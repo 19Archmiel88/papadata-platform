@@ -20,18 +20,17 @@
 
 ## Podsumowanie
 
-- SPRZECZNE: 3
+- SPRZECZNE: 2
 - BRAK: 22
 - DECYZJA: 0
 - CZĘŚCIOWE: 1
-- ZGODNE: 15
+- ZGODNE: 16
 
 ## Macierz
 
 Obszar | Wymaganie | Stan aktualny | Status | Działanie
 --- | --- | --- | --- | ---
 Frontend | Kod aplikacyjny poza .storybook; Storybook renderuje te same komponenty co aplikacja | Pliki implementacyjne w .storybook: 7; pliki w src: 0 | SPRZECZNE | Po przeniesieniu projektu do apps/web przenieść komponenty, CSS, fixtures i ekrany do src bez zmiany UI.
-Środowisko | Node.js 24 LTS przypięty w repozytorium | .node-version=22.22.2, .nvmrc=22.22.2, engines.node=22.22.2 | SPRZECZNE | Po potwierdzeniu kompatybilności przejść na Node.js 24 LTS i ponownie wykonać pełne testy.
 Walidacja | Jedna zatwierdzona biblioteka walidacji: Zod | Zod=nie, Valibot=tak | SPRZECZNE | W apps/web zastosować Zod. Valibot usunąć dopiero po potwierdzeniu braku użycia albo opisać odstępstwo w ADR.
 Frontend | React Router | Brak: react-router | BRAK | Dodać do apps/web po utworzeniu monorepo.
 Frontend | TanStack Query | Brak: @tanstack/react-query | BRAK | Dodać do apps/web po utworzeniu monorepo.
@@ -70,12 +69,13 @@ Frontend | Vitest | Obecne: vitest | ZGODNE | Zachować przy migracji do apps/we
 Frontend | Playwright | Obecne: playwright | ZGODNE | Zachować przy migracji do apps/web.
 Frontend | Storybook | Obecne: storybook | ZGODNE | Zachować przy migracji do apps/web.
 Stan bazowy | Czysty punkt odniesienia przed migracją | Commit 01fc199 znajduje się na origin/main. | ZGODNE | Nie przepisywać historii main. Wszystkie zmiany wykonywać na osobnej gałęzi.
+Środowisko | Node.js 24 LTS przypięty w repozytorium | .node-version=24.18.0, .nvmrc=24.18.0, engines.node=24.18.0; verify, build i build Storybooka zakończone powodzeniem | ZGODNE | Zachować Node.js 24.18.0. Aktualizować wyłącznie po osobnej weryfikacji kompatybilności.
 Środowisko | pnpm przypięty przez packageManager | pnpm@10.29.3 | ZGODNE | Zachować jedną wersję pnpm dla całego monorepo.
 
 ## Kolejność realizacji
 
 1. Zachować commit 01fc199 jako niezmienny punkt bazowy.
-2. Potwierdzić przejście projektu na Node.js 24 LTS.
+2. Node.js 24.18.0 został zweryfikowany i przypięty w repozytorium.
 3. Utworzyć root modularnego monorepo z pnpm workspace i Turborepo.
 4. Przenieść obecny projekt do apps/web bez zmiany UI, copy, CSS, stories i testów.
 5. Ponownie uruchomić lint, typecheck, 58 testów, build aplikacji i build Storybooka.

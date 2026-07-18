@@ -1,0 +1,56 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "ui": "stream",
+  "globalDependencies": [
+    ".node-version",
+    ".nvmrc"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    },
+    "build:storybook": {
+      "dependsOn": [
+        "^build:storybook"
+      ],
+      "outputs": [
+        "storybook-static/**"
+      ]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "typecheck": {
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": [
+        "typecheck"
+      ],
+      "outputs": [
+        "coverage/**"
+      ]
+    },
+    "test:storybook": {
+      "dependsOn": [
+        "typecheck"
+      ],
+      "outputs": [
+        "coverage/**"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "storybook": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

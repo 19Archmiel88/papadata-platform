@@ -17,14 +17,14 @@ w Storybooku:
 
 - Storybook jest aktywnym środowiskiem projektowania i testowania UI.
 - Obecny wygląd stanowi bazę do dalszego rozwoju.
-- Implementacje ekranów znajdują się tymczasowo w katalogu `.storybook`.
+- Implementacje ekranów znajdują się tymczasowo w katalogu `apps/web/.storybook`.
 - Aplikacja Vite jest obecnie technicznym shellem bez produkcyjnego UI.
 - Backend, BFF, API, workery i infrastruktura nie zostały jeszcze utworzone.
 - Poprawny build lub test nie oznacza gotowości produkcyjnej produktu.
 
 ## Najbliższy cel
 
-Przenieść istniejące implementacje z `.storybook` do właściwej struktury
+Przenieść istniejące implementacje z `apps/web/.storybook` do właściwej struktury `apps/web/src`
 `src` bez zmiany:
 
 - wyglądu;
@@ -36,25 +36,26 @@ Przenieść istniejące implementacje z `.storybook` do właściwej struktury
 
 Docelowo:
 
-- `.storybook` zawiera wyłącznie konfigurację Storybooka;
-- `src/design-system` zawiera fundamenty i komponenty;
-- `src/screens` zawiera kompletne ekrany;
-- `src/stories` zawiera definicje stories;
-- `src/fixtures` zawiera dane scenariuszy;
-- `src/contracts` zawiera kontrakty UI;
-- `src/i18n` zawiera konfigurację języków;
-- `src/app` zawiera aplikację produkcyjną.
+- `apps/web/.storybook` zawiera wyłącznie konfigurację Storybooka;
+- `apps/web/src/design-system` zawiera fundamenty i komponenty;
+- `apps/web/src/screens` zawiera kompletne ekrany;
+- `apps/web/src/stories` zawiera definicje stories;
+- `apps/web/src/fixtures` zawiera dane scenariuszy;
+- `apps/web/src/contracts` zawiera kontrakty UI;
+- `apps/web/src/i18n` zawiera konfigurację języków;
+- `apps/web/src/app` zawiera aplikację produkcyjną.
 
 Storybook i aplikacja produkcyjna mają używać tych samych komponentów.
 
 ## Struktura bieżąca
 
-- `.storybook` — konfiguracja oraz tymczasowa implementacja UI;
+- `apps/web/.storybook` — konfiguracja oraz tymczasowa implementacja UI;
 - `.vscode` — rekomendowane rozszerzenia i ustawienia edytora;
 - `docs` — instrukcje techniczne i szablony pracy;
 - `AGENTS.md` — obowiązujące reguły pracy z Codexem;
 - `00-INSTRUKCJA-STARTU.md` — plan rozwoju platformy;
-- `package.json` — skrypty i zależności aktualnego frontendu.
+- `package.json` — skrypty orkiestrujące monorepo i zależności root;
+- `apps/web/package.json` — skrypty i zależności aplikacji webowej.
 
 ## Uruchamianie
 
@@ -88,3 +89,12 @@ Aplikacja Vite:
 - Operacje Git, instalowanie zależności i zmiany architektoniczne wymagają jawnej zgody.
 
 Szczegółowe reguły znajdują się w `AGENTS.md`.
+
+## Stan realizacji monorepo
+
+- Root repozytorium korzysta z pnpm workspace i Turborepo.
+- Aplikacja webowa znajduje się w `apps/web`.
+- Storybook i obecne prototypy UI znajdują się tymczasowo w `apps/web/.storybook`.
+- `apps/bff`, `apps/api` i `apps/worker` nie zostały jeszcze utworzone.
+- Pakiety współdzielone w `packages/*` nie zostały jeszcze utworzone.
+- Obecny etap nie potwierdza gotowości aplikacji produkcyjnej.

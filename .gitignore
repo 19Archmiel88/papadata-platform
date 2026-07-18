@@ -47,3 +47,10 @@ Thumbs.db
 
 # Local review materials
 docs/UI-AUDIT-SOURCE.md
+
+# Monorepo build outputs
+**/.turbo/
+**/node_modules/
+**/dist/
+**/storybook-static/
+**/coverage/

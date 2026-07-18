@@ -1,0 +1,335 @@
+.pdw-shell {
+  color-scheme: light;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.pdw-shell[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+.pdw-main {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+  margin: 0 auto;
+  max-width: 82rem;
+  min-height: calc(100dvh - 4.375rem);
+  padding:
+    clamp(2rem, 5vh, 4.5rem)
+    clamp(1rem, 4vw, 3rem);
+}
+
+.pdw-header {
+  align-items: end;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.pdw-heading {
+  display: grid;
+  gap: 0.7rem;
+  max-width: 48rem;
+}
+
+.pdw-kicker {
+  color: var(--pdw-accent, var(--pds-accent-primary));
+  font-size: 0.8125rem;
+  font-weight: var(--pds-font-weight-medium);
+}
+
+.pdw-heading h1 {
+  color: var(--pds-text-primary);
+  font-size: clamp(1.85rem, 3vw, 2.7rem);
+  font-weight: var(--pds-font-weight-semibold);
+  letter-spacing: 0;
+  line-height: 1.08;
+  margin: 0;
+}
+
+.pdw-heading p {
+  color: var(--pds-text-secondary);
+  font-size: 0.98rem;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.pdw-status {
+  align-items: center;
+  background:
+    color-mix(
+      in oklch,
+      var(--pds-bg-tertiary) 78%,
+      transparent
+    );
+  border: 1px solid var(--pds-border-secondary);
+  border-radius: var(--pds-radius-md);
+  color: var(--pds-text-secondary);
+  display: inline-flex;
+  font-size: 0.8125rem;
+  gap: 0.5rem;
+  min-height: 2.35rem;
+  padding-inline: 0.8rem;
+  white-space: nowrap;
+}
+
+.pdw-status svg {
+  color: var(--pdw-accent, var(--pds-accent-primary));
+}
+
+.pdw-layout {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.42fr);
+}
+
+.pdw-panel,
+.pdw-side-panel,
+.pdw-card {
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in oklch, var(--pds-bg-tertiary) 92%, white 4%),
+      color-mix(in oklch, var(--pds-bg-tertiary) 78%, transparent)
+    );
+  border: 1px solid var(--pds-border-secondary);
+  border-radius: var(--pds-radius-md);
+}
+
+.pdw-panel {
+  display: grid;
+  gap: 1.25rem;
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.pdw-side-panel {
+  align-content: start;
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.pdw-panel-header,
+.pdw-card-header {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.pdw-panel-header h2,
+.pdw-card-header h3 {
+  color: var(--pds-text-primary);
+  font-size: 1rem;
+  font-weight: var(--pds-font-weight-semibold);
+  margin: 0;
+}
+
+.pdw-card-header h3 {
+  font-size: 0.9rem;
+}
+
+.pdw-chip {
+  align-items: center;
+  background:
+    color-mix(
+      in oklch,
+      var(--pdw-chip, var(--pds-accent-primary)) 11%,
+      transparent
+    );
+  border:
+    1px solid
+    color-mix(
+      in oklch,
+      var(--pdw-chip, var(--pds-accent-primary)) 32%,
+      var(--pds-border-secondary)
+    );
+  border-radius: var(--pds-radius-full);
+  color:
+    color-mix(
+      in oklch,
+      var(--pdw-chip, var(--pds-accent-primary)) 70%,
+      var(--pds-text-primary)
+    );
+  display: inline-flex;
+  font-size: 0.75rem;
+  font-weight: var(--pds-font-weight-medium);
+  min-height: 1.55rem;
+  padding-inline: 0.6rem;
+  white-space: nowrap;
+}
+
+.pdw-chip--ready {
+  --pdw-chip: oklch(64% 0.13 166);
+}
+
+.pdw-chip--waiting {
+  --pdw-chip: var(--pds-accent-warm);
+}
+
+.pdw-chip--blocked {
+  --pdw-chip: oklch(63% 0.16 32);
+}
+
+.pdw-grid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pdw-card {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 1rem;
+}
+
+.pdw-card p,
+.pdw-side-panel p {
+  color: var(--pds-text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.pdw-card strong {
+  color: var(--pds-text-primary);
+  font-size: 0.95rem;
+  font-weight: var(--pds-font-weight-semibold);
+}
+
+.pdw-meta-list,
+.pdw-requirements,
+.pdw-actions {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0;
+}
+
+.pdw-meta-list {
+  list-style: none;
+}
+
+.pdw-meta-list li,
+.pdw-requirements li {
+  align-items: start;
+  color: var(--pds-text-secondary);
+  display: grid;
+  font-size: 0.8125rem;
+  gap: 0.55rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  line-height: 1.45;
+}
+
+.pdw-meta-list svg,
+.pdw-requirements svg {
+  color: var(--pdw-accent, var(--pds-accent-primary));
+  margin-top: 0.1rem;
+}
+
+.pdw-form-grid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pdw-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.pdw-field span {
+  color: var(--pds-text-secondary);
+  font-size: 0.75rem;
+}
+
+.pdw-field strong {
+  background:
+    color-mix(
+      in oklch,
+      var(--pds-bg-tertiary) 82%,
+      transparent
+    );
+  border: 1px solid var(--pds-border-secondary);
+  border-radius: 0.65rem;
+  color: var(--pds-text-primary);
+  font-size: 0.875rem;
+  font-weight: var(--pds-font-weight-medium);
+  min-height: 2.75rem;
+  padding: 0.8rem;
+}
+
+.pdw-actions {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.pdw-button {
+  align-items: center;
+  background: var(--pds-accent-primary);
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  color: white;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: var(--pds-font-weight-medium);
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding-inline: 1rem;
+}
+
+.pdw-button--secondary {
+  background:
+    color-mix(
+      in oklch,
+      var(--pds-bg-tertiary) 80%,
+      transparent
+    );
+  border-color: var(--pds-border-primary);
+  color: var(--pds-text-primary);
+}
+
+.pdw-timeline {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.pdw-timeline-step {
+  border-left: 1px solid var(--pds-border-secondary);
+  display: grid;
+  gap: 0.2rem;
+  padding-left: 0.85rem;
+}
+
+.pdw-timeline-step strong {
+  color: var(--pds-text-primary);
+  font-size: 0.85rem;
+  font-weight: var(--pds-font-weight-medium);
+}
+
+.pdw-timeline-step span {
+  color: var(--pds-text-secondary);
+  font-size: 0.75rem;
+}
+
+@media (max-width: 920px) {
+  .pdw-header,
+  .pdw-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pdw-status {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .pdw-grid,
+  .pdw-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

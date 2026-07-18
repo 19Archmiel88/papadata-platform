@@ -1,0 +1,22 @@
+{
+  "recommendations": [
+    "openai.chatgpt",
+    "ms-vscode-remote.remote-wsl",
+    "ms-vscode-remote.remote-containers",
+    "ms-azuretools.vscode-docker",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "EditorConfig.EditorConfig",
+    "bradlc.vscode-tailwindcss",
+    "ms-playwright.playwright",
+    "vitest.explorer",
+    "redhat.vscode-yaml",
+    "tamasfe.even-better-toml",
+    "hashicorp.terraform",
+    "github.vscode-github-actions",
+    "DavidAnson.vscode-markdownlint",
+    "usernamehw.errorlens",
+    "eamodio.gitlens",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}

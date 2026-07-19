@@ -321,6 +321,21 @@ export const entitlementSchema = z.object({
 
 export type Entitlement = z.infer<typeof entitlementSchema>;
 
+export const sessionUserSchema = z.object({
+  email: z.string().email(),
+  fullName: z.string().min(1),
+  mfaEnabled: z.boolean(),
+  status: z.enum([
+    'active',
+    'blocked',
+    'password_change_required',
+    'password_reset_required',
+  ]),
+  userId: userIdSchema,
+});
+
+export type SessionUser = z.infer<typeof sessionUserSchema>;
+
 export const sessionContextSchema = z.object({
   actorId: userIdSchema,
   capabilities: z.array(capabilitySchema).default([]),
@@ -333,6 +348,24 @@ export const sessionContextSchema = z.object({
 });
 
 export type SessionContext = z.infer<typeof sessionContextSchema>;
+
+export const applicationSessionContextSchema = z.object({
+  activeWorkspace: workspaceSchema,
+  capabilities: z.array(capabilitySchema),
+  contractVersion: contractVersionSchema,
+  correlationId: correlationIdSchema,
+  currency: currencyCodeSchema,
+  entitlements: z.array(entitlementSchema),
+  featureFlags: z.record(z.string(), z.boolean()),
+  locale: z.string().min(2),
+  memberships: z.array(membershipSchema),
+  tenant: tenantSchema,
+  timezone: z.string().min(1),
+  user: sessionUserSchema,
+  workspaces: z.array(workspaceSchema),
+});
+
+export type ApplicationSessionContext = z.infer<typeof applicationSessionContextSchema>;
 
 export const dataIssueSchema = z.object({
   issueId: dataIssueIdSchema,
@@ -385,6 +418,59 @@ export const operationStatusSchema = z.object({
 });
 
 export type OperationStatus = z.infer<typeof operationStatusSchema>;
+
+export const auditEventSchema = z.object({
+  actor: z
+    .object({
+      actorId: userIdSchema,
+      roles: z.array(roleSchema),
+    })
+    .optional(),
+  auditEventId: auditEventIdSchema,
+  correlationId: correlationIdSchema,
+  eventType: z
+    .string()
+    .min(3)
+    .regex(/^[a-z0-9_.:-]+$/),
+  occurredAt: isoDateTimeSchema,
+  reason: z.string().min(1).optional(),
+  result: z.enum(['success', 'failure', 'denied']),
+  source: z.enum([
+    'api_client',
+    'app_shell',
+    'auth_server',
+    'local_auth_adapter',
+    'storybook',
+    'test',
+    'web_ui',
+  ]),
+  tenantId: tenantIdSchema.optional(),
+  workspaceId: workspaceIdSchema.optional(),
+});
+
+export type AuditEvent = z.infer<typeof auditEventSchema>;
+
+export const workspaceCacheKeySchema = z.object({
+  contractVersion: contractVersionSchema,
+  scope: z.string().min(1),
+  tenantId: tenantIdSchema,
+  version: z.string().min(1),
+  workspaceId: workspaceIdSchema,
+});
+
+export type WorkspaceCacheKey = z.infer<typeof workspaceCacheKeySchema>;
+
+export function createWorkspaceCacheKey(input: WorkspaceCacheKey): string {
+  const key = workspaceCacheKeySchema.parse(input);
+
+  return [
+    key.contractVersion,
+    key.tenantId,
+    key.workspaceId,
+    key.scope,
+    key.version,
+  ].join(':');
+}
 
 export const resourceScopeSchema = z.discriminatedUnion('resourceKind', [
   z.object({

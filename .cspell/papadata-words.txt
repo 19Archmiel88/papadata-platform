@@ -13,6 +13,7 @@ backendu
 biznesowo
 Bledny
 Blockery
+backfillu
 builderem
 buildów
 Caly
@@ -42,6 +43,7 @@ frontendowa
 frontendowe
 frontendowy
 frontendu
+guardy
 hardcoduj
 Idempotencja
 idempotencji
@@ -88,6 +90,7 @@ REAUTHENTICATION
 refaktoru
 refaktory
 refundy
+resynchronizacja
 relogin
 ROAS
 routingu
@@ -116,15 +119,18 @@ TOTP
 Toxiproxy
 transakcyjności
 walidowana
+walidowane
 walidowany
 walidować
 waliduje
 watchery
 wersjonowana
 wersjonowane
+wersjonowany
 wersjonowania
 Wordmark
 wordmarka
+woocommerce
 workery
 workerów
 Wygasl

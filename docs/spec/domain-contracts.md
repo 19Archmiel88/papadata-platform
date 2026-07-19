@@ -40,6 +40,43 @@ Pierwszym vertical slice jest auth tenant/workspace:
   tenant/workspace, readiness, limitations oraz klasę błędu;
 - zmiana workspace zwraca reset `cache`, `drafts` i `workspace_data`.
 
+## Zakres Fali 1
+
+Fala 1 dodaje fundament aplikacji w `apps/web/src`:
+
+- `shell/` zawiera `SessionContextProvider`, hooki kontekstu workspace,
+  `PermissionBoundary` i runtime guardy zmiany workspace;
+- `shared/api/` zawiera klienta API z `correlationId`, wersją kontraktu,
+  aktywnym `tenantId` i `workspaceId` w headers oraz redakcją danych
+  wrażliwych;
+- `shared/test/` zawiera kanoniczne fixture Storybooka walidowane schematami
+  domenowymi;
+- `shared/patterns/` zawiera wspólne wzorce UI dla workspace, readiness,
+  operacji, evidence, decyzji i problemów danych;
+- `features/reference-slice/` zawiera pierwszy pion end-to-end od kontekstu
+  sesji do KPI, evidence, rekomendacji i decyzji człowieka.
+
+`ApplicationSessionContext` rozszerza bazowy `SessionContext` o użytkownika,
+aktywny workspace, wszystkie dostępne workspace, memberships, capabilities,
+entitlements, locale, timezone, walutę i feature flags.
+
+Klucz cache workspace jest wersjonowany i zawiera:
+
+- `contractVersion`;
+- `tenantId`;
+- `workspaceId`;
+- zakres cache;
+- wersję danych.
+
+Zmiana workspace w runtime:
+
+- anuluje aktywne zapytania;
+- zatrzymuje streamy;
+- czyści cache;
+- czyści drafty;
+- odrzuca późne odpowiedzi ze starego workspace;
+- zapisuje audit event bez sekretów, tokenów ani kodów MFA.
+
 ## Inwarianty danych
 
 Testy kontraktów utrwalają zasady:

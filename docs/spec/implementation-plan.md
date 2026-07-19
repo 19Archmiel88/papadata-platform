@@ -12,19 +12,19 @@
 
 ## Fala 1 — fundament
 
-- [ ] Tenant.
-- [ ] Workspace.
-- [ ] Membership.
-- [ ] Role.
-- [ ] Capabilities.
-- [ ] Data scope.
-- [ ] Auth.
-- [ ] MFA.
-- [ ] Zaproszenia.
-- [ ] Sesje.
-- [ ] Audit log.
-- [ ] App shell.
-- [ ] Light/dark mode.
+- [x] Tenant.
+- [x] Workspace.
+- [x] Membership.
+- [x] Role.
+- [x] Capabilities.
+- [x] Data scope.
+- [x] Auth.
+- [x] MFA.
+- [x] Zaproszenia.
+- [x] Sesje.
+- [x] Audit log.
+- [x] App shell.
+- [x] Light/dark mode.
 
 ## Fala 2 — integracje
 

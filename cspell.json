@@ -14,6 +14,7 @@
     "node_modules/**",
     "**/.turbo/**",
     "**/coverage/**",
+    "docs/source-materials/**",
     "dist/**",
     "**/dist/**",
     "build/**",

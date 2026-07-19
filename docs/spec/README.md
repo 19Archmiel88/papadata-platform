@@ -12,6 +12,11 @@ https://drive.google.com/drive/folders/1jgwAszV2d6Te29bBmDz4fQETGfvoI-rD?usp=dri
 Dokumenty na Drive są materiałami rozszerzonymi. Pliki w tym katalogu są
 wykonawczym źródłem prawdy dla implementacji.
 
+Skonwertowany pakiet dokumentacji źródłowej z plików Word znajduje się w
+[`docs/source-materials/papadata-dokumentacja`](../source-materials/papadata-dokumentacja/README.md).
+Pakiet ten zachowuje pełną strukturę materiałów biznesowych, architektonicznych,
+bezpieczeństwa oraz UI/UX i służy jako rozszerzony kontekst analityczny.
+
 ## Zasady dla Codexa
 
 1. Najpierw przeanalizuj strukturę repozytorium.

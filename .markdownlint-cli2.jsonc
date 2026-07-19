@@ -10,6 +10,7 @@
     "**/dist/**",
     "**/storybook-static/**",
     "**/coverage/**",
+    "docs/source-materials/**",
     "**/test-results/**",
     "**/playwright-report/**"
   ]

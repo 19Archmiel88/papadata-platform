@@ -8,12 +8,21 @@ const meta = {
   parameters: {
     layout: 'fullscreen',
   },
+  argTypes: {
+    initialTheme: {
+      control: 'inline-radio',
+      options: ['light', 'dark'],
+    },
+  },
+  args: {
+    initialTheme: 'light',
+  },
 } satisfies Meta<typeof LogoWordmarkReference>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const ReferencjaZnaku: Story = {
-  name: 'Referencja znaku',
+export const FinalneLogo: Story = {
+  name: 'Finalne logo',
 };

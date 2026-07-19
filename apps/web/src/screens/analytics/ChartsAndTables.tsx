@@ -10,6 +10,7 @@ import {
   type StatusBadgeStatus,
 } from '../../design-system';
 import '../../design-system/foundations/papadata-brand-surface.css';
+import { TargetScreenShell } from '../shared/TargetScreenShell';
 import './analytical-elements.css';
 
 const analyticalRowStatusToBadge = {
@@ -19,12 +20,11 @@ const analyticalRowStatusToBadge = {
 
 function ChartsAndTables() {
   return (
-    <div
-      className="pds-brand-surface pdx-shell"
-      data-theme="dark"
-      lang="pl"
+    <TargetScreenShell
+      className="pdx-shell"
+      initialTheme="dark"
+      mainClassName="pdx-main"
     >
-      <main className="pdx-main">
         <header className="pdx-header">
           <span>Elementy analityczne</span>
           <h1>Wykresy i tabele</h1>
@@ -85,8 +85,7 @@ function ChartsAndTables() {
             </tbody>
           </table>
         </Surface>
-      </main>
-    </div>
+    </TargetScreenShell>
   );
 }
 

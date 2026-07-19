@@ -1,9 +1,6 @@
 import {
-  Fingerprint,
   Mail,
   ShieldCheck,
-  UserRoundCheck,
-  Waypoints,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -16,7 +13,6 @@ import {
   PasswordField,
   ProviderButton,
   StatusBadge,
-  StepIndicator,
   Surface,
   TextField,
   VerificationCodeInput,
@@ -103,32 +99,10 @@ function AuthComponentShowcase({
         <Surface className="pda-component-section">
           <header>
             <span>Stan</span>
-            <h2>Postęp, status i komunikat</h2>
+            <h2>Status i komunikat</h2>
           </header>
 
           <div className="pda-component-grid">
-            <StepIndicator
-              aria-label="Postęp procesu dostępu"
-              currentIndex={1}
-              steps={[
-                {
-                  icon: <UserRoundCheck aria-hidden="true" size={15} />,
-                  key: 'account',
-                  label: 'Konto',
-                },
-                {
-                  icon: <Fingerprint aria-hidden="true" size={15} />,
-                  key: 'verification',
-                  label: 'Weryfikacja',
-                },
-                {
-                  icon: <Waypoints aria-hidden="true" size={15} />,
-                  key: 'access',
-                  label: 'Dostęp',
-                },
-              ]}
-            />
-
             <div className="pda-component-trust">
               <ShieldCheck aria-hidden="true" size={22} />
               <span>

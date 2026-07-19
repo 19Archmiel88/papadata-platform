@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { AuthComponentShowcase } from '../../screens/account-access/AuthComponentShowcase';
 
 const meta = {
-  title: 'PapaData/02 Komponenty/Dostęp do konta',
+  title: 'PapaData/03 Wzorce/Zestawy ekranowe/Dostęp do konta',
   component: AuthComponentShowcase,
   parameters: {
     layout: "fullscreen",
@@ -21,7 +21,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const ZestawKomponentow: Story = {
-  name: "Zestaw komponentów",
+  name: 'Przegląd',
   args: {
     initialTheme: "dark",
   },

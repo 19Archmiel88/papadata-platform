@@ -19,6 +19,7 @@ import {
   Surface,
 } from '../../design-system';
 import '../../design-system/foundations/papadata-brand-surface.css';
+import { TargetScreenShell } from '../shared/TargetScreenShell';
 import './analytical-elements.css';
 
 const analyticalListIconByName: Record<AnalyticalListIcon, LucideIcon> = {
@@ -32,12 +33,11 @@ const analyticalListIconByName: Record<AnalyticalListIcon, LucideIcon> = {
 
 function AnalyticalStates() {
   return (
-    <div
-      className="pds-brand-surface pdx-shell"
-      data-theme="dark"
-      lang="pl"
+    <TargetScreenShell
+      className="pdx-shell"
+      initialTheme="dark"
+      mainClassName="pdx-main"
     >
-      <main className="pdx-main">
         <header className="pdx-header">
           <span>Elementy analityczne</span>
           <h1>Stany danych oraz jakość i świeżość</h1>
@@ -107,8 +107,7 @@ function AnalyticalStates() {
             </ul>
           </Surface>
         </section>
-      </main>
-    </div>
+    </TargetScreenShell>
   );
 }
 

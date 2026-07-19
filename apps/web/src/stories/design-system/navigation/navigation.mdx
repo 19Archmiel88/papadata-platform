@@ -1,0 +1,53 @@
+import {
+  Canvas,
+  Meta,
+} from '@storybook/addon-docs/blocks';
+
+import * as NavigationStories from './navigation.stories';
+
+<Meta of={NavigationStories} name="Dokumentacja" />
+
+# Nawigacja
+
+Elementy nawigacyjne umożliwiają przechodzenie między widokami,
+sekcjami, zakresami danych i stronami wyników.
+
+## Nawigacja podstawowa
+
+<Canvas of={NavigationStories.Podstawowa} />
+
+Kontrolki globalne powinny mieć stałe znaczenie i kolejność
+w całej aplikacji.
+
+## Ścieżka
+
+<Canvas of={NavigationStories.Sciezka} />
+
+Breadcrumb opisuje położenie użytkownika, ale nie zastępuje
+przycisku wykonującego faktyczny powrót.
+
+## Zakładki
+
+<Canvas of={NavigationStories.Tabs} />
+
+Aktywna zakładka otrzymuje `aria-selected="true"`.
+
+## Paginacja
+
+<Canvas of={NavigationStories.Paginacja} />
+
+Bieżąca strona otrzymuje `aria-current="page"`.
+
+## Stany
+
+<Canvas of={NavigationStories.Stany} />
+
+Focus musi być widoczny w jasnym i ciemnym motywie.
+
+## Zasady
+
+- Jeden wzorzec nawigacji odpowiada jednemu rodzajowi przejścia.
+- Link służy do przechodzenia pod adres URL.
+- Przycisk uruchamia działanie.
+- Stan aktywny nie może być przekazywany wyłącznie kolorem.
+- Kolejność focusu odpowiada kolejności wizualnej.

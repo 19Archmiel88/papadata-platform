@@ -8,7 +8,6 @@ import {
   ShieldCheck,
   User,
   Waypoints,
-  type LucideIcon,
 } from 'lucide-react';
 import {
   useEffect,
@@ -26,18 +25,15 @@ import {
   PageHeader,
   PasswordField as DsPasswordField,
   ProviderButton as DsProviderButton,
-  StepIndicator,
   TextField as DsTextField,
   VerificationCodeInput,
 } from '../../design-system';
 import {
   authIdentityFixture,
-  authProgressSteps,
   staticCooldownSeconds,
   verificationCodeLength,
   verificationCodeSettings,
   verificationCooldownSeconds,
-  type AuthProgressIcon,
   type AuthScreen,
   type LoginState,
   type VerificationCodeState,
@@ -45,12 +41,6 @@ import {
 } from '../../fixtures/auth';
 import '../../design-system/foundations/papadata-brand-surface.css';
 import './papadata-auth.css';
-
-const authProgressIconByName: Record<AuthProgressIcon, LucideIcon> = {
-  fingerprint: Fingerprint,
-  user: User,
-  waypoints: Waypoints,
-};
 
 type AuthStoryProps = {
   initialLoginState?: LoginState;
@@ -63,30 +53,6 @@ type GoToOptions = {
   emailVerificationCopyMode?: EmailVerificationCopyMode;
 };
 type GoTo = (screen: AuthScreen, options?: GoToOptions) => void;
-
-function getProgressIndex(screen: AuthScreen): number {
-  if (
-    screen === 'verification' ||
-    screen === 'emailVerification' ||
-    screen === 'mfa' ||
-    screen === 'recovery' ||
-    screen === 'reauthentication'
-  ) {
-    return 1;
-  }
-
-  if (
-    screen === 'complete' ||
-    screen === 'signedOut' ||
-    screen === 'authUnavailable' ||
-    screen === 'accessBlocked' ||
-    screen === 'accessResolution'
-  ) {
-    return 2;
-  }
-
-  return 0;
-}
 
 function getInitialVerificationCode(
   state: VerificationCodeState,
@@ -141,9 +107,6 @@ function AuthStorySurfaceState({
   const [verificationCode, setVerificationCode] = useState(() =>
     getInitialVerificationCode(initialVerificationState),
   );
-
-  const progressIndex = getProgressIndex(screen);
-
   const goTo: GoTo = (nextScreen, options) => {
     setVerificationCode('');
     setEmailVerificationCopyMode(
@@ -157,7 +120,9 @@ function AuthStorySurfaceState({
   return (
     <div
       className={`pds-brand-surface pda-auth-shell${
-        screen === 'login' ? ' pda-auth-surface--login' : ''
+        screen === 'login'
+          ? ' pda-auth-surface--login'
+          : ' pda-auth-surface--flow'
       }`}
       data-login-state={screen === 'login' ? loginState : undefined}
       data-screen={screen}
@@ -180,12 +145,12 @@ function AuthStorySurfaceState({
         />
       ) : (
         <main className="pda-auth-main">
+          <LoginBackgroundLines />
+
           <section
             className="pda-auth-workspace"
             aria-label="Formularz dostępu"
           >
-            <AuthProgress currentIndex={progressIndex} />
-
             <div className="pda-auth-screen" key={screen}>
               <AuthScreenRenderer
                 emailVerificationCopyMode={emailVerificationCopyMode}
@@ -318,35 +283,6 @@ function LoginBackgroundLines() {
         />
       </svg>
     </div>
-  );
-}
-
-function AuthProgress({
-  currentIndex,
-}: {
-  currentIndex: number;
-}) {
-  return (
-    <StepIndicator
-      className="pda-auth-progress"
-      currentIndex={currentIndex}
-      aria-label="Postęp procesu dostępu"
-      steps={authProgressSteps.map((step) => {
-        const StepIcon = authProgressIconByName[step.icon];
-
-        return {
-          icon: (
-            <StepIcon
-              aria-hidden="true"
-              size={15}
-              strokeWidth={1.8}
-            />
-          ),
-          key: step.key,
-          label: step.label,
-        };
-      })}
-    />
   );
 }
 

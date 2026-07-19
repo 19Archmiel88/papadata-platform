@@ -1,0 +1,159 @@
+.pdt-shell {
+  --pdt-background: #f7f9fc;
+  --pdt-surface:
+    color-mix(
+      in oklch,
+      var(--pds-bg-secondary) 82%,
+      transparent
+    );
+  --pdt-surface-strong:
+    color-mix(
+      in oklch,
+      var(--pds-bg-tertiary) 92%,
+      transparent
+    );
+  --pdt-separator:
+    color-mix(
+      in oklch,
+      var(--pds-border-primary) 82%,
+      transparent
+    );
+
+  background: var(--pdt-background);
+  color-scheme: light;
+  isolation: isolate;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.pdt-shell[data-theme='dark'] {
+  --pdt-background: #02060d;
+  --pdt-surface:
+    color-mix(
+      in oklch,
+      var(--pds-bg-secondary) 54%,
+      transparent
+    );
+  --pdt-surface-strong:
+    color-mix(
+      in oklch,
+      var(--pds-bg-tertiary) 68%,
+      transparent
+    );
+  --pdt-separator:
+    color-mix(
+      in oklch,
+      var(--pds-border-primary) 72%,
+      transparent
+    );
+
+  color-scheme: dark;
+}
+
+.pdt-shell::before,
+.pdt-shell::after {
+  content: none;
+  display: none;
+}
+
+.pdt-shell .pds-topbar {
+  background:
+    color-mix(
+      in oklch,
+      var(--pdt-background) 92%,
+      transparent
+    );
+  backdrop-filter: blur(18px);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.pdt-main {
+  min-height: calc(100dvh - 4.375rem);
+  position: relative;
+  z-index: 2;
+}
+
+.pdt-ambient {
+  height: clamp(6rem, 11vw, 9rem);
+  inset-inline: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  top: clamp(12rem, 31vh, 22rem);
+  z-index: 0;
+}
+
+.pdt-ambient__group {
+  height: 100%;
+  opacity: 0.42;
+  position: absolute;
+  top: 0;
+  width: min(32rem, 34vw);
+}
+
+.pdt-ambient__group--left {
+  left: 0;
+}
+
+.pdt-ambient__group--right {
+  right: 0;
+  transform: scaleX(-1);
+}
+
+.pdt-ambient__line {
+  fill: none;
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.pdt-ambient__line--blue {
+  stroke:
+    color-mix(
+      in oklch,
+      var(--pds-brand-blue) 64%,
+      transparent
+    );
+}
+
+.pdt-ambient__line--cyan {
+  stroke:
+    color-mix(
+      in oklch,
+      var(--pds-brand-sky) 40%,
+      transparent
+    );
+}
+
+.pdt-ambient__line--teal {
+  stroke:
+    color-mix(
+      in oklch,
+      var(--pds-brand-teal) 46%,
+      transparent
+    );
+}
+
+.pdt-shell[data-theme='light'] .pdt-ambient__group {
+  opacity: 0.24;
+}
+
+@media (max-width: 760px) {
+  .pdt-ambient {
+    top: 11rem;
+  }
+
+  .pdt-ambient__group {
+    opacity: 0.24;
+    width: 52vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdt-ambient {
+    animation: none;
+  }
+}

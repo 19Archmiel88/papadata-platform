@@ -4,7 +4,7 @@ import { AuthOperationalScreen } from '../../screens/auth/AuthOperationalScreen'
 import { renderLocalAuthStory } from './authStoryRender';
 
 const meta = {
-  title: 'PapaData/03 Wzorce/Wybór kontekstu',
+  title: 'PapaData/03 Wzorce/Scenariusze operacyjne/Wybór kontekstu',
   component: AuthOperationalScreen,
   render: renderLocalAuthStory,
   parameters: { layout: 'fullscreen' },
@@ -15,7 +15,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const WyborKontekstu: Story = {
-  name: 'Wybór kontekstu',
+  name: 'Podstawowy',
   args: { initialScenario: 'contextSelection', theme: 'dark' },
 };
 
@@ -30,6 +30,6 @@ export const WorkspaceZablokowany: Story = {
 };
 
 export const BrakMembershipu: Story = {
-  name: 'Brak membershipu',
+  name: 'Brak członkostwa',
   args: { initialScenario: 'noMembership', theme: 'dark' },
 };

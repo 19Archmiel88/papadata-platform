@@ -61,7 +61,7 @@ function DeveloperDiagnostics() {
 }
 
 const meta = {
-  title: 'PapaData/04 Ekrany docelowe/Diagnostyka deweloperska',
+  title: 'PapaData/05 Diagnostyka deweloperska/Konfiguracja przestrzeni roboczej',
   component: DeveloperDiagnostics,
   parameters: {
     layout: 'fullscreen',

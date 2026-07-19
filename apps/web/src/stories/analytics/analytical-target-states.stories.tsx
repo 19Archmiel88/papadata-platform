@@ -8,19 +8,20 @@ import {
   LoadingState,
 } from '../../design-system';
 import '../../design-system/foundations/papadata-brand-surface.css';
+import { TargetScreenShell } from '../../screens/shared/TargetScreenShell';
 
 function AnalyticsStateStage() {
   return (
-    <div
-      className="pds-brand-surface pdx-shell"
-      data-theme="dark"
-      lang="pl"
+    <TargetScreenShell
+      className="pdx-shell"
+      initialTheme="dark"
+      mainClassName="pdx-main"
     />
   );
 }
 
 const meta = {
-  title: 'PapaData/04 Ekrany docelowe/Analityka',
+  title: 'PapaData/04 Ekrany docelowe/Analityka/Stany danych',
   component: AnalyticsStateStage,
   parameters: {
     layout: 'fullscreen',
@@ -33,15 +34,13 @@ type Story = StoryObj<typeof meta>;
 
 function StateCanvas({ children }: { children: ReactNode }) {
   return (
-    <div
-      className="pds-brand-surface pdx-shell"
-      data-theme="dark"
-      lang="pl"
+    <TargetScreenShell
+      className="pdx-shell"
+      initialTheme="dark"
+      mainClassName="pdx-main pdx-main--state"
     >
-      <main className="pdx-main">
-        {children}
-      </main>
-    </div>
+      {children}
+    </TargetScreenShell>
   );
 }
 

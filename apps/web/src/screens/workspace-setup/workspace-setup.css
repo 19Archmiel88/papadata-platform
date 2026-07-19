@@ -348,3 +348,88 @@
     grid-template-columns: 1fr;
   }
 }
+
+.pdw-shell.pdt-shell {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.pdw-shell .pdw-main {
+  gap: clamp(1.75rem, 4vw, 3rem);
+  min-height: calc(100dvh - 4.375rem);
+  padding-top: clamp(2.75rem, 6vh, 5rem);
+}
+
+.pdw-shell .pdw-header {
+  align-items: center;
+  border-bottom: 1px solid var(--pdt-separator);
+  padding-bottom: clamp(1.25rem, 3vw, 2rem);
+}
+
+.pdw-shell .pdw-heading h1 {
+  font-weight: var(--pds-font-weight-medium);
+  letter-spacing: -0.035em;
+}
+
+.pdw-shell .pdw-heading p {
+  max-width: 42rem;
+}
+
+.pdw-shell .pdw-layout {
+  gap: clamp(1rem, 2.5vw, 2rem);
+  position: relative;
+  z-index: 2;
+}
+
+.pdw-shell .pdw-panel {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--pdt-separator);
+  border-radius: 0;
+  border-top: 1px solid var(--pdt-separator);
+  box-shadow: none;
+  padding: clamp(1.25rem, 2.5vw, 2rem) 0;
+}
+
+.pdw-shell .pdw-side-panel {
+  background: var(--pdt-surface);
+  backdrop-filter: blur(18px);
+  border-color: var(--pdt-separator);
+  border-radius: 0.8rem;
+  box-shadow: none;
+  padding: clamp(1rem, 2vw, 1.4rem);
+}
+
+.pdw-shell .pdw-grid {
+  gap: 0;
+  grid-template-columns: 1fr;
+}
+
+.pdw-shell .pdw-card {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid var(--pdt-separator);
+  box-shadow: none;
+  padding: 1rem 0;
+}
+
+.pdw-shell .pdw-card:last-child {
+  border-bottom: 1px solid var(--pdt-separator);
+}
+
+.pdw-shell .pdw-panel-header h2,
+.pdw-shell .pdw-card-header h3,
+.pdw-shell .pdw-card strong {
+  font-weight: var(--pds-font-weight-medium);
+}
+
+.pdw-shell .pdw-status {
+  background: var(--pdt-surface);
+  border-color: var(--pdt-separator);
+  box-shadow: none;
+}
+
+.pdw-shell .pdw-button {
+  box-shadow: none;
+}

@@ -35,7 +35,7 @@ function PapaDataBrandSurfaceState({
 
   return (
     <div
-      className="pds-brand-surface"
+      className="pds-brand-surface pds-foundation-stage"
       data-language={language}
       data-theme={theme}
       lang={language}

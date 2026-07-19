@@ -1,0 +1,49 @@
+import {
+  Canvas,
+  Meta,
+} from '@storybook/addon-docs/blocks';
+
+import * as ComponentStories from './messages.stories';
+
+<Meta of={ComponentStories} name="Dokumentacja" />
+
+# Komunikaty
+
+Komunikaty przekazują bieżący stan, rezultat operacji albo problem wymagający reakcji.
+
+## Warianty
+
+<Canvas of={ComponentStories.Warianty} />
+
+Ton wynika z znaczenia i wymaganej reakcji.
+
+## Walidacja
+
+<Canvas of={ComponentStories.Walidacja} />
+
+Komunikat pozostaje związany z polem lub formularzem.
+
+## Bez ikony
+
+<Canvas of={ComponentStories.BezIkony} />
+
+Ikonę można pominąć tylko przy oczywistym kontekście.
+
+## Z akcją
+
+<Canvas of={ComponentStories.ZAkcja} />
+
+Komunikat jest częścią procesu decyzyjnego.
+
+## Długa treść
+
+<Canvas of={ComponentStories.LongContent} />
+
+Dłuższa treść pozostaje konkretna i operacyjna.
+
+## Zasady użycia
+
+- Tytuł opisuje stan, a treść jego skutek.
+- Błąd używa roli alert.
+- Nie używaj sukcesu dla zwykłej informacji.
+- Komunikat wskazuje możliwy następny krok.

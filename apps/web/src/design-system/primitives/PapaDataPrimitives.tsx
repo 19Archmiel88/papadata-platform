@@ -496,7 +496,9 @@ export function AppHeader({
   return (
     <header {...props} className={cx('pds-topbar', className)} aria-label="PapaData">
       <div className="pds-topbar__inner">
-        <PapaDataBrand />
+        <PapaDataBrand
+          signetVariant="micro"
+        />
 
         {canChangeLanguage || canChangeTheme || trailing ? (
           <div className="pds-preferences" aria-label="Ustawienia widoku">

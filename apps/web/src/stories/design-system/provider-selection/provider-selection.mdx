@@ -1,0 +1,37 @@
+import {
+  Canvas,
+  Meta,
+} from '@storybook/addon-docs/blocks';
+
+import * as ComponentStories from './provider-selection.stories';
+
+<Meta of={ComponentStories} name="Dokumentacja" />
+
+# Wybór dostawcy
+
+Przyciski dostawców rozpoczynają zewnętrzny proces uwierzytelnienia.
+
+## Dostępni
+
+<Canvas of={ComponentStories.Dostepni} />
+
+Każdy dostawca zachowuje rozpoznawalny znak.
+
+## Niedostępny
+
+<Canvas of={ComponentStories.Niedostepny} />
+
+Niedostępność usługi jest jawnie przekazana.
+
+## Stany
+
+<Canvas of={ComponentStories.Stany} />
+
+Focus i brak dostępności pozostają czytelne.
+
+## Zasady użycia
+
+- Nazwa dostawcy jest częścią etykiety.
+- Logo nie zastępuje tekstu.
+- Stan niedostępny blokuje rozpoczęcie procesu.
+- Nie zmieniaj znaczenia firmowych znaków dostawców.

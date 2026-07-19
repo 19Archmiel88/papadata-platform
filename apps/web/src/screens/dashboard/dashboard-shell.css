@@ -402,3 +402,156 @@
     grid-template-columns: 1fr;
   }
 }
+
+.pdd-shell {
+  --pdd-background: #f7f9fc;
+  --pdd-surface:
+    color-mix(
+      in oklch,
+      var(--pds-bg-secondary) 82%,
+      transparent
+    );
+  --pdd-separator:
+    color-mix(
+      in oklch,
+      var(--pds-border-primary) 80%,
+      transparent
+    );
+
+  background: var(--pdd-background);
+  isolation: isolate;
+  position: relative;
+}
+
+.pdd-shell[data-theme='dark'] {
+  --pdd-background: #02060d;
+  --pdd-surface:
+    color-mix(
+      in oklch,
+      var(--pds-bg-secondary) 56%,
+      transparent
+    );
+  --pdd-separator:
+    color-mix(
+      in oklch,
+      var(--pds-border-primary) 72%,
+      transparent
+    );
+}
+
+.pdd-shell > .pdt-ambient {
+  opacity: 0.65;
+}
+
+.pdd-shell .pdd-app {
+  position: relative;
+  z-index: 2;
+}
+
+.pdd-shell .pdd-sidebar {
+  background:
+    color-mix(
+      in oklch,
+      var(--pdd-background) 88%,
+      transparent
+    );
+  backdrop-filter: blur(18px);
+  border-color: var(--pdd-separator);
+}
+
+.pdd-shell .pdd-topbar {
+  background:
+    color-mix(
+      in oklch,
+      var(--pdd-background) 90%,
+      transparent
+    );
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--pdd-separator);
+}
+
+.pdd-shell .pdd-topbar h1,
+.pdd-shell .pdd-panel-header h2,
+.pdd-shell .pdd-card h3,
+.pdd-shell .pdd-card strong {
+  font-weight: var(--pds-font-weight-medium);
+}
+
+.pdd-shell .pdd-panel,
+.pdd-shell .pdd-table {
+  background: var(--pdd-surface);
+  backdrop-filter: blur(16px);
+  border-color: var(--pdd-separator);
+  border-radius: 0.8rem;
+  box-shadow: none;
+}
+
+.pdd-shell .pdd-kpi-grid {
+  border-bottom: 1px solid var(--pdd-separator);
+  border-top: 1px solid var(--pdd-separator);
+  gap: 0;
+}
+
+.pdd-shell .pdd-card {
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--pdd-separator);
+  border-radius: 0;
+  box-shadow: none;
+  padding: 1rem;
+}
+
+.pdd-shell .pdd-card:first-child {
+  border-left: 0;
+}
+
+.pdd-shell .pdd-control {
+  background: transparent;
+  border-color: var(--pdd-separator);
+}
+
+.pdd-shell .pdd-nav button {
+  border-radius: 0.55rem;
+  font-weight: var(--pds-font-weight-regular);
+}
+
+.pdd-shell .pdd-nav button.is-active {
+  background:
+    color-mix(
+      in oklch,
+      var(--pds-brand-blue) 12%,
+      transparent
+    );
+  border-color:
+    color-mix(
+      in oklch,
+      var(--pds-brand-blue) 34%,
+      var(--pdd-separator)
+    );
+}
+
+.pdd-shell--standalone.pdt-shell {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.pdd-shell .pdd-main--standalone {
+  margin: 0 auto;
+  max-width: 82rem;
+  min-height: calc(100dvh - 4.375rem);
+  padding:
+    clamp(2.75rem, 6vh, 5rem)
+    clamp(1rem, 4vw, 3rem);
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  .pdd-shell .pdd-card {
+    border-left: 0;
+    border-top: 1px solid var(--pdd-separator);
+  }
+
+  .pdd-shell .pdd-card:first-child {
+    border-top: 0;
+  }
+}

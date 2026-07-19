@@ -1,0 +1,43 @@
+import {
+  Canvas,
+  Meta,
+} from '@storybook/addon-docs/blocks';
+
+import * as ComponentStories from './surfaces.stories';
+
+<Meta of={ComponentStories} name="Dokumentacja" />
+
+# Karty i powierzchnie
+
+Powierzchnie grupują treści należące do jednego obiektu albo procesu.
+
+## Powierzchnie
+
+<Canvas of={ComponentStories.Powierzchnie} />
+
+Wariant wynika z poziomu wydzielenia treści.
+
+## Karty
+
+<Canvas of={ComponentStories.Karty} />
+
+Karta opisuje jeden obiekt i jego stan.
+
+## Z akcją
+
+<Canvas of={ComponentStories.ZAkcja} />
+
+Akcja jest osadzona w powierzchni, której dotyczy.
+
+## Statusy
+
+<Canvas of={ComponentStories.Statusy} />
+
+Status stanowi część zawartości karty.
+
+## Zasady użycia
+
+- Nie opakowuj każdej sekcji w kartę.
+- Karta ma jeden wyraźny temat.
+- Unikaj ciężkich cieni i zbędnych obramowań.
+- Klikalność powierzchni musi być jednoznaczna.

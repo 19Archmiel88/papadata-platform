@@ -17,7 +17,6 @@ import type { CSSProperties } from 'react';
 
 import {
   ActionArrow,
-  AppHeader,
   Button,
   InlineNotice,
   PageHeader,
@@ -31,6 +30,7 @@ import {
   type WorkspaceSurfaceIcon,
 } from '../../fixtures/workspace';
 import '../../design-system/foundations/papadata-brand-surface.css';
+import { TargetScreenShell } from '../shared/TargetScreenShell';
 import './workspace-setup.css';
 
 const surfaceIconByName: Record<WorkspaceSurfaceIcon, LucideIcon> = {
@@ -66,19 +66,16 @@ function WorkspaceSetupStory({
   const Icon = surfaceIconByName[definition.icon];
 
   return (
-    <div
-      className="pds-brand-surface pdw-shell"
-      data-theme={theme}
-      lang="pl"
+    <TargetScreenShell
+      className="pdw-shell"
+      initialTheme={theme}
+      mainClassName="pdw-main"
       style={
         {
           '--pdw-accent': definition.accent,
         } as CSSProperties & Record<'--pdw-accent', string>
       }
     >
-      <AppHeader />
-
-      <main className="pdw-main">
         <header className="pdw-header">
           <PageHeader
             className="pdw-heading"
@@ -164,8 +161,7 @@ function WorkspaceSetupStory({
             </ol>
           </Surface>
         </section>
-      </main>
-    </div>
+    </TargetScreenShell>
   );
 }
 

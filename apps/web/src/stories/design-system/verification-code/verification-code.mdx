@@ -1,0 +1,43 @@
+import {
+  Canvas,
+  Meta,
+} from '@storybook/addon-docs/blocks';
+
+import * as ComponentStories from './verification-code.stories';
+
+<Meta of={ComponentStories} name="Dokumentacja" />
+
+# Kod jednorazowy
+
+Kod jednorazowy składa się z sześciu cyfr i jest obsługiwany przez jedno rzeczywiste pole wejściowe.
+
+## Podstawowy
+
+<Canvas of={ComponentStories.Podstawowy} />
+
+Pusty kod wskazuje aktywny segment.
+
+## Uzupełniony
+
+<Canvas of={ComponentStories.Complete} />
+
+Kompletna wartość zachowuje geometrię sześciu segmentów.
+
+## Błąd
+
+<Canvas of={ComponentStories.Error} />
+
+Błąd jest ogłaszany i opisany tekstowo.
+
+## Nieaktywny
+
+<Canvas of={ComponentStories.Nieaktywny} />
+
+Stan nieaktywny uniemożliwia zmianę kodu.
+
+## Zasady użycia
+
+- Akceptuj wyłącznie cyfry.
+- Obsługuj wklejenie pełnego kodu.
+- Stosuj autocomplete one-time-code.
+- Nie twórz sześciu niezależnych pól formularza.

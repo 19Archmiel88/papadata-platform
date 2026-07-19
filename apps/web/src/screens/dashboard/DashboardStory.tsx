@@ -37,6 +37,7 @@ import {
   type DashboardTopbarIcon,
 } from '../../fixtures/dashboard';
 import '../../design-system/foundations/papadata-brand-surface.css';
+import { TargetScreenAmbient } from '../shared/TargetScreenShell';
 import './dashboard-shell.css';
 
 const navigationIconByName: Record<DashboardNavigationIcon, LucideIcon> = {
@@ -88,6 +89,8 @@ function DashboardStory({ module, theme }: DashboardStoryProps) {
       data-theme={theme}
       lang="pl"
     >
+      <TargetScreenAmbient />
+
       <div className="pdd-app">
         <aside className="pdd-sidebar" aria-label="Nawigacja dashboardu">
           <PapaDataBrand className="pdd-brand" />

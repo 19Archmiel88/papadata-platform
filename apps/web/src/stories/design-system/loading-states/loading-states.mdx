@@ -1,0 +1,43 @@
+import {
+  Canvas,
+  Meta,
+} from '@storybook/addon-docs/blocks';
+
+import * as ComponentStories from './loading-states.stories';
+
+<Meta of={ComponentStories} name="Dokumentacja" />
+
+# Stany ładowania
+
+Stany systemowe wyjaśniają, czy dane są pobierane, nie istnieją albo wystąpił błąd.
+
+## Ładowanie
+
+<Canvas of={ComponentStories.Ladowanie} />
+
+System wykonuje operację i oczekuje na wynik.
+
+## Brak danych
+
+<Canvas of={ComponentStories.BrakDanych} />
+
+Brak danych jest oczekiwanym stanem produktu.
+
+## Błąd
+
+<Canvas of={ComponentStories.Error} />
+
+Błąd opisuje problem i możliwą kolejną akcję.
+
+## Przegląd
+
+<Canvas of={ComponentStories.Przeglad} />
+
+Wspólna hierarchia wszystkich stanów.
+
+## Zasady użycia
+
+- Ładowanie nie może wyglądać jak pusty ekran.
+- Pusty stan zawiera następny możliwy krok.
+- Błąd wyjaśnia skutek i możliwość ponowienia.
+- Nie pokazuj nieskończonego ładowania bez informacji.

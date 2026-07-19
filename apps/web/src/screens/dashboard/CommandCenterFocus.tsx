@@ -17,6 +17,7 @@ import {
   type CommandCenterSignalIcon,
 } from '../../fixtures/dashboard';
 import '../../design-system/foundations/papadata-brand-surface.css';
+import { TargetScreenShell } from '../shared/TargetScreenShell';
 import './dashboard-shell.css';
 
 const commandCenterSignalIconByName: Record<
@@ -30,12 +31,11 @@ const commandCenterSignalIconByName: Record<
 
 function CommandCenterFocus() {
   return (
-    <div
-      className="pds-brand-surface pdd-shell"
-      data-theme="dark"
-      lang="pl"
+    <TargetScreenShell
+      className="pdd-shell pdd-shell--standalone"
+      initialTheme="dark"
+      mainClassName="pdd-main pdd-main--standalone"
     >
-      <main className="pdd-main">
         <Surface className="pdd-panel">
           <div className="pdd-panel-header">
             <div>
@@ -76,8 +76,7 @@ function CommandCenterFocus() {
             Otwórz analizę kampanii
           </Button>
         </Surface>
-      </main>
-    </div>
+    </TargetScreenShell>
   );
 }
 

@@ -1,0 +1,43 @@
+import {
+  Canvas,
+  Meta,
+} from '@storybook/addon-docs/blocks';
+
+import * as ComponentStories from './form-fields.stories';
+
+<Meta of={ComponentStories} name="Dokumentacja" />
+
+# Pola formularzy
+
+Pola formularzy zbierają pojedyncze wartości i przekazują ich stan, opis oraz walidację.
+
+## Podstawowe
+
+<Canvas of={ComponentStories.Podstawowe} />
+
+Podstawowe pole korzysta z etykiety, opcjonalnej ikony i wskazówki.
+
+## Typy
+
+<Canvas of={ComponentStories.Typy} />
+
+Typ HTML wynika z rodzaju wprowadzanych danych.
+
+## Stany
+
+<Canvas of={ComponentStories.Stany} />
+
+Stan nieaktywny i tylko do odczytu mają odmienne znaczenie.
+
+## Walidacja
+
+<Canvas of={ComponentStories.Walidacja} />
+
+Błąd pozostaje powiązany z konkretnym polem.
+
+## Zasady użycia
+
+- Każde pole ma widoczną etykietę.
+- Placeholder nie zastępuje etykiety.
+- Komunikat błędu wskazuje sposób rozwiązania problemu.
+- Typ pola odpowiada rodzajowi danych.

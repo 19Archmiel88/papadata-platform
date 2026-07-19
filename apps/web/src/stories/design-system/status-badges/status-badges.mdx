@@ -1,0 +1,37 @@
+import {
+  Canvas,
+  Meta,
+} from '@storybook/addon-docs/blocks';
+
+import * as ComponentStories from './status-badges.stories';
+
+<Meta of={ComponentStories} name="Dokumentacja" />
+
+# Statusy i odznaki
+
+Odznaka przekazuje krótki stan obiektu za pomocą ikony, tekstu i koloru.
+
+## Warianty
+
+<Canvas of={ComponentStories.Warianty} />
+
+Statusy są pogrupowane według znaczenia operacyjnego.
+
+## Etykiety
+
+<Canvas of={ComponentStories.Etykiety} />
+
+Etykieta może doprecyzować znaczenie w kontekście produktu.
+
+## W kontekście
+
+<Canvas of={ComponentStories.WKontekscie} />
+
+Odznaka uzupełnia nazwę obiektu.
+
+## Zasady użycia
+
+- Kolor nie jest jedynym nośnikiem znaczenia.
+- Etykieta pozostaje krótka.
+- Nie używaj statusu jako przycisku.
+- Ten sam status zachowuje stałe znaczenie.

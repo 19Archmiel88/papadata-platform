@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { AnalyticalStates } from '../../screens/analytics/AnalyticalStates';
 
 const meta = {
-  title: 'PapaData/04 Ekrany docelowe/Analityka',
+  title: 'PapaData/04 Ekrany docelowe/Analityka/Jakość i świeżość danych',
   component: AnalyticalStates,
   parameters: {
     layout: 'fullscreen',

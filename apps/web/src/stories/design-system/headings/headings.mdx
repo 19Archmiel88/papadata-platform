@@ -1,0 +1,43 @@
+import {
+  Canvas,
+  Meta,
+} from '@storybook/addon-docs/blocks';
+
+import * as ComponentStories from './headings.stories';
+
+<Meta of={ComponentStories} name="Dokumentacja" />
+
+# Nagłówki
+
+Nagłówki budują hierarchię strony, sekcji i powiązanych działań.
+
+## Strony
+
+<Canvas of={ComponentStories.Strony} />
+
+Nagłówek pierwszego poziomu identyfikuje cały widok.
+
+## Sekcje
+
+<Canvas of={ComponentStories.Sekcje} />
+
+Nagłówek drugiego poziomu rozpoczyna sekcję.
+
+## Z akcjami
+
+<Canvas of={ComponentStories.ZAkcjami} />
+
+Akcja pozostaje związana z zakresem nagłówka.
+
+## Długi tekst
+
+<Canvas of={ComponentStories.LongText} />
+
+Treść łamie się bez utraty hierarchii.
+
+## Zasady użycia
+
+- Jedna strona ma jeden nagłówek pierwszego poziomu.
+- Eyebrow nie zastępuje tytułu.
+- Opis pozostaje krótki i operacyjny.
+- Działanie w nagłówku dotyczy całego jego zakresu.

@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { AuthStorySurface } from '../../screens/account-access/AuthStorySurface';
 
 const meta = {
-  title: 'PapaData/04 Ekrany docelowe/Dostęp do konta/Weryfikacja adresu e-mail',
+  title: 'PapaData/05 Diagnostyka deweloperska/Dostęp do konta/Weryfikacja adresu e-mail',
   component: AuthStorySurface,
   parameters: {
     layout: 'fullscreen',

@@ -4,7 +4,7 @@ import { AuthOperationalScreen } from '../../screens/auth/AuthOperationalScreen'
 import { renderLocalAuthStory } from './authStoryRender';
 
 const meta = {
-  title: 'PapaData/03 Wzorce/Formularz logowania',
+  title: 'PapaData/03 Wzorce/Scenariusze operacyjne/Przejścia dostępu',
   component: AuthOperationalScreen,
   render: renderLocalAuthStory,
   parameters: { layout: 'fullscreen' },

@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import type { Preview } from '@storybook/react-vite'
+import type { Preview } from '@storybook/react-vite';
 
 const preview: Preview = {
   parameters: {
@@ -19,26 +19,103 @@ const preview: Preview = {
             '02 Komponenty',
             [
               'Przyciski',
-              'Pola formularzy',
-              'Pole hasła',
-              'Kod jednorazowy',
-              'Statusy i odznaki',
-              'Komunikaty',
               [
-                'Informacyjne',
-                'Sukces',
-                'Ostrzeżenia',
-                'Błędy',
-                'Komunikaty walidacyjne',
+                'Dokumentacja',
+                'Podstawowy',
+                'Warianty',
+                'Rozmiary',
+                'Stany',
+                'Ikony',
+              ],
+              'Pola formularzy',
+              [
+                'Dokumentacja',
+                'Podstawowe',
+                'Typy',
+                'Stany',
+                'Walidacja',
+              ],
+              'Pole hasła',
+              [
+                'Dokumentacja',
+                'Podstawowe',
+                'Widoczność',
+                'Walidacja',
+                'Stany',
+              ],
+              'Kod jednorazowy',
+              [
+                'Dokumentacja',
+                'Podstawowy',
+                'Uzupełniony',
+                'Błąd',
+                'Nieaktywny',
+              ],
+              'Statusy i odznaki',
+              [
+                'Dokumentacja',
+                'Warianty',
+                'Etykiety',
+                'W kontekście',
               ],
               'Nawigacja',
+              [
+                'Dokumentacja',
+                'Podstawowa',
+                'Ścieżka',
+                'Zakładki',
+                'Paginacja',
+                'Stany',
+              ],
               'Nagłówki',
+              [
+                'Dokumentacja',
+                'Strony',
+                'Sekcje',
+                'Z akcjami',
+                'Długi tekst',
+              ],
               'Karty i powierzchnie',
-              'Wskaźniki postępu',
+              [
+                'Dokumentacja',
+                'Powierzchnie',
+                'Karty',
+                'Z akcją',
+                'Statusy',
+              ],
               'Stany ładowania',
+              [
+                'Dokumentacja',
+                'Ładowanie',
+                'Brak danych',
+                'Błąd',
+                'Przegląd',
+              ],
+              'Wybór dostawcy',
+              [
+                'Dokumentacja',
+                'Dostępni',
+                'Niedostępny',
+                'Stany',
+              ],
+              'Komunikaty',
+              [
+                'Dokumentacja',
+                'Warianty',
+                'Walidacja',
+                'Bez ikony',
+                'Z akcją',
+                'Długa treść',
+              ],
             ],
             '03 Wzorce',
             [
+              'Zestawy ekranowe',
+              [
+                'Dostęp do konta',
+                'Dashboard',
+                'Konfiguracja przestrzeni roboczej',
+              ],
               'Formularz logowania',
               'Formularz kodu jednorazowego',
               'Wybór kontekstu',
@@ -47,18 +124,27 @@ const preview: Preview = {
               'Pusty stan',
               'Stan błędu',
               'Stan braku dostępu',
+              'Scenariusze operacyjne',
+              [
+                'Przejścia dostępu',
+                'Wybór kontekstu',
+                'Błędy dostępu',
+                'Bezpieczeństwo i uprawnienia',
+              ],
             ],
             '04 Ekrany docelowe',
             [
               'Dostęp do konta',
               [
                 'Logowanie',
+                'Rejestracja',
                 'Weryfikacja adresu e-mail',
                 'MFA',
                 'Odzyskiwanie hasła',
                 'Reset hasła',
                 'Zaproszenie',
                 'Zarządzanie sesjami',
+                'Stany dostępu',
                 'Ponowne uwierzytelnienie',
               ],
               'Konfiguracja przestrzeni roboczej',
@@ -81,14 +167,42 @@ const preview: Preview = {
               'Analityka',
               [
                 'KPI',
-                'Wykresy',
-                'Tabele',
-                'Brak danych',
-                'Ładowanie',
-                'Błąd',
-                'Nieaktualne dane',
+                [
+                  'Przegląd',
+                ],
+                'Wykresy i tabele',
+                [
+                  'Przegląd',
+                  'Wykresy',
+                  'Tabele',
+                ],
+                'Stany danych',
+                [
+                  'Brak danych',
+                  'Ładowanie',
+                  'Błąd',
+                ],
+                'Jakość i świeżość danych',
+                [
+                  'Nieaktualne dane',
+                ],
               ],
-              'Diagnostyka deweloperska',
+            ],
+
+            '05 Diagnostyka deweloperska',
+            [
+              'Dostęp do konta',
+              [
+                'Logowanie',
+                'Weryfikacja adresu e-mail',
+                'MFA',
+                'Odzyskiwanie hasła',
+                'Reset hasła',
+                'Zaproszenie',
+                'Zarządzanie sesjami',
+                'Ponowne uwierzytelnienie',
+              ],
+              'Konfiguracja przestrzeni roboczej',
             ],
           ],
         ],
@@ -105,8 +219,8 @@ const preview: Preview = {
       // 'todo' - show a11y violations in the test UI only
       // 'error' - fail CI on a11y violations
       // 'off' - skip a11y checks entirely
-      test: 'todo'
-    }
+      test: 'todo',
+    },
   },
 };
 

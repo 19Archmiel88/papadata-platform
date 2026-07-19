@@ -1,0 +1,55 @@
+import {
+  Canvas,
+  Controls,
+  Meta,
+} from '@storybook/addon-docs/blocks';
+
+import * as ButtonStories from './buttons.stories';
+
+<Meta of={ButtonStories} name="Dokumentacja" />
+
+# Przyciski
+
+Przyciski uruchamiają działania i prowadzą użytkownika przez proces.
+Wariant wynika z ważności oraz konsekwencji operacji.
+
+## Podstawowy przykład
+
+<Canvas of={ButtonStories.Podstawowy} />
+
+## Właściwości
+
+<Controls of={ButtonStories.Podstawowy} />
+
+## Warianty
+
+<Canvas of={ButtonStories.Warianty} />
+
+W jednym obszarze decyzyjnym powinna znajdować się jedna akcja główna.
+
+## Rozmiary
+
+<Canvas of={ButtonStories.Rozmiary} />
+
+Rozmiar domyślny obsługuje większość formularzy.
+Pełną szerokość należy stosować głównie na małych ekranach.
+
+## Stany
+
+<Canvas of={ButtonStories.Stany} />
+
+Stan nieaktywny korzysta z natywnego atrybutu `disabled`.
+Stan przetwarzania dodatkowo otrzymuje `aria-busy="true"`.
+
+## Ikony
+
+<Canvas of={ButtonStories.Ikony} />
+
+Przycisk zawierający wyłącznie ikonę zawsze wymaga dostępnej nazwy.
+
+## Zasady
+
+- Jedna akcja główna w jednym obszarze decyzyjnym.
+- Etykieta opisuje rezultat działania.
+- Wariant destrukcyjny jest przeznaczony dla ryzykownych operacji.
+- Focus musi być widoczny w każdym motywie.

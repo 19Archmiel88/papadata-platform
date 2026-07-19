@@ -259,3 +259,98 @@
     grid-template-columns: 1fr;
   }
 }
+
+.pdx-shell.pdt-shell {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.pdx-shell .pdx-main {
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  min-height: calc(100dvh - 4.375rem);
+  padding-top: clamp(2.75rem, 6vh, 5rem);
+  position: relative;
+  z-index: 2;
+}
+
+.pdx-shell .pdx-header {
+  border-bottom: 1px solid var(--pdt-separator);
+  max-width: 52rem;
+  padding-bottom: clamp(1.25rem, 3vw, 2rem);
+}
+
+.pdx-shell .pdx-header h1 {
+  font-weight: var(--pds-font-weight-medium);
+  letter-spacing: -0.035em;
+}
+
+.pdx-shell .pdx-header p {
+  max-width: 42rem;
+}
+
+.pdx-shell .pdx-grid:not(.pdx-grid--two) {
+  border-bottom: 1px solid var(--pdt-separator);
+  border-top: 1px solid var(--pdt-separator);
+  gap: 0;
+}
+
+.pdx-shell .pdx-grid:not(.pdx-grid--two) .pdx-card {
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--pdt-separator);
+  border-radius: 0;
+  box-shadow: none;
+  padding: clamp(1rem, 2vw, 1.35rem);
+}
+
+.pdx-shell
+  .pdx-grid:not(.pdx-grid--two)
+  .pdx-card:first-child {
+  border-left: 0;
+}
+
+.pdx-shell .pdx-panel,
+.pdx-shell .pdx-table {
+  background: var(--pdt-surface);
+  backdrop-filter: blur(16px);
+  border-color: var(--pdt-separator);
+  border-radius: 0.8rem;
+  box-shadow: none;
+}
+
+.pdx-shell .pdx-panel-header h2,
+.pdx-shell .pdx-card h3,
+.pdx-shell .pdx-card strong {
+  font-weight: var(--pds-font-weight-medium);
+}
+
+.pdx-shell .pdx-line-chart {
+  background: transparent;
+  border-color: var(--pdt-separator);
+  border-radius: 0.65rem;
+}
+
+.pdx-shell .pdx-main--state {
+  align-content: center;
+  grid-template-columns: minmax(0, 38rem);
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+  .pdx-shell .pdx-grid:not(.pdx-grid--two) {
+    grid-template-columns: 1fr;
+  }
+
+  .pdx-shell
+    .pdx-grid:not(.pdx-grid--two)
+    .pdx-card {
+    border-left: 0;
+    border-top: 1px solid var(--pdt-separator);
+  }
+
+  .pdx-shell
+    .pdx-grid:not(.pdx-grid--two)
+    .pdx-card:first-child {
+    border-top: 0;
+  }
+}

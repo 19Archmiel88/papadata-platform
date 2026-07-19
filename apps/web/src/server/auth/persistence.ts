@@ -5,7 +5,7 @@ import type {
   Invitation,
   Membership,
   MfaChallenge,
-  Organization,
+  Tenant,
   RecoveryCode,
   ReauthenticationContext,
   UserId,
@@ -62,7 +62,7 @@ export type AuthPersistence = {
   invitations: AuthRepository<Invitation, InvitationId>;
   memberships: AuthRepository<Membership, string>;
   mfaChallenges: AuthRepository<MfaChallenge, AuthChallengeId>;
-  organizations: AuthRepository<Organization, string>;
+  tenants: AuthRepository<Tenant, string>;
   passwordResetTokens: AuthRepository<TokenDigestRecord<'password_reset'>, PasswordResetId>;
   reauthentication: AuthRepository<ReauthenticationContext, string>;
   recoveryCodes: AuthRepository<RecoveryCodeRecord, string>;
@@ -121,8 +121,8 @@ export function createInMemoryAuthPersistence(): AuthPersistence {
     mfaChallenges: createRepository<MfaChallenge, AuthChallengeId>(
       (challenge) => challenge.challengeId,
     ),
-    organizations: createRepository<Organization, string>(
-      (organization) => organization.organizationId,
+    tenants: createRepository<Tenant, string>(
+      (tenant) => tenant.tenantId,
     ),
     passwordResetTokens: createRepository<TokenDigestRecord<'password_reset'>, PasswordResetId>(
       (token) => token.recordId as PasswordResetId,

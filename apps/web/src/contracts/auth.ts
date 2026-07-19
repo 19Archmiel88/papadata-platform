@@ -3,12 +3,18 @@ import type {
   CorrelationId,
   InvitationId,
   MembershipId,
-  OrganizationId,
+  TenantId,
   PasswordResetId,
   SessionId,
   UserId,
   WorkspaceId,
 } from './ids';
+import type {
+  Membership as DomainMembership,
+  Tenant as DomainTenant,
+  WorkspaceChangeResolution,
+  Workspace as DomainWorkspace,
+} from '../domain-contracts';
 import type { AccessDecision, ActorContext, Capability, Role } from './authz';
 import type { TenantContext } from './tenant';
 
@@ -17,7 +23,7 @@ export type {
   CorrelationId,
   InvitationId,
   MembershipId,
-  OrganizationId,
+  TenantId,
   PasswordResetId,
   SessionId,
   UserId,
@@ -51,8 +57,9 @@ export type AuthErrorCode =
   | 'INVITATION_EMAIL_MISMATCH'
   | 'MEMBERSHIP_CONFLICT'
   | 'NO_ACTIVE_MEMBERSHIP'
-  | 'ORGANIZATION_NOT_FOUND'
+  | 'TENANT_NOT_FOUND'
   | 'WORKSPACE_NOT_FOUND'
+  | 'WORKSPACE_TENANT_MISMATCH'
   | 'WORKSPACE_NOT_READY'
   | 'WORKSPACE_BLOCKED'
   | 'WORKSPACE_NO_DATA'
@@ -123,27 +130,11 @@ export type AuthUser = {
   userId: UserId;
 };
 
-export type Organization = {
-  name: string;
-  organizationId: OrganizationId;
-  status: 'active' | 'blocked';
-};
+export type Tenant = DomainTenant;
 
-export type Workspace = {
-  name: string;
-  organizationId: OrganizationId;
-  status: WorkspaceStatus;
-  workspaceId: WorkspaceId;
-};
+export type Workspace = DomainWorkspace;
 
-export type Membership = {
-  membershipId: MembershipId;
-  organizationId: OrganizationId;
-  role: Role;
-  status: MembershipStatus;
-  userId: UserId;
-  workspaceId: WorkspaceId;
-};
+export type Membership = DomainMembership;
 
 export type AuthSession = {
   clientLabel: string;
@@ -188,7 +179,7 @@ export type Invitation = {
   email: string;
   expiresAt: string;
   invitationId: InvitationId;
-  organizationId: OrganizationId;
+  tenantId: TenantId;
   requestedRole: Role;
   status: InvitationStatus;
   tokenIssuedAt: string;
@@ -237,7 +228,7 @@ export type AuditEvent = {
   correlationId: CorrelationId;
   eventType: AuditEventType;
   occurredAt: string;
-  organizationId?: OrganizationId;
+  tenantId?: TenantId;
   reason?: AuthErrorCode | 'granted_by_fixture';
   result: 'success' | 'failure' | 'denied';
   source: 'auth_server' | 'local_auth_adapter' | 'web_ui' | 'storybook' | 'test';
@@ -349,20 +340,22 @@ export type OperationResult<TValue> =
       error: AuthError;
     };
 
-export type PostLoginContextResolution =
+export type PostLoginContextResolution = {
+  workspaceChange?: WorkspaceChangeResolution;
+} & (
   | {
       status: 'workspace_selected';
-      organization: Organization;
+      tenantRecord: Tenant;
       tenant: TenantContext;
       workspace: Workspace;
     }
   | {
-      status: 'organization_selection_required';
-      organizations: readonly Organization[];
+      status: 'tenant_selection_required';
+      tenants: readonly Tenant[];
     }
   | {
       status: 'workspace_selection_required';
-      organization: Organization;
+      tenantRecord: Tenant;
       workspaces: readonly Workspace[];
     }
   | {
@@ -372,9 +365,10 @@ export type PostLoginContextResolution =
         | 'workspace_blocked'
         | 'workspace_no_data';
       error: AuthError;
-      organization?: Organization;
+      tenantRecord?: Tenant;
       workspace?: Workspace;
-    };
+    }
+);
 
 export type TestOutboxMessage =
   | {
@@ -413,7 +407,7 @@ export type AuthGateway = {
     actor: ActorContext,
     input: {
       email: string;
-      organizationId: OrganizationId;
+      tenantId: TenantId;
       requestedRole: Role;
       workspaceId: WorkspaceId;
     },

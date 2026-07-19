@@ -6,7 +6,7 @@ Status: local/test boundary coverage, production controls pending decisions.
 
 - Session cookie and server-side session state.
 - User identity, credentials and MFA state.
-- Organization, workspace and membership records.
+- Tenant, workspace and membership records.
 - Invitation, password reset and recovery-code tokens.
 - Audit events and correlation IDs.
 
@@ -25,7 +25,7 @@ Status: local/test boundary coverage, production controls pending decisions.
 - Session fixation and session rotation reuse.
 - CSRF through Origin, Host and token validation.
 - Open redirect return URLs.
-- Wrong organization/workspace and foreign workspace access.
+- Wrong tenant/workspace and foreign workspace access.
 - Missing membership and missing capability.
 - One-time reset, invitation and recovery-code reuse.
 - MFA retry limit.

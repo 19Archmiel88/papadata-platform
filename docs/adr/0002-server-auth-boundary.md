@@ -31,7 +31,7 @@ The boundary provides:
 - server-side MFA challenge verification for `totp_dev`;
 - password recovery, password reset and password change after reauthentication;
 - invitation check, accept, create, resend and cancel;
-- organization/workspace selection and backend authorization checks;
+- tenant/workspace selection and backend authorization checks;
 - rate-limit interface with a local/test in-memory adapter;
 - persistence interfaces for future durable repositories;
 - server-side audit events without passwords, raw tokens, MFA codes, recovery

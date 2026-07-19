@@ -4,7 +4,9 @@ Status: local/test server boundary, production IdP unresolved
 
 ## Boundaries
 
-- `apps/web/src/contracts/auth.ts` defines the auth contracts used by UI and tests.
+- `apps/web/src/domain-contracts` defines the versioned tenant, workspace,
+  readiness, status and error contracts.
+- `apps/web/src/contracts/auth.ts` adapts those contracts for auth UI and tests.
 - `apps/web/src/auth/serverAuthApiClient.ts` is the runtime frontend API client.
 - `apps/web/src/auth/localAuthGateway.ts` implements a deterministic local/test
   provider used behind the server boundary and as an explicit Storybook mock.
@@ -21,7 +23,7 @@ required for production.
 ## Server Boundary
 
 AUTH-002 adds a minimal Node HTTP boundary under `/api/auth`. It handles session,
-MFA, password reset/change, invitations, organization/workspace selection,
+MFA, password reset/change, invitations, tenant/workspace selection,
 backend authorization checks, reauthentication, rate-limit interfaces and
 server-side audit.
 
@@ -84,12 +86,12 @@ The local/test adapter supports create, resend, cancel and accept. New account
 activation is only possible through an invitation token, not through open public
 registration.
 
-## Organization And Workspace Context
+## Tenant And Workspace Context
 
 After authentication, context resolution returns one of:
 
 - workspace selected;
-- organization selection required;
+- tenant selection required;
 - workspace selection required;
 - no active membership;
 - workspace not ready;
@@ -127,7 +129,7 @@ Implemented event types include:
 - unauthorized access attempt;
 - workspace changed.
 
-Audit events include correlation ID, result, actor when available, organization,
+Audit events include correlation ID, result, actor when available, tenant,
 workspace, target metadata and reason. Server audit output does not include
 passwords, raw tokens, MFA codes, raw recovery codes or full cookies.
 

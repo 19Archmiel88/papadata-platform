@@ -34,11 +34,12 @@ bezpieczeństwa oraz UI/UX i służy jako rozszerzony kontekst analityczny.
 
 1. `decisions.md` — decyzje i statusy.
 2. `source-of-truth.md` — zasady interpretacji.
-3. `data-and-kpi.md` — dane, readiness i KPI.
-4. `integrations.md` — integracje i synchronizacja.
-5. `security.md` — bezpieczeństwo i audyt.
-6. `ai.md` — warstwa AI.
-7. `ui-and-storybook.md` — UI i Storybook.
-8. `implementation-plan.md` — kolejność wdrożenia.
+3. `domain-contracts.md` — kontrakty domenowe, statusy i błędy.
+4. `data-and-kpi.md` — dane, readiness i KPI.
+5. `integrations.md` — integracje i synchronizacja.
+6. `security.md` — bezpieczeństwo i audyt.
+7. `ai.md` — warstwa AI.
+8. `ui-and-storybook.md` — UI i Storybook.
+9. `implementation-plan.md` — kolejność wdrożenia.
 
 W razie konfliktu implementację należy zatrzymać i zgłosić konflikt.

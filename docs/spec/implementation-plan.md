@@ -2,19 +2,17 @@
 
 ## Fala 0 — analiza i kontrakty
 
-- [ ] Przeanalizować repozytorium.
-- [ ] Zidentyfikować technologie i wersje.
-- [ ] Zidentyfikować routing i zarządzanie stanem.
-- [ ] Zidentyfikować modele danych i API.
-- [ ] Zidentyfikować role i uprawnienia.
-- [ ] Zidentyfikować Storybook, fixtures i testy.
-- [ ] Przygotować gap analysis.
-- [ ] Przygotować plan zmian.
-- [ ] Nie zmieniać kodu przed przedstawieniem planu.
+- [x] Zamrozić decyzje P0 w `decisions.md`.
+- [x] Wprowadzić wersjonowane kontrakty TypeScript/Zod.
+- [x] Wprowadzić kanoniczne `tenantId` i `workspaceId`.
+- [x] Usunąć domenowe użycie `organizationId` z vertical slice auth.
+- [x] Walidować fixtures auth schematami kontraktów.
+- [x] Utrwalić inwarianty danych i KPI w testach.
+- [x] Opisać vertical slice tenant/workspace auth.
 
 ## Fala 1 — fundament
 
-- [ ] Organization.
+- [ ] Tenant.
 - [ ] Workspace.
 - [ ] Membership.
 - [ ] Role.

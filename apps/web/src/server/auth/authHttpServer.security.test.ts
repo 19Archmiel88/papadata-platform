@@ -9,6 +9,7 @@ import {
   localAuthPasswordResetTokens,
 } from '../../fixtures/auth-domain';
 import type { AuthError, LoginOutcome, SessionResult } from '../../contracts/auth';
+import { domainContractVersion } from '../../domain-contracts';
 import { createLocalTestAuthHttpServer, type StartedAuthHttpServer } from './authHttpServer';
 
 type JsonResponse<TBody = unknown> = {
@@ -81,6 +82,13 @@ describe('server auth HTTP security boundary', () => {
     if (login.body.status === 'authenticated' && cookie) {
       expect(login.body.session.sessionId).not.toBe(cookie);
       expect(login.body.returnUrl).toBe('/');
+      expect(contractField(login.body, 'contractVersion')).toBe(domainContractVersion);
+      expect(contractField(login.body, 'correlationId')).toEqual(
+        expect.stringMatching(/^corr_http_/),
+      );
+      expect(contractField(login.body, 'tenantId')).toBe('ten_northstar');
+      expect(contractField(login.body, 'workspaceId')).toBe('wrk_northstar_main');
+      expect(readinessState(login.body)).toBe('ready');
     }
   });
 
@@ -127,31 +135,40 @@ describe('server auth HTTP security boundary', () => {
     expect(revoked.body.status).toBe('missing');
   });
 
-  it('denies wrong organization, wrong workspace, foreign workspace, no membership and missing capability', async () => {
+  it('denies wrong tenant, wrong workspace, foreign workspace, no membership and missing capability', async () => {
     const { client } = await startAuthServer();
 
     await loginAnalyst(client);
 
     const missingCapability = await client.post('/authz/check', {
       capability: localAuthCapabilities.createInvitation,
-      organizationId: 'org_northstar',
+      tenantId: 'ten_northstar',
       workspaceId: 'wrk_northstar_main',
     });
     const wrongWorkspace = await client.post('/authz/check', {
       capability: localAuthCapabilities.listSessions,
-      organizationId: 'org_baltic',
+      tenantId: 'ten_baltic',
       workspaceId: 'wrk_baltic_marketplace',
     });
-    const wrongOrganization = await client.post('/context/validate', {
-      organizationId: 'org_unknown',
+    const wrongTenant = await client.post('/context/validate', {
+      tenantId: 'ten_unknown',
       workspaceId: 'wrk_northstar_main',
+    });
+    const foreignWorkspace = await client.post('/context/validate', {
+      tenantId: 'ten_northstar',
+      workspaceId: 'wrk_baltic_marketplace',
     });
 
     expect(missingCapability.status).toBe(403);
     expect(errorCode(missingCapability.body)).toBe('FORBIDDEN');
+    expect(errorClass(missingCapability.body)).toBe('authorization');
     expect(wrongWorkspace.status).toBe(403);
     expect(errorCode(wrongWorkspace.body)).toBe('FORBIDDEN');
-    expect(wrongOrganization.status).toBe(403);
+    expect(wrongTenant.status).toBe(403);
+    expect(errorCode(wrongTenant.body)).toBe('TENANT_NOT_FOUND');
+    expect(foreignWorkspace.status).toBe(403);
+    expect(errorCode(foreignWorkspace.body)).toBe('WORKSPACE_TENANT_MISMATCH');
+    expect(errorClass(foreignWorkspace.body)).toBe('authorization');
 
     const { client: noMembershipClient } = await startAuthServer();
     const login = await noMembershipClient.post<LoginOutcome>('/session/login', {
@@ -160,7 +177,7 @@ describe('server auth HTTP security boundary', () => {
     });
     const denied = await noMembershipClient.post('/authz/check', {
       capability: localAuthCapabilities.listSessions,
-      organizationId: 'org_northstar',
+      tenantId: 'ten_northstar',
       workspaceId: 'wrk_northstar_main',
     });
 
@@ -533,6 +550,28 @@ function getSetCookie(headers: Headers): string[] {
 function errorCode(body: unknown): AuthError['code'] | undefined {
   const error = errorFromBody(body);
   return error?.code;
+}
+
+function errorClass(body: unknown): string | undefined {
+  const error = errorFromBody(body) as (AuthError & { errorClass?: string }) | undefined;
+  return error?.errorClass;
+}
+
+function contractField(body: unknown, field: string): unknown {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+
+  return body[field];
+}
+
+function readinessState(body: unknown): string | undefined {
+  if (!isRecord(body) || !isRecord(body.readiness)) {
+    return undefined;
+  }
+
+  const state = body.readiness.state;
+  return typeof state === 'string' ? state : undefined;
 }
 
 function errorMessage(body: unknown): string | undefined {

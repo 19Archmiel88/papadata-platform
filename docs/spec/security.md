@@ -2,7 +2,7 @@
 
 ## Wymagania podstawowe
 
-- [ ] Izolacja organization.
+- [ ] Izolacja tenantów.
 - [ ] Izolacja workspace.
 - [ ] Autoryzacja backendowa.
 - [ ] MFA dla kont uprzywilejowanych.

@@ -46,7 +46,7 @@ export function createInMemoryServerAuditLog(
         correlationId: input.correlationId ?? asCorrelationId(`corr_srv_${entropy()}`),
         eventType: input.eventType,
         occurredAt: now().toISOString(),
-        organizationId: input.tenant?.organizationId,
+        tenantId: input.tenant?.tenantId,
         reason: input.reason,
         result: input.result,
         source: 'auth_server',

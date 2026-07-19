@@ -17,7 +17,7 @@ import type {
   MfaChallengeInput,
   OperationResult,
   PasswordChangeInput,
-  Organization,
+  Tenant,
   PasswordResetConfirmInput,
   PasswordResetRequest,
   PasswordResetStartInput,
@@ -37,6 +37,10 @@ import type { AccessDecision, ActorContext, Capability, Role } from '../contract
 import { denyByDefaultAccessDecision } from '../contracts/authz';
 import type { TenantContext } from '../contracts/tenant';
 import {
+  resolveWorkspaceChange,
+  validateTenantWorkspacePair,
+} from '../domain-contracts';
+import {
   asAuthChallengeId,
   asAuditEventId,
   asCorrelationId,
@@ -53,7 +57,7 @@ import {
   localAuthInvitations,
   localAuthMemberships,
   localAuthMfaChallenges,
-  localAuthOrganizations,
+  localAuthTenants,
   localAuthPasswordResetTokens,
   localAuthPasswordResets,
   localAuthRecoveryCodeValues,
@@ -91,7 +95,7 @@ type LocalAuthSeed = {
   invitations: readonly Invitation[];
   memberships: readonly Membership[];
   mfaChallenges: readonly MfaChallenge[];
-  organizations: readonly Organization[];
+  tenants: readonly Tenant[];
   passwordResetTokens: Record<string, string>;
   passwordResets: readonly PasswordResetRequest[];
   recoveryCodes: Record<string, readonly RecoveryCode[]>;
@@ -138,7 +142,7 @@ const fixturePasswordByEmail: Record<string, string> = {
   'analyst@northstar.example': localAuthFixturePasswords.analyst,
   'blocked@northstar.example': localAuthFixturePasswords.blocked,
   'change-password@northstar.example': localAuthFixturePasswords.changePassword,
-  'multi-org@papadata.example': localAuthFixturePasswords.multiOrg,
+  'multi-tenant@papadata.example': localAuthFixturePasswords.multiTenant,
   'multi-workspace@northstar.example': localAuthFixturePasswords.multiWorkspace,
   'nomembership@northstar.example': localAuthFixturePasswords.noMembership,
   'owner@northstar.example': localAuthFixturePasswords.owner,
@@ -150,7 +154,7 @@ const defaultSeed: LocalAuthSeed = {
   invitations: localAuthInvitations,
   memberships: localAuthMemberships,
   mfaChallenges: localAuthMfaChallenges,
-  organizations: localAuthOrganizations,
+  tenants: localAuthTenants,
   passwordResetTokens: localAuthPasswordResetTokens,
   passwordResets: localAuthPasswordResets,
   recoveryCodeValues: localAuthRecoveryCodeValues,
@@ -348,7 +352,7 @@ class LocalAuthGateway implements AuthGateway {
 
   private readonly now: () => Date;
 
-  private readonly organizations: Organization[];
+  private readonly tenants: Tenant[];
 
   private readonly passwordResetTokenDigests: Map<
     string,
@@ -386,7 +390,7 @@ class LocalAuthGateway implements AuthGateway {
     this.invitations = cloneReadonlyArray(seed.invitations);
     this.memberships = cloneReadonlyArray(seed.memberships);
     this.now = now ?? (() => new Date(localAuthFixtureNow));
-    this.organizations = cloneReadonlyArray(seed.organizations);
+    this.tenants = cloneReadonlyArray(seed.tenants);
     this.passwordResets = cloneReadonlyArray(seed.passwordResets);
     this.passwordResetTokenDigests = passwordResetTokenDigests;
     this.policy = policy;
@@ -426,7 +430,7 @@ class LocalAuthGateway implements AuthGateway {
 
     if (invitationStateError) {
       this.audit('auth.unauthorized_access_attempt', 'failure', {
-        organizationId: invitation.organizationId,
+        tenantId: invitation.tenantId,
         reason: invitationStateError.code,
         target: {
           email: maskEmail(invitation.email),
@@ -444,7 +448,7 @@ class LocalAuthGateway implements AuthGateway {
 
     if (normalizeEmail(invitation.email) !== normalizeEmail(parsed.output.email)) {
       this.audit('auth.unauthorized_access_attempt', 'denied', {
-        organizationId: invitation.organizationId,
+        tenantId: invitation.tenantId,
         reason: 'INVITATION_EMAIL_MISMATCH',
         target: {
           email: maskEmail(parsed.output.email),
@@ -481,9 +485,9 @@ class LocalAuthGateway implements AuthGateway {
       await this.setPassword(user.userId, parsed.output.password);
     }
 
-    if (this.hasActiveMembership(user.userId, invitation.organizationId, invitation.workspaceId)) {
+    if (this.hasActiveMembership(user.userId, invitation.tenantId, invitation.workspaceId)) {
       this.audit('auth.unauthorized_access_attempt', 'denied', {
-        organizationId: invitation.organizationId,
+        tenantId: invitation.tenantId,
         reason: 'MEMBERSHIP_CONFLICT',
         target: {
           email: maskEmail(invitation.email),
@@ -502,7 +506,7 @@ class LocalAuthGateway implements AuthGateway {
 
     this.memberships.push({
       membershipId: asMembershipId(this.nextId('mem')),
-      organizationId: invitation.organizationId,
+      tenantId: invitation.tenantId,
       role: invitation.requestedRole,
       status: 'active',
       userId: user.userId,
@@ -511,14 +515,14 @@ class LocalAuthGateway implements AuthGateway {
     invitation.status = 'used';
     invitation.acceptedAt = now.toISOString();
     const session = this.createSession(user, false, {
-      organizationId: invitation.organizationId,
+      tenantId: invitation.tenantId,
       workspaceId: invitation.workspaceId,
     });
     const context = this.resolveContextForUser(user.userId, session);
 
     this.audit('auth.invitation_accepted', 'success', {
       actor: this.actorFromUser(user),
-      organizationId: invitation.organizationId,
+      tenantId: invitation.tenantId,
       target: {
         email: maskEmail(invitation.email),
         invitationId: invitation.invitationId,
@@ -529,7 +533,7 @@ class LocalAuthGateway implements AuthGateway {
     });
     this.audit('auth.membership_changed', 'success', {
       actor: this.actorFromUser(user),
-      organizationId: invitation.organizationId,
+      tenantId: invitation.tenantId,
       target: {
         userId: user.userId,
         workspaceId: invitation.workspaceId,
@@ -565,16 +569,45 @@ class LocalAuthGateway implements AuthGateway {
       };
     }
 
+    const contextValidation = validateTenantWorkspacePair(
+      tenant,
+      this.tenants,
+      this.workspaces,
+    );
+
+    if (!contextValidation.ok) {
+      this.audit('auth.unauthorized_access_attempt', 'denied', {
+        actor: this.actorFromUser(sessionResult.user),
+        reason: contextValidation.errorCode,
+        target: {
+          sessionId,
+          userId: sessionResult.user.userId,
+          workspaceId: tenant.workspaceId,
+        },
+        tenantId: tenant.tenantId,
+        workspaceId: tenant.workspaceId,
+      });
+
+      return {
+        error: authError(
+          contextValidation.errorCode,
+          'Tenant i workspace nie tworzą poprawnego kontekstu.',
+          false,
+        ),
+        status: 'error',
+      };
+    }
+
     const membership = this.findMembership(
       sessionResult.user.userId,
-      tenant.organizationId,
+      tenant.tenantId,
       tenant.workspaceId,
     );
 
     if (!membership || membership.status !== 'active') {
       this.audit('auth.unauthorized_access_attempt', 'denied', {
         actor: this.actorFromUser(sessionResult.user),
-        organizationId: tenant.organizationId,
+        tenantId: tenant.tenantId,
         reason: 'FORBIDDEN',
         target: {
           sessionId,
@@ -596,7 +629,7 @@ class LocalAuthGateway implements AuthGateway {
     if (!capabilities.includes(capability)) {
       this.audit('auth.unauthorized_access_attempt', 'denied', {
         actor,
-        organizationId: tenant.organizationId,
+        tenantId: tenant.tenantId,
         reason: 'FORBIDDEN',
         target: {
           sessionId,
@@ -633,7 +666,7 @@ class LocalAuthGateway implements AuthGateway {
     if (!allowed || !invitation) {
       this.audit('auth.unauthorized_access_attempt', 'denied', {
         actor,
-        organizationId: actor.organizationId,
+        tenantId: actor.tenantId,
         reason: allowed ? 'INVITATION_INVALID' : 'FORBIDDEN',
         target: { invitationId, userId: actor.actorId },
         workspaceId: actor.workspaceId,
@@ -652,7 +685,7 @@ class LocalAuthGateway implements AuthGateway {
     invitation.status = 'cancelled';
     this.audit('auth.invitation_cancelled', 'success', {
       actor,
-      organizationId: invitation.organizationId,
+      tenantId: invitation.tenantId,
       target: {
         email: maskEmail(invitation.email),
         invitationId: invitation.invitationId,
@@ -751,7 +784,7 @@ class LocalAuthGateway implements AuthGateway {
 
     if (stateError) {
       this.audit('auth.invitation_checked', 'failure', {
-        organizationId: invitation.organizationId,
+        tenantId: invitation.tenantId,
         reason: stateError.code,
         target: {
           email: maskEmail(invitation.email),
@@ -769,7 +802,7 @@ class LocalAuthGateway implements AuthGateway {
 
     if (input.email && normalizeEmail(input.email) !== normalizeEmail(invitation.email)) {
       this.audit('auth.invitation_checked', 'denied', {
-        organizationId: invitation.organizationId,
+        tenantId: invitation.tenantId,
         reason: 'INVITATION_EMAIL_MISMATCH',
         target: {
           email: maskEmail(input.email),
@@ -790,7 +823,7 @@ class LocalAuthGateway implements AuthGateway {
     }
 
     this.audit('auth.invitation_checked', 'success', {
-      organizationId: invitation.organizationId,
+      tenantId: invitation.tenantId,
       target: {
         email: maskEmail(invitation.email),
         invitationId: invitation.invitationId,
@@ -826,7 +859,7 @@ class LocalAuthGateway implements AuthGateway {
     actor: ActorContext,
     input: {
       email: string;
-      organizationId: Invitation['organizationId'];
+      tenantId: Invitation['tenantId'];
       requestedRole: Role;
       workspaceId: Invitation['workspaceId'];
     },
@@ -834,7 +867,7 @@ class LocalAuthGateway implements AuthGateway {
     if (!this.hasActorCapability(actor, 'auth:invitation:create')) {
       this.audit('auth.unauthorized_access_attempt', 'denied', {
         actor,
-        organizationId: input.organizationId,
+        tenantId: input.tenantId,
         reason: 'FORBIDDEN',
         target: { email: maskEmail(input.email), userId: actor.actorId },
         workspaceId: input.workspaceId,
@@ -846,13 +879,19 @@ class LocalAuthGateway implements AuthGateway {
       };
     }
 
-    const workspace = this.findWorkspace(input.workspaceId);
-    const organization = this.findOrganization(input.organizationId);
+    const contextValidation = validateTenantWorkspacePair(
+      {
+        tenantId: input.tenantId,
+        workspaceId: input.workspaceId,
+      },
+      this.tenants,
+      this.workspaces,
+    );
 
-    if (!organization || !workspace) {
+    if (!contextValidation.ok) {
       return {
         error: authError(
-          organization ? 'WORKSPACE_NOT_FOUND' : 'ORGANIZATION_NOT_FOUND',
+          contextValidation.errorCode,
           'Nie można odnaleźć wskazanego kontekstu.',
           false,
         ),
@@ -866,7 +905,7 @@ class LocalAuthGateway implements AuthGateway {
       email: normalizeEmail(input.email),
       expiresAt: addMs(now, this.policy.invitationTtlMs),
       invitationId: asInvitationId(this.nextId('inv')),
-      organizationId: input.organizationId,
+      tenantId: input.tenantId,
       requestedRole: input.requestedRole,
       status: 'active',
       tokenIssuedAt: now.toISOString(),
@@ -887,7 +926,7 @@ class LocalAuthGateway implements AuthGateway {
     });
     this.audit('auth.invitation_created', 'success', {
       actor,
-      organizationId: input.organizationId,
+      tenantId: input.tenantId,
       target: {
         email: maskEmail(invitation.email),
         invitationId: invitation.invitationId,
@@ -932,7 +971,7 @@ class LocalAuthGateway implements AuthGateway {
     if (tenant) {
       const membership = this.findMembership(
         sessionResult.user.userId,
-        tenant.organizationId,
+        tenant.tenantId,
         tenant.workspaceId,
       );
 
@@ -1268,7 +1307,7 @@ class LocalAuthGateway implements AuthGateway {
     if (!this.hasActorCapability(actor, 'auth:invitation:resend') || !invitation) {
       this.audit('auth.unauthorized_access_attempt', 'denied', {
         actor,
-        organizationId: actor.organizationId,
+        tenantId: actor.tenantId,
         reason: invitation ? 'FORBIDDEN' : 'INVITATION_INVALID',
         target: { invitationId, userId: actor.actorId },
         workspaceId: actor.workspaceId,
@@ -1303,7 +1342,7 @@ class LocalAuthGateway implements AuthGateway {
     });
     this.audit('auth.invitation_resent', 'success', {
       actor,
-      organizationId: invitation.organizationId,
+      tenantId: invitation.tenantId,
       target: {
         email: maskEmail(invitation.email),
         invitationId,
@@ -1444,9 +1483,26 @@ class LocalAuthGateway implements AuthGateway {
       return { error: sessionResult.error, status: 'error' };
     }
 
+    const contextValidation = validateTenantWorkspacePair(
+      tenant,
+      this.tenants,
+      this.workspaces,
+    );
+
+    if (!contextValidation.ok) {
+      return {
+        error: authError(
+          contextValidation.errorCode,
+          'Nie można wybrać wskazanego workspace.',
+          false,
+        ),
+        status: 'error',
+      };
+    }
+
     const membership = this.findMembership(
       sessionResult.user.userId,
-      tenant.organizationId,
+      tenant.tenantId,
       tenant.workspaceId,
     );
 
@@ -1457,6 +1513,10 @@ class LocalAuthGateway implements AuthGateway {
       };
     }
 
+    const workspaceChange = resolveWorkspaceChange(
+      sessionResult.session.currentTenant,
+      tenant,
+    );
     sessionResult.session.currentTenant = tenant;
     const context = this.resolveContextForUser(
       sessionResult.user.userId,
@@ -1464,7 +1524,7 @@ class LocalAuthGateway implements AuthGateway {
     );
     this.audit('auth.workspace_changed', 'success', {
       actor: this.actorFromUser(sessionResult.user),
-      organizationId: tenant.organizationId,
+      tenantId: tenant.tenantId,
       target: {
         sessionId,
         userId: sessionResult.user.userId,
@@ -1473,7 +1533,13 @@ class LocalAuthGateway implements AuthGateway {
       workspaceId: tenant.workspaceId,
     });
 
-    return { status: 'success', value: context };
+    return {
+      status: 'success',
+      value: {
+        ...context,
+        workspaceChange,
+      },
+    };
   }
 
   async signIn(input: LoginInput): Promise<LoginOutcome> {
@@ -1728,7 +1794,7 @@ class LocalAuthGateway implements AuthGateway {
       actorId: userId,
       capabilities: this.capabilitiesForFixtureRole(membership.role),
       dataScope: 'workspace',
-      organizationId: membership.organizationId,
+      tenantId: membership.tenantId,
       roles: [membership.role],
       workspaceId: membership.workspaceId,
     };
@@ -1747,7 +1813,7 @@ class LocalAuthGateway implements AuthGateway {
       actorId: user.userId,
       capabilities: [],
       dataScope: 'none',
-      organizationId: this.organizations[0]?.organizationId ?? localAuthOrganizations[0].organizationId,
+      tenantId: this.tenants[0]?.tenantId ?? localAuthTenants[0].tenantId,
       roles: [],
       workspaceId: this.workspaces[0]?.workspaceId ?? localAuthWorkspaces[0].workspaceId,
     };
@@ -1770,7 +1836,7 @@ class LocalAuthGateway implements AuthGateway {
   }
 
   private capabilitiesForFixtureRole(role: Role): readonly Capability[] {
-    if (role === 'organization_owner' || role === 'workspace_admin') {
+    if (role === 'tenant_owner' || role === 'workspace_admin') {
       return [
         'auth:invitation:create' as Capability,
         'auth:invitation:resend' as Capability,
@@ -1857,22 +1923,22 @@ class LocalAuthGateway implements AuthGateway {
 
   private findMembership(
     userId: UserId,
-    organizationId: TenantContext['organizationId'],
+    tenantId: TenantContext['tenantId'],
     workspaceId: TenantContext['workspaceId'],
   ): Membership | undefined {
     return this.memberships.find(
       (membership) =>
         membership.userId === userId &&
-        membership.organizationId === organizationId &&
+        membership.tenantId === tenantId &&
         membership.workspaceId === workspaceId,
     );
   }
 
-  private findOrganization(
-    organizationId: TenantContext['organizationId'],
-  ): Organization | undefined {
-    return this.organizations.find(
-      (organization) => organization.organizationId === organizationId,
+  private findTenant(
+    tenantId: TenantContext['tenantId'],
+  ): Tenant | undefined {
+    return this.tenants.find(
+      (tenant) => tenant.tenantId === tenantId,
     );
   }
 
@@ -1903,11 +1969,11 @@ class LocalAuthGateway implements AuthGateway {
 
   private hasActiveMembership(
     userId: UserId,
-    organizationId: TenantContext['organizationId'],
+    tenantId: TenantContext['tenantId'],
     workspaceId: TenantContext['workspaceId'],
   ): boolean {
     return Boolean(
-      this.findMembership(userId, organizationId, workspaceId)?.status === 'active',
+      this.findMembership(userId, tenantId, workspaceId)?.status === 'active',
     );
   }
 
@@ -2024,7 +2090,7 @@ class LocalAuthGateway implements AuthGateway {
     if (session?.currentTenant) {
       const selectedMembership = this.findMembership(
         userId,
-        session.currentTenant.organizationId,
+        session.currentTenant.tenantId,
         session.currentTenant.workspaceId,
       );
 
@@ -2033,31 +2099,31 @@ class LocalAuthGateway implements AuthGateway {
       }
     }
 
-    const organizationIds = new Set(
-      activeMemberships.map((membership) => membership.organizationId),
+    const tenantIds = new Set(
+      activeMemberships.map((membership) => membership.tenantId),
     );
 
-    if (organizationIds.size > 1) {
+    if (tenantIds.size > 1) {
       return {
-        organizations: this.organizations.filter((organization) =>
-          organizationIds.has(organization.organizationId),
+        tenants: this.tenants.filter((tenant) =>
+          tenantIds.has(tenant.tenantId),
         ),
-        status: 'organization_selection_required',
+        status: 'tenant_selection_required',
       };
     }
 
-    const [organizationId] = organizationIds;
+    const [tenantId] = tenantIds;
     const workspaces = activeMemberships
-      .filter((membership) => membership.organizationId === organizationId)
+      .filter((membership) => membership.tenantId === tenantId)
       .map((membership) => this.findWorkspace(membership.workspaceId))
       .filter((workspace): workspace is Workspace => Boolean(workspace));
 
     if (workspaces.length > 1) {
-      const organization = this.findOrganization(organizationId);
+      const tenant = this.findTenant(tenantId);
 
-      if (organization) {
+      if (tenant) {
         return {
-          organization,
+          tenantRecord: tenant,
           status: 'workspace_selection_required',
           workspaces,
         };
@@ -2070,9 +2136,9 @@ class LocalAuthGateway implements AuthGateway {
 
   private resolveWorkspaceState(membership: Membership): PostLoginContextResolution {
     const workspace = this.findWorkspace(membership.workspaceId);
-    const organization = this.findOrganization(membership.organizationId);
+    const tenant = this.findTenant(membership.tenantId);
 
-    if (!workspace || !organization) {
+    if (!workspace || !tenant) {
       return {
         error: authError('WORKSPACE_NOT_FOUND', 'Workspace nie istnieje.', false),
         status: 'no_active_membership',
@@ -2082,7 +2148,7 @@ class LocalAuthGateway implements AuthGateway {
     if (workspace.status === 'not_ready') {
       return {
         error: authError('WORKSPACE_NOT_READY', 'Workspace nie jest gotowy.', true),
-        organization,
+        tenantRecord: tenant,
         status: 'workspace_not_ready',
         workspace,
       };
@@ -2091,7 +2157,7 @@ class LocalAuthGateway implements AuthGateway {
     if (workspace.status === 'blocked') {
       return {
         error: authError('WORKSPACE_BLOCKED', 'Workspace jest zablokowany.', false),
-        organization,
+        tenantRecord: tenant,
         status: 'workspace_blocked',
         workspace,
       };
@@ -2100,17 +2166,17 @@ class LocalAuthGateway implements AuthGateway {
     if (workspace.status === 'no_data') {
       return {
         error: authError('WORKSPACE_NO_DATA', 'Workspace nie ma jeszcze danych.', true),
-        organization,
+        tenantRecord: tenant,
         status: 'workspace_no_data',
         workspace,
       };
     }
 
     return {
-      organization,
+      tenantRecord: tenant,
       status: 'workspace_selected',
       tenant: {
-        organizationId: workspace.organizationId,
+        tenantId: workspace.tenantId,
         workspaceId: workspace.workspaceId,
       },
       workspace,

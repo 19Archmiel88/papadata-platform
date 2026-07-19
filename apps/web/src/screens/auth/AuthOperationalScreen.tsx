@@ -23,7 +23,7 @@ import type {
 } from '../../contracts/auth';
 import { asAuthChallengeId, asSessionId } from '../../contracts/ids';
 import {
-  authOperationalOrganizations,
+  authOperationalTenants,
   authOperationalScenarios,
   authOperationalSessionFixtures,
   authOperationalWorkspaces,
@@ -578,10 +578,10 @@ function renderScenarioForm({
       <div className="pda-auth-op__split">
         <div>
           <h2>Tenant</h2>
-          {authOperationalOrganizations.map((organization) => (
-            <button className="pda-auth-op__option" key={organization.organizationId} type="button">
+          {authOperationalTenants.map((tenant) => (
+            <button className="pda-auth-op__option" key={tenant.tenantId} type="button">
               <Building2 size={18} />
-              <span>{organization.name}</span>
+              <span>{tenant.name}</span>
             </button>
           ))}
         </div>

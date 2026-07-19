@@ -1,8 +1,8 @@
-import type { OrganizationId, WorkspaceId } from './ids';
+import type { TenantId, WorkspaceId } from './ids';
 
-export type { OrganizationId, WorkspaceId } from './ids';
+export type { TenantId, WorkspaceId } from './ids';
 
 export type TenantContext = {
-  organizationId: OrganizationId;
+  tenantId: TenantId;
   workspaceId: WorkspaceId;
 };

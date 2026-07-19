@@ -136,25 +136,25 @@ describe('local auth gateway integration flows', () => {
     );
   });
 
-  it('requires organization or workspace selection when context is ambiguous', async () => {
+  it('requires tenant or workspace selection when context is ambiguous', async () => {
     const gateway = await createLocalAuthGateway();
-    const multiOrg = await gateway.signIn({
-      email: 'multi-org@papadata.example',
-      password: localAuthFixturePasswords.multiOrg,
+    const multiTenant = await gateway.signIn({
+      email: 'multi-tenant@papadata.example',
+      password: localAuthFixturePasswords.multiTenant,
     });
     const multiWorkspace = await gateway.signIn({
       email: 'multi-workspace@northstar.example',
       password: localAuthFixturePasswords.multiWorkspace,
     });
 
-    expect(multiOrg.status).toBe('authenticated');
+    expect(multiTenant.status).toBe('authenticated');
     expect(multiWorkspace.status).toBe('authenticated');
 
-    if (multiOrg.status !== 'authenticated' || multiWorkspace.status !== 'authenticated') {
+    if (multiTenant.status !== 'authenticated' || multiWorkspace.status !== 'authenticated') {
       return;
     }
 
-    expect(multiOrg.context.status).toBe('organization_selection_required');
+    expect(multiTenant.context.status).toBe('tenant_selection_required');
     expect(multiWorkspace.context.status).toBe('workspace_selection_required');
   });
 
@@ -202,7 +202,7 @@ describe('local auth gateway integration flows', () => {
     const gateway = await createLocalAuthGateway();
     const created = await gateway.createInvitation(localAuthOwnerActor, {
       email: 'audited@northstar.example',
-      organizationId: localAuthOwnerActor.organizationId,
+      tenantId: localAuthOwnerActor.tenantId,
       requestedRole: 'viewer',
       workspaceId: localAuthOwnerActor.workspaceId,
     });

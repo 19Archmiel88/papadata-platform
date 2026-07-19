@@ -1,29 +1,10 @@
-import type { TenantContext } from './tenant';
+import type { Capability, DataScope, Role } from '../domain-contracts';
+import { asCapability } from '../domain-contracts';
 import type { UserId } from './ids';
+import type { TenantContext } from './tenant';
 
-export type Role =
-  | 'organization_owner'
-  | 'workspace_admin'
-  | 'analyst'
-  | 'marketing_operator'
-  | 'viewer'
-  | 'billing_admin'
-  | 'auditor_security'
-  | 'internal_support_operations';
-
-export type Capability = string & {
-  readonly __brand: 'Capability';
-};
-
-export function asCapability(value: string): Capability {
-  return value as Capability;
-}
-
-export type DataScope =
-  | 'none'
-  | 'own'
-  | 'workspace'
-  | 'organization';
+export type { Capability, DataScope, Role };
+export { asCapability };
 
 export type ActorContext = TenantContext & {
   actorId: UserId;

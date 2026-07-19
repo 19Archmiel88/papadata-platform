@@ -148,7 +148,7 @@ test('workspace selection, no membership, CSRF rejection, foreign workspace and 
   });
 
   const selected = await browserPost(page, '/context/select', {
-    organizationId: 'org_northstar',
+    tenantId: 'ten_northstar',
     workspaceId: 'wrk_northstar_lab',
   });
 
@@ -175,12 +175,12 @@ test('workspace selection, no membership, CSRF rejection, foreign workspace and 
 
   const deniedByDefault = await browserPost(page, '/authz/check', {
     capability: 'auth:invitation:create',
-    organizationId: 'org_northstar',
+    tenantId: 'ten_northstar',
     workspaceId: 'wrk_northstar_main',
   });
   const foreignWorkspace = await browserPost(page, '/authz/check', {
     capability: 'auth:session:list',
-    organizationId: 'org_baltic',
+    tenantId: 'ten_baltic',
     workspaceId: 'wrk_baltic_marketplace',
   });
 
@@ -196,7 +196,7 @@ test('workspace selection, no membership, CSRF rejection, foreign workspace and 
 
   const noMembership = await browserPost(page, '/authz/check', {
     capability: 'auth:session:list',
-    organizationId: 'org_northstar',
+    tenantId: 'ten_northstar',
     workspaceId: 'wrk_northstar_main',
   });
 

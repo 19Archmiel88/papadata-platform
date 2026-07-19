@@ -5,8 +5,8 @@
 - source,
 - normalized,
 - canonical,
-- analytical projections,
-- KPI snapshots,
+- ready dataset,
+- ready KPI,
 - evidence.
 
 ## Wymagane stany
@@ -44,5 +44,11 @@ Każdy KPI musi zawierać:
 ## Zasady
 
 - Brak danych nie może być prezentowany jako zero.
+- Jeden fakt biznesowy może zasilić KPI tylko raz.
+- Source data nie są canonical data.
+- Canonical data nie oznaczają automatycznie ready dataset.
+- Ready dataset nie oznacza automatycznie ready KPI.
+- Readiness jest lokalne dla zakresu, okresu, waluty i workspace.
 - KPI nie może być `ready`, jeżeli wymagane dane nie przeszły readiness.
-- Zmiana definicji KPI wymaga wersjonowania.
+- Zmiana definicji KPI wymaga wersjonowania `MetricDefinition`.
+- `MetricSnapshot` zawiera readiness, lineage i evidence.

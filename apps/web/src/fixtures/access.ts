@@ -2,7 +2,7 @@ import type { Role } from '../contracts/authz';
 import { denyByDefaultAccessDecision } from '../contracts/authz';
 
 export const papaDataRoles = [
-  'organization_owner',
+  'tenant_owner',
   'workspace_admin',
   'analyst',
   'marketing_operator',

@@ -2,7 +2,7 @@
 
 ## Role
 
-- Organization Owner
+- Tenant Owner
 - Workspace Admin
 - Analyst
 - Marketing Operator

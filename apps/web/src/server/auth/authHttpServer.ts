@@ -17,12 +17,14 @@ import type { ActorContext, Capability, Role } from '../../contracts/authz';
 import { asCapability } from '../../contracts/authz';
 import {
   asAuthChallengeId,
+  asCorrelationId,
   asInvitationId,
-  asOrganizationId,
+  asTenantId,
   asSessionId,
   asWorkspaceId,
 } from '../../contracts/ids';
 import type { TenantContext } from '../../contracts/tenant';
+import { domainContractVersion, type ErrorClass } from '../../domain-contracts';
 import {
   authCsrfCookieName,
   authSessionCookieName,
@@ -252,8 +254,8 @@ async function handleRequest(
     return;
   }
 
-  if (method === 'GET' && route === '/context/organizations') {
-    await listOrganizations(request, response, options);
+  if (method === 'GET' && route === '/context/tenants') {
+    await listTenants(request, response, options);
     return;
   }
 
@@ -828,9 +830,9 @@ async function createInvitation(
 
   const result = await options.gateway.createInvitation(actor.value, {
     email: getString(body, 'email'),
-    organizationId: asOrganizationId(getString(body, 'organizationId')),
     requestedRole: getString(body, 'requestedRole') as Role,
-    workspaceId: asWorkspaceId(getString(body, 'workspaceId')),
+    tenantId: tenantIdFromString(getString(body, 'tenantId')),
+    workspaceId: workspaceIdFromString(getString(body, 'workspaceId')),
   });
   sendJson(response, result.status === 'success' ? 200 : 403, result);
 }
@@ -888,7 +890,7 @@ async function currentActor(
   sendJson(response, actor.status === 'success' ? 200 : 403, actor);
 }
 
-async function listOrganizations(
+async function listTenants(
   request: IncomingMessage,
   response: ServerResponse,
   options: RuntimeAuthHttpServerOptions,
@@ -901,13 +903,13 @@ async function listOrganizations(
 
   const context = active.result.context;
 
-  if (context.status === 'organization_selection_required') {
-    sendJson(response, 200, { status: 'success', value: context.organizations });
+  if (context.status === 'tenant_selection_required') {
+    sendJson(response, 200, { status: 'success', value: context.tenants });
     return;
   }
 
-  if ('organization' in context && context.organization) {
-    sendJson(response, 200, { status: 'success', value: [context.organization] });
+  if ('tenantRecord' in context && context.tenantRecord) {
+    sendJson(response, 200, { status: 'success', value: [context.tenantRecord] });
     return;
   }
 
@@ -931,20 +933,20 @@ async function listWorkspaces(
     return;
   }
 
-  const organizationId = url.searchParams.get('organizationId');
+  const tenantId = url.searchParams.get('tenantId');
   const context = active.result.context;
 
   if (context.status === 'workspace_selection_required') {
     sendJson(response, 200, {
       status: 'success',
       value: context.workspaces.filter(
-        (workspace) => !organizationId || workspace.organizationId === organizationId,
+        (workspace) => !tenantId || workspace.tenantId === tenantId,
       ),
     });
     return;
   }
 
-  if (context.status === 'workspace_selected' && (!organizationId || context.workspace.organizationId === organizationId)) {
+  if (context.status === 'workspace_selected' && (!tenantId || context.workspace.tenantId === tenantId)) {
     sendJson(response, 200, { status: 'success', value: [context.workspace] });
     return;
   }
@@ -973,6 +975,8 @@ async function selectWorkspace(
   sendJson(response, result.status === 'success' ? 200 : 403, {
     ...result,
     clearClientWorkspaceCache: result.status === 'success',
+    workspaceStateReset:
+      result.status === 'success' ? result.value.workspaceChange?.resetScopes ?? [] : [],
   });
 }
 
@@ -1247,9 +1251,25 @@ function getString(body: unknown, key: string): string {
 
 function tenantFromBody(body: unknown): TenantContext {
   return {
-    organizationId: asOrganizationId(getString(body, 'organizationId')),
-    workspaceId: asWorkspaceId(getString(body, 'workspaceId')),
+    tenantId: tenantIdFromString(getString(body, 'tenantId')),
+    workspaceId: workspaceIdFromString(getString(body, 'workspaceId')),
   };
+}
+
+function tenantIdFromString(value: string): TenantContext['tenantId'] {
+  try {
+    return asTenantId(value);
+  } catch {
+    return asTenantId('invalid_tenant');
+  }
+}
+
+function workspaceIdFromString(value: string): TenantContext['workspaceId'] {
+  try {
+    return asWorkspaceId(value);
+  } catch {
+    return asWorkspaceId('invalid_workspace');
+  }
 }
 
 function reauthenticationPurposeFromBody(body: unknown): ReauthenticationPurpose {
@@ -1366,7 +1386,136 @@ function clientAddress(request: IncomingMessage): string {
 function sendJson(response: ServerResponse, statusCode: number, body: unknown): void {
   response.statusCode = statusCode;
   response.setHeader('Content-Type', jsonContentType);
-  response.end(JSON.stringify(body));
+  response.end(JSON.stringify(withContractEnvelope(body)));
+}
+
+function withContractEnvelope(body: unknown): unknown {
+  if (!isRecord(body)) {
+    return body;
+  }
+
+  const context = extractContractContext(body);
+  const error = isRecord(body.error)
+    ? {
+        ...body.error,
+        errorClass: classifyAuthErrorCode(
+          typeof body.error.code === 'string' ? body.error.code : 'SERVER_ERROR',
+        ),
+      }
+    : body.error;
+
+  return {
+    contractVersion: domainContractVersion,
+    correlationId: asCorrelationId(`corr_http_${defaultTokenGenerator()}`),
+    limitations: [],
+    ...body,
+    error,
+    readiness: context
+      ? {
+          evaluatedAt: new Date().toISOString(),
+          limitations: [],
+          scope: {
+            dataLayer: 'canonical',
+            tenantId: context.tenantId,
+            workspaceId: context.workspaceId,
+          },
+          state: 'ready',
+        }
+      : undefined,
+    tenantId: context?.tenantId,
+    workspaceId: context?.workspaceId,
+  };
+}
+
+function extractContractContext(body: Record<string, unknown>):
+  | {
+      tenantId: string;
+      workspaceId: string;
+    }
+  | undefined {
+  return (
+    contextFromRecord(body) ??
+    contextFromRecord(isRecord(body.value) ? body.value : undefined) ??
+    contextFromRecord(isRecord(body.context) ? body.context : undefined) ??
+    contextFromRecord(isRecord(body.session) ? body.session : undefined)
+  );
+}
+
+function contextFromRecord(record: Record<string, unknown> | undefined):
+  | {
+      tenantId: string;
+      workspaceId: string;
+    }
+  | undefined {
+  if (!record) {
+    return undefined;
+  }
+
+  if (typeof record.tenantId === 'string' && typeof record.workspaceId === 'string') {
+    return {
+      tenantId: record.tenantId,
+      workspaceId: record.workspaceId,
+    };
+  }
+
+  if (isRecord(record.tenant)) {
+    const tenantContext = contextFromRecord(record.tenant);
+
+    if (tenantContext) {
+      return tenantContext;
+    }
+  }
+
+  if (isRecord(record.currentTenant)) {
+    const sessionContext = contextFromRecord(record.currentTenant);
+
+    if (sessionContext) {
+      return sessionContext;
+    }
+  }
+
+  if (isRecord(record.workspace) && typeof record.tenantId === 'string') {
+    const workspaceId = record.workspace.workspaceId;
+
+    if (typeof workspaceId === 'string') {
+      return {
+        tenantId: record.tenantId,
+        workspaceId,
+      };
+    }
+  }
+
+  return undefined;
+}
+
+function classifyAuthErrorCode(code: string): ErrorClass {
+  if (code === 'UNAUTHENTICATED' || code === 'SESSION_EXPIRED' || code === 'SESSION_REVOKED') {
+    return 'authentication';
+  }
+
+  if (
+    code === 'FORBIDDEN' ||
+    code === 'NO_ACTIVE_MEMBERSHIP' ||
+    code === 'TENANT_NOT_FOUND' ||
+    code === 'WORKSPACE_NOT_FOUND' ||
+    code === 'WORKSPACE_TENANT_MISMATCH'
+  ) {
+    return 'authorization';
+  }
+
+  if (code === 'RATE_LIMITED') {
+    return 'rate_limited';
+  }
+
+  if (code.includes('INVALID') || code.includes('EXPIRED') || code.includes('USED')) {
+    return 'validation';
+  }
+
+  if (code.includes('CONFLICT')) {
+    return 'conflict';
+  }
+
+  return 'internal';
 }
 
 function defaultTokenGenerator(): string {

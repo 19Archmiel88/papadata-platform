@@ -1,6 +1,6 @@
 import type { ReauthenticationPurpose } from '../contracts/auth';
 import {
-  localAuthOrganizations,
+  localAuthTenants,
   localAuthSessions,
   localAuthWorkspaces,
 } from './auth-domain';
@@ -102,7 +102,7 @@ export const authOperationalScenarios: Record<
     action: 'Sprawdź zaproszenie',
     email: 'expired@northstar.example',
     eyebrow: 'Zaproszenie',
-    impact: 'Wygasły token nie otwiera organization ani workspace.',
+    impact: 'Wygasły token nie otwiera tenant ani workspace.',
     recovery: 'Uprawniony użytkownik może wysłać nowe zaproszenie.',
     status: 'Link wygasł',
     title: 'Zaproszenie wygasło',
@@ -290,7 +290,7 @@ export const authOperationalScenarios: Record<
 };
 
 export const authOperationalSessionFixtures = localAuthSessions;
-export const authOperationalOrganizations = localAuthOrganizations;
+export const authOperationalTenants = localAuthTenants;
 export const authOperationalWorkspaces = localAuthWorkspaces;
 
 export const authReauthenticationPurposes: readonly {

@@ -38,7 +38,7 @@ The local/test session model includes:
 
 - `sessionId`;
 - `userId`;
-- explicit `organizationId` and `workspaceId` when selected;
+- explicit `tenantId` and `workspaceId` when selected;
 - status: `active`, `expiring`, `expired`, `revoked`,
   `reauthentication_required`;
 - `createdAt`, `lastActivityAt`, `expiresAt`, `idleExpiresAt`;
@@ -72,7 +72,7 @@ SMS MFA is not implemented.
 
 Invitations are bound to:
 
-- `organizationId`;
+- `tenantId`;
 - `workspaceId`;
 - requested role;
 - e-mail;
@@ -96,8 +96,8 @@ After authentication, context resolution returns one of:
 - workspace blocked;
 - workspace no data.
 
-Every protected operation receives explicit `organizationId` and `workspaceId`.
-No `tenantId` field is introduced.
+Every protected operation receives explicit `tenantId` and `workspaceId`.
+The GCP organization identifier is never introduced into domain contracts.
 
 ## Authorization
 

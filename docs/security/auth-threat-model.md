@@ -47,4 +47,4 @@ Status: local/test boundary coverage, production controls pending decisions.
 The local/test suite covers wrong workspace, foreign workspace, no membership,
 missing capability, missing cookie, revoked/expired cookie, CSRF rejection,
 token reuse and MFA retry limit. Every future data-bearing feature must add a
-negative test for a foreign `workspaceId` with explicit `organizationId`.
+negative test for a foreign `workspaceId` with explicit `tenantId`.

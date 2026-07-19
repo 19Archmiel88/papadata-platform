@@ -11,7 +11,7 @@ local/test adapter. That adapter was useful for UI, Storybook and scenario
 coverage, but it still executed trusted decisions in frontend-importable code.
 
 `docs/spec/security.md` and `docs/spec/source-of-truth.md` require backend-side
-authorization, explicit `organizationId` and `workspaceId`, secure sessions,
+authorization, explicit `tenantId` and `workspaceId`, secure sessions,
 CSRF protection and audit events generated outside the browser.
 
 The production IdP, backend runtime, durable database, session store and TTL

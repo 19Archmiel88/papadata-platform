@@ -13,7 +13,6 @@ required_files=(
   "docs/spec/security.md"
   "docs/spec/ui-and-storybook.md"
   "docs/spec/states-and-errors.md"
-  "CODEX.md"
 )
 
 missing=0

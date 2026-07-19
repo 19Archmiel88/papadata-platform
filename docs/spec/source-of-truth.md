@@ -16,7 +16,7 @@ Nie potwierdza, że:
 
 - Organization jest granicą własności, billingu i polityk.
 - Workspace jest granicą danych, integracji, operacji, audytu i AI.
-- Kontrakty używają jawnie `organizationId` oraz `workspaceId`.
+- Kontrakty używają jawnie `tenantId` oraz `workspaceId`.
 - Role są pakietami capabilities oraz data scope.
 - Autoryzacja jest egzekwowana po stronie backendu.
 - MVP ma działać end-to-end.

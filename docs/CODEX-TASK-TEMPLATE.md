@@ -40,7 +40,7 @@ Jedno zdanie opisujące mierzalny rezultat.
 
 ## Reguły bezpieczeństwa
 
-- organizationId;
+- tenantId;
 - workspaceId;
 - capabilities;
 - data scope;

@@ -47,7 +47,7 @@ Instrukcja przyjmuje następujące niezmienne założenia:
 - Cloud Build realizuje produkcyjne budowanie i wdrożenie.
 - OpenTelemetry jest wspólną podstawą logów, metryk i trace.
 - Local, CI, Development, Staging i Production muszą zachowywać te same kontrakty, schematy, migracje i granice procesów.
-- Każdy kontrakt używa jawnie `organizationId` i `workspaceId`.
+- Każdy kontrakt używa jawnie `tenantId` i `workspaceId`.
 - Uprawnienia są egzekwowane po stronie BFF/API/workerów, nigdy wyłącznie w UI.
 - Każdy job, event, cache key, log, eksport i artefakt AI zachowuje kontekst organizacji i workspace.
 - MVP jest kompletne procesowo; ograniczana jest liczba providerów, wariantów, rynków i skala, a nie obsługa błędów, recovery, bezpieczeństwa i audytu.
@@ -470,7 +470,7 @@ Redis nie może przechowywać jedynej kopii:
 - source authority;
 - definicji KPI.
 
-Każdy cache key zawiera `organizationId` i `workspaceId` w jednoznacznym formacie.
+Każdy cache key zawiera `tenantId` i `workspaceId` w jednoznacznym formacie.
 
 ---
 
@@ -489,7 +489,7 @@ Każdy cache key zawiera `organizationId` i `workspaceId` w jednoznacznym formac
 - `eventType`;
 - `eventVersion`;
 - `occurredAt`;
-- `organizationId`;
+- `tenantId`;
 - `workspaceId`;
 - `operationId`;
 - `correlationId`;
@@ -695,7 +695,7 @@ Każdy log i span, jeśli ma zastosowanie:
 - `service`;
 - `environment`;
 - `version`;
-- `organizationId`;
+- `tenantId`;
 - `workspaceId`;
 - `operationId`;
 - `correlationId`;
@@ -1110,8 +1110,8 @@ Poza zakresem:
 - dane produkcyjne.
 
 Kryteria akceptacji:
-- jawne organizationId i workspaceId;
-- brak tenantId;
+- jawne tenantId i workspaceId;
+- obowiązkowy tenantId;
 - deny by default;
 - negatywny test obcego workspace;
 - lint, typecheck i testy przechodzą.
@@ -1389,7 +1389,7 @@ Wykonaj przegląd niezatwierdzonych zmian bez modyfikowania plików.
 
 Sprawdź:
 - zgodność z AGENTS.md;
-- naruszenia organizationId/workspaceId;
+- naruszenia tenantId/workspaceId;
 - bezpieczeństwo;
 - breaking changes;
 - brakujące testy;
@@ -1502,7 +1502,7 @@ Oczekiwany rezultat:
 - OpenTelemetry skeleton;
 - kontrakt błędów;
 - event envelope;
-- `organizationId` i `workspaceId`;
+- `tenantId` i `workspaceId`;
 - authz skeleton;
 - migracje;
 - test tenant isolation;

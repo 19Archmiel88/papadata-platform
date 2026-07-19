@@ -27,6 +27,17 @@ w Storybooku:
   zostały jeszcze wybrane ani utworzone.
 - Poprawny build lub test nie oznacza gotowości produkcyjnej produktu.
 
+## Model tenantów i GCP
+
+- `papadata.pl` jest organizacją Google Cloud operatora platformy.
+- Foldery `env-dev`, `env-stg` i `env-prod` rozdzielają środowiska GCP.
+- Każdy klient PapaData posiada osobny aplikacyjny `tenantId`.
+- Jeden tenant może posiadać jeden lub wiele workspace oznaczonych przez
+  `workspaceId`.
+- Identyfikator organizacji GCP nie jest używany w kontraktach domenowych.
+- Dedykowany projekt GCP klienta jest opcjonalnym wariantem deploymentu i nie
+  zastępuje `tenantId`.
+
 ## Najbliższy cel
 
 Rozwijać współdzieloną implementację w `apps/web/src`, używaną przez aplikację i Storybook.
@@ -77,14 +88,13 @@ Aplikacja Vite:
     pnpm lint
     pnpm typecheck
     pnpm test
-    pnpm test:auth
     pnpm test:e2e:auth
     pnpm test:storybook
     pnpm verify
     pnpm build
     pnpm build-storybook
 
-`pnpm verify` uruchamia lint, pełny typecheck oraz testy Storybooka.
+`pnpm verify` uruchamia lint, typecheck, spellcheck, markdownlint oraz pełny zestaw testów.
 
 ## Zasady
 
@@ -96,7 +106,8 @@ Aplikacja Vite:
 - Nie przedstawiamy prototypu jako funkcji gotowej produkcyjnie.
 - Obecny auth ma lokalną/testową granicę serwerową, ale nie jest produkcyjnym
   IdP ani produkcyjnym session store.
-- Operacje Git, instalowanie zależności i zmiany architektoniczne wymagają jawnej zgody.
+- Po zielonej weryfikacji Codex automatycznie tworzy polski commit i wykonuje bezpieczny push do `origin/main`.
+- Nowe zależności produkcyjne, zmiany architektoniczne i operacje na GCP nadal wymagają jawnej zgody.
 
 Szczegółowe reguły znajdują się w `AGENTS.md`.
 

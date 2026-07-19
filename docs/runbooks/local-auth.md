@@ -54,7 +54,7 @@ application logs.
    `/api/auth/local-test/audit` in local E2E.
 4. Verify CSRF by loading `/api/auth/csrf` and sending `X-PapaData-CSRF` on
    state-changing requests.
-5. Verify that protected operations use explicit `organizationId` and
+5. Verify that protected operations use explicit `tenantId` and
    `workspaceId`.
 6. If a flow depends on a production security decision, keep it behind the
    provider-agnostic contract and record the blocker.

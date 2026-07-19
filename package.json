@@ -9,6 +9,7 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "test:e2e:auth": "pnpm --filter @papadata/web test:e2e:auth",
     "test:storybook": "pnpm --filter @papadata/web test:storybook",
     "build": "turbo run build",
     "build:storybook": "pnpm --filter @papadata/web build:storybook",

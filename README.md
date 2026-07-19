@@ -17,14 +17,19 @@ w Storybooku:
 
 - Storybook jest aktywnym środowiskiem projektowania i testowania UI.
 - Obecny wygląd stanowi bazę do dalszego rozwoju.
-- Implementacje ekranów znajdują się tymczasowo w katalogu `apps/web/.storybook`.
-- Aplikacja Vite jest obecnie technicznym shellem bez produkcyjnego UI.
-- Backend, BFF, API, workery i infrastruktura nie zostały jeszcze utworzone.
+- Implementacje ekranów znajdują się w `apps/web/src`, a Storybook używa tych
+  samych komponentów.
+- Aplikacja Vite używa runtime klienta `/api/auth`; Storybook jawnie wstrzykuje
+  local/test adapter.
+- Minimalna serwerowa granica auth istnieje lokalnie/testowo w
+  `apps/web/src/server/auth`.
+- Produkcyjny backend runtime, IdP, baza danych, workery i infrastruktura nie
+  zostały jeszcze wybrane ani utworzone.
 - Poprawny build lub test nie oznacza gotowości produkcyjnej produktu.
 
 ## Najbliższy cel
 
-Przenieść istniejące implementacje z `apps/web/.storybook` do właściwej struktury `apps/web/src`
+Rozwijać współdzieloną implementację w `apps/web/src`, używaną przez aplikację i Storybook.
 `src` bez zmiany:
 
 - wyglądu;
@@ -49,7 +54,7 @@ Storybook i aplikacja produkcyjna mają używać tych samych komponentów.
 
 ## Struktura bieżąca
 
-- `apps/web/.storybook` — konfiguracja oraz tymczasowa implementacja UI;
+- `apps/web/.storybook` — wyłącznie konfiguracja Storybooka;
 - `.vscode` — rekomendowane rozszerzenia i ustawienia edytora;
 - `docs` — instrukcje techniczne i szablony pracy;
 - `AGENTS.md` — obowiązujące reguły pracy z Codexem;
@@ -71,6 +76,9 @@ Aplikacja Vite:
 
     pnpm lint
     pnpm typecheck
+    pnpm test
+    pnpm test:auth
+    pnpm test:e2e:auth
     pnpm test:storybook
     pnpm verify
     pnpm build
@@ -86,6 +94,8 @@ Aplikacja Vite:
 - Każdy ekran docelowo posiada jedną implementację współdzieloną przez aplikację i Storybook.
 - Dane scenariuszy są oddzielone od komponentów.
 - Nie przedstawiamy prototypu jako funkcji gotowej produkcyjnie.
+- Obecny auth ma lokalną/testową granicę serwerową, ale nie jest produkcyjnym
+  IdP ani produkcyjnym session store.
 - Operacje Git, instalowanie zależności i zmiany architektoniczne wymagają jawnej zgody.
 
 Szczegółowe reguły znajdują się w `AGENTS.md`.
@@ -94,7 +104,8 @@ Szczegółowe reguły znajdują się w `AGENTS.md`.
 
 - Root repozytorium korzysta z pnpm workspace i Turborepo.
 - Aplikacja webowa znajduje się w `apps/web`.
-- Storybook i obecne prototypy UI znajdują się tymczasowo w `apps/web/.storybook`.
-- `apps/bff`, `apps/api` i `apps/worker` nie zostały jeszcze utworzone.
+- Konfiguracja Storybooka znajduje się w `apps/web/.storybook`, a komponenty, ekrany, stories i fixtures w `apps/web/src`.
+- `apps/bff`, `apps/api` i `apps/worker` nie zostały jeszcze utworzone jako
+  produkcyjne runtime.
 - Pakiety współdzielone w `packages/*` nie zostały jeszcze utworzone.
 - Obecny etap nie potwierdza gotowości aplikacji produkcyjnej.

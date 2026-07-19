@@ -17,6 +17,9 @@ export default defineConfig([globalIgnores(['dist', 'storybook-static']), {
     reactRefresh.configs.vite,
   ],
   languageOptions: {
-    globals: globals.browser,
+    globals: {
+      ...globals.browser,
+      ...globals.node,
+    },
   },
 }, ...storybook.configs["flat/recommended"]])

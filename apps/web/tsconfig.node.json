@@ -9,8 +9,8 @@
       "node"
     ],
     "skipLibCheck": true,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
@@ -23,6 +23,8 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "vite.config.ts"
+    "playwright.auth.config.ts",
+    "vite.config.ts",
+    "vitest.auth.config.ts"
   ]
 }

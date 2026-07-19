@@ -54,3 +54,5 @@ docs/UI-AUDIT-SOURCE.md
 **/dist/
 **/storybook-static/
 **/coverage/
+**/test-results/
+**/playwright-report/

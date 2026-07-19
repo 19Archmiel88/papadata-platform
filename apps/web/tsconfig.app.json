@@ -28,8 +28,12 @@
   },
   "include": [
     "src",
-    ".storybook/**/*.ts",
-    ".storybook/**/*.tsx",
+    ".storybook/*.ts",
+    ".storybook/*.tsx",
     "vitest.shims.d.ts"
+  ],
+  "exclude": [
+    "src/server",
+    "e2e"
   ]
 }

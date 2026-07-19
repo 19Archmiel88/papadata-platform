@@ -1,27 +1,36 @@
 import {
-  ArrowRight,
-  Eye,
   Fingerprint,
-  LockKeyhole,
   Mail,
   ShieldCheck,
   UserRoundCheck,
   Waypoints,
-} from "lucide-react";
-import { useState } from "react";
+} from 'lucide-react';
+import { useState } from 'react';
 
-import "../../design-system/foundations/papadata-brand-surface.css";
-import { PapaDataBrand } from "../../design-system/brand/PapaDataBrand";
-import { VerificationCodeInput } from "../../design-system/forms/VerificationCodeInput";
-import { authCodeExamples, authIdentityFixture } from "../../fixtures/auth";
-import "./papadata-auth.css";
+import {
+  ActionArrow,
+  AppHeader,
+  Button,
+  InlineNotice,
+  PageHeader,
+  PasswordField,
+  ProviderButton,
+  StatusBadge,
+  StepIndicator,
+  Surface,
+  TextField,
+  VerificationCodeInput,
+} from '../../design-system';
+import '../../design-system/foundations/papadata-brand-surface.css';
+import { authCodeExamples, authIdentityFixture } from '../../fixtures/auth';
+import './papadata-auth.css';
 
 type AuthComponentShowcaseProps = {
-  initialTheme: "light" | "dark";
+  initialTheme: 'light' | 'dark';
 };
 
 function AuthComponentShowcase({
-  initialTheme = "dark",
+  initialTheme = 'dark',
 }: AuthComponentShowcaseProps) {
   return (
     <div
@@ -29,106 +38,51 @@ function AuthComponentShowcase({
       data-theme={initialTheme}
       lang="pl"
     >
-      <header className="pds-topbar" aria-label="PapaData">
-        <div className="pds-topbar__inner">
-          <PapaDataBrand />
-        </div>
-      </header>
+      <AppHeader />
 
       <main className="pda-components-main">
-        <header className="pda-components-heading">
-          <span className="pda-auth-kicker">Dostęp do konta</span>
-          <h1>Elementy procesu Auth</h1>
-          <p>
-            Referencja przycisków, pól, postępu i sygnałów używanych przez
-            powierzchnie dostępu PapaData.
-          </p>
-        </header>
+        <PageHeader
+          className="pda-components-heading"
+          eyebrow="Dostęp do konta"
+          text="Wspólne komponenty używane przez logowanie, MFA, odzyskiwanie dostępu i zaproszenia."
+          title="Elementy procesu Auth"
+        />
 
-        <section className="pda-component-section">
+        <Surface className="pda-component-section">
           <header>
             <span>Akcje</span>
             <h2>Przyciski i dostawcy</h2>
           </header>
 
           <div className="pda-component-row">
-            <button
-              className="pda-auth-button pda-auth-button--primary"
-              type="button"
-            >
+            <Button iconAfter={<ActionArrow />} variant="primary">
               Kontynuuj
-              <ArrowRight size={18} />
-            </button>
+            </Button>
 
-            <button
-              className="pda-auth-button pda-auth-button--secondary"
-              type="button"
-            >
-              Wyślij ponownie
-            </button>
+            <Button variant="secondary">Wyślij ponownie</Button>
 
-            <button className="pda-auth-link" type="button">
-              Odzyskaj dostęp
-            </button>
+            <Button variant="ghost">Odzyskaj dostęp</Button>
           </div>
 
           <div className="pda-provider-row pda-component-row--narrow">
-            <button className="pda-provider-button" type="button">
-              <span className="pda-provider-mark pda-provider-mark--google">
-                G
-              </span>
-              <span>Google</span>
-              <ArrowRight size={16} />
-            </button>
-
-            <button className="pda-provider-button" type="button">
-              <span className="pda-provider-mark pda-provider-mark--microsoft">
-                M
-              </span>
-              <span>Microsoft</span>
-              <ArrowRight size={16} />
-            </button>
+            <ProviderButton provider="google">Google</ProviderButton>
+            <ProviderButton provider="microsoft">Microsoft</ProviderButton>
           </div>
-        </section>
+        </Surface>
 
-        <section className="pda-component-section">
+        <Surface className="pda-component-section">
           <header>
             <span>Formularze</span>
             <h2>Pola i kod jednorazowy</h2>
           </header>
 
           <div className="pda-field-grid pda-component-row--fields">
-            <label className="pda-field" htmlFor="component-email">
-              <span className="pda-field__label">E-mail służbowy</span>
+            <TextFieldExample />
 
-              <span className="pda-input-frame">
-                <Mail size={18} />
-                <input
-                  defaultValue={authIdentityFixture.email}
-                  id="component-email"
-                  type="email"
-                />
-                <span className="pda-input-frame__signal" />
-              </span>
-            </label>
-
-            <div className="pda-field">
-              <label className="pda-field__label" htmlFor="component-password">
-                Hasło
-              </label>
-
-              <span className="pda-input-frame">
-                <LockKeyhole size={18} />
-                <input id="component-password" type="password" />
-                <button
-                  aria-label="Pokaż hasło"
-                  className="pda-field-action"
-                  type="button"
-                >
-                  <Eye size={18} />
-                </button>
-              </span>
-            </div>
+            <PasswordField
+              autoComplete="current-password"
+              label="Hasło"
+            />
 
             <div className="pda-code-showcase-grid">
               {authCodeExamples.map((example) => (
@@ -144,49 +98,71 @@ function AuthComponentShowcase({
               ))}
             </div>
           </div>
-        </section>
+        </Surface>
 
-        <section className="pda-component-section">
+        <Surface className="pda-component-section">
           <header>
             <span>Stan</span>
-            <h2>Postęp i sygnały zaufania</h2>
+            <h2>Postęp, status i komunikat</h2>
           </header>
 
           <div className="pda-component-grid">
-            <ol className="pda-auth-progress">
-              <li className="is-complete">
-                <span className="pda-auth-progress__node">
-                  <UserRoundCheck size={15} />
-                </span>
-                <span className="pda-auth-progress__label">Konto</span>
-              </li>
-
-              <li className="is-active">
-                <span className="pda-auth-progress__node">
-                  <Fingerprint size={15} />
-                </span>
-                <span className="pda-auth-progress__label">Weryfikacja</span>
-              </li>
-
-              <li>
-                <span className="pda-auth-progress__node">
-                  <Waypoints size={15} />
-                </span>
-                <span className="pda-auth-progress__label">Dostęp</span>
-              </li>
-            </ol>
+            <StepIndicator
+              aria-label="Postęp procesu dostępu"
+              currentIndex={1}
+              steps={[
+                {
+                  icon: <UserRoundCheck aria-hidden="true" size={15} />,
+                  key: 'account',
+                  label: 'Konto',
+                },
+                {
+                  icon: <Fingerprint aria-hidden="true" size={15} />,
+                  key: 'verification',
+                  label: 'Weryfikacja',
+                },
+                {
+                  icon: <Waypoints aria-hidden="true" size={15} />,
+                  key: 'access',
+                  label: 'Dostęp',
+                },
+              ]}
+            />
 
             <div className="pda-component-trust">
-              <ShieldCheck size={22} />
+              <ShieldCheck aria-hidden="true" size={22} />
               <span>
                 <strong>Bezpieczny feedback</strong>
                 <span>Komunikaty nie ujawniają stanu konta ani dostawcy.</span>
               </span>
             </div>
           </div>
-        </section>
+
+          <div className="pda-component-row">
+            <StatusBadge status="ready" />
+            <StatusBadge status="pending" />
+            <StatusBadge status="blocked" />
+          </div>
+
+          <InlineNotice tone="info">
+            Ten sam komponent komunikatu obsługuje informację, sukces,
+            ostrzeżenie i błąd.
+          </InlineNotice>
+        </Surface>
       </main>
     </div>
+  );
+}
+
+function TextFieldExample() {
+  return (
+    <TextField
+      autoComplete="email"
+      defaultValue={authIdentityFixture.email}
+      icon={<Mail aria-hidden="true" size={18} strokeWidth={1.8} />}
+      label="E-mail służbowy"
+      type="email"
+    />
   );
 }
 
@@ -211,7 +187,7 @@ function CodeInputExample({
     <VerificationCodeInput
       disabled={disabled}
       errorMessage={errorMessage}
-      hint={invalid ? undefined : "Wpisz dokładnie sześć cyfr."}
+      hint={invalid ? undefined : 'Wpisz dokładnie sześć cyfr.'}
       id={id}
       invalid={invalid}
       label={label}

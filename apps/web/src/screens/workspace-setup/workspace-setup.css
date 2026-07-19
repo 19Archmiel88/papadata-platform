@@ -119,6 +119,11 @@
   min-width: 0;
 }
 
+.pdw-panel-header > div {
+  display: grid;
+  gap: 0.25rem;
+}
+
 .pdw-panel-header h2,
 .pdw-card-header h3 {
   color: var(--pds-text-primary);
@@ -129,6 +134,11 @@
 
 .pdw-card-header h3 {
   font-size: 0.9rem;
+}
+
+.pdw-panel-header > div span {
+  color: var(--pds-text-muted);
+  font-size: 0.75rem;
 }
 
 .pdw-chip {
@@ -291,6 +301,11 @@
     );
   border-color: var(--pds-border-primary);
   color: var(--pds-text-primary);
+}
+
+.pdw-client-summary {
+  display: grid;
+  gap: 0.75rem;
 }
 
 .pdw-timeline {

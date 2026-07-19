@@ -1,19 +1,12 @@
 import {
-  ArrowRight,
   BadgeCheck,
   BriefcaseBusiness,
   Check,
-  CircleAlert,
-  Clock3,
-  Eye,
-  EyeOff,
   Fingerprint,
   LockKeyhole,
   Mail,
-  Moon,
   RefreshCw,
   ShieldCheck,
-  Sun,
   User,
   UserRoundCheck,
   Waypoints,
@@ -27,8 +20,18 @@ import {
 } from 'react';
 
 import type { PapaDataLanguage, PapaDataTheme } from '../../contracts/ui';
-import { PapaDataBrand } from '../../design-system/brand/PapaDataBrand';
-import { VerificationCodeInput } from '../../design-system/forms/VerificationCodeInput';
+import {
+  ActionArrow,
+  AppHeader,
+  Button as DsButton,
+  InlineNotice,
+  PageHeader,
+  PasswordField as DsPasswordField,
+  ProviderButton as DsProviderButton,
+  StepIndicator,
+  TextField as DsTextField,
+  VerificationCodeInput,
+} from '../../design-system';
 import {
   authIdentityFixture,
   authProgressSteps,
@@ -64,20 +67,6 @@ type GoToOptions = {
   emailVerificationCopyMode?: EmailVerificationCopyMode;
 };
 type GoTo = (screen: AuthScreen, options?: GoToOptions) => void;
-
-type FieldProps = {
-  ariaDescribedBy?: string;
-  autoComplete?: string;
-  defaultValue?: string;
-  disabled?: boolean;
-  helper?: string;
-  icon: ReactNode;
-  id: string;
-  label: string;
-  placeholder?: string;
-  required?: boolean;
-  type?: string;
-};
 
 function getProgressIndex(screen: AuthScreen): number {
   if (
@@ -159,21 +148,8 @@ function AuthStorySurfaceState({
 
   const copy = authScreenCopy[screen];
   const progressIndex = getProgressIndex(screen);
-  const nextLanguage: PapaDataLanguage =
-    language === 'pl' ? 'en' : 'pl';
-  const nextTheme: PapaDataTheme =
-    theme === 'dark' ? 'light' : 'dark';
-  const ThemeIcon = theme === 'dark' ? Sun : Moon;
-
-  const languageLabel =
-    language === 'pl'
-      ? 'Zmień język na angielski'
-      : 'Zmień język na polski';
-
-  const themeLabel =
-    theme === 'dark'
-      ? 'Przełącz na motyw jasny'
-      : 'Przełącz na motyw ciemny';
+  const isEmailVerificationScreen =
+    screen === 'emailVerification' || screen === 'verification';
 
   const goTo: GoTo = (nextScreen, options) => {
     setVerificationCode('');
@@ -195,68 +171,12 @@ function AuthStorySurfaceState({
       data-theme={theme}
       lang={language}
     >
-      <header className="pds-topbar" aria-label="PapaData">
-        <div className="pds-topbar__inner">
-          <PapaDataBrand />
-
-          <div
-            className="pds-preferences"
-            aria-label="Ustawienia widoku"
-          >
-            <button
-              aria-label={languageLabel}
-              className="pds-preferences__button pds-preferences__button--language"
-              onClick={() => setLanguage(nextLanguage)}
-              title={languageLabel}
-              type="button"
-            >
-              <span
-                className="pds-language-switch"
-                aria-hidden="true"
-              >
-                <span
-                  className={
-                    language === 'pl'
-                      ? 'pds-language-switch__option is-active'
-                      : 'pds-language-switch__option'
-                  }
-                >
-                  PL
-                </span>
-
-                <span className="pds-language-switch__separator">
-                  /
-                </span>
-
-                <span
-                  className={
-                    language === 'en'
-                      ? 'pds-language-switch__option is-active'
-                      : 'pds-language-switch__option'
-                  }
-                >
-                  EN
-                </span>
-              </span>
-            </button>
-
-            <button
-              aria-label={themeLabel}
-              aria-pressed={theme === 'dark'}
-              className="pds-preferences__button pds-preferences__button--theme"
-              onClick={() => setTheme(nextTheme)}
-              title={themeLabel}
-              type="button"
-            >
-              <ThemeIcon
-                aria-hidden="true"
-                size={18}
-                strokeWidth={1.75}
-              />
-            </button>
-          </div>
-        </div>
-      </header>
+      <AppHeader
+        language={language}
+        onLanguageChange={setLanguage}
+        onThemeChange={setTheme}
+        theme={theme}
+      />
 
       {screen === 'login' ? (
         <LoginView
@@ -266,35 +186,41 @@ function AuthStorySurfaceState({
           showPassword={showPassword}
         />
       ) : (
-        <main className="pda-auth-main">
-          <section
-            className="pda-auth-context"
-            aria-labelledby="pda-auth-title"
-          >
-            <div className="pda-auth-context__copy">
-              <span className="pda-auth-kicker">
-                {copy.eyebrow}
-              </span>
+        <main
+          className={`pda-auth-main${
+            isEmailVerificationScreen ? ' pda-auth-main--focused' : ''
+          }`}
+        >
+          {!isEmailVerificationScreen ? (
+            <section
+              className="pda-auth-context"
+              aria-labelledby="pda-auth-title"
+            >
+              <div className="pda-auth-context__copy">
+                <span className="pda-auth-kicker">
+                  {copy.eyebrow}
+                </span>
 
-              <h1 id="pda-auth-title">{copy.title}</h1>
+                <h1 id="pda-auth-title">{copy.title}</h1>
 
-              <p>{copy.summary}</p>
-            </div>
+                <p>{copy.summary}</p>
+              </div>
 
-            <AccessVisual copy={copy} progressIndex={progressIndex} />
+              <AccessVisual copy={copy} progressIndex={progressIndex} />
 
-            <div className="pda-auth-context__status">
-              <span
-                className="pda-auth-context__pulse"
-                aria-hidden="true"
-              />
+              <div className="pda-auth-context__status">
+                <span
+                  className="pda-auth-context__pulse"
+                  aria-hidden="true"
+                />
 
-              <span>
-                <strong>Stan procesu</strong>
-                <span>{copy.status}</span>
-              </span>
-            </div>
-          </section>
+                <span>
+                  <strong>Stan procesu</strong>
+                  <span>{copy.status}</span>
+                </span>
+              </div>
+            </section>
+          ) : null}
 
           <section
             className="pda-auth-workspace"
@@ -367,13 +293,13 @@ function LoginView({
           />
         </div>
 
-        <button
+        <DsButton
           className="pda-login-registration"
           onClick={() => goTo('register')}
-          type="button"
+          variant="ghost"
         >
           Nie masz konta? <span>Zarejestruj się</span>
-        </button>
+        </DsButton>
 
         <p className="pda-login-terms">
           Kontynuując, akceptujesz nasz{' '}
@@ -443,44 +369,26 @@ function AuthProgress({
   currentIndex: number;
 }) {
   return (
-    <ol
+    <StepIndicator
       className="pda-auth-progress"
+      currentIndex={currentIndex}
       aria-label="Postęp procesu dostępu"
-    >
-      {authProgressSteps.map((step, index) => {
+      steps={authProgressSteps.map((step) => {
         const StepIcon = authProgressIconByName[step.icon];
-        const state =
-          index < currentIndex
-            ? 'is-complete'
-            : index === currentIndex
-              ? 'is-active'
-              : undefined;
 
-        return (
-          <li className={state} key={step.key}>
-            <span className="pda-auth-progress__node">
-              {index < currentIndex ? (
-                <Check
-                  aria-hidden="true"
-                  size={14}
-                  strokeWidth={2.2}
-                />
-              ) : (
-                <StepIcon
-                  aria-hidden="true"
-                  size={15}
-                  strokeWidth={1.8}
-                />
-              )}
-            </span>
-
-            <span className="pda-auth-progress__label">
-              {step.label}
-            </span>
-          </li>
-        );
+        return {
+          icon: (
+            <StepIcon
+              aria-hidden="true"
+              size={15}
+              strokeWidth={1.8}
+            />
+          ),
+          key: step.key,
+          label: step.label,
+        };
       })}
-    </ol>
+    />
   );
 }
 
@@ -727,127 +635,94 @@ function LoginForm({
       }}
     >
       {isInvalid ? (
-        <div
-          className="pda-login-alert pda-login-alert--error"
+        <InlineNotice
+          className="pda-login-alert"
           id="login-status-message"
-          role="alert"
+          tone="error"
         >
-          <CircleAlert aria-hidden="true" size={17} strokeWidth={1.8} />
-          <span>
-            Nie udało się zalogować. Sprawdź dane lub odzyskaj dostęp.
-          </span>
-        </div>
+          Nie udało się zalogować. Sprawdź dane lub odzyskaj dostęp.
+        </InlineNotice>
       ) : null}
 
       <div className="pda-login-fields">
-        <label className="pda-login-field" htmlFor="login-email">
-          <span className="pda-login-field__label">Adres e-mail</span>
-          <input
-            aria-describedby={isInvalid ? messageId : undefined}
-            autoComplete="email"
-            className="pda-login-input"
-            disabled={isSubmitting}
-            id="login-email"
-            placeholder="m@example.com"
-            required
-            type="email"
-          />
-        </label>
+        <DsTextField
+          aria-describedby={isInvalid ? messageId : undefined}
+          autoComplete="email"
+          className="pda-login-field"
+          disabled={isSubmitting}
+          id="login-email"
+          label="Adres e-mail"
+          placeholder="m@example.com"
+          required
+          type="email"
+        />
 
-        <div className="pda-login-field">
-          <div className="pda-login-field__head">
-            <label className="pda-login-field__label" htmlFor="login-password">
-              Hasło
-            </label>
-
-            <button
+        <DsPasswordField
+          aria-describedby={isInvalid ? messageId : undefined}
+          autoComplete="current-password"
+          className="pda-login-field"
+          disabled={isSubmitting}
+          id="login-password"
+          label="Hasło"
+          labelAction={
+            <DsButton
               className="pda-login-forgot"
               disabled={isSubmitting}
               onClick={() => goTo('recovery')}
-              type="button"
+              variant="ghost"
             >
               Nie pamiętam hasła
-            </button>
-          </div>
-
-          <div className="pda-login-password">
-            <input
-              aria-describedby={isInvalid ? messageId : undefined}
-              autoComplete="current-password"
-              className="pda-login-input"
-              disabled={isSubmitting}
-              id="login-password"
-              required
-              type={showPassword ? 'text' : 'password'}
-            />
-
-            <button
-              aria-label={showPassword ? 'Ukryj hasło' : 'Pokaż hasło'}
-              className="pda-login-password__toggle"
-              disabled={isSubmitting}
-              onClick={() => setShowPassword(!showPassword)}
-              type="button"
-            >
-              {showPassword ? (
-                <EyeOff aria-hidden="true" size={18} strokeWidth={1.8} />
-              ) : (
-                <Eye aria-hidden="true" size={18} strokeWidth={1.8} />
-              )}
-            </button>
-          </div>
-        </div>
+            </DsButton>
+          }
+          onVisibleChange={setShowPassword}
+          required
+          visible={showPassword}
+        />
       </div>
 
-      <button
+      <DsButton
         className="pda-login-submit"
         disabled={isSubmitting}
+        loading={isSubmitting}
         type="submit"
+        variant="primary"
       >
-        {isSubmitting ? (
-          <RefreshCw
-            aria-hidden="true"
-            className="pda-login-submit__status"
-            size={16}
-            strokeWidth={1.8}
-          />
-        ) : null}
         {isSubmitting ? 'Sprawdzanie dostępu' : 'Zaloguj się'}
-      </button>
+      </DsButton>
 
       <div className="pda-login-divider">
         <span>lub kontynuuj przez</span>
       </div>
 
       {isProviderUnavailable ? (
-        <div
-          className="pda-login-alert pda-login-alert--warning"
+        <InlineNotice
+          className="pda-login-alert"
           id="login-status-message"
-          role="status"
+          tone="warning"
         >
-          <CircleAlert aria-hidden="true" size={17} strokeWidth={1.8} />
-          <span>
-            Logowanie przez Microsoft jest chwilowo niedostępne. Użyj
-            innej metody.
-          </span>
-        </div>
+          Logowanie przez Microsoft jest chwilowo niedostępne. Użyj innej
+          metody.
+        </InlineNotice>
       ) : null}
 
       <div className="pda-login-providers">
-        <ProviderButton
-          describedBy={isProviderUnavailable ? messageId : undefined}
+        <DsProviderButton
+          aria-describedby={isProviderUnavailable ? messageId : undefined}
           disabled={isSubmitting || isProviderUnavailable}
-          label="Microsoft"
           onClick={() => goTo('mfa')}
           provider="microsoft"
           unavailable={isProviderUnavailable}
-        />
+        >
+          Microsoft
+        </DsProviderButton>
 
-        <ProviderButton
+        <DsProviderButton
           disabled={isSubmitting}
-          label="Google"
           onClick={() => goTo('mfa')}
           provider="google"
-        />
+        >
+          Google
+        </DsProviderButton>
       </div>
 
       <span className="pds-sr-only" role="status" aria-live="polite">
@@ -934,25 +809,22 @@ function RegisterForm({
       </label>
 
       <div className="pda-form-actions">
-        <button
-          className="pda-auth-button pda-auth-button--primary"
+        <DsButton
+          className="pda-auth-button"
+          iconAfter={<ActionArrow />}
           type="submit"
+          variant="primary"
         >
           Utwórz i zweryfikuj
-          <ArrowRight
-            aria-hidden="true"
-            size={18}
-            strokeWidth={1.9}
-          />
-        </button>
+        </DsButton>
 
-        <button
+        <DsButton
           className="pda-auth-link"
           onClick={() => goTo('login')}
-          type="button"
+          variant="ghost"
         >
           Mam już konto
-        </button>
+        </DsButton>
       </div>
     </form>
   );
@@ -1055,13 +927,6 @@ function VerificationCodeForm({
         : status === 'resent' || status === 'success'
           ? 'success'
           : 'neutral';
-  const StatusIcon =
-    statusTone === 'error' || statusTone === 'warning'
-      ? CircleAlert
-      : statusTone === 'success'
-        ? BadgeCheck
-        : Clock3;
-
   useEffect(() => {
     return () => {
       if (submitTimerRef.current !== undefined) {
@@ -1228,72 +1093,51 @@ function VerificationCodeForm({
       />
 
       {statusMessage ? (
-        <div
-          className={`pda-code-status pda-code-status--${statusTone}`}
-          role={statusTone === 'error' ? 'alert' : 'status'}
+        <InlineNotice
+          className="pda-code-status"
+          tone={statusTone}
         >
-          <StatusIcon
-            aria-hidden="true"
-            size={16}
-            strokeWidth={1.8}
-          />
-          <span>{statusMessage}</span>
-        </div>
+          {statusMessage}
+        </InlineNotice>
       ) : null}
 
       <div className="pda-form-actions">
-        <button
-          className="pda-auth-button pda-auth-button--primary"
+        <DsButton
+          className="pda-auth-button"
           disabled={
             isExpired
               ? false
               : isSubmitting || isSuccess || !isCodeComplete
           }
-          type={isExpired ? 'button' : 'submit'}
+          iconAfter={!isSubmitting ? <ActionArrow /> : undefined}
+          loading={isSubmitting}
           onClick={isExpired ? sendNewCode : undefined}
+          type={isExpired ? 'button' : 'submit'}
+          variant="primary"
         >
-          {isSubmitting ? (
-            <RefreshCw
-              aria-hidden="true"
-              className="pda-login-submit__status"
-              size={16}
-              strokeWidth={1.8}
-            />
-          ) : null}
           {primaryLabel}
-          {!isSubmitting ? (
-            <ArrowRight
-              aria-hidden="true"
-              size={18}
-              strokeWidth={1.9}
-            />
-          ) : null}
-        </button>
+        </DsButton>
 
         {!isExpired ? (
-          <button
-            className="pda-auth-button pda-auth-button--secondary"
+          <DsButton
+            className="pda-auth-button"
             disabled={isSubmitting || isCooldown || isSuccess}
+            iconBefore={<RefreshCw aria-hidden="true" size={17} strokeWidth={1.8} />}
             onClick={sendNewCode}
-            type="button"
+            variant="secondary"
           >
-            <RefreshCw
-              aria-hidden="true"
-              size={17}
-              strokeWidth={1.8}
-            />
             {resendLabel}
-          </button>
+          </DsButton>
         ) : null}
 
-        <button
+        <DsButton
           className="pda-auth-link"
           disabled={isSubmitting || isSuccess}
           onClick={() => goTo(copy.changeTarget)}
-          type="button"
+          variant="ghost"
         >
           {copy.changeLabel}
-        </button>
+        </DsButton>
       </div>
     </form>
   );
@@ -1332,25 +1176,22 @@ function RecoveryForm({
       />
 
       <div className="pda-form-actions">
-        <button
-          className="pda-auth-button pda-auth-button--primary"
+        <DsButton
+          className="pda-auth-button"
+          iconAfter={<ActionArrow />}
           type="submit"
+          variant="primary"
         >
           Kontynuuj
-          <ArrowRight
-            aria-hidden="true"
-            size={18}
-            strokeWidth={1.9}
-          />
-        </button>
+        </DsButton>
 
-        <button
+        <DsButton
           className="pda-auth-link"
           onClick={() => goTo('login')}
-          type="button"
+          variant="ghost"
         >
           Wróć do logowania
-        </button>
+        </DsButton>
       </div>
     </form>
   );
@@ -1398,25 +1239,22 @@ function InvitationForm({
       />
 
       <div className="pda-form-actions">
-        <button
-          className="pda-auth-button pda-auth-button--primary"
+        <DsButton
+          className="pda-auth-button"
+          iconAfter={<ActionArrow />}
           type="submit"
+          variant="primary"
         >
           Przyjmij i zweryfikuj
-          <ArrowRight
-            aria-hidden="true"
-            size={18}
-            strokeWidth={1.9}
-          />
-        </button>
+        </DsButton>
 
-        <button
+        <DsButton
           className="pda-auth-link"
           onClick={() => goTo('login')}
-          type="button"
+          variant="ghost"
         >
           Użyj innego konta
-        </button>
+        </DsButton>
       </div>
     </form>
   );
@@ -1464,34 +1302,31 @@ function ReauthenticationForm({
       />
 
       <div className="pda-form-actions">
-        <button
-          className="pda-auth-button pda-auth-button--primary"
+        <DsButton
+          className="pda-auth-button"
+          iconAfter={<ActionArrow />}
           type="submit"
+          variant="primary"
         >
           Potwierdź akcję
-          <ArrowRight
-            aria-hidden="true"
-            size={18}
-            strokeWidth={1.9}
-          />
-        </button>
+        </DsButton>
 
         <div className="pda-form-actions__secondary">
-          <button
+          <DsButton
             className="pda-auth-link"
             onClick={() => goTo('recovery')}
-            type="button"
+            variant="ghost"
           >
             Odzyskaj dostęp
-          </button>
+          </DsButton>
 
-          <button
+          <DsButton
             className="pda-auth-link"
             onClick={() => goTo('login')}
-            type="button"
+            variant="ghost"
           >
             Anuluj
-          </button>
+          </DsButton>
         </div>
       </div>
     </form>
@@ -1603,25 +1438,21 @@ function CompleteState({
       </div>
 
       <div className="pda-form-actions">
-        <button
-          className="pda-auth-button pda-auth-button--primary"
-          type="button"
+        <DsButton
+          className="pda-auth-button"
+          iconAfter={<ActionArrow />}
+          variant="primary"
         >
           Przejdź dalej
-          <ArrowRight
-            aria-hidden="true"
-            size={18}
-            strokeWidth={1.9}
-          />
-        </button>
+        </DsButton>
 
-        <button
+        <DsButton
           className="pda-auth-link"
           onClick={() => goTo('login')}
-          type="button"
+          variant="ghost"
         >
           Zacznij od nowa
-        </button>
+        </DsButton>
       </div>
     </div>
   );
@@ -1661,106 +1492,30 @@ function DecisionState({
         text={note}
       />
 
-      <div className="pda-state__notice">
-        <CircleAlert
-          aria-hidden="true"
-          size={18}
-          strokeWidth={1.7}
-        />
-        <span>
-          Publiczny komunikat nie ujawnia stanu konta,
-          dostawcy ani szczegółów decyzji.
-        </span>
-      </div>
+      <InlineNotice className="pda-state__notice" tone="warning">
+        Publiczny komunikat nie ujawnia stanu konta, dostawcy ani
+        szczegółów decyzji.
+      </InlineNotice>
 
       <div className="pda-form-actions">
-        <button
-          className="pda-auth-button pda-auth-button--primary"
+        <DsButton
+          className="pda-auth-button"
+          iconAfter={<ActionArrow />}
           onClick={() => goTo(primaryTarget)}
-          type="button"
+          variant="primary"
         >
           {primaryLabel}
-          <ArrowRight
-            aria-hidden="true"
-            size={18}
-            strokeWidth={1.9}
-          />
-        </button>
+        </DsButton>
 
-        <button
+        <DsButton
           className="pda-auth-link"
           onClick={() => goTo(secondaryTarget)}
-          type="button"
+          variant="ghost"
         >
           {secondaryLabel}
-        </button>
+        </DsButton>
       </div>
     </div>
-  );
-}
-
-function ProviderButton({
-  describedBy,
-  disabled = false,
-  label,
-  onClick,
-  provider,
-  unavailable = false,
-}: {
-  describedBy?: string;
-  disabled?: boolean;
-  label: string;
-  onClick: () => void;
-  provider: 'google' | 'microsoft';
-  unavailable?: boolean;
-}) {
-  return (
-    <button
-      aria-describedby={describedBy}
-      className={`pda-provider-button pda-provider-button--${provider}${
-        unavailable ? ' is-unavailable' : ''
-      }`}
-      disabled={disabled}
-      onClick={onClick}
-      type="button"
-    >
-      {provider === 'microsoft' ? (
-        <svg
-          aria-hidden="true"
-          className="pda-provider-logo"
-          viewBox="0 0 20 20"
-        >
-          <rect fill="#f25022" height="8.5" width="8.5" x="1" y="1" />
-          <rect fill="#7fba00" height="8.5" width="8.5" x="10.5" y="1" />
-          <rect fill="#00a4ef" height="8.5" width="8.5" x="1" y="10.5" />
-          <rect fill="#ffb900" height="8.5" width="8.5" x="10.5" y="10.5" />
-        </svg>
-      ) : (
-        <svg
-          aria-hidden="true"
-          className="pda-provider-logo"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-            fill="#4285f4"
-          />
-          <path
-            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            fill="#34a853"
-          />
-          <path
-            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-            fill="#fbbc05"
-          />
-          <path
-            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-            fill="#ea4335"
-          />
-        </svg>
-      )}
-      <span>{label}</span>
-    </button>
   );
 }
 
@@ -1776,35 +1531,34 @@ function AuthField({
   placeholder,
   required,
   type = 'text',
-}: FieldProps) {
+}: {
+  ariaDescribedBy?: string;
+  autoComplete?: string;
+  defaultValue?: string;
+  disabled?: boolean;
+  helper?: string;
+  icon: ReactNode;
+  id: string;
+  label: string;
+  placeholder?: string;
+  required?: boolean;
+  type?: string;
+}) {
   return (
-    <label className="pda-field" htmlFor={id}>
-      <span className="pda-field__label">{label}</span>
-
-      <span className="pda-input-frame">
-        {icon}
-
-        <input
-          aria-describedby={ariaDescribedBy}
-          autoComplete={autoComplete}
-          defaultValue={defaultValue}
-          disabled={disabled}
-          id={id}
-          placeholder={placeholder}
-          required={required}
-          type={type}
-        />
-
-        <span
-          className="pda-input-frame__signal"
-          aria-hidden="true"
-        />
-      </span>
-
-      {helper ? (
-        <span className="pda-field__hint">{helper}</span>
-      ) : null}
-    </label>
+    <DsTextField
+      aria-describedby={ariaDescribedBy}
+      autoComplete={autoComplete}
+      className="pda-field"
+      defaultValue={defaultValue}
+      disabled={disabled}
+      helper={helper}
+      icon={icon}
+      id={id}
+      label={label}
+      placeholder={placeholder}
+      required={required}
+      type={type}
+    />
   );
 }
 
@@ -1828,54 +1582,18 @@ function PasswordField({
   showPassword: boolean;
 }) {
   return (
-    <div className="pda-field">
-      <label className="pda-field__label" htmlFor={id}>
-        {label}
-      </label>
-
-      <span className="pda-input-frame">
-        <LockKeyhole
-          aria-hidden="true"
-          size={18}
-          strokeWidth={1.8}
-        />
-
-        <input
-          aria-describedby={ariaDescribedBy}
-          autoComplete={autoComplete}
-          disabled={disabled}
-          id={id}
-          required
-          type={showPassword ? 'text' : 'password'}
-        />
-
-        <button
-          aria-label={showPassword ? 'Ukryj hasło' : 'Pokaż hasło'}
-          className="pda-field-action"
-          disabled={disabled}
-          onClick={() => setShowPassword(!showPassword)}
-          type="button"
-        >
-          {showPassword ? (
-            <EyeOff
-              aria-hidden="true"
-              size={18}
-              strokeWidth={1.8}
-            />
-          ) : (
-            <Eye
-              aria-hidden="true"
-              size={18}
-              strokeWidth={1.8}
-            />
-          )}
-        </button>
-      </span>
-
-      {helper ? (
-        <span className="pda-field__hint">{helper}</span>
-      ) : null}
-    </div>
+    <DsPasswordField
+      aria-describedby={ariaDescribedBy}
+      autoComplete={autoComplete}
+      className="pda-field"
+      disabled={disabled}
+      helper={helper}
+      id={id}
+      label={label}
+      onVisibleChange={setShowPassword}
+      required
+      visible={showPassword}
+    />
   );
 }
 
@@ -1889,11 +1607,13 @@ function FormHeader({
   title: string;
 }) {
   return (
-    <header className="pda-auth-form__header">
-      <span>{eyebrow}</span>
-      <h2>{title}</h2>
-      <p>{text}</p>
-    </header>
+    <PageHeader
+      className="pda-auth-form__header"
+      eyebrow={eyebrow}
+      heading="h2"
+      text={text}
+      title={title}
+    />
   );
 }
 

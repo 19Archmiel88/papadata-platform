@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { AuthStorySurface } from '../../screens/account-access/AuthStorySurface';
 
 const meta = {
-  title: 'PapaData/Dostęp do konta/Proces dostępu',
+  title: 'PapaData/04 Ekrany docelowe/Dostęp do konta/Logowanie',
   component: AuthStorySurface,
   parameters: {
     layout: 'fullscreen',
@@ -94,7 +94,7 @@ export const LogowanieBledneDane: Story = {
 };
 
 export const LogowanieProviderNiedostepny: Story = {
-  name: 'Provider niedostępny',
+  name: 'Dostawca niedostępny',
   args: {
     initialLoginState: 'providerUnavailable',
     initialScreen: 'login',
@@ -111,7 +111,7 @@ export const Rejestracja: Story = {
 };
 
 export const EmailVerificationPodstawowy: Story = {
-  name: 'Email verification — podstawowy',
+  name: 'Weryfikacja e-mail — podstawowa',
   args: {
     initialScreen: 'emailVerification',
     initialTheme: 'dark',
@@ -120,7 +120,7 @@ export const EmailVerificationPodstawowy: Story = {
 };
 
 export const EmailVerificationWysylanie: Story = {
-  name: 'Email verification — wysyłanie',
+  name: 'Weryfikacja e-mail — wysyłanie',
   args: {
     initialScreen: 'emailVerification',
     initialTheme: 'dark',
@@ -129,7 +129,7 @@ export const EmailVerificationWysylanie: Story = {
 };
 
 export const EmailVerificationBlednyKod: Story = {
-  name: 'Email verification — błędny kod',
+  name: 'Weryfikacja e-mail — błędny kod',
   args: {
     initialScreen: 'emailVerification',
     initialTheme: 'dark',
@@ -138,7 +138,7 @@ export const EmailVerificationBlednyKod: Story = {
 };
 
 export const EmailVerificationKodWygasl: Story = {
-  name: 'Email verification — kod wygasł',
+  name: 'Weryfikacja e-mail — kod wygasł',
   args: {
     initialScreen: 'emailVerification',
     initialTheme: 'dark',
@@ -147,7 +147,7 @@ export const EmailVerificationKodWygasl: Story = {
 };
 
 export const EmailVerificationKodWyslanyPonownie: Story = {
-  name: 'Email verification — kod wysłany ponownie',
+  name: 'Weryfikacja e-mail — kod wysłany ponownie',
   args: {
     initialScreen: 'emailVerification',
     initialTheme: 'dark',
@@ -156,7 +156,7 @@ export const EmailVerificationKodWyslanyPonownie: Story = {
 };
 
 export const EmailVerificationCooldown: Story = {
-  name: 'Email verification — cooldown',
+  name: 'Weryfikacja e-mail — blokada ponownej wysyłki',
   args: {
     initialScreen: 'emailVerification',
     initialTheme: 'dark',
@@ -165,7 +165,7 @@ export const EmailVerificationCooldown: Story = {
 };
 
 export const EmailVerificationKodPotwierdzony: Story = {
-  name: 'Email verification — kod potwierdzony',
+  name: 'Weryfikacja e-mail — kod potwierdzony',
   args: {
     initialScreen: 'emailVerification',
     initialTheme: 'dark',

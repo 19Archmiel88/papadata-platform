@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { LogoWordmarkReference } from '../../screens/foundations/LogoWordmarkReference';
 
 const meta = {
-  title: 'PapaData/Podstawy marki/Logo i wordmark',
+  title: 'PapaData/01 Podstawy marki/Logo i znak',
   component: LogoWordmarkReference,
   parameters: {
     layout: 'fullscreen',

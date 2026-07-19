@@ -24,7 +24,7 @@ export type WorkspaceSurfaceDefinition = {
   cards: readonly {
     description: string;
     label: string;
-    status: 'ready' | 'waiting' | 'blocked';
+    status: 'ready' | 'pending' | 'blocked';
     title: string;
   }[];
   icon: WorkspaceSurfaceIcon;
@@ -39,7 +39,7 @@ export const workspaceSurfaces: Record<
   WorkspaceSurfaceDefinition
 > = {
   selection: {
-    accent: 'oklch(68% 0.13 188)',
+    accent: 'var(--pds-accent)',
     action: 'Wybierz workspace',
     icon: 'waypoints',
     kicker: 'Wybór workspace',
@@ -50,20 +50,20 @@ export const workspaceSurfaces: Record<
     cards: [
       {
         description: 'Pełna gotowość danych sprzedażowych.',
-        label: 'ready',
+        label: 'gotowy',
         status: 'ready',
         title: 'Northstar Commerce',
       },
       {
         description: 'Czeka na administratora integracji.',
-        label: 'waiting',
-        status: 'waiting',
+        label: 'oczekuje',
+        status: 'pending',
         title: 'Retail Lab EU',
       },
     ],
   },
   creation: {
-    accent: 'oklch(62% 0.17 252)',
+    accent: 'var(--pds-accent)',
     action: 'Utwórz workspace',
     icon: 'store',
     kicker: 'Utworzenie workspace',
@@ -74,20 +74,20 @@ export const workspaceSurfaces: Record<
     cards: [
       {
         description: 'Nazwa unikalna w organizacji prawnej.',
-        label: 'ready',
+        label: 'gotowy',
         status: 'ready',
         title: 'Nazwa workspace',
       },
       {
-        description: 'Limit planu może dać stan gated zamiast płatności.',
-        label: 'waiting',
-        status: 'waiting',
+        description: 'Limit planu może wymagać kontaktu z administratorem.',
+        label: 'oczekuje',
+        status: 'pending',
         title: 'Eligibility planu',
       },
     ],
   },
   company: {
-    accent: 'oklch(70% 0.13 74)',
+    accent: 'var(--pds-accent)',
     action: 'Potwierdź dane firmy',
     icon: 'building',
     kicker: 'Dane firmy',
@@ -98,20 +98,20 @@ export const workspaceSurfaces: Record<
     cards: [
       {
         description: 'Kraj, nazwa prawna i identyfikator rejestrowy.',
-        label: 'ready',
+        label: 'gotowy',
         status: 'ready',
         title: 'Identyfikacja',
       },
       {
         description: 'Źródło danych rejestrowych wymaga potwierdzenia.',
-        label: 'waiting',
-        status: 'waiting',
+        label: 'oczekuje',
+        status: 'pending',
         title: 'Weryfikacja',
       },
     ],
   },
   business: {
-    accent: 'oklch(65% 0.16 295)',
+    accent: 'var(--pds-accent)',
     action: 'Zapisz profil',
     icon: 'fileCheck',
     kicker: 'Profil działalności',
@@ -122,92 +122,92 @@ export const workspaceSurfaces: Record<
     cards: [
       {
         description: 'Waluta i strefa czasu wpływają na KPI.',
-        label: 'ready',
+        label: 'gotowy',
         status: 'ready',
         title: 'Raportowanie',
       },
       {
         description: 'Pola opcjonalne nie blokują dashboardu.',
-        label: 'ready',
+        label: 'gotowy',
         status: 'ready',
         title: 'Dodatkowy kontekst',
       },
     ],
   },
   dataSource: {
-    accent: 'oklch(68% 0.13 188)',
+    accent: 'var(--pds-accent)',
     action: 'Połącz źródło',
     icon: 'databaseZap',
     kicker: 'Połączenie źródła danych',
     sideTitle: 'Minimalny dataset',
     summary:
-      'Provider, OAuth, test połączenia i walidacja danych należą do jednej powierzchni.',
+      'Wybierz dostawcę z katalogu MVP i połącz dane potrzebne do pierwszych KPI.',
     title: 'Połącz źródło sprzedaży',
     cards: [
       {
-        description: 'OAuth preferowany; sekrety pozostają write-only.',
-        label: 'ready',
+        description: 'Połączymy zamówienia, produkty, klientów i stany produktów.',
+        label: 'gotowy',
         status: 'ready',
         title: 'Shopify',
       },
       {
-        description: 'Pominięcie daje tylko ograniczoną powłokę.',
-        label: 'waiting',
-        status: 'waiting',
+        description: 'Możesz wrócić później, ale dashboard pokaże ograniczony zakres.',
+        label: 'oczekuje',
+        status: 'pending',
         title: 'Odroczenie',
       },
     ],
   },
   status: {
-    accent: 'oklch(72% 0.14 76)',
+    accent: 'var(--pds-accent)',
     action: 'Oceń ponownie',
     icon: 'gauge',
     kicker: 'Stan konfiguracji workspace',
     sideTitle: 'Wymagania',
     summary:
-      'Ekran pokazuje aktualne wymagania ocenione przez runtime, właściciela akcji i wpływ.',
+      'Ekran pokazuje aktualne wymagania, osobę odpowiedzialną i wpływ na gotowość.',
     title: 'Sprawdź, co blokuje pełną gotowość',
     cards: [
       {
         description: 'Profil działalności ukończony przez administratora.',
-        label: 'ready',
+        label: 'gotowy',
         status: 'ready',
         title: 'Profil działalności',
       },
       {
         description: 'Integracja czeka na osobę z capability.',
-        label: 'waiting',
-        status: 'waiting',
+        label: 'oczekuje',
+        status: 'pending',
         title: 'Źródło danych',
       },
     ],
   },
   preparation: {
-    accent: 'oklch(62% 0.17 252)',
+    accent: 'var(--pds-accent)',
     action: 'Przejdź do dashboardu',
     icon: 'refresh',
     kicker: 'Przygotowanie dashboardu',
     sideTitle: 'Proces bez fikcyjnego postępu',
     summary:
-      'Powierzchnia pojawia się tylko przy realnej walidacji, imporcie albo synchronizacji.',
+      'Powierzchnia pojawia się przy walidacji, imporcie albo synchronizacji danych.',
     title: 'Przygotowujemy pierwsze użyteczne dane',
     cards: [
       {
         description: 'Mapowanie zamówień i waluty.',
-        label: 'ready',
+        label: 'gotowy',
         status: 'ready',
         title: 'Walidacja datasetu',
       },
       {
         description: 'Synchronizacja może przejść w delayed.',
-        label: 'waiting',
-        status: 'waiting',
+        label: 'w toku',
+        status: 'pending',
         title: 'Import danych',
       },
     ],
   },
   blocked: {
-    accent: 'oklch(63% 0.16 32)',
+    accent: 'var(--pds-accent)',
     action: 'Skontaktuj się ze wsparciem',
     icon: 'lock',
     kicker: 'Dostęp zablokowany',
@@ -218,14 +218,14 @@ export const workspaceSurfaces: Record<
     cards: [
       {
         description: 'Brak bezpiecznej ścieżki self-service.',
-        label: 'blocked',
+        label: 'zablokowany',
         status: 'blocked',
         title: 'Membership',
       },
       {
         description: 'Dostępna jest kontrolowana eskalacja.',
-        label: 'waiting',
-        status: 'waiting',
+        label: 'oczekuje',
+        status: 'pending',
         title: 'Support',
       },
     ],

@@ -19,6 +19,11 @@ import {
 
 import { PapaDataBrand } from '../../design-system/brand/PapaDataBrand';
 import {
+  StatusBadge,
+  Surface,
+  type StatusBadgeStatus,
+} from '../../design-system';
+import {
   dashboardChartBars,
   dashboardDecisionInsights,
   dashboardDefinitions,
@@ -56,6 +61,18 @@ const insightIconByName: Record<DashboardInsightIcon, LucideIcon> = {
   circleDollar: CircleDollarSign,
   helpCircle: HelpCircle,
 };
+
+const dashboardStatusToBadge = {
+  blocked: 'blocked',
+  ready: 'ready',
+  warning: 'warning',
+} as const satisfies Record<string, StatusBadgeStatus>;
+
+const signalStatusToBadge = {
+  delayed: 'delayed',
+  ready: 'ready',
+  warning: 'warning',
+} as const satisfies Record<string, StatusBadgeStatus>;
 
 type DashboardStoryProps = {
   module: DashboardModule;
@@ -122,33 +139,31 @@ function DashboardStory({ module, theme }: DashboardStoryProps) {
 
           <main className="pdd-main">
             <section className="pdd-summary">
-              <article className="pdd-panel">
+              <Surface className="pdd-panel">
                 <div className="pdd-panel-header">
                   <div>
                     <h2>{definition.module}</h2>
                     <span>Zakres, świeżość i dostępność danych</span>
                   </div>
-                  <span className={`pdd-chip pdd-chip--${definition.status}`}>
-                    {definition.status}
-                  </span>
+                  <StatusBadge status={dashboardStatusToBadge[definition.status]} />
                 </div>
 
                 <div className="pdd-kpi-grid">
-                  <div className="pdd-card">
+                  <Surface className="pdd-card">
                     <span>Wynik</span>
                     <strong>{definition.metricA}</strong>
                     <p>Porównanie do poprzedniego okresu.</p>
-                  </div>
-                  <div className="pdd-card">
+                  </Surface>
+                  <Surface className="pdd-card">
                     <span>Świeżość</span>
                     <strong>{definition.metricB}</strong>
                     <p>Jawny wpływ na decyzje i KPI.</p>
-                  </div>
-                  <div className="pdd-card">
+                  </Surface>
+                  <Surface className="pdd-card">
                     <span>Zakres</span>
                     <strong>{definition.metricC}</strong>
                     <p>Moduły, źródła albo alerty wymagające uwagi.</p>
-                  </div>
+                  </Surface>
                 </div>
 
                 <div className="pdd-chart" aria-hidden="true">
@@ -160,9 +175,9 @@ function DashboardStory({ module, theme }: DashboardStoryProps) {
                     />
                   ))}
                 </div>
-              </article>
+              </Surface>
 
-              <aside className="pdd-panel">
+              <Surface className="pdd-panel">
                 <div className="pdd-panel-header">
                   <h2>Najbliższe decyzje</h2>
                   <Sparkles aria-hidden="true" size={17} />
@@ -180,7 +195,7 @@ function DashboardStory({ module, theme }: DashboardStoryProps) {
                     );
                   })}
                 </ul>
-              </aside>
+              </Surface>
             </section>
 
             <table className="pdd-table">
@@ -197,7 +212,9 @@ function DashboardStory({ module, theme }: DashboardStoryProps) {
                   <tr key={row.signal}>
                     <td>{row.signal}</td>
                     <td>{row.source}</td>
-                    <td>{row.state}</td>
+                    <td>
+                      <StatusBadge status={signalStatusToBadge[row.state]} />
+                    </td>
                     <td>{row.impact}</td>
                   </tr>
                 ))}

@@ -8,17 +8,17 @@ export type AnalyticalListIcon =
 
 export const analyticalKpiCards = [
   {
-    description: 'Ostatnie 30 dni, orders ready, timezone Europe/Warsaw.',
+    description: 'Ostatnie 30 dni, zamówienia gotowe, strefa Europe/Warsaw.',
     label: 'Przychód',
     value: '128 400 PLN',
   },
   {
-    description: 'Partial: brak kosztów reklam dla jednego źródła.',
+    description: 'Częściowe dane: brak kosztów reklam dla jednego źródła.',
     label: 'Marża',
     value: '31,2%',
   },
   {
-    description: 'Traffic stale: ostatnia synchronizacja 48 godzin temu.',
+    description: 'Ruch opóźniony: ostatnia synchronizacja 48 godzin temu.',
     label: 'Konwersja',
     value: '3,4%',
   },
@@ -48,7 +48,7 @@ export const analyticalTrafficRows = [
     conversion: '2,4%',
     revenue: '31 200 PLN',
     source: 'Paid social',
-    state: 'partial',
+    state: 'warning',
   },
   {
     conversion: '5,1%',
@@ -61,17 +61,17 @@ export const analyticalTrafficRows = [
 export const analyticalStateCards = [
   {
     description: 'Zakres danych spełnia warunki KPI.',
-    label: 'ready',
+    label: 'gotowe',
     title: 'Gotowe',
   },
   {
     description: 'Widoczny jest wpływ brakujących źródeł.',
-    label: 'partial',
+    label: 'częściowe',
     title: 'Częściowe',
   },
   {
     description: 'Ostatnia synchronizacja przekroczyła próg.',
-    label: 'stale',
+    label: 'opóźnione',
     title: 'Nieświeże',
   },
 ] as const;
@@ -79,19 +79,19 @@ export const analyticalStateCards = [
 export const analyticalStateItems = [
   {
     icon: 'checkCircle',
-    text: 'ready: dane kompletne i aktualne dla zakresu.',
+    text: 'Gotowe: dane kompletne i aktualne dla zakresu.',
   },
   {
     icon: 'databaseZap',
-    text: 'syncing: trwa realne pobieranie albo przetwarzanie.',
+    text: 'W toku: trwa pobieranie albo przetwarzanie.',
   },
   {
     icon: 'clock',
-    text: 'waiting: następny krok ma provider albo administrator.',
+    text: 'Oczekujące: następny krok ma dostawca albo administrator.',
   },
   {
     icon: 'lock',
-    text: 'permissionDenied: brak capability bez ujawniania danych.',
+    text: 'Brak dostępu: uprawnienia są niewystarczające bez ujawniania danych.',
   },
 ] as const satisfies readonly {
   icon: AnalyticalListIcon;

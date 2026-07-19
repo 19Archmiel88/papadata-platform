@@ -5,7 +5,7 @@ import { AuthOperationalScreen } from '../../screens/auth/AuthOperationalScreen'
 import { renderLocalAuthStory } from './authStoryRender';
 
 const meta = {
-  title: 'PapaData/Auth/MFA',
+  title: 'PapaData/04 Ekrany docelowe/Dostęp do konta/MFA',
   component: AuthOperationalScreen,
   render: renderLocalAuthStory,
   parameters: { layout: 'fullscreen' },
@@ -31,11 +31,11 @@ export const BlednyKod: Story = {
 };
 
 export const ChallengeWygasl: Story = {
-  name: 'Challenge wygasł',
+  name: 'Próba MFA wygasła',
   args: { initialScenario: 'mfaExpired', theme: 'dark' },
 };
 
 export const RecoveryCode: Story = {
-  name: 'Recovery code',
+  name: 'Kod odzyskiwania',
   args: { initialScenario: 'mfaRecoveryCode', theme: 'dark' },
 };

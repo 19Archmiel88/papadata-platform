@@ -4,7 +4,7 @@ import { dashboardDefinitions } from '../../fixtures/dashboard';
 import { DashboardStory } from '../../screens/dashboard/DashboardStory';
 
 const meta = {
-  title: 'PapaData/Dashboard',
+  title: 'PapaData/04 Ekrany docelowe/Dashboard',
   component: DashboardStory,
   parameters: {
     layout: 'fullscreen',
@@ -26,6 +26,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Shell: Story = {
+  name: 'Główny widok',
   args: { module: 'shell', theme: 'dark' },
 };
 

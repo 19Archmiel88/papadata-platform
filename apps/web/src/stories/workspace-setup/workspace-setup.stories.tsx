@@ -4,7 +4,7 @@ import { workspaceSurfaces } from '../../fixtures/workspace';
 import { WorkspaceSetupStory } from '../../screens/workspace-setup/WorkspaceSetupStory';
 
 const meta = {
-  title: 'PapaData/Konfiguracja workspace',
+  title: 'PapaData/04 Ekrany docelowe/Konfiguracja przestrzeni roboczej',
   component: WorkspaceSetupStory,
   parameters: {
     layout: 'fullscreen',
@@ -26,12 +26,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const WyborWorkspace: Story = {
-  name: 'Wybór workspace',
+  name: 'Wybór przestrzeni',
   args: { surface: 'selection', theme: 'dark' },
 };
 
 export const UtworzenieWorkspace: Story = {
-  name: 'Utworzenie workspace',
+  name: 'Utworzenie przestrzeni',
   args: { surface: 'creation', theme: 'dark' },
 };
 
@@ -51,12 +51,12 @@ export const PolaczenieZrodlaDanych: Story = {
 };
 
 export const StanKonfiguracjiWorkspace: Story = {
-  name: 'Stan konfiguracji workspace',
+  name: 'Konfiguracja',
   args: { surface: 'status', theme: 'dark' },
 };
 
 export const PrzygotowanieDashboardu: Story = {
-  name: 'Przygotowanie dashboardu',
+  name: 'Gotowość dashboardu',
   args: { surface: 'preparation', theme: 'dark' },
 };
 

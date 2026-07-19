@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ThemePreferencesReference } from '../../screens/foundations/ThemePreferencesReference';
 
 const meta = {
-  title: 'PapaData/Podstawy marki/Motywy i preferencje',
+  title: 'PapaData/01 Podstawy marki/Motywy',
   component: ThemePreferencesReference,
   parameters: {
     layout: 'fullscreen',

@@ -4,8 +4,18 @@ import {
   analyticalChartBars,
   analyticalTrafficRows,
 } from '../../fixtures/analytics';
+import {
+  StatusBadge,
+  Surface,
+  type StatusBadgeStatus,
+} from '../../design-system';
 import '../../design-system/foundations/papadata-brand-surface.css';
 import './analytical-elements.css';
+
+const analyticalRowStatusToBadge = {
+  ready: 'ready',
+  warning: 'warning',
+} as const satisfies Record<string, StatusBadgeStatus>;
 
 function ChartsAndTables() {
   return (
@@ -19,13 +29,13 @@ function ChartsAndTables() {
           <span>Elementy analityczne</span>
           <h1>Wykresy i tabele</h1>
           <p>
-            Robocza reprezentacja ChartFrame, tabel i stanów danych bez
-            importowania silnika wykresów do Storybookowego prototypu.
+            Widok pokazuje ramę wykresu, tabelę i jawne stany danych dla
+            decyzji analitycznych.
           </p>
         </header>
 
         <section className="pdx-grid pdx-grid--two">
-          <article className="pdx-panel">
+          <Surface className="pdx-panel">
             <div className="pdx-panel-header">
               <h2>Plan vs wynik</h2>
               <BarChart3 aria-hidden="true" size={18} />
@@ -35,18 +45,18 @@ function ChartsAndTables() {
                 <span key={value} style={{ height: `${value}%` }} />
               ))}
             </div>
-          </article>
+          </Surface>
 
-          <article className="pdx-panel">
+          <Surface className="pdx-panel">
             <div className="pdx-panel-header">
               <h2>Przychód vs koszty</h2>
               <LineChart aria-hidden="true" size={18} />
             </div>
             <div className="pdx-line-chart" aria-hidden="true" />
-          </article>
+          </Surface>
         </section>
 
-        <section className="pdx-panel">
+        <Surface className="pdx-panel">
           <div className="pdx-panel-header">
             <h2>Tabela źródeł ruchu</h2>
             <Table2 aria-hidden="true" size={18} />
@@ -67,12 +77,14 @@ function ChartsAndTables() {
                   <td>{row.source}</td>
                   <td>{row.revenue}</td>
                   <td>{row.conversion}</td>
-                  <td>{row.state}</td>
+                  <td>
+                    <StatusBadge status={analyticalRowStatusToBadge[row.state]} />
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </section>
+        </Surface>
       </main>
     </div>
   );

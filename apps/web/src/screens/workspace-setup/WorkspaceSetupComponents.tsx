@@ -7,6 +7,15 @@ import {
   RefreshCw,
 } from 'lucide-react';
 
+import {
+  ActionArrow,
+  AppHeader,
+  Button,
+  InlineNotice,
+  PageHeader,
+  StatusBadge,
+  Surface,
+} from '../../design-system';
 import '../../design-system/foundations/papadata-brand-surface.css';
 import './workspace-setup.css';
 
@@ -17,82 +26,88 @@ function WorkspaceSetupComponents() {
       data-theme="dark"
       lang="pl"
     >
+      <AppHeader />
+
       <main className="pdw-main">
         <header className="pdw-header">
-          <div className="pdw-heading">
-            <span className="pdw-kicker">
-              Katalog projektowy
-            </span>
-            <h1>Komponenty konfiguracji workspace</h1>
-            <p>
-              Tymczasowy zestaw elementów do oceny stanów bez
-              tworzenia produkcyjnego design systemu.
-            </p>
-          </div>
+          <PageHeader
+            className="pdw-heading"
+            eyebrow="Konfiguracja przestrzeni roboczej"
+            text="Elementy tej ścieżki korzystają ze wspólnych statusów, komunikatów i akcji PapaData."
+            title="Komponenty konfiguracji workspace"
+          />
         </header>
 
-        <section className="pdw-panel">
+        <Surface className="pdw-panel">
           <div className="pdw-panel-header">
             <h2>Stany kanoniczne</h2>
           </div>
 
           <div className="pdw-grid">
-            <article className="pdw-card">
+            <Surface className="pdw-card">
               <div className="pdw-card-header">
-                <h3>ready</h3>
+                <h3>Gotowy</h3>
                 <CheckCircle2 aria-hidden="true" size={18} />
               </div>
+              <StatusBadge status="ready" />
               <p>Wymaganie gotowe i możliwe do kontynuowania.</p>
-            </article>
+            </Surface>
 
-            <article className="pdw-card">
+            <Surface className="pdw-card">
               <div className="pdw-card-header">
-                <h3>waiting</h3>
+                <h3>Oczekujący</h3>
                 <Clock3 aria-hidden="true" size={18} />
               </div>
-              <p>System, provider albo administrator posiada następny krok.</p>
-            </article>
+              <StatusBadge status="pending" />
+              <p>System, dostawca albo administrator posiada następny krok.</p>
+            </Surface>
 
-            <article className="pdw-card">
+            <Surface className="pdw-card">
               <div className="pdw-card-header">
-                <h3>stale / partial</h3>
+                <h3>Opóźniony</h3>
                 <DatabaseZap aria-hidden="true" size={18} />
               </div>
+              <StatusBadge status="delayed" />
               <p>Dane istnieją, ale wpływ na KPI musi być jawny.</p>
-            </article>
+            </Surface>
 
-            <article className="pdw-card">
+            <Surface className="pdw-card">
               <div className="pdw-card-header">
-                <h3>blocked</h3>
+                <h3>Zablokowany</h3>
                 <LockKeyhole aria-hidden="true" size={18} />
               </div>
-              <p>Brak bezpiecznej ścieżki bez recovery albo supportu.</p>
-            </article>
+              <StatusBadge status="blocked" />
+              <p>Brak bezpiecznej ścieżki bez pomocy administratora.</p>
+            </Surface>
           </div>
-        </section>
+        </Surface>
 
-        <section className="pdw-panel">
+        <Surface className="pdw-panel">
           <div className="pdw-panel-header">
-            <h2>Akcje i recovery</h2>
+            <h2>Akcje i odzyskanie działania</h2>
           </div>
 
           <div className="pdw-actions">
-            <button className="pdw-button" type="button">
+            <Button
+              className="pdw-button"
+              iconBefore={<RefreshCw aria-hidden="true" size={16} />}
+              variant="secondary"
+            >
               Ponów ocenę
-              <RefreshCw aria-hidden="true" size={16} />
-            </button>
-            <button
-              className="pdw-button pdw-button--secondary"
-              type="button"
+            </Button>
+            <Button
+              className="pdw-button"
+              variant="secondary"
             >
               Poproś administratora
-            </button>
-            <button
-              className="pdw-button pdw-button--secondary"
-              type="button"
+            </Button>
+            <Button
+              className="pdw-button"
+              iconAfter={<ActionArrow />}
+              variant="primary"
             >
-              Otwórz diagnostykę
-            </button>
+              Kontynuuj
+            </Button>
           </div>
 
           <ul className="pdw-requirements">
@@ -110,7 +125,12 @@ function WorkspaceSetupComponents() {
               </span>
             </li>
           </ul>
-        </section>
+
+          <InlineNotice tone="warning">
+            Jeżeli krok nie może zostać ukończony samodzielnie, widok pokazuje
+            bezpieczną ścieżkę do administratora workspace.
+          </InlineNotice>
+        </Surface>
       </main>
     </div>
   );

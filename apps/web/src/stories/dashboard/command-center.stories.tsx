@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CommandCenterFocus } from '../../screens/dashboard/CommandCenterFocus';
 
 const meta = {
-  title: 'PapaData/Dashboard/Centrum Dowodzenia',
+  title: 'PapaData/04 Ekrany docelowe/Dashboard/Centrum dowodzenia',
   component: CommandCenterFocus,
   parameters: {
     layout: 'fullscreen',

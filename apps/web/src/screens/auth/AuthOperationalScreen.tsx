@@ -1,9 +1,6 @@
 import {
-  ArrowRight,
   Building2,
   CheckCircle2,
-  KeyRound,
-  LockKeyhole,
   Mail,
   RefreshCw,
   ShieldAlert,
@@ -16,7 +13,6 @@ import { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 
 import '../../design-system/foundations/papadata-brand-surface.css';
-import { PapaDataBrand } from '../../design-system/brand/PapaDataBrand';
 import { createServerAuthApiClient } from '../../auth/serverAuthApiClient';
 import type {
   AuthChallengeId,
@@ -35,6 +31,17 @@ import {
   type AuthOperationalFieldDefaults,
   type AuthOperationalScenario,
 } from '../../fixtures/auth-experience';
+import {
+  ActionArrow,
+  AppHeader,
+  Button,
+  InlineNotice,
+  PasswordField,
+  StatusBadge,
+  TextField,
+  VerificationCodeInput,
+  type StatusBadgeStatus,
+} from '../../design-system';
 import './auth-operational.css';
 
 export type AuthOperationalScreenProps = {
@@ -65,11 +72,18 @@ const scenarioOrder: readonly AuthOperationalScenario[] = [
   'forbidden',
 ];
 
+const workspaceStatusToBadge = {
+  blocked: 'blocked',
+  no_data: 'noData',
+  not_ready: 'pending',
+  ready: 'ready',
+} as const satisfies Record<string, StatusBadgeStatus>;
+
 export function AuthOperationalScreen({
   fieldDefaults = {},
   gatewayFactory = createServerAuthApiClient,
   initialScenario = 'login',
-  modeLabel = 'Server auth',
+  modeLabel,
   theme = 'dark',
 }: AuthOperationalScreenProps) {
   const [scenario, setScenario] = useState<AuthOperationalScenario>(initialScenario);
@@ -378,12 +392,13 @@ export function AuthOperationalScreen({
 
   return (
     <div className="pds-brand-surface pda-auth-shell pda-auth-op" data-theme={theme}>
-      <header className="pds-topbar" aria-label="PapaData">
-        <div className="pds-topbar__inner">
-          <PapaDataBrand />
-          <span className="pda-auth-op__mode">{modeLabel}</span>
-        </div>
-      </header>
+      <AppHeader
+        trailing={
+          modeLabel ? (
+            <span className="pda-auth-op__mode">{modeLabel}</span>
+          ) : undefined
+        }
+      />
 
       <main className="pda-auth-op__main">
         <nav aria-label="AUTH-001" className="pda-auth-op__rail">
@@ -483,14 +498,12 @@ function renderScenarioForm({
     return (
       <form className="pda-auth-form pda-auth-op__form" onSubmit={submitLogin}>
         <AuthTextField defaultValue={copy.email} icon={<Mail size={18} />} label="E-mail" name="email" type="email" />
-        <AuthTextField
+        <AuthPasswordField
           defaultValue={fieldDefaults.passwords?.[scenario] ?? ''}
-          icon={<LockKeyhole size={18} />}
           label="Hasło"
           name="password"
-          type="password"
         />
-        <AuthTextField defaultValue="/dashboard" icon={<ArrowRight size={18} />} label="Return URL" name="returnUrl" />
+        <AuthTextField defaultValue="/dashboard" icon={<ActionArrow />} label="Adres powrotu" name="returnUrl" />
         <PrimaryAction busy={busy} label={copy.action} />
       </form>
     );
@@ -506,7 +519,7 @@ function renderScenarioForm({
 
     return (
       <form className="pda-auth-form pda-auth-op__form" onSubmit={submitMfa}>
-        <AuthTextField defaultValue={code} icon={<KeyRound size={18} />} label="Kod" name="code" inputMode="numeric" />
+        <AuthCodeField defaultValue={code} label="Kod jednorazowy" name="code" />
         <PrimaryAction busy={busy} label={copy.action} />
       </form>
     );
@@ -530,9 +543,9 @@ function renderScenarioForm({
 
     return (
       <form className="pda-auth-form pda-auth-op__form" onSubmit={submitResetPassword}>
-        <AuthTextField defaultValue={token} icon={<KeyRound size={18} />} label="Token procesu" name="token" type="password" />
-        <AuthTextField defaultValue="FreshPassphrase123" icon={<LockKeyhole size={18} />} label="Nowe hasło" name="newPassword" type="password" />
-        <AuthTextField defaultValue="FreshPassphrase123" icon={<LockKeyhole size={18} />} label="Powtórz hasło" name="confirmPassword" type="password" />
+        <AuthPasswordField defaultValue={token} label="Token procesu" name="token" />
+        <AuthPasswordField defaultValue="FreshPassphrase123" label="Nowe hasło" name="newPassword" />
+        <AuthPasswordField defaultValue="FreshPassphrase123" label="Powtórz hasło" name="confirmPassword" />
         <PrimaryAction busy={busy} label={copy.action} />
       </form>
     );
@@ -549,8 +562,8 @@ function renderScenarioForm({
     return (
       <form className="pda-auth-form pda-auth-op__form" onSubmit={submitInvitation}>
         <AuthTextField defaultValue={copy.email} icon={<Mail size={18} />} label="E-mail" name="email" type="email" />
-        <AuthTextField defaultValue={fieldDefaults.passwords?.[scenario] ?? ''} icon={<LockKeyhole size={18} />} label="Hasło" name="password" type="password" />
-        <AuthTextField defaultValue={token} icon={<KeyRound size={18} />} label="Token zaproszenia" name="token" type="password" />
+        <AuthPasswordField defaultValue={fieldDefaults.passwords?.[scenario] ?? ''} label="Hasło" name="password" />
+        <AuthPasswordField defaultValue={token} label="Token zaproszenia" name="token" />
         <PrimaryAction busy={busy} label={copy.action} />
       </form>
     );
@@ -564,7 +577,7 @@ function renderScenarioForm({
     return (
       <div className="pda-auth-op__split">
         <div>
-          <h2>Organization</h2>
+          <h2>Tenant</h2>
           {authOperationalOrganizations.map((organization) => (
             <button className="pda-auth-op__option" key={organization.organizationId} type="button">
               <Building2 size={18} />
@@ -573,12 +586,12 @@ function renderScenarioForm({
           ))}
         </div>
         <div>
-          <h2>Workspace</h2>
+          <h2>Przestrzeń robocza</h2>
           {authOperationalWorkspaces.map((workspace) => (
             <button className="pda-auth-op__option" key={workspace.workspaceId} type="button">
               <UsersRound size={18} />
               <span>{workspace.name}</span>
-              <small>{workspace.status}</small>
+              <StatusBadge status={workspaceStatusToBadge[workspace.status]} />
             </button>
           ))}
         </div>
@@ -590,24 +603,24 @@ function renderScenarioForm({
     return (
       <div className="pda-auth-op__form">
         <div className="pda-auth-op__actions">
-          <button
-            className="pda-auth-button pda-auth-button--secondary"
+          <Button
+            className="pda-auth-button"
             disabled={busy}
+            iconBefore={<RefreshCw size={18} />}
             onClick={() => runSessionAction('list')}
-            type="button"
+            variant="secondary"
           >
-            <RefreshCw size={18} />
             Lista sesji
-          </button>
-          <button
-            className="pda-auth-button pda-auth-button--primary"
+          </Button>
+          <Button
+            className="pda-auth-button"
             disabled={busy}
+            iconAfter={<ActionArrow />}
             onClick={() => runSessionAction('revokeOther')}
-            type="button"
+            variant="primary"
           >
             Unieważnij pozostałe
-            <ArrowRight size={18} />
-          </button>
+          </Button>
         </div>
         <SessionList sessions={sessions} />
       </div>
@@ -617,7 +630,7 @@ function renderScenarioForm({
   if (scenario === 'reauthentication') {
     return (
       <form className="pda-auth-form pda-auth-op__form" onSubmit={submitReauthentication}>
-        <AuthTextField defaultValue={fieldDefaults.passwords?.[scenario] ?? ''} icon={<LockKeyhole size={18} />} label="Hasło" name="password" type="password" />
+        <AuthPasswordField defaultValue={fieldDefaults.passwords?.[scenario] ?? ''} label="Hasło" name="password" />
         <div className="pda-auth-op__purpose-list">
           {authReauthenticationPurposes.map((purpose) => (
             <span key={purpose.value}>{purpose.label}</span>
@@ -631,31 +644,31 @@ function renderScenarioForm({
   return (
     <div className="pda-auth-op__form">
       <div className="pda-auth-op__actions">
-        <button
-          className="pda-auth-button pda-auth-button--secondary"
+        <Button
+          className="pda-auth-button"
           disabled={busy}
           onClick={() => runSecurityAction('configure')}
-          type="button"
+          variant="secondary"
         >
           Skonfiguruj MFA
-        </button>
-        <button
-          className="pda-auth-button pda-auth-button--secondary"
+        </Button>
+        <Button
+          className="pda-auth-button"
           disabled={busy}
           onClick={() => runSecurityAction('regenerate')}
-          type="button"
+          variant="secondary"
         >
-          Recovery codes
-        </button>
-        <button
-          className="pda-auth-button pda-auth-button--primary"
+          Kody odzyskiwania
+        </Button>
+        <Button
+          className="pda-auth-button"
           disabled={busy}
+          iconAfter={<ActionArrow />}
           onClick={() => runSecurityAction('disable')}
-          type="button"
+          variant="danger"
         >
           Wyłącz MFA
-          <ArrowRight size={18} />
-        </button>
+        </Button>
       </div>
       <p className="pda-auth-op__recovery">{result.context?.status ?? copy.recovery}</p>
     </div>
@@ -680,28 +693,72 @@ function AuthTextField({
   type = 'text',
 }: AuthTextFieldProps) {
   return (
-    <label className="pda-field">
-      <span className="pda-field__label">{label}</span>
-      <span className="pda-input-frame">
-        {icon}
-        <input
-          autoComplete="off"
-          defaultValue={defaultValue}
-          inputMode={inputMode}
-          name={name}
-          type={type}
-        />
-      </span>
-    </label>
+    <TextField
+      autoComplete="off"
+      defaultValue={defaultValue}
+      icon={icon}
+      inputMode={inputMode}
+      label={label}
+      name={name}
+      type={type}
+    />
+  );
+}
+
+function AuthPasswordField({
+  defaultValue,
+  label,
+  name,
+}: {
+  defaultValue: string;
+  label: string;
+  name: string;
+}) {
+  return (
+    <PasswordField
+      autoComplete="off"
+      defaultValue={defaultValue}
+      label={label}
+      name={name}
+    />
+  );
+}
+
+function AuthCodeField({
+  defaultValue,
+  label,
+  name,
+}: {
+  defaultValue: string;
+  label: string;
+  name: string;
+}) {
+  const [value, setValue] = useState(defaultValue);
+
+  return (
+    <VerificationCodeInput
+      hint="Wpisz dokładnie sześć cyfr."
+      id={`${name}-field`}
+      label={label}
+      name={name}
+      onChange={setValue}
+      value={value}
+    />
   );
 }
 
 function PrimaryAction({ busy, label }: { busy: boolean; label: string }) {
   return (
-    <button className="pda-auth-button pda-auth-button--primary" disabled={busy} type="submit">
+    <Button
+      className="pda-auth-button"
+      disabled={busy}
+      iconAfter={!busy ? <ActionArrow /> : undefined}
+      loading={busy}
+      type="submit"
+      variant="primary"
+    >
       {busy ? 'Przetwarzanie' : label}
-      <ArrowRight size={18} />
-    </button>
+    </Button>
   );
 }
 
@@ -733,10 +790,13 @@ function StatusPill({
   tone: ResultState['tone'];
 }) {
   return (
-    <div className={`pda-auth-op__pill pda-auth-op__pill--${tone}`}>
-      {icon}
-      <span>{label}</span>
-    </div>
+    <InlineNotice
+      className={`pda-auth-op__pill pda-auth-op__pill--${tone}`}
+      icon={icon}
+      tone={tone === 'neutral' ? 'neutral' : tone}
+    >
+      {label}
+    </InlineNotice>
   );
 }
 

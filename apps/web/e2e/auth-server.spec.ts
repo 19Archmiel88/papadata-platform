@@ -97,7 +97,7 @@ test('login with MFA and reauthentication can revoke another session', async ({ 
 
   await loginOwnerWithMfa(page);
   await loginOwnerWithMfa(page);
-  await page.getByRole('button', { name: /Reauthentication/i }).click();
+  await page.getByRole('button', { name: /Ponowne uwierzytelnienie/i }).click();
   await page.getByRole('textbox', { name: 'Hasło' }).fill(localAuthFixturePasswords.owner);
   await page.getByRole('button', { name: /Potwierdź/i }).click();
   await expect(page.getByText(/Potwierdzenie ważne/i)).toBeVisible();

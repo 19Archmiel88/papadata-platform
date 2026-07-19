@@ -1,6 +1,5 @@
 import {
   AlertTriangle,
-  ArrowRight,
   Building2,
   CheckCircle2,
   Clock3,
@@ -14,7 +13,18 @@ import {
   Waypoints,
   type LucideIcon,
 } from 'lucide-react';
+import type { CSSProperties } from 'react';
 
+import {
+  ActionArrow,
+  AppHeader,
+  Button,
+  InlineNotice,
+  PageHeader,
+  StatusBadge,
+  Surface,
+  type StatusBadgeStatus,
+} from '../../design-system';
 import {
   workspaceSurfaces,
   type WorkspaceSurface,
@@ -33,6 +43,15 @@ const surfaceIconByName: Record<WorkspaceSurfaceIcon, LucideIcon> = {
   store: Store,
   waypoints: Waypoints,
 };
+
+const workspaceStatusByCardStatus = {
+  blocked: 'blocked',
+  pending: 'pending',
+  ready: 'ready',
+} as const satisfies Record<
+  'blocked' | 'pending' | 'ready',
+  StatusBadgeStatus
+>;
 
 type WorkspaceSetupStoryProps = {
   surface: WorkspaceSurface;
@@ -54,89 +73,79 @@ function WorkspaceSetupStory({
       style={
         {
           '--pdw-accent': definition.accent,
-        } as React.CSSProperties & Record<'--pdw-accent', string>
+        } as CSSProperties & Record<'--pdw-accent', string>
       }
     >
+      <AppHeader />
+
       <main className="pdw-main">
         <header className="pdw-header">
-          <div className="pdw-heading">
-            <span className="pdw-kicker">
-              {definition.kicker}
-            </span>
-            <h1>{definition.title}</h1>
-            <p>{definition.summary}</p>
-          </div>
+          <PageHeader
+            className="pdw-heading"
+            eyebrow={definition.kicker}
+            text={definition.summary}
+            title={definition.title}
+          />
 
-          <span className="pdw-status">
-            <Icon aria-hidden="true" size={17} strokeWidth={1.8} />
-            PROPOSED
-          </span>
+          <StatusBadge
+            className="pdw-status"
+            label="krok aktywny"
+            status="active"
+          />
         </header>
 
         <section className="pdw-layout" aria-label={definition.kicker}>
-          <div className="pdw-panel">
+          <Surface className="pdw-panel">
             <div className="pdw-panel-header">
-              <h2>Aktualna powierzchnia</h2>
-              <span className="pdw-chip pdw-chip--ready">
-                {definition.kicker}
-              </span>
+              <div>
+                <h2>Aktualny krok</h2>
+                <span>{definition.kicker}</span>
+              </div>
+              <Icon aria-hidden="true" size={18} strokeWidth={1.8} />
             </div>
 
             <div className="pdw-grid">
               {definition.cards.map((card) => (
-                <article className="pdw-card" key={card.title}>
+                <Surface className="pdw-card" key={card.title}>
                   <div className="pdw-card-header">
                     <h3>{card.title}</h3>
-                    <span className={`pdw-chip pdw-chip--${card.status}`}>
-                      {card.label}
-                    </span>
+                    <StatusBadge
+                      label={card.label}
+                      status={workspaceStatusByCardStatus[card.status]}
+                    />
                   </div>
                   <p>{card.description}</p>
-                </article>
+                </Surface>
               ))}
             </div>
 
-            <div className="pdw-form-grid">
-              <div className="pdw-field">
-                <span>Capability</span>
-                <strong>Sprawdzana po stronie runtime</strong>
-              </div>
-              <div className="pdw-field">
-                <span>Źródło prawdy</span>
-                <strong>Stan serwerowy, nie URL</strong>
-              </div>
-              <div className="pdw-field">
-                <span>Recovery</span>
-                <strong>Retry, prośba admina albo support</strong>
-              </div>
-              <div className="pdw-field">
-                <span>Sekrety</span>
-                <strong>Nigdy nieodtwarzane w formularzu</strong>
-              </div>
-            </div>
+            {surface === 'dataSource' ? <DataSourceClientSummary /> : null}
 
             <div className="pdw-actions">
-              <button className="pdw-button" type="button">
+              <Button
+                className="pdw-button"
+                iconAfter={<ActionArrow />}
+                variant="primary"
+              >
                 {definition.action}
-                <ArrowRight aria-hidden="true" size={16} />
-              </button>
-              <button
-                className="pdw-button pdw-button--secondary"
-                type="button"
+              </Button>
+              <Button
+                className="pdw-button"
+                variant="secondary"
               >
                 Poproś administratora
-              </button>
+              </Button>
             </div>
-          </div>
+          </Surface>
 
-          <aside className="pdw-side-panel" aria-label={definition.sideTitle}>
+          <Surface className="pdw-side-panel" aria-label={definition.sideTitle}>
             <div className="pdw-card-header">
               <h3>{definition.sideTitle}</h3>
               <ShieldCheck aria-hidden="true" size={18} />
             </div>
             <p>
-              Ten widok projektuje zadanie użytkownika bez
-              implementowania runtime, routingu ani prawdziwego API.
+              Użytkownik widzi wpływ na gotowość dashboardu i najbliższy
+              bezpieczny krok bez szczegółów technicznych.
             </p>
 
             <ol className="pdw-requirements">
@@ -146,16 +155,32 @@ function WorkspaceSetupStory({
               </li>
               <li>
                 <Clock3 aria-hidden="true" size={16} />
-                <span>Stany waiting i delayed nie udają postępu.</span>
+                <span>Stany oczekiwania nie udają zakończonego postępu.</span>
               </li>
               <li>
                 <AlertTriangle aria-hidden="true" size={16} />
                 <span>Braki uprawnień nie ujawniają danych wrażliwych.</span>
               </li>
             </ol>
-          </aside>
+          </Surface>
         </section>
       </main>
+    </div>
+  );
+}
+
+function DataSourceClientSummary() {
+  return (
+    <div className="pdw-client-summary">
+      <InlineNotice title="Wybrany dostawca" tone="info">
+        Shopify z katalogu MVP. Połączymy zamówienia, produkty, klientów i
+        stany produktów potrzebne do pierwszych KPI.
+      </InlineNotice>
+
+      <InlineNotice title="Odzyskanie po błędzie" tone="warning">
+        Jeśli połączenie się nie powiedzie, użytkownik może ponowić próbę albo
+        poprosić administratora workspace o wykonanie połączenia.
+      </InlineNotice>
     </div>
   );
 }

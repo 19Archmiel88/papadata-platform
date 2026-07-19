@@ -12,7 +12,7 @@ export type DashboardModule =
   | 'support'
   | 'assistant';
 
-export type DashboardStatus = 'ready' | 'partial' | 'blocked';
+export type DashboardStatus = 'ready' | 'warning' | 'blocked';
 
 export type DashboardDefinition = {
   headline: string;
@@ -60,17 +60,17 @@ export const dashboardDefinitions: Record<
     metricA: '12,4%',
     metricB: '3 ryzyka',
     metricC: '5 akcji',
-    module: 'Command Center',
-    status: 'partial',
+    module: 'Centrum Dowodzenia',
+    status: 'warning',
     summary:
-      'Pierwsza powierzchnia decyzyjna dla priorytetów sprzedaży, marży i operacji.',
+      'Pierwsza powierzchnia decyzyjna dla priorytetów sprzedaży, marży i operacji z jawnym wpływem brakujących danych.',
   },
   orders: {
     headline: 'Zamówienia',
     metricA: '128 tys.',
     metricB: '4,8%',
     metricC: '312',
-    module: 'Orders',
+    module: 'Zamówienia',
     status: 'ready',
     summary:
       'Zdrowie zamówień, przychód, anulowania, zwroty i ryzyka realizacji.',
@@ -80,8 +80,8 @@ export const dashboardDefinitions: Record<
     metricA: '48',
     metricB: '17%',
     metricC: '9',
-    module: 'Products',
-    status: 'partial',
+    module: 'Produkty',
+    status: 'warning',
     summary:
       'Produkty wymagające akcji handlowej, stock/range i wpływ na wynik.',
   },
@@ -90,7 +90,7 @@ export const dashboardDefinitions: Record<
     metricA: '8,2 tys.',
     metricB: '31%',
     metricC: '4 segmenty',
-    module: 'Customers',
+    module: 'Klienci',
     status: 'ready',
     summary:
       'Retencja, wartość segmentów i sygnały jakości bazy klientów.',
@@ -100,8 +100,8 @@ export const dashboardDefinitions: Record<
     metricA: '42 tys.',
     metricB: '2,9%',
     metricC: '48 h',
-    module: 'Traffic',
-    status: 'partial',
+    module: 'Ruch',
+    status: 'warning',
     summary:
       'Źródła popytu i jakość ruchu z jawnym oznaczeniem świeżości danych.',
   },
@@ -110,7 +110,7 @@ export const dashboardDefinitions: Record<
     metricA: '4,1 ROAS',
     metricB: '18 tys.',
     metricC: '2 alerty',
-    module: 'Paid Campaigns',
+    module: 'Kampanie płatne',
     status: 'ready',
     summary:
       'Wydatki, zwrot, budżet i ryzyka kampanii bez ukrywania braków danych.',
@@ -118,39 +118,39 @@ export const dashboardDefinitions: Record<
   integrations: {
     headline: 'Integracje',
     metricA: '2 aktywne',
-    metricB: '1 stale',
-    metricC: 'OAuth',
-    module: 'Integrations',
-    status: 'partial',
+    metricB: '1 opóźniona',
+    metricC: 'logowanie',
+    module: 'Integracje',
+    status: 'warning',
     summary:
-      'Połączenia, diagnostyka, retry, rotacja i bezpieczne odłączenie źródeł.',
+      'Połączenia, diagnostyka, ponowienie próby i bezpieczne odłączenie źródeł.',
   },
   settings: {
     headline: 'Ustawienia',
     metricA: '6 domen',
     metricB: 'MFA',
-    metricC: 'audit',
-    module: 'Settings',
+    metricC: 'audyt',
+    module: 'Ustawienia',
     status: 'ready',
     summary:
-      'Rozdzielone domeny konta, workspace, security, capabilities i integracji.',
+      'Rozdzielone domeny konta, workspace, bezpieczeństwa, uprawnień i integracji.',
   },
   subscription: {
     headline: 'Subskrypcja',
     metricA: 'Pro',
     metricB: '82%',
     metricC: '3 limity',
-    module: 'Subscription',
+    module: 'Subskrypcja',
     status: 'ready',
     summary:
-      'Plan, faktury, limity użycia i gated states bez automatycznej płatności.',
+      'Plan, faktury i limity użycia bez automatycznego działania finansowego.',
   },
   support: {
     headline: 'Pomoc',
     metricA: '24/7',
     metricB: '6 tematów',
     metricC: 'SLA',
-    module: 'Support',
+    module: 'Pomoc',
     status: 'ready',
     summary:
       'Samoobsługa, kontakt z człowiekiem i bezpieczna eskalacja problemu.',
@@ -158,10 +158,10 @@ export const dashboardDefinitions: Record<
   assistant: {
     headline: 'Papa Asystent',
     metricA: '3 źródła',
-    metricB: 'partial',
+    metricB: 'częściowe',
     metricC: '5 cyt.',
-    module: 'Assistant',
-    status: 'partial',
+    module: 'Papa Asystent',
+    status: 'warning',
     summary:
       'Kontekstowe wsparcie decyzyjne ograniczone uprawnieniami i jakością danych.',
   },
@@ -215,11 +215,11 @@ export const dashboardDecisionInsights = [
   },
   {
     icon: 'circleDollar',
-    text: 'Rekomendacje nie udają pewności przy danych partial.',
+    text: 'Rekomendacje nie udają pewności przy częściowych danych.',
   },
   {
     icon: 'helpCircle',
-    text: 'Recovery pozostaje dostępne bez opuszczania kontekstu.',
+    text: 'Odzyskanie działania pozostaje dostępne bez opuszczania kontekstu.',
   },
 ] as const satisfies readonly {
   icon: DashboardInsightIcon;
@@ -237,13 +237,13 @@ export const dashboardSignalRows = [
     impact: 'Średni',
     signal: 'Ruch płatny',
     source: 'Kampanie',
-    state: 'partial',
+    state: 'warning',
   },
   {
-    impact: 'Wymaga retry',
+    impact: 'Wymaga ponowienia',
     signal: 'Stan integracji',
     source: 'Shopify',
-    state: 'stale',
+    state: 'delayed',
   },
 ] as const;
 
@@ -265,7 +265,7 @@ export const commandCenterCards = [
     value: 'Marża rośnie wolniej niż przychód',
   },
   {
-    description: 'Orders ready, campaigns partial, traffic stale.',
+    description: 'Zamówienia gotowe, kampanie częściowe, ruch opóźniony.',
     label: 'Źródła',
     value: '3 aktywne',
   },
@@ -307,17 +307,17 @@ export const dashboardComponentControls = [
 export const dashboardComponentCards = [
   {
     description: 'Dane kompletne dla jawnego zakresu.',
-    label: 'ready',
+    label: 'gotowy',
     value: '128 tys.',
   },
   {
-    description: 'Brak traffic wpływa na interpretację.',
-    label: 'partial',
+    description: 'Brak danych o ruchu wpływa na interpretację.',
+    label: 'częściowe',
     value: '2 źródła',
   },
   {
     description: 'Ostatnia udana synchronizacja przekroczyła próg.',
-    label: 'stale',
+    label: 'opóźnione',
     value: '48 h',
   },
 ] as const;

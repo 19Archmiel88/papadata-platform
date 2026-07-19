@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { WorkspaceSetupComponents } from '../../screens/workspace-setup/WorkspaceSetupComponents';
 
 const meta = {
-  title: 'PapaData/Konfiguracja workspace/Komponenty',
+  title: 'PapaData/02 Komponenty/Karty i powierzchnie',
   component: WorkspaceSetupComponents,
   parameters: {
     layout: 'fullscreen',

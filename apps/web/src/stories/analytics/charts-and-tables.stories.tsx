@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ChartsAndTables } from '../../screens/analytics/ChartsAndTables';
 
 const meta = {
-  title: 'PapaData/Elementy analityczne/Wykresy i tabele',
+  title: 'PapaData/04 Ekrany docelowe/Analityka',
   component: ChartsAndTables,
   parameters: {
     layout: 'fullscreen',
@@ -15,5 +15,13 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const WidokAnalityczny: Story = {
-  name: 'Widok analityczny',
+  name: 'Wykresy i tabele',
+};
+
+export const Wykresy: Story = {
+  args: {},
+};
+
+export const Tabele: Story = {
+  args: {},
 };

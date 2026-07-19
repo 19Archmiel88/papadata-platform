@@ -1,11 +1,16 @@
 import {
-  ArrowRight,
   BadgeAlert,
   CheckCircle2,
   Sparkles,
   type LucideIcon,
 } from 'lucide-react';
 
+import {
+  ActionArrow,
+  Button,
+  StatusBadge,
+  Surface,
+} from '../../design-system';
 import {
   commandCenterCards,
   commandCenterSignals,
@@ -31,22 +36,22 @@ function CommandCenterFocus() {
       lang="pl"
     >
       <main className="pdd-main">
-        <section className="pdd-panel">
+        <Surface className="pdd-panel">
           <div className="pdd-panel-header">
             <div>
               <h2>Centrum Dowodzenia</h2>
               <span>Najważniejszy wniosek, źródła i następne akcje</span>
             </div>
-            <span className="pdd-chip pdd-chip--partial">partial</span>
+            <StatusBadge status="warning" />
           </div>
 
           <div className="pdd-kpi-grid">
             {commandCenterCards.map((card) => (
-              <article className="pdd-card" key={card.label}>
+              <Surface className="pdd-card" key={card.label}>
                 <span>{card.label}</span>
                 <strong>{card.value}</strong>
                 <p>{card.description}</p>
-              </article>
+              </Surface>
             ))}
           </div>
 
@@ -63,11 +68,14 @@ function CommandCenterFocus() {
             })}
           </ul>
 
-          <button className="pdd-button" type="button">
+          <Button
+            className="pdd-button"
+            iconAfter={<ActionArrow />}
+            variant="primary"
+          >
             Otwórz analizę kampanii
-            <ArrowRight aria-hidden="true" size={16} />
-          </button>
-        </section>
+          </Button>
+        </Surface>
       </main>
     </div>
   );

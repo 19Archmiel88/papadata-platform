@@ -26,6 +26,34 @@
   --pds-accent-secondary: var(--pds-brand-teal);
   --pds-accent-warm: oklch(70% 0.13 74);
 
+  --pds-canvas: var(--pds-bg-primary);
+  --pds-surface: var(--pds-bg-tertiary);
+  --pds-surface-subtle: color-mix(in oklch, var(--pds-bg-secondary) 84%, transparent);
+  --pds-border: var(--pds-border-secondary);
+  --pds-border-strong: var(--pds-border-primary);
+  --pds-border-subtle: var(--pds-border-secondary);
+  --pds-text: var(--pds-text-primary);
+  --pds-text-strong: var(--pds-text-primary);
+  --pds-text-muted: var(--pds-text-secondary);
+  --pds-text-subtle: color-mix(in oklch, var(--pds-text-secondary) 68%, transparent);
+  --pds-primary: oklch(17% 0.025 260);
+  --pds-primary-hover: oklch(23% 0.03 260);
+  --pds-primary-contrast: oklch(98.5% 0.004 255);
+  --pds-accent: var(--pds-brand-teal);
+  --pds-accent-subtle: color-mix(in oklch, var(--pds-accent) 10%, transparent);
+  --pds-success: oklch(60% 0.13 166);
+  --pds-warning: oklch(65% 0.13 74);
+  --pds-danger: oklch(52% 0.17 28);
+  --pds-focus-ring: color-mix(in oklch, var(--pds-border-focus) 28%, transparent);
+  --pds-radius: var(--pds-radius-md);
+  --pds-control-height: 3rem;
+  --pds-content-width-narrow: 33rem;
+  --pds-content-width: 72rem;
+  --pds-content-width-wide: 82rem;
+  --pds-brand-mint: var(--pds-success);
+  --pds-brand-amber: var(--pds-warning);
+  --pds-brand-rose: var(--pds-danger);
+
   --pds-shadow-topbar:
     0 0.75rem 2.6rem oklch(35% 0.035 260 / 9%),
     0 1px 0 color-mix(in oklch, white 75%, transparent);
@@ -156,6 +184,29 @@
   --pds-accent-secondary: var(--pds-brand-teal);
   --pds-accent-warm: oklch(79% 0.14 76);
 
+  --pds-canvas: var(--pds-bg-primary);
+  --pds-surface: var(--pds-bg-tertiary);
+  --pds-surface-subtle: color-mix(in oklch, var(--pds-bg-secondary) 82%, transparent);
+  --pds-border: var(--pds-border-secondary);
+  --pds-border-strong: var(--pds-border-primary);
+  --pds-border-subtle: var(--pds-border-secondary);
+  --pds-text: var(--pds-text-primary);
+  --pds-text-strong: var(--pds-text-primary);
+  --pds-text-muted: var(--pds-text-secondary);
+  --pds-text-subtle: color-mix(in oklch, var(--pds-text-secondary) 70%, transparent);
+  --pds-primary: oklch(97% 0.005 255);
+  --pds-primary-hover: oklch(90.5% 0.008 255);
+  --pds-primary-contrast: oklch(12.5% 0.022 260);
+  --pds-accent: var(--pds-brand-teal);
+  --pds-accent-subtle: color-mix(in oklch, var(--pds-accent) 14%, transparent);
+  --pds-success: oklch(72% 0.13 166);
+  --pds-warning: oklch(79% 0.14 76);
+  --pds-danger: oklch(72% 0.14 28);
+  --pds-focus-ring: color-mix(in oklch, var(--pds-border-focus) 32%, transparent);
+  --pds-brand-mint: var(--pds-success);
+  --pds-brand-amber: var(--pds-warning);
+  --pds-brand-rose: var(--pds-danger);
+
   --pds-shadow-topbar:
     0 1.15rem 3.4rem oklch(5% 0.02 265 / 42%),
     0 1px 0 color-mix(in oklch, white 7%, transparent);
@@ -193,6 +244,29 @@
     --pds-accent-primary-hover: #7DA0FF;
     --pds-accent-secondary: var(--pds-brand-teal);
     --pds-accent-warm: oklch(79% 0.14 76);
+
+    --pds-canvas: var(--pds-bg-primary);
+    --pds-surface: var(--pds-bg-tertiary);
+    --pds-surface-subtle: color-mix(in oklch, var(--pds-bg-secondary) 82%, transparent);
+    --pds-border: var(--pds-border-secondary);
+    --pds-border-strong: var(--pds-border-primary);
+    --pds-border-subtle: var(--pds-border-secondary);
+    --pds-text: var(--pds-text-primary);
+    --pds-text-strong: var(--pds-text-primary);
+    --pds-text-muted: var(--pds-text-secondary);
+    --pds-text-subtle: color-mix(in oklch, var(--pds-text-secondary) 70%, transparent);
+    --pds-primary: oklch(97% 0.005 255);
+    --pds-primary-hover: oklch(90.5% 0.008 255);
+    --pds-primary-contrast: oklch(12.5% 0.022 260);
+    --pds-accent: var(--pds-brand-teal);
+    --pds-accent-subtle: color-mix(in oklch, var(--pds-accent) 14%, transparent);
+    --pds-success: oklch(72% 0.13 166);
+    --pds-warning: oklch(79% 0.14 76);
+    --pds-danger: oklch(72% 0.14 28);
+    --pds-focus-ring: color-mix(in oklch, var(--pds-border-focus) 32%, transparent);
+    --pds-brand-mint: var(--pds-success);
+    --pds-brand-amber: var(--pds-warning);
+    --pds-brand-rose: var(--pds-danger);
 
     --pds-shadow-topbar:
       0 1.15rem 3.4rem oklch(5% 0.02 265 / 42%),

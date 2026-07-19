@@ -5,7 +5,7 @@ import { AuthOperationalScreen } from '../../screens/auth/AuthOperationalScreen'
 import { renderLocalAuthStory } from './authStoryRender';
 
 const meta = {
-  title: 'PapaData/Auth/Zaproszenia',
+  title: 'PapaData/04 Ekrany docelowe/Dostęp do konta/Zaproszenie',
   component: AuthOperationalScreen,
   render: renderLocalAuthStory,
   parameters: { layout: 'fullscreen' },

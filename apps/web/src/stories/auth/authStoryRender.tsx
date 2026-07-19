@@ -11,7 +11,6 @@ export function renderLocalAuthStory(args: AuthOperationalScreenProps) {
       {...args}
       fieldDefaults={localTestAuthFieldDefaults}
       gatewayFactory={createLocalAuthGateway}
-      modeLabel="Local/test auth"
     />
   );
 }

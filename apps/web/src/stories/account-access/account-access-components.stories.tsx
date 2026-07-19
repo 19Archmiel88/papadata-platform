@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { AuthComponentShowcase } from '../../screens/account-access/AuthComponentShowcase';
 
 const meta = {
-  title: "PapaData/Dostęp do konta/Komponenty",
+  title: 'PapaData/02 Komponenty/Dostęp do konta',
   component: AuthComponentShowcase,
   parameters: {
     layout: "fullscreen",

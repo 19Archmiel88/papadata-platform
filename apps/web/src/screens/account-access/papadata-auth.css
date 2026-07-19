@@ -114,6 +114,19 @@
   z-index: 1;
 }
 
+.pda-auth-main--focused {
+  grid-template-columns: minmax(0, var(--pds-content-width-narrow));
+  justify-content: center;
+}
+
+.pda-auth-main--focused .pda-auth-workspace {
+  padding-left: 0;
+}
+
+.pda-auth-main--focused .pda-auth-workspace::before {
+  display: none;
+}
+
 .pda-auth-context {
   align-content: space-between;
   display: grid;

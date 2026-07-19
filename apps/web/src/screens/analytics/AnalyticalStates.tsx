@@ -14,6 +14,10 @@ import {
   analyticalStateItems,
   type AnalyticalListIcon,
 } from '../../fixtures/analytics';
+import {
+  StatusBadge,
+  Surface,
+} from '../../design-system';
 import '../../design-system/foundations/papadata-brand-surface.css';
 import './analytical-elements.css';
 
@@ -44,20 +48,29 @@ function AnalyticalStates() {
         </header>
 
         <section className="pdx-grid">
-          {analyticalStateCards.map((card) => (
-            <article className="pdx-card" key={card.label}>
+          {analyticalStateCards.map((card, index) => (
+            <Surface className="pdx-card" key={card.label}>
               <span>{card.label}</span>
               <strong>{card.title}</strong>
+              <StatusBadge
+                status={
+                  index === 0
+                    ? 'ready'
+                    : index === 1
+                      ? 'warning'
+                      : 'delayed'
+                }
+              />
               <p>{card.description}</p>
-            </article>
+            </Surface>
           ))}
         </section>
 
         <section className="pdx-grid pdx-grid--two">
-          <article className="pdx-panel">
+          <Surface className="pdx-panel">
             <div className="pdx-panel-header">
               <h2>Stany danych</h2>
-              <span className="pdx-chip pdx-chip--partial">partial</span>
+              <StatusBadge status="warning" />
             </div>
 
             <ul className="pdx-state-list">
@@ -72,12 +85,12 @@ function AnalyticalStates() {
                 );
               })}
             </ul>
-          </article>
+          </Surface>
 
-          <article className="pdx-panel">
+          <Surface className="pdx-panel">
             <div className="pdx-panel-header">
               <h2>Jakość i świeżość</h2>
-              <span className="pdx-chip pdx-chip--ready">quality</span>
+              <StatusBadge label="jakość danych" status="ready" />
             </div>
 
             <ul className="pdx-quality-list">
@@ -92,7 +105,7 @@ function AnalyticalStates() {
                 );
               })}
             </ul>
-          </article>
+          </Surface>
         </section>
       </main>
     </div>

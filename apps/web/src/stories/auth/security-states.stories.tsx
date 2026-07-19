@@ -4,7 +4,7 @@ import { AuthOperationalScreen } from '../../screens/auth/AuthOperationalScreen'
 import { renderLocalAuthStory } from './authStoryRender';
 
 const meta = {
-  title: 'PapaData/Security States/Auth',
+  title: 'PapaData/03 Wzorce/Stan braku dostępu',
   component: AuthOperationalScreen,
   render: renderLocalAuthStory,
   parameters: { layout: 'fullscreen' },
@@ -20,6 +20,6 @@ export const UstawieniaBezpieczenstwa: Story = {
 };
 
 export const BrakCapability: Story = {
-  name: 'Brak capability',
+  name: 'Brak uprawnień',
   args: { initialScenario: 'forbidden', theme: 'dark' },
 };

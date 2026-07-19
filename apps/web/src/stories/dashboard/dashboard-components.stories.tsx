@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { DashboardComponents } from '../../screens/dashboard/DashboardComponents';
 
 const meta = {
-  title: 'PapaData/Dashboard/Komponenty',
+  title: 'PapaData/02 Komponenty/Nawigacja',
   component: DashboardComponents,
   parameters: {
     layout: 'fullscreen',

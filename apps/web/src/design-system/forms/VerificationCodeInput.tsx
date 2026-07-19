@@ -3,6 +3,8 @@ import {
   type ChangeEvent,
 } from 'react';
 
+import '../primitives/papadata-primitives.css';
+
 const VERIFICATION_CODE_LENGTH = 6;
 
 export type VerificationCodeInputProps = {
@@ -58,21 +60,21 @@ export const VerificationCodeInput = forwardRef<
 
   return (
     <div
-      className={`pda-verification-code${
+      className={`pds-code${
         invalid ? ' is-invalid' : ''
       }${disabled ? ' is-disabled' : ''}`}
     >
-      <label className="pda-field__label" htmlFor={id}>
+      <label className="pds-field__label" htmlFor={id}>
         {label}
       </label>
 
-      <span className="pda-verification-code__control">
+      <span className="pds-code__control">
         <input
           aria-describedby={describedBy || undefined}
           aria-invalid={invalid || undefined}
           autoComplete="one-time-code"
           autoFocus={autoFocus}
-          className="pda-verification-code__input"
+          className="pds-code__input"
           disabled={disabled}
           id={id}
           inputMode="numeric"
@@ -87,12 +89,12 @@ export const VerificationCodeInput = forwardRef<
 
         <span
           aria-hidden="true"
-          className="pda-verification-code__segments"
+          className="pds-code__segments"
         >
           {Array.from({ length: VERIFICATION_CODE_LENGTH }, (_, index) => {
             const digit = (digits[index] ?? '').trim();
             const segmentClassName = [
-              'pda-verification-code__segment',
+              'pds-code__segment',
               digit ? 'has-value' : '',
               !disabled && index === activeIndex ? 'is-active' : '',
             ]
@@ -109,13 +111,13 @@ export const VerificationCodeInput = forwardRef<
       </span>
 
       {hint ? (
-        <span className="pda-verification-code__hint" id={hintId}>
+        <span className="pds-code__hint" id={hintId}>
           {hint}
         </span>
       ) : null}
 
       {invalid && errorMessage ? (
-        <span className="pda-verification-code__error" id={errorId}>
+        <span className="pds-code__error" id={errorId}>
           {errorMessage}
         </span>
       ) : null}
@@ -133,3 +135,5 @@ export const VerificationCodeInput = forwardRef<
     </div>
   );
 });
+
+export const CodeInput = VerificationCodeInput;

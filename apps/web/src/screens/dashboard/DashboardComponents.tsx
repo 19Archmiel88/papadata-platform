@@ -11,6 +11,10 @@ import {
   dashboardComponentControls,
   type DashboardComponentControlIcon,
 } from '../../fixtures/dashboard';
+import {
+  StatusBadge,
+  Surface,
+} from '../../design-system';
 import '../../design-system/foundations/papadata-brand-surface.css';
 import './dashboard-shell.css';
 
@@ -32,7 +36,7 @@ function DashboardComponents() {
       lang="pl"
     >
       <main className="pdd-main">
-        <section className="pdd-panel">
+        <Surface className="pdd-panel">
           <div className="pdd-panel-header">
             <h2>Komponenty dashboardu</h2>
             <span>Toolbar, KPI, tabela i status danych</span>
@@ -53,14 +57,23 @@ function DashboardComponents() {
 
           <div className="pdd-kpi-grid">
             {dashboardComponentCards.map((card) => (
-              <article className="pdd-card" key={card.label}>
+              <Surface className="pdd-card" key={card.label}>
                 <span>{card.label}</span>
                 <strong>{card.value}</strong>
+                <StatusBadge
+                  status={
+                    card.label === 'gotowy'
+                      ? 'ready'
+                      : card.label === 'częściowe'
+                        ? 'warning'
+                        : 'delayed'
+                  }
+                />
                 <p>{card.description}</p>
-              </article>
+              </Surface>
             ))}
           </div>
-        </section>
+        </Surface>
       </main>
     </div>
   );

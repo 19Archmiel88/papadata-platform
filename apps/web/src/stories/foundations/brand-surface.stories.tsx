@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { PapaDataBrandSurface } from '../../screens/foundations/PapaDataBrandSurface';
 
 const meta = {
-  title: 'PapaData/Podstawy marki/Tło i górny pasek',
+  title: 'PapaData/01 Podstawy marki/Kolory',
   component: PapaDataBrandSurface,
   parameters: {
     layout: 'fullscreen',

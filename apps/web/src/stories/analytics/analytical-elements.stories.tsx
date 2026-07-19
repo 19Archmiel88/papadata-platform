@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { AnalyticalKpi } from '../../screens/analytics/AnalyticalKpi';
 
 const meta = {
-  title: 'PapaData/Elementy analityczne/KPI',
+  title: 'PapaData/04 Ekrany docelowe/Analityka',
   component: AnalyticalKpi,
   parameters: {
     layout: 'fullscreen',
@@ -15,5 +15,5 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const KartyKpi: Story = {
-  name: 'Karty KPI',
+  name: 'KPI',
 };

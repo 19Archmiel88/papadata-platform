@@ -1,5 +1,6 @@
 
 import { analyticalKpiCards } from '../../fixtures/analytics';
+import { Surface } from '../../design-system';
 import '../../design-system/foundations/papadata-brand-surface.css';
 import './analytical-elements.css';
 
@@ -22,11 +23,11 @@ function AnalyticalKpi() {
 
         <section className="pdx-grid">
           {analyticalKpiCards.map((card) => (
-            <article className="pdx-card" key={card.label}>
+            <Surface className="pdx-card" key={card.label}>
               <span>{card.label}</span>
               <strong>{card.value}</strong>
               <p>{card.description}</p>
-            </article>
+            </Surface>
           ))}
         </section>
       </main>

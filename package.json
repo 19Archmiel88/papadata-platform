@@ -14,11 +14,18 @@
     "build": "turbo run build",
     "build:storybook": "pnpm --filter @papadata/web build:storybook",
     "preview": "pnpm --filter @papadata/web preview",
-    "verify": "pnpm lint && pnpm typecheck && pnpm test:storybook",
-    "build-storybook": "pnpm build:storybook"
+    "verify": "pnpm lint && pnpm typecheck && pnpm spell && pnpm markdownlint && pnpm test",
+    "build-storybook": "pnpm build:storybook",
+    "spell": "cspell \"**/*.{ts,tsx,md,css}\"",
+    "markdownlint": "markdownlint-cli2"
   },
   "devDependencies": {
-    "turbo": "2.10.5"
+    "@cspell/dict-pl_pl": "^3.0.6",
+    "cspell": "^10.0.1",
+    "cspell-cli": "^10.0.1",
+    "markdownlint-cli2": "^0.23.1",
+    "turbo": "2.10.5",
+    "typescript": "~6.0.3"
   },
   "packageManager": "pnpm@10.29.3",
   "engines": {

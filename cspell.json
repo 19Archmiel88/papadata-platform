@@ -1,0 +1,22 @@
+{
+  "version": "0.2",
+  "language": "en,pl",
+  "import": ["@cspell/dict-pl_pl/cspell-ext.json"],
+  "dictionaries": ["pl-pl", "en_US", "papadata-custom"],
+  "dictionaryDefinitions": [
+    {
+      "name": "papadata-custom",
+      "path": "./.cspell/papadata-words.txt",
+      "addWords": true
+    }
+  ],
+  "ignorePaths": [
+    "node_modules/**",
+    "dist/**",
+    "build/**",
+    ".next/**",
+    "coverage/**",
+    "*.lock",
+    "pnpm-lock.yaml"
+  ]
+}

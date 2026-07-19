@@ -1,5 +1,5 @@
 {
-  "$schema": "https://turborepo.dev/schema.json",
+  "$schema": "./node_modules/turbo/schema.json",
   "ui": "stream",
   "globalDependencies": [
     ".node-version",
@@ -32,17 +32,13 @@
       "dependsOn": [
         "typecheck"
       ],
-      "outputs": [
-        "coverage/**"
-      ]
+      "outputs": []
     },
     "test:storybook": {
       "dependsOn": [
         "typecheck"
       ],
-      "outputs": [
-        "coverage/**"
-      ]
+      "outputs": []
     },
     "dev": {
       "cache": false,

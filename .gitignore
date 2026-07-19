@@ -56,3 +56,11 @@ docs/UI-AUDIT-SOURCE.md
 **/coverage/
 **/test-results/
 **/playwright-report/
+
+# Temporary and backup files
+*.bak
+*.old
+*.orig
+*.rej
+*.tmp
+*~

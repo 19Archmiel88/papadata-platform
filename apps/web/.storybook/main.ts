@@ -1,4 +1,5 @@
 import type { StorybookConfig } from '@storybook/react-vite';
+import { mergeConfig } from 'vite';
 
 const config: StorybookConfig = {
   stories: [
@@ -13,6 +14,12 @@ const config: StorybookConfig = {
     '@storybook/addon-mcp',
   ],
   framework: '@storybook/react-vite',
+  viteFinal: (viteConfig) =>
+    mergeConfig(viteConfig, {
+      build: {
+        chunkSizeWarningLimit: 1600,
+      },
+    }),
 };
 
 export default config;

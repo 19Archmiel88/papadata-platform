@@ -99,12 +99,10 @@
 
 .pda-auth-main {
   display: grid;
-  gap: clamp(3rem, 7vw, 7.5rem);
-  grid-template-columns:
-    minmax(20rem, 0.88fr)
-    minmax(32rem, 1.12fr);
+  grid-template-columns: minmax(0, var(--pds-content-width-narrow));
+  justify-content: center;
   margin: 0 auto;
-  max-width: 82rem;
+  max-width: 100%;
   min-height: calc(100dvh - 4.375rem);
   padding:
     clamp(2.5rem, 6vh, 5.25rem)
@@ -112,32 +110,6 @@
   position: relative;
   width: 100%;
   z-index: 1;
-}
-
-.pda-auth-main--focused {
-  grid-template-columns: minmax(0, var(--pds-content-width-narrow));
-  justify-content: center;
-}
-
-.pda-auth-main--focused .pda-auth-workspace {
-  padding-left: 0;
-}
-
-.pda-auth-main--focused .pda-auth-workspace::before {
-  display: none;
-}
-
-.pda-auth-context {
-  align-content: space-between;
-  display: grid;
-  gap: clamp(2rem, 5vh, 4rem);
-  min-width: 0;
-}
-
-.pda-auth-context__copy {
-  display: grid;
-  gap: 0.875rem;
-  max-width: 31rem;
 }
 
 .pda-auth-kicker {
@@ -148,429 +120,13 @@
   line-height: 1.4;
 }
 
-.pda-auth-context h1 {
-  color: var(--pds-text-primary);
-  font-size: clamp(2rem, 3vw, 3rem);
-  font-weight: var(--pds-font-weight-medium);
-  letter-spacing: -0.032em;
-  line-height: 1.06;
-  margin: 0;
-  max-width: 19ch;
-  text-wrap: pretty;
-}
-
-.pda-auth-shell[data-screen="recovery"]
-.pda-auth-context h1 {
-  max-width: none;
-  white-space: nowrap;
-}
-
-.pda-auth-context__copy > p {
-  color: var(--pds-text-secondary);
-  font-size: clamp(0.975rem, 1.25vw, 1.075rem);
-  line-height: 1.68;
-  margin: 0;
-  max-width: 30rem;
-}
-
-.pda-auth-context__status {
-  align-items: center;
-  display: flex;
-  gap: 0.75rem;
-}
-
-.pda-auth-context__status > span:last-child {
-  display: grid;
-  gap: 0.125rem;
-}
-
-.pda-auth-context__status strong {
-  color: var(--pds-text-primary);
-  font-size: 0.8125rem;
-  font-weight: var(--pds-font-weight-medium);
-}
-
-.pda-auth-context__status span span {
-  color: var(--pds-text-secondary);
-  font-size: 0.8125rem;
-}
-
-.pda-auth-context__pulse {
-  background: var(--pda-stage-accent);
-  border-radius: var(--pds-radius-full);
-  display: block;
-  flex: 0 0 auto;
-  height: 0.42rem;
-  position: relative;
-  width: 0.42rem;
-}
-
-.pda-auth-context__pulse::after {
-  animation:
-    pda-status-breathe
-    3.2s
-    var(--pds-easing-default)
-    infinite;
-  border:
-    1px solid
-    color-mix(
-      in oklch,
-      var(--pda-stage-accent) 38%,
-      transparent
-    );
-  border-radius: inherit;
-  content: "";
-  inset: -0.18rem;
-  opacity: 0.26;
-  position: absolute;
-}
-
-.pda-access-visual {
-  height: clamp(17rem, 29vw, 21rem);
-  isolation: isolate;
-  max-width: 32rem;
-  position: relative;
-}
-
-.pda-access-network {
-  height: 100%;
-  inset: 0;
-  overflow: visible;
-  pointer-events: none;
-  position: absolute;
-  width: 100%;
-  z-index: 1;
-}
-
-.pda-access-network__track,
-.pda-access-network__signal {
-  fill: none;
-  vector-effect: non-scaling-stroke;
-}
-
-.pda-access-network__track {
-  opacity: 0.36;
-  stroke-width: 1.15;
-}
-
-.pda-access-network__track--entry {
-  stroke:
-    color-mix(
-      in oklch,
-      var(--pda-entry) 42%,
-      var(--pda-line)
-    );
-}
-
-.pda-access-network__track--verification {
-  stroke:
-    color-mix(
-      in oklch,
-      var(--pda-verification) 42%,
-      var(--pda-line)
-    );
-}
-
-.pda-access-network__track--workspace {
-  stroke:
-    color-mix(
-      in oklch,
-      var(--pda-workspace) 42%,
-      var(--pda-line)
-    );
-}
-
-.pda-access-network__signal {
-  animation:
-    pda-network-flow
-    7.5s
-    linear
-    infinite;
-  opacity: 0.72;
-  stroke-dasharray: 0.09 0.91;
-  stroke-dashoffset: 0;
-  stroke-linecap: round;
-  stroke-width: 2.15;
-  will-change: stroke-dashoffset;
-}
-
-.pda-access-network__signal--entry {
-  stroke: var(--pda-entry);
-}
-
-.pda-access-network__signal--verification {
-  animation-delay: -2.5s;
-  stroke: var(--pda-verification);
-}
-
-.pda-access-network__signal--workspace {
-  animation-delay: -5s;
-  stroke: var(--pda-workspace);
-}
-
-.pda-access-visual__orbit {
-  border: 1px solid transparent;
-  border-radius: 50%;
-  pointer-events: none;
-  position: absolute;
-  z-index: 0;
-}
-
-.pda-access-visual__orbit--outer {
-  border-left-color:
-    color-mix(
-      in oklch,
-      var(--pda-entry) 25%,
-      transparent
-    );
-  border-right-color:
-    color-mix(
-      in oklch,
-      var(--pda-workspace) 22%,
-      transparent
-    );
-  height: 12.5rem;
-  left: 24%;
-  top: 14%;
-  transform: rotate(-13deg);
-  width: 16.5rem;
-}
-
-.pda-access-visual__orbit--inner {
-  border-top-color:
-    color-mix(
-      in oklch,
-      var(--pda-verification) 30%,
-      transparent
-    );
-  border-bottom-color:
-    color-mix(
-      in oklch,
-      var(--pda-stage-accent) 22%,
-      transparent
-    );
-  height: 8.5rem;
-  left: 34%;
-  top: 26%;
-  transform: rotate(21deg);
-  width: 10.5rem;
-}
-
-.pda-access-visual__core {
-  align-items: center;
-  background:
-    linear-gradient(
-      145deg,
-      color-mix(
-        in oklch,
-        var(--pda-surface-strong) 96%,
-        white 4%
-      ),
-      var(--pda-surface-soft)
-    );
-  border:
-    1px solid
-    color-mix(
-      in oklch,
-      var(--pda-stage-accent) 46%,
-      var(--pda-line)
-    );
-  border-radius: 1.25rem;
-  color: var(--pda-stage-accent);
-  display: flex;
-  height: 5.15rem;
-  justify-content: center;
-  left: 42%;
-  position: absolute;
-  top: 34%;
-  width: 5.15rem;
-  z-index: 3;
-}
-
-.pda-access-visual__core-ring {
-  animation:
-    pda-access-ring
-    9s
-    linear
-    infinite;
-  border: 1px solid transparent;
-  border-radius: 50%;
-  border-right-color:
-    color-mix(
-      in oklch,
-      var(--pda-stage-secondary) 48%,
-      transparent
-    );
-  border-top-color:
-    color-mix(
-      in oklch,
-      var(--pda-stage-accent) 52%,
-      transparent
-    );
-  inset: -1.1rem;
-  position: absolute;
-}
-
-.pda-access-visual__core > svg {
-  position: relative;
-  z-index: 1;
-}
-
-.pda-access-node {
-  --pda-node-color: var(--pda-stage-accent);
-
-  align-items: center;
-  color: var(--pds-text-secondary);
-  display: grid;
-  gap: 0.35rem;
-  justify-items: center;
-  position: absolute;
-  z-index: 4;
-}
-
-.pda-access-node--entry {
-  --pda-node-color: var(--pda-entry);
-
-  left: 2%;
-  top: 39%;
-}
-
-.pda-access-node--verification {
-  --pda-node-color: var(--pda-verification);
-
-  right: 3%;
-  top: 5%;
-}
-
-.pda-access-node--workspace {
-  --pda-node-color: var(--pda-workspace);
-
-  bottom: 5%;
-  right: 3%;
-}
-
-.pda-access-node > span {
-  align-items: center;
-  background: var(--pda-surface-strong);
-  border:
-    1px solid
-    color-mix(
-      in oklch,
-      var(--pda-node-color) 22%,
-      var(--pda-line)
-    );
-  border-radius: 0.875rem;
-  color:
-    color-mix(
-      in oklch,
-      var(--pda-node-color) 64%,
-      var(--pds-text-secondary)
-    );
-  display: flex;
-  height: 3rem;
-  justify-content: center;
-  transition:
-    background-color var(--pds-duration-normal)
-      var(--pds-easing-out),
-    border-color var(--pds-duration-normal)
-      var(--pds-easing-out),
-    color var(--pds-duration-normal)
-      var(--pds-easing-out),
-    transform var(--pds-duration-normal)
-      var(--pds-easing-out);
-  width: 3rem;
-}
-
-.pda-access-node small {
-  color:
-    color-mix(
-      in oklch,
-      var(--pda-node-color) 45%,
-      var(--pds-text-secondary)
-    );
-  font-size: 0.6875rem;
-  letter-spacing: 0.01em;
-}
-
-.pda-access-node.is-active > span {
-  background:
-    color-mix(
-      in oklch,
-      var(--pda-node-color) 13%,
-      var(--pda-surface-strong)
-    );
-  border-color:
-    color-mix(
-      in oklch,
-      var(--pda-node-color) 64%,
-      var(--pda-line)
-    );
-  color: var(--pda-node-color);
-  transform: translateY(-0.14rem);
-}
-
-.pda-access-node.is-complete > span {
-  background:
-    color-mix(
-      in oklch,
-      var(--pda-node-color) 15%,
-      var(--pda-surface-strong)
-    );
-  border-color:
-    color-mix(
-      in oklch,
-      var(--pda-node-color) 42%,
-      var(--pda-line)
-    );
-  color: var(--pda-node-color);
-}
-
-.pda-access-visual__readout {
-  bottom: 1%;
-  display: grid;
-  gap: 0.35rem;
-  left: 3%;
-  max-width: 17.5rem;
-  position: absolute;
-  z-index: 4;
-}
-
-.pda-access-visual__readout-label {
-  color: var(--pda-stage-accent);
-  font-size: 0.875rem;
-  font-weight: var(--pds-font-weight-medium);
-}
-
-.pda-access-visual__readout > span:last-child {
-  color: var(--pds-text-secondary);
-  font-size: 0.775rem;
-  line-height: 1.55;
-}
-
 .pda-auth-workspace {
   align-self: center;
   display: grid;
   gap: clamp(1.75rem, 3vh, 2.5rem);
   min-width: 0;
-  padding-left: clamp(2rem, 5vw, 5rem);
   position: relative;
-}
-
-.pda-auth-workspace::before {
-  background:
-    linear-gradient(
-      180deg,
-      transparent,
-      var(--pda-line) 12%,
-      var(--pda-line) 88%,
-      transparent
-    );
-  bottom: -1.5rem;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: -1.5rem;
-  width: 1px;
+  width: 100%;
 }
 
 .pda-auth-progress {
@@ -1714,29 +1270,6 @@
   line-height: 1.5;
 }
 
-@keyframes pda-network-flow {
-  from {
-    stroke-dashoffset: 1;
-  }
-
-  to {
-    stroke-dashoffset: -1;
-  }
-}
-
-@keyframes pda-status-breathe {
-  0%,
-  100% {
-    opacity: 0.16;
-    transform: scale(0.92);
-  }
-
-  50% {
-    opacity: 0.38;
-    transform: scale(1.04);
-  }
-}
-
 @keyframes pda-button-sheen {
   0%,
   18% {
@@ -1760,16 +1293,6 @@
     transform:
       translate3d(620%, 0, 0)
       skewX(-18deg);
-  }
-}
-
-@keyframes pda-access-ring {
-  from {
-    transform: rotate(0deg) scale(0.96);
-  }
-
-  to {
-    transform: rotate(360deg) scale(0.96);
   }
 }
 
@@ -1797,47 +1320,10 @@
   }
 }
 
-@media (max-width: 1040px) {
-  .pda-auth-main {
-    gap: 3.5rem;
-    grid-template-columns: minmax(17rem, 0.75fr) minmax(29rem, 1.25fr);
-  }
-
-  .pda-auth-workspace {
-    padding-left: 2.5rem;
-  }
-}
-
 @media (max-width: 860px) {
   .pda-auth-main {
-    gap: 2.5rem;
     grid-template-columns: 1fr;
     max-width: 44rem;
-  }
-
-  .pda-auth-context {
-    gap: 1.75rem;
-  }
-
-  .pda-auth-context h1 {
-    max-width: 22ch;
-  }
-
-  .pda-access-visual {
-    display: none;
-  }
-
-  .pda-auth-context__status {
-    border-bottom: 1px solid var(--pda-line);
-    padding-bottom: 1.5rem;
-  }
-
-  .pda-auth-workspace {
-    padding-left: 0;
-  }
-
-  .pda-auth-workspace::before {
-    display: none;
   }
 }
 
@@ -1847,15 +1333,6 @@
       2rem
       1rem
       3rem;
-  }
-
-  .pda-auth-context h1 {
-    font-size: 2rem;
-  }
-
-  .pda-auth-shell[data-screen="recovery"]
-  .pda-auth-context h1 {
-    white-space: normal;
   }
 
   .pda-auth-progress__label {
@@ -1899,16 +1376,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pda-access-network__signal,
-  .pda-access-visual__core-ring,
-  .pda-auth-context__pulse::after,
   .pda-auth-button--primary::before,
   .pda-auth-screen,
   .pda-state__symbol > span {
     animation: none;
   }
 
-  .pda-access-node > span,
   .pda-auth-button,
   .pda-auth-link,
   .pda-provider-button,
@@ -1920,10 +1393,6 @@
     transition: none;
   }
 }
-
-/* LOGIN PROTOTYPE V3
-   Centralna powierzchnia logowania. Pozostałe ekrany Auth zachowują
-   wcześniejszy układ i wspólne style. */
 
 .pda-auth-surface--login {
   --pda-login-canvas-top: oklch(98.8% 0.004 255);

@@ -1,14 +1,12 @@
 import {
   BadgeCheck,
   BriefcaseBusiness,
-  Check,
   Fingerprint,
   LockKeyhole,
   Mail,
   RefreshCw,
   ShieldCheck,
   User,
-  UserRoundCheck,
   Waypoints,
   type LucideIcon,
 } from 'lucide-react';
@@ -35,14 +33,12 @@ import {
 import {
   authIdentityFixture,
   authProgressSteps,
-  authScreenCopy,
   staticCooldownSeconds,
   verificationCodeLength,
   verificationCodeSettings,
   verificationCooldownSeconds,
   type AuthProgressIcon,
   type AuthScreen,
-  type AuthScreenCopy,
   type LoginState,
   type VerificationCodeState,
   type VerificationKind,
@@ -146,10 +142,7 @@ function AuthStorySurfaceState({
     getInitialVerificationCode(initialVerificationState),
   );
 
-  const copy = authScreenCopy[screen];
   const progressIndex = getProgressIndex(screen);
-  const isEmailVerificationScreen =
-    screen === 'emailVerification' || screen === 'verification';
 
   const goTo: GoTo = (nextScreen, options) => {
     setVerificationCode('');
@@ -186,42 +179,7 @@ function AuthStorySurfaceState({
           showPassword={showPassword}
         />
       ) : (
-        <main
-          className={`pda-auth-main${
-            isEmailVerificationScreen ? ' pda-auth-main--focused' : ''
-          }`}
-        >
-          {!isEmailVerificationScreen ? (
-            <section
-              className="pda-auth-context"
-              aria-labelledby="pda-auth-title"
-            >
-              <div className="pda-auth-context__copy">
-                <span className="pda-auth-kicker">
-                  {copy.eyebrow}
-                </span>
-
-                <h1 id="pda-auth-title">{copy.title}</h1>
-
-                <p>{copy.summary}</p>
-              </div>
-
-              <AccessVisual copy={copy} progressIndex={progressIndex} />
-
-              <div className="pda-auth-context__status">
-                <span
-                  className="pda-auth-context__pulse"
-                  aria-hidden="true"
-                />
-
-                <span>
-                  <strong>Stan procesu</strong>
-                  <span>{copy.status}</span>
-                </span>
-              </div>
-            </section>
-          ) : null}
-
+        <main className="pda-auth-main">
           <section
             className="pda-auth-workspace"
             aria-label="Formularz dostępu"
@@ -389,122 +347,6 @@ function AuthProgress({
         };
       })}
     />
-  );
-}
-
-function AccessVisual({
-  copy,
-  progressIndex,
-}: {
-  copy: AuthScreenCopy;
-  progressIndex: number;
-}) {
-  return (
-    <div className="pda-access-visual" aria-hidden="true">
-      <svg
-        className="pda-access-network"
-        preserveAspectRatio="xMidYMid meet"
-        viewBox="0 0 520 340"
-      >
-        <path
-          className="pda-access-network__track pda-access-network__track--entry"
-          d="M62 174 C148 174 174 190 242 181"
-        />
-        <path
-          className="pda-access-network__track pda-access-network__track--verification"
-          d="M460 72 C383 72 350 124 278 163"
-        />
-        <path
-          className="pda-access-network__track pda-access-network__track--workspace"
-          d="M460 270 C380 270 346 226 278 191"
-        />
-
-        <path
-          className="pda-access-network__signal pda-access-network__signal--entry"
-          d="M62 174 C148 174 174 190 242 181"
-          pathLength="1"
-        />
-        <path
-          className="pda-access-network__signal pda-access-network__signal--verification"
-          d="M460 72 C383 72 350 124 278 163"
-          pathLength="1"
-        />
-        <path
-          className="pda-access-network__signal pda-access-network__signal--workspace"
-          d="M460 270 C380 270 346 226 278 191"
-          pathLength="1"
-        />
-      </svg>
-
-      <span className="pda-access-visual__orbit pda-access-visual__orbit--outer" />
-      <span className="pda-access-visual__orbit pda-access-visual__orbit--inner" />
-
-      <AccessNode
-        icon={<UserRoundCheck size={19} strokeWidth={1.7} />}
-        label="Konto"
-        position="entry"
-        state={
-          progressIndex > 0
-            ? 'complete'
-            : progressIndex === 0
-              ? 'active'
-              : 'idle'
-        }
-      />
-
-      <AccessNode
-        icon={<Fingerprint size={20} strokeWidth={1.7} />}
-        label="Sygnał"
-        position="verification"
-        state={
-          progressIndex > 1
-            ? 'complete'
-            : progressIndex === 1
-              ? 'active'
-              : 'idle'
-        }
-      />
-
-      <AccessNode
-        icon={<Waypoints size={20} strokeWidth={1.7} />}
-        label="Workspace"
-        position="workspace"
-        state={progressIndex === 2 ? 'active' : 'idle'}
-      />
-
-      <div className="pda-access-visual__core">
-        <span className="pda-access-visual__core-ring" />
-        <ShieldCheck size={28} strokeWidth={1.55} />
-      </div>
-
-      <div className="pda-access-visual__readout">
-        <span className="pda-access-visual__readout-label">
-          {copy.visualTitle}
-        </span>
-        <span>{copy.visualText}</span>
-      </div>
-    </div>
-  );
-}
-
-function AccessNode({
-  icon,
-  label,
-  position,
-  state,
-}: {
-  icon: ReactNode;
-  label: string;
-  position: 'entry' | 'verification' | 'workspace';
-  state: 'active' | 'complete' | 'idle';
-}) {
-  return (
-    <div
-      className={`pda-access-node pda-access-node--${position} is-${state}`}
-    >
-      <span>{state === 'complete' ? <Check size={17} /> : icon}</span>
-      <small>{label}</small>
-    </div>
   );
 }
 

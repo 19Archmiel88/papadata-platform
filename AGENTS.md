@@ -42,7 +42,6 @@ Raport końcowy ma być krótki.
 
 Jawnego zatwierdzenia nadal wymagają:
 
-- instalacja nowej zależności produkcyjnej;
 - zmiana przyjętej architektury;
 - rozszerzenie zakresu MVP;
 - operacje na GCP lub Terraform;
@@ -217,13 +216,17 @@ Nowa funkcja wymaga:
 
 ## 12. Zależności
 
+Codex może dodać zależność wymaganą przez bieżące zadanie bez dodatkowego
+pytania, jeżeli zmiana mieści się w zaakceptowanym zakresie pracy i nie wymaga
+ADR ani zmiany architektury.
+
 Przed dodaniem zależności:
 
 - wskaż problem;
 - oceń alternatywę bez zależności;
 - sprawdź utrzymanie, licencję, bezpieczeństwo i bundle/runtime cost;
 - wskaż miejsce instalacji;
-- uzyskaj zgodę.
+- uruchom właściwe kontrole po instalacji.
 
 Nie instaluj pakietów w root, jeżeli należą tylko do jednej aplikacji.
 

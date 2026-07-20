@@ -16,7 +16,7 @@ Aktualnie w repo działają:
 
 Nie są jeszcze zainstalowane jako produkcyjny runtime: NestJS, `pg`,
 ioredis, OpenTelemetry, provider SDK GCP, billing SDK ani OpenAI SDK. Ich
-dodanie nadal wymaga właściwego zadania, ADR lub zgody zgodnie z `AGENTS.md`.
+dodanie nadal wymaga właściwego zadania albo ADR zgodnie z `AGENTS.md`.
 
 ## Instalowane w fundamencie
 

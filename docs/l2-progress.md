@@ -29,6 +29,13 @@ Docker Compose.
   izolacji.
 - Dodano `tsconfig.base.json` dla nowych pakietów backendu.
 
+## Korekta podziału backendu
+
+Poprawiony podział backendu ma 9 zadań i jest zapisany w
+`docs/backend-implementation-plan.md`. Zadanie 1 obejmuje audyt, ADR-y oraz
+wspólny kontrakt API, ponieważ wszystkie późniejsze endpointy muszą używać
+jednego standardu odpowiedzi, idempotencji i wersjonowania.
+
 ## Granice
 
 - Backend nie uruchamia serwera HTTP.

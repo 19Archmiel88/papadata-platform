@@ -4,7 +4,27 @@
 
 Aktualna wersja kontraktów to `domain-contracts.v1`.
 
-Implementacja znajduje się w `apps/web/src/domain-contracts`.
+Wspólny kontrakt backendu znajduje się w `packages/contracts`. Istniejące
+kontrakty i fixtures frontendu z wcześniejszych fal pozostają w
+`apps/web/src/domain-contracts` oraz katalogach funkcji do czasu migracji na
+wspólny pakiet.
+
+## Standard API backendu
+
+Każdy endpoint BFF/API używa:
+
+- wersji `/v1`;
+- `contractVersion`;
+- `correlationId`;
+- `readiness`;
+- `limitations`;
+- `operationId` dla operacji asynchronicznych;
+- `Idempotency-Key` dla bezpiecznego powtarzania komend;
+- `expectedVersion` albo `ETag` dla concurrency;
+- paginacji kursorowej dla list.
+
+Sukces zwraca `ApiResponseEnvelope`, błąd zwraca `ApiErrorEnvelope`, a listy
+zwracają `CursorPage`.
 
 ## Zakres Fali 0
 

@@ -50,8 +50,7 @@
 - Pino
 - nestjs-pino
 - pg
-- Drizzle ORM
-- Drizzle Kit
+- plain SQL migrations
 - ioredis
 - OpenTelemetry
 - Undici

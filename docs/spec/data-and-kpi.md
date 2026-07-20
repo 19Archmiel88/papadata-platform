@@ -67,3 +67,42 @@ Zakres:
   `revenue_after_fees`.
 
 Fuzzy matching pozostaje wyłączony jako `fuzzy.disabled.2026-07`.
+
+## Implementacja Fali 4
+
+Implementacja local/CI znajduje się w `apps/web/src/features/analytics`.
+
+Zakres:
+
+- wersjonowane `MetricDefinition`;
+- deterministyczny Metric Engine;
+- niezmienny `MetricSnapshot`;
+- KPI readiness `READY`, `PARTIAL`, `EMPTY`, `STALE`, `INVALID`, `BLOCKED`,
+  `PROCESSING`, `RECALCULATION_REQUIRED`;
+- reconciliation source -> normalized -> canonical -> qualifying ->
+  snapshot;
+- Query Service z capability, entitlement, tenant i workspace validation;
+- cache key z tenantem, workspace, okresem, readiness i wersją definicji;
+- Command Center projections;
+- Trust Drawer;
+- drill-down;
+- alerty, zadania i controlled export.
+
+Aktywne KPI local/CI:
+
+- `Order Count`;
+- `Gross Revenue`;
+- `Refund Value`;
+- `Net Revenue`.
+
+KPI gated albo blocked:
+
+- `Marketplace Fees`;
+- `Revenue After Marketplace Fees`;
+- `Advertising Spend`;
+- `Attributed Conversion Value`;
+- `ROAS`;
+- `Contribution Margin`.
+
+`Contribution Margin` pozostaje blocked bez potwierdzonego kosztu produktu i
+innych wymaganych kosztów zmiennych.

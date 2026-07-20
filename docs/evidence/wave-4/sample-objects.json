@@ -1,0 +1,31 @@
+{
+  "metricDefinition": {
+    "kpiId": "order_count",
+    "name": "Order Count",
+    "version": "metric.order-count.v1",
+    "formulaVersion": "formula.order-count.2026-07",
+    "lifecycleStatus": "ACTIVE"
+  },
+  "metricSnapshot": {
+    "metricCode": "order_count",
+    "metricDefinitionVersion": "metric.order-count.v1",
+    "value": "2",
+    "readiness": "READY",
+    "currency": null,
+    "timezone": "Europe/Warsaw"
+  },
+  "projection": {
+    "projectionVersion": "analytics-projection.2026-07",
+    "readiness": "READY",
+    "allowedActions": [
+      "open_trust_drawer",
+      "drill_down",
+      "export"
+    ]
+  },
+  "export": {
+    "classification": "CUSTOMER_CONFIDENTIAL",
+    "retentionClass": "R-EXPORT",
+    "status": "READY"
+  }
+}

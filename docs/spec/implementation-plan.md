@@ -54,13 +54,13 @@
 
 ## Fala 4 — analityka
 
-- [ ] KPI.
-- [ ] Snapshoty.
-- [ ] Command Center.
-- [ ] Moduły analityczne.
-- [ ] Wizualizacje.
-- [ ] Insighty.
-- [ ] Storybook pełnych ekranów.
+- [x] KPI.
+- [x] Snapshoty.
+- [x] Command Center.
+- [x] Moduły analityczne.
+- [x] Wizualizacje.
+- [x] Insighty.
+- [x] Storybook pełnych ekranów.
 
 ## Fala 5 — AI
 

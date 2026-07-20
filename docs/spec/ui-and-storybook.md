@@ -176,3 +176,50 @@ Obowiązujące stany:
 - expired session;
 - workspace switch during operation;
 - light theme.
+
+## Fala 4 — Analytics Platform i Customer Workspace
+
+Ekran customer workspace znajduje się w
+`apps/web/src/features/analytics/CustomerWorkspaceScreen.tsx`.
+
+Storybook:
+
+- `PapaData/04 Ekrany docelowe/Analytics Platform i Customer Workspace`;
+- `apps/web/src/stories/analytics/wave4-analytics.stories.tsx`.
+
+Fixtures są walidowane schematem Zod i znajdują się w
+`apps/web/src/features/analytics/analyticsFixtures.ts`.
+
+Obowiązujące stany:
+
+- default;
+- loading;
+- empty confirmed;
+- missing data;
+- partial;
+- stale;
+- invalid;
+- blocked;
+- processing;
+- recalculation;
+- permission denied;
+- entitlement required;
+- recoverable error;
+- critical issue;
+- historical snapshot;
+- long content;
+- desktop;
+- tablet;
+- mobile;
+- keyboard navigation;
+- reduced motion;
+- light;
+- dark;
+- high contrast;
+- orders;
+- D2C;
+- data trust;
+- alerts;
+- tasks;
+- gated modules;
+- workspace switch.

@@ -138,3 +138,37 @@ Testy kontraktów utrwalają zasady:
 - canonical data nie są automatycznie ready dataset;
 - ready dataset nie jest automatycznie ready KPI;
 - readiness jest lokalne dla zakresu, okresu, waluty, tenanta i workspace.
+
+## Zakres Fali 4
+
+Fala 4 dodaje kontrakty analityczne w
+`apps/web/src/features/analytics/analyticsContracts.ts`:
+
+- `MetricDefinition`;
+- `MetricCalculation`;
+- `MetricSnapshot`;
+- analytics readiness;
+- analytics reconciliation;
+- projections;
+- `CommandCenterProjection`;
+- `ModuleProjection`;
+- `Task`;
+- `Alert`;
+- `ChangeSinceLastVisit`;
+- `MetricExport`;
+- `TrustDrawer`;
+- `DrillDown`;
+- analytics cache key;
+- telemetry i monitoring.
+
+Kontrakt modułu ma wersję `analytics.v1`.
+
+Inwarianty Fali 4:
+
+- UI nie oblicza KPI;
+- snapshot jest niezmienny;
+- brak danych nie jest zerem;
+- transakcje i atrybucja są rozdzielone;
+- query service ponownie waliduje capability, entitlement, tenant i workspace;
+- stale response starego workspace jest odrzucany;
+- funkcja bez backendu jest gated albo blocked.

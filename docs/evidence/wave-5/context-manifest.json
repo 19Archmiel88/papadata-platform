@@ -1,0 +1,16 @@
+{
+  "id": "ctx_wave5_example",
+  "tenantId": "ten_northstar",
+  "workspaceId": "wrk_northstar_main",
+  "useCaseId": "uc_command_center_analysis",
+  "purpose": "Analiza aktualnego widoku decyzyjnego.",
+  "metricSnapshotIds": ["metric_snapshot_example"],
+  "datasetReferences": ["dataset_orders_contract"],
+  "evidenceReferences": ["ai_ev_metric_snapshot_example"],
+  "readinessSummary": ["READY"],
+  "classifications": ["CUSTOMER_CONFIDENTIAL"],
+  "redactions": ["pii_minimized", "provider_errors_removed", "secrets_redacted"],
+  "excludedCategories": ["secrets", "raw_payloads", "credentials", "foreign_workspace"],
+  "retrievalPolicyVersion": "retrieval-policy.2026-07",
+  "integrityHash": "fnv1a:wave5"
+}

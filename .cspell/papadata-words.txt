@@ -208,3 +208,17 @@ refundów
 snapshotu
 snapshotów
 wersjonowanych
+bramkowanym
+datasetach
+fallbacku
+indexu
+invalidować
+narzu
+pomi
+playgroundem
+redactions
+snapshotcie
+tenantowi
+testsecret
+threadów
+zmapowany

@@ -106,3 +106,28 @@ KPI gated albo blocked:
 
 `Contribution Margin` pozostaje blocked bez potwierdzonego kosztu produktu i
 innych wymaganych kosztów zmiennych.
+
+## Implementacja Fali 5
+
+AI korzysta tylko z `MetricSnapshot` dostępnych przez Metrics & Query Service.
+Runtime Fali 5 nie zastępuje snapshotów fixture'em.
+
+Do AI mogą trafić:
+
+- `READY` MetricSnapshot;
+- `PARTIAL` MetricSnapshot z limitations;
+- zatwierdzone definicje KPI;
+- evidence;
+- lineage i reconciliation przez Trust Drawer;
+- agregaty.
+
+AI odmawia lub blokuje:
+
+- brak danych;
+- `INVALID` KPI;
+- `BLOCKED` KPI;
+- dane spoza tenant/workspace;
+- dane bez evidence;
+- dane poza dozwolonym data scope;
+- próby ujawnienia sekretów;
+- prompt injection.

@@ -223,3 +223,55 @@ Obowiązujące stany:
 - tasks;
 - gated modules;
 - workspace switch.
+
+## Fala 5 — Insights, decyzje i AI
+
+Ekran AI znajduje się w
+`apps/web/src/features/ai/AISurfacesScreen.tsx`.
+
+Storybook:
+
+- `PapaData/04 Ekrany docelowe/Insights, decyzje i AI`;
+- `apps/web/src/stories/ai/wave5-ai.stories.tsx`.
+
+Fixtures są walidowane schematem Zod i znajdują się w
+`apps/web/src/features/ai/aiFixtures.ts`.
+
+Obowiązujące powierzchnie:
+
+- Papa Asystent;
+- Laboratorium AI;
+- rekomendacje i decyzje;
+- AI Actions;
+- AI Provenance;
+- AI Settings;
+- AI History;
+- AI Governance.
+
+Obowiązujące stany:
+
+- disabled;
+- gated;
+- permission denied;
+- entitlement required;
+- building context;
+- streaming;
+- ready answer;
+- partial;
+- stale;
+- no data refusal;
+- invalid refusal;
+- blocked refusal;
+- out of scope refusal;
+- injection blocked;
+- evidence unavailable;
+- provider timeout;
+- provider error;
+- cost limit;
+- cancelled;
+- workspace changed;
+- session expired;
+- laboratory states;
+- recommendation states;
+- action states;
+- provenance states.

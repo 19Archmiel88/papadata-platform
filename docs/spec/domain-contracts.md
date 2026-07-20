@@ -172,3 +172,52 @@ Inwarianty Fali 4:
 - query service ponownie waliduje capability, entitlement, tenant i workspace;
 - stale response starego workspace jest odrzucany;
 - funkcja bez backendu jest gated albo blocked.
+
+## Zakres Fali 5
+
+Fala 5 dodaje kontrakty AI i decyzji w
+`apps/web/src/features/ai/aiContracts.ts`:
+
+- `AIUseCase`;
+- `AIProvider`;
+- `AIModelDefinition`;
+- `PromptTemplate`;
+- `RetrievalPolicy`;
+- `OutputSchema`;
+- `EvidencePolicy`;
+- `RefusalPolicy`;
+- `CostPolicy`;
+- `RetentionPolicy`;
+- `AIThread`;
+- `AIMessage`;
+- `ModelRun`;
+- `ContextManifest`;
+- `AIEvidence`;
+- `Observation`;
+- `Insight`;
+- `Recommendation`;
+- `Decision`;
+- `Action`;
+- `ActionProposal`;
+- `ActionExecution`;
+- `Outcome`;
+- `LaboratoryExperiment`;
+- Gate S3;
+- AI Settings;
+- AI History;
+- AI Governance;
+- Evaluation Run.
+
+Kontrakt modułu ma wersję `ai-platform.v1`.
+
+Inwarianty Fali 5:
+
+- AI nie jest źródłem prawdy;
+- AI nie ustala uprawnień, entitlementu, readiness, source authority ani KPI;
+- każdy run ma ContextManifest, evidence, provenance, cost i audit;
+- każdy fakt i istotna interpretacja wskazuje evidence;
+- produkcyjne AI jest zablokowane do spełnienia Gate S3;
+- ActionProposal nie wykonuje działania bez decyzji człowieka, approval,
+  reauthentication i rewalidacji;
+- tenant-safe retrieval ponownie waliduje tenant, workspace, membership,
+  capability, entitlement i data scope.

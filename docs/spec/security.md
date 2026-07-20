@@ -16,7 +16,7 @@
 - [ ] Append-only audit log.
 - [ ] Tamper detection.
 - [ ] Backup audytu.
-- [ ] Tenant-safe AI retrieval.
+- [x] Tenant-safe AI retrieval.
 
 ## Zdarzenia audytowe
 
@@ -38,3 +38,23 @@
 - rekomendacja AI,
 - wykonanie AI Action,
 - próba nieuprawnionego dostępu.
+
+## Implementacja Fali 5
+
+AI Gateway egzekwuje:
+
+- active membership;
+- capability;
+- entitlement;
+- tenant/workspace scope;
+- approved use case;
+- Gate S3;
+- readiness;
+- retention;
+- cost policy;
+- prompt injection detection;
+- secret redaction;
+- evidence scope validation;
+- audit.
+
+Produkcyjne AI jest zablokowane do niezależnych ocen Gate S3.

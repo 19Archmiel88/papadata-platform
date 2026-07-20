@@ -64,16 +64,16 @@
 
 ## Fala 5 — AI
 
-- [ ] AI gateway.
-- [ ] Evidence pack.
-- [ ] Structured output.
-- [ ] Fakty, wnioski i rekomendacje.
-- [ ] Odmowa przy braku danych.
-- [ ] Odmowa przy braku uprawnień.
-- [ ] AI Actions.
-- [ ] Approval.
-- [ ] Audit.
-- [ ] Evals.
+- [x] AI gateway.
+- [x] Evidence pack.
+- [x] Structured output.
+- [x] Fakty, wnioski i rekomendacje.
+- [x] Odmowa przy braku danych.
+- [x] Odmowa przy braku uprawnień.
+- [x] AI Actions.
+- [x] Approval.
+- [x] Audit.
+- [x] Evals.
 
 ## Fala 6 — billing i operacje
 

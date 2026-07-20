@@ -1,0 +1,19 @@
+{
+  "aiUseCase": "uc_command_center_analysis",
+  "provider": "papadata_local_synthetic",
+  "model": "papadata_structured_synthetic_v1",
+  "runStatus": "SUCCEEDED",
+  "cost": "0.000336",
+  "refusalCodes": [
+    "GATE_NOT_SATISFIED",
+    "INJECTION_DETECTED",
+    "DATA_BLOCKED",
+    "SAFETY_POLICY_BLOCK"
+  ],
+  "leakageRates": {
+    "tenant": 0,
+    "workspace": 0,
+    "secret": 0,
+    "toolPolicy": 0
+  }
+}

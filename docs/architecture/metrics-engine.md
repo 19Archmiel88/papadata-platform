@@ -1,5 +1,9 @@
 # Metrics Engine
 
+Backendowy Metric Engine L2 musi używać katalogu `2026-05-analytics-v1` z
+`packages/contracts`. Wąski runtime Fali 4 pozostaje lokalną implementacją
+referencyjną i nie może być traktowany jako pełny katalog metryk.
+
 Fala 4 dodaje lokalny silnik metryk w
 `apps/web/src/features/analytics/localAnalyticsRuntime.ts`.
 

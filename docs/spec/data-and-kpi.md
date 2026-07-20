@@ -53,6 +53,24 @@ Każdy KPI musi zawierać:
 - Zmiana definicji KPI wymaga wersjonowania `MetricDefinition`.
 - `MetricSnapshot` zawiera readiness, lineage i evidence.
 
+## Kanoniczny katalog metryk L2
+
+Backend L2 używa katalogu `2026-05-analytics-v1` z `packages/contracts` oraz
+opisu w `docs/architecture/canonical-metric-catalog.md`.
+
+Katalog zawiera:
+
+- 55 metryk objętych audytem;
+- 3 dodatkowe metryki GA4 oznaczone jako `supplemental`;
+- 58 metryk łącznie.
+
+Dashboard, Business Summary i Centrum Dowodzenia nie mogą wprowadzać
+alternatywnych wzorów dla tych samych kluczy. Rozbieżności `net_revenue`,
+`cac`, `aov`, `conversion_rate`, `roas`/`mer`,
+`orders_per_customer`/`purchase_frequency` oraz
+`discounts`/`discount_value_total` muszą zostać usunięte lub jawnie powiązane
+przed uznaniem Metric Engine i Dashboard API za gotowe.
+
 ## Implementacja Fali 3
 
 Implementacja local/CI znajduje się w `apps/web/src/features/data-quality`.

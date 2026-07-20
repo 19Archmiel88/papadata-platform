@@ -173,25 +173,35 @@ Tabele:
 
 ## 7. Metric Engine i Dashboard API
 
+Zadanie startuje od katalogu `2026-05-analytics-v1` z
+`packages/contracts` oraz `docs/architecture/canonical-metric-catalog.md`.
+Nie wolno budować dashboardu na osobnym słowniku KPI bez mapowania do
+kanonicznego katalogu.
+
 Zakres KPI:
 
-- sprzedaz;
-- zamowienia;
+- sprzedaż;
+- zamówienia;
 - AOV;
 - zwroty;
 - stan magazynowy;
 - ryzyko braku zapasu;
-- marza;
+- marża;
 - contribution;
 - koszt reklam;
 - ROAS;
 - CPC;
 - CPM;
 - CTR;
-- rankingi produktow.
+- rankingi produktów.
 
-Marza i wartosc magazynu nie moga byc liczone bez kosztow oraz source
+Marża i wartość magazynu nie mogą być liczone bez kosztów oraz source
 authority.
+
+Przed implementacją endpointów dashboardu trzeba usunąć lub jawnie powiązać
+rozbieżności: `net_revenue`, `cac`, `aov`, `conversion_rate`, `roas`/`mer`,
+`orders_per_customer`/`purchase_frequency` oraz
+`discounts`/`discount_value_total`.
 
 ## 8. Billing, AI, notifications i reports
 

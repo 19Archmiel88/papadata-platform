@@ -214,3 +214,642 @@ export type BackendServiceManifest = {
   readonly capabilities: readonly string[];
   readonly limitations: readonly string[];
 };
+
+export const METRIC_CATALOG_VERSION = "2026-05-analytics-v1";
+
+export const metricCatalogScopes = [
+  "audited",
+  "supplemental",
+] as const;
+
+export type MetricCatalogScope = (typeof metricCatalogScopes)[number];
+
+export const metricUnits = [
+  "count",
+  "days",
+  "hours",
+  "money",
+  "percent",
+  "ratio",
+] as const;
+
+export type MetricUnit = (typeof metricUnits)[number];
+
+export const metricCalculationStatuses = [
+  "ok",
+  "zero",
+  "partial",
+  "no_data",
+  "not_configured",
+  "not_supported",
+  "syncing",
+  "needs_reauth",
+  "permission_error",
+  "network_error",
+  "provider_error",
+  "error",
+] as const;
+
+export type MetricCalculationStatus =
+  (typeof metricCalculationStatuses)[number];
+
+export type CanonicalMetricDefinition = {
+  readonly key: string;
+  readonly name: string;
+  readonly catalogScope: MetricCatalogScope;
+  readonly unit: MetricUnit;
+  readonly formula: string;
+  readonly requiredSources: readonly string[];
+  readonly qualityNotes: readonly string[];
+};
+
+type ExactLength<T extends readonly unknown[], TLength extends number> =
+  T & {
+    readonly length: TLength;
+  };
+
+const defineAuditedMetricCatalog = <
+  const T extends readonly CanonicalMetricDefinition[],
+>(
+  definitions: ExactLength<T, 55>,
+): T => definitions;
+
+const defineSupplementalMetricCatalog = <
+  const T extends readonly CanonicalMetricDefinition[],
+>(
+  definitions: ExactLength<T, 3>,
+): T => definitions;
+
+const defineCompleteMetricCatalog = <
+  const T extends readonly CanonicalMetricDefinition[],
+>(
+  definitions: ExactLength<T, 58>,
+): T => definitions;
+
+export const auditedMetricDefinitions = defineAuditedMetricCatalog([
+  {
+    key: "roi",
+    name: "ROI",
+    catalogScope: "audited",
+    unit: "ratio",
+    formula: "(revenue - purchase_cost - ad_spend) / (purchase_cost + ad_spend)",
+    requiredSources: ["commerce", "ads", "costs"],
+    qualityNotes: ["Requires confirmed costs and ad spend."],
+  },
+  {
+    key: "purchase_cost",
+    name: "Purchase cost",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "SUM(fact_order_lines.cogs_total_reporting)",
+    requiredSources: ["commerce", "costs"],
+    qualityNotes: ["Must be blocked or partial without source authority for costs."],
+  },
+  {
+    key: "impressions",
+    name: "Ad impressions",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "SUM(fact_ads_daily.impressions)",
+    requiredSources: ["ads"],
+    qualityNotes: ["Zero is valid only when ads data exists."],
+  },
+  {
+    key: "clicks",
+    name: "Ad clicks",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "SUM(fact_ads_daily.clicks)",
+    requiredSources: ["ads"],
+    qualityNotes: ["Zero is valid only when ads data exists."],
+  },
+  {
+    key: "sessions",
+    name: "Sessions",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "SUM(fact_analytics_daily.sessions)",
+    requiredSources: ["analytics"],
+    qualityNotes: ["Zero is valid only when analytics data exists."],
+  },
+  {
+    key: "users",
+    name: "Users",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "SUM(fact_analytics_daily.users_count)",
+    requiredSources: ["analytics"],
+    qualityNotes: ["Daily users can count the same person more than once."],
+  },
+  {
+    key: "revenue",
+    name: "Gross revenue",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "SUM(qualified_orders.totalGross)",
+    requiredSources: ["commerce"],
+    qualityNotes: ["Requires qualified commerce orders."],
+  },
+  {
+    key: "conversion_rate",
+    name: "E-commerce conversion rate",
+    catalogScope: "audited",
+    unit: "percent",
+    formula: "orders_count / sessions * 100",
+    requiredSources: ["commerce", "analytics"],
+    qualityNotes: ["Uses commerce orders, not ad platform purchases."],
+  },
+  {
+    key: "ctr",
+    name: "CTR",
+    catalogScope: "audited",
+    unit: "percent",
+    formula: "clicks / impressions * 100",
+    requiredSources: ["ads"],
+    qualityNotes: ["No artificial zero when impressions are missing."],
+  },
+  {
+    key: "ad_spend",
+    name: "Ad spend",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "SUM(fact_ads_daily.spend_reporting)",
+    requiredSources: ["ads"],
+    qualityNotes: ["Requires currency policy and source authority."],
+  },
+  {
+    key: "purchases",
+    name: "Ad platform purchases",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "SUM(fact_ads_daily.conversions)",
+    requiredSources: ["ads"],
+    qualityNotes: ["Not equivalent to orders_count."],
+  },
+  {
+    key: "roas",
+    name: "ROAS",
+    catalogScope: "audited",
+    unit: "ratio",
+    formula: "revenue / ad_spend",
+    requiredSources: ["commerce", "ads"],
+    qualityNotes: ["No artificial zero when ad spend is missing."],
+  },
+  {
+    key: "aov",
+    name: "Average order value",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "revenue / orders_count",
+    requiredSources: ["commerce"],
+    qualityNotes: ["Depends on canonical revenue definition."],
+  },
+  {
+    key: "add_to_cart",
+    name: "Add to cart",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "SUM(fact_analytics_daily.add_to_cart)",
+    requiredSources: ["analytics"],
+    qualityNotes: ["Zero is valid only when analytics events exist."],
+  },
+  {
+    key: "reach",
+    name: "Ad reach",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "exact range reach; fallback SUM(fact_ads_daily.reach)",
+    requiredSources: ["ads"],
+    qualityNotes: ["Daily reach fallback is partial."],
+  },
+  {
+    key: "avg_cpc",
+    name: "Average CPC",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "ad_spend / clicks",
+    requiredSources: ["ads"],
+    qualityNotes: ["No artificial zero when clicks are missing."],
+  },
+  {
+    key: "avg_cpm",
+    name: "Average CPM",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "ad_spend / impressions * 1000",
+    requiredSources: ["ads"],
+    qualityNotes: ["No artificial zero when impressions are missing."],
+  },
+  {
+    key: "avg_cpv",
+    name: "Average CPV",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "SUM(video_cost_reporting) / SUM(video_views)",
+    requiredSources: ["ads"],
+    qualityNotes: ["Partial when video views exist without video cost."],
+  },
+  {
+    key: "net_revenue",
+    name: "Net revenue",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "SUM(totalNet); fallback totalGross with partial status",
+    requiredSources: ["commerce"],
+    qualityNotes: ["Not equivalent to gross revenue minus refunds."],
+  },
+  {
+    key: "orders_count",
+    name: "Orders count",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "COUNT(qualified_orders)",
+    requiredSources: ["commerce"],
+    qualityNotes: ["Uses commerce order status policy."],
+  },
+  {
+    key: "avg_products_per_order",
+    name: "Average products per order",
+    catalogScope: "audited",
+    unit: "ratio",
+    formula: "products_sold_count / orders_count",
+    requiredSources: ["commerce"],
+    qualityNotes: ["No artificial zero when orders are missing."],
+  },
+  {
+    key: "avg_order_discount_percent",
+    name: "Average order discount percent",
+    catalogScope: "audited",
+    unit: "percent",
+    formula: "AVG(discount / (totalGross + discount) * 100)",
+    requiredSources: ["commerce"],
+    qualityNotes: ["Skips orders with non-positive pre-discount value."],
+  },
+  {
+    key: "discounted_orders_count",
+    name: "Discounted orders count",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "COUNT(orders with discountTotal > 0 or discount code)",
+    requiredSources: ["commerce"],
+    qualityNotes: ["Requires discount evidence."],
+  },
+  {
+    key: "non_discounted_orders_count",
+    name: "Non-discounted orders count",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "MAX(orders_count - discounted_orders_count, 0)",
+    requiredSources: ["commerce"],
+    qualityNotes: ["Derived from orders and discounted orders."],
+  },
+  {
+    key: "order_fulfillment_time",
+    name: "Order fulfillment time",
+    catalogScope: "audited",
+    unit: "hours",
+    formula: "AVG(hours_between(paidAt, fulfilledAt))",
+    requiredSources: ["commerce"],
+    qualityNotes: ["Partial when fulfillment timestamps are incomplete."],
+  },
+  {
+    key: "cancellation_return_rate",
+    name: "Cancellation and return rate",
+    catalogScope: "audited",
+    unit: "percent",
+    formula: "affected_orders / placed_orders * 100",
+    requiredSources: ["commerce", "refunds"],
+    qualityNotes: ["Each order contributes once to the numerator."],
+  },
+  {
+    key: "payment_methods_used_count",
+    name: "Payment methods used count",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "COUNT_DISTINCT(fact_payments.provider)",
+    requiredSources: ["payments"],
+    qualityNotes: ["Blocked or partial without payments data."],
+  },
+  {
+    key: "delivery_types_selected_count",
+    name: "Delivery types selected count",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "COUNT_DISTINCT(shippingMethod)",
+    requiredSources: ["commerce"],
+    qualityNotes: ["Fallback to channel is partial."],
+  },
+  {
+    key: "discounts",
+    name: "Discounts",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "SUM(discountTotal)",
+    requiredSources: ["commerce"],
+    qualityNotes: ["Duplicate of discount_value_total until resolved."],
+  },
+  {
+    key: "discount_uses_count",
+    name: "Discount uses count",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "SUM(discount code uses); fallback discounted_orders_count",
+    requiredSources: ["commerce"],
+    qualityNotes: ["Fallback is partial."],
+  },
+  {
+    key: "discounted_purchase_value_total",
+    name: "Discounted purchase value total",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "SUM(totalGross for discounted orders)",
+    requiredSources: ["commerce"],
+    qualityNotes: ["Requires discount evidence."],
+  },
+  {
+    key: "discount_value_total",
+    name: "Discount value total",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "SUM(discountTotal)",
+    requiredSources: ["commerce"],
+    qualityNotes: ["Duplicate of discounts until resolved."],
+  },
+  {
+    key: "discounted_orders_aov",
+    name: "Discounted orders AOV",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "discounted_purchase_value_total / discounted_orders_count",
+    requiredSources: ["commerce"],
+    qualityNotes: ["No artificial zero when discounted orders are missing."],
+  },
+  {
+    key: "gross_margin_total",
+    name: "Gross margin total",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "revenue - purchase_cost",
+    requiredSources: ["commerce", "costs"],
+    qualityNotes: ["Blocked without confirmed costs and source authority."],
+  },
+  {
+    key: "products_sold_count",
+    name: "Products sold count",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "SUM(fact_order_lines.quantity)",
+    requiredSources: ["commerce"],
+    qualityNotes: ["Requires canonical order lines."],
+  },
+  {
+    key: "sold_products_margin_value",
+    name: "Sold products margin value",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "SUM(fact_order_lines.gross_margin_reporting)",
+    requiredSources: ["commerce", "costs"],
+    qualityNotes: ["Blocked without confirmed costs and source authority."],
+  },
+  {
+    key: "margin_revenue_share",
+    name: "Margin revenue share",
+    catalogScope: "audited",
+    unit: "percent",
+    formula: "gross_margin_total / revenue * 100",
+    requiredSources: ["commerce", "costs"],
+    qualityNotes: ["Derived from margin and revenue readiness."],
+  },
+  {
+    key: "products_on_promotion_count",
+    name: "Products on promotion count",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "COUNT_DISTINCT(products with promotion evidence)",
+    requiredSources: ["commerce", "products"],
+    qualityNotes: ["Counts unique products, not units sold."],
+  },
+  {
+    key: "promo_product_regular_price",
+    name: "Promotion product regular price",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "quantity-weighted regular reference price",
+    requiredSources: ["commerce", "products"],
+    qualityNotes: ["Catalog or reconstructed price fallback is partial."],
+  },
+  {
+    key: "promo_product_sale_price",
+    name: "Promotion product sale price",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "quantity-weighted actual sale price",
+    requiredSources: ["commerce", "products"],
+    qualityNotes: ["Requires promotional sale evidence."],
+  },
+  {
+    key: "promo_product_discount_percent",
+    name: "Promotion product discount percent",
+    catalogScope: "audited",
+    unit: "percent",
+    formula: "(regular_price - sale_price) / regular_price * 100",
+    requiredSources: ["commerce", "products"],
+    qualityNotes: ["No artificial zero when regular price is missing."],
+  },
+  {
+    key: "customers_total",
+    name: "Customers total",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "COUNT_DISTINCT(customerId); fallback customerEmailHash",
+    requiredSources: ["commerce", "customers"],
+    qualityNotes: ["Email hash fallback is partial."],
+  },
+  {
+    key: "customers_to_users_ratio",
+    name: "Customers to users ratio",
+    catalogScope: "audited",
+    unit: "ratio",
+    formula: "customers_total / users",
+    requiredSources: ["commerce", "analytics"],
+    qualityNotes: ["Derived from customer and analytics readiness."],
+  },
+  {
+    key: "avg_revenue_per_customer",
+    name: "Average revenue per customer",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "revenue / customers_total",
+    requiredSources: ["commerce", "customers"],
+    qualityNotes: ["No artificial zero when customers are missing."],
+  },
+  {
+    key: "orders_per_customer",
+    name: "Orders per customer",
+    catalogScope: "audited",
+    unit: "ratio",
+    formula: "orders_count / customers_total",
+    requiredSources: ["commerce", "customers"],
+    qualityNotes: ["Duplicate of purchase_frequency until resolved."],
+  },
+  {
+    key: "repeat_purchase_rate",
+    name: "Repeat purchase rate",
+    catalogScope: "audited",
+    unit: "percent",
+    formula: "repeat_customers / active_customers * 100",
+    requiredSources: ["commerce", "customers"],
+    qualityNotes: ["Uses customer lifetime orders through period end."],
+  },
+  {
+    key: "purchase_frequency",
+    name: "Purchase frequency",
+    catalogScope: "audited",
+    unit: "ratio",
+    formula: "orders_count / customers_total",
+    requiredSources: ["commerce", "customers"],
+    qualityNotes: ["Duplicate of orders_per_customer until resolved."],
+  },
+  {
+    key: "avg_time_between_purchases",
+    name: "Average time between purchases",
+    catalogScope: "audited",
+    unit: "days",
+    formula: "AVG(days_between(customer_orders))",
+    requiredSources: ["commerce", "customers"],
+    qualityNotes: ["Requires chronological customer order history."],
+  },
+  {
+    key: "customer_retention_rate",
+    name: "Customer retention rate",
+    catalogScope: "audited",
+    unit: "percent",
+    formula: "retained_customers / eligible_customers * 100",
+    requiredSources: ["commerce", "customers"],
+    qualityNotes: ["Email hash fallback is partial."],
+  },
+  {
+    key: "customer_churn_rate",
+    name: "Customer churn rate",
+    catalogScope: "audited",
+    unit: "percent",
+    formula: "MAX(100 - customer_retention_rate, 0)",
+    requiredSources: ["commerce", "customers"],
+    qualityNotes: ["Derived from customer retention readiness."],
+  },
+  {
+    key: "clv",
+    name: "Customer lifetime value",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "lifetime_margin / active_customers; fallback lifetime_revenue",
+    requiredSources: ["commerce", "customers", "costs"],
+    qualityNotes: ["Revenue fallback is partial."],
+  },
+  {
+    key: "ltv",
+    name: "Lifetime value",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "lifetime_revenue_total / active_customers_count",
+    requiredSources: ["commerce", "customers"],
+    qualityNotes: ["Revenue-based lifetime metric."],
+  },
+  {
+    key: "cac",
+    name: "Blended CAC",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "ad_spend / customers_total",
+    requiredSources: ["ads", "commerce", "customers"],
+    qualityNotes: ["Not equivalent to new-customer CAC."],
+  },
+  {
+    key: "customer_revenue_over_time",
+    name: "Customer revenue over time",
+    catalogScope: "audited",
+    unit: "money",
+    formula: "SUM(lifetime customer revenue for active customers)",
+    requiredSources: ["commerce", "customers"],
+    qualityNotes: ["Requires customer identity policy."],
+  },
+  {
+    key: "customer_lifetime_orders_count",
+    name: "Customer lifetime orders count",
+    catalogScope: "audited",
+    unit: "count",
+    formula: "SUM(lifetime orders for active customers)",
+    requiredSources: ["commerce", "customers"],
+    qualityNotes: ["Requires customer identity policy."],
+  },
+] as const);
+
+export const supplementalMetricDefinitions = defineSupplementalMetricCatalog([
+  {
+    key: "begin_checkout",
+    name: "Begin checkout",
+    catalogScope: "supplemental",
+    unit: "count",
+    formula: "SUM(fact_analytics_daily.begin_checkout)",
+    requiredSources: ["analytics"],
+    qualityNotes: ["Supplemental GA4 metric available with scope=all."],
+  },
+  {
+    key: "new_users",
+    name: "New users",
+    catalogScope: "supplemental",
+    unit: "count",
+    formula: "SUM(fact_analytics_daily.new_users)",
+    requiredSources: ["analytics"],
+    qualityNotes: ["Supplemental GA4 metric available with scope=all."],
+  },
+  {
+    key: "event_count",
+    name: "Event count",
+    catalogScope: "supplemental",
+    unit: "count",
+    formula: "SUM(fact_analytics_daily.event_count)",
+    requiredSources: ["analytics"],
+    qualityNotes: ["Supplemental GA4 metric available with scope=all."],
+  },
+] as const);
+
+export const canonicalMetricDefinitions = defineCompleteMetricCatalog([
+  ...auditedMetricDefinitions,
+  ...supplementalMetricDefinitions,
+] as const);
+
+export type CanonicalMetricKey =
+  (typeof canonicalMetricDefinitions)[number]["key"];
+
+export type AuditedMetricKey =
+  (typeof auditedMetricDefinitions)[number]["key"];
+
+export type SupplementalMetricKey =
+  (typeof supplementalMetricDefinitions)[number]["key"];
+
+export const metricCatalogSummary = {
+  auditedCount: auditedMetricDefinitions.length,
+  supplementalCount: supplementalMetricDefinitions.length,
+  totalCount: canonicalMetricDefinitions.length,
+  version: METRIC_CATALOG_VERSION,
+} as const;
+
+export const dashboardMetricConflictKeys = [
+  "net_revenue",
+  "cac",
+  "aov",
+  "conversion_rate",
+  "roas",
+  "orders_per_customer",
+  "purchase_frequency",
+  "discounts",
+  "discount_value_total",
+] as const satisfies readonly CanonicalMetricKey[];
+
+export const dashboardOnlyMetricKeys = [
+  "gmv",
+  "refund_rate",
+  "margin",
+  "mer",
+];

@@ -32,7 +32,19 @@ export default defineConfig(({ command, mode }) => {
       sourcemap: false,
     },
     optimizeDeps: {
-      include: ['valibot'],
+      include: [
+        '@radix-ui/react-checkbox',
+        '@radix-ui/react-dialog',
+        '@radix-ui/react-dropdown-menu',
+        '@radix-ui/react-popover',
+        '@radix-ui/react-select',
+        '@radix-ui/react-separator',
+        '@radix-ui/react-switch',
+        '@radix-ui/react-tabs',
+        '@radix-ui/react-tooltip',
+        'motion/react',
+        'valibot',
+      ],
     },
     plugins: [react(), tailwindcss()],
     test: {

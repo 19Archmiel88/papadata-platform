@@ -8,6 +8,62 @@ const preview: Preview = {
         order: [
           'PapaData',
           [
+            '00-foundations',
+            [
+              'Pełny interfejs',
+            ],
+            '05-primitives',
+            [
+              'Komponenty',
+            ],
+            '10-account-access',
+            [
+              'Ekrany dostępu',
+            ],
+            '20-onboarding',
+            [
+              'Onboarding',
+            ],
+            '30-command-center',
+            [
+              'Customer Workspace',
+            ],
+            '40-analytics',
+            [
+              'Wykresy i filtry dat',
+            ],
+            '50-integrations',
+            [
+              'Integracje',
+            ],
+            '60-data-quality',
+            [
+              'Jakość danych',
+            ],
+            '70-decisions',
+            [
+              'Decyzje i działania',
+            ],
+            '80-assistant',
+            [
+              'Papa Asystent',
+            ],
+            '90-reports',
+            [
+              'Raporty i eksporty',
+            ],
+            '100-settings',
+            [
+              'Ustawienia',
+            ],
+            '110-billing',
+            [
+              'Subskrypcja i użycie',
+            ],
+            '120-internal-control-plane',
+            [
+              'Ekrany operacyjne',
+            ],
             '01 Podstawy marki',
             [
               'Kolory',

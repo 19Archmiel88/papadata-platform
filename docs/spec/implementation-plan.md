@@ -28,29 +28,29 @@
 
 ## Fala 2 — integracje
 
-- [ ] Wspólny adapter integracji.
-- [ ] Secrets.
-- [ ] Kolejki.
-- [ ] Checkpointy.
-- [ ] Retry.
-- [ ] DLQ.
-- [ ] Backfill.
-- [ ] Reconnect.
-- [ ] Disconnect.
-- [ ] Monitoring.
-- [ ] Runbooki.
+- [x] Wspólny adapter integracji.
+- [x] Secrets.
+- [x] Kolejki.
+- [x] Checkpointy.
+- [x] Retry.
+- [x] DLQ.
+- [x] Backfill.
+- [x] Reconnect.
+- [x] Disconnect.
+- [x] Monitoring.
+- [x] Runbooki.
 
 ## Fala 3 — dane
 
-- [ ] Source data.
-- [ ] Normalized data.
-- [ ] Canonical data.
-- [ ] Lineage.
-- [ ] Deduplikacja.
-- [ ] Konflikty danych.
-- [ ] Quality.
-- [ ] Readiness.
-- [ ] Reprocessing.
+- [x] Source data.
+- [x] Normalized data.
+- [x] Canonical data.
+- [x] Lineage.
+- [x] Deduplikacja.
+- [x] Konflikty danych.
+- [x] Quality.
+- [x] Readiness.
+- [x] Reprocessing.
 
 ## Fala 4 — analityka
 

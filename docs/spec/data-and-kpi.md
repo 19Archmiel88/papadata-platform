@@ -52,3 +52,18 @@ Każdy KPI musi zawierać:
 - KPI nie może być `ready`, jeżeli wymagane dane nie przeszły readiness.
 - Zmiana definicji KPI wymaga wersjonowania `MetricDefinition`.
 - `MetricSnapshot` zawiera readiness, lineage i evidence.
+
+## Implementacja Fali 3
+
+Implementacja local/CI znajduje się w `apps/web/src/features/data-quality`.
+
+Zakres:
+
+- source -> raw normalized -> exact matching -> source authority ->
+  canonicalization -> lineage;
+- quality assessment i readiness datasetu `orders`;
+- DataIssue, manual review, reprocessing, impact report i reconciliation;
+- minimalne `MetricDefinition` dla `order_count`, `gross_revenue` i
+  `revenue_after_fees`.
+
+Fuzzy matching pozostaje wyłączony jako `fuzzy.disabled.2026-07`.

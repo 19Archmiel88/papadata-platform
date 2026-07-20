@@ -187,6 +187,16 @@ const preview: Preview = {
                   'Nieaktualne dane',
                 ],
               ],
+              'Jakość danych i integralność',
+              [
+                'Gotowy dataset',
+                'Brak danych',
+                'Częściowy dataset',
+                'Dataset nieprawidłowy',
+                'Dataset zablokowany',
+                'Reprocess',
+                'Reconciliation',
+              ],
             ],
 
             '05 Diagnostyka deweloperska',

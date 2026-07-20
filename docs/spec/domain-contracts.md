@@ -77,6 +77,57 @@ Zmiana workspace w runtime:
 - odrzuca późne odpowiedzi ze starego workspace;
 - zapisuje audit event bez sekretów, tokenów ani kodów MFA.
 
+## Zakres Fali 2
+
+Fala 2 dodaje kontrakty integracji w
+`apps/web/src/features/integrations/integrationContracts.ts`:
+
+- `IntegrationProvider`;
+- `IntegrationConnection`;
+- `ScopePolicy` i `ScopeDiff`;
+- `CredentialMetadata`;
+- `SyncJob`;
+- `SyncCheckpoint`;
+- `SourceBatch`;
+- `SourceRecord`;
+- `OutboxEvent`;
+- `WebhookEnvelope`;
+- `SafeIntegrationError`;
+- request i response schemas dla API facade integracji.
+
+Kontrakt adaptera ma wersję `integration-adapter.v1`, a polityka scopes ma
+wersję `integration-policy.2026-07`.
+
+Fala 2 rozszerza audit eventy o wielkie litery w nazwach zdarzeń, ponieważ
+integracje używają zdarzeń operacyjnych w formacie
+`INTEGRATION_CONNECT_STARTED`.
+
+## Zakres Fali 3
+
+Fala 3 dodaje kontrakty danych w
+`apps/web/src/features/data-quality/dataQualityContracts.ts`:
+
+- `RawNormalizedRecord`;
+- `SourceAuthorityRule`;
+- `OverlapCandidate`;
+- `ExactMatchResult`;
+- `CanonicalOrder`;
+- `LineageLink`;
+- `Dataset`;
+- `QualityAssessment`;
+- `ReadinessAssessment`;
+- `DataIssue`;
+- `ManualDataDecision`;
+- `ReprocessJob`;
+- `DataImpactReport`;
+- `ReconciliationReport`;
+- `MetricDefinition`;
+- `DataInventoryEntry`;
+- `DeletionLedgerEntry`.
+
+Kontrakt modułu ma wersję `data-quality.v1`. Referencyjny dataset to
+WooCommerce `orders`, a referencyjny fakt kanoniczny to `CanonicalOrder`.
+
 ## Inwarianty danych
 
 Testy kontraktów utrwalają zasady:

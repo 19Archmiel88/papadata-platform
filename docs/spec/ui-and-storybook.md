@@ -81,3 +81,98 @@ Wspólne wzorce Fali 1 znajdują się w `apps/web/src/shared/patterns`:
 - `PermissionBoundary`;
 - `DataIssuePanel`;
 - standardowe stany empty, partial, error i expired session.
+
+## Fala 2 — integracje i synchronizacja
+
+Ekran integracji znajduje się w
+`apps/web/src/features/integrations/IntegrationLifecycleScreen.tsx`.
+
+Storybook:
+
+- `PapaData/04 Ekrany docelowe/Integracje i synchronizacja`;
+- `apps/web/src/stories/integrations/wave2-integrations.stories.tsx`.
+
+Fixtures są walidowane schematem Zod i znajdują się w
+`apps/web/src/features/integrations/integrationFixtures.ts`.
+
+Obowiązujące stany:
+
+- provider unavailable;
+- provider pilot;
+- missing capability;
+- missing entitlement;
+- not connected;
+- connecting;
+- OAuth cancelled;
+- callback error;
+- bad redirect;
+- full scope;
+- limited scope;
+- active;
+- initial sync queued;
+- initial sync running;
+- initial sync partial;
+- initial sync failed;
+- no data;
+- rate limit;
+- retry wait;
+- provider outage;
+- schema mismatch;
+- credential expired;
+- reauth required;
+- reconnect success;
+- reconnect failure;
+- scope increased;
+- scope decreased;
+- backfill;
+- disconnect impact;
+- revoke failure;
+- disabled connection;
+- recovery success;
+- recovery failure;
+- forbidden;
+- expired session;
+- workspace switch during operation;
+- light theme.
+
+## Fala 3 — jakość danych i integralność
+
+Ekran jakości danych znajduje się w
+`apps/web/src/features/data-quality/DataQualityCenterScreen.tsx`.
+
+Storybook:
+
+- `PapaData/04 Ekrany docelowe/Jakość danych i integralność`;
+- `apps/web/src/stories/data-quality/wave3-data-quality.stories.tsx`.
+
+Fixtures są walidowane schematem Zod i znajdują się w
+`apps/web/src/features/data-quality/dataQualityFixtures.ts`.
+
+Obowiązujące stany:
+
+- `NO_DATA`;
+- `INGESTING`;
+- `PARTIAL`;
+- `DELAYED`;
+- `INVALID`;
+- `PROCESSING`;
+- `READY`;
+- `RESYNC_REQUIRED`;
+- `BLOCKED`;
+- schema mismatch;
+- missing required field;
+- unknown status;
+- missing currency;
+- duplicate source record;
+- exact match;
+- overlap;
+- source authority;
+- manual review;
+- reprocess;
+- reconciliation;
+- old/new impact;
+- missing lineage;
+- forbidden;
+- expired session;
+- workspace switch during operation;
+- light theme.

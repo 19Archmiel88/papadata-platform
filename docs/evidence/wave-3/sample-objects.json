@@ -1,0 +1,17 @@
+{
+  "sourceBatchCounts": {
+    "accepted": 2,
+    "duplicated": 0,
+    "failed": 0,
+    "fetched": 2,
+    "quarantined": 0
+  },
+  "canonicalFact": "CanonicalOrder",
+  "dataset": "orders",
+  "provider": "woocommerce",
+  "readiness": "READY",
+  "allowedMetricCodes": ["order_count", "gross_revenue"],
+  "blockedMetricCodes": ["revenue_after_fees"],
+  "fuzzyMatching": "fuzzy.disabled.2026-07",
+  "reconciliation": "PASS"
+}

@@ -210,6 +210,29 @@ export const dataLayerCatalog = [
 export const dataLayerSchema = z.enum(dataLayerCatalog);
 export type DataLayer = z.infer<typeof dataLayerSchema>;
 
+export const dataClassificationCatalog = [
+  'PUBLIC_CONFIG',
+  'CUSTOMER_CONFIDENTIAL',
+  'PERSONAL_DATA',
+  'CREDENTIALS',
+  'AUDIT_SECURITY',
+] as const;
+
+export const dataClassificationSchema = z.enum(dataClassificationCatalog);
+export type DataClassification = z.infer<typeof dataClassificationSchema>;
+
+export const retentionClassCatalog = [
+  'R-TRANSIENT',
+  'R-EXPORT',
+  'R-BUSINESS',
+  'R-AUDIT',
+  'R-BACKUP',
+  'R-SECURITY',
+] as const;
+
+export const retentionClassSchema = z.enum(retentionClassCatalog);
+export type RetentionClass = z.infer<typeof retentionClassSchema>;
+
 export const readinessStateCatalog = [
   'no_data',
   'partial',
@@ -431,7 +454,7 @@ export const auditEventSchema = z.object({
   eventType: z
     .string()
     .min(3)
-    .regex(/^[a-z0-9_.:-]+$/),
+    .regex(/^[A-Za-z0-9_.:-]+$/),
   occurredAt: isoDateTimeSchema,
   reason: z.string().min(1).optional(),
   result: z.enum(['success', 'failure', 'denied']),

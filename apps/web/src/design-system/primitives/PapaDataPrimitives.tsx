@@ -501,7 +501,7 @@ export function AppHeader({
         />
 
         {canChangeLanguage || canChangeTheme || trailing ? (
-          <div className="pds-preferences" aria-label="Ustawienia widoku">
+          <div className="pds-preferences" role="group" aria-label="Ustawienia widoku">
             {canChangeLanguage ? (
               <button
                 aria-label={

@@ -27,8 +27,9 @@ function ThemePreferencesReference() {
         >
           <div className="pds-foundation-preference-card">
             <span>Język</span>
-            <div className="pds-preferences" aria-label="Język">
+            <div className="pds-preferences" role="group" aria-label="Język">
               <button
+                aria-label="Przełącz język"
                 className="pds-preferences__button pds-preferences__button--language"
                 type="button"
               >
@@ -50,6 +51,7 @@ function ThemePreferencesReference() {
           <div className="pds-foundation-preference-card">
             <span>Motyw jasny</span>
             <button
+              aria-label="Włącz motyw ciemny"
               className="pds-preferences__button pds-preferences__button--theme"
               type="button"
             >
@@ -63,6 +65,7 @@ function ThemePreferencesReference() {
           >
             <span>Motyw ciemny</span>
             <button
+              aria-label="Włącz motyw jasny"
               className="pds-preferences__button pds-preferences__button--theme"
               type="button"
             >

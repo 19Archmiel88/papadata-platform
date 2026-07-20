@@ -7,7 +7,7 @@ import {
 } from '../../features/full-interface';
 
 const meta = {
-  title: 'PapaData/80-assistant/Papa Asystent',
+  title: 'PapaData/80 Asystent/Papa Asystent',
   component: PapaDataFullInterfaceScreen,
   parameters: {
     layout: 'fullscreen',
@@ -57,7 +57,7 @@ function story(args: Partial<PapaDataFullInterfaceScreenProps>, name: string): S
 }
 
 export const Default: Story = {
-  ...story({}, 'Default'),
+  ...story({}, 'Domyślny'),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.findByRole('heading', { name: /Papa Asystent/i })).resolves.toBeInTheDocument();
@@ -73,13 +73,13 @@ export const Default: Story = {
   },
 };
 
-export const Loading = story({ state: 'loading' }, 'Loading');
-export const Generating = story({ state: 'processing' }, 'Generating');
-export const ReadyAnswer = story({ state: 'ready' }, 'Ready answer');
-export const Partial = story({ state: 'partial' }, 'Partial');
-export const RefusalNoData = story({ state: 'insufficient_data' }, 'Refusal no data');
-export const ProviderError = story({ state: 'provider_error' }, 'Provider error');
-export const Cancelled = story({ state: 'cancelled' }, 'Cancelled');
-export const BlockedByPolicy = story({ state: 'blocked_by_policy' }, 'Blocked by policy');
+export const Loading = story({ state: 'loading' }, 'Ładowanie');
+export const Generating = story({ state: 'processing' }, 'Generowanie');
+export const ReadyAnswer = story({ state: 'ready' }, 'Gotowa odpowiedź');
+export const Partial = story({ state: 'partial' }, 'Częściowa odpowiedź');
+export const RefusalNoData = story({ state: 'insufficient_data' }, 'Odmowa: brak danych');
+export const ProviderError = story({ state: 'provider_error' }, 'Błąd providera');
+export const Cancelled = story({ state: 'cancelled' }, 'Anulowane');
+export const BlockedByPolicy = story({ state: 'blocked_by_policy' }, 'Zablokowane polityką');
 export const Mobile = story({ viewport: 'mobile' }, 'Mobile');
-export const Dark = story({ theme: 'dark' }, 'Dark');
+export const Dark = story({ theme: 'dark' }, 'Motyw ciemny');

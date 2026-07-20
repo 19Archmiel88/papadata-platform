@@ -8,59 +8,59 @@ const preview: Preview = {
         order: [
           'PapaData',
           [
-            '00-foundations',
+            '00 Fundamenty',
             [
               'Pełny interfejs',
             ],
-            '05-primitives',
+            '05 Prymitywy',
             [
               'Komponenty',
             ],
-            '10-account-access',
+            '10 Dostęp do konta',
             [
               'Ekrany dostępu',
             ],
-            '20-onboarding',
+            '20 Onboarding',
             [
               'Onboarding',
             ],
-            '30-command-center',
+            '30 Customer Workspace',
             [
               'Customer Workspace',
             ],
-            '40-analytics',
+            '40 Analityka',
             [
               'Wykresy i filtry dat',
             ],
-            '50-integrations',
+            '50 Integracje',
             [
               'Integracje',
             ],
-            '60-data-quality',
+            '60 Jakość danych',
             [
               'Jakość danych',
             ],
-            '70-decisions',
+            '70 Decyzje',
             [
               'Decyzje i działania',
             ],
-            '80-assistant',
+            '80 Asystent',
             [
               'Papa Asystent',
             ],
-            '90-reports',
+            '90 Raporty',
             [
               'Raporty i eksporty',
             ],
-            '100-settings',
+            '100 Ustawienia',
             [
               'Ustawienia',
             ],
-            '110-billing',
+            '110 Rozliczenia',
             [
               'Subskrypcja i użycie',
             ],
-            '120-internal-control-plane',
+            '120 Panel operacyjny',
             [
               'Ekrany operacyjne',
             ],
@@ -313,7 +313,7 @@ const preview: Preview = {
       // 'todo' - show a11y violations in the test UI only
       // 'error' - fail CI on a11y violations
       // 'off' - skip a11y checks entirely
-      test: 'todo',
+      test: 'error',
     },
   },
 };

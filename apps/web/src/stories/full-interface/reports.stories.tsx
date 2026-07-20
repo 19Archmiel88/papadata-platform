@@ -6,7 +6,7 @@ import {
 } from '../../features/full-interface';
 
 const meta = {
-  title: 'PapaData/90-reports/Raporty i eksporty',
+  title: 'PapaData/90 Raporty/Raporty i eksporty',
   component: PapaDataFullInterfaceScreen,
   parameters: { layout: 'fullscreen' },
   args: {
@@ -26,11 +26,11 @@ function story(args: Partial<PapaDataFullInterfaceScreenProps>, name: string): S
   return { args, name };
 }
 
-export const Default = story({ screenId: 'reports_exports' }, 'Default');
-export const Loading = story({ screenId: 'reports_exports', state: 'loading' }, 'Loading');
-export const Empty = story({ screenId: 'reports_exports', state: 'empty' }, 'Empty');
-export const Partial = story({ screenId: 'reports_exports', state: 'partial' }, 'Partial');
-export const Error = story({ screenId: 'reports_exports', state: 'error' }, 'Error');
-export const Forbidden = story({ screenId: 'reports_exports', state: 'forbidden' }, 'Forbidden');
+export const Default = story({ screenId: 'reports_exports' }, 'Domyślny');
+export const Loading = story({ screenId: 'reports_exports', state: 'loading' }, 'Ładowanie');
+export const Empty = story({ screenId: 'reports_exports', state: 'empty' }, 'Pusty stan');
+export const Partial = story({ screenId: 'reports_exports', state: 'partial' }, 'Częściowe dane');
+export const Error = story({ screenId: 'reports_exports', state: 'error' }, 'Błąd');
+export const Forbidden = story({ screenId: 'reports_exports', state: 'forbidden' }, 'Brak dostępu');
 export const Mobile = story({ screenId: 'reports_exports', viewport: 'mobile' }, 'Mobile');
-export const Dark = story({ screenId: 'reports_exports', theme: 'dark' }, 'Dark');
+export const Dark = story({ screenId: 'reports_exports', theme: 'dark' }, 'Motyw ciemny');

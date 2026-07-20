@@ -209,7 +209,8 @@
 .pdui-panel h2,
 .pdui-component-tile h2,
 .pdui-domain-card h3,
-.pdui-metric-card h3,
+.pdui-evidence-panel h2,
+.pdui-metric-card h2,
 .pdui-state-panel h1 {
   font-size: var(--pds-type-element, 1.125rem);
   font-weight: var(--pds-font-weight-semibold);

@@ -7,7 +7,7 @@ import {
 } from '../../features/full-interface';
 
 const meta = {
-  title: 'PapaData/40-analytics/Wykresy i filtry dat',
+  title: 'PapaData/40 Analityka/Wykresy i filtry dat',
   component: PapaDataFullInterfaceScreen,
   parameters: {
     layout: 'fullscreen',
@@ -42,7 +42,7 @@ function story(args: Partial<PapaDataFullInterfaceScreenProps>, name: string): S
 }
 
 export const Default: Story = {
-  ...story({}, 'Default'),
+  ...story({}, 'Domyślny'),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.findByText(/LineChart/i)).resolves.toBeInTheDocument();
@@ -50,9 +50,9 @@ export const Default: Story = {
   },
 };
 
-export const Loading = story({ state: 'loading' }, 'Loading');
-export const Empty = story({ state: 'empty' }, 'Empty');
-export const Partial = story({ state: 'partial' }, 'Partial');
+export const Loading = story({ state: 'loading' }, 'Ładowanie');
+export const Empty = story({ state: 'empty' }, 'Pusty stan');
+export const Partial = story({ state: 'partial' }, 'Częściowe dane');
 export const Mobile = story({ viewport: 'mobile' }, 'Mobile');
-export const Dark = story({ theme: 'dark' }, 'Dark');
-export const Light = story({ theme: 'light' }, 'Light');
+export const Dark = story({ theme: 'dark' }, 'Motyw ciemny');
+export const Light = story({ theme: 'light' }, 'Motyw jasny');

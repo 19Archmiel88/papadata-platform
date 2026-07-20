@@ -7,7 +7,7 @@ import {
 } from '../../features/full-interface';
 
 const meta = {
-  title: 'PapaData/00-foundations/Pełny interfejs',
+  title: 'PapaData/00 Fundamenty/Pełny interfejs',
   component: PapaDataFullInterfaceScreen,
   parameters: {
     layout: 'fullscreen',
@@ -67,7 +67,7 @@ function story(args: Partial<PapaDataFullInterfaceScreenProps>, name: string): S
 }
 
 export const Default: Story = {
-  ...story({}, 'Default'),
+  ...story({}, 'Domyślny'),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(
@@ -77,9 +77,9 @@ export const Default: Story = {
   },
 };
 
-export const Loading = story({ state: 'loading' }, 'Loading');
-export const Partial = story({ state: 'partial' }, 'Partial');
-export const Error = story({ state: 'error' }, 'Error');
+export const Loading = story({ state: 'loading' }, 'Ładowanie');
+export const Partial = story({ state: 'partial' }, 'Częściowe dane');
+export const Error = story({ state: 'error' }, 'Błąd');
 export const Mobile = story({ viewport: 'mobile' }, 'Mobile');
-export const Dark = story({ theme: 'dark' }, 'Dark');
-export const Light = story({ theme: 'light' }, 'Light');
+export const Dark = story({ theme: 'dark' }, 'Motyw ciemny');
+export const Light = story({ theme: 'light' }, 'Motyw jasny');

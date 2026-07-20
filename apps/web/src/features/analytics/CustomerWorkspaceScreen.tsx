@@ -391,7 +391,11 @@ function OrdersTable({ module }: { module: ModuleProjection }) {
   }
 
   return (
-    <div style={{ overflowX: 'auto' }}>
+    <div
+      aria-label="Przewijana tabela zamówień"
+      style={{ overflowX: 'auto' }}
+      tabIndex={0}
+    >
       <table>
         <caption style={{ textAlign: 'left' }}>
           Dane projekcji z pagination/sort stable w Query Service
@@ -604,7 +608,7 @@ function CustomerWorkspaceContent({
             capability={analyticsCapabilities.viewCommandCenter}
             explanation="Brak capability analytics:command-center:view w aktywnym workspace."
           >
-            <section aria-labelledby="command-center-title" style={grid}>
+            <div style={grid}>
               <Surface style={{ ...grid, padding: '1rem' }}>
                 <span style={cluster}>
                   <LayoutDashboard aria-hidden="true" size={18} />
@@ -671,7 +675,7 @@ function CustomerWorkspaceContent({
                   ))}
                 </Surface>
               </div>
-            </section>
+            </div>
           </PermissionBoundary>
 
           <ModuleSection fixture={fixture} onActivity={setActivity} />

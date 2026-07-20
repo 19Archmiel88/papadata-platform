@@ -279,10 +279,10 @@
 
 .pdw-button {
   align-items: center;
-  background: var(--pds-accent-primary);
-  border: 1px solid transparent;
+  background: var(--pds-primary);
+  border: 1px solid var(--pds-primary);
   border-radius: 0.75rem;
-  color: white;
+  color: var(--pds-primary-contrast);
   display: inline-flex;
   font: inherit;
   font-size: 0.875rem;

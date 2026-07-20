@@ -8,7 +8,7 @@ import {
 } from '../../features/full-interface';
 
 const meta = {
-  title: 'PapaData/30-command-center/Customer Workspace',
+  title: 'PapaData/30 Customer Workspace/Customer Workspace',
   component: PapaDataFullInterfaceScreen,
   parameters: {
     layout: 'fullscreen',
@@ -77,7 +77,7 @@ function screenStory(screenId: string, name: string): Story {
 }
 
 export const Default: Story = {
-  ...story({}, 'Default'),
+  ...story({}, 'Domyślny'),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.findByRole('heading', { name: /Centrum Dowodzenia/i })).resolves.toBeInTheDocument();
@@ -86,17 +86,17 @@ export const Default: Story = {
   },
 };
 
-export const Loading = story({ state: 'loading' }, 'Loading');
-export const Empty = story({ state: 'empty' }, 'Empty');
-export const NoData = story({ state: 'no_data' }, 'NoData');
-export const Partial = story({ state: 'partial' }, 'Partial');
-export const Stale = story({ state: 'stale' }, 'Stale');
-export const Error = story({ state: 'error' }, 'Error');
-export const Forbidden = story({ state: 'forbidden' }, 'Forbidden');
-export const Blocked = story({ state: 'blocked' }, 'Blocked');
-export const ExpiredSession = story({ state: 'expired' }, 'ExpiredSession');
+export const Loading = story({ state: 'loading' }, 'Ładowanie');
+export const Empty = story({ state: 'empty' }, 'Pusty stan');
+export const NoData = story({ state: 'no_data' }, 'Brak danych');
+export const Partial = story({ state: 'partial' }, 'Częściowe dane');
+export const Stale = story({ state: 'stale' }, 'Nieświeże dane');
+export const Error = story({ state: 'error' }, 'Błąd');
+export const Forbidden = story({ state: 'forbidden' }, 'Brak dostępu');
+export const Blocked = story({ state: 'blocked' }, 'Zablokowane');
+export const ExpiredSession = story({ state: 'expired' }, 'Wygasła sesja');
 export const Mobile = story({ viewport: 'mobile' }, 'Mobile');
-export const Dark = story({ theme: 'dark' }, 'Dark');
+export const Dark = story({ theme: 'dark' }, 'Motyw ciemny');
 
 export const LogowanieOdzyskiwanie = screenStory('login_access_recovery', 'Logowanie i odzyskiwanie dostępu');
 export const ZaproszenieAktywacja = screenStory('invitation_activation', 'Zaproszenie i aktywacja konta');

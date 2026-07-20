@@ -6,7 +6,7 @@ import {
 } from '../../features/full-interface';
 
 const meta = {
-  title: 'PapaData/20-onboarding/Onboarding',
+  title: 'PapaData/20 Onboarding/Onboarding',
   component: PapaDataFullInterfaceScreen,
   parameters: { layout: 'fullscreen' },
   args: {
@@ -26,11 +26,11 @@ function story(args: Partial<PapaDataFullInterfaceScreenProps>, name: string): S
   return { args, name };
 }
 
-export const Default = story({ screenId: 'company_onboarding' }, 'Default');
-export const Loading = story({ screenId: 'company_onboarding', state: 'loading' }, 'Loading');
-export const Empty = story({ screenId: 'company_onboarding', state: 'empty' }, 'Empty');
-export const Partial = story({ screenId: 'company_onboarding', state: 'partial' }, 'Partial');
-export const Error = story({ screenId: 'company_onboarding', state: 'error' }, 'Error');
+export const Default = story({ screenId: 'company_onboarding' }, 'Domyślny');
+export const Loading = story({ screenId: 'company_onboarding', state: 'loading' }, 'Ładowanie');
+export const Empty = story({ screenId: 'company_onboarding', state: 'empty' }, 'Pusty stan');
+export const Partial = story({ screenId: 'company_onboarding', state: 'partial' }, 'Częściowe dane');
+export const Error = story({ screenId: 'company_onboarding', state: 'error' }, 'Błąd');
 export const ProfilBiznesowy = story({ screenId: 'business_profile' }, 'Konfiguracja profilu biznesowego');
 export const Mobile = story({ screenId: 'company_onboarding', viewport: 'mobile' }, 'Mobile');
-export const Dark = story({ screenId: 'company_onboarding', theme: 'dark' }, 'Dark');
+export const Dark = story({ screenId: 'company_onboarding', theme: 'dark' }, 'Motyw ciemny');

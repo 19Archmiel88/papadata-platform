@@ -7,7 +7,7 @@ import {
 } from '../../features/full-interface';
 
 const meta = {
-  title: 'PapaData/05-primitives/Komponenty',
+  title: 'PapaData/05 Prymitywy/Komponenty',
   component: PapaDataFullInterfaceScreen,
   parameters: {
     layout: 'fullscreen',
@@ -46,7 +46,7 @@ function story(args: Partial<PapaDataFullInterfaceScreenProps>, name: string): S
 }
 
 export const Default: Story = {
-  ...story({}, 'Default'),
+  ...story({}, 'Domyślny'),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.findByRole('heading', { name: /Biblioteka komponentów PapaData/i })).resolves.toBeInTheDocument();
@@ -55,10 +55,10 @@ export const Default: Story = {
   },
 };
 
-export const Loading = story({ state: 'loading' }, 'Loading');
-export const Empty = story({ state: 'empty' }, 'Empty');
-export const Partial = story({ state: 'partial' }, 'Partial');
-export const Error = story({ state: 'error' }, 'Error');
-export const Forbidden = story({ state: 'forbidden' }, 'Forbidden');
+export const Loading = story({ state: 'loading' }, 'Ładowanie');
+export const Empty = story({ state: 'empty' }, 'Pusty stan');
+export const Partial = story({ state: 'partial' }, 'Częściowe dane');
+export const Error = story({ state: 'error' }, 'Błąd');
+export const Forbidden = story({ state: 'forbidden' }, 'Brak dostępu');
 export const Mobile = story({ viewport: 'mobile' }, 'Mobile');
-export const Dark = story({ theme: 'dark' }, 'Dark');
+export const Dark = story({ theme: 'dark' }, 'Motyw ciemny');

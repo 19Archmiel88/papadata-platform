@@ -82,7 +82,7 @@ export const OAuthAnulowany: Story = {
 };
 
 export const CallbackError: Story = {
-  name: 'Callback error',
+  name: 'Błąd callbacku',
   args: { fixtureId: 'callback_error' },
 };
 
@@ -107,52 +107,52 @@ export const Active: Story = {
 };
 
 export const InitialSyncQueued: Story = {
-  name: 'Initial sync queued',
+  name: 'Synchronizacja początkowa w kolejce',
   args: { fixtureId: 'initial_sync_queued' },
 };
 
 export const InitialSyncRunning: Story = {
-  name: 'Initial sync running',
+  name: 'Synchronizacja początkowa w toku',
   args: { fixtureId: 'initial_sync_running' },
 };
 
 export const InitialSyncPartial: Story = {
-  name: 'Initial sync partial',
+  name: 'Synchronizacja początkowa częściowa',
   args: { fixtureId: 'initial_sync_partial' },
 };
 
 export const InitialSyncFailed: Story = {
-  name: 'Initial sync failed',
+  name: 'Synchronizacja początkowa nieudana',
   args: { fixtureId: 'initial_sync_failed' },
 };
 
 export const NoData: Story = {
-  name: 'No data',
+  name: 'Brak danych',
   args: { fixtureId: 'no_data' },
 };
 
 export const RateLimit: Story = {
-  name: 'Rate limit',
+  name: 'Limit żądań',
   args: { fixtureId: 'rate_limit' },
 };
 
 export const RetryWait: Story = {
-  name: 'Retry wait',
+  name: 'Oczekiwanie na retry',
   args: { fixtureId: 'retry_wait' },
 };
 
 export const ProviderOutage: Story = {
-  name: 'Provider outage',
+  name: 'Awaria providera',
   args: { fixtureId: 'provider_outage' },
 };
 
 export const SchemaMismatch: Story = {
-  name: 'Schema mismatch',
+  name: 'Niezgodność schematu',
   args: { fixtureId: 'schema_mismatch' },
 };
 
 export const CredentialExpired: Story = {
-  name: 'Credential expired',
+  name: 'Wygasłe poświadczenia',
   args: { fixtureId: 'credential_expired' },
 };
 
@@ -162,22 +162,22 @@ export const ReauthRequired: Story = {
 };
 
 export const ReconnectSuccess: Story = {
-  name: 'Reconnect success',
+  name: 'Reconnect udany',
   args: { fixtureId: 'reconnect_success' },
 };
 
 export const ReconnectFailure: Story = {
-  name: 'Reconnect failure',
+  name: 'Reconnect nieudany',
   args: { fixtureId: 'reconnect_failure' },
 };
 
 export const ScopeIncreased: Story = {
-  name: 'Scope increased',
+  name: 'Scope zwiększony',
   args: { fixtureId: 'scope_increased' },
 };
 
 export const ScopeDecreased: Story = {
-  name: 'Scope decreased',
+  name: 'Scope zmniejszony',
   args: { fixtureId: 'scope_decreased' },
 };
 
@@ -186,41 +186,42 @@ export const Backfill: Story = {
 };
 
 export const DisconnectImpact: Story = {
-  name: 'Disconnect impact',
+  name: 'Wpływ rozłączenia',
   args: { fixtureId: 'disconnect_impact' },
 };
 
 export const RevokeFailure: Story = {
-  name: 'Revoke failure',
+  name: 'Nieudane cofnięcie dostępu',
   args: { fixtureId: 'revoke_failure' },
 };
 
 export const DisabledConnection: Story = {
-  name: 'Disabled connection',
+  name: 'Połączenie wyłączone',
   args: { fixtureId: 'disabled_connection' },
 };
 
 export const RecoverySuccess: Story = {
-  name: 'Recovery success',
+  name: 'Recovery udane',
   args: { fixtureId: 'recovery_success' },
 };
 
 export const RecoveryFailure: Story = {
-  name: 'Recovery failure',
+  name: 'Recovery nieudane',
   args: { fixtureId: 'recovery_failure' },
 };
 
 export const Forbidden: Story = {
+  name: 'Brak dostępu',
   args: { fixtureId: 'forbidden' },
 };
 
 export const ExpiredSession: Story = {
-  name: 'Expired session',
+  name: 'Wygasła sesja',
   args: { fixtureId: 'expired_session' },
 };
 
 export const WorkspaceSwitchPodczasOperacji: Story = {
-  name: 'Workspace switch podczas operacji',
+  name: 'Zmiana workspace podczas operacji',
   args: { fixtureId: 'workspace_switch_during_operation' },
 };
 

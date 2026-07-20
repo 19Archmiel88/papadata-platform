@@ -79,6 +79,7 @@ import {
   type UISystemState,
   type UIStatusTone,
 } from './fullInterfaceContracts';
+import '../../design-system/foundations/papadata-brand-surface.css';
 import './full-interface.css';
 
 type ClassValue = string | false | null | undefined;
@@ -649,7 +650,7 @@ export function Separator() {
 }
 
 export function Skeleton() {
-  return <span className="pdui-skeleton" aria-label="Ładowanie" />;
+  return <span className="pdui-skeleton" role="status" aria-label="Ładowanie" />;
 }
 
 export function Spinner() {
@@ -722,7 +723,7 @@ export function MetricCard({ metric }: { metric: UIMetric }) {
   return (
     <Surface className="pdui-metric-card">
       <span className="pdui-kicker">{metric.source}</span>
-      <h3>{metric.label}</h3>
+      <h2>{metric.label}</h2>
       <MetricValue metric={metric} />
       <div className="pdui-card-row">
         <MetricDelta metric={metric} />
@@ -779,7 +780,7 @@ export function EvidencePanel({ evidence }: { evidence: readonly UIEvidence[] })
     <Surface className="pdui-evidence-panel">
       <div className="pdui-panel-heading">
         <FileText aria-hidden="true" size={18} />
-        <h3>Evidence</h3>
+        <h2>Evidence</h2>
       </div>
       <ul>
         {evidence.map((item) => (

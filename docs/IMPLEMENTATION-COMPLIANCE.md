@@ -25,8 +25,8 @@
 ## Podsumowanie
 
 - ZGODNE: 9.
-- CZĘŚCIOWE: 12.
-- BRAK: 7.
+- CZĘŚCIOWE: 13.
+- BRAK: 6.
 - SPRZECZNE: 0.
 
 Najważniejsza zmiana względem starej macierzy: repozytorium nie jest już tylko
@@ -54,8 +54,8 @@ Metric Engine | Definicje KPI i Dashboard API | 27 metryk, snapshoty, readiness 
 Reports | Eksporty i pliki | Lokalny raport tworzy rzeczywisty plik, status i download. | CZĘŚCIOWE | Dodać produkcyjny storage i kontrolowane udostępnianie.
 AI | Papa Asystent z evidence, refusal, approval i eval | Lokalny backend obsługuje AI threads/messages/evidence/refusal/approvals i `INSUFFICIENT_DATA`. | CZĘŚCIOWE | Dodać provider AI, governance gate i monitoring produkcyjny.
 Billing | Pełny sandbox lifecycle | Lokalny billing sandbox obsługuje activation, plan change, cancel, resume, payment events, invoice, usage i entitlements. | CZĘŚCIOWE | Podłączyć wybranego operatora i self-service flows po ADR.
-Security docs | Lokalny baseline bezpieczeństwa | Dodano audit, security headers draft, privacy docs, AI use register, notices i security scripts. | ZGODNE | Wymagany legal review, CI i produkcyjne hardening gates.
-CI | Automatyczne bramy jakości | Brak `.github` i brak pipeline CI. | BRAK | Dodać CI dla lint, typecheck, test, build, Storybook, audit, secret scan, SAST i SBOM.
+Security docs | Lokalny baseline bezpieczeństwa | Dodano audit, security headers draft, privacy docs, AI use register, notices i security scripts. | ZGODNE | Wymagany legal review i produkcyjne hardening gates.
+CI | Automatyczne bramy jakości | `.github/workflows/ci.yml` uruchamia install, lint, typecheck, spell, markdownlint, test, build, Storybook, audit i walidację Docker Compose. | CZĘŚCIOWE | Dodać secret scan, SAST, SBOM i artefakty dowodowe w Prompt 9/hardening.
 SAST/SBOM/container scan | Bramy hardeningu | Nie wdrożono. | BRAK | Dodać w Prompt 9/hardening.
 Secret scan | Automatyczny skan sekretów | Wykonano lokalny `rg` audit, ale brak narzędzia CI. | BRAK | Dodać dedykowany secret scan i procedurę rotacji.
 OpenAPI | Kontrakt HTTP publikowany jako OpenAPI | TypeScript contracts istnieją; OpenAPI nie jest generowane. | BRAK | Dodać OpenAPI po stabilizacji API frameworka.
@@ -78,7 +78,7 @@ Backup/restore | Recovery evidence | Nie wdrożono ćwiczenia restore. | BRAK | 
 
 ## Najbliższe braki produkcyjne
 
-1. CI z testami, security scanami, SBOM i artefaktami dowodowymi.
+1. Rozszerzenie CI o secret scan, SAST, SBOM i artefakty dowodowe.
 2. BFF i pełny lokalny runtime parity: web, scheduler, seed, queue/storage
    emulator, OTel.
 3. Trwałe repozytoria `pg` dla lokalnych runtime sandbox.

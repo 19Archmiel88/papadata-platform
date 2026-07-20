@@ -6,7 +6,7 @@ import {
 } from '../../features/full-interface';
 
 const meta = {
-  title: 'PapaData/60-data-quality/Jakość danych',
+  title: 'PapaData/60 Jakość danych/Jakość danych',
   component: PapaDataFullInterfaceScreen,
   parameters: { layout: 'fullscreen' },
   args: {
@@ -26,13 +26,13 @@ function story(args: Partial<PapaDataFullInterfaceScreenProps>, name: string): S
   return { args, name };
 }
 
-export const Default = story({ screenId: 'data_quality' }, 'Default');
-export const Loading = story({ screenId: 'data_quality', state: 'loading' }, 'Loading');
-export const Empty = story({ screenId: 'data_quality', state: 'empty' }, 'Empty');
-export const Partial = story({ screenId: 'data_quality', state: 'partial' }, 'Partial');
-export const Invalid = story({ screenId: 'data_quality', state: 'invalid' }, 'Invalid');
-export const Blocked = story({ screenId: 'data_quality', state: 'blocked' }, 'Blocked');
+export const Default = story({ screenId: 'data_quality' }, 'Domyślny');
+export const Loading = story({ screenId: 'data_quality', state: 'loading' }, 'Ładowanie');
+export const Empty = story({ screenId: 'data_quality', state: 'empty' }, 'Pusty stan');
+export const Partial = story({ screenId: 'data_quality', state: 'partial' }, 'Częściowe dane');
+export const Invalid = story({ screenId: 'data_quality', state: 'invalid' }, 'Nieprawidłowe dane');
+export const Blocked = story({ screenId: 'data_quality', state: 'blocked' }, 'Zablokowane');
 export const Readiness = story({ screenId: 'readiness' }, 'Readiness');
 export const KonfliktyDuplikaty = story({ screenId: 'conflicts_duplicates' }, 'Konflikty i duplikaty');
 export const Mobile = story({ screenId: 'data_quality', viewport: 'mobile' }, 'Mobile');
-export const Dark = story({ screenId: 'data_quality', theme: 'dark' }, 'Dark');
+export const Dark = story({ screenId: 'data_quality', theme: 'dark' }, 'Motyw ciemny');

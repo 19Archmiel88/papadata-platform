@@ -6,7 +6,7 @@ import {
 } from '../../features/full-interface';
 
 const meta = {
-  title: 'PapaData/70-decisions/Decyzje i działania',
+  title: 'PapaData/70 Decyzje/Decyzje i działania',
   component: PapaDataFullInterfaceScreen,
   parameters: { layout: 'fullscreen' },
   args: {
@@ -26,14 +26,14 @@ function story(args: Partial<PapaDataFullInterfaceScreenProps>, name: string): S
   return { args, name };
 }
 
-export const Default = story({ screenId: 'recommendations' }, 'Default');
-export const Loading = story({ screenId: 'recommendations', state: 'loading' }, 'Loading');
-export const Partial = story({ screenId: 'recommendations', state: 'partial' }, 'Partial');
-export const NeedsReview = story({ screenId: 'recommendations', state: 'needs_review' }, 'Needs review');
-export const Forbidden = story({ screenId: 'recommendations', state: 'forbidden' }, 'Forbidden');
+export const Default = story({ screenId: 'recommendations' }, 'Domyślny');
+export const Loading = story({ screenId: 'recommendations', state: 'loading' }, 'Ładowanie');
+export const Partial = story({ screenId: 'recommendations', state: 'partial' }, 'Częściowe dane');
+export const NeedsReview = story({ screenId: 'recommendations', state: 'needs_review' }, 'Wymaga przeglądu');
+export const Forbidden = story({ screenId: 'recommendations', state: 'forbidden' }, 'Brak dostępu');
 export const Rekomendacje = story({ screenId: 'recommendations' }, 'Rekomendacje');
 export const Decyzje = story({ screenId: 'decisions' }, 'Decyzje');
 export const Dzialania = story({ screenId: 'actions' }, 'Działania');
 export const Rezultaty = story({ screenId: 'outcomes' }, 'Rezultaty');
 export const Mobile = story({ screenId: 'recommendations', viewport: 'mobile' }, 'Mobile');
-export const Dark = story({ screenId: 'recommendations', theme: 'dark' }, 'Dark');
+export const Dark = story({ screenId: 'recommendations', theme: 'dark' }, 'Motyw ciemny');

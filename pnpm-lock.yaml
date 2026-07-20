@@ -27,6 +27,15 @@ importers:
         specifier: ~6.0.3
         version: 6.0.3
 
+  apps/api:
+    dependencies:
+      '@papadata/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@papadata/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+
   apps/web:
     dependencies:
       '@radix-ui/react-checkbox':
@@ -183,6 +192,29 @@ importers:
       vitest:
         specifier: ^4.1.10
         version: 4.1.10(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.10)(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
+
+  apps/worker:
+    dependencies:
+      '@papadata/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@papadata/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+
+  packages/contracts: {}
+
+  packages/database:
+    dependencies:
+      '@papadata/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+
+  packages/testing:
+    dependencies:
+      '@papadata/contracts':
+        specifier: workspace:*
+        version: link:../contracts
 
 packages:
 

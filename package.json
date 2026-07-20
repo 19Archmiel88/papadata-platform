@@ -8,7 +8,7 @@
     "storybook": "pnpm --filter @papadata/web storybook",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
+    "test": "turbo run test --concurrency=1",
     "test:e2e:auth": "pnpm --filter @papadata/web test:e2e:auth",
     "test:storybook": "pnpm --filter @papadata/web test:storybook",
     "build": "turbo run build",
@@ -17,7 +17,11 @@
     "verify": "pnpm lint && pnpm typecheck && pnpm spell && pnpm markdownlint && pnpm test",
     "build-storybook": "pnpm build:storybook",
     "spell": "cspell \"**/*.{ts,tsx,md,css}\"",
-    "markdownlint": "markdownlint-cli2"
+    "markdownlint": "markdownlint-cli2",
+    "start:local": "docker compose --env-file .env.example up --build api worker",
+    "migrate": "docker compose --env-file .env.example run --rm migrate up",
+    "migrate:status": "docker compose --env-file .env.example run --rm migrate status",
+    "test:migrations": "docker compose --env-file .env.example run --rm migrate test"
   },
   "devDependencies": {
     "@cspell/dict-pl_pl": "^3.0.6",

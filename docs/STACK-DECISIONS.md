@@ -1,5 +1,23 @@
 # PapaData — katalog rekomendowanego stacku
 
+## Stan instalacji 2026-07-20
+
+Ten dokument opisuje stack rekomendowany i docelowy. Nie wszystkie pozycje są
+już zainstalowane.
+
+Aktualnie w repo działają:
+
+- pnpm, Turborepo, TypeScript, ESLint, markdownlint i cspell;
+- React, React DOM, Vite, Tailwind CSS, Radix UI, Lucide, Motion, Zod,
+  Vitest, Playwright, Storybook i `rehype-sanitize` w `apps/web`;
+- lokalne pakiety `@papadata/contracts`, `@papadata/database` i
+  `@papadata/testing`;
+- lokalny Docker Compose z PostgreSQL, Redis, API, worker i migracjami SQL.
+
+Nie są jeszcze zainstalowane jako produkcyjny runtime: NestJS, `pg`,
+ioredis, OpenTelemetry, provider SDK GCP, billing SDK ani OpenAI SDK. Ich
+dodanie nadal wymaga właściwego zadania, ADR lub zgody zgodnie z `AGENTS.md`.
+
 ## Instalowane w fundamencie
 
 ### Root / tooling

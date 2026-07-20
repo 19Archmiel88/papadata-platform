@@ -13,7 +13,9 @@
   },
   "scripts": {
     "build": "tsc -b tsconfig.json",
-    "typecheck": "tsc -b tsconfig.json --pretty false"
+    "typecheck": "tsc -b tsconfig.json --pretty false",
+    "start:local": "node local-runtime.mjs",
+    "healthcheck": "node healthcheck.mjs"
   },
   "dependencies": {
     "@papadata/contracts": "workspace:*",

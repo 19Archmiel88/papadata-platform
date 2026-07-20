@@ -215,6 +215,270 @@ export type BackendServiceManifest = {
   readonly limitations: readonly string[];
 };
 
+export const authApiPaths = {
+  register: `${API_BASE_PATH}/auth/register`,
+  login: `${API_BASE_PATH}/auth/login`,
+  logout: `${API_BASE_PATH}/auth/logout`,
+  refresh: `${API_BASE_PATH}/auth/refresh`,
+  me: `${API_BASE_PATH}/auth/me`,
+  contextSelect: `${API_BASE_PATH}/auth/context/select`,
+  passwordResetRequest: `${API_BASE_PATH}/auth/password/reset/request`,
+  passwordResetConfirm: `${API_BASE_PATH}/auth/password/reset/confirm`,
+  passwordChange: `${API_BASE_PATH}/auth/password/change`,
+  emailVerify: `${API_BASE_PATH}/auth/email/verify`,
+  mfaChallenge: `${API_BASE_PATH}/auth/mfa/challenge`,
+  mfaVerify: `${API_BASE_PATH}/auth/mfa/verify`,
+  mfaRecovery: `${API_BASE_PATH}/auth/mfa/recovery`,
+  sessions: `${API_BASE_PATH}/auth/sessions`,
+  session: `${API_BASE_PATH}/auth/sessions/:sessionId`,
+} as const satisfies Record<string, VersionedApiPath>;
+
+export type AuthApiPath = (typeof authApiPaths)[keyof typeof authApiPaths];
+
+export const tenantWorkspaceApiPaths = {
+  invitationValidate: `${API_BASE_PATH}/invitations/validate`,
+  invitationAccept: `${API_BASE_PATH}/invitations/accept`,
+  invitationResend: `${API_BASE_PATH}/invitations/resend`,
+  invitationRevoke: `${API_BASE_PATH}/invitations/:id/revoke`,
+  organizationRegister: `${API_BASE_PATH}/organizations/register`,
+  organizationVerify: `${API_BASE_PATH}/organizations/verify`,
+  organizationBootstrap: `${API_BASE_PATH}/organizations/bootstrap`,
+  workspaces: `${API_BASE_PATH}/workspaces`,
+  workspaceReadiness: `${API_BASE_PATH}/workspaces/:id/readiness`,
+  onboardingStatus: `${API_BASE_PATH}/onboarding/status`,
+  onboardingCompany: `${API_BASE_PATH}/onboarding/company`,
+  onboardingBusinessProfile: `${API_BASE_PATH}/onboarding/business-profile`,
+  onboardingPlatform: `${API_BASE_PATH}/onboarding/platform`,
+  onboardingDataSources: `${API_BASE_PATH}/onboarding/data-sources`,
+  onboardingComplete: `${API_BASE_PATH}/onboarding/complete`,
+} as const satisfies Record<string, VersionedApiPath>;
+
+export type TenantWorkspaceApiPath =
+  (typeof tenantWorkspaceApiPaths)[keyof typeof tenantWorkspaceApiPaths];
+
+export const complianceApiPaths = {
+  privacyConsent: `${API_BASE_PATH}/privacy/consent`,
+  legalDocuments: `${API_BASE_PATH}/legal/documents`,
+  legalDocument: `${API_BASE_PATH}/legal/documents/:type`,
+  legalAcceptances: `${API_BASE_PATH}/legal/acceptances`,
+  legalAcceptancesMe: `${API_BASE_PATH}/legal/acceptances/me`,
+  notifications: `${API_BASE_PATH}/notifications`,
+  notificationRead: `${API_BASE_PATH}/notifications/:id/read`,
+  notificationsReadAll: `${API_BASE_PATH}/notifications/read-all`,
+} as const satisfies Record<string, VersionedApiPath>;
+
+export type ComplianceApiPath =
+  (typeof complianceApiPaths)[keyof typeof complianceApiPaths];
+
+export const mvpIntegrationProviderIds = [
+  "woocommerce",
+  "allegro",
+  "google_ads",
+  "meta_ads",
+] as const;
+
+export type MvpIntegrationProviderId =
+  (typeof mvpIntegrationProviderIds)[number];
+
+export const commerceSalesProviderIds = [
+  "woocommerce",
+  "allegro",
+] as const satisfies readonly MvpIntegrationProviderId[];
+
+export const adsAttributionProviderIds = [
+  "google_ads",
+  "meta_ads",
+] as const satisfies readonly MvpIntegrationProviderId[];
+
+export const integrationStreams = [
+  "ad_spend",
+  "attributed_conversions",
+  "inventory",
+  "orders",
+  "products",
+  "refunds",
+] as const;
+
+export type IntegrationStream = (typeof integrationStreams)[number];
+
+export const sandboxIntegrationOperations = [
+  "account_selection",
+  "backfill",
+  "checkpoint",
+  "connect",
+  "disconnect",
+  "incremental_sync",
+  "initial_sync",
+  "partial_success",
+  "rate_limit",
+  "reauthorize",
+  "recovery",
+  "retry",
+] as const;
+
+export type SandboxIntegrationOperation =
+  (typeof sandboxIntegrationOperations)[number];
+
+export const productMappingMethods = [
+  "catalog",
+  "ean",
+  "exact_match",
+  "fuzzy_manual_review",
+  "manual",
+  "sku",
+] as const;
+
+export type ProductMappingMethod = (typeof productMappingMethods)[number];
+
+export const dashboardApiPaths = {
+  readiness: `${API_BASE_PATH}/dashboard/readiness`,
+  commandCenter: `${API_BASE_PATH}/dashboard/command-center`,
+  campaigns: `${API_BASE_PATH}/dashboard/campaigns`,
+  orders: `${API_BASE_PATH}/dashboard/orders`,
+  products: `${API_BASE_PATH}/dashboard/products`,
+  customers: `${API_BASE_PATH}/dashboard/customers`,
+  traffic: `${API_BASE_PATH}/dashboard/traffic`,
+} as const satisfies Record<string, VersionedApiPath>;
+
+export type DashboardApiPath =
+  (typeof dashboardApiPaths)[keyof typeof dashboardApiPaths];
+
+export const dashboardMetricCodes = [
+  "gross_order_value",
+  "revenue_after_refunds",
+  "orders",
+  "units_sold",
+  "returned_units",
+  "return_value",
+  "return_rate_units",
+  "return_rate_orders",
+  "aov",
+  "available_stock",
+  "stock_value",
+  "days_of_inventory",
+  "inventory_turnover",
+  "sell_through_rate",
+  "stockout_risk",
+  "product_revenue",
+  "product_units",
+  "product_margin",
+  "product_contribution",
+  "ad_spend",
+  "cpc",
+  "cpm",
+  "ctr",
+  "platform_attributed_conversions",
+  "platform_attributed_revenue",
+  "roas",
+  "cost_per_order",
+] as const;
+
+export type DashboardMetricCode = (typeof dashboardMetricCodes)[number];
+
+export const dashboardMetricReadinessStates = [
+  "ready",
+  "partial",
+  "stale",
+  "invalid",
+  "no_data",
+  "unavailable",
+] as const;
+
+export type DashboardMetricReadinessState =
+  (typeof dashboardMetricReadinessStates)[number];
+
+export const reportApiPaths = {
+  export: `${API_BASE_PATH}/reports/export`,
+  status: `${API_BASE_PATH}/reports/:id/status`,
+  download: `${API_BASE_PATH}/reports/:id/download`,
+} as const satisfies Record<string, VersionedApiPath>;
+
+export type ReportApiPath = (typeof reportApiPaths)[keyof typeof reportApiPaths];
+
+export const assistantApiPaths = {
+  threads: `${API_BASE_PATH}/assistant/threads`,
+  threadMessages: `${API_BASE_PATH}/assistant/threads/:threadId/messages`,
+  threadStream: `${API_BASE_PATH}/assistant/threads/:threadId/stream`,
+  approvals: `${API_BASE_PATH}/assistant/threads/:threadId/approvals`,
+  simulation: `${API_BASE_PATH}/assistant/threads/:threadId/simulation`,
+  revalidation: `${API_BASE_PATH}/assistant/threads/:threadId/revalidation`,
+} as const satisfies Record<string, VersionedApiPath>;
+
+export type AssistantApiPath =
+  (typeof assistantApiPaths)[keyof typeof assistantApiPaths];
+
+export const billingApiPaths = {
+  subscription: `${API_BASE_PATH}/billing/subscription`,
+  activateSubscription: `${API_BASE_PATH}/billing/subscription/activate`,
+  changePlan: `${API_BASE_PATH}/billing/subscription/change-plan`,
+  cancelSubscription: `${API_BASE_PATH}/billing/subscription/cancel`,
+  resumeSubscription: `${API_BASE_PATH}/billing/subscription/resume`,
+  paymentPending: `${API_BASE_PATH}/billing/payment/pending`,
+  paymentFailed: `${API_BASE_PATH}/billing/payment/failed`,
+  paymentRecovered: `${API_BASE_PATH}/billing/payment/recovered`,
+  generateInvoice: `${API_BASE_PATH}/billing/invoices/generate`,
+  updateUsage: `${API_BASE_PATH}/billing/usage/update`,
+  limitReached: `${API_BASE_PATH}/billing/limits/reached`,
+  changeEntitlement: `${API_BASE_PATH}/billing/entitlements/change`,
+} as const satisfies Record<string, VersionedApiPath>;
+
+export type BillingApiPath = (typeof billingApiPaths)[keyof typeof billingApiPaths];
+
+export const workerJobTypes = [
+  "email_outbox",
+  "sync",
+  "backfill",
+  "readiness",
+  "metric_calculation",
+  "reprocessing",
+  "notifications",
+  "reports",
+  "exports",
+  "ai_briefings",
+  "cleanup",
+  "retry",
+  "dlq",
+] as const;
+
+export type WorkerJobType = (typeof workerJobTypes)[number];
+
+export const billingSandboxEventTypes = [
+  "subscription_activated",
+  "plan_changed",
+  "subscription_cancelled",
+  "subscription_resumed",
+  "payment_pending",
+  "payment_failed",
+  "payment_recovered",
+  "invoice_generated",
+  "usage_updated",
+  "limit_reached",
+  "entitlement_changed",
+] as const;
+
+export type BillingSandboxEventType = (typeof billingSandboxEventTypes)[number];
+
+export const assistantRefusalCodes = [
+  "INSUFFICIENT_DATA",
+  "DATA_NOT_READY",
+  "DATA_INVALID",
+  "DATA_BLOCKED",
+  "STALE_FOR_CURRENT_DECISION",
+  "PERMISSION_DENIED",
+  "ENTITLEMENT_REQUIRED",
+  "OUT_OF_SCOPE",
+  "UNSUPPORTED_USE_CASE",
+  "EVIDENCE_UNAVAILABLE",
+  "CONFLICT_UNRESOLVED",
+  "SAFETY_POLICY_BLOCK",
+  "PROVIDER_UNAVAILABLE",
+  "COST_LIMIT_REACHED",
+  "GATE_NOT_SATISFIED",
+  "INJECTION_DETECTED",
+] as const;
+
+export type AssistantRefusalCode = (typeof assistantRefusalCodes)[number];
+
 export const METRIC_CATALOG_VERSION = "2026-05-analytics-v1";
 
 export const metricCatalogScopes = [

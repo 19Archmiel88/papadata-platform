@@ -13,7 +13,10 @@
   },
   "scripts": {
     "build": "tsc -b tsconfig.json",
-    "typecheck": "tsc -b tsconfig.json --pretty false"
+    "typecheck": "tsc -b tsconfig.json --pretty false",
+    "test": "node --experimental-strip-types --test --test-concurrency=1 --test-isolation=process authHttpRuntime.test.mjs accessHttpRuntime.test.mjs complianceHttpRuntime.test.mjs integrationDataCore.test.mjs metricEngineCore.test.mjs remainingBackendCore.test.mjs",
+    "start:local": "node local-runtime.mjs",
+    "healthcheck": "node healthcheck.mjs"
   },
   "dependencies": {
     "@papadata/contracts": "workspace:*",

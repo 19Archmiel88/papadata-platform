@@ -6,6 +6,24 @@ Ten dokument porządkuje backend po korekcie zakresu. Backend jest dzielony na
 9 krótkich zadań. Każde zadanie kończy się kontrolami i nie przechodzi do
 następnego bez zielonych bram.
 
+## Stan realizacji 2026-07-20
+
+Ten plan pozostaje planem docelowym. Aktualny stan wdrożenia jest lokalnym
+backendem sandbox opisanym w `docs/l2-progress.md`, a nie gotowością
+produkcyjną.
+
+| Zadanie | Stan lokalny | Najważniejsza granica |
+| --- | --- | --- |
+| 1. Audyt, ADR-y i kontrakty | Wykonane | Kontrakty są TypeScript, bez OpenAPI generatora. |
+| 2. Docker Compose, BFF, PostgreSQL, Redis i OTel | Częściowe | Jest PostgreSQL, Redis, API, worker i migrate; brak BFF, web, scheduler, seed, emulatorów, OTel. |
+| 3. Auth | Wykonane lokalnie | Persistence in-memory/Redis-like; brak produkcyjnego IdP i `pg` repozytoriów. |
+| 4. Tenant, workspace, role, policy i onboarding | Wykonane lokalnie | Persistence in-memory; Internal Support działa przez lokalny JIT. |
+| 5. Queue, worker, outbox, storage i scheduler | Częściowe | Jest worker sandbox, retry/DLQ i outbox foundation; brak scheduler i produkcyjnego storage. |
+| 6. Integracje i canonical pipeline | Częściowe | Są sandboxy WooCommerce, Allegro, Google Ads i Meta Ads; brak Shopify, BaseLinker i GA4. |
+| 7. Metric Engine i Dashboard API | Wykonane lokalnie | Brak cache/jobów produkcyjnych i trwałych repozytoriów `pg`. |
+| 8. Billing, AI, notifications i reports | Wykonane lokalnie | Billing/AI/reporting są sandboxem bez providerów produkcyjnych. |
+| 9. Testy, security, recovery i hardening | Częściowe | Są testy lokalne i security baseline; brak CI SAST, SBOM, container scan, backup/restore. |
+
 ## 1. Audyt, ADR-y i kontrakty
 
 Zakres:

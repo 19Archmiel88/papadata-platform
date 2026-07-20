@@ -85,6 +85,24 @@ describe('Fala 5 AI tenant/workspace isolation and policy enforcement', () => {
     expect(result.message.sanitizedContent).not.toMatch(/sk-|Bearer qwerty|abc123/);
   });
 
+  it('sanityzuje HTML, niebezpieczne linki i zachowuje bezpieczny Markdown', () => {
+    const sanitized = sanitizeMarkdownContent(
+      [
+        '<script>alert("xss")</script>',
+        '<img src=x onerror=alert(1)>',
+        '**Wynik:** [raport](https://example.com/report)',
+        '[atak](javascript:alert(1))',
+      ].join('\n'),
+    );
+
+    expect(sanitized).not.toContain('<script');
+    expect(sanitized).not.toContain('onerror');
+    expect(sanitized).not.toContain('javascript:');
+    expect(sanitized).toContain('**Wynik:**');
+    expect(sanitized).toContain('[raport](https://example.com/report)');
+    expect(sanitized).toContain('[atak](#blocked)');
+  });
+
   it('blokuje działania zabronione i wymaga reauthentication', () => {
     const { context, result, runtime } = createReferenceWave5AI();
     const observation = runtime.generateObservations(context)[0];

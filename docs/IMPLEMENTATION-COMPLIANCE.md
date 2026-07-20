@@ -3,104 +3,85 @@
 ## Status dokumentu
 
 - Typ: dokument realizacyjny.
-- Cel: porównanie aktualnego repozytorium z obowiązującą dokumentacją.
+- Data aktualizacji: 2026-07-20.
+- Punkt bazowy audytu: `4073843`.
+- Dokument porównuje aktualny stan repozytorium z dokumentacją wykonawczą.
 - Dokument nie zmienia decyzji architektonicznych.
 - Dokument nie jest dowodem gotowości produkcyjnej.
-- Gałąź robocza: chore/zgodnosc-z-architektura.
-- Punkt bazowy main: 01fc199.
 
 ## Źródła
 
-1. PapaData — Rejestr decyzji i wymagań biznesowych, dokument 2, wersja 2.0.
-2. 01_Architektura_produktu_i_plan_techniczny, wersja 2.0.
-3. 04_Architektura_frontendowa_i_Storybook.
-4. 02_System_wspólny_Storybooka, wersja 2.0.
-5. STACK-DECISIONS.md.
-6. 00-INSTRUKCJA-STARTU.md.
+1. `docs/l2-progress.md`.
+2. `docs/backend-implementation-plan.md`.
+3. `docs/spec/source-of-truth.md`.
+4. `docs/spec/domain-contracts.md`.
+5. `docs/spec/security.md`.
+6. `docs/spec/data-and-kpi.md`.
+7. `docs/spec/integrations.md`.
+8. `docs/spec/ai.md`.
+9. `docs/security/LOCAL_SECURITY_AUDIT.md`.
+10. `AGENTS.md`.
 
 ## Podsumowanie
 
-- SPRZECZNE: 2
-- BRAK: 19
-- DECYZJA: 0
-- CZĘŚCIOWE: 2
-- ZGODNE: 18
+- ZGODNE: 9.
+- CZĘŚCIOWE: 12.
+- BRAK: 7.
+- SPRZECZNE: 0.
+
+Najważniejsza zmiana względem starej macierzy: repozytorium nie jest już tylko
+frontendem w Storybooku. Istnieje lokalny backend sandbox z API, workerem,
+migracjami SQL, kontraktami, testami HTTP oraz security baseline. Nadal nie
+jest to backend produkcyjny.
 
 ## Macierz
 
 Obszar | Wymaganie | Stan aktualny | Status | Działanie
 --- | --- | --- | --- | ---
-Frontend | Kod aplikacyjny poza .storybook; Storybook renderuje te same komponenty co aplikacja | Pliki implementacyjne w apps/web/.storybook: 7; pliki w apps/web/src: 0 | SPRZECZNE | Przenieść komponenty, CSS, fixtures i ekrany do apps/web/src bez zmiany UI.
-Walidacja | Jedna zatwierdzona biblioteka walidacji: Zod | Zod=nie, Valibot=tak | SPRZECZNE | W apps/web zastosować Zod. Valibot usunąć dopiero po potwierdzeniu braku użycia albo opisać odstępstwo w ADR.
-Frontend | React Router | Brak: react-router | BRAK | Dodać do apps/web po utworzeniu monorepo.
-Frontend | TanStack Query | Brak: @tanstack/react-query | BRAK | Dodać do apps/web po utworzeniu monorepo.
-Frontend | Zod | Brak: zod | BRAK | Dodać do apps/web po utworzeniu monorepo.
-Frontend | React Hook Form | Brak: react-hook-form | BRAK | Dodać do apps/web po utworzeniu monorepo.
-Frontend | Zustand | Brak: zustand | BRAK | Dodać do apps/web po utworzeniu monorepo.
-Frontend | ECharts | Brak: echarts | BRAK | Dodać do apps/web po utworzeniu monorepo.
-Frontend | i18next | Brak: i18next | BRAK | Dodać do apps/web po utworzeniu monorepo.
-Frontend | react-i18next | Brak: react-i18next | BRAK | Dodać do apps/web po utworzeniu monorepo.
-Frontend | date-fns | Brak: date-fns | BRAK | Dodać do apps/web po utworzeniu monorepo.
-Frontend | MSW | Brak: msw | BRAK | Dodać do apps/web po utworzeniu monorepo.
-Frontend | React Testing Library | Brak: @testing-library/react | BRAK | Dodać do apps/web po utworzeniu monorepo.
-Repozytorium | Modularne monorepo pnpm z Turborepo | Root zawiera pnpm-workspace.yaml i turbo.json; Turborepo 2.10.5 rozpoznaje @papadata/web | ZGODNE | Zachować orkiestrację z root i instalować zależności aplikacyjne w odpowiednich workspace’ach.
-Repozytorium | Osobne aplikacje web, BFF, API i worker | apps/web istnieje; brak apps/bff, apps/api i apps/worker | CZĘŚCIOWE | Zachować apps/web; pozostałe aplikacje tworzyć zgodnie z kolejnością wdrożenia i kontraktami.
-Repozytorium | Współdzielone pakiety monorepo | Brak: packages/contracts, packages/ui, packages/config, packages/testing | BRAK | Przed utworzeniem packages/ui rozstrzygnąć relację z apps/web/src/shared/ui.
-Tooling root | Turborepo | Zainstalowano turbo 2.10.5 w root; zadania @papadata/web są wykrywane | ZGODNE | Zachować w root monorepo.
-Tooling root | Prettier | Brak | BRAK | Dodać dopiero w root monorepo.
-Tooling root | markdownlint | Brak | BRAK | Dodać dopiero w root monorepo.
-Tooling root | Knip | Brak | BRAK | Dodać dopiero w root monorepo.
-Tooling root | dependency-cruiser | Brak | BRAK | Dodać dopiero w root monorepo.
-Tooling root | Husky | Brak | BRAK | Dodać dopiero w root monorepo.
-Tooling root | lint-staged | Brak | BRAK | Dodać dopiero w root monorepo.
-Tooling root | commitlint | Brak | BRAK | Dodać dopiero w root monorepo.
-Storybook | Polskie nazwy, light/dark, pełne stany i flow produkcyjne | Obecny Storybook posiada polskie nazwy, motywy oraz 58 przechodzących testów; kompletność wszystkich stanów wymaga audytu modułowego. | CZĘŚCIOWE | Zachować istniejący wygląd. Uzupełniać stany wyłącznie według dokumentów M01-M15 i kontraktów domenowych.
-Frontend | React | Obecne: react | ZGODNE | Zachować w apps/web.
-Frontend | React DOM | Obecne: react-dom | ZGODNE | Zachować w apps/web.
-Frontend | Vite | Obecne: vite | ZGODNE | Zachować w apps/web.
-Frontend | Tailwind CSS | Obecne: tailwindcss | ZGODNE | Zachować w apps/web.
-Frontend | Radix UI | Obecne: @radix-ui/* | ZGODNE | Zachować w apps/web.
-Frontend | class-variance-authority | Obecne: class-variance-authority | ZGODNE | Zachować w apps/web.
-Frontend | clsx | Obecne: clsx | ZGODNE | Zachować w apps/web.
-Frontend | tailwind-merge | Obecne: tailwind-merge | ZGODNE | Zachować w apps/web.
-Frontend | Lucide React | Obecne: lucide-react | ZGODNE | Zachować w apps/web.
-Frontend | Motion | Obecne: motion | ZGODNE | Zachować w apps/web.
-Frontend | Vitest | Obecne: vitest | ZGODNE | Zachować w apps/web.
-Frontend | Playwright | Obecne: playwright | ZGODNE | Zachować w apps/web.
-Frontend | Storybook | Obecne: storybook | ZGODNE | Zachować w apps/web.
-Stan bazowy | Czysty punkt odniesienia przed migracją | Commit 01fc199 znajduje się na origin/main. | ZGODNE | Nie przepisywać historii main. Wszystkie zmiany wykonywać na osobnej gałęzi.
-Środowisko | Node.js 24 LTS przypięty w repozytorium | .node-version=24.18.0, .nvmrc=24.18.0, engines.node=24.18.0; verify, build i build Storybooka zakończone powodzeniem | ZGODNE | Zachować Node.js 24.18.0. Aktualizować wyłącznie po osobnej weryfikacji kompatybilności.
-Środowisko | pnpm przypięty przez packageManager | pnpm@10.29.3 | ZGODNE | Zachować jedną wersję pnpm dla całego monorepo.
+Repozytorium | Modularne monorepo pnpm z Turborepo | Root zawiera `pnpm-workspace.yaml`, `turbo.json`, `apps/*` i `packages/*`. | ZGODNE | Zachować orkiestrację root i instalować zależności w pakietach właściwych dla zakresu.
+Frontend | Zachować istniejący frontend i Storybook | `apps/web` działa z React, Vite, Storybook, Vitest i Playwright; Storybook używa komponentów z `src`. | ZGODNE | Nie usuwać Storybooka; rozwijać UI dopiero w osobnych promptach.
+Backend API | Osobna aplikacja API | `apps/api` istnieje z lokalnym runtime, healthcheckiem i testami HTTP `/v1`. | CZĘŚCIOWE | Zastąpić runtime sandbox produkcyjnym frameworkiem dopiero po właściwym ADR i zadaniu.
+BFF | Osobna warstwa BFF/API boundary | ADR BFF istnieje, ale `apps/bff` nie zostało utworzone. | BRAK | Utworzyć BFF w osobnym zakresie, bez mieszania z UI.
+Worker | Osobny worker | `apps/worker` istnieje z lokalnym runtime, healthcheckiem i job manifestem. | CZĘŚCIOWE | Dodać produkcyjne repozytoria, scheduler i kolejkę w osobnym zadaniu.
+Contracts | Wspólny kontrakt `/v1` | `packages/contracts` definiuje `contractVersion`, `/v1`, headers, idempotency, ETag, cursor pagination, endpointy auth/dashboard/reports. | ZGODNE | Utrzymywać jako publiczną granicę między pakietami.
+Database | SQL bez ORM i role migracyjne/runtime | `packages/database` zawiera manifest tabel, migracje SQL i role `papadata_migrator`, `papadata_app`, `papadata_test`. | CZĘŚCIOWE | Dodać produkcyjne repozytoria `pg` i testy compatibility migracji.
+Local runtime | Docker Compose local parity | Jest `postgres`, `redis`, `api`, `worker`, `migrate`. | CZĘŚCIOWE | Dodać web, bff, scheduler, seed, queue emulator, storage emulator i OTel.
+Auth | Cookies, CSRF, refresh rotation, OTP, MFA, sessions, lockout, audit | Lokalny backend auth spełnia zakres Promptu 3 i ma testy HTTP. | CZĘŚCIOWE | Podłączyć trwałe repozytoria, provider e-mail i produkcyjny session store.
+Tenant/workspace | Tenant, workspace, membership, role, policy, onboarding | Lokalny backend obsługuje encje, role, JIT support, onboarding i testy izolacji. | CZĘŚCIOWE | Dodać trwałe repozytoria i pełny policy engine.
+Compliance | CMP, legal documents, audit, notifications | Lokalny backend obsługuje consent, legal acceptances i trwałe powiadomienia. | CZĘŚCIOWE | Podmienić treści prawne po legal review i dodać produkcyjne kanały.
+Integracje | MVP providerzy i canonical pipeline | Sandboxy WooCommerce, Allegro, Google Ads, Meta Ads oraz tabele source/normalized/canonical istnieją. | CZĘŚCIOWE | Dodać Shopify, BaseLinker, GA4 i produkcyjne adaptery providerów.
+Metric Engine | Definicje KPI i Dashboard API | 27 metryk, snapshoty, readiness i endpointy dashboardu działają lokalnie. | CZĘŚCIOWE | Dodać joby produkcyjne, cache i trwałe repozytoria.
+Reports | Eksporty i pliki | Lokalny raport tworzy rzeczywisty plik, status i download. | CZĘŚCIOWE | Dodać produkcyjny storage i kontrolowane udostępnianie.
+AI | Papa Asystent z evidence, refusal, approval i eval | Lokalny backend obsługuje AI threads/messages/evidence/refusal/approvals i `INSUFFICIENT_DATA`. | CZĘŚCIOWE | Dodać provider AI, governance gate i monitoring produkcyjny.
+Billing | Pełny sandbox lifecycle | Lokalny billing sandbox obsługuje activation, plan change, cancel, resume, payment events, invoice, usage i entitlements. | CZĘŚCIOWE | Podłączyć wybranego operatora i self-service flows po ADR.
+Security docs | Lokalny baseline bezpieczeństwa | Dodano audit, security headers draft, privacy docs, AI use register, notices i security scripts. | ZGODNE | Wymagany legal review, CI i produkcyjne hardening gates.
+CI | Automatyczne bramy jakości | Brak `.github` i brak pipeline CI. | BRAK | Dodać CI dla lint, typecheck, test, build, Storybook, audit, secret scan, SAST i SBOM.
+SAST/SBOM/container scan | Bramy hardeningu | Nie wdrożono. | BRAK | Dodać w Prompt 9/hardening.
+Secret scan | Automatyczny skan sekretów | Wykonano lokalny `rg` audit, ale brak narzędzia CI. | BRAK | Dodać dedykowany secret scan i procedurę rotacji.
+OpenAPI | Kontrakt HTTP publikowany jako OpenAPI | TypeScript contracts istnieją; OpenAPI nie jest generowane. | BRAK | Dodać OpenAPI po stabilizacji API frameworka.
+Observability | OTel, structured logs, job observability | Lokalne audit/job records istnieją; OTel collector nie istnieje. | BRAK | Dodać OTel i runbooki operacyjne.
+Backup/restore | Recovery evidence | Nie wdrożono ćwiczenia restore. | BRAK | Dodać test backup/restore przed go-live.
 
-## Kolejność realizacji
+## Zielone kontrole po aktualnym zakresie
 
-1. Zachować commit 01fc199 jako niezmienny punkt bazowy.
-2. Node.js 24.18.0 został zweryfikowany i przypięty w repozytorium.
-3. Root modularnego monorepo z pnpm workspace i Turborepo został utworzony.
-4. Obecny projekt został przeniesiony do apps/web bez zmiany UI, copy, CSS, stories i testów.
-5. Lint, typecheck, 58 testów, build aplikacji i build Storybooka przeszły po migracji.
-6. Rozstrzygnąć granicę packages/ui kontra apps/web/src/shared/ui.
-7. Dodać brakujący tooling wyłącznie do root monorepo.
-8. Dodać brakujące pakiety frontendowe wyłącznie do apps/web.
-9. Zastąpić Valibot biblioteką Zod albo opisać odstępstwo w ADR.
-10. Przenieść kod aplikacyjny z .storybook do produkcyjnej struktury src.
-11. Pozostawić w .storybook wyłącznie konfigurację.
-12. Uzupełniać stany i flow na podstawie dokumentów modułowych M01-M15.
-13. Dopiero później utworzyć apps/bff, apps/api i apps/worker zgodnie z kolejnością wdrożenia.
+- `pnpm install --frozen-lockfile`.
+- `pnpm markdownlint`.
+- `pnpm spell`.
+- `pnpm typecheck`.
+- `pnpm lint`.
+- `pnpm build`.
+- `pnpm build-storybook`.
+- `pnpm test:storybook`.
+- `pnpm security:audit`.
+- `pnpm security:check`.
+- `pnpm test`.
 
-## Bramy migracji frontendu
+## Najbliższe braki produkcyjne
 
-Migracja obecnego frontendu jest zakończona dopiero wtedy, gdy:
-
-- wygląd Storybooka pozostaje bez zmian;
-- polskie nazwy stories pozostają bez zmian;
-- motyw jasny i ciemny działa;
-- wszystkie 58 aktualnych testów przechodzi;
-- lint przechodzi;
-- TypeScript strict przechodzi;
-- build Vite przechodzi;
-- build Storybooka przechodzi;
-- `apps/web/.storybook` nie zawiera kodu aplikacyjnego;
-- Storybook i aplikacja używają tych samych komponentów;
-- fixtures są oddzielone od komponentów;
-- brak zmian nieobjętych dokumentacją lub zaakceptowanym ADR.
+1. CI z testami, security scanami, SBOM i artefaktami dowodowymi.
+2. BFF i pełny lokalny runtime parity: web, scheduler, seed, queue/storage
+   emulator, OTel.
+3. Trwałe repozytoria `pg` dla lokalnych runtime sandbox.
+4. Produkcyjne providery auth, e-mail, storage, queue, billing i AI.
+5. Legal review dokumentów privacy/legal i finalne treści legal documents.
+6. Backup/restore, failure injection, recovery runbooki i rollback evidence.

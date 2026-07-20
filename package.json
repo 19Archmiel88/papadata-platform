@@ -21,7 +21,9 @@
     "start:local": "docker compose --env-file .env.example up --build api worker",
     "migrate": "docker compose --env-file .env.example run --rm migrate up",
     "migrate:status": "docker compose --env-file .env.example run --rm migrate status",
-    "test:migrations": "docker compose --env-file .env.example run --rm migrate test"
+    "test:migrations": "docker compose --env-file .env.example run --rm migrate test",
+    "security:audit": "pnpm audit --prod",
+    "security:check": "pnpm audit --prod && pnpm build && pnpm build-storybook"
   },
   "devDependencies": {
     "@cspell/dict-pl_pl": "^3.0.6",

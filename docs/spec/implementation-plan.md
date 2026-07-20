@@ -1,5 +1,8 @@
 # Plan implementacji
 
+Status: plan wykonawczy produktu. Checklista oznacza lokalne pokrycie
+kontraktowe/testowe w repo, nie gotowość produkcyjną.
+
 ## Fala 0 — analiza i kontrakty
 
 - [x] Zamrozić decyzje P0 w `decisions.md`.
@@ -77,22 +80,22 @@
 
 ## Fala 6 — billing i operacje
 
-- [ ] Plany.
-- [ ] Entitlements.
-- [ ] Usage.
-- [ ] Raporty.
-- [ ] Eksporty.
-- [ ] Support JIT.
-- [ ] Monitoring.
-- [ ] Alerty.
-- [ ] Runbooki.
+- [x] Plany.
+- [x] Entitlements.
+- [x] Usage.
+- [x] Raporty.
+- [x] Eksporty.
+- [x] Support JIT.
+- [ ] Monitoring produkcyjny.
+- [x] Alerty jako trwałe powiadomienia lokalne.
+- [ ] Runbooki operacyjne dla produkcji.
 
 ## Fala 7 — hardening i go-live
 
-- [ ] Tenant isolation tests.
-- [ ] Security scans.
+- [x] Tenant isolation tests.
+- [x] Security baseline i dependency audit.
 - [ ] Restore exercise.
-- [ ] Provider failure tests.
-- [ ] AI evals.
+- [x] Provider failure tests w sandboxach.
+- [x] AI evals lokalne.
 - [ ] Rollback.
 - [ ] Go/no-go.

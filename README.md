@@ -2,8 +2,9 @@
 
 Repozytorium produktu PapaData.
 
-Na obecnym etapie zawiera zaakceptowaną bazę wizualną rozwijaną
-w Storybooku:
+Na obecnym etapie zawiera zaakceptowaną bazę wizualną rozwijaną w Storybooku
+oraz lokalny backend sandbox dla kontraktów, auth, tenant/workspace,
+integracji, metryk, raportów, AI i billingu:
 
 - motyw jasny i ciemny;
 - zmianę języka;
@@ -23,8 +24,12 @@ w Storybooku:
   local/test adapter.
 - Minimalna serwerowa granica auth istnieje lokalnie/testowo w
   `apps/web/src/server/auth`.
-- Produkcyjny backend runtime, IdP, baza danych, workery i infrastruktura nie
-  zostały jeszcze wybrane ani utworzone.
+- `apps/api` i `apps/worker` istnieją jako lokalne runtime backendu sandbox.
+- `packages/contracts`, `packages/database` i `packages/testing` zawierają
+  współdzielone kontrakty, manifesty tabel oraz fixture testowe.
+- Docker Compose uruchamia lokalnie PostgreSQL, Redis, API, worker i migracje.
+- Produkcyjny backend, BFF, IdP, trwałe repozytoria `pg`, storage, kolejka,
+  OTel, CI i hosting nie są jeszcze gotowe produkcyjnie.
 - Poprawny build lub test nie oznacza gotowości produkcyjnej produktu.
 
 ## Model tenantów i GCP
@@ -38,7 +43,7 @@ w Storybooku:
 - Dedykowany projekt GCP klienta jest opcjonalnym wariantem deploymentu i nie
   zastępuje `tenantId`.
 
-## Najbliższy cel
+## Najbliższy cel UI
 
 Rozwijać współdzieloną implementację w `apps/web/src`, używaną przez aplikację i Storybook.
 `src` bez zmiany:
@@ -65,6 +70,13 @@ Storybook i aplikacja produkcyjna mają używać tych samych komponentów.
 
 ## Struktura bieżąca
 
+- `apps/web` — aplikacja React/Vite, Storybook, testy UI i lokalne testy auth;
+- `apps/api` — lokalny backend API sandbox dla kontraktów `/v1`;
+- `apps/worker` — lokalny worker sandbox;
+- `packages/contracts` — wspólne kontrakty backendu i API;
+- `packages/database` — manifest bazy i migracje SQL bez ORM;
+- `packages/testing` — wspólne fixture testowe;
+- `infra` — lokalny Dockerfile Node oraz inicjalizacja PostgreSQL;
 - `apps/web/.storybook` — wyłącznie konfiguracja Storybooka;
 - `.vscode` — rekomendowane rozszerzenia i ustawienia edytora;
 - `docs` — instrukcje techniczne i szablony pracy;
@@ -83,6 +95,16 @@ Aplikacja Vite:
 
     pnpm dev
 
+Lokalny backend sandbox:
+
+    pnpm start:local
+
+Migracje lokalnej bazy:
+
+    pnpm migrate
+    pnpm migrate:status
+    pnpm test:migrations
+
 ## Kontrole jakości
 
     pnpm lint
@@ -93,8 +115,12 @@ Aplikacja Vite:
     pnpm verify
     pnpm build
     pnpm build-storybook
+    pnpm security:audit
+    pnpm security:check
 
 `pnpm verify` uruchamia lint, typecheck, spellcheck, markdownlint oraz pełny zestaw testów.
+`pnpm security:check` uruchamia audyt produkcyjnych zależności, build repo oraz
+build Storybooka.
 
 ## Zasady
 
@@ -106,6 +132,8 @@ Aplikacja Vite:
 - Nie przedstawiamy prototypu jako funkcji gotowej produkcyjnie.
 - Obecny auth ma lokalną/testową granicę serwerową, ale nie jest produkcyjnym
   IdP ani produkcyjnym session store.
+- Lokalny backend sandbox nie zastępuje produkcyjnego API, BFF, storage,
+  kolejek, providerów ani hostingu.
 - Po zielonej weryfikacji Codex automatycznie tworzy polski commit i wykonuje bezpieczny push do `origin/main`.
 - Nowe zależności produkcyjne, zmiany architektoniczne i operacje na GCP nadal wymagają jawnej zgody.
 
@@ -116,7 +144,11 @@ Szczegółowe reguły znajdują się w `AGENTS.md`.
 - Root repozytorium korzysta z pnpm workspace i Turborepo.
 - Aplikacja webowa znajduje się w `apps/web`.
 - Konfiguracja Storybooka znajduje się w `apps/web/.storybook`, a komponenty, ekrany, stories i fixtures w `apps/web/src`.
-- `apps/bff`, `apps/api` i `apps/worker` nie zostały jeszcze utworzone jako
-  produkcyjne runtime.
-- Pakiety współdzielone w `packages/*` nie zostały jeszcze utworzone.
+- `apps/api` i `apps/worker` zostały utworzone jako lokalne runtime sandbox;
+  `apps/bff` nie istnieje jeszcze.
+- Pakiety współdzielone `packages/contracts`, `packages/database` i
+  `packages/testing` zostały utworzone.
+- Pełny stan backendu lokalnego jest opisany w `docs/l2-progress.md`.
+- Lokalny baseline bezpieczeństwa jest opisany w
+  `docs/security/LOCAL_SECURITY_AUDIT.md`.
 - Obecny etap nie potwierdza gotowości aplikacji produkcyjnej.

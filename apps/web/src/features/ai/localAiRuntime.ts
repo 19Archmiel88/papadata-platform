@@ -1,5 +1,3 @@
-import { defaultSchema } from 'rehype-sanitize';
-
 import {
   asOperationId,
   type ApplicationSessionContext,
@@ -136,7 +134,6 @@ type AIIncident = {
 
 const fixtureNow = '2026-07-20T00:00:00.000Z';
 const defaultExpiry = '2026-08-19T00:00:00.000Z';
-const allowedSanitizeTags = new Set((defaultSchema.tagNames ?? []).map(String));
 const forbiddenActions = new Set<ActionProposal['actionType']>([
   'PAYMENT',
   'CHANGE_ROLE',
@@ -210,9 +207,7 @@ export function sanitizeMarkdownContent(content: string): string {
   const withoutDangerousHtml = content
     .replace(/<script[\s\S]*?<\/script>/gi, '[removed-script]')
     .replace(/<style[\s\S]*?<\/style>/gi, '[removed-style]')
-    .replace(/<\/?([a-z0-9-]+)(\s[^>]*)?>/gi, (match, tag: string) =>
-      allowedSanitizeTags.has(tag.toLowerCase()) ? '' : match.replace(/[<>]/g, ''),
-    );
+    .replace(/<\/?[a-z0-9-]+(\s[^>]*)?>/gi, '');
 
   return withoutDangerousHtml
     .replace(/\]\(\s*(javascript|data):[^)]*\)/gi, '](#blocked)')

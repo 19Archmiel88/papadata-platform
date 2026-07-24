@@ -1,0 +1,127 @@
+services:
+  postgres-production:
+    image: postgres:16.13-alpine
+    environment:
+      POSTGRES_DB: papadata
+      POSTGRES_USER: papadata_migrator
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-papadata-local}
+    ports:
+      - "55432:5432"
+    volumes:
+      - papadata_pg_data:/var/lib/postgresql/data
+      - ./infra/postgres/production-init.sql:/docker-entrypoint-initdb.d/001-production-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U papadata_migrator -d papadata"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis-production:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "56379:6379"
+    volumes:
+      - papadata_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  minio:
+    image: minio/minio:RELEASE.2025-07-23T15-54-02Z
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-papadata}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-papadata-local-secret}
+    ports:
+      - "59000:9000"
+      - "59001:9001"
+    volumes:
+      - papadata_minio_data:/data
+
+  minio-init:
+    image: minio/mc:RELEASE.2025-07-21T05-28-08Z
+    depends_on:
+      - minio
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        until mc alias set local http://minio:9000 "$${MINIO_ROOT_USER}" "$${MINIO_ROOT_PASSWORD}"; do sleep 2; done
+        mc mb --ignore-existing local/papadata-artifacts
+        mc anonymous set none local/papadata-artifacts
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-papadata}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-papadata-local-secret}
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.130.1
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./infra/otel/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
+    ports:
+      - "54317:4317"
+      - "54318:4318"
+
+  migrate-production:
+    image: postgres:16.13-alpine
+    depends_on:
+      postgres-production:
+        condition: service_healthy
+    volumes:
+      - ./packages/database/migrations:/migrations:ro
+      - ./infra/postgres/apply-migrations.sh:/apply-migrations.sh:ro
+    environment:
+      PGHOST: postgres-production
+      PGUSER: papadata_migrator
+      PGDATABASE: papadata
+      PGPASSWORD: ${POSTGRES_PASSWORD:-papadata-local}
+      MIGRATIONS_DIR: /migrations
+    entrypoint: ["/bin/sh", "/apply-migrations.sh"]
+
+  api-production:
+    build:
+      context: .
+      dockerfile: infra/production/api.Dockerfile
+    env_file: [.env.production-parity]
+    depends_on:
+      migrate-production:
+        condition: service_completed_successfully
+      redis-production:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+      otel-collector:
+        condition: service_started
+    ports:
+      - "54000:4000"
+
+  bff-production:
+    build:
+      context: .
+      dockerfile: infra/production/bff.Dockerfile
+    env_file: [.env.production-parity]
+    depends_on:
+      - api-production
+    ports:
+      - "53001:3001"
+
+  worker-production:
+    build:
+      context: .
+      dockerfile: infra/production/worker.Dockerfile
+    env_file: [.env.production-parity]
+    depends_on:
+      postgres-production:
+        condition: service_healthy
+      redis-production:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+
+volumes:
+  papadata_pg_data:
+  papadata_redis_data:
+  papadata_minio_data:

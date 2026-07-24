@@ -1,0 +1,42 @@
+{
+  "name": "papadata-platform",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @papadata/api --filter @papadata/bff --filter @papadata/worker run dev:production",
+    "dev:api": "pnpm --filter @papadata/api dev:production",
+    "dev:bff": "pnpm --filter @papadata/bff dev:production",
+    "dev:worker": "pnpm --filter @papadata/worker dev:production",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test --concurrency=1",
+    "build": "turbo run build",
+    "verify": "pnpm typecheck && pnpm test && pnpm build",
+    "start:local": "docker compose --env-file .env.example up --build api worker",
+    "migrate": "docker compose --env-file .env.example run --rm migrate up",
+    "migrate:status": "docker compose --env-file .env.example run --rm migrate status",
+    "test:migrations": "docker compose --env-file .env.example run --rm migrate test",
+    "security:audit": "pnpm audit --prod",
+    "security:check": "pnpm audit --prod && pnpm build",
+    "start:production-parity": "docker compose -f compose.production-parity.yml --env-file .env.production-parity up --build",
+    "stop:production-parity": "docker compose -f compose.production-parity.yml down",
+    "test:production-foundation": "pnpm --filter @papadata/integrations test",
+    "test:master-remediation": "pnpm --filter @papadata/integrations test && pnpm --filter @papadata/storage test && pnpm --filter @papadata/ai-runtime test",
+    "verify:master-remediation": "pnpm typecheck && pnpm test:master-remediation && pnpm build"
+  },
+  "devDependencies": {
+    "turbo": "2.10.5",
+    "typescript": "~6.0.3"
+  },
+  "packageManager": "pnpm@10.29.3",
+  "pnpm": {
+    "overrides": {
+      "gaxios>uuid": "11.1.1",
+      "teeny-request>uuid": "11.1.1"
+    }
+  },
+  "engines": {
+    "node": "24.18.0",
+    "pnpm": "10.29.3"
+  }
+}

@@ -1,0 +1,66 @@
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+dist-ssr/
+coverage/
+reports/security/
+.turbo/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment variables and secrets
+.env
+.env.local
+.env.*
+.env.*.local
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*credentials*.json
+*service-account*.json
+
+# Local files
+*.local
+
+# Visual Studio Code
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Other editors and operating systems
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local review materials
+docs/UI-AUDIT-SOURCE.md
+
+# Monorepo build outputs
+**/.turbo/
+**/node_modules/
+**/dist/
+**/coverage/
+
+# Temporary and backup files
+*.bak
+*.old
+*.orig
+*.rej
+*.tmp
+*~

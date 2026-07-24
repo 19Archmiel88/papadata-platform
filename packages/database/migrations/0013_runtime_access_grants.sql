@@ -1,0 +1,45 @@
+grant select on app.integration_provider_catalog to papadata_app;
+grant select, insert, update on app.integration_credentials to papadata_app;
+grant select, insert on app.integration_webhook_events to papadata_app;
+grant select, insert on app.fx_rates to papadata_app;
+grant select, insert, update on app.source_authority_rules to papadata_app;
+grant select, insert, update on app.cross_provider_matches to papadata_app;
+grant select, insert, update on app.data_inventory to papadata_app;
+grant select, insert, update on app.data_deletion_ledger to papadata_app;
+
+grant select, insert, update on app.security_mfa_enrollments to papadata_app;
+grant select, insert, update on app.security_step_up_proofs to papadata_app;
+grant select, insert, update on app.security_invitation_tokens to papadata_app;
+grant select, insert, update on app.security_jit_grants to papadata_app;
+grant select, insert, update on app.audit_chain_heads to papadata_app;
+grant select, insert on app.security_audit_events to papadata_app;
+grant select, insert, update on app.privacy_requests to papadata_app;
+grant select, insert, update on app.privacy_request_targets to papadata_app;
+grant select, insert, update on app.platform_jobs to papadata_app;
+grant select, insert, update on app.report_requests to papadata_app;
+grant select, insert on app.integration_credential_events to papadata_app;
+grant select, insert, update on app.system_kill_switches to papadata_app;
+grant select, insert, update on app.provider_evidence to papadata_app;
+
+grant select, insert, update, delete on app.integration_provider_catalog to papadata_test;
+grant select, insert, update, delete on app.integration_credentials to papadata_test;
+grant select, insert, update, delete on app.integration_webhook_events to papadata_test;
+grant select, insert, update, delete on app.fx_rates to papadata_test;
+grant select, insert, update, delete on app.source_authority_rules to papadata_test;
+grant select, insert, update, delete on app.cross_provider_matches to papadata_test;
+grant select, insert, update, delete on app.data_inventory to papadata_test;
+grant select, insert, update, delete on app.data_deletion_ledger to papadata_test;
+
+grant select, insert, update, delete on app.security_mfa_enrollments to papadata_test;
+grant select, insert, update, delete on app.security_step_up_proofs to papadata_test;
+grant select, insert, update, delete on app.security_invitation_tokens to papadata_test;
+grant select, insert, update, delete on app.security_jit_grants to papadata_test;
+grant select, insert, update, delete on app.audit_chain_heads to papadata_test;
+grant select, insert on app.security_audit_events to papadata_test;
+grant select, insert, update, delete on app.privacy_requests to papadata_test;
+grant select, insert, update, delete on app.privacy_request_targets to papadata_test;
+grant select, insert, update, delete on app.platform_jobs to papadata_test;
+grant select, insert, update, delete on app.report_requests to papadata_test;
+grant select, insert, update, delete on app.integration_credential_events to papadata_test;
+grant select, insert, update, delete on app.system_kill_switches to papadata_test;
+grant select, insert, update, delete on app.provider_evidence to papadata_test;

@@ -1,0 +1,4 @@
+export const reportFormats=["csv","json","pdf","xlsx"] as const;export type ReportFormat=(typeof reportFormats)[number];
+export const reportStates=["queued","generating","ready","failed","expired","cancelled"] as const;export type ReportState=(typeof reportStates)[number];
+export type CreateReportRequest={readonly reportType:string;readonly format:ReportFormat;readonly dateFrom:string;readonly dateTo:string;readonly filters:Readonly<Record<string,unknown>>;readonly idempotencyKey:string};
+export type ReportView={readonly reportId:string;readonly tenantId:string;readonly workspaceId:string;readonly state:ReportState;readonly format:ReportFormat;readonly objectKey:string|null;readonly checksumSha256:string|null;readonly createdAt:string;readonly readyAt:string|null;readonly expiresAt:string|null;readonly errorCode:string|null};

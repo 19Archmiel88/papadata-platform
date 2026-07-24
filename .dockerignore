@@ -1,0 +1,23 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build artifacts
+dist
+**/dist
+coverage
+**/coverage
+.turbo
+**/.turbo
+
+# Local environment and generated output
+.env
+.env.*
+!.env.example
+*.log
+
+# VCS and editor metadata
+.git
+.github
+.vscode
+.idea

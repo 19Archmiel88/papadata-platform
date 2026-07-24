@@ -1,0 +1,2 @@
+import { Module } from "@nestjs/common";import { ScheduleModule } from "@nestjs/schedule";import { IntegrationWorkerService } from "./worker.service.js";import { PlatformWorkerService } from "./platform-worker.service.js";import { ReconciliationScheduler } from "./scheduler.service.js";
+@Module({imports:[ScheduleModule.forRoot()],providers:[IntegrationWorkerService,PlatformWorkerService,ReconciliationScheduler]})export class WorkerProductionModule{}

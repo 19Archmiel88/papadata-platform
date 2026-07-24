@@ -1,0 +1,3 @@
+export type AuditEventInput={readonly tenantId:string|null;readonly workspaceId:string|null;readonly actorId:string;readonly actorType:"user"|"service"|"support"|"system";readonly action:string;readonly resourceType:string;readonly resourceId:string|null;readonly outcome:"success"|"failure"|"denied";readonly correlationId:string;readonly metadata:Readonly<Record<string,unknown>>};
+export type AuditEventRecord=AuditEventInput&{readonly eventId:string;readonly sequenceNumber:string;readonly previousHash:string|null;readonly eventHash:string;readonly createdAt:string};
+export type AuditVerificationResult={readonly valid:boolean;readonly checkedEvents:number;readonly firstInvalidSequence:string|null;readonly latestHash:string|null};

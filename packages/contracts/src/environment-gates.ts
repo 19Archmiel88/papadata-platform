@@ -1,0 +1,3 @@
+export const productionGateIds=["contracts_canonical","tenant_isolation_verified","mfa_privileged_roles","step_up_reauthentication","tamper_evident_audit","privacy_lifecycle","migration_clean_install","migration_upgrade","system_e2e","security_scans","observability","backup_restore_drill","rollback_drill","incident_response","independent_security_review","independent_privacy_review"] as const;
+export type ProductionGateId=(typeof productionGateIds)[number];
+export type ProductionGateStatus={readonly gateId:ProductionGateId;readonly status:"not_started"|"in_progress"|"blocked"|"satisfied";readonly evidenceReferences:readonly string[];readonly owner:string|null;readonly reviewedAt:string|null};

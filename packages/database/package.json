@@ -1,0 +1,31 @@
+{
+  "name": "@papadata/database",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b tsconfig.json",
+    "typecheck": "tsc -b tsconfig.json --pretty false",
+    "test": "node --test src/*.test.mjs"
+  },
+  "dependencies": {
+    "@papadata/contracts": "workspace:*",
+    "pg": "^8.22.0"
+  },
+  "engines": {
+    "node": "24.18.0",
+    "pnpm": "10.29.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/pg": "^8.15.5"
+  }
+}

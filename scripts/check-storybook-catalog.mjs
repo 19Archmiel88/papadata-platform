@@ -5,7 +5,6 @@ import {
 import {
   existsSync,
   readFileSync,
-  readdirSync,
 } from 'node:fs';
 
 import path from 'node:path';
@@ -33,57 +32,10 @@ const contractPath = path.join(
   'apps/web/src/storybook-next/storybook-contract.json',
 );
 
-const storiesRoot = path.join(
-  root,
-  'apps/web/src/storybook-next/stories',
-);
-
 function ensure(condition, message) {
   if (!condition) {
     throw new Error(message);
   }
-}
-
-function collectStoryFiles(directory) {
-  if (!existsSync(directory)) {
-    return [];
-  }
-
-  const result = [];
-
-  for (
-    const entry
-    of readdirSync(
-      directory,
-      {
-        withFileTypes: true,
-      },
-    )
-  ) {
-    const absolutePath = path.join(
-      directory,
-      entry.name,
-    );
-
-    if (entry.isDirectory()) {
-      result.push(
-        ...collectStoryFiles(absolutePath),
-      );
-      continue;
-    }
-
-    if (
-      entry.isFile()
-      && (
-        entry.name.includes('.stories.')
-        || entry.name.endsWith('.mdx')
-      )
-    ) {
-      result.push(absolutePath);
-    }
-  }
-
-  return result.sort();
 }
 
 ensure(
@@ -115,11 +67,6 @@ ensure(
 ensure(
   existsSync(contractPath),
   `Missing contract: ${contractPath}`,
-);
-
-ensure(
-  existsSync(storiesRoot),
-  `Missing empty stories target directory: ${storiesRoot}`,
 );
 
 const contract = JSON.parse(
@@ -167,49 +114,87 @@ for (const entry of contract.entries) {
 
   ensure(
     entry.prototypeStatus === 'none',
-    `Entry ${entry.id}: prototypeStatus must be none after reset.`,
+    `Entry ${entry.id}: prototypeStatus must remain none.`,
   );
 
   ensure(
     entry.productionStatus === 'not_started',
-    `Entry ${entry.id}: productionStatus must be not_started after reset.`,
+    `Entry ${entry.id}: productionStatus must remain not_started.`,
   );
 
   ensure(
     entry.testStatus === 'not_started',
-    `Entry ${entry.id}: testStatus must be not_started after reset.`,
+    `Entry ${entry.id}: testStatus must remain not_started.`,
   );
 
-  ensure(
-    entry.storyStatus === 'planned',
-    `Entry ${entry.id}: storyStatus must be planned after reset.`,
-  );
+  if (entry.storyStatus === 'implemented') {
+    ensure(
+      entry.storyVisibility === 'visible',
+      `Entry ${entry.id}: implemented story must be visible.`,
+    );
 
-  ensure(
-    entry.storyVisibility === 'hidden',
-    `Entry ${entry.id}: storyVisibility must be hidden after reset.`,
-  );
+    ensure(
+      typeof entry.storyFile === 'string'
+      && typeof entry.storyTitle === 'string'
+      && typeof entry.storyExport === 'string',
+      `Entry ${entry.id}: incomplete story metadata.`,
+    );
 
-  ensure(
-    entry.storyFile === null
-    && entry.storyTitle === null
-    && entry.storyName === undefined
-    && entry.storyExport === undefined,
-    `Entry ${entry.id}: active story metadata remains after reset.`,
-  );
+    ensure(
+      !Object.prototype.hasOwnProperty.call(
+        entry,
+        'storyName',
+      ),
+      `Entry ${entry.id}: storyName is no longer tracked.`,
+    );
+  } else {
+    ensure(
+      entry.storyVisibility === 'hidden',
+      `Entry ${entry.id}: non-implemented story must be hidden.`,
+    );
+
+    ensure(
+      entry.storyFile === null
+      && entry.storyTitle === null
+      && entry.storyName === undefined
+      && entry.storyExport === undefined,
+      `Entry ${entry.id}: inactive story metadata remains.`,
+    );
+  }
 }
 
 const policy = contract.visibleStoryPolicy;
+const implementedStories = contract.entries.filter(
+  (entry) => entry.storyStatus === 'implemented',
+);
+const visibleStories = contract.entries.filter(
+  (entry) => entry.storyVisibility === 'visible',
+);
+const activeStoryFiles = new Set(
+  implementedStories.map(
+    (entry) => entry.storyFile,
+  ),
+);
 
 ensure(Boolean(policy), 'Missing visibleStoryPolicy.');
 ensure(policy.sectionOverviewCount === 0, 'sectionOverviewCount must be 0.');
-ensure(policy.entryStoryCount === 0, 'entryStoryCount must be 0.');
-ensure(policy.visibleStoryCount === 0, 'visibleStoryCount must be 0.');
-ensure(policy.plannedEntriesRemainInContract === true, 'Requirements must remain in contract.');
+ensure(
+  policy.entryStoryCount === implementedStories.length,
+  'entryStoryCount differs from implemented stories.',
+);
+ensure(
+  policy.visibleStoryCount === visibleStories.length,
+  'visibleStoryCount differs from visible stories.',
+);
+ensure(
+  policy.plannedEntriesRemainInContract === true,
+  'Requirements must remain in contract.',
+);
 
 ensure(
-  contract.activeVisualLayer?.state === 'reset',
-  'activeVisualLayer.state must be reset.',
+  contract.activeVisualLayer?.state
+    === 'foundations_clean_start',
+  'activeVisualLayer.state must be foundations_clean_start.',
 );
 
 ensure(
@@ -217,11 +202,21 @@ ensure(
   'Legacy prototype must not be allowed.',
 );
 
-const storyFiles = collectStoryFiles(storiesRoot);
+ensure(
+  contract.activeVisualLayer?.activeStoryFiles
+    === activeStoryFiles.size,
+  'activeStoryFiles differs from implemented story files.',
+);
 
 ensure(
-  storyFiles.length === 0,
-  `Active Storybook visual files remain:\n${storyFiles.join('\n')}`,
+  contract.activeVisualLayer?.activeSectionOverviews === 0,
+  'activeSectionOverviews must be 0.',
+);
+
+ensure(
+  contract.activeVisualLayer?.activeEntryStories
+    === implementedStories.length,
+  'activeEntryStories differs from implemented stories.',
 );
 
 console.log(
@@ -230,11 +225,11 @@ console.log(
     'Sections: 22.',
     'Requirements entries: 220.',
     'Active section overview stories: 0.',
-    'Active entry stories: 0.',
+    `Active entry stories: ${implementedStories.length}.`,
     'prototypeStatus none: 220.',
     'productionStatus not_started: 220.',
     'testStatus not_started: 220.',
-    'storyStatus planned: 220.',
-    'storyVisibility hidden: 220.',
+    `storyStatus implemented: ${implementedStories.length}.`,
+    `storyVisibility visible: ${visibleStories.length}.`,
   ].join('\n'),
 );

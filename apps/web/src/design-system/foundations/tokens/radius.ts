@@ -1,9 +1,9 @@
 export const radiusTokens = {
-  none: '0',
-  control: '6px',
-  compactSurface: '8px',
-  surface: '10px',
-  largeSurface: '12px',
-  overlay: '14px',
-  pill: '999px',
+  none: 'var(--pd-radius-none)',
+  subtle: 'var(--pd-radius-subtle)',
+  small: 'var(--pd-radius-small)',
+  control: 'var(--pd-radius-control)',
+  surface: 'var(--pd-radius-surface)',
+  overlay: 'var(--pd-radius-overlay)',
+  pill: 'var(--pd-radius-pill)',
 } as const;

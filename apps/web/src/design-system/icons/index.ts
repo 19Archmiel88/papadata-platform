@@ -1,7 +1,16 @@
-/**
- * Punkt eksportu modułu:
- * src/design-system/icons
- *
- * Moduł nie zawiera kodu legacy.
- */
-export {};
+export {
+  Icon,
+  papaDataIconNames,
+} from './Icon';
+export type {
+  IconProps,
+  PapaDataIconName,
+} from './Icon';
+
+export {
+  PapaDataBrand,
+} from './PapaDataBrand';
+export type {
+  PapaDataBrandProps,
+  PapaDataBrandSize,
+} from './PapaDataBrand';

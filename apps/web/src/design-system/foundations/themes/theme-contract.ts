@@ -1,10 +1,14 @@
-export const papaDataThemes = [
-  'light',
-  'dark',
-] as const;
+import {
+  defaultPapaDataRuntimeGlobals,
+} from '../runtime';
 
-export type PapaDataTheme =
-  typeof papaDataThemes[number];
+export {
+  papaDataRuntimeThemes as papaDataThemes,
+} from '../runtime';
 
-export const defaultPapaDataTheme:
-  PapaDataTheme = 'light';
+export type {
+  PapaDataRuntimeTheme as PapaDataTheme,
+} from '../runtime';
+
+export const defaultPapaDataTheme =
+  defaultPapaDataRuntimeGlobals.theme;

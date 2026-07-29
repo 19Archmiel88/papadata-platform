@@ -1,8 +1,41 @@
 import type {
+  Decorator,
   Preview,
 } from '@storybook/react-vite';
 
+import {
+  applyPapaDataRuntimeGlobals,
+  normalizePapaDataRuntimeGlobals,
+} from '../src/design-system/foundations/runtime';
+import '../src/design-system/foundations/foundations.css';
+
+const withPapaDataRuntime: Decorator = (
+  Story,
+  context,
+) => {
+  const runtimeGlobals =
+    normalizePapaDataRuntimeGlobals({
+      theme: context.globals.theme,
+      locale: context.globals.locale,
+      density: context.globals.density,
+      motion: context.globals.motion,
+    });
+
+  if (typeof document !== 'undefined') {
+    applyPapaDataRuntimeGlobals(
+      document.documentElement,
+      runtimeGlobals,
+    );
+  }
+
+  return <Story />;
+};
+
 const preview: Preview = {
+  decorators: [
+    withPapaDataRuntime,
+  ],
+
   globalTypes: {
     theme: {
       name: 'Motyw',

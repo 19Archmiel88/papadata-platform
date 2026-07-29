@@ -101,9 +101,13 @@ function validate(contract, taxonomy) {
   const requiredPolicies = {
     preserveEntryIds: true,
     requirementsRemainInContract: true,
-    activeVisualLayerReset: true,
-    zeroActiveStoriesAfterReset: true,
+    activeVisualLayerCleanStart: true,
+    foundationsStoriesAllowed: true,
     legacyPrototypeAllowed: false,
+    legacyVisualLayerForbidden: true,
+    pdsTokensForbidden: true,
+    visibleStoriesRequireContractEntry: true,
+    generatedCatalogFromContract: true,
     newVisibleRootRequiresDecision: true,
     singlePrimaryRootPerCurrentSection: true,
     entryOverridesAllowed: true,
@@ -189,17 +193,17 @@ function validate(contract, taxonomy) {
 
   ensure(
     contract.entries.every((entry) => entry.prototypeStatus === 'none'),
-    'All entries must have prototypeStatus none after visual reset.',
+    'All entries must keep prototypeStatus none in clean start.',
     errors,
   );
   ensure(
-    contract.entries.every((entry) => entry.storyStatus === 'planned'),
-    'All entries must have storyStatus planned after visual reset.',
+    contract.entries.every((entry) => entry.productionStatus === 'not_started'),
+    'All entries must keep productionStatus not_started in clean start.',
     errors,
   );
   ensure(
-    contract.entries.every((entry) => entry.storyVisibility === 'hidden'),
-    'All entries must be hidden after visual reset.',
+    contract.entries.every((entry) => entry.testStatus === 'not_started'),
+    'All entries must keep testStatus not_started in clean start.',
     errors,
   );
 
@@ -212,17 +216,82 @@ function validate(contract, taxonomy) {
   const resolvedCounts = new Map(
     targetIds.map((targetId) => [targetId, 0]),
   );
+  const visibleStories = [];
+  const implementedStories = [];
 
   for (const entry of contract.entries) {
-    const targetId = overridesByEntryId.get(entry.id)?.targetRootId
-      ?? mappingsBySectionId.get(entry.sectionId)?.primaryRootId;
+    const override = overridesByEntryId.get(entry.id);
+    const mapping = mappingsBySectionId.get(entry.sectionId);
+    const targetId = override?.targetRootId
+      ?? mapping?.primaryRootId;
+    const plannedPath = override?.plannedPath
+      ?? mapping?.plannedPath
+      ?? [];
 
     ensure(Boolean(targetId), `No target for entry ${entry.id}.`, errors);
 
     if (targetId && resolvedCounts.has(targetId)) {
       resolvedCounts.set(targetId, resolvedCounts.get(targetId) + 1);
     }
+
+    if (entry.storyStatus === 'implemented') {
+      implementedStories.push(entry);
+      ensure(
+        entry.storyVisibility === 'visible',
+        `Implemented entry ${entry.id} must be visible.`,
+        errors,
+      );
+      ensure(
+        typeof entry.storyFile === 'string'
+          && typeof entry.storyTitle === 'string'
+          && typeof entry.storyExport === 'string',
+        `Implemented entry ${entry.id} has incomplete story metadata.`,
+        errors,
+      );
+      ensure(
+        !Object.prototype.hasOwnProperty.call(entry, 'storyName'),
+        `Implemented entry ${entry.id} must not use storyName.`,
+        errors,
+      );
+    }
+
+    if (entry.storyVisibility === 'visible') {
+      visibleStories.push(entry);
+      ensure(
+        entry.storyStatus === 'implemented',
+        `Visible entry ${entry.id} must be implemented.`,
+        errors,
+      );
+
+      const plannedRoot = plannedPath[0];
+
+      ensure(
+        typeof entry.storyTitle === 'string'
+          && (
+            entry.storyTitle === plannedRoot
+            || entry.storyTitle.startsWith(`${plannedRoot}/`)
+          ),
+        `Visible entry ${entry.id} is outside taxonomy path.`,
+        errors,
+      );
+    }
   }
+
+  ensure(
+    visibleStories.length === implementedStories.length,
+    'Visible story count differs from implemented story count.',
+    errors,
+  );
+  ensure(
+    contract.visibleStoryPolicy?.visibleStoryCount === visibleStories.length,
+    'visibleStoryPolicy.visibleStoryCount differs from visible entries.',
+    errors,
+  );
+  ensure(
+    contract.visibleStoryPolicy?.entryStoryCount === implementedStories.length,
+    'visibleStoryPolicy.entryStoryCount differs from implemented entries.',
+    errors,
+  );
 
   return {
     errors,
@@ -232,6 +301,8 @@ function validate(contract, taxonomy) {
       canonicalRoots: roots.length,
       internalGroups: internalGroups.length,
       overrides: overrides.length,
+      visibleStories: visibleStories.length,
+      implementedStories: implementedStories.length,
       contractIdentitySha256: actualIdentity,
       taxonomySha256: taxonomyDigest(taxonomy),
       resolvedCounts: Object.fromEntries(resolvedCounts),
@@ -262,12 +333,13 @@ function renderDecisionDocument(contract, taxonomy, stats) {
     '',
     '## Stan aktywnej warstwy wizualnej',
     '',
-    'Aktywna warstwa wizualna Storybooka zostala wyzerowana. Poprzednie stories, ShowcaseKit, wrappery demonstracyjne i lokalne style nie sa czescia biezacego systemu.',
+    'Aktywna warstwa wizualna Storybooka jest w etapie Clean Start. Dozwolone sa wylacznie stories zgodne z kontraktem i taksonomia. ShowcaseKit, wrappery demonstracyjne, lokalne warstwy wizualne i tokeny --pds-* nie sa czescia biezacego systemu.',
     '',
     '- wymagania: 220 pozycji w kontrakcie;',
-    '- aktywne stories: 0;',
+    `- aktywne stories: ${stats.visibleStories};`,
     '- prototypeStatus implemented: 0;',
-    '- wszystkie nowe implementacje maja wynikac z dokumentacji normatywnej i biezacych decyzji produktowych.',
+    `- storyStatus implemented: ${stats.implementedStories};`,
+    '- wszystkie aktywne stories musza wynikac z kontraktu, taksonomii i biezacych foundations.',
     '',
     '## Cel',
     '',
@@ -342,7 +414,8 @@ function renderDecisionDocument(contract, taxonomy, stats) {
     '## Zasady dalszego rozwoju',
     '',
     '- Nie wolno przywracac ShowcaseKit ani starej warstwy CSS.',
-    '- Nowe story powstaje przy produkcyjnej implementacji lub jako jawne laboratorium decyzji.',
+    '- Nowe story musi miec wpis w kontrakcie i tytul zgodny z docelowym rootem taksonomii.',
+    '- Laboratorium decyzji pozostaje miejscem dla jawnych demonstracji foundations przed przeniesieniem decyzji do warstwy docelowej.',
     '- Zmiana storyStatus, prototypeStatus, productionStatus i testStatus wymaga rzeczywistego dowodu.',
     '- Lista 220 wymagan pozostaje zakresem produktu, a nie lista aktywnych atrap.',
     '',
@@ -411,6 +484,18 @@ function runSelfTest(contract, taxonomy) {
     assertValid(changedContract, taxonomy);
   });
 
+  expectFailure('visible story outside taxonomy path', () => {
+    const changedContract = clone(contract);
+    changedContract.entries[0].storyStatus = 'implemented';
+    changedContract.entries[0].storyVisibility = 'visible';
+    changedContract.entries[0].storyFile = 'sample.stories.tsx';
+    changedContract.entries[0].storyTitle = '77 Poza taksonomia';
+    changedContract.entries[0].storyExport = 'Sample';
+    changedContract.visibleStoryPolicy.visibleStoryCount += 1;
+    changedContract.visibleStoryPolicy.entryStoryCount += 1;
+    assertValid(changedContract, taxonomy);
+  });
+
   console.log('Storybook taxonomy self-test: PASS.');
 }
 
@@ -447,5 +532,6 @@ console.log(
     `Visible roots: ${stats.canonicalRoots}.`,
     `Internal groups: ${stats.internalGroups}.`,
     `Entry overrides: ${stats.overrides}.`,
+    `Visible stories: ${stats.visibleStories}.`,
   ].join(' '),
 );

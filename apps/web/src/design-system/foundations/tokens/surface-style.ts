@@ -1,19 +1,19 @@
 export const surfaceStyleTokens = {
   radius: {
-    none: '0px',
-    subtle: '2px',
-    small: '4px',
-    control: '6px',
-    surface: '8px',
-    overlay: '12px',
-    pill: '999px',
+    none: 'var(--pd-radius-none)',
+    subtle: 'var(--pd-radius-subtle)',
+    small: 'var(--pd-radius-small)',
+    control: 'var(--pd-radius-control)',
+    surface: 'var(--pd-radius-surface)',
+    overlay: 'var(--pd-radius-overlay)',
+    pill: 'var(--pd-radius-pill)',
   },
 
   border: {
     width: {
-      none: '0px',
-      subtle: '1px',
-      strong: '2px',
+      none: 'var(--pd-border-width-none)',
+      subtle: 'var(--pd-border-width-subtle)',
+      strong: 'var(--pd-border-width-strong)',
     },
 
     style: {
@@ -22,31 +22,30 @@ export const surfaceStyleTokens = {
     },
 
     role: {
-      separator: 'var(--pd-border-subtle)',
-      default: 'var(--pd-border-main)',
-      strong: 'var(--pd-border-strong)',
-      focus: 'var(--pd-brand-blue)',
-      premium: 'var(--pd-brand-gold-border)',
+      separator: 'var(--pd-separator-subtle)',
+      default: 'var(--pd-separator)',
+      strong: 'var(--pd-separator-strong)',
+      focus: 'var(--pd-focus-visible)',
+      interactive: 'var(--pd-border-interactive)',
+      danger: 'var(--pd-border-danger)',
     },
   },
 
   shadow: {
-    none: 'none',
-
-    popover:
-      '0 8px 24px rgba(15, 23, 42, 0.14)',
-
-    overlay:
-      '0 14px 36px rgba(15, 23, 42, 0.18)',
-
-    dialog:
-      '0 24px 64px rgba(15, 23, 42, 0.22)',
+    none: 'var(--pd-shadow-none)',
+    control: 'var(--pd-shadow-control)',
+    raised: 'var(--pd-shadow-raised)',
+    overlay: 'var(--pd-shadow-overlay)',
+    floating: 'var(--pd-shadow-floating)',
   },
 
   focus: {
-    floorHeight: '2px',
-    floorInset: '4px',
-    line: 'var(--pd-focus-line)',
+    width: 'var(--pd-focus-width)',
+    offset: 'var(--pd-focus-offset)',
+    ringSize: 'var(--pd-focus-ring-size)',
+    line: 'var(--pd-focus-visible)',
+    ring: 'var(--pd-focus-ring)',
+    onInteractive: 'var(--pd-focus-on-interactive)',
   },
 } as const;
 
@@ -68,12 +67,8 @@ export const surfaceStyleContract = {
   ],
 
   elevatedSurfaceTypes: [
-    'popover',
-    'dropdown',
-    'tooltip',
-    'drawer',
-    'dialog',
-    'floatingAssistant',
+    'raised',
+    'overlay',
   ],
 
   rules: {

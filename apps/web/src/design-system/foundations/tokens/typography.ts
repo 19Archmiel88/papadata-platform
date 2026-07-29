@@ -1,46 +1,7 @@
 export const typographyTokens = {
   families: {
-    /**
-     * Jedyny krój interfejsowy PapaData.
-     *
-     * Zastosowanie:
-     * - nagłówki;
-     * - tekst podstawowy;
-     * - opisy;
-     * - etykiety;
-     * - nawigacja;
-     * - formularze;
-     * - przyciski;
-     * - komunikaty.
-     */
-    sans: [
-      'Inter',
-      'system-ui',
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'sans-serif',
-    ].join(', '),
-
-    /**
-     * Jedyny krój danych technicznych PapaData.
-     *
-     * Zastosowanie:
-     * - KPI;
-     * - kwoty;
-     * - procenty;
-     * - cyfry tabularne;
-     * - identyfikatory;
-     * - kody;
-     * - wartości techniczne.
-     */
-    mono: [
-      '"JetBrains Mono"',
-      'ui-monospace',
-      'SFMono-Regular',
-      'Consolas',
-      'monospace',
-    ].join(', '),
+    sans: 'var(--pd-font-sans)',
+    mono: 'var(--pd-font-mono)',
   },
 
   usage: {
@@ -49,35 +10,39 @@ export const typographyTokens = {
   },
 
   weights: {
-    regular: 400,
-    medium: 500,
-    semibold: 600,
+    regular: 'var(--pd-font-weight-regular)',
+    medium: 'var(--pd-font-weight-medium)',
+    semibold: 'var(--pd-font-weight-semibold)',
   },
 
   sizes: {
-    micro: '11px',
-    caption: '12px',
-    bodySmall: '13px',
-    body: '14px',
-    bodyLarge: '16px',
-    section: '18px',
-    metric: '24px',
-    page: '32px',
-    display: '40px',
+    micro: 'var(--pd-type-size-micro)',
+    caption: 'var(--pd-type-size-caption)',
+    bodySmall: 'var(--pd-type-size-body-small)',
+    body: 'var(--pd-type-size-body)',
+    bodyLarge: 'var(--pd-type-size-body-large)',
+    section: 'var(--pd-type-size-section)',
+    metric: 'var(--pd-type-size-metric)',
+    page: 'var(--pd-type-size-page)',
+    display: 'var(--pd-type-size-display)',
+    pageMobile: 'var(--pd-type-size-page-mobile)',
+    displayMobile: 'var(--pd-type-size-display-mobile)',
   },
 
   lineHeights: {
-    compact: 1.2,
-    heading: 1.3,
-    normal: 1.55,
-    relaxed: 1.65,
+    compact: 'var(--pd-line-height-compact)',
+    heading: 'var(--pd-line-height-heading)',
+    pageMobile: 'var(--pd-line-height-page-mobile)',
+    displayMobile: 'var(--pd-line-height-display-mobile)',
+    normal: 'var(--pd-line-height-normal)',
+    relaxed: 'var(--pd-line-height-relaxed)',
   },
 
   letterSpacing: {
-    display: '-0.035em',
-    heading: '-0.02em',
-    normal: '0',
-    data: '-0.015em',
+    display: 'var(--pd-letter-spacing)',
+    heading: 'var(--pd-letter-spacing)',
+    normal: 'var(--pd-letter-spacing)',
+    data: 'var(--pd-letter-spacing)',
   },
 
   numeric: {
@@ -95,8 +60,6 @@ export const typographyContract = {
   ],
 
   forbiddenFontFamilies: [
-    'Inter',
-    'JetBrains Mono',
   ],
 
   rules: {

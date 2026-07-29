@@ -231,7 +231,6 @@ for (const entry of contract.entries) {
     if (
       !entry.storyFile
       || !entry.storyTitle
-      || !entry.storyName
       || !entry.storyExport
     ) {
       throw new Error(

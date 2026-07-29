@@ -1,61 +1,38 @@
-export const spacingTokens = {
-  /**
-   * Wszystkie odstępy produktu wynikają
-   * z bazowej jednostki 4 px.
-   */
-  unit: 4,
+import {
+  papaDataRuntimeDensities,
+} from '../runtime';
 
+export const spacingTokens = {
   space: {
-    0: '0px',
-    1: '4px',
-    2: '8px',
-    3: '12px',
-    4: '16px',
-    5: '20px',
-    6: '24px',
-    8: '32px',
-    10: '40px',
-    12: '48px',
-    16: '64px',
-    20: '80px',
-    24: '96px',
+    0: 'var(--pd-space-0)',
+    1: 'var(--pd-space-1)',
+    2: 'var(--pd-space-2)',
+    3: 'var(--pd-space-3)',
+    4: 'var(--pd-space-4)',
+    5: 'var(--pd-space-5)',
+    6: 'var(--pd-space-6)',
+    8: 'var(--pd-space-8)',
+    10: 'var(--pd-space-10)',
+    12: 'var(--pd-space-12)',
+    16: 'var(--pd-space-16)',
+    20: 'var(--pd-space-20)',
+    24: 'var(--pd-space-24)',
   },
 
   semantic: {
-    inlineTight: '4px',
-    inline: '8px',
-    control: '12px',
-    group: '16px',
-    block: '24px',
-    section: '48px',
-    page: '64px',
+    inlineTight: 'var(--pd-space-1)',
+    inline: 'var(--pd-space-2)',
+    control: 'var(--pd-space-3)',
+    group: 'var(--pd-space-4)',
+    block: 'var(--pd-space-6)',
+    section: 'var(--pd-density-section-gap)',
+    page: 'var(--pd-layout-page-padding)',
   },
 
   layout: {
-    contentMaxWidth: '1180px',
-
-    pagePadding: {
-      desktop: '48px',
-      tablet: '32px',
-      mobile: '16px',
-    },
-
-    grid: {
-      desktop: {
-        columns: 12,
-        gap: '24px',
-      },
-
-      tablet: {
-        columns: 8,
-        gap: '20px',
-      },
-
-      mobile: {
-        columns: 4,
-        gap: '16px',
-      },
-    },
+    contentMaxWidth:
+      'var(--pd-layout-content-max-width)',
+    pagePadding: 'var(--pd-layout-page-padding)',
 
     breakpoints: {
       mobile: '390px',
@@ -66,17 +43,14 @@ export const spacingTokens = {
   },
 
   density: {
-    comfortable: {
-      controlHeight: '40px',
-      tableRowHeight: '48px',
-      sectionGap: '48px',
-    },
-
-    compact: {
-      controlHeight: '32px',
-      tableRowHeight: '40px',
-      sectionGap: '40px',
-    },
+    modes: papaDataRuntimeDensities,
+    controlHeight:
+      'var(--pd-density-control-height)',
+    rowHeight: 'var(--pd-density-row-height)',
+    surfacePadding:
+      'var(--pd-density-surface-padding)',
+    sectionGap: 'var(--pd-density-section-gap)',
+    inlineGap: 'var(--pd-density-inline-gap)',
   },
 } as const;
 
@@ -122,4 +96,4 @@ export type LayoutBreakpointName =
   keyof typeof spacingTokens.layout.breakpoints;
 
 export type InterfaceDensity =
-  keyof typeof spacingTokens.density;
+  typeof papaDataRuntimeDensities[number];

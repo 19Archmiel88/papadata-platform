@@ -75,6 +75,5 @@ export type CatalogEntryDefinition = {
   readonly requirements: readonly string[];
   readonly storyTitle: string | null;
   readonly storyFile: string | null;
-  readonly storyName?: string;
   readonly storyExport?: string;
 };

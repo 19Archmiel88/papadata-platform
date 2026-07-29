@@ -1,15 +1,25 @@
+import {
+  papaDataRuntimeMotionModes,
+} from '../runtime';
+
 export const motionTokens = {
+  modes: papaDataRuntimeMotionModes,
+
   duration: {
-    instant: '80ms',
-    fast: '140ms',
-    standard: '200ms',
-    deliberate: '280ms',
+    instant: 'var(--pd-motion-duration-instant)',
+    fast: 'var(--pd-motion-duration-fast)',
+    standard:
+      'var(--pd-motion-duration-standard)',
+    deliberate:
+      'var(--pd-motion-duration-deliberate)',
   },
 
   easing: {
     standard:
-      'cubic-bezier(0.2, 0, 0, 1)',
+      'var(--pd-motion-easing-standard)',
     emphasized:
-      'cubic-bezier(0.16, 1, 0.3, 1)',
+      'var(--pd-motion-easing-emphasized)',
   },
+
+  distance: 'var(--pd-motion-distance)',
 } as const;

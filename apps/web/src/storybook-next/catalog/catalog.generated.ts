@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: 43af309f74d51033fd2c40d285bf0e88b943ec4d5edcbf57b5f876829d5452b8
+// SHA-256 źródła: ca24d1878f5c44464c879b1709a767c3f614e2b1d19219444ceba5129b1a8be2
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -22,8 +22,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "premium",
       "hierarchia wizualna",
@@ -31,10 +31,11 @@ export const storybookCatalog = [
       "dark mode",
       "akcent marki"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "00 Fundamenty/Podstawy",
+    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
     "displaySectionTitle": "Fundamenty",
-    "displayTitle": "Kierunek wizualny"
+    "displayTitle": "Kierunek wizualny",
+    "storyExport": "KierunekWizualny"
   },
   {
     "id": "00.02",
@@ -52,8 +53,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "Inter",
       "JetBrains Mono",
@@ -66,10 +67,11 @@ export const storybookCatalog = [
       "długie teksty",
       "próbki PL/EN"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "00 Fundamenty/Podstawy",
+    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
     "displaySectionTitle": "Fundamenty",
-    "displayTitle": "Typografia"
+    "displayTitle": "Typografia",
+    "storyExport": "Typografia"
   },
   {
     "id": "00.03",
@@ -87,8 +89,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "kolory marki",
       "kolory neutralne",
@@ -100,10 +102,11 @@ export const storybookCatalog = [
       "success",
       "kontrast light/dark"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "00 Fundamenty/Podstawy",
+    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
     "displaySectionTitle": "Fundamenty",
-    "displayTitle": "Kolory"
+    "displayTitle": "Kolory",
+    "storyExport": "KolorySemantyczne"
   },
   {
     "id": "00.04",
@@ -121,8 +124,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "skala odstępów",
       "marginesy ekranów",
@@ -136,10 +139,11 @@ export const storybookCatalog = [
       "compact",
       "jawne viewporty Storybooka"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "00 Fundamenty/Podstawy",
+    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
     "displaySectionTitle": "Fundamenty",
-    "displayTitle": "Odstępy i siatka"
+    "displayTitle": "Odstępy i siatka",
+    "storyExport": "SpacingIGrid"
   },
   {
     "id": "00.05",
@@ -157,8 +161,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "radius powierzchni",
       "radius inputów",
@@ -172,10 +176,11 @@ export const storybookCatalog = [
       "cień tylko dla uzasadnionych warstw",
       "separacja bez nadmiaru kontenerów"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "00 Fundamenty/Podstawy",
+    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
     "displaySectionTitle": "Fundamenty",
-    "displayTitle": "Promienie, obramowania i cienie"
+    "displayTitle": "Promienie, obramowania i cienie",
+    "storyExport": "PromienieObramowaniaICienie"
   },
   {
     "id": "00.06",
@@ -193,8 +198,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "styl ikon",
       "stroke",
@@ -207,10 +212,11 @@ export const storybookCatalog = [
       "ikony providerów",
       "zasada niekomunikowania stanu wyłącznie kolorem"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "00 Fundamenty/Podstawy",
+    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
     "displaySectionTitle": "Fundamenty",
-    "displayTitle": "Ikonografia"
+    "displayTitle": "Ikonografia",
+    "storyExport": "Ikonografia"
   },
   {
     "id": "00.07",
@@ -228,8 +234,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "tokeny czasu",
       "tokeny easing",
@@ -247,10 +253,11 @@ export const storybookCatalog = [
       "przerwanie animacji",
       "play testy interakcji"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "00 Fundamenty/Podstawy",
+    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
     "displaySectionTitle": "Fundamenty",
-    "displayTitle": "Animacje"
+    "displayTitle": "Animacje",
+    "storyExport": "MotionIReducedMotion"
   },
   {
     "id": "00.08",
@@ -268,8 +275,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "obsługa klawiatury",
       "focus-visible",
@@ -284,10 +291,11 @@ export const storybookCatalog = [
       "mobile reflow",
       "kontrast light/dark"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "00 Fundamenty/Podstawy",
+    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
     "displaySectionTitle": "Fundamenty",
-    "displayTitle": "Dostępność"
+    "displayTitle": "Dostępność",
+    "storyExport": "Dostepnosc"
   },
   {
     "id": "05.01",
@@ -305,8 +313,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "logowanie",
       "rejestracja",
@@ -317,10 +325,11 @@ export const storybookCatalog = [
       "dark",
       "mobile"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie",
+    "storyFile": "apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx",
     "displaySectionTitle": "Tła i powierzchnie",
-    "displayTitle": "Ekrany dostępu"
+    "displayTitle": "Ekrany dostępu",
+    "storyExport": "TloAuth"
   },
   {
     "id": "05.02",
@@ -338,8 +347,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "canvas aplikacji",
       "region treści",
@@ -349,10 +358,11 @@ export const storybookCatalog = [
       "compact",
       "mobile"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie",
+    "storyFile": "apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx",
     "displaySectionTitle": "Tła i powierzchnie",
-    "displayTitle": "Tło aplikacji"
+    "displayTitle": "Tło aplikacji",
+    "storyExport": "CanvasAplikacji"
   },
   {
     "id": "05.03",
@@ -370,8 +380,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "MetricCard",
       "ChartFrame",
@@ -382,10 +392,11 @@ export const storybookCatalog = [
       "panel rekomendacji",
       "panel statusu danych"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie",
+    "storyFile": "apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx",
     "displaySectionTitle": "Tła i powierzchnie",
-    "displayTitle": "Powierzchnie danych"
+    "displayTitle": "Powierzchnie danych",
+    "storyExport": "PowierzchniaDanych"
   },
   {
     "id": "05.04",
@@ -403,8 +414,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "podział sekcji",
       "karty",
@@ -414,10 +425,11 @@ export const storybookCatalog = [
       "drawer",
       "sticky surfaces"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie",
+    "storyFile": "apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx",
     "displaySectionTitle": "Tła i powierzchnie",
-    "displayTitle": "Separatory i obramowania"
+    "displayTitle": "Separatory i obramowania",
+    "storyExport": "SeparatoryIObramowania"
   },
   {
     "id": "05.05",
@@ -435,8 +447,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "dozwolone gradienty",
       "subtelne światło",
@@ -447,10 +459,11 @@ export const storybookCatalog = [
       "light/dark",
       "zakaz przypadkowego glow i halo"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie",
+    "storyFile": "apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx",
     "displaySectionTitle": "Tła i powierzchnie",
-    "displayTitle": "Gradienty i światło"
+    "displayTitle": "Gradienty i światło",
+    "storyExport": "GradientySwiatloISzklo"
   },
   {
     "id": "10.01",

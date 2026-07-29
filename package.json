@@ -22,7 +22,13 @@
     "stop:production-parity": "docker compose -f compose.production-parity.yml down",
     "test:production-foundation": "pnpm --filter @papadata/integrations test",
     "test:master-remediation": "pnpm --filter @papadata/integrations test && pnpm --filter @papadata/storage test && pnpm --filter @papadata/ai-runtime test",
-    "verify:master-remediation": "pnpm typecheck && pnpm test:master-remediation && pnpm build"
+    "verify:master-remediation": "pnpm typecheck && pnpm test:master-remediation && pnpm build",
+    "dev:web": "pnpm --filter @papadata/web dev",
+    "build:web": "pnpm --filter @papadata/web build",
+    "preview:web": "pnpm --filter @papadata/web preview",
+    "storybook": "pnpm --filter @papadata/web storybook",
+    "build-storybook": "pnpm --filter @papadata/web build-storybook",
+    "check:storybook-catalog": "pnpm --filter @papadata/web check-storybook-catalog"
   },
   "devDependencies": {
     "turbo": "2.10.5",

@@ -64,3 +64,10 @@ docs/UI-AUDIT-SOURCE.md
 *.rej
 *.tmp
 *~
+
+# PapaData Web
+apps/web/dist/
+apps/web/storybook-static/
+apps/web/node_modules/
+apps/web/.cache/
+apps/web/.vite/

@@ -2,4 +2,5 @@ packages:
   - "apps/api"
   - "apps/bff"
   - "apps/worker"
+  - "apps/web"
   - "packages/*"

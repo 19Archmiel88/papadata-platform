@@ -1,0 +1,468 @@
+{
+  "schemaVersion": 2,
+  "decisionId": "SB-TAXONOMY-002",
+  "status": "accepted",
+  "title": "Kanoniczna mapa taksonomii Storybooka po visual reset",
+  "sourceContract": "apps/web/src/storybook-next/storybook-contract.json",
+  "decisionDocument": "docs/storybook/STORYBOOK-TAXONOMY-DECISIONS.md",
+  "baselineContractIdentitySha256": "b87fb78aba30c844d870b9742db465c6210ce66ab6aff621c58be9328146f17a",
+  "expectedSectionCount": 22,
+  "expectedEntryCount": 220,
+  "purpose": "Logiczne przypisanie 220 wymagan do kanonicznych rootow po usunieciu calej odrzuconej aktywnej warstwy wizualnej Storybooka.",
+  "policies": {
+    "preserveEntryIds": true,
+    "requirementsRemainInContract": true,
+    "activeVisualLayerReset": true,
+    "zeroActiveStoriesAfterReset": true,
+    "legacyPrototypeAllowed": false,
+    "newVisibleRootRequiresDecision": true,
+    "singlePrimaryRootPerCurrentSection": true,
+    "entryOverridesAllowed": true,
+    "internalGroupsAreNotSidebarRoots": true
+  },
+  "canonicalRoots": [
+    {
+      "id": "00",
+      "title": "Fundamenty",
+      "visibility": "visible",
+      "lifecycle": "permanent",
+      "purpose": "Tokeny, typografia, ikonografia, focus, motion, dostępność i zasady bazowe."
+    },
+    {
+      "id": "05",
+      "title": "Laboratorium decyzji",
+      "visibility": "visible",
+      "lifecycle": "temporary",
+      "purpose": "Porównywanie wariantów wizualnych przed przeniesieniem zaakceptowanej decyzji do warstwy docelowej."
+    },
+    {
+      "id": "10",
+      "title": "Komponenty",
+      "visibility": "visible",
+      "lifecycle": "permanent",
+      "purpose": "Produkcyjne primitives i components wraz z API, stories i testami."
+    },
+    {
+      "id": "20",
+      "title": "Wzorce",
+      "visibility": "visible",
+      "lifecycle": "permanent",
+      "purpose": "Kompozycje komponentów, stany przekrojowe, tabele, wykresy i wzorce danych."
+    },
+    {
+      "id": "25",
+      "title": "Powłoki",
+      "visibility": "visible",
+      "lifecycle": "permanent",
+      "purpose": "AuthShell, AppShell, topbary, sidebar, AssistantLayer i globalny system warstw."
+    },
+    {
+      "id": "30",
+      "title": "Dashboard",
+      "visibility": "visible",
+      "lifecycle": "permanent",
+      "purpose": "Centrum Dowodzenia i moduły analityczno-biznesowe."
+    },
+    {
+      "id": "40",
+      "title": "Papa Asystent",
+      "visibility": "visible",
+      "lifecycle": "permanent",
+      "purpose": "Papa Asystent, Laboratorium AI, rekomendacje i kontrolowane działania AI."
+    },
+    {
+      "id": "50",
+      "title": "Integracje",
+      "visibility": "visible",
+      "lifecycle": "permanent",
+      "purpose": "Integracje, synchronizacja, jakość danych, readiness i recovery."
+    },
+    {
+      "id": "60",
+      "title": "Ustawienia",
+      "visibility": "visible",
+      "lifecycle": "permanent",
+      "purpose": "Profil, firma, zespół, bezpieczeństwo, governance i konfiguracja."
+    },
+    {
+      "id": "70",
+      "title": "Subskrypcja",
+      "visibility": "visible",
+      "lifecycle": "permanent",
+      "purpose": "Plany, płatności, faktury, limity i entitlementy."
+    },
+    {
+      "id": "80",
+      "title": "Pomoc",
+      "visibility": "visible",
+      "lifecycle": "permanent",
+      "purpose": "Centrum Pomocy, procedury, wyszukiwanie i kontakt ze wsparciem."
+    },
+    {
+      "id": "90",
+      "title": "Przepływy",
+      "visibility": "visible",
+      "lifecycle": "permanent",
+      "purpose": "Kompletne procesy wieloekranowe i przekrojowe scenariusze produktu."
+    }
+  ],
+  "internalGroups": [
+    {
+      "id": "INTERNAL",
+      "title": "Dokumentacja wewnętrzna",
+      "visibility": "hidden",
+      "purpose": "Mapy, indeksy i informacje governance niewidoczne jako docelowy root produktu."
+    }
+  ],
+  "sectionMappings": [
+    {
+      "sectionId": "00",
+      "currentTitle": "Fundamenty",
+      "currentFolder": "00-foundations",
+      "primaryRootId": "00",
+      "plannedPath": [
+        "00 Fundamenty"
+      ],
+      "disposition": "keep",
+      "decision": "Sekcja pozostaje kanonicznym rootem fundamentów."
+    },
+    {
+      "sectionId": "05",
+      "currentTitle": "Tła i powierzchnie",
+      "currentFolder": "05-surfaces",
+      "primaryRootId": "05",
+      "plannedPath": [
+        "05 Laboratorium decyzji",
+        "Tła i powierzchnie"
+      ],
+      "disposition": "temporary",
+      "decision": "Sekcja pozostaje tymczasowym laboratorium do czasu przeniesienia zaakceptowanych wariantów do fundamentów i komponentów."
+    },
+    {
+      "sectionId": "10",
+      "currentTitle": "Komponenty",
+      "currentFolder": "10-components",
+      "primaryRootId": "10",
+      "plannedPath": [
+        "10 Komponenty"
+      ],
+      "disposition": "keep",
+      "decision": "Sekcja pozostaje rootem komponentów, ale docelowo prezentuje implementacje produkcyjne zamiast ShowcaseKit."
+    },
+    {
+      "sectionId": "15",
+      "currentTitle": "Wykresy i wizualizacje danych",
+      "currentFolder": "15-data-visualizations",
+      "primaryRootId": "20",
+      "plannedPath": [
+        "20 Wzorce",
+        "Wykresy i wizualizacje danych"
+      ],
+      "disposition": "consolidate",
+      "decision": "Wykresy są wzorcami danych i nie tworzą osobnego kanonicznego rootu."
+    },
+    {
+      "sectionId": "18",
+      "currentTitle": "Wzorce i stany przekrojowe",
+      "currentFolder": "18-cross-cutting-patterns",
+      "primaryRootId": "20",
+      "plannedPath": [
+        "20 Wzorce",
+        "Stany i wzorce przekrojowe"
+      ],
+      "disposition": "consolidate",
+      "decision": "Sekcja staje się częścią kanonicznego rootu Wzorce."
+    },
+    {
+      "sectionId": "20",
+      "currentTitle": "Powłoka produktu i nawigacja",
+      "currentFolder": "20-product-shell",
+      "primaryRootId": "25",
+      "plannedPath": [
+        "25 Powłoki"
+      ],
+      "disposition": "split",
+      "decision": "Większość wpisów należy do Powłok; pojedyncze wzorce i flow są rozdzielane przez entryOverrides."
+    },
+    {
+      "sectionId": "25",
+      "currentTitle": "Dostęp, rejestracja i onboarding — M01",
+      "currentFolder": "25-access-registration-onboarding",
+      "primaryRootId": "90",
+      "plannedPath": [
+        "90 Przepływy",
+        "Auth, rejestracja i onboarding"
+      ],
+      "disposition": "split",
+      "decision": "Obecne pozycje są powierzchniami i procesami. Przyszłe primitives, wzorce i AuthShell trafią odpowiednio do rootów 10, 20 i 25."
+    },
+    {
+      "sectionId": "30",
+      "currentTitle": "Centrum Dowodzenia — M04",
+      "currentFolder": "30-command-center",
+      "primaryRootId": "30",
+      "plannedPath": [
+        "30 Dashboard",
+        "Centrum Dowodzenia"
+      ],
+      "disposition": "keep",
+      "decision": "Centrum Dowodzenia pozostaje głównym modułem Dashboardu."
+    },
+    {
+      "sectionId": "31",
+      "currentTitle": "Kampanie płatne — M05",
+      "currentFolder": "31-paid-campaigns",
+      "primaryRootId": "30",
+      "plannedPath": [
+        "30 Dashboard",
+        "Kampanie płatne"
+      ],
+      "disposition": "consolidate",
+      "decision": "Moduł biznesowy staje się podsekcją Dashboardu."
+    },
+    {
+      "sectionId": "32",
+      "currentTitle": "Zamówienia — M06",
+      "currentFolder": "32-orders",
+      "primaryRootId": "30",
+      "plannedPath": [
+        "30 Dashboard",
+        "Zamówienia"
+      ],
+      "disposition": "consolidate",
+      "decision": "Moduł biznesowy staje się podsekcją Dashboardu."
+    },
+    {
+      "sectionId": "33",
+      "currentTitle": "Produkty — M07",
+      "currentFolder": "33-products",
+      "primaryRootId": "30",
+      "plannedPath": [
+        "30 Dashboard",
+        "Produkty"
+      ],
+      "disposition": "consolidate",
+      "decision": "Moduł biznesowy staje się podsekcją Dashboardu."
+    },
+    {
+      "sectionId": "34",
+      "currentTitle": "Klienci — M08",
+      "currentFolder": "34-customers",
+      "primaryRootId": "30",
+      "plannedPath": [
+        "30 Dashboard",
+        "Klienci"
+      ],
+      "disposition": "consolidate",
+      "decision": "Moduł biznesowy staje się podsekcją Dashboardu."
+    },
+    {
+      "sectionId": "35",
+      "currentTitle": "Ruch na stronie i lejek sprzedażowy — M09",
+      "currentFolder": "35-traffic-and-funnel",
+      "primaryRootId": "30",
+      "plannedPath": [
+        "30 Dashboard",
+        "Ruch i lejek sprzedażowy"
+      ],
+      "disposition": "consolidate",
+      "decision": "Moduł biznesowy staje się podsekcją Dashboardu."
+    },
+    {
+      "sectionId": "40",
+      "currentTitle": "Integracje i synchronizacja — M10",
+      "currentFolder": "40-integrations",
+      "primaryRootId": "50",
+      "plannedPath": [
+        "50 Integracje",
+        "Połączenia i synchronizacja"
+      ],
+      "disposition": "renumber",
+      "decision": "Integracje otrzymują kanoniczny root 50."
+    },
+    {
+      "sectionId": "41",
+      "currentTitle": "Jakość danych i integralność — M11",
+      "currentFolder": "41-data-quality",
+      "primaryRootId": "50",
+      "plannedPath": [
+        "50 Integracje",
+        "Jakość danych i readiness"
+      ],
+      "disposition": "consolidate",
+      "decision": "Jakość danych jest częścią cyklu integracji, synchronizacji i readiness."
+    },
+    {
+      "sectionId": "50",
+      "currentTitle": "Papa Asystent i Laboratorium AI — M12",
+      "currentFolder": "50-papa-assistant",
+      "primaryRootId": "40",
+      "plannedPath": [
+        "40 Papa Asystent"
+      ],
+      "disposition": "renumber",
+      "decision": "Papa Asystent otrzymuje kanoniczny root 40."
+    },
+    {
+      "sectionId": "60",
+      "currentTitle": "Ustawienia, zespół i bezpieczeństwo — M13",
+      "currentFolder": "60-settings-team-security",
+      "primaryRootId": "60",
+      "plannedPath": [
+        "60 Ustawienia"
+      ],
+      "disposition": "keep",
+      "decision": "Sekcja pozostaje kanonicznym rootem ustawień."
+    },
+    {
+      "sectionId": "70",
+      "currentTitle": "Subskrypcja i płatności — M14",
+      "currentFolder": "70-subscription-billing",
+      "primaryRootId": "70",
+      "plannedPath": [
+        "70 Subskrypcja"
+      ],
+      "disposition": "keep",
+      "decision": "Sekcja pozostaje kanonicznym rootem subskrypcji i płatności."
+    },
+    {
+      "sectionId": "80",
+      "currentTitle": "Decyzje, działania i pomiar — M15",
+      "currentFolder": "80-decisions-actions-measurement",
+      "primaryRootId": "30",
+      "plannedPath": [
+        "30 Dashboard",
+        "Decyzje, działania i pomiar"
+      ],
+      "disposition": "split",
+      "decision": "Centrum decyzji i pomiar pozostają częścią Dashboardu; wpisy bezpośrednio związane z AI są przekierowane do Papa Asystenta."
+    },
+    {
+      "sectionId": "85",
+      "currentTitle": "Centrum Pomocy",
+      "currentFolder": "85-help-center",
+      "primaryRootId": "80",
+      "plannedPath": [
+        "80 Pomoc",
+        "Centrum Pomocy"
+      ],
+      "disposition": "renumber",
+      "decision": "Centrum Pomocy otrzymuje kanoniczny root 80."
+    },
+    {
+      "sectionId": "90",
+      "currentTitle": "Przepływy kompletne",
+      "currentFolder": "90-complete-flows",
+      "primaryRootId": "90",
+      "plannedPath": [
+        "90 Przepływy"
+      ],
+      "disposition": "keep",
+      "decision": "Sekcja pozostaje rootem kompletnych procesów przekrojowych."
+    },
+    {
+      "sectionId": "99",
+      "currentTitle": "Mapa produktu i indeks Storybooka",
+      "currentFolder": "99-product-map",
+      "primaryRootId": "INTERNAL",
+      "plannedPath": [
+        "Dokumentacja wewnętrzna",
+        "Mapa produktu i indeks"
+      ],
+      "disposition": "hide",
+      "decision": "Mapa i indeks pozostają źródłem governance, ale nie są docelowym rootem nawigacji produktu."
+    }
+  ],
+  "entryOverrides": [
+    {
+      "entryId": "20.06",
+      "targetRootId": "20",
+      "plannedPath": [
+        "20 Wzorce",
+        "WorkspaceSwitcher"
+      ],
+      "reason": "WorkspaceSwitcher jest współdzielonym wzorcem, nie pełną powłoką."
+    },
+    {
+      "entryId": "20.07",
+      "targetRootId": "90",
+      "plannedPath": [
+        "90 Przepływy",
+        "GlobalSearch"
+      ],
+      "reason": "Global search i Command Palette wymagają scenariusza interakcji przekrojowej."
+    },
+    {
+      "entryId": "20.08",
+      "targetRootId": "20",
+      "plannedPath": [
+        "20 Wzorce",
+        "NotificationCenter"
+      ],
+      "reason": "NotificationCenter jest współdzielonym wzorcem używanym przez powłokę."
+    },
+    {
+      "entryId": "20.09",
+      "targetRootId": "20",
+      "plannedPath": [
+        "20 Wzorce",
+        "Centrum operacji w tle"
+      ],
+      "reason": "Statusy operacji są wzorcem procesowym, a nie anatomią AppShell."
+    },
+    {
+      "entryId": "20.10",
+      "targetRootId": "25",
+      "plannedPath": [
+        "25 Powłoki",
+        "OverlayRoot"
+      ],
+      "reason": "OverlayRoot jest globalnym regionem powłoki."
+    },
+    {
+      "entryId": "80.02",
+      "targetRootId": "40",
+      "plannedPath": [
+        "40 Papa Asystent",
+        "Obserwacje"
+      ],
+      "reason": "Obserwacje są częścią cyklu analitycznego Papa Asystenta."
+    },
+    {
+      "entryId": "80.03",
+      "targetRootId": "40",
+      "plannedPath": [
+        "40 Papa Asystent",
+        "Rekomendacje"
+      ],
+      "reason": "Rekomendacje są wspólną powierzchnią Papa Asystenta i AI Actions."
+    },
+    {
+      "entryId": "80.05",
+      "targetRootId": "40",
+      "plannedPath": [
+        "40 Papa Asystent",
+        "Brief działania"
+      ],
+      "reason": "Brief działania jest elementem kontrolowanego cyklu AI Actions."
+    },
+    {
+      "entryId": "80.06",
+      "targetRootId": "40",
+      "plannedPath": [
+        "40 Papa Asystent",
+        "Szczegóły działania"
+      ],
+      "reason": "Szczegóły działania należą do kontrolowanego cyklu wykonania i recovery."
+    },
+    {
+      "entryId": "80.08",
+      "targetRootId": "40",
+      "plannedPath": [
+        "40 Papa Asystent",
+        "Biblioteka działań"
+      ],
+      "reason": "Biblioteka działań jest częścią historii i governance działań AI."
+    }
+  ]
+}

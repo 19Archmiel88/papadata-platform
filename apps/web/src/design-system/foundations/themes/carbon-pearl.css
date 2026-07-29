@@ -1,0 +1,179 @@
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --pd-canvas: #f8fafc;
+  --pd-canvas-gradient:
+    radial-gradient(
+      circle at 50% -12%,
+      rgba(59, 102, 217, 0.035) 0%,
+      rgba(99, 102, 241, 0.012) 34%,
+      transparent 72%
+    );
+
+  --pd-surface-main: #ffffff;
+  --pd-surface-section: #f1f5f9;
+  --pd-surface-active: #e2e8f0;
+
+  --pd-border-main: #e2e8f0;
+  --pd-border-subtle: #f1f5f9;
+  --pd-border-strong: #cbd5e1;
+
+  --pd-text-main: #0f172a;
+  --pd-text-secondary: #475467;
+  --pd-text-muted: #64748b;
+
+  --pd-brand-blue: #3b66d9;
+  --pd-brand-gold: #a36310;
+  --pd-brand-gold-surface: #fff4de;
+  --pd-brand-gold-border: #d8b36a;
+  --pd-teal: #0d9488;
+  --pd-light-blue: #2563eb;
+  --pd-ai: #6366f1;
+
+  --pd-status-success: #15803d;
+  --pd-status-info: #2563eb;
+  --pd-status-warning: #c25a1b;
+  --pd-status-error: #d9364f;
+  --pd-status-critical: #9f1239;
+  --pd-status-processing: #0f8f9d;
+  --pd-status-pending: #7c5cc4;
+  --pd-status-partial: #b7791f;
+  --pd-status-disabled: #64748b;
+  --pd-status-no-data: #94a3b8;
+
+  --pd-success: var(--pd-status-success);
+  --pd-info: var(--pd-status-info);
+  --pd-warning: var(--pd-status-warning);
+  --pd-error: var(--pd-status-error);
+  --pd-critical: var(--pd-status-critical);
+  --pd-processing: var(--pd-status-processing);
+  --pd-pending: var(--pd-status-pending);
+  --pd-partial: var(--pd-status-partial);
+  --pd-disabled: var(--pd-status-disabled);
+  --pd-no-data: var(--pd-status-no-data);
+
+  --pd-chart-actual: #3b66d9;
+  --pd-chart-comparison: #0d9488;
+  --pd-chart-ai: #6366f1;
+  --pd-chart-after: #16a36a;
+  --pd-chart-anomaly: #d9364f;
+  --pd-chart-no-data: #94a3b8;
+
+  --pd-overlay-bg: rgba(255, 255, 255, 0.96);
+  --pd-overlay-shadow: 0 24px 48px -18px rgba(15, 23, 42, 0.18);
+
+  --pd-font-sans:
+    "Inter",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  --pd-font-mono:
+    "JetBrains Mono",
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+
+  --pd-radius-none: 0;
+  --pd-radius-subtle: 2px;
+  --pd-radius-small: 4px;
+  --pd-radius-control: 6px;
+  --pd-radius-compact: 8px;
+  --pd-radius-surface: 8px;
+  --pd-radius-overlay: 12px;
+  --pd-radius-pill: 999px;
+
+  --pd-border-width-none: 0;
+  --pd-border-width-subtle: 1px;
+  --pd-border-width-strong: 2px;
+
+  --pd-focus-line: var(--pd-brand-blue);
+  --pd-focus-floor-height: 2px;
+  --pd-focus-floor-inset: 4px;
+
+  --pd-shadow-none: none;
+  --pd-shadow-popover: 0 8px 24px rgba(15, 23, 42, 0.14);
+  --pd-shadow-overlay: 0 14px 36px rgba(15, 23, 42, 0.18);
+  --pd-shadow-dialog: 0 24px 64px rgba(15, 23, 42, 0.22);
+
+  --pd-duration-fast: 140ms;
+  --pd-duration-standard: 200ms;
+  --pd-duration-deliberate: 280ms;
+  --pd-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --pd-easing-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --pd-canvas: #0b0d11;
+  --pd-canvas-gradient:
+    radial-gradient(
+      circle at 50% -12%,
+      rgba(79, 125, 243, 0.04) 0%,
+      rgba(139, 123, 232, 0.016) 36%,
+      transparent 74%
+    );
+
+  --pd-surface-main: #11141a;
+  --pd-surface-section: #161a21;
+  --pd-surface-active: #1c212a;
+
+  --pd-border-main: #2a303a;
+  --pd-border-subtle: #20252d;
+  --pd-border-strong: #3a424f;
+
+  --pd-text-main: #f1f3f5;
+  --pd-text-secondary: #9aa1ab;
+  --pd-text-muted: #7f8792;
+
+  --pd-brand-blue: #4f7df3;
+  --pd-brand-gold: #e0b75b;
+  --pd-brand-gold-surface: #241b0e;
+  --pd-brand-gold-border: #6f5525;
+  --pd-teal: #2ab7a9;
+  --pd-light-blue: #6fa8ff;
+  --pd-ai: #8b7be8;
+
+  --pd-status-success: #45b982;
+  --pd-status-info: #6fa8ff;
+  --pd-status-warning: #e3944c;
+  --pd-status-error: #ee6a78;
+  --pd-status-critical: #fb7185;
+  --pd-status-processing: #36bec8;
+  --pd-status-pending: #a894ea;
+  --pd-status-partial: #d5a84b;
+  --pd-status-disabled: #7f8792;
+  --pd-status-no-data: #707986;
+
+  --pd-success: var(--pd-status-success);
+  --pd-info: var(--pd-status-info);
+  --pd-warning: var(--pd-status-warning);
+  --pd-error: var(--pd-status-error);
+  --pd-critical: var(--pd-status-critical);
+  --pd-processing: var(--pd-status-processing);
+  --pd-pending: var(--pd-status-pending);
+  --pd-partial: var(--pd-status-partial);
+  --pd-disabled: var(--pd-status-disabled);
+  --pd-no-data: var(--pd-status-no-data);
+
+  --pd-chart-actual: #4f7df3;
+  --pd-chart-comparison: #2ab7a9;
+  --pd-chart-ai: #8b7be8;
+  --pd-chart-after: #48c78e;
+  --pd-chart-anomaly: #ee6a78;
+  --pd-chart-no-data: #707986;
+
+  --pd-overlay-bg: rgba(17, 20, 26, 0.96);
+  --pd-overlay-shadow: 0 32px 64px -20px rgba(0, 0, 0, 0.88);
+
+  --pd-focus-line: var(--pd-brand-blue);
+
+  --pd-shadow-popover: 0 10px 28px rgba(0, 0, 0, 0.46);
+  --pd-shadow-overlay: 0 16px 42px rgba(0, 0, 0, 0.52);
+  --pd-shadow-dialog: 0 28px 72px rgba(0, 0, 0, 0.6);
+}

@@ -1,0 +1,275 @@
+.pd-select {
+  display: grid;
+  gap: var(--pd-space-2);
+  min-width: 0;
+}
+
+.pd-select__native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.pd-select__trigger-shell {
+  z-index: 0;
+  padding-right: var(--pd-space-2);
+}
+
+.pd-select__trigger-shell[data-open='true'] {
+  z-index: 1;
+  border-color: var(--pd-form-accent);
+  box-shadow:
+    0 0 0 var(--pd-focus-ring-size) var(--pd-form-ring),
+    0 0 0 1px var(--pd-form-accent);
+}
+
+.pd-select__trigger {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--pd-space-3);
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.pd-select__trigger:disabled {
+  cursor: not-allowed;
+}
+
+.pd-select__trigger-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pd-select__trigger-label--placeholder {
+  color: var(--pd-text-muted);
+}
+
+.pd-select__indicator {
+  color: var(--pd-form-muted);
+  font-size: 0.7rem;
+  transition: transform var(--pd-motion-duration-fast)
+    var(--pd-motion-easing-standard);
+}
+
+.pd-select__indicator[data-open='true'] {
+  transform: rotate(180deg);
+}
+
+.pd-select__panel {
+  --pd-select-scrollbar-thumb: color-mix(
+    in srgb,
+    var(--pd-text-muted) 52%,
+    transparent
+  );
+  --pd-select-scrollbar-thumb-hover: color-mix(
+    in srgb,
+    var(--pd-text-secondary) 64%,
+    transparent
+  );
+  --pd-select-scrollbar-track: color-mix(
+    in srgb,
+    var(--pd-surface-overlay) 28%,
+    transparent
+  );
+  position: absolute;
+  top: calc(100% + var(--pd-space-2));
+  right: 0;
+  left: 0;
+  display: grid;
+  gap: var(--pd-space-2);
+  padding: var(--pd-space-3);
+  max-block-size: min(22rem, calc(100dvh - 8rem));
+  border: var(--pd-border-width-subtle) solid
+    var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-control);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(
+        in srgb,
+        var(--pd-surface-overlay) 92%,
+        transparent
+      ),
+      var(--pd-surface-overlay)
+    );
+  box-shadow: var(--pd-shadow-overlay);
+  backdrop-filter: blur(18px);
+  overflow: hidden;
+}
+
+.pd-select__panel[data-state='error'] {
+  border-color: var(--pd-status-danger);
+}
+
+.pd-select__search-shell {
+  padding-bottom: var(--pd-space-2);
+  border-bottom:
+    var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+}
+
+.pd-select__search-input {
+  width: 100%;
+  min-height: calc(var(--pd-density-control-height) - var(--pd-space-4));
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--pd-text);
+  font: inherit;
+}
+
+.pd-select__search-input::placeholder {
+  color: var(--pd-text-muted);
+}
+
+.pd-select__listbox {
+  display: grid;
+  gap: var(--pd-space-1);
+  max-block-size: min(16rem, calc(100dvh - 12rem));
+  padding-right: var(--pd-space-1);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color:
+    var(--pd-select-scrollbar-thumb)
+    var(--pd-select-scrollbar-track);
+}
+
+.pd-select__listbox::-webkit-scrollbar {
+  width: 0.75rem;
+}
+
+.pd-select__listbox::-webkit-scrollbar-track {
+  margin-block: var(--pd-space-1);
+  border-radius: 999px;
+  background: var(--pd-select-scrollbar-track);
+}
+
+.pd-select__listbox::-webkit-scrollbar-thumb {
+  border: 0.2rem solid transparent;
+  border-radius: 999px;
+  background: var(--pd-select-scrollbar-thumb);
+  background-clip: padding-box;
+}
+
+.pd-select__listbox::-webkit-scrollbar-thumb:hover {
+  background: var(--pd-select-scrollbar-thumb-hover);
+  background-clip: padding-box;
+}
+
+.pd-select__option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--pd-space-3);
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 var(--pd-space-3);
+  border: var(--pd-border-width-subtle) solid transparent;
+  border-radius: calc(var(--pd-radius-control) - 0.25rem);
+  background: transparent;
+  color: var(--pd-text);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition:
+    border-color var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard),
+    background-color var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard),
+    color var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard);
+}
+
+.pd-select__option:hover,
+.pd-select__option[data-active='true'] {
+  border-color: color-mix(
+    in srgb,
+    var(--pd-brand) 28%,
+    var(--pd-separator-subtle)
+  );
+  background: color-mix(
+    in srgb,
+    var(--pd-brand) 11%,
+    var(--pd-surface-overlay)
+  );
+}
+
+.pd-select__option[data-selected='true'] {
+  border-color: color-mix(
+    in srgb,
+    var(--pd-brand) 42%,
+    var(--pd-separator-subtle)
+  );
+  background: color-mix(
+    in srgb,
+    var(--pd-brand) 16%,
+    var(--pd-surface-overlay)
+  );
+  color: var(--pd-text);
+}
+
+.pd-select__option[data-disabled='true'] {
+  color: var(--pd-text-muted);
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.pd-select__option[data-disabled='true']:hover {
+  border-color: transparent;
+  background: transparent;
+}
+
+.pd-select__option[data-disabled='true'][data-active='true'] {
+  border-color: transparent;
+  background: transparent;
+}
+
+.pd-select__option-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pd-select__option-mark {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: transparent;
+  transition: background-color var(--pd-motion-duration-fast)
+    var(--pd-motion-easing-standard);
+}
+
+.pd-select__option-mark[data-selected='true'] {
+  background: var(--pd-brand);
+}
+
+.pd-select__empty-state {
+  display: grid;
+  place-items: center;
+  min-height: 7rem;
+  padding: var(--pd-space-5);
+  border: var(--pd-border-width-subtle) dashed
+    var(--pd-separator);
+  border-radius: calc(var(--pd-radius-control) - 0.25rem);
+  color: var(--pd-text-secondary);
+  text-align: center;
+}

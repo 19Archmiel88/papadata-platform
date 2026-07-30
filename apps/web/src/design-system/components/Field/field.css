@@ -1,0 +1,407 @@
+.pd-form-field {
+  display: grid;
+  gap: var(--pd-space-2);
+  min-width: 0;
+}
+
+.pd-form-field__label-row {
+  display: flex;
+  gap: var(--pd-space-2);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pd-form-field__label {
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-body-small);
+  font-weight: var(--pd-font-weight-medium);
+  line-height: var(--pd-line-height-normal);
+}
+
+.pd-form-field__required {
+  color: var(--pd-status-danger);
+}
+
+.pd-form-field__badge {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-form-control {
+  --pd-form-border: var(--pd-separator-subtle);
+  --pd-form-surface: var(--pd-surface-raised);
+  --pd-form-text: var(--pd-text);
+  --pd-form-muted: var(--pd-text-muted);
+  --pd-form-accent: var(--pd-brand);
+  --pd-form-ring: var(--pd-focus-visible);
+
+  position: relative;
+  display: flex;
+  gap: var(--pd-space-3);
+  align-items: center;
+  min-height: var(--pd-density-control-height);
+  padding: 0 var(--pd-space-3);
+  border: var(--pd-border-width-subtle) solid var(--pd-form-border);
+  border-radius: var(--pd-radius-control);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-form-surface) 88%, white),
+      var(--pd-form-surface)
+    );
+  color: var(--pd-form-text);
+  transition:
+    border-color var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard),
+    box-shadow var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard),
+    background-color var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard);
+}
+
+.pd-form-control:focus-within {
+  border-color: var(--pd-form-accent);
+  box-shadow:
+    0 0 0 var(--pd-focus-ring-size) var(--pd-form-ring),
+    0 0 0 1px var(--pd-form-accent);
+}
+
+.pd-form-control[data-state='error'] {
+  --pd-form-border: var(--pd-status-danger);
+  --pd-form-accent: var(--pd-status-danger);
+  --pd-form-ring: var(--pd-status-danger-subtle);
+}
+
+.pd-form-control[data-state='valid'] {
+  --pd-form-border: var(--pd-status-success);
+  --pd-form-accent: var(--pd-status-success);
+  --pd-form-ring: var(--pd-status-success-subtle);
+}
+
+.pd-form-control[data-state='disabled'] {
+  opacity: 0.62;
+  cursor: not-allowed;
+}
+
+.pd-form-control[data-state='readonly'] {
+  --pd-form-surface: var(--pd-surface-subtle);
+  --pd-form-border: var(--pd-separator);
+}
+
+.pd-form-control[data-state='disabled']:focus-within,
+.pd-form-control[data-state='readonly']:focus-within {
+  box-shadow: none;
+}
+
+.pd-form-control__prefix,
+.pd-form-control__suffix {
+  flex: 0 0 auto;
+  color: var(--pd-form-muted);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-form-control__input,
+.pd-form-control__select,
+.pd-form-control__search {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.pd-form-control__input::placeholder,
+.pd-form-control__search::placeholder {
+  color: var(--pd-form-muted);
+}
+
+.pd-form-control__select {
+  appearance: none;
+  cursor: pointer;
+}
+
+.pd-form-control__search-wrap {
+  display: grid;
+  gap: var(--pd-space-2);
+}
+
+.pd-form-control__meta,
+.pd-form-check__meta,
+.pd-form-switch__meta,
+.pd-verification-code__meta {
+  display: grid;
+  gap: var(--pd-space-1);
+}
+
+.pd-form-control__helper,
+.pd-form-check__helper,
+.pd-form-switch__helper,
+.pd-verification-code__helper {
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-form-control__message,
+.pd-form-check__message,
+.pd-form-switch__message,
+.pd-verification-code__message {
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-form-control__message[data-state='error'],
+.pd-form-check__message[data-state='error'],
+.pd-form-switch__message[data-state='error'],
+.pd-verification-code__message[data-state='error'] {
+  color: var(--pd-status-danger);
+}
+
+.pd-form-control__message[data-state='valid'],
+.pd-form-check__message[data-state='valid'],
+.pd-form-switch__message[data-state='valid'],
+.pd-verification-code__message[data-state='valid'] {
+  color: var(--pd-status-success);
+}
+
+.pd-form-control__toggle {
+  appearance: none;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--pd-interactive);
+  cursor: pointer;
+  font-size: var(--pd-type-size-body-small);
+  font-weight: var(--pd-font-weight-medium);
+}
+
+.pd-form-control__toggle:focus-visible {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: var(--pd-focus-offset);
+  border-radius: var(--pd-radius-pill);
+}
+
+.pd-form-control__strength {
+  display: grid;
+  gap: var(--pd-space-2);
+}
+
+.pd-form-control__strength-bar {
+  width: 100%;
+  height: 0.375rem;
+  overflow: hidden;
+  border-radius: var(--pd-radius-pill);
+  background: var(--pd-status-neutral-subtle);
+}
+
+.pd-form-control__strength-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--pd-status-danger),
+    var(--pd-status-warning),
+    var(--pd-status-success)
+  );
+}
+
+.pd-form-control__requirements {
+  display: grid;
+  gap: var(--pd-space-1);
+  margin: 0;
+  padding-left: var(--pd-space-4);
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-form-control__requirements li[data-met='true'] {
+  color: var(--pd-status-success);
+}
+
+.pd-form-check,
+.pd-form-switch {
+  display: grid;
+  gap: var(--pd-space-2);
+}
+
+.pd-form-check__label,
+.pd-form-switch__label {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--pd-space-3);
+  align-items: start;
+  cursor: pointer;
+}
+
+.pd-form-check__label[data-disabled='true'],
+.pd-form-switch__label[data-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.pd-form-check__input,
+.pd-form-switch__input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pd-form-check__control {
+  position: relative;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.125rem;
+  border: var(--pd-border-width-subtle) solid var(--pd-separator);
+  border-radius: calc(var(--pd-radius-control) * 0.65);
+  background: var(--pd-surface-raised);
+  transition:
+    border-color var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard),
+    background-color var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard);
+}
+
+.pd-form-check__control::after {
+  content: '';
+  position: absolute;
+  inset: 0.14rem;
+  border-radius: calc(var(--pd-radius-control) * 0.4);
+  background: var(--pd-brand);
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    opacity var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard),
+    transform var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard);
+}
+
+.pd-form-check__label[data-checked='true'] .pd-form-check__control,
+.pd-form-check__label[data-indeterminate='true'] .pd-form-check__control {
+  border-color: var(--pd-brand);
+}
+
+.pd-form-check__label[data-checked='true'] .pd-form-check__control::after,
+.pd-form-check__label[data-indeterminate='true'] .pd-form-check__control::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.pd-form-check__input:focus-visible + .pd-form-check__control,
+.pd-form-switch__input:focus-visible + .pd-form-switch__track {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: var(--pd-focus-offset);
+}
+
+.pd-form-check__input[aria-invalid='true'] + .pd-form-check__control {
+  border-color: var(--pd-status-danger);
+}
+
+.pd-form-check__text,
+.pd-form-switch__text {
+  display: grid;
+  gap: var(--pd-space-1);
+}
+
+.pd-form-check__caption,
+.pd-form-switch__caption {
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-body);
+  font-weight: var(--pd-font-weight-medium);
+}
+
+.pd-form-switch__track {
+  position: relative;
+  width: 2.75rem;
+  height: 1.5rem;
+  margin-top: 0.05rem;
+  border: var(--pd-border-width-subtle) solid var(--pd-separator);
+  border-radius: var(--pd-radius-pill);
+  background: var(--pd-surface-raised);
+  transition:
+    border-color var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard),
+    background-color var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard);
+}
+
+.pd-form-switch__track::after {
+  content: '';
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--pd-text-muted);
+  transition:
+    transform var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard),
+    background-color var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard);
+}
+
+.pd-form-switch__label[data-checked='true'] .pd-form-switch__track {
+  border-color: var(--pd-brand);
+  background: color-mix(in srgb, var(--pd-brand) 14%, var(--pd-surface-raised));
+}
+
+.pd-form-switch__label[data-checked='true'] .pd-form-switch__track::after {
+  transform: translateX(1.2rem);
+  background: var(--pd-brand);
+}
+
+.pd-form-switch__label[data-pending='true'] .pd-form-switch__track {
+  border-style: dashed;
+}
+
+.pd-form-select {
+  display: grid;
+  gap: var(--pd-space-2);
+}
+
+.pd-form-select__chevron {
+  flex: 0 0 auto;
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-verification-code {
+  display: grid;
+  gap: var(--pd-space-2);
+}
+
+.pd-verification-code__slots {
+  display: grid;
+  grid-template-columns: repeat(var(--pd-code-length, 6), minmax(0, 1fr));
+  gap: var(--pd-space-2);
+}
+
+.pd-verification-code__slot {
+  display: grid;
+  place-items: center;
+  min-height: 2.75rem;
+  border: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-control);
+  background: var(--pd-surface-raised);
+  color: var(--pd-text);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-body-large);
+  font-weight: var(--pd-font-weight-semibold);
+}
+
+.pd-verification-code__slot[data-filled='true'] {
+  border-color: var(--pd-brand-line);
+}
+
+.pd-verification-code__slot[data-state='error'] {
+  border-color: var(--pd-status-danger);
+}
+
+.pd-verification-code__resend {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+}

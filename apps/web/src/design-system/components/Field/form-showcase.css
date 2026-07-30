@@ -1,0 +1,98 @@
+.pd-form-story {
+  min-height: 100vh;
+  padding: var(--pd-layout-page-padding);
+  background-color: var(--pd-canvas);
+  background-image: var(--pd-canvas-gradient);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: var(--pd-text);
+}
+
+.pd-form-story__inner {
+  display: grid;
+  gap: var(--pd-space-8);
+  max-width: min(1080px, 100%);
+  margin: 0 auto;
+}
+
+.pd-form-story__header {
+  display: grid;
+  gap: var(--pd-space-3);
+  padding-bottom: var(--pd-space-6);
+  border-bottom:
+    var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+}
+
+.pd-form-story__kicker {
+  margin: 0;
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-form-story__header h1,
+.pd-form-story__section h2,
+.pd-form-story__card h3,
+.pd-form-story p {
+  margin: 0;
+}
+
+.pd-form-story__lead {
+  max-width: 64ch;
+  color: var(--pd-text-secondary);
+}
+
+.pd-form-story__section {
+  display: grid;
+  gap: var(--pd-space-5);
+}
+
+.pd-form-story__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--pd-space-5);
+}
+
+.pd-form-story__card {
+  display: grid;
+  gap: var(--pd-space-4);
+  padding: var(--pd-space-5);
+  border-top: var(--pd-border-width-strong) solid var(--pd-brand-line);
+  border-bottom:
+    var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-raised) 84%, transparent),
+      transparent
+    );
+}
+
+.pd-form-story__card[data-tone='error'] {
+  border-top-color: var(--pd-status-danger);
+}
+
+.pd-form-story__card[data-tone='valid'] {
+  border-top-color: var(--pd-status-success);
+}
+
+.pd-form-story__card[data-tone='muted'] {
+  border-top-color: var(--pd-separator);
+}
+
+.pd-form-story__eyebrow {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-form-story__copy {
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-form-story__stack {
+  display: grid;
+  gap: var(--pd-space-3);
+}

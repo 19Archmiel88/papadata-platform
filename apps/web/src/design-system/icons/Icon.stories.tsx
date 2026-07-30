@@ -313,14 +313,14 @@ const catalogItemStyle = {
 } satisfies CSSProperties;
 
 const iconCategoryLabels = {
-  home: 'Home',
-  search: 'Search',
+  home: 'Strona glowna',
+  search: 'Wyszukiwanie',
   trend: 'Trend',
-  data: 'Data',
-  integration: 'Integration',
+  data: 'Dane',
+  integration: 'Integracja',
   assistant: 'Assistant',
-  security: 'Security',
-  billing: 'Billing',
+  security: 'Bezpieczenstwo',
+  billing: 'Rozliczenia',
   success: 'Success',
   warning: 'Warning',
 } satisfies Record<PapaDataIconName, string>;
@@ -511,7 +511,7 @@ export const Ikony: Story = {
         <header style={headerStyle}>
           <div>
             <p style={labelStyle}>10.11 Ikony</p>
-            <h1 style={headerTitleStyle}>Icon</h1>
+            <h1 style={headerTitleStyle}>Ikony</h1>
           </div>
           <p style={headerSummaryStyle}>
             Zamknięty katalog ikon dziedziczy kolor przez

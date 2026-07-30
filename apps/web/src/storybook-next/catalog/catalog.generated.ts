@@ -492,7 +492,7 @@ export const storybookCatalog = [
       "dark",
       "znaki providerów"
     ],
-    "storyTitle": "10 Komponenty/Marka",
+    "storyTitle": "10 Komponenty bazowe/Marka",
     "storyFile": "apps/web/src/design-system/icons/PapaDataBrand.stories.tsx",
     "displaySectionTitle": "Komponenty",
     "displayTitle": "Marka",
@@ -527,7 +527,7 @@ export const storybookCatalog = [
       "disabled",
       "button group"
     ],
-    "storyTitle": "10 Komponenty/Przyciski i akcje",
+    "storyTitle": "10 Komponenty bazowe/Przyciski i akcje",
     "storyFile": "apps/web/src/design-system/components/Button/Button.stories.tsx",
     "displaySectionTitle": "Komponenty",
     "displayTitle": "Przyciski",
@@ -836,7 +836,7 @@ export const storybookCatalog = [
       "billing",
       "pomoc"
     ],
-    "storyTitle": "10 Komponenty/Ikony",
+    "storyTitle": "10 Komponenty bazowe/Ikony",
     "storyFile": "apps/web/src/design-system/icons/Icon.stories.tsx",
     "displaySectionTitle": "Komponenty",
     "displayTitle": "Ikony",

@@ -4,46 +4,6 @@
   "rule": "MANIFEST.json and SHA256SUMS.txt excluded to avoid circular self-hash",
   "files": [
     {
-      "path": "METRYKI-JAKOSCI.json",
-      "bytes": 1054,
-      "sha256": "258c129de04ca3db9eae79f51a1ff24911f4d012d6284f20d71b8238adc1374d"
-    },
-    {
-      "path": "METRYKI-SEKCJI.csv",
-      "bytes": 983,
-      "sha256": "5aaf6d246cfcdb988e3d23183382f8d7b4208cdb36e1692a162947c2ac3f361f"
-    },
-    {
-      "path": "POTWIERDZENIE-PRIORYTETOW-P0.md",
-      "bytes": 1397,
-      "sha256": "645ffba2dcd355c8620229eee70092a19761ec8398cc6fab4f63e9ce0aacc682"
-    },
-    {
-      "path": "RAPORT-KOMPLETNOSCI-I-JAKOSCI.md",
-      "bytes": 970,
-      "sha256": "95c8960f9e73adb4a3b7b235f7c9c3be086f2f125b59b154d636e6dd7bffcd4d"
-    },
-    {
-      "path": "RAPORT-WALIDACJI.md",
-      "bytes": 708,
-      "sha256": "0bcd04fbcb805dbaa4a8cc5798439d3f5435cc9939c5c51f3e4274b20b6c11c2"
-    },
-    {
-      "path": "README.md",
-      "bytes": 1796,
-      "sha256": "f21450d87dc663093ced0e1712653ed679815eae2e561e59eb5893c563104a38"
-    },
-    {
-      "path": "VALIDATION-1.0.json",
-      "bytes": 521,
-      "sha256": "9a611c690f21667139e37a910adb1cbc80910d51bb46fe19a76afd7d5666fd24"
-    },
-    {
-      "path": "VALIDATION.json",
-      "bytes": 521,
-      "sha256": "9a611c690f21667139e37a910adb1cbc80910d51bb46fe19a76afd7d5666fd24"
-    },
-    {
       "path": "config/p0-integrations.env.example",
       "bytes": 1101,
       "sha256": "aaf165b2bfa15773470e664dc4de7d347f640be4c0bb0d2ce18f4fdb1c0f5619"
@@ -1282,6 +1242,11 @@
       "path": "docs/specyfikacja-docelowa/00-zarzadzanie-dokumentacja/37-potwierdzenie-priorytetow-p0.md",
       "bytes": 1587,
       "sha256": "ff56f7b69bb221846726d0beba4afee8d20a94227915f216e04d0e41484025a2"
+    },
+    {
+      "path": "docs/specyfikacja-docelowa/00-zarzadzanie-dokumentacja/39-raport-zaleznosci-i-licencji.md",
+      "bytes": 7106,
+      "sha256": "8f0baa1f63b328f1ca9f5ded7cd8522728fbea21c4a4c70fc158d756aecb3a9f"
     },
     {
       "path": "docs/specyfikacja-docelowa/01-fundamenty/00-01-kierunek-wizualny.md",
@@ -7699,6 +7664,36 @@
       "sha256": "fa4c1090a0edef501e899199fd829d8776563e4b4f91473b586fb43e6e72ab32"
     },
     {
+      "path": "METRYKI-JAKOSCI.json",
+      "bytes": 1054,
+      "sha256": "258c129de04ca3db9eae79f51a1ff24911f4d012d6284f20d71b8238adc1374d"
+    },
+    {
+      "path": "METRYKI-SEKCJI.csv",
+      "bytes": 983,
+      "sha256": "5aaf6d246cfcdb988e3d23183382f8d7b4208cdb36e1692a162947c2ac3f361f"
+    },
+    {
+      "path": "POTWIERDZENIE-PRIORYTETOW-P0.md",
+      "bytes": 1397,
+      "sha256": "645ffba2dcd355c8620229eee70092a19761ec8398cc6fab4f63e9ce0aacc682"
+    },
+    {
+      "path": "RAPORT-KOMPLETNOSCI-I-JAKOSCI.md",
+      "bytes": 970,
+      "sha256": "95c8960f9e73adb4a3b7b235f7c9c3be086f2f125b59b154d636e6dd7bffcd4d"
+    },
+    {
+      "path": "RAPORT-WALIDACJI.md",
+      "bytes": 708,
+      "sha256": "0bcd04fbcb805dbaa4a8cc5798439d3f5435cc9939c5c51f3e4274b20b6c11c2"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1796,
+      "sha256": "f21450d87dc663093ced0e1712653ed679815eae2e561e59eb5893c563104a38"
+    },
+    {
       "path": "rejestry/api-consumers.csv",
       "bytes": 58446,
       "sha256": "9145b394542fa39d4e5110c73ae2053977cbcd09d65a47e537c772fcf91446fa"
@@ -7790,8 +7785,8 @@
     },
     {
       "path": "scripts/validate_all.py",
-      "bytes": 15667,
-      "sha256": "a9c3b0b6101122e22f970ff888f698e78556819e81c525d6186eefd154746dea"
+      "bytes": 17155,
+      "sha256": "88bd729b0ebf14dc90dbdf168ffc530ecb7f533cbb2360be54def8296aa36b09"
     },
     {
       "path": "scripts/validate_auth_api_contract.py",
@@ -7837,6 +7832,17 @@
       "path": "tsconfig.contracts.json",
       "bytes": 222,
       "sha256": "97c4a7b4a407535d1e5291c74bcddeab1ea184d5f41a4d326c90da6183984dea"
+    },
+    {
+      "path": "VALIDATION-1.0.json",
+      "bytes": 521,
+      "sha256": "9a611c690f21667139e37a910adb1cbc80910d51bb46fe19a76afd7d5666fd24"
+    },
+    {
+      "path": "VALIDATION.json",
+      "bytes": 521,
+      "sha256": "9a611c690f21667139e37a910adb1cbc80910d51bb46fe19a76afd7d5666fd24"
     }
-  ]
+  ],
+  "file_count": 1568
 }

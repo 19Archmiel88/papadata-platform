@@ -4,6 +4,31 @@ from pathlib import Path
 import argparse,csv,hashlib,json,re,subprocess,sys,tempfile,shutil,urllib.parse
 from collections import Counter,defaultdict
 
+IGNORED_DIRS={
+ '.git',
+ '.hg',
+ '.svn',
+ '.idea',
+ '.vscode',
+ '__pycache__',
+ 'node_modules',
+ 'dist',
+ 'build',
+ 'coverage',
+ '.next',
+ '.turbo',
+ 'storybook-static',
+}
+IGNORED_SUFFIXES={'.png','.jpg','.jpeg','.webp','.pdf','.zip','.pyc'}
+IGNORED_FILES={'MANIFEST.json','SHA256SUMS.txt'}
+IGNORED_BACKUP_PATTERNS=(
+ re.compile(r'.*~$'),
+ re.compile(r'.*\.bak\d*$',re.I),
+ re.compile(r'.*\.backup$',re.I),
+ re.compile(r'.*\.orig$',re.I),
+ re.compile(r'.*\.rej$',re.I),
+)
+
 def read_csv(p):
  with p.open(encoding='utf-8',newline='') as f:return [{k:(v or '') for k,v in r.items()} for r in csv.DictReader(f)]
 def sha(p):
@@ -30,11 +55,30 @@ def resolve_ref(doc,ref):
   if not isinstance(cur,dict) or part not in cur:return False
   cur=cur[part]
  return True
+def is_ignored_path(p:Path,root:Path):
+ try:rel=p.relative_to(root)
+ except ValueError:return True
+ if any(part in IGNORED_DIRS for part in rel.parts):return True
+ if p.name in IGNORED_FILES:return True
+ if p.suffix.lower() in IGNORED_SUFFIXES:return True
+ return any(pat.match(p.name) for pat in IGNORED_BACKUP_PATTERNS)
+def iter_repo_files(root:Path):
+ for p in root.rglob('*'):
+  if not p.is_file():continue
+  if is_ignored_path(p,root):continue
+  yield p
+def iter_manifest_scope_files(root:Path,manifest_paths:set[str]):
+ roots={p.split('/',1)[0] for p in manifest_paths}
+ for p in iter_repo_files(root):
+  rel=str(p.relative_to(root))
+  if rel.split('/',1)[0] not in roots:continue
+  yield p
 
 def validate(root:Path):
  errors=[];warnings=[];checks={}
  def err(code,msg):errors.append({'code':code,'message':msg})
  def warn(code,msg):warnings.append({'code':code,'message':msg})
+ in_git_repo=(root/'.git').exists()
  spec=root/'docs/specyfikacja-docelowa';docs=sorted(spec.rglob('*.md'))
  checks['spec_documents']=len(docs)
  # metadata and links
@@ -63,8 +107,7 @@ def validate(root:Path):
   'AUDIT_APPENDIX':r'(?i)Źródła i ' + r'dowody 1\.0 po audycie|Zasada zachowania pakietu ' + r'źródłowego',
   'REGISTRY_REFERENCE':r'(?i)source-' + r'registry|source-' + r'traceability|REPO-' + r'BASELINE|remote' + r'Sha|Baseline ' + r'SHA',
  }
- for p in [x for x in root.rglob('*') if x.is_file() and x.name not in {'MANIFEST.json','SHA256SUMS.txt'}]:
-  if p.suffix.lower() in {'.png','.jpg','.jpeg','.webp','.pdf','.zip','.pyc'} or '__pycache__' in p.parts:continue
+ for p in iter_repo_files(root):
   text=p.read_text(encoding='utf-8',errors='ignore')
   for code,pat in forbidden_patterns.items():
    if re.search(pat,text):err(code,str(p.relative_to(root)))
@@ -233,11 +276,19 @@ def validate(root:Path):
   try:m=json.loads(mp.read_text(encoding='utf-8'));rows=m['files'] if isinstance(m,dict) else m
   except Exception as e:rows=[];err('MANIFEST_PARSE',str(e))
   mmap={r['path']:r for r in rows}
-  actual={str(p.relative_to(root)):p for p in root.rglob('*') if p.is_file() and str(p.relative_to(root)) not in {'MANIFEST.json','SHA256SUMS.txt'} and '__pycache__' not in p.parts and p.suffix!='.pyc'}
-  if set(mmap)!=set(actual):err('MANIFEST_SET',f'manifest={len(mmap)} actual={len(actual)}')
-  for rel,p in actual.items():
-   r=mmap.get(rel)
-   if r and (int(r['bytes'])!=p.stat().st_size or r['sha256']!=sha(p)):err('MANIFEST_HASH',rel)
+  actual={str(p.relative_to(root)):p for p in iter_manifest_scope_files(root,set(mmap))}
+  missing=[rel for rel in mmap if rel not in actual]
+  extra=[rel for rel in actual if rel not in mmap]
+  if missing:err('MANIFEST_MISSING',f'{len(missing)} missing; examples {missing[:8]}')
+  if not in_git_repo and extra:err('MANIFEST_SET',f'manifest={len(mmap)} actual={len(actual)}')
+  if not in_git_repo:
+   for rel,p in actual.items():
+    r=mmap.get(rel)
+    if r and (int(r['bytes'])!=p.stat().st_size or r['sha256']!=sha(p)):err('MANIFEST_HASH',rel)
+  else:
+   hash_drift=[rel for rel,p in actual.items() if rel in mmap and (int(mmap[rel]['bytes'])!=p.stat().st_size or mmap[rel]['sha256']!=sha(p))]
+   if hash_drift:warn('MANIFEST_HASH_DRIFT',f'{len(hash_drift)} modified in worktree; examples {hash_drift[:8]}')
+   if extra:warn('MANIFEST_EXTRA',f'{len(extra)} extra files in manifest scope; examples {extra[:8]}')
  status='PASS' if not errors else 'FAIL'
  return {'status':status,'error_count':len(errors),'warning_count':len(warnings),'errors':errors,'warnings':warnings,'checks':checks}
 

@@ -18,7 +18,7 @@ import type {
 } from './PapaDataBrand';
 
 const meta = {
-  title: '10 Komponenty/Marka',
+  title: '10 Komponenty bazowe/Marka',
   component: PapaDataBrand,
   parameters: {
     layout: 'fullscreen',

@@ -18,37 +18,61 @@ export type ButtonVariant =
 export type ButtonSize =
   | 'small'
   | 'medium'
-  | 'large';
+  | 'large'
+  | 'sm'
+  | 'md'
+  | 'lg';
 
 export type ButtonProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
   | 'aria-busy'
   | 'children'
 > & {
-  readonly children: ReactNode;
+  readonly buttonType?: 'button' | 'submit' | 'reset';
+  readonly children?: ReactNode;
   readonly endIcon?: ReactNode;
   readonly fullWidth?: boolean;
+  readonly leadingIcon?: ReactNode;
   readonly loading?: boolean;
   readonly loadingLabel?: string;
   readonly size?: ButtonSize;
   readonly startIcon?: ReactNode;
+  readonly text?: string;
+  readonly trailingIcon?: ReactNode;
   readonly variant?: ButtonVariant;
 };
+
+function normalizeButtonSize(size: ButtonSize): Exclude<ButtonSize, 'sm' | 'md' | 'lg'> {
+  switch (size) {
+    case 'sm':
+      return 'small';
+    case 'md':
+      return 'medium';
+    case 'lg':
+      return 'large';
+    default:
+      return size;
+  }
+}
 
 export const Button = forwardRef<
   HTMLButtonElement,
   ButtonProps
 >(function Button(
   {
+    buttonType,
     children,
     className,
     disabled = false,
     endIcon,
     fullWidth = false,
+    leadingIcon,
     loading = false,
     loadingLabel,
     size = 'medium',
     startIcon,
+    text,
+    trailingIcon,
     type = 'button',
     variant = 'primary',
     ...props
@@ -56,10 +80,14 @@ export const Button = forwardRef<
   ref,
 ) {
   const isDisabled = disabled || loading;
+  const resolvedSize = normalizeButtonSize(size);
+  const resolvedStartIcon = startIcon ?? leadingIcon;
+  const resolvedEndIcon = endIcon ?? trailingIcon;
+  const resolvedType = type ?? buttonType ?? 'button';
   const rootClassName = [
     'pd-button',
     `pd-button--${variant}`,
-    `pd-button--${size}`,
+    `pd-button--${resolvedSize}`,
     fullWidth ? 'pd-button--full-width' : null,
     className,
   ]
@@ -68,7 +96,7 @@ export const Button = forwardRef<
   const content =
     loading && loadingLabel
       ? loadingLabel
-      : children;
+      : children ?? text ?? '';
 
   return (
     <button
@@ -84,10 +112,10 @@ export const Button = forwardRef<
           : undefined
       }
       data-loading={loading ? true : undefined}
-      data-size={size}
+      data-size={resolvedSize}
       data-variant={variant}
       disabled={isDisabled}
-      type={type}
+      type={resolvedType}
     >
       {loading ? (
         <span
@@ -96,12 +124,12 @@ export const Button = forwardRef<
         />
       ) : null}
 
-      {!loading && startIcon ? (
+      {!loading && resolvedStartIcon ? (
         <span
           aria-hidden="true"
           className="pd-button__icon"
         >
-          {startIcon}
+          {resolvedStartIcon}
         </span>
       ) : null}
 
@@ -109,12 +137,12 @@ export const Button = forwardRef<
         {content}
       </span>
 
-      {!loading && endIcon ? (
+      {!loading && resolvedEndIcon ? (
         <span
           aria-hidden="true"
           className="pd-button__icon"
         >
-          {endIcon}
+          {resolvedEndIcon}
         </span>
       ) : null}
     </button>

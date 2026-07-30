@@ -18,7 +18,7 @@ import {
 } from './Icon';
 
 const meta = {
-  title: '10 Komponenty/Ikony',
+  title: '10 Komponenty bazowe/Ikony',
   component: Icon,
   parameters: {
     layout: 'fullscreen',

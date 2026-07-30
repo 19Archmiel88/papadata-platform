@@ -39,7 +39,7 @@ import {
 import './action-showcase.css';
 
 const meta = {
-  title: '10 Komponenty/Przyciski i akcje',
+  title: '10 Komponenty bazowe/Przyciski i akcje',
   component: Button,
   parameters: {
     layout: 'fullscreen',

@@ -1,7 +1,4 @@
 import type {
-  CSSProperties,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -30,11 +27,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const themeFrameStyle = {
-  display: 'grid',
-  gap: 'var(--pd-space-3)',
-} satisfies CSSProperties;
-
 export const EmptyStateStory: Story = {
   args: {
     title: 'Brak danych do wyświetlenia.',
@@ -54,40 +46,62 @@ export const EmptyStateStory: Story = {
         </header>
 
         <section className="pd-feedback-story__section">
+          <h2 className="pd-feedback-story__section-title">Wariant referencyjny</h2>
+          <EmptyState
+            message="Podłącz źródło danych, aby zbudować pierwszy widok operacyjny."
+            primaryActionLabel="Dodaj źródło"
+            secondaryActionLabel="Sprawdź wymagania"
+            title="Brak danych źródłowych."
+            variant="empty"
+          />
+        </section>
+
+        <section className="pd-feedback-story__section">
           <h2 className="pd-feedback-story__section-title">Warianty</h2>
-          <div className="pd-feedback-story__stack">
-            <EmptyState
-              message="Podłącz źródło danych, aby zbudować pierwszy widok operacyjny."
-              primaryActionLabel="Dodaj źródło"
-              secondaryActionLabel="Sprawdź wymagania"
-              title="Brak danych źródłowych."
-              variant="empty"
-            />
-            <EmptyState
-              message="Zmień frazę albo zawęź filtry, aby odzyskać wyniki wyszukiwania."
-              primaryActionLabel="Wyczyść filtry"
-              title="Brak wyników dla bieżącego zapytania."
-              variant="search"
-            />
-            <EmptyState
-              message="Ten moduł wymaga dodatkowego uprawnienia lub potwierdzenia właściciela obszaru."
-              secondaryActionLabel="Poproś o dostęp"
-              title="Dostęp jest ograniczony."
-              variant="forbidden"
-            />
-            <EmptyState
-              message="Najpierw ustaw zasady synchronizacji i zdefiniuj podstawowe mapowanie pól."
-              primaryActionLabel="Skonfiguruj integrację"
-              title="Wymagana jest konfiguracja początkowa."
-              variant="configuration"
-            />
+          <div className="pd-feedback-story__list">
+            <div className="pd-feedback-story__spec-row">
+              <div className="pd-feedback-story__spec-label">
+                <h3>Brak wyników</h3>
+                <p>Zawężenie kontekstu bez budowania osobnego ekranu.</p>
+              </div>
+              <EmptyState
+                message="Zmień frazę albo zawęź filtry, aby odzyskać wyniki wyszukiwania."
+                primaryActionLabel="Wyczyść filtry"
+                title="Brak wyników dla bieżącego zapytania."
+                variant="search"
+              />
+            </div>
+            <div className="pd-feedback-story__spec-row">
+              <div className="pd-feedback-story__spec-label">
+                <h3>Ograniczony dostęp</h3>
+                <p>Uprawnienia są komunikowane spokojnie i lokalnie.</p>
+              </div>
+              <EmptyState
+                message="Ten moduł wymaga dodatkowego uprawnienia lub potwierdzenia właściciela obszaru."
+                secondaryActionLabel="Poproś o dostęp"
+                title="Dostęp jest ograniczony."
+                variant="forbidden"
+              />
+            </div>
+            <div className="pd-feedback-story__spec-row">
+              <div className="pd-feedback-story__spec-label">
+                <h3>Wymagana konfiguracja</h3>
+                <p>Pusty stan prowadzi do następnego kroku bez ciężkiej ramy.</p>
+              </div>
+              <EmptyState
+                message="Najpierw ustaw zasady synchronizacji i zdefiniuj podstawowe mapowanie pól."
+                primaryActionLabel="Skonfiguruj integrację"
+                title="Wymagana jest konfiguracja początkowa."
+                variant="configuration"
+              />
+            </div>
           </div>
         </section>
 
         <section className="pd-feedback-story__section">
           <h2 className="pd-feedback-story__section-title">Motywy</h2>
-          <div className="pd-feedback-story__grid">
-            <div className="pd-feedback-story__frame" style={themeFrameStyle}>
+          <div className="pd-feedback-story__theme-grid">
+            <div className="pd-feedback-story__theme-row">
               <span className="pd-feedback-story__eyebrow">tryb jasny</span>
               <EmptyState
                 message="Wariant zachowuje czytelny rytm typograficzny i lekkie akcje."
@@ -97,9 +111,8 @@ export const EmptyStateStory: Story = {
               />
             </div>
             <div
-              className="pd-feedback-story__frame"
+              className="pd-feedback-story__theme-row"
               data-theme="dark"
-              style={themeFrameStyle}
             >
               <span className="pd-feedback-story__eyebrow">tryb ciemny</span>
               <EmptyState

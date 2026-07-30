@@ -1,7 +1,4 @@
 import type {
-  CSSProperties,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -30,11 +27,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const themeFrameStyle = {
-  display: 'grid',
-  gap: 'var(--pd-space-3)',
-} satisfies CSSProperties;
-
 export const StatusBadgeStory: Story = {
   args: {
     status: 'Przetwarzanie',
@@ -57,41 +49,55 @@ export const StatusBadgeStory: Story = {
         <section className="pd-feedback-story__section">
           <h2 className="pd-feedback-story__section-title">Warianty</h2>
           <div className="pd-feedback-story__table">
-            <StatusBadge status="Stabilność" text="Stabilne" tone="success" />
-            <StatusBadge status="Weryfikacja" text="Do sprawdzenia" tone="warning" />
-            <StatusBadge status="Synchronizacja" text="Błąd synchronizacji" tone="critical" />
-            <StatusBadge status="Start" text="Nie rozpoczęto" tone="neutral" />
-            <StatusBadge status="Przetwarzanie" text="Przetwarzanie" tone="processing" />
+            <div className="pd-feedback-story__table-row">
+              <span className="pd-feedback-story__table-label">Stabilność danych</span>
+              <StatusBadge status="Stabilność" text="Stabilne" tone="success" />
+            </div>
+            <div className="pd-feedback-story__table-row">
+              <span className="pd-feedback-story__table-label">Weryfikacja ręczna</span>
+              <StatusBadge status="Weryfikacja" text="Do sprawdzenia" tone="warning" />
+            </div>
+            <div className="pd-feedback-story__table-row">
+              <span className="pd-feedback-story__table-label">Synchronizacja</span>
+              <StatusBadge status="Synchronizacja" text="Błąd synchronizacji" tone="critical" />
+            </div>
+            <div className="pd-feedback-story__table-row">
+              <span className="pd-feedback-story__table-label">Stan początkowy</span>
+              <StatusBadge status="Start" text="Nie rozpoczęto" tone="neutral" />
+            </div>
+            <div className="pd-feedback-story__table-row">
+              <span className="pd-feedback-story__table-label">Proces w toku</span>
+              <StatusBadge status="Przetwarzanie" text="Przetwarzanie" tone="processing" />
+            </div>
           </div>
         </section>
 
         <section className="pd-feedback-story__section">
           <h2 className="pd-feedback-story__section-title">Kierunek przyjęty i odrzucony</h2>
-          <div
-            className="pd-feedback-story__direction-grid"
-            data-theme="dark"
-          >
+          <div className="pd-feedback-story__direction-grid" data-theme="dark">
             <div className="pd-feedback-story__direction-card">
-              <StatusBadge status="Kierunek" text="Przyjęte" tone="success" />
-              <div className="pd-feedback-story__direction-copy">
-                <h3>Neutralne powierzchnie, lokalny akcent</h3>
-                <p>
-                  Spokojny canvas, precyzyjne separatory, duża czytelność danych
-                  i kolor używany oszczędnie wyłącznie do statusu.
-                </p>
+              <div className="pd-feedback-story__direction-item">
+                <StatusBadge status="Kierunek" text="Przyjęte" tone="success" />
+                <div className="pd-feedback-story__direction-copy">
+                  <h3>Neutralne powierzchnie, lokalny akcent</h3>
+                  <p>
+                    Spokojny canvas, precyzyjne separatory, duża czytelność danych
+                    i kolor używany oszczędnie wyłącznie do statusu.
+                  </p>
+                </div>
               </div>
-            </div>
-            <div
-              className="pd-feedback-story__direction-card"
-              data-tone="critical"
-            >
-              <StatusBadge status="Kierunek" text="Odrzucone" tone="critical" />
-              <div className="pd-feedback-story__direction-copy">
-                <h3>Neonowe halo i nadmiar kart</h3>
-                <p>
-                  Zbyt mocne poświaty, przypadkowe gradienty i ciężkie zamknięcie
-                  każdej informacji w osobnej karcie nie są kierunkiem PapaData.
-                </p>
+              <div
+                className="pd-feedback-story__direction-item"
+                data-tone="critical"
+              >
+                <StatusBadge status="Kierunek" text="Odrzucone" tone="critical" />
+                <div className="pd-feedback-story__direction-copy">
+                  <h3>Neonowe halo i nadmiar kart</h3>
+                  <p>
+                    Zbyt mocne poświaty, przypadkowe gradienty i ciężkie zamknięcie
+                    każdej informacji w osobnej karcie nie są kierunkiem PapaData.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -99,21 +105,20 @@ export const StatusBadgeStory: Story = {
 
         <section className="pd-feedback-story__section">
           <h2 className="pd-feedback-story__section-title">Motywy</h2>
-          <div className="pd-feedback-story__grid">
-            <div className="pd-feedback-story__frame" style={themeFrameStyle}>
+          <div className="pd-feedback-story__theme-grid">
+            <div className="pd-feedback-story__theme-row">
               <span className="pd-feedback-story__eyebrow">tryb jasny</span>
-              <div className="pd-feedback-story__table">
+              <div className="pd-feedback-story__inline-group">
                 <StatusBadge status="Import" text="Stabilne" tone="success" />
                 <StatusBadge status="Analiza" text="Przetwarzanie" tone="processing" />
               </div>
             </div>
             <div
-              className="pd-feedback-story__frame"
+              className="pd-feedback-story__theme-row"
               data-theme="dark"
-              style={themeFrameStyle}
             >
               <span className="pd-feedback-story__eyebrow">tryb ciemny</span>
-              <div className="pd-feedback-story__table">
+              <div className="pd-feedback-story__inline-group">
                 <StatusBadge status="Uprawnienia" text="Do sprawdzenia" tone="warning" />
                 <StatusBadge status="Integracja" text="Błąd synchronizacji" tone="critical" />
               </div>

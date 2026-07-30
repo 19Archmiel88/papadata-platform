@@ -3,26 +3,27 @@
   --pd-feedback-tint: var(--pd-status-info-subtle);
   --pd-feedback-border: color-mix(
     in srgb,
-    var(--pd-feedback-accent) 30%,
+    var(--pd-feedback-accent) 24%,
     var(--pd-separator-subtle)
   );
 
   display: grid;
   gap: var(--pd-space-3);
-  padding: var(--pd-space-4);
+  padding: var(--pd-space-3) var(--pd-space-4);
   border: var(--pd-border-width-subtle) solid var(--pd-feedback-border);
-  border-radius: var(--pd-radius-control);
+  border-left-width: 2px;
+  border-radius: calc(var(--pd-radius-control) * 0.9);
   background:
     linear-gradient(
       180deg,
       color-mix(
         in srgb,
-        var(--pd-feedback-tint) 66%,
+        var(--pd-feedback-tint) 28%,
         var(--pd-surface-overlay)
       ),
       color-mix(
         in srgb,
-        var(--pd-feedback-tint) 32%,
+        var(--pd-feedback-tint) 12%,
         var(--pd-surface-overlay)
       )
     );
@@ -123,34 +124,67 @@
 }
 
 .pd-feedback-state {
+  --pd-feedback-state-accent: var(--pd-brand);
+  --pd-feedback-state-tint: var(--pd-brand-ambient);
+
   display: grid;
-  gap: var(--pd-space-4);
-  padding: clamp(var(--pd-space-4), 3vw, var(--pd-space-6));
-  border: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
-  border-radius: calc(var(--pd-radius-control) * 1.25);
+  gap: var(--pd-space-3);
+  padding: clamp(var(--pd-space-4), 2vw, var(--pd-space-5))
+    0
+    clamp(var(--pd-space-4), 2vw, var(--pd-space-5))
+    var(--pd-space-4);
+  border-top: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  border-left: 2px solid
+    color-mix(
+      in srgb,
+      var(--pd-feedback-state-accent) 64%,
+      var(--pd-separator-subtle)
+    );
+  border-right: 0;
+  border-bottom: 0;
+  border-radius: 0;
   background:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--pd-surface-overlay) 94%, transparent),
+      color-mix(
+        in srgb,
+        var(--pd-feedback-state-tint) 14%,
+        var(--pd-surface-overlay)
+      ),
       color-mix(in srgb, var(--pd-surface-overlay) 100%, transparent)
     );
 }
 
+.pd-feedback-state[data-variant='empty'] {
+  --pd-feedback-state-accent: var(--pd-brand);
+  --pd-feedback-state-tint: var(--pd-brand-ambient);
+}
+
+.pd-feedback-state[data-variant='search'] {
+  --pd-feedback-state-accent: var(--pd-status-info);
+  --pd-feedback-state-tint: var(--pd-status-info-subtle);
+}
+
+.pd-feedback-state[data-variant='configuration'],
+.pd-feedback-state[data-variant='integration'] {
+  --pd-feedback-state-accent: var(--pd-brand);
+  --pd-feedback-state-tint: var(--pd-brand-ambient);
+}
+
+.pd-feedback-state[data-variant='data'] {
+  --pd-feedback-state-accent: var(--pd-status-warning);
+  --pd-feedback-state-tint: var(--pd-status-warning-subtle);
+}
+
 .pd-feedback-state[data-variant='forbidden'],
 .pd-feedback-state[data-variant='permission'] {
-  border-color: color-mix(
-    in srgb,
-    var(--pd-status-warning) 28%,
-    var(--pd-separator-subtle)
-  );
+  --pd-feedback-state-accent: var(--pd-status-warning);
+  --pd-feedback-state-tint: var(--pd-status-warning-subtle);
 }
 
 .pd-feedback-state[data-variant='system'] {
-  border-color: color-mix(
-    in srgb,
-    var(--pd-status-danger) 28%,
-    var(--pd-separator-subtle)
-  );
+  --pd-feedback-state-accent: var(--pd-status-danger);
+  --pd-feedback-state-tint: var(--pd-status-danger-subtle);
 }
 
 .pd-feedback-state__symbol {
@@ -192,9 +226,9 @@
   margin: 0;
   color: var(--pd-text);
   font-size: clamp(
-    var(--pd-type-size-heading-4),
-    1.8vw,
-    var(--pd-type-size-heading-3)
+    var(--pd-type-size-heading-5),
+    1.4vw,
+    var(--pd-type-size-heading-4)
   );
   font-weight: var(--pd-font-weight-semibold);
   line-height: var(--pd-line-height-tight);
@@ -279,15 +313,33 @@
 
 .pd-toast {
   width: min(100%, 26rem);
+  border-color: transparent;
+  border-left-width: 0;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-raised) 96%, var(--pd-feedback-tint)),
+      color-mix(in srgb, var(--pd-surface-overlay) 100%, transparent)
+    );
   box-shadow:
     0 0 0 1px color-mix(
       in srgb,
-      var(--pd-feedback-accent) 10%,
+      var(--pd-feedback-accent) 8%,
       transparent
     ),
-    0 0.75rem 2rem color-mix(
+    0 0.65rem 1.5rem color-mix(
       in srgb,
-      var(--pd-shadow-overlay) 30%,
+      var(--pd-shadow-overlay) 14%,
+      transparent
+    ),
+    0 1.5rem 3.4rem color-mix(
+      in srgb,
+      var(--pd-shadow-overlay) 12%,
+      transparent
+    ),
+    0 2.8rem 5.8rem color-mix(
+      in srgb,
+      var(--pd-shadow-overlay) 8%,
       transparent
     );
 }

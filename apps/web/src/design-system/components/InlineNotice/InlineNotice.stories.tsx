@@ -1,7 +1,4 @@
 import type {
-  CSSProperties,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -29,11 +26,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-const themeFrameStyle = {
-  display: 'grid',
-  gap: 'var(--pd-space-3)',
-} satisfies CSSProperties;
 
 export const InlineNoticeStory: Story = {
   args: {
@@ -85,8 +77,8 @@ export const InlineNoticeStory: Story = {
 
         <section className="pd-feedback-story__section">
           <h2 className="pd-feedback-story__section-title">Motywy</h2>
-          <div className="pd-feedback-story__grid">
-            <div className="pd-feedback-story__frame" style={themeFrameStyle}>
+          <div className="pd-feedback-story__theme-grid">
+            <div className="pd-feedback-story__theme-row">
               <span className="pd-feedback-story__eyebrow">tryb jasny</span>
               <InlineNotice
                 actionLabel="Zobacz zalecenia"
@@ -97,9 +89,8 @@ export const InlineNoticeStory: Story = {
             </div>
 
             <div
-              className="pd-feedback-story__frame"
+              className="pd-feedback-story__theme-row"
               data-theme="dark"
-              style={themeFrameStyle}
             >
               <span className="pd-feedback-story__eyebrow">tryb ciemny</span>
               <InlineNotice

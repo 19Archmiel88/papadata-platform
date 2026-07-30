@@ -1,7 +1,4 @@
 import type {
-  CSSProperties,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -30,11 +27,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const themeFrameStyle = {
-  display: 'grid',
-  gap: 'var(--pd-space-3)',
-} satisfies CSSProperties;
-
 export const ErrorStateStory: Story = {
   args: {
     errorCode: 'ERR-500',
@@ -55,49 +47,71 @@ export const ErrorStateStory: Story = {
         </header>
 
         <section className="pd-feedback-story__section">
+          <h2 className="pd-feedback-story__section-title">Wariant referencyjny</h2>
+          <ErrorState
+            correlationId="corr-29A1"
+            errorCode="DATA-409"
+            message="Źródło zwróciło niespójny zakres metryk i wymaga ponownego przeliczenia."
+            retryLabel="Przelicz ponownie"
+            supportLabel="Pokaż szczegóły"
+            title="Błąd danych wejściowych."
+            variant="data"
+          />
+        </section>
+
+        <section className="pd-feedback-story__section">
           <h2 className="pd-feedback-story__section-title">Warianty</h2>
-          <div className="pd-feedback-story__stack">
-            <ErrorState
-              correlationId="corr-29A1"
-              errorCode="DATA-409"
-              message="Źródło zwróciło niespójny zakres metryk i wymaga ponownego przeliczenia."
-              retryLabel="Przelicz ponownie"
-              supportLabel="Pokaż szczegóły"
-              title="Błąd danych wejściowych."
-              variant="data"
-            />
-            <ErrorState
-              correlationId="perm-77K"
-              errorCode="AUTH-403"
-              message="Do wykonania tej operacji potrzebna jest decyzja właściciela przestrzeni."
-              recoverable={false}
-              title="Brak wystarczających uprawnień."
-              variant="permission"
-            />
-            <ErrorState
-              correlationId="int-908"
-              errorCode="INT-502"
-              message="Provider odpowiedział niepełnie i wymaga ponowienia po stronie synchronizacji."
-              retryLabel="Spróbuj ponownie"
-              title="Błąd po stronie integracji."
-              variant="integration"
-            />
-            <ErrorState
-              correlationId="sys-114"
-              errorCode="SYS-500"
-              message="Warstwa systemowa nie zakończyła operacji w oczekiwanym czasie."
-              retryLabel="Ponów"
-              supportLabel="Skontaktuj się ze wsparciem"
-              title="Błąd systemowy."
-              variant="system"
-            />
+          <div className="pd-feedback-story__list">
+            <div className="pd-feedback-story__spec-row">
+              <div className="pd-feedback-story__spec-label">
+                <h3>Brak uprawnień</h3>
+                <p>Stan blokady pozostaje czytelny bez ciężkiej czerwonej karty.</p>
+              </div>
+              <ErrorState
+                correlationId="perm-77K"
+                errorCode="AUTH-403"
+                message="Do wykonania tej operacji potrzebna jest decyzja właściciela przestrzeni."
+                recoverable={false}
+                title="Brak wystarczających uprawnień."
+                variant="permission"
+              />
+            </div>
+            <div className="pd-feedback-story__spec-row">
+              <div className="pd-feedback-story__spec-label">
+                <h3>Błąd integracji</h3>
+                <p>Opisuje problem i pokazuje prostą ścieżkę odzyskania.</p>
+              </div>
+              <ErrorState
+                correlationId="int-908"
+                errorCode="INT-502"
+                message="Provider odpowiedział niepełnie i wymaga ponowienia po stronie synchronizacji."
+                retryLabel="Spróbuj ponownie"
+                title="Błąd po stronie integracji."
+                variant="integration"
+              />
+            </div>
+            <div className="pd-feedback-story__spec-row">
+              <div className="pd-feedback-story__spec-label">
+                <h3>Błąd systemowy</h3>
+                <p>Utrzymuje ślad techniczny i działania pomocnicze.</p>
+              </div>
+              <ErrorState
+                correlationId="sys-114"
+                errorCode="SYS-500"
+                message="Warstwa systemowa nie zakończyła operacji w oczekiwanym czasie."
+                retryLabel="Ponów"
+                supportLabel="Skontaktuj się ze wsparciem"
+                title="Błąd systemowy."
+                variant="system"
+              />
+            </div>
           </div>
         </section>
 
         <section className="pd-feedback-story__section">
           <h2 className="pd-feedback-story__section-title">Motywy</h2>
-          <div className="pd-feedback-story__grid">
-            <div className="pd-feedback-story__frame" style={themeFrameStyle}>
+          <div className="pd-feedback-story__theme-grid">
+            <div className="pd-feedback-story__theme-row">
               <span className="pd-feedback-story__eyebrow">tryb jasny</span>
               <ErrorState
                 correlationId="corr-light"
@@ -108,9 +122,8 @@ export const ErrorStateStory: Story = {
               />
             </div>
             <div
-              className="pd-feedback-story__frame"
+              className="pd-feedback-story__theme-row"
               data-theme="dark"
-              style={themeFrameStyle}
             >
               <span className="pd-feedback-story__eyebrow">tryb ciemny</span>
               <ErrorState

@@ -115,11 +115,11 @@ const longOptions = [
 const themePreviewStyle = {
   display: 'grid',
   gap: 'var(--pd-space-3)',
-  padding: 'var(--pd-space-4)',
-  border: 'var(--pd-border-width-subtle) solid var(--pd-separator-subtle)',
-  borderRadius: 'var(--pd-radius-panel)',
-  background:
-    'linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-raised) 82%, transparent), transparent)',
+  padding: 'var(--pd-space-4) 0 0 var(--pd-space-4)',
+  borderTop: 'var(--pd-border-width-subtle) solid var(--pd-separator-subtle)',
+  borderLeft: '2px solid color-mix(in srgb, var(--pd-brand-line) 48%, transparent)',
+  boxShadow:
+    '0 -1.2rem 2.2rem -2rem color-mix(in srgb, var(--pd-shadow-overlay) 24%, transparent), -1.2rem 0 2.2rem -2rem color-mix(in srgb, var(--pd-shadow-overlay) 24%, transparent)',
 } satisfies CSSProperties;
 
 type SelectPreviewProps = Omit<

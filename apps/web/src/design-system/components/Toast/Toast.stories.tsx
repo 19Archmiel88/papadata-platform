@@ -1,7 +1,4 @@
 import type {
-  CSSProperties,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -30,11 +27,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const themeFrameStyle = {
-  display: 'grid',
-  gap: 'var(--pd-space-3)',
-} satisfies CSSProperties;
-
 export const ToastStory: Story = {
   args: {
     message: 'To jest komponent prezentacyjny bez globalnego systemu kolejkowania.',
@@ -56,7 +48,7 @@ export const ToastStory: Story = {
 
         <section className="pd-feedback-story__section">
           <h2 className="pd-feedback-story__section-title">Warianty</h2>
-          <div className="pd-feedback-story__stack">
+          <div className="pd-feedback-story__toast-stack">
             <Toast
               actionLabel="Otwórz log"
               durationMs={5000}
@@ -86,8 +78,8 @@ export const ToastStory: Story = {
 
         <section className="pd-feedback-story__section">
           <h2 className="pd-feedback-story__section-title">Motywy</h2>
-          <div className="pd-feedback-story__grid">
-            <div className="pd-feedback-story__frame" style={themeFrameStyle}>
+          <div className="pd-feedback-story__toast-theme-grid">
+            <div className="pd-feedback-story__toast-theme-column">
               <span className="pd-feedback-story__eyebrow">tryb jasny</span>
               <Toast
                 actionLabel="Przejdź dalej"
@@ -99,9 +91,8 @@ export const ToastStory: Story = {
               />
             </div>
             <div
-              className="pd-feedback-story__frame"
+              className="pd-feedback-story__toast-theme-column"
               data-theme="dark"
-              style={themeFrameStyle}
             >
               <span className="pd-feedback-story__eyebrow">tryb ciemny</span>
               <Toast

@@ -12,6 +12,12 @@ export {
   Checkbox,
 } from './Checkbox';
 export {
+  Dialog,
+} from './Dialog';
+export {
+  Drawer,
+} from './Drawer';
+export {
   EmptyState,
 } from './EmptyState';
 export {
@@ -25,8 +31,14 @@ export {
   InlineNotice,
 } from './InlineNotice';
 export {
+  OverlayRoot,
+} from './OverlayRoot';
+export {
   ProgressIndicator,
 } from './ProgressIndicator';
+export {
+  Popover,
+} from './Popover';
 export {
   Select,
 } from './Select';
@@ -45,6 +57,9 @@ export {
 export {
   Toast,
 } from './Toast';
+export {
+  Tooltip,
+} from './Tooltip';
 export {
   VerificationCodeInput,
 } from './VerificationCodeInput';
@@ -73,6 +88,12 @@ export type {
   CheckboxProps,
 } from './Checkbox';
 export type {
+  DialogProps,
+} from './Dialog';
+export type {
+  DrawerProps,
+} from './Drawer';
+export type {
   EmptyStateProps,
   EmptyStateVariant,
 } from './EmptyState';
@@ -88,9 +109,17 @@ export type {
   InlineNoticeProps,
 } from './InlineNotice';
 export type {
+  OverlayCloseReason,
+  OverlayRootBackdrop,
+  OverlayRootProps,
+} from './OverlayRoot';
+export type {
   ProgressIndicatorProps,
   ProgressIndicatorTone,
 } from './ProgressIndicator';
+export type {
+  PopoverProps,
+} from './Popover';
 export type {
   SelectProps,
 } from './Select';
@@ -110,6 +139,9 @@ export type {
 export type {
   ToastProps,
 } from './Toast';
+export type {
+  TooltipProps,
+} from './Tooltip';
 export type {
   VerificationCodeInputProps,
 } from './VerificationCodeInput';

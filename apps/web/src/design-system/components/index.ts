@@ -15,6 +15,12 @@ export {
   Checkbox,
 } from './Checkbox';
 export {
+  DataList,
+} from './DataList';
+export {
+  DataTable,
+} from './DataTable';
+export {
   Dialog,
 } from './Dialog';
 export {
@@ -33,6 +39,9 @@ export {
 export {
   InlineNotice,
 } from './InlineNotice';
+export {
+  KeyValueList,
+} from './KeyValueList';
 export {
   Menu,
 } from './Menu';
@@ -69,6 +78,9 @@ export {
 export {
   Switch,
 } from './Switch';
+export {
+  Table,
+} from './Table';
 export {
   Tabs,
 } from './Tabs';
@@ -110,6 +122,14 @@ export type {
   CheckboxProps,
 } from './Checkbox';
 export type {
+  DataListItem,
+  DataListProps,
+} from './DataList';
+export type {
+  DataTableProps,
+  DataTableStatusTone,
+} from './DataTable';
+export type {
   DialogProps,
 } from './Dialog';
 export type {
@@ -130,6 +150,11 @@ export type {
 export type {
   InlineNoticeProps,
 } from './InlineNotice';
+export type {
+  KeyValueListGroup,
+  KeyValueListItem,
+  KeyValueListProps,
+} from './KeyValueList';
 export type {
   MenuCloseReason,
   MenuItem,
@@ -173,6 +198,12 @@ export type {
 export type {
   SwitchProps,
 } from './Switch';
+export type {
+  TableColumn,
+  TableProps,
+  TableRow,
+  TableRowValue,
+} from './Table';
 export type {
   TabsItem,
   TabsProps,

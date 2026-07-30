@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: ca24d1878f5c44464c879b1709a767c3f614e2b1d19219444ceba5129b1a8be2
+// SHA-256 źródła: 64afa6a51c626500c84da18cbf3d9f3faef9f855959fcb42cbbc967298121d1b
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -477,12 +477,12 @@ export const storybookCatalog = [
     "note": null,
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "draft",
+    "documentationStatus": "accepted",
     "prototypeStatus": "none",
-    "productionStatus": "not_started",
-    "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "productionStatus": "implemented",
+    "testStatus": "passing",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "logotyp",
       "symbol",
@@ -492,10 +492,11 @@ export const storybookCatalog = [
       "dark",
       "znaki providerów"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "10 Komponenty/Marka",
+    "storyFile": "apps/web/src/design-system/icons/PapaDataBrand.stories.tsx",
     "displaySectionTitle": "Komponenty",
-    "displayTitle": "Marka"
+    "displayTitle": "Marka",
+    "storyExport": "Marka"
   },
   {
     "id": "10.02",
@@ -509,12 +510,12 @@ export const storybookCatalog = [
     "note": null,
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "draft",
+    "documentationStatus": "accepted",
     "prototypeStatus": "none",
-    "productionStatus": "not_started",
-    "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "productionStatus": "implemented",
+    "testStatus": "passing",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "primary",
       "secondary",
@@ -526,10 +527,11 @@ export const storybookCatalog = [
       "disabled",
       "button group"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "10 Komponenty/Przyciski i akcje",
+    "storyFile": "apps/web/src/design-system/components/Button/Button.stories.tsx",
     "displaySectionTitle": "Komponenty",
-    "displayTitle": "Przyciski"
+    "displayTitle": "Przyciski",
+    "storyExport": "Przyciski"
   },
   {
     "id": "10.03",
@@ -814,12 +816,12 @@ export const storybookCatalog = [
     "note": null,
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "draft",
+    "documentationStatus": "accepted",
     "prototypeStatus": "none",
-    "productionStatus": "not_started",
-    "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "productionStatus": "implemented",
+    "testStatus": "passing",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "komponent Icon",
       "IconButton",
@@ -834,10 +836,11 @@ export const storybookCatalog = [
       "billing",
       "pomoc"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "10 Komponenty/Ikony",
+    "storyFile": "apps/web/src/design-system/icons/Icon.stories.tsx",
     "displaySectionTitle": "Komponenty",
-    "displayTitle": "Ikony"
+    "displayTitle": "Ikony",
+    "storyExport": "Ikony"
   },
   {
     "id": "10.12",

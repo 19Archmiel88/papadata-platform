@@ -1,0 +1,62 @@
+{
+  "fixtureId": "SB-235",
+  "storyTitle": "50 Papa Asystent i Laboratorium AI/Dowody",
+  "sourceDocument": "15-papa-asystent-i-laboratorium-ai/50-06-dowody.md",
+  "screenId": "50.06",
+  "components": [
+    "PageHeader",
+    "InlineNotice",
+    "Button",
+    "ShareChart",
+    "ComparisonChart",
+    "DecisionCard",
+    "EvidencePanel"
+  ],
+  "states": [
+    "ready",
+    "loading",
+    "empty",
+    "error",
+    "partial",
+    "stale",
+    "forbidden",
+    "offline"
+  ],
+  "viewports": [
+    1440,
+    768,
+    390
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "localeCases": [
+    "pl",
+    "en-long-copy"
+  ],
+  "playSteps": [
+    "focus-first-interactive",
+    "activate-primary-action",
+    "verify-focus-restoration",
+    "verify-live-region",
+    "verify-keyboard-only"
+  ],
+  "visualAssertions": [
+    "1440-light",
+    "1440-dark",
+    "768-reflow",
+    "390-mobile",
+    "200-percent-zoom",
+    "reduced-motion",
+    "state-offline"
+  ],
+  "a11y": [
+    "keyboard-only",
+    "focus-visible",
+    "accessible-name",
+    "live-region",
+    "200-percent-zoom"
+  ],
+  "implementationStatus": "backlog-target-not-implemented"
+}

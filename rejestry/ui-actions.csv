@@ -1,0 +1,2 @@
+operation_id,kind,surface_id,description,owner,version
+ui.return_to_login,ui,auth-26,Nawigacja po wylogowaniu bez wywołania BFF,Artur Wiśniewski,1.0

@@ -1,0 +1,130 @@
+id,nazwa,dokument,route_docelowy,modul,document_type,runtime_surface
+30.01,Widok główny,07-centrum-dowodzenia/30-01-widok-glowny.md,/app/command-center/widok-glowny,M04,runtime-screen,yes
+30.02,Kolejka uwagi,07-centrum-dowodzenia/30-02-kolejka-uwagi.md,/app/command-center/kolejka-uwagi,M04,runtime-screen,yes
+30.03,KPI,07-centrum-dowodzenia/30-03-kpi.md,/app/command-center/kpi,M04,runtime-screen,yes
+30.04,Plan vs wynik,07-centrum-dowodzenia/30-04-plan-vs-wynik.md,/app/command-center/plan-vs-wynik,M04,runtime-screen,yes
+30.05,Drivery wyniku,07-centrum-dowodzenia/30-05-drivery-wyniku.md,/app/command-center/drivery-wyniku,M04,runtime-screen,yes
+30.06,Źródła sprzedaży,07-centrum-dowodzenia/30-06-zrodla-sprzedazy.md,/app/command-center/zrodla-sprzedazy,M04,runtime-screen,yes
+30.07,Ruch,07-centrum-dowodzenia/30-07-ruch.md,/app/command-center/ruch,M04,runtime-screen,yes
+30.08,Produkty,07-centrum-dowodzenia/30-08-produkty.md,/app/command-center/produkty,M04,runtime-screen,yes
+30.09,Klienci,07-centrum-dowodzenia/30-09-klienci.md,/app/command-center/klienci,M04,runtime-screen,yes
+30.10,Lejek,07-centrum-dowodzenia/30-10-lejek.md,/app/command-center/lejek,M04,runtime-screen,yes
+30.11,Rekomendacje AI — skrót,07-centrum-dowodzenia/30-11-rekomendacje-ai-skrot.md,/app/command-center/rekomendacje-ai-skrot,M04,runtime-screen,yes
+30.12,Sygnały sprzedażowe,07-centrum-dowodzenia/30-12-sygnaly-sprzedazowe.md,/app/command-center/sygnaly-sprzedazowe,M04,runtime-screen,yes
+30.13,Waterfall,07-centrum-dowodzenia/30-13-waterfall.md,/app/command-center/waterfall,M04,runtime-screen,yes
+30.14,Warianty Centrum Dowodzenia,07-centrum-dowodzenia/30-14-warianty-centrum-dowodzenia.md,,M04,storybook-variants,no
+31.01,Przegląd,08-kampanie-platne/31-01-przeglad.md,/app/campaigns/przeglad,M05,runtime-screen,yes
+31.02,Lista kampanii,08-kampanie-platne/31-02-lista-kampanii.md,/app/campaigns/lista-kampanii,M05,runtime-screen,yes
+31.03,Szczegóły kampanii,08-kampanie-platne/31-03-szczegoly-kampanii.md,/app/campaigns/szczegoly-kampanii/:resourceId,M05,runtime-screen,yes
+31.04,Atrybucja i sprzedaż,08-kampanie-platne/31-04-atrybucja-i-sprzedaz.md,/app/campaigns/atrybucja-i-sprzedaz,M05,runtime-screen,yes
+31.05,Budżet,08-kampanie-platne/31-05-budzet.md,/app/campaigns/budzet,M05,runtime-screen,yes
+31.06,Diagnostyka,08-kampanie-platne/31-06-diagnostyka.md,/app/campaigns/diagnostyka,M05,runtime-screen,yes
+31.07,Rekomendacje — kontekst domenowy,08-kampanie-platne/31-07-rekomendacje-kontekst-domenowy.md,/app/campaigns/rekomendacje-kontekst-domenowy,M05,runtime-screen,yes
+31.08,Warianty kampanii,08-kampanie-platne/31-08-warianty-kampanii.md,,M05,storybook-variants,no
+32.01,Przegląd,09-zamowienia/32-01-przeglad.md,/app/orders/przeglad,M06,runtime-screen,yes
+32.02,Lista,09-zamowienia/32-02-lista.md,/app/orders/lista,M06,runtime-screen,yes
+32.03,Szczegóły,09-zamowienia/32-03-szczegoly.md,/app/orders/szczegoly/:resourceId,M06,runtime-screen,yes
+32.04,Oś zdarzeń,09-zamowienia/32-04-os-zdarzen.md,/app/orders/os-zdarzen,M06,runtime-screen,yes
+32.05,Porównanie źródeł,09-zamowienia/32-05-porownanie-zrodel.md,/app/orders/porownanie-zrodel,M06,runtime-screen,yes
+32.06,Rekoncyliacja — skrót,09-zamowienia/32-06-rekoncyliacja-skrot.md,/app/orders/rekoncyliacja-skrot,M06,runtime-screen,yes
+32.07,Eksport,09-zamowienia/32-07-eksport.md,/app/orders/eksport,M06,runtime-screen,yes
+32.08,Warianty zamówień,09-zamowienia/32-08-warianty-zamowien.md,,M06,storybook-variants,no
+33.01,Przegląd,10-produkty/33-01-przeglad.md,/app/products/przeglad,M07,runtime-screen,yes
+33.02,Katalog,10-produkty/33-02-katalog.md,/app/products/katalog,M07,runtime-screen,yes
+33.03,Szczegóły,10-produkty/33-03-szczegoly.md,/app/products/szczegoly/:resourceId,M07,runtime-screen,yes
+33.04,Mapowanie,10-produkty/33-04-mapowanie.md,/app/products/mapowanie,M07,runtime-screen,yes
+33.05,Oferty,10-produkty/33-05-oferty.md,/app/products/oferty,M07,runtime-screen,yes
+33.06,Wydajność,10-produkty/33-06-wydajnosc.md,/app/products/wydajnosc,M07,runtime-screen,yes
+33.07,Kolejka braków,10-produkty/33-07-kolejka-brakow.md,/app/products/kolejka-brakow,M07,runtime-screen,yes
+33.08,Analiza wpływu,10-produkty/33-08-analiza-wplywu.md,/app/products/analiza-wplywu,M07,runtime-screen,yes
+33.09,Warianty produktów,10-produkty/33-09-warianty-produktow.md,,M07,storybook-variants,no
+34.01,Przegląd,11-klienci/34-01-przeglad.md,/app/customers/przeglad,M08,runtime-screen,yes
+34.02,Segmenty,11-klienci/34-02-segmenty.md,/app/customers/segmenty,M08,runtime-screen,yes
+34.03,Kohorty,11-klienci/34-03-kohorty.md,/app/customers/kohorty,M08,runtime-screen,yes
+34.04,Szczegóły pseudonimizowane,11-klienci/34-04-szczegoly-pseudonimizowane.md,/app/customers/szczegoly-pseudonimizowane/:resourceId,M08,runtime-screen,yes
+34.05,Konflikty tożsamości,11-klienci/34-05-konflikty-tozsamosci.md,/app/customers/konflikty-tozsamosci,M08,runtime-screen,yes
+34.06,Prywatność,11-klienci/34-06-prywatnosc.md,/app/customers/prywatnosc,M08,runtime-screen,yes
+34.07,Analiza wpływu,11-klienci/34-07-analiza-wplywu.md,/app/customers/analiza-wplywu,M08,runtime-screen,yes
+34.08,Warianty klientów,11-klienci/34-08-warianty-klientow.md,,M08,storybook-variants,no
+35.01,Przegląd ruchu,12-ruch-i-lejek/35-01-przeglad-ruchu.md,/app/traffic/przeglad-ruchu,M09,runtime-screen,yes
+35.02,Kanały,12-ruch-i-lejek/35-02-kanaly.md,/app/traffic/kanaly,M09,runtime-screen,yes
+35.03,Lejek — widok,12-ruch-i-lejek/35-03-lejek-widok.md,/app/traffic/lejek-widok,M09,runtime-screen,yes
+35.04,Lejek — szczegóły kroku,12-ruch-i-lejek/35-04-lejek-szczegoly-kroku.md,/app/traffic/lejek-szczegoly-kroku/:resourceId,M09,runtime-screen,yes
+35.05,Definicje lejka,12-ruch-i-lejek/35-05-definicje-lejka.md,/app/traffic/definicje-lejka,M09,runtime-screen,yes
+35.06,GA4 vs zamówienia,12-ruch-i-lejek/35-06-ga4-vs-zamowienia.md,/app/traffic/ga4-vs-zamowienia,M09,runtime-screen,yes
+35.07,Jakość zdarzeń,12-ruch-i-lejek/35-07-jakosc-zdarzen.md,/app/traffic/jakosc-zdarzen,M09,runtime-screen,yes
+35.08,Strony wejścia,12-ruch-i-lejek/35-08-strony-wejscia.md,/app/traffic/strony-wejscia,M09,runtime-screen,yes
+35.09,Warianty ruchu,12-ruch-i-lejek/35-09-warianty-ruchu.md,,M09,storybook-variants,no
+40.01,Katalog integracji,13-integracje-i-synchronizacja/40-01-katalog-integracji.md,/app/integrations/katalog-integracji,M10,runtime-screen,yes
+40.02,Kreator połączenia,13-integracje-i-synchronizacja/40-02-kreator-polaczenia.md,/app/integrations/kreator-polaczenia,M10,runtime-screen,yes
+40.03,Szczegóły integracji,13-integracje-i-synchronizacja/40-03-szczegoly-integracji.md,/app/integrations/szczegoly-integracji/:resourceId,M10,runtime-screen,yes
+40.04,Historia synchronizacji,13-integracje-i-synchronizacja/40-04-historia-synchronizacji.md,/app/integrations/historia-synchronizacji,M10,runtime-screen,yes
+40.05,Przebieg synchronizacji,13-integracje-i-synchronizacja/40-05-przebieg-synchronizacji.md,/app/integrations/przebieg-synchronizacji,M10,runtime-screen,yes
+40.06,Zakres synchronizacji,13-integracje-i-synchronizacja/40-06-zakres-synchronizacji.md,/app/integrations/zakres-synchronizacji,M10,runtime-screen,yes
+40.07,Ponowne połączenie,13-integracje-i-synchronizacja/40-07-ponowne-polaczenie.md,/app/integrations/ponowne-polaczenie,M10,runtime-screen,yes
+40.08,Odłączenie,13-integracje-i-synchronizacja/40-08-odlaczenie.md,/app/integrations/odlaczenie,M10,runtime-screen,yes
+40.09,Awaria providera,13-integracje-i-synchronizacja/40-09-awaria-providera.md,/app/integrations/awaria-providera,M10,runtime-screen,yes
+40.10,Warianty integracji,13-integracje-i-synchronizacja/40-10-warianty-integracji.md,,M10,storybook-variants,no
+41.01,Centrum jakości,14-jakosc-danych-i-integralnosc/41-01-centrum-jakosci.md,/app/data-quality/centrum-jakosci,M11,runtime-screen,yes
+41.02,Zbiór danych,14-jakosc-danych-i-integralnosc/41-02-zbior-danych.md,/app/data-quality/zbior-danych,M11,runtime-screen,yes
+41.03,Pochodzenie danych,14-jakosc-danych-i-integralnosc/41-03-pochodzenie-danych.md,/app/data-quality/pochodzenie-danych,M11,runtime-screen,yes
+41.04,Nakładanie źródeł,14-jakosc-danych-i-integralnosc/41-04-nakladanie-zrodel.md,/app/data-quality/nakladanie-zrodel,M11,runtime-screen,yes
+41.05,Nadrzędność źródła,14-jakosc-danych-i-integralnosc/41-05-nadrzednosc-zrodla.md,/app/data-quality/nadrzednosc-zrodla,M11,runtime-screen,yes
+41.06,Konflikty,14-jakosc-danych-i-integralnosc/41-06-konflikty.md,/app/data-quality/konflikty,M11,runtime-screen,yes
+41.07,Przegląd ręczny,14-jakosc-danych-i-integralnosc/41-07-przeglad-reczny.md,/app/data-quality/przeglad-reczny,M11,runtime-screen,yes
+41.08,Ponowne przetwarzanie,14-jakosc-danych-i-integralnosc/41-08-ponowne-przetwarzanie.md,/app/data-quality/ponowne-przetwarzanie,M11,runtime-screen,yes
+41.09,Rekoncyliacja,14-jakosc-danych-i-integralnosc/41-09-rekoncyliacja.md,/app/data-quality/rekoncyliacja,M11,runtime-screen,yes
+41.10,Warianty jakości danych,14-jakosc-danych-i-integralnosc/41-10-warianty-jakosci-danych.md,,M11,storybook-variants,no
+50.01,Panel kontekstowy Papa,15-papa-asystent-i-laboratorium-ai/50-01-panel-kontekstowy-papa.md,/app/papa/panel-kontekstowy-papa,M12,runtime-screen,yes
+50.02,AssistantShell,15-papa-asystent-i-laboratorium-ai/50-02-assistantshell.md,/app/papa/assistantshell,M12,runtime-screen,yes
+50.03,Tryby pracy,15-papa-asystent-i-laboratorium-ai/50-03-tryby-pracy.md,,M12,policy,no
+50.04,Context basket,15-papa-asystent-i-laboratorium-ai/50-04-context-basket.md,/app/papa/context-basket,M12,runtime-screen,yes
+50.05,Odpowiedź Papa,15-papa-asystent-i-laboratorium-ai/50-05-odpowiedz-papa.md,/app/papa/odpowiedz-papa,M12,runtime-screen,yes
+50.06,Dowody,15-papa-asystent-i-laboratorium-ai/50-06-dowody.md,/app/papa/dowody,M12,runtime-screen,yes
+50.07,Confidence,15-papa-asystent-i-laboratorium-ai/50-07-confidence.md,,M12,policy,no
+50.08,Laboratorium AI,15-papa-asystent-i-laboratorium-ai/50-08-laboratorium-ai.md,/app/papa/laboratorium-ai,M12,runtime-screen,yes
+50.09,Obserwacje,15-papa-asystent-i-laboratorium-ai/50-09-obserwacje.md,/app/papa/obserwacje,M12,runtime-screen,yes
+50.10,Rekomendacje i warianty,15-papa-asystent-i-laboratorium-ai/50-10-rekomendacje-i-warianty.md,,M12,storybook-variants,no
+50.11,Propozycje AI,15-papa-asystent-i-laboratorium-ai/50-11-propozycje-ai.md,/app/papa/propozycje-ai,M12,runtime-screen,yes
+50.12,AI Action Approval,15-papa-asystent-i-laboratorium-ai/50-12-ai-action-approval.md,/app/papa/ai-action-approval,M12,runtime-screen,yes
+50.13,AI Actions,15-papa-asystent-i-laboratorium-ai/50-13-ai-actions.md,/app/papa/ai-actions,M12,runtime-screen,yes
+50.14,Zablokowane działania AI,15-papa-asystent-i-laboratorium-ai/50-14-zablokowane-dzialania-ai.md,,M12,policy,no
+50.15,Historia i pamięć Papa,15-papa-asystent-i-laboratorium-ai/50-15-historia-i-pamiec-papa.md,/app/papa/historia-i-pamiec-papa,M12,runtime-screen,yes
+50.16,Ustawienia AI i Governance,15-papa-asystent-i-laboratorium-ai/50-16-ustawienia-ai-i-governance.md,/app/papa/ustawienia-ai-i-governance,M12,runtime-screen,yes
+50.17,Warianty Papa,15-papa-asystent-i-laboratorium-ai/50-17-warianty-papa.md,,M12,storybook-variants,no
+60.01,Organizacja,16-ustawienia-zespol-bezpieczenstwo/60-01-organizacja.md,/app/settings/organizacja,M13,runtime-screen,yes
+60.02,Workspace,16-ustawienia-zespol-bezpieczenstwo/60-02-workspace.md,/app/settings/workspace,M13,runtime-screen,yes
+60.03,Członkostwa,16-ustawienia-zespol-bezpieczenstwo/60-03-czlonkostwa.md,/app/settings/czlonkostwa,M13,runtime-screen,yes
+60.04,Role i uprawnienia,16-ustawienia-zespol-bezpieczenstwo/60-04-role-i-uprawnienia.md,/app/settings/role-i-uprawnienia,M13,runtime-screen,yes
+60.05,Bezpieczeństwo konta,16-ustawienia-zespol-bezpieczenstwo/60-05-bezpieczenstwo-konta.md,/app/settings/bezpieczenstwo-konta,M13,runtime-screen,yes
+60.06,Sesje,16-ustawienia-zespol-bezpieczenstwo/60-06-sesje.md,/app/settings/sesje,M13,runtime-screen,yes
+60.07,Audyt,16-ustawienia-zespol-bezpieczenstwo/60-07-audyt.md,/app/settings/audyt,M13,runtime-screen,yes
+60.08,Prywatność,16-ustawienia-zespol-bezpieczenstwo/60-08-prywatnosc.md,/app/settings/prywatnosc,M13,runtime-screen,yes
+60.09,Dostęp wsparcia,16-ustawienia-zespol-bezpieczenstwo/60-09-dostep-wsparcia.md,/app/settings/dostep-wsparcia,M13,runtime-screen,yes
+60.10,Warianty ustawień,16-ustawienia-zespol-bezpieczenstwo/60-10-warianty-ustawien.md,,M13,storybook-variants,no
+70.01,Subskrypcja,17-subskrypcja-i-platnosci/70-01-subskrypcja.md,/app/billing/subskrypcja,M14,runtime-screen,yes
+70.02,Użycie i limity,17-subskrypcja-i-platnosci/70-02-uzycie-i-limity.md,/app/billing/uzycie-i-limity,M14,runtime-screen,yes
+70.03,Plany,17-subskrypcja-i-platnosci/70-03-plany.md,/app/billing/plany,M14,runtime-screen,yes
+70.04,Faktury,17-subskrypcja-i-platnosci/70-04-faktury.md,/app/billing/faktury,M14,runtime-screen,yes
+70.05,Płatności,17-subskrypcja-i-platnosci/70-05-platnosci.md,/app/billing/platnosci,M14,runtime-screen,yes
+70.06,Zaległa płatność,17-subskrypcja-i-platnosci/70-06-zalegla-platnosc.md,/app/billing/zalegla-platnosc,M14,runtime-screen,yes
+70.07,Korekty,17-subskrypcja-i-platnosci/70-07-korekty.md,/app/billing/korekty,M14,runtime-screen,yes
+70.08,Zmiana i anulowanie,17-subskrypcja-i-platnosci/70-08-zmiana-i-anulowanie.md,/app/billing/zmiana-i-anulowanie,M14,runtime-screen,yes
+70.09,Pilot do abonamentu,17-subskrypcja-i-platnosci/70-09-pilot-do-abonamentu.md,/app/billing/pilot-do-abonamentu,M14,runtime-screen,yes
+70.10,Warianty billingowe,17-subskrypcja-i-platnosci/70-10-warianty-billingowe.md,,M14,storybook-variants,no
+80.01,Centrum decyzji,18-wsparcie-marketingowe-decyzje-dzialania/80-01-centrum-decyzji.md,/app/decisions/centrum-decyzji,M15,runtime-screen,yes
+80.02,Obserwacje,18-wsparcie-marketingowe-decyzje-dzialania/80-02-obserwacje.md,/app/decisions/obserwacje,M15,runtime-screen,yes
+80.03,Rekomendacje,18-wsparcie-marketingowe-decyzje-dzialania/80-03-rekomendacje.md,/app/decisions/rekomendacje,M15,runtime-screen,yes
+80.04,Rejestr decyzji,18-wsparcie-marketingowe-decyzje-dzialania/80-04-rejestr-decyzji.md,/app/decisions/rejestr-decyzji,M15,runtime-screen,yes
+80.05,Brief działania,18-wsparcie-marketingowe-decyzje-dzialania/80-05-brief-dzialania.md,/app/decisions/brief-dzialania,M15,runtime-screen,yes
+80.06,Szczegóły działania,18-wsparcie-marketingowe-decyzje-dzialania/80-06-szczegoly-dzialania.md,/app/decisions/szczegoly-dzialania/:resourceId,M15,runtime-screen,yes
+80.07,Pomiar,18-wsparcie-marketingowe-decyzje-dzialania/80-07-pomiar.md,/app/decisions/pomiar,M15,runtime-screen,yes
+80.08,Biblioteka działań,18-wsparcie-marketingowe-decyzje-dzialania/80-08-biblioteka-dzialan.md,/app/decisions/biblioteka-dzialan,M15,runtime-screen,yes
+80.09,Powiązania z modułami i sprawami,18-wsparcie-marketingowe-decyzje-dzialania/80-09-powiazania-z-modulami-i-sprawami.md,/app/decisions/powiazania-z-modulami-i-sprawami,M15,runtime-screen,yes
+80.10,Warianty decyzji i działań,18-wsparcie-marketingowe-decyzje-dzialania/80-10-warianty-decyzji-i-dzialan.md,,M15,storybook-variants,no
+85.01,Strona główna pomocy,19-centrum-pomocy/85-01-strona-glowna-pomocy.md,/app/help/strona-glowna-pomocy,M15,runtime-screen,yes
+85.02,Procedury,19-centrum-pomocy/85-02-procedury.md,/app/help/procedury/:resourceId,M15,runtime-screen,yes
+85.03,Lista wyników,19-centrum-pomocy/85-03-lista-wynikow.md,/app/help/lista-wynikow,M15,runtime-screen,yes
+85.04,Szczegóły procedury,19-centrum-pomocy/85-04-szczegoly-procedury.md,/app/help/szczegoly-procedury/:resourceId,M15,runtime-screen,yes
+85.05,Zgłoszenie wsparcia,19-centrum-pomocy/85-05-zgloszenie-wsparcia.md,/app/help/zgloszenie-wsparcia/:resourceId,M15,runtime-screen,yes
+85.06,Warianty Centrum Pomocy,19-centrum-pomocy/85-06-warianty-centrum-pomocy.md,,M15,storybook-variants,no

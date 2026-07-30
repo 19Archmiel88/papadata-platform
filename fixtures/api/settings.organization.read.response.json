@@ -1,0 +1,19 @@
+{
+  "operationId": "settings.organization.read",
+  "correlationId": "corr-settingsOrganizationRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "records": [],
+    "pageInfo": {
+      "nextCursor": null,
+      "total": 0
+    },
+    "summary": {},
+    "organizationResult": {
+      "operationId": "settings.organization.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "settings"
+    }
+  },
+  "warnings": []
+}

@@ -1,0 +1,58 @@
+{
+  "fixtureId": "SB-170",
+  "storyTitle": "31 Kampanie płatne/Diagnostyka",
+  "sourceDocument": "08-kampanie-platne/31-06-diagnostyka.md",
+  "screenId": "31.06",
+  "components": [
+    "PageHeader",
+    "InlineNotice",
+    "Button"
+  ],
+  "states": [
+    "ready",
+    "loading",
+    "empty",
+    "error",
+    "partial",
+    "stale",
+    "forbidden",
+    "offline"
+  ],
+  "viewports": [
+    1440,
+    768,
+    390
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "localeCases": [
+    "pl",
+    "en-long-copy"
+  ],
+  "playSteps": [
+    "focus-first-interactive",
+    "activate-primary-action",
+    "verify-focus-restoration",
+    "verify-live-region",
+    "verify-keyboard-only"
+  ],
+  "visualAssertions": [
+    "1440-light",
+    "1440-dark",
+    "768-reflow",
+    "390-mobile",
+    "200-percent-zoom",
+    "reduced-motion",
+    "state-offline"
+  ],
+  "a11y": [
+    "keyboard-only",
+    "focus-visible",
+    "accessible-name",
+    "live-region",
+    "200-percent-zoom"
+  ],
+  "implementationStatus": "backlog-target-not-implemented"
+}

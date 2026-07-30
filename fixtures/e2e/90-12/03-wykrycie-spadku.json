@@ -1,0 +1,34 @@
+{
+  "fixtureId": "E2E_90_12_03_wykrycie-spadku",
+  "flowId": "90.12",
+  "stepNo": 3,
+  "stepName": "Wykrycie spadku",
+  "surfaceDocument": "12-ruch-i-lejek/35-07-jakosc-zdarzen.md",
+  "route": "/app/traffic/jakosc-zdarzen",
+  "operationId": "traffic.event-quality.read",
+  "operationKind": "query",
+  "capability": "traffic.read",
+  "apiRequestFixture": "fixtures/api/traffic.event-quality.read.request.json",
+  "apiResponseFixture": "fixtures/api/traffic.event-quality.read.response.json",
+  "actor": {
+    "role": "Admin",
+    "tenantId": "tenant-e2e",
+    "workspaceId": "workspace-e2e",
+    "capabilities": [
+      "traffic.read"
+    ]
+  },
+  "preconditions": [
+    "Warunek domenowy spadek ruchu do dzia ania wykrycie spadku: Aktor posiada `traffic.read`; fixture ładuje request `fixtures/api/traffic.event-quality.read.request.json` i stan domeny wymagany dla kroku 3 procesu 90.12. Poprzedni krok zakończył się potwierdzonym postcondition albo jest to punkt startowy."
+  ],
+  "expected": {
+    "success": "Odpowiedź `TrafficEventQualityReadResponse` ma operationId `traffic.event-quality.read`, brak ApiProblem krytycznego, a UI renderuje dane kroku „Wykrycie spadku” bez zamiany null na zero.",
+    "postcondition": "Po kroku „Wykrycie spadku” obowiązuje domenowy warunek: operacja `traffic.event-quality.read` jest widoczna w audycie, fixture response `fixtures/api/traffic.event-quality.read.response.json` przechodzi walidację schema, a następna powierzchnia „Diagnoza” jest osiągalna wyłącznie zgodnie z procesem 90.12.",
+    "assertion": "Asercja domenowa spadek ruchu do dzia ania wykrycie spadku: Sprawdź operation kind `query`, capability `traffic.read`, schema request/response, expected event `e2e_90_12_03_traffic_event_quality_read`, brak podwójnego efektu, prawidłowy focus po zmianie powierzchni oraz kod `TRAFFIC_DIAGNOSIS_INCOMPLETE` w kontrolowanym scenariuszu błędu."
+  },
+  "recoverableError": {
+    "code": "TRAFFIC_DIAGNOSIS_INCOMPLETE",
+    "behavior": "Odzyskanie kroku spadek ruchu do dzia ania wykrycie spadku: `TRAFFIC_DIAGNOSIS_INCOMPLETE` dla kroku 3: zachowaj niesekretne dane formularza i route `/app/traffic/jakosc-zdarzen`, pokaż correlationId oraz akcję retry tylko dla błędu oznaczonego `recoverable=true`; błąd capability kończy proces bez retry.",
+    "resume": "Reguła wznowienia spadek ruchu do dzia ania wykrycie spadku: Checkpoint `E2E_90_12_03_wykrycie-spadku` zapisuje zakończony step_no=3, operationId i identyfikatory zasobów z response fixture. Po wznowieniu system ponownie sprawdza `traffic.read` i odczytuje aktualny stan; komendy nie są automatycznie odtwarzane bez tego samego idempotency key."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "operationId": "data-quality.center.read",
+  "correlationId": "corr-dataQualityCenterRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "records": [],
+    "pageInfo": {
+      "nextCursor": null,
+      "total": 0
+    },
+    "summary": {},
+    "diagnostics": [],
+    "qualityCenterResult": {
+      "operationId": "data-quality.center.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "data-quality"
+    }
+  },
+  "warnings": []
+}

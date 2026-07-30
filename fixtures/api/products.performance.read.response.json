@@ -1,0 +1,19 @@
+{
+  "operationId": "products.performance.read",
+  "correlationId": "corr-productsPerformanceRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "records": [],
+    "pageInfo": {
+      "nextCursor": null,
+      "total": 0
+    },
+    "summary": {},
+    "performanceResult": {
+      "operationId": "products.performance.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "products"
+    }
+  },
+  "warnings": []
+}

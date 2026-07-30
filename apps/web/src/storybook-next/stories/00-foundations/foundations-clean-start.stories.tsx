@@ -213,8 +213,8 @@ export const KierunekWizualny: Story = {
           }
           summary={
             locale === 'en'
-              ? 'Champagne gold connects the logo, wordmark and primary brand actions. Cyan serves analytical data and status colors keep operational meaning.'
-              : 'Szampańskie złoto spina logo, logotyp i główne akcje marki. Cyan obsługuje dane analityczne, a kolory statusów zachowują znaczenie operacyjne.'
+              ? 'Dark amber connects the PD logo, wordmark and primary brand actions. Cyan serves analytical data and status colors keep operational meaning.'
+              : 'Ciemny bursztyn spina logo PD, logotyp i główne akcje marki. Cyan obsługuje dane analityczne, a kolory statusów zachowują znaczenie operacyjne.'
           }
         >
           <div className="pd-f0-brand-system">
@@ -226,8 +226,8 @@ export const KierunekWizualny: Story = {
               />
               <p>
                 <Localized
-                  pl="Logo pełne jest pierwszym sygnałem marki. Złoto prowadzi identyfikację i główne akcje, ale nie zastępuje danych ani statusów."
-                  en="The full logo is the first brand signal. Gold anchors identity and primary brand actions without replacing data or status colors."
+                  pl="Logo pełne jest pierwszym sygnałem marki. Ciemny bursztyn prowadzi identyfikację i główne akcje, ale nie zastępuje danych ani statusów."
+                  en="The full logo is the first brand signal. Dark amber anchors identity and primary brand actions without replacing data or status colors."
                 />
               </p>
             </article>
@@ -238,15 +238,15 @@ export const KierunekWizualny: Story = {
                   <Localized pl="Sygnet" en="Mark" />
                 </span>
                 <PapaDataBrand
-                  aria-label="PapaData sygnet"
                   glow
+                  label="PapaData sygnet"
                   showWordmark={false}
                   size="large"
                 />
                 <p>
                   <Localized
-                    pl="Znak P z wewnętrznym D i trzema słupkami. Używany w ciasnych miejscach."
-                    en="The P mark with inner D and three bars. Used in compact spaces."
+                    pl="Monogram PD z ambientem i kreską rozchodzącą się od środka. Używany w ciasnych miejscach."
+                    en="The PD monogram with ambient light and a center-out accent line. Used in compact spaces."
                   />
                 </p>
               </article>
@@ -255,7 +255,7 @@ export const KierunekWizualny: Story = {
                   <Localized pl="Logotyp" en="Wordmark" />
                 </span>
                 <PapaDataBrand
-                  aria-label="PapaData logotyp"
+                  label="PapaData logotyp"
                   showMark={false}
                   size="large"
                 />
@@ -271,8 +271,8 @@ export const KierunekWizualny: Story = {
                   <Localized pl="Logo pełne" en="Full logo" />
                 </span>
                 <PapaDataBrand
-                  aria-label="PapaData logo"
                   glow
+                  label="PapaData logo"
                   size="large"
                 />
                 <p>
@@ -294,8 +294,8 @@ export const KierunekWizualny: Story = {
                   <TokenCode>--pd-brand</TokenCode>
                   <p>
                     <Localized
-                      pl="Logo, sygnet, brandowy akcent."
-                      en="Logo, mark and brand accent."
+                      pl="Logo PD, sygnet i główny bursztynowy akcent."
+                      en="PD logo, mark and the main amber brand accent."
                     />
                   </p>
                 </div>
@@ -359,8 +359,8 @@ export const KierunekWizualny: Story = {
                 </strong>
                 <p>
                   <Localized
-                    pl="Złoto nie udaje CTA ani statusu."
-                    en="Gold does not act as CTA or status."
+                    pl="Bursztyn nie udaje CTA ani statusu."
+                    en="Amber does not act as CTA or status."
                   />
                 </p>
               </article>
@@ -376,8 +376,8 @@ export const KierunekWizualny: Story = {
                 </strong>
                 <p>
                   <Localized
-                    pl="Złoto prowadzi główną akcję marki."
-                    en="Gold leads the primary brand action."
+                    pl="Bursztyn prowadzi główną akcję marki."
+                    en="Amber leads the primary brand action."
                   />
                 </p>
               </article>
@@ -461,8 +461,8 @@ export const KierunekWizualny: Story = {
               </h3>
               <p>
                 <Localized
-                  pl="Spokojny canvas, precyzyjne separatory, duża czytelność danych i złoto używane oszczędnie."
-                  en="A calm canvas, precise separators, readable data and restrained use of gold."
+                  pl="Spokojny canvas, precyzyjne separatory, duża czytelność danych i bursztyn używany oszczędnie."
+                  en="A calm canvas, precise separators, readable data and restrained use of amber."
                 />
               </p>
             </article>
@@ -729,6 +729,13 @@ export const KolorySemantyczne: Story = {
             <PapaDataBrand glow size="large" />
             <TokenCode>--pd-brand-highlight</TokenCode>
           </article>
+          <article data-brand-emphasis="line">
+            <span
+              aria-hidden="true"
+              className="pd-f0-brand-line-sample"
+            />
+            <TokenCode>--pd-brand-line</TokenCode>
+          </article>
           <article>
             <button
               data-interactive-tone="primary"
@@ -774,8 +781,8 @@ export const KolorySemantyczne: Story = {
         }
         summary={
           <Localized
-            pl="Serie danych nie korzystają przypadkowo ze złota marki ani kolorów statusów."
-            en="Data series do not randomly reuse brand gold or status colors."
+            pl="Serie danych nie korzystają przypadkowo z bursztynu marki ani kolorów statusów."
+            en="Data series do not randomly reuse brand amber or status colors."
           />
         }
       >
@@ -1307,9 +1314,9 @@ const iconSemanticRoles: readonly {
     titlePl: 'Akcja markowa',
     titleEn: 'Brand action',
     descriptionPl:
-      'Ikona w przycisku dziedziczy kolor akcji, więc złoto marki pojawia się tylko tam, gdzie użytkownik działa.',
+      'Ikona w przycisku dziedziczy kolor akcji, więc bursztyn marki pojawia się tylko tam, gdzie użytkownik działa.',
     descriptionEn:
-      'An icon inside a button inherits the action color, so brand gold appears where the user acts.',
+      'An icon inside a button inherits the action color, so brand amber appears where the user acts.',
     token: '--pd-brand-action',
     icons: ['search', 'integration'],
   },
@@ -1318,9 +1325,9 @@ const iconSemanticRoles: readonly {
     titlePl: 'Analityka',
     titleEn: 'Analytics',
     descriptionPl:
-      'Dane używają cyjanu i nie konkurują ze złotem identyfikacji.',
+      'Dane używają cyjanu i nie konkurują z bursztynem identyfikacji.',
     descriptionEn:
-      'Data uses cyan and does not compete with identity gold.',
+      'Data uses cyan and does not compete with identity amber.',
     token: '--pd-data-accent',
     icons: ['trend', 'data'],
   },
@@ -1351,9 +1358,9 @@ const iconSemanticRoles: readonly {
     titlePl: 'Asystent',
     titleEn: 'Assistant',
     descriptionPl:
-      'Asystent może korzystać ze złota jako sygnału produktu, ale nie zastępuje statusów.',
+      'Asystent może korzystać z bursztynu jako sygnału produktu, ale nie zastępuje statusów.',
     descriptionEn:
-      'Assistant can use gold as a product signal, but never replaces statuses.',
+      'Assistant can use amber as a product signal, but never replaces statuses.',
     token: '--pd-brand-strong',
     icons: ['assistant'],
   },

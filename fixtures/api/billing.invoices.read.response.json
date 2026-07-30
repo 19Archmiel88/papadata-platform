@@ -1,0 +1,19 @@
+{
+  "operationId": "billing.invoices.read",
+  "correlationId": "corr-billingInvoicesRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "records": [],
+    "pageInfo": {
+      "nextCursor": null,
+      "total": 0
+    },
+    "summary": {},
+    "invoicesResult": {
+      "operationId": "billing.invoices.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "billing"
+    }
+  },
+  "warnings": []
+}

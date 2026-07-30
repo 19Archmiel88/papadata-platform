@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "systemVersion": "Component System V1",
+  "stage": "C1.6",
+  "stageName": "integrate C1 stories, statuses and evidence",
+  "foundationBaseline": {
+    "expectedActiveStoryCount": 13,
+    "expectedActiveStoryFileCount": 2,
+    "activeStoryFiles": [
+      "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+      "apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx"
+    ],
+    "frozenEntries": [
+      "00.01",
+      "00.02",
+      "00.03",
+      "00.04",
+      "00.05",
+      "00.06",
+      "00.07",
+      "00.08",
+      "05.01",
+      "05.02",
+      "05.03",
+      "05.04",
+      "05.05"
+    ],
+    "requiredTokens": [
+      "--pd-brand",
+      "--pd-brand-highlight",
+      "--pd-interactive",
+      "--pd-interactive-on",
+      "--pd-data-accent",
+      "--pd-data-series-1",
+      "--pd-data-series-6",
+      "--pd-data-actual",
+      "--pd-data-target",
+      "--pd-data-forecast",
+      "--pd-status-neutral",
+      "--pd-focus-visible",
+      "--pd-focus-on-interactive",
+      "--pd-grid-gutter",
+      "--pd-shadow-control",
+      "--pd-shadow-floating",
+      "--pd-glass-surface",
+      "--pd-gradient-premium",
+      "--pd-gradient-data",
+      "--pd-overlay-scrim-text",
+      "--pd-overlay-scrim-text-muted",
+      "--pd-type-size-page-mobile",
+      "--pd-type-size-display-mobile"
+    ],
+    "requiredFoundationExports": [
+      "./motion",
+      "./radius",
+      "./runtime",
+      "./shadows",
+      "./spacing",
+      "./themes",
+      "./tokens",
+      "./typography",
+      "spacingContract",
+      "spacingTokens"
+    ],
+    "requiredIconExports": [
+      "Icon",
+      "IconProps",
+      "PapaDataBrand",
+      "PapaDataBrandProps",
+      "PapaDataBrandSize",
+      "PapaDataIconName",
+      "papaDataIconNames"
+    ]
+  },
+  "requiredComponents": [
+    "PapaDataBrand",
+    "Icon",
+    "Button",
+    "TextAction",
+    "LinkAction",
+    "IconButton",
+    "ButtonGroup"
+  ],
+  "requiredComponentExports": [
+    "Button",
+    "ButtonProps",
+    "ButtonSize",
+    "ButtonVariant",
+    "TextAction",
+    "TextActionProps",
+    "TextActionSize",
+    "TextActionTone",
+    "LinkAction",
+    "LinkActionProps",
+    "LinkActionSize",
+    "LinkActionTone",
+    "IconButton",
+    "IconButtonProps",
+    "IconButtonSize",
+    "IconButtonVariant",
+    "ButtonGroup",
+    "ButtonGroupProps",
+    "ButtonGroupOrientation"
+  ],
+  "plannedComponents": [
+    "PapaDataBrand",
+    "Icon",
+    "Button",
+    "TextAction",
+    "LinkAction",
+    "IconButton",
+    "ButtonGroup"
+  ],
+  "activeComponentEntries": [
+    "10.01",
+    "10.02",
+    "10.11"
+  ],
+  "finalizedComponentEntries": [
+    "10.01",
+    "10.02",
+    "10.11"
+  ],
+  "evidence": {
+    "document": "docs/storybook/COMPONENT-SYSTEM-V1-EVIDENCE.md",
+    "requiredEntries": [
+      "10.01",
+      "10.02",
+      "10.11"
+    ],
+    "requiredPublicExports": [
+      "apps/web/src/design-system/index.ts",
+      "apps/web/src/design-system/icons/index.ts",
+      "apps/web/src/design-system/components/index.ts"
+    ]
+  }
+}

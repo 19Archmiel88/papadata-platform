@@ -836,12 +836,12 @@
       "note": null,
       "group": null,
       "sourceStatus": "specified",
-      "documentationStatus": "draft",
+      "documentationStatus": "accepted",
       "prototypeStatus": "none",
-      "productionStatus": "not_started",
-      "testStatus": "not_started",
-      "storyStatus": "planned",
-      "storyVisibility": "hidden",
+      "productionStatus": "implemented",
+      "testStatus": "passing",
+      "storyStatus": "implemented",
+      "storyVisibility": "visible",
       "requirements": [
         "logotyp",
         "symbol",
@@ -851,10 +851,11 @@
         "dark",
         "znaki providerów"
       ],
-      "storyTitle": null,
-      "storyFile": null,
+      "storyTitle": "10 Komponenty/Marka",
+      "storyFile": "apps/web/src/design-system/icons/PapaDataBrand.stories.tsx",
       "displaySectionTitle": "Komponenty",
-      "displayTitle": "Marka"
+      "displayTitle": "Marka",
+      "storyExport": "Marka"
     },
     {
       "id": "10.02",
@@ -868,12 +869,12 @@
       "note": null,
       "group": null,
       "sourceStatus": "specified",
-      "documentationStatus": "draft",
+      "documentationStatus": "accepted",
       "prototypeStatus": "none",
-      "productionStatus": "not_started",
-      "testStatus": "not_started",
-      "storyStatus": "planned",
-      "storyVisibility": "hidden",
+      "productionStatus": "implemented",
+      "testStatus": "passing",
+      "storyStatus": "implemented",
+      "storyVisibility": "visible",
       "requirements": [
         "primary",
         "secondary",
@@ -885,10 +886,11 @@
         "disabled",
         "button group"
       ],
-      "storyTitle": null,
-      "storyFile": null,
+      "storyTitle": "10 Komponenty/Przyciski i akcje",
+      "storyFile": "apps/web/src/design-system/components/Button/Button.stories.tsx",
       "displaySectionTitle": "Komponenty",
-      "displayTitle": "Przyciski"
+      "displayTitle": "Przyciski",
+      "storyExport": "Przyciski"
     },
     {
       "id": "10.03",
@@ -1173,12 +1175,12 @@
       "note": null,
       "group": null,
       "sourceStatus": "specified",
-      "documentationStatus": "draft",
+      "documentationStatus": "accepted",
       "prototypeStatus": "none",
-      "productionStatus": "not_started",
-      "testStatus": "not_started",
-      "storyStatus": "planned",
-      "storyVisibility": "hidden",
+      "productionStatus": "implemented",
+      "testStatus": "passing",
+      "storyStatus": "implemented",
+      "storyVisibility": "visible",
       "requirements": [
         "komponent Icon",
         "IconButton",
@@ -1193,10 +1195,11 @@
         "billing",
         "pomoc"
       ],
-      "storyTitle": null,
-      "storyFile": null,
+      "storyTitle": "10 Komponenty/Ikony",
+      "storyFile": "apps/web/src/design-system/icons/Icon.stories.tsx",
       "displaySectionTitle": "Komponenty",
-      "displayTitle": "Ikony"
+      "displayTitle": "Ikony",
+      "storyExport": "Ikony"
     },
     {
       "id": "10.12",
@@ -6160,17 +6163,23 @@
   ],
   "visibleStoryPolicy": {
     "sectionOverviewCount": 0,
-    "entryStoryCount": 13,
-    "visibleStoryCount": 13,
+    "entryStoryCount": 16,
+    "visibleStoryCount": 16,
     "plannedEntriesRemainInContract": true,
     "technicalIdentifiersVisibleInSidebar": false
   },
   "activeVisualLayer": {
-    "state": "foundations_clean_start",
-    "activeStoryFiles": 2,
+    "state": "component_system_v1",
+    "componentSystemStage": "C1.6",
+    "componentSystemFinalEntries": [
+      "10.01",
+      "10.02",
+      "10.11"
+    ],
+    "activeStoryFiles": 5,
     "activeSectionOverviews": 0,
-    "activeEntryStories": 13,
+    "activeEntryStories": 16,
     "legacyPrototypeAllowed": false,
-    "implementationSource": "apps/web/src/design-system/foundations/runtime-and-css"
+    "implementationSource": "apps/web/src/design-system"
   }
 }

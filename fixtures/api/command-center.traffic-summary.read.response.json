@@ -1,0 +1,19 @@
+{
+  "operationId": "command-center.traffic-summary.read",
+  "correlationId": "corr-commandCenterTrafficSummaryRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "records": [],
+    "pageInfo": {
+      "nextCursor": null,
+      "total": 0
+    },
+    "summary": {},
+    "centerTrafficSummaryResult": {
+      "operationId": "command-center.traffic-summary.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "command-center"
+    }
+  },
+  "warnings": []
+}

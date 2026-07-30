@@ -1,0 +1,19 @@
+{
+  "operationId": "products.offers.read",
+  "correlationId": "corr-productsOffersRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "records": [],
+    "pageInfo": {
+      "nextCursor": null,
+      "total": 0
+    },
+    "summary": {},
+    "offersResult": {
+      "operationId": "products.offers.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "products"
+    }
+  },
+  "warnings": []
+}

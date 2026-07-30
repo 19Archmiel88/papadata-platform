@@ -1,0 +1,34 @@
+{
+  "fixtureId": "E2E_90_14_01_kpi",
+  "flowId": "90.14",
+  "stepNo": 1,
+  "stepName": "KPI",
+  "surfaceDocument": "07-centrum-dowodzenia/30-03-kpi.md",
+  "route": "/app/command-center/kpi",
+  "operationId": "command-center.kpi.read",
+  "operationKind": "query",
+  "capability": "analytics.read",
+  "apiRequestFixture": "fixtures/api/command-center.kpi.read.request.json",
+  "apiResponseFixture": "fixtures/api/command-center.kpi.read.response.json",
+  "actor": {
+    "role": "Admin",
+    "tenantId": "tenant-e2e",
+    "workspaceId": "workspace-e2e",
+    "capabilities": [
+      "analytics.read"
+    ]
+  },
+  "preconditions": [
+    "Warunek domenowy kpi do interpretacji papa kpi: Aktor posiada `analytics.read`; fixture ładuje request `fixtures/api/command-center.kpi.read.request.json` i stan domeny wymagany dla kroku 1 procesu 90.14. Poprzedni krok zakończył się potwierdzonym postcondition albo jest to punkt startowy."
+  ],
+  "expected": {
+    "success": "Odpowiedź `CommandCenterKpiReadResponse` ma operationId `command-center.kpi.read`, brak ApiProblem krytycznego, a UI renderuje dane kroku „KPI” bez zamiany null na zero.",
+    "postcondition": "Po kroku „KPI” obowiązuje domenowy warunek: operacja `command-center.kpi.read` jest widoczna w audycie, fixture response `fixtures/api/command-center.kpi.read.response.json` przechodzi walidację schema, a następna powierzchnia „Otwarcie Papa” jest osiągalna wyłącznie zgodnie z procesem 90.14.",
+    "assertion": "Asercja domenowa kpi do interpretacji papa kpi: Sprawdź operation kind `query`, capability `analytics.read`, schema request/response, expected event `e2e_90_14_01_command_center_kpi_read`, brak podwójnego efektu, prawidłowy focus po zmianie powierzchni oraz kod `RECOMMENDATION_DECISION_CONFLICT` w kontrolowanym scenariuszu błędu."
+  },
+  "recoverableError": {
+    "code": "RECOMMENDATION_DECISION_CONFLICT",
+    "behavior": "Odzyskanie kroku kpi do interpretacji papa kpi: `RECOMMENDATION_DECISION_CONFLICT` dla kroku 1: zachowaj niesekretne dane formularza i route `/app/command-center/kpi`, pokaż correlationId oraz akcję retry tylko dla błędu oznaczonego `recoverable=true`; błąd capability kończy proces bez retry.",
+    "resume": "Reguła wznowienia kpi do interpretacji papa kpi: Checkpoint `E2E_90_14_01_kpi` zapisuje zakończony step_no=1, operationId i identyfikatory zasobów z response fixture. Po wznowieniu system ponownie sprawdza `analytics.read` i odczytuje aktualny stan; komendy nie są automatycznie odtwarzane bez tego samego idempotency key."
+  }
+}

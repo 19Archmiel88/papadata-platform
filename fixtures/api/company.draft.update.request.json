@@ -1,0 +1,26 @@
+{
+  "context": {
+    "correlationId": "corr-companyDraftUpdate",
+    "locale": "pl",
+    "timezone": "Europe/Warsaw",
+    "actor": {
+      "userId": "00000000-0000-4000-8000-000000000001",
+      "tenantId": "00000000-0000-4000-8000-000000000002",
+      "workspaceId": "00000000-0000-4000-8000-000000000003",
+      "role": "Admin",
+      "capabilities": [
+        "company.write"
+      ]
+    }
+  },
+  "metadata": {
+    "idempotencyKey": "idem-companyDraftUpdate",
+    "reason": "approved target contract"
+  },
+  "input": {
+    "requestedBy": "00000000-0000-4000-8000-000000000001",
+    "effectiveAt": null,
+    "draftUpdateValue": null
+  },
+  "companyId": null
+}

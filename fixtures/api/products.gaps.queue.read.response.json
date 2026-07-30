@@ -1,0 +1,19 @@
+{
+  "operationId": "products.gaps.queue.read",
+  "correlationId": "corr-productsGapsQueueRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "records": [],
+    "pageInfo": {
+      "nextCursor": null,
+      "total": 0
+    },
+    "summary": {},
+    "gapsQueueResult": {
+      "operationId": "products.gaps.queue.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "products"
+    }
+  },
+  "warnings": []
+}

@@ -1,0 +1,34 @@
+{
+  "fixtureId": "E2E_90_07_03_lineage",
+  "flowId": "90.07",
+  "stepNo": 3,
+  "stepName": "Lineage",
+  "surfaceDocument": "14-jakosc-danych-i-integralnosc/41-03-pochodzenie-danych.md",
+  "route": "/app/data-quality/pochodzenie-danych",
+  "operationId": "data-quality.lineage.read",
+  "operationKind": "query",
+  "capability": "data-quality.read",
+  "apiRequestFixture": "fixtures/api/data-quality.lineage.read.request.json",
+  "apiResponseFixture": "fixtures/api/data-quality.lineage.read.response.json",
+  "actor": {
+    "role": "Admin",
+    "tenantId": "tenant-e2e",
+    "workspaceId": "workspace-e2e",
+    "capabilities": [
+      "data-quality.read"
+    ]
+  },
+  "preconditions": [
+    "Warunek domenowy problem danych do readiness lineage: Aktor posiada `data-quality.read`; fixture ładuje request `fixtures/api/data-quality.lineage.read.request.json` i stan domeny wymagany dla kroku 3 procesu 90.07. Poprzedni krok zakończył się potwierdzonym postcondition albo jest to punkt startowy."
+  ],
+  "expected": {
+    "success": "Odpowiedź `DataQualityLineageReadResponse` ma operationId `data-quality.lineage.read`, brak ApiProblem krytycznego, a UI renderuje dane kroku „Lineage” bez zamiany null na zero.",
+    "postcondition": "Po kroku „Lineage” obowiązuje domenowy warunek: operacja `data-quality.lineage.read` jest widoczna w audycie, fixture response `fixtures/api/data-quality.lineage.read.response.json` przechodzi walidację schema, a następna powierzchnia „Nadrzędność źródła” jest osiągalna wyłącznie zgodnie z procesem 90.07.",
+    "assertion": "Asercja domenowa problem danych do readiness lineage: Sprawdź operation kind `query`, capability `data-quality.read`, schema request/response, expected event `e2e_90_07_03_data_quality_lineage_read`, brak podwójnego efektu, prawidłowy focus po zmianie powierzchni oraz kod `DATA_READINESS_BLOCKED` w kontrolowanym scenariuszu błędu."
+  },
+  "recoverableError": {
+    "code": "DATA_READINESS_BLOCKED",
+    "behavior": "Odzyskanie kroku problem danych do readiness lineage: `DATA_READINESS_BLOCKED` dla kroku 3: zachowaj niesekretne dane formularza i route `/app/data-quality/pochodzenie-danych`, pokaż correlationId oraz akcję retry tylko dla błędu oznaczonego `recoverable=true`; błąd capability kończy proces bez retry.",
+    "resume": "Reguła wznowienia problem danych do readiness lineage: Checkpoint `E2E_90_07_03_lineage` zapisuje zakończony step_no=3, operationId i identyfikatory zasobów z response fixture. Po wznowieniu system ponownie sprawdza `data-quality.read` i odczytuje aktualny stan; komendy nie są automatycznie odtwarzane bez tego samego idempotency key."
+  }
+}

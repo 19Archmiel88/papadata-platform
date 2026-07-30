@@ -1,0 +1,26 @@
+{
+  "context": {
+    "correlationId": "corr-authAccountLink",
+    "locale": "pl",
+    "timezone": "Europe/Warsaw",
+    "actor": {
+      "userId": "00000000-0000-4000-8000-000000000001",
+      "tenantId": "00000000-0000-4000-8000-000000000002",
+      "workspaceId": "00000000-0000-4000-8000-000000000003",
+      "role": "Admin",
+      "capabilities": [
+        "auth.write"
+      ]
+    }
+  },
+  "metadata": {
+    "idempotencyKey": "idem-authAccountLink",
+    "reason": "approved target contract"
+  },
+  "input": {
+    "requestedBy": "00000000-0000-4000-8000-000000000001",
+    "effectiveAt": null,
+    "accountLinkValue": null
+  },
+  "resourceId": null
+}

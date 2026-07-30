@@ -1,0 +1,34 @@
+{
+  "fixtureId": "E2E_90_08_03_konflikt",
+  "flowId": "90.08",
+  "stepNo": 3,
+  "stepName": "Konflikt",
+  "surfaceDocument": "14-jakosc-danych-i-integralnosc/41-06-konflikty.md",
+  "route": "/app/data-quality/konflikty",
+  "operationId": "data-quality.conflicts.read",
+  "operationKind": "query",
+  "capability": "data-quality.read",
+  "apiRequestFixture": "fixtures/api/data-quality.conflicts.read.request.json",
+  "apiResponseFixture": "fixtures/api/data-quality.conflicts.read.response.json",
+  "actor": {
+    "role": "Admin",
+    "tenantId": "tenant-e2e",
+    "workspaceId": "workspace-e2e",
+    "capabilities": [
+      "data-quality.read"
+    ]
+  },
+  "preconditions": [
+    "Warunek domenowy produkt do ponownego przetwarzania konflikt: Aktor posiada `data-quality.read`; fixture ładuje request `fixtures/api/data-quality.conflicts.read.request.json` i stan domeny wymagany dla kroku 3 procesu 90.08. Poprzedni krok zakończył się potwierdzonym postcondition albo jest to punkt startowy."
+  ],
+  "expected": {
+    "success": "Odpowiedź `DataQualityConflictsReadResponse` ma operationId `data-quality.conflicts.read`, brak ApiProblem krytycznego, a UI renderuje dane kroku „Konflikt” bez zamiany null na zero.",
+    "postcondition": "Po kroku „Konflikt” obowiązuje domenowy warunek: operacja `data-quality.conflicts.read` jest widoczna w audycie, fixture response `fixtures/api/data-quality.conflicts.read.response.json` przechodzi walidację schema, a następna powierzchnia „Przegląd ręczny” jest osiągalna wyłącznie zgodnie z procesem 90.08.",
+    "assertion": "Asercja domenowa produkt do ponownego przetwarzania konflikt: Sprawdź operation kind `query`, capability `data-quality.read`, schema request/response, expected event `e2e_90_08_03_data_quality_conflicts_read`, brak podwójnego efektu, prawidłowy focus po zmianie powierzchni oraz kod `PRODUCT_REPROCESSING_FAILED` w kontrolowanym scenariuszu błędu."
+  },
+  "recoverableError": {
+    "code": "PRODUCT_REPROCESSING_FAILED",
+    "behavior": "Odzyskanie kroku produkt do ponownego przetwarzania konflikt: `PRODUCT_REPROCESSING_FAILED` dla kroku 3: zachowaj niesekretne dane formularza i route `/app/data-quality/konflikty`, pokaż correlationId oraz akcję retry tylko dla błędu oznaczonego `recoverable=true`; błąd capability kończy proces bez retry.",
+    "resume": "Reguła wznowienia produkt do ponownego przetwarzania konflikt: Checkpoint `E2E_90_08_03_konflikt` zapisuje zakończony step_no=3, operationId i identyfikatory zasobów z response fixture. Po wznowieniu system ponownie sprawdza `data-quality.read` i odczytuje aktualny stan; komendy nie są automatycznie odtwarzane bez tego samego idempotency key."
+  }
+}

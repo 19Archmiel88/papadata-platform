@@ -1,0 +1,19 @@
+id,nazwa,kroki,dokument
+90.01,Zaproszenie do pierwszego KPI,Przegląd zaproszenia → Utworzenie lub powiązanie konta → Weryfikacja MFA → Wybór workspace → Onboarding → Połączenie integracji → Pierwsza synchronizacja → Pierwszy KPI → Centrum Dowodzenia,20-przeplywy-e2e/90-01-zaproszenie-do-pierwszego-kpi.md
+90.02,Onboarding do pierwszej wartości,Profil działalności → Identyfikacja firmy → Karta pilotażu → Integracja → Dane częściowe → Pierwszy insight → Rekomendacja,20-przeplywy-e2e/90-02-onboarding-do-pierwszej-wartosci.md
+90.03,Zmiana workspace,Aktywny moduł → Otwarcie przełącznika workspace → Walidacja dostępu → Zmiana workspace → Zachowanie modułu albo fallback → Komunikat wpływu na dane,20-przeplywy-e2e/90-03-zmiana-workspace.md
+90.04,KPI do rekordu źródłowego,KPI → Wykres → Tabela alternatywna → Źródło → Rekord źródłowy → Lineage → Problem danych,20-przeplywy-e2e/90-04-kpi-do-rekordu-zrodlowego.md
+90.05,Połączenie do pierwszych danych,Katalog integracji → Kreator połączenia → OAuth lub API key → Zakres synchronizacji → Synchronizacja → Dane częściowe → Gotowość,20-przeplywy-e2e/90-05-polaczenie-do-pierwszych-danych.md
+90.06,Wygasły token do ponownego połączenia,Alert integracji → Szczegóły integracji → Ponowne połączenie → Ponowne uwierzytelnienie → Wznowienie synchronizacji → Potwierdzenie,20-przeplywy-e2e/90-06-wygasly-token-do-ponownego-polaczenia.md
+90.07,Problem danych do readiness,Status danych → Problem jakości → Lineage → Nadrzędność źródła → Przegląd ręczny → Ponowne przetwarzanie → Gotowość poprawiona,20-przeplywy-e2e/90-07-problem-danych-do-readiness.md
+90.08,Produkt do ponownego przetwarzania,Produkt → Mapowanie → Konflikt → Przegląd ręczny → Ponowne przetwarzanie → Rekoncyliacja,20-przeplywy-e2e/90-08-produkt-do-ponownego-przetwarzania.md
+90.09,Uwaga do decyzji,Sygnał w Centrum Dowodzenia → Kolejka uwagi → Dowody → Rekomendacja Papa → Decyzja → Pomiar,20-przeplywy-e2e/90-09-uwaga-do-decyzji.md
+90.10,Kampania do decyzji budżetowej,Kampanie → Analiza ROAS → Budżet → Rekomendacja → Zatwierdzenie → Pomiar rezultatu,20-przeplywy-e2e/90-10-kampania-do-decyzji-budzetowej.md
+90.11,Segment do decyzji,Klienci → Segment → Kohorta → Rekomendacja → Decyzja → Działanie,20-przeplywy-e2e/90-11-segment-do-decyzji.md
+90.12,Spadek ruchu do działania,Ruch → Lejek → Wykrycie spadku → Diagnoza → Rekomendacja → Działanie marketingowe,20-przeplywy-e2e/90-12-spadek-ruchu-do-dzialania.md
+90.13,Obserwacja do wyniku,Obserwacja → Decyzja → Brief → Działanie → Pomiar → Wynik → Wniosek,20-przeplywy-e2e/90-13-obserwacja-do-wyniku.md
+90.14,KPI do interpretacji Papa,KPI → Otwarcie Papa → Snapshot kontekstu → Dowody → Odpowiedź → Ograniczenia → Zapis lub odrzucenie obserwacji,20-przeplywy-e2e/90-14-kpi-do-interpretacji-papa.md
+90.15,Rekomendacja do decyzji,"Rekomendacja → Warianty → Dowody, ryzyko i wysiłek → Review → Decyzja → Propozycja działania → Baseline → Pomiar",20-przeplywy-e2e/90-15-rekomendacja-do-decyzji.md
+90.16,AI Action approval,Policy check → Dokładna operacja → Cel → Wpływ → Rollback → Capability → MFA lub reauth → Approve albo reject → Wykonanie → Audyt → Outcome,20-przeplywy-e2e/90-16-ai-action-approval.md
+90.17,Pilot do abonamentu,Pilot → Użycie → Dowód wartości → Plan → Płatność → Abonament → Entitlements,20-przeplywy-e2e/90-17-pilot-do-abonamentu.md
+90.18,Zaległa płatność,Alert billingowy → Zaległa płatność → Bezpieczne ograniczenie → Metoda płatności → Odblokowanie,20-przeplywy-e2e/90-18-zalegla-platnosc.md

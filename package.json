@@ -30,6 +30,7 @@
     "build-storybook": "pnpm --filter @papadata/web build-storybook",
     "check:storybook-catalog": "pnpm --filter @papadata/web check-storybook-catalog",
     "check:foundation-system": "pnpm --filter @papadata/web check-foundation-system",
+    "check-component-system": "pnpm --filter @papadata/web check-component-system",
     "verify:foundation-system": "pnpm --filter @papadata/web verify-foundation-system",
     "evidence:foundation-system": "pnpm --filter @papadata/web capture-foundation-evidence"
   },

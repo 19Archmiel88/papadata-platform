@@ -109,8 +109,8 @@
   --pd-canvas-gradient:
     radial-gradient(
       circle at 8% 14%,
-      rgba(199, 170, 97, 0.16) 0,
-      rgba(199, 170, 97, 0.055) 280px,
+      rgba(169, 96, 18, 0.14) 0,
+      rgba(169, 96, 18, 0.05) 280px,
       transparent 660px
     ),
     linear-gradient(
@@ -141,16 +141,19 @@
   --pd-interactive-subtle: #e3edff;
   --pd-interactive-on: #ffffff;
 
-  --pd-brand-deep: #2d2410;
-  --pd-brand: #78611f;
-  --pd-brand-strong: #513f12;
-  --pd-brand-highlight: #c7aa61;
-  --pd-brand-on: #fff9ea;
-  --pd-brand-action: #8a6d19;
-  --pd-brand-action-hover: #6f5510;
-  --pd-brand-action-active: #4f3b0b;
-  --pd-brand-action-on: #fff9ea;
-  --pd-brand-glow: rgba(120, 97, 31, 0.14);
+  --pd-brand-deep: #2a1604;
+  --pd-brand: #8a4f0d;
+  --pd-brand-strong: #5a3108;
+  --pd-brand-highlight: #c77a22;
+  --pd-brand-accent: #a96012;
+  --pd-brand-line: #b66d19;
+  --pd-brand-ambient: rgba(169, 96, 18, 0.18);
+  --pd-brand-on: #fff7e8;
+  --pd-brand-action: #8f510d;
+  --pd-brand-action-hover: #744009;
+  --pd-brand-action-active: #512b06;
+  --pd-brand-action-on: #fff7e8;
+  --pd-brand-glow: rgba(169, 96, 18, 0.18);
 
   --pd-data-accent: #008aa3;
   --pd-data-accent-hover: #04748a;
@@ -193,7 +196,7 @@
   --pd-gradient-premium:
     linear-gradient(
       135deg,
-      rgba(199, 170, 97, 0.16),
+      rgba(169, 96, 18, 0.14),
       rgba(20, 91, 215, 0.035)
     );
   --pd-gradient-data:
@@ -211,8 +214,8 @@
   --pd-canvas-gradient:
     radial-gradient(
       circle at 8% 14%,
-      rgba(212, 181, 93, 0.16) 0,
-      rgba(212, 181, 93, 0.055) 300px,
+      rgba(209, 132, 37, 0.16) 0,
+      rgba(209, 132, 37, 0.055) 300px,
       transparent 720px
     ),
     linear-gradient(
@@ -243,16 +246,19 @@
   --pd-interactive-subtle: #152b4d;
   --pd-interactive-on: #071b35;
 
-  --pd-brand-deep: #201806;
-  --pd-brand: #d4b55d;
-  --pd-brand-strong: #ecd17d;
-  --pd-brand-highlight: #ffe7a8;
-  --pd-brand-on: #151007;
-  --pd-brand-action: #d8b64f;
-  --pd-brand-action-hover: #f0cf72;
-  --pd-brand-action-active: #ffe3a0;
-  --pd-brand-action-on: #151007;
-  --pd-brand-glow: rgba(212, 181, 93, 0.24);
+  --pd-brand-deep: #1a0d03;
+  --pd-brand: #c9781d;
+  --pd-brand-strong: #e99835;
+  --pd-brand-highlight: #f4b15a;
+  --pd-brand-accent: #d18425;
+  --pd-brand-line: #efa13c;
+  --pd-brand-ambient: rgba(209, 132, 37, 0.24);
+  --pd-brand-on: #160b03;
+  --pd-brand-action: #c9781d;
+  --pd-brand-action-hover: #df8b2c;
+  --pd-brand-action-active: #f0a84d;
+  --pd-brand-action-on: #160b03;
+  --pd-brand-glow: rgba(209, 132, 37, 0.3);
 
   --pd-data-accent: #23bfd3;
   --pd-data-accent-hover: #55d7e5;
@@ -295,7 +301,7 @@
   --pd-gradient-premium:
     linear-gradient(
       135deg,
-      rgba(212, 181, 93, 0.17),
+      rgba(209, 132, 37, 0.17),
       rgba(79, 148, 255, 0.055)
     );
   --pd-gradient-data:

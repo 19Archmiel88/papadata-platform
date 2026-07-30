@@ -1,0 +1,14 @@
+{
+  "operationId": "campaigns.detail.read",
+  "correlationId": "corr-campaignsDetailRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "record": {},
+    "detailResult": {
+      "operationId": "campaigns.detail.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "campaigns"
+    }
+  },
+  "warnings": []
+}

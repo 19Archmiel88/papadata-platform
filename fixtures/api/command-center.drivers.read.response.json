@@ -1,0 +1,19 @@
+{
+  "operationId": "command-center.drivers.read",
+  "correlationId": "corr-commandCenterDriversRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "records": [],
+    "pageInfo": {
+      "nextCursor": null,
+      "total": 0
+    },
+    "summary": {},
+    "centerDriversResult": {
+      "operationId": "command-center.drivers.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "command-center"
+    }
+  },
+  "warnings": []
+}

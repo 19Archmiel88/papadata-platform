@@ -1,0 +1,62 @@
+{
+  "fixtureId": "SB-282",
+  "storyTitle": "85 Centrum Pomocy/Zgłoszenie wsparcia",
+  "sourceDocument": "19-centrum-pomocy/85-05-zgloszenie-wsparcia.md",
+  "screenId": "85.05",
+  "components": [
+    "PageHeader",
+    "InlineNotice",
+    "Button",
+    "TextField",
+    "Select",
+    "Checkbox",
+    "Dialog"
+  ],
+  "states": [
+    "ready",
+    "loading",
+    "empty",
+    "error",
+    "partial",
+    "stale",
+    "forbidden",
+    "offline"
+  ],
+  "viewports": [
+    1440,
+    768,
+    390
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "localeCases": [
+    "pl",
+    "en-long-copy"
+  ],
+  "playSteps": [
+    "focus-first-interactive",
+    "activate-primary-action",
+    "verify-focus-restoration",
+    "verify-live-region",
+    "verify-keyboard-only"
+  ],
+  "visualAssertions": [
+    "1440-light",
+    "1440-dark",
+    "768-reflow",
+    "390-mobile",
+    "200-percent-zoom",
+    "reduced-motion",
+    "state-offline"
+  ],
+  "a11y": [
+    "keyboard-only",
+    "focus-visible",
+    "accessible-name",
+    "live-region",
+    "200-percent-zoom"
+  ],
+  "implementationStatus": "backlog-target-not-implemented"
+}

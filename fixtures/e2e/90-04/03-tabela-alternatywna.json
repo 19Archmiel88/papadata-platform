@@ -1,0 +1,34 @@
+{
+  "fixtureId": "E2E_90_04_03_tabela-alternatywna",
+  "flowId": "90.04",
+  "stepNo": 3,
+  "stepName": "Tabela alternatywna",
+  "surfaceDocument": "09-zamowienia/32-02-lista.md",
+  "route": "/app/orders/lista",
+  "operationId": "orders.list.read",
+  "operationKind": "query",
+  "capability": "orders.read",
+  "apiRequestFixture": "fixtures/api/orders.list.read.request.json",
+  "apiResponseFixture": "fixtures/api/orders.list.read.response.json",
+  "actor": {
+    "role": "Admin",
+    "tenantId": "tenant-e2e",
+    "workspaceId": "workspace-e2e",
+    "capabilities": [
+      "orders.read"
+    ]
+  },
+  "preconditions": [
+    "Warunek domenowy kpi do rekordu r d owego tabela alternatywna: Aktor posiada `orders.read`; fixture ładuje request `fixtures/api/orders.list.read.request.json` i stan domeny wymagany dla kroku 3 procesu 90.04. Poprzedni krok zakończył się potwierdzonym postcondition albo jest to punkt startowy."
+  ],
+  "expected": {
+    "success": "Odpowiedź `OrdersListReadResponse` ma operationId `orders.list.read`, brak ApiProblem krytycznego, a UI renderuje dane kroku „Tabela alternatywna” bez zamiany null na zero.",
+    "postcondition": "Po kroku „Tabela alternatywna” obowiązuje domenowy warunek: operacja `orders.list.read` jest widoczna w audycie, fixture response `fixtures/api/orders.list.read.response.json` przechodzi walidację schema, a następna powierzchnia „Źródło” jest osiągalna wyłącznie zgodnie z procesem 90.04.",
+    "assertion": "Asercja domenowa kpi do rekordu r d owego tabela alternatywna: Sprawdź operation kind `query`, capability `orders.read`, schema request/response, expected event `e2e_90_04_03_orders_list_read`, brak podwójnego efektu, prawidłowy focus po zmianie powierzchni oraz kod `SOURCE_RECORD_UNAVAILABLE` w kontrolowanym scenariuszu błędu."
+  },
+  "recoverableError": {
+    "code": "SOURCE_RECORD_UNAVAILABLE",
+    "behavior": "Odzyskanie kroku kpi do rekordu r d owego tabela alternatywna: `SOURCE_RECORD_UNAVAILABLE` dla kroku 3: zachowaj niesekretne dane formularza i route `/app/orders/lista`, pokaż correlationId oraz akcję retry tylko dla błędu oznaczonego `recoverable=true`; błąd capability kończy proces bez retry.",
+    "resume": "Reguła wznowienia kpi do rekordu r d owego tabela alternatywna: Checkpoint `E2E_90_04_03_tabela-alternatywna` zapisuje zakończony step_no=3, operationId i identyfikatory zasobów z response fixture. Po wznowieniu system ponownie sprawdza `orders.read` i odczytuje aktualny stan; komendy nie są automatycznie odtwarzane bez tego samego idempotency key."
+  }
+}

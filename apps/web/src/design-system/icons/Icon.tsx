@@ -2,6 +2,7 @@ import type {
   SVGAttributes,
 } from 'react';
 import {
+  forwardRef,
   useId,
 } from 'react';
 
@@ -23,8 +24,24 @@ export type PapaDataIconName =
 
 export type IconProps = Omit<
   SVGAttributes<SVGSVGElement>,
-  'children' | 'name'
+  | 'aria-hidden'
+  | 'aria-label'
+  | 'aria-labelledby'
+  | 'children'
+  | 'fill'
+  | 'focusable'
+  | 'height'
+  | 'name'
+  | 'role'
+  | 'stroke'
+  | 'strokeLinecap'
+  | 'strokeLinejoin'
+  | 'strokeWidth'
+  | 'tabIndex'
+  | 'viewBox'
+  | 'width'
 > & {
+  readonly decorative?: boolean;
   readonly label?: string;
   readonly name: PapaDataIconName;
   readonly size?: 16 | 20 | 24;
@@ -109,34 +126,44 @@ function IconPaths({
   }
 }
 
-export function Icon({
-  label,
-  name,
-  size = 20,
-  ...props
-}: IconProps) {
+export const Icon = forwardRef<SVGSVGElement, IconProps>(function Icon(
+  {
+    decorative = false,
+    label,
+    name,
+    size = 20,
+    ...props
+  },
+  ref,
+) {
   const titleId = useId();
+  const isInformative =
+    !decorative
+    && typeof label === 'string'
+    && label.trim().length > 0;
 
   return (
     <svg
-      aria-hidden={label ? undefined : true}
-      aria-labelledby={label ? titleId : undefined}
+      {...props}
+      ref={ref}
+      aria-hidden={isInformative ? undefined : true}
+      aria-labelledby={isInformative ? titleId : undefined}
       fill="none"
       focusable="false"
       height={size}
-      role={label ? 'img' : undefined}
+      role={isInformative ? 'img' : undefined}
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="1.75"
+      tabIndex={undefined}
       viewBox="0 0 24 24"
       width={size}
-      {...props}
     >
-      {label ? (
+      {isInformative ? (
         <title id={titleId}>{label}</title>
       ) : null}
       <IconPaths name={name} />
     </svg>
   );
-}
+});

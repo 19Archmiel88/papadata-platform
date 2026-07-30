@@ -1,0 +1,14 @@
+{
+  "operationId": "products.detail.read",
+  "correlationId": "corr-productsDetailRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "record": {},
+    "detailResult": {
+      "operationId": "products.detail.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "products"
+    }
+  },
+  "warnings": []
+}

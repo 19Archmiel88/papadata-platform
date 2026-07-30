@@ -1,0 +1,29 @@
+{
+  "context": {
+    "correlationId": "corr-authSessionRead",
+    "locale": "pl",
+    "timezone": "Europe/Warsaw",
+    "actor": {
+      "userId": "00000000-0000-4000-8000-000000000001",
+      "tenantId": "00000000-0000-4000-8000-000000000002",
+      "workspaceId": "00000000-0000-4000-8000-000000000003",
+      "role": "Admin",
+      "capabilities": [
+        "auth.read"
+      ]
+    }
+  },
+  "dateRange": null,
+  "page": {
+    "cursor": null,
+    "limit": 50,
+    "sort": "updatedAt",
+    "direction": "desc"
+  },
+  "filters": {
+    "sessionFilter": null,
+    "search": null,
+    "status": null,
+    "source": null
+  }
+}

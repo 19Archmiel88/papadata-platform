@@ -1,0 +1,875 @@
+screen_id,ekran,komponent,component_document,status
+20.10,Nakładki i warstwy interfejsu,AlertDialog,04-komponenty-bazowe/komponenty/alertdialog.md,required
+30.02,Kolejka uwagi,ApprovalPanel,04-komponenty-bazowe/komponenty/approvalpanel.md,required
+30.01,Widok główny,AssistantComposer,04-komponenty-bazowe/komponenty/assistantcomposer.md,required
+20.10,Nakładki i warstwy interfejsu,BackgroundOperationItem,04-komponenty-bazowe/komponenty/backgroundoperationitem.md,required
+20.10,Nakładki i warstwy interfejsu,BottomSheet,04-komponenty-bazowe/komponenty/bottomsheet.md,required
+30.01,Widok główny,BrandLockup,04-komponenty-bazowe/komponenty/brandlockup.md,required
+30.01,Widok główny,BrandMark,04-komponenty-bazowe/komponenty/brandmark.md,required
+20.01,Powłoka aplikacji,Breadcrumbs,04-komponenty-bazowe/komponenty/breadcrumbs.md,required
+20.01,Powłoka aplikacji,BulkActionBar,04-komponenty-bazowe/komponenty/bulkactionbar.md,required
+30.01,Widok główny,Button,04-komponenty-bazowe/komponenty/button.md,required
+25.02,Logowanie,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+20.01,Powłoka aplikacji,ColumnPicker,04-komponenty-bazowe/komponenty/columnpicker.md,required
+30.01,Widok główny,Combobox,04-komponenty-bazowe/komponenty/combobox.md,required
+30.01,Widok główny,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+30.01,Widok główny,DateRangePicker,04-komponenty-bazowe/komponenty/daterangepicker.md,required
+30.02,Kolejka uwagi,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+30.01,Widok główny,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+20.10,Nakładki i warstwy interfejsu,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+20.10,Nakładki i warstwy interfejsu,Drawer,04-komponenty-bazowe/komponenty/drawer.md,required
+20.10,Nakładki i warstwy interfejsu,EmptyState,04-komponenty-bazowe/komponenty/emptystate.md,required
+20.10,Nakładki i warstwy interfejsu,ErrorState,04-komponenty-bazowe/komponenty/errorstate.md,required
+25.02,Logowanie,FileInput,04-komponenty-bazowe/komponenty/fileinput.md,required
+20.01,Powłoka aplikacji,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+30.01,Widok główny,IconButton,04-komponenty-bazowe/komponenty/iconbutton.md,required
+20.10,Nakładki i warstwy interfejsu,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+20.10,Nakładki i warstwy interfejsu,Menu,04-komponenty-bazowe/komponenty/menu.md,required
+25.02,Logowanie,NipField,04-komponenty-bazowe/komponenty/nipfield.md,required
+25.02,Logowanie,NumberField,04-komponenty-bazowe/komponenty/numberfield.md,required
+20.01,Powłoka aplikacji,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+20.01,Powłoka aplikacji,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+20.01,Powłoka aplikacji,PaginationNav,04-komponenty-bazowe/komponenty/paginationnav.md,required
+30.01,Widok główny,Panel,04-komponenty-bazowe/komponenty/panel.md,required
+25.02,Logowanie,PasswordField,04-komponenty-bazowe/komponenty/passwordfield.md,required
+20.10,Nakładki i warstwy interfejsu,Popover,04-komponenty-bazowe/komponenty/popover.md,required
+20.10,Nakładki i warstwy interfejsu,ProgressIndicator,04-komponenty-bazowe/komponenty/progressindicator.md,required
+25.02,Logowanie,RadioGroup,04-komponenty-bazowe/komponenty/radiogroup.md,required
+25.02,Logowanie,SearchField,04-komponenty-bazowe/komponenty/searchfield.md,required
+20.01,Powłoka aplikacji,SectionIntro,04-komponenty-bazowe/komponenty/sectionintro.md,required
+20.01,Powłoka aplikacji,SectionNavigation,04-komponenty-bazowe/komponenty/sectionnavigation.md,required
+25.02,Logowanie,Select,04-komponenty-bazowe/komponenty/select.md,required
+20.10,Nakładki i warstwy interfejsu,Skeleton,04-komponenty-bazowe/komponenty/skeleton.md,required
+20.10,Nakładki i warstwy interfejsu,Spinner,04-komponenty-bazowe/komponenty/spinner.md,required
+30.01,Widok główny,StatusBadge,04-komponenty-bazowe/komponenty/statusbadge.md,required
+25.02,Logowanie,Switch,04-komponenty-bazowe/komponenty/switch.md,required
+20.01,Powłoka aplikacji,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+30.01,Widok główny,TextAction,04-komponenty-bazowe/komponenty/textaction.md,required
+30.01,Widok główny,TextArea,04-komponenty-bazowe/komponenty/textarea.md,required
+25.02,Logowanie,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+20.10,Nakładki i warstwy interfejsu,Toast,04-komponenty-bazowe/komponenty/toast.md,required
+20.10,Nakładki i warstwy interfejsu,Tooltip,04-komponenty-bazowe/komponenty/tooltip.md,required
+25.02,Logowanie,VerificationCodeInput,04-komponenty-bazowe/komponenty/verificationcodeinput.md,required
+30.04,Plan vs wynik,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+30.04,Plan vs wynik,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+30.04,Plan vs wynik,CorrelationChart,05-wykresy-i-wizualizacje/komponenty/correlationchart.md,required
+30.04,Plan vs wynik,ForecastChart,05-wykresy-i-wizualizacje/komponenty/forecastchart.md,required
+30.04,Plan vs wynik,FunnelChart,05-wykresy-i-wizualizacje/komponenty/funnelchart.md,required
+30.04,Plan vs wynik,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+30.04,Plan vs wynik,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+30.04,Plan vs wynik,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+30.04,Plan vs wynik,WaterfallChart,05-wykresy-i-wizualizacje/komponenty/waterfallchart.md,required
+30.01,Widok główny,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+30.01,Widok główny,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+30.02,Kolejka uwagi,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+30.02,Kolejka uwagi,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+30.02,Kolejka uwagi,Button,04-komponenty-bazowe/komponenty/button.md,required
+30.02,Kolejka uwagi,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+30.02,Kolejka uwagi,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+30.02,Kolejka uwagi,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+30.02,Kolejka uwagi,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+30.02,Kolejka uwagi,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+30.02,Kolejka uwagi,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+30.02,Kolejka uwagi,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+30.03,KPI,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+30.03,KPI,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+30.03,KPI,Button,04-komponenty-bazowe/komponenty/button.md,required
+30.03,KPI,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+30.03,KPI,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+30.03,KPI,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+30.03,KPI,ForecastChart,05-wykresy-i-wizualizacje/komponenty/forecastchart.md,required
+30.03,KPI,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+30.03,KPI,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+30.03,KPI,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+30.03,KPI,Select,04-komponenty-bazowe/komponenty/select.md,required
+30.03,KPI,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+30.03,KPI,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+30.04,Plan vs wynik,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+30.04,Plan vs wynik,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+30.04,Plan vs wynik,Button,04-komponenty-bazowe/komponenty/button.md,required
+30.05,Drivery wyniku,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+30.05,Drivery wyniku,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+30.05,Drivery wyniku,Button,04-komponenty-bazowe/komponenty/button.md,required
+30.05,Drivery wyniku,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+30.05,Drivery wyniku,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+30.05,Drivery wyniku,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+30.05,Drivery wyniku,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+30.06,Źródła sprzedaży,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+30.06,Źródła sprzedaży,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+30.06,Źródła sprzedaży,Button,04-komponenty-bazowe/komponenty/button.md,required
+30.06,Źródła sprzedaży,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+30.06,Źródła sprzedaży,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+30.07,Ruch,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+30.07,Ruch,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+30.07,Ruch,Button,04-komponenty-bazowe/komponenty/button.md,required
+30.07,Ruch,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+30.07,Ruch,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+30.07,Ruch,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+30.07,Ruch,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+30.07,Ruch,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+30.07,Ruch,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+30.07,Ruch,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+30.08,Produkty,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+30.08,Produkty,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+30.08,Produkty,Button,04-komponenty-bazowe/komponenty/button.md,required
+30.08,Produkty,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+30.08,Produkty,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+30.09,Klienci,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+30.09,Klienci,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+30.09,Klienci,Button,04-komponenty-bazowe/komponenty/button.md,required
+30.09,Klienci,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+30.09,Klienci,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+30.10,Lejek,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+30.10,Lejek,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+30.10,Lejek,Button,04-komponenty-bazowe/komponenty/button.md,required
+30.10,Lejek,FunnelChart,05-wykresy-i-wizualizacje/komponenty/funnelchart.md,required
+30.10,Lejek,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+30.10,Lejek,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+30.10,Lejek,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+30.10,Lejek,Select,04-komponenty-bazowe/komponenty/select.md,required
+30.10,Lejek,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+30.10,Lejek,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+30.11,Rekomendacje AI — skrót,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+30.11,Rekomendacje AI — skrót,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+30.11,Rekomendacje AI — skrót,Button,04-komponenty-bazowe/komponenty/button.md,required
+30.11,Rekomendacje AI — skrót,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+30.11,Rekomendacje AI — skrót,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+30.11,Rekomendacje AI — skrót,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+30.11,Rekomendacje AI — skrót,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+30.12,Sygnały sprzedażowe,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+30.12,Sygnały sprzedażowe,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+30.12,Sygnały sprzedażowe,Button,04-komponenty-bazowe/komponenty/button.md,required
+30.12,Sygnały sprzedażowe,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+30.12,Sygnały sprzedażowe,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+30.13,Waterfall,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+30.13,Waterfall,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+30.13,Waterfall,Button,04-komponenty-bazowe/komponenty/button.md,required
+30.13,Waterfall,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+30.13,Waterfall,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+30.13,Waterfall,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+30.13,Waterfall,WaterfallChart,05-wykresy-i-wizualizacje/komponenty/waterfallchart.md,required
+30.13,Waterfall,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+30.13,Waterfall,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+30.14,Warianty Centrum Dowodzenia,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+30.14,Warianty Centrum Dowodzenia,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+30.14,Warianty Centrum Dowodzenia,Button,04-komponenty-bazowe/komponenty/button.md,required
+30.14,Warianty Centrum Dowodzenia,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+30.14,Warianty Centrum Dowodzenia,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+30.14,Warianty Centrum Dowodzenia,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+30.14,Warianty Centrum Dowodzenia,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+30.14,Warianty Centrum Dowodzenia,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+30.14,Warianty Centrum Dowodzenia,Select,04-komponenty-bazowe/komponenty/select.md,required
+30.14,Warianty Centrum Dowodzenia,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+30.14,Warianty Centrum Dowodzenia,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+31.01,Przegląd,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+31.01,Przegląd,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+31.01,Przegląd,Button,04-komponenty-bazowe/komponenty/button.md,required
+31.01,Przegląd,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+31.01,Przegląd,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+31.01,Przegląd,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+31.01,Przegląd,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+31.01,Przegląd,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+31.02,Lista kampanii,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+31.02,Lista kampanii,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+31.02,Lista kampanii,Button,04-komponenty-bazowe/komponenty/button.md,required
+31.02,Lista kampanii,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+31.02,Lista kampanii,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+31.02,Lista kampanii,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+31.02,Lista kampanii,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+31.02,Lista kampanii,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+31.02,Lista kampanii,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+31.02,Lista kampanii,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+31.02,Lista kampanii,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+31.03,Szczegóły kampanii,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+31.03,Szczegóły kampanii,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+31.03,Szczegóły kampanii,Button,04-komponenty-bazowe/komponenty/button.md,required
+31.03,Szczegóły kampanii,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+31.03,Szczegóły kampanii,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+31.03,Szczegóły kampanii,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+31.03,Szczegóły kampanii,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+31.03,Szczegóły kampanii,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+31.03,Szczegóły kampanii,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+31.03,Szczegóły kampanii,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+31.04,Atrybucja i sprzedaż,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+31.04,Atrybucja i sprzedaż,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+31.04,Atrybucja i sprzedaż,Button,04-komponenty-bazowe/komponenty/button.md,required
+31.04,Atrybucja i sprzedaż,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+31.04,Atrybucja i sprzedaż,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+31.05,Budżet,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+31.05,Budżet,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+31.05,Budżet,Button,04-komponenty-bazowe/komponenty/button.md,required
+31.05,Budżet,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+31.05,Budżet,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+31.05,Budżet,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+31.05,Budżet,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+31.06,Diagnostyka,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+31.06,Diagnostyka,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+31.06,Diagnostyka,Button,04-komponenty-bazowe/komponenty/button.md,required
+31.07,Rekomendacje — kontekst domenowy,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+31.07,Rekomendacje — kontekst domenowy,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+31.07,Rekomendacje — kontekst domenowy,Button,04-komponenty-bazowe/komponenty/button.md,required
+31.07,Rekomendacje — kontekst domenowy,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+31.07,Rekomendacje — kontekst domenowy,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+31.07,Rekomendacje — kontekst domenowy,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+31.07,Rekomendacje — kontekst domenowy,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+31.07,Rekomendacje — kontekst domenowy,ApprovalPanel,04-komponenty-bazowe/komponenty/approvalpanel.md,required
+31.07,Rekomendacje — kontekst domenowy,AlertDialog,04-komponenty-bazowe/komponenty/alertdialog.md,required
+31.08,Warianty kampanii,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+31.08,Warianty kampanii,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+31.08,Warianty kampanii,Button,04-komponenty-bazowe/komponenty/button.md,required
+31.08,Warianty kampanii,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+31.08,Warianty kampanii,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+32.01,Przegląd,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+32.01,Przegląd,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+32.01,Przegląd,Button,04-komponenty-bazowe/komponenty/button.md,required
+32.01,Przegląd,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+32.01,Przegląd,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+32.01,Przegląd,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+32.01,Przegląd,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+32.01,Przegląd,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+32.01,Przegląd,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+32.01,Przegląd,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+32.02,Lista,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+32.02,Lista,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+32.02,Lista,Button,04-komponenty-bazowe/komponenty/button.md,required
+32.02,Lista,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+32.02,Lista,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+32.02,Lista,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+32.02,Lista,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+32.03,Szczegóły,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+32.03,Szczegóły,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+32.03,Szczegóły,Button,04-komponenty-bazowe/komponenty/button.md,required
+32.03,Szczegóły,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+32.03,Szczegóły,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+32.04,Oś zdarzeń,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+32.04,Oś zdarzeń,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+32.04,Oś zdarzeń,Button,04-komponenty-bazowe/komponenty/button.md,required
+32.04,Oś zdarzeń,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+32.04,Oś zdarzeń,Select,04-komponenty-bazowe/komponenty/select.md,required
+32.04,Oś zdarzeń,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+32.04,Oś zdarzeń,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+32.05,Porównanie źródeł,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+32.05,Porównanie źródeł,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+32.05,Porównanie źródeł,Button,04-komponenty-bazowe/komponenty/button.md,required
+32.06,Rekoncyliacja — skrót,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+32.06,Rekoncyliacja — skrót,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+32.06,Rekoncyliacja — skrót,Button,04-komponenty-bazowe/komponenty/button.md,required
+32.07,Eksport,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+32.07,Eksport,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+32.07,Eksport,Button,04-komponenty-bazowe/komponenty/button.md,required
+32.08,Warianty zamówień,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+32.08,Warianty zamówień,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+32.08,Warianty zamówień,Button,04-komponenty-bazowe/komponenty/button.md,required
+33.01,Przegląd,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+33.01,Przegląd,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+33.01,Przegląd,Button,04-komponenty-bazowe/komponenty/button.md,required
+33.01,Przegląd,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+33.01,Przegląd,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+33.01,Przegląd,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+33.01,Przegląd,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+33.01,Przegląd,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+33.02,Katalog,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+33.02,Katalog,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+33.02,Katalog,Button,04-komponenty-bazowe/komponenty/button.md,required
+33.02,Katalog,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+33.02,Katalog,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+33.02,Katalog,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+33.02,Katalog,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+33.02,Katalog,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+33.02,Katalog,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+33.02,Katalog,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+33.03,Szczegóły,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+33.03,Szczegóły,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+33.03,Szczegóły,Button,04-komponenty-bazowe/komponenty/button.md,required
+33.03,Szczegóły,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+33.03,Szczegóły,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+33.03,Szczegóły,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+33.03,Szczegóły,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+33.04,Mapowanie,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+33.04,Mapowanie,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+33.04,Mapowanie,Button,04-komponenty-bazowe/komponenty/button.md,required
+33.04,Mapowanie,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+33.04,Mapowanie,Select,04-komponenty-bazowe/komponenty/select.md,required
+33.04,Mapowanie,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+33.04,Mapowanie,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+33.05,Oferty,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+33.05,Oferty,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+33.05,Oferty,Button,04-komponenty-bazowe/komponenty/button.md,required
+33.06,Wydajność,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+33.06,Wydajność,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+33.06,Wydajność,Button,04-komponenty-bazowe/komponenty/button.md,required
+33.06,Wydajność,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+33.06,Wydajność,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+33.06,Wydajność,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+33.06,Wydajność,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+33.06,Wydajność,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+33.06,Wydajność,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+33.06,Wydajność,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+33.07,Kolejka braków,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+33.07,Kolejka braków,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+33.07,Kolejka braków,Button,04-komponenty-bazowe/komponenty/button.md,required
+33.07,Kolejka braków,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+33.07,Kolejka braków,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+33.07,Kolejka braków,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+33.07,Kolejka braków,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+33.07,Kolejka braków,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+33.07,Kolejka braków,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+33.07,Kolejka braków,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+33.08,Analiza wpływu,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+33.08,Analiza wpływu,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+33.08,Analiza wpływu,Button,04-komponenty-bazowe/komponenty/button.md,required
+33.08,Analiza wpływu,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+33.08,Analiza wpływu,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+33.08,Analiza wpływu,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+33.08,Analiza wpływu,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+33.08,Analiza wpływu,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+33.08,Analiza wpływu,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+33.08,Analiza wpływu,Select,04-komponenty-bazowe/komponenty/select.md,required
+33.08,Analiza wpływu,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+33.08,Analiza wpływu,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+33.09,Warianty produktów,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+33.09,Warianty produktów,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+33.09,Warianty produktów,Button,04-komponenty-bazowe/komponenty/button.md,required
+33.09,Warianty produktów,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+33.09,Warianty produktów,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+34.01,Przegląd,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+34.01,Przegląd,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+34.01,Przegląd,Button,04-komponenty-bazowe/komponenty/button.md,required
+34.01,Przegląd,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+34.01,Przegląd,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+34.01,Przegląd,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+34.02,Segmenty,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+34.02,Segmenty,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+34.02,Segmenty,Button,04-komponenty-bazowe/komponenty/button.md,required
+34.02,Segmenty,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+34.02,Segmenty,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+34.02,Segmenty,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+34.02,Segmenty,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+34.02,Segmenty,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+34.02,Segmenty,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+34.03,Kohorty,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+34.03,Kohorty,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+34.03,Kohorty,Button,04-komponenty-bazowe/komponenty/button.md,required
+34.04,Szczegóły pseudonimizowane,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+34.04,Szczegóły pseudonimizowane,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+34.04,Szczegóły pseudonimizowane,Button,04-komponenty-bazowe/komponenty/button.md,required
+34.04,Szczegóły pseudonimizowane,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+34.04,Szczegóły pseudonimizowane,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+34.05,Konflikty tożsamości,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+34.05,Konflikty tożsamości,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+34.05,Konflikty tożsamości,Button,04-komponenty-bazowe/komponenty/button.md,required
+34.06,Prywatność,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+34.06,Prywatność,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+34.06,Prywatność,Button,04-komponenty-bazowe/komponenty/button.md,required
+34.06,Prywatność,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+34.06,Prywatność,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+34.06,Prywatność,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+34.06,Prywatność,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+34.07,Analiza wpływu,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+34.07,Analiza wpływu,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+34.07,Analiza wpływu,Button,04-komponenty-bazowe/komponenty/button.md,required
+34.07,Analiza wpływu,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+34.07,Analiza wpływu,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+34.07,Analiza wpływu,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+34.07,Analiza wpływu,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+34.07,Analiza wpływu,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+34.07,Analiza wpływu,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+34.08,Warianty klientów,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+34.08,Warianty klientów,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+34.08,Warianty klientów,Button,04-komponenty-bazowe/komponenty/button.md,required
+35.01,Przegląd ruchu,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+35.01,Przegląd ruchu,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+35.01,Przegląd ruchu,Button,04-komponenty-bazowe/komponenty/button.md,required
+35.01,Przegląd ruchu,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+35.01,Przegląd ruchu,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+35.01,Przegląd ruchu,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+35.01,Przegląd ruchu,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+35.01,Przegląd ruchu,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+35.01,Przegląd ruchu,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+35.01,Przegląd ruchu,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+35.02,Kanały,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+35.02,Kanały,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+35.02,Kanały,Button,04-komponenty-bazowe/komponenty/button.md,required
+35.02,Kanały,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+35.02,Kanały,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+35.02,Kanały,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+35.03,Lejek — widok,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+35.03,Lejek — widok,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+35.03,Lejek — widok,Button,04-komponenty-bazowe/komponenty/button.md,required
+35.03,Lejek — widok,FunnelChart,05-wykresy-i-wizualizacje/komponenty/funnelchart.md,required
+35.03,Lejek — widok,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+35.03,Lejek — widok,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+35.04,Lejek — szczegóły kroku,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+35.04,Lejek — szczegóły kroku,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+35.04,Lejek — szczegóły kroku,Button,04-komponenty-bazowe/komponenty/button.md,required
+35.04,Lejek — szczegóły kroku,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+35.04,Lejek — szczegóły kroku,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+35.04,Lejek — szczegóły kroku,FunnelChart,05-wykresy-i-wizualizacje/komponenty/funnelchart.md,required
+35.04,Lejek — szczegóły kroku,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+35.04,Lejek — szczegóły kroku,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+35.05,Definicje lejka,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+35.05,Definicje lejka,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+35.05,Definicje lejka,Button,04-komponenty-bazowe/komponenty/button.md,required
+35.05,Definicje lejka,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+35.05,Definicje lejka,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+35.05,Definicje lejka,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+35.05,Definicje lejka,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+35.05,Definicje lejka,Select,04-komponenty-bazowe/komponenty/select.md,required
+35.05,Definicje lejka,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+35.05,Definicje lejka,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+35.06,GA4 vs zamówienia,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+35.06,GA4 vs zamówienia,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+35.06,GA4 vs zamówienia,Button,04-komponenty-bazowe/komponenty/button.md,required
+35.06,GA4 vs zamówienia,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+35.06,GA4 vs zamówienia,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+35.07,Jakość zdarzeń,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+35.07,Jakość zdarzeń,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+35.07,Jakość zdarzeń,Button,04-komponenty-bazowe/komponenty/button.md,required
+35.07,Jakość zdarzeń,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+35.07,Jakość zdarzeń,Select,04-komponenty-bazowe/komponenty/select.md,required
+35.07,Jakość zdarzeń,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+35.07,Jakość zdarzeń,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+35.08,Strony wejścia,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+35.08,Strony wejścia,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+35.08,Strony wejścia,Button,04-komponenty-bazowe/komponenty/button.md,required
+35.08,Strony wejścia,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+35.08,Strony wejścia,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+35.09,Warianty ruchu,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+35.09,Warianty ruchu,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+35.09,Warianty ruchu,Button,04-komponenty-bazowe/komponenty/button.md,required
+40.01,Katalog integracji,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+40.01,Katalog integracji,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+40.01,Katalog integracji,Button,04-komponenty-bazowe/komponenty/button.md,required
+40.01,Katalog integracji,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+40.01,Katalog integracji,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+40.01,Katalog integracji,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+40.01,Katalog integracji,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+40.01,Katalog integracji,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+40.01,Katalog integracji,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+40.01,Katalog integracji,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+40.02,Kreator połączenia,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+40.02,Kreator połączenia,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+40.02,Kreator połączenia,Button,04-komponenty-bazowe/komponenty/button.md,required
+40.02,Kreator połączenia,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+40.02,Kreator połączenia,Select,04-komponenty-bazowe/komponenty/select.md,required
+40.02,Kreator połączenia,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+40.02,Kreator połączenia,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+40.03,Szczegóły integracji,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+40.03,Szczegóły integracji,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+40.03,Szczegóły integracji,Button,04-komponenty-bazowe/komponenty/button.md,required
+40.03,Szczegóły integracji,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+40.03,Szczegóły integracji,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+40.04,Historia synchronizacji,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+40.04,Historia synchronizacji,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+40.04,Historia synchronizacji,Button,04-komponenty-bazowe/komponenty/button.md,required
+40.04,Historia synchronizacji,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+40.04,Historia synchronizacji,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+40.04,Historia synchronizacji,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+40.04,Historia synchronizacji,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+40.05,Przebieg synchronizacji,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+40.05,Przebieg synchronizacji,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+40.05,Przebieg synchronizacji,Button,04-komponenty-bazowe/komponenty/button.md,required
+40.05,Przebieg synchronizacji,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+40.06,Zakres synchronizacji,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+40.06,Zakres synchronizacji,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+40.06,Zakres synchronizacji,Button,04-komponenty-bazowe/komponenty/button.md,required
+40.06,Zakres synchronizacji,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+40.06,Zakres synchronizacji,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+40.07,Ponowne połączenie,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+40.07,Ponowne połączenie,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+40.07,Ponowne połączenie,Button,04-komponenty-bazowe/komponenty/button.md,required
+40.07,Ponowne połączenie,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+40.07,Ponowne połączenie,Select,04-komponenty-bazowe/komponenty/select.md,required
+40.07,Ponowne połączenie,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+40.07,Ponowne połączenie,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+40.08,Odłączenie,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+40.08,Odłączenie,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+40.08,Odłączenie,Button,04-komponenty-bazowe/komponenty/button.md,required
+40.08,Odłączenie,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+40.08,Odłączenie,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+40.08,Odłączenie,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+40.08,Odłączenie,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+40.08,Odłączenie,Select,04-komponenty-bazowe/komponenty/select.md,required
+40.08,Odłączenie,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+40.08,Odłączenie,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+40.09,Awaria providera,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+40.09,Awaria providera,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+40.09,Awaria providera,Button,04-komponenty-bazowe/komponenty/button.md,required
+40.10,Warianty integracji,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+40.10,Warianty integracji,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+40.10,Warianty integracji,Button,04-komponenty-bazowe/komponenty/button.md,required
+41.01,Centrum jakości,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+41.01,Centrum jakości,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+41.01,Centrum jakości,Button,04-komponenty-bazowe/komponenty/button.md,required
+41.02,Zbiór danych,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+41.02,Zbiór danych,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+41.02,Zbiór danych,Button,04-komponenty-bazowe/komponenty/button.md,required
+41.03,Pochodzenie danych,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+41.03,Pochodzenie danych,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+41.03,Pochodzenie danych,Button,04-komponenty-bazowe/komponenty/button.md,required
+41.04,Nakładanie źródeł,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+41.04,Nakładanie źródeł,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+41.04,Nakładanie źródeł,Button,04-komponenty-bazowe/komponenty/button.md,required
+41.05,Nadrzędność źródła,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+41.05,Nadrzędność źródła,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+41.05,Nadrzędność źródła,Button,04-komponenty-bazowe/komponenty/button.md,required
+41.05,Nadrzędność źródła,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+41.05,Nadrzędność źródła,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+41.06,Konflikty,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+41.06,Konflikty,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+41.06,Konflikty,Button,04-komponenty-bazowe/komponenty/button.md,required
+41.07,Przegląd ręczny,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+41.07,Przegląd ręczny,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+41.07,Przegląd ręczny,Button,04-komponenty-bazowe/komponenty/button.md,required
+41.07,Przegląd ręczny,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+41.07,Przegląd ręczny,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+41.07,Przegląd ręczny,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+41.08,Ponowne przetwarzanie,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+41.08,Ponowne przetwarzanie,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+41.08,Ponowne przetwarzanie,Button,04-komponenty-bazowe/komponenty/button.md,required
+41.08,Ponowne przetwarzanie,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+41.08,Ponowne przetwarzanie,Select,04-komponenty-bazowe/komponenty/select.md,required
+41.08,Ponowne przetwarzanie,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+41.08,Ponowne przetwarzanie,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+41.09,Rekoncyliacja,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+41.09,Rekoncyliacja,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+41.09,Rekoncyliacja,Button,04-komponenty-bazowe/komponenty/button.md,required
+41.10,Warianty jakości danych,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+41.10,Warianty jakości danych,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+41.10,Warianty jakości danych,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.01,Panel kontekstowy Papa,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.01,Panel kontekstowy Papa,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.01,Panel kontekstowy Papa,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.01,Panel kontekstowy Papa,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+50.01,Panel kontekstowy Papa,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+50.01,Panel kontekstowy Papa,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+50.01,Panel kontekstowy Papa,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+50.02,AssistantShell,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.02,AssistantShell,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.02,AssistantShell,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.03,Tryby pracy,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.03,Tryby pracy,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.03,Tryby pracy,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.03,Tryby pracy,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+50.03,Tryby pracy,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+50.03,Tryby pracy,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+50.03,Tryby pracy,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+50.04,Context basket,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.04,Context basket,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.04,Context basket,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.04,Context basket,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+50.04,Context basket,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+50.04,Context basket,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+50.04,Context basket,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+50.04,Context basket,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+50.04,Context basket,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+50.05,Odpowiedź Papa,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.05,Odpowiedź Papa,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.05,Odpowiedź Papa,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.05,Odpowiedź Papa,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+50.06,Dowody,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.06,Dowody,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.06,Dowody,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.06,Dowody,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+50.06,Dowody,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+50.06,Dowody,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+50.07,Confidence,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.07,Confidence,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.07,Confidence,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.08,Laboratorium AI,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.08,Laboratorium AI,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.08,Laboratorium AI,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.08,Laboratorium AI,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+50.08,Laboratorium AI,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+50.08,Laboratorium AI,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+50.08,Laboratorium AI,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+50.08,Laboratorium AI,ShareChart,05-wykresy-i-wizualizacje/komponenty/sharechart.md,required
+50.08,Laboratorium AI,ComparisonChart,05-wykresy-i-wizualizacje/komponenty/comparisonchart.md,required
+50.08,Laboratorium AI,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+50.09,Obserwacje,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.09,Obserwacje,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.09,Obserwacje,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.09,Obserwacje,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+50.09,Obserwacje,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+50.09,Obserwacje,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+50.09,Obserwacje,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+50.09,Obserwacje,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+50.09,Obserwacje,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+50.10,Rekomendacje i warianty,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.10,Rekomendacje i warianty,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.10,Rekomendacje i warianty,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.10,Rekomendacje i warianty,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+50.10,Rekomendacje i warianty,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+50.10,Rekomendacje i warianty,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+50.10,Rekomendacje i warianty,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+50.11,Propozycje AI,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.11,Propozycje AI,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.11,Propozycje AI,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.11,Propozycje AI,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+50.12,AI Action Approval,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.12,AI Action Approval,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.12,AI Action Approval,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.12,AI Action Approval,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+50.12,AI Action Approval,ApprovalPanel,04-komponenty-bazowe/komponenty/approvalpanel.md,required
+50.12,AI Action Approval,AlertDialog,04-komponenty-bazowe/komponenty/alertdialog.md,required
+50.13,AI Actions,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.13,AI Actions,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.13,AI Actions,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.13,AI Actions,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+50.14,Zablokowane działania AI,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.14,Zablokowane działania AI,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.14,Zablokowane działania AI,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.14,Zablokowane działania AI,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+50.14,Zablokowane działania AI,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+50.14,Zablokowane działania AI,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+50.14,Zablokowane działania AI,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+50.15,Historia i pamięć Papa,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.15,Historia i pamięć Papa,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.15,Historia i pamięć Papa,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.15,Historia i pamięć Papa,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+50.15,Historia i pamięć Papa,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+50.15,Historia i pamięć Papa,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+50.15,Historia i pamięć Papa,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+50.15,Historia i pamięć Papa,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+50.15,Historia i pamięć Papa,ApprovalPanel,04-komponenty-bazowe/komponenty/approvalpanel.md,required
+50.15,Historia i pamięć Papa,AlertDialog,04-komponenty-bazowe/komponenty/alertdialog.md,required
+50.16,Ustawienia AI i Governance,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.16,Ustawienia AI i Governance,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.16,Ustawienia AI i Governance,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.16,Ustawienia AI i Governance,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+50.17,Warianty Papa,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+50.17,Warianty Papa,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+50.17,Warianty Papa,Button,04-komponenty-bazowe/komponenty/button.md,required
+50.17,Warianty Papa,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+60.01,Organizacja,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+60.01,Organizacja,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+60.01,Organizacja,Button,04-komponenty-bazowe/komponenty/button.md,required
+60.02,Workspace,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+60.02,Workspace,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+60.02,Workspace,Button,04-komponenty-bazowe/komponenty/button.md,required
+60.02,Workspace,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+60.02,Workspace,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+60.02,Workspace,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+60.02,Workspace,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+60.02,Workspace,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+60.02,Workspace,Select,04-komponenty-bazowe/komponenty/select.md,required
+60.02,Workspace,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+60.02,Workspace,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+60.03,Członkostwa,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+60.03,Członkostwa,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+60.03,Członkostwa,Button,04-komponenty-bazowe/komponenty/button.md,required
+60.03,Członkostwa,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+60.03,Członkostwa,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+60.03,Członkostwa,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+60.03,Członkostwa,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+60.04,Role i uprawnienia,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+60.04,Role i uprawnienia,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+60.04,Role i uprawnienia,Button,04-komponenty-bazowe/komponenty/button.md,required
+60.04,Role i uprawnienia,ApprovalPanel,04-komponenty-bazowe/komponenty/approvalpanel.md,required
+60.04,Role i uprawnienia,AlertDialog,04-komponenty-bazowe/komponenty/alertdialog.md,required
+60.05,Bezpieczeństwo konta,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+60.05,Bezpieczeństwo konta,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+60.05,Bezpieczeństwo konta,Button,04-komponenty-bazowe/komponenty/button.md,required
+60.06,Sesje,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+60.06,Sesje,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+60.06,Sesje,Button,04-komponenty-bazowe/komponenty/button.md,required
+60.06,Sesje,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+60.06,Sesje,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+60.06,Sesje,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+60.06,Sesje,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+60.07,Audyt,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+60.07,Audyt,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+60.07,Audyt,Button,04-komponenty-bazowe/komponenty/button.md,required
+60.07,Audyt,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+60.07,Audyt,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+60.07,Audyt,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+60.07,Audyt,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+60.07,Audyt,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+60.08,Prywatność,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+60.08,Prywatność,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+60.08,Prywatność,Button,04-komponenty-bazowe/komponenty/button.md,required
+60.08,Prywatność,ApprovalPanel,04-komponenty-bazowe/komponenty/approvalpanel.md,required
+60.08,Prywatność,AlertDialog,04-komponenty-bazowe/komponenty/alertdialog.md,required
+60.09,Dostęp wsparcia,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+60.09,Dostęp wsparcia,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+60.09,Dostęp wsparcia,Button,04-komponenty-bazowe/komponenty/button.md,required
+60.09,Dostęp wsparcia,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+60.09,Dostęp wsparcia,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+60.09,Dostęp wsparcia,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+60.09,Dostęp wsparcia,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+60.10,Warianty ustawień,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+60.10,Warianty ustawień,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+60.10,Warianty ustawień,Button,04-komponenty-bazowe/komponenty/button.md,required
+70.01,Subskrypcja,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+70.01,Subskrypcja,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+70.01,Subskrypcja,Button,04-komponenty-bazowe/komponenty/button.md,required
+70.01,Subskrypcja,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+70.01,Subskrypcja,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+70.01,Subskrypcja,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+70.02,Użycie i limity,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+70.02,Użycie i limity,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+70.02,Użycie i limity,Button,04-komponenty-bazowe/komponenty/button.md,required
+70.02,Użycie i limity,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+70.02,Użycie i limity,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+70.02,Użycie i limity,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+70.02,Użycie i limity,ForecastChart,05-wykresy-i-wizualizacje/komponenty/forecastchart.md,required
+70.03,Plany,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+70.03,Plany,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+70.03,Plany,Button,04-komponenty-bazowe/komponenty/button.md,required
+70.03,Plany,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+70.03,Plany,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+70.03,Plany,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+70.03,Plany,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+70.03,Plany,Select,04-komponenty-bazowe/komponenty/select.md,required
+70.03,Plany,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+70.03,Plany,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+70.04,Faktury,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+70.04,Faktury,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+70.04,Faktury,Button,04-komponenty-bazowe/komponenty/button.md,required
+70.04,Faktury,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+70.04,Faktury,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+70.04,Faktury,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+70.04,Faktury,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+70.05,Płatności,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+70.05,Płatności,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+70.05,Płatności,Button,04-komponenty-bazowe/komponenty/button.md,required
+70.05,Płatności,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+70.05,Płatności,Select,04-komponenty-bazowe/komponenty/select.md,required
+70.05,Płatności,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+70.05,Płatności,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+70.06,Zaległa płatność,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+70.06,Zaległa płatność,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+70.06,Zaległa płatność,Button,04-komponenty-bazowe/komponenty/button.md,required
+70.07,Korekty,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+70.07,Korekty,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+70.07,Korekty,Button,04-komponenty-bazowe/komponenty/button.md,required
+70.08,Zmiana i anulowanie,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+70.08,Zmiana i anulowanie,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+70.08,Zmiana i anulowanie,Button,04-komponenty-bazowe/komponenty/button.md,required
+70.08,Zmiana i anulowanie,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+70.08,Zmiana i anulowanie,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+70.08,Zmiana i anulowanie,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+70.08,Zmiana i anulowanie,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+70.08,Zmiana i anulowanie,Select,04-komponenty-bazowe/komponenty/select.md,required
+70.08,Zmiana i anulowanie,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+70.08,Zmiana i anulowanie,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+70.09,Pilot do abonamentu,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+70.09,Pilot do abonamentu,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+70.09,Pilot do abonamentu,Button,04-komponenty-bazowe/komponenty/button.md,required
+70.09,Pilot do abonamentu,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+70.09,Pilot do abonamentu,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+70.09,Pilot do abonamentu,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+70.10,Warianty billingowe,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+70.10,Warianty billingowe,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+70.10,Warianty billingowe,Button,04-komponenty-bazowe/komponenty/button.md,required
+80.01,Centrum decyzji,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+80.01,Centrum decyzji,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+80.01,Centrum decyzji,Button,04-komponenty-bazowe/komponenty/button.md,required
+80.01,Centrum decyzji,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+80.02,Obserwacje,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+80.02,Obserwacje,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+80.02,Obserwacje,Button,04-komponenty-bazowe/komponenty/button.md,required
+80.02,Obserwacje,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+80.02,Obserwacje,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+80.02,Obserwacje,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+80.02,Obserwacje,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+80.03,Rekomendacje,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+80.03,Rekomendacje,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+80.03,Rekomendacje,Button,04-komponenty-bazowe/komponenty/button.md,required
+80.03,Rekomendacje,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+80.03,Rekomendacje,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+80.03,Rekomendacje,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+80.03,Rekomendacje,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+80.04,Rejestr decyzji,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+80.04,Rejestr decyzji,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+80.04,Rejestr decyzji,Button,04-komponenty-bazowe/komponenty/button.md,required
+80.04,Rejestr decyzji,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+80.04,Rejestr decyzji,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+80.04,Rejestr decyzji,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+80.04,Rejestr decyzji,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+80.04,Rejestr decyzji,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+80.05,Brief działania,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+80.05,Brief działania,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+80.05,Brief działania,Button,04-komponenty-bazowe/komponenty/button.md,required
+80.06,Szczegóły działania,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+80.06,Szczegóły działania,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+80.06,Szczegóły działania,Button,04-komponenty-bazowe/komponenty/button.md,required
+80.06,Szczegóły działania,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+80.06,Szczegóły działania,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+80.06,Szczegóły działania,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+80.06,Szczegóły działania,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+80.06,Szczegóły działania,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+80.07,Pomiar,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+80.07,Pomiar,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+80.07,Pomiar,Button,04-komponenty-bazowe/komponenty/button.md,required
+80.07,Pomiar,MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,required
+80.07,Pomiar,ChartFrame,05-wykresy-i-wizualizacje/komponenty/chartframe.md,required
+80.07,Pomiar,TrendChart,05-wykresy-i-wizualizacje/komponenty/trendchart.md,required
+80.08,Biblioteka działań,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+80.08,Biblioteka działań,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+80.08,Biblioteka działań,Button,04-komponenty-bazowe/komponenty/button.md,required
+80.08,Biblioteka działań,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+80.08,Biblioteka działań,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+80.08,Biblioteka działań,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+80.09,Powiązania z modułami i sprawami,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+80.09,Powiązania z modułami i sprawami,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+80.09,Powiązania z modułami i sprawami,Button,04-komponenty-bazowe/komponenty/button.md,required
+80.10,Warianty decyzji i działań,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+80.10,Warianty decyzji i działań,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+80.10,Warianty decyzji i działań,Button,04-komponenty-bazowe/komponenty/button.md,required
+80.10,Warianty decyzji i działań,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+85.01,Strona główna pomocy,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+85.01,Strona główna pomocy,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+85.01,Strona główna pomocy,Button,04-komponenty-bazowe/komponenty/button.md,required
+85.01,Strona główna pomocy,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+85.01,Strona główna pomocy,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+85.01,Strona główna pomocy,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+85.02,Procedury,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+85.02,Procedury,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+85.02,Procedury,Button,04-komponenty-bazowe/komponenty/button.md,required
+85.02,Procedury,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+85.02,Procedury,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+85.02,Procedury,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+85.03,Lista wyników,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+85.03,Lista wyników,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+85.03,Lista wyników,Button,04-komponenty-bazowe/komponenty/button.md,required
+85.03,Lista wyników,FilterBar,04-komponenty-bazowe/komponenty/filterbar.md,required
+85.03,Lista wyników,DataTable,04-komponenty-bazowe/komponenty/datatable.md,required
+85.03,Lista wyników,Pagination,04-komponenty-bazowe/komponenty/pagination.md,required
+85.03,Lista wyników,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+85.03,Lista wyników,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+85.04,Szczegóły procedury,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+85.04,Szczegóły procedury,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+85.04,Szczegóły procedury,Button,04-komponenty-bazowe/komponenty/button.md,required
+85.04,Szczegóły procedury,DetailPanel,04-komponenty-bazowe/komponenty/detailpanel.md,required
+85.04,Szczegóły procedury,Tabs,04-komponenty-bazowe/komponenty/tabs.md,required
+85.04,Szczegóły procedury,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+85.05,Zgłoszenie wsparcia,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+85.05,Zgłoszenie wsparcia,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+85.05,Zgłoszenie wsparcia,Button,04-komponenty-bazowe/komponenty/button.md,required
+85.05,Zgłoszenie wsparcia,TextField,04-komponenty-bazowe/komponenty/textfield.md,required
+85.05,Zgłoszenie wsparcia,Select,04-komponenty-bazowe/komponenty/select.md,required
+85.05,Zgłoszenie wsparcia,Checkbox,04-komponenty-bazowe/komponenty/checkbox.md,required
+85.05,Zgłoszenie wsparcia,Dialog,04-komponenty-bazowe/komponenty/dialog.md,required
+85.06,Warianty Centrum Pomocy,PageHeader,04-komponenty-bazowe/komponenty/pageheader.md,required
+85.06,Warianty Centrum Pomocy,InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,required
+85.06,Warianty Centrum Pomocy,Button,04-komponenty-bazowe/komponenty/button.md,required
+85.06,Warianty Centrum Pomocy,DecisionCard,04-komponenty-bazowe/komponenty/decisioncard.md,required
+30.01,Widok główny,MorningBrief,04-komponenty-domenowe/morning-brief.md,required-domain
+30.04,Plan vs wynik,PlanPerformance,04-komponenty-domenowe/plan-performance.md,required-domain
+34.03,Kohorty,CohortMatrix,04-komponenty-domenowe/cohort-matrix.md,required-domain
+31.05,Budżet,BudgetPacing,04-komponenty-domenowe/budget-pacing.md,required-domain
+41.03,Pochodzenie danych,LineageGraph,04-komponenty-domenowe/lineage-graph.md,required-domain
+40.04,Historia synchronizacji,SyncTimeline,04-komponenty-domenowe/sync-timeline.md,required-domain
+41.09,Rekoncyliacja,ReconciliationPanel,04-komponenty-domenowe/reconciliation-panel.md,required-domain
+31.04,Atrybucja i sprzedaż,AttributionComparison,04-komponenty-domenowe/attribution-comparison.md,required-domain
+35.03,Lejek — widok,SalesFunnel,04-komponenty-domenowe/sales-funnel.md,required-domain
+35.04,Lejek — szczegóły kroku,FunnelStep,04-komponenty-domenowe/funnel-step.md,required-domain
+34.02,Segmenty,CustomerSegments,04-komponenty-domenowe/customer-segments.md,required-domain
+30.06,Źródła sprzedaży,SalesSources,04-komponenty-domenowe/sales-sources.md,required-domain
+30.05,Drivery wyniku,ResultDrivers,04-komponenty-domenowe/result-drivers.md,required-domain
+80.04,Rejestr decyzji,DecisionQueue,04-komponenty-domenowe/decision-queue.md,required-domain
+80.03,Rekomendacje,RecommendationCard,04-komponenty-domenowe/recommendation-card.md,required-domain
+50.06,Dowody,EvidencePanel,04-komponenty-domenowe/evidence-panel.md,required-domain
+41.01,Centrum jakości,DataStatusBanner,04-komponenty-domenowe/data-status-banner.md,required-domain
+40.02,Kreator połączenia,PairingFlow,04-komponenty-domenowe/pairing-flow.md,required-domain

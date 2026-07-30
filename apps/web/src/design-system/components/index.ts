@@ -2,6 +2,9 @@ export {
   BackgroundOperationItem,
 } from './BackgroundOperationItem';
 export {
+  Breadcrumbs,
+} from './Breadcrumbs';
+export {
   Button,
   ButtonGroup,
   IconButton,
@@ -31,14 +34,26 @@ export {
   InlineNotice,
 } from './InlineNotice';
 export {
+  Menu,
+} from './Menu';
+export {
   OverlayRoot,
 } from './OverlayRoot';
+export {
+  Pagination,
+} from './Pagination';
+export {
+  PaginationNav,
+} from './PaginationNav';
+export {
+  Popover,
+} from './Popover';
 export {
   ProgressIndicator,
 } from './ProgressIndicator';
 export {
-  Popover,
-} from './Popover';
+  SectionNavigation,
+} from './SectionNavigation';
 export {
   Select,
 } from './Select';
@@ -55,6 +70,9 @@ export {
   Switch,
 } from './Switch';
 export {
+  Tabs,
+} from './Tabs';
+export {
   Toast,
 } from './Toast';
 export {
@@ -68,6 +86,10 @@ export type {
   BackgroundOperationItemProps,
   BackgroundOperationStatus,
 } from './BackgroundOperationItem';
+export type {
+  BreadcrumbsItem,
+  BreadcrumbsProps,
+} from './Breadcrumbs';
 export type {
   ButtonProps,
   ButtonGroupOrientation,
@@ -109,17 +131,32 @@ export type {
   InlineNoticeProps,
 } from './InlineNotice';
 export type {
+  MenuCloseReason,
+  MenuItem,
+  MenuProps,
+} from './Menu';
+export type {
   OverlayCloseReason,
   OverlayRootBackdrop,
   OverlayRootProps,
 } from './OverlayRoot';
 export type {
+  PaginationProps,
+} from './Pagination';
+export type {
+  PaginationNavProps,
+} from './PaginationNav';
+export type {
+  PopoverProps,
+} from './Popover';
+export type {
   ProgressIndicatorProps,
   ProgressIndicatorTone,
 } from './ProgressIndicator';
 export type {
-  PopoverProps,
-} from './Popover';
+  SectionNavigationItem,
+  SectionNavigationProps,
+} from './SectionNavigation';
 export type {
   SelectProps,
 } from './Select';
@@ -136,6 +173,10 @@ export type {
 export type {
   SwitchProps,
 } from './Switch';
+export type {
+  TabsItem,
+  TabsProps,
+} from './Tabs';
 export type {
   ToastProps,
 } from './Toast';

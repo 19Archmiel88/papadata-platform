@@ -1,0 +1,18 @@
+{
+  "operationId": "data-quality.reprocess.start",
+  "correlationId": "corr-dataQualityReprocessStart",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "outcomeId": "00000000-0000-4000-8000-000000000099",
+    "status": "applied",
+    "changedResourceIds": [],
+    "nextAction": null,
+    "jobId": null,
+    "qualityReprocessStartResult": {
+      "operationId": "data-quality.reprocess.start",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "data-quality"
+    }
+  },
+  "warnings": []
+}

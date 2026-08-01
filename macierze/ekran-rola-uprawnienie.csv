@@ -1,0 +1,517 @@
+screen_id,ekran,rola,capability,zakres
+30.01,Widok główny,Owner,command-center.read,read + capability-specific actions
+30.01,Widok główny,Admin,command-center.read,read + capability-specific actions
+30.01,Widok główny,Analyst,command-center.read,read + capability-specific actions
+30.01,Widok główny,Viewer,command-center.read,read
+30.02,Kolejka uwagi,Owner,command-center.read,read + capability-specific actions
+30.02,Kolejka uwagi,Admin,command-center.read,read + capability-specific actions
+30.02,Kolejka uwagi,Analyst,command-center.read,read + capability-specific actions
+30.02,Kolejka uwagi,Viewer,command-center.read,read
+30.03,KPI,Owner,command-center.read,read + capability-specific actions
+30.03,KPI,Admin,command-center.read,read + capability-specific actions
+30.03,KPI,Analyst,command-center.read,read + capability-specific actions
+30.03,KPI,Viewer,command-center.read,read
+30.04,Plan vs wynik,Owner,command-center.read,read + capability-specific actions
+30.04,Plan vs wynik,Admin,command-center.read,read + capability-specific actions
+30.04,Plan vs wynik,Analyst,command-center.read,read + capability-specific actions
+30.04,Plan vs wynik,Viewer,command-center.read,read
+30.05,Drivery wyniku,Owner,command-center.read,read + capability-specific actions
+30.05,Drivery wyniku,Admin,command-center.read,read + capability-specific actions
+30.05,Drivery wyniku,Analyst,command-center.read,read + capability-specific actions
+30.05,Drivery wyniku,Viewer,command-center.read,read
+30.06,Źródła sprzedaży,Owner,command-center.read,read + capability-specific actions
+30.06,Źródła sprzedaży,Admin,command-center.read,read + capability-specific actions
+30.06,Źródła sprzedaży,Analyst,command-center.read,read + capability-specific actions
+30.06,Źródła sprzedaży,Viewer,command-center.read,read
+30.07,Ruch,Owner,command-center.read,read + capability-specific actions
+30.07,Ruch,Admin,command-center.read,read + capability-specific actions
+30.07,Ruch,Analyst,command-center.read,read + capability-specific actions
+30.07,Ruch,Viewer,command-center.read,read
+30.08,Produkty,Owner,command-center.read,read + capability-specific actions
+30.08,Produkty,Admin,command-center.read,read + capability-specific actions
+30.08,Produkty,Analyst,command-center.read,read + capability-specific actions
+30.08,Produkty,Viewer,command-center.read,read
+30.09,Klienci,Owner,command-center.read,read + capability-specific actions
+30.09,Klienci,Admin,command-center.read,read + capability-specific actions
+30.09,Klienci,Analyst,command-center.read,read + capability-specific actions
+30.09,Klienci,Viewer,command-center.read,read
+30.10,Lejek,Owner,command-center.read,read + capability-specific actions
+30.10,Lejek,Admin,command-center.read,read + capability-specific actions
+30.10,Lejek,Analyst,command-center.read,read + capability-specific actions
+30.10,Lejek,Viewer,command-center.read,read
+30.11,Rekomendacje AI — skrót,Owner,command-center.read,read + capability-specific actions
+30.11,Rekomendacje AI — skrót,Admin,command-center.read,read + capability-specific actions
+30.11,Rekomendacje AI — skrót,Analyst,command-center.read,read + capability-specific actions
+30.11,Rekomendacje AI — skrót,Viewer,command-center.read,read
+30.12,Sygnały sprzedażowe,Owner,command-center.read,read + capability-specific actions
+30.12,Sygnały sprzedażowe,Admin,command-center.read,read + capability-specific actions
+30.12,Sygnały sprzedażowe,Analyst,command-center.read,read + capability-specific actions
+30.12,Sygnały sprzedażowe,Viewer,command-center.read,read
+30.13,Waterfall,Owner,command-center.read,read + capability-specific actions
+30.13,Waterfall,Admin,command-center.read,read + capability-specific actions
+30.13,Waterfall,Analyst,command-center.read,read + capability-specific actions
+30.13,Waterfall,Viewer,command-center.read,read
+30.14,Warianty Centrum Dowodzenia,Owner,command-center.read,read + capability-specific actions
+30.14,Warianty Centrum Dowodzenia,Admin,command-center.read,read + capability-specific actions
+30.14,Warianty Centrum Dowodzenia,Analyst,command-center.read,read + capability-specific actions
+30.14,Warianty Centrum Dowodzenia,Viewer,command-center.read,read
+31.01,Przegląd,Owner,campaigns.read,read + capability-specific actions
+31.01,Przegląd,Admin,campaigns.read,read + capability-specific actions
+31.01,Przegląd,Analyst,campaigns.read,read + capability-specific actions
+31.01,Przegląd,Viewer,campaigns.read,read
+31.02,Lista kampanii,Owner,campaigns.read,read + capability-specific actions
+31.02,Lista kampanii,Admin,campaigns.read,read + capability-specific actions
+31.02,Lista kampanii,Analyst,campaigns.read,read + capability-specific actions
+31.02,Lista kampanii,Viewer,campaigns.read,read
+31.03,Szczegóły kampanii,Owner,campaigns.read,read + capability-specific actions
+31.03,Szczegóły kampanii,Admin,campaigns.read,read + capability-specific actions
+31.03,Szczegóły kampanii,Analyst,campaigns.read,read + capability-specific actions
+31.03,Szczegóły kampanii,Viewer,campaigns.read,read
+31.04,Atrybucja i sprzedaż,Owner,campaigns.read,read + capability-specific actions
+31.04,Atrybucja i sprzedaż,Admin,campaigns.read,read + capability-specific actions
+31.04,Atrybucja i sprzedaż,Analyst,campaigns.read,read + capability-specific actions
+31.04,Atrybucja i sprzedaż,Viewer,campaigns.read,read
+31.05,Budżet,Owner,campaigns.read,read + capability-specific actions
+31.05,Budżet,Admin,campaigns.read,read + capability-specific actions
+31.05,Budżet,Analyst,campaigns.read,read + capability-specific actions
+31.05,Budżet,Viewer,campaigns.read,read
+31.06,Diagnostyka,Owner,campaigns.read,read + capability-specific actions
+31.06,Diagnostyka,Admin,campaigns.read,read + capability-specific actions
+31.06,Diagnostyka,Analyst,campaigns.read,read + capability-specific actions
+31.06,Diagnostyka,Viewer,campaigns.read,read
+31.07,Rekomendacje — kontekst domenowy,Owner,campaigns.read,read + capability-specific actions
+31.07,Rekomendacje — kontekst domenowy,Admin,campaigns.read,read + capability-specific actions
+31.07,Rekomendacje — kontekst domenowy,Analyst,campaigns.read,read + capability-specific actions
+31.07,Rekomendacje — kontekst domenowy,Viewer,campaigns.read,read
+31.08,Warianty kampanii,Owner,campaigns.read,read + capability-specific actions
+31.08,Warianty kampanii,Admin,campaigns.read,read + capability-specific actions
+31.08,Warianty kampanii,Analyst,campaigns.read,read + capability-specific actions
+31.08,Warianty kampanii,Viewer,campaigns.read,read
+32.01,Przegląd,Owner,orders.read,read + capability-specific actions
+32.01,Przegląd,Admin,orders.read,read + capability-specific actions
+32.01,Przegląd,Analyst,orders.read,read + capability-specific actions
+32.01,Przegląd,Viewer,orders.read,read
+32.02,Lista,Owner,orders.read,read + capability-specific actions
+32.02,Lista,Admin,orders.read,read + capability-specific actions
+32.02,Lista,Analyst,orders.read,read + capability-specific actions
+32.02,Lista,Viewer,orders.read,read
+32.03,Szczegóły,Owner,orders.read,read + capability-specific actions
+32.03,Szczegóły,Admin,orders.read,read + capability-specific actions
+32.03,Szczegóły,Analyst,orders.read,read + capability-specific actions
+32.03,Szczegóły,Viewer,orders.read,read
+32.04,Oś zdarzeń,Owner,orders.read,read + capability-specific actions
+32.04,Oś zdarzeń,Admin,orders.read,read + capability-specific actions
+32.04,Oś zdarzeń,Analyst,orders.read,read + capability-specific actions
+32.04,Oś zdarzeń,Viewer,orders.read,read
+32.05,Porównanie źródeł,Owner,orders.read,read + capability-specific actions
+32.05,Porównanie źródeł,Admin,orders.read,read + capability-specific actions
+32.05,Porównanie źródeł,Analyst,orders.read,read + capability-specific actions
+32.05,Porównanie źródeł,Viewer,orders.read,read
+32.06,Rekoncyliacja — skrót,Owner,orders.read,read + capability-specific actions
+32.06,Rekoncyliacja — skrót,Admin,orders.read,read + capability-specific actions
+32.06,Rekoncyliacja — skrót,Analyst,orders.read,read + capability-specific actions
+32.06,Rekoncyliacja — skrót,Viewer,orders.read,read
+32.07,Eksport,Owner,orders.read,read + capability-specific actions
+32.07,Eksport,Admin,orders.read,read + capability-specific actions
+32.07,Eksport,Analyst,orders.read,read + capability-specific actions
+32.07,Eksport,Viewer,orders.read,read
+32.08,Warianty zamówień,Owner,orders.read,read + capability-specific actions
+32.08,Warianty zamówień,Admin,orders.read,read + capability-specific actions
+32.08,Warianty zamówień,Analyst,orders.read,read + capability-specific actions
+32.08,Warianty zamówień,Viewer,orders.read,read
+33.01,Przegląd,Owner,products.read,read + capability-specific actions
+33.01,Przegląd,Admin,products.read,read + capability-specific actions
+33.01,Przegląd,Analyst,products.read,read + capability-specific actions
+33.01,Przegląd,Viewer,products.read,read
+33.02,Katalog,Owner,products.read,read + capability-specific actions
+33.02,Katalog,Admin,products.read,read + capability-specific actions
+33.02,Katalog,Analyst,products.read,read + capability-specific actions
+33.02,Katalog,Viewer,products.read,read
+33.03,Szczegóły,Owner,products.read,read + capability-specific actions
+33.03,Szczegóły,Admin,products.read,read + capability-specific actions
+33.03,Szczegóły,Analyst,products.read,read + capability-specific actions
+33.03,Szczegóły,Viewer,products.read,read
+33.04,Mapowanie,Owner,products.read,read + capability-specific actions
+33.04,Mapowanie,Admin,products.read,read + capability-specific actions
+33.04,Mapowanie,Analyst,products.read,read + capability-specific actions
+33.04,Mapowanie,Viewer,products.read,read
+33.05,Oferty,Owner,products.read,read + capability-specific actions
+33.05,Oferty,Admin,products.read,read + capability-specific actions
+33.05,Oferty,Analyst,products.read,read + capability-specific actions
+33.05,Oferty,Viewer,products.read,read
+33.06,Wydajność,Owner,products.read,read + capability-specific actions
+33.06,Wydajność,Admin,products.read,read + capability-specific actions
+33.06,Wydajność,Analyst,products.read,read + capability-specific actions
+33.06,Wydajność,Viewer,products.read,read
+33.07,Kolejka braków,Owner,products.read,read + capability-specific actions
+33.07,Kolejka braków,Admin,products.read,read + capability-specific actions
+33.07,Kolejka braków,Analyst,products.read,read + capability-specific actions
+33.07,Kolejka braków,Viewer,products.read,read
+33.08,Analiza wpływu,Owner,products.read,read + capability-specific actions
+33.08,Analiza wpływu,Admin,products.read,read + capability-specific actions
+33.08,Analiza wpływu,Analyst,products.read,read + capability-specific actions
+33.08,Analiza wpływu,Viewer,products.read,read
+33.09,Warianty produktów,Owner,products.read,read + capability-specific actions
+33.09,Warianty produktów,Admin,products.read,read + capability-specific actions
+33.09,Warianty produktów,Analyst,products.read,read + capability-specific actions
+33.09,Warianty produktów,Viewer,products.read,read
+34.01,Przegląd,Owner,customers.read,read + capability-specific actions
+34.01,Przegląd,Admin,customers.read,read + capability-specific actions
+34.01,Przegląd,Analyst,customers.read,read + capability-specific actions
+34.01,Przegląd,Viewer,customers.read,read
+34.02,Segmenty,Owner,customers.read,read + capability-specific actions
+34.02,Segmenty,Admin,customers.read,read + capability-specific actions
+34.02,Segmenty,Analyst,customers.read,read + capability-specific actions
+34.02,Segmenty,Viewer,customers.read,read
+34.03,Kohorty,Owner,customers.read,read + capability-specific actions
+34.03,Kohorty,Admin,customers.read,read + capability-specific actions
+34.03,Kohorty,Analyst,customers.read,read + capability-specific actions
+34.03,Kohorty,Viewer,customers.read,read
+34.04,Szczegóły pseudonimizowane,Owner,customers.read,read + capability-specific actions
+34.04,Szczegóły pseudonimizowane,Admin,customers.read,read + capability-specific actions
+34.04,Szczegóły pseudonimizowane,Analyst,customers.read,read + capability-specific actions
+34.04,Szczegóły pseudonimizowane,Viewer,customers.read,read
+34.05,Konflikty tożsamości,Owner,customers.read,read + capability-specific actions
+34.05,Konflikty tożsamości,Admin,customers.read,read + capability-specific actions
+34.05,Konflikty tożsamości,Analyst,customers.read,read + capability-specific actions
+34.05,Konflikty tożsamości,Viewer,customers.read,read
+34.06,Prywatność,Owner,customers.read,read + capability-specific actions
+34.06,Prywatność,Admin,customers.read,read + capability-specific actions
+34.06,Prywatność,Analyst,customers.read,read + capability-specific actions
+34.06,Prywatność,Viewer,customers.read,read
+34.07,Analiza wpływu,Owner,customers.read,read + capability-specific actions
+34.07,Analiza wpływu,Admin,customers.read,read + capability-specific actions
+34.07,Analiza wpływu,Analyst,customers.read,read + capability-specific actions
+34.07,Analiza wpływu,Viewer,customers.read,read
+34.08,Warianty klientów,Owner,customers.read,read + capability-specific actions
+34.08,Warianty klientów,Admin,customers.read,read + capability-specific actions
+34.08,Warianty klientów,Analyst,customers.read,read + capability-specific actions
+34.08,Warianty klientów,Viewer,customers.read,read
+35.01,Przegląd ruchu,Owner,traffic.read,read + capability-specific actions
+35.01,Przegląd ruchu,Admin,traffic.read,read + capability-specific actions
+35.01,Przegląd ruchu,Analyst,traffic.read,read + capability-specific actions
+35.01,Przegląd ruchu,Viewer,traffic.read,read
+35.02,Kanały,Owner,traffic.read,read + capability-specific actions
+35.02,Kanały,Admin,traffic.read,read + capability-specific actions
+35.02,Kanały,Analyst,traffic.read,read + capability-specific actions
+35.02,Kanały,Viewer,traffic.read,read
+35.03,Lejek — widok,Owner,traffic.read,read + capability-specific actions
+35.03,Lejek — widok,Admin,traffic.read,read + capability-specific actions
+35.03,Lejek — widok,Analyst,traffic.read,read + capability-specific actions
+35.03,Lejek — widok,Viewer,traffic.read,read
+35.04,Lejek — szczegóły kroku,Owner,traffic.read,read + capability-specific actions
+35.04,Lejek — szczegóły kroku,Admin,traffic.read,read + capability-specific actions
+35.04,Lejek — szczegóły kroku,Analyst,traffic.read,read + capability-specific actions
+35.04,Lejek — szczegóły kroku,Viewer,traffic.read,read
+35.05,Definicje lejka,Owner,traffic.read,read + capability-specific actions
+35.05,Definicje lejka,Admin,traffic.read,read + capability-specific actions
+35.05,Definicje lejka,Analyst,traffic.read,read + capability-specific actions
+35.05,Definicje lejka,Viewer,traffic.read,read
+35.06,GA4 vs zamówienia,Owner,traffic.read,read + capability-specific actions
+35.06,GA4 vs zamówienia,Admin,traffic.read,read + capability-specific actions
+35.06,GA4 vs zamówienia,Analyst,traffic.read,read + capability-specific actions
+35.06,GA4 vs zamówienia,Viewer,traffic.read,read
+35.07,Jakość zdarzeń,Owner,traffic.read,read + capability-specific actions
+35.07,Jakość zdarzeń,Admin,traffic.read,read + capability-specific actions
+35.07,Jakość zdarzeń,Analyst,traffic.read,read + capability-specific actions
+35.07,Jakość zdarzeń,Viewer,traffic.read,read
+35.08,Strony wejścia,Owner,traffic.read,read + capability-specific actions
+35.08,Strony wejścia,Admin,traffic.read,read + capability-specific actions
+35.08,Strony wejścia,Analyst,traffic.read,read + capability-specific actions
+35.08,Strony wejścia,Viewer,traffic.read,read
+35.09,Warianty ruchu,Owner,traffic.read,read + capability-specific actions
+35.09,Warianty ruchu,Admin,traffic.read,read + capability-specific actions
+35.09,Warianty ruchu,Analyst,traffic.read,read + capability-specific actions
+35.09,Warianty ruchu,Viewer,traffic.read,read
+40.01,Katalog integracji,Owner,integrations.read,read + capability-specific actions
+40.01,Katalog integracji,Admin,integrations.read,read + capability-specific actions
+40.01,Katalog integracji,Analyst,integrations.read,read + capability-specific actions
+40.01,Katalog integracji,Viewer,integrations.read,read
+40.02,Kreator połączenia,Owner,integrations.read,read + capability-specific actions
+40.02,Kreator połączenia,Admin,integrations.read,read + capability-specific actions
+40.02,Kreator połączenia,Analyst,integrations.read,read + capability-specific actions
+40.02,Kreator połączenia,Viewer,integrations.read,read
+40.03,Szczegóły integracji,Owner,integrations.read,read + capability-specific actions
+40.03,Szczegóły integracji,Admin,integrations.read,read + capability-specific actions
+40.03,Szczegóły integracji,Analyst,integrations.read,read + capability-specific actions
+40.03,Szczegóły integracji,Viewer,integrations.read,read
+40.04,Historia synchronizacji,Owner,integrations.read,read + capability-specific actions
+40.04,Historia synchronizacji,Admin,integrations.read,read + capability-specific actions
+40.04,Historia synchronizacji,Analyst,integrations.read,read + capability-specific actions
+40.04,Historia synchronizacji,Viewer,integrations.read,read
+40.05,Przebieg synchronizacji,Owner,integrations.read,read + capability-specific actions
+40.05,Przebieg synchronizacji,Admin,integrations.read,read + capability-specific actions
+40.05,Przebieg synchronizacji,Analyst,integrations.read,read + capability-specific actions
+40.05,Przebieg synchronizacji,Viewer,integrations.read,read
+40.06,Zakres synchronizacji,Owner,integrations.read,read + capability-specific actions
+40.06,Zakres synchronizacji,Admin,integrations.read,read + capability-specific actions
+40.06,Zakres synchronizacji,Analyst,integrations.read,read + capability-specific actions
+40.06,Zakres synchronizacji,Viewer,integrations.read,read
+40.07,Ponowne połączenie,Owner,integrations.read,read + capability-specific actions
+40.07,Ponowne połączenie,Admin,integrations.read,read + capability-specific actions
+40.07,Ponowne połączenie,Analyst,integrations.read,read + capability-specific actions
+40.07,Ponowne połączenie,Viewer,integrations.read,read
+40.08,Odłączenie,Owner,integrations.read,read + capability-specific actions
+40.08,Odłączenie,Admin,integrations.read,read + capability-specific actions
+40.08,Odłączenie,Analyst,integrations.read,read + capability-specific actions
+40.08,Odłączenie,Viewer,integrations.read,read
+40.09,Awaria providera,Owner,integrations.read,read + capability-specific actions
+40.09,Awaria providera,Admin,integrations.read,read + capability-specific actions
+40.09,Awaria providera,Analyst,integrations.read,read + capability-specific actions
+40.09,Awaria providera,Viewer,integrations.read,read
+40.10,Warianty integracji,Owner,integrations.read,read + capability-specific actions
+40.10,Warianty integracji,Admin,integrations.read,read + capability-specific actions
+40.10,Warianty integracji,Analyst,integrations.read,read + capability-specific actions
+40.10,Warianty integracji,Viewer,integrations.read,read
+41.01,Centrum jakości,Owner,data-quality.read,read + capability-specific actions
+41.01,Centrum jakości,Admin,data-quality.read,read + capability-specific actions
+41.01,Centrum jakości,Analyst,data-quality.read,read + capability-specific actions
+41.01,Centrum jakości,Viewer,data-quality.read,read
+41.02,Zbiór danych,Owner,data-quality.read,read + capability-specific actions
+41.02,Zbiór danych,Admin,data-quality.read,read + capability-specific actions
+41.02,Zbiór danych,Analyst,data-quality.read,read + capability-specific actions
+41.02,Zbiór danych,Viewer,data-quality.read,read
+41.03,Pochodzenie danych,Owner,data-quality.read,read + capability-specific actions
+41.03,Pochodzenie danych,Admin,data-quality.read,read + capability-specific actions
+41.03,Pochodzenie danych,Analyst,data-quality.read,read + capability-specific actions
+41.03,Pochodzenie danych,Viewer,data-quality.read,read
+41.04,Nakładanie źródeł,Owner,data-quality.read,read + capability-specific actions
+41.04,Nakładanie źródeł,Admin,data-quality.read,read + capability-specific actions
+41.04,Nakładanie źródeł,Analyst,data-quality.read,read + capability-specific actions
+41.04,Nakładanie źródeł,Viewer,data-quality.read,read
+41.05,Nadrzędność źródła,Owner,data-quality.read,read + capability-specific actions
+41.05,Nadrzędność źródła,Admin,data-quality.read,read + capability-specific actions
+41.05,Nadrzędność źródła,Analyst,data-quality.read,read + capability-specific actions
+41.05,Nadrzędność źródła,Viewer,data-quality.read,read
+41.06,Konflikty,Owner,data-quality.read,read + capability-specific actions
+41.06,Konflikty,Admin,data-quality.read,read + capability-specific actions
+41.06,Konflikty,Analyst,data-quality.read,read + capability-specific actions
+41.06,Konflikty,Viewer,data-quality.read,read
+41.07,Przegląd ręczny,Owner,data-quality.read,read + capability-specific actions
+41.07,Przegląd ręczny,Admin,data-quality.read,read + capability-specific actions
+41.07,Przegląd ręczny,Analyst,data-quality.read,read + capability-specific actions
+41.07,Przegląd ręczny,Viewer,data-quality.read,read
+41.08,Ponowne przetwarzanie,Owner,data-quality.read,read + capability-specific actions
+41.08,Ponowne przetwarzanie,Admin,data-quality.read,read + capability-specific actions
+41.08,Ponowne przetwarzanie,Analyst,data-quality.read,read + capability-specific actions
+41.08,Ponowne przetwarzanie,Viewer,data-quality.read,read
+41.09,Rekoncyliacja,Owner,data-quality.read,read + capability-specific actions
+41.09,Rekoncyliacja,Admin,data-quality.read,read + capability-specific actions
+41.09,Rekoncyliacja,Analyst,data-quality.read,read + capability-specific actions
+41.09,Rekoncyliacja,Viewer,data-quality.read,read
+41.10,Warianty jakości danych,Owner,data-quality.read,read + capability-specific actions
+41.10,Warianty jakości danych,Admin,data-quality.read,read + capability-specific actions
+41.10,Warianty jakości danych,Analyst,data-quality.read,read + capability-specific actions
+41.10,Warianty jakości danych,Viewer,data-quality.read,read
+50.01,Panel kontekstowy Papa,Owner,ai.use,read + capability-specific actions
+50.01,Panel kontekstowy Papa,Admin,ai.use,read + capability-specific actions
+50.01,Panel kontekstowy Papa,Analyst,ai.use,read + capability-specific actions
+50.01,Panel kontekstowy Papa,Viewer,ai.use,read
+50.02,AssistantShell,Owner,ai.use,read + capability-specific actions
+50.02,AssistantShell,Admin,ai.use,read + capability-specific actions
+50.02,AssistantShell,Analyst,ai.use,read + capability-specific actions
+50.02,AssistantShell,Viewer,ai.use,read
+50.03,Tryby pracy,Owner,ai.use,read + capability-specific actions
+50.03,Tryby pracy,Admin,ai.use,read + capability-specific actions
+50.03,Tryby pracy,Analyst,ai.use,read + capability-specific actions
+50.03,Tryby pracy,Viewer,ai.use,read
+50.04,Context basket,Owner,ai.use,read + capability-specific actions
+50.04,Context basket,Admin,ai.use,read + capability-specific actions
+50.04,Context basket,Analyst,ai.use,read + capability-specific actions
+50.04,Context basket,Viewer,ai.use,read
+50.05,Odpowiedź Papa,Owner,ai.use,read + capability-specific actions
+50.05,Odpowiedź Papa,Admin,ai.use,read + capability-specific actions
+50.05,Odpowiedź Papa,Analyst,ai.use,read + capability-specific actions
+50.05,Odpowiedź Papa,Viewer,ai.use,read
+50.06,Dowody,Owner,ai.use,read + capability-specific actions
+50.06,Dowody,Admin,ai.use,read + capability-specific actions
+50.06,Dowody,Analyst,ai.use,read + capability-specific actions
+50.06,Dowody,Viewer,ai.use,read
+50.07,Confidence,Owner,ai.use,read + capability-specific actions
+50.07,Confidence,Admin,ai.use,read + capability-specific actions
+50.07,Confidence,Analyst,ai.use,read + capability-specific actions
+50.07,Confidence,Viewer,ai.use,read
+50.08,Laboratorium AI,Owner,ai.use,read + capability-specific actions
+50.08,Laboratorium AI,Admin,ai.use,read + capability-specific actions
+50.08,Laboratorium AI,Analyst,ai.use,read + capability-specific actions
+50.08,Laboratorium AI,Viewer,ai.use,read
+50.09,Obserwacje,Owner,ai.use,read + capability-specific actions
+50.09,Obserwacje,Admin,ai.use,read + capability-specific actions
+50.09,Obserwacje,Analyst,ai.use,read + capability-specific actions
+50.09,Obserwacje,Viewer,ai.use,read
+50.10,Rekomendacje i warianty,Owner,ai.use,read + capability-specific actions
+50.10,Rekomendacje i warianty,Admin,ai.use,read + capability-specific actions
+50.10,Rekomendacje i warianty,Analyst,ai.use,read + capability-specific actions
+50.10,Rekomendacje i warianty,Viewer,ai.use,read
+50.11,Propozycje AI,Owner,ai.use,read + capability-specific actions
+50.11,Propozycje AI,Admin,ai.use,read + capability-specific actions
+50.11,Propozycje AI,Analyst,ai.use,read + capability-specific actions
+50.11,Propozycje AI,Viewer,ai.use,read
+50.12,AI Action Approval,Owner,ai.use,read + capability-specific actions
+50.12,AI Action Approval,Admin,ai.use,read + capability-specific actions
+50.12,AI Action Approval,Analyst,ai.use,read + capability-specific actions
+50.12,AI Action Approval,Viewer,ai.use,read
+50.13,AI Actions,Owner,ai.use,read + capability-specific actions
+50.13,AI Actions,Admin,ai.use,read + capability-specific actions
+50.13,AI Actions,Analyst,ai.use,read + capability-specific actions
+50.13,AI Actions,Viewer,ai.use,read
+50.14,Zablokowane działania AI,Owner,ai.use,read + capability-specific actions
+50.14,Zablokowane działania AI,Admin,ai.use,read + capability-specific actions
+50.14,Zablokowane działania AI,Analyst,ai.use,read + capability-specific actions
+50.14,Zablokowane działania AI,Viewer,ai.use,read
+50.15,Historia i pamięć Papa,Owner,ai.use,read + capability-specific actions
+50.15,Historia i pamięć Papa,Admin,ai.use,read + capability-specific actions
+50.15,Historia i pamięć Papa,Analyst,ai.use,read + capability-specific actions
+50.15,Historia i pamięć Papa,Viewer,ai.use,read
+50.16,Ustawienia AI i Governance,Owner,ai.use,read + capability-specific actions
+50.16,Ustawienia AI i Governance,Admin,ai.use,read + capability-specific actions
+50.16,Ustawienia AI i Governance,Analyst,ai.use,read + capability-specific actions
+50.16,Ustawienia AI i Governance,Viewer,ai.use,read
+50.17,Warianty Papa,Owner,ai.use,read + capability-specific actions
+50.17,Warianty Papa,Admin,ai.use,read + capability-specific actions
+50.17,Warianty Papa,Analyst,ai.use,read + capability-specific actions
+50.17,Warianty Papa,Viewer,ai.use,read
+60.01,Organizacja,Owner,settings.read,read + capability-specific actions
+60.01,Organizacja,Admin,settings.read,read + capability-specific actions
+60.01,Organizacja,Analyst,settings.read,read + capability-specific actions
+60.01,Organizacja,Viewer,settings.read,read
+60.02,Workspace,Owner,settings.read,read + capability-specific actions
+60.02,Workspace,Admin,settings.read,read + capability-specific actions
+60.02,Workspace,Analyst,settings.read,read + capability-specific actions
+60.02,Workspace,Viewer,settings.read,read
+60.03,Członkostwa,Owner,settings.read,read + capability-specific actions
+60.03,Członkostwa,Admin,settings.read,read + capability-specific actions
+60.03,Członkostwa,Analyst,settings.read,read + capability-specific actions
+60.03,Członkostwa,Viewer,settings.read,read
+60.04,Role i uprawnienia,Owner,settings.read,read + capability-specific actions
+60.04,Role i uprawnienia,Admin,settings.read,read + capability-specific actions
+60.04,Role i uprawnienia,Analyst,settings.read,read + capability-specific actions
+60.04,Role i uprawnienia,Viewer,settings.read,read
+60.05,Bezpieczeństwo konta,Owner,settings.read,read + capability-specific actions
+60.05,Bezpieczeństwo konta,Admin,settings.read,read + capability-specific actions
+60.05,Bezpieczeństwo konta,Analyst,settings.read,read + capability-specific actions
+60.05,Bezpieczeństwo konta,Viewer,settings.read,read
+60.06,Sesje,Owner,settings.read,read + capability-specific actions
+60.06,Sesje,Admin,settings.read,read + capability-specific actions
+60.06,Sesje,Analyst,settings.read,read + capability-specific actions
+60.06,Sesje,Viewer,settings.read,read
+60.07,Audyt,Owner,settings.read,read + capability-specific actions
+60.07,Audyt,Admin,settings.read,read + capability-specific actions
+60.07,Audyt,Analyst,settings.read,read + capability-specific actions
+60.07,Audyt,Viewer,settings.read,read
+60.08,Prywatność,Owner,settings.read,read + capability-specific actions
+60.08,Prywatność,Admin,settings.read,read + capability-specific actions
+60.08,Prywatność,Analyst,settings.read,read + capability-specific actions
+60.08,Prywatność,Viewer,settings.read,read
+60.09,Dostęp wsparcia,Owner,settings.read,read + capability-specific actions
+60.09,Dostęp wsparcia,Admin,settings.read,read + capability-specific actions
+60.09,Dostęp wsparcia,Analyst,settings.read,read + capability-specific actions
+60.09,Dostęp wsparcia,Viewer,settings.read,read
+60.10,Warianty ustawień,Owner,settings.read,read + capability-specific actions
+60.10,Warianty ustawień,Admin,settings.read,read + capability-specific actions
+60.10,Warianty ustawień,Analyst,settings.read,read + capability-specific actions
+60.10,Warianty ustawień,Viewer,settings.read,read
+70.01,Subskrypcja,Owner,billing.read,read + capability-specific actions
+70.01,Subskrypcja,Admin,billing.read,read + capability-specific actions
+70.01,Subskrypcja,Analyst,billing.read,read + capability-specific actions
+70.01,Subskrypcja,Viewer,billing.read,read
+70.02,Użycie i limity,Owner,billing.read,read + capability-specific actions
+70.02,Użycie i limity,Admin,billing.read,read + capability-specific actions
+70.02,Użycie i limity,Analyst,billing.read,read + capability-specific actions
+70.02,Użycie i limity,Viewer,billing.read,read
+70.03,Plany,Owner,billing.read,read + capability-specific actions
+70.03,Plany,Admin,billing.read,read + capability-specific actions
+70.03,Plany,Analyst,billing.read,read + capability-specific actions
+70.03,Plany,Viewer,billing.read,read
+70.04,Faktury,Owner,billing.read,read + capability-specific actions
+70.04,Faktury,Admin,billing.read,read + capability-specific actions
+70.04,Faktury,Analyst,billing.read,read + capability-specific actions
+70.04,Faktury,Viewer,billing.read,read
+70.05,Płatności,Owner,billing.read,read + capability-specific actions
+70.05,Płatności,Admin,billing.read,read + capability-specific actions
+70.05,Płatności,Analyst,billing.read,read + capability-specific actions
+70.05,Płatności,Viewer,billing.read,read
+70.06,Zaległa płatność,Owner,billing.read,read + capability-specific actions
+70.06,Zaległa płatność,Admin,billing.read,read + capability-specific actions
+70.06,Zaległa płatność,Analyst,billing.read,read + capability-specific actions
+70.06,Zaległa płatność,Viewer,billing.read,read
+70.07,Korekty,Owner,billing.read,read + capability-specific actions
+70.07,Korekty,Admin,billing.read,read + capability-specific actions
+70.07,Korekty,Analyst,billing.read,read + capability-specific actions
+70.07,Korekty,Viewer,billing.read,read
+70.08,Zmiana i anulowanie,Owner,billing.read,read + capability-specific actions
+70.08,Zmiana i anulowanie,Admin,billing.read,read + capability-specific actions
+70.08,Zmiana i anulowanie,Analyst,billing.read,read + capability-specific actions
+70.08,Zmiana i anulowanie,Viewer,billing.read,read
+70.09,Pilot do abonamentu,Owner,billing.read,read + capability-specific actions
+70.09,Pilot do abonamentu,Admin,billing.read,read + capability-specific actions
+70.09,Pilot do abonamentu,Analyst,billing.read,read + capability-specific actions
+70.09,Pilot do abonamentu,Viewer,billing.read,read
+70.10,Warianty billingowe,Owner,billing.read,read + capability-specific actions
+70.10,Warianty billingowe,Admin,billing.read,read + capability-specific actions
+70.10,Warianty billingowe,Analyst,billing.read,read + capability-specific actions
+70.10,Warianty billingowe,Viewer,billing.read,read
+80.01,Centrum decyzji,Owner,decisions.read,read + capability-specific actions
+80.01,Centrum decyzji,Admin,decisions.read,read + capability-specific actions
+80.01,Centrum decyzji,Analyst,decisions.read,read + capability-specific actions
+80.01,Centrum decyzji,Viewer,decisions.read,read
+80.02,Obserwacje,Owner,decisions.read,read + capability-specific actions
+80.02,Obserwacje,Admin,decisions.read,read + capability-specific actions
+80.02,Obserwacje,Analyst,decisions.read,read + capability-specific actions
+80.02,Obserwacje,Viewer,decisions.read,read
+80.03,Rekomendacje,Owner,decisions.read,read + capability-specific actions
+80.03,Rekomendacje,Admin,decisions.read,read + capability-specific actions
+80.03,Rekomendacje,Analyst,decisions.read,read + capability-specific actions
+80.03,Rekomendacje,Viewer,decisions.read,read
+80.04,Rejestr decyzji,Owner,decisions.read,read + capability-specific actions
+80.04,Rejestr decyzji,Admin,decisions.read,read + capability-specific actions
+80.04,Rejestr decyzji,Analyst,decisions.read,read + capability-specific actions
+80.04,Rejestr decyzji,Viewer,decisions.read,read
+80.05,Brief działania,Owner,decisions.read,read + capability-specific actions
+80.05,Brief działania,Admin,decisions.read,read + capability-specific actions
+80.05,Brief działania,Analyst,decisions.read,read + capability-specific actions
+80.05,Brief działania,Viewer,decisions.read,read
+80.06,Szczegóły działania,Owner,decisions.read,read + capability-specific actions
+80.06,Szczegóły działania,Admin,decisions.read,read + capability-specific actions
+80.06,Szczegóły działania,Analyst,decisions.read,read + capability-specific actions
+80.06,Szczegóły działania,Viewer,decisions.read,read
+80.07,Pomiar,Owner,decisions.read,read + capability-specific actions
+80.07,Pomiar,Admin,decisions.read,read + capability-specific actions
+80.07,Pomiar,Analyst,decisions.read,read + capability-specific actions
+80.07,Pomiar,Viewer,decisions.read,read
+80.08,Biblioteka działań,Owner,decisions.read,read + capability-specific actions
+80.08,Biblioteka działań,Admin,decisions.read,read + capability-specific actions
+80.08,Biblioteka działań,Analyst,decisions.read,read + capability-specific actions
+80.08,Biblioteka działań,Viewer,decisions.read,read
+80.09,Powiązania z modułami i sprawami,Owner,decisions.read,read + capability-specific actions
+80.09,Powiązania z modułami i sprawami,Admin,decisions.read,read + capability-specific actions
+80.09,Powiązania z modułami i sprawami,Analyst,decisions.read,read + capability-specific actions
+80.09,Powiązania z modułami i sprawami,Viewer,decisions.read,read
+80.10,Warianty decyzji i działań,Owner,decisions.read,read + capability-specific actions
+80.10,Warianty decyzji i działań,Admin,decisions.read,read + capability-specific actions
+80.10,Warianty decyzji i działań,Analyst,decisions.read,read + capability-specific actions
+80.10,Warianty decyzji i działań,Viewer,decisions.read,read
+85.01,Strona główna pomocy,Owner,help.read,read + capability-specific actions
+85.01,Strona główna pomocy,Admin,help.read,read + capability-specific actions
+85.01,Strona główna pomocy,Analyst,help.read,read + capability-specific actions
+85.01,Strona główna pomocy,Viewer,help.read,read
+85.02,Procedury,Owner,help.read,read + capability-specific actions
+85.02,Procedury,Admin,help.read,read + capability-specific actions
+85.02,Procedury,Analyst,help.read,read + capability-specific actions
+85.02,Procedury,Viewer,help.read,read
+85.03,Lista wyników,Owner,help.read,read + capability-specific actions
+85.03,Lista wyników,Admin,help.read,read + capability-specific actions
+85.03,Lista wyników,Analyst,help.read,read + capability-specific actions
+85.03,Lista wyników,Viewer,help.read,read
+85.04,Szczegóły procedury,Owner,help.read,read + capability-specific actions
+85.04,Szczegóły procedury,Admin,help.read,read + capability-specific actions
+85.04,Szczegóły procedury,Analyst,help.read,read + capability-specific actions
+85.04,Szczegóły procedury,Viewer,help.read,read
+85.05,Zgłoszenie wsparcia,Owner,help.read,read + capability-specific actions
+85.05,Zgłoszenie wsparcia,Admin,help.read,read + capability-specific actions
+85.05,Zgłoszenie wsparcia,Analyst,help.read,read + capability-specific actions
+85.05,Zgłoszenie wsparcia,Viewer,help.read,read
+85.06,Warianty Centrum Pomocy,Owner,help.read,read + capability-specific actions
+85.06,Warianty Centrum Pomocy,Admin,help.read,read + capability-specific actions
+85.06,Warianty Centrum Pomocy,Analyst,help.read,read + capability-specific actions
+85.06,Warianty Centrum Pomocy,Viewer,help.read,read

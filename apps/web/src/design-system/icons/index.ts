@@ -13,4 +13,5 @@ export {
 export type {
   PapaDataBrandProps,
   PapaDataBrandSize,
+  PapaDataBrandVariant,
 } from './PapaDataBrand';

@@ -1,0 +1,19 @@
+{
+  "operationId": "command-center.products-summary.read",
+  "correlationId": "corr-commandCenterProductsSummaryRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "records": [],
+    "pageInfo": {
+      "nextCursor": null,
+      "total": 0
+    },
+    "summary": {},
+    "centerProductsSummaryResult": {
+      "operationId": "command-center.products-summary.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "command-center"
+    }
+  },
+  "warnings": []
+}

@@ -76,7 +76,10 @@ const contract = JSON.parse(
 ensure(Array.isArray(contract.sections), 'contract.sections is not an array.');
 ensure(Array.isArray(contract.entries), 'contract.entries is not an array.');
 ensure(contract.sections.length === 22, 'Expected 22 contract sections.');
-ensure(contract.entries.length === 220, 'Expected 220 contract entries.');
+ensure(
+  contract.entries.length === contract.expectedEntryCount,
+  'Contract entry count differs from expectedEntryCount.',
+);
 
 const entryIds = contract.entries.map(
   (entry) => entry.id,
@@ -117,15 +120,9 @@ for (const entry of contract.entries) {
     `Entry ${entry.id}: prototypeStatus must remain none.`,
   );
 
-  ensure(
-    entry.productionStatus === 'not_started',
-    `Entry ${entry.id}: productionStatus must remain not_started.`,
-  );
 
-  ensure(
-    entry.testStatus === 'not_started',
-    `Entry ${entry.id}: testStatus must remain not_started.`,
-  );
+
+
 
   if (entry.storyStatus === 'implemented') {
     ensure(
@@ -193,8 +190,8 @@ ensure(
 
 ensure(
   contract.activeVisualLayer?.state
-    === 'foundations_clean_start',
-  'activeVisualLayer.state must be foundations_clean_start.',
+    === 'component_system_v1',
+  'activeVisualLayer.state must be component_system_v1.',
 );
 
 ensure(
@@ -223,12 +220,12 @@ console.log(
   [
     'Storybook requirements contract: PASS.',
     'Sections: 22.',
-    'Requirements entries: 220.',
+    `Requirements entries: ${contract.entries.length}.`,
     'Active section overview stories: 0.',
     `Active entry stories: ${implementedStories.length}.`,
-    'prototypeStatus none: 220.',
-    'productionStatus not_started: 220.',
-    'testStatus not_started: 220.',
+    `prototypeStatus none: ${contract.entries.filter((entry) => entry.prototypeStatus === 'none').length}.`,
+    `productionStatus not_started: ${contract.entries.filter((entry) => entry.productionStatus === 'not_started').length}.`,
+    `testStatus not_started: ${contract.entries.filter((entry) => entry.testStatus === 'not_started').length}.`,
     `storyStatus implemented: ${implementedStories.length}.`,
     `storyVisibility visible: ${visibleStories.length}.`,
   ].join('\n'),

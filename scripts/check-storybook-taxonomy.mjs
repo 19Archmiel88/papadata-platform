@@ -101,7 +101,7 @@ function validate(contract, taxonomy) {
   const requiredPolicies = {
     preserveEntryIds: true,
     requirementsRemainInContract: true,
-    activeVisualLayerCleanStart: true,
+    activeVisualLayerComponentSystemV1: true,
     foundationsStoriesAllowed: true,
     legacyPrototypeAllowed: false,
     legacyVisualLayerForbidden: true,
@@ -193,19 +193,11 @@ function validate(contract, taxonomy) {
 
   ensure(
     contract.entries.every((entry) => entry.prototypeStatus === 'none'),
-    'All entries must keep prototypeStatus none in clean start.',
+    'All entries must keep prototypeStatus none in Component System V1.',
     errors,
   );
-  ensure(
-    contract.entries.every((entry) => entry.productionStatus === 'not_started'),
-    'All entries must keep productionStatus not_started in clean start.',
-    errors,
-  );
-  ensure(
-    contract.entries.every((entry) => entry.testStatus === 'not_started'),
-    'All entries must keep testStatus not_started in clean start.',
-    errors,
-  );
+
+
 
   const mappingsBySectionId = new Map(
     mappings.map((mapping) => [mapping.sectionId, mapping]),
@@ -333,9 +325,9 @@ function renderDecisionDocument(contract, taxonomy, stats) {
     '',
     '## Stan aktywnej warstwy wizualnej',
     '',
-    'Aktywna warstwa wizualna Storybooka jest w etapie Clean Start. Dozwolone sa wylacznie stories zgodne z kontraktem i taksonomia. ShowcaseKit, wrappery demonstracyjne, lokalne warstwy wizualne i tokeny --pds-* nie sa czescia biezacego systemu.',
+    'Aktywna warstwa wizualna Storybooka dziala w etapie Component System V1. Dozwolone sa wylacznie zaakceptowane stories zgodne z kontraktem, taksonomia i kanonicznymi foundations. Tokeny --pds-* oraz rownolegla legacy visual layer pozostaja zabronione.',
     '',
-    '- wymagania: 220 pozycji w kontrakcie;',
+    `- wymagania: ${contract.entries.length} pozycji w kontrakcie;`,
     `- aktywne stories: ${stats.visibleStories};`,
     '- prototypeStatus implemented: 0;',
     `- storyStatus implemented: ${stats.implementedStories};`,
@@ -396,7 +388,7 @@ function renderDecisionDocument(contract, taxonomy, stats) {
 
   lines.push(
     '',
-    '## Rozklad 220 wymagan',
+    `## Rozklad ${contract.entries.length} wymagan`,
     '',
     '| Root | Liczba pozycji |',
     '|---|---:|',
@@ -417,7 +409,7 @@ function renderDecisionDocument(contract, taxonomy, stats) {
     '- Nowe story musi miec wpis w kontrakcie i tytul zgodny z docelowym rootem taksonomii.',
     '- Laboratorium decyzji pozostaje miejscem dla jawnych demonstracji foundations przed przeniesieniem decyzji do warstwy docelowej.',
     '- Zmiana storyStatus, prototypeStatus, productionStatus i testStatus wymaga rzeczywistego dowodu.',
-    '- Lista 220 wymagan pozostaje zakresem produktu, a nie lista aktywnych atrap.',
+    `- Lista ${contract.entries.length} wymagan pozostaje zakresem produktu, a nie lista aktywnych atrap.`,
     '',
     '## Integralnosc',
     '',

@@ -1,0 +1,20 @@
+{
+  "operationId": "traffic.funnel-definitions.read",
+  "correlationId": "corr-trafficFunnelDefinitionsRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "records": [],
+    "pageInfo": {
+      "nextCursor": null,
+      "total": 0
+    },
+    "summary": {},
+    "steps": [],
+    "funnelDefinitionsResult": {
+      "operationId": "traffic.funnel-definitions.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "traffic"
+    }
+  },
+  "warnings": []
+}

@@ -54,11 +54,14 @@ const requiredEntries = {
   '00.01': 'KierunekWizualny',
   '00.02': 'Typografia',
   '00.03': 'KolorySemantyczne',
-  '00.04': 'SpacingIGrid',
-  '00.05': 'PromienieObramowaniaICienie',
-  '00.06': 'Ikonografia',
-  '00.07': 'MotionIReducedMotion',
-  '00.08': 'Dostepnosc',
+  '00.04': 'StatusySystemowe',
+  '00.05': 'SpacingIGrid',
+  '00.06': 'PromienieIGeometria',
+  '00.07': 'LinieISeparacja',
+  '00.08': 'GlebiaIWarstwy',
+  '00.09': 'Ikonografia',
+  '00.10': 'MotionIReducedMotion',
+  '00.11': 'Dostepnosc',
   '05.01': 'TloAuth',
   '05.02': 'CanvasAplikacji',
   '05.03': 'PowierzchniaDanych',
@@ -214,33 +217,51 @@ function run() {
     'Keyboard listbox example is missing.',
   );
   ensure(
-    surfaceStory.includes('<caption className="pd-f0-sr-only">'),
-    'Data table accessible caption is missing.',
+    surfaceStory.includes('role="table"')
+      && surfaceStory.includes('aria-label="Źródła danych"')
+      && surfaceStory.includes('role="columnheader"')
+      && surfaceStory.includes('role="cell"'),
+    'Data table accessible name and table semantics are missing.',
   );
 
   ensure(
-    foundationStory.includes('data-effective-motion={effectiveMode}'),
-    'Motion story does not separate requested and effective modes.',
+    foundationStory.includes('className="pd-f0-motion-mode"')
+      && foundationStory.includes(
+        "data-motion={reduced ? 'reduced' : 'full'}",
+      )
+      && foundationStory.includes(
+        'className="pd-f0-motion-demo"',
+      )
+      && foundationStory.includes(
+        'className="pd-f0-motion-demo__track"',
+      ),
+    'Motion story does not expose the accepted full and reduced variants.',
   );
   ensure(
-    surfaceStory.includes('Układ responsywny z nawigacją'),
-    'Responsive canvas label is missing.',
+    surfaceStory.includes('aria-label="Nawigacja obszaru roboczego"')
+      && surfaceStory.includes('aria-label="Nawigacja modułów"'),
+    'Responsive application canvas navigation semantics are missing.',
   );
   ensure(
-    surfaceStory.includes('Które źródło napędza rentowny wzrost?'),
-    'Polish data-surface business copy is missing.',
+    surfaceStory.includes('Źródła aktywne')
+      && surfaceStory.includes('Ostatnia synchronizacja'),
+    'Polish operational data-surface copy is missing.',
   );
   ensure(
-    surfaceStory.includes('Podstawowe narzędzie podziału dużych sekcji.'),
-    'Polish separator guidance is missing.',
+    surfaceStory.includes('pd-cw-separation-stage')
+      && surfaceStory.includes('pd-cw-separation-stage__table')
+      && surfaceStory.includes('Nagłówki, wiersze i podziały wewnątrz regionu.'),
+    'Current separator guidance and separation stage are missing.',
   );
   ensure(
     storyCss.includes('height: 220px;'),
     'Chart placeholder does not have a definite height.',
   );
   ensure(
-    storyCss.includes('var(--pd-overlay-scrim-text)'),
-    'Overlay scrim does not use a dedicated text token.',
+    theme.includes('--pd-overlay-scrim-text:')
+      && theme.includes('--pd-overlay-scrim-text-muted:')
+      && surfaceStory.includes('aria-label="Panel Papa Asystenta"'),
+    'Overlay text tokens or the accepted assistant overlay surface are missing.',
   );
   ensure(
     webPackage.scripts?.['verify-foundation-system']?.includes('capture-foundation-evidence'),
@@ -251,8 +272,8 @@ function run() {
     'Evidence script is not using the final CDP capture model.',
   );
   ensure(
-    evidenceScript.includes('const foundationCoreExports = requiredExports.slice(0, 8);'),
-    'Foundation evidence does not explicitly cover the 8 core stories.',
+    evidenceScript.includes('const foundationCoreExports = requiredExports.slice(0, 11);'),
+    'Foundation evidence does not explicitly cover the 11 core stories.',
   );
   ensure(
     evidenceScript.includes('zoom: 2'),
@@ -291,12 +312,15 @@ function run() {
     'Primary focus does not use the two-layer focus ring.',
   );
   ensure(
-    storyCss.includes('[data-active="true"]:not([aria-selected="true"])'),
-    'Listbox keyboard-active state is not separated from selected.',
+    foundationStory.includes('optionRefs.current[boundedIndex]?.focus();')
+      && foundationStory.includes('aria-selected={selected === option}'),
+    'Listbox focus navigation and selected state are not represented separately.',
   );
   ensure(
-    storyCss.includes('box-shadow: inset 3px 0 0 var(--pd-focus-visible);'),
-    'Listbox keyboard-active indicator is missing.',
+    foundationStory.includes('role="option"')
+      && foundationStory.includes('optionRefs.current[index] = node;')
+      && theme.includes(':focus-visible'),
+    'Listbox option focus-visible indicator is missing.',
   );
   ensure(
     evidenceScript.includes("dispatchKey(client, 'ArrowDown', 'ArrowDown', 40)"),
@@ -314,7 +338,7 @@ function run() {
   console.log(
     [
       'Foundation System V1 static gate: PASS.',
-      'Entries: 13/13.',
+      'Entries: 16/16.',
       `Required tokens: ${requiredTokens.length}/${requiredTokens.length}.`,
       'Shared brand: PASS.',
       'Focus and forced colors: PASS.',

@@ -1,0 +1,20 @@
+{
+  "operationId": "customers.cohorts.read",
+  "correlationId": "corr-customersCohortsRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "records": [],
+    "pageInfo": {
+      "nextCursor": null,
+      "total": 0
+    },
+    "summary": {},
+    "cohorts": [],
+    "cohortsResult": {
+      "operationId": "customers.cohorts.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "customers"
+    }
+  },
+  "warnings": []
+}

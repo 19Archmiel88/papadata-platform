@@ -16,6 +16,7 @@
     "check-storybook-taxonomy": "node ../../scripts/check-storybook-taxonomy.mjs --self-test",
     "check-storybook-architecture": "node ../../scripts/check-storybook-architecture.mjs --self-test",
     "check-foundation-system": "node ../../scripts/check-foundation-system-v1.mjs",
+    "check-component-system": "node ../../scripts/check-component-system-v1.mjs",
     "verify-foundation-system": "pnpm check-storybook-catalog && pnpm check-foundation-system && pnpm typecheck && pnpm build-storybook && pnpm capture-foundation-evidence",
     "capture-foundation-evidence": "node ../../scripts/capture-foundation-evidence.mjs"
   },

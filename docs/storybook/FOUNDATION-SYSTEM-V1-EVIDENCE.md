@@ -112,7 +112,7 @@ REJECTED
 
 `ACCEPTED` wymaga:
 
-- 13/13 stories widocznych;
+- 16/16 stories widocznych;
 - wszystkich checkerów `PASS`;
 - typecheck `PASS`;
 - build aplikacji i Storybooka `PASS`;
@@ -120,3 +120,12 @@ REJECTED
 - kompletu przypadków interakcyjnych;
 - braku blokera focus/keyboard/screen reader;
 - akceptacji wizualnej właściciela produktu.
+
+## Aktualny zamrożony baseline
+
+- Fundamenty: `00.01–00.11`.
+- Laboratorium: `05.01–05.05`.
+- Łącznie: `16/16` aktywnych i zamrożonych stories.
+- Kanoniczna para fontów: `Inter` i `JetBrains Mono`.
+- Kanoniczne czasy Motion: `70 / 110 / 180 / 240 ms`.
+- Zaakceptowane stories są źródłem dla dokumentacji i dalszych sekcji.

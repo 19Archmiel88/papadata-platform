@@ -198,7 +198,7 @@ Status `FOUNDATION SYSTEM V1 — ACCEPTED` może zostać nadany dopiero, gdy:
 
 ### Techniczne
 
-- 13/13 entries jest widoczne i zaimplementowane w kontrakcie;
+- 16/16 entries jest widoczne i zaimplementowane w kontrakcie;
 - wszystkie tokeny mają jedno źródło;
 - nie ma `--pds-*`, `--demo-brand-*`, ShowcaseKit ani legacy visual layer;
 - runtime obsługuje theme, locale, density i motion;
@@ -256,3 +256,12 @@ Finalny patch F0 zamyka problemy wykryte podczas pierwszego audytu evidence:
 12. Tło Auth jest jawnie opisane jako laboratorium powierzchni, nie zatwierdzony ekran produkcyjny.
 
 Po zastosowaniu patcha finalny odbiór wymaga ponownego uruchomienia pełnej bramy technicznej i wygenerowania nowego pakietu evidence.
+
+## Aktualny zamrożony baseline
+
+- Fundamenty: `00.01–00.11`.
+- Laboratorium: `05.01–05.05`.
+- Łącznie: `16/16` aktywnych i zamrożonych stories.
+- Kanoniczna para fontów: `Inter` i `JetBrains Mono`.
+- Kanoniczne czasy Motion: `70 / 110 / 180 / 240 ms`.
+- Zaakceptowane stories są źródłem dla dokumentacji i dalszych sekcji.

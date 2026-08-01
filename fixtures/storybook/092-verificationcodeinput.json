@@ -1,0 +1,50 @@
+{
+  "fixtureId": "SB-092",
+  "storyTitle": "10 Komponenty/VerificationCodeInput",
+  "sourceDocument": "04-komponenty-bazowe/komponenty/verificationcodeinput.md",
+  "screenId": null,
+  "components": [],
+  "states": [
+    "ready",
+    "loading",
+    "empty",
+    "error"
+  ],
+  "viewports": [
+    1440,
+    768,
+    390
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "localeCases": [
+    "pl",
+    "en-long-copy"
+  ],
+  "playSteps": [
+    "focus-first-interactive",
+    "exercise-component-interaction",
+    "verify-focus-restoration",
+    "verify-live-region",
+    "verify-keyboard-only"
+  ],
+  "visualAssertions": [
+    "1440-light",
+    "1440-dark",
+    "768-reflow",
+    "390-mobile",
+    "200-percent-zoom",
+    "reduced-motion",
+    "state-error"
+  ],
+  "a11y": [
+    "keyboard-only",
+    "focus-visible",
+    "accessible-name",
+    "live-region",
+    "200-percent-zoom"
+  ],
+  "implementationStatus": "backlog-target-not-implemented"
+}

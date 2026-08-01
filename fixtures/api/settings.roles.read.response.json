@@ -1,0 +1,19 @@
+{
+  "operationId": "settings.roles.read",
+  "correlationId": "corr-settingsRolesRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "records": [],
+    "pageInfo": {
+      "nextCursor": null,
+      "total": 0
+    },
+    "summary": {},
+    "rolesResult": {
+      "operationId": "settings.roles.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "settings"
+    }
+  },
+  "warnings": []
+}

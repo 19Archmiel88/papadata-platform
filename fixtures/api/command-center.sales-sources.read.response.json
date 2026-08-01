@@ -1,0 +1,19 @@
+{
+  "operationId": "command-center.sales-sources.read",
+  "correlationId": "corr-commandCenterSalesSourcesRead",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "records": [],
+    "pageInfo": {
+      "nextCursor": null,
+      "total": 0
+    },
+    "summary": {},
+    "centerSalesSourcesResult": {
+      "operationId": "command-center.sales-sources.read",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "command-center"
+    }
+  },
+  "warnings": []
+}

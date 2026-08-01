@@ -1,0 +1,161 @@
+.pd-inline-action,
+button.pd-inline-action,
+a.pd-inline-action {
+  --pd-inline-action-color: var(--pd-interactive);
+  --pd-inline-action-hover-color: var(--pd-interactive-hover);
+  --pd-inline-action-line: var(--pd-brand-line);
+  --pd-inline-action-glow: var(--pd-brand-glow);
+
+  appearance: none;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pd-space-1);
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--pd-radius-subtle);
+  outline: var(--pd-focus-width) solid transparent;
+  outline-offset: var(--pd-focus-offset);
+  background: transparent;
+  color: var(--pd-inline-action-color);
+  box-shadow: none;
+  cursor: pointer;
+  font: inherit;
+  font-weight: var(--pd-font-weight-medium);
+  line-height: inherit;
+  text-decoration: none;
+  transition:
+    color var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard),
+    filter var(--pd-motion-duration-standard)
+      var(--pd-motion-easing-emphasized),
+    opacity var(--pd-motion-duration-fast)
+      var(--pd-motion-easing-standard);
+}
+
+.pd-inline-action:hover,
+button.pd-inline-action:hover,
+a.pd-inline-action:hover,
+.pd-inline-action:focus-visible,
+button.pd-inline-action:focus-visible,
+a.pd-inline-action:focus-visible {
+  color: var(--pd-inline-action-hover-color);
+  filter: drop-shadow(0 0 0.34rem var(--pd-inline-action-glow));
+}
+
+.pd-inline-action:focus-visible,
+button.pd-inline-action:focus-visible,
+a.pd-inline-action:focus-visible {
+  box-shadow: 0 0 0 var(--pd-focus-ring-size) var(--pd-focus-visible);
+}
+
+.pd-inline-action__label {
+  position: relative;
+  display: inline-block;
+  color: currentColor;
+}
+
+.pd-inline-action__label::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -0.22em;
+  left: 0;
+  height: 1.5px;
+  border-radius: var(--pd-radius-pill);
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--pd-inline-action-line) 18%,
+      var(--pd-brand-accent) 50%,
+      var(--pd-inline-action-line) 82%,
+      transparent
+    );
+  opacity: 0;
+  transform: scaleX(0.1);
+  transform-origin: center;
+  transition:
+    opacity var(--pd-motion-duration-standard)
+      var(--pd-motion-easing-emphasized),
+    transform var(--pd-motion-duration-deliberate)
+      var(--pd-motion-easing-emphasized);
+}
+
+.pd-inline-action:hover .pd-inline-action__label::after,
+.pd-inline-action:focus-visible .pd-inline-action__label::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.pd-inline-action__icon {
+  display: inline-flex;
+  color: currentColor;
+  transition: filter var(--pd-motion-duration-standard)
+    var(--pd-motion-easing-emphasized);
+}
+
+.pd-inline-action:hover .pd-inline-action__icon,
+.pd-inline-action:focus-visible .pd-inline-action__icon {
+  filter: drop-shadow(0 0 0.3rem var(--pd-inline-action-glow));
+}
+
+.pd-inline-action--muted,
+.pd-inline-action[data-tone='muted'] {
+  --pd-inline-action-color: var(--pd-text-secondary);
+  --pd-inline-action-hover-color: var(--pd-text);
+}
+
+.pd-inline-action--danger,
+.pd-inline-action[data-tone='danger'] {
+  --pd-inline-action-color: var(--pd-status-danger);
+  --pd-inline-action-hover-color: var(--pd-status-danger);
+  --pd-inline-action-line: var(--pd-status-danger);
+  --pd-inline-action-glow: var(--pd-status-danger-subtle);
+}
+
+.pd-inline-action--small,
+.pd-inline-action[data-size='small'] {
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-inline-action[disabled],
+.pd-inline-action[aria-disabled='true'] {
+  color: var(--pd-text-muted);
+  cursor: not-allowed;
+  filter: none;
+  opacity: 0.56;
+}
+
+.pd-inline-action[disabled] .pd-inline-action__label::after,
+.pd-inline-action[aria-disabled='true'] .pd-inline-action__label::after {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-inline-action,
+  .pd-inline-action__icon,
+  .pd-inline-action__label::after {
+    transition-duration: 1ms;
+  }
+}
+
+@media (forced-colors: active) {
+  .pd-inline-action,
+  button.pd-inline-action,
+  a.pd-inline-action {
+    color: LinkText;
+  }
+
+  .pd-inline-action__label::after {
+    background: LinkText;
+  }
+
+  .pd-inline-action[disabled],
+  .pd-inline-action[aria-disabled='true'] {
+    color: GrayText;
+  }
+}

@@ -1,6 +1,10 @@
 import type {
   HTMLAttributes,
 } from 'react';
+import {
+  forwardRef,
+  memo,
+} from 'react';
 
 import './papa-data-brand.css';
 
@@ -9,116 +13,175 @@ export type PapaDataBrandSize =
   | 'medium'
   | 'large';
 
+export type PapaDataBrandVariant =
+  | 'lockup'
+  | 'mark'
+  | 'wordmark'
+  | 'decorative';
+
 export type PapaDataBrandProps = Omit<
   HTMLAttributes<HTMLSpanElement>,
-  'children'
+  | 'aria-hidden'
+  | 'aria-label'
+  | 'aria-labelledby'
+  | 'children'
+  | 'role'
 > & {
+  readonly decorative?: boolean;
   readonly glow?: boolean;
   readonly label?: string;
   readonly showMark?: boolean;
   readonly showWordmark?: boolean;
   readonly size?: PapaDataBrandSize;
+  readonly variant?: PapaDataBrandVariant;
 };
 
-export function PapaDataBrand({
-  className,
-  glow = false,
-  label = 'PapaData',
-  showMark = true,
-  showWordmark = true,
-  size = 'medium',
-  ...props
-}: PapaDataBrandProps) {
-  const rootClassName = [
-    'pd-brand-lockup',
-    `pd-brand-lockup--${size}`,
-    glow ? 'pd-brand-lockup--glow' : null,
-    !showMark ? 'pd-brand-lockup--wordmark-only' : null,
-    !showWordmark ? 'pd-brand-lockup--mark-only' : null,
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
+function PapaDataBrandMark() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="pd-brand-lockup__mark"
+      focusable="false"
+      viewBox="0 0 100 100"
+    >
+      <path
+        className="svg-stroke-layer"
+        d="M50 55 L85 72.5 L50 90 L15 72.5 Z"
+        fill="var(--brand-logo-base-fill)"
+        stroke="var(--brand-logo-base-stroke)"
+        strokeLinejoin="round"
+      />
+      <path
+        className="svg-stroke-layer"
+        d="M50 35 L85 52.5 L50 70 L15 52.5 Z"
+        fill="var(--brand-logo-mid-fill)"
+        stroke="var(--pd-brand-line)"
+        strokeLinejoin="round"
+      />
+      <path
+        className="svg-stroke-layer"
+        d="M50 15 L85 32.5 L50 50 L15 32.5 Z"
+        fill="var(--pd-brand)"
+        stroke="var(--pd-brand)"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
+function PapaDataWordmark() {
   return (
     <span
-      aria-label={label}
-      className={rootClassName}
-      role="img"
-      {...props}
+      aria-hidden="true"
+      className="pd-brand-lockup__wordmark font-inter"
     >
-      {showMark ? (
-        <svg
-          aria-hidden="true"
-          className="pd-brand-lockup__mark"
-          focusable="false"
-          viewBox="0 0 72 72"
-        >
-          <path
-            className="pd-brand-lockup__p"
-            d="M13 61V11H37.5C52.5 11 61 19.2 61 31C61 42.8 52.5 51 37.5 51H27"
-          />
-
-          <path
-            className="pd-brand-lockup__d"
-            d="M29 21V41H37.5C45.7 41 50.5 37.2 50.5 31C50.5 24.8 45.7 21 37.5 21H29Z"
-          />
-
-          <g
-            aria-hidden="true"
-            className="pd-brand-lockup__bars"
-          >
-            <path
-              className="pd-brand-lockup__bar-front pd-brand-lockup__bar-front--one"
-              d="M27 57L34 53V64L27 68V57Z"
-            />
-            <path
-              className="pd-brand-lockup__bar-top pd-brand-lockup__bar-top--one"
-              d="M27 57L31 55L38 59L34 61L27 57Z"
-            />
-            <path
-              className="pd-brand-lockup__bar-side pd-brand-lockup__bar-side--one"
-              d="M34 61L38 59V64L34 66V61Z"
-            />
-
-            <path
-              className="pd-brand-lockup__bar-front pd-brand-lockup__bar-front--two"
-              d="M38 52L45 48V64L38 68V52Z"
-            />
-            <path
-              className="pd-brand-lockup__bar-top pd-brand-lockup__bar-top--two"
-              d="M38 52L42 50L49 54L45 56L38 52Z"
-            />
-            <path
-              className="pd-brand-lockup__bar-side pd-brand-lockup__bar-side--two"
-              d="M45 56L49 54V64L45 66V56Z"
-            />
-
-            <path
-              className="pd-brand-lockup__bar-front pd-brand-lockup__bar-front--three"
-              d="M49 46L56 42V64L49 68V46Z"
-            />
-            <path
-              className="pd-brand-lockup__bar-top pd-brand-lockup__bar-top--three"
-              d="M49 46L53 44L60 48L56 50L49 46Z"
-            />
-            <path
-              className="pd-brand-lockup__bar-side pd-brand-lockup__bar-side--three"
-              d="M56 50L60 48V64L56 66V50Z"
-            />
-          </g>
-        </svg>
-      ) : null}
-
-      {showWordmark ? (
-        <span
-          aria-hidden="true"
-          className="pd-brand-lockup__wordmark"
-        >
-          <span>Papa</span>
-          <span>Data</span>
-        </span>
-      ) : null}
+      <span className="pd-brand-lockup__wordmark-prefix">
+        Papa
+      </span>
+      <span className="pd-brand-lockup__wordmark-suffix pd-text-brand">
+        Data
+      </span>
     </span>
   );
 }
+
+function getDefaultLabel({
+  showMark,
+  showWordmark,
+}: {
+  readonly showMark: boolean;
+  readonly showWordmark: boolean;
+}) {
+  if (showMark && showWordmark) {
+    return 'PapaData logo';
+  }
+
+  if (showMark) {
+    return 'PapaData sygnet';
+  }
+
+  if (showWordmark) {
+    return 'PapaData logotyp';
+  }
+
+  return 'PapaData';
+}
+
+export const PapaDataBrand = memo(
+  forwardRef<HTMLSpanElement, PapaDataBrandProps>(
+    function PapaDataBrand(
+      {
+        className,
+        decorative = false,
+        glow = false,
+        label,
+        showMark = true,
+        showWordmark = true,
+        size = 'medium',
+        variant = 'lockup',
+        ...props
+      },
+      ref,
+    ) {
+      const resolvedShowMark =
+        variant === 'wordmark'
+          ? false
+          : variant === 'mark' || variant === 'decorative'
+            ? true
+            : showMark;
+      const resolvedShowWordmark =
+        variant === 'mark'
+          ? false
+          : variant === 'wordmark' || variant === 'decorative'
+            ? true
+            : showWordmark;
+      const isDecorative =
+        decorative || variant === 'decorative';
+      const resolvedLabel =
+        label
+        ?? getDefaultLabel({
+          showMark: resolvedShowMark,
+          showWordmark: resolvedShowWordmark,
+        });
+      const isInformative =
+        !isDecorative && resolvedLabel.trim().length > 0;
+      const rootClassName = [
+        'pd-lockup',
+        'pd-brand-lockup',
+        `pd-brand-lockup--${size}`,
+        `pd-brand-lockup--${variant}`,
+        resolvedShowMark && !resolvedShowWordmark
+          ? 'pd-lockup--mark-only pd-brand-lockup--mark-only'
+          : null,
+        !resolvedShowMark && resolvedShowWordmark
+          ? 'pd-lockup--wordmark-only pd-brand-lockup--wordmark-only'
+          : null,
+        isDecorative ? 'pd-brand-lockup--decorative' : null,
+        glow ? 'pd-brand-lockup--glow' : null,
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ');
+
+      return (
+        <span
+          {...props}
+          ref={ref}
+          aria-hidden={isInformative ? undefined : true}
+          aria-label={isInformative ? resolvedLabel : undefined}
+          className={rootClassName}
+          data-decorative={isDecorative ? true : undefined}
+          data-size={size}
+          data-variant={variant}
+          role={isInformative ? 'img' : undefined}
+          tabIndex={undefined}
+        >
+          {resolvedShowMark ? <PapaDataBrandMark /> : null}
+          {resolvedShowWordmark ? <PapaDataWordmark /> : null}
+        </span>
+      );
+    },
+  ),
+);
+
+PapaDataBrand.displayName = 'PapaDataBrand';

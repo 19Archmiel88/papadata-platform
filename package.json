@@ -30,6 +30,7 @@
     "build-storybook": "pnpm --filter @papadata/web build-storybook",
     "check:storybook-catalog": "pnpm --filter @papadata/web check-storybook-catalog",
     "check:foundation-system": "pnpm --filter @papadata/web check-foundation-system",
+    "check-component-system": "pnpm --filter @papadata/web check-component-system",
     "verify:foundation-system": "pnpm --filter @papadata/web verify-foundation-system",
     "evidence:foundation-system": "pnpm --filter @papadata/web capture-foundation-evidence"
   },
@@ -41,7 +42,9 @@
   "pnpm": {
     "overrides": {
       "gaxios>uuid": "11.1.1",
-      "teeny-request>uuid": "11.1.1"
+      "teeny-request>uuid": "11.1.1",
+      "@nestjs/platform-fastify>find-my-way": "9.7.0",
+      "minimatch@9.0.9>brace-expansion": "2.1.4"
     }
   },
   "engines": {

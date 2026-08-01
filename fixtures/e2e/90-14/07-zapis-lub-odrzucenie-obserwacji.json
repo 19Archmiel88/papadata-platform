@@ -1,0 +1,34 @@
+{
+  "fixtureId": "E2E_90_14_07_zapis-lub-odrzucenie-obserwacji",
+  "flowId": "90.14",
+  "stepNo": 7,
+  "stepName": "Zapis lub odrzucenie obserwacji",
+  "surfaceDocument": "15-papa-asystent-i-laboratorium-ai/50-09-obserwacje.md",
+  "route": "/app/papa/obserwacje",
+  "operationId": "papa.observation.save",
+  "operationKind": "command",
+  "capability": "ai.write",
+  "apiRequestFixture": "fixtures/api/papa.observation.save.request.json",
+  "apiResponseFixture": "fixtures/api/papa.observation.save.response.json",
+  "actor": {
+    "role": "Admin",
+    "tenantId": "tenant-e2e",
+    "workspaceId": "workspace-e2e",
+    "capabilities": [
+      "ai.write"
+    ]
+  },
+  "preconditions": [
+    "Warunek domenowy kpi do interpretacji papa zapis lub odrzucenie obserwacji: Aktor posiada `ai.write`; fixture ładuje request `fixtures/api/papa.observation.save.request.json` i stan domeny wymagany dla kroku 7 procesu 90.14. Poprzedni krok zakończył się potwierdzonym postcondition albo jest to punkt startowy."
+  ],
+  "expected": {
+    "success": "Komenda zwraca applied/queued, audit event zawiera `papa.observation.save`, a odczyt potwierdzający pokazuje zmianę wymaganą przed krokiem „stan końcowy procesu”.",
+    "postcondition": "Po kroku „Zapis lub odrzucenie obserwacji” obowiązuje domenowy warunek: operacja `papa.observation.save` jest widoczna w audycie, fixture response `fixtures/api/papa.observation.save.response.json` przechodzi walidację schema, a następna powierzchnia „stan końcowy procesu” jest osiągalna wyłącznie zgodnie z procesem 90.14.",
+    "assertion": "Asercja domenowa kpi do interpretacji papa zapis lub odrzucenie obserwacji: Sprawdź operation kind `command`, capability `ai.write`, schema request/response, expected event `e2e_90_14_07_papa_observation_save`, brak podwójnego efektu, prawidłowy focus po zmianie powierzchni oraz kod `RECOMMENDATION_DECISION_CONFLICT` w kontrolowanym scenariuszu błędu."
+  },
+  "recoverableError": {
+    "code": "RECOMMENDATION_DECISION_CONFLICT",
+    "behavior": "Odzyskanie kroku kpi do interpretacji papa zapis lub odrzucenie obserwacji: `RECOMMENDATION_DECISION_CONFLICT` dla kroku 7: zachowaj niesekretne dane formularza i route `/app/papa/obserwacje`, pokaż correlationId oraz akcję retry tylko dla błędu oznaczonego `recoverable=true`; błąd capability kończy proces bez retry.",
+    "resume": "Reguła wznowienia kpi do interpretacji papa zapis lub odrzucenie obserwacji: Checkpoint `E2E_90_14_07_zapis-lub-odrzucenie-obserwacji` zapisuje zakończony step_no=7, operationId i identyfikatory zasobów z response fixture. Po wznowieniu system ponownie sprawdza `ai.write` i odczytuje aktualny stan; komendy nie są automatycznie odtwarzane bez tego samego idempotency key."
+  }
+}

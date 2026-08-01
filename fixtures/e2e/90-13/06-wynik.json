@@ -1,0 +1,34 @@
+{
+  "fixtureId": "E2E_90_13_06_wynik",
+  "flowId": "90.13",
+  "stepNo": 6,
+  "stepName": "Wynik",
+  "surfaceDocument": "07-centrum-dowodzenia/30-04-plan-vs-wynik.md",
+  "route": "/app/command-center/plan-vs-wynik",
+  "operationId": "command-center.plan-performance.read",
+  "operationKind": "query",
+  "capability": "analytics.read",
+  "apiRequestFixture": "fixtures/api/command-center.plan-performance.read.request.json",
+  "apiResponseFixture": "fixtures/api/command-center.plan-performance.read.response.json",
+  "actor": {
+    "role": "Admin",
+    "tenantId": "tenant-e2e",
+    "workspaceId": "workspace-e2e",
+    "capabilities": [
+      "analytics.read"
+    ]
+  },
+  "preconditions": [
+    "Warunek domenowy obserwacja do wyniku wynik: Aktor posiada `analytics.read`; fixture ładuje request `fixtures/api/command-center.plan-performance.read.request.json` i stan domeny wymagany dla kroku 6 procesu 90.13. Poprzedni krok zakończył się potwierdzonym postcondition albo jest to punkt startowy."
+  ],
+  "expected": {
+    "success": "Odpowiedź `CommandCenterPlanPerformanceReadResponse` ma operationId `command-center.plan-performance.read`, brak ApiProblem krytycznego, a UI renderuje dane kroku „Wynik” bez zamiany null na zero.",
+    "postcondition": "Po kroku „Wynik” obowiązuje domenowy warunek: operacja `command-center.plan-performance.read` jest widoczna w audycie, fixture response `fixtures/api/command-center.plan-performance.read.response.json` przechodzi walidację schema, a następna powierzchnia „Wniosek” jest osiągalna wyłącznie zgodnie z procesem 90.13.",
+    "assertion": "Asercja domenowa obserwacja do wyniku wynik: Sprawdź operation kind `query`, capability `analytics.read`, schema request/response, expected event `e2e_90_13_06_command_center_plan_performance_read`, brak podwójnego efektu, prawidłowy focus po zmianie powierzchni oraz kod `PAPA_INTERPRETATION_UNAVAILABLE` w kontrolowanym scenariuszu błędu."
+  },
+  "recoverableError": {
+    "code": "PAPA_INTERPRETATION_UNAVAILABLE",
+    "behavior": "Odzyskanie kroku obserwacja do wyniku wynik: `PAPA_INTERPRETATION_UNAVAILABLE` dla kroku 6: zachowaj niesekretne dane formularza i route `/app/command-center/plan-vs-wynik`, pokaż correlationId oraz akcję retry tylko dla błędu oznaczonego `recoverable=true`; błąd capability kończy proces bez retry.",
+    "resume": "Reguła wznowienia obserwacja do wyniku wynik: Checkpoint `E2E_90_13_06_wynik` zapisuje zakończony step_no=6, operationId i identyfikatory zasobów z response fixture. Po wznowieniu system ponownie sprawdza `analytics.read` i odczytuje aktualny stan; komendy nie są automatycznie odtwarzane bez tego samego idempotency key."
+  }
+}

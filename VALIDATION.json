@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "error_count": 0,
+  "warning_count": 0,
+  "errors": [],
+  "warnings": [],
+  "checks": {
+    "spec_documents": 460,
+    "broken_links": 0,
+    "provenance_references": 0,
+    "registry_document_references": 0,
+    "api_operations": 212,
+    "api_data_shapes": 176,
+    "components": 78,
+    "auth_surfaces": 29,
+    "e2e_steps": 124,
+    "storybook_targets": 286,
+    "priority_p0": {
+      "documents": 12,
+      "metrics": 58,
+      "legal_templates": 26,
+      "mvp_integrations": 7
+    }
+  }
+}

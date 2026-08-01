@@ -1,0 +1,17 @@
+{
+  "operationId": "data-quality.write",
+  "correlationId": "corr-dataQualityWrite",
+  "generatedAt": "2026-07-30T12:00:00Z",
+  "data": {
+    "outcomeId": "00000000-0000-4000-8000-000000000099",
+    "status": "applied",
+    "changedResourceIds": [],
+    "nextAction": null,
+    "qualityResult": {
+      "operationId": "data-quality.write",
+      "completedAt": "2026-07-30T12:00:00Z",
+      "domain": "data-quality"
+    }
+  },
+  "warnings": []
+}

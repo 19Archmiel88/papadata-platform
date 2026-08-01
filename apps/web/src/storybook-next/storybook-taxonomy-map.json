@@ -2,17 +2,17 @@
   "schemaVersion": 2,
   "decisionId": "SB-TAXONOMY-002",
   "status": "accepted",
-  "title": "Kanoniczna mapa taksonomii Storybooka po Clean Start foundations",
+  "title": "Kanoniczna mapa taksonomii Storybooka w Component System V1",
   "sourceContract": "apps/web/src/storybook-next/storybook-contract.json",
   "decisionDocument": "docs/storybook/STORYBOOK-TAXONOMY-DECISIONS.md",
-  "baselineContractIdentitySha256": "b87fb78aba30c844d870b9742db465c6210ce66ab6aff621c58be9328146f17a",
+  "baselineContractIdentitySha256": "3103a18fc7aa4e4c00006cfbb7248526836df7dcc8d93c8f8e8fe895fdd2736e",
   "expectedSectionCount": 22,
-  "expectedEntryCount": 220,
-  "purpose": "Logiczne przypisanie 220 wymagan do kanonicznych rootow po usunieciu calej odrzuconej aktywnej warstwy wizualnej Storybooka.",
+  "expectedEntryCount": 223,
+  "purpose": "Logiczne przypisanie 223 wymagań do kanonicznych rootów po aktywacji Component System V1.",
   "policies": {
     "preserveEntryIds": true,
     "requirementsRemainInContract": true,
-    "activeVisualLayerCleanStart": true,
+    "activeVisualLayerComponentSystemV1": true,
     "foundationsStoriesAllowed": true,
     "legacyPrototypeAllowed": false,
     "legacyVisualLayerForbidden": true,
@@ -378,6 +378,33 @@
     }
   ],
   "entryOverrides": [
+    {
+      "entryId": "10.01",
+      "targetRootId": "10",
+      "plannedPath": [
+        "10 Komponenty bazowe",
+        "Marka"
+      ],
+      "reason": "Aktywna implementacja Component System V1 zachowuje zaakceptowaną ścieżkę story."
+    },
+    {
+      "entryId": "10.02",
+      "targetRootId": "10",
+      "plannedPath": [
+        "10 Komponenty bazowe",
+        "Przyciski i akcje"
+      ],
+      "reason": "Aktywna implementacja Component System V1 zachowuje zaakceptowaną ścieżkę story."
+    },
+    {
+      "entryId": "10.11",
+      "targetRootId": "10",
+      "plannedPath": [
+        "10 Komponenty bazowe",
+        "Ikony"
+      ],
+      "reason": "Aktywna implementacja Component System V1 zachowuje zaakceptowaną ścieżkę story."
+    },
     {
       "entryId": "20.06",
       "targetRootId": "20",

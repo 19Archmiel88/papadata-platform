@@ -45,8 +45,11 @@ const requiredExports = [
   'KierunekWizualny',
   'Typografia',
   'KolorySemantyczne',
+  'StatusySystemowe',
   'SpacingIGrid',
-  'PromienieObramowaniaICienie',
+  'PromienieIGeometria',
+  'LinieISeparacja',
+  'GlebiaIWarstwy',
   'Ikonografia',
   'MotionIReducedMotion',
   'Dostepnosc',
@@ -57,7 +60,7 @@ const requiredExports = [
   'GradientySwiatloISzklo',
 ];
 
-const foundationCoreExports = requiredExports.slice(0, 8);
+const foundationCoreExports = requiredExports.slice(0, 11);
 
 const mimeTypes = {
   '.css': 'text/css; charset=utf-8',
@@ -614,23 +617,52 @@ async function runAction(client, action) {
 
   if (action === 'motion-full' || action === 'motion-reduced') {
     const index = action === 'motion-full' ? 0 : 1;
-    await evaluate(client, `(() => {
-      const buttons = [...document.querySelectorAll('.pd-f0-motion-trigger')];
-      buttons[${index}]?.click();
-      return buttons.length;
+
+    const before = await evaluate(client, `(() => {
+      const modes = [...document.querySelectorAll('.pd-f0-motion-mode')];
+      const mode = modes[${index}];
+      const button = mode?.querySelector('button');
+      const status = mode?.querySelector('[role="status"]');
+      const track = mode?.querySelector('.pd-f0-motion-demo__track');
+
+      const result = {
+        modeCount: modes.length,
+        mode: mode?.getAttribute('data-motion') ?? '',
+        buttonFound: Boolean(button),
+        statusBefore: status?.textContent?.trim() ?? '',
+        trackFound: Boolean(track),
+      };
+
+      button?.click();
+
+      return result;
     })()`);
+
     await delay(action === 'motion-full' ? 80 : 30);
 
-    return evaluate(client, `(() => {
-      const cards = [...document.querySelectorAll('.pd-f0-motion-example')];
-      const card = cards[${index}];
-      const bar = card?.querySelector('.pd-f0-motion-track span');
+    const after = await evaluate(client, `(() => {
+      const modes = [...document.querySelectorAll('.pd-f0-motion-mode')];
+      const mode = modes[${index}];
+      const status = mode?.querySelector('[role="status"]');
+      const track = mode?.querySelector('.pd-f0-motion-demo__track');
+      const marker = track?.firstElementChild;
+
       return {
-        requested: card?.getAttribute('data-local-motion') ?? '',
-        effective: card?.getAttribute('data-effective-motion') ?? '',
-        transform: bar ? getComputedStyle(bar).transform : '',
+        statusAfter: status?.textContent?.trim() ?? '',
+        trackTransform: marker
+          ? getComputedStyle(marker).transform
+          : '',
       };
     })()`);
+
+    return {
+      ...before,
+      ...after,
+      statusChanged:
+        Boolean(before.statusBefore)
+        && Boolean(after.statusAfter)
+        && before.statusBefore !== after.statusAfter,
+    };
   }
 
   throw new Error(`Unknown evidence action: ${action}`);
@@ -653,13 +685,19 @@ function actionPassed(action, evidence) {
   }
 
   if (action === 'motion-full') {
-    return evidence?.requested === 'full'
-      && evidence?.effective === 'full';
+    return evidence?.modeCount === 2
+      && evidence?.mode === 'full'
+      && evidence?.buttonFound === true
+      && evidence?.trackFound === true
+      && evidence?.statusChanged === true;
   }
 
   if (action === 'motion-reduced') {
-    return evidence?.requested === 'reduced'
-      && evidence?.effective === 'reduced';
+    return evidence?.modeCount === 2
+      && evidence?.mode === 'reduced'
+      && evidence?.buttonFound === true
+      && evidence?.trackFound === true
+      && evidence?.statusChanged === true;
   }
 
   return false;
@@ -701,7 +739,7 @@ async function collectLayoutEvidence(client, captureCase) {
           && !element.getAttribute('aria-labelledby')
           && !element.getAttribute('title');
       })
-      .slice(0, 8)
+      .slice(0, 11)
       .map((element) => ({
         tag: element.tagName.toLowerCase(),
         role: element.getAttribute('role') ?? '',

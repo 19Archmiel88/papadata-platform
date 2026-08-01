@@ -1,0 +1,24 @@
+.pd-button-group,
+.pd-action-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.pd-button-group[data-orientation='vertical'],
+.pd-button-group--vertical,
+.pd-action-group[data-orientation='vertical'],
+.pd-action-group--vertical {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.pd-button-group > * ,
+.pd-action-group > * {
+  flex: 0 0 auto;
+}

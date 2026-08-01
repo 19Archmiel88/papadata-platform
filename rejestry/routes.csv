@@ -1,0 +1,113 @@
+route,document,title,status,ownership
+/app/billing/faktury,17-subskrypcja-i-platnosci/70-04-faktury.md,Faktury,target,canonical-runtime
+/app/billing/korekty,17-subskrypcja-i-platnosci/70-07-korekty.md,Korekty,target,canonical-runtime
+/app/billing/pilot-do-abonamentu,17-subskrypcja-i-platnosci/70-09-pilot-do-abonamentu.md,Pilot do abonamentu,target,canonical-runtime
+/app/billing/plany,17-subskrypcja-i-platnosci/70-03-plany.md,Plany,target,canonical-runtime
+/app/billing/platnosci,17-subskrypcja-i-platnosci/70-05-platnosci.md,Płatności,target,canonical-runtime
+/app/billing/subskrypcja,17-subskrypcja-i-platnosci/70-01-subskrypcja.md,Subskrypcja,target,canonical-runtime
+/app/billing/uzycie-i-limity,17-subskrypcja-i-platnosci/70-02-uzycie-i-limity.md,Użycie i limity,target,canonical-runtime
+/app/billing/zalegla-platnosc,17-subskrypcja-i-platnosci/70-06-zalegla-platnosc.md,Zaległa płatność,target,canonical-runtime
+/app/billing/zmiana-i-anulowanie,17-subskrypcja-i-platnosci/70-08-zmiana-i-anulowanie.md,Zmiana i anulowanie,target,canonical-runtime
+/app/campaigns/atrybucja-i-sprzedaz,08-kampanie-platne/31-04-atrybucja-i-sprzedaz.md,Atrybucja i sprzedaż,target,canonical-runtime
+/app/campaigns/budzet,08-kampanie-platne/31-05-budzet.md,Budżet,target,canonical-runtime
+/app/campaigns/diagnostyka,08-kampanie-platne/31-06-diagnostyka.md,Diagnostyka,target,canonical-runtime
+/app/campaigns/lista-kampanii,08-kampanie-platne/31-02-lista-kampanii.md,Lista kampanii,target,canonical-runtime
+/app/campaigns/przeglad,08-kampanie-platne/31-01-przeglad.md,Przegląd,target,canonical-runtime
+/app/campaigns/rekomendacje-kontekst-domenowy,08-kampanie-platne/31-07-rekomendacje-kontekst-domenowy.md,Rekomendacje — kontekst domenowy,target,canonical-runtime
+/app/campaigns/szczegoly-kampanii/:resourceId,08-kampanie-platne/31-03-szczegoly-kampanii.md,Szczegóły kampanii,target,canonical-runtime
+/app/command-center/drivery-wyniku,07-centrum-dowodzenia/30-05-drivery-wyniku.md,Drivery wyniku,target,canonical-runtime
+/app/command-center/klienci,07-centrum-dowodzenia/30-09-klienci.md,Klienci,target,canonical-runtime
+/app/command-center/kolejka-uwagi,07-centrum-dowodzenia/30-02-kolejka-uwagi.md,Kolejka uwagi,target,canonical-runtime
+/app/command-center/kpi,07-centrum-dowodzenia/30-03-kpi.md,KPI,target,canonical-runtime
+/app/command-center/lejek,07-centrum-dowodzenia/30-10-lejek.md,Lejek,target,canonical-runtime
+/app/command-center/plan-vs-wynik,07-centrum-dowodzenia/30-04-plan-vs-wynik.md,Plan vs wynik,target,canonical-runtime
+/app/command-center/produkty,07-centrum-dowodzenia/30-08-produkty.md,Produkty,target,canonical-runtime
+/app/command-center/rekomendacje-ai-skrot,07-centrum-dowodzenia/30-11-rekomendacje-ai-skrot.md,Rekomendacje AI — skrót,target,canonical-runtime
+/app/command-center/ruch,07-centrum-dowodzenia/30-07-ruch.md,Ruch,target,canonical-runtime
+/app/command-center/sygnaly-sprzedazowe,07-centrum-dowodzenia/30-12-sygnaly-sprzedazowe.md,Sygnały sprzedażowe,target,canonical-runtime
+/app/command-center/waterfall,07-centrum-dowodzenia/30-13-waterfall.md,Waterfall,target,canonical-runtime
+/app/command-center/widok-glowny,07-centrum-dowodzenia/30-01-widok-glowny.md,Widok główny,target,canonical-runtime
+/app/command-center/zrodla-sprzedazy,07-centrum-dowodzenia/30-06-zrodla-sprzedazy.md,Źródła sprzedaży,target,canonical-runtime
+/app/customers/analiza-wplywu,11-klienci/34-07-analiza-wplywu.md,Analiza wpływu,target,canonical-runtime
+/app/customers/kohorty,11-klienci/34-03-kohorty.md,Kohorty,target,canonical-runtime
+/app/customers/konflikty-tozsamosci,11-klienci/34-05-konflikty-tozsamosci.md,Konflikty tożsamości,target,canonical-runtime
+/app/customers/prywatnosc,11-klienci/34-06-prywatnosc.md,Prywatność,target,canonical-runtime
+/app/customers/przeglad,11-klienci/34-01-przeglad.md,Przegląd,target,canonical-runtime
+/app/customers/segmenty,11-klienci/34-02-segmenty.md,Segmenty,target,canonical-runtime
+/app/customers/szczegoly-pseudonimizowane/:resourceId,11-klienci/34-04-szczegoly-pseudonimizowane.md,Szczegóły pseudonimizowane,target,canonical-runtime
+/app/data-quality/centrum-jakosci,14-jakosc-danych-i-integralnosc/41-01-centrum-jakosci.md,Centrum jakości,target,canonical-runtime
+/app/data-quality/konflikty,14-jakosc-danych-i-integralnosc/41-06-konflikty.md,Konflikty,target,canonical-runtime
+/app/data-quality/nadrzednosc-zrodla,14-jakosc-danych-i-integralnosc/41-05-nadrzednosc-zrodla.md,Nadrzędność źródła,target,canonical-runtime
+/app/data-quality/nakladanie-zrodel,14-jakosc-danych-i-integralnosc/41-04-nakladanie-zrodel.md,Nakładanie źródeł,target,canonical-runtime
+/app/data-quality/pochodzenie-danych,14-jakosc-danych-i-integralnosc/41-03-pochodzenie-danych.md,Pochodzenie danych,target,canonical-runtime
+/app/data-quality/ponowne-przetwarzanie,14-jakosc-danych-i-integralnosc/41-08-ponowne-przetwarzanie.md,Ponowne przetwarzanie,target,canonical-runtime
+/app/data-quality/przeglad-reczny,14-jakosc-danych-i-integralnosc/41-07-przeglad-reczny.md,Przegląd ręczny,target,canonical-runtime
+/app/data-quality/rekoncyliacja,14-jakosc-danych-i-integralnosc/41-09-rekoncyliacja.md,Rekoncyliacja,target,canonical-runtime
+/app/data-quality/zbior-danych,14-jakosc-danych-i-integralnosc/41-02-zbior-danych.md,Zbiór danych,target,canonical-runtime
+/app/decisions/biblioteka-dzialan,18-wsparcie-marketingowe-decyzje-dzialania/80-08-biblioteka-dzialan.md,Biblioteka działań,target,canonical-runtime
+/app/decisions/brief-dzialania,18-wsparcie-marketingowe-decyzje-dzialania/80-05-brief-dzialania.md,Brief działania,target,canonical-runtime
+/app/decisions/centrum-decyzji,18-wsparcie-marketingowe-decyzje-dzialania/80-01-centrum-decyzji.md,Centrum decyzji,target,canonical-runtime
+/app/decisions/obserwacje,18-wsparcie-marketingowe-decyzje-dzialania/80-02-obserwacje.md,Obserwacje,target,canonical-runtime
+/app/decisions/pomiar,18-wsparcie-marketingowe-decyzje-dzialania/80-07-pomiar.md,Pomiar,target,canonical-runtime
+/app/decisions/powiazania-z-modulami-i-sprawami,18-wsparcie-marketingowe-decyzje-dzialania/80-09-powiazania-z-modulami-i-sprawami.md,Powiązania z modułami i sprawami,target,canonical-runtime
+/app/decisions/rejestr-decyzji,18-wsparcie-marketingowe-decyzje-dzialania/80-04-rejestr-decyzji.md,Rejestr decyzji,target,canonical-runtime
+/app/decisions/rekomendacje,18-wsparcie-marketingowe-decyzje-dzialania/80-03-rekomendacje.md,Rekomendacje,target,canonical-runtime
+/app/decisions/szczegoly-dzialania/:resourceId,18-wsparcie-marketingowe-decyzje-dzialania/80-06-szczegoly-dzialania.md,Szczegóły działania,target,canonical-runtime
+/app/help/lista-wynikow,19-centrum-pomocy/85-03-lista-wynikow.md,Lista wyników,target,canonical-runtime
+/app/help/procedury/:resourceId,19-centrum-pomocy/85-02-procedury.md,Procedury,target,canonical-runtime
+/app/help/strona-glowna-pomocy,19-centrum-pomocy/85-01-strona-glowna-pomocy.md,Strona główna pomocy,target,canonical-runtime
+/app/help/szczegoly-procedury/:resourceId,19-centrum-pomocy/85-04-szczegoly-procedury.md,Szczegóły procedury,target,canonical-runtime
+/app/help/zgloszenie-wsparcia/:resourceId,19-centrum-pomocy/85-05-zgloszenie-wsparcia.md,Zgłoszenie wsparcia,target,canonical-runtime
+/app/integrations/awaria-providera,13-integracje-i-synchronizacja/40-09-awaria-providera.md,Awaria providera,target,canonical-runtime
+/app/integrations/historia-synchronizacji,13-integracje-i-synchronizacja/40-04-historia-synchronizacji.md,Historia synchronizacji,target,canonical-runtime
+/app/integrations/katalog-integracji,13-integracje-i-synchronizacja/40-01-katalog-integracji.md,Katalog integracji,target,canonical-runtime
+/app/integrations/kreator-polaczenia,13-integracje-i-synchronizacja/40-02-kreator-polaczenia.md,Kreator połączenia,target,canonical-runtime
+/app/integrations/odlaczenie,13-integracje-i-synchronizacja/40-08-odlaczenie.md,Odłączenie,target,canonical-runtime
+/app/integrations/ponowne-polaczenie,13-integracje-i-synchronizacja/40-07-ponowne-polaczenie.md,Ponowne połączenie,target,canonical-runtime
+/app/integrations/przebieg-synchronizacji,13-integracje-i-synchronizacja/40-05-przebieg-synchronizacji.md,Przebieg synchronizacji,target,canonical-runtime
+/app/integrations/szczegoly-integracji/:resourceId,13-integracje-i-synchronizacja/40-03-szczegoly-integracji.md,Szczegóły integracji,target,canonical-runtime
+/app/integrations/zakres-synchronizacji,13-integracje-i-synchronizacja/40-06-zakres-synchronizacji.md,Zakres synchronizacji,target,canonical-runtime
+/app/orders/eksport,09-zamowienia/32-07-eksport.md,Eksport,target,canonical-runtime
+/app/orders/lista,09-zamowienia/32-02-lista.md,Lista,target,canonical-runtime
+/app/orders/os-zdarzen,09-zamowienia/32-04-os-zdarzen.md,Oś zdarzeń,target,canonical-runtime
+/app/orders/porownanie-zrodel,09-zamowienia/32-05-porownanie-zrodel.md,Porównanie źródeł,target,canonical-runtime
+/app/orders/przeglad,09-zamowienia/32-01-przeglad.md,Przegląd,target,canonical-runtime
+/app/orders/rekoncyliacja-skrot,09-zamowienia/32-06-rekoncyliacja-skrot.md,Rekoncyliacja — skrót,target,canonical-runtime
+/app/orders/szczegoly/:resourceId,09-zamowienia/32-03-szczegoly.md,Szczegóły,target,canonical-runtime
+/app/papa/ai-action-approval,15-papa-asystent-i-laboratorium-ai/50-12-ai-action-approval.md,AI Action Approval,target,canonical-runtime
+/app/papa/ai-actions,15-papa-asystent-i-laboratorium-ai/50-13-ai-actions.md,AI Actions,target,canonical-runtime
+/app/papa/assistantshell,15-papa-asystent-i-laboratorium-ai/50-02-assistantshell.md,AssistantShell,target,canonical-runtime
+/app/papa/context-basket,15-papa-asystent-i-laboratorium-ai/50-04-context-basket.md,Context basket,target,canonical-runtime
+/app/papa/dowody,15-papa-asystent-i-laboratorium-ai/50-06-dowody.md,Dowody,target,canonical-runtime
+/app/papa/historia-i-pamiec-papa,15-papa-asystent-i-laboratorium-ai/50-15-historia-i-pamiec-papa.md,Historia i pamięć Papa,target,canonical-runtime
+/app/papa/laboratorium-ai,15-papa-asystent-i-laboratorium-ai/50-08-laboratorium-ai.md,Laboratorium AI,target,canonical-runtime
+/app/papa/obserwacje,15-papa-asystent-i-laboratorium-ai/50-09-obserwacje.md,Obserwacje,target,canonical-runtime
+/app/papa/odpowiedz-papa,15-papa-asystent-i-laboratorium-ai/50-05-odpowiedz-papa.md,Odpowiedź Papa,target,canonical-runtime
+/app/papa/panel-kontekstowy-papa,15-papa-asystent-i-laboratorium-ai/50-01-panel-kontekstowy-papa.md,Panel kontekstowy Papa,target,canonical-runtime
+/app/papa/propozycje-ai,15-papa-asystent-i-laboratorium-ai/50-11-propozycje-ai.md,Propozycje AI,target,canonical-runtime
+/app/papa/ustawienia-ai-i-governance,15-papa-asystent-i-laboratorium-ai/50-16-ustawienia-ai-i-governance.md,Ustawienia AI i Governance,target,canonical-runtime
+/app/products/analiza-wplywu,10-produkty/33-08-analiza-wplywu.md,Analiza wpływu,target,canonical-runtime
+/app/products/katalog,10-produkty/33-02-katalog.md,Katalog,target,canonical-runtime
+/app/products/kolejka-brakow,10-produkty/33-07-kolejka-brakow.md,Kolejka braków,target,canonical-runtime
+/app/products/mapowanie,10-produkty/33-04-mapowanie.md,Mapowanie,target,canonical-runtime
+/app/products/oferty,10-produkty/33-05-oferty.md,Oferty,target,canonical-runtime
+/app/products/przeglad,10-produkty/33-01-przeglad.md,Przegląd,target,canonical-runtime
+/app/products/szczegoly/:resourceId,10-produkty/33-03-szczegoly.md,Szczegóły,target,canonical-runtime
+/app/products/wydajnosc,10-produkty/33-06-wydajnosc.md,Wydajność,target,canonical-runtime
+/app/settings/audyt,16-ustawienia-zespol-bezpieczenstwo/60-07-audyt.md,Audyt,target,canonical-runtime
+/app/settings/bezpieczenstwo-konta,16-ustawienia-zespol-bezpieczenstwo/60-05-bezpieczenstwo-konta.md,Bezpieczeństwo konta,target,canonical-runtime
+/app/settings/czlonkostwa,16-ustawienia-zespol-bezpieczenstwo/60-03-czlonkostwa.md,Członkostwa,target,canonical-runtime
+/app/settings/dostep-wsparcia,16-ustawienia-zespol-bezpieczenstwo/60-09-dostep-wsparcia.md,Dostęp wsparcia,target,canonical-runtime
+/app/settings/organizacja,16-ustawienia-zespol-bezpieczenstwo/60-01-organizacja.md,Organizacja,target,canonical-runtime
+/app/settings/prywatnosc,16-ustawienia-zespol-bezpieczenstwo/60-08-prywatnosc.md,Prywatność,target,canonical-runtime
+/app/settings/role-i-uprawnienia,16-ustawienia-zespol-bezpieczenstwo/60-04-role-i-uprawnienia.md,Role i uprawnienia,target,canonical-runtime
+/app/settings/sesje,16-ustawienia-zespol-bezpieczenstwo/60-06-sesje.md,Sesje,target,canonical-runtime
+/app/settings/workspace,16-ustawienia-zespol-bezpieczenstwo/60-02-workspace.md,Workspace,target,canonical-runtime
+/app/traffic/definicje-lejka,12-ruch-i-lejek/35-05-definicje-lejka.md,Definicje lejka,target,canonical-runtime
+/app/traffic/ga4-vs-zamowienia,12-ruch-i-lejek/35-06-ga4-vs-zamowienia.md,GA4 vs zamówienia,target,canonical-runtime
+/app/traffic/jakosc-zdarzen,12-ruch-i-lejek/35-07-jakosc-zdarzen.md,Jakość zdarzeń,target,canonical-runtime
+/app/traffic/kanaly,12-ruch-i-lejek/35-02-kanaly.md,Kanały,target,canonical-runtime
+/app/traffic/lejek-szczegoly-kroku/:resourceId,12-ruch-i-lejek/35-04-lejek-szczegoly-kroku.md,Lejek — szczegóły kroku,target,canonical-runtime
+/app/traffic/lejek-widok,12-ruch-i-lejek/35-03-lejek-widok.md,Lejek — widok,target,canonical-runtime
+/app/traffic/przeglad-ruchu,12-ruch-i-lejek/35-01-przeglad-ruchu.md,Przegląd ruchu,target,canonical-runtime
+/app/traffic/strony-wejscia,12-ruch-i-lejek/35-08-strony-wejscia.md,Strony wejścia,target,canonical-runtime

@@ -24,23 +24,10 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm verify
       - run: pnpm build
+      - run: cp .env.example .env.production-parity
       - run: docker compose -f compose.production-parity.yml config
   migrations:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17-alpine
-        env:
-          POSTGRES_DB: papadata
-          POSTGRES_USER: papadata_migrator
-          POSTGRES_PASSWORD: papadata-ci
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U papadata_migrator -d papadata"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 20
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -62,6 +49,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   sbom-and-container-scan:
     runs-on: ubuntu-latest
@@ -73,7 +62,7 @@ jobs:
           format: cyclonedx-json
           output-file: sbom.cdx.json
       - run: docker build -f infra/production/Dockerfile -t papadata-platform:ci .
-      - uses: aquasecurity/trivy-action@0.32.0
+      - uses: aquasecurity/trivy-action@v0.32.0
         with:
           image-ref: papadata-platform:ci
           format: sarif

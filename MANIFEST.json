@@ -4,6 +4,66 @@
   "rule": "MANIFEST.json and SHA256SUMS.txt excluded to avoid circular self-hash",
   "files": [
     {
+      "path": "METRYKI-JAKOSCI.json",
+      "bytes": 1054,
+      "sha256": "258c129de04ca3db9eae79f51a1ff24911f4d012d6284f20d71b8238adc1374d"
+    },
+    {
+      "path": "METRYKI-SEKCJI.csv",
+      "bytes": 954,
+      "sha256": "24459edea1c1fc82a5877c24e421112cd7cf8ec2b947a10311c9a20a16dbbf2d"
+    },
+    {
+      "path": "POTWIERDZENIE-PRIORYTETOW-P0.md",
+      "bytes": 1397,
+      "sha256": "645ffba2dcd355c8620229eee70092a19761ec8398cc6fab4f63e9ce0aacc682"
+    },
+    {
+      "path": "RAPORT-KOMPLETNOSCI-I-JAKOSCI.md",
+      "bytes": 970,
+      "sha256": "95c8960f9e73adb4a3b7b235f7c9c3be086f2f125b59b154d636e6dd7bffcd4d"
+    },
+    {
+      "path": "RAPORT-WALIDACJI.md",
+      "bytes": 708,
+      "sha256": "0bcd04fbcb805dbaa4a8cc5798439d3f5435cc9939c5c51f3e4274b20b6c11c2"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1796,
+      "sha256": "f21450d87dc663093ced0e1712653ed679815eae2e561e59eb5893c563104a38"
+    },
+    {
+      "path": "VALIDATION-1.0.json",
+      "bytes": 521,
+      "sha256": "9a611c690f21667139e37a910adb1cbc80910d51bb46fe19a76afd7d5666fd24"
+    },
+    {
+      "path": "VALIDATION.json",
+      "bytes": 521,
+      "sha256": "9a611c690f21667139e37a910adb1cbc80910d51bb46fe19a76afd7d5666fd24"
+    },
+    {
+      "path": "apps/web/src/storybook-next/catalog/catalog.generated.ts",
+      "bytes": 174273,
+      "sha256": "268a5ae9bb8985658cacf06b4712664b5e93d1f280116cb4e2484f55d1cb3b11"
+    },
+    {
+      "path": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+      "bytes": 99710,
+      "sha256": "21291a285f3d8f2e34f30498568299d5356e1c44d65e7f6f865c29a5e5d2d3c7"
+    },
+    {
+      "path": "apps/web/src/storybook-next/storybook-contract.json",
+      "bytes": 197549,
+      "sha256": "c39a15e3a41c49aa1f8cce49e5fe85023a283a0343def7756c93a3abde0cd387"
+    },
+    {
+      "path": "apps/web/src/storybook-next/storybook-taxonomy-map.json",
+      "bytes": 15229,
+      "sha256": "015b17c62f58db6debae5e10d03d7bf30a9d8b0de7a56ae152ce8a3f93b74566"
+    },
+    {
       "path": "config/p0-integrations.env.example",
       "bytes": 1101,
       "sha256": "aaf165b2bfa15773470e664dc4de7d347f640be4c0bb0d2ce18f4fdb1c0f5619"
@@ -1250,43 +1310,58 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/01-fundamenty/00-01-kierunek-wizualny.md",
-      "bytes": 3051,
-      "sha256": "6d957ee581d3efdd1f95205ff9794f24f3035ca34c64e0f4d90485f536ebca9b"
+      "bytes": 2254,
+      "sha256": "d0f30e0781b39a052b78bea03ee751c919d5037159ec98736e5a83bb57605689"
     },
     {
       "path": "docs/specyfikacja-docelowa/01-fundamenty/00-02-typografia.md",
-      "bytes": 2569,
-      "sha256": "b4dd9906203690ad801be04242f45c1dea0a1da8b347498251dc9fdde5b0cd41"
+      "bytes": 2202,
+      "sha256": "6d6e3b5175ebb7261c256e6be6fbc8cc1f538a465f8961d5c4b4cef66ece1937"
     },
     {
-      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-03-kolory.md",
-      "bytes": 3022,
-      "sha256": "b6d1694fad7fd96aded52b57dce257f13954a34975b8896996058dcc9bf13e42"
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-03-kolory-semantyczne.md",
+      "bytes": 2200,
+      "sha256": "ecc738cc5028c920eb105e0b64d5587392e47b67888c5eec816e8b42442bb6a6"
     },
     {
-      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-04-spacing-i-grid.md",
-      "bytes": 3175,
-      "sha256": "7056d610851467e3398682c763a13343d5adb551158bc95796b08a214d7bf427"
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-04-statusy-systemowe.md",
+      "bytes": 2146,
+      "sha256": "18f850ae2cd79194af257a1f8daf0536e3e8d3e4227e18491cdd22e8f7e77478"
     },
     {
-      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-05-promienie-obramowania-i-cienie.md",
-      "bytes": 3131,
-      "sha256": "445cf0674aac2f268c7576cf6304cf65c763c2b12eacbe35c077a6c41da31758"
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-05-odstepy-i-siatka.md",
+      "bytes": 2130,
+      "sha256": "8ac4b7395361ce43cb82014e164659a71c9b3096c3d9b3604b3bdca5a69259da"
     },
     {
-      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-06-ikonografia.md",
-      "bytes": 3027,
-      "sha256": "aaa6355bfad0a6b887e30a119e0b2fb451f95c09727bb4cc3dae2b19e2f4ae5d"
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-06-promienie-i-geometria.md",
+      "bytes": 2099,
+      "sha256": "0c33047649cefadda789b9a060c76e6167cf2bb219bd122e78bbbb6c744e79a9"
     },
     {
-      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-07-motion.md",
-      "bytes": 3022,
-      "sha256": "238f72455b2b3bb64d81697ef0cc00677c947887da2f018e37eef3e1c501cf6d"
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-07-linie-i-separacja.md",
+      "bytes": 2099,
+      "sha256": "cff394afe4e8457fbf8ac92eb3084447ebe8daf0eff1a11b3d9f986129b4b6df"
     },
     {
-      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-08-dostepnosc.md",
-      "bytes": 2939,
-      "sha256": "bc5b021b04c296758432ddb997588a5546e10adb2889e0ec54c1b4c4417be641"
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-08-glebia-i-warstwy.md",
+      "bytes": 2067,
+      "sha256": "c9afa165d3bd2f194290fe937b8487d191660bec975a38ad93da0af35d13510d"
+    },
+    {
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-09-ikonografia.md",
+      "bytes": 2076,
+      "sha256": "ee47108b12236e064af8bd3cbe53e41ac988438be93c456db09c2431b82aea74"
+    },
+    {
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-10-motion-i-ograniczenie-ruchu.md",
+      "bytes": 2227,
+      "sha256": "c8df110825de8e75a246d3799f1dd2aac2ffd644b74d867d795a35ca24c3496a"
+    },
+    {
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-11-dostepnosc-systemowa.md",
+      "bytes": 2300,
+      "sha256": "e3dce035018c42f9168f154ea98d07d3d584facb6529ac9db8948f0f82e8c619"
     },
     {
       "path": "docs/specyfikacja-docelowa/02-tla-i-powierzchnie/05-01-tlo-auth.md",
@@ -3427,6 +3502,21 @@
       "path": "docs/specyfikacja-docelowa/27-pakiet-prawny-i-organizacyjny/25-checklista-prawna-go-live.md",
       "bytes": 3924,
       "sha256": "7905d9e8e6583b20418fd77e35ed6c3469718b4fada8eed9d27f81e242341bb5"
+    },
+    {
+      "path": "docs/storybook/FOUNDATION-SYSTEM-V1-EVIDENCE.md",
+      "bytes": 3957,
+      "sha256": "b528d99d95748e7021421eb2eed6d48a91881126cffb8f46889816fffc97e111"
+    },
+    {
+      "path": "docs/storybook/FOUNDATION-SYSTEM-V1-ROADMAP.md",
+      "bytes": 8625,
+      "sha256": "f163488ddf39014d9761b49bfbabce08c72fe88c43715ae4d349db5b05bcae4b"
+    },
+    {
+      "path": "docs/storybook/STORYBOOK-TAXONOMY-DECISIONS.md",
+      "bytes": 9630,
+      "sha256": "32d6eb56a225adb0108d97bf231784fa5a5a31ec5c6764bdd49971d4124adf0c"
     },
     {
       "path": "fixtures/api/access.bootstrap.request.json",
@@ -7664,36 +7754,6 @@
       "sha256": "fa4c1090a0edef501e899199fd829d8776563e4b4f91473b586fb43e6e72ab32"
     },
     {
-      "path": "METRYKI-JAKOSCI.json",
-      "bytes": 1054,
-      "sha256": "258c129de04ca3db9eae79f51a1ff24911f4d012d6284f20d71b8238adc1374d"
-    },
-    {
-      "path": "METRYKI-SEKCJI.csv",
-      "bytes": 983,
-      "sha256": "5aaf6d246cfcdb988e3d23183382f8d7b4208cdb36e1692a162947c2ac3f361f"
-    },
-    {
-      "path": "POTWIERDZENIE-PRIORYTETOW-P0.md",
-      "bytes": 1397,
-      "sha256": "645ffba2dcd355c8620229eee70092a19761ec8398cc6fab4f63e9ce0aacc682"
-    },
-    {
-      "path": "RAPORT-KOMPLETNOSCI-I-JAKOSCI.md",
-      "bytes": 970,
-      "sha256": "95c8960f9e73adb4a3b7b235f7c9c3be086f2f125b59b154d636e6dd7bffcd4d"
-    },
-    {
-      "path": "RAPORT-WALIDACJI.md",
-      "bytes": 708,
-      "sha256": "0bcd04fbcb805dbaa4a8cc5798439d3f5435cc9939c5c51f3e4274b20b6c11c2"
-    },
-    {
-      "path": "README.md",
-      "bytes": 1796,
-      "sha256": "f21450d87dc663093ced0e1712653ed679815eae2e561e59eb5893c563104a38"
-    },
-    {
       "path": "rejestry/api-consumers.csv",
       "bytes": 58446,
       "sha256": "9145b394542fa39d4e5110c73ae2053977cbcd09d65a47e537c772fcf91446fa"
@@ -7730,8 +7790,8 @@
     },
     {
       "path": "rejestry/documents.csv",
-      "bytes": 66917,
-      "sha256": "78dd9d2eda198366031f8578543cc91feba1fe9888ab018e7f162976420e705b"
+      "bytes": 66946,
+      "sha256": "85823d164f66b306a7f17a372de69139d5a2a63283c63f67b8b39a9d54f7405a"
     },
     {
       "path": "rejestry/entities.csv",
@@ -7769,9 +7829,39 @@
       "sha256": "f1398d5125e9e7e2ba86b831618d4a3c9bb01935ab16fda4e4e069b9b24ac6e3"
     },
     {
+      "path": "scripts/capture-foundation-evidence.mjs",
+      "bytes": 25828,
+      "sha256": "78db54713f1afb4fc76d9faa8d862b1c9aeb7397cc8049f868c3e102e8d6dea8"
+    },
+    {
+      "path": "scripts/check-foundation-system-v1.mjs",
+      "bytes": 11134,
+      "sha256": "d8c4755530f3389eb1825f631fdc9098ab0249428b2f72e446874cf001ca2044"
+    },
+    {
+      "path": "scripts/check-storybook-architecture.mjs",
+      "bytes": 16679,
+      "sha256": "f8d5620c2a4e9ab5761c8387a8befbb0583f8516654e1885e1d8b420415d20ae"
+    },
+    {
+      "path": "scripts/check-storybook-catalog.mjs",
+      "bytes": 5597,
+      "sha256": "4f5bf3c64e7e5fe83b3e72eb08737eeb82e65c80ddd652e56e495864e864abaf"
+    },
+    {
+      "path": "scripts/check-storybook-taxonomy.mjs",
+      "bytes": 16617,
+      "sha256": "4a270d267ae68e7e0033cce6cdcaf7246ee43b03584f0a95610dba280cd34369"
+    },
+    {
       "path": "scripts/finalize_package.py",
       "bytes": 1764,
       "sha256": "f0053cc1c80abf0c26eff4349a5b7abce36bee815e21ca0d4a32034a7c33a12f"
+    },
+    {
+      "path": "scripts/generate-storybook-catalog.mjs",
+      "bytes": 6291,
+      "sha256": "662fe0a70e60224118777750eb72c6164c711510ee0bc32d5840480abe9fc546"
     },
     {
       "path": "scripts/quality_metrics.py",
@@ -7832,17 +7922,7 @@
       "path": "tsconfig.contracts.json",
       "bytes": 222,
       "sha256": "97c4a7b4a407535d1e5291c74bcddeab1ea184d5f41a4d326c90da6183984dea"
-    },
-    {
-      "path": "VALIDATION-1.0.json",
-      "bytes": 521,
-      "sha256": "9a611c690f21667139e37a910adb1cbc80910d51bb46fe19a76afd7d5666fd24"
-    },
-    {
-      "path": "VALIDATION.json",
-      "bytes": 521,
-      "sha256": "9a611c690f21667139e37a910adb1cbc80910d51bb46fe19a76afd7d5666fd24"
     }
   ],
-  "file_count": 1568
+  "file_count": 1584
 }

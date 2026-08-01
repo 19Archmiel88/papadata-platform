@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: 64afa6a51c626500c84da18cbf3d9f3faef9f855959fcb42cbbc967298121d1b
+// SHA-256 źródła: c39a15e3a41c49aa1f8cce49e5fe85023a283a0343def7756c93a3abde0cd387
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -65,7 +65,10 @@ export const storybookCatalog = [
       "liczby i KPI",
       "cyfry tabularne",
       "długie teksty",
-      "próbki PL/EN"
+      "próbki PL/EN",
+      "lokalny format dat",
+      "wyrównanie kwot",
+      "bezpieczne zawijanie identyfikatorów"
     ],
     "storyTitle": "00 Fundamenty/Podstawy",
     "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
@@ -75,7 +78,7 @@ export const storybookCatalog = [
   },
   {
     "id": "00.03",
-    "title": "Kolory",
+    "title": "Kolory semantyczne",
     "sectionId": "00",
     "sectionTitle": "Fundamenty",
     "folder": "00-foundations",
@@ -94,22 +97,59 @@ export const storybookCatalog = [
     "requirements": [
       "kolory marki",
       "kolory neutralne",
-      "kolory semantyczne",
+      "role interfejsu",
       "kolory danych",
-      "statusy",
-      "warning",
-      "error",
-      "success",
+      "ton neutralny",
+      "ton informacyjny",
+      "ton sukcesu",
+      "ton ostrzeżenia",
+      "ton błędu",
+      "ton przetwarzania",
       "kontrast light/dark"
     ],
     "storyTitle": "00 Fundamenty/Podstawy",
     "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
     "displaySectionTitle": "Fundamenty",
-    "displayTitle": "Kolory",
+    "displayTitle": "Kolory semantyczne",
     "storyExport": "KolorySemantyczne"
   },
   {
     "id": "00.04",
+    "title": "Statusy systemowe",
+    "sectionId": "00",
+    "sectionTitle": "Fundamenty",
+    "folder": "00-foundations",
+    "storyClass": "reference",
+    "owner": "Design System",
+    "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
+    "note": null,
+    "group": null,
+    "sourceStatus": "accepted",
+    "documentationStatus": "accepted",
+    "prototypeStatus": "none",
+    "productionStatus": "not_started",
+    "testStatus": "not_started",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
+    "requirements": [
+      "tekstowa etykieta statusu",
+      "stabilny klucz techniczny",
+      "przypisany ton semantyczny",
+      "kategorie domenowe",
+      "statusy biznesowe",
+      "neutralne wnętrze badge",
+      "rozwijane grupy",
+      "light mode",
+      "dark mode"
+    ],
+    "storyTitle": "00 Fundamenty/Podstawy",
+    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+    "displaySectionTitle": "Fundamenty",
+    "displayTitle": "Statusy systemowe",
+    "storyExport": "StatusySystemowe"
+  },
+  {
+    "id": "00.05",
     "title": "Spacing i grid",
     "sectionId": "00",
     "sectionTitle": "Fundamenty",
@@ -146,8 +186,8 @@ export const storybookCatalog = [
     "storyExport": "SpacingIGrid"
   },
   {
-    "id": "00.05",
-    "title": "Promienie, obramowania i cienie",
+    "id": "00.06",
+    "title": "Promienie i geometria",
     "sectionId": "00",
     "sectionTitle": "Fundamenty",
     "folder": "00-foundations",
@@ -163,27 +203,93 @@ export const storybookCatalog = [
     "testStatus": "not_started",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
-    "requirements": [
-      "radius powierzchni",
-      "radius inputów",
-      "radius kart",
-      "radius overlayów",
-      "obramowania neutralne",
-      "obramowania aktywne",
-      "obramowania błędów",
-      "focus floor",
-      "głębia warstw",
-      "cień tylko dla uzasadnionych warstw",
-      "separacja bez nadmiaru kontenerów"
-    ],
     "storyTitle": "00 Fundamenty/Podstawy",
     "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
     "displaySectionTitle": "Fundamenty",
-    "displayTitle": "Promienie, obramowania i cienie",
-    "storyExport": "PromienieObramowaniaICienie"
+    "requirements": [
+      "radius kontrolki",
+      "radius powierzchni",
+      "radius mikroznacznika",
+      "kontrakt użycia",
+      "zakaz dekoracyjnych wrapperów",
+      "light mode",
+      "dark mode",
+      "responsive"
+    ],
+    "displayTitle": "Promienie i geometria",
+    "storyExport": "PromienieIGeometria"
   },
   {
-    "id": "00.06",
+    "id": "00.07",
+    "title": "Linie i separacja",
+    "sectionId": "00",
+    "sectionTitle": "Fundamenty",
+    "folder": "00-foundations",
+    "storyClass": "reference",
+    "owner": "Design System",
+    "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
+    "note": null,
+    "group": null,
+    "sourceStatus": "accepted",
+    "documentationStatus": "accepted",
+    "prototypeStatus": "none",
+    "productionStatus": "not_started",
+    "testStatus": "not_started",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
+    "storyTitle": "00 Fundamenty/Podstawy",
+    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+    "displaySectionTitle": "Fundamenty",
+    "requirements": [
+      "linia strukturalna",
+      "separator wewnętrzny",
+      "akcent aktywny",
+      "linia statusu",
+      "struktura",
+      "interakcja",
+      "komunikacja",
+      "separacja bez nadmiaru kontenerów"
+    ],
+    "displayTitle": "Linie i separacja",
+    "storyExport": "LinieISeparacja"
+  },
+  {
+    "id": "00.08",
+    "title": "Głębia i warstwy",
+    "sectionId": "00",
+    "sectionTitle": "Fundamenty",
+    "folder": "00-foundations",
+    "storyClass": "reference",
+    "owner": "Design System",
+    "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
+    "note": null,
+    "group": null,
+    "sourceStatus": "accepted",
+    "documentationStatus": "accepted",
+    "prototypeStatus": "none",
+    "productionStatus": "not_started",
+    "testStatus": "not_started",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
+    "storyTitle": "00 Fundamenty/Podstawy",
+    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+    "displaySectionTitle": "Fundamenty",
+    "requirements": [
+      "canvas bazowy",
+      "panel uniesiony",
+      "element pływający",
+      "overlay",
+      "hierarchia warstw",
+      "cień tylko dla uzasadnionych warstw",
+      "kontrakt dozwolonych zastosowań",
+      "light mode",
+      "dark mode"
+    ],
+    "displayTitle": "Głębia i warstwy",
+    "storyExport": "GlebiaIWarstwy"
+  },
+  {
+    "id": "00.09",
     "title": "Ikonografia",
     "sectionId": "00",
     "sectionTitle": "Fundamenty",
@@ -219,7 +325,7 @@ export const storybookCatalog = [
     "storyExport": "Ikonografia"
   },
   {
-    "id": "00.07",
+    "id": "00.10",
     "title": "Motion",
     "sectionId": "00",
     "sectionTitle": "Fundamenty",
@@ -260,7 +366,7 @@ export const storybookCatalog = [
     "storyExport": "MotionIReducedMotion"
   },
   {
-    "id": "00.08",
+    "id": "00.11",
     "title": "Dostępność",
     "sectionId": "00",
     "sectionTitle": "Fundamenty",

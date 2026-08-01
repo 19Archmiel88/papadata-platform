@@ -6,25 +6,25 @@ owner: Artur Wiśniewski
 status: approved-target
 ---
 
-# Kierunek wizualny
+# Promienie i geometria
 
 | Pole | Wartość |
 |---|---|
-| Identyfikator | 00.01 |
+| Identyfikator | 00.06 |
 | Status dokumentacji | ZAAKCEPTOWANA |
 | Status implementacji | ZAAKCEPTOWANE — KANONICZNA IMPLEMENTACJA REFERENCYJNA |
 | Story class | reference |
 | Właściciel | Design System |
-| Story export | `KierunekWizualny` |
+| Story export | `PromienieIGeometria` |
 | Story file | `apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx` |
 | Production status | `not_started` |
 | Test status | `not_started` |
 
-Kanoniczna ścieżka: `00 Fundamenty/Podstawy/Kierunek wizualny`
+Kanoniczna ścieżka: `00 Fundamenty/Podstawy/Promienie i geometria`
 
 ## Cel
 
-Kanoniczny kierunek wizualny PapaData określa hierarchię, charakter powierzchni, zastosowanie akcentu marki oraz relację między trybem jasnym i ciemnym.
+Geometria określa promienie kontrolek, powierzchni i mikroznaczników oraz ogranicza dekoracyjne opakowania.
 
 Akceptacja dotyczy referencyjnej story Fundamentów i jej kierunku
 wizualnego. Nie oznacza automatycznie ukończenia wszystkich komponentów
@@ -32,17 +32,17 @@ produkcyjnych ani testów przekrojowych.
 
 ## Kontrakt zaakceptowany
 
-- premium bez dekoracyjnego nadmiaru
-- czytelna hierarchia wizualna
-- pełna równoważność trybu jasnego i ciemnego
-- akcent marki używany funkcjonalnie
-- brak lokalnych systemów wizualnych tworzonych przez kolejne sekcje
+- radius kontrolki
+- radius powierzchni
+- radius mikroznacznika
+- spójność light i dark
+- zakaz dekoracyjnych wrapperów
 
 ## Reguły obowiązujące kolejne sekcje
 
-- Każda kolejna sekcja korzysta z istniejących tokenów --pd-*.
-- Nie wolno tworzyć alternatywnej palety, typografii ani geometrii.
-- Nowy kierunek wizualny wymaga jawnej zmiany kontraktu Fundamentów.
+- Promień wynika z roli elementu, nie z lokalnej preferencji.
+- Nie wolno dodawać kontenerów wyłącznie w celu dekoracyjnym.
+- Nowa geometria wymaga rozszerzenia kanonicznych tokenów.
 
 ## Źródła kanoniczne
 

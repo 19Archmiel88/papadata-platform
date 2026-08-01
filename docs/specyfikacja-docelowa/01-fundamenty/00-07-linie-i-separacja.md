@@ -6,25 +6,25 @@ owner: Artur Wiśniewski
 status: approved-target
 ---
 
-# Kierunek wizualny
+# Linie i separacja
 
 | Pole | Wartość |
 |---|---|
-| Identyfikator | 00.01 |
+| Identyfikator | 00.07 |
 | Status dokumentacji | ZAAKCEPTOWANA |
 | Status implementacji | ZAAKCEPTOWANE — KANONICZNA IMPLEMENTACJA REFERENCYJNA |
 | Story class | reference |
 | Właściciel | Design System |
-| Story export | `KierunekWizualny` |
+| Story export | `LinieISeparacja` |
 | Story file | `apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx` |
 | Production status | `not_started` |
 | Test status | `not_started` |
 
-Kanoniczna ścieżka: `00 Fundamenty/Podstawy/Kierunek wizualny`
+Kanoniczna ścieżka: `00 Fundamenty/Podstawy/Linie i separacja`
 
 ## Cel
 
-Kanoniczny kierunek wizualny PapaData określa hierarchię, charakter powierzchni, zastosowanie akcentu marki oraz relację między trybem jasnym i ciemnym.
+Linie rozdzielają strukturę, wskazują interakcję albo komunikują stan. Nie zastępują hierarchii odstępów i powierzchni.
 
 Akceptacja dotyczy referencyjnej story Fundamentów i jej kierunku
 wizualnego. Nie oznacza automatycznie ukończenia wszystkich komponentów
@@ -32,17 +32,17 @@ produkcyjnych ani testów przekrojowych.
 
 ## Kontrakt zaakceptowany
 
-- premium bez dekoracyjnego nadmiaru
-- czytelna hierarchia wizualna
-- pełna równoważność trybu jasnego i ciemnego
-- akcent marki używany funkcjonalnie
-- brak lokalnych systemów wizualnych tworzonych przez kolejne sekcje
+- linia strukturalna
+- separator wewnętrzny
+- akcent aktywny
+- linia statusu
+- separacja bez nadmiaru kontenerów
 
 ## Reguły obowiązujące kolejne sekcje
 
-- Każda kolejna sekcja korzysta z istniejących tokenów --pd-*.
-- Nie wolno tworzyć alternatywnej palety, typografii ani geometrii.
-- Nowy kierunek wizualny wymaga jawnej zmiany kontraktu Fundamentów.
+- Każda linia ma funkcję: struktura, interakcja albo komunikacja.
+- Nie wolno obrysowywać każdego elementu bez uzasadnienia.
+- Kolor i grubość linii pochodzą z tokenów semantycznych.
 
 ## Źródła kanoniczne
 

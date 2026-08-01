@@ -6,25 +6,25 @@ owner: Artur Wiśniewski
 status: approved-target
 ---
 
-# Kierunek wizualny
+# Odstępy, gęstość i siatka
 
 | Pole | Wartość |
 |---|---|
-| Identyfikator | 00.01 |
+| Identyfikator | 00.05 |
 | Status dokumentacji | ZAAKCEPTOWANA |
 | Status implementacji | ZAAKCEPTOWANE — KANONICZNA IMPLEMENTACJA REFERENCYJNA |
 | Story class | reference |
 | Właściciel | Design System |
-| Story export | `KierunekWizualny` |
+| Story export | `SpacingIGrid` |
 | Story file | `apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx` |
 | Production status | `not_started` |
 | Test status | `not_started` |
 
-Kanoniczna ścieżka: `00 Fundamenty/Podstawy/Kierunek wizualny`
+Kanoniczna ścieżka: `00 Fundamenty/Podstawy/Odstępy i siatka`
 
 ## Cel
 
-Kanoniczny kierunek wizualny PapaData określa hierarchię, charakter powierzchni, zastosowanie akcentu marki oraz relację między trybem jasnym i ciemnym.
+Skala odstępów, gęstość oraz siatka kontrolują rytm ekranów, kart, formularzy, tabel i układów responsywnych.
 
 Akceptacja dotyczy referencyjnej story Fundamentów i jej kierunku
 wizualnego. Nie oznacza automatycznie ukończenia wszystkich komponentów
@@ -32,17 +32,17 @@ produkcyjnych ani testów przekrojowych.
 
 ## Kontrakt zaakceptowany
 
-- premium bez dekoracyjnego nadmiaru
-- czytelna hierarchia wizualna
-- pełna równoważność trybu jasnego i ciemnego
-- akcent marki używany funkcjonalnie
-- brak lokalnych systemów wizualnych tworzonych przez kolejne sekcje
+- kanoniczna skala odstępów
+- marginesy ekranów i odstępy sekcji
+- odstępy kart, formularzy i tabel
+- wariant comfortable i compact
+- desktop, tablet i mobile
 
 ## Reguły obowiązujące kolejne sekcje
 
-- Każda kolejna sekcja korzysta z istniejących tokenów --pd-*.
-- Nie wolno tworzyć alternatywnej palety, typografii ani geometrii.
-- Nowy kierunek wizualny wymaga jawnej zmiany kontraktu Fundamentów.
+- Wartości odstępów pochodzą z kontraktu spacing.
+- Gęstość nie może obniżać czytelności ani dostępności.
+- Lokalna arbitralna skala spacingu jest niedozwolona.
 
 ## Źródła kanoniczne
 

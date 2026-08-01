@@ -6,25 +6,25 @@ owner: Artur Wiśniewski
 status: approved-target
 ---
 
-# Kierunek wizualny
+# Ikonografia
 
 | Pole | Wartość |
 |---|---|
-| Identyfikator | 00.01 |
+| Identyfikator | 00.09 |
 | Status dokumentacji | ZAAKCEPTOWANA |
 | Status implementacji | ZAAKCEPTOWANE — KANONICZNA IMPLEMENTACJA REFERENCYJNA |
 | Story class | reference |
 | Właściciel | Design System |
-| Story export | `KierunekWizualny` |
+| Story export | `Ikonografia` |
 | Story file | `apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx` |
 | Production status | `not_started` |
 | Test status | `not_started` |
 
-Kanoniczna ścieżka: `00 Fundamenty/Podstawy/Kierunek wizualny`
+Kanoniczna ścieżka: `00 Fundamenty/Podstawy/Ikonografia`
 
 ## Cel
 
-Kanoniczny kierunek wizualny PapaData określa hierarchię, charakter powierzchni, zastosowanie akcentu marki oraz relację między trybem jasnym i ciemnym.
+Ikonografia określa styl, stroke, rozmiary, wyrównanie optyczne, zastosowanie koloru oraz wymagania dostępności.
 
 Akceptacja dotyczy referencyjnej story Fundamentów i jej kierunku
 wizualnego. Nie oznacza automatycznie ukończenia wszystkich komponentów
@@ -32,17 +32,17 @@ produkcyjnych ani testów przekrojowych.
 
 ## Kontrakt zaakceptowany
 
-- premium bez dekoracyjnego nadmiaru
-- czytelna hierarchia wizualna
-- pełna równoważność trybu jasnego i ciemnego
-- akcent marki używany funkcjonalnie
-- brak lokalnych systemów wizualnych tworzonych przez kolejne sekcje
+- spójny styl i stroke
+- kanoniczne rozmiary
+- wyrównanie optyczne
+- ikona z etykietą i akcja icon-only
+- dostępna nazwa dla ikon interaktywnych
 
 ## Reguły obowiązujące kolejne sekcje
 
-- Każda kolejna sekcja korzysta z istniejących tokenów --pd-*.
-- Nie wolno tworzyć alternatywnej palety, typografii ani geometrii.
-- Nowy kierunek wizualny wymaga jawnej zmiany kontraktu Fundamentów.
+- Ikona dekoracyjna jest ukryta przed technologiami asystującymi.
+- Akcja icon-only zawsze ma accessible name.
+- Ikona nie komunikuje stanu wyłącznie kolorem.
 
 ## Źródła kanoniczne
 

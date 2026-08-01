@@ -3,11 +3,10 @@ import type {
   StoryObj,
 } from '@storybook/react-vite';
 import type {
-  KeyboardEvent,
+  CSSProperties,
   ReactNode,
 } from 'react';
 import {
-  useEffect,
   useId,
   useRef,
   useState,
@@ -33,6 +32,16 @@ import {
   type PapaDataIconName,
 } from '../../../design-system/icons';
 import '../foundations-demo.css';
+import './foundation-iconography-no-containers.css';
+import {
+  ArrowNorthEastIcon,
+  GlobeIcon,
+  MoonStarIcon,
+} from '../story-icons';
+import './foundation-lab-alignment.css';
+import './foundation-geometry-lab-only.css';
+import './foundation-select-target.css';
+import './foundation-status-catalog.css';
 
 const meta = {
   title: '00 Fundamenty/Podstawy',
@@ -45,6 +54,11 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+type LocalizedCopy = {
+  readonly pl: string;
+  readonly en: string;
+};
+
 function readLocale(): PapaDataRuntimeLocale {
   if (typeof document === 'undefined') {
     return 'pl';
@@ -55,52 +69,71 @@ function readLocale(): PapaDataRuntimeLocale {
     : 'pl';
 }
 
+function copy(value: LocalizedCopy) {
+  return readLocale() === 'en' ? value.en : value.pl;
+}
+
 function Localized({
   pl,
   en,
-}: {
-  readonly pl: ReactNode;
-  readonly en: ReactNode;
-}) {
-  return readLocale() === 'en' ? en : pl;
+}: LocalizedCopy) {
+  return <>{readLocale() === 'en' ? en : pl}</>;
 }
 
-function Page({
-  eyebrow,
+function FoundationPage({
   title,
   summary,
   children,
 }: {
-  readonly eyebrow: ReactNode;
   readonly title: ReactNode;
   readonly summary: ReactNode;
   readonly children: ReactNode;
 }) {
   return (
     <main className="pd-f0-page">
-      <header className="pd-f0-page__header">
-        <div>
-          <p className="pd-f0-kicker">
-            {eyebrow}
-          </p>
-          <h1>{title}</h1>
-        </div>
-        <p className="pd-f0-page__summary">
-          {summary}
-        </p>
-      </header>
-      {children}
+      <div className="pd-f0-page__inner">
+        <header className="pd-f0-page__header">
+          <div className="pd-f0-page__label">
+            <span>00</span>
+            <span>
+              <Localized pl="Fundamenty" en="Foundations" />
+            </span>
+          </div>
+          <div className="pd-f0-page__heading">
+            <h1>{title}</h1>
+            <p>{summary}</p>
+          </div>
+          <dl className="pd-f0-page__meta" aria-label={copy({
+            pl: 'Parametry prezentacji',
+            en: 'Presentation parameters',
+          })}>
+            <div>
+              <dt><Localized pl="Układ" en="Layout" /></dt>
+              <dd><Localized pl="Systemowy" en="System" /></dd>
+            </div>
+            <div>
+              <dt><Localized pl="Powierzchnia" en="Surface" /></dt>
+              <dd><Localized pl="Neutralna" en="Neutral" /></dd>
+            </div>
+            <div>
+              <dt><Localized pl="Gęstość" en="Density" /></dt>
+              <dd><Localized pl="Sterowana globalnie" en="Global control" /></dd>
+            </div>
+          </dl>
+        </header>
+        {children}
+      </div>
     </main>
   );
 }
 
-function Section({
-  eyebrow,
+function FoundationSection({
+  index,
   title,
   summary,
   children,
 }: {
-  readonly eyebrow?: ReactNode;
+  readonly index: string;
   readonly title: ReactNode;
   readonly summary?: ReactNode;
   readonly children: ReactNode;
@@ -108,14 +141,122 @@ function Section({
   return (
     <section className="pd-f0-section">
       <header className="pd-f0-section__header">
-        {eyebrow ? (
-          <p className="pd-f0-kicker">{eyebrow}</p>
-        ) : null}
-        <h2>{title}</h2>
-        {summary ? <p>{summary}</p> : null}
+        <span className="pd-f0-section__index" aria-hidden="true">
+          {index}
+        </span>
+        <div>
+          <h2>{title}</h2>
+          {summary ? <p>{summary}</p> : null}
+        </div>
       </header>
-      {children}
+      <div className="pd-f0-section__content">
+        {children}
+      </div>
     </section>
+  );
+}
+
+function FoundationVariant({
+  title,
+  description,
+  token,
+  children,
+  surface = 'plain',
+}: {
+  readonly title: ReactNode;
+  readonly description?: ReactNode;
+  readonly token?: ReactNode;
+  readonly children: ReactNode;
+  readonly surface?: 'plain' | 'subtle' | 'data';
+}) {
+  return (
+    <article className="pd-f0-variant" data-surface={surface}>
+      <header className="pd-f0-variant__header">
+        <h3>{title}</h3>
+        {description ? <p>{description}</p> : null}
+        {token ? <code>{token}</code> : null}
+      </header>
+      <div className="pd-f0-variant__body">
+        {children}
+      </div>
+    </article>
+  );
+}
+
+function FoundationLedger({
+  children,
+  label,
+}: {
+  readonly children: ReactNode;
+  readonly label: string;
+}) {
+  return (
+    <div className="pd-f0-ledger" role="list" aria-label={label}>
+      {children}
+    </div>
+  );
+}
+
+function LedgerRow({
+  label,
+  value,
+  detail,
+  preview,
+}: {
+  readonly label: ReactNode;
+  readonly value?: ReactNode;
+  readonly detail?: ReactNode;
+  readonly preview?: ReactNode;
+}) {
+  return (
+    <div className="pd-f0-ledger__row" role="listitem">
+      <div className="pd-f0-ledger__label">{label}</div>
+      {preview ? <div className="pd-f0-ledger__preview">{preview}</div> : null}
+      {value ? <div className="pd-f0-ledger__value">{value}</div> : null}
+      {detail ? <div className="pd-f0-ledger__detail">{detail}</div> : null}
+    </div>
+  );
+}
+
+function ThemePreview({
+  theme,
+  title,
+  description,
+  children,
+}: {
+  readonly theme: 'light' | 'dark';
+  readonly title: ReactNode;
+  readonly description?: ReactNode;
+  readonly children: ReactNode;
+}) {
+  return (
+    <article className="pd-f0-theme-preview" data-theme={theme}>
+      <header>
+        <span>{theme === 'light'
+          ? <Localized pl="Tryb jasny" en="Light mode" />
+          : <Localized pl="Tryb ciemny" en="Dark mode" />}</span>
+        <h3>{title}</h3>
+        {description ? <p>{description}</p> : null}
+      </header>
+      <div className="pd-f0-theme-preview__body">
+        {children}
+      </div>
+    </article>
+  );
+}
+
+function ThemePair({
+  light,
+  dark,
+}: {
+  readonly light: ReactNode;
+  readonly dark: ReactNode;
+}) {
+  return (
+    <div className="pd-f0-theme-pair">
+      {light}
+      {dark}
+    </div>
   );
 }
 
@@ -124,30 +265,46 @@ function TokenCode({
 }: {
   readonly children: ReactNode;
 }) {
+  return <code className="pd-f0-token">{children}</code>;
+}
+
+function FoundationButton({
+  children,
+  tone = 'secondary',
+  icon,
+  onClick,
+  type = 'button',
+}: {
+  readonly children: ReactNode;
+  readonly tone?: 'primary' | 'secondary' | 'quiet';
+  readonly icon?: PapaDataIconName;
+  readonly onClick?: () => void;
+  readonly type?: 'button' | 'submit';
+}) {
   return (
-    <code className="pd-f0-token-code">
-      {children}
-    </code>
+    <button
+      className="pd-f0-button"
+      data-tone={tone}
+      onClick={onClick}
+      type={type}
+    >
+      {icon ? <Icon decorative name={icon} size={16} /> : null}
+      <span>{children}</span>
+    </button>
   );
 }
 
-function StatusPill({
+type FoundationStatusTone = 'success' | 'warning' | 'danger' | 'critical' | 'neutral' | 'info' | 'processing' | 'muted';
+
+function StatusBadge({
   tone,
   children,
 }: {
-  readonly tone:
-    | 'success'
-    | 'warning'
-    | 'danger'
-    | 'neutral'
-    | 'info';
+  readonly tone: FoundationStatusTone;
   readonly children: ReactNode;
 }) {
   return (
-    <span
-      className="pd-f0-status"
-      data-tone={tone}
-    >
+    <span className="pd-f0-status" data-tone={tone}>
       <span aria-hidden="true" />
       {children}
     </span>
@@ -156,2269 +313,2001 @@ function StatusPill({
 
 const visualPrinciples = [
   {
-    titlePl: 'Decyzja przed dekoracją',
-    titleEn: 'Decision before decoration',
-    textPl:
-      'Hierarchia informacji, dane i następna akcja mają pierwszeństwo przed efektami.',
-    textEn:
-      'Information hierarchy, data and the next action come before decorative effects.',
+    number: '01',
+    title: {
+      pl: 'Decyzja przed dekoracją',
+      en: 'Decision before decoration',
+    },
+    description: {
+      pl: 'Dane, hierarchia i następna akcja mają pierwszeństwo przed efektem wizualnym.',
+      en: 'Data, hierarchy and the next action come before visual effects.',
+    },
   },
   {
-    titlePl: 'Premium przez precyzję',
-    titleEn: 'Premium through precision',
-    textPl:
-      'Marka jest lokalnym akcentem. Powierzchnie pozostają spokojne, analityczne i czytelne.',
-    textEn:
-      'Brand is a local accent. Surfaces remain calm, analytical and readable.',
+    number: '02',
+    title: {
+      pl: 'Premium przez precyzję',
+      en: 'Premium through precision',
+    },
+    description: {
+      pl: 'Jakość budują proporcje, rytm i czytelność, nie poświaty ani ciężkie cienie.',
+      en: 'Quality comes from proportion, rhythm and clarity, not glow or heavy shadows.',
+    },
   },
   {
-    titlePl: 'Mniej kart, więcej struktury',
-    titleEn: 'Fewer cards, stronger structure',
-    textPl:
-      'Separatory, odstęp i zmiana powierzchni budują układ bez kart w kartach.',
-    textEn:
-      'Spacing, separators and surface changes structure the interface without nested cards.',
+    number: '03',
+    title: {
+      pl: 'Mniej kontenerów, więcej struktury',
+      en: 'Fewer containers, stronger structure',
+    },
+    description: {
+      pl: 'Sekcje rozdzielają odstęp i linia. Powierzchnia pojawia się tylko tam, gdzie niesie funkcję.',
+      en: 'Spacing and separators structure sections. A surface appears only when it has a function.',
+    },
   },
 ] as const;
 
 export const KierunekWizualny: Story = {
   name: 'Kierunek wizualny',
-  render: () => {
-    const locale = readLocale();
-
-    return (
-      <Page
-        eyebrow="00 Fundamenty"
-        title={
-          locale === 'en'
-            ? 'Visual direction'
-            : 'Kierunek wizualny'
-        }
+  render: () => (
+    <FoundationPage
+      title={<Localized pl="Kierunek wizualny" en="Visual direction" />}
+      summary={
+        <Localized
+          pl="Jedna zasada prezentacji dla całego systemu: spokojny canvas, precyzyjne separatory i lokalny akcent marki."
+          en="One presentation rule for the entire system: calm canvas, precise separators and a local brand accent."
+        />
+      }
+    >
+      <FoundationSection
+        index="01"
+        title={<Localized pl="Tożsamość marki" en="Brand identity" />}
         summary={
-          locale === 'en'
-            ? 'One target language for the entire product: analytical clarity, controlled depth and a distinctive brand accent.'
-            : 'Jeden docelowy język całego produktu: analityczna czytelność, kontrolowana głębia i rozpoznawalny akcent marki.'
+          <Localized
+            pl="Marka identyfikuje produkt. Kolor danych i statusu zachowuje własne znaczenie."
+            en="Brand identifies the product. Data and status colors retain their own meaning."
+          />
         }
       >
-        <Section
-          eyebrow={
-            locale === 'en'
-              ? 'PapaData identity'
-              : 'Tożsamość PapaData'
+        <FoundationVariant
+          title={<Localized pl="Logo pełne" en="Full logo" />}
+          description={
+            <Localized
+              pl="Sygnet i logotyp występują bez dekoracyjnego glow. Wolna przestrzeń buduje rangę znaku."
+              en="Mark and wordmark appear without decorative glow. Clear space gives the identity its weight."
+            />
           }
-          title={
-            locale === 'en'
-              ? 'The brand identifies. UI semantics explain.'
-              : 'Marka identyfikuje. Semantyka UI wyjaśnia.'
-          }
-          summary={
-            locale === 'en'
-              ? 'Dark amber connects the PD logo, wordmark and primary brand actions. Cyan serves analytical data and status colors keep operational meaning.'
-              : 'Ciemny bursztyn spina logo PD, logotyp i główne akcje marki. Cyan obsługuje dane analityczne, a kolory statusów zachowują znaczenie operacyjne.'
-          }
+          token="--pd-brand"
         >
-          <div className="pd-f0-brand-system">
-            <article className="pd-f0-brand-hero">
-              <PapaDataBrand
-                className="pd-f0-brand-hero__logo"
-                glow
-                size="large"
+          <div className="pd-f0-brand-lockup-demo">
+            <PapaDataBrand label="PapaData logo" size="large" />
+            <p>
+              <Localized
+                pl="Bursztyn pozostaje akcentem marki, nie kolorem całego interfejsu."
+                en="Amber remains a brand accent, not the color of the entire interface."
               />
-              <p>
-                <Localized
-                  pl="Logo pełne jest pierwszym sygnałem marki. Ciemny bursztyn prowadzi identyfikację i główne akcje, ale nie zastępuje danych ani statusów."
-                  en="The full logo is the first brand signal. Dark amber anchors identity and primary brand actions without replacing data or status colors."
-                />
-              </p>
-            </article>
-
-            <div className="pd-f0-brand-anatomy">
-              <article>
-                <span>
-                  <Localized pl="Sygnet" en="Mark" />
-                </span>
-                <PapaDataBrand
-                  glow
-                  label="PapaData sygnet"
-                  showWordmark={false}
-                  size="large"
-                />
-                <p>
-                  <Localized
-                    pl="Monogram PD z ambientem i kreską rozchodzącą się od środka. Używany w ciasnych miejscach."
-                    en="The PD monogram with ambient light and a center-out accent line. Used in compact spaces."
-                  />
-                </p>
-              </article>
-              <article>
-                <span>
-                  <Localized pl="Logotyp" en="Wordmark" />
-                </span>
-                <PapaDataBrand
-                  label="PapaData logotyp"
-                  showMark={false}
-                  size="large"
-                />
-                <p>
-                  <Localized
-                    pl="Sam napis działa tylko wtedy, gdy kontekst już niesie znak marki."
-                    en="The wordmark alone works only when the context already carries the brand mark."
-                  />
-                </p>
-              </article>
-              <article data-brand-emphasis="full">
-                <span>
-                  <Localized pl="Logo pełne" en="Full logo" />
-                </span>
-                <PapaDataBrand
-                  glow
-                  label="PapaData logo"
-                  size="large"
-                />
-                <p>
-                  <Localized
-                    pl="Sygnet i logotyp razem. Ten sam komponent działa w jasnym i ciemnym motywie."
-                    en="Mark and wordmark together. The same component works in light and dark themes."
-                  />
-                </p>
-              </article>
-            </div>
-
-            <div className="pd-f0-brand-semantics">
-              <article data-brand-role="identity">
-                <span aria-hidden="true" />
-                <div>
-                  <strong>
-                    <Localized pl="Marka" en="Brand" />
-                  </strong>
-                  <TokenCode>--pd-brand</TokenCode>
-                  <p>
-                    <Localized
-                      pl="Logo PD, sygnet i główny bursztynowy akcent."
-                      en="PD logo, mark and the main amber brand accent."
-                    />
-                  </p>
-                </div>
-              </article>
-              <article data-brand-role="action">
-                <span aria-hidden="true" />
-                <div>
-                  <strong>
-                    <Localized pl="CTA marki" en="Brand CTA" />
-                  </strong>
-                  <TokenCode>--pd-brand-action</TokenCode>
-                  <p>
-                    <Localized
-                      pl="Najważniejsze przyciski i wejścia w przepływ."
-                      en="Primary buttons and entry points into the flow."
-                    />
-                  </p>
-                </div>
-              </article>
-              <article data-brand-role="data">
-                <span aria-hidden="true" />
-                <div>
-                  <strong>
-                    <Localized pl="Dane" en="Data" />
-                  </strong>
-                  <TokenCode>--pd-data-accent</TokenCode>
-                  <p>
-                    <Localized
-                      pl="Wykresy, metryki i elementy analityczne."
-                      en="Charts, metrics and analytical elements."
-                    />
-                  </p>
-                </div>
-              </article>
-              <article data-brand-role="status">
-                <span aria-hidden="true" />
-                <div>
-                  <strong>
-                    <Localized pl="Status" en="Status" />
-                  </strong>
-                  <TokenCode>--pd-status-*</TokenCode>
-                  <p>
-                    <Localized
-                      pl="Stan systemu, alerty i walidacja."
-                      en="System state, alerts and validation."
-                    />
-                  </p>
-                </div>
-              </article>
-            </div>
-
-            <div className="pd-f0-brand-usage">
-              <article data-example="brand">
-                <PapaDataBrand
-                  glow
-                  showWordmark={false}
-                  size="small"
-                />
-                <strong>
-                  <Localized pl="Identyfikacja" en="Identity" />
-                </strong>
-                <p>
-                  <Localized
-                    pl="Bursztyn nie udaje CTA ani statusu."
-                    en="Amber does not act as CTA or status."
-                  />
-                </p>
-              </article>
-              <article data-example="action">
-                <button
-                  data-interactive-tone="primary"
-                  type="button"
-                >
-                  <Localized pl="Połącz źródło" en="Connect source" />
-                </button>
-                <strong>
-                  <Localized pl="Akcja" en="Action" />
-                </strong>
-                <p>
-                  <Localized
-                    pl="Bursztyn prowadzi główną akcję marki."
-                    en="Amber leads the primary brand action."
-                  />
-                </p>
-              </article>
-              <article data-example="data">
-                <div aria-hidden="true">
-                  <span />
-                  <span />
-                  <span />
-                </div>
-                <strong>
-                  <Localized pl="Dane" en="Data" />
-                </strong>
-                <p>
-                  <Localized
-                    pl="Cyan opisuje warstwę analityczną."
-                    en="Cyan describes the analytical layer."
-                  />
-                </p>
-              </article>
-              <article data-example="status">
-                <StatusPill tone="success">
-                  <Localized pl="Aktywne" en="Active" />
-                </StatusPill>
-                <strong>
-                  <Localized pl="Status" en="Status" />
-                </strong>
-                <p>
-                  <Localized
-                    pl="Status komunikuje stan, nie dekorację."
-                    en="Status communicates state, not decoration."
-                  />
-                </p>
-              </article>
-            </div>
+            </p>
           </div>
-        </Section>
+        </FoundationVariant>
 
-        <Section
-          title={
-            locale === 'en'
-              ? 'Three governing principles'
-              : 'Trzy zasady nadrzędne'
+        <FoundationVariant
+          title={<Localized pl="Role semantyczne" en="Semantic roles" />}
+          description={
+            <Localized
+              pl="Każdy kolor ma jedną odpowiedzialność i nie przejmuje roli innego obszaru."
+              en="Each color has one responsibility and does not take over another area."
+            />
           }
         >
-          <div className="pd-f0-principle-grid">
-            {visualPrinciples.map((item, index) => (
-              <article key={item.titlePl}>
-                <span>{String(index + 1).padStart(2, '0')}</span>
-                <h3>
-                  {locale === 'en'
-                    ? item.titleEn
-                    : item.titlePl}
-                </h3>
-                <p>
-                  {locale === 'en'
-                    ? item.textEn
-                    : item.textPl}
-                </p>
-              </article>
-            ))}
-          </div>
-        </Section>
+          <FoundationLedger label={copy({ pl: 'Role kolorów', en: 'Color roles' })}>
+            <LedgerRow
+              label={<Localized pl="Marka" en="Brand" />}
+              preview={<span className="pd-f0-swatch" data-color="brand" />}
+              value={<TokenCode>--pd-brand</TokenCode>}
+              detail={<Localized pl="Logo i główne akcje marki" en="Logo and primary brand actions" />}
+            />
+            <LedgerRow
+              label={<Localized pl="Interakcja" en="Interaction" />}
+              preview={<span className="pd-f0-swatch" data-color="interactive" />}
+              value={<TokenCode>--pd-interactive</TokenCode>}
+              detail={<Localized pl="Linki, fokus i aktywne kontrolki" en="Links, focus and active controls" />}
+            />
+            <LedgerRow
+              label={<Localized pl="Dane" en="Data" />}
+              preview={<span className="pd-f0-swatch" data-color="data" />}
+              value={<TokenCode>--pd-data-accent</TokenCode>}
+              detail={<Localized pl="Wykresy i informacja analityczna" en="Charts and analytical information" />}
+            />
+            <LedgerRow
+              label={<Localized pl="Status" en="Status" />}
+              preview={<span className="pd-f0-swatch" data-color="status" />}
+              value={<TokenCode>--pd-status-*</TokenCode>}
+              detail={<Localized pl="Stan procesu i walidacja" en="Process state and validation" />}
+            />
+          </FoundationLedger>
+        </FoundationVariant>
+      </FoundationSection>
 
-        <Section
-          title={
-            locale === 'en'
-              ? 'Accepted and rejected direction'
-              : 'Kierunek przyjęty i odrzucony'
+      <FoundationSection
+        index="02"
+        title={<Localized pl="Zasady projektowe" en="Design principles" />}
+        summary={
+          <Localized
+            pl="Te same reguły obowiązują komponent, story i ekran produktu."
+            en="The same rules apply to a component, a story and a product screen."
+          />
+        }
+      >
+        <div className="pd-f0-principles">
+          {visualPrinciples.map((principle) => (
+            <article key={principle.number}>
+              <span>{principle.number}</span>
+              <div>
+                <h3>{copy(principle.title)}</h3>
+                <p>{copy(principle.description)}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <FoundationVariant
+          title={<Localized pl="Kierunek akceptowany i odrzucony" en="Accepted and rejected direction" />}
+          description={
+            <Localized
+              pl="Porównanie nie jest kartą demonstracyjną. To prosta lista decyzji."
+              en="The comparison is not a demo card. It is a direct decision list."
+            />
           }
         >
-          <div className="pd-f0-do-dont">
-            <article data-result="accepted">
-              <StatusPill tone="success">
-                <Localized pl="Przyjęte" en="Accepted" />
-              </StatusPill>
-              <h3>
-                <Localized
-                  pl="Neutralne powierzchnie, lokalny akcent"
-                  en="Neutral surfaces, local accent"
-                />
-              </h3>
-              <p>
-                <Localized
-                  pl="Spokojny canvas, precyzyjne separatory, duża czytelność danych i bursztyn używany oszczędnie."
-                  en="A calm canvas, precise separators, readable data and restrained use of amber."
-                />
-              </p>
-            </article>
-            <article data-result="rejected">
-              <StatusPill tone="danger">
-                <Localized pl="Odrzucone" en="Rejected" />
-              </StatusPill>
-              <h3>
-                <Localized
-                  pl="Neonowe halo i nadmiar kart"
-                  en="Neon halo and excessive cards"
-                />
-              </h3>
-              <p>
-                <Localized
-                  pl="Duże poświaty, generyczny SaaS, przypadkowe gradienty i każda sekcja zamknięta w osobnej ramce."
-                  en="Large glows, generic SaaS styling, random gradients and every section boxed into a card."
-                />
-              </p>
-            </article>
+          <div className="pd-f0-decision-list">
+            <div data-result="accepted">
+              <StatusBadge tone="success"><Localized pl="Stosujemy" en="Use" /></StatusBadge>
+              <p><Localized pl="Neutralne powierzchnie, separatory, lokalne akcenty i czytelny rytm danych." en="Neutral surfaces, separators, local accents and a readable data rhythm." /></p>
+            </div>
+            <div data-result="rejected">
+              <StatusBadge tone="danger"><Localized pl="Odrzucamy" en="Avoid" /></StatusBadge>
+              <p><Localized pl="Glow, ciężkie cienie, przypadkowe gradienty i osobną kartę dla każdego przykładu." en="Glow, heavy shadows, arbitrary gradients and a separate card for every example." /></p>
+            </div>
           </div>
-        </Section>
-      </Page>
-    );
-  },
+        </FoundationVariant>
+      </FoundationSection>
+
+      <FoundationSection
+        index="03"
+        title={<Localized pl="Motyw jasny i ciemny" en="Light and dark theme" />}
+        summary={
+          <Localized
+            pl="Każdy motyw ma własną pełną powierzchnię. Nie mieszamy jasnych tokenów z ciemnym canvasem."
+            en="Each theme has its own complete surface. Light tokens are never mixed with a dark canvas."
+          />
+        }
+      >
+        <ThemePair
+          light={
+            <ThemePreview
+              theme="light"
+              title={<Localized pl="Spokojna powierzchnia robocza" en="Calm working surface" />}
+              description={<Localized pl="Kontrast wynika z hierarchii, nie z mocnego cienia." en="Contrast comes from hierarchy, not a strong shadow." />}
+            >
+              <div className="pd-f0-theme-sample">
+                <div>
+                  <span><Localized pl="Przychód netto" en="Net revenue" /></span>
+                  <strong>1 248 590 zł</strong>
+                </div>
+                <FoundationButton icon="trend" tone="primary">
+                  <Localized pl="Otwórz analizę" en="Open analysis" />
+                </FoundationButton>
+              </div>
+            </ThemePreview>
+          }
+          dark={
+            <ThemePreview
+              theme="dark"
+              title={<Localized pl="Czytelność bez neonów" en="Readable without neon" />}
+              description={<Localized pl="Głębię buduje powierzchnia i separator, nie poświata." en="Surface and separator create depth, not glow." />}
+            >
+              <div className="pd-f0-theme-sample">
+                <div>
+                  <span><Localized pl="Przychód netto" en="Net revenue" /></span>
+                  <strong>1 248 590 zł</strong>
+                </div>
+                <FoundationButton icon="trend" tone="primary">
+                  <Localized pl="Otwórz analizę" en="Open analysis" />
+                </FoundationButton>
+              </div>
+            </ThemePreview>
+          }
+        />
+      </FoundationSection>
+    </FoundationPage>
+  ),
 };
 
 const typographyRows = [
-  {
-    labelPl: 'Nagłówek ekspozycyjny',
-    labelEn: 'Display',
-    token: '--pd-type-size-display',
-  },
-  {
-    labelPl: 'Tytuł strony',
-    labelEn: 'Page title',
-    token: '--pd-type-size-page',
-  },
-  {
-    labelPl: 'Tytuł sekcji',
-    labelEn: 'Section title',
-    token: '--pd-type-size-section',
-  },
-  {
-    labelPl: 'Tekst duży',
-    labelEn: 'Body large',
-    token: '--pd-type-size-body-large',
-  },
-  {
-    labelPl: 'Tekst podstawowy',
-    labelEn: 'Body',
-    token: '--pd-type-size-body',
-  },
-  {
-    labelPl: 'Tekst mały',
-    labelEn: 'Body small',
-    token: '--pd-type-size-body-small',
-  },
-  {
-    labelPl: 'Podpis',
-    labelEn: 'Caption',
-    token: '--pd-type-size-caption',
-  },
-  {
-    labelPl: 'Metryka',
-    labelEn: 'Metric',
-    token: '--pd-type-size-metric',
-  },
-  {
-    labelPl: 'Dane techniczne',
-    labelEn: 'Technical data',
-    token: '--pd-font-mono',
-  },
+  { token: '--pd-type-size-page', role: { pl: 'Tytuł strony', en: 'Page title' }, sample: { pl: 'Przegląd danych', en: 'Data overview' }, kind: 'page' },
+  { token: '--pd-type-size-section', role: { pl: 'Tytuł sekcji', en: 'Section title' }, sample: { pl: 'Źródła danych', en: 'Data sources' }, kind: 'section' },
+  { token: '--pd-type-size-body-large', role: { pl: 'Wprowadzenie', en: 'Introduction' }, sample: { pl: 'Najważniejszy kontekst operacyjny.', en: 'The most important operational context.' }, kind: 'lead' },
+  { token: '--pd-type-size-body', role: { pl: 'Tekst roboczy', en: 'Working copy' }, sample: { pl: 'Dane pozostają czytelne przy codziennej pracy.', en: 'Data remains readable in daily work.' }, kind: 'body' },
+  { token: '--pd-type-size-body-small', role: { pl: 'Opis pomocniczy', en: 'Supporting copy' }, sample: { pl: 'Aktualizacja 4 min temu', en: 'Updated 4 min ago' }, kind: 'small' },
+  { token: '--pd-type-size-caption', role: { pl: 'Metadane', en: 'Metadata' }, sample: { pl: 'Źródło: GA4', en: 'Source: GA4' }, kind: 'caption' },
 ] as const;
 
 export const Typografia: Story = {
   name: 'Typografia',
   render: () => {
     const locale = readLocale();
-    const dateStart = new Date('2026-06-01T12:00:00Z');
-    const dateEnd = new Date('2026-06-30T12:00:00Z');
-    const copy = locale === 'en'
-      ? {
-          title: 'Typography and data formatting',
-          summary:
-            'Inter supports the interface and long-form reading. JetBrains Mono is reserved for identifiers, metrics and technical data.',
-          sample: 'A decision model for profitable growth',
-          paragraph:
-            'The interface prioritizes readable analysis, concrete recommendations and a clear next action without excessive bold text.',
-        }
-      : {
-          title: 'Typografia i formatowanie danych',
-          summary:
-            'Inter obsługuje interfejs i dłuższe treści. JetBrains Mono jest zarezerwowany dla identyfikatorów, metryk i danych technicznych.',
-          sample: 'Model decyzyjny rentownego wzrostu',
-          paragraph:
-            'Interfejs stawia na czytelną analizę, konkretne rekomendacje i jasną następną akcję bez nadmiaru pogrubień.',
-        };
+    const rangeStart = new Date('2026-07-01T08:00:00Z');
+    const rangeEnd = new Date('2026-07-31T08:00:00Z');
+    const alignedValues = [
+      {
+        label: { pl: 'Przychód', en: 'Revenue' },
+        value: formatPapaDataCurrency(1248590.42, locale),
+      },
+      {
+        label: { pl: 'Koszt', en: 'Cost' },
+        value: formatPapaDataCurrency(28400, locale),
+      },
+      {
+        label: { pl: 'Korekta', en: 'Adjustment' },
+        value: formatPapaDataCurrency(950.8, locale),
+      },
+    ] as const;
 
     return (
-      <Page
-        eyebrow="00 Fundamenty"
-        title={copy.title}
-        summary={copy.summary}
+      <FoundationPage
+        title={<Localized pl="Typografia i formatowanie danych" en="Typography and data formatting" />}
+        summary={<Localized pl="Typografia ma wspierać skanowanie danych. Waga i skala wynikają z roli, nie z dekoracji." en="Typography supports data scanning. Weight and scale follow the role, not decoration." />}
       >
-        <Section title={copy.sample}>
-          <div className="pd-f0-type-ledger">
-            {typographyRows.map((item, index) => (
-              <article key={item.token}>
-                <div>
-                  <strong>
-                    {locale === 'en' ? item.labelEn : item.labelPl}
-                  </strong>
-                  <TokenCode>{item.token}</TokenCode>
-                </div>
-                <p data-type-row={index}>
-                  {index === 7
-                    ? formatPapaDataCurrency(
-                        1284930.42,
-                        locale,
-                      )
-                    : index === 8
-                      ? 'SKU-PL-2394 · ROAS 4.82'
-                      : index === 0
-                        ? copy.sample
-                        : copy.paragraph}
-                </p>
-              </article>
-            ))}
-          </div>
-        </Section>
-
-        <Section
-          title={
-            locale === 'en'
-              ? 'Locale changes real content and formats'
-              : 'Locale zmienia realną treść i formaty'
-          }
+        <FoundationSection
+          index="01"
+          title={<Localized pl="Hierarchia tekstu" en="Text hierarchy" />}
+          summary={<Localized pl="Jedna drabina typograficzna działa w jasnym i ciemnym motywie." en="One type scale works in light and dark themes." />}
         >
+          <FoundationLedger label={copy({ pl: 'Skala typograficzna', en: 'Type scale' })}>
+            {typographyRows.map((row) => (
+              <LedgerRow
+                key={row.token}
+                label={copy(row.role)}
+                preview={<span className="pd-f0-type-sample" data-kind={row.kind}>{copy(row.sample)}</span>}
+                value={<TokenCode>{row.token}</TokenCode>}
+              />
+            ))}
+          </FoundationLedger>
+        </FoundationSection>
+
+        <FoundationSection
+          index="02"
+          title={<Localized pl="Dane i liczby" en="Data and numbers" />}
+          summary={<Localized pl="Liczby, waluty i daty korzystają z jednego runtime locale." en="Numbers, currency and dates use one runtime locale." />}
+        >
+          <div className="pd-f0-metric-strip">
+            <div>
+              <span><Localized pl="Liczba" en="Number" /></span>
+              <strong>{formatPapaDataNumber(1284590.42, locale)}</strong>
+            </div>
+            <div>
+              <span><Localized pl="Waluta" en="Currency" /></span>
+              <strong>{formatPapaDataCurrency(248950.8, locale)}</strong>
+            </div>
+            <div>
+              <span><Localized pl="Wynik" en="Result" /></span>
+              <strong>{formatPapaDataPercent(0.186, locale)}</strong>
+            </div>
+            <div>
+              <span><Localized pl="Aktualność" en="Freshness" /></span>
+              <strong>{formatPapaDataRelativeTime(-4, 'minute', locale)}</strong>
+            </div>
+          </div>
+
           <div className="pd-f0-format-grid">
-            <article>
-              <span>
-                <Localized pl="Liczba" en="Number" />
-              </span>
-              <strong>
-                {formatPapaDataNumber(1284930.42, locale)}
-              </strong>
+            <article className="pd-f0-format-example">
+              <header>
+                <h3><Localized pl="Zakres dat" en="Date range" /></h3>
+                <p><Localized pl="Format jest lokalny, a układ i hierarchia pozostają stałe." en="The format is locale-aware while layout and hierarchy remain stable." /></p>
+              </header>
+              <div className="pd-f0-date-format">
+                <div className="pd-f0-inline-value">
+                  <Icon decorative name="data" size={20} />
+                  <strong>{formatPapaDataDateRange(rangeStart, rangeEnd, locale)}</strong>
+                </div>
+                <dl>
+                  <div>
+                    <dt><Localized pl="Format lokalny" en="Locale format" /></dt>
+                    <dd><Localized pl="dzień – miesiąc – rok" en="month – day – year" /></dd>
+                  </div>
+                  <div>
+                    <dt><Localized pl="Zasada" en="Rule" /></dt>
+                    <dd><Localized pl="Bez ręcznego składania dat" en="Never assemble dates manually" /></dd>
+                  </div>
+                </dl>
+              </div>
             </article>
-            <article>
-              <span>
-                <Localized pl="Waluta" en="Currency" />
-              </span>
-              <strong>
-                {formatPapaDataCurrency(842900, locale)}
-              </strong>
-            </article>
-            <article>
-              <span>
-                <Localized pl="Procent" en="Percent" />
-              </span>
-              <strong>
-                {formatPapaDataPercent(0.842, locale)}
-              </strong>
-            </article>
-            <article>
-              <span>
-                <Localized pl="Zakres dat" en="Date range" />
-              </span>
-              <strong>
-                {formatPapaDataDateRange(
-                  dateStart,
-                  dateEnd,
-                  locale,
-                )}
-              </strong>
-            </article>
-            <article>
-              <span>
-                <Localized pl="Czas względny" en="Relative time" />
-              </span>
-              <strong>
-                {formatPapaDataRelativeTime(-14, 'minute', locale)}
-              </strong>
-            </article>
-            <article>
-              <span>
-                <Localized pl="Długi tekst" en="Long content" />
-              </span>
-              <strong className="pd-f0-wrap-sample">
-                <Localized
-                  pl="Rekomendacja dotycząca ponownego połączenia źródła danych marketplace"
-                  en="Recommendation for reconnecting the marketplace data source"
-                />
-              </strong>
+
+            <article className="pd-f0-format-example">
+              <header>
+                <h3><Localized pl="Wyrównanie liczb" en="Numeric alignment" /></h3>
+                <p><Localized pl="Cyfry tabelaryczne stabilizują kolumny kwot i KPI." en="Tabular figures stabilize amount and KPI columns." /></p>
+              </header>
+              <div
+                className="pd-f0-number-alignment"
+                role="table"
+                aria-label={copy({ pl: 'Przykład wyrównania kwot', en: 'Amount alignment example' })}
+              >
+                {alignedValues.map((item) => (
+                  <div role="row" key={item.label.pl}>
+                    <span role="cell">{copy(item.label)}</span>
+                    <strong role="cell">{item.value}</strong>
+                  </div>
+                ))}
+              </div>
             </article>
           </div>
-        </Section>
-      </Page>
+        </FoundationSection>
+
+        <FoundationSection
+          index="03"
+          title={<Localized pl="Długie treści" en="Long content" />}
+          summary={<Localized pl="Tekst zawija się naturalnie i nie wymusza poziomego scrolla strony." en="Text wraps naturally and never forces page-level horizontal scrolling." />}
+        >
+          <div className="pd-f0-long-content-grid">
+            <article>
+              <header>
+                <h3><Localized pl="Rekomendacja biznesowa" en="Business recommendation" /></h3>
+                <p><Localized pl="Dłuższy akapit sprawdza rytm, szerokość i czytelność treści roboczej." en="A longer paragraph verifies rhythm, measure and working-copy readability." /></p>
+              </header>
+              <div className="pd-f0-long-copy">
+                <p>
+                  <Localized
+                    pl="Wstrzymaj automatyczną publikację raportu do czasu potwierdzenia kompletności danych ze wszystkich kanałów reklamowych, ponownego przeliczenia atrybucji dla ostatnich siedmiu dni oraz zatwierdzenia różnic pomiędzy przychodem raportowanym a wartością zamówień zapisaną w systemie źródłowym."
+                    en="Pause automatic report publication until data completeness is confirmed across all advertising channels, attribution is recalculated for the last seven days, and differences between reported revenue and source-system order value are approved."
+                  />
+                </p>
+                <p>
+                  <Localized
+                    pl="Po spełnieniu tych warunków system może wznowić harmonogram bez ręcznej zmiany konfiguracji kampanii."
+                    en="Once these conditions are met, the system may resume the schedule without a manual campaign-configuration change."
+                  />
+                </p>
+              </div>
+            </article>
+
+            <article>
+              <header>
+                <h3><Localized pl="Tekst techniczny" en="Technical text" /></h3>
+                <p><Localized pl="Identyfikator nie może rozszerzać kolumny ani całej strony." en="An identifier must not widen its column or the page." /></p>
+              </header>
+              <code className="pd-f0-breakable-code">
+                source_authority.reconciliation.candidate_resolution.window_2026_07_31
+              </code>
+            </article>
+          </div>
+        </FoundationSection>
+      </FoundationPage>
     );
   },
 };
 
 const semanticColors = [
-  ['Canvas', '--pd-canvas', 'canvas'],
-  ['Surface', '--pd-surface', 'surface'],
-  ['Surface subtle', '--pd-surface-subtle', 'surface-subtle'],
-  ['Surface raised', '--pd-surface-raised', 'surface-raised'],
-  ['Surface active', '--pd-surface-active', 'surface-active'],
-  ['Surface data', '--pd-surface-data', 'surface-data'],
-  ['Text', '--pd-text', 'text'],
-  ['Text secondary', '--pd-text-secondary', 'text-secondary'],
-  ['Text muted', '--pd-text-muted', 'text-muted'],
-  ['Separator', '--pd-separator', 'separator'],
-  ['Interactive', '--pd-interactive', 'interactive'],
-  ['Data accent', '--pd-data-accent', 'data-accent'],
-  ['Focus', '--pd-focus-visible', 'focus'],
-  ['Success', '--pd-status-success', 'success'],
-  ['Warning', '--pd-status-warning', 'warning'],
-  ['Danger', '--pd-status-danger', 'danger'],
-  ['Neutral', '--pd-status-neutral', 'neutral'],
+  { role: { pl: 'Canvas', en: 'Canvas' }, token: '--pd-canvas', color: 'canvas' },
+  { role: { pl: 'Powierzchnia', en: 'Surface' }, token: '--pd-surface', color: 'surface' },
+  { role: { pl: 'Tekst', en: 'Text' }, token: '--pd-text', color: 'text' },
+  { role: { pl: 'Tekst pomocniczy', en: 'Secondary text' }, token: '--pd-text-secondary', color: 'secondary' },
+  { role: { pl: 'Separator', en: 'Separator' }, token: '--pd-separator', color: 'separator' },
+  { role: { pl: 'Interakcja', en: 'Interaction' }, token: '--pd-interactive', color: 'interactive' },
+  { role: { pl: 'Dane', en: 'Data' }, token: '--pd-data-accent', color: 'data' },
+  { role: { pl: 'Fokus', en: 'Focus' }, token: '--pd-focus-visible', color: 'focus' },
 ] as const;
 
-const dataPalette = [
-  '--pd-data-series-1',
-  '--pd-data-series-2',
-  '--pd-data-series-3',
-  '--pd-data-series-4',
-  '--pd-data-series-5',
-  '--pd-data-series-6',
-] as const;
+const dataSeries = ['1', '2', '3', '4', '5', '6'] as const;
+
+
+const semanticTones = [
+  {
+    tone: 'neutral',
+    label: { pl: 'Neutralny', en: 'Neutral' },
+    token: '--pd-status-neutral',
+    usage: { pl: 'Brak oceny, stan nieaktywny lub informacja pomocnicza.', en: 'No evaluation, inactive state or supporting information.' },
+  },
+  {
+    tone: 'info',
+    label: { pl: 'Informacyjny', en: 'Informational' },
+    token: '--pd-status-info',
+    usage: { pl: 'Informacja, która nie wymaga natychmiastowej reakcji.', en: 'Information that does not require immediate action.' },
+  },
+  {
+    tone: 'success',
+    label: { pl: 'Sukces', en: 'Success' },
+    token: '--pd-status-success',
+    usage: { pl: 'Potwierdzone zakończenie lub poprawny wynik.', en: 'Confirmed completion or a valid result.' },
+  },
+  {
+    tone: 'warning',
+    label: { pl: 'Ostrzeżenie', en: 'Warning' },
+    token: '--pd-status-warning',
+    usage: { pl: 'Ryzyko, opóźnienie lub stan wymagający uwagi.', en: 'Risk, delay or a state requiring attention.' },
+  },
+  {
+    tone: 'danger',
+    label: { pl: 'Błąd', en: 'Error' },
+    token: '--pd-status-danger',
+    usage: { pl: 'Błąd, blokada albo nieodwracalny skutek.', en: 'Error, blocker or irreversible consequence.' },
+  },
+  {
+    tone: 'processing',
+    label: { pl: 'Przetwarzanie', en: 'Processing' },
+    token: '--pd-brand-accent',
+    usage: { pl: 'Operacja trwa i system oczekuje na jej wynik.', en: 'An operation is running and the system is awaiting its result.' },
+  },
+] as const satisfies readonly {
+  readonly tone: FoundationStatusTone;
+  readonly label: LocalizedCopy;
+  readonly token: string;
+  readonly usage: LocalizedCopy;
+}[];
+
+const statusToneLabels: Record<FoundationStatusTone, LocalizedCopy> = {
+  success: { pl: 'Sukces', en: 'Success' },
+  warning: { pl: 'Ostrzeżenie', en: 'Warning' },
+  danger: { pl: 'Błąd', en: 'Error' },
+  critical: { pl: 'Krytyczny', en: 'Critical' },
+  neutral: { pl: 'Neutralny', en: 'Neutral' },
+  info: { pl: 'Informacyjny', en: 'Informational' },
+  processing: { pl: 'Przetwarzanie', en: 'Processing' },
+  muted: { pl: 'Wyciszony', en: 'Muted' },
+};
+
+type ProjectStatusItem = {
+  readonly key: string;
+  readonly label: LocalizedCopy;
+  readonly tone: FoundationStatusTone;
+};
+
+type ProjectStatusGroup = {
+  readonly title: LocalizedCopy;
+  readonly description: LocalizedCopy;
+  readonly statuses: readonly ProjectStatusItem[];
+};
+
+const projectStatusGroups = [
+  {
+    title: { pl: 'Bazowe stany systemu', en: 'Base system states' },
+    description: { pl: 'Statusy przekrojowe dla usług, sekcji, kart i widoków danych.', en: 'Cross-product states for services, sections, cards and data views.' },
+    statuses: [
+      { key: 'ready', label: { pl: 'Gotowe', en: 'Ready' }, tone: 'info' },
+      { key: 'processing', label: { pl: 'Przetwarzanie', en: 'Processing' }, tone: 'processing' },
+      { key: 'running', label: { pl: 'W toku', en: 'Running' }, tone: 'processing' },
+      { key: 'queued', label: { pl: 'W kolejce', en: 'Queued' }, tone: 'processing' },
+      { key: 'retry_wait', label: { pl: 'Czeka na ponowienie', en: 'Waiting for retry' }, tone: 'warning' },
+      { key: 'partial', label: { pl: 'Częściowe', en: 'Partial' }, tone: 'warning' },
+      { key: 'no_data', label: { pl: 'Brak danych', en: 'No data' }, tone: 'neutral' },
+      { key: 'stale', label: { pl: 'Nieaktualne', en: 'Stale' }, tone: 'warning' },
+      { key: 'delayed', label: { pl: 'Opóźnione', en: 'Delayed' }, tone: 'warning' },
+      { key: 'invalid', label: { pl: 'Nieprawidłowe', en: 'Invalid' }, tone: 'danger' },
+      { key: 'conflicting', label: { pl: 'Konflikt', en: 'Conflict' }, tone: 'danger' },
+      { key: 'resync_required', label: { pl: 'Wymaga synchronizacji', en: 'Resync required' }, tone: 'warning' },
+      { key: 'manual_review_required', label: { pl: 'Wymaga sprawdzenia', en: 'Manual review required' }, tone: 'warning' },
+      { key: 'succeeded', label: { pl: 'Zakończone', en: 'Succeeded' }, tone: 'success' },
+      { key: 'failed', label: { pl: 'Błąd', en: 'Failed' }, tone: 'danger' },
+      { key: 'cancelled', label: { pl: 'Anulowane', en: 'Cancelled' }, tone: 'muted' },
+      { key: 'blocked', label: { pl: 'Zablokowane', en: 'Blocked' }, tone: 'danger' },
+      { key: 'unknown', label: { pl: 'Nieznane', en: 'Unknown' }, tone: 'neutral' },
+      { key: 'unavailable', label: { pl: 'Niedostępne', en: 'Unavailable' }, tone: 'neutral' },
+    ],
+  },
+  {
+    title: { pl: 'Dostęp, konto i workspace', en: 'Access, account and workspace' },
+    description: { pl: 'Statusy tenantów, workspace, członkostw, zaproszeń i onboardingu.', en: 'Tenant, workspace, membership, invitation and onboarding states.' },
+    statuses: [
+      { key: 'active', label: { pl: 'Aktywne', en: 'Active' }, tone: 'success' },
+      { key: 'pending_verification', label: { pl: 'Czeka na weryfikację', en: 'Pending verification' }, tone: 'warning' },
+      { key: 'archived', label: { pl: 'Zarchiwizowane', en: 'Archived' }, tone: 'muted' },
+      { key: 'invited', label: { pl: 'Zaproszony', en: 'Invited' }, tone: 'info' },
+      { key: 'revoked', label: { pl: 'Cofnięte', en: 'Revoked' }, tone: 'muted' },
+      { key: 'pending', label: { pl: 'Oczekuje', en: 'Pending' }, tone: 'warning' },
+      { key: 'accepted', label: { pl: 'Przyjęte', en: 'Accepted' }, tone: 'success' },
+      { key: 'missing', label: { pl: 'Brakujące', en: 'Missing' }, tone: 'neutral' },
+      { key: 'deleted', label: { pl: 'Usunięte', en: 'Deleted' }, tone: 'muted' },
+      { key: 'completed', label: { pl: 'Ukończone', en: 'Completed' }, tone: 'success' },
+      { key: 'not_started', label: { pl: 'Nie rozpoczęto', en: 'Not started' }, tone: 'neutral' },
+      { key: 'in_progress', label: { pl: 'W trakcie', en: 'In progress' }, tone: 'processing' },
+      { key: 'satisfied', label: { pl: 'Spełnione', en: 'Satisfied' }, tone: 'success' },
+    ],
+  },
+  {
+    title: { pl: 'Operacje i joby', en: 'Operations and jobs' },
+    description: { pl: 'Statusy pipeline, workera, importów, synców i zadań w tle.', en: 'Pipeline, worker, import, sync and background-job states.' },
+    statuses: [
+      { key: 'leased', label: { pl: 'Przypisane do workera', en: 'Leased' }, tone: 'processing' },
+      { key: 'fetching', label: { pl: 'Pobieranie', en: 'Fetching' }, tone: 'processing' },
+      { key: 'persisting_source', label: { pl: 'Zapis źródła', en: 'Persisting source' }, tone: 'processing' },
+      { key: 'normalizing', label: { pl: 'Normalizacja', en: 'Normalizing' }, tone: 'processing' },
+      { key: 'writing_canonical', label: { pl: 'Zapis kanoniczny', en: 'Writing canonical' }, tone: 'processing' },
+      { key: 'reconciling', label: { pl: 'Uzgadnianie', en: 'Reconciling' }, tone: 'processing' },
+      { key: 'retryable_failed', label: { pl: 'Błąd możliwy do ponowienia', en: 'Retryable failure' }, tone: 'warning' },
+      { key: 'terminal_failed', label: { pl: 'Błąd końcowy', en: 'Terminal failure' }, tone: 'danger' },
+      { key: 'dead_lettered', label: { pl: 'W kolejce błędów', en: 'Dead-lettered' }, tone: 'danger' },
+      { key: 'dlq', label: { pl: 'Wymaga obsługi technicznej', en: 'Requires technical handling' }, tone: 'danger' },
+      { key: 'cancel_requested', label: { pl: 'Żądanie anulowania', en: 'Cancel requested' }, tone: 'warning' },
+      { key: 'not_leased', label: { pl: 'Nieprzypisane', en: 'Not leased' }, tone: 'neutral' },
+    ],
+  },
+  {
+    title: { pl: 'Dane, metryki i readiness', en: 'Data, metrics and readiness' },
+    description: { pl: 'Statusy jakości obliczeń, integracji, źródeł i zależności usług.', en: 'Calculation quality, integration, source and service-dependency states.' },
+    statuses: [
+      { key: 'ok', label: { pl: 'Poprawne', en: 'OK' }, tone: 'success' },
+      { key: 'zero', label: { pl: 'Zero', en: 'Zero' }, tone: 'neutral' },
+      { key: 'not_configured', label: { pl: 'Nie skonfigurowano', en: 'Not configured' }, tone: 'neutral' },
+      { key: 'not_supported', label: { pl: 'Nieobsługiwane', en: 'Not supported' }, tone: 'neutral' },
+      { key: 'syncing', label: { pl: 'Synchronizacja', en: 'Syncing' }, tone: 'processing' },
+      { key: 'needs_reauth', label: { pl: 'Wymaga ponownego połączenia', en: 'Needs reauth' }, tone: 'warning' },
+      { key: 'permission_error', label: { pl: 'Brak uprawnień', en: 'Permission error' }, tone: 'danger' },
+      { key: 'network_error', label: { pl: 'Błąd sieci', en: 'Network error' }, tone: 'danger' },
+      { key: 'provider_error', label: { pl: 'Błąd dostawcy', en: 'Provider error' }, tone: 'danger' },
+      { key: 'error', label: { pl: 'Błąd', en: 'Error' }, tone: 'danger' },
+      { key: 'passed', label: { pl: 'Zgodne', en: 'Passed' }, tone: 'success' },
+      { key: 'mismatch', label: { pl: 'Niezgodność', en: 'Mismatch' }, tone: 'danger' },
+    ],
+  },
+  {
+    title: { pl: 'Commerce, płatności i zwroty', en: 'Commerce, payments and returns' },
+    description: { pl: 'Statusy zamówień, płatności, faktur, zwrotów i refundacji.', en: 'Order, payment, invoice, return and refund states.' },
+    statuses: [
+      { key: 'confirmed', label: { pl: 'Potwierdzone', en: 'Confirmed' }, tone: 'success' },
+      { key: 'paid', label: { pl: 'Opłacone', en: 'Paid' }, tone: 'success' },
+      { key: 'shipped', label: { pl: 'Wysłane', en: 'Shipped' }, tone: 'info' },
+      { key: 'delivered', label: { pl: 'Dostarczone', en: 'Delivered' }, tone: 'success' },
+      { key: 'refunded', label: { pl: 'Zwrócone', en: 'Refunded' }, tone: 'muted' },
+      { key: 'partially_refunded', label: { pl: 'Częściowy zwrot', en: 'Partially refunded' }, tone: 'warning' },
+      { key: 'returned', label: { pl: 'Zwrócone przez klienta', en: 'Returned' }, tone: 'muted' },
+      { key: 'authorized', label: { pl: 'Autoryzowana', en: 'Authorized' }, tone: 'info' },
+      { key: 'captured', label: { pl: 'Pobrana', en: 'Captured' }, tone: 'success' },
+      { key: 'open', label: { pl: 'Otwarta', en: 'Open' }, tone: 'info' },
+      { key: 'past_due', label: { pl: 'Po terminie', en: 'Past due' }, tone: 'danger' },
+      { key: 'requested', label: { pl: 'Zgłoszone', en: 'Requested' }, tone: 'info' },
+      { key: 'received', label: { pl: 'Odebrane', en: 'Received' }, tone: 'info' },
+    ],
+  },
+  {
+    title: { pl: 'Billing i KSeF', en: 'Billing and KSeF' },
+    description: { pl: 'Statusy subskrypcji, faktur oraz komunikacji z KSeF.', en: 'Subscription, invoice and KSeF communication states.' },
+    statuses: [
+      { key: 'trial', label: { pl: 'Okres próbny', en: 'Trial' }, tone: 'info' },
+      { key: 'draft', label: { pl: 'Szkic', en: 'Draft' }, tone: 'neutral' },
+      { key: 'ready_for_ksef', label: { pl: 'Gotowa do KSeF', en: 'Ready for KSeF' }, tone: 'info' },
+      { key: 'submitted', label: { pl: 'Wysłana', en: 'Submitted' }, tone: 'processing' },
+      { key: 'rejected', label: { pl: 'Odrzucone', en: 'Rejected' }, tone: 'danger' },
+      { key: 'offline_pending', label: { pl: 'Oczekuje offline', en: 'Offline pending' }, tone: 'warning' },
+      { key: 'correction_required', label: { pl: 'Wymaga korekty', en: 'Correction required' }, tone: 'warning' },
+    ],
+  },
+  {
+    title: { pl: 'Security, MFA i uprawnienia', en: 'Security, MFA and permissions' },
+    description: { pl: 'Statusy tokenów, dostępu tymczasowego, zatwierdzeń i wygasania.', en: 'Token, temporary access, approval and expiry states.' },
+    statuses: [
+      { key: 'approved', label: { pl: 'Zatwierdzone', en: 'Approved' }, tone: 'success' },
+      { key: 'expired', label: { pl: 'Wygasłe', en: 'Expired' }, tone: 'muted' },
+      { key: 'expiring', label: { pl: 'Wygasa', en: 'Expiring' }, tone: 'warning' },
+    ],
+  },
+  {
+    title: { pl: 'Privacy, retencja i żądania użytkownika', en: 'Privacy, retention and user requests' },
+    description: { pl: 'Statusy weryfikacji tożsamości, retencji, usunięć i legal hold.', en: 'Identity verification, retention, deletion and legal-hold states.' },
+    statuses: [
+      { key: 'identity_verification_pending', label: { pl: 'Czeka na weryfikację tożsamości', en: 'Identity verification pending' }, tone: 'warning' },
+      { key: 'blocked_by_legal_hold', label: { pl: 'Zablokowane prawnie', en: 'Blocked by legal hold' }, tone: 'danger' },
+      { key: 'verification_pending', label: { pl: 'Czeka na weryfikację', en: 'Verification pending' }, tone: 'warning' },
+      { key: 'verified', label: { pl: 'Zweryfikowane', en: 'Verified' }, tone: 'success' },
+      { key: 'not_applicable', label: { pl: 'Nie dotyczy', en: 'Not applicable' }, tone: 'neutral' },
+      { key: 'not_found', label: { pl: 'Nie znaleziono', en: 'Not found' }, tone: 'neutral' },
+    ],
+  },
+  {
+    title: { pl: 'Uzgadnianie i reguły źródeł', en: 'Reconciliation and source rules' },
+    description: { pl: 'Statusy deduplikacji, source authority, kandydatów i reguł.', en: 'Deduplication, source-authority, candidate and rule states.' },
+    statuses: [
+      { key: 'automatic_match', label: { pl: 'Dopasowane automatycznie', en: 'Automatic match' }, tone: 'success' },
+      { key: 'manual_review', label: { pl: 'Do ręcznego sprawdzenia', en: 'Manual review' }, tone: 'warning' },
+      { key: 'retired', label: { pl: 'Wycofane', en: 'Retired' }, tone: 'muted' },
+    ],
+  },
+  {
+    title: { pl: 'Dokumentacja, Storybook i projekt', en: 'Documentation, Storybook and project' },
+    description: { pl: 'Statusy rejestrów, kontraktów, macierzy testów i backlogu projektowego.', en: 'Registry, contract, test-matrix and project backlog states.' },
+    statuses: [
+      { key: 'specified', label: { pl: 'Wyspecyfikowane', en: 'Specified' }, tone: 'info' },
+      { key: 'planned', label: { pl: 'Zaplanowane', en: 'Planned' }, tone: 'neutral' },
+      { key: 'implemented', label: { pl: 'Zaimplementowane', en: 'Implemented' }, tone: 'success' },
+      { key: 'passing', label: { pl: 'Przechodzi testy', en: 'Passing' }, tone: 'success' },
+      { key: 'approved-target', label: { pl: 'Zatwierdzony cel', en: 'Approved target' }, tone: 'success' },
+      { key: 'required', label: { pl: 'Wymagane', en: 'Required' }, tone: 'warning' },
+      { key: 'used', label: { pl: 'Używane', en: 'Used' }, tone: 'info' },
+    ],
+  },
+] as const satisfies readonly ProjectStatusGroup[];
+
 
 export const KolorySemantyczne: Story = {
   name: 'Kolory semantyczne',
   render: () => (
-    <Page
-      eyebrow="00 Fundamenty"
-      title={
-        <Localized
-          pl="Marka, semantyka i dane"
-          en="Brand, semantics and data"
-        />
-      }
-      summary={
-        <Localized
-          pl="Jedno źródło tokenów rozdziela tożsamość marki, akcje, dane, fokus i statusy."
-          en="One token source separates brand identity, actions, data, focus and operational statuses."
-        />
-      }
+    <FoundationPage
+      title={<Localized pl="Kolory semantyczne" en="Semantic colors" />}
+      summary={<Localized pl="Paleta nie służy do dekoracji. Każdy token odpowiada za konkretną informację lub warstwę." en="The palette is not decorative. Each token owns a specific information or surface role." />}
     >
-      <Section
-        title={
-          <Localized
-            pl="Kolory marki"
-            en="Brand colors"
-          />
-        }
+      <FoundationSection
+        index="01"
+        title={<Localized pl="Role interfejsu" en="Interface roles" />}
+        summary={<Localized pl="Kolory są prezentowane jako rejestr, nie zbiór osobnych kart." en="Colors are shown as a ledger, not a collection of separate cards." />}
       >
-        <div className="pd-f0-brand-token-grid">
-          <article>
-            <PapaDataBrand size="large" />
-            <TokenCode>--pd-brand</TokenCode>
-          </article>
-          <article data-brand-emphasis="highlight">
-            <PapaDataBrand glow size="large" />
-            <TokenCode>--pd-brand-highlight</TokenCode>
-          </article>
-          <article data-brand-emphasis="line">
-            <span
-              aria-hidden="true"
-              className="pd-f0-brand-line-sample"
+        <FoundationLedger label={copy({ pl: 'Kolory interfejsu', en: 'Interface colors' })}>
+          {semanticColors.map((item) => (
+            <LedgerRow
+              key={item.token}
+              label={copy(item.role)}
+              preview={<span className="pd-f0-color-chip" data-color={item.color} />}
+              value={<TokenCode>{item.token}</TokenCode>}
+              detail={<span className="pd-f0-color-value">var({item.token})</span>}
             />
-            <TokenCode>--pd-brand-line</TokenCode>
-          </article>
-          <article>
-            <button
-              data-interactive-tone="primary"
-              type="button"
-            >
-              <Localized pl="Główna akcja" en="Primary action" />
-            </button>
-            <TokenCode>--pd-brand-action</TokenCode>
-          </article>
-        </div>
-      </Section>
+          ))}
+        </FoundationLedger>
+      </FoundationSection>
 
-      <Section
-        title={
-          <Localized
-            pl="Role semantyczne"
-            en="Semantic roles"
-          />
-        }
+      <FoundationSection
+        index="02"
+        title={<Localized pl="Paleta danych" en="Data palette" />}
+        summary={<Localized pl="Serie są rozróżnialne, ale pozostają spokojne na analitycznym canvasie." en="Series remain distinguishable while staying calm on an analytical canvas." />}
       >
-        <div className="pd-f0-color-ledger">
-          {semanticColors.map(([label, token, role]) => (
-            <article key={token}>
-              <span
-                aria-hidden="true"
-                data-color-role={role}
-              />
+        <div className="pd-f0-series">
+          {dataSeries.map((series) => (
+            <div key={series}>
+              <span data-series={series} />
               <div>
-                <strong>{label}</strong>
-                <TokenCode>{token}</TokenCode>
+                <strong><Localized pl={`Seria ${series}`} en={`Series ${series}`} /></strong>
+                <TokenCode>{`--pd-data-series-${series}`}</TokenCode>
               </div>
+            </div>
+          ))}
+        </div>
+        <div className="pd-f0-mini-chart" aria-label={copy({ pl: 'Przykład palety danych', en: 'Data palette example' })}>
+          <span data-series="1" style={{ '--value': '68%' } as CSSProperties} />
+          <span data-series="2" style={{ '--value': '44%' } as CSSProperties} />
+          <span data-series="3" style={{ '--value': '57%' } as CSSProperties} />
+          <span data-series="4" style={{ '--value': '32%' } as CSSProperties} />
+          <span data-series="5" style={{ '--value': '76%' } as CSSProperties} />
+          <span data-series="6" style={{ '--value': '49%' } as CSSProperties} />
+        </div>
+      </FoundationSection>
+
+      <FoundationSection
+        index="03"
+        title={<Localized pl="Tony komunikatów" en="Message tones" />}
+        summary={<Localized pl="Kolor wspiera tekst, ikonę lub stan. Nigdy nie jest jedynym nośnikiem znaczenia." en="Color supports text, icon or state. It is never the only carrier of meaning." />}
+      >
+        <p className="pd-f0-status-rule">
+          <Localized
+            pl="Środek komunikatu pozostaje neutralny. Ton semantyczny pojawia się jako lokalny akcent i zawsze towarzyszy mu czytelna etykieta."
+            en="The message interior stays neutral. Semantic tone appears as a local accent and is always paired with a readable label."
+          />
+        </p>
+        <div className="pd-f0-tone-register">
+          {semanticTones.map((item) => (
+            <article key={item.tone}>
+              <StatusBadge tone={item.tone}><Localized {...item.label} /></StatusBadge>
+              <TokenCode>{item.token}</TokenCode>
+              <p><Localized {...item.usage} /></p>
             </article>
           ))}
         </div>
-      </Section>
-
-      <Section
-        title={
-          <Localized
-            pl="Paleta danych"
-            en="Data palette"
-          />
-        }
-        summary={
-          <Localized
-            pl="Serie danych nie korzystają przypadkowo z bursztynu marki ani kolorów statusów."
-            en="Data series do not randomly reuse brand amber or status colors."
-          />
-        }
-      >
-        <div className="pd-f0-data-palette">
-          {dataPalette.map((token, index) => (
-            <article key={token}>
-              <span
-                aria-hidden="true"
-                style={{
-                  background: `var(${token})`,
-                }}
-              />
-              <strong>
-                <Localized pl="Seria" en="Series" /> {index + 1}
-              </strong>
-              <TokenCode>{token}</TokenCode>
-            </article>
-          ))}
-        </div>
-        <div className="pd-f0-data-contract">
-          <article data-data-role="actual">
-            <strong>
-              <Localized pl="Wynik" en="Actual" />
-            </strong>
-            <TokenCode>--pd-data-actual</TokenCode>
-          </article>
-          <article data-data-role="target">
-            <strong>
-              <Localized pl="Cel" en="Target" />
-            </strong>
-            <TokenCode>--pd-data-target</TokenCode>
-          </article>
-          <article data-data-role="forecast">
-            <strong>
-              <Localized pl="Prognoza" en="Forecast" />
-            </strong>
-            <TokenCode>--pd-data-forecast</TokenCode>
-          </article>
-          <article data-data-role="uncertainty">
-            <strong>
-              <Localized pl="Niepewność" en="Uncertainty" />
-            </strong>
-            <TokenCode>--pd-data-uncertainty</TokenCode>
-          </article>
-        </div>
-      </Section>
-
-      <Section
-        title={
-          <Localized
-            pl="Status wymaga tekstu"
-            en="Status requires text"
-          />
-        }
-      >
-        <div className="pd-f0-status-row">
-          <StatusPill tone="success">
-            <Localized pl="Stabilne" en="Stable" />
-          </StatusPill>
-          <StatusPill tone="warning">
-            <Localized pl="Do sprawdzenia" en="Review required" />
-          </StatusPill>
-          <StatusPill tone="danger">
-            <Localized pl="Błąd synchronizacji" en="Sync failed" />
-          </StatusPill>
-          <StatusPill tone="neutral">
-            <Localized pl="Nie rozpoczęto" en="Not started" />
-          </StatusPill>
-          <StatusPill tone="info">
-            <Localized pl="Przetwarzanie" en="Processing" />
-          </StatusPill>
-        </div>
-      </Section>
-    </Page>
+      </FoundationSection>
+    </FoundationPage>
   ),
 };
 
-const spacingTokens = [
-  '--pd-space-1',
-  '--pd-space-2',
-  '--pd-space-3',
-  '--pd-space-4',
-  '--pd-space-6',
-  '--pd-space-8',
-  '--pd-space-12',
-] as const;
-
-function DensityTable({
-  density,
-}: {
-  readonly density: 'comfortable' | 'compact';
-}) {
-  const locale = readLocale();
-  const densityLabel = density === 'comfortable'
-    ? locale === 'en' ? 'comfortable' : 'wygodna'
-    : locale === 'en' ? 'compact' : 'kompaktowa';
-
-  return (
-    <article
-      className="pd-f0-density-sample"
-      data-density={density}
+export const StatusySystemowe: Story = {
+  name: 'Statusy systemowe',
+  render: () => (
+    <FoundationPage
+      title={<Localized pl="Statusy systemowe" en="System statuses" />}
+      summary={<Localized pl="Katalog oddziela znaczenie biznesowe od tonu wizualnego. Każdy status ma nazwę, stabilny klucz i przypisany ton." en="The catalog separates business meaning from visual tone. Every status has a name, stable key and assigned tone." />}
     >
-      <header>
-        <h3>{densityLabel}</h3>
-        <TokenCode>data-density="{density}"</TokenCode>
-      </header>
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">
-              <Localized pl="Źródło" en="Source" />
-            </th>
-            <th scope="col">
-              <Localized pl="Status" en="Status" />
-            </th>
-            <th scope="col">
-              <Localized pl="Wartość" en="Value" />
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Marketplace</td>
-            <td><Localized pl="Stabilne" en="Stable" /></td>
-            <td>{formatPapaDataPercent(0.992, locale)}</td>
-          </tr>
-          <tr>
-            <td><Localized pl="Kampanie" en="Campaigns" /></td>
-            <td><Localized pl="Do sprawdzenia" en="Review" /></td>
-            <td>+{formatPapaDataPercent(0.084, locale)}</td>
-          </tr>
-        </tbody>
-      </table>
-    </article>
-  );
-}
+      <FoundationSection
+        index="01"
+        title={<Localized pl="Kategorie katalogu" en="Catalog categories" />}
+        summary={<Localized pl="Statusy są pogrupowane według obszaru produktu, a nie według koloru." en="Statuses are grouped by product domain, not by color." />}
+      >
+        <div className="pd-f0-status-index">
+          {projectStatusGroups.map((group, groupIndex) => (
+            <article key={group.title.pl}>
+              <span>{String(groupIndex + 1).padStart(2, '0')}</span>
+              <div>
+                <h3><Localized {...group.title} /></h3>
+                <p><Localized {...group.description} /></p>
+              </div>
+              <strong>
+                <Localized
+                  pl={`${group.statuses.length} statusów`}
+                  en={`${group.statuses.length} statuses`}
+                />
+              </strong>
+            </article>
+          ))}
+        </div>
+      </FoundationSection>
+
+      <FoundationSection
+        index="02"
+        title={<Localized pl="Katalog domenowy" en="Domain catalog" />}
+        summary={<Localized pl="Rozwiń kategorię, aby sprawdzić etykietę, klucz techniczny i ton każdego stanu." en="Expand a category to inspect each state's label, technical key and tone." />}
+      >
+        <p className="pd-f0-status-rule">
+          <Localized
+            pl="Kolor nie definiuje statusu. Status definiują jego nazwa i klucz, a ton jedynie wspiera priorytet komunikatu."
+            en="Color does not define a status. Its name and key do; tone only supports message priority."
+          />
+        </p>
+        <div className="pd-f0-status-register">
+          {projectStatusGroups.map((group, groupIndex) => (
+            <details
+              className="pd-f0-status-group"
+              key={group.title.pl}
+              open={groupIndex === 0}
+            >
+              <summary>
+                <span>
+                  <strong><Localized {...group.title} /></strong>
+                  <small><Localized {...group.description} /></small>
+                </span>
+                <span className="pd-f0-status-count">
+                  <Localized
+                    pl={`${group.statuses.length} statusów`}
+                    en={`${group.statuses.length} statuses`}
+                  />
+                </span>
+              </summary>
+              <div className="pd-f0-status-table" role="table">
+                <div className="pd-f0-status-table__header" role="row">
+                  <span role="columnheader"><Localized pl="Etykieta" en="Label" /></span>
+                  <span role="columnheader"><Localized pl="Klucz techniczny" en="Technical key" /></span>
+                  <span role="columnheader"><Localized pl="Ton" en="Tone" /></span>
+                </div>
+                {group.statuses.map((status) => (
+                  <div className="pd-f0-status-item" role="row" key={`${group.title.pl}-${status.key}`}>
+                    <span role="cell">
+                      <StatusBadge tone={status.tone}><Localized {...status.label} /></StatusBadge>
+                    </span>
+                    <code role="cell">{status.key}</code>
+                    <span className="pd-f0-status-tone" role="cell">
+                      {copy(statusToneLabels[status.tone])}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </details>
+          ))}
+        </div>
+      </FoundationSection>
+    </FoundationPage>
+  ),
+};
+
+const spacingScale = [
+  { token: '--pd-space-0', value: 0 },
+  { token: '--pd-space-1', value: 4 },
+  { token: '--pd-space-2', value: 8 },
+  { token: '--pd-space-3', value: 12 },
+  { token: '--pd-space-4', value: 16 },
+  { token: '--pd-space-5', value: 20 },
+  { token: '--pd-space-6', value: 24 },
+  { token: '--pd-space-8', value: 32 },
+  { token: '--pd-space-10', value: 40 },
+  { token: '--pd-space-12', value: 48 },
+  { token: '--pd-space-16', value: 64 },
+] as const;
 
 export const SpacingIGrid: Story = {
   name: 'Odstępy i siatka',
   render: () => (
-    <Page
-      eyebrow="00 Fundamenty"
-      title={
-        <Localized
-          pl="Odstępy, gęstość i responsywna siatka"
-          en="Spacing, density and responsive grid"
-        />
-      }
-      summary={
-        <Localized
-          pl="Skala 4 px, dwie gęstości i realny reflow dla 12, 8 i 4 kolumn."
-          en="A 4 px scale, two density modes and real reflow across 12, 8 and 4 columns."
-        />
-      }
+    <FoundationPage
+      title={<Localized pl="Odstępy, gęstość i siatka" en="Spacing, density and grid" />}
+      summary={<Localized pl="Układ jest oparty na stałej skali i elastycznej siatce. Nie projektujemy lokalnych wyjątków dla każdej story." en="Layout uses a fixed scale and a flexible grid. Stories do not invent local exceptions." />}
     >
-      <Section
-        title={
-          <Localized pl="Skala odstępów" en="Spacing scale" />
-        }
+      <FoundationSection
+        index="01"
+        title={<Localized pl="Skala odstępów" en="Spacing scale" />}
+        summary={<Localized pl="Każda wartość ma nazwę tokenu i widoczny wymiar." en="Every value has a token name and a visible dimension." />}
       >
         <div className="pd-f0-spacing-scale">
-          {spacingTokens.map((token) => (
-            <article key={token}>
-              <TokenCode>{token}</TokenCode>
-              <span
-                aria-hidden="true"
-                style={{ width: `var(${token})` }}
-              />
-            </article>
+          {spacingScale.map((item) => (
+            <div key={item.token}>
+              <code>{item.token}</code>
+              <span>{item.value}px</span>
+              <i style={{ width: `${Math.max(item.value, 1)}px` }} />
+            </div>
           ))}
         </div>
-      </Section>
+      </FoundationSection>
 
-      <Section
-        title={
-          <Localized pl="Gęstość" en="Density" />
-        }
+      <FoundationSection
+        index="02"
+        title={<Localized pl="Gęstość" en="Density" />}
+        summary={<Localized pl="Wariant kompaktowy zmienia rytm, ale nie zmienia hierarchii ani wyglądu komponentu." en="Compact density changes rhythm without changing hierarchy or component identity." />}
       >
-        <div className="pd-f0-two-column">
-          <DensityTable density="comfortable" />
-          <DensityTable density="compact" />
-        </div>
-      </Section>
+        <ThemePair
+          light={
+            <ThemePreview theme="light" title={<Localized pl="Wygodna" en="Comfortable" />}>
+              <div className="pd-f0-density-demo" data-density="comfortable">
+                <div><span><Localized pl="Źródło danych" en="Data source" /></span><strong>Google Analytics 4</strong></div>
+                <div><span><Localized pl="Status" en="Status" /></span><StatusBadge tone="success"><Localized pl="Stabilne" en="Stable" /></StatusBadge></div>
+              </div>
+            </ThemePreview>
+          }
+          dark={
+            <ThemePreview theme="dark" title={<Localized pl="Kompaktowa" en="Compact" />}>
+              <div className="pd-f0-density-demo" data-density="compact">
+                <div><span><Localized pl="Źródło danych" en="Data source" /></span><strong>Google Analytics 4</strong></div>
+                <div><span><Localized pl="Status" en="Status" /></span><StatusBadge tone="success"><Localized pl="Stabilne" en="Stable" /></StatusBadge></div>
+              </div>
+            </ThemePreview>
+          }
+        />
+      </FoundationSection>
 
-      <Section
-        title={
-          <Localized
-            pl="Siatka adaptuje się, nie skaluje"
-            en="The grid reflows instead of scaling"
-          />
-        }
+      <FoundationSection
+        index="03"
+        title={<Localized pl="Responsywna siatka" en="Responsive grid" />}
+        summary={<Localized pl="Kolumny zmieniają liczbę, ale zawartość zachowuje kolejność i minimalną szerokość." en="Column count changes while content preserves order and minimum width." />}
       >
-        <div
-          aria-label={readLocale() === 'en'
-            ? 'Responsive grid demonstration'
-            : 'Demonstracja responsywnej siatki'}
-          className="pd-f0-responsive-grid"
-        >
-          {Array.from({ length: 12 }, (_, index) => (
-            <span key={index}>{index + 1}</span>
-          ))}
+        <div className="pd-f0-grid-demo" aria-hidden="true">
+          {Array.from({ length: 12 }, (_, index) => <span key={index}>{index + 1}</span>)}
         </div>
-        <dl className="pd-f0-breakpoint-ledger">
-          <div>
-            <dt><Localized pl="Szeroki desktop" en="Wide desktop" /></dt>
-            <dd><Localized pl="12 kolumn" en="12 columns" /></dd>
-          </div>
-          <div>
-            <dt>Tablet</dt>
-            <dd><Localized pl="8 kolumn" en="8 columns" /></dd>
-          </div>
-          <div>
-            <dt><Localized pl="Telefon" en="Mobile" /></dt>
-            <dd><Localized pl="4 kolumny" en="4 columns" /></dd>
-          </div>
-          <div>
-            <dt><Localized pl="Powiększenie 200%" en="Zoom 200%" /></dt>
-            <dd><Localized pl="reflow treści" en="content reflow" /></dd>
-          </div>
-        </dl>
-      </Section>
-    </Page>
+        <FoundationLedger label={copy({ pl: 'Punkty siatki', en: 'Grid breakpoints' })}>
+          <LedgerRow label="1440 px" value={<Localized pl="12 kolumn" en="12 columns" />} detail={<Localized pl="Pełny układ analityczny" en="Full analytical layout" />} />
+          <LedgerRow label="768 px" value={<Localized pl="8 kolumn" en="8 columns" />} detail={<Localized pl="Sekcje przechodzą do jednego przepływu" en="Sections move to one flow" />} />
+          <LedgerRow label="390 px" value={<Localized pl="4 kolumny" en="4 columns" />} detail={<Localized pl="Komponent i opis układają się pionowo" en="Component and description stack vertically" />} />
+        </FoundationLedger>
+      </FoundationSection>
+    </FoundationPage>
   ),
 };
 
-const radiusDefinitions = [
+const geometryRadiusRows = [
   {
-    role: 'none',
-    token: '--pd-radius-none',
-    labelPl: 'Brak promienia',
-    labelEn: 'No radius',
-    usePl: 'Tabele i separatory',
-    useEn: 'Tables and separators',
-  },
-  {
-    role: 'subtle',
-    token: '--pd-radius-subtle',
-    labelPl: 'Subtelny',
-    labelEn: 'Subtle',
-    usePl: 'Słupki i drobne znaczniki',
-    useEn: 'Bars and small markers',
-  },
-  {
-    role: 'small',
-    token: '--pd-radius-small',
-    labelPl: 'Mały',
-    labelEn: 'Small',
-    usePl: 'Próbki i elementy danych',
-    useEn: 'Samples and data elements',
-  },
-  {
-    role: 'control',
+    name: 'control',
     token: '--pd-radius-control',
-    labelPl: 'Kontrolka',
-    labelEn: 'Control',
-    usePl: 'Przycisk, pole i menu',
-    useEn: 'Button, field and menu',
+    label: { pl: 'Kontrolka', en: 'Control' },
+    detail: {
+      pl: 'Select, input, zakres dat i lokalne akcje.',
+      en: 'Select, input, date range and local actions.',
+    },
+    contract: {
+      pl: 'Promień opisuje element wejściowy lub akcję o stałej wysokości.',
+      en: 'The radius identifies an input or action with a fixed control height.',
+    },
+    avoid: {
+      pl: 'Nie stosujemy go do dużych powierzchni i całych sekcji.',
+      en: 'Do not use it for large surfaces or entire sections.',
+    },
   },
   {
-    role: 'surface',
-    token: '--pd-radius-surface',
-    labelPl: 'Powierzchnia',
-    labelEn: 'Surface',
-    usePl: 'Panel danych i sekcja',
-    useEn: 'Data panel and section',
-  },
-  {
-    role: 'overlay',
+    name: 'overlay',
     token: '--pd-radius-overlay',
-    labelPl: 'Warstwa nad treścią',
-    labelEn: 'Overlay',
-    usePl: 'Dialog, popover i drawer',
-    useEn: 'Dialog, popover and drawer',
+    label: { pl: 'Powierzchnia', en: 'Surface' },
+    detail: {
+      pl: 'Panel, modal, drawer, toast i inne rzeczywiste warstwy.',
+      en: 'Panel, modal, drawer, toast and other real layers.',
+    },
+    contract: {
+      pl: 'Promień pojawia się tylko wtedy, gdy element tworzy odrębną powierzchnię.',
+      en: 'The radius appears only when the element creates a distinct surface.',
+    },
+    avoid: {
+      pl: 'Nie opakowujemy nim każdego fragmentu dokumentacji.',
+      en: 'Do not wrap every documentation fragment with it.',
+    },
   },
   {
-    role: 'pill',
+    name: 'pill',
     token: '--pd-radius-pill',
-    labelPl: 'Pastylka',
-    labelEn: 'Pill',
-    usePl: 'Status i filtr',
-    useEn: 'Status and filter',
+    label: { pl: 'Mikroznacznik', en: 'Micro marker' },
+    detail: {
+      pl: 'Status, badge, kropka aktywności i uchwyt scrollbara.',
+      en: 'Status, badge, activity dot and scrollbar thumb.',
+    },
+    contract: {
+      pl: 'Pełne zaokrąglenie jest zarezerwowane dla małych znaczników.',
+      en: 'Full rounding is reserved for compact markers.',
+    },
+    avoid: {
+      pl: 'Nie używamy go jako domyślnego promienia przycisków i kart.',
+      en: 'Do not use it as the default radius for buttons or cards.',
+    },
   },
 ] as const;
 
-export const PromienieObramowaniaICienie: Story = {
-  name: 'Promienie, obramowania i cienie',
-  render: () => {
-    const locale = readLocale();
-
-    return (
-      <Page
-        eyebrow="00 Fundamenty"
-        title={
-          <Localized
-            pl="Geometria i głębia"
-            en="Geometry and depth"
-          />
-        }
-        summary={
-          <Localized
-            pl="Promień wynika z roli elementu, obramowanie buduje hierarchię, a cień jest zarezerwowany dla rzeczywiście wyniesionych warstw."
-            en="Radius follows component role, borders establish hierarchy and shadows are reserved for genuinely elevated layers."
-          />
-        }
-      >
-        <Section title={<Localized pl="Promienie i zastosowanie" en="Radius and usage" />}>
-          <div className="pd-f0-radius-grid">
-            {radiusDefinitions.map((item) => (
-              <article
-                data-radius={item.role}
-                key={item.token}
-              >
-                <div
-                  aria-hidden="true"
-                  className="pd-f0-radius-sample"
-                >
-                  <span />
-                  <span />
-                  <span />
-                </div>
-                <div>
-                  <strong>
-                    {locale === 'en' ? item.labelEn : item.labelPl}
-                  </strong>
-                  <p>
-                    {locale === 'en' ? item.useEn : item.usePl}
-                  </p>
-                  <TokenCode>{item.token}</TokenCode>
-                </div>
-              </article>
-            ))}
-          </div>
-        </Section>
-
-        <Section title={<Localized pl="Obramowania" en="Borders" />}>
-          <div className="pd-f0-border-grid">
-            <article data-border="subtle">
-              <span aria-hidden="true" />
-              <div>
-                <strong><Localized pl="Subtelne" en="Subtle" /></strong>
-                <p><Localized pl="Podział w tabeli i spokojnych listach." en="Division inside tables and calm lists." /></p>
-                <TokenCode>--pd-separator-subtle</TokenCode>
-              </div>
-            </article>
-            <article data-border="default">
-              <span aria-hidden="true" />
-              <div>
-                <strong><Localized pl="Standardowe" en="Default" /></strong>
-                <p><Localized pl="Granica panelu lub grupy ustawień." en="Boundary for panels or settings groups." /></p>
-                <TokenCode>--pd-separator</TokenCode>
-              </div>
-            </article>
-            <article data-border="strong">
-              <span aria-hidden="true" />
-              <div>
-                <strong><Localized pl="Mocne" en="Strong" /></strong>
-                <p><Localized pl="Krawędź drawera, sticky panelu lub ważnej sekcji." en="Edge for drawers, sticky panels or important sections." /></p>
-                <TokenCode>--pd-separator-strong</TokenCode>
-              </div>
-            </article>
-            <article data-border="interactive">
-              <span aria-hidden="true" />
-              <div>
-                <strong><Localized pl="Interaktywne" en="Interactive" /></strong>
-                <p><Localized pl="Tylko stan wejścia lub elementu aktywnego." en="Only for input state or active elements." /></p>
-                <TokenCode>--pd-border-interactive</TokenCode>
-              </div>
-            </article>
-            <article data-border="danger">
-              <span aria-hidden="true" />
-              <div>
-                <strong><Localized pl="Błąd" en="Danger" /></strong>
-                <p><Localized pl="Walidacja i ryzykowne decyzje." en="Validation and risky decisions." /></p>
-                <TokenCode>--pd-border-danger</TokenCode>
-              </div>
-            </article>
-          </div>
-        </Section>
-
-        <Section title={<Localized pl="Głębia" en="Elevation" />}>
-          <div className="pd-f0-shadow-grid">
-            <article data-shadow="none">
-              <span aria-hidden="true" />
-              <div>
-                <strong><Localized pl="Powierzchnia bazowa" en="Base surface" /></strong>
-                <p><Localized pl="Sekcja w przepływie strony." en="Section in the page flow." /></p>
-                <TokenCode>--pd-shadow-none</TokenCode>
-              </div>
-            </article>
-            <article data-shadow="control">
-              <span aria-hidden="true" />
-              <div>
-                <strong><Localized pl="Kontrolka" en="Control" /></strong>
-                <p><Localized pl="Pole, select lub małe menu." en="Field, select or small menu." /></p>
-                <TokenCode>--pd-shadow-control</TokenCode>
-              </div>
-            </article>
-            <article data-shadow="raised">
-              <span aria-hidden="true" />
-              <div>
-                <strong><Localized pl="Powierzchnia wyniesiona" en="Raised surface" /></strong>
-                <p><Localized pl="Panel narzędziowy nad tłem." en="Tool panel above the background." /></p>
-                <TokenCode>--pd-shadow-raised</TokenCode>
-              </div>
-            </article>
-            <article data-shadow="floating">
-              <span aria-hidden="true" />
-              <div>
-                <strong><Localized pl="Kontrolka pływająca" en="Floating control" /></strong>
-                <p><Localized pl="Popover, menu kontekstowe lub szybka akcja." en="Popover, context menu or quick action." /></p>
-                <TokenCode>--pd-shadow-floating</TokenCode>
-              </div>
-            </article>
-            <article data-shadow="overlay">
-              <span aria-hidden="true" />
-              <div>
-                <strong><Localized pl="Warstwa nad treścią" en="Overlay" /></strong>
-                <p><Localized pl="Dialog, drawer i blokujące warstwy." en="Dialog, drawer and blocking layers." /></p>
-                <TokenCode>--pd-shadow-overlay</TokenCode>
-              </div>
-            </article>
-          </div>
-        </Section>
-
-        <Section
-          title={
-            <Localized
-              pl="Separacja bez kart w kartach"
-              en="Separation without nested cards"
-            />
-          }
-        >
-          <div className="pd-f0-structure-sample">
-            <header>
-              <h3><Localized pl="Wyniki kanałów" en="Channel results" /></h3>
-              <StatusPill tone="success">
-                <Localized pl="Aktualne" en="Current" />
-              </StatusPill>
-            </header>
-            <div>
-              <article>
-                <span>Marketplace</span>
-                <strong>842 900 zł</strong>
-              </article>
-              <article>
-                <span><Localized pl="Płatne media" en="Paid media" /></span>
-                <strong>118 430 zł</strong>
-              </article>
-              <article>
-                <span>CRM</span>
-                <strong><Localized pl="17 rekordów" en="17 records" /></strong>
-              </article>
-            </div>
-          </div>
-        </Section>
-      </Page>
-    );
-  },
-};
-
-const iconCategoryLabels = {
-  home: { pl: 'Strona główna', en: 'Home' },
-  search: { pl: 'Wyszukiwanie', en: 'Search' },
-  trend: { pl: 'Trend', en: 'Trend' },
-  data: { pl: 'Dane', en: 'Data' },
-  integration: { pl: 'Integracja', en: 'Integration' },
-  assistant: { pl: 'Asystent', en: 'Assistant' },
-  security: { pl: 'Bezpieczeństwo', en: 'Security' },
-  billing: { pl: 'Płatności', en: 'Billing' },
-  success: { pl: 'Sukces', en: 'Success' },
-  warning: { pl: 'Ostrzeżenie', en: 'Warning' },
-} as const;
-
-const iconLanguageRules = [
+const geometryBorderRows = [
   {
-    labelPl: 'Geometria',
-    labelEn: 'Geometry',
-    value: '24x24',
-    token: 'viewBox="0 0 24 24"',
+    name: 'structure',
+    group: 'structure',
+    token: '--pd-separator',
+    label: { pl: 'Linia strukturalna', en: 'Structural line' },
+    detail: {
+      pl: 'Topbar, granice canvasu i główne regiony aplikacji.',
+      en: 'Topbar, canvas boundaries and main application regions.',
+    },
   },
   {
-    labelPl: 'Linia',
-    labelEn: 'Stroke',
-    value: '1.75',
-    token: 'strokeWidth',
+    name: 'subtle',
+    group: 'structure',
+    token: '--pd-separator-subtle',
+    label: { pl: 'Separator wewnętrzny', en: 'Internal separator' },
+    detail: {
+      pl: 'Wiersze danych, nagłówki paneli, listy zmian i sekcje pomocnicze.',
+      en: 'Data rows, panel headers, change lists and supporting sections.',
+    },
   },
   {
-    labelPl: 'Zakończenia',
-    labelEn: 'Caps',
-    value: 'round',
-    token: 'strokeLinecap',
+    name: 'accent',
+    group: 'interaction',
+    token: '--pd-brand-accent',
+    label: { pl: 'Akcent aktywny', en: 'Active accent' },
+    detail: {
+      pl: 'Aktywna kontrolka, nawigacja i znacznik wybranej opcji.',
+      en: 'Active control, navigation and selected option marker.',
+    },
   },
   {
-    labelPl: 'Kolor',
-    labelEn: 'Color',
-    value: 'currentColor',
-    token: 'inherit',
-  },
-] as const;
-
-const iconSemanticRoles: readonly {
-  readonly key:
-    | 'navigation'
-    | 'action'
-    | 'data'
-    | 'status'
-    | 'security'
-    | 'assistant';
-  readonly titlePl: string;
-  readonly titleEn: string;
-  readonly descriptionPl: string;
-  readonly descriptionEn: string;
-  readonly token: string;
-  readonly icons: readonly PapaDataIconName[];
-}[] = [
-  {
-    key: 'navigation',
-    titlePl: 'Nawigacja',
-    titleEn: 'Navigation',
-    descriptionPl:
-      'Ikony prowadzą po strukturze produktu i pozostają podporządkowane tekstowi.',
-    descriptionEn:
-      'Navigation icons guide the product structure and stay subordinate to text.',
-    token: '--pd-text-secondary',
-    icons: ['home', 'search'],
-  },
-  {
-    key: 'action',
-    titlePl: 'Akcja markowa',
-    titleEn: 'Brand action',
-    descriptionPl:
-      'Ikona w przycisku dziedziczy kolor akcji, więc bursztyn marki pojawia się tylko tam, gdzie użytkownik działa.',
-    descriptionEn:
-      'An icon inside a button inherits the action color, so brand amber appears where the user acts.',
-    token: '--pd-brand-action',
-    icons: ['search', 'integration'],
-  },
-  {
-    key: 'data',
-    titlePl: 'Analityka',
-    titleEn: 'Analytics',
-    descriptionPl:
-      'Dane używają cyjanu i nie konkurują z bursztynem identyfikacji.',
-    descriptionEn:
-      'Data uses cyan and does not compete with identity amber.',
-    token: '--pd-data-accent',
-    icons: ['trend', 'data'],
-  },
-  {
-    key: 'status',
-    titlePl: 'Status',
-    titleEn: 'Status',
-    descriptionPl:
-      'Sukces i ostrzeżenie mają własne znaczenie operacyjne, niezależne od marki.',
-    descriptionEn:
-      'Success and warning keep their own operational meaning, separate from the brand.',
+    name: 'left-accent',
+    group: 'communication',
     token: '--pd-status-*',
-    icons: ['success', 'warning'],
-  },
-  {
-    key: 'security',
-    titlePl: 'Zaufanie',
-    titleEn: 'Trust',
-    descriptionPl:
-      'Bezpieczeństwo pozostaje neutralne lub interaktywne, zależnie od kontekstu.',
-    descriptionEn:
-      'Security stays neutral or interactive depending on context.',
-    token: '--pd-interactive',
-    icons: ['security'],
-  },
-  {
-    key: 'assistant',
-    titlePl: 'Asystent',
-    titleEn: 'Assistant',
-    descriptionPl:
-      'Asystent może korzystać z bursztynu jako sygnału produktu, ale nie zastępuje statusów.',
-    descriptionEn:
-      'Assistant can use amber as a product signal, but never replaces statuses.',
-    token: '--pd-brand-strong',
-    icons: ['assistant'],
-  },
-];
-
-const iconDomainGroups: readonly {
-  readonly key: string;
-  readonly titlePl: string;
-  readonly titleEn: string;
-  readonly descriptionPl: string;
-  readonly descriptionEn: string;
-  readonly icons: readonly PapaDataIconName[];
-}[] = [
-  {
-    key: 'navigation',
-    titlePl: 'Nawigacja',
-    titleEn: 'Navigation',
-    descriptionPl: 'Wejście, orientacja i szybkie odnalezienie miejsca.',
-    descriptionEn: 'Entry points, orientation and quick wayfinding.',
-    icons: ['home', 'search'],
-  },
-  {
-    key: 'analytics',
-    titlePl: 'Analityka',
-    titleEn: 'Analytics',
-    descriptionPl: 'Wykresy, źródła danych i sygnały pomiarowe.',
-    descriptionEn: 'Charts, data sources and measurement signals.',
-    icons: ['trend', 'data'],
-  },
-  {
-    key: 'integration',
-    titlePl: 'Integracje',
-    titleEn: 'Integrations',
-    descriptionPl: 'Połączenia między systemami i przepływami.',
-    descriptionEn: 'Connections between systems and workflows.',
-    icons: ['integration'],
-  },
-  {
-    key: 'operations',
-    titlePl: 'Operacje',
-    titleEn: 'Operations',
-    descriptionPl: 'Płatności, rozliczenia, uprawnienia i zaufanie.',
-    descriptionEn: 'Payments, billing, permissions and trust.',
-    icons: ['billing', 'security'],
-  },
-  {
-    key: 'status',
-    titlePl: 'Statusy',
-    titleEn: 'Statuses',
-    descriptionPl: 'Krótka informacja o wyniku lub ryzyku.',
-    descriptionEn: 'Short feedback about outcome or risk.',
-    icons: ['success', 'warning'],
-  },
-  {
-    key: 'assistant',
-    titlePl: 'Asystent',
-    titleEn: 'Assistant',
-    descriptionPl: 'Wsparcie, automatyzacja i sugestie systemu.',
-    descriptionEn: 'Support, automation and system suggestions.',
-    icons: ['assistant'],
-  },
-];
-
-export const Ikonografia: Story = {
-  name: 'Ikonografia',
-  render: () => {
-    const locale = readLocale();
-
-    return (
-      <Page
-        eyebrow="00 Fundamenty"
-        title={<Localized pl="Ikonografia" en="Iconography" />}
-        summary={
-          <Localized
-            pl="Ikony dziedziczą kolor z kontekstu: marka prowadzi akcje, dane zostają cyjanowe, a statusy zachowują własne znaczenie."
-            en="Icons inherit color from context: brand leads actions, data stays cyan, and statuses keep their own meaning."
-          />
-        }
-      >
-        <Section
-          title={<Localized pl="Język ikon" en="Icon language" />}
-          summary={
-            <Localized
-              pl="Jedna geometria i jedna grubość linii dla całego produktu."
-              en="One geometry and one stroke weight across the product."
-            />
-          }
-        >
-          <div className="pd-f0-icon-language">
-            <div className="pd-f0-icon-language__sample">
-              <div className="pd-f0-icon-strip" aria-hidden="true">
-                <Icon name="home" size={24} />
-                <Icon name="search" size={24} />
-                <Icon name="trend" size={24} />
-                <Icon name="data" size={24} />
-              </div>
-              <p>
-                <Localized
-                  pl="Ikona nie niesie własnego koloru. Znaczenie wynika z roli, przycisku, statusu albo kontekstu danych."
-                  en="The icon does not carry its own color. Meaning comes from role, button, status or data context."
-                />
-              </p>
-            </div>
-            <dl className="pd-f0-icon-specs">
-              {iconLanguageRules.map((rule) => (
-                <div key={rule.token}>
-                  <dt>{locale === 'en' ? rule.labelEn : rule.labelPl}</dt>
-                  <dd>
-                    <strong>{rule.value}</strong>
-                    <TokenCode>{rule.token}</TokenCode>
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </Section>
-
-        <Section
-          title={<Localized pl="Role semantyczne" en="Semantic roles" />}
-          summary={
-            <Localized
-              pl="Ten sam symbol może zmienić barwę tylko przez kontekst, nigdy przez ręczny wariant dekoracyjny."
-              en="The same symbol changes color through context, never through a manual decorative variant."
-            />
-          }
-        >
-          <div className="pd-f0-icon-role-grid">
-            {iconSemanticRoles.map((role) => (
-              <article key={role.key} data-icon-role={role.key}>
-                <div className="pd-f0-icon-role-sample" aria-hidden="true">
-                  {role.icons.map((name) => (
-                    <Icon
-                      className={`pd-f0-icon-preview pd-f0-icon-preview--${name}`}
-                      key={name}
-                      name={name}
-                      size={24}
-                    />
-                  ))}
-                </div>
-                <div>
-                  <strong>{locale === 'en' ? role.titleEn : role.titlePl}</strong>
-                  <p>
-                    {locale === 'en'
-                      ? role.descriptionEn
-                      : role.descriptionPl}
-                  </p>
-                  <TokenCode>{role.token}</TokenCode>
-                </div>
-              </article>
-            ))}
-          </div>
-        </Section>
-
-        <Section
-          title={<Localized pl="Rejestr domenowy" en="Domain registry" />}
-          summary={
-            <Localized
-              pl="Ikony są grupowane według zadania, nie według wyglądu."
-              en="Icons are grouped by job, not appearance."
-            />
-          }
-        >
-          <div className="pd-f0-icon-domain-grid">
-            {iconDomainGroups.map((group) => (
-              <article key={group.key} data-icon-domain={group.key}>
-                <header>
-                  <strong>{locale === 'en' ? group.titleEn : group.titlePl}</strong>
-                  <p>
-                    {locale === 'en'
-                      ? group.descriptionEn
-                      : group.descriptionPl}
-                  </p>
-                </header>
-                <div className="pd-f0-icon-domain-list">
-                  {group.icons.map((name) => {
-                    const label = iconCategoryLabels[name];
-
-                    return (
-                      <span key={name}>
-                        <Icon name={name} size={20} />
-                        <span>{locale === 'en' ? label.en : label.pl}</span>
-                        <TokenCode>{name}</TokenCode>
-                      </span>
-                    );
-                  })}
-                </div>
-              </article>
-            ))}
-          </div>
-        </Section>
-
-        <Section
-          title={
-            <Localized
-              pl="Rozmiary w realnym użyciu"
-              en="Sizes in real usage"
-            />
-          }
-        >
-          <div className="pd-f0-icon-size-ledger">
-            <article>
-              <div className="pd-f0-icon-size-sample pd-f0-icon-size-sample--meta">
-                <Icon name="data" size={16} />
-                <span>CRM</span>
-                <TokenCode>12 rekordów</TokenCode>
-              </div>
-              <div>
-                <strong>16 px</strong>
-                <p>
-                  <Localized
-                    pl="Metadane, drobne etykiety i informacje pomocnicze."
-                    en="Metadata, small labels and supporting information."
-                  />
-                </p>
-              </div>
-            </article>
-            <article>
-              <div className="pd-f0-icon-size-sample pd-f0-icon-size-sample--button">
-                <button data-interactive-tone="primary" type="button">
-                  <Icon name="integration" size={20} />
-                  <Localized pl="Połącz" en="Connect" />
-                </button>
-              </div>
-              <div>
-                <strong>20 px</strong>
-                <p>
-                  <Localized
-                    pl="Przyciski, pozycje menu, listy i nawigacja boczna."
-                    en="Buttons, menu items, lists and side navigation."
-                  />
-                </p>
-              </div>
-            </article>
-            <article>
-              <div className="pd-f0-icon-size-sample pd-f0-icon-size-sample--heading">
-                <Icon name="assistant" size={24} />
-                <span><Localized pl="Asystent" en="Assistant" /></span>
-              </div>
-              <div>
-                <strong>24 px</strong>
-                <p>
-                  <Localized
-                    pl="Nagłówki paneli, landmarki i ważne punkty orientacyjne."
-                    en="Panel headings, landmarks and important orientation points."
-                  />
-                </p>
-              </div>
-            </article>
-          </div>
-        </Section>
-
-        <Section
-          title={
-            <Localized
-              pl="Dostępność i nazwy"
-              en="Accessibility and names"
-            />
-          }
-        >
-          <div className="pd-f0-icon-a11y">
-            <article>
-              <Icon name="trend" size={20} />
-              <div>
-                <strong>
-                  <Localized pl="Dekoracyjna" en="Decorative" />
-                </strong>
-                <p>
-                  <Localized
-                    pl="Przy tekście ikona jest ukryta dla czytnika."
-                    en="Next to text, the icon is hidden from screen readers."
-                  />
-                </p>
-                <TokenCode>aria-hidden</TokenCode>
-              </div>
-            </article>
-            <article>
-              <button
-                className="pd-f0-icon-action"
-                aria-label={locale === 'en'
-                  ? 'Open security settings'
-                  : 'Otwórz ustawienia bezpieczeństwa'}
-                type="button"
-              >
-                <Icon name="security" size={20} />
-              </button>
-              <div>
-                <strong>
-                  <Localized pl="Samodzielny przycisk" en="Icon-only button" />
-                </strong>
-                <p>
-                  <Localized
-                    pl="Przycisk z samą ikoną ma nazwę akcji na przycisku."
-                    en="An icon-only button gets the action name on the button."
-                  />
-                </p>
-                <TokenCode>aria-label</TokenCode>
-              </div>
-            </article>
-            <article>
-              <Icon
-                label={locale === 'en'
-                  ? 'Integration connected'
-                  : 'Integracja połączona'}
-                name="integration"
-                size={20}
-              />
-              <div>
-                <strong>
-                  <Localized pl="Informacyjna" en="Informative" />
-                </strong>
-                <p>
-                  <Localized
-                    pl="Jeśli ikona sama przekazuje stan, dostaje własną nazwę."
-                    en="When the icon itself communicates state, it gets its own name."
-                  />
-                </p>
-                <TokenCode>{'<title>'}</TokenCode>
-              </div>
-            </article>
-          </div>
-        </Section>
-      </Page>
-    );
-  },
-};
-
-type MotionMode = 'full' | 'reduced';
-
-const motionDecisionRows = [
-  {
-    key: 'feedback',
-    titlePl: 'Feedback po akcji',
-    titleEn: 'Action feedback',
-    descriptionPl:
-      'Krótki sygnał potwierdza, że system przyjął zmianę.',
-    descriptionEn:
-      'A short signal confirms that the system accepted the change.',
-    token: '--pd-motion-duration-fast',
-  },
-  {
-    key: 'state',
-    titlePl: 'Zmiana stanu',
-    titleEn: 'State change',
-    descriptionPl:
-      'Ruch pomaga zrozumieć, skąd przyszła aktualizacja lub gdzie trafia fokus.',
-    descriptionEn:
-      'Motion helps explain where an update came from or where focus moved.',
-    token: '--pd-motion-duration-standard',
-  },
-  {
-    key: 'overlay',
-    titlePl: 'Warstwa nad treścią',
-    titleEn: 'Overlay layer',
-    descriptionPl:
-      'Dialog, popover i drawer mogą użyć wolniejszego wejścia tylko dla orientacji.',
-    descriptionEn:
-      'Dialog, popover and drawer may use a slower entrance only for orientation.',
-    token: '--pd-motion-duration-deliberate',
-  },
-  {
-    key: 'avoid',
-    titlePl: 'Bez ruchu dekoracyjnego',
-    titleEn: 'No decorative motion',
-    descriptionPl:
-      'Nie animujemy tła, metryk i danych tylko po to, żeby ekran wyglądał żywiej.',
-    descriptionEn:
-      'Backgrounds, metrics and data are not animated just to make the screen feel lively.',
-    token: 'no-loop',
+    label: { pl: 'Linia statusu', en: 'Status line' },
+    detail: {
+      pl: 'Feedback i alert używają lokalnej linii semantycznej zamiast pełnego wypełnienia.',
+      en: 'Feedback and alerts use a local semantic line instead of a full fill.',
+    },
   },
 ] as const;
 
-const motionReductionRows = [
+const geometryDepthRows = [
   {
-    step: '1',
-    titlePl: 'System operacyjny',
-    titleEn: 'Operating system',
-    descriptionPl:
-      'Preferencja reduce zawsze wygrywa z lokalną próbą uruchomienia pełnego ruchu.',
-    descriptionEn:
-      'The reduce preference always wins over a local full-motion request.',
-    token: 'prefers-reduced-motion',
+    level: '00',
+    name: 'none',
+    token: '--pd-shadow-none',
+    label: { pl: 'Canvas bazowy', en: 'Base canvas' },
+    allowed: {
+      pl: 'Canvas, region danych, tabela i zwykła sekcja robocza.',
+      en: 'Canvas, data region, table and normal working section.',
+    },
+    forbidden: {
+      pl: 'Nie służy do modali ani elementów ponad treścią.',
+      en: 'Not for modals or elements above content.',
+    },
   },
   {
-    step: '2',
-    titlePl: 'Runtime produktu',
-    titleEn: 'Product runtime',
-    descriptionPl:
-      'Aplikacja publikuje efektywny tryb na atrybucie dokumentu.',
-    descriptionEn:
-      'The app publishes the effective mode on the document attribute.',
-    token: 'data-motion',
+    level: '01',
+    name: 'raised',
+    token: '--pd-shadow-raised',
+    label: { pl: 'Panel uniesiony', en: 'Raised panel' },
+    allowed: {
+      pl: 'Panel wspierający, notification rail i lokalna powierzchnia robocza.',
+      en: 'Supporting panel, notification rail and local working surface.',
+    },
+    forbidden: {
+      pl: 'Nie zastępuje separatorów wewnątrz panelu.',
+      en: 'Does not replace separators inside the panel.',
+    },
   },
   {
-    step: '3',
-    titlePl: 'Komponent',
-    titleEn: 'Component',
-    descriptionPl:
-      'Komponent może prosić o ruch, ale musi umieć przejść w stan natychmiastowy.',
-    descriptionEn:
-      'A component can request motion, but must support an instant state change.',
-    token: 'data-motion-requested',
+    level: '02',
+    name: 'floating',
+    token: '--pd-shadow-floating',
+    label: { pl: 'Element pływający', en: 'Floating element' },
+    allowed: {
+      pl: 'Dropdown, popover, toast i krótka warstwa operacyjna.',
+      en: 'Dropdown, popover, toast and short-lived operational layer.',
+    },
+    forbidden: {
+      pl: 'Nie używamy go do stałych regionów layoutu.',
+      en: 'Do not use it for persistent layout regions.',
+    },
+  },
+  {
+    level: '03',
+    name: 'overlay',
+    token: '--pd-shadow-overlay',
+    label: { pl: 'Overlay', en: 'Overlay' },
+    allowed: {
+      pl: 'Modal, formularz auth i najwyższa warstwa wymagająca uwagi.',
+      en: 'Modal, auth form and top attention layer.',
+    },
+    forbidden: {
+      pl: 'Nie może stać się domyślnym cieniem zwykłych kart.',
+      en: 'Must not become the default shadow for ordinary cards.',
+    },
   },
 ] as const;
 
-function MotionExample({
-  mode,
+function GeometryRadiusPreview({
+  name,
 }: {
-  readonly mode: MotionMode;
+  readonly name: (typeof geometryRadiusRows)[number]['name'];
 }) {
-  const cardRef = useRef<HTMLElement>(null);
-  const [run, setRun] = useState(0);
-  const [effectiveMode, setEffectiveMode] = useState<MotionMode>(mode);
-  const [duration, setDuration] = useState('');
-
-  useEffect(() => {
-    if (typeof document === 'undefined') {
-      return undefined;
-    }
-
-    const syncMotionState = () => {
-      const rootMode = document.documentElement.dataset.motion === 'reduced'
-        ? 'reduced'
-        : 'full';
-      const nextEffectiveMode = mode === 'reduced' || rootMode === 'reduced'
-        ? 'reduced'
-        : 'full';
-
-      setEffectiveMode(nextEffectiveMode);
-      setDuration(
-        nextEffectiveMode === 'reduced'
-          ? '1ms'
-          : getComputedStyle(cardRef.current ?? document.documentElement)
-              .getPropertyValue('--pd-motion-duration-standard')
-              .trim(),
-      );
-    };
-
-    syncMotionState();
-
-    const observer = new MutationObserver(syncMotionState);
-    observer.observe(
-      document.documentElement,
-      {
-        attributeFilter: ['data-motion'],
-        attributes: true,
-      },
-    );
-
-    return () => observer.disconnect();
-  }, [mode]);
-
   return (
-    <article
-      className="pd-f0-motion-example"
-      data-effective-motion={effectiveMode}
-      data-local-motion={mode}
-      ref={cardRef}
-    >
-      <header>
-        <div>
-          <h3>
-            {mode === 'full'
-              ? <Localized pl="Pełny ruch" en="Full motion" />
-              : <Localized pl="Ograniczony ruch" en="Reduced motion" />}
-          </h3>
-          <p>
-            <Localized pl="Żądany" en="Requested" />: {mode}
-            {' · '}
-            <Localized pl="Efektywny" en="Effective" />: {effectiveMode}
-          </p>
-        </div>
-        <TokenCode>{duration || motionTokens.duration.standard}</TokenCode>
-      </header>
-      <button
-        className="pd-f0-motion-trigger pd-f0-action pd-f0-action--emphasis"
-        data-interactive-tone="primary"
-        onClick={() => setRun((value) => value + 1)}
-        type="button"
-      >
-        <Icon name="trend" size={20} />
-        <Localized pl="Uruchom przykład" en="Run example" />
-      </button>
-      <div aria-live="polite" className="pd-f0-motion-live">
-        {run > 0 ? (
-          <Localized
-            pl={`Aktualizacja ${run} zakończona`}
-            en={`Update ${run} completed`}
-          />
-        ) : (
-          <Localized pl="Gotowe" en="Ready" />
-        )}
-      </div>
-      <div aria-hidden="true" className="pd-f0-motion-track">
-        <span key={run} data-run={run > 0 ? 'true' : 'false'} />
-      </div>
-    </article>
+    <div className="pd-f0-lab-radius-preview" data-radius={name} aria-hidden="true">
+      {name === 'control' ? (
+        <span className="pd-f0-lab-radius-control">
+          <span>Commerce</span>
+          <span>⌄</span>
+        </span>
+      ) : null}
+      {name === 'overlay' ? (
+        <span className="pd-f0-lab-radius-overlay">
+          <span />
+          <span />
+        </span>
+      ) : null}
+      {name === 'pill' ? (
+        <>
+          <span className="pd-f0-lab-pill-dot" />
+          <span className="pd-f0-lab-pill-badge">Active</span>
+        </>
+      ) : null}
+    </div>
   );
 }
 
-export const MotionIReducedMotion: Story = {
-  name: 'Animacje i ograniczenie ruchu',
-  render: () => (
-    <Page
-      eyebrow="00 Fundamenty"
-      title={<Localized pl="Motion i ograniczenie ruchu" en="Motion and reduced motion" />}
-      summary={
-        <Localized
-          pl="Ruch informuje o zmianie, nie jest ozdobą. Preferencja systemowa reduced motion ma pierwszeństwo przed globalem Storybooka."
-          en="Motion communicates change rather than decoration. The operating-system reduced-motion preference takes priority over the Storybook global."
-        />
-      }
+function GeometryBorderPreview({
+  name,
+}: {
+  readonly name: (typeof geometryBorderRows)[number]['name'];
+}) {
+  return (
+    <div className="pd-f0-lab-border-preview" data-border={name} aria-hidden="true">
+      <span />
+      <span />
+      <span />
+    </div>
+  );
+}
+
+function DepthCanvas() {
+  return (
+    <div
+      className="pd-f0-depth-stage__canvas"
+      role="img"
+      aria-label={copy({
+        pl: 'Relacja pomiędzy bazą, panelem uniesionym, elementem pływającym i overlayem',
+        en: 'Relationship between the base, raised panel, floating element and overlay',
+      })}
     >
-      <Section
-        title={
-          <Localized
-            pl="Kiedy ruch jest dozwolony"
-            en="When motion is allowed"
-          />
-        }
-        summary={
-          <Localized
-            pl="Ruch ma pomagać w orientacji albo potwierdzeniu zmiany. Nie jest warstwą marki."
-            en="Motion should help orientation or confirm change. It is not a brand layer."
-          />
-        }
+      <div className="pd-f0-depth-stage__base" data-shadow="none">
+        <div className="pd-f0-depth-stage__base-heading">
+          <div>
+            <span><Localized pl="Warstwa bazowa" en="Base layer" /></span>
+            <strong><Localized pl="Przychód i kampanie" en="Revenue and campaigns" /></strong>
+          </div>
+          <span><Localized pl="Aktualizacja 2 min temu" en="Updated 2 min ago" /></span>
+        </div>
+        <div className="pd-f0-depth-stage__metrics">
+          <div>
+            <span><Localized pl="Przychód" en="Revenue" /></span>
+            <strong>1 248 590 zł</strong>
+          </div>
+          <div>
+            <span><Localized pl="Marża" en="Margin" /></span>
+            <strong>24,8%</strong>
+          </div>
+          <div>
+            <span><Localized pl="Alerty" en="Alerts" /></span>
+            <strong>3</strong>
+          </div>
+        </div>
+      </div>
+
+      <div className="pd-f0-depth-stage__raised" data-shadow="raised">
+        <span><Localized pl="Panel uniesiony" en="Raised panel" /></span>
+        <strong><Localized pl="Rekomendacje" en="Recommendations" /></strong>
+        <p><Localized pl="Wspiera analizę, ale pozostaje częścią canvasu." en="Supports analysis while remaining part of the canvas." /></p>
+      </div>
+
+      <div className="pd-f0-depth-stage__floating" data-shadow="floating">
+        <span><Localized pl="Element pływający" en="Floating element" /></span>
+        <strong><Localized pl="Źródła danych" en="Data sources" /></strong>
+        <p>Meta Ads · GA4 · Commerce</p>
+      </div>
+
+      <div className="pd-f0-depth-stage__overlay" data-shadow="overlay">
+        <header>
+          <div>
+            <span><Localized pl="Warstwa wymagająca uwagi" en="Attention layer" /></span>
+            <strong><Localized pl="Zastosować rekomendację?" en="Apply recommendation?" /></strong>
+          </div>
+          <span><Localized pl="Zamknij" en="Close" /></span>
+        </header>
+        <div>
+          <p><Localized pl="Zmiana nie zostanie wykonana bez potwierdzenia użytkownika." en="The change will not be applied without user confirmation." /></p>
+          <dl>
+            <div>
+              <dt><Localized pl="Wpływ" en="Impact" /></dt>
+              <dd>+7,80%</dd>
+            </div>
+            <div>
+              <dt><Localized pl="Pewność" en="Confidence" /></dt>
+              <dd><Localized pl="Wysoka" en="High" /></dd>
+            </div>
+          </dl>
+        </div>
+        <footer>
+          <span><Localized pl="Anuluj" en="Cancel" /></span>
+          <strong><Localized pl="Zatwierdź zmianę" en="Approve change" /></strong>
+        </footer>
+      </div>
+
+      <div className="pd-f0-depth-stage__toast" data-shadow="floating">
+        <span className="pd-f0-depth-stage__toast-marker" />
+        <div>
+          <strong><Localized pl="Rekomendacja przygotowana" en="Recommendation prepared" /></strong>
+          <p><Localized pl="Zapisano jako wersję roboczą." en="Saved as a draft." /></p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export const PromienieIGeometria: Story = {
+  name: 'Promienie i geometria',
+  render: () => (
+    <FoundationPage
+      title={<Localized pl="Promienie i geometria" en="Radii and geometry" />}
+      summary={<Localized pl="Trzy role geometryczne porządkują kontrolki, rzeczywiste powierzchnie i małe znaczniki. Promień wynika z funkcji, nie z dekoracji." en="Three geometry roles organize controls, real surfaces and compact markers. Radius follows function, not decoration." />}
+    >
+      <FoundationSection
+        index="01"
+        title={<Localized pl="Role geometryczne" en="Geometry roles" />}
+        summary={<Localized pl="Każda rola ma jeden przykład, jeden token i jasno określony zakres użycia." en="Each role has one example, one token and a clearly defined scope." />}
       >
-        <div className="pd-f0-motion-priority-grid">
-          {motionDecisionRows.map((row) => (
-            <article key={row.key} data-motion-purpose={row.key}>
-              <span aria-hidden="true" />
+        <div className="pd-f0-lab-only-grid" role="list" aria-label={copy({ pl: 'Role promieni', en: 'Radius roles' })}>
+          {geometryRadiusRows.map((item) => (
+            <article className="pd-f0-lab-only-card" key={item.name} role="listitem">
+              <GeometryRadiusPreview name={item.name} />
+              <strong>{copy(item.label)}</strong>
+              <code className="pd-f0-lab-only-token">{item.token}</code>
+              <p>{copy(item.detail)}</p>
+            </article>
+          ))}
+        </div>
+      </FoundationSection>
+
+      <FoundationSection
+        index="02"
+        title={<Localized pl="Kontrakt użycia" en="Usage contract" />}
+        summary={<Localized pl="Ten sam promień nie może opisywać wszystkich elementów interfejsu." en="The same radius must not describe every interface element." />}
+      >
+        <div className="pd-f0-geometry-contract" role="list">
+          {geometryRadiusRows.map((item, index) => (
+            <article key={item.name} role="listitem">
+              <span>{String(index + 1).padStart(2, '0')}</span>
               <div>
-                <strong>{readLocale() === 'en' ? row.titleEn : row.titlePl}</strong>
-                <p>
-                  {readLocale() === 'en'
-                    ? row.descriptionEn
-                    : row.descriptionPl}
-                </p>
-                <TokenCode>{row.token}</TokenCode>
+                <strong>{copy(item.label)}</strong>
+                <p>{copy(item.contract)}</p>
+              </div>
+              <div>
+                <span><Localized pl="Nie używamy" en="Avoid" /></span>
+                <p>{copy(item.avoid)}</p>
               </div>
             </article>
           ))}
         </div>
-      </Section>
-
-      <Section
-        title={<Localized pl="Pełny ruch kontra redukcja" en="Full motion versus reduction" />}
-        summary={
-          <Localized
-            pl="Ten sam komponent pokazuje żądany tryb i efektywny wynik po uwzględnieniu preferencji użytkownika."
-            en="The same component shows the requested mode and the effective result after user preferences are applied."
-          />
-        }
-      >
-        <div className="pd-f0-motion-comparison">
-          <MotionExample mode="full" />
-          <MotionExample mode="reduced" />
-        </div>
-      </Section>
-
-      <Section
-        title={<Localized pl="Priorytet redukcji" en="Reduction priority" />}
-        summary={
-          <Localized
-            pl="Redukcja ruchu jest kontraktem dostępności, nie wariantem estetycznym."
-            en="Reduced motion is an accessibility contract, not an aesthetic variant."
-          />
-        }
-      >
-        <div className="pd-f0-motion-reduction-grid">
-          {motionReductionRows.map((row) => (
-            <article key={row.step}>
-              <span>{row.step}</span>
-              <div>
-                <strong>{readLocale() === 'en' ? row.titleEn : row.titlePl}</strong>
-                <p>
-                  {readLocale() === 'en'
-                    ? row.descriptionEn
-                    : row.descriptionPl}
-                </p>
-                <TokenCode>{row.token}</TokenCode>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        <dl className="pd-f0-motion-token-ledger">
-          <div><dt>instant</dt><dd><TokenCode>--pd-motion-duration-instant</TokenCode></dd></div>
-          <div><dt>fast</dt><dd><TokenCode>--pd-motion-duration-fast</TokenCode></dd></div>
-          <div><dt>standard</dt><dd><TokenCode>--pd-motion-duration-standard</TokenCode></dd></div>
-          <div><dt>deliberate</dt><dd><TokenCode>--pd-motion-duration-deliberate</TokenCode></dd></div>
-          <div><dt>easing</dt><dd><TokenCode>--pd-motion-easing-standard</TokenCode></dd></div>
-          <div><dt>distance</dt><dd><TokenCode>--pd-motion-distance</TokenCode></dd></div>
-        </dl>
-      </Section>
-    </Page>
+      </FoundationSection>
+    </FoundationPage>
   ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const triggers = canvas.getAllByRole('button', {
-      name: /Uruchom przykład|Run example/,
-    });
-
-    await userEvent.click(triggers[0]);
-    await expect(
-      canvas.getByText(/Aktualizacja 1 zakończona|Update 1 completed/),
-    ).toBeInTheDocument();
-  },
 };
 
-type DropdownValue = 'marketplace' | 'paid' | 'crm';
-
-const dropdownOptions = [
-  ['marketplace', 'Marketplace'],
-  ['paid', 'Paid media'],
-  ['crm', 'CRM'],
-] as const satisfies readonly [DropdownValue, string][];
-
-function AccessibleListbox() {
-  const id = useId();
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
-  const [open, setOpen] = useState(true);
-  const [selected, setSelected] = useState<DropdownValue>('crm');
-  const [active, setActive] = useState<DropdownValue>('marketplace');
-  const [shouldFocusList, setShouldFocusList] = useState(false);
-
-  const move = (offset: number) => {
-    const index = dropdownOptions.findIndex(([value]) => value === active);
-    const next = (index + offset + dropdownOptions.length) % dropdownOptions.length;
-    setActive(dropdownOptions[next][0]);
-  };
-
-  const openList = (nextActive: DropdownValue = selected) => {
-    setActive(nextActive);
-    setOpen(true);
-    setShouldFocusList(true);
-  };
-
-  const close = (restore = true) => {
-    setOpen(false);
-    setShouldFocusList(false);
-    if (restore) {
-      window.requestAnimationFrame(() => triggerRef.current?.focus());
-    }
-  };
-
-  useEffect(() => {
-    if (!open || !shouldFocusList) {
-      return undefined;
-    }
-
-    const frame = window.requestAnimationFrame(() => {
-      listRef.current?.focus();
-      setShouldFocusList(false);
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, [open, shouldFocusList]);
-
-  const handleListKey = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'ArrowDown') {
-      event.preventDefault();
-      move(1);
-    } else if (event.key === 'ArrowUp') {
-      event.preventDefault();
-      move(-1);
-    } else if (event.key === 'Home') {
-      event.preventDefault();
-      setActive(dropdownOptions[0][0]);
-    } else if (event.key === 'End') {
-      event.preventDefault();
-      setActive(dropdownOptions.at(-1)?.[0] ?? 'crm');
-    } else if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      setSelected(active);
-      close();
-    } else if (event.key === 'Escape') {
-      event.preventDefault();
-      close();
-    } else if (event.key === 'Tab') {
-      close(false);
-    }
-  };
-
-  const selectedLabel = dropdownOptions.find(([value]) => value === selected)?.[1];
-
-  return (
-    <div className="pd-f0-listbox-demo">
-      <button
-        className="pd-f0-control-trigger"
-        aria-controls={`${id}-listbox`}
-        aria-expanded={open}
-        aria-haspopup="listbox"
-        onClick={() => {
-          if (open) {
-            close(false);
-          } else {
-            openList();
-          }
-        }}
-        onKeyDown={(event) => {
-          if (event.key === 'ArrowDown') {
-            event.preventDefault();
-            openList(selected);
-          } else if (event.key === 'ArrowUp') {
-            event.preventDefault();
-            openList(dropdownOptions.at(-1)?.[0] ?? selected);
-          }
-        }}
-        ref={triggerRef}
-        type="button"
+export const LinieISeparacja: Story = {
+  name: 'Linie i separacja',
+  render: () => (
+    <FoundationPage
+      title={<Localized pl="Linie i separacja" en="Lines and separation" />}
+      summary={<Localized pl="Linie są uporządkowane według trzech funkcji: struktury, interakcji i komunikacji. Nie tworzymy dekoracyjnej palety ramek." en="Lines are organized by three functions: structure, interaction and communication. We do not create a decorative border palette." />}
+    >
+      <FoundationSection
+        index="01"
+        title={<Localized pl="Struktura" en="Structure" />}
+        summary={<Localized pl="Główne granice i wewnętrzne podziały mają różną wagę i nie są zamienne." en="Main boundaries and internal divisions have different weight and are not interchangeable." />}
       >
-        <span>
-          <Localized pl="Kanał" en="Channel" />
-        </span>
-        <strong>{selectedLabel}</strong>
-      </button>
-
-      {open ? (
-        <div
-          aria-activedescendant={`${id}-option-${active}`}
-          aria-label={readLocale() === 'en' ? 'Data channel' : 'Kanał danych'}
-          className="pd-f0-listbox-demo__menu"
-          id={`${id}-listbox`}
-          onKeyDown={handleListKey}
-          ref={listRef}
-          role="listbox"
-          tabIndex={-1}
-        >
-          {dropdownOptions.map(([value, label]) => (
-            <div
-              aria-selected={selected === value}
-              data-active={active === value}
-              id={`${id}-option-${value}`}
-              key={value}
-              onClick={() => {
-                setActive(value);
-                setSelected(value);
-                close();
-              }}
-              role="option"
-            >
-              <span>{label}</span>
-              {selected === value ? (
-                <span aria-hidden="true">✓</span>
-              ) : null}
-            </div>
+        <div className="pd-f0-separation-grid" data-columns="2" role="list">
+          {geometryBorderRows.filter((item) => item.group === 'structure').map((item) => (
+            <article className="pd-f0-lab-border-card" key={item.name} role="listitem">
+              <GeometryBorderPreview name={item.name} />
+              <strong>{copy(item.label)}</strong>
+              <code className="pd-f0-lab-only-token">{item.token}</code>
+              <p>{copy(item.detail)}</p>
+            </article>
           ))}
         </div>
-      ) : null}
-      <p className="pd-f0-listbox-demo__status" role="status">
-        <Localized pl="Wybrano" en="Selected" />: {selectedLabel}
+      </FoundationSection>
+
+      <FoundationSection
+        index="02"
+        title={<Localized pl="Interakcja" en="Interaction" />}
+        summary={<Localized pl="Akcent pojawia się lokalnie i wskazuje wybrany lub aktywny element." en="The accent appears locally and identifies a selected or active element." />}
+      >
+        <div className="pd-f0-separation-grid" data-columns="1" role="list">
+          {geometryBorderRows.filter((item) => item.group === 'interaction').map((item) => (
+            <article className="pd-f0-lab-border-card" key={item.name} role="listitem">
+              <GeometryBorderPreview name={item.name} />
+              <strong>{copy(item.label)}</strong>
+              <code className="pd-f0-lab-only-token">{item.token}</code>
+              <p>{copy(item.detail)}</p>
+            </article>
+          ))}
+        </div>
+      </FoundationSection>
+
+      <FoundationSection
+        index="03"
+        title={<Localized pl="Komunikacja" en="Communication" />}
+        summary={<Localized pl="Status używa semantycznej linii i tekstu zamiast pełnego kolorowego kontenera." en="Status uses a semantic line and text instead of a fully colored container." />}
+      >
+        <div className="pd-f0-separation-grid" data-columns="1" role="list">
+          {geometryBorderRows.filter((item) => item.group === 'communication').map((item) => (
+            <article className="pd-f0-lab-border-card" key={item.name} role="listitem">
+              <GeometryBorderPreview name={item.name} />
+              <strong>{copy(item.label)}</strong>
+              <code className="pd-f0-lab-only-token">{item.token}</code>
+              <p>{copy(item.detail)}</p>
+            </article>
+          ))}
+        </div>
+      </FoundationSection>
+    </FoundationPage>
+  ),
+};
+
+export const GlebiaIWarstwy: Story = {
+  name: 'Głębia i warstwy',
+  render: () => (
+    <FoundationPage
+      title={<Localized pl="Głębia i warstwy" en="Depth and layers" />}
+      summary={<Localized pl="Cień komunikuje zmianę poziomu. Wszystkie warstwy pokazujemy w jednej relacji, a ich kontrakt zapisujemy w stałej kolejności od canvasu do overlayu." en="Shadow communicates a level change. All layers are shown in one relationship and their contract follows a fixed order from canvas to overlay." />}
+    >
+      <FoundationSection
+        index="01"
+        title={<Localized pl="Hierarchia warstw" en="Layer hierarchy" />}
+        summary={<Localized pl="Canvas, panel, element pływający i overlay muszą być czytelne jako jeden system." en="Canvas, panel, floating element and overlay must read as one system." />}
+      >
+        <div className="pd-f0-depth-stage">
+          <DepthCanvas />
+        </div>
+      </FoundationSection>
+
+      <FoundationSection
+        index="02"
+        title={<Localized pl="Kontrakt poziomów" en="Level contract" />}
+        summary={<Localized pl="Każdy poziom ma dozwolone zastosowanie i jednoznaczne ograniczenie." en="Each level has an allowed use and an explicit restriction." />}
+      >
+        <div className="pd-f0-depth-contract" role="table" aria-label={copy({ pl: 'Kontrakt poziomów głębi', en: 'Depth level contract' })}>
+          <div className="pd-f0-depth-contract__header" role="row">
+            <span role="columnheader"><Localized pl="Poziom" en="Level" /></span>
+            <span role="columnheader"><Localized pl="Rola i token" en="Role and token" /></span>
+            <span role="columnheader"><Localized pl="Dozwolone" en="Allowed" /></span>
+            <span role="columnheader"><Localized pl="Niedozwolone" en="Not allowed" /></span>
+          </div>
+          {geometryDepthRows.map((item) => (
+            <article key={item.name} role="row" data-shadow={item.name}>
+              <span className="pd-f0-depth-contract__level" role="cell">{item.level}</span>
+              <div role="cell">
+                <strong>{copy(item.label)}</strong>
+                <code className="pd-f0-lab-only-token">{item.token}</code>
+              </div>
+              <p role="cell">{copy(item.allowed)}</p>
+              <p role="cell">{copy(item.forbidden)}</p>
+            </article>
+          ))}
+        </div>
+
+        <p className="pd-f0-lab-only-note">
+          <Icon decorative name="warning" size={16} />
+          <Localized
+            pl="Struktura wewnątrz panelu nadal wynika z powierzchni, rytmu i separatorów. Cień nie może zastępować hierarchii."
+            en="Structure inside a panel still comes from surfaces, rhythm and separators. Shadow must not replace hierarchy."
+          />
+        </p>
+      </FoundationSection>
+    </FoundationPage>
+  ),
+};
+
+
+type FoundationProjectGraphicKey =
+  | PapaDataIconName
+  | 'arrow-north-east'
+  | 'globe'
+  | 'moon-star';
+
+type FoundationProjectGraphic = {
+  readonly key: FoundationProjectGraphicKey;
+  readonly label: LocalizedCopy;
+  readonly category: LocalizedCopy;
+  readonly source: LocalizedCopy;
+  readonly underline: boolean;
+  readonly note: LocalizedCopy;
+};
+
+const foundationProjectGraphics = [
+  {
+    key: 'home',
+    label: { pl: 'Home', en: 'Home' },
+    category: { pl: 'Nawigacja', en: 'Navigation' },
+    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
+    underline: false,
+    note: { pl: 'Ikona nawigacyjna bez dodatkowego akcentu.', en: 'Navigation icon without an additional accent.' },
+  },
+  {
+    key: 'search',
+    label: { pl: 'Search', en: 'Search' },
+    category: { pl: 'Akcja', en: 'Action' },
+    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
+    underline: false,
+    note: { pl: 'Akcja pomocnicza bez kreski pod symbolem.', en: 'Auxiliary action without an underline beneath the symbol.' },
+  },
+  {
+    key: 'integration',
+    label: { pl: 'Integration', en: 'Integration' },
+    category: { pl: 'Akcja', en: 'Action' },
+    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
+    underline: false,
+    note: { pl: 'Ikona połączenia lub przejścia do integracji.', en: 'Connection or integration entry icon.' },
+  },
+  {
+    key: 'arrow-north-east',
+    label: { pl: 'ArrowNorthEast', en: 'ArrowNorthEast' },
+    category: { pl: 'Grafika pomocnicza', en: 'Supporting graphic' },
+    source: { pl: 'storybook-next/stories/story-icons.tsx', en: 'storybook-next/stories/story-icons.tsx' },
+    underline: false,
+    note: { pl: 'Zewnętrzne przejście lub link bez dodatkowej kreski.', en: 'External transition or link without an additional underline.' },
+  },
+  {
+    key: 'data',
+    label: { pl: 'Data', en: 'Data' },
+    category: { pl: 'Dane', en: 'Data' },
+    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
+    underline: false,
+    note: { pl: 'Zbiór danych, warstwa danych lub zakres.', en: 'Dataset, data layer, or data scope.' },
+  },
+  {
+    key: 'trend',
+    label: { pl: 'Trend', en: 'Trend' },
+    category: { pl: 'Analiza', en: 'Analytics' },
+    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
+    underline: false,
+    note: { pl: 'Wykres i kierunek zmiany bez dekoracyjnej kreski.', en: 'Chart and change direction without a decorative underline.' },
+  },
+  {
+    key: 'billing',
+    label: { pl: 'Billing', en: 'Billing' },
+    category: { pl: 'Finanse', en: 'Finance' },
+    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
+    underline: false,
+    note: { pl: 'Płatności, rozliczenia i plan subskrypcji.', en: 'Payments, billing, and subscription plans.' },
+  },
+  {
+    key: 'security',
+    label: { pl: 'Security', en: 'Security' },
+    category: { pl: 'System', en: 'System' },
+    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
+    underline: false,
+    note: { pl: 'Bezpieczeństwo, zgodność i zaufanie bez kreski sygnałowej.', en: 'Security, compliance, and trust without a signal underline.' },
+  },
+  {
+    key: 'assistant',
+    label: { pl: 'Assistant', en: 'Assistant' },
+    category: { pl: 'System', en: 'System' },
+    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
+    underline: false,
+    note: { pl: 'Papa Asystent jako znak systemowy, bez linii pod spodem.', en: 'Papa Assistant as a system sign, without an underline.' },
+  },
+  {
+    key: 'success',
+    label: { pl: 'Success', en: 'Success' },
+    category: { pl: 'Status', en: 'Status' },
+    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
+    underline: false,
+    note: { pl: 'Status sukcesu pozostaje czystą ikoną liniową.', en: 'Success status remains a clean line icon.' },
+  },
+  {
+    key: 'warning',
+    label: { pl: 'Warning', en: 'Warning' },
+    category: { pl: 'Status / sygnał', en: 'Status / signal' },
+    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
+    underline: true,
+    note: { pl: 'Wariant sygnałowy ostrzeżenia używa akcentowej kreski pod symbolem.', en: 'The warning signal variant uses an accent underline beneath the symbol.' },
+  },
+  {
+    key: 'globe',
+    label: { pl: 'Globe', en: 'Globe' },
+    category: { pl: 'Grafika pomocnicza', en: 'Supporting graphic' },
+    source: { pl: 'storybook-next/stories/story-icons.tsx', en: 'storybook-next/stories/story-icons.tsx' },
+    underline: false,
+    note: { pl: 'Przełączanie języka lub zasięg, bez kreski.', en: 'Locale switch or scope, without an underline.' },
+  },
+  {
+    key: 'moon-star',
+    label: { pl: 'MoonStar', en: 'MoonStar' },
+    category: { pl: 'Grafika pomocnicza', en: 'Supporting graphic' },
+    source: { pl: 'storybook-next/stories/story-icons.tsx', en: 'storybook-next/stories/story-icons.tsx' },
+    underline: false,
+    note: { pl: 'Tryb motywu lub nocny, bez kreski pod ikoną.', en: 'Theme or night mode, without a line beneath the icon.' },
+  },
+] as const satisfies readonly FoundationProjectGraphic[];
+
+const foundationProjectGraphicGroups: ReadonlyArray<{
+  readonly title: LocalizedCopy;
+  readonly description: LocalizedCopy;
+  readonly keys: readonly FoundationProjectGraphicKey[];
+}> = [
+  {
+    title: { pl: 'Nawigacja i akcje', en: 'Navigation and actions' },
+    description: { pl: 'Ikony akcji i przejścia nie dostają osobnych kontenerów. Pokazujemy je jako lekkie elementy liniowe wspierające etykietę.', en: 'Action and transition icons do not get separate containers. We present them as lightweight line elements that support the label.' },
+    keys: ['home', 'search', 'integration', 'arrow-north-east'],
+  },
+  {
+    title: { pl: 'Dane i analiza', en: 'Data and analytics' },
+    description: { pl: 'Ikony danych zachowują wspólną geometrię i nie są opakowane w karty ani boxy.', en: 'Data icons keep a shared geometry and are not wrapped in cards or boxes.' },
+    keys: ['data', 'trend', 'billing'],
+  },
+  {
+    title: { pl: 'System i status', en: 'System and status' },
+    description: { pl: 'Status zawsze ma tekst. Dodatkowa kreska pod ikoną jest wyjątkiem zarezerwowanym tylko dla wariantu ostrzeżenia.', en: 'Status always includes text. The extra underline below the icon is an exception reserved only for the warning variant.' },
+    keys: ['security', 'assistant', 'success', 'warning'],
+  },
+  {
+    title: { pl: 'Grafiki środowiska', en: 'Environment graphics' },
+    description: { pl: 'Pomocnicze grafiki Storybooka dla globali: język i motyw. Również bez kontenerów i bez kreski.', en: 'Supporting Storybook graphics for globals: locale and theme. Also without containers and without an underline.' },
+    keys: ['globe', 'moon-star'],
+  },
+];
+
+function findFoundationProjectGraphic(
+  key: FoundationProjectGraphicKey,
+) {
+  return foundationProjectGraphics.find((item) => item.key === key)!;
+}
+
+function FoundationProjectGraphicSvg({
+  item,
+}: {
+  readonly item: FoundationProjectGraphic;
+}) {
+  switch (item.key) {
+    case 'arrow-north-east':
+      return <ArrowNorthEastIcon />;
+    case 'globe':
+      return <GlobeIcon />;
+    case 'moon-star':
+      return <MoonStarIcon />;
+    default:
+      return <Icon decorative name={item.key} size={20} />;
+  }
+}
+
+function FoundationProjectGraphicPreview({
+  item,
+}: {
+  readonly item: FoundationProjectGraphic;
+}) {
+  return (
+    <span
+      className="pd-f0-iconography-preview"
+      data-underline={item.underline ? 'true' : 'false'}
+      aria-hidden="true"
+    >
+      <FoundationProjectGraphicSvg item={item} />
+    </span>
+  );
+}
+
+export const Ikonografia: Story = {
+  name: 'Ikonografia',
+  render: () => (
+    <FoundationPage
+      title={<Localized pl="Ikonografia" en="Iconography" />}
+      summary={<Localized pl="Fundamenty pokazują pełny katalog ikon i grafik używanych w projekcie. Bez dodatkowych kontenerów, bez przesuwania treści w prawo i z jasnym rozróżnieniem, gdzie pojawia się kreska pod symbolem." en="Foundations show the full catalog of icons and graphics used in the project. Without extra containers, without pushing content to the right, and with a clear distinction of where the underline appears beneath the symbol." />}
+    >
+      <FoundationSection
+        index="01"
+        title={<Localized pl="Komplet używanych ikon i grafik" en="Complete set of used icons and graphics" />}
+        summary={<Localized pl="To jest aktualny katalog źródeł występujących w projekcie: ikony z design systemu oraz dodatkowe grafiki pomocnicze Storybooka." en="This is the current source catalog used in the project: icons from the design system and supporting Storybook graphics." />}
+      >
+        <FoundationLedger label={copy({ pl: 'Katalog ikon i grafik projektu', en: 'Project icon and graphic catalog' })}>
+          {foundationProjectGraphics.map((item) => (
+            <LedgerRow
+              key={item.key}
+              label={(
+                <div className="pd-f0-iconography-label">
+                  <strong>{copy(item.label)}</strong>
+                  <span>{copy(item.note)}</span>
+                </div>
+              )}
+              preview={<FoundationProjectGraphicPreview item={item} />}
+              value={(
+                <div className="pd-f0-iconography-meta">
+                  <strong>{copy(item.category)}</strong>
+                  <span>{copy(item.source)}</span>
+                </div>
+              )}
+              detail={(
+                <div className="pd-f0-iconography-detail">
+                  <strong><Localized pl="Kreska pod spodem" en="Underline" /></strong>
+                  <span>{copy(item.underline ? { pl: 'Tak', en: 'Yes' } : { pl: 'Nie', en: 'No' })}</span>
+                </div>
+              )}
+            />
+          ))}
+        </FoundationLedger>
+      </FoundationSection>
+
+      <FoundationSection
+        index="02"
+        title={<Localized pl="Role i zasady użycia" en="Roles and usage rules" />}
+        summary={<Localized pl="Ikony i grafiki pozostają częścią układu listowego. Nie budujemy z nich osobnych kafli ani kart." en="Icons and graphics remain part of a list-based layout. We do not turn them into separate tiles or cards." />}
+      >
+        <div className="pd-f0-iconography-role-list">
+          {foundationProjectGraphicGroups.map((group) => (
+            <article className="pd-f0-iconography-role" key={group.title.pl}>
+              <header>
+                <h3>{copy(group.title)}</h3>
+                <p>{copy(group.description)}</p>
+              </header>
+              <div className="pd-f0-iconography-strip">
+                {group.keys.map((key) => {
+                  const item = findFoundationProjectGraphic(key);
+                  return (
+                    <span key={item.key}>
+                      <FoundationProjectGraphicPreview item={item} />
+                      <strong>{copy(item.label)}</strong>
+                    </span>
+                  );
+                })}
+              </div>
+            </article>
+          ))}
+        </div>
+      </FoundationSection>
+
+      <FoundationSection
+        index="03"
+        title={<Localized pl="Kiedy pojawia się kreska" en="When the underline appears" />}
+        summary={<Localized pl="Kreska pod symbolem jest wyjątkiem, a nie stałą dekoracją całej ikonografii." en="The underline beneath a symbol is an exception, not a default decoration for the whole iconography." />}
+      >
+        <FoundationVariant
+          title={<Localized pl="Wariant sygnałowy vs. zwykły" en="Signal variant vs. regular" />}
+          description={<Localized pl="Pokazujemy to na prostych wierszach: ostrzeżenie ma kreskę, pozostałe symbole nie." en="We show it in simple rows: warning uses the underline, the remaining symbols do not." />}
+        >
+          <div className="pd-f0-iconography-note">
+            <p>
+              <Localized
+                pl="W projekcie kreska pod ikoną jest dozwolona tylko dla przygotowanego wariantu sygnałowego. Nie dokładamy jej do wszystkich ikon systemowych."
+                en="In this project, the underline beneath the icon is allowed only for the prepared signal variant. We do not add it to all system icons."
+              />
+            </p>
+            <FoundationLedger label={copy({ pl: 'Porównanie wariantów ikonografii', en: 'Iconography variant comparison' })}>
+              {(['warning', 'success', 'assistant', 'security'] as const satisfies readonly FoundationProjectGraphicKey[]).map((key) => {
+                const item = findFoundationProjectGraphic(key);
+                return (
+                  <LedgerRow
+                    key={item.key}
+                    label={<strong>{copy(item.label)}</strong>}
+                    preview={<FoundationProjectGraphicPreview item={item} />}
+                    value={copy(item.underline ? { pl: 'wariant sygnałowy', en: 'signal variant' } : { pl: 'wariant standardowy', en: 'standard variant' })}
+                    detail={copy(item.underline ? { pl: 'kreska: tak', en: 'underline: yes' } : { pl: 'kreska: nie', en: 'underline: no' })}
+                  />
+                );
+              })}
+            </FoundationLedger>
+          </div>
+        </FoundationVariant>
+      </FoundationSection>
+    </FoundationPage>
+  ),
+};
+
+function MotionDemo({
+  reduced,
+}: {
+  readonly reduced: boolean;
+}) {
+  const [run, setRun] = useState(false);
+
+  return (
+    <div className="pd-f0-motion-demo" data-motion={reduced ? 'reduced' : 'full'}>
+      <div className="pd-f0-motion-demo__track" aria-hidden="true">
+        <span data-run={run ? 'true' : 'false'} />
+      </div>
+      <FoundationButton
+        icon="trend"
+        onClick={() => {
+          setRun(false);
+          window.requestAnimationFrame(() => setRun(true));
+        }}
+      >
+        <Localized pl="Uruchom zmianę" en="Run change" />
+      </FoundationButton>
+      <p role="status">
+        {run
+          ? <Localized pl="Stan został zaktualizowany." en="State updated." />
+          : <Localized pl="Gotowe do demonstracji." en="Ready to demonstrate." />}
       </p>
     </div>
   );
 }
 
-function FocusActions() {
-  const primaryRef = useRef<HTMLButtonElement>(null);
+function MotionModePreview({
+  index,
+  reduced,
+  title,
+  description,
+}: {
+  readonly index: string;
+  readonly reduced: boolean;
+  readonly title: ReactNode;
+  readonly description: ReactNode;
+}) {
+  return (
+    <article
+      className="pd-f0-motion-mode"
+      data-motion={reduced ? 'reduced' : 'full'}
+    >
+      <header>
+        <span>{index}</span>
+        <div>
+          <h3>{title}</h3>
+          <p>{description}</p>
+        </div>
+      </header>
+      <MotionDemo reduced={reduced} />
+    </article>
+  );
+}
 
-  useEffect(() => {
-    primaryRef.current?.focus();
-  }, []);
+export const MotionIReducedMotion: Story = {
+  name: 'Motion i ograniczenie ruchu',
+  render: () => (
+    <FoundationPage
+      title={<Localized pl="Motion i ograniczenie ruchu" en="Motion and reduced motion" />}
+      summary={<Localized pl="Ruch potwierdza zmianę stanu. Nie jest tłem, ozdobą ani warunkiem zrozumienia interfejsu." en="Motion confirms a state change. It is not background decoration or required for understanding." />}
+    >
+      <FoundationSection
+        index="01"
+        title={<Localized pl="Kiedy ruch jest dozwolony" en="When motion is allowed" />}
+        summary={<Localized pl="Animacja musi mieć funkcję, krótki czas i odpowiednik bez ruchu." en="Animation needs a function, short duration and a non-motion equivalent." />}
+      >
+        <div className="pd-f0-principles">
+          <article><span>01</span><div><h3><Localized pl="Zmiana stanu" en="State change" /></h3><p><Localized pl="Potwierdza wykonanie akcji lub aktualizację danych." en="Confirms an action or data update." /></p></div></article>
+          <article><span>02</span><div><h3><Localized pl="Wejście warstwy" en="Layer entry" /></h3><p><Localized pl="Pokazuje relację triggera z dialogiem lub popoverem." en="Shows the relationship between a trigger and a dialog or popover." /></p></div></article>
+          <article><span>03</span><div><h3><Localized pl="Zmiana priorytetu" en="Priority change" /></h3><p><Localized pl="Kieruje uwagę bez pulsowania i ciągłego ruchu." en="Guides attention without pulsing or continuous motion." /></p></div></article>
+        </div>
+      </FoundationSection>
+
+      <FoundationSection
+        index="02"
+        title={<Localized pl="Pełny ruch i redukcja" en="Full and reduced motion" />}
+        summary={<Localized pl="Oba warianty dziedziczą bieżący motyw, przekazują ten sam rezultat i zachowują ten sam układ." en="Both variants inherit the current theme, communicate the same result and preserve the same layout." />}
+      >
+        <div className="pd-f0-motion-comparison">
+          <MotionModePreview
+            index="01"
+            reduced={false}
+            title={<Localized pl="Ruch standardowy" en="Standard motion" />}
+            description={<Localized pl="Krótka animacja pokazuje kierunek i potwierdza zmianę stanu." en="A short animation shows direction and confirms the state change." />}
+          />
+          <MotionModePreview
+            index="02"
+            reduced
+            title={<Localized pl="Ruch ograniczony" en="Reduced motion" />}
+            description={<Localized pl="Rezultat pojawia się natychmiast, bez przesunięcia i bez utraty informacji." en="The result appears immediately, without movement or information loss." />}
+          />
+        </div>
+      </FoundationSection>
+
+      <FoundationSection
+        index="03"
+        title={<Localized pl="Tokeny ruchu" en="Motion tokens" />}
+        summary={<Localized pl="Czas i easing są wspólne dla systemu." en="Duration and easing are shared across the system." />}
+      >
+        <div className="pd-f0-motion-token-groups">
+          <section>
+            <h3><Localized pl="Czas" en="Duration" /></h3>
+            <FoundationLedger label={copy({ pl: 'Tokeny czasu ruchu', en: 'Motion duration tokens' })}>
+              <LedgerRow label={<Localized pl="Natychmiast" en="Instant" />} value={<TokenCode>{motionTokens.duration.instant}</TokenCode>} detail="70 ms" />
+              <LedgerRow label={<Localized pl="Szybko" en="Fast" />} value={<TokenCode>{motionTokens.duration.fast}</TokenCode>} detail="110 ms" />
+              <LedgerRow label={<Localized pl="Standard" en="Standard" />} value={<TokenCode>{motionTokens.duration.standard}</TokenCode>} detail="180 ms" />
+              <LedgerRow label={<Localized pl="Celowo" en="Deliberate" />} value={<TokenCode>{motionTokens.duration.deliberate}</TokenCode>} detail="240 ms" />
+            </FoundationLedger>
+          </section>
+          <section>
+            <h3><Localized pl="Easing" en="Easing" /></h3>
+            <FoundationLedger label={copy({ pl: 'Tokeny easing', en: 'Easing tokens' })}>
+              <LedgerRow
+                label={<Localized pl="Standardowy" en="Standard" />}
+                value={<TokenCode>{motionTokens.easing.standard}</TokenCode>}
+                detail="cubic-bezier(0.2, 0, 0, 1)"
+              />
+              <LedgerRow
+                label={<Localized pl="Wzmocniony" en="Emphasized" />}
+                value={<TokenCode>{motionTokens.easing.emphasized}</TokenCode>}
+                detail="cubic-bezier(0.16, 1, 0.3, 1)"
+              />
+            </FoundationLedger>
+          </section>
+        </div>
+      </FoundationSection>
+    </FoundationPage>
+  ),
+  play: async ({ canvasElement }) => {
+    const modes = [
+      ...canvasElement.querySelectorAll<HTMLElement>(
+        '.pd-f0-motion-mode',
+      ),
+    ];
+
+    await expect(modes).toHaveLength(2);
+    await expect(modes[0]).toHaveAttribute(
+      'data-motion',
+      'full',
+    );
+    await expect(modes[1]).toHaveAttribute(
+      'data-motion',
+      'reduced',
+    );
+
+    for (const mode of modes) {
+      const scope = within(mode);
+      const trigger = scope.getByRole('button');
+      const status = scope.getByRole('status');
+      const statusBefore = status.textContent;
+
+      await expect(
+        mode.querySelector('.pd-f0-motion-demo__track'),
+      ).not.toBeNull();
+
+      await userEvent.click(trigger);
+
+      await expect(status.textContent).not.toBe(
+        statusBefore,
+      );
+    }
+  },
+
+};
+
+function AccessibleChoice() {
+  const id = useId();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const optionRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const [open, setOpen] = useState(false);
+  const options = ['CRM', 'Commerce', 'Analityka'] as const;
+  const [selected, setSelected] = useState<(typeof options)[number]>('CRM');
+
+  const focusOption = (index: number) => {
+    const boundedIndex = Math.max(
+      0,
+      Math.min(index, options.length - 1),
+    );
+
+    optionRefs.current[boundedIndex]?.focus();
+  };
+
+  const openList = (index: number) => {
+    setOpen(true);
+    window.requestAnimationFrame(() => focusOption(index));
+  };
+
+  const closeList = (returnFocus = true) => {
+    setOpen(false);
+
+    if (returnFocus) {
+      window.requestAnimationFrame(() => triggerRef.current?.focus());
+    }
+  };
+
+  const selectOption = (option: typeof options[number]) => {
+    setSelected(option);
+    closeList();
+  };
 
   return (
-    <div className="pd-f0-focus-actions">
-      <button
-        className="pd-f0-action pd-f0-action--emphasis"
-        data-interactive-tone="primary"
-        ref={primaryRef}
-        type="button"
-      >
-        <Icon name="search" size={20} />
-        <Localized pl="Zastosuj filtr" en="Apply filter" />
-      </button>
-      <button className="pd-f0-action" type="button">
-        <Icon name="data" size={20} />
-        <Localized pl="Eksportuj dane" en="Export data" />
-      </button>
-      <a href="#screen-reader-contract">
-        <Localized pl="Przejdź do zasad" en="Go to guidance" />
-      </a>
+    <div className="pd-f0-choice">
+      <label id={`${id}-label`}><Localized pl="Kanał danych" en="Data channel" /></label>
+      <p className="pd-f0-choice__help" id={`${id}-help`}>
+        <Localized
+          pl="Otwórz listę i wybierz kanał. Po zatwierdzeniu fokus wróci do przycisku."
+          en="Open the list and choose a channel. After selection, focus returns to the trigger."
+        />
+      </p>
+      <div className="pd-f0-choice__control">
+        <button
+          ref={triggerRef}
+          aria-controls={`${id}-listbox`}
+          aria-describedby={`${id}-help`}
+          aria-expanded={open}
+          aria-haspopup="listbox"
+          aria-labelledby={`${id}-label ${id}-value`}
+          className="pd-f0-choice__trigger"
+          onClick={() => {
+            if (open) {
+              closeList(false);
+            } else {
+              openList(options.indexOf(selected));
+            }
+          }}
+          onKeyDown={(event) => {
+            if (event.key === 'ArrowDown') {
+              event.preventDefault();
+              openList(options.indexOf(selected));
+            } else if (event.key === 'ArrowUp') {
+              event.preventDefault();
+              openList(options.length - 1);
+            } else if (event.key === 'Escape' && open) {
+              event.preventDefault();
+              closeList();
+            }
+          }}
+          type="button"
+        >
+          <span id={`${id}-value`}>{selected}</span>
+          <span aria-hidden="true">⌄</span>
+        </button>
+        {open ? (
+          <div
+            className="pd-f0-choice__list"
+            id={`${id}-listbox`}
+            role="listbox"
+            aria-labelledby={`${id}-label`}
+          >
+            {options.map((option, index) => (
+              <button
+                aria-selected={selected === option}
+                key={option}
+                onClick={() => selectOption(option)}
+                onKeyDown={(event) => {
+                  if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    focusOption((index + 1) % options.length);
+                  } else if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    focusOption((index - 1 + options.length) % options.length);
+                  } else if (event.key === 'Home') {
+                    event.preventDefault();
+                    focusOption(0);
+                  } else if (event.key === 'End') {
+                    event.preventDefault();
+                    focusOption(options.length - 1);
+                  } else if (event.key === 'Escape') {
+                    event.preventDefault();
+                    closeList();
+                  } else if (event.key === 'Tab') {
+                    closeList(false);
+                  }
+                }}
+                ref={(node) => {
+                  optionRefs.current[index] = node;
+                }}
+                role="option"
+                type="button"
+              >
+                <span>{option}</span>
+                {selected === option ? <span aria-hidden="true">✓</span> : null}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </div>
+      <div className="pd-f0-choice__feedback">
+        <p>
+          <strong><Localized pl="Nazwa dostępna" en="Accessible name" /></strong>
+          <span><Localized pl="Kanał danych, wybrano" en="Data channel, selected" />: {selected}</span>
+        </p>
+        <p aria-live="polite" role="status">
+          <strong><Localized pl="Status" en="Status" /></strong>
+          <span><Localized pl="Wybrano" en="Selected" />: {selected}</span>
+        </p>
+        <p>
+          <strong><Localized pl="Powrót fokusu" en="Focus return" /></strong>
+          <span><Localized pl="Po wyborze fokus wraca do przycisku Kanał danych." en="After selection, focus returns to the Data channel trigger." /></span>
+        </p>
+      </div>
     </div>
   );
 }
 
-const accessibilityLayerRows = [
-  {
-    key: 'focus',
-    titlePl: 'Fokus',
-    titleEn: 'Focus',
-    descriptionPl:
-      'Każdy element interaktywny ma widoczny, tokenowy focus-visible.',
-    descriptionEn:
-      'Every interactive element has visible token-driven focus-visible.',
-    token: '--pd-focus-visible',
-  },
-  {
-    key: 'keyboard',
-    titlePl: 'Klawiatura',
-    titleEn: 'Keyboard',
-    descriptionPl:
-      'Złożone kontrolki rozdzielają fokus, aktywną opcję i wybór.',
-    descriptionEn:
-      'Complex controls separate focus, active option and selection.',
-    token: 'aria-activedescendant',
-  },
-  {
-    key: 'names',
-    titlePl: 'Nazwy',
-    titleEn: 'Names',
-    descriptionPl:
-      'Kontrolka z ikoną ma nazwę akcji, a nie opis grafiki.',
-    descriptionEn:
-      'An icon control is named by the action, not by the graphic.',
-    token: 'aria-label',
-  },
-  {
-    key: 'announcements',
-    titlePl: 'Komunikaty',
-    titleEn: 'Announcements',
-    descriptionPl:
-      'Zmiany asynchroniczne są ogłaszane bez przenoszenia fokusu.',
-    descriptionEn:
-      'Async changes are announced without moving focus.',
-    token: 'aria-live="polite"',
-  },
-  {
-    key: 'status',
-    titlePl: 'Status',
-    titleEn: 'Status',
-    descriptionPl:
-      'Kolor nigdy nie jest jedynym nośnikiem informacji.',
-    descriptionEn:
-      'Color is never the only information carrier.',
-    token: 'text + color',
-  },
-  {
-    key: 'reflow',
-    titlePl: 'Reflow',
-    titleEn: 'Reflow',
-    descriptionPl:
-      'Tekst i układy działają przy powiększeniu bez poziomego scrolla strony.',
-    descriptionEn:
-      'Text and layouts work under zoom without page-level horizontal scroll.',
-    token: '200%',
-  },
+const accessibilityRows = [
+  { title: { pl: 'Fokus', en: 'Focus' }, detail: { pl: 'Widoczny focus-visible na każdej kontrolce.', en: 'Visible focus-visible on every control.' }, token: ':focus-visible' },
+  { title: { pl: 'Klawiatura', en: 'Keyboard' }, detail: { pl: 'Tab, Enter, Space, Escape i strzałki zgodnie z rolą.', en: 'Tab, Enter, Space, Escape and arrows follow the role.' }, token: 'keyboard' },
+  { title: { pl: 'Nazwa', en: 'Name' }, detail: { pl: 'Nazwa opisuje akcję, nie wygląd ikony.', en: 'The name describes the action, not the icon appearance.' }, token: 'aria-label' },
+  { title: { pl: 'Komunikat', en: 'Announcement' }, detail: { pl: 'Zmiana asynchroniczna jest ogłaszana bez przenoszenia fokusu.', en: 'Async change is announced without moving focus.' }, token: 'aria-live' },
+  { title: { pl: 'Status', en: 'Status' }, detail: { pl: 'Kolor zawsze ma tekstowy odpowiednik.', en: 'Color always has a textual equivalent.' }, token: 'text + color' },
+  { title: { pl: 'Reflow', en: 'Reflow' }, detail: { pl: 'Interfejs działa przy 200% bez poziomego scrolla strony.', en: 'The interface works at 200% without page-level horizontal scrolling.' }, token: '200%' },
 ] as const;
 
 export const Dostepnosc: Story = {
   name: 'Dostępność systemowa',
   render: () => (
-    <Page
-      eyebrow="00 Fundamenty"
-      title={
-        <Localized
-          pl="Dostępność systemowa"
-          en="System accessibility"
-        />
-      }
-      summary={
-        <Localized
-          pl="Dostępność jest kontraktem komponentu: fokus, klawiatura, nazwa, komunikat, status i reflow muszą działać razem."
-          en="Accessibility is a component contract: focus, keyboard, name, announcement, status and reflow must work together."
-        />
-      }
+    <FoundationPage
+      title={<Localized pl="Dostępność systemowa" en="System accessibility" />}
+      summary={<Localized pl="Dostępność jest częścią kontraktu komponentu, a nie osobną warstwą dodawaną po projekcie." en="Accessibility is part of the component contract, not a layer added after design." />}
     >
-      <Section
-        title={
-          <Localized
-            pl="Warstwa operacyjna"
-            en="Operational layer"
-          />
-        }
-        summary={
-          <Localized
-            pl="Te przykłady są interaktywne i testowane: fokus startowy, akcje, link oraz listbox z aktywną opcją."
-            en="These examples are interactive and tested: initial focus, actions, link and listbox with active option."
-          />
-        }
+      <FoundationSection
+        index="01"
+        title={<Localized pl="Kontrakt" en="Contract" />}
+        summary={<Localized pl="Każdy komponent przechodzi przez te same sześć warstw." en="Every component passes through the same six layers." />}
       >
-        <div className="pd-f0-accessibility-lab">
-          <article>
-            <header>
-              <h3>
-                <Localized
-                  pl="Focus-visible na kontrolkach"
-                  en="Focus-visible on controls"
-                />
-              </h3>
-              <p>
-                <Localized
-                  pl="Fokus jest widoczny tylko wtedy, gdy użytkownik porusza się klawiaturą lub technologią wspierającą."
-                  en="Focus is visible when the user navigates with keyboard or assistive technology."
-                />
-              </p>
-              <TokenCode>:focus-visible</TokenCode>
-            </header>
-            <FocusActions />
-          </article>
-
-          <article>
-            <header>
-              <h3>
-                <Localized
-                  pl="Listbox z aktywną opcją"
-                  en="Listbox with active option"
-                />
-              </h3>
-              <p>
-                <Localized
-                  pl="Wybrany element i aktywny element klawiatury są pokazane osobno."
-                  en="Selected item and keyboard-active item are represented separately."
-                />
-              </p>
-              <TokenCode>role="listbox"</TokenCode>
-            </header>
-            <AccessibleListbox />
-          </article>
-        </div>
-      </Section>
-
-      <Section
-        title={
-          <Localized
-            pl="Kontrakt systemowy"
-            en="System contract"
-          />
-        }
-        summary={
-          <Localized
-            pl="Każda nowa kontrolka przechodzi przez te warstwy zanim trafi do wzorców produktu."
-            en="Every new control passes through these layers before it enters product patterns."
-          />
-        }
-      >
-        <div className="pd-f0-accessibility-layer-grid" id="screen-reader-contract">
-          {accessibilityLayerRows.map((row) => (
-            <article key={row.key} data-a11y-layer={row.key}>
-              <span aria-hidden="true" />
-              <div>
-                <strong>{readLocale() === 'en' ? row.titleEn : row.titlePl}</strong>
-                <p>
-                  {readLocale() === 'en'
-                    ? row.descriptionEn
-                    : row.descriptionPl}
-                </p>
-                <TokenCode>{row.token}</TokenCode>
-              </div>
-            </article>
+        <FoundationLedger label={copy({ pl: 'Kontrakt dostępności', en: 'Accessibility contract' })}>
+          {accessibilityRows.map((item) => (
+            <LedgerRow
+              key={item.token}
+              label={copy(item.title)}
+              value={<TokenCode>{item.token}</TokenCode>}
+              detail={copy(item.detail)}
+            />
           ))}
-        </div>
-      </Section>
+        </FoundationLedger>
+      </FoundationSection>
 
-      <Section
-        title={
-          <Localized
-            pl="Dowody w komponentach"
-            en="Evidence in components"
-          />
-        }
-        summary={
-          <Localized
-            pl="Kontrakt jest widoczny w realnych fragmentach UI, nie tylko w opisie."
-            en="The contract appears in real UI fragments, not only in copy."
-          />
-        }
+      <FoundationSection
+        index="02"
+        title={<Localized pl="Przykład interaktywny" en="Interactive example" />}
+        summary={<Localized pl="Kontrolka ma widoczną etykietę, nazwę dostępną, status i powrót fokusu." en="The control has a visible label, accessible name, status and focus return." />}
       >
-        <div className="pd-f0-accessibility-evidence">
-          <article>
-            <h3>
-              <Localized pl="Nazwy kontrolek" en="Control names" />
-            </h3>
-            <button
-              className="pd-f0-icon-action"
-              aria-label={readLocale() === 'en'
-                ? 'Search Help Center'
-                : 'Szukaj w Centrum Pomocy'}
-              type="button"
-            >
-              <Icon name="search" size={20} />
+        <FoundationVariant
+          title={<Localized pl="Wybór kanału" en="Channel selection" />}
+          description={<Localized pl="Ten sam wzorzec działa myszą i klawiaturą." en="The same pattern works with mouse and keyboard." />}
+          surface="subtle"
+        >
+          <AccessibleChoice />
+        </FoundationVariant>
+      </FoundationSection>
+
+      <FoundationSection
+        index="03"
+        title={<Localized pl="Dowody w interfejsie" en="Evidence in the interface" />}
+        summary={<Localized pl="Wizualna prezentacja pokazuje rzeczywiste zachowanie, nie techniczny debugger." en="The visual presentation shows real behavior, not a technical debugger." />}
+      >
+        <div className="pd-f0-evidence">
+          <div>
+            <button className="pd-f0-icon-button" aria-label={copy({ pl: 'Szukaj w danych', en: 'Search data' })} type="button">
+              <Icon decorative name="search" size={20} />
             </button>
-            <p>
-              <Localized
-                pl="Icon-only action ma jawną nazwę dostępną."
-                en="An icon-only action has an explicit accessible name."
-              />
-            </p>
-          </article>
-          <article>
-            <h3>
-              <Localized pl="Komunikat dynamiczny" en="Dynamic announcement" />
-            </h3>
-            <div aria-live="polite" role="status">
-              <Localized
-                pl="Synchronizacja zakończona. Zaktualizowano 128 rekordów."
-                en="Synchronization completed. 128 records updated."
-              />
-            </div>
-          </article>
-          <article>
-            <h3>
-              <Localized pl="Status tekstowy" en="Text status" />
-            </h3>
-            <StatusPill tone="warning">
-              <Localized pl="Dane opóźnione" en="Data delayed" />
-            </StatusPill>
-            <p>
-              <Localized
-                pl="Kolor wspiera tekst, ale go nie zastępuje."
-                en="Color supports the text but does not replace it."
-              />
-            </p>
-          </article>
-          <article>
-            <h3>Reflow 200%</h3>
-            <p className="pd-f0-reflow-copy">
-              <Localized
-                pl="Bardzo długa rekomendacja biznesowa pozostaje czytelna bez poziomego skalowania całego interfejsu."
-                en="A very long business recommendation remains readable without horizontally scaling the entire interface."
-              />
-            </p>
-          </article>
+            <div><strong><Localized pl="Nazwa kontrolki" en="Control name" /></strong><p><Localized pl="Ikona nie jest jedynym źródłem znaczenia." en="The icon is not the only source of meaning." /></p></div>
+          </div>
+          <div>
+            <StatusBadge tone="warning"><Localized pl="Dane opóźnione" en="Data delayed" /></StatusBadge>
+            <div><strong><Localized pl="Status tekstowy" en="Text status" /></strong><p><Localized pl="Kolor wspiera jednoznaczny tekst." en="Color supports explicit text." /></p></div>
+          </div>
+          <div>
+            <span className="pd-f0-focus-sample" tabIndex={0}><Localized pl="Element fokusowalny" en="Focusable element" /></span>
+            <div><strong><Localized pl="Widoczny fokus" en="Visible focus" /></strong><p><Localized pl="Obrys jest czytelny w obu motywach." en="The outline remains clear in both themes." /></p></div>
+          </div>
         </div>
-      </Section>
-    </Page>
+      </FoundationSection>
+    </FoundationPage>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const primary = canvas.getByRole('button', {
-      name: /Zastosuj filtr|Apply filter/,
+    const trigger = canvas.getByRole('button', {
+      name: /Kanał danych CRM|Data channel CRM/,
     });
 
-    await expect(primary).toHaveFocus();
-
-    const channelTrigger = canvas.getByRole('button', {
-      name: /Kanał\s+CRM|Channel\s+CRM/,
-    });
-
-    await userEvent.click(channelTrigger);
-    await expect(
-      canvas.queryByRole('listbox', {
-        name: /Kanał danych|Data channel/,
-      }),
-    ).not.toBeInTheDocument();
-
-    await userEvent.click(channelTrigger);
-
+    await userEvent.click(trigger);
     const listbox = canvas.getByRole('listbox', {
       name: /Kanał danych|Data channel/,
     });
+    await expect(listbox).toBeInTheDocument();
 
-    await expect(listbox).toHaveFocus();
-    await expect(listbox).toHaveAttribute('aria-activedescendant');
-    await userEvent.keyboard('{ArrowDown}{Enter}');
-    await expect(channelTrigger).toHaveFocus();
-
-    primary.focus();
-    await expect(primary).toHaveFocus();
+    const commerce = canvas.getByRole('option', {
+      name: 'Commerce',
+    });
+    await userEvent.click(commerce);
+    await expect(trigger).toHaveFocus();
+    await expect(canvas.getByRole('status')).toHaveTextContent(/Commerce/);
   },
 };

@@ -1,7 +1,7 @@
 {
   "name": "PapaData Storybook — finalna struktura katalogu",
   "expectedSectionCount": 22,
-  "expectedEntryCount": 220,
+  "expectedEntryCount": 223,
   "storyClasses": [
     "reference",
     "component",
@@ -6269,8 +6269,8 @@
   ],
   "visibleStoryPolicy": {
     "sectionOverviewCount": 0,
-    "entryStoryCount": 16,
-    "visibleStoryCount": 16,
+    "entryStoryCount": 19,
+    "visibleStoryCount": 19,
     "plannedEntriesRemainInContract": true,
     "technicalIdentifiersVisibleInSidebar": false
   },
@@ -6284,7 +6284,7 @@
     ],
     "activeStoryFiles": 5,
     "activeSectionOverviews": 0,
-    "activeEntryStories": 16,
+    "activeEntryStories": 19,
     "legacyPrototypeAllowed": false,
     "implementationSource": "apps/web/src/design-system"
   }

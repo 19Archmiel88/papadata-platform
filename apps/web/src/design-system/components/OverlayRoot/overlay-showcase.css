@@ -9,8 +9,8 @@
     ),
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--pd-surface-canvas) 96%, transparent),
-      var(--pd-surface-canvas)
+      color-mix(in srgb, var(--pd-canvas) 96%, transparent),
+      var(--pd-canvas)
     );
   color: var(--pd-text);
 }
@@ -20,6 +20,7 @@
   margin: 0 auto;
   display: grid;
   gap: var(--pd-space-6);
+  background-color: var(--pd-canvas);
 }
 
 .pd-overlay-story__header {
@@ -118,6 +119,7 @@
 
 .pd-overlay-story__theme-column[data-theme='dark'] {
   padding: var(--pd-space-4) 0 0 var(--pd-space-4);
+  background-color: var(--pd-canvas);
   border-left: 2px solid color-mix(in srgb, var(--pd-brand-line) 48%, transparent);
   box-shadow:
     -1.4rem 0 2.6rem -2.3rem color-mix(

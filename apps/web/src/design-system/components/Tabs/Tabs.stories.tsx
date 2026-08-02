@@ -229,7 +229,16 @@ export const TabsStory: Story = {
     canvasElement,
   }) => {
     const canvas = within(canvasElement);
-    const firstTab = canvas.getByRole('tab', {
+    const basicRow = canvas.getByRole('heading', {
+      name: 'Wariant podstawowy',
+    }).closest('.pd-navigation-story__row') as HTMLElement | null;
+
+    if (!basicRow) {
+      throw new Error('Nie znaleziono podstawowego wariantu zakładek.');
+    }
+
+    const basicTabs = within(basicRow);
+    const firstTab = basicTabs.getByRole('tab', {
       name: 'Przegląd',
     });
 
@@ -237,7 +246,7 @@ export const TabsStory: Story = {
     await userEvent.keyboard('{ArrowRight}');
 
     await expect(
-      canvas.getByRole('tab', {
+      basicTabs.getByRole('tab', {
         name: 'Jakość danych 12',
       }),
     ).toHaveFocus();

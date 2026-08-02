@@ -47,7 +47,6 @@ export const StatusBadge = forwardRef<
     <span
       {...props}
       ref={ref}
-      aria-label={`${status}: ${text}`}
       className={joinClassNames(
         'pd-status-badge',
         className,
@@ -67,6 +66,9 @@ export const StatusBadge = forwardRef<
         </span>
       ) : null}
       <span className="pd-status-badge__text">
+        <span className="pd-visually-hidden">
+          {`${status}: `}
+        </span>
         {text}
       </span>
     </span>

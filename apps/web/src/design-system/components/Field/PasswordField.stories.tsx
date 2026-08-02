@@ -48,6 +48,7 @@ function PasswordFieldShowcase() {
         </header>
 
         <section className="pd-form-story__section">
+          <h2>Warianty</h2>
           <div className="pd-form-story__grid">
             <article className="pd-form-story__card">
               <span className="pd-form-story__eyebrow">interakcja</span>
@@ -126,9 +127,9 @@ export const PasswordFieldStory: Story = {
   }) => {
     const canvas = within(canvasElement);
     const field = canvas.getByLabelText('Hasło');
-    const toggle = canvas.getByRole('button', {
+    const toggle = canvas.getAllByRole('button', {
       name: 'Pokaż hasło',
-    });
+    })[0];
 
     await expect(field).toHaveAttribute('type', 'password');
     await userEvent.click(toggle);

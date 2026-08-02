@@ -12,9 +12,11 @@ import {
 import '../Navigation/navigation-showcase.css';
 
 function PaginationExample({
+  ariaLabel = 'Paginacja listy wyników',
   compact = false,
   total = 240,
 }: {
+  readonly ariaLabel?: string;
   readonly compact?: boolean;
   readonly total?: number;
 }) {
@@ -22,6 +24,7 @@ function PaginationExample({
 
   return (
     <Pagination
+      ariaLabel={ariaLabel}
       page={page}
       pageSize={25}
       pageSizeOptions={[
@@ -69,7 +72,7 @@ export const PaginationStory: Story = {
   },
   name: 'Stronicowanie',
   render: () => (
-    <main className="pd-navigation-story">
+    <div className="pd-navigation-story">
       <div className="pd-navigation-story__inner">
         <header className="pd-navigation-story__header">
           <p className="pd-navigation-story__kicker">10 Komponenty/Pagination</p>
@@ -89,7 +92,7 @@ export const PaginationStory: Story = {
                 <p>Zakres wyników, numery stron oraz akcje poprzednia i następna.</p>
               </div>
               <div className="pd-navigation-story__canvas">
-                <PaginationExample />
+                <PaginationExample ariaLabel="Paginacja wariantu podstawowego" />
               </div>
             </div>
             <div className="pd-navigation-story__row">
@@ -98,7 +101,10 @@ export const PaginationStory: Story = {
                 <p>Mniejsza gęstość dla list pobocznych i paneli narzędziowych.</p>
               </div>
               <div className="pd-navigation-story__canvas">
-                <PaginationExample compact />
+                <PaginationExample
+                  ariaLabel="Paginacja wariantu kompaktowego"
+                  compact
+                />
               </div>
             </div>
             <div className="pd-navigation-story__row">
@@ -108,6 +114,7 @@ export const PaginationStory: Story = {
               </div>
               <div className="pd-navigation-story__canvas">
                 <Pagination
+                  ariaLabel="Paginacja pierwszej strony zakresu granicznego"
                   page={1}
                   pageSize={25}
                   pageSizeOptions={[
@@ -117,6 +124,7 @@ export const PaginationStory: Story = {
                   total={50}
                 />
                 <Pagination
+                  ariaLabel="Paginacja ostatniej strony zakresu granicznego"
                   page={2}
                   pageSize={25}
                   pageSizeOptions={[
@@ -135,18 +143,21 @@ export const PaginationStory: Story = {
           <div className="pd-navigation-story__theme-grid">
             <div className="pd-navigation-story__theme-column">
               <span className="pd-navigation-story__eyebrow">tryb jasny</span>
-              <PaginationExample />
+              <PaginationExample ariaLabel="Paginacja w trybie jasnym" />
             </div>
             <div
               className="pd-navigation-story__theme-column"
               data-theme="dark"
             >
               <span className="pd-navigation-story__eyebrow">tryb ciemny</span>
-              <PaginationExample compact />
+              <PaginationExample
+                ariaLabel="Paginacja w trybie ciemnym"
+                compact
+              />
             </div>
           </div>
         </section>
       </div>
-    </main>
+    </div>
   ),
 };

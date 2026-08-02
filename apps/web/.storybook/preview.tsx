@@ -28,7 +28,11 @@ const withPapaDataRuntime: Decorator = (
     );
   }
 
-  return <Story />;
+  return (
+    <div className="pd-storybook-canvas">
+      <Story />
+    </div>
+  );
 };
 
 const preview: Preview = {
@@ -56,8 +60,8 @@ const preview: Preview = {
     },
 
     locale: {
-      name: 'Jezyk',
-      description: 'Jezyk interfejsu',
+      name: 'Język',
+      description: 'Język interfejsu',
       toolbar: {
         icon: 'globe',
         items: [
@@ -74,8 +78,8 @@ const preview: Preview = {
     },
 
     density: {
-      name: 'Gestosc',
-      description: 'Gestosc interfejsu',
+      name: 'Gęstość',
+      description: 'Gęstość interfejsu',
       toolbar: {
         icon: 'sidebar',
         items: [
@@ -99,7 +103,7 @@ const preview: Preview = {
         items: [
           {
             value: 'full',
-            title: 'Pelne',
+            title: 'Pełne',
           },
           {
             value: 'reduced',
@@ -127,7 +131,7 @@ const preview: Preview = {
     viewport: {
       options: {
         desktopWide: {
-          name: 'Duzy ekran',
+          name: 'Duży ekran',
           styles: {
             width: '1920px',
             height: '1080px',
@@ -147,7 +151,7 @@ const preview: Preview = {
         tablet: {
           name: 'Tablet',
           styles: {
-            width: '834px',
+            width: '768px',
             height: '1194px',
           },
           type: 'tablet',

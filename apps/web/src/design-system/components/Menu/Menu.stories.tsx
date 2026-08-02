@@ -198,9 +198,16 @@ export const MenuStory: Story = {
     canvasElement,
   }) => {
     const canvas = within(canvasElement);
+    const basicRow = canvas.getByRole('heading', {
+      name: 'Wariant podstawowy',
+    }).closest('.pd-navigation-story__row') as HTMLElement | null;
+
+    if (!basicRow) {
+      throw new Error('Nie znaleziono podstawowego wariantu menu.');
+    }
 
     await userEvent.click(
-      canvas.getByRole('button', {
+      within(basicRow).getByRole('button', {
         name: 'Otwórz listę akcji',
       }),
     );

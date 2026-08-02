@@ -162,7 +162,7 @@ function ActionsShowcase() {
             <p className="pd-action-hero__lead">
               Przyciski, ikony i linki nie są opakowane w dekoracyjne
               pudełka. Są samodzielnymi kontrolkami: czytelne w spoczynku,
-              podświetlone na hoverze i spięte jedną bursztynową kreską.
+              wyraźne przy fokusu i spięte jedną subtelną kreską.
             </p>
           </div>
 
@@ -170,7 +170,7 @@ function ActionsShowcase() {
             <span aria-hidden="true" className="pd-action-focus-strip" />
             <ButtonGroup
               className="button-group-horizontal"
-              label="Controlled action group"
+              label="Sterowana grupa akcji"
             >
               <Button startIcon={icon('success')}>
                 Zastosuj zmiany
@@ -198,7 +198,7 @@ function ActionsShowcase() {
                 <div>
                   <h3>{item.intent}</h3>
                   <p className="pd-action-row__meta">
-                    variant: {item.variant}
+                    wariant: {item.variant}
                   </p>
                 </div>
                 <div>
@@ -216,7 +216,7 @@ function ActionsShowcase() {
         </StorySection>
 
         <StorySection
-          description="Stany nie zmieniają geometrii elementu. Loading blokuje kliknięcia, disabled jest spokojny, a rozmiary pozostają częścią tego samego języka."
+          description="Stany nie zmieniają geometrii elementu. Ładowanie blokuje kliknięcia, stan wyłączony pozostaje spokojny, a rozmiary należą do jednego systemu."
           eyebrow="02"
           title="Stany bez przesunięć"
         >
@@ -224,7 +224,7 @@ function ActionsShowcase() {
             <article className="pd-action-state-row">
               <div>
                 <h3>Gęsty układ</h3>
-                <p className="pd-action-state-row__meta">size: small</p>
+                <p className="pd-action-state-row__meta">rozmiar: mały</p>
               </div>
               <Button
                 size="small"
@@ -239,7 +239,7 @@ function ActionsShowcase() {
             <article className="pd-action-state-row">
               <div>
                 <h3>Domyślna akcja</h3>
-                <p className="pd-action-state-row__meta">size: medium</p>
+                <p className="pd-action-state-row__meta">rozmiar: średni</p>
               </div>
               <Button startIcon={icon('success')}>
                 Zatwierdź konfigurację
@@ -250,7 +250,7 @@ function ActionsShowcase() {
             <article className="pd-action-state-row">
               <div>
                 <h3>Wejście w przepływ</h3>
-                <p className="pd-action-state-row__meta">size: large</p>
+                <p className="pd-action-state-row__meta">rozmiar: duży</p>
               </div>
               <Button endIcon={icon('integration')} size="large">
                 Przejdź do integracji
@@ -265,7 +265,7 @@ function ActionsShowcase() {
               </div>
               <Button
                 loading
-                loadingLabel="Syncing integrations"
+                loadingLabel="Trwa synchronizacja integracji"
               >
                 Synchronizuj integracje
               </Button>
@@ -275,7 +275,7 @@ function ActionsShowcase() {
             <article className="pd-action-state-row">
               <div>
                 <h3>Brak danych</h3>
-                <p className="pd-action-state-row__meta">disabled</p>
+                <p className="pd-action-state-row__meta">stan wyłączony</p>
               </div>
               <Button disabled variant="secondary">
                 Brak wymaganych danych
@@ -286,7 +286,7 @@ function ActionsShowcase() {
         </StorySection>
 
         <StorySection
-          description="Ikony zachowują się jak kontrolki, nie jak ozdobne kafelki. Na hoverze rozświetla się sam znak oraz kreska pod nim."
+          description="Ikony zachowują się jak kontrolki, nie jak ozdobne kafelki. Reagują zmianą koloru i subtelnym znacznikiem aktywności."
           eyebrow="03"
           title="Ikony i pasek operacyjny"
         >
@@ -319,7 +319,7 @@ function ActionsShowcase() {
                 icon="integration"
                 label="Synchronizuj integracje"
                 loading
-                loadingLabel="Syncing integrations"
+                loadingLabel="Trwa synchronizacja integracji"
                 variant="secondary"
               />
             </div>
@@ -346,7 +346,7 @@ function ActionsShowcase() {
         </StorySection>
 
         <StorySection
-          description="Akcje tekstowe i linki działają w treści. Nie konkurują z CTA, ale mają ten sam efekt kreski i podświetlenia."
+          description="Akcje tekstowe i linki działają w treści. Nie konkurują z CTA, ale korzystają z tej samej spokojnej hierarchii i znacznika aktywności."
           eyebrow="04"
           title="Akcje tekstowe i linki"
         >
@@ -482,7 +482,7 @@ export const Przyciski: Story = {
     assertNoLayoutShift(beforeFocus, afterFocus);
 
     const loadingActions = canvas.getAllByRole('button', {
-      name: 'Syncing integrations',
+      name: 'Trwa synchronizacja integracji',
     });
     const loadingButton = loadingActions[0];
     const loadingIconButton = loadingActions[1];
@@ -499,7 +499,7 @@ export const Przyciski: Story = {
 
     await expect(loadingIconButton).toHaveAttribute(
       'aria-label',
-      'Syncing integrations',
+      'Trwa synchronizacja integracji',
     );
     await expect(
       loadingIconButton.querySelector('.pd-icon-button__spinner'),
@@ -515,7 +515,7 @@ export const Przyciski: Story = {
     );
 
     const horizontalGroup = canvas.getByRole('group', {
-      name: 'Controlled action group',
+      name: 'Sterowana grupa akcji',
     });
 
     await expect(horizontalGroup).toHaveClass(

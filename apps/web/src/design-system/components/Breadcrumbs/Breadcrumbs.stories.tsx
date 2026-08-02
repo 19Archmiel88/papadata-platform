@@ -83,7 +83,11 @@ export const BreadcrumbsStory: Story = {
                 <p>Pełna ścieżka z bieżącym elementem na końcu.</p>
               </div>
               <div className="pd-navigation-story__canvas">
-                <Breadcrumbs items={items} maxVisible={4} />
+                <Breadcrumbs
+                  ariaLabel="Ścieżka nawigacji podstawowa"
+                  items={items}
+                  maxVisible={4}
+                />
               </div>
             </div>
             <div className="pd-navigation-story__row">
@@ -93,6 +97,7 @@ export const BreadcrumbsStory: Story = {
               </div>
               <div className="pd-navigation-story__canvas">
                 <Breadcrumbs
+                  ariaLabel="Ścieżka nawigacji rozszerzona"
                   items={[
                     ...items.slice(0, 3),
                     {
@@ -114,6 +119,7 @@ export const BreadcrumbsStory: Story = {
               </div>
               <div className="pd-navigation-story__canvas">
                 <Breadcrumbs
+                  ariaLabel="Ścieżka nawigacji skrócona"
                   items={[
                     {
                       current: false,
@@ -135,14 +141,22 @@ export const BreadcrumbsStory: Story = {
           <div className="pd-navigation-story__theme-grid">
             <div className="pd-navigation-story__theme-column">
               <span className="pd-navigation-story__eyebrow">tryb jasny</span>
-              <Breadcrumbs items={items} maxVisible={4} />
+              <Breadcrumbs
+                ariaLabel="Ścieżka nawigacji w jasnym motywie"
+                items={items}
+                maxVisible={4}
+              />
             </div>
             <div
               className="pd-navigation-story__theme-column"
               data-theme="dark"
             >
               <span className="pd-navigation-story__eyebrow">tryb ciemny</span>
-              <Breadcrumbs items={items} maxVisible={3} />
+              <Breadcrumbs
+                ariaLabel="Ścieżka nawigacji w ciemnym motywie"
+                items={items}
+                maxVisible={3}
+              />
             </div>
           </div>
         </section>

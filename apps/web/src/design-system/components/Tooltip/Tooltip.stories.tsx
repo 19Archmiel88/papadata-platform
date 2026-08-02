@@ -5,6 +5,7 @@ import type {
 import {
   expect,
   userEvent,
+  waitFor,
   within,
 } from 'storybook/test';
 
@@ -171,17 +172,24 @@ export const TooltipStory: Story = {
     canvasElement,
   }) => {
     const canvas = within(canvasElement);
+    const topTrigger = canvas.getByRole('button', {
+      name: 'Pokaż podpowiedź od góry',
+    });
 
-    await userEvent.tab();
+    topTrigger.focus();
 
-    await expect(
-      canvas.getByRole('tooltip'),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        canvas.getByRole('tooltip'),
+      ).toBeInTheDocument();
+    });
 
     await userEvent.keyboard('{Escape}');
 
-    await expect(
-      canvas.queryByRole('tooltip'),
-    ).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        canvas.queryByRole('tooltip'),
+      ).not.toBeInTheDocument();
+    });
   },
 };

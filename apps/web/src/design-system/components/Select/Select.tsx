@@ -169,6 +169,7 @@ export const Select = forwardRef<
 ) {
   const autoId = useId();
   const selectId = id ?? `pd-select-${autoId}`;
+  const labelId = `${selectId}-label`;
   const helperId = helperText
     ? `${selectId}-helper`
     : undefined;
@@ -241,8 +242,9 @@ export const Select = forwardRef<
         rootRef.current
         && !rootRef.current.contains(event.target as Node)
       ) {
-        setIsOpen(false);
-        setQuery('');
+        closeList({
+          restoreFocus: false,
+        });
       }
     };
 
@@ -251,8 +253,9 @@ export const Select = forwardRef<
         rootRef.current
         && !rootRef.current.contains(event.target as Node)
       ) {
-        setIsOpen(false);
-        setQuery('');
+        closeList({
+          restoreFocus: false,
+        });
       }
     };
 
@@ -348,9 +351,19 @@ export const Select = forwardRef<
     isOpen,
   ]);
 
-  function closeList() {
+  function closeList({
+    restoreFocus = false,
+  }: {
+    readonly restoreFocus?: boolean;
+  } = {}) {
     setIsOpen(false);
     setQuery('');
+
+    if (restoreFocus) {
+      requestAnimationFrame(() => {
+        triggerRef.current?.focus();
+      });
+    }
   }
 
   function openList(direction: 1 | -1 = 1) {
@@ -402,7 +415,9 @@ export const Select = forwardRef<
       setUncontrolledValue(nextValue);
     }
 
-    closeList();
+    closeList({
+      restoreFocus: true,
+    });
 
     if (!nativeSelectRef.current || nextValue === resolvedValue) {
       return;
@@ -487,7 +502,9 @@ export const Select = forwardRef<
         }
 
         event.preventDefault();
-        closeList();
+        closeList({
+          restoreFocus: true,
+        });
         return;
       }
 
@@ -528,8 +545,9 @@ export const Select = forwardRef<
 
       case 'Escape': {
         event.preventDefault();
-        closeList();
-        triggerRef.current?.focus();
+        closeList({
+          restoreFocus: true,
+        });
         return;
       }
 
@@ -550,6 +568,14 @@ export const Select = forwardRef<
     onChange?.(event);
   }
 
+  function handleLabelClick() {
+    if (disabled) {
+      return;
+    }
+
+    triggerRef.current?.focus();
+  }
+
   return (
     <div
       className={joinClassNames('pd-select', className)}
@@ -557,7 +583,12 @@ export const Select = forwardRef<
       data-state={state}
       ref={rootRef}
     >
-      <label className="pd-form-field__label-row" htmlFor={selectId}>
+      <label
+        className="pd-form-field__label-row"
+        htmlFor={nativeSelectId}
+        id={labelId}
+        onClick={handleLabelClick}
+      >
         <span className="pd-form-field__label">
           {label}
           {required ? (
@@ -575,6 +606,7 @@ export const Select = forwardRef<
       <select
         {...props}
         aria-hidden="true"
+        aria-labelledby={labelId}
         className="pd-select__native"
         disabled={disabled}
         id={nativeSelectId}
@@ -612,13 +644,13 @@ export const Select = forwardRef<
               ? `${selectId}-option-${activeOption.value}`
               : undefined
           }
-          aria-controls={listboxId}
+          aria-controls={isOpen ? listboxId : undefined}
           aria-describedby={describedBy}
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           aria-invalid={state === 'error' ? true : undefined}
           aria-label={ariaLabel}
-          aria-labelledby={ariaLabelledBy}
+          aria-labelledby={ariaLabelledBy ?? labelId}
           aria-readonly={readOnly ? true : undefined}
           autoFocus={autoFocus}
           className="pd-select__trigger"
@@ -736,7 +768,12 @@ export const Select = forwardRef<
                   );
                 })
               ) : (
-                <div className="pd-select__empty-state">
+                <div
+                  aria-disabled="true"
+                  aria-selected="false"
+                  className="pd-select__empty-state"
+                  role="option"
+                >
                   Brak wyników dla podanej frazy.
                 </div>
               )}

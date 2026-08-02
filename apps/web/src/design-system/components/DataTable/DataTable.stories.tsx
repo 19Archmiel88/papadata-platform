@@ -28,12 +28,14 @@ function DataTableExample({
   errorMessage = null,
   loading = false,
   noResults = false,
+  pagination = true,
   wide = false,
 }: {
   readonly compact?: boolean;
   readonly errorMessage?: string | null;
   readonly loading?: boolean;
   readonly noResults?: boolean;
+  readonly pagination?: boolean;
   readonly wide?: boolean;
 }) {
   const [sort, setSort] = useState<{
@@ -91,13 +93,13 @@ function DataTableExample({
       errorMessage={errorMessage}
       loading={loading}
       noResults={noResults}
-      pagination={{
+      pagination={pagination ? {
         cursor: 'after_25',
         loading: false,
         nextCursor: 'after_50',
         previousCursor: 'before_25',
         summary: '26–50 z 240 wyników',
-      }}
+      } : null}
       rowCount={rows.length}
       rows={noResults ? [] : rows}
       selectedRowIds={[
@@ -162,7 +164,7 @@ export const DataTableStory: Story = {
   },
   name: 'Tabela danych',
   render: () => (
-    <main className="pd-data-story">
+    <div className="pd-data-story">
       <div className="pd-data-story__inner">
         <header className="pd-data-story__header">
           <p className="pd-data-story__kicker">10 Komponenty/DataTable</p>
@@ -191,7 +193,10 @@ export const DataTableStory: Story = {
                 <p>Mniejsza gęstość dla list technicznych i pobocznych tabel.</p>
               </div>
               <div className="pd-data-story__canvas">
-                <DataTableExample compact />
+                <DataTableExample
+                  compact
+                  pagination={false}
+                />
               </div>
             </div>
             <div className="pd-data-story__row">
@@ -200,7 +205,10 @@ export const DataTableStory: Story = {
                 <p>Tabela utrzymuje lokalny scroll i nie rozwala układu strony.</p>
               </div>
               <div className="pd-data-story__canvas">
-                <DataTableExample wide />
+                <DataTableExample
+                  pagination={false}
+                  wide
+                />
               </div>
             </div>
             <div className="pd-data-story__row">
@@ -209,9 +217,18 @@ export const DataTableStory: Story = {
                 <p>Ładowanie, błąd i brak wyników używają istniejących komponentów systemowych.</p>
               </div>
               <div className="pd-data-story__canvas">
-                <DataTableExample loading />
-                <DataTableExample errorMessage="Nie udało się odczytać historii synchronizacji dla bieżącego zakresu." />
-                <DataTableExample noResults />
+                <DataTableExample
+                  loading
+                  pagination={false}
+                />
+                <DataTableExample
+                  errorMessage="Nie udało się odczytać historii synchronizacji dla bieżącego zakresu."
+                  pagination={false}
+                />
+                <DataTableExample
+                  noResults
+                  pagination={false}
+                />
               </div>
             </div>
           </div>
@@ -222,18 +239,21 @@ export const DataTableStory: Story = {
           <div className="pd-data-story__theme-grid">
             <div className="pd-data-story__theme-column">
               <span className="pd-data-story__eyebrow">tryb jasny</span>
-              <DataTableExample compact />
+              <DataTableExample
+                compact
+                pagination={false}
+              />
             </div>
             <div
               className="pd-data-story__theme-column"
               data-theme="dark"
             >
               <span className="pd-data-story__eyebrow">tryb ciemny</span>
-              <DataTableExample />
+              <DataTableExample pagination={false} />
             </div>
           </div>
         </section>
       </div>
-    </main>
+    </div>
   ),
 };

@@ -4,7 +4,7 @@
   "stage": "C1.6",
   "stageName": "integrate C1 stories, statuses and evidence",
   "foundationBaseline": {
-    "expectedActiveStoryCount": 13,
+    "expectedActiveStoryCount": 16,
     "expectedActiveStoryFileCount": 2,
     "activeStoryFiles": [
       "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
@@ -19,6 +19,9 @@
       "00.06",
       "00.07",
       "00.08",
+      "00.09",
+      "00.10",
+      "00.11",
       "05.01",
       "05.02",
       "05.03",

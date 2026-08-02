@@ -1,17 +1,7 @@
 .pd-navigation-story {
   min-height: 100vh;
   padding: clamp(var(--pd-space-5), 5vw, var(--pd-space-8));
-  background:
-    radial-gradient(
-      circle at top left,
-      color-mix(in srgb, var(--pd-brand-ambient) 16%, transparent),
-      transparent 36%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--pd-surface-canvas) 96%, transparent),
-      var(--pd-surface-canvas)
-    );
+  background: var(--pd-canvas);
   color: var(--pd-text);
 }
 
@@ -20,6 +10,7 @@
   margin: 0 auto;
   display: grid;
   gap: var(--pd-space-6);
+  background-color: var(--pd-canvas);
 }
 
 .pd-navigation-story__header,
@@ -36,12 +27,6 @@
 .pd-navigation-story__section {
   padding-top: var(--pd-space-5);
   border-top: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
-  box-shadow:
-    0 -1.3rem 2.4rem -2.1rem color-mix(
-      in srgb,
-      var(--pd-shadow-overlay) 22%,
-      transparent
-    );
 }
 
 .pd-navigation-story__kicker {
@@ -92,7 +77,7 @@
 
 .pd-navigation-story__theme-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
   gap: var(--pd-space-5);
 }
 
@@ -102,7 +87,8 @@
 }
 
 .pd-navigation-story__theme-column[data-theme='dark'] {
-  padding-top: var(--pd-space-1);
+  padding: var(--pd-space-3);
+  background-color: var(--pd-canvas);
 }
 
 .pd-navigation-story__eyebrow {

@@ -24,10 +24,23 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm verify
       - run: pnpm build
-      - run: cp .env.example .env.production-parity
       - run: docker compose -f compose.production-parity.yml config
   migrations:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: papadata
+          POSTGRES_USER: papadata_migrator
+          POSTGRES_PASSWORD: papadata-ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U papadata_migrator -d papadata"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -44,23 +57,14 @@ jobs:
 
   secrets:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: read
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   sbom-and-container-scan:
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
     steps:
       - uses: actions/checkout@v4
       - uses: anchore/sbom-action@v0
@@ -69,8 +73,17 @@ jobs:
           format: cyclonedx-json
           output-file: sbom.cdx.json
       - run: docker build -f infra/production/Dockerfile -t papadata-platform:ci .
-      - run: docker save papadata-platform:ci -o papadata-platform-ci.tar
-      - run: docker run --rm -v "${{ github.workspace }}:/work" aquasec/trivy:0.64.1 image --input /work/papadata-platform-ci.tar --format sarif --output /work/trivy-results.sarif --severity CRITICAL,HIGH --exit-code 1
+      - uses: aquasecurity/trivy-action@0.32.0
+        with:
+          image-ref: papadata-platform:ci
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+          exit-code: 1
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif
       - uses: actions/upload-artifact@v4
         if: always()
         with:

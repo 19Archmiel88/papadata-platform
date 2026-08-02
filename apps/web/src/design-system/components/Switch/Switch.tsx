@@ -109,24 +109,29 @@ export const Switch = forwardRef<
             <span className="pd-form-switch__caption">
               {label}
             </span>
+          </span>
+        </label>
+
+        {helperText || message ? (
+          <div className="pd-form-switch__meta">
             {helperText ? (
-              <span
+              <div
                 className="pd-form-switch__helper"
                 id={helperId}
               >
                 {helperText}
-              </span>
+              </div>
             ) : null}
-          </span>
-        </label>
 
-        {message ? (
-          <div
-            className="pd-form-switch__message"
-            data-state={state}
-            id={messageId}
-          >
-            {message}
+            {message ? (
+              <div
+                className="pd-form-switch__message"
+                data-state={state}
+                id={messageId}
+              >
+                {message}
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>

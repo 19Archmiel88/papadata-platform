@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: c39a15e3a41c49aa1f8cce49e5fe85023a283a0343def7756c93a3abde0cd387
+// SHA-256 źródła: 784286e5227a8f5b3bd8484beb69d2f2f552e07392939acd04ec64fbe3dcd06c
 
 import type { CatalogEntryDefinition } from './types';
 

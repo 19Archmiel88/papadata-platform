@@ -3,59 +3,49 @@ version: 1.0
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
+id: DOC-10-AA0B1D2D486A
 status: approved-target
+updated_at: 2026-07-30T10:30:00+02:00
 ---
 
-# Typografia i formatowanie danych
+# Typografia
 
-| Pole | Wartość |
-|---|---|
-| Identyfikator | 00.02 |
-| Status dokumentacji | ZAAKCEPTOWANA |
-| Status implementacji | ZAAKCEPTOWANE — KANONICZNA IMPLEMENTACJA REFERENCYJNA |
-| Story class | reference |
-| Właściciel | Design System |
-| Story export | `Typografia` |
-| Story file | `apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx` |
-| Production status | `not_started` |
-| Test status | `not_started` |
+## Decyzja kanoniczna 1.0
 
-Kanoniczna ścieżka: `00 Fundamenty/Podstawy/Typografia`
+Kanoniczna para fontów dla PapaData 1.0 to **Instrument Sans** jako font interfejsu oraz **IBM Plex Mono** jako font techniczny. Decyzja jest docelowa dla nowych ekranów, Storybooka i design systemu. Wzmianki o poprzedniej parze fontów są traktowane jako ślad historyczny snapshotu i nie są źródłem nowej implementacji.
 
-## Cel
+## Zakres odpowiedzialności
 
-Typografia interfejsu opiera się na Inter, a dane techniczne, identyfikatory i fragmenty kodowe na JetBrains Mono.
+Typografia definiuje czytelność, hierarchię, rytm i sposób prezentacji danych analitycznych. Nie definiuje ról użytkownika, endpointów, capability ani procesów biznesowych. Wszystkie komponenty korzystają z tokenów typograficznych, a nie z lokalnych wartości CSS.
 
-Akceptacja dotyczy referencyjnej story Fundamentów i jej kierunku
-wizualnego. Nie oznacza automatycznie ukończenia wszystkich komponentów
-produkcyjnych ani testów przekrojowych.
+## Tokeny i aliasy
 
-## Kontrakt zaakceptowany
+| Token | Wartość docelowa | Zastosowanie |
+|---|---|---|
+| `--pd-font-sans` | `Instrument Sans` | tekst UI, nagłówki, formularze, tabele |
+| `--pd-font-mono` | `IBM Plex Mono` | identyfikatory, kwoty techniczne, logi, kody, trace ID |
+| `--pd-type-display` | 40–48 px | ekranowe nagłówki strategiczne |
+| `--pd-type-title` | 24–32 px | tytuły regionów i modułów |
+| `--pd-type-body` | 15–16 px | treść podstawowa |
+| `--pd-type-caption` | 12–13 px | etykiety pomocnicze, metadane, timestampy |
+| `--pd-line-normal` | 1.45–1.6 | tekst roboczy i opisowy |
+| `--pd-letter-tight` | -0.02em | duże nagłówki bez efektu ciężkości |
 
-- Inter jako font interfejsu
-- JetBrains Mono jako font techniczny
-- cyfry tabularne dla kwot, KPI i porównań
-- bezpieczne zawijanie długich identyfikatorów
-- formatowanie danych zgodne z lokalizacją PL/EN
+## Reguły użycia
 
-## Reguły obowiązujące kolejne sekcje
+- Nie używać wersalików jako podstawowego sposobu budowania hierarchii.
+- Nie stosować ciężkich font-weight jako domyślnej estetyki; wagi 400–500 są standardem, 600 tylko dla krótkich punktów ciężkości.
+- Liczby KPI używają tabular numerals, aby wartości nie skakały w tabelach i wykresach.
+- Długie opisy analityczne muszą zachować czytelność przy zoom 200%.
+- PL/EN ma zachować tę samą hierarchię mimo różnej długości tekstów.
 
-- `--pd-font-sans` wskazuje Inter.
-- `--pd-font-mono` wskazuje JetBrains Mono.
-- Instrument Sans i IBM Plex Mono nie są częścią kanonicznego systemu.
-- Komponenty nie definiują własnych rodzin fontów.
+## Decyzja odrzucona
 
-## Źródła kanoniczne
+Poprzednia para fontów pozostaje dopuszczalna wyłącznie jako zależność historyczna istniejącego snapshotu lub fallback w migracji. Nie jest docelowym wyborem dla nowych dokumentów, nowych stories ani nowych komponentów.
 
-- kontrakt: `apps/web/src/storybook-next/storybook-contract.json`
-- mapa taksonomii: `apps/web/src/storybook-next/storybook-taxonomy-map.json`
-- story: `apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx`
-- theme: `apps/web/src/design-system/foundations/themes/carbon-pearl.css`
-- foundations entrypoint: `apps/web/src/design-system/foundations/foundations.css`
+## Testy
 
-## Zasada zmian
-
-Zmiana zaakceptowanego kontraktu wymaga jednoczesnej aktualizacji kodu,
-dokumentacji, kontraktu Storybooka, mapy taksonomii, katalogu generowanego
-i technicznych bram kontrolnych. Lokalne obejście w pojedynczym komponencie
-nie jest zmianą Fundamentów i nie może zastępować ich kontraktu.
+1. Storybook pokazuje skalę dla light/dark, PL/EN i compact/comfortable.
+2. Walidator blokuje drugi konkurencyjny wybór fontów w dokumentach docelowych.
+3. Komponenty nie deklarują lokalnych rodzin fontów poza tokenami.
+4. Nagłówki nie używają all caps jako wymogu wizualnego.

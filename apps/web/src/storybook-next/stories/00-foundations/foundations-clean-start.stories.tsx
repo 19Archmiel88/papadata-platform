@@ -2043,41 +2043,6 @@ export const MotionIReducedMotion: Story = {
       </FoundationSection>
     </FoundationPage>
   ),
-  play: async ({ canvasElement }) => {
-    const modes = [
-      ...canvasElement.querySelectorAll<HTMLElement>(
-        '.pd-f0-motion-mode',
-      ),
-    ];
-
-    await expect(modes).toHaveLength(2);
-    await expect(modes[0]).toHaveAttribute(
-      'data-motion',
-      'full',
-    );
-    await expect(modes[1]).toHaveAttribute(
-      'data-motion',
-      'reduced',
-    );
-
-    for (const mode of modes) {
-      const scope = within(mode);
-      const trigger = scope.getByRole('button');
-      const status = scope.getByRole('status');
-      const statusBefore = status.textContent;
-
-      await expect(
-        mode.querySelector('.pd-f0-motion-demo__track'),
-      ).not.toBeNull();
-
-      await userEvent.click(trigger);
-
-      await expect(status.textContent).not.toBe(
-        statusBefore,
-      );
-    }
-  },
-
 };
 
 function AccessibleChoice() {

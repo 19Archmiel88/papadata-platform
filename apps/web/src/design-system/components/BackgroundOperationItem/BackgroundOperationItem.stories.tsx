@@ -146,13 +146,23 @@ export const BackgroundOperationItemStory: Story = {
     canvasElement,
   }) => {
     const canvas = within(canvasElement);
+    const runningOperation = canvas.getByRole('heading', {
+      name: 'Aktualizacja źródeł wydajności',
+    }).closest('.pd-background-operation') as HTMLElement | null;
+    const failedOperation = canvas.getByRole('heading', {
+      name: 'Import danych z hurtowni',
+    }).closest('.pd-background-operation') as HTMLElement | null;
+
+    if (!runningOperation || !failedOperation) {
+      throw new Error('Nie znaleziono oczekiwanych wariantów operacji w tle.');
+    }
 
     await expect(
-      canvas.getByLabelText('Stan operacji: W toku'),
+      within(runningOperation).getByLabelText('Stan operacji: W toku'),
     ).toBeInTheDocument();
 
     await expect(
-      canvas.getByRole('button', {
+      within(failedOperation).getByRole('button', {
         name: 'Ponów',
       }),
     ).toBeInTheDocument();

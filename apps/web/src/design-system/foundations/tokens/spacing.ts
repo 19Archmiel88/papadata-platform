@@ -36,7 +36,7 @@ export const spacingTokens = {
 
     breakpoints: {
       mobile: '390px',
-      tablet: '834px',
+      tablet: '768px',
       desktop: '1440px',
       wide: '1920px',
     },

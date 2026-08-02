@@ -3,58 +3,80 @@ version: 1.0
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
+id: DOC-10-CB806CB7B3AB
 status: approved-target
+updated_at: 2026-07-30T10:30:00+02:00
 ---
 
 # Kierunek wizualny
 
+## Metadane
+
 | Pole | Wartość |
-|---|---|
+| --- | --- |
 | Identyfikator | 00.01 |
-| Status dokumentacji | ZAAKCEPTOWANA |
-| Status implementacji | ZAAKCEPTOWANE — KANONICZNA IMPLEMENTACJA REFERENCYJNA |
-| Story class | reference |
-| Właściciel | Design System |
-| Story export | `KierunekWizualny` |
-| Story file | `apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx` |
-| Production status | `not_started` |
-| Test status | `not_started` |
+| Nazwa polska | Kierunek wizualny |
+| Nazwa techniczna | kierunek-wizualny |
+| Typ dokumentu | kontrakt fundamentu |
+| Wersja | 1.0 |
+| Status kontraktu | zatwierdzony stan docelowy |
+| Priorytet | P0 |
+| Właściciel | Design System Lead |
+| Moduł | M02 — Design System |
 
-Kanoniczna ścieżka: `00 Fundamenty/Podstawy/Kierunek wizualny`
+| Status implementacji | CZĘŚCIOWO ISTNIEJE — WYMAGA DOMKNIĘCIA |
+| Status Storybooka | jawnie wskazany w sekcji Storybook |
+| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
 
-## Cel
+## Decyzja normatywna
 
-Kanoniczny kierunek wizualny PapaData określa hierarchię, charakter powierzchni, zastosowanie akcentu marki oraz relację między trybem jasnym i ciemnym.
+PapaData buduje wrażenie premium przez precyzję, kontrolowaną gęstość i czytelne dowody, nie przez dekoracyjny przepych.
 
-Akceptacja dotyczy referencyjnej story Fundamentów i jej kierunku
-wizualnego. Nie oznacza automatycznie ukończenia wszystkich komponentów
-produkcyjnych ani testów przekrojowych.
+## Stan obecny i dowód
 
-## Kontrakt zaakceptowany
+Snapshot potwierdza tokeny `--pd-*`, motyw Carbon/Pearl, komponenty Button/Icon/Brand i stories fundamentów. Elementy istniejące są dowodem implementacji tylko dla wskazanego snapshotu; pozostałe reguły stanowią kontrakt docelowy.
 
-- premium bez dekoracyjnego nadmiaru
-- czytelna hierarchia wizualna
-- pełna równoważność trybu jasnego i ciemnego
-- akcent marki używany funkcjonalnie
-- brak lokalnych systemów wizualnych tworzonych przez kolejne sekcje
+## Zasady obowiązujące
 
-## Reguły obowiązujące kolejne sekcje
+- hierarchia oparta na typografii, odstępach i hairline dividerach
+- jedna rodzina akcentu marki; statusy mają osobne role semantyczne
+- brak kart zagnieżdżonych bez osobnego cyklu interakcji
+- light i dark mode są równorzędne funkcjonalnie
+- animacja nie zastępuje informacji ani nie zmienia geometrii
 
-- Każda kolejna sekcja korzysta z istniejących tokenów --pd-*.
-- Nie wolno tworzyć alternatywnej palety, typografii ani geometrii.
-- Nowy kierunek wizualny wymaga jawnej zmiany kontraktu Fundamentów.
+## Zakres katalogu
 
-## Źródła kanoniczne
+- premium
+- hierarchia wizualna
+- light mode
+- dark mode
+- akcent marki
 
-- kontrakt: `apps/web/src/storybook-next/storybook-contract.json`
-- mapa taksonomii: `apps/web/src/storybook-next/storybook-taxonomy-map.json`
-- story: `apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx`
-- theme: `apps/web/src/design-system/foundations/themes/carbon-pearl.css`
-- foundations entrypoint: `apps/web/src/design-system/foundations/foundations.css`
+## Tokeny i właścicielstwo
 
-## Zasada zmian
+- Tokeny mają prefiks `--pd-` i są jedyną publiczną warstwą wartości wizualnych.
+- Komponent nie może wprowadzić lokalnej wartości, jeżeli reprezentuje ona rolę globalną.
+- Zmiana tokenu wymaga testu obu motywów, viewportów i stanów interakcji.
+- Nazwa tokenu opisuje rolę, nie konkretny kolor ani ekran.
 
-Zmiana zaakceptowanego kontraktu wymaga jednoczesnej aktualizacji kodu,
-dokumentacji, kontraktu Storybooka, mapy taksonomii, katalogu generowanego
-i technicznych bram kontrolnych. Lokalne obejście w pojedynczym komponencie
-nie jest zmianą Fundamentów i nie może zastępować ich kontraktu.
+## Zastosowanie i zakazy
+
+| Stosować | Nie stosować |
+| --- | --- |
+| w komponentach bazowych, wzorcach, ekranach i aplikacji mobilnej | lokalnych wyjątków bez decyzji i tokenu |
+| w light i dark mode z identyczną geometrią | dekoracji zastępującej hierarchię |
+| z testem Storybook i regresją wizualną | zmiany tylko na podstawie pojedynczego mockupu |
+
+## Storybook i testy
+
+- Kanoniczna ścieżka: `00 Fundamenty/Kierunek wizualny`.
+- Wymagane stories: referencja tokenów, użycie poprawne, antyprzykład, light, dark, compact, reduced motion tam gdzie dotyczy.
+- Testy: kontrast, klawiatura, zoom 200%, snapshot tokenów i brak wartości spoza kontraktu.
+
+## Kryteria akceptacji
+
+1. Reguły są odzwierciedlone w publicznych tokenach lub jawnie oznaczone jako wymagające implementacji.
+2. Żaden komponent nie omija kontraktu lokalną wartością o tej samej roli.
+3. Storybook pokazuje poprawne użycie i antyprzykłady.
+4. Light i dark mode przechodzą identyczną macierz funkcjonalną.
+5. Dokument jest powiązany z indeksem tokenów i mapą komponentów.

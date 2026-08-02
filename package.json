@@ -42,9 +42,7 @@
   "pnpm": {
     "overrides": {
       "gaxios>uuid": "11.1.1",
-      "teeny-request>uuid": "11.1.1",
-      "@nestjs/platform-fastify>find-my-way": "9.7.0",
-      "minimatch@9.0.9>brace-expansion": "2.1.4"
+      "teeny-request>uuid": "11.1.1"
     }
   },
   "engines": {

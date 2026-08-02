@@ -9,8 +9,8 @@
     ),
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--pd-surface-canvas) 96%, transparent),
-      var(--pd-surface-canvas)
+      color-mix(in srgb, var(--pd-canvas) 96%, transparent),
+      var(--pd-canvas)
     );
   color: var(--pd-text);
 }
@@ -20,6 +20,7 @@
   margin: 0 auto;
   display: grid;
   gap: var(--pd-space-6);
+  background-color: var(--pd-canvas);
 }
 
 .pd-data-story__header,
@@ -99,6 +100,11 @@
   display: grid;
   gap: var(--pd-space-3);
   min-width: 0;
+}
+
+.pd-data-story__theme-column[data-theme='dark'] {
+  padding: var(--pd-space-3);
+  background-color: var(--pd-canvas);
 }
 
 .pd-data-story__eyebrow {

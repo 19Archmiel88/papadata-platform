@@ -93,15 +93,6 @@ function useOverlayEscape(
         return;
       }
 
-      if (
-        panelRef.current
-        && !panelRef.current.contains(
-          event.target as Node,
-        )
-      ) {
-        return;
-      }
-
       event.preventDefault();
       requestClose(
         onOpenChange,

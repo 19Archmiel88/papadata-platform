@@ -4,7 +4,6 @@ a.pd-inline-action {
   --pd-inline-action-color: var(--pd-interactive);
   --pd-inline-action-hover-color: var(--pd-interactive-hover);
   --pd-inline-action-line: var(--pd-brand-line);
-  --pd-inline-action-glow: var(--pd-brand-glow);
 
   appearance: none;
   position: relative;
@@ -29,8 +28,6 @@ a.pd-inline-action {
   transition:
     color var(--pd-motion-duration-fast)
       var(--pd-motion-easing-standard),
-    filter var(--pd-motion-duration-standard)
-      var(--pd-motion-easing-emphasized),
     opacity var(--pd-motion-duration-fast)
       var(--pd-motion-easing-standard);
 }
@@ -42,7 +39,6 @@ a.pd-inline-action:hover,
 button.pd-inline-action:focus-visible,
 a.pd-inline-action:focus-visible {
   color: var(--pd-inline-action-hover-color);
-  filter: drop-shadow(0 0 0.34rem var(--pd-inline-action-glow));
 }
 
 .pd-inline-action:focus-visible,
@@ -65,15 +61,7 @@ a.pd-inline-action:focus-visible {
   left: 0;
   height: 1.5px;
   border-radius: var(--pd-radius-pill);
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      var(--pd-inline-action-line) 18%,
-      var(--pd-brand-accent) 50%,
-      var(--pd-inline-action-line) 82%,
-      transparent
-    );
+  background: var(--pd-inline-action-line);
   opacity: 0;
   transform: scaleX(0.1);
   transform-origin: center;
@@ -93,13 +81,8 @@ a.pd-inline-action:focus-visible {
 .pd-inline-action__icon {
   display: inline-flex;
   color: currentColor;
-  transition: filter var(--pd-motion-duration-standard)
+  transition: color var(--pd-motion-duration-fast)
     var(--pd-motion-easing-emphasized);
-}
-
-.pd-inline-action:hover .pd-inline-action__icon,
-.pd-inline-action:focus-visible .pd-inline-action__icon {
-  filter: drop-shadow(0 0 0.3rem var(--pd-inline-action-glow));
 }
 
 .pd-inline-action--muted,
@@ -113,7 +96,6 @@ a.pd-inline-action:focus-visible {
   --pd-inline-action-color: var(--pd-status-danger);
   --pd-inline-action-hover-color: var(--pd-status-danger);
   --pd-inline-action-line: var(--pd-status-danger);
-  --pd-inline-action-glow: var(--pd-status-danger-subtle);
 }
 
 .pd-inline-action--small,
@@ -125,7 +107,6 @@ a.pd-inline-action:focus-visible {
 .pd-inline-action[aria-disabled='true'] {
   color: var(--pd-text-muted);
   cursor: not-allowed;
-  filter: none;
   opacity: 0.56;
 }
 

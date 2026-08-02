@@ -1,6 +1,7 @@
 .pd-button-group,
 .pd-action-group {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
   padding: 0;
@@ -21,4 +22,6 @@
 .pd-button-group > * ,
 .pd-action-group > * {
   flex: 0 0 auto;
+  max-width: 100%;
+  min-width: 0;
 }

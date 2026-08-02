@@ -167,7 +167,7 @@ export const VerificationCodeInput = forwardRef<
 
           {resendAvailableAt ? (
             <div className="pd-verification-code__resend">
-              Ponowne wyslanie dostepne: {resendAvailableAt}
+              Ponowne wysłanie dostępne: {resendAvailableAt}
             </div>
           ) : null}
 

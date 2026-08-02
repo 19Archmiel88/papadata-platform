@@ -317,14 +317,17 @@ export function Menu({
           ref={panelRef}
           className="pd-menu__panel"
           data-placement={placement}
-          role="menu"
         >
           {interactiveItems.length === 0 ? (
             <div className="pd-menu__empty">
               {emptyLabel}
             </div>
           ) : (
-            <ul className="pd-menu__list">
+            <ul
+              aria-orientation="vertical"
+              className="pd-menu__list"
+              role="menu"
+            >
               {items.map((item) => {
                 if (
                   item.kind === 'separator'
@@ -349,7 +352,10 @@ export function Menu({
                   );
 
                 return (
-                  <li key={item.id}>
+                  <li
+                    key={item.id}
+                    role="none"
+                  >
                     <button
                       ref={(node) => {
                         itemRefs.current[item.id] = node;

@@ -36,21 +36,14 @@
 
 .app-placeholder dl {
   display: grid;
-  grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(220px, 1fr)
-    );
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--pd-space-6);
   margin: var(--pd-space-12) 0 0;
 }
 
 .app-placeholder dl > div {
   padding-top: var(--pd-space-4);
-  border-top:
-    var(--pd-border-width-subtle)
-    solid
-    var(--pd-separator);
+  border-top: var(--pd-border-width-subtle) solid var(--pd-separator);
 }
 
 .app-placeholder dt {

@@ -128,24 +128,29 @@ export const Checkbox = forwardRef<
           <span className="pd-form-check__caption">
             {label}
           </span>
+        </span>
+      </label>
+
+      {helperText || message ? (
+        <div className="pd-form-check__meta">
           {helperText ? (
-            <span
+            <div
               className="pd-form-check__helper"
               id={helperId}
             >
               {helperText}
-            </span>
+            </div>
           ) : null}
-        </span>
-      </label>
 
-      {message ? (
-        <div
-          className="pd-form-check__message"
-          data-state={state}
-          id={messageId}
-        >
-          {message}
+          {message ? (
+            <div
+              className="pd-form-check__message"
+              data-state={state}
+              id={messageId}
+            >
+              {message}
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>

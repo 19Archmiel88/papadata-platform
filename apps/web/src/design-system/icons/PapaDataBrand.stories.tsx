@@ -249,7 +249,7 @@ export const Marka: Story = {
             <article className="pd-brand-language__sample">
               <div className="pd-brand-language__line">
                 <PapaDataBrand
-                  data-testid="brand-lockup"
+                  data-testid="brand-language-lockup"
                   glow
                   label="PapaData logo"
                   size="large"
@@ -344,9 +344,7 @@ export const Marka: Story = {
     const canvas = within(canvasElement);
 
     await expect(
-      canvas.getByRole('img', {
-        name: 'PapaData logo',
-      }),
+      canvas.getByTestId('brand-controlled'),
     ).toBeInTheDocument();
 
     await expect(canvas.getByText('Lockup informacyjny')).toBeInTheDocument();
@@ -354,7 +352,7 @@ export const Marka: Story = {
     await expect(canvas.getByText('Wordmark')).toBeInTheDocument();
     await expect(canvas.getByText('Dekoracyjny')).toBeInTheDocument();
 
-    const lockup = canvas.getByTestId('brand-lockup');
+    const lockup = canvas.getByTestId('brand-language-lockup');
     const mark = canvas.getByTestId('brand-mark');
     const wordmark = canvas.getByTestId('brand-wordmark');
     const decorative = canvas.getByTestId('brand-decorative');

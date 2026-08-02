@@ -48,6 +48,7 @@ export const TextFieldStory: Story = {
         </header>
 
         <section className="pd-form-story__section">
+          <h2>Warianty</h2>
           <div className="pd-form-story__grid">
             <article className="pd-form-story__card">
               <span className="pd-form-story__eyebrow">wariant podstawowy</span>

@@ -20,6 +20,7 @@
   gap: clamp(1.5rem, 3vw, 2.75rem);
   width: min(100%, 72rem);
   margin: 0 auto;
+  background-color: var(--pd-surface);
 }
 
 .pd-loading-story__header {
@@ -167,6 +168,7 @@
 
 .pd-loading-story__theme-row[data-theme='dark'] {
   padding: var(--pd-space-4) 0 0 var(--pd-space-4);
+  background-color: var(--pd-canvas);
   border-left: 2px solid color-mix(in srgb, var(--pd-brand-line) 48%, transparent);
   box-shadow:
     -1.4rem 0 2.6rem -2.3rem color-mix(

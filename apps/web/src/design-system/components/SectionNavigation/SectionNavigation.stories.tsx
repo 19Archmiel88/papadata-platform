@@ -54,7 +54,7 @@ export const SectionNavigationStory: Story = {
   },
   name: 'Nawigacja sekcji',
   render: () => (
-    <main className="pd-navigation-story">
+    <div className="pd-navigation-story">
       <div className="pd-navigation-story__inner">
         <header className="pd-navigation-story__header">
           <p className="pd-navigation-story__kicker">10 Komponenty/SectionNavigation</p>
@@ -76,6 +76,7 @@ export const SectionNavigationStory: Story = {
               <div className="pd-navigation-story__canvas">
                 <SectionNavigation
                   activeId="jakosc"
+                  ariaLabel="Nawigacja sekcji w wariancie poziomym"
                   items={items}
                   orientation="horizontal"
                 />
@@ -89,6 +90,7 @@ export const SectionNavigationStory: Story = {
               <div className="pd-navigation-story__canvas">
                 <SectionNavigation
                   activeId="przeglad"
+                  ariaLabel="Nawigacja sekcji w wariancie pionowym"
                   items={items}
                   orientation="vertical"
                 />
@@ -102,6 +104,7 @@ export const SectionNavigationStory: Story = {
               <div className="pd-navigation-story__canvas">
                 <SectionNavigation
                   activeId="przeglad"
+                  ariaLabel="Nawigacja sekcji w wariancie kompaktowym"
                   items={items}
                   orientation="horizontal"
                   size="compact"
@@ -118,6 +121,7 @@ export const SectionNavigationStory: Story = {
               <span className="pd-navigation-story__eyebrow">tryb jasny</span>
               <SectionNavigation
                 activeId="jakosc"
+                ariaLabel="Nawigacja sekcji w trybie jasnym"
                 items={items}
                 orientation="horizontal"
               />
@@ -129,6 +133,7 @@ export const SectionNavigationStory: Story = {
               <span className="pd-navigation-story__eyebrow">tryb ciemny</span>
               <SectionNavigation
                 activeId="jakosc"
+                ariaLabel="Nawigacja sekcji w trybie ciemnym"
                 items={items}
                 orientation="vertical"
               />
@@ -136,6 +141,6 @@ export const SectionNavigationStory: Story = {
           </div>
         </section>
       </div>
-    </main>
+    </div>
   ),
 };

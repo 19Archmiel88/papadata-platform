@@ -1,0 +1,125 @@
+.pd-f0-iconography-list {
+  display: grid;
+  gap: 0;
+}
+
+.pd-f0-iconography-label {
+  display: grid;
+  gap: 6px;
+}
+
+.pd-f0-iconography-label strong {
+  display: block;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.pd-f0-iconography-label span,
+.pd-f0-iconography-meta,
+.pd-f0-iconography-detail,
+.pd-f0-iconography-role p {
+  color: var(--pd-text-secondary);
+}
+
+.pd-f0-iconography-preview {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--pd-text-primary);
+}
+
+.pd-f0-iconography-preview svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pd-f0-iconography-preview[data-underline='true']::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 1px;
+  width: 16px;
+  height: 2px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  background: var(--pd-brand-accent);
+}
+
+.pd-f0-iconography-preview[data-underline='true'] svg {
+  transform: translateY(-3px);
+}
+
+.pd-f0-iconography-meta {
+  display: grid;
+  gap: 4px;
+}
+
+.pd-f0-iconography-meta strong,
+.pd-f0-iconography-detail strong {
+  color: var(--pd-text-primary);
+  font-weight: 600;
+}
+
+.pd-f0-iconography-detail {
+  display: grid;
+  gap: 4px;
+}
+
+.pd-f0-iconography-role-list {
+  display: grid;
+  gap: 0;
+}
+
+.pd-f0-iconography-role {
+  display: grid;
+  gap: 14px;
+  padding: 16px 0;
+  border-top: 1px solid var(--pd-separator);
+}
+
+.pd-f0-iconography-role:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.pd-f0-iconography-role h3 {
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 1.35;
+}
+
+.pd-f0-iconography-role p {
+  margin: 6px 0 0;
+}
+
+.pd-f0-iconography-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+}
+
+.pd-f0-iconography-strip > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 120px;
+}
+
+.pd-f0-iconography-strip code {
+  color: var(--pd-text-secondary);
+  font-size: 0.8125rem;
+}
+
+.pd-f0-iconography-note {
+  display: grid;
+  gap: 10px;
+}
+
+.pd-f0-iconography-note > p {
+  margin: 0;
+  color: var(--pd-text-secondary);
+}

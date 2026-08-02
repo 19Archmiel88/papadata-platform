@@ -131,13 +131,21 @@ export const EmptyStateStory: Story = {
     canvasElement,
   }) => {
     const canvas = within(canvasElement);
+    const referenceSection = canvas.getByRole('heading', {
+      name: 'Wariant referencyjny',
+    }).closest('section');
+
+    if (!referenceSection) {
+      throw new Error('Nie znaleziono sekcji wariantu referencyjnego.');
+    }
+
     await expect(
-      canvas.getByRole('heading', {
+      within(referenceSection).getByRole('heading', {
         name: 'Brak danych źródłowych.',
       }),
     ).toBeInTheDocument();
     await expect(
-      canvas.getByRole('button', {
+      within(referenceSection).getByRole('button', {
         name: 'Dodaj źródło',
       }),
     ).toBeInTheDocument();

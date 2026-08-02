@@ -47,6 +47,7 @@ function VerificationCodeShowcase() {
         </header>
 
         <section className="pd-form-story__section">
+          <h2>Warianty</h2>
           <div className="pd-form-story__grid">
             <article className="pd-form-story__card">
               <span className="pd-form-story__eyebrow">wariant podstawowy</span>
@@ -119,7 +120,7 @@ export const VerificationCodeInputStory: Story = {
   }) => {
     const canvas = within(canvasElement);
     const input = canvas.getByRole('textbox', {
-      name: 'Kod weryfikacyjny',
+      name: /Kod weryfikacyjny/,
     });
 
     await userEvent.clear(input);

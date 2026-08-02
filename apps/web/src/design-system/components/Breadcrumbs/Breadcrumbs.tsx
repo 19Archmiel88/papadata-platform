@@ -103,10 +103,13 @@ export function Breadcrumbs({
                 className="pd-breadcrumbs__item"
               >
                 <span
-                  aria-label={`Pominięto ${item.hiddenCount} poziomy ścieżki`}
+                  aria-hidden="true"
                   className="pd-breadcrumbs__ellipsis"
                 >
                   …
+                </span>
+                <span className="pd-visually-hidden">
+                  {`Pominięto ${item.hiddenCount} poziomy ścieżki`}
                 </span>
                 {!isLast ? (
                   <span

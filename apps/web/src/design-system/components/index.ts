@@ -15,6 +15,12 @@ export {
   Checkbox,
 } from './Checkbox';
 export {
+  FilterBar,
+} from './FilterBar';
+export {
+  FilterChip,
+} from './FilterChip';
+export {
   DataList,
 } from './DataList';
 export {
@@ -61,8 +67,14 @@ export {
   ProgressIndicator,
 } from './ProgressIndicator';
 export {
+  SearchField,
+} from './SearchField';
+export {
   SectionNavigation,
 } from './SectionNavigation';
+export {
+  SegmentedControl,
+} from './SegmentedControl';
 export {
   Select,
 } from './Select';
@@ -76,6 +88,9 @@ export {
   StatusBadge,
 } from './StatusBadge';
 export {
+  SortControl,
+} from './SortControl';
+export {
   Switch,
 } from './Switch';
 export {
@@ -87,6 +102,9 @@ export {
 export {
   Toast,
 } from './Toast';
+export {
+  Toolbar,
+} from './Toolbar';
 export {
   Tooltip,
 } from './Tooltip';
@@ -121,6 +139,14 @@ export type {
 export type {
   CheckboxProps,
 } from './Checkbox';
+export type {
+  FilterBarFilter,
+  FilterBarProps,
+} from './FilterBar';
+export type {
+  FilterChipProps,
+  FilterChipTone,
+} from './FilterChip';
 export type {
   DataListItem,
   DataListProps,
@@ -179,9 +205,16 @@ export type {
   ProgressIndicatorTone,
 } from './ProgressIndicator';
 export type {
+  SearchFieldProps,
+} from './SearchField';
+export type {
   SectionNavigationItem,
   SectionNavigationProps,
 } from './SectionNavigation';
+export type {
+  SegmentedControlItem,
+  SegmentedControlProps,
+} from './SegmentedControl';
 export type {
   SelectProps,
 } from './Select';
@@ -195,6 +228,11 @@ export type {
 export type {
   StatusBadgeProps,
 } from './StatusBadge';
+export type {
+  SortControlDirection,
+  SortControlOption,
+  SortControlProps,
+} from './SortControl';
 export type {
   SwitchProps,
 } from './Switch';
@@ -211,6 +249,9 @@ export type {
 export type {
   ToastProps,
 } from './Toast';
+export type {
+  ToolbarProps,
+} from './Toolbar';
 export type {
   TooltipProps,
 } from './Tooltip';

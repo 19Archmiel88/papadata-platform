@@ -3,7 +3,6 @@ button.pd-icon-button {
   --pd-icon-button-color: var(--pd-text-secondary);
   --pd-icon-button-hover-color: var(--pd-brand-highlight);
   --pd-icon-button-line: var(--pd-brand-line);
-  --pd-icon-button-glow: var(--pd-brand-glow);
 
   appearance: none;
   position: relative;
@@ -27,8 +26,6 @@ button.pd-icon-button {
   transition:
     color var(--pd-motion-duration-fast)
       var(--pd-motion-easing-standard),
-    filter var(--pd-motion-duration-standard)
-      var(--pd-motion-easing-emphasized),
     opacity var(--pd-motion-duration-fast)
       var(--pd-motion-easing-standard);
 }
@@ -42,15 +39,7 @@ button.pd-icon-button::after {
   left: var(--pd-space-2);
   height: 2px;
   border-radius: var(--pd-radius-pill);
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      var(--pd-icon-button-line) 20%,
-      var(--pd-brand-accent) 50%,
-      var(--pd-icon-button-line) 80%,
-      transparent
-    );
+  background: var(--pd-icon-button-line);
   opacity: 0;
   transform: scaleX(0.12);
   transform-origin: center;
@@ -66,7 +55,6 @@ button.pd-icon-button:hover,
 .pd-icon-button:focus-visible,
 button.pd-icon-button:focus-visible {
   color: var(--pd-icon-button-hover-color);
-  filter: drop-shadow(0 0 0.38rem var(--pd-icon-button-glow));
 }
 
 .pd-icon-button:hover::after,
@@ -88,15 +76,8 @@ button.pd-icon-button:focus-visible {
   transition:
     color var(--pd-motion-duration-fast)
       var(--pd-motion-easing-standard),
-    filter var(--pd-motion-duration-standard)
-      var(--pd-motion-easing-emphasized),
     opacity var(--pd-motion-duration-fast)
       var(--pd-motion-easing-standard);
-}
-
-.pd-icon-button:hover svg,
-.pd-icon-button:focus-visible svg {
-  filter: drop-shadow(0 0 0.34rem var(--pd-icon-button-glow));
 }
 
 .pd-icon-button--primary,
@@ -122,7 +103,6 @@ button.pd-icon-button:focus-visible {
   --pd-icon-button-color: var(--pd-status-danger);
   --pd-icon-button-hover-color: var(--pd-status-danger);
   --pd-icon-button-line: var(--pd-status-danger);
-  --pd-icon-button-glow: var(--pd-status-danger-subtle);
 }
 
 .pd-icon-button--small,
@@ -144,7 +124,6 @@ button.pd-icon-button:focus-visible {
 .pd-icon-button[data-disabled='true'] {
   color: var(--pd-text-muted);
   cursor: not-allowed;
-  filter: none;
   opacity: 0.56;
 }
 

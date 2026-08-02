@@ -1,6 +1,40 @@
 :root {
   color-scheme: light;
 
+  --pd-canvas-gradient:
+    radial-gradient(
+      circle at 12% 10%,
+      color-mix(
+        in srgb,
+        var(--pd-brand-ambient) 72%,
+        transparent
+      ) 0,
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 88% 12%,
+      color-mix(
+        in srgb,
+        var(--pd-status-info-subtle) 82%,
+        transparent
+      ) 0,
+      transparent 28%
+    ),
+    linear-gradient(
+      140deg,
+      color-mix(
+        in srgb,
+        var(--pd-surface) 88%,
+        transparent
+      ) 0%,
+      transparent 48%,
+      color-mix(
+        in srgb,
+        var(--pd-brand-ambient) 24%,
+        transparent
+      ) 100%
+    );
+
   --pd-font-sans:
     "Inter",
     system-ui,
@@ -106,19 +140,6 @@
   color-scheme: light;
 
   --pd-canvas: #f4f1ea;
-  --pd-canvas-gradient:
-    radial-gradient(
-      circle at 8% 14%,
-      rgba(169, 96, 18, 0.14) 0,
-      rgba(169, 96, 18, 0.05) 280px,
-      transparent 660px
-    ),
-    linear-gradient(
-      135deg,
-      #fffdf8 0,
-      #f6f2e9 38%,
-      #eef2f4 100%
-    );
 
   --pd-surface: #fcfdff;
   --pd-surface-subtle: #edf3f8;
@@ -126,6 +147,7 @@
   --pd-surface-overlay: rgba(252, 253, 255, 0.96);
   --pd-surface-active: #e4edfb;
   --pd-surface-data: #f7fbff;
+  --pd-surface-panel: #ffffff;
 
   --pd-separator-subtle: #e2eaf3;
   --pd-separator: #cbd8e6;
@@ -133,7 +155,7 @@
 
   --pd-text: #071b35;
   --pd-text-secondary: #3e5067;
-  --pd-text-muted: #6b7c91;
+  --pd-text-muted: #5a6d83;
 
   --pd-interactive: #145bd7;
   --pd-interactive-hover: #0d49b4;
@@ -211,19 +233,6 @@
   color-scheme: dark;
 
   --pd-canvas: #0d141b;
-  --pd-canvas-gradient:
-    radial-gradient(
-      circle at 8% 14%,
-      rgba(209, 132, 37, 0.16) 0,
-      rgba(209, 132, 37, 0.055) 300px,
-      transparent 720px
-    ),
-    linear-gradient(
-      135deg,
-      #253039 0,
-      #151f2a 44%,
-      #0a1018 100%
-    );
 
   --pd-surface: #0d141d;
   --pd-surface-subtle: #121c28;
@@ -231,6 +240,7 @@
   --pd-surface-overlay: rgba(28, 41, 57, 0.97);
   --pd-surface-active: #203854;
   --pd-surface-data: #102637;
+  --pd-surface-panel: #1a2635;
 
   --pd-separator-subtle: #253244;
   --pd-separator: #334458;

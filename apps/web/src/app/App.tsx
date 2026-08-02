@@ -2,19 +2,13 @@ export function App() {
   return (
     <main className="app-placeholder">
       <section>
-        <p className="app-placeholder__brand">
-          PapaData
-        </p>
+        <p className="app-placeholder__brand">PapaData</p>
 
-        <h1>
-          Nowy frontend jest gotowy do budowy.
-        </h1>
+        <h1>Nowy frontend jest gotowy do budowy.</h1>
 
         <p>
-          Repozytorium zawiera czystą aplikację
-          React oraz pełny katalog Storybooka.
-          Ekrany produkcyjne nie zostały jeszcze
-          zaimplementowane.
+          Repozytorium zawiera czystą aplikację React oraz pełny katalog
+          Storybooka. Ekrany produkcyjne nie zostały jeszcze zaimplementowane.
         </p>
 
         <dl>

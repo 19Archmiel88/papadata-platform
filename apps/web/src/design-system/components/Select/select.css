@@ -98,18 +98,9 @@
   border: var(--pd-border-width-subtle) solid
     var(--pd-separator-subtle);
   border-radius: var(--pd-radius-control);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(
-        in srgb,
-        var(--pd-surface-overlay) 92%,
-        transparent
-      ),
-      var(--pd-surface-overlay)
-    );
+  background: var(--pd-surface-raised);
   box-shadow: var(--pd-shadow-overlay);
-  backdrop-filter: blur(18px);
+  backdrop-filter: none;
   overflow: hidden;
 }
 

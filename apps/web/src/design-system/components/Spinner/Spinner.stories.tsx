@@ -133,17 +133,21 @@ export const SpinnerStory: Story = {
     canvasElement,
   }) => {
     const canvas = within(canvasElement);
+    const mediumSizeItem = canvas.getByText('średni').closest('.pd-loading-story__size-item') as HTMLElement | null;
+    const loadingButton = canvas.getByRole('button', {
+      name: 'Zapisywanie zmian',
+    });
+
+    if (!mediumSizeItem) {
+      throw new Error('Nie znaleziono średniego wariantu spinnera.');
+    }
 
     await expect(
-      canvas.getByRole('status', {
-        name: 'Ładowanie danych źródłowych',
-      }),
-    ).toBeInTheDocument();
+      within(mediumSizeItem).getByRole('status'),
+    ).toHaveTextContent('Ładowanie danych źródłowych');
 
     await expect(
-      canvas.getByRole('button', {
-        name: 'Zapisywanie zmian',
-      }),
+      loadingButton,
     ).toHaveAttribute('aria-busy', 'true');
   },
 };

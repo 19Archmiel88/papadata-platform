@@ -157,15 +157,28 @@ export const ProgressIndicatorStory: Story = {
     canvasElement,
   }) => {
     const canvas = within(canvasElement);
+    const neutralRow = canvas.getByRole('heading', {
+      name: 'Neutralny',
+    }).closest('.pd-loading-story__spec-row') as HTMLElement | null;
+    const lightThemeRow = canvas.getByText('tryb jasny').closest('.pd-loading-story__theme-row') as HTMLElement | null;
+
+    if (!neutralRow || !lightThemeRow) {
+      throw new Error('Nie znaleziono oczekiwanych wariantów paska postępu.');
+    }
 
     await expect(
-      canvas.getByRole('progressbar', {
+      within(neutralRow).getByRole('progressbar', {
         name: 'Postęp analizy',
       }),
     ).toHaveAttribute('aria-valuenow', '64');
 
     await expect(
-      canvas.getByText('W toku'),
-    ).toBeInTheDocument();
+      within(lightThemeRow).getByRole('progressbar', {
+        name: 'Przygotowanie paczki eksportu',
+      }),
+    ).toHaveAttribute(
+      'aria-valuetext',
+      'Przygotowanie paczki eksportu: w toku',
+    );
   },
 };

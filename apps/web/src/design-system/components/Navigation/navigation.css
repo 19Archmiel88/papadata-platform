@@ -173,6 +173,7 @@
   flex-wrap: wrap;
   gap: var(--pd-space-2);
   align-items: center;
+  min-width: 0;
   padding: var(--pd-space-1) 0;
 }
 
@@ -181,6 +182,7 @@
   flex-wrap: wrap;
   gap: var(--pd-space-2);
   align-items: center;
+  min-width: 0;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -188,9 +190,11 @@
 
 .pd-breadcrumbs__item {
   display: inline-flex;
+  flex-wrap: wrap;
   gap: var(--pd-space-2);
   align-items: center;
   min-width: 0;
+  max-width: 100%;
 }
 
 .pd-breadcrumbs__link,
@@ -200,7 +204,8 @@
   max-width: min(28ch, 100%);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .pd-breadcrumbs__link {

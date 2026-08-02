@@ -20,10 +20,14 @@
   box-sizing: border-box;
 }
 
-body {
+/*
+ * Wspólny canvas PapaData.
+ * Jedna definicja jest używana przez wszystkie stories.
+ */
+body,
+.pd-storybook-canvas {
   min-width: 320px;
   min-height: 100vh;
-  margin: 0;
   background-color: var(--pd-canvas);
   background-image: var(--pd-canvas-gradient);
   background-attachment: fixed;
@@ -32,6 +36,22 @@ body {
   color: var(--pd-text);
   font-size: var(--pd-type-size-body);
   line-height: var(--pd-line-height-normal);
+}
+
+body {
+  margin: 0;
+}
+
+.pd-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 button,

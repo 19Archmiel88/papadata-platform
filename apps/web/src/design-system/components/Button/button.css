@@ -3,11 +3,11 @@ button.pd-button {
   --pd-button-color: var(--pd-text);
   --pd-button-hover-color: var(--pd-text);
   --pd-button-line: var(--pd-brand-line);
-  --pd-button-glow: var(--pd-brand-glow);
 
   appearance: none;
   position: relative;
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: var(--pd-space-2);
@@ -30,8 +30,6 @@ button.pd-button {
   transition:
     color var(--pd-motion-duration-fast)
       var(--pd-motion-easing-standard),
-    filter var(--pd-motion-duration-standard)
-      var(--pd-motion-easing-emphasized),
     opacity var(--pd-motion-duration-fast)
       var(--pd-motion-easing-standard);
 }
@@ -45,15 +43,7 @@ button.pd-button::after {
   left: var(--pd-space-3);
   height: 2px;
   border-radius: var(--pd-radius-pill);
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      var(--pd-button-line) 18%,
-      var(--pd-brand-accent) 50%,
-      var(--pd-button-line) 82%,
-      transparent
-    );
+  background: var(--pd-button-line);
   opacity: 0;
   transform: scaleX(0.08);
   transform-origin: center;
@@ -69,7 +59,6 @@ button.pd-button:hover,
 .pd-button:focus-visible,
 button.pd-button:focus-visible {
   color: var(--pd-button-hover-color);
-  filter: drop-shadow(0 0 0.42rem var(--pd-button-glow));
 }
 
 .pd-button:hover::after,
@@ -87,7 +76,7 @@ button.pd-button:focus-visible {
 
 .pd-button:active,
 button.pd-button:active {
-  filter: drop-shadow(0 0 0.28rem var(--pd-button-glow));
+  color: var(--pd-button-hover-color);
 }
 
 .pd-button[disabled],
@@ -96,7 +85,6 @@ button.pd-button[disabled],
 .pd-button[data-disabled='true'] {
   color: var(--pd-text-muted);
   cursor: not-allowed;
-  filter: none;
   opacity: 0.56;
 }
 
@@ -120,23 +108,17 @@ button.pd-button[disabled]::after,
   transition:
     color var(--pd-motion-duration-fast)
       var(--pd-motion-easing-standard),
-    filter var(--pd-motion-duration-standard)
-      var(--pd-motion-easing-emphasized),
     opacity var(--pd-motion-duration-fast)
       var(--pd-motion-easing-standard);
-}
-
-.pd-button:hover .pd-button__icon,
-.pd-button:hover svg,
-.pd-button:focus-visible .pd-button__icon,
-.pd-button:focus-visible svg {
-  filter: drop-shadow(0 0 0.36rem var(--pd-button-glow));
 }
 
 .pd-button__label {
   position: relative;
   z-index: 1;
+  min-width: 0;
   color: currentColor;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .pd-button--primary,
@@ -144,7 +126,6 @@ button.pd-button[disabled]::after,
   --pd-button-color: var(--pd-brand);
   --pd-button-hover-color: var(--pd-brand-highlight);
   --pd-button-line: var(--pd-brand-line);
-  --pd-button-glow: var(--pd-brand-glow);
 
   font-weight: var(--pd-font-weight-semibold);
 }
@@ -168,7 +149,6 @@ button.pd-button[disabled]::after,
   --pd-button-color: var(--pd-status-danger);
   --pd-button-hover-color: var(--pd-status-danger);
   --pd-button-line: var(--pd-status-danger);
-  --pd-button-glow: var(--pd-status-danger-subtle);
 }
 
 .pd-button--link,

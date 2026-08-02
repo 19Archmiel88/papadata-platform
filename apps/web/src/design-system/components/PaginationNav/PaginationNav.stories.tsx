@@ -12,9 +12,11 @@ import {
 import '../Navigation/navigation-showcase.css';
 
 function PaginationNavExample({
+  ariaLabel = 'Nawigacja zakresów listy wyników',
   compact = false,
   loading = false,
 }: {
+  readonly ariaLabel?: string;
   readonly compact?: boolean;
   readonly loading?: boolean;
 }) {
@@ -22,6 +24,7 @@ function PaginationNavExample({
 
   return (
     <PaginationNav
+      ariaLabel={ariaLabel}
       cursor={cursor}
       loading={loading}
       nextCursor={loading ? null : 'after_50'}
@@ -67,7 +70,7 @@ export const PaginationNavStory: Story = {
   },
   name: 'Nawigacja zakresów',
   render: () => (
-    <main className="pd-navigation-story">
+    <div className="pd-navigation-story">
       <div className="pd-navigation-story__inner">
         <header className="pd-navigation-story__header">
           <p className="pd-navigation-story__kicker">10 Komponenty/PaginationNav</p>
@@ -87,7 +90,7 @@ export const PaginationNavStory: Story = {
                 <p>Zakres wyników dla tabeli lub listy zewnętrznie sterowanej.</p>
               </div>
               <div className="pd-navigation-story__canvas">
-                <PaginationNavExample />
+                <PaginationNavExample ariaLabel="Nawigacja zakresów wariantu listy" />
               </div>
             </div>
             <div className="pd-navigation-story__row">
@@ -96,7 +99,10 @@ export const PaginationNavStory: Story = {
                 <p>Mniejsza gęstość dla paneli bocznych i pobocznych list.</p>
               </div>
               <div className="pd-navigation-story__canvas">
-                <PaginationNavExample compact />
+                <PaginationNavExample
+                  ariaLabel="Nawigacja zakresów wariantu kompaktowego"
+                  compact
+                />
               </div>
             </div>
             <div className="pd-navigation-story__row">
@@ -105,12 +111,15 @@ export const PaginationNavStory: Story = {
                 <p>Przy aktywnym pobieraniu zakresu obie akcje pozostają wyłączone.</p>
               </div>
               <div className="pd-navigation-story__canvas">
-                <PaginationNavExample loading />
+                <PaginationNavExample
+                  ariaLabel="Nawigacja zakresów w stanie ładowania"
+                  loading
+                />
               </div>
             </div>
           </div>
         </section>
       </div>
-    </main>
+    </div>
   ),
 };

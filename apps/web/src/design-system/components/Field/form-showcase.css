@@ -14,6 +14,7 @@
   gap: var(--pd-space-8);
   max-width: min(1080px, 100%);
   margin: 0 auto;
+  background-color: var(--pd-canvas);
 }
 
 .pd-form-story__header {

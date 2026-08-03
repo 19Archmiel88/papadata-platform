@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: 6efa8db9b4b8e98eca16c179cd295c9f11be2a4786057efea4a4c285a47b391a
+// SHA-256 źródła: b260a359f710d16bfffd65d9223df5535ab0a33258fdb93f2e7650a7237bea1e
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -21,7 +21,7 @@ export const storybookCatalog = [
     "documentationStatus": "accepted",
     "prototypeStatus": "none",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "requirements": [
@@ -36,7 +36,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Kierunek wizualny",
     "storyExport": "KierunekWizualny",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "00.02",
@@ -53,7 +53,7 @@ export const storybookCatalog = [
     "documentationStatus": "accepted",
     "prototypeStatus": "none",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "requirements": [
@@ -76,7 +76,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Typografia",
     "storyExport": "Typografia",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "00.03",
@@ -93,7 +93,7 @@ export const storybookCatalog = [
     "documentationStatus": "accepted",
     "prototypeStatus": "none",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "requirements": [
@@ -114,7 +114,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Kolory semantyczne",
     "storyExport": "KolorySemantyczne",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "00.04",
@@ -131,7 +131,7 @@ export const storybookCatalog = [
     "documentationStatus": "accepted",
     "prototypeStatus": "none",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "requirements": [
@@ -150,7 +150,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Statusy systemowe",
     "storyExport": "StatusySystemowe",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "00.05",
@@ -167,7 +167,7 @@ export const storybookCatalog = [
     "documentationStatus": "accepted",
     "prototypeStatus": "none",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "requirements": [
@@ -188,7 +188,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Odstępy i siatka",
     "storyExport": "SpacingIGrid",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "00.06",
@@ -205,7 +205,7 @@ export const storybookCatalog = [
     "documentationStatus": "accepted",
     "prototypeStatus": "none",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "storyTitle": "00 Fundamenty/Podstawy",
@@ -223,7 +223,7 @@ export const storybookCatalog = [
     ],
     "displayTitle": "Promienie i geometria",
     "storyExport": "PromienieIGeometria",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "00.07",
@@ -240,7 +240,7 @@ export const storybookCatalog = [
     "documentationStatus": "accepted",
     "prototypeStatus": "none",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "storyTitle": "00 Fundamenty/Podstawy",
@@ -258,7 +258,7 @@ export const storybookCatalog = [
     ],
     "displayTitle": "Linie i separacja",
     "storyExport": "LinieISeparacja",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "00.08",
@@ -275,7 +275,7 @@ export const storybookCatalog = [
     "documentationStatus": "accepted",
     "prototypeStatus": "none",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "storyTitle": "00 Fundamenty/Podstawy",
@@ -294,7 +294,7 @@ export const storybookCatalog = [
     ],
     "displayTitle": "Głębia i warstwy",
     "storyExport": "GlebiaIWarstwy",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "00.09",
@@ -311,7 +311,7 @@ export const storybookCatalog = [
     "documentationStatus": "accepted",
     "prototypeStatus": "none",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "requirements": [
@@ -331,7 +331,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Ikonografia",
     "storyExport": "Ikonografia",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "00.10",
@@ -348,7 +348,7 @@ export const storybookCatalog = [
     "documentationStatus": "accepted",
     "prototypeStatus": "none",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "requirements": [
@@ -373,7 +373,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Animacje",
     "storyExport": "MotionIReducedMotion",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "00.11",
@@ -390,7 +390,7 @@ export const storybookCatalog = [
     "documentationStatus": "accepted",
     "prototypeStatus": "none",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "requirements": [
@@ -412,7 +412,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Dostępność",
     "storyExport": "Dostepnosc",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "05.01",

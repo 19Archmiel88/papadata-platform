@@ -380,7 +380,7 @@
       "documentationStatus": "accepted",
       "prototypeStatus": "none",
       "productionStatus": "not_started",
-      "testStatus": "not_started",
+      "testStatus": "passing",
       "storyStatus": "implemented",
       "storyVisibility": "visible",
       "requirements": [
@@ -395,7 +395,7 @@
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Kierunek wizualny",
       "storyExport": "KierunekWizualny",
-      "accepted": false
+      "accepted": true
     },
     {
       "id": "00.02",
@@ -412,7 +412,7 @@
       "documentationStatus": "accepted",
       "prototypeStatus": "none",
       "productionStatus": "not_started",
-      "testStatus": "not_started",
+      "testStatus": "passing",
       "storyStatus": "implemented",
       "storyVisibility": "visible",
       "requirements": [
@@ -435,7 +435,7 @@
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Typografia",
       "storyExport": "Typografia",
-      "accepted": false
+      "accepted": true
     },
     {
       "id": "00.03",
@@ -452,7 +452,7 @@
       "documentationStatus": "accepted",
       "prototypeStatus": "none",
       "productionStatus": "not_started",
-      "testStatus": "not_started",
+      "testStatus": "passing",
       "storyStatus": "implemented",
       "storyVisibility": "visible",
       "requirements": [
@@ -473,7 +473,7 @@
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Kolory semantyczne",
       "storyExport": "KolorySemantyczne",
-      "accepted": false
+      "accepted": true
     },
     {
       "id": "00.04",
@@ -490,7 +490,7 @@
       "documentationStatus": "accepted",
       "prototypeStatus": "none",
       "productionStatus": "not_started",
-      "testStatus": "not_started",
+      "testStatus": "passing",
       "storyStatus": "implemented",
       "storyVisibility": "visible",
       "requirements": [
@@ -509,7 +509,7 @@
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Statusy systemowe",
       "storyExport": "StatusySystemowe",
-      "accepted": false
+      "accepted": true
     },
     {
       "id": "00.05",
@@ -526,7 +526,7 @@
       "documentationStatus": "accepted",
       "prototypeStatus": "none",
       "productionStatus": "not_started",
-      "testStatus": "not_started",
+      "testStatus": "passing",
       "storyStatus": "implemented",
       "storyVisibility": "visible",
       "requirements": [
@@ -547,7 +547,7 @@
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Odstępy i siatka",
       "storyExport": "SpacingIGrid",
-      "accepted": false
+      "accepted": true
     },
     {
       "id": "00.06",
@@ -564,7 +564,7 @@
       "documentationStatus": "accepted",
       "prototypeStatus": "none",
       "productionStatus": "not_started",
-      "testStatus": "not_started",
+      "testStatus": "passing",
       "storyStatus": "implemented",
       "storyVisibility": "visible",
       "storyTitle": "00 Fundamenty/Podstawy",
@@ -582,7 +582,7 @@
       ],
       "displayTitle": "Promienie i geometria",
       "storyExport": "PromienieIGeometria",
-      "accepted": false
+      "accepted": true
     },
     {
       "id": "00.07",
@@ -599,7 +599,7 @@
       "documentationStatus": "accepted",
       "prototypeStatus": "none",
       "productionStatus": "not_started",
-      "testStatus": "not_started",
+      "testStatus": "passing",
       "storyStatus": "implemented",
       "storyVisibility": "visible",
       "storyTitle": "00 Fundamenty/Podstawy",
@@ -617,7 +617,7 @@
       ],
       "displayTitle": "Linie i separacja",
       "storyExport": "LinieISeparacja",
-      "accepted": false
+      "accepted": true
     },
     {
       "id": "00.08",
@@ -634,7 +634,7 @@
       "documentationStatus": "accepted",
       "prototypeStatus": "none",
       "productionStatus": "not_started",
-      "testStatus": "not_started",
+      "testStatus": "passing",
       "storyStatus": "implemented",
       "storyVisibility": "visible",
       "storyTitle": "00 Fundamenty/Podstawy",
@@ -653,7 +653,7 @@
       ],
       "displayTitle": "Głębia i warstwy",
       "storyExport": "GlebiaIWarstwy",
-      "accepted": false
+      "accepted": true
     },
     {
       "id": "00.09",
@@ -670,7 +670,7 @@
       "documentationStatus": "accepted",
       "prototypeStatus": "none",
       "productionStatus": "not_started",
-      "testStatus": "not_started",
+      "testStatus": "passing",
       "storyStatus": "implemented",
       "storyVisibility": "visible",
       "requirements": [
@@ -690,7 +690,7 @@
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Ikonografia",
       "storyExport": "Ikonografia",
-      "accepted": false
+      "accepted": true
     },
     {
       "id": "00.10",
@@ -707,7 +707,7 @@
       "documentationStatus": "accepted",
       "prototypeStatus": "none",
       "productionStatus": "not_started",
-      "testStatus": "not_started",
+      "testStatus": "passing",
       "storyStatus": "implemented",
       "storyVisibility": "visible",
       "requirements": [
@@ -732,7 +732,7 @@
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Animacje",
       "storyExport": "MotionIReducedMotion",
-      "accepted": false
+      "accepted": true
     },
     {
       "id": "00.11",
@@ -749,7 +749,7 @@
       "documentationStatus": "accepted",
       "prototypeStatus": "none",
       "productionStatus": "not_started",
-      "testStatus": "not_started",
+      "testStatus": "passing",
       "storyStatus": "implemented",
       "storyVisibility": "visible",
       "requirements": [
@@ -771,7 +771,7 @@
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Dostępność",
       "storyExport": "Dostepnosc",
-      "accepted": false
+      "accepted": true
     },
     {
       "id": "05.01",

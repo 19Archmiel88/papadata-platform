@@ -198,6 +198,64 @@ function storybookGlobalQuery(theme) {
   ].join(';');
 }
 
+async function waitForStableFrame(page) {
+  await page.waitForSelector('#storybook-root, #root', {
+    state: 'visible',
+    timeout: 15000,
+  });
+  await page.waitForFunction(() => {
+    const root = document.querySelector('#storybook-root, #root');
+
+    return Boolean(root && root.childElementCount > 0 && root.getBoundingClientRect().height > 0);
+  }, {
+    timeout: 15000,
+  });
+  await page.evaluate(async () => {
+    const waitForAnimationFrame = () => new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+    const waitForImages = () => Promise.all(
+      Array.from(document.images)
+        .filter((image) => !image.complete)
+        .map((image) => new Promise((resolve) => {
+          image.addEventListener('load', resolve, {
+            once: true,
+          });
+          image.addEventListener('error', resolve, {
+            once: true,
+          });
+        })),
+    );
+    const waitForAnimations = async () => {
+      const deadline = Date.now() + 3000;
+
+      while (Date.now() < deadline) {
+        const animations = document.getAnimations?.() ?? [];
+        const pendingAnimations = animations.filter((animation) => (
+          animation.playState === 'pending' || animation.playState === 'running'
+        ));
+
+        if (pendingAnimations.length === 0) {
+          return;
+        }
+
+        await Promise.race([
+          Promise.all(pendingAnimations.map((animation) => (
+            animation.finished.catch(() => undefined)
+          ))),
+          new Promise((resolve) => setTimeout(resolve, 50)),
+        ]);
+      }
+    };
+
+    await document.fonts?.ready;
+    await waitForImages();
+    await waitForAnimationFrame();
+    await waitForAnimations();
+    await waitForAnimationFrame();
+  });
+}
+
 ensure(existsSync(indexPath), 'Missing apps/web/storybook-static/index.json. Run build-storybook before capture-foundation-evidence.');
 
 const contract = getContract();
@@ -239,10 +297,11 @@ let browser;
 try {
   browser = await chromium.launch({
     headless: true,
-  });
-  const page = await browser.newPage({
-    viewport,
-    deviceScaleFactor: 1,
+    args: [
+      '--force-color-profile=srgb',
+      '--force-device-scale-factor=1',
+      '--run-all-compositor-stages-before-draw',
+    ],
   });
 
   for (const storyId of foundationEntryIds) {
@@ -255,20 +314,28 @@ try {
       const screenshotName = `${storyId.replace('.', '-')}__${kebab(contractEntry.title)}__${theme}__desktop__pl__comfortable.png`;
       const screenshotPath = path.join(screenshotsDirectory, screenshotName);
       const storyUrl = `${url}/iframe.html?id=${storybookEntry.id}&globals=${encodeURIComponent(storybookGlobalQuery(theme))}`;
+      const page = await browser.newPage({
+        viewport,
+        deviceScaleFactor: 1,
+      });
 
-      await page.goto(storyUrl, {
-        waitUntil: 'networkidle',
-      });
-      await page.waitForSelector('#storybook-root, #root', {
-        timeout: 15000,
-      });
-      await page.emulateMedia({
-        reducedMotion: 'no-preference',
-      });
-      await page.screenshot({
-        path: screenshotPath,
-        fullPage: true,
-      });
+      try {
+        await page.emulateMedia({
+          reducedMotion: 'no-preference',
+        });
+        await page.goto(storyUrl, {
+          waitUntil: 'networkidle',
+        });
+        await waitForStableFrame(page);
+        await page.screenshot({
+          path: screenshotPath,
+          fullPage: true,
+          animations: 'disabled',
+          caret: 'hide',
+        });
+      } finally {
+        await page.close();
+      }
 
       const image = readFileSync(screenshotPath);
       evidenceEntries.push({

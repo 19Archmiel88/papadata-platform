@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-03T15:22:25.381Z",
+  "generatedAt": "2026-08-03T16:23:45.551Z",
   "branch": "storybook/05-laboratorium-decyzji",
-  "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+  "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
   "worktreeDirty": false,
   "viewport": {
     "width": 1440,
@@ -28,7 +28,7 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-01__kierunek-wizualny__light__desktop__pl__comfortable.png",
@@ -49,11 +49,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-01__kierunek-wizualny__dark__desktop__pl__comfortable.png",
-      "sha256": "c75baaa946394df9af014c46317f0c6640b366980b551f97db894e95b8d5ea46",
+      "sha256": "d89aad45ddcc324cb501764ccb57e401b1a5163f5c4ff45aefeb02f5e09dfe8e",
       "decisionStatus": "accepted"
     },
     {
@@ -70,7 +70,7 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-02__typografia__light__desktop__pl__comfortable.png",
@@ -91,11 +91,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-02__typografia__dark__desktop__pl__comfortable.png",
-      "sha256": "19f06635aecf71f9f73c6979d74e2396e331d1ed29069604532fa8be1b559585",
+      "sha256": "c7f785efb0be5f77cc16fedfc3dc547c6e39496914e2ac171fcd44b9dbcb65b4",
       "decisionStatus": "accepted"
     },
     {
@@ -112,11 +112,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-03__kolory-semantyczne__light__desktop__pl__comfortable.png",
-      "sha256": "60e92d76ece57a9e8fcd88bca076f97135980839487909f670a5fdcbd485d3e5",
+      "sha256": "763fba6da2603faebce1ce8e8bbcb73c2a1ab40a70aedee44e8dcc2bc4b91738",
       "decisionStatus": "accepted"
     },
     {
@@ -133,11 +133,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-03__kolory-semantyczne__dark__desktop__pl__comfortable.png",
-      "sha256": "1356cfb5cbcf0daeacabf98f23050a1241751417a5be6a5d7dcd80b89722a2fd",
+      "sha256": "f3bdde64f5c51cbfb7841c3621fa6312f11e6cedebca64e899201b1ba2f61566",
       "decisionStatus": "accepted"
     },
     {
@@ -154,11 +154,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-04__statusy-systemowe__light__desktop__pl__comfortable.png",
-      "sha256": "ad1d92e3e805603b788226c85a0e758e8e240c9712ca441017322ea4366c5f3b",
+      "sha256": "94066e51892f324ff5b13b8a8178e6f2c8bcee8aa2527e940d18b5e145999f6f",
       "decisionStatus": "accepted"
     },
     {
@@ -175,11 +175,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-04__statusy-systemowe__dark__desktop__pl__comfortable.png",
-      "sha256": "03ec55e5435a653fe68490050776b3aa4f1a353645ffda53d5741051ae56b76f",
+      "sha256": "77a632548526d6415bbe813866ac5481f840ef3309fb6c14a5b26c01398f001c",
       "decisionStatus": "accepted"
     },
     {
@@ -196,11 +196,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-05__spacing-i-grid__light__desktop__pl__comfortable.png",
-      "sha256": "93b0555d4aa5efb159661151d56d1b9ad049e0efc4bdbdcb63f321c56b98e0cb",
+      "sha256": "93dfc9ea402977056d0a9ceae340af2d7fead484d9d493f71a450a1d91f0e5bf",
       "decisionStatus": "accepted"
     },
     {
@@ -217,11 +217,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-05__spacing-i-grid__dark__desktop__pl__comfortable.png",
-      "sha256": "28af424e221ba788ae8e5f1a6d15baca5eee0b8328b611e4281cc7b70c195183",
+      "sha256": "43f66cdbbc5061a82044e017b1dc38195f30fb574d9fabcc79218dafa93b794b",
       "decisionStatus": "accepted"
     },
     {
@@ -238,7 +238,7 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-06__promienie-i-geometria__light__desktop__pl__comfortable.png",
@@ -259,11 +259,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-06__promienie-i-geometria__dark__desktop__pl__comfortable.png",
-      "sha256": "c6f2448b7397220ab350701b8800c5eb3608f9ee57c9034e96484bed4f609ec5",
+      "sha256": "6b7e21e42c46288693d673da4d13ee31151cec25ebefaf55523c2fc3bbb48d7b",
       "decisionStatus": "accepted"
     },
     {
@@ -280,11 +280,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-07__linie-i-separacja__light__desktop__pl__comfortable.png",
-      "sha256": "edb5b79a413baf06baeacb075d66cd767022867ef7c257d5bbc80db8f96bfe7b",
+      "sha256": "299371d4f69ee1ca70655f61d61854d1ddaf73aa8f02174f4efb09f5512e7bf0",
       "decisionStatus": "accepted"
     },
     {
@@ -301,11 +301,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-07__linie-i-separacja__dark__desktop__pl__comfortable.png",
-      "sha256": "c23769ba6f1c1551104a4c78b6f671c0e5cc68793d6357d08f9c1751dff1c0f1",
+      "sha256": "f905c51b8ee0cf27d42b1cbf80a86e736c297272edb2bc12ed91f9784a3706f7",
       "decisionStatus": "accepted"
     },
     {
@@ -322,11 +322,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-08__glebia-i-warstwy__light__desktop__pl__comfortable.png",
-      "sha256": "d82c6cd9391e2f845605ca5877b70bf42c69720854e928283f0d2a360667d922",
+      "sha256": "c40d9ba4fabb7ad33e9ef0d85288cac82d1958c8e433d8fe376160f6c374db49",
       "decisionStatus": "accepted"
     },
     {
@@ -343,11 +343,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-08__glebia-i-warstwy__dark__desktop__pl__comfortable.png",
-      "sha256": "1ab01bf605df1ad5dddda0ba746303397b8cd1f688ee0ac20344ecb1fdab06d1",
+      "sha256": "81ac0c741d66083d04e48ba5bf2356574324b22eb32065ab6647e308485d9074",
       "decisionStatus": "accepted"
     },
     {
@@ -364,11 +364,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-09__ikonografia__light__desktop__pl__comfortable.png",
-      "sha256": "91508a91d8aab9ddd0e34a1fd66d2f749483e7084ad3c2c3d10a5ce225300828",
+      "sha256": "2b49e038f1be2a5aa177679deef9d4e556baa91b19899ddf6b73e8d1bd3cb4dd",
       "decisionStatus": "accepted"
     },
     {
@@ -385,11 +385,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-09__ikonografia__dark__desktop__pl__comfortable.png",
-      "sha256": "578462fb8a18f069fba0fb7c67d0291e0784fcebe8541a56e00c7f3d7ba88371",
+      "sha256": "8270d1b8d40c11fb7b9322a183f0bc8dd860c59b39be63e7e132861df4f90ef2",
       "decisionStatus": "accepted"
     },
     {
@@ -406,11 +406,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-10__motion__light__desktop__pl__comfortable.png",
-      "sha256": "945eab1e6793713abb461de318c66fcbe82b669bdacf2dcf1deb3d56abe2b31c",
+      "sha256": "8fb81ba2ed44ed3541e8d052494c8d159a1c3fb907343c50117fb56db025f0c6",
       "decisionStatus": "accepted"
     },
     {
@@ -427,11 +427,11 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-10__motion__dark__desktop__pl__comfortable.png",
-      "sha256": "9ce1b8c83941447833da5baf5a5f2f75ccce554adb961d119ff50fb5c043c9e7",
+      "sha256": "ccc762365a61c347e855f7d869815a4f6a4e294861fbea24a4b63602b236d85a",
       "decisionStatus": "accepted"
     },
     {
@@ -448,7 +448,7 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-11__dostepnosc__light__desktop__pl__comfortable.png",
@@ -469,7 +469,7 @@
         "height": 1000
       },
       "branch": "storybook/05-laboratorium-decyzji",
-      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "commit": "94ea15ab11d018252944b36fdc55df8b7462e30a",
       "worktreeDirty": false,
       "storybookVersion": "^10.5.3",
       "file": "screenshots/00-11__dostepnosc__dark__desktop__pl__comfortable.png",
@@ -477,5 +477,5 @@
       "decisionStatus": "accepted"
     }
   ],
-  "approvedCommit": "316c0b6e2ee862b5b8ea687eef6849698610c046"
+  "approvedCommit": "94ea15ab11d018252944b36fdc55df8b7462e30a"
 }

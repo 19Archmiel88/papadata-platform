@@ -15,7 +15,7 @@ applies_to:
   - pl
   - comfortable
   - full_motion
-approved_commit: "316c0b6e2ee862b5b8ea687eef6849698610c046"
+approved_commit: "94ea15ab11d018252944b36fdc55df8b7462e30a"
 approved_evidence: "foundation-evidence/manifest.json"
 owner: Artur Wiśniewski
 updated_at: 2026-08-03

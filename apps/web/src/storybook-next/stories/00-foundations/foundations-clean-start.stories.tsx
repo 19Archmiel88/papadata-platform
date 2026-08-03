@@ -27,6 +27,9 @@ import {
   type PapaDataRuntimeLocale,
 } from '../../../design-system/foundations';
 import {
+  type StatusBadgeTone,
+} from '../../../design-system/components';
+import {
   Icon,
   PapaDataBrand,
   type PapaDataIconName,
@@ -191,7 +194,7 @@ function FoundationLedger({
   readonly label: string;
 }) {
   return (
-    <div className="pd-f0-ledger" role="list" aria-label={label}>
+    <div className="pd-f0-ledger" data-reference="demo-only" role="list" aria-label={label}>
       {children}
     </div>
   );
@@ -230,7 +233,7 @@ function ThemePreview({
   readonly children: ReactNode;
 }) {
   return (
-    <article className="pd-f0-theme-preview" data-theme={theme}>
+    <article className="pd-f0-theme-preview" data-reference="demo-only" data-theme={theme}>
       <header>
         <span>{theme === 'light'
           ? <Localized pl="Tryb jasny" en="Light mode" />
@@ -253,7 +256,7 @@ function ThemePair({
   readonly dark: ReactNode;
 }) {
   return (
-    <div className="pd-f0-theme-pair">
+    <div className="pd-f0-theme-pair" data-reference="demo-only">
       {light}
       {dark}
     </div>
@@ -268,6 +271,7 @@ function TokenCode({
   return <code className="pd-f0-token">{children}</code>;
 }
 
+// Storybook reference helper only; not a public Button API.
 function FoundationButton({
   children,
   tone = 'secondary',
@@ -284,6 +288,7 @@ function FoundationButton({
   return (
     <button
       className="pd-f0-button"
+      data-reference="demo-only"
       data-tone={tone}
       onClick={onClick}
       type={type}
@@ -294,8 +299,9 @@ function FoundationButton({
   );
 }
 
-type FoundationStatusTone = 'success' | 'warning' | 'danger' | 'critical' | 'neutral' | 'info' | 'processing' | 'muted';
+type FoundationStatusTone = StatusBadgeTone;
 
+// Storybook reference helper only; status API is owned by StatusBadgeTone.
 function StatusBadge({
   tone,
   children,
@@ -304,7 +310,7 @@ function StatusBadge({
   readonly children: ReactNode;
 }) {
   return (
-    <span className="pd-f0-status" data-tone={tone}>
+    <span className="pd-f0-status" data-reference="demo-only" data-tone={tone}>
       <span aria-hidden="true" />
       {children}
     </span>
@@ -465,7 +471,7 @@ export const KierunekWizualny: Story = {
               <p><Localized pl="Neutralne powierzchnie, separatory, lokalne akcenty i czytelny rytm danych." en="Neutral surfaces, separators, local accents and a readable data rhythm." /></p>
             </div>
             <div data-result="rejected">
-              <StatusBadge tone="danger"><Localized pl="Odrzucamy" en="Avoid" /></StatusBadge>
+              <StatusBadge tone="critical"><Localized pl="Odrzucamy" en="Avoid" /></StatusBadge>
               <p><Localized pl="Glow, ciężkie cienie, przypadkowe gradienty i osobną kartę dla każdego przykładu." en="Glow, heavy shadows, arbitrary gradients and a separate card for every example." /></p>
             </div>
           </div>
@@ -727,7 +733,7 @@ const semanticTones = [
     usage: { pl: 'Ryzyko, opóźnienie lub stan wymagający uwagi.', en: 'Risk, delay or a state requiring attention.' },
   },
   {
-    tone: 'danger',
+    tone: 'critical',
     label: { pl: 'Błąd', en: 'Error' },
     token: '--pd-status-danger',
     usage: { pl: 'Błąd, blokada albo nieodwracalny skutek.', en: 'Error, blocker or irreversible consequence.' },
@@ -746,14 +752,12 @@ const semanticTones = [
 }[];
 
 const statusToneLabels: Record<FoundationStatusTone, LocalizedCopy> = {
-  success: { pl: 'Sukces', en: 'Success' },
-  warning: { pl: 'Ostrzeżenie', en: 'Warning' },
-  danger: { pl: 'Błąd', en: 'Error' },
-  critical: { pl: 'Krytyczny', en: 'Critical' },
   neutral: { pl: 'Neutralny', en: 'Neutral' },
   info: { pl: 'Informacyjny', en: 'Informational' },
+  success: { pl: 'Sukces', en: 'Success' },
+  warning: { pl: 'Ostrzeżenie', en: 'Warning' },
+  critical: { pl: 'Krytyczny', en: 'Critical' },
   processing: { pl: 'Przetwarzanie', en: 'Processing' },
-  muted: { pl: 'Wyciszony', en: 'Muted' },
 };
 
 type ProjectStatusItem = {
@@ -782,14 +786,14 @@ const projectStatusGroups = [
       { key: 'no_data', label: { pl: 'Brak danych', en: 'No data' }, tone: 'neutral' },
       { key: 'stale', label: { pl: 'Nieaktualne', en: 'Stale' }, tone: 'warning' },
       { key: 'delayed', label: { pl: 'Opóźnione', en: 'Delayed' }, tone: 'warning' },
-      { key: 'invalid', label: { pl: 'Nieprawidłowe', en: 'Invalid' }, tone: 'danger' },
-      { key: 'conflicting', label: { pl: 'Konflikt', en: 'Conflict' }, tone: 'danger' },
+      { key: 'invalid', label: { pl: 'Nieprawidłowe', en: 'Invalid' }, tone: 'critical' },
+      { key: 'conflicting', label: { pl: 'Konflikt', en: 'Conflict' }, tone: 'critical' },
       { key: 'resync_required', label: { pl: 'Wymaga synchronizacji', en: 'Resync required' }, tone: 'warning' },
       { key: 'manual_review_required', label: { pl: 'Wymaga sprawdzenia', en: 'Manual review required' }, tone: 'warning' },
       { key: 'succeeded', label: { pl: 'Zakończone', en: 'Succeeded' }, tone: 'success' },
-      { key: 'failed', label: { pl: 'Błąd', en: 'Failed' }, tone: 'danger' },
-      { key: 'cancelled', label: { pl: 'Anulowane', en: 'Cancelled' }, tone: 'muted' },
-      { key: 'blocked', label: { pl: 'Zablokowane', en: 'Blocked' }, tone: 'danger' },
+      { key: 'failed', label: { pl: 'Błąd', en: 'Failed' }, tone: 'critical' },
+      { key: 'cancelled', label: { pl: 'Anulowane', en: 'Cancelled' }, tone: 'neutral' },
+      { key: 'blocked', label: { pl: 'Zablokowane', en: 'Blocked' }, tone: 'critical' },
       { key: 'unknown', label: { pl: 'Nieznane', en: 'Unknown' }, tone: 'neutral' },
       { key: 'unavailable', label: { pl: 'Niedostępne', en: 'Unavailable' }, tone: 'neutral' },
     ],
@@ -800,13 +804,13 @@ const projectStatusGroups = [
     statuses: [
       { key: 'active', label: { pl: 'Aktywne', en: 'Active' }, tone: 'success' },
       { key: 'pending_verification', label: { pl: 'Czeka na weryfikację', en: 'Pending verification' }, tone: 'warning' },
-      { key: 'archived', label: { pl: 'Zarchiwizowane', en: 'Archived' }, tone: 'muted' },
+      { key: 'archived', label: { pl: 'Zarchiwizowane', en: 'Archived' }, tone: 'neutral' },
       { key: 'invited', label: { pl: 'Zaproszony', en: 'Invited' }, tone: 'info' },
-      { key: 'revoked', label: { pl: 'Cofnięte', en: 'Revoked' }, tone: 'muted' },
+      { key: 'revoked', label: { pl: 'Cofnięte', en: 'Revoked' }, tone: 'neutral' },
       { key: 'pending', label: { pl: 'Oczekuje', en: 'Pending' }, tone: 'warning' },
       { key: 'accepted', label: { pl: 'Przyjęte', en: 'Accepted' }, tone: 'success' },
       { key: 'missing', label: { pl: 'Brakujące', en: 'Missing' }, tone: 'neutral' },
-      { key: 'deleted', label: { pl: 'Usunięte', en: 'Deleted' }, tone: 'muted' },
+      { key: 'deleted', label: { pl: 'Usunięte', en: 'Deleted' }, tone: 'neutral' },
       { key: 'completed', label: { pl: 'Ukończone', en: 'Completed' }, tone: 'success' },
       { key: 'not_started', label: { pl: 'Nie rozpoczęto', en: 'Not started' }, tone: 'neutral' },
       { key: 'in_progress', label: { pl: 'W trakcie', en: 'In progress' }, tone: 'processing' },
@@ -824,9 +828,9 @@ const projectStatusGroups = [
       { key: 'writing_canonical', label: { pl: 'Zapis kanoniczny', en: 'Writing canonical' }, tone: 'processing' },
       { key: 'reconciling', label: { pl: 'Uzgadnianie', en: 'Reconciling' }, tone: 'processing' },
       { key: 'retryable_failed', label: { pl: 'Błąd możliwy do ponowienia', en: 'Retryable failure' }, tone: 'warning' },
-      { key: 'terminal_failed', label: { pl: 'Błąd końcowy', en: 'Terminal failure' }, tone: 'danger' },
-      { key: 'dead_lettered', label: { pl: 'W kolejce błędów', en: 'Dead-lettered' }, tone: 'danger' },
-      { key: 'dlq', label: { pl: 'Wymaga obsługi technicznej', en: 'Requires technical handling' }, tone: 'danger' },
+      { key: 'terminal_failed', label: { pl: 'Błąd końcowy', en: 'Terminal failure' }, tone: 'critical' },
+      { key: 'dead_lettered', label: { pl: 'W kolejce błędów', en: 'Dead-lettered' }, tone: 'critical' },
+      { key: 'dlq', label: { pl: 'Wymaga obsługi technicznej', en: 'Requires technical handling' }, tone: 'critical' },
       { key: 'cancel_requested', label: { pl: 'Żądanie anulowania', en: 'Cancel requested' }, tone: 'warning' },
       { key: 'not_leased', label: { pl: 'Nieprzypisane', en: 'Not leased' }, tone: 'neutral' },
     ],
@@ -841,12 +845,12 @@ const projectStatusGroups = [
       { key: 'not_supported', label: { pl: 'Nieobsługiwane', en: 'Not supported' }, tone: 'neutral' },
       { key: 'syncing', label: { pl: 'Synchronizacja', en: 'Syncing' }, tone: 'processing' },
       { key: 'needs_reauth', label: { pl: 'Wymaga ponownego połączenia', en: 'Needs reauth' }, tone: 'warning' },
-      { key: 'permission_error', label: { pl: 'Brak uprawnień', en: 'Permission error' }, tone: 'danger' },
-      { key: 'network_error', label: { pl: 'Błąd sieci', en: 'Network error' }, tone: 'danger' },
-      { key: 'provider_error', label: { pl: 'Błąd dostawcy', en: 'Provider error' }, tone: 'danger' },
-      { key: 'error', label: { pl: 'Błąd', en: 'Error' }, tone: 'danger' },
+      { key: 'permission_error', label: { pl: 'Brak uprawnień', en: 'Permission error' }, tone: 'critical' },
+      { key: 'network_error', label: { pl: 'Błąd sieci', en: 'Network error' }, tone: 'critical' },
+      { key: 'provider_error', label: { pl: 'Błąd dostawcy', en: 'Provider error' }, tone: 'critical' },
+      { key: 'error', label: { pl: 'Błąd', en: 'Error' }, tone: 'critical' },
       { key: 'passed', label: { pl: 'Zgodne', en: 'Passed' }, tone: 'success' },
-      { key: 'mismatch', label: { pl: 'Niezgodność', en: 'Mismatch' }, tone: 'danger' },
+      { key: 'mismatch', label: { pl: 'Niezgodność', en: 'Mismatch' }, tone: 'critical' },
     ],
   },
   {
@@ -857,13 +861,13 @@ const projectStatusGroups = [
       { key: 'paid', label: { pl: 'Opłacone', en: 'Paid' }, tone: 'success' },
       { key: 'shipped', label: { pl: 'Wysłane', en: 'Shipped' }, tone: 'info' },
       { key: 'delivered', label: { pl: 'Dostarczone', en: 'Delivered' }, tone: 'success' },
-      { key: 'refunded', label: { pl: 'Zwrócone', en: 'Refunded' }, tone: 'muted' },
+      { key: 'refunded', label: { pl: 'Zwrócone', en: 'Refunded' }, tone: 'neutral' },
       { key: 'partially_refunded', label: { pl: 'Częściowy zwrot', en: 'Partially refunded' }, tone: 'warning' },
-      { key: 'returned', label: { pl: 'Zwrócone przez klienta', en: 'Returned' }, tone: 'muted' },
+      { key: 'returned', label: { pl: 'Zwrócone przez klienta', en: 'Returned' }, tone: 'neutral' },
       { key: 'authorized', label: { pl: 'Autoryzowana', en: 'Authorized' }, tone: 'info' },
       { key: 'captured', label: { pl: 'Pobrana', en: 'Captured' }, tone: 'success' },
       { key: 'open', label: { pl: 'Otwarta', en: 'Open' }, tone: 'info' },
-      { key: 'past_due', label: { pl: 'Po terminie', en: 'Past due' }, tone: 'danger' },
+      { key: 'past_due', label: { pl: 'Po terminie', en: 'Past due' }, tone: 'critical' },
       { key: 'requested', label: { pl: 'Zgłoszone', en: 'Requested' }, tone: 'info' },
       { key: 'received', label: { pl: 'Odebrane', en: 'Received' }, tone: 'info' },
     ],
@@ -876,7 +880,7 @@ const projectStatusGroups = [
       { key: 'draft', label: { pl: 'Szkic', en: 'Draft' }, tone: 'neutral' },
       { key: 'ready_for_ksef', label: { pl: 'Gotowa do KSeF', en: 'Ready for KSeF' }, tone: 'info' },
       { key: 'submitted', label: { pl: 'Wysłana', en: 'Submitted' }, tone: 'processing' },
-      { key: 'rejected', label: { pl: 'Odrzucone', en: 'Rejected' }, tone: 'danger' },
+      { key: 'rejected', label: { pl: 'Odrzucone', en: 'Rejected' }, tone: 'critical' },
       { key: 'offline_pending', label: { pl: 'Oczekuje offline', en: 'Offline pending' }, tone: 'warning' },
       { key: 'correction_required', label: { pl: 'Wymaga korekty', en: 'Correction required' }, tone: 'warning' },
     ],
@@ -886,7 +890,7 @@ const projectStatusGroups = [
     description: { pl: 'Statusy tokenów, dostępu tymczasowego, zatwierdzeń i wygasania.', en: 'Token, temporary access, approval and expiry states.' },
     statuses: [
       { key: 'approved', label: { pl: 'Zatwierdzone', en: 'Approved' }, tone: 'success' },
-      { key: 'expired', label: { pl: 'Wygasłe', en: 'Expired' }, tone: 'muted' },
+      { key: 'expired', label: { pl: 'Wygasłe', en: 'Expired' }, tone: 'neutral' },
       { key: 'expiring', label: { pl: 'Wygasa', en: 'Expiring' }, tone: 'warning' },
     ],
   },
@@ -895,7 +899,7 @@ const projectStatusGroups = [
     description: { pl: 'Statusy weryfikacji tożsamości, retencji, usunięć i legal hold.', en: 'Identity verification, retention, deletion and legal-hold states.' },
     statuses: [
       { key: 'identity_verification_pending', label: { pl: 'Czeka na weryfikację tożsamości', en: 'Identity verification pending' }, tone: 'warning' },
-      { key: 'blocked_by_legal_hold', label: { pl: 'Zablokowane prawnie', en: 'Blocked by legal hold' }, tone: 'danger' },
+      { key: 'blocked_by_legal_hold', label: { pl: 'Zablokowane prawnie', en: 'Blocked by legal hold' }, tone: 'critical' },
       { key: 'verification_pending', label: { pl: 'Czeka na weryfikację', en: 'Verification pending' }, tone: 'warning' },
       { key: 'verified', label: { pl: 'Zweryfikowane', en: 'Verified' }, tone: 'success' },
       { key: 'not_applicable', label: { pl: 'Nie dotyczy', en: 'Not applicable' }, tone: 'neutral' },
@@ -908,7 +912,7 @@ const projectStatusGroups = [
     statuses: [
       { key: 'automatic_match', label: { pl: 'Dopasowane automatycznie', en: 'Automatic match' }, tone: 'success' },
       { key: 'manual_review', label: { pl: 'Do ręcznego sprawdzenia', en: 'Manual review' }, tone: 'warning' },
-      { key: 'retired', label: { pl: 'Wycofane', en: 'Retired' }, tone: 'muted' },
+      { key: 'retired', label: { pl: 'Wycofane', en: 'Retired' }, tone: 'neutral' },
     ],
   },
   {
@@ -1929,6 +1933,7 @@ function MotionDemo({
           setRun(false);
           window.requestAnimationFrame(() => setRun(true));
         }}
+        tone="primary"
       >
         <Localized pl="Uruchom zmianę" en="Run change" />
       </FoundationButton>

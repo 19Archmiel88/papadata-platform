@@ -48,6 +48,23 @@ updated_at: 2026-07-30T10:30:00+02:00
 | 7 | częściowe dane | wymagany wariant lub stan | test Storybook + test interakcji |
 | 8 | akcja wyjaśnienia przez Papa. | wymagany wariant lub stan | test Storybook + test interakcji |
 
+## Warianty MetricCard
+
+MetricCard nie ma jednej obowiązkowej rozbudowanej anatomii dla całego systemu. Wymagane warianty projektowe:
+
+- podstawowy
+- z trendem
+- z celem
+- z odchyleniem
+- z mikrochartem
+- alarmowy lub rekomendacyjny
+
+Mikrochart, subtelne wypełnienie albo cień pod wykresem oraz graficzna strzałka kierunku należą do wariantu rozbudowanego. Nie są obowiązkowe dla każdego MetricCard.
+
+Wariant Centrum Dowodzenia może zawierać: wartość, jednostkę, delta, okres porównawczy, cel lub plan, trend `up`, `down`, `flat` albo `unknown`, ikonę albo strzałkę kierunku, mikrochart, subtelne wypełnienie lub cień, źródło, zakres, świeżość, status danych oraz akcję szczegółów lub wyjaśnienia przez Papa.
+
+Ten dokument opisuje zatwierdzony kontrakt docelowy. Obecny kontrakt TypeScript pozostaje węższy i wymaga późniejszej synchronizacji z implementacją oraz kontraktami technicznymi.
+
 ## Anatomia
 
 ```text
@@ -99,6 +116,7 @@ Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kon
 
 - Title: `15 Wykresy i wizualizacje danych/MetricCard`.
 - Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
+- Pełna story komponentu pokazuje wszystkie warianty MetricCard; 05.03 pokazuje tylko reprezentatywne decyzje powierzchni.
 - Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
 
 ## Testy i kryteria akceptacji

@@ -15,6 +15,8 @@ component_id: ColumnPicker
 ## Anatomia
 columns; maxVisible.
 
+`ColumnPicker` służy wyłącznie do pokazywania i ukrywania istniejących kolumn. Pole `visible` opisuje bieżącą widoczność kolumny, a `required` oznacza kolumnę wymaganą, której użytkownik nie może ukryć.
+
 ## Kanoniczny kontrakt TypeScript
 Jedyny kanoniczny kontrakt: `contracts/components/columnpicker.ts`.
 
@@ -28,6 +30,10 @@ Zdarzenia mają identyfikator komponentu, nazwę działania, `correlationId` i t
 
 ## Stany i warianty
 Obsłuż: default, loading, empty, error, disabled, readonly i success, jeśli mają znaczenie dla tego komponentu. Nie renderuj akcji bez capability i nie ukrywaj przyczyny blokady.
+
+ColumnPicker nie tworzy nowych kolumn, nie usuwa kolumn z modelu, nie modyfikuje schematu, nie usuwa danych źródłowych i nie zmienia kolejności kolumn. Zmiana kolejności kolumn pozostaje poza zakresem zatwierdzonego kontraktu.
+
+Ukrycie kolumny wpływa na aktualny widok oraz na opcję „Eksportuj widoczne kolumny”. Nie zmienia danych źródłowych ani bezpiecznego zakresu opcji „Eksportuj wszystkie kolumny”. Ukrycie kolumny przez ColumnPicker jest preferencją widoku i nie zwiększa ani nie zmniejsza uprawnień użytkownika.
 
 ## Dostępność
 Semantyczny element HTML, pełna obsługa klawiatury, focus-visible, nazwa dostępna, komunikaty dynamiczne przez właściwe live region oraz brak przekazywania znaczenia wyłącznie kolorem.

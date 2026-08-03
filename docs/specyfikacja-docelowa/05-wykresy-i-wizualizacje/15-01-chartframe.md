@@ -53,16 +53,30 @@ updated_at: 2026-07-30T10:30:00+02:00
 | 12 | tabela alternatywna | wymagany wariant lub stan | test Storybook + test interakcji |
 | 13 | akcja Papa Asystenta. | wymagany wariant lub stan | test Storybook + test interakcji |
 
+## Kontrakt docelowy i techniczny
+
+Dokumentacja opisuje pełny kontrakt docelowy ChartFrame. Obecny kontrakt TypeScript jest węższy i obejmuje przede wszystkim `title`, `subtitle`, `series`, `unit`, `dateRangeLabel`, `legendPosition` i `dataTableLabel`. Brakujących pól docelowych nie wolno traktować jako istniejącej implementacji; wymagają późniejszej synchronizacji kontraktów technicznych i komponentu.
+
 ## Anatomia
 
 ```text
 chartframe
 ├── semantic root
-├── header or accessible label
-├── primary content
-├── status / validation region
-├── primary action
-└── optional secondary actions or metadata
+├── title or business question
+├── context description
+├── data status and freshness
+├── date range and period comparison
+├── metric selector
+├── source or channel selector
+├── main visualization
+├── axes and scale
+├── legend
+├── annotations
+├── tooltip model
+├── narrative summary
+├── actions
+├── alternative data table
+└── Papa explanation action
 ```
 
 ## Komponenty składowe
@@ -89,6 +103,9 @@ Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia
 - Stan asynchroniczny rozróżnia loading, processing, retrying, success, recoverable error i terminal error.
 - Read-only, no-access i plan-restricted są osobnymi stanami, nie odmianą disabled.
 - Zmiana motywu, języka lub viewportu nie resetuje danych ani procesu.
+- ChartFrame używa kanonicznych stanów danych z `15-08-stany-danych.md`. Etykiety laboratoryjne mapują się na nazwy kanoniczne następująco: loading → processing, empty → no data, partial → partial, stale → stale, error → konkretna przyczyna, np. provider error, unavailable albo conflict. Identyfikatory techniczne, np. `noData` albo `sourceError`, są zapisywane osobno i wyłącznie wtedy, gdy występują we właściwym kontrakcie.
+- Nagłówek, kontekst, status, metadane, filtry i geometria powierzchni pozostają stabilne między stanami. Region legendy i region tabeli alternatywnej nie mogą powodować przypadkowego skoku geometrii, ale ich treść oraz dostępność zależą od konkretnego stanu.
+- Nie wolno pokazywać legendy ani tabeli alternatywnej w sposób sugerujący dostępne dane, kiedy danych nie ma. W stanie niedostępności region może zawierać komunikat zastępczy, być nieaktywny albo zachować zarezerwowane miejsce zgodnie z kontraktem widoku.
 
 ## Interakcje i klawiatura
 
@@ -106,6 +123,7 @@ Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kon
 
 - Title: `15 Wykresy i wizualizacje danych/ChartFrame`.
 - Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
+- Pełna story komponentu pokazuje katalog wariantów ChartFrame; 05.03 pokazuje jeden reprezentatywny pełny ChartFrame.
 - Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
 
 ## Testy i kryteria akceptacji

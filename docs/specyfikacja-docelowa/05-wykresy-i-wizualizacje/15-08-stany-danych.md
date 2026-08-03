@@ -46,7 +46,22 @@ updated_at: 2026-07-30T10:30:00+02:00
 | 5 | conflict | wymagany wariant lub stan | test Storybook + test interakcji |
 | 6 | provider error | wymagany wariant lub stan | test Storybook + test interakcji |
 | 7 | processing | wymagany wariant lub stan | test Storybook + test interakcji |
-| 8 | unavailable. | wymagany wariant lub stan | test Storybook + test interakcji |
+| 8 | unavailable | wymagany wariant lub stan | test Storybook + test interakcji |
+
+## Mapowanie nazw laboratoryjnych
+
+Nazwy kanoniczne pozostają bez zmian. 05.03 może używać uproszczonych etykiet laboratoryjnych, ale musi mapować je na słownik dokumentacyjny oraz, osobno, na identyfikator techniczny używany przez właściwy kontrakt:
+
+| Etykieta w 05.03 | Nazwa kanoniczna | Identyfikator techniczny, jeśli występuje w kontrakcie |
+| --- | --- | --- |
+| ready | ready | `ready` |
+| loading | processing | `processing` |
+| empty | no data | `noData` |
+| partial | partial | `partial` |
+| stale | stale | `stale` |
+| error | konkretna przyczyna | zależny od kontraktu, np. `sourceError`, `unavailable` albo `conflict` |
+
+Etykieta error jest skrótem laboratoryjnym i nie jest stanem kanonicznym. Nie mapuje się globalnie ani wyłącznie na jeden identyfikator techniczny. Przykład w 05.03 musi wskazać konkretną przyczynę kanoniczną, np. provider error, unavailable albo conflict, oraz identyfikator techniczny tylko wtedy, gdy przewiduje go właściwy kontrakt. `sourceError` może wystąpić wyłącznie jako identyfikator techniczny, nie jako nowy kanoniczny stan dokumentacyjny.
 
 ## Anatomia
 

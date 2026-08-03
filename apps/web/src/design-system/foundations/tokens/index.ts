@@ -7,6 +7,15 @@ export type {
 } from './colors';
 
 export {
+  layerContract,
+  layerTokens,
+} from './layers';
+
+export type {
+  LayerTokenName,
+} from './layers';
+
+export {
   motionTokens,
 } from './motion';
 

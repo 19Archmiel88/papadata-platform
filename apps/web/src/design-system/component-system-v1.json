@@ -10,24 +10,7 @@
       "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
       "apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx"
     ],
-    "frozenEntries": [
-      "00.01",
-      "00.02",
-      "00.03",
-      "00.04",
-      "00.05",
-      "00.06",
-      "00.07",
-      "00.08",
-      "00.09",
-      "00.10",
-      "00.11",
-      "05.01",
-      "05.02",
-      "05.03",
-      "05.04",
-      "05.05"
-    ],
+    "frozenEntries": [],
     "requiredTokens": [
       "--pd-brand",
       "--pd-brand-highlight",
@@ -51,7 +34,14 @@
       "--pd-overlay-scrim-text",
       "--pd-overlay-scrim-text-muted",
       "--pd-type-size-page-mobile",
-      "--pd-type-size-display-mobile"
+      "--pd-type-size-display-mobile",
+      "--pd-status-danger-border",
+      "--pd-layer-underlay",
+      "--pd-layer-base",
+      "--pd-layer-sticky",
+      "--pd-layer-popover",
+      "--pd-layer-modal",
+      "--pd-layer-toast"
     ],
     "requiredFoundationExports": [
       "./motion",
@@ -63,7 +53,10 @@
       "./tokens",
       "./typography",
       "spacingContract",
-      "spacingTokens"
+      "spacingTokens",
+      "./layers",
+      "layerTokens",
+      "layerContract"
     ],
     "requiredIconExports": [
       "Icon",

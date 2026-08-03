@@ -69,6 +69,7 @@ export type CatalogEntryDefinition = {
   readonly productionStatus:
     CatalogProductionStatus;
   readonly testStatus: CatalogTestStatus;
+  readonly accepted?: boolean;
   readonly storyStatus: CatalogStoryStatus;
   readonly storyVisibility:
     CatalogStoryVisibility;

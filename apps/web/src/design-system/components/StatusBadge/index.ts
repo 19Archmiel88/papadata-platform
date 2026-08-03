@@ -4,3 +4,6 @@ export {
 export type {
   StatusBadgeProps,
 } from './StatusBadge';
+export type {
+  StatusBadgeTone,
+} from '../Feedback/feedbackTone';

@@ -1,0 +1,481 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-03T15:22:25.381Z",
+  "branch": "storybook/05-laboratorium-decyzji",
+  "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+  "worktreeDirty": false,
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "locale": "pl",
+  "density": "comfortable",
+  "motion": "full",
+  "requiredScreenshotCount": 22,
+  "decisionStatus": "accepted",
+  "entries": [
+    {
+      "storyId": "00.01",
+      "storyExport": "KierunekWizualny",
+      "storybookId": "00-fundamenty-podstawy--kierunek-wizualny",
+      "title": "Kierunek wizualny",
+      "theme": "light",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-01__kierunek-wizualny__light__desktop__pl__comfortable.png",
+      "sha256": "211454285ffdb147fa747fd915193de9dad7e50d5a6e1cbbd60d7fcacfd9ce01",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.01",
+      "storyExport": "KierunekWizualny",
+      "storybookId": "00-fundamenty-podstawy--kierunek-wizualny",
+      "title": "Kierunek wizualny",
+      "theme": "dark",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-01__kierunek-wizualny__dark__desktop__pl__comfortable.png",
+      "sha256": "c75baaa946394df9af014c46317f0c6640b366980b551f97db894e95b8d5ea46",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.02",
+      "storyExport": "Typografia",
+      "storybookId": "00-fundamenty-podstawy--typografia",
+      "title": "Typografia",
+      "theme": "light",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-02__typografia__light__desktop__pl__comfortable.png",
+      "sha256": "d83476a44da759ab6ef24f3c3a76f1f3acae80a47cb72943a581cda0e4de081e",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.02",
+      "storyExport": "Typografia",
+      "storybookId": "00-fundamenty-podstawy--typografia",
+      "title": "Typografia",
+      "theme": "dark",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-02__typografia__dark__desktop__pl__comfortable.png",
+      "sha256": "19f06635aecf71f9f73c6979d74e2396e331d1ed29069604532fa8be1b559585",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.03",
+      "storyExport": "KolorySemantyczne",
+      "storybookId": "00-fundamenty-podstawy--kolory-semantyczne",
+      "title": "Kolory semantyczne",
+      "theme": "light",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-03__kolory-semantyczne__light__desktop__pl__comfortable.png",
+      "sha256": "60e92d76ece57a9e8fcd88bca076f97135980839487909f670a5fdcbd485d3e5",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.03",
+      "storyExport": "KolorySemantyczne",
+      "storybookId": "00-fundamenty-podstawy--kolory-semantyczne",
+      "title": "Kolory semantyczne",
+      "theme": "dark",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-03__kolory-semantyczne__dark__desktop__pl__comfortable.png",
+      "sha256": "1356cfb5cbcf0daeacabf98f23050a1241751417a5be6a5d7dcd80b89722a2fd",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.04",
+      "storyExport": "StatusySystemowe",
+      "storybookId": "00-fundamenty-podstawy--statusy-systemowe",
+      "title": "Statusy systemowe",
+      "theme": "light",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-04__statusy-systemowe__light__desktop__pl__comfortable.png",
+      "sha256": "ad1d92e3e805603b788226c85a0e758e8e240c9712ca441017322ea4366c5f3b",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.04",
+      "storyExport": "StatusySystemowe",
+      "storybookId": "00-fundamenty-podstawy--statusy-systemowe",
+      "title": "Statusy systemowe",
+      "theme": "dark",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-04__statusy-systemowe__dark__desktop__pl__comfortable.png",
+      "sha256": "03ec55e5435a653fe68490050776b3aa4f1a353645ffda53d5741051ae56b76f",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.05",
+      "storyExport": "SpacingIGrid",
+      "storybookId": "00-fundamenty-podstawy--spacing-i-grid",
+      "title": "Spacing i grid",
+      "theme": "light",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-05__spacing-i-grid__light__desktop__pl__comfortable.png",
+      "sha256": "93b0555d4aa5efb159661151d56d1b9ad049e0efc4bdbdcb63f321c56b98e0cb",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.05",
+      "storyExport": "SpacingIGrid",
+      "storybookId": "00-fundamenty-podstawy--spacing-i-grid",
+      "title": "Spacing i grid",
+      "theme": "dark",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-05__spacing-i-grid__dark__desktop__pl__comfortable.png",
+      "sha256": "28af424e221ba788ae8e5f1a6d15baca5eee0b8328b611e4281cc7b70c195183",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.06",
+      "storyExport": "PromienieIGeometria",
+      "storybookId": "00-fundamenty-podstawy--promienie-i-geometria",
+      "title": "Promienie i geometria",
+      "theme": "light",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-06__promienie-i-geometria__light__desktop__pl__comfortable.png",
+      "sha256": "1119d34298ee557a90ccfb2fb96320170820cad629745a93c2921154152dac80",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.06",
+      "storyExport": "PromienieIGeometria",
+      "storybookId": "00-fundamenty-podstawy--promienie-i-geometria",
+      "title": "Promienie i geometria",
+      "theme": "dark",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-06__promienie-i-geometria__dark__desktop__pl__comfortable.png",
+      "sha256": "c6f2448b7397220ab350701b8800c5eb3608f9ee57c9034e96484bed4f609ec5",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.07",
+      "storyExport": "LinieISeparacja",
+      "storybookId": "00-fundamenty-podstawy--linie-i-separacja",
+      "title": "Linie i separacja",
+      "theme": "light",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-07__linie-i-separacja__light__desktop__pl__comfortable.png",
+      "sha256": "edb5b79a413baf06baeacb075d66cd767022867ef7c257d5bbc80db8f96bfe7b",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.07",
+      "storyExport": "LinieISeparacja",
+      "storybookId": "00-fundamenty-podstawy--linie-i-separacja",
+      "title": "Linie i separacja",
+      "theme": "dark",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-07__linie-i-separacja__dark__desktop__pl__comfortable.png",
+      "sha256": "c23769ba6f1c1551104a4c78b6f671c0e5cc68793d6357d08f9c1751dff1c0f1",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.08",
+      "storyExport": "GlebiaIWarstwy",
+      "storybookId": "00-fundamenty-podstawy--glebia-i-warstwy",
+      "title": "Głębia i warstwy",
+      "theme": "light",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-08__glebia-i-warstwy__light__desktop__pl__comfortable.png",
+      "sha256": "d82c6cd9391e2f845605ca5877b70bf42c69720854e928283f0d2a360667d922",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.08",
+      "storyExport": "GlebiaIWarstwy",
+      "storybookId": "00-fundamenty-podstawy--glebia-i-warstwy",
+      "title": "Głębia i warstwy",
+      "theme": "dark",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-08__glebia-i-warstwy__dark__desktop__pl__comfortable.png",
+      "sha256": "1ab01bf605df1ad5dddda0ba746303397b8cd1f688ee0ac20344ecb1fdab06d1",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.09",
+      "storyExport": "Ikonografia",
+      "storybookId": "00-fundamenty-podstawy--ikonografia",
+      "title": "Ikonografia",
+      "theme": "light",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-09__ikonografia__light__desktop__pl__comfortable.png",
+      "sha256": "91508a91d8aab9ddd0e34a1fd66d2f749483e7084ad3c2c3d10a5ce225300828",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.09",
+      "storyExport": "Ikonografia",
+      "storybookId": "00-fundamenty-podstawy--ikonografia",
+      "title": "Ikonografia",
+      "theme": "dark",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-09__ikonografia__dark__desktop__pl__comfortable.png",
+      "sha256": "578462fb8a18f069fba0fb7c67d0291e0784fcebe8541a56e00c7f3d7ba88371",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.10",
+      "storyExport": "MotionIReducedMotion",
+      "storybookId": "00-fundamenty-podstawy--motion-i-reduced-motion",
+      "title": "Motion",
+      "theme": "light",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-10__motion__light__desktop__pl__comfortable.png",
+      "sha256": "945eab1e6793713abb461de318c66fcbe82b669bdacf2dcf1deb3d56abe2b31c",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.10",
+      "storyExport": "MotionIReducedMotion",
+      "storybookId": "00-fundamenty-podstawy--motion-i-reduced-motion",
+      "title": "Motion",
+      "theme": "dark",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-10__motion__dark__desktop__pl__comfortable.png",
+      "sha256": "9ce1b8c83941447833da5baf5a5f2f75ccce554adb961d119ff50fb5c043c9e7",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.11",
+      "storyExport": "Dostepnosc",
+      "storybookId": "00-fundamenty-podstawy--dostepnosc",
+      "title": "Dostępność",
+      "theme": "light",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-11__dostepnosc__light__desktop__pl__comfortable.png",
+      "sha256": "85a5694597e2ad5208c3ae19d61077be185f0427e44695e01a6426941465a766",
+      "decisionStatus": "accepted"
+    },
+    {
+      "storyId": "00.11",
+      "storyExport": "Dostepnosc",
+      "storybookId": "00-fundamenty-podstawy--dostepnosc",
+      "title": "Dostępność",
+      "theme": "dark",
+      "locale": "pl",
+      "density": "comfortable",
+      "motion": "full",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "branch": "storybook/05-laboratorium-decyzji",
+      "commit": "316c0b6e2ee862b5b8ea687eef6849698610c046",
+      "worktreeDirty": false,
+      "storybookVersion": "^10.5.3",
+      "file": "screenshots/00-11__dostepnosc__dark__desktop__pl__comfortable.png",
+      "sha256": "2f6e4e835dbdd552690957f7a2e18f07782cb0fdac61263acf032eb67763f52d",
+      "decisionStatus": "accepted"
+    }
+  ],
+  "approvedCommit": "316c0b6e2ee862b5b8ea687eef6849698610c046"
+}

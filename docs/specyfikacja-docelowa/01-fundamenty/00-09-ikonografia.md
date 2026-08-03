@@ -15,7 +15,7 @@ applies_to:
   - pl
   - comfortable
   - full_motion
-approved_commit: "421da5ab58a6a26fdf952a41841cb2679ce6222d"
+approved_commit: "316c0b6e2ee862b5b8ea687eef6849698610c046"
 approved_evidence: "foundation-evidence/manifest.json"
 owner: Artur Wiśniewski
 updated_at: 2026-08-03
@@ -45,5 +45,5 @@ Ikona wspiera etykietę i strukturę, ale nie zastępuje nazwy dostępnościowej
 ## Status odbioru Etapu 01
 
 - Dokument opisuje accepted desktop baseline light/dark dla stories `00.01-00.11`.
-- `test_status: "candidate"` oznacza, że finalny status `passing` wymaga manifestu i świadomej akceptacji zrzutów.
+- `test_status: "passing"` oznacza, że finalny status `passing` wymaga manifestu i świadomej akceptacji zrzutów.
 - Laboratorium `05.01-05.05` pozostaje poza frozen baseline i ma status review.

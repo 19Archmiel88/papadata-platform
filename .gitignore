@@ -73,4 +73,5 @@ apps/web/.cache/
 apps/web/.vite/
 
 # Generated Storybook acceptance evidence
-/foundation-evidence/
+/foundation-evidence/*
+!/foundation-evidence/manifest.json

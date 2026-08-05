@@ -51,31 +51,63 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_ENABLE_COMMENTS: false
 
-  sbom-and-container-scan:
+  sbom:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: anchore/sbom-action@v0
         with:
           path: .
           format: cyclonedx-json
           output-file: sbom.cdx.json
-      - run: docker build -f infra/production/Dockerfile -t papadata-platform:ci .
-      - uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          image-ref: papadata-platform:ci
-          format: sarif
-          output: trivy-results.sarif
-          severity: CRITICAL,HIGH
-          exit-code: 1
-      - uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: trivy-results.sarif
+
       - uses: actions/upload-artifact@v4
+        with:
+          name: sbom-evidence
+          path: sbom.cdx.json
+
+  container-scan:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [api, bff, worker]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build production image
+        run: |
+          docker build \
+            -f "infra/production/${{ matrix.service }}.Dockerfile" \
+            -t "papadata-${{ matrix.service }}:ci" \
+            .
+
+      - name: Scan production image
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          version: "v0.70.0"
+          image-ref: "papadata-${{ matrix.service }}:ci"
+          scanners: vuln
+          vuln-type: os,library
+          format: sarif
+          output: "trivy-${{ matrix.service }}.sarif"
+          severity: CRITICAL,HIGH
+          limit-severities-for-sarif: true
+          ignore-unfixed: true
+          exit-code: 1
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          name: security-evidence
-          path: |
-            sbom.cdx.json
-            trivy-results.sarif
+          sarif_file: "trivy-${{ matrix.service }}.sarif"
+          category: "trivy-${{ matrix.service }}"
+
+      - name: Upload security evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: "security-evidence-${{ matrix.service }}"
+          path: "trivy-${{ matrix.service }}.sarif"

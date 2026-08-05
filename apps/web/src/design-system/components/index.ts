@@ -227,6 +227,7 @@ export type {
 } from './Spinner';
 export type {
   StatusBadgeProps,
+  StatusBadgeTone,
 } from './StatusBadge';
 export type {
   SortControlDirection,

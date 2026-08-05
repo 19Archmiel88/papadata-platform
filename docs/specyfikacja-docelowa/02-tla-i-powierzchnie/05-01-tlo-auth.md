@@ -63,7 +63,7 @@ Surface
 
 ## Tokeny
 
-`--pd-canvas`, `--pd-surface-1`, `--pd-surface-2`, `--pd-surface-3`, `--pd-border-subtle`, `--pd-overlay-scrim`, `--pd-shadow-overlay`, `--pd-radius-*`.
+`--pd-canvas`, `--pd-surface`, `--pd-surface-subtle`, `--pd-surface-raised`, `--pd-separator-subtle`, `--pd-overlay-scrim`, `--pd-shadow-overlay`, `--pd-radius-*`.
 
 ## Responsywność
 

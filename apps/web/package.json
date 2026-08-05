@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "tsc -b --pretty false",
-    "storybook": "storybook dev -p 6006 --host 0.0.0.0 --no-open --disable-telemetry --ci",
+    "storybook": "storybook dev -p 6010 --host 0.0.0.0 --exact-port --no-open --disable-telemetry --ci",
     "build-storybook": "storybook build --output-dir storybook-static --disable-telemetry",
     "generate-storybook-catalog": "node ../../scripts/generate-storybook-catalog.mjs",
     "check-storybook-catalog": "node ../../scripts/check-storybook-catalog.mjs && node ../../scripts/check-storybook-architecture.mjs --self-test && node ../../scripts/check-storybook-taxonomy.mjs --self-test",
@@ -17,7 +17,7 @@
     "check-storybook-architecture": "node ../../scripts/check-storybook-architecture.mjs --self-test",
     "check-foundation-system": "node ../../scripts/check-foundation-system-v1.mjs",
     "check-component-system": "node ../../scripts/check-component-system-v1.mjs",
-    "verify-foundation-system": "pnpm check-storybook-catalog && pnpm check-foundation-system && pnpm typecheck && pnpm build-storybook && pnpm capture-foundation-evidence",
+    "verify-foundation-system": "node ../../scripts/verify-foundation-system-readonly.mjs",
     "capture-foundation-evidence": "node ../../scripts/capture-foundation-evidence.mjs"
   },
   "dependencies": {

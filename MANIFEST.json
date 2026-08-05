@@ -1250,68 +1250,83 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/01-fundamenty/00-01-kierunek-wizualny.md",
-      "bytes": 3051,
-      "sha256": "6d957ee581d3efdd1f95205ff9794f24f3035ca34c64e0f4d90485f536ebca9b"
+      "bytes": 1526,
+      "sha256": "ebe32b84843eab3019dae6fe30ad2bba781bfa5d3c3a4f100171d87672e431da"
     },
     {
       "path": "docs/specyfikacja-docelowa/01-fundamenty/00-02-typografia.md",
-      "bytes": 2569,
-      "sha256": "b4dd9906203690ad801be04242f45c1dea0a1da8b347498251dc9fdde5b0cd41"
+      "bytes": 1871,
+      "sha256": "69f2a25c41e53ad6aefaffa81376327f247bf5ede18f815ff9298f75a3c006a6"
     },
     {
-      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-03-kolory.md",
-      "bytes": 3022,
-      "sha256": "b6d1694fad7fd96aded52b57dce257f13954a34975b8896996058dcc9bf13e42"
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-03-kolory-semantyczne.md",
+      "bytes": 1830,
+      "sha256": "1d870782cb5cee40dfd92891fa9ca249e2055bb5893a2e81f4719b8b47eff38c"
     },
     {
-      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-04-spacing-i-grid.md",
-      "bytes": 3175,
-      "sha256": "7056d610851467e3398682c763a13343d5adb551158bc95796b08a214d7bf427"
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-04-statusy-systemowe.md",
+      "bytes": 1815,
+      "sha256": "1454b6426197afa573b15aa0d519571399b1c260aa7e9a028ef5811ca2aa05e7"
     },
     {
-      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-05-promienie-obramowania-i-cienie.md",
-      "bytes": 3131,
-      "sha256": "445cf0674aac2f268c7576cf6304cf65c763c2b12eacbe35c077a6c41da31758"
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-05-spacing-i-grid.md",
+      "bytes": 1546,
+      "sha256": "fed53015ac78a78baa3e09731e76de5bf7322e9c02680276d9b801ab87e4d41a"
     },
     {
-      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-06-ikonografia.md",
-      "bytes": 3027,
-      "sha256": "aaa6355bfad0a6b887e30a119e0b2fb451f95c09727bb4cc3dae2b19e2f4ae5d"
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-06-promienie-i-geometria.md",
+      "bytes": 1486,
+      "sha256": "d4d18dbac58455ca38225b5f2729c98ae337239a68383b32c73ce5bd3ea8d793"
     },
     {
-      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-07-motion.md",
-      "bytes": 3022,
-      "sha256": "238f72455b2b3bb64d81697ef0cc00677c947887da2f018e37eef3e1c501cf6d"
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-07-linie-i-separacja.md",
+      "bytes": 1485,
+      "sha256": "644fcdee4c51bd7a5d9901b96cb1ae245ad0f2b966ee051ff1b38784cd5b063c"
     },
     {
-      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-08-dostepnosc.md",
-      "bytes": 2939,
-      "sha256": "bc5b021b04c296758432ddb997588a5546e10adb2889e0ec54c1b4c4417be641"
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-08-glebia-i-warstwy.md",
+      "bytes": 1855,
+      "sha256": "c7f28cb5a9c248cc39e8502de823e7353f32dd69a67a6be942c5e21c99111020"
+    },
+    {
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-09-ikonografia.md",
+      "bytes": 1512,
+      "sha256": "28cf40375df8e08c00a242a7829611c0eb1f548379b07ed15485b433912fb9ad"
+    },
+    {
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-10-motion.md",
+      "bytes": 1545,
+      "sha256": "3aa40084ac4606f4026369f86b8ab7996abfdcf0e6375fed8d95619c5efeb02d"
+    },
+    {
+      "path": "docs/specyfikacja-docelowa/01-fundamenty/00-11-dostepnosc.md",
+      "bytes": 2318,
+      "sha256": "c9c7fe88260ec50ae09f6591e3ca431b20db64cc2c8b3d0ce6067feac6363331"
     },
     {
       "path": "docs/specyfikacja-docelowa/02-tla-i-powierzchnie/05-01-tlo-auth.md",
-      "bytes": 2340,
-      "sha256": "41b7a9dba1a66832dc20fd68e690065f52c41aa2580c4b8a4303d0d3efa7c7dc"
+      "bytes": 2351,
+      "sha256": "10fd8f7e682ac23829ac37601738df8a9dc49845e22abeab2299c97427aa78a1"
     },
     {
       "path": "docs/specyfikacja-docelowa/02-tla-i-powierzchnie/05-02-tlo-aplikacji.md",
-      "bytes": 2321,
-      "sha256": "74f3400afc113b20e4c1076a3db38c6463611fe86b12582c78421e471505343f"
+      "bytes": 2332,
+      "sha256": "2d6e977bb46af53792152f5ebf676346406fda4a6e821b12ce058823750b6cab"
     },
     {
       "path": "docs/specyfikacja-docelowa/02-tla-i-powierzchnie/05-03-powierzchnie-danych.md",
-      "bytes": 2322,
-      "sha256": "2689f541804e23235f4ffccffb3d9322e6a7ecb990ede4b69af29a610502fabe"
+      "bytes": 6722,
+      "sha256": "3590dbf6da2e28666cdb290345af0d36bdd799adabe231e382cfeded314b84ec"
     },
     {
       "path": "docs/specyfikacja-docelowa/02-tla-i-powierzchnie/05-04-separatory-i-obramowania.md",
-      "bytes": 2280,
-      "sha256": "7e45439c94a7ae40eebb51890a29f87e2224476ffab00227b4c6784b911402f8"
+      "bytes": 2291,
+      "sha256": "1b46fabfc345174368194e164ed59071834ea79d138bdc5416bb62cc6320b6b1"
     },
     {
       "path": "docs/specyfikacja-docelowa/02-tla-i-powierzchnie/05-05-gradienty-swiatlo-i-szklo.md",
-      "bytes": 2356,
-      "sha256": "e4469e23a347b0cb15a9d37a8f20fd8c1300137824a7f876fe9c8700eeabb222"
+      "bytes": 2367,
+      "sha256": "7ab1c9697039b0a2a5a9272c73577dea2ee53a693bf19d274ea70050ef9fb2bf"
     },
     {
       "path": "docs/specyfikacja-docelowa/03-dostep-rejestracja-onboarding/auth-fsm-wykonawczy.md",
@@ -1645,8 +1660,8 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/04-komponenty-bazowe/komponenty/columnpicker.md",
-      "bytes": 2176,
-      "sha256": "0c8ac541ab3a62e7c15c49073f9b02ba5b0eab84fa0e48d2c8ce78d0cf9d89e6"
+      "bytes": 2939,
+      "sha256": "50878cba18acd54e511a75358a55fc3cb591951d33074ee3f50d342bd12fa8ac"
     },
     {
       "path": "docs/specyfikacja-docelowa/04-komponenty-bazowe/komponenty/combobox.md",
@@ -1660,8 +1675,8 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/04-komponenty-bazowe/komponenty/datatable.md",
-      "bytes": 3404,
-      "sha256": "12d4288939b82aaaf5297433539fadfa9a236247a585844d3edaf9c7007ff10f"
+      "bytes": 5774,
+      "sha256": "5581e65ce3b61ce0f5433d679cd3334d356929392d8c4536792cfbb58d01ffd0"
     },
     {
       "path": "docs/specyfikacja-docelowa/04-komponenty-bazowe/komponenty/daterangepicker.md",
@@ -1950,13 +1965,13 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-01-chartframe.md",
-      "bytes": 4748,
-      "sha256": "d9922833ac58f4521d307f1c4baf772e8986237c23f5b78be004b23ee5942f47"
+      "bytes": 6545,
+      "sha256": "db723e94f678d9e26b59cc185366256d26e6b275b8407603c32f4e802aae217a"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-02-metriccard.md",
-      "bytes": 4295,
-      "sha256": "7f43738cc8b442d5f0d8674ff686b600f782a54a9bf1198ad602059b6341d502"
+      "bytes": 5348,
+      "sha256": "0582a2402eef5862172459760eaec1dd286f6b6385d0bf75cb3610bac7db0777"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-03-trendy.md",
@@ -1985,8 +2000,8 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-08-stany-danych.md",
-      "bytes": 4223,
-      "sha256": "4bbb70ae3147a257ffc53d0e6e2f58e09b00377989d0d72f38a40b1b23b3b994"
+      "bytes": 5339,
+      "sha256": "946397d6596f33eebc706e65ab4f40b91c49a6d836a5cc0b64ef3c6d57592c3b"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-09-interakcje-i-filtry.md",
@@ -2000,8 +2015,8 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/komponenty/chartframe.md",
-      "bytes": 3903,
-      "sha256": "f1c0c14eec2b0508cfb3f5c1d2153298fb14c8febe2e08c3fd861d308fd9e1c3"
+      "bytes": 5656,
+      "sha256": "b6c8362a521adafe3aeaef45332352c103d6a22f930cfe88fa6f8cd35edd8c21"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/komponenty/comparisonchart.md",
@@ -2025,8 +2040,8 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/komponenty/metriccard.md",
-      "bytes": 4010,
-      "sha256": "37071c8410f2a925376c343db54a6ed553b71690f728082545ecd68893ac6d2e"
+      "bytes": 5048,
+      "sha256": "920f41139b61205cfbb0b6f82ce8dde16c635a1167cdd25246338450e8348ee6"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/komponenty/sharechart.md",
@@ -3275,8 +3290,8 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/26-priorytety-p0/07-kreator-raportow-i-eksport.md",
-      "bytes": 957,
-      "sha256": "b6b3e90e4a5d0ffbbe94e131ce94103a1ebb3cdb2f461529e1c12dec9a06dfa1"
+      "bytes": 2768,
+      "sha256": "ec887b46e0083832c154696f8981b8b8c44baa12020667ce1a4af75cfc43ee4d"
     },
     {
       "path": "docs/specyfikacja-docelowa/26-priorytety-p0/08-ciaglosc-asystent-laboratorium.md",
@@ -7670,8 +7685,8 @@
     },
     {
       "path": "METRYKI-SEKCJI.csv",
-      "bytes": 983,
-      "sha256": "5aaf6d246cfcdb988e3d23183382f8d7b4208cdb36e1692a162947c2ac3f361f"
+      "bytes": 953,
+      "sha256": "78b02a45169a018d8816a769eebe1f5c44e85ab12544398631b1978dfb4380d5"
     },
     {
       "path": "POTWIERDZENIE-PRIORYTETOW-P0.md",
@@ -7730,8 +7745,8 @@
     },
     {
       "path": "rejestry/documents.csv",
-      "bytes": 66917,
-      "sha256": "78dd9d2eda198366031f8578543cc91feba1fe9888ab018e7f162976420e705b"
+      "bytes": 66843,
+      "sha256": "7998a665416af923c49e968214cfeafdd2d4cb09e3d0c646a3cda1494e0fa797"
     },
     {
       "path": "rejestry/entities.csv",
@@ -7844,5 +7859,5 @@
       "sha256": "9a611c690f21667139e37a910adb1cbc80910d51bb46fe19a76afd7d5666fd24"
     }
   ],
-  "file_count": 1568
+  "file_count": 1571
 }

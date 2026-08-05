@@ -21,7 +21,14 @@ export const typographyTokens = {
     bodySmall: 'var(--pd-type-size-body-small)',
     body: 'var(--pd-type-size-body)',
     bodyLarge: 'var(--pd-type-size-body-large)',
+    label: 'var(--pd-type-size-label)',
     section: 'var(--pd-type-size-section)',
+    heading1: 'var(--pd-type-size-heading-1)',
+    heading2: 'var(--pd-type-size-heading-2)',
+    heading3: 'var(--pd-type-size-heading-3)',
+    heading4: 'var(--pd-type-size-heading-4)',
+    heading5: 'var(--pd-type-size-heading-5)',
+    headingSmall: 'var(--pd-type-size-heading-small)',
     metric: 'var(--pd-type-size-metric)',
     page: 'var(--pd-type-size-page)',
     display: 'var(--pd-type-size-display)',
@@ -31,6 +38,7 @@ export const typographyTokens = {
 
   lineHeights: {
     compact: 'var(--pd-line-height-compact)',
+    tight: 'var(--pd-line-height-tight)',
     heading: 'var(--pd-line-height-heading)',
     pageMobile: 'var(--pd-line-height-page-mobile)',
     displayMobile: 'var(--pd-line-height-display-mobile)',

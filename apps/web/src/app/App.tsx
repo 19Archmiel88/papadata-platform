@@ -19,7 +19,7 @@ export function App() {
 
           <div>
             <dt>Storybook</dt>
-            <dd>pnpm storybook</dd>
+            <dd>pnpm storybook: localhost:6010</dd>
           </div>
         </dl>
       </section>

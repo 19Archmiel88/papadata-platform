@@ -1,5 +1,5 @@
 .pd-overlay-root {
-  --pd-overlay-z-index: 60;
+  --pd-overlay-z-index: var(--pd-layer-modal);
 
   position: fixed;
   inset: 0;
@@ -175,7 +175,7 @@
 
 .pd-popover__panel {
   position: absolute;
-  z-index: 4;
+  z-index: var(--pd-layer-popover);
   width: min(22rem, calc(100vw - 2rem));
   min-width: 16rem;
 }
@@ -212,7 +212,7 @@
 
 .pd-tooltip__bubble {
   position: absolute;
-  z-index: 5;
+  z-index: var(--pd-layer-popover);
   max-width: min(18rem, calc(100vw - 2rem));
   padding: 0.7rem 0.85rem;
   color: var(--pd-text);

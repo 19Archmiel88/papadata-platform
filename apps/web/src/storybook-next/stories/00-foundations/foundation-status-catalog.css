@@ -26,7 +26,7 @@
   flex: 0 0 auto;
   border-radius: 999px;
   background: var(--pd-f0-status-accent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--pd-f0-status-accent) 18%, transparent);
+  box-shadow: none;
 }
 
 .pd-f0-status[data-tone="success"] {
@@ -37,7 +37,6 @@
   --pd-f0-status-accent: var(--pd-status-warning);
 }
 
-.pd-f0-status[data-tone="danger"],
 .pd-f0-status[data-tone="critical"] {
   --pd-f0-status-accent: var(--pd-status-danger);
 }
@@ -52,10 +51,6 @@
 
 .pd-f0-status[data-tone="neutral"] {
   --pd-f0-status-accent: var(--pd-status-neutral);
-}
-
-.pd-f0-status[data-tone="muted"] {
-  --pd-f0-status-accent: var(--pd-separator);
 }
 
 .pd-f0-status-rule {

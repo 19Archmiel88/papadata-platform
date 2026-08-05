@@ -15,6 +15,8 @@ component_id: MetricCard
 ## Anatomia
 metricId; title; value; formattedValue; delta; target; trend; unit.
 
+Anatomia bazowa wynika z kanonicznego kontraktu TypeScript. Warianty projektowe mogą rozszerzać prezentację o porównanie okresu, cel lub plan, odchylenie, mikrochart, status danych, źródło, zakres, świeżość oraz akcję szczegółów albo wyjaśnienia przez Papa, o ile ekran dostarcza te dane przez zatwierdzony view model.
+
 ## Kanoniczny kontrakt TypeScript
 Jedyny kanoniczny kontrakt: `contracts/components/metriccard.ts`.
 
@@ -34,6 +36,10 @@ Zdarzenia mają identyfikator komponentu, nazwę działania, `correlationId` i t
 
 ## Stany i warianty
 Obsłuż: default, loading, empty, error, disabled, readonly i success, jeśli mają znaczenie dla tego komponentu. Nie renderuj akcji bez capability i nie ukrywaj przyczyny blokady.
+
+Warianty MetricCard: podstawowy, z trendem, z celem, z odchyleniem, z mikrochartem oraz alarmowy lub rekomendacyjny. Mikrochart, subtelne wypełnienie albo cień pod wykresem oraz ikona albo strzałka kierunku są elementami wariantu rozbudowanego, nie obowiązkową anatomią każdego MetricCard.
+
+Kontrakt docelowy opisany w dokumentacji jest szerszy niż obecny kontrakt TypeScript. Do czasu synchronizacji kontraktów technicznych nie wolno przedstawiać pól wariantu rozbudowanego jako istniejącego API komponentu.
 
 ## Dostępność
 Semantyczny element HTML, pełna obsługa klawiatury, focus-visible, nazwa dostępna, komunikaty dynamiczne przez właściwe live region oraz brak przekazywania znaczenia wyłącznie kolorem.
@@ -80,6 +86,8 @@ Semantyczny element HTML, pełna obsługa klawiatury, focus-visible, nazwa dost�
 
 ## Storybook i testy
 Wymagane stories: wariant bazowy, wszystkie stany, długie polskie i angielskie etykiety, 200% zoom, dark/light, reduced motion oraz test interakcji dla każdej akcji. Target pozostaje backlogiem do chwili dodania fizycznego pliku story.
+
+Story komponentu MetricCard odpowiada za pełny katalog wariantów. Story 05.03 może pokazać wybrane warianty jako decyzję powierzchni, ale nie zastępuje testów komponentu.
 
 ## Kryteria akceptacji
 1. `tsc --noEmit` kompiluje jedyny kontrakt kanoniczny.

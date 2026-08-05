@@ -2,50 +2,53 @@
 version: 1.0
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
+story_id: "00.02"
+story_title: "Typografia"
+decision_status: "accepted"
+prototype_status: "implemented"
+production_status: "not_started"
+test_status: "passing"
+applies_to:
+  - desktop
+  - light
+  - dark
+  - pl
+  - comfortable
+  - full_motion
+approved_commit: "94ea15ab11d018252944b36fdc55df8b7462e30a"
+approved_evidence: "foundation-evidence/manifest.json"
 owner: Artur Wiśniewski
-id: DOC-10-AA0B1D2D486A
-status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+updated_at: 2026-08-03
+status: stage-01-accepted
 ---
 
 # Typografia
 
-## Decyzja kanoniczna 1.0
+## Decyzja
 
-Kanoniczna para fontów dla PapaData 1.0 to **Instrument Sans** jako font interfejsu oraz **IBM Plex Mono** jako font techniczny. Decyzja jest docelowa dla nowych ekranów, Storybooka i design systemu. Wzmianki o poprzedniej parze fontów są traktowane jako ślad historyczny snapshotu i nie są źródłem nowej implementacji.
+Kanoniczna para fontów to Inter dla interfejsu użytkownika oraz JetBrains Mono dla danych technicznych, identyfikatorów, wartości systemowych, kodu i treści monospace.
 
-## Zakres odpowiedzialności
+## Publiczne role
 
-Typografia definiuje czytelność, hierarchię, rytm i sposób prezentacji danych analitycznych. Nie definiuje ról użytkownika, endpointów, capability ani procesów biznesowych. Wszystkie komponenty korzystają z tokenów typograficznych, a nie z lokalnych wartości CSS.
-
-## Tokeny i aliasy
-
-| Token | Wartość docelowa | Zastosowanie |
+| Rola | Token CSS | Zastosowanie |
 |---|---|---|
-| `--pd-font-sans` | `Instrument Sans` | tekst UI, nagłówki, formularze, tabele |
-| `--pd-font-mono` | `IBM Plex Mono` | identyfikatory, kwoty techniczne, logi, kody, trace ID |
-| `--pd-type-display` | 40–48 px | ekranowe nagłówki strategiczne |
-| `--pd-type-title` | 24–32 px | tytuły regionów i modułów |
-| `--pd-type-body` | 15–16 px | treść podstawowa |
-| `--pd-type-caption` | 12–13 px | etykiety pomocnicze, metadane, timestampy |
-| `--pd-line-normal` | 1.45–1.6 | tekst roboczy i opisowy |
-| `--pd-letter-tight` | -0.02em | duże nagłówki bez efektu ciężkości |
+| sans | `--pd-font-sans` | UI, nagłówki, formularze, tabele |
+| mono | `--pd-font-mono` | dane techniczne i identyfikatory |
+| label | `--pd-type-size-label` | etykiety i krótkie metadane |
+| heading1-heading5 | `--pd-type-size-heading-*` | hierarchia nagłówków komponentów |
+| headingSmall | `--pd-type-size-heading-small` | kompaktowe nagłówki paneli |
+| tight | `--pd-line-height-tight` | zwarte nagłówki i tytuły |
 
 ## Reguły użycia
 
-- Nie używać wersalików jako podstawowego sposobu budowania hierarchii.
-- Nie stosować ciężkich font-weight jako domyślnej estetyki; wagi 400–500 są standardem, 600 tylko dla krótkich punktów ciężkości.
-- Liczby KPI używają tabular numerals, aby wartości nie skakały w tabelach i wykresach.
-- Długie opisy analityczne muszą zachować czytelność przy zoom 200%.
-- PL/EN ma zachować tę samą hierarchię mimo różnej długości tekstów.
+- zwykły tekst, nawigacja, formularze i przyciski używają Inter
+- liczby techniczne mogą używać JetBrains Mono z tabular numerals
+- font monospace nie służy do zwykłych opisów ani nawigacji
+- hierarchia wynika z rozmiaru, line-height i weight, nie z wersalików
+- dokumentacja i tokeny nie utrzymują konkurencyjnych fontów
 
-## Decyzja odrzucona
+## Status odbioru Etapu 01
 
-Poprzednia para fontów pozostaje dopuszczalna wyłącznie jako zależność historyczna istniejącego snapshotu lub fallback w migracji. Nie jest docelowym wyborem dla nowych dokumentów, nowych stories ani nowych komponentów.
-
-## Testy
-
-1. Storybook pokazuje skalę dla light/dark, PL/EN i compact/comfortable.
-2. Walidator blokuje drugi konkurencyjny wybór fontów w dokumentach docelowych.
-3. Komponenty nie deklarują lokalnych rodzin fontów poza tokenami.
-4. Nagłówki nie używają all caps jako wymogu wizualnego.
+- Dokument opisuje accepted desktop baseline light/dark dla stories `00.01-00.11`.
+- `test_status: "passing"` oznacza, że finalny status `passing` wymaga manifestu i świadomej akceptacji zrzutów.
+- Laboratorium `05.01-05.05` pozostaje poza frozen baseline i ma status review.

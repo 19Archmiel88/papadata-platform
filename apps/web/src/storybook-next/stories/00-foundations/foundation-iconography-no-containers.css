@@ -28,7 +28,7 @@
   justify-content: center;
   width: 24px;
   height: 24px;
-  color: var(--pd-text-primary);
+  color: var(--pd-text);
 }
 
 .pd-f0-iconography-preview svg {
@@ -59,7 +59,7 @@
 
 .pd-f0-iconography-meta strong,
 .pd-f0-iconography-detail strong {
-  color: var(--pd-text-primary);
+  color: var(--pd-text);
   font-weight: 600;
 }
 

@@ -9,6 +9,9 @@ pnpm dev:web
 pnpm storybook
 ```
 
+Storybook uruchamia się pod adresem
+`http://localhost:6010/`.
+
 Główne `pnpm dev` pozostaje poleceniem backendowym.
 
 ## Katalog Storybooka

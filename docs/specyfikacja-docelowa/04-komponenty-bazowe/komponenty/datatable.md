@@ -15,6 +15,8 @@ component_id: DataTable
 ## Anatomia
 columns; rows; rowCount; sort; selectedRowIds; loading; emptyMessage.
 
+Pełny system tabeli jest kompozycją powierzchni, a nie wyłącznie siatką danych. Może obejmować toolbar, wyszukiwanie, filtry, zakres dat, licznik aktywnych filtrów, czyszczenie filtrów, `ColumnPicker`, zmianę gęstości, sortowanie, zaznaczanie wierszy, `BulkActionBar`, akcje pojedynczego rekordu, otwieranie `DetailPanel`, paginację, liczbę wszystkich rekordów, stany danych i eksport.
+
 ## Kanoniczny kontrakt TypeScript
 Jedyny kanoniczny kontrakt: `contracts/components/datatable.ts`.
 
@@ -33,6 +35,14 @@ Zdarzenia mają identyfikator komponentu, nazwę działania, `correlationId` i t
 
 ## Stany i warianty
 Obsłuż: default, loading, empty, error, disabled, readonly i success, jeśli mają znaczenie dla tego komponentu. Nie renderuj akcji bez capability i nie ukrywaj przyczyny blokady.
+
+Wariant prezentacyjny „Zwiń do 1 wiersza” pokazuje pierwszy wiersz bieżącego wyniku po zastosowaniu aktywnych filtrów, aktualnego sortowania i aktualnie wybranej strony. Akcja powrotna to „Pokaż pełną tabelę”.
+
+Zwinięcie nie jest stanem danych, stanem gotowości, zmianą paginacji ani zmianą zestawu danych. Nie może automatycznie zaznaczać wiersza, zmieniać aktywnej strony, zmieniać rozmiaru strony, usuwać filtrów, usuwać sortowania, zmieniać widoczności kolumn, usuwać istniejącego zaznaczenia ani zmieniać danych źródłowych. Toolbar, nagłówek kolumn oraz informacja o liczbie rekordów pozostają dostępne, chyba że dokumentacja konkretnego ekranu jednoznacznie określi inaczej.
+
+Eksport pojedynczej tabeli korzysta z aktualnej konfiguracji powierzchni. Opcja „Eksportuj widoczne kolumny” uwzględnia tylko widoczne kolumny, ich aktualną kolejność prezentacji wynikającą z konfiguracji tabeli, aktywne filtry, aktualne sortowanie, zakres dat, źródło, świeżość i snapshot, jeżeli dotyczy.
+
+Opcja „Eksportuj wszystkie kolumny” obejmuje także kolumny ukryte, ale tylko w bezpiecznym zakresie: wszystkie dozwolone i eksportowalne kolumny należące do aktualnego zestawu danych tabeli, dostępne dla aktualnego użytkownika oraz dopuszczone do prezentacji i eksportu przez capability oraz politykę danych. Opcja nie obejmuje pól technicznych backendu, kolumn niedostępnych dla użytkownika ani danych wyłączonych z eksportu. PII, sekrety i dane chronione są wykluczone, jeśli nie zostały jawnie dopuszczone do eksportu; dane osobowe mogą trafić do eksportu tylko wtedy, gdy należą do aktualnego zestawu danych tabeli, użytkownik ma właściwe capability, a polityka danych jawnie pozwala na eksport. Nie zmienia widoku użytkownika.
 
 ## Dostępność
 Semantyczny element HTML, pełna obsługa klawiatury, focus-visible, nazwa dostępna, komunikaty dynamiczne przez właściwe live region oraz brak przekazywania znaczenia wyłącznie kolorem.
@@ -63,6 +73,8 @@ Semantyczny element HTML, pełna obsługa klawiatury, focus-visible, nazwa dost�
 
 ## Storybook i testy
 Wymagane stories: wariant bazowy, wszystkie stany, długie polskie i angielskie etykiety, 200% zoom, dark/light, reduced motion oraz test interakcji dla każdej akcji. Target pozostaje backlogiem do chwili dodania fizycznego pliku story.
+
+Story DataTable odpowiada za pełne warianty systemu tabeli. Story 05.03 pokazuje reprezentatywną powierzchnię tabeli i nie zastępuje katalogu komponentu.
 
 ## Kryteria akceptacji
 1. `tsc --noEmit` kompiluje jedyny kontrakt kanoniczny.

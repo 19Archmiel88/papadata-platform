@@ -64,6 +64,10 @@ migration_checksum() {
   sha256sum "$1" | awk '{ print $1 }'
 }
 
+monotonic_ms() {
+  awk '{ printf "%.0f\n", $1 * 1000 }' /proc/uptime
+}
+
 applied_checksum() {
   target_database="$1"
   version="$2"
@@ -101,10 +105,10 @@ apply_migrations() {
       echo "skip ${version} ${name}"
     else
       echo "apply ${version} ${name}"
-      started_at="$(date +%s)"
+      started_at_ms="$(monotonic_ms)"
       run_psql "$target_database" --single-transaction -f "$migration_file" || return 1
-      finished_at="$(date +%s)"
-      execution_ms=$(( (finished_at - started_at) * 1000 ))
+      finished_at_ms="$(monotonic_ms)"
+      execution_ms=$((finished_at_ms - started_at_ms))
 
       run_psql "$target_database" \
         -v version="$version" \

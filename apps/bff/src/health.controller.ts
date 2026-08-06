@@ -4,6 +4,7 @@ import {
   Inject,
   ServiceUnavailableException,
 } from "@nestjs/common";
+import { CloudRunIdentityService } from "./cloud-run-identity.service.js";
 import type { BffConfig } from "./config.js";
 import { BFF_CONFIG } from "./tokens.js";
 
@@ -12,6 +13,9 @@ export class HealthController {
   constructor(
     @Inject(BFF_CONFIG)
     private readonly config: BffConfig,
+
+    @Inject(CloudRunIdentityService)
+    private readonly cloudRunIdentity: CloudRunIdentityService,
   ) {}
 
   @Get("health")
@@ -41,24 +45,23 @@ export class HealthController {
   @Get("readyz")
   async readyz(): Promise<object> {
     try {
+      const authorization = await this.cloudRunIdentity.authorizationHeader();
       const response = await fetch(
         `${this.config.apiOrigin}/readyz`,
         {
+          headers: authorization ? { authorization } : undefined,
           signal: AbortSignal.timeout(this.config.upstreamTimeoutMs),
         },
       );
 
-      const upstream: unknown =
-        await response.json();
+      const upstream: unknown = await response.json();
 
       if (
         !response.ok
         || !isRecord(upstream)
         || upstream.status !== "ready"
       ) {
-        throw new Error(
-          "Upstream API is not ready.",
-        );
+        throw new Error("Upstream API is not ready.");
       }
 
       return {
@@ -72,7 +75,7 @@ export class HealthController {
         status: "ready",
         upstream,
       };
-    } catch (error) {
+    } catch {
       throw new ServiceUnavailableException({
         dependencies: [
           {

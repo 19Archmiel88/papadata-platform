@@ -75,3 +75,22 @@ apps/web/.vite/
 # Generated Storybook acceptance evidence
 /foundation-evidence/*
 !/foundation-evidence/manifest.json
+
+# Generated local production-parity certificates and runtime evidence
+/.runtime/
+
+# Terraform local working directories
+**/.terraform/
+
+# Production-parity template is safe to commit; the generated secret file remains ignored
+!.env.production-parity.example
+
+# Local project archives and checksums
+/*.zip
+/*.zip.sha256
+/*.tar
+/*.tar.gz
+/*.tgz
+
+# Legacy donor is stored outside the runtime repository
+/migration/donor/

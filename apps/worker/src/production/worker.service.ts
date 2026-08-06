@@ -15,6 +15,7 @@ import {
   SecretManagerCredentialSecretStore,
   type CredentialProvider,
 } from "@papadata/integrations";
+import { readWorkerConfig } from "./config.js";
 import { DurableIngestionPipeline } from "./ingestion-pipeline.js";
 
 export type IntegrationJobPayload = {
@@ -47,11 +48,9 @@ export async function createAdapterForIntegrationJob(input: {
     input.payload.workspaceId,
     input.payload.connectionId,
   );
-
   if (!connection || connection.provider_id !== input.payload.providerId) {
     throw new Error("Integration connection scope mismatch");
   }
-
   const credential = await input.credentialProvider.resolve({
     tenantId: input.payload.tenantId,
     workspaceId: input.payload.workspaceId,
@@ -59,16 +58,23 @@ export async function createAdapterForIntegrationJob(input: {
     credentialReference: readConnectionCredentialReference(connection),
     provider: input.payload.providerId,
   });
-
   return createProviderAdapter(credential);
 }
 
 @Injectable()
 export class IntegrationWorkerService implements OnModuleDestroy {
   private readonly logger = new Logger(IntegrationWorkerService.name);
-  private readonly connection = new IORedis(process.env.REDIS_URL ?? "redis://redis-production:6379", { maxRetriesPerRequest: null });
+  private readonly config = readWorkerConfig();
+  private readonly connection = new IORedis(this.config.redisUrl, {
+    connectTimeout: 5_000,
+    enableReadyCheck: true,
+    maxRetriesPerRequest: null,
+    ...(this.config.redisCaBase64
+      ? { tls: { ca: Buffer.from(this.config.redisCaBase64, "base64").toString("utf8") } }
+      : {}),
+  });
   private readonly database = new ProductionDatabase({
-    connectionString: process.env.DATABASE_URL ?? "postgresql://papadata_app:papadata-local@postgres-production:5432/papadata",
+    connectionString: this.config.databaseUrl,
     max: 8,
     statementTimeoutMs: 30_000,
   });
@@ -84,9 +90,9 @@ export class IntegrationWorkerService implements OnModuleDestroy {
     (job) => this.process(job),
     {
       connection: this.connection,
-      concurrency: Number(process.env.WORKER_CONCURRENCY ?? 4),
-      lockDuration: 60_000,
-      stalledInterval: 30_000,
+      concurrency: this.config.workerConcurrency,
+      lockDuration: this.config.leaseDurationMs,
+      stalledInterval: Math.max(5_000, Math.floor(this.config.leaseDurationMs / 2)),
     },
   );
 
@@ -94,6 +100,7 @@ export class IntegrationWorkerService implements OnModuleDestroy {
     this.logger.log(`Processing ${job.data.operation} for ${job.data.providerId}`);
     const pipeline = new DurableIngestionPipeline({
       repository: this.ingestionRepository,
+      leaseDurationMs: this.config.leaseDurationMs,
     });
 
     return pipeline.run({
@@ -121,14 +128,9 @@ export class IntegrationWorkerService implements OnModuleDestroy {
   }
 }
 
-function readConnectionCredentialReference(
-  connection: Record<string, unknown>,
-): string {
+function readConnectionCredentialReference(connection: Record<string, unknown>): string {
   const credentialReference = connection.credential_ref;
-  if (
-    typeof credentialReference !== "string"
-    || credentialReference.trim().length === 0
-  ) {
+  if (typeof credentialReference !== "string" || !credentialReference.trim()) {
     throw new Error("Integration connection has no credential reference");
   }
   return credentialReference;

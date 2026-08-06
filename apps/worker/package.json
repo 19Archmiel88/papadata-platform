@@ -24,6 +24,7 @@
     "@nestjs/common": "^11.1.28",
     "@nestjs/core": "^11.1.28",
     "@nestjs/schedule": "^6.1.3",
+    "@papadata/ai-runtime": "workspace:*",
     "@papadata/contracts": "workspace:*",
     "@papadata/database": "workspace:*",
     "@papadata/integrations": "workspace:*",

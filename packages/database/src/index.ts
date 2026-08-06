@@ -40,6 +40,7 @@ export const DATABASE_SCHEMA_NAME = "app";
 export const databaseRoles = {
   migrator: "papadata_migrator",
   runtime: "papadata_app",
+  platform: "papadata_platform",
   test: "papadata_test",
 } as const;
 
@@ -122,3 +123,5 @@ export type MetricEngineTableName = (typeof metricEngineTables)[number];
 export type RemainingBackendTableName = (typeof remainingBackendTables)[number];
 export * from "./production.js";
 export * from "./remediation.js";
+
+export * from "./product-domain.js";

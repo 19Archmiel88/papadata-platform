@@ -1,0 +1,20 @@
+metric,current_project,papadata_main,interpretation
+backend_code_files,190,506,papadata-main has broader implementation
+backend_code_loc,36368,148630,papadata-main has much more backend logic
+production_controllers,9,38,papadata-main exposes more business domains
+production_routes,26,259,papadata-main is much more functionally complete
+openapi_operations,212_target_26_release,262,papadata-main runtime is closer to its documented contract
+test_files,21,92,papadata-main has broader test coverage
+assertions_approx,456,2325,papadata-main has more behavioral verification
+migrations,13,54,papadata-main has longer domain evolution history
+models_or_tables,85_create_tables,79_prisma_models,both have substantial schemas but old is more wired to domains
+rls_enable,19,63,papadata-main has broader RLS coverage
+rls_force,2,60,papadata-main has broader forced RLS
+rls_policies,7,87,papadata-main has broader tenant policy coverage
+runtime_adapters,3,5,neither meets required 7
+adapter_loc,289,2555,papadata-main adapters are significantly deeper
+terraform_resources,34,66,papadata-main has broader applied architecture surface
+workflow_files,4,1,current splits concerns and has stronger supply-chain workflows
+workflow_jobs,8,2,current has more separate workflow jobs; old jobs are larger and include live services
+docs_files,473,85,current has more documentation but greater target-runtime divergence
+docs_markdown_lines,31915,16950,quantity does not equal runtime completeness

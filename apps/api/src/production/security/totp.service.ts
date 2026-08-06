@@ -1,3 +1,4 @@
+import { Inject } from "@nestjs/common";
 import { Injectable } from "@nestjs/common";
 import { createCipheriv, createDecipheriv, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { ProductionDatabase, SecurityRepository } from "@papadata/database";
@@ -6,7 +7,7 @@ const encode=(input:Buffer):string=>{let bits="";for(const byte of input)bits+=b
 const decode=(value:string):Buffer=>{let bits="";for(const char of value.replace(/=+$/u,"").toUpperCase()){const index=alphabet.indexOf(char);if(index<0)throw new Error("Invalid base32 secret");bits+=index.toString(2).padStart(5,"0");}const bytes:number[]=[];for(let i=0;i+8<=bits.length;i+=8)bytes.push(Number.parseInt(bits.slice(i,i+8),2));return Buffer.from(bytes);};
 @Injectable()
 export class TotpService{
- private readonly repository:SecurityRepository;constructor(database:ProductionDatabase){this.repository=new SecurityRepository(database);}
+ private readonly repository:SecurityRepository;constructor(@Inject(ProductionDatabase) database:ProductionDatabase){this.repository=new SecurityRepository(database);}
  private key():Buffer{const value=process.env.MFA_ENCRYPTION_KEY;if(!value)throw new Error("MFA_ENCRYPTION_KEY is required");const key=Buffer.from(value,/^[0-9a-f]{64}$/iu.test(value)?"hex":"base64");if(key.length!==32)throw new Error("MFA_ENCRYPTION_KEY must decode to 32 bytes");return key;}
  private encrypt(secret:string):string{const iv=randomBytes(12);const cipher=createCipheriv("aes-256-gcm",this.key(),iv);const data=Buffer.concat([cipher.update(secret,"utf8"),cipher.final()]);return[iv.toString("base64url"),cipher.getAuthTag().toString("base64url"),data.toString("base64url")].join(".");}
  private decrypt(value:string):string{const[iv,tag,data]=value.split(".");if(!iv||!tag||!data)throw new Error("Invalid encrypted MFA secret");const decipher=createDecipheriv("aes-256-gcm",this.key(),Buffer.from(iv,"base64url"));decipher.setAuthTag(Buffer.from(tag,"base64url"));return Buffer.concat([decipher.update(Buffer.from(data,"base64url")),decipher.final()]).toString("utf8");}

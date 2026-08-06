@@ -40,7 +40,7 @@ const descriptors: readonly IntegrationProviderDescriptor[] = [
     supportedStreams: ["orders", "products", "refunds", "inventory"],
     requiredScopes: ["allegro:api:sale:orders:read"],
     optionalScopes: ["allegro:api:sale:offers:read"],
-    supportsWebhooks: true,
+    supportsWebhooks: false,
   },
   {
     providerId: "google_ads",
@@ -83,7 +83,13 @@ export class ProviderRegistry {
     }
   }
 
-  listDescriptors(): readonly IntegrationProviderDescriptor[] {
+  listDescriptors(input: { readonly includeUnavailable?: boolean } = {}): readonly IntegrationProviderDescriptor[] {
+    return input.includeUnavailable
+      ? descriptors
+      : descriptors.filter((descriptor) => this.adapters.has(descriptor.providerId));
+  }
+
+  listTargetDescriptors(): readonly IntegrationProviderDescriptor[] {
     return descriptors;
   }
 
@@ -100,7 +106,7 @@ export class ProviderRegistry {
   }
 
   configuredProviderIds(): readonly MvpIntegrationCatalogProviderId[] {
-    return mvpIntegrationCatalogProviderIds.filter((providerId) =>
+    return mvpIntegrationCatalogProviderIds.filter((providerId: MvpIntegrationCatalogProviderId) =>
       this.adapters.get(providerId)?.isConfigured() === true,
     );
   }

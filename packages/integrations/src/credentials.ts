@@ -59,22 +59,73 @@ export interface CredentialProvider {
   resolve(input: CredentialResolutionInput): Promise<ResolvedCredentialMaterial>;
 }
 
+export type WooCommerceCredentialMaterial = {
+  readonly storeUrl: string;
+  readonly consumerKey: string;
+  readonly consumerSecret: string;
+  readonly webhookSecret?: string;
+};
+
 export type ShopifyCredentialMaterial = {
   readonly shopDomain: string;
   readonly accessToken: string;
   readonly apiVersion: string;
+  readonly webhookSecret?: string;
 };
 
 export type BaseLinkerCredentialMaterial = {
   readonly token: string;
 };
 
+export type AllegroCredentialMaterial = {
+  readonly accessToken?: string;
+  readonly refreshToken?: string;
+  readonly clientId?: string;
+  readonly clientSecret?: string;
+  readonly tokenUri?: string;
+  readonly expiresAt?: string | null;
+  readonly apiBaseUrl?: string;
+  readonly marketplaceId?: string;
+};
+
+export type GoogleAdsCredentialMaterial = {
+  readonly developerToken: string;
+  readonly customerId: string;
+  readonly loginCustomerId?: string;
+  readonly accessToken?: string;
+  readonly refreshToken?: string;
+  readonly clientId?: string;
+  readonly clientSecret?: string;
+  readonly tokenUri?: string;
+  readonly expiresAt?: string | null;
+  readonly apiVersion?: string;
+};
+
+export type MetaAdsCredentialMaterial = {
+  readonly accountId: string;
+  readonly accessToken: string;
+  readonly apiVersion?: string;
+  readonly appSecret?: string;
+};
+
 export type Ga4CredentialMaterial = {
   readonly propertyId: string;
-  readonly accessToken: string;
+  readonly accessToken?: string;
+  readonly refreshToken?: string;
+  readonly clientId?: string;
+  readonly clientSecret?: string;
+  readonly tokenUri?: string;
+  readonly expiresAt?: string | null;
 };
 
 export type ResolvedCredentialMaterial =
+  | {
+      readonly providerId: "woocommerce";
+      readonly credentialReference: string;
+      readonly secretResource: string;
+      readonly version: string;
+      readonly material: WooCommerceCredentialMaterial;
+    }
   | {
       readonly providerId: "shopify";
       readonly credentialReference: string;
@@ -88,6 +139,27 @@ export type ResolvedCredentialMaterial =
       readonly secretResource: string;
       readonly version: string;
       readonly material: BaseLinkerCredentialMaterial;
+    }
+  | {
+      readonly providerId: "allegro";
+      readonly credentialReference: string;
+      readonly secretResource: string;
+      readonly version: string;
+      readonly material: AllegroCredentialMaterial;
+    }
+  | {
+      readonly providerId: "google_ads";
+      readonly credentialReference: string;
+      readonly secretResource: string;
+      readonly version: string;
+      readonly material: GoogleAdsCredentialMaterial;
+    }
+  | {
+      readonly providerId: "meta_ads";
+      readonly credentialReference: string;
+      readonly secretResource: string;
+      readonly version: string;
+      readonly material: MetaAdsCredentialMaterial;
     }
   | {
       readonly providerId: "ga4";
@@ -341,44 +413,135 @@ function parseCredentialSecret(
   secretPayload: string,
 ): ResolvedCredentialMaterial {
   const payload = parseJsonObject(secretPayload);
+  const common = {
+    credentialReference: "",
+    secretResource: "",
+    version: "",
+  } as const;
 
   switch (providerId) {
+    case "woocommerce":
+      return {
+        ...common,
+        providerId,
+        material: {
+          storeUrl: requiredString(payload.storeUrl),
+          consumerKey: requiredString(payload.consumerKey),
+          consumerSecret: requiredString(payload.consumerSecret),
+          ...(optionalString(payload.webhookSecret)
+            ? { webhookSecret: optionalString(payload.webhookSecret) ?? undefined }
+            : {}),
+        },
+      };
     case "shopify":
       return {
+        ...common,
         providerId,
-        credentialReference: "",
-        secretResource: "",
-        version: "",
         material: {
           shopDomain: requiredString(payload.shopDomain),
           accessToken: requiredString(payload.accessToken),
           apiVersion: optionalString(payload.apiVersion) ?? "2026-07",
+          ...(optionalString(payload.webhookSecret)
+            ? { webhookSecret: optionalString(payload.webhookSecret) ?? undefined }
+            : {}),
         },
       };
     case "baselinker":
       return {
+        ...common,
         providerId,
-        credentialReference: "",
-        secretResource: "",
-        version: "",
         material: {
           token: requiredString(payload.token),
         },
       };
-    case "ga4":
+    case "allegro":
       return {
+        ...common,
         providerId,
-        credentialReference: "",
-        secretResource: "",
-        version: "",
         material: {
-          propertyId: requiredString(payload.propertyId),
-          accessToken: requiredString(payload.accessToken),
+          ...optionalOAuthMaterial(payload),
+          ...(optionalString(payload.apiBaseUrl)
+            ? { apiBaseUrl: optionalString(payload.apiBaseUrl) ?? undefined }
+            : {}),
+          ...(optionalString(payload.marketplaceId)
+            ? { marketplaceId: optionalString(payload.marketplaceId) ?? undefined }
+            : {}),
         },
       };
-    default:
-      throw new CredentialResolutionError("provider_not_supported");
+    case "google_ads":
+      return {
+        ...common,
+        providerId,
+        material: {
+          developerToken: requiredString(payload.developerToken),
+          customerId: requiredString(payload.customerId),
+          ...optionalOAuthMaterial(payload),
+          ...(optionalString(payload.loginCustomerId)
+            ? { loginCustomerId: optionalString(payload.loginCustomerId) ?? undefined }
+            : {}),
+          ...(optionalString(payload.apiVersion)
+            ? { apiVersion: optionalString(payload.apiVersion) ?? undefined }
+            : {}),
+        },
+      };
+    case "meta_ads":
+      return {
+        ...common,
+        providerId,
+        material: {
+          accountId: requiredString(payload.accountId),
+          accessToken: requiredString(payload.accessToken),
+          ...(optionalString(payload.apiVersion)
+            ? { apiVersion: optionalString(payload.apiVersion) ?? undefined }
+            : {}),
+          ...(optionalString(payload.appSecret)
+            ? { appSecret: optionalString(payload.appSecret) ?? undefined }
+            : {}),
+        },
+      };
+    case "ga4":
+      return {
+        ...common,
+        providerId,
+        material: {
+          propertyId: requiredString(payload.propertyId),
+          ...optionalOAuthMaterial(payload),
+        },
+      };
   }
+  throw new CredentialResolutionError("provider_not_supported");
+}
+
+function optionalOAuthMaterial(
+  payload: Record<string, unknown>,
+): {
+  readonly accessToken?: string;
+  readonly refreshToken?: string;
+  readonly clientId?: string;
+  readonly clientSecret?: string;
+  readonly tokenUri?: string;
+  readonly expiresAt?: string | null;
+} {
+  return {
+    ...(optionalString(payload.accessToken)
+      ? { accessToken: optionalString(payload.accessToken) ?? undefined }
+      : {}),
+    ...(optionalString(payload.refreshToken)
+      ? { refreshToken: optionalString(payload.refreshToken) ?? undefined }
+      : {}),
+    ...(optionalString(payload.clientId)
+      ? { clientId: optionalString(payload.clientId) ?? undefined }
+      : {}),
+    ...(optionalString(payload.clientSecret)
+      ? { clientSecret: optionalString(payload.clientSecret) ?? undefined }
+      : {}),
+    ...(optionalString(payload.tokenUri)
+      ? { tokenUri: optionalString(payload.tokenUri) ?? undefined }
+      : {}),
+    ...(optionalNullableString(payload.expiresAt) !== undefined
+      ? { expiresAt: optionalNullableString(payload.expiresAt) }
+      : {}),
+  };
 }
 
 function parseJsonObject(payload: string): Record<string, unknown> {
@@ -407,5 +570,11 @@ function optionalString(value: unknown): string | null {
   if (value === undefined || value === null) {
     return null;
   }
+  return requiredString(value);
+}
+
+function optionalNullableString(value: unknown): string | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
   return requiredString(value);
 }

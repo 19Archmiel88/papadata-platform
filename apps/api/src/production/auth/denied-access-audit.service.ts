@@ -26,26 +26,38 @@ export class DeniedAccessAuditService {
       return;
     }
 
+    const correlationId =
+      readHeader(input.request.headers, "x-correlation-id") ?? "unknown";
+    const resourceId = [
+      input.request.method ?? "UNKNOWN",
+      input.request.url ?? "unknown",
+    ].join(" ");
+
+    if (!input.principal) {
+      console.warn("Anonymous API access denied", {
+        correlationId,
+        reason: input.reason,
+        resourceId,
+      });
+      return;
+    }
+
     try {
       await this.audit.append({
         action: "api.access.denied",
-        actorId: input.principal?.userId ?? "anonymous",
-        actorType: input.principal ? "user" : "system",
-        correlationId:
-          readHeader(input.request.headers, "x-correlation-id") ?? "unknown",
+        actorId: input.principal.userId,
+        actorType: "user",
+        correlationId,
         metadata: {
           reason: input.reason,
           requiredAuthLevel: input.requiredAuthLevel,
           requiredCapabilities: input.requiredCapabilities,
         },
         outcome: "denied",
-        resourceId: [
-          input.request.method ?? "UNKNOWN",
-          input.request.url ?? "unknown",
-        ].join(" "),
+        resourceId,
         resourceType: "api_endpoint",
-        tenantId: input.principal?.tenantId ?? null,
-        workspaceId: input.principal?.workspaceId ?? null,
+        tenantId: input.principal.tenantId,
+        workspaceId: input.principal.workspaceId,
       });
     } catch (error) {
       console.warn("Denied access audit failed", {

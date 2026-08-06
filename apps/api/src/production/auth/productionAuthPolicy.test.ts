@@ -103,7 +103,7 @@ describe("production A01 auth and route policies", () => {
     const webhook = matrix.find(
       (entry) =>
         entry.method === "POST"
-        && entry.path === "/v1/integrations/webhooks/:provider",
+        && entry.path === "/v1/integrations/webhooks/:provider/:connectionId",
     );
     assert.equal(webhook?.classifications[0], "external-provider");
     assert.equal(webhook?.capabilities.length, 0);
@@ -497,11 +497,11 @@ describe("production A01 auth and route policies", () => {
         url: "/metrics",
       });
 
-      assert.equal(metrics.statusCode, 403);
+      assert.equal(metrics.statusCode, 401);
 
       const webhook = await fixture.inject({
         method: "POST",
-        url: "/v1/integrations/webhooks/shopify",
+        url: "/v1/integrations/webhooks/shopify/00000000-0000-4000-8000-000000000001",
       });
 
       assert.equal(webhook.statusCode, 403);
@@ -778,20 +778,39 @@ async function withProductionHttpApp(
   const previousNodeEnv = process.env.NODE_ENV;
   const previousDatabaseUrl = process.env.DATABASE_URL;
   const previousRedisUrl = process.env.REDIS_URL;
+  const previousStorageDriver = process.env.PAPADATA_STORAGE_DRIVER;
   const previousStorageBucket = process.env.PAPADATA_STORAGE_BUCKET;
+  const previousStorageEndpoint = process.env.PAPADATA_STORAGE_ENDPOINT;
+  const previousStorageAccessKey = process.env.PAPADATA_STORAGE_ACCESS_KEY;
+  const previousStorageSecretKey = process.env.PAPADATA_STORAGE_SECRET_KEY;
   const previousSessionStore = process.env.PAPADATA_API_AUTH_SESSION_STORE;
+  const previousQueueDriver = process.env.PAPADATA_API_QUEUE_DRIVER;
+  const previousInfrastructureAuthToken =
+    process.env.PAPADATA_INFRASTRUCTURE_AUTH_TOKEN;
+  const previousMfaEncryptionKey = process.env.MFA_ENCRYPTION_KEY;
 
   process.env.NODE_ENV = "test";
   process.env.DATABASE_URL = "postgresql://user:pass@127.0.0.1:1/db";
   process.env.REDIS_URL = "redis://127.0.0.1:1";
+  process.env.PAPADATA_STORAGE_DRIVER = "minio";
   process.env.PAPADATA_STORAGE_BUCKET = "test-bucket";
+  process.env.PAPADATA_STORAGE_ENDPOINT = "http://127.0.0.1:9000";
+  process.env.PAPADATA_STORAGE_ACCESS_KEY =
+    "minio-access-key-0123456789";
+  process.env.PAPADATA_STORAGE_SECRET_KEY =
+    "minio-secret-key-01234567890123456789";
   process.env.PAPADATA_API_AUTH_SESSION_STORE = "test-memory";
+  process.env.PAPADATA_API_QUEUE_DRIVER = "test-memory";
+  process.env.PAPADATA_INFRASTRUCTURE_AUTH_TOKEN =
+    "integration-fixture-infrastructure-token-000001";
+  process.env.MFA_ENCRYPTION_KEY =
+    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
   await withPrincipalEnv(async () => {
     const app = await NestFactory.create<NestFastifyApplication>(
       ProductionAppModule,
       new FastifyAdapter(),
-      { logger: false },
+      { abortOnError: false, logger: false },
     );
 
     try {
@@ -839,11 +858,21 @@ async function withProductionHttpApp(
       restoreEnv("NODE_ENV", previousNodeEnv);
       restoreEnv("DATABASE_URL", previousDatabaseUrl);
       restoreEnv("REDIS_URL", previousRedisUrl);
+      restoreEnv("PAPADATA_STORAGE_DRIVER", previousStorageDriver);
       restoreEnv("PAPADATA_STORAGE_BUCKET", previousStorageBucket);
+      restoreEnv("PAPADATA_STORAGE_ENDPOINT", previousStorageEndpoint);
+      restoreEnv("PAPADATA_STORAGE_ACCESS_KEY", previousStorageAccessKey);
+      restoreEnv("PAPADATA_STORAGE_SECRET_KEY", previousStorageSecretKey);
       restoreEnv(
         "PAPADATA_API_AUTH_SESSION_STORE",
         previousSessionStore,
       );
+      restoreEnv("PAPADATA_API_QUEUE_DRIVER", previousQueueDriver);
+      restoreEnv(
+        "PAPADATA_INFRASTRUCTURE_AUTH_TOKEN",
+        previousInfrastructureAuthToken,
+      );
+      restoreEnv("MFA_ENCRYPTION_KEY", previousMfaEncryptionKey);
     }
   });
 }

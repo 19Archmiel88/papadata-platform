@@ -31,12 +31,29 @@ export class IntegrationService {
   }
 
   listProviders(): object {
-    return this.registry.listDescriptors().map((provider) => ({
+    const enabled = this.registry.listDescriptors().map((provider) => ({
       ...provider,
       runtimeAvailability: this.registry.hasAdapter(provider.providerId)
         ? "adapter_implemented"
         : "not_implemented",
+      releaseStatus: "enabled",
     }));
+    const targetOnly = this.registry.listTargetDescriptors()
+      .filter((provider) => !this.registry.hasAdapter(provider.providerId))
+      .map((provider) => ({
+        providerId: provider.providerId,
+        displayName: provider.displayName,
+        category: provider.category,
+        runtimeAvailability: "not_implemented",
+        releaseStatus: "target_only",
+        connectable: false,
+      }));
+
+    return {
+      enabled,
+      targetOnly,
+      releasePolicy: "Only providers backed by a registered adapter are connectable.",
+    };
   }
 
   listConnections(
@@ -76,6 +93,7 @@ export class IntegrationService {
       providerId: request.providerId,
       credentialReference: request.credentialReference,
       requestedScopes: request.requestedScopes,
+      idempotencyKey: String(request.idempotencyKey),
     });
   }
 

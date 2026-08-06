@@ -9,15 +9,10 @@ export type DatabaseConfig = {
 };
 
 export class ProductionDatabase {
-  readonly pool: Pool;
+  private readonly pool: Pool;
 
   constructor(config: DatabaseConfig) {
-    this.pool = new Pool({
-      connectionString: config.connectionString,
-      max: config.max,
-      statement_timeout: config.statementTimeoutMs,
-      application_name: "papadata-platform",
-    });
+    this.pool = createPool(config, "papadata-application");
   }
 
   async close(): Promise<void> {
@@ -31,32 +26,79 @@ export class ProductionDatabase {
 
   async withTenantWorkspace<T>(
     tenantId: string,
-    workspaceId: string,
+    workspaceId: string | null,
     operation: (client: PoolClient) => Promise<T>,
   ): Promise<T> {
-    const client = await this.pool.connect();
+    if (!tenantId.trim()) {
+      throw new Error("Tenant scope is required for application database access.");
+    }
 
-    try {
-      await client.query("begin");
+    return withTransaction(this.pool, async (client) => {
       await client.query(
         "select set_config('app.tenant_id', $1, true)",
         [tenantId],
       );
       await client.query(
         "select set_config('app.workspace_id', $1, true)",
-        [workspaceId],
+        [workspaceId ?? ""],
       );
+      return operation(client);
+    });
+  }
 
-      const result = await operation(client);
-
-      await client.query("commit");
-      return result;
-    } catch (error) {
-      await client.query("rollback");
-      throw error;
-    } finally {
-      client.release();
+  async withIdentity<T>(
+    identityKey: string,
+    userId: string | null,
+    operation: (client: PoolClient) => Promise<T>,
+  ): Promise<T> {
+    if (!/^[a-f0-9]{64}$/u.test(identityKey)) {
+      throw new Error("Identity key is invalid.");
     }
+
+    return withTransaction(this.pool, async (client) => {
+      await client.query(
+        "select set_config('app.identity_key', $1, true)",
+        [identityKey],
+      );
+      await client.query(
+        "select set_config('app.identity_user_id', $1, true)",
+        [userId ?? ""],
+      );
+      return operation(client);
+    });
+  }
+
+  async queryGlobalReadonly<T extends QueryResultRow>(
+    text: string,
+    values: readonly unknown[] = [],
+  ): Promise<readonly T[]> {
+    if (!/^\s*(select|with)\b/iu.test(text) || /;\s*\S/iu.test(text)) {
+      throw new Error("Global application database access is read-only.");
+    }
+    const result = await this.pool.query<T>(text, [...values]);
+    return result.rows;
+  }
+}
+
+/**
+ * Dedicated database boundary for platform-wide schedulers and retention jobs.
+ * The supplied credential must use the separately managed `papadata_platform`
+ * role. It must never be reused by API or BFF request handling.
+ */
+export class PlatformDatabase {
+  private readonly pool: Pool;
+
+  constructor(config: DatabaseConfig) {
+    this.pool = createPool(config, "papadata-platform-operator");
+  }
+
+  async close(): Promise<void> {
+    await this.pool.end();
+  }
+
+  async checkHealth(): Promise<boolean> {
+    const result = await this.pool.query<{ ok: number }>("select 1 as ok");
+    return result.rows[0]?.ok === 1;
   }
 
   async query<T extends QueryResultRow>(
@@ -65,6 +107,39 @@ export class ProductionDatabase {
   ): Promise<readonly T[]> {
     const result = await this.pool.query<T>(text, [...values]);
     return result.rows;
+  }
+
+  withTransaction<T>(
+    operation: (client: PoolClient) => Promise<T>,
+  ): Promise<T> {
+    return withTransaction(this.pool, operation);
+  }
+}
+
+function createPool(config: DatabaseConfig, applicationName: string): Pool {
+  return new Pool({
+    connectionString: config.connectionString,
+    max: config.max,
+    statement_timeout: config.statementTimeoutMs,
+    application_name: applicationName,
+  });
+}
+
+async function withTransaction<T>(
+  pool: Pool,
+  operation: (client: PoolClient) => Promise<T>,
+): Promise<T> {
+  const client = await pool.connect();
+  try {
+    await client.query("begin");
+    const result = await operation(client);
+    await client.query("commit");
+    return result;
+  } catch (error) {
+    await client.query("rollback");
+    throw error;
+  } finally {
+    client.release();
   }
 }
 
@@ -133,6 +208,7 @@ export class IntegrationRepository {
     providerId: string;
     credentialReference: string;
     requestedScopes: readonly string[];
+    idempotencyKey: string;
   }): Promise<Record<string, unknown>> {
     return this.database.withTenantWorkspace(
       input.tenantId,
@@ -148,6 +224,7 @@ export class IntegrationRepository {
              credential_ref,
              requested_scopes,
              granted_scopes,
+             idempotency_key,
              connected_at,
              created_at,
              updated_at
@@ -161,10 +238,13 @@ export class IntegrationRepository {
              $4,
              $5::jsonb,
              '[]'::jsonb,
+             $6,
              now(),
              now(),
              now()
            )
+           on conflict (tenant_id, workspace_id, idempotency_key)
+           do update set idempotency_key = excluded.idempotency_key
            returning connection_id as id, *`,
           [
             input.tenantId,
@@ -172,6 +252,7 @@ export class IntegrationRepository {
             input.providerId,
             input.credentialReference,
             JSON.stringify(input.requestedScopes),
+            input.idempotencyKey,
           ],
         );
 
@@ -184,6 +265,22 @@ export class IntegrationRepository {
         return row;
       },
     );
+  }
+
+  async findConnectionForWebhook(
+    connectionId: string,
+    providerId: string,
+  ): Promise<Record<string, unknown> | null> {
+    const rows = await this.database.queryGlobalReadonly<Record<string, unknown>>(
+      `select connection_id::text as id, tenant_id::text, workspace_id::text,
+              provider_id, credential_ref, requested_scopes
+         from app.integration_connections
+        where connection_id = $1::uuid and provider_id = $2
+          and deleted_at is null
+        limit 1`,
+      [connectionId, providerId],
+    );
+    return rows[0] ?? null;
   }
 
   async listJobs(
@@ -249,14 +346,21 @@ export class IntegrationRepository {
         const result = await client.query(
           `update app.sync_jobs
            set
-             status = 'cancelled',
-             completed_at = coalesce(completed_at, now())
+             status = 'cancel_requested',
+             cancel_requested_at = coalesce(cancel_requested_at, now()),
+             updated_at = now()
            where tenant_id = $1
              and workspace_id = $2
              and sync_job_id = $3
              and status in (
                'queued',
                'rate_limited',
+               'leased',
+               'fetching',
+               'persisting_source',
+               'normalizing',
+               'writing_canonical',
+               'reconciling',
                'running'
              )
            returning sync_job_id`,
@@ -658,6 +762,50 @@ export class DurableIntegrationIngestionRepository {
     );
   }
 
+  async renewLease(input: {
+    readonly tenantId: string;
+    readonly workspaceId: string;
+    readonly syncJobId: string;
+    readonly leaseOwner: string;
+    readonly leaseExpiresAt: string;
+  }): Promise<boolean> {
+    return this.database.withTenantWorkspace(
+      input.tenantId,
+      input.workspaceId,
+      async (client) => {
+        const result = await client.query(
+          `update app.sync_jobs
+           set
+             lease_expires_at = $5,
+             heartbeat_at = now(),
+             updated_at = now()
+           where tenant_id::text = $1
+             and workspace_id::text = $2
+             and sync_job_id = $3
+             and lease_owner = $4
+             and cancel_requested_at is null
+             and status in (
+               'leased',
+               'fetching',
+               'persisting_source',
+               'normalizing',
+               'writing_canonical',
+               'reconciling'
+             )
+           returning sync_job_id`,
+          [
+            input.tenantId,
+            input.workspaceId,
+            input.syncJobId,
+            input.leaseOwner,
+            input.leaseExpiresAt,
+          ],
+        );
+        return result.rowCount === 1;
+      },
+    );
+  }
+
   async transitionJobState(input: {
     readonly tenantId: string;
     readonly workspaceId: string;
@@ -802,13 +950,25 @@ export class DurableIntegrationIngestionRepository {
              provider_id,
              stream,
              external_id,
-             jsonb_build_object(
-               'providerId', provider_id,
-               'stream', stream,
-               'externalId', external_id,
-               'payload', payload
-             ),
-             'valid',
+             case
+               when jsonb_typeof(payload -> 'canonical') = 'object'
+                 then payload -> 'canonical'
+               else jsonb_build_object(
+                 'version', 'integration.canonical.v1',
+                 'providerId', provider_id,
+                 'stream', stream,
+                 'externalId', external_id,
+                 'entity', payload,
+                 'quality', jsonb_build_object(
+                   'status', 'partial',
+                   'missingFields', jsonb_build_array('canonical_normalizer')
+                 )
+               )
+             end,
+             case
+               when payload #>> '{canonical,quality,status}' = 'valid' then 'valid'
+               else 'partial'
+             end,
              now()
            from app.source_records
            where tenant_id::text = $1
@@ -1447,7 +1607,7 @@ export class CurrencyRepository {
     quoteCurrency: string;
     observedAt: string;
   }): Promise<Record<string, unknown> | null> {
-    const rows = await this.database.query<Record<string, unknown>>(
+    const rows = await this.database.queryGlobalReadonly<Record<string, unknown>>(
       `select *
        from app.fx_rates
        where base_currency = $1

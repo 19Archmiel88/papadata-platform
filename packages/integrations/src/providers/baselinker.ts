@@ -1,6 +1,18 @@
 import { randomUUID } from "node:crypto";
-import type { IntegrationProviderAdapter, ProviderFetchRequest, ProviderFetchResult } from "../provider-adapter.js";
+import type {
+  IntegrationProviderAdapter,
+  ProviderFetchRequest,
+  ProviderFetchResult,
+  ProviderRecord,
+} from "../provider-adapter.js";
 import { ProviderAdapterError } from "../provider-adapter.js";
+import {
+  FetchProviderHttpClient,
+  type ProviderHttpClient,
+  isRecord,
+  readArrayField,
+  readStringField,
+} from "../http.js";
 
 export class BaseLinkerAdapter implements IntegrationProviderAdapter {
   readonly providerId = "baselinker" as const;
@@ -8,13 +20,18 @@ export class BaseLinkerAdapter implements IntegrationProviderAdapter {
   readonly optionalScopes = [] as const;
 
   private readonly token: string | null;
+  private readonly http: ProviderHttpClient;
 
-  constructor(token: string | null) {
+  constructor(
+    token: string | null,
+    http: ProviderHttpClient = new FetchProviderHttpClient(),
+  ) {
     this.token = token;
+    this.http = http;
   }
 
   isConfigured(): boolean {
-    return Boolean(this.token);
+    return Boolean(this.token?.trim());
   }
 
   async verifyConnection(): Promise<void> {
@@ -22,83 +39,133 @@ export class BaseLinkerAdapter implements IntegrationProviderAdapter {
   }
 
   async fetch(request: ProviderFetchRequest): Promise<ProviderFetchResult> {
-    const records = [];
+    const records: ProviderRecord[] = [];
+    const observedAt = new Date().toISOString();
+    const from = request.from ?? checkpointDate(request.checkpoint);
+
     for (const stream of request.streams) {
       if (stream === "orders") {
-        const dateFrom = request.from
-          ? Math.floor(new Date(request.from).getTime() / 1000)
-          : 0;
-        const payload = await this.call("getOrders", { date_confirmed_from: dateFrom });
-        const orders = this.readArray(payload, "orders");
-        for (const order of orders) {
-          records.push({
-            stream,
-            externalId: this.readId(order, "order_id"),
-            observedAt: new Date().toISOString(),
-            payload: order,
-          });
-        }
+        const orders = await this.fetchOrders(from);
+        records.push(...orders.map((order) => ({
+          stream,
+          externalId: readStringField(order, "order_id") ?? randomUUID(),
+          observedAt,
+          payload: order,
+        })));
+        continue;
       }
       if (stream === "products" || stream === "inventory") {
-        const payload = await this.call("getInventories", {});
-        records.push({
-          stream,
-          externalId: `inventory-${new Date().toISOString()}`,
-          observedAt: new Date().toISOString(),
-          payload,
-        });
+        const inventories = readArrayField(await this.call("getInventories", {}), "inventories");
+        for (const inventory of inventories) {
+          const inventoryId = readStringField(inventory, "inventory_id");
+          if (!inventoryId) continue;
+          const products = await this.fetchInventoryProducts(inventoryId);
+          for (const product of products) {
+            records.push({
+              stream,
+              externalId: `${inventoryId}:${readStringField(product, "id", "product_id", "sku") ?? randomUUID()}`,
+              observedAt,
+              payload: { inventoryId, product },
+            });
+          }
+        }
       }
     }
+
     return {
       records,
-      nextCheckpoint: new Date().toISOString(),
+      nextCheckpoint: JSON.stringify({ dateConfirmedFrom: Math.floor(Date.now() / 1000) }),
       partial: false,
       limitations: [],
     };
   }
 
-  private async call(method: string, parameters: object): Promise<unknown> {
+  private async fetchOrders(from: string | null): Promise<readonly unknown[]> {
+    const rows: unknown[] = [];
+    let dateFrom = toUnixSeconds(from);
+    let guard = 0;
+    while (guard < 10_000) {
+      const payload = await this.call("getOrders", {
+        date_confirmed_from: dateFrom,
+        get_unconfirmed_orders: true,
+      });
+      const page = readArrayField(payload, "orders");
+      rows.push(...page);
+      if (page.length < 100) break;
+      const timestamps = page
+        .map((order) => Number(readStringField(order, "date_confirmed", "date_add") ?? "0"))
+        .filter((value) => Number.isFinite(value) && value > dateFrom);
+      if (timestamps.length === 0) break;
+      dateFrom = Math.max(...timestamps) + 1;
+      guard += 1;
+    }
+    return rows;
+  }
+
+  private async fetchInventoryProducts(inventoryId: string): Promise<readonly unknown[]> {
+    const rows: unknown[] = [];
+    let page = 1;
+    while (page <= 10_000) {
+      const payload = await this.call("getInventoryProductsData", {
+        inventory_id: Number(inventoryId),
+        page,
+      });
+      const products = isRecord(payload.products)
+        ? Object.entries(payload.products).map(([id, product]) => ({
+            ...(isRecord(product) ? product : { value: product }),
+            id,
+          }))
+        : readArrayField(payload, "products");
+      rows.push(...products);
+      if (products.length < 1000) break;
+      page += 1;
+    }
+    return rows;
+  }
+
+  private async call(method: string, parameters: object): Promise<Record<string, unknown>> {
     if (!this.token) {
       throw new ProviderAdapterError("BaseLinker is not configured", "authentication");
     }
-    const body = new URLSearchParams({
-      method,
-      parameters: JSON.stringify(parameters),
-    });
-    const response = await fetch("https://api.baselinker.com/connector.php", {
-      method: "POST",
+    const response = await this.http.requestJson<unknown>({
+      body: new URLSearchParams({ method, parameters: JSON.stringify(parameters) }),
       headers: {
-        "X-BLToken": this.token,
         "Content-Type": "application/x-www-form-urlencoded",
+        "X-BLToken": this.token,
       },
-      body,
+      maxAttempts: 4,
+      method: "POST",
+      timeoutMs: 30_000,
+      url: "https://api.baselinker.com/connector.php",
     });
-    if (response.status === 429) {
-      throw new ProviderAdapterError("BaseLinker rate limit", "rate_limit", 60);
+    if (!isRecord(response.data)) {
+      throw new ProviderAdapterError("BaseLinker returned an invalid response", "validation");
     }
-    if (response.status >= 500) {
-      throw new ProviderAdapterError("BaseLinker temporary failure", "transient", 30);
+    if (response.data.status === "ERROR") {
+      throw new ProviderAdapterError(
+        readStringField(response.data, "error_message") ?? "BaseLinker request failed",
+        "permanent",
+      );
     }
-    if (!response.ok) {
-      throw new ProviderAdapterError(`BaseLinker request failed: ${response.status}`, "permanent");
-    }
-    const payload = await response.json() as { status?: string; error_message?: string };
-    if (payload.status === "ERROR") {
-      throw new ProviderAdapterError(payload.error_message ?? "BaseLinker error", "permanent");
-    }
-    return payload;
+    return response.data;
   }
+}
 
-  private readArray(payload: unknown, key: string): readonly unknown[] {
-    if (!payload || typeof payload !== "object") return [];
-    const value = (payload as Record<string, unknown>)[key];
-    return Array.isArray(value) ? value : [];
-  }
+function toUnixSeconds(value: string | null): number {
+  if (!value) return 0;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? Math.floor(parsed / 1000) : Number(value) || 0;
+}
 
-  private readId(item: unknown, key: string): string {
-    if (item && typeof item === "object" && key in item) {
-      return String((item as Record<string, unknown>)[key]);
+function checkpointDate(checkpoint: string | null): string | null {
+  if (!checkpoint) return null;
+  try {
+    const parsed = JSON.parse(checkpoint) as unknown;
+    if (isRecord(parsed) && typeof parsed.dateConfirmedFrom === "number") {
+      return new Date(parsed.dateConfirmedFrom * 1000).toISOString();
     }
-    return randomUUID();
+  } catch {
+    return checkpoint;
   }
+  return null;
 }

@@ -57,6 +57,23 @@ export type IsoDateTime = string & {
   readonly [isoDateTimeBrand]: "IsoDateTime";
 };
 
+const idempotencyKeyPattern = /^[A-Za-z0-9._:-]{8,128}$/u;
+
+export function toIdempotencyKey(value: string): IdempotencyKey {
+  if (!idempotencyKeyPattern.test(value)) {
+    throw new TypeError("Invalid idempotency key.");
+  }
+  return value as IdempotencyKey;
+}
+
+export function toIsoDateTime(value: string): IsoDateTime {
+  const timestamp = Date.parse(value);
+  if (!Number.isFinite(timestamp)) {
+    throw new TypeError("Invalid ISO date-time.");
+  }
+  return value as IsoDateTime;
+}
+
 export type TenantWorkspaceScope = {
   readonly tenantId: TenantId;
   readonly workspaceId: WorkspaceId;
@@ -1131,3 +1148,5 @@ export * from "./privacy-runtime.js";
 export * from "./reporting-runtime.js";
 export * from "./ai-runtime.js";
 export * from "./environment-gates.js";
+
+export * from "./migrated-domain-policies.js";

@@ -1,4 +1,4 @@
-export type BffRuntimeEnvironment = "local" | "production" | "test";
+export type BffRuntimeEnvironment = "local" | "production" | "production-parity" | "test";
 
 export type BffSessionStoreMode = "redis-auth-state" | "test-memory";
 
@@ -24,6 +24,11 @@ export type BffConfig = {
   readonly maxBodyBytes: number;
   readonly port: number;
   readonly publicHosts: readonly string[];
+  readonly rateLimitMax: number;
+  readonly rateLimitWindowMs: number;
+  readonly redisCaBase64: string | null;
+  readonly redisCommandTimeoutMs: number;
+  readonly redisConnectTimeoutMs: number;
   readonly requestIdHeaderName: string;
   readonly runtimeEnvironment: BffRuntimeEnvironment;
   readonly sessionCookieName: string;
@@ -31,6 +36,8 @@ export type BffConfig = {
   readonly sessionRedisUrl: string;
   readonly sessionStoreMode: BffSessionStoreMode;
   readonly upstreamTimeoutMs: number;
+  readonly upstreamIdentityAudience: string | null;
+  readonly metadataIdentityEndpoint: string;
 };
 
 const placeholderPattern =
@@ -47,6 +54,7 @@ export function readBffConfig(
   env: NodeJS.ProcessEnv = process.env,
 ): BffConfig {
   const runtimeEnvironment = readRuntimeEnvironment(env.NODE_ENV);
+  const productionLike = runtimeEnvironment === "production" || runtimeEnvironment === "production-parity";
   const cookieSecret = readSecret(env, "BFF_COOKIE_SECRET");
   const cookiePreviousSecret = readOptionalSecret(
     env,
@@ -87,6 +95,16 @@ export function readBffConfig(
   validateOrigins(allowedOrigins);
   validatePublicHosts(publicHosts);
 
+  const sessionRedisUrl = sessionStoreMode === "redis-auth-state"
+    ? readRedisUrl(env.REDIS_URL, runtimeEnvironment)
+    : env.REDIS_URL?.trim() || "redis://127.0.0.1:6379";
+  const redisCaBase64 = readOptionalBase64(env.REDIS_CA_BASE64, "REDIS_CA_BASE64");
+  if (productionLike && !redisCaBase64) {
+    throw new BffConfigurationError(
+      "REDIS_CA_BASE64 is required for production Redis TLS verification.",
+    );
+  }
+
   return {
     allowedOrigins,
     apiOrigin: readOrigin(env.API_ORIGIN, "API_ORIGIN"),
@@ -101,7 +119,7 @@ export function readBffConfig(
     cookiePreviousSecret,
     cookieSameSite: env.BFF_COOKIE_SAME_SITE === "lax" ? "lax" : "strict",
     cookieSecret,
-    cookieSecure: runtimeEnvironment === "production",
+    cookieSecure: productionLike,
     csrfCookieMaxAgeSeconds: readBoundedInteger(
       env.BFF_CSRF_COOKIE_MAX_AGE_SECONDS,
       "BFF_CSRF_COOKIE_MAX_AGE_SECONDS",
@@ -139,14 +157,41 @@ export function readBffConfig(
     ),
     port: readBoundedInteger(env.BFF_PORT, "BFF_PORT", 3001, 1, 65_535),
     publicHosts,
+    rateLimitMax: readBoundedInteger(
+      env.BFF_RATE_LIMIT_MAX,
+      "BFF_RATE_LIMIT_MAX",
+      300,
+      1,
+      100_000,
+    ),
+    rateLimitWindowMs: readBoundedInteger(
+      env.BFF_RATE_LIMIT_WINDOW_MS,
+      "BFF_RATE_LIMIT_WINDOW_MS",
+      60_000,
+      1_000,
+      3_600_000,
+    ),
+    redisCaBase64,
+    redisCommandTimeoutMs: readBoundedInteger(
+      env.BFF_REDIS_COMMAND_TIMEOUT_MS,
+      "BFF_REDIS_COMMAND_TIMEOUT_MS",
+      2_000,
+      100,
+      30_000,
+    ),
+    redisConnectTimeoutMs: readBoundedInteger(
+      env.BFF_REDIS_CONNECT_TIMEOUT_MS,
+      "BFF_REDIS_CONNECT_TIMEOUT_MS",
+      3_000,
+      100,
+      30_000,
+    ),
     requestIdHeaderName:
       env.BFF_REQUEST_ID_HEADER_NAME?.trim().toLowerCase() || "x-request-id",
     runtimeEnvironment,
     sessionCookieName: env.BFF_SESSION_COOKIE_NAME?.trim() || "pd_session",
     sessionRedisPrefix: env.BFF_SESSION_REDIS_PREFIX?.trim() || "papadata:auth",
-    sessionRedisUrl: sessionStoreMode === "redis-auth-state"
-      ? readRequiredText(env, "REDIS_URL")
-      : env.REDIS_URL?.trim() || "redis://127.0.0.1:6379",
+    sessionRedisUrl,
     sessionStoreMode,
     upstreamTimeoutMs: readBoundedInteger(
       env.BFF_UPSTREAM_TIMEOUT_MS,
@@ -155,61 +200,53 @@ export function readBffConfig(
       100,
       30_000,
     ),
+    upstreamIdentityAudience: runtimeEnvironment === "production"
+      ? readOrigin(
+          env.BFF_UPSTREAM_IDENTITY_AUDIENCE?.trim() || env.API_ORIGIN,
+          "BFF_UPSTREAM_IDENTITY_AUDIENCE",
+        )
+      : null,
+    metadataIdentityEndpoint: env.BFF_METADATA_IDENTITY_ENDPOINT?.trim()
+      || "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity",
   };
 }
 
 function readRuntimeEnvironment(value: string | undefined): BffRuntimeEnvironment {
-  if (value === "production") {
-    return "production";
-  }
-
-  if (value === "test") {
-    return "test";
-  }
-
-  return "local";
+  if (value === "production") return "production";
+  if (value === "production-parity") return "production-parity";
+  if (value === "test") return "test";
+  if (value === undefined || value === "local" || value === "development") return "local";
+  throw new BffConfigurationError(
+    "NODE_ENV must be local, development, test, production-parity or production.",
+  );
 }
 
 function readSessionStoreMode(value: string | undefined): BffSessionStoreMode {
-  if (value === "test-memory") {
-    return "test-memory";
-  }
-
+  if (value === "test-memory") return "test-memory";
   if (value === undefined || value === "redis-auth-state") {
     return "redis-auth-state";
   }
-
   throw new BffConfigurationError(
     "BFF_SESSION_STORE must be redis-auth-state or test-memory.",
   );
 }
 
-function readRequiredText(
-  env: NodeJS.ProcessEnv,
-  name: string,
-): string {
+function readRequiredText(env: NodeJS.ProcessEnv, name: string): string {
   const value = env[name]?.trim();
-
-  if (!value) {
-    throw new BffConfigurationError(`${name} is required.`);
-  }
-
+  if (!value) throw new BffConfigurationError(`${name} is required.`);
   return value;
 }
 
 function readSecret(env: NodeJS.ProcessEnv, name: string): string {
   const value = readRequiredText(env, name);
-
   if (Buffer.byteLength(value, "utf8") < 32) {
     throw new BffConfigurationError(
       `${name} must have at least 32 bytes of secret material.`,
     );
   }
-
   if (placeholderPattern.test(value.trim())) {
     throw new BffConfigurationError(`${name} must not use a placeholder.`);
   }
-
   return value;
 }
 
@@ -223,10 +260,8 @@ function readOptionalSecret(
 
 function assertDistinctSecrets(secrets: Readonly<Record<string, string>>): void {
   const entries = Object.entries(secrets);
-
   for (let index = 0; index < entries.length; index += 1) {
     const [leftName, leftValue] = entries[index]!;
-
     for (const [rightName, rightValue] of entries.slice(index + 1)) {
       if (leftValue === rightValue) {
         throw new BffConfigurationError(
@@ -238,15 +273,10 @@ function assertDistinctSecrets(secrets: Readonly<Record<string, string>>): void 
 }
 
 function readCsv(value: string | undefined, name: string): readonly string[] {
-  const values = value
-    ?.split(",")
-    .map((item) => item.trim())
-    .filter(Boolean) ?? [];
-
+  const values = value?.split(",").map((item) => item.trim()).filter(Boolean) ?? [];
   if (values.length === 0) {
     throw new BffConfigurationError(`${name} must not be empty.`);
   }
-
   return [...new Set(values)];
 }
 
@@ -257,19 +287,13 @@ function validateOrigins(origins: readonly string[]): void {
         "BFF_ALLOWED_ORIGINS cannot contain wildcard origins.",
       );
     }
-
     readOrigin(origin, "BFF_ALLOWED_ORIGINS");
   }
 }
 
 function validatePublicHosts(hosts: readonly string[]): void {
   for (const host of hosts) {
-    if (
-      host.includes("://")
-      || host.includes("/")
-      || host === "*"
-      || host.length < 1
-    ) {
+    if (host.includes("://") || host.includes("/") || host === "*" || !host) {
       throw new BffConfigurationError(
         "BFF_PUBLIC_HOSTS must contain explicit host names without scheme.",
       );
@@ -279,24 +303,38 @@ function validatePublicHosts(hosts: readonly string[]): void {
 
 function readOrigin(value: string | undefined, name: string): string {
   const raw = value?.trim();
-
-  if (!raw) {
-    throw new BffConfigurationError(`${name} is required.`);
-  }
-
+  if (!raw) throw new BffConfigurationError(`${name} is required.`);
   let parsed: URL;
-
   try {
     parsed = new URL(raw);
   } catch {
     throw new BffConfigurationError(`${name} must be a valid URL origin.`);
   }
-
   if (!["http:", "https:"].includes(parsed.protocol)) {
     throw new BffConfigurationError(`${name} must use HTTP or HTTPS.`);
   }
-
   return parsed.origin;
+}
+
+function readRedisUrl(
+  value: string | undefined,
+  runtimeEnvironment: BffRuntimeEnvironment,
+): string {
+  const raw = value?.trim();
+  if (!raw) throw new BffConfigurationError("REDIS_URL is required.");
+  let parsed: URL;
+  try {
+    parsed = new URL(raw);
+  } catch {
+    throw new BffConfigurationError("REDIS_URL must be a valid URL.");
+  }
+  if (!["redis:", "rediss:"].includes(parsed.protocol)) {
+    throw new BffConfigurationError("REDIS_URL must use redis:// or rediss://.");
+  }
+  if ((runtimeEnvironment === "production" || runtimeEnvironment === "production-parity") && parsed.protocol !== "rediss:") {
+    throw new BffConfigurationError("REDIS_URL must use rediss:// in production.");
+  }
+  return raw;
 }
 
 function readBoundedInteger(
@@ -306,21 +344,22 @@ function readBoundedInteger(
   min: number,
   max: number,
 ): number {
-  if (raw === undefined || raw.trim() === "") {
-    return fallback;
-  }
-
+  if (raw === undefined || raw.trim() === "") return fallback;
   if (!/^\d+$/u.test(raw)) {
     throw new BffConfigurationError(`${name} must be an integer.`);
   }
-
   const value = Number(raw);
-
   if (!Number.isSafeInteger(value) || value < min || value > max) {
-    throw new BffConfigurationError(
-      `${name} must be between ${min} and ${max}.`,
-    );
+    throw new BffConfigurationError(`${name} must be between ${min} and ${max}.`);
   }
-
   return value;
+}
+
+function readOptionalBase64(value: string | undefined, name: string): string | null {
+  const normalized = value?.trim();
+  if (!normalized) return null;
+  if (Buffer.from(normalized, "base64").byteLength === 0) {
+    throw new BffConfigurationError(`${name} must be valid base64.`);
+  }
+  return normalized;
 }

@@ -264,6 +264,19 @@ class InMemoryDurableRepository implements DurableIngestionRepository {
     return true;
   }
 
+  async renewLease(input: {
+    readonly tenantId: string;
+    readonly workspaceId: string;
+    readonly syncJobId: string;
+    readonly leaseOwner: string;
+    readonly leaseExpiresAt: string;
+  }): Promise<boolean> {
+    return (
+      input.syncJobId === this.activeJobId
+      && this.leaseOwner === input.leaseOwner
+    );
+  }
+
   async transitionJobState(input: {
     readonly leaseOwner: string;
     readonly fromState: string;

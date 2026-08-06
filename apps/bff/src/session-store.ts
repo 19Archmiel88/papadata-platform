@@ -1,6 +1,6 @@
-import { createConnection } from "node:net";
 import type { OnModuleDestroy } from "@nestjs/common";
 import { Injectable } from "@nestjs/common";
+import { createClient, type RedisClientType } from "redis";
 import type { BffConfig } from "./config.js";
 
 type JsonRecord = Record<string, unknown>;
@@ -26,9 +26,9 @@ export type BffSessionRecord = {
 };
 
 export type BffSessionStore = {
-  readonly findSession: (
-    sessionId: string,
-  ) => Promise<BffSessionRecord | null>;
+  readonly findSession: (sessionId: string) => Promise<BffSessionRecord | null>;
+  readonly saveSession: (session: BffSessionRecord) => Promise<void>;
+  readonly revokeSession: (sessionId: string, revokedAt: string) => Promise<void>;
 };
 
 export const BFF_SESSION_STORE = Symbol("BFF_SESSION_STORE");
@@ -41,35 +41,114 @@ export class TestMemoryBffSessionStore implements BffSessionStore {
     return Promise.resolve(this.sessions.get(sessionId) ?? null);
   }
 
-  saveSession(session: BffSessionRecord): void {
+  saveSession(session: BffSessionRecord): Promise<void> {
     this.sessions.set(session.sessionId, session);
+    return Promise.resolve();
+  }
+
+  revokeSession(sessionId: string, revokedAt: string): Promise<void> {
+    const session = this.sessions.get(sessionId);
+    if (session) this.sessions.set(sessionId, { ...session, revokedAt });
+    return Promise.resolve();
   }
 }
 
-export class RedisBffSessionStore
-  implements BffSessionStore, OnModuleDestroy
-{
-  private readonly redis: RedisRespClient;
+export class RedisBffSessionStore implements BffSessionStore, OnModuleDestroy {
+  private readonly redis: RedisClientType;
+  private connectPromise: Promise<void> | null = null;
 
   constructor(private readonly config: BffConfig) {
-    this.redis = RedisRespClient.fromUrl(config.sessionRedisUrl);
+    this.redis = createClient({
+      url: config.sessionRedisUrl,
+      socket: new URL(config.sessionRedisUrl).protocol === "rediss:"
+        ? {
+            connectTimeout: config.redisConnectTimeoutMs,
+            tls: true as const,
+            ...(config.redisCaBase64
+              ? {
+                  ca: Buffer.from(
+                    config.redisCaBase64,
+                    "base64",
+                  ).toString("utf8"),
+                }
+              : {}),
+            reconnectStrategy: (retries: number) =>
+              Math.min(100 * 2 ** retries, 2_000),
+          }
+        : {
+            connectTimeout: config.redisConnectTimeoutMs,
+            keepAlive: true,
+            keepAliveInitialDelay: 5_000,
+            reconnectStrategy: (retries: number) =>
+              Math.min(100 * 2 ** retries, 2_000),
+          },
+    });
+    this.redis.on("error", (error: Error) => {
+      console.error("BFF Redis client error", { message: error.message });
+    });
   }
 
   async findSession(sessionId: string): Promise<BffSessionRecord | null> {
-    const raw = await this.redis.get(
-      `${this.config.sessionRedisPrefix}:session:${sessionId}`,
+    await this.ensureConnected();
+    const raw = await withTimeout(
+      this.redis.get(`${this.config.sessionRedisPrefix}:session:${sessionId}`),
+      this.config.redisCommandTimeoutMs,
     );
 
-    if (!raw) {
+    if (!raw) return null;
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(String(raw)) as unknown;
+    } catch {
       return null;
     }
-
-    const parsed = JSON.parse(raw) as unknown;
     return isRecord(parsed) ? readSessionRecord(parsed) : null;
   }
 
-  onModuleDestroy(): Promise<void> {
-    return Promise.resolve();
+  async saveSession(session: BffSessionRecord): Promise<void> {
+    await this.ensureConnected();
+    const ttlSeconds = Math.max(
+      1,
+      Math.floor((Date.parse(session.expiresAt) - Date.now()) / 1_000),
+    );
+    await withTimeout(
+      this.redis.set(
+        `${this.config.sessionRedisPrefix}:session:${session.sessionId}`,
+        JSON.stringify(session),
+        { EX: ttlSeconds },
+      ),
+      this.config.redisCommandTimeoutMs,
+    );
+  }
+
+  async revokeSession(sessionId: string, revokedAt: string): Promise<void> {
+    await this.ensureConnected();
+    const key = `${this.config.sessionRedisPrefix}:session:${sessionId}`;
+    const session = await this.findSession(sessionId);
+    if (!session) return;
+    const ttlSeconds = Math.max(
+      1,
+      Math.floor((Date.parse(session.expiresAt) - Date.now()) / 1_000),
+    );
+    await withTimeout(
+      this.redis.set(key, JSON.stringify({ ...session, revokedAt }), { EX: ttlSeconds }),
+      this.config.redisCommandTimeoutMs,
+    );
+  }
+
+  async onModuleDestroy(): Promise<void> {
+    if (this.redis.isOpen) {
+      await this.redis.quit().catch(() => this.redis.disconnect());
+    }
+  }
+
+  private async ensureConnected(): Promise<void> {
+    if (this.redis.isReady) return;
+    const connecting = this.connectPromise ??= this.redis.connect().then(() => undefined).finally(() => {
+      this.connectPromise = null;
+    });
+    await withTimeout(connecting, this.config.redisConnectTimeoutMs);
   }
 }
 
@@ -79,38 +158,38 @@ export function createBffSessionStore(config: BffConfig): BffSessionStore {
     : new RedisBffSessionStore(config);
 }
 
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  let timeout: NodeJS.Timeout | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_resolve, reject) => {
+        timeout = setTimeout(() => reject(new Error("Redis command timed out.")), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+}
+
 function readSessionRecord(value: JsonRecord): BffSessionRecord | null {
   const sessionId = readString(value, "sessionId");
   const userId = readString(value, "userId");
   const expiresAt = readString(value, "expiresAt");
-  const activeTenantId =
-    readString(value, "activeTenantId") ?? readString(value, "tenantId");
-  const activeWorkspaceId =
-    readString(value, "activeWorkspaceId") ?? readString(value, "workspaceId");
+  const activeTenantId = readString(value, "activeTenantId") ?? readString(value, "tenantId");
+  const activeWorkspaceId = readString(value, "activeWorkspaceId") ?? readString(value, "workspaceId");
   const memberships = readMemberships(value.memberships);
 
-  if (
-    !sessionId
-    || !userId
-    || !expiresAt
-    || !activeTenantId
-    || !activeWorkspaceId
-    || !memberships
-  ) {
+  if (!sessionId || !userId || !expiresAt || !activeTenantId || !activeWorkspaceId || !memberships) {
     return null;
   }
 
-  const capabilities =
-    readStringArray(value.capabilities)
-    ?? memberships.find(
-      (membership) =>
-        membership.tenantId === activeTenantId
-        && membership.workspaceId === activeWorkspaceId,
+  const capabilities = readStringArray(value.capabilities)
+    ?? memberships.find((membership) =>
+      membership.tenantId === activeTenantId
+      && membership.workspaceId === activeWorkspaceId
     )?.capabilities;
-
-  if (!capabilities) {
-    return null;
-  }
+  if (!capabilities) return null;
 
   const authLevel = readAuthLevel(value.authLevel)
     ?? (value.mfaVerified === true ? "mfa" : "session");
@@ -130,41 +209,22 @@ function readSessionRecord(value: JsonRecord): BffSessionRecord | null {
 }
 
 function readMemberships(value: unknown): readonly BffSessionMembership[] | null {
-  if (!Array.isArray(value)) {
-    return null;
-  }
-
+  if (!Array.isArray(value)) return null;
   const memberships: BffSessionMembership[] = [];
-
   for (const item of value) {
-    if (!isRecord(item)) {
-      return null;
-    }
-
+    if (!isRecord(item)) return null;
     const tenantId = readString(item, "tenantId");
     const workspaceId = readString(item, "workspaceId");
     const capabilities = readStringArray(item.capabilities);
     const roles = readStringArray(item.roles) ?? [];
-
-    if (!tenantId || !workspaceId || !capabilities) {
-      return null;
-    }
-
-    memberships.push({
-      capabilities,
-      roles,
-      tenantId,
-      workspaceId,
-    });
+    if (!tenantId || !workspaceId || !capabilities) return null;
+    memberships.push({ capabilities, roles, tenantId, workspaceId });
   }
-
   return memberships;
 }
 
 function readAuthLevel(value: unknown): BffSessionRecord["authLevel"] | null {
-  return value === "session" || value === "mfa" || value === "step_up"
-    ? value
-    : null;
+  return value === "session" || value === "mfa" || value === "step_up" ? value : null;
 }
 
 function readString(source: JsonRecord, key: string): string | null {
@@ -185,116 +245,4 @@ function readStringArray(value: unknown): readonly string[] | null {
 
 function isRecord(value: unknown): value is JsonRecord {
   return value !== null && typeof value === "object" && !Array.isArray(value);
-}
-
-class RedisRespClient {
-  private constructor(
-    private readonly host: string,
-    private readonly port: number,
-  ) {}
-
-  static fromUrl(value: string): RedisRespClient {
-    const parsed = new URL(value);
-    return new RedisRespClient(
-      parsed.hostname,
-      Number.parseInt(parsed.port || "6379", 10),
-    );
-  }
-
-  get(key: string): Promise<string | null> {
-    return this.command(["GET", key]).then((value) =>
-      typeof value === "string" ? value : null,
-    );
-  }
-
-  private command(args: readonly string[]): Promise<unknown> {
-    return new Promise((resolve, reject) => {
-      let settled = false;
-      let buffer = Buffer.alloc(0);
-      const socket = createConnection(
-        {
-          host: this.host,
-          port: this.port,
-        },
-        () => {
-          socket.write(encodeCommand(args));
-        },
-      );
-
-      socket.on("data", (chunk) => {
-        buffer = Buffer.concat([buffer, chunk]);
-
-        try {
-          const parsed = parseResp(buffer.toString("utf8"));
-          settled = true;
-          socket.end();
-          resolve(parsed.value);
-        } catch (error) {
-          if (isIncompleteResp(buffer.toString("utf8"))) {
-            return;
-          }
-
-          settled = true;
-          socket.destroy();
-          reject(error);
-        }
-      });
-
-      socket.on("error", (error) => {
-        if (!settled) {
-          reject(error);
-        }
-      });
-
-      socket.on("end", () => {
-        if (!settled) {
-          reject(new Error("Redis connection closed before a response."));
-        }
-      });
-    });
-  }
-}
-
-function encodeCommand(args: readonly string[]): string {
-  return `*${args.length}\r\n${args
-    .map((arg) => `$${Buffer.byteLength(arg)}\r\n${arg}\r\n`)
-    .join("")}`;
-}
-
-function parseResp(
-  input: string,
-  offset = 0,
-): { readonly next: number; readonly value: unknown } {
-  const type = input[offset];
-
-  if (type === "+") {
-    const end = input.indexOf("\r\n", offset);
-    return { next: end + 2, value: input.slice(offset + 1, end) };
-  }
-
-  if (type === "-") {
-    const end = input.indexOf("\r\n", offset);
-    throw new Error(input.slice(offset + 1, end));
-  }
-
-  if (type === "$") {
-    const end = input.indexOf("\r\n", offset);
-    const length = Number.parseInt(input.slice(offset + 1, end), 10);
-
-    if (length === -1) {
-      return { next: end + 2, value: null };
-    }
-
-    const start = end + 2;
-    return {
-      next: start + length + 2,
-      value: input.slice(start, start + length),
-    };
-  }
-
-  throw new Error("Unsupported Redis response.");
-}
-
-function isIncompleteResp(input: string): boolean {
-  return !input.endsWith("\r\n");
 }

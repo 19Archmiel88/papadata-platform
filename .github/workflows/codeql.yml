@@ -11,24 +11,36 @@ permissions:
   contents: read
   security-events: write
 
+env:
+  PAPADATA_CODE_SCANNING_AVAILABLE: ${{ github.event.repository.private == false || vars.PAPADATA_CODE_SCANNING_ENABLED == 'true' }}
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      - name: Explain Code Scanning availability
+        if: env.PAPADATA_CODE_SCANNING_AVAILABLE != 'true'
+        run: |
+          echo "::notice title=GitHub Code Scanning unavailable::CodeQL is skipped because this private repository does not currently expose Code Scanning. Enable GitHub Code Security first, then set repository variable PAPADATA_CODE_SCANNING_ENABLED=true."
+
       - name: Checkout
+        if: env.PAPADATA_CODE_SCANNING_AVAILABLE == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Initialize CodeQL
+        if: env.PAPADATA_CODE_SCANNING_AVAILABLE == 'true'
         uses: github/codeql-action/init@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
         with:
           languages: javascript-typescript
           queries: security-and-quality
 
       - name: Autobuild
+        if: env.PAPADATA_CODE_SCANNING_AVAILABLE == 'true'
         uses: github/codeql-action/autobuild@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
 
       - name: Analyze
+        if: env.PAPADATA_CODE_SCANNING_AVAILABLE == 'true'
         uses: github/codeql-action/analyze@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0

@@ -16,7 +16,7 @@ Wydanie zawiera:
 - trwały model tenancy, domen produktowych, audytu mutacji i wyszukiwania;
 - natywne runtime dla głównych domen oraz generowaną warstwę kompatybilności dla pozostałych operacji kontraktu;
 - automatycznie generowaną macierz możliwości, pokrycia kontraktu i integracji;
-- migrację `0017_backend_product_convergence.sql` z wymuszonym RLS.
+- migrację `0017_backend_product_convergence.sql` z wymuszonym RLS oraz forward-only migrację `0018_classify_product_convergence_tables.sql`, która rejestruje klasyfikację bezpieczeństwa sześciu nowych tabel.
 
 ## Granice uczciwego statusu
 
@@ -47,3 +47,7 @@ node tools/generate-backend-capability-docs.mjs
 ```
 
 CI uruchamia oba generatory w wariancie `--check`. Drift pomiędzy OpenAPI, kontrolerami, providerami, manifestem i dokumentacją blokuje bramkę wydania.
+
+## Granica GitHub Code Scanning
+
+Trivy pozostaje egzekwowaną bramką podatności, a wygenerowany SARIF jest zachowywany jako artefakt. CodeQL i upload SARIF do GitHub Code Scanning wymagają dostępnej usługi Code Scanning. W prywatnym repozytorium uruchamiają się dopiero po włączeniu GitHub Code Security i ustawieniu `PAPADATA_CODE_SCANNING_ENABLED=true`; nie stanowi to deklaracji gotowości produkcyjnej ani zastępstwa dla wyniku skanowania.

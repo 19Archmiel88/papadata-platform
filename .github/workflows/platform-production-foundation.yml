@@ -9,6 +9,9 @@ permissions:
   contents: read
   security-events: write
 
+env:
+  PAPADATA_CODE_SCANNING_AVAILABLE: ${{ github.event.repository.private == false || vars.PAPADATA_CODE_SCANNING_ENABLED == 'true' }}
+
 jobs:
   production-parity-config:
     runs-on: ubuntu-latest
@@ -164,8 +167,13 @@ jobs:
           ignore-unfixed: true
           exit-code: 1
 
+      - name: Explain SARIF upload availability
+        if: ${{ always() && env.PAPADATA_CODE_SCANNING_AVAILABLE != 'true' }}
+        run: |
+          echo "::notice title=SARIF upload skipped::Trivy enforcement ran in this job and the SARIF file remains available as an artifact. Enable GitHub Code Security first, then set repository variable PAPADATA_CODE_SCANNING_ENABLED=true."
+
       - name: Upload SARIF
-        if: always()
+        if: ${{ always() && env.PAPADATA_CODE_SCANNING_AVAILABLE == 'true' }}
         uses: github/codeql-action/upload-sarif@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
         with:
           sarif_file: trivy-${{ matrix.service }}.sarif

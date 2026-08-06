@@ -51,3 +51,9 @@ sh tools/restore-drill.sh
 ```
 
 Drill musi być wykonywany na izolowanym celu. Wynik bez zweryfikowania integralności domenowej i czasu od ostatniego odtwarzalnego punktu nie potwierdza RPO.
+
+## Korekta klasyfikacji po migracji 0017
+
+Migracja `0018_classify_product_convergence_tables.sql` jest korektą forward-only. Klasyfikuje sześć tabel utworzonych przez `0017_backend_product_convergence.sql` w `app.table_security_classification`: `identity_users` i `identity_audit_events` jako `global_internal`, a `identity_memberships`, `product_domain_records`, `product_domain_events` i `webhook_replay_receipts` jako `tenant_workspace`.
+
+Nie wolno dopisywać tej korekty do zastosowanych migracji `0016` ani `0017`. Kanoniczny runner zapisuje SHA-256 migracji w `app.schema_migrations`, więc zmiana istniejącego pliku powodowałaby kontrolowany `Checksum mismatch` na bazie, która już go zastosowała.

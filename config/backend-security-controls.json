@@ -43,6 +43,7 @@
       "status": "implemented_requires_database_test",
       "evidencePaths": [
         "packages/database/migrations/0016_backend_release_hardening.sql",
+        "packages/database/migrations/0018_classify_product_convergence_tables.sql",
         "packages/database/tests/rls-isolation.sql",
         "packages/database/scripts/migrate.sh"
       ],

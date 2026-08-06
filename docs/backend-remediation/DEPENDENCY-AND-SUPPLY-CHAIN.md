@@ -16,3 +16,11 @@ Kontrole:
 - Terraform akceptuje wyłącznie obrazy aplikacji wskazane przez digest.
 
 Podpisywanie obrazu i attestation wymagają skonfigurowanego rejestru/OIDC. Brak podpisu w konkretnym wydaniu pozostaje blokadą produkcyjną, nawet gdy workflow repozytorium jest poprawny.
+
+## Polityka licencji
+
+`BlueOak-1.0.0` i `OFL-1.1` są jawnie dopuszczone w `config/backend-license-policy.json`. Pierwsza obejmuje zależności narzędziowe używane przez workspace, a druga paczki self-hostowanych fontów. Polityka pozostaje fail-closed: `unknownPolicy` ma wartość `fail`, dlatego każda kolejna nierozpoznana licencja blokuje bramkę do czasu jawnej decyzji.
+
+## GitHub Code Scanning i SARIF
+
+Skan Trivy pozostaje bramką niezależnie od dostępności GitHub Code Scanning: wykrycie podatności `HIGH` lub `CRITICAL` nadal kończy job błędem. SARIF jest zawsze zachowywany jako artefakt workflow. Upload do Code Scanning oraz analiza CodeQL są wykonywane dla repozytorium publicznego albo po włączeniu GitHub Code Security i ustawieniu zmiennej repozytorium `PAPADATA_CODE_SCANNING_ENABLED=true`. Brak tej usługi w repozytorium prywatnym nie może być maskowany przez `continue-on-error`.

@@ -1,4 +1,8 @@
-import { ProviderAdapterError, type IntegrationProviderAdapter } from "@papadata/integrations";
+import {
+  normalizeProviderRecord,
+  ProviderAdapterError,
+  type IntegrationProviderAdapter,
+} from "@papadata/integrations";
 import type {
   DurableBatchProcessInput,
   DurableBatchProcessResult,
@@ -36,6 +40,13 @@ export type DurableIngestionRepository = {
     readonly leaseOwner: string;
     readonly leaseExpiresAt: string;
     readonly attempt: number;
+  }): Promise<boolean>;
+  renewLease(input: {
+    readonly tenantId: string;
+    readonly workspaceId: string;
+    readonly syncJobId: string;
+    readonly leaseOwner: string;
+    readonly leaseExpiresAt: string;
   }): Promise<boolean>;
   transitionJobState(input: {
     readonly tenantId: string;
@@ -164,6 +175,27 @@ export class DurableIngestionPipeline {
     }
 
     let currentState: DurableIntegrationJobState = "leased";
+    let leaseLost = false;
+    let heartbeatRunning = false;
+    const heartbeat = setInterval(() => {
+      if (heartbeatRunning || leaseLost) return;
+      heartbeatRunning = true;
+      const renewedUntil = new Date(
+        this.clock().getTime() + this.leaseDurationMs,
+      ).toISOString();
+      void this.repository.renewLease({
+        ...context,
+        leaseOwner: input.leaseOwner,
+        leaseExpiresAt: renewedUntil,
+      }).then((renewed) => {
+        leaseLost = !renewed;
+      }).catch(() => {
+        leaseLost = true;
+      }).finally(() => {
+        heartbeatRunning = false;
+      });
+    }, Math.max(1_000, Math.floor(this.leaseDurationMs / 3)));
+    heartbeat.unref();
 
     try {
       if (await this.cancelIfRequested(context, input.leaseOwner)) {
@@ -194,6 +226,26 @@ export class DurableIngestionPipeline {
         checkpoint,
       });
       const fetchFinishedAt = this.clock().toISOString();
+      const fetchedRecords = fetchResult.records.map((record) => ({
+        ...record,
+        payload: {
+          canonical: normalizeProviderRecord({
+            providerId: input.payload.providerId,
+            stream: record.stream,
+            externalId: record.externalId,
+            observedAt: record.observedAt,
+            payload: record.payload,
+          }),
+          raw: record.payload,
+        },
+      }));
+
+      if (leaseLost) {
+        throw new DurableIngestionError("Integration job lease was lost", {
+          failureClass: "transient",
+          retryable: true,
+        });
+      }
 
       if (await this.cancelIfRequested(context, input.leaseOwner)) {
         return emptyResult("cancelled", input.payload.jobId);
@@ -212,7 +264,7 @@ export class DurableIngestionPipeline {
         providerId: input.payload.providerId,
         syncJobId: input.payload.jobId,
         checkpointStream,
-        fetchedRecords: fetchResult.records,
+        fetchedRecords,
         nextCheckpoint: fetchResult.nextCheckpoint,
         attempt: input.attempt,
         correlationId: input.correlationId,
@@ -324,6 +376,8 @@ export class DurableIngestionPipeline {
         attempt: input.attempt,
       });
       throw error;
+    } finally {
+      clearInterval(heartbeat);
     }
   }
 

@@ -1,22 +1,35 @@
-import { Global, Module } from "@nestjs/common";
+import { Global, Injectable, Module, type OnModuleDestroy } from "@nestjs/common";
 import { ProductionDatabase } from "@papadata/database";
 import { readProductionConfig } from "./config.js";
+
+@Injectable()
+export class ProductionDatabaseProvider
+  extends ProductionDatabase
+  implements OnModuleDestroy
+{
+  constructor() {
+    const config = readProductionConfig();
+    super({
+      connectionString: config.databaseUrl,
+      max: config.databasePoolMax,
+      statementTimeoutMs: config.databaseStatementTimeoutMs,
+    });
+  }
+
+  async onModuleDestroy(): Promise<void> {
+    await this.close();
+  }
+}
 
 @Global()
 @Module({
   providers: [
+    ProductionDatabaseProvider,
     {
       provide: ProductionDatabase,
-      useFactory: () => {
-        const config = readProductionConfig();
-        return new ProductionDatabase({
-          connectionString: config.databaseUrl,
-          max: Number(process.env.DB_POOL_MAX ?? 20),
-          statementTimeoutMs: Number(process.env.DB_STATEMENT_TIMEOUT_MS ?? 30000),
-        });
-      },
+      useExisting: ProductionDatabaseProvider,
     },
   ],
-  exports: [ProductionDatabase],
+  exports: [ProductionDatabase, ProductionDatabaseProvider],
 })
 export class DatabaseModule {}

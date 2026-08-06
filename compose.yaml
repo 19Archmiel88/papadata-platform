@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:${POSTGRES_VERSION:-18}-alpine
+    image: postgres:${POSTGRES_VERSION:-16.13}-alpine
     environment:
       POSTGRES_USER: ${POSTGRES_ADMIN_USER:-papadata_admin}
       POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:-change-me-local-only}
@@ -9,6 +9,7 @@ services:
       PAPADATA_TEST_DATABASE: ${PAPADATA_TEST_DATABASE:-papadata_test}
       PAPADATA_MIGRATOR_PASSWORD: ${PAPADATA_MIGRATOR_PASSWORD:-change-me-local-only}
       PAPADATA_APP_PASSWORD: ${PAPADATA_APP_PASSWORD:-change-me-local-only}
+      PAPADATA_PLATFORM_PASSWORD: ${PAPADATA_PLATFORM_PASSWORD:-change-me-local-only}
       PAPADATA_TEST_PASSWORD: ${PAPADATA_TEST_PASSWORD:-change-me-local-only}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
@@ -41,7 +42,7 @@ services:
       start_period: 5s
 
   migrate:
-    image: postgres:${POSTGRES_VERSION:-18}-alpine
+    image: postgres:${POSTGRES_VERSION:-16.13}-alpine
     working_dir: /workspace
     entrypoint: ["sh", "/workspace/packages/database/scripts/migrate.sh"]
     command: ["up"]
@@ -53,7 +54,9 @@ services:
       PAPADATA_MIGRATOR_USER: ${PAPADATA_MIGRATOR_USER:-papadata_migrator}
       PAPADATA_MIGRATOR_PASSWORD: ${PAPADATA_MIGRATOR_PASSWORD:-change-me-local-only}
       PAPADATA_APP_USER: ${PAPADATA_APP_USER:-papadata_app}
+      PAPADATA_PLATFORM_USER: ${PAPADATA_PLATFORM_USER:-papadata_platform}
       PAPADATA_TEST_USER: ${PAPADATA_TEST_USER:-papadata_test}
+      PAPADATA_TEST_PASSWORD: ${PAPADATA_TEST_PASSWORD:-change-me-local-only}
       MIGRATION_DIR: /workspace/packages/database/migrations
     volumes:
       - ./:/workspace:ro

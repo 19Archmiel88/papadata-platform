@@ -18,19 +18,37 @@ export async function createBffApplication(
   const adapter = new FastifyAdapter({
     bodyLimit: config.maxBodyBytes,
     logger: true,
-    trustProxy: false,
+    trustProxy: true,
   });
   const app = await NestFactory.create<NestFastifyApplication>(
     BffAppModule.register(config),
     adapter,
+    {
+      bodyParser: false,
+    },
+  );
+
+  const fastify = app.getHttpAdapter().getInstance();
+  fastify.addContentTypeParser(
+    ["application/octet-stream", "application/x-www-form-urlencoded", "text/csv"],
+    { parseAs: "buffer" },
+    (_request, body, done) => done(null, body),
+  );
+  fastify.addContentTypeParser(
+    /^text\//u,
+    { parseAs: "buffer" },
+    (_request, body, done) => done(null, body),
+  );
+  fastify.addContentTypeParser(
+    /^multipart\/form-data(?:;.*)?$/u,
+    { parseAs: "buffer" },
+    (_request, body, done) => done(null, body),
   );
 
   await app.register(cookie, {
     secret: [
       config.cookieSecret,
-      ...(config.cookiePreviousSecret
-        ? [config.cookiePreviousSecret]
-        : []),
+      ...(config.cookiePreviousSecret ? [config.cookiePreviousSecret] : []),
     ],
   });
   await app.register(helmet, {
@@ -44,20 +62,17 @@ export async function createBffApplication(
     },
   });
 
-  app.getHttpAdapter().getInstance().setErrorHandler(
+  fastify.setErrorHandler(
     (error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
       const statusCode = error.statusCode === 413 ? 413 : error.statusCode;
-
       if (statusCode === 413) {
         sendSanitizedError(reply, request, 413, "PAYLOAD_TOO_LARGE");
         return;
       }
-
       if (statusCode && statusCode >= 400 && statusCode < 500) {
         sendSanitizedError(reply, request, statusCode, "REQUEST_REJECTED");
         return;
       }
-
       sendSanitizedError(reply, request, 500, "BFF_INTERNAL_ERROR");
     },
   );
@@ -75,10 +90,9 @@ function sendSanitizedError(
   reply.status(statusCode).send({
     error: {
       code,
-      message:
-        statusCode === 413
-          ? "Request body is too large."
-          : "Request could not be completed.",
+      message: statusCode === 413
+        ? "Request body is too large."
+        : "Request could not be completed.",
       requestId: request.id,
     },
   });

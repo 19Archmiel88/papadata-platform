@@ -1,6 +1,18 @@
 import { randomUUID } from "node:crypto";
-import type { IntegrationProviderAdapter, ProviderFetchRequest, ProviderFetchResult } from "../provider-adapter.js";
+import type {
+  IntegrationProviderAdapter,
+  ProviderFetchRequest,
+  ProviderFetchResult,
+  ProviderRecord,
+} from "../provider-adapter.js";
 import { ProviderAdapterError } from "../provider-adapter.js";
+import {
+  FetchProviderHttpClient,
+  type ProviderHttpClient,
+  isRecord,
+  readArrayField,
+  readStringField,
+} from "../http.js";
 
 export type ShopifyAdapterConfig = {
   readonly shopDomain: string;
@@ -14,9 +26,14 @@ export class ShopifyAdapter implements IntegrationProviderAdapter {
   readonly optionalScopes = ["read_customers"] as const;
 
   private readonly config: ShopifyAdapterConfig | null;
+  private readonly http: ProviderHttpClient;
 
-  constructor(config: ShopifyAdapterConfig | null) {
+  constructor(
+    config: ShopifyAdapterConfig | null,
+    http: ProviderHttpClient = new FetchProviderHttpClient(),
+  ) {
     this.config = config;
+    this.http = http;
   }
 
   isConfigured(): boolean {
@@ -24,80 +41,204 @@ export class ShopifyAdapter implements IntegrationProviderAdapter {
   }
 
   async verifyConnection(): Promise<void> {
-    await this.request("shop.json");
+    await this.graphql<{ readonly shop?: unknown }>(
+      "query VerifyShop { shop { id name myshopifyDomain } }",
+      {},
+    );
   }
 
   async fetch(request: ProviderFetchRequest): Promise<ProviderFetchResult> {
-    const records = [];
-    const from = request.from ? `&created_at_min=${encodeURIComponent(request.from)}` : "";
-    const to = request.to ? `&created_at_max=${encodeURIComponent(request.to)}` : "";
+    const records: ProviderRecord[] = [];
+    const limitations: string[] = [];
+    const observedAt = new Date().toISOString();
 
     for (const stream of request.streams) {
-      const endpoint = stream === "orders"
-        ? `orders.json?status=any&limit=250${from}${to}`
-        : stream === "products"
-          ? "products.json?limit=250"
-          : stream === "inventory"
-            ? "inventory_levels.json?limit=250"
-            : stream === "refunds"
-              ? `orders.json?status=any&limit=250${from}${to}`
-              : null;
-      if (!endpoint) {
+      if (stream === "orders" || stream === "refunds") {
+        const orders = await this.paginate(
+          `query Orders($cursor: String, $query: String) {
+             orders(first: 100, after: $cursor, query: $query, sortKey: UPDATED_AT) {
+               pageInfo { hasNextPage endCursor }
+               nodes {
+                 id name createdAt updatedAt cancelledAt closedAt displayFinancialStatus
+                 displayFulfillmentStatus currencyCode currentTotalPriceSet { shopMoney { amount currencyCode } }
+                 customer { id email phone }
+                 shippingAddress { city countryCodeV2 zip }
+                 lineItems(first: 250) { nodes { id sku name quantity originalUnitPriceSet { shopMoney { amount currencyCode } } } }
+                 refunds { id createdAt note totalRefundedSet { shopMoney { amount currencyCode } } refundLineItems(first: 250) { nodes { quantity lineItem { id sku } } } }
+               }
+             }
+           }`,
+          "orders",
+          buildOrderQuery(request),
+        );
+        if (stream === "orders") {
+          records.push(...orders.map((order) => ({
+            stream,
+            externalId: globalId(order),
+            observedAt,
+            payload: order,
+          })));
+        } else {
+          for (const order of orders) {
+            const orderId = globalId(order);
+            for (const refund of readArrayField(order, "refunds")) {
+              records.push({
+                stream,
+                externalId: readStringField(refund, "id") ?? `${orderId}:${randomUUID()}`,
+                observedAt,
+                payload: { orderId, refund },
+              });
+            }
+          }
+        }
         continue;
       }
-      const payload = await this.request(endpoint);
-      const items = this.extractItems(stream, payload);
-      for (const item of items) {
-        const id = this.readId(item);
-        records.push({
+
+      if (stream === "products") {
+        const products = await this.paginate(
+          `query Products($cursor: String) {
+             products(first: 100, after: $cursor, sortKey: UPDATED_AT) {
+               pageInfo { hasNextPage endCursor }
+               nodes { id title handle status vendor productType createdAt updatedAt
+                 variants(first: 250) { nodes { id sku barcode title price inventoryQuantity inventoryItem { id tracked } } }
+               }
+             }
+           }`,
+          "products",
+        );
+        records.push(...products.map((product) => ({
           stream,
-          externalId: id,
-          observedAt: new Date().toISOString(),
-          payload: item,
-        });
+          externalId: globalId(product),
+          observedAt,
+          payload: product,
+        })));
+        continue;
       }
+
+      if (stream === "inventory") {
+        const inventory = await this.paginate(
+          `query Inventory($cursor: String) {
+             inventoryItems(first: 100, after: $cursor) {
+               pageInfo { hasNextPage endCursor }
+               nodes { id tracked sku variant { id displayName product { id title } } inventoryLevels(first: 100) { nodes { id location { id name } quantities(names: ["available", "committed", "on_hand"]) { name quantity } } } }
+             }
+           }`,
+          "inventoryItems",
+        );
+        records.push(...inventory.map((item) => ({
+          stream,
+          externalId: globalId(item),
+          observedAt,
+          payload: item,
+        })));
+      }
+    }
+
+    if (request.streams.includes("orders")) {
+      limitations.push("Shopify orders older than the granted historical window require read_all_orders approval.");
     }
 
     return {
       records,
-      nextCheckpoint: new Date().toISOString(),
+      nextCheckpoint: JSON.stringify({ updatedAt: observedAt }),
       partial: false,
-      limitations: [],
+      limitations,
     };
   }
 
-  private async request(path: string): Promise<unknown> {
+  private async paginate(
+    query: string,
+    connectionName: string,
+    searchQuery?: string,
+  ): Promise<readonly unknown[]> {
+    const records: unknown[] = [];
+    let cursor: string | null = null;
+    let page = 0;
+
+    while (page < 10_000) {
+      const payload = await this.graphql<unknown>(query, {
+        cursor,
+        ...(searchQuery ? { query: searchQuery } : {}),
+      });
+      if (!isRecord(payload) || !isRecord(payload[connectionName])) {
+        throw new ProviderAdapterError("Shopify returned an invalid connection", "validation");
+      }
+      const connection = payload[connectionName];
+      records.push(...readArrayField(connection, "nodes"));
+      const pageInfo = isRecord(connection.pageInfo) ? connection.pageInfo : {};
+      const hasNextPage = pageInfo.hasNextPage === true;
+      cursor = readStringField(pageInfo, "endCursor");
+      page += 1;
+      if (!hasNextPage || !cursor) break;
+    }
+    return records;
+  }
+
+  private async graphql<T>(query: string, variables: Record<string, unknown>): Promise<T> {
     if (!this.config) {
       throw new ProviderAdapterError("Shopify is not configured", "authentication");
     }
-    const url = `https://${this.config.shopDomain}/admin/api/${this.config.apiVersion}/${path}`;
-    const response = await fetch(url, {
-      headers: { "X-Shopify-Access-Token": this.config.accessToken },
+    const domain = normalizeShopDomain(this.config.shopDomain);
+    const version = normalizeApiVersion(this.config.apiVersion);
+    const response = await this.http.requestJson<unknown>({
+      body: JSON.stringify({ query, variables }),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": this.config.accessToken,
+      },
+      maxAttempts: 4,
+      method: "POST",
+      timeoutMs: 30_000,
+      url: `https://${domain}/admin/api/${version}/graphql.json`,
     });
-    if (response.status === 429) {
-      throw new ProviderAdapterError("Shopify rate limit", "rate_limit", 60);
+    if (!isRecord(response.data)) {
+      throw new ProviderAdapterError("Shopify returned an invalid response", "validation");
     }
-    if (response.status >= 500) {
-      throw new ProviderAdapterError("Shopify temporary failure", "transient", 30);
+    const errors = readArrayField(response.data, "errors");
+    if (errors.length > 0) {
+      throw new ProviderAdapterError("Shopify GraphQL request failed", "validation");
     }
-    if (!response.ok) {
-      throw new ProviderAdapterError(`Shopify request failed: ${response.status}`, "permanent");
-    }
-    return response.json();
+    return response.data.data as T;
   }
+}
 
-  private extractItems(stream: string, payload: unknown): readonly unknown[] {
-    if (!payload || typeof payload !== "object") return [];
-    const record = payload as Record<string, unknown>;
-    const key = stream === "orders" || stream === "refunds" ? "orders" : stream;
-    const value = record[key];
-    return Array.isArray(value) ? value : [];
-  }
+function buildOrderQuery(request: ProviderFetchRequest): string | undefined {
+  const terms: string[] = [];
+  const checkpoint = checkpointDate(request.checkpoint);
+  const from = request.from ?? checkpoint;
+  if (from) terms.push(`updated_at:>=${from}`);
+  if (request.to) terms.push(`updated_at:<=${request.to}`);
+  return terms.length > 0 ? terms.join(" ") : undefined;
+}
 
-  private readId(item: unknown): string {
-    if (item && typeof item === "object" && "id" in item) {
-      return String((item as { id: unknown }).id);
-    }
-    return randomUUID();
+function checkpointDate(checkpoint: string | null): string | null {
+  if (!checkpoint) return null;
+  try {
+    const parsed = JSON.parse(checkpoint) as unknown;
+    return isRecord(parsed) && typeof parsed.updatedAt === "string"
+      ? parsed.updatedAt
+      : null;
+  } catch {
+    return Number.isFinite(Date.parse(checkpoint)) ? checkpoint : null;
   }
+}
+
+function normalizeShopDomain(value: string): string {
+  const normalized = value.trim().replace(/^https?:\/\//iu, "").replace(/\/$/u, "");
+  if (!/^[a-z0-9][a-z0-9.-]*\.myshopify\.com$/iu.test(normalized)) {
+    throw new ProviderAdapterError("Shopify domain is invalid", "validation");
+  }
+  return normalized;
+}
+
+function normalizeApiVersion(value: string): string {
+  if (!/^\d{4}-\d{2}$/u.test(value)) {
+    throw new ProviderAdapterError("Shopify API version is invalid", "validation");
+  }
+  return value;
+}
+
+function globalId(value: unknown): string {
+  return readStringField(value, "id") ?? randomUUID();
 }

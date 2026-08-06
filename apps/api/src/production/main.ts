@@ -17,6 +17,7 @@ const telemetry = await startTelemetry(config.otlpEndpoint);
 const app = await NestFactory.create<NestFastifyApplication>(
   ProductionAppModule,
   new FastifyAdapter({
+    bodyLimit: 1_048_576,
     logger: true,
     trustProxy: true,
   }),
@@ -27,7 +28,10 @@ const app = await NestFactory.create<NestFastifyApplication>(
 
 app.useGlobalPipes(
   new ValidationPipe({
+    forbidNonWhitelisted: true,
+    forbidUnknownValues: true,
     transform: true,
+    transformOptions: { enableImplicitConversion: false },
     whitelist: true,
   }),
 );
@@ -39,10 +43,27 @@ await app.listen({
   port: config.port,
 });
 
-const shutdown = async (): Promise<void> => {
-  await app.close();
-  await telemetry.shutdown();
+let shutdownPromise: Promise<void> | null = null;
+const shutdown = (): Promise<void> => {
+  shutdownPromise ??= Promise.allSettled([
+    app.close(),
+    telemetry.shutdown(),
+  ]).then((results) => {
+    const rejected = results.find(
+      (result): result is PromiseRejectedResult => result.status === "rejected",
+    );
+    if (rejected) {
+      throw rejected.reason;
+    }
+  });
+  return shutdownPromise;
 };
 
-process.on("SIGTERM", () => void shutdown());
-process.on("SIGINT", () => void shutdown());
+for (const signal of ["SIGTERM", "SIGINT"] as const) {
+  process.once(signal, () => {
+    void shutdown().catch((error: unknown) => {
+      console.error("Graceful shutdown failed", error);
+      process.exitCode = 1;
+    });
+  });
+}

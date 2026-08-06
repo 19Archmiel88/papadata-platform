@@ -35,12 +35,6 @@ export class CapabilityGuard implements CanActivate {
     }
 
     if (policy.policy.classification !== "authenticated") {
-      if (policy.policy.classification === "infrastructure") {
-        throw new ForbiddenException(
-          "Infrastructure endpoint requires internal authentication.",
-        );
-      }
-
       return true;
     }
 
@@ -67,13 +61,7 @@ export class CapabilityGuard implements CanActivate {
       throw new ForbiddenException("Required capability is missing.");
     }
 
-    if (
-      !meetsAuthenticationLevel(
-        principal,
-        policy.policy.authLevel,
-        new Date(),
-      )
-    ) {
+    if (!meetsAuthenticationLevel(principal, policy.policy.authLevel, new Date())) {
       await this.deniedAccessAudit.record({
         auditDeniedAccess: policy.policy.auditDeniedAccess,
         principal,

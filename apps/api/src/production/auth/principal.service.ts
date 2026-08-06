@@ -11,6 +11,7 @@ import {
   type RequestWithPrincipal,
 } from "./request-principal.js";
 import { isCanonicalCapability } from "./route-policy.js";
+import { readProductionConfig } from "../config.js";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -70,8 +71,8 @@ export class RedisPrincipalSessionStore
       );
     }
 
-    const redisUrl = requiredEnv("REDIS_URL");
-    const redis = await this.getRedis(redisUrl);
+    const config = readProductionConfig();
+    const redis = await this.getRedis(config);
     const prefix = process.env.PAPADATA_API_AUTH_SESSION_REDIS_PREFIX
       ?? "papadata:auth";
     const raw = await redis.get(`${prefix}:session:${sessionId}`);
@@ -84,9 +85,29 @@ export class RedisPrincipalSessionStore
     return isRecord(session) ? readSessionRecord(session) : null;
   }
 
-  private async getRedis(url: string): Promise<RedisClientType> {
+  private async getRedis(
+    config: ReturnType<typeof readProductionConfig>,
+  ): Promise<RedisClientType> {
     if (!this.redisClient) {
-      this.redisClient = createClient({ url });
+      this.redisClient = createClient({
+        url: config.redisUrl,
+        socket: new URL(config.redisUrl).protocol === "rediss:"
+          ? {
+              connectTimeout: config.redisConnectTimeoutMs,
+              tls: true as const,
+              ...(config.redisCaBase64
+                ? {
+                    ca: Buffer.from(
+                      config.redisCaBase64,
+                      "base64",
+                    ).toString("utf8"),
+                  }
+                : {}),
+            }
+          : {
+              connectTimeout: config.redisConnectTimeoutMs,
+            },
+      });
     }
 
     if (!this.redisClient.isOpen) {

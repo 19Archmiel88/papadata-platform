@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "package": "PapaData-Backend-Migration-Implementation-2026-08-06",
+  "targetProject": "papadata-platform",
+  "donorProject": "papadata-main",
+  "strategy": "selective-port-no-full-merge",
+  "fullLegacyFeatureParityClaimed": false,
+  "productionReadinessClaimed": false,
+  "providerAdapterImplementations": 7,
+  "providerLiveAcceptances": 0,
+  "preserved": [
+    "BFF session boundary",
+    "signed internal principal",
+    "capability and authentication-level guards",
+    "durable worker state machine",
+    "tenant-aware persistence and RLS foundation",
+    "audit and idempotency foundation",
+    "supply-chain and release hardening"
+  ],
+  "implementedNow": [
+    "backend typecheck stabilization",
+    "explicit Nest dependency injection",
+    "test-only in-memory queue driver",
+    "canonical provider record v2",
+    "raw plus canonical lineage persistence",
+    "migrated access precedence policy",
+    "migrated billing status, plan, entitlement, VAT and KSeF policies",
+    "migrated source-priority and provider-error policies",
+    "semantic access, billing, data-quality and command-center handlers",
+    "generated capability documentation with honest implementation classes"
+  ],
+  "evidence": {
+    "nodeRequired": "24.18.0",
+    "pnpmRequired": "10.29.3",
+    "typecheckSelectedBackendPackages": "pass",
+    "integrationTests": "pass",
+    "bffTests": "pass",
+    "workerTests": "pass",
+    "apiAuthHttpTests": "26/26 pass",
+    "liveProviderTests": "not-run",
+    "stagingDeployment": "not-run"
+  }
+}

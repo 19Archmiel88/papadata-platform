@@ -18,8 +18,10 @@ export const requiredAuthLevelMetadataKey =
   "papadata:route-policy:auth-level";
 export const auditDeniedAccessMetadataKey =
   "papadata:route-policy:audit-denied-access";
+export const operationIdMetadataKey = "papadata:route-policy:operation-id";
 
 const canonicalCapabilitySet = new Set<string>(canonicalCapabilities);
+const operationIdPattern = /^[a-z][a-z0-9_-]*(?:\.[a-z0-9][a-z0-9_-]*)+$/u;
 
 export function isCanonicalCapability(
   value: string,
@@ -37,6 +39,14 @@ export function InfrastructureEndpoint(): MethodDecorator {
 
 export function ExternalProviderEndpoint(): MethodDecorator {
   return SetMetadata(externalProviderEndpointMetadataKey, true);
+}
+
+export function OperationId(value: string): MethodDecorator {
+  if (!operationIdPattern.test(value)) {
+    throw new Error(`Invalid operationId: ${value}`);
+  }
+
+  return SetMetadata(operationIdMetadataKey, value);
 }
 
 export function RequireCapabilities(

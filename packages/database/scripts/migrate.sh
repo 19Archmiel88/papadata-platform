@@ -8,7 +8,9 @@ postgres_port="${POSTGRES_PORT:-5432}"
 migrator_user="${PAPADATA_MIGRATOR_USER:-papadata_migrator}"
 migrator_password="${PAPADATA_MIGRATOR_PASSWORD:-change-me-local-only}"
 app_user="${PAPADATA_APP_USER:-papadata_app}"
+platform_user="${PAPADATA_PLATFORM_USER:-papadata_platform}"
 test_user="${PAPADATA_TEST_USER:-papadata_test}"
+test_password="${PAPADATA_TEST_PASSWORD:-change-me-local-only}"
 migration_dir="${MIGRATION_DIR:-/workspace/packages/database/migrations}"
 
 run_psql() {
@@ -29,6 +31,19 @@ run_psql_value() {
   shift
 
   run_psql "$target_database" -tA "$@"
+}
+
+run_test_psql() {
+  target_database="$1"
+  shift
+
+  PGPASSWORD="$test_password" psql \
+    -h "$postgres_host" \
+    -p "$postgres_port" \
+    -U "$test_user" \
+    -d "$target_database" \
+    -v ON_ERROR_STOP=1 \
+    "$@"
 }
 
 wait_for_database() {
@@ -208,6 +223,56 @@ WITH checks(check_name, passed) AS (
           )
           AND tableowner <> '${migrator_user}'
       )
+    ),
+    (
+      'platform_role_has_bypassrls',
+      EXISTS (
+        SELECT 1 FROM pg_roles
+        WHERE rolname = '${platform_user}' AND rolbypassrls
+      )
+    ),
+    (
+      'all_tables_classified',
+      NOT EXISTS (
+        SELECT 1
+        FROM information_schema.tables AS table_list
+        LEFT JOIN app.table_security_classification AS classification
+          ON classification.table_name = table_list.table_name
+        WHERE table_list.table_schema = 'app'
+          AND table_list.table_type = 'BASE TABLE'
+          AND classification.table_name IS NULL
+      )
+    ),
+    (
+      'tenant_tables_have_forced_rls',
+      NOT EXISTS (
+        SELECT 1
+        FROM information_schema.columns AS tenant_column
+        JOIN pg_class AS relation
+          ON relation.relname = tenant_column.table_name
+        JOIN pg_namespace AS namespace
+          ON namespace.oid = relation.relnamespace
+         AND namespace.nspname = tenant_column.table_schema
+        WHERE tenant_column.table_schema = 'app'
+          AND tenant_column.column_name = 'tenant_id'
+          AND (NOT relation.relrowsecurity OR NOT relation.relforcerowsecurity)
+      )
+    ),
+    (
+      'privacy_targets_have_forced_rls',
+      EXISTS (
+        SELECT 1
+        FROM pg_class AS relation
+        JOIN pg_namespace AS namespace ON namespace.oid = relation.relnamespace
+        WHERE namespace.nspname = 'app'
+          AND relation.relname = 'privacy_request_targets'
+          AND relation.relrowsecurity
+          AND relation.relforcerowsecurity
+      )
+    ),
+    (
+      'platform_role_is_not_runtime_role',
+      '${platform_user}' <> '${app_user}'
     )
 )
 SELECT check_name || '=' || CASE WHEN passed THEN 'ok' ELSE 'fail' END
@@ -226,6 +291,19 @@ SQL
   echo "schema_migrations_count=${applied_total}"
 }
 
+assert_rls_isolation() {
+  target_database="$1"
+  test_file="${migration_dir%/migrations}/tests/rls-isolation.sql"
+
+  if [ ! -f "$test_file" ]; then
+    echo "RLS isolation test not found: ${test_file}"
+    return 1
+  fi
+
+  run_test_psql "$target_database" -f "$test_file" || return 1
+  echo "rls_isolation=ok database=${target_database} role=${test_user}"
+}
+
 case "$command_name" in
   up)
     apply_migrations "$database_name"
@@ -236,7 +314,8 @@ case "$command_name" in
   test)
     reset_test_schema &&
       apply_migrations "$test_database_name" &&
-      assert_migration_contract "$test_database_name"
+      assert_migration_contract "$test_database_name" &&
+      assert_rls_isolation "$test_database_name"
     ;;
   *)
     echo "Usage: migrate.sh [up|status|test]"

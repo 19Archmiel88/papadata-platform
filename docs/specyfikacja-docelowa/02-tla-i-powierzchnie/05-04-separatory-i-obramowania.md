@@ -5,7 +5,7 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-4AF5EFAB439D
 status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+updated_at: 2026-08-06T00:00:00+02:00
 ---
 
 # Separatory i obramowania
@@ -19,58 +19,40 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Nazwa techniczna | separatory-i-obramowania |
 | Typ dokumentu | kontrakt powierzchni |
 | Wersja | 1.0 |
-| Status kontraktu | zatwierdzony stan docelowy |
-| Priorytet | P0 |
-| Właściciel | Design System Lead |
-| Moduł | M02 — Design System |
-
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | PROTOTYP STORYBOOK — REVIEW |
+| Status Storybooka | mapa ról i zastosowań desktop light/dark |
+| Status testów | dedykowane testy Storybook interaction/axe: `not_started` |
 
 ## Decyzja docelowa
 
-Hairline divider jest podstawowym narzędziem hierarchii.
+Hairline divider i kontrolowana separacja są podstawowym sposobem budowania hierarchii. Active, focus i danger mają odrębne role.
 
-## Anatomia powierzchni
+## Stan prototypu Storybook 05.04
 
-```text
-Surface
-├── Background role
-├── Content boundary
-├── Optional status region
-├── Interactive content
-└── Overlay anchor
-```
+Historia pokazuje poziomy `subtle`, `default`, `strong`, `focus`, `active` i `danger`, używa poprawnego tokenu `--pd-separator-strong` i mapuje je na sekcje, topbar/sidebar, tabelę, drawer, focus oraz status krytyczny.
+
+Mapa aplikacji demonstruje topbar, sidebar, region treści i wizualną próbkę drawera bez kart wewnątrz kart. Próbka drawera jest zwykłym kontenerem prezentacyjnym, a nie landmarkiem `aside`, ponieważ nie pełni w historii samodzielnej roli komplementarnej. Nawigacja ma lokalny aktywny stan. Antyprzykład pokazuje utratę znaczenia, gdy każdy element dostaje tę samą ciężką ramkę.
 
 ## Reguły
 
-- border subtle/default/strong
-- active i focus są oddzielnymi rolami
-- status danger nie jest zwykłym active border
-- divider nie tworzy dodatkowego landmarku
+- `--pd-separator-subtle` dla podziałów wewnętrznych
+- `--pd-separator` dla granic regionów
+- `--pd-separator-strong` dla wyjątkowo mocnej granicy ważnej powierzchni
+- `--pd-focus-visible` wyłącznie dla widocznego focusu
+- `--pd-brand-accent` dla aktywnego wyboru
+- `--pd-status-danger` dla statusu krytycznego
+- danger nie jest zwykłym active border
+- separator ani wizualna próbka drawera nie tworzą dodatkowego landmarku lub dekoracyjnej ramki każdego elementu
 
 ## Warianty wymagane przez katalog
 
 - podział sekcji
-- obramowania kart
-- obramowania tabel
+- obramowania ważnych powierzchni
+- podziały tabel
 - separatory topbara
 - separatory sidebara
-- separatory drawerów.
-
-## Tokeny
-
-`--pd-canvas`, `--pd-surface`, `--pd-surface-subtle`, `--pd-surface-raised`, `--pd-separator-subtle`, `--pd-overlay-scrim`, `--pd-shadow-overlay`, `--pd-radius-*`.
-
-## Responsywność
-
-Powierzchnia nie ma stałej wysokości zależnej od desktopu. Na compact zachowuje priorytet zadania, na medium redukuje elementy drugorzędne, a na wide nie rozciąga tekstu formularzy i opisów ponad czytelną szerokość.
-
-## Dostępność
-
-Powierzchnia nie jest automatycznie landmarkiem. Landmark wynika z rzeczywistej roli i ma nazwę. Tło, gradient ani tekstura nie mogą obniżyć kontrastu lub utrudnić widoczności focus ring.
+- granice drawerów
 
 ## Storybook i odbiór
 
-Wymagane: light, dark, desktop, tablet, mobile, zoom 200%, high content density, empty/error oraz porównanie z antyprzykładem. Kryterium odbioru stanowi brak utraty funkcji i brak dekoracyjnych wrapperów bez odpowiedzialności.
+Przed akceptacją wymagane są: typecheck, Storybook build, checki Storybooka i Fundamentów, `git diff --check`, desktop light/dark, kontrola widocznego focusu, aktywnej nawigacji, rozróżnienia danger/active/focus, braku poziomego overflow i zgodności tokenów z `00-07-linie-i-separacja.md`. Historia pozostaje `review`.

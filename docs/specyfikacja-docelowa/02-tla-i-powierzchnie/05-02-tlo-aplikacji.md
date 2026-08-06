@@ -5,7 +5,7 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-57FE6FF39170
 status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+updated_at: 2026-08-06T00:00:00+02:00
 ---
 
 # Tło aplikacji
@@ -16,7 +16,7 @@ updated_at: 2026-07-30T10:30:00+02:00
 | --- | --- |
 | Identyfikator | 05.02 |
 | Nazwa polska | Tło aplikacji |
-| Nazwa techniczna | to-aplikacji |
+| Nazwa techniczna | tlo-aplikacji |
 | Typ dokumentu | kontrakt powierzchni |
 | Wersja | 1.0 |
 | Status kontraktu | zatwierdzony stan docelowy |
@@ -24,13 +24,34 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Właściciel | Design System Lead |
 | Moduł | M02 — Design System |
 
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | PROTOTYP STORYBOOK — REVIEW |
+| Status Storybooka | reprezentatywna historia desktop light/dark; nie jest produkcyjnym AppShell |
+| Status testów | dedykowane interaction/play i utrwalone axe: `not_started`; walidacja techniczna wymagana przed akceptacją |
 
 ## Decyzja docelowa
 
-Canvas i region treści rozdzielają nawigację od zadania; shell nie tworzy dekoracyjnych kart.
+Canvas i region treści rozdzielają nawigację od zadania. Shell nie tworzy dekoracyjnych kart, a panel Papa jest warstwą nakładaną i nie ściska głównego regionu treści.
+
+## Stan prototypu Storybook 05.02
+
+Prototyp pokazuje jeden reprezentatywny canvas z przełączanymi wariantami: sidebar, brak sidebara, panel Papa i compact rail. Nie mnoży czterech równorzędnych miniaturek. Panel Papa używa scrim, granicy regionu i technicznego cienia overlay; otwiera się nad canvasem i zachowuje szerokość zadania.
+
+Sekcja właściciela scrolla pokazuje jeden przewijany region treści przy stabilnym topbarze i nawigacji. Region jest dostępny w sekwencji klawiaturowej przez `tabIndex=0`, ma jednoznaczną nazwę i widoczny focus oparty na `--pd-focus-visible`. Lokalny scrollbar tego regionu używa neutralnego tracka i akcentowego thumba opartego wyłącznie na istniejących tokenach PapaData; hover i active wzmacniają akcent bez glow, blur ani ciężkiego cienia. Sticky topbar jest nieprzezroczysty i nie używa blur, glow ani glass. Sekcja szerokości treści rozróżnia szeroki region analityczny i kontrolowaną długość formularza. Decyzja i antyprzykład wyjaśniają, dlaczego karty wewnątrz kart i mechaniczne ściskanie przez panel są odrzucane.
+
+Mobile i tablet pozostają wymaganiami katalogu, ale są odroczone poza bieżącym desktopowym review. Story nie pokazuje makiety mobile udającej zaakceptowany produkt.
+
+## Reguły
+
+- jeden canvas i jawne granice regionów
+- wariant z sidebarem, bez sidebara, z panelem Papa i compact rail
+- panel Papa jako warstwa overlay zgodna z „Głębia i warstwy”
+- sticky topbar na nieprzezroczystej powierzchni
+- jeden jawny właściciel scrolla: content region, dostępny z klawiatury i z widocznym fokusem
+- lokalny firmowy scrollbar: neutralny track, akcentowy thumb, czytelne hover/active, bez zmiany globalnego scrollbara
+- pełna szerokość dla analiz, ograniczona dla formularzy
+- brak poziomego scrolla i brak dekoracyjnych wrapperów bez odpowiedzialności
+- widoczne kontrolki demonstracyjne mają lokalne działanie; nie pozostają martwymi przyciskami
+- globalne tokeny i Fundamenty pozostają bez zmian
 
 ## Anatomia powierzchni
 
@@ -43,13 +64,6 @@ Surface
 └── Overlay anchor
 ```
 
-## Reguły
-
-- układ z sidebarem, railem, drawerem i panelem Papa
-- sticky topbar na nieprzezroczystej powierzchni
-- pełna szerokość dla analiz, ograniczona dla formularzy
-- jawny właściciel scrolla
-
 ## Warianty wymagane przez katalog
 
 - główne tło aplikacji
@@ -57,20 +71,22 @@ Surface
 - układ z sidebarem
 - układ bez sidebara
 - układ z panelem Papa
-- układ compact.
+- układ compact
 
 ## Tokeny
 
-`--pd-canvas`, `--pd-surface`, `--pd-surface-subtle`, `--pd-surface-raised`, `--pd-separator-subtle`, `--pd-overlay-scrim`, `--pd-shadow-overlay`, `--pd-radius-*`.
+`--pd-canvas`, `--pd-surface`, `--pd-surface-subtle`, `--pd-surface-raised`, `--pd-separator-subtle`, `--pd-separator`, `--pd-overlay-scrim`, `--pd-shadow-overlay`, `--pd-radius-*`, role warstw z `00-08-glebia-i-warstwy.md`.
 
 ## Responsywność
 
-Powierzchnia nie ma stałej wysokości zależnej od desktopu. Na compact zachowuje priorytet zadania, na medium redukuje elementy drugorzędne, a na wide nie rozciąga tekstu formularzy i opisów ponad czytelną szerokość.
+Aktywny zakres Stage 02 obejmuje desktop light/dark. Compact oznacza desktopowy rail, nie formalny projekt mobile. Wąski reflow nie może tworzyć poziomego scrolla; formalny odbiór tablet/mobile pozostaje odroczony.
 
 ## Dostępność
 
-Powierzchnia nie jest automatycznie landmarkiem. Landmark wynika z rzeczywistej roli i ma nazwę. Tło, gradient ani tekstura nie mogą obniżyć kontrastu lub utrudnić widoczności focus ring.
+Landmark wynika z rzeczywistej roli i ma nazwę unikalną dla wariantu lub demonstracji, dzięki czemu kilka canvasów w jednej historii pozostaje rozróżnialnych. Przełącznik wariantu używa `aria-pressed`, nawigacja używa `aria-current`, a scroll owner jest nazwanym regionem dostępnym przez Tab i przewijanym klawiaturą. Panel Papa ma nazwę i kontrolkę zamknięcia. Warstwa zamyka się przez kontrolkę oraz scrim; produkcyjne zachowanie OverlayRoot pozostaje odpowiedzialnością docelowego komponentu.
 
 ## Storybook i odbiór
 
-Wymagane: light, dark, desktop, tablet, mobile, zoom 200%, high content density, empty/error oraz porównanie z antyprzykładem. Kryterium odbioru stanowi brak utraty funkcji i brak dekoracyjnych wrapperów bez odpowiedzialności.
+Przed akceptacją wymagane są: typecheck, Storybook build, checki katalogu/architektury/taksonomii, Foundation verification, `git diff --check`, desktop light/dark, kontrola interakcji wariantów, panelu Papa, scroll ownera, klawiatury, focus, konsoli i braku poziomego overflow. Przejście walidacji nie zmienia statusu `review` na `accepted`.
+
+BRAK DECYZJI W DOKUMENTACJI: kontrakt 05.02 nie definiuje produkcyjnego publicznego API AppShell ani pełnego przepływu OverlayRoot. Story pozostaje lokalnym laboratorium struktury.

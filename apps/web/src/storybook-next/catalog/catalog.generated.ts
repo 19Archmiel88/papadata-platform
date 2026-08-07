@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: 844499648bde5e4b9fc5e3e2092dea71d08cf199f02f2a1048a804b0e6546378
+// SHA-256 źródła: 81eef0736fa11a1d452ee67e2b237cb2c2e5d213ffc8119ec9d2417db6d00519
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -1068,15 +1068,15 @@ export const storybookCatalog = [
     "storyClass": "component",
     "owner": "Analytics UI",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": null,
+    "note": "Runtime owner: TrendChart. Promoted from 05.03; TrendChart owns line/area temporal visual grammar and actual/plan/previous period/moving average. ChartFrame remains the composition owner and 15.09 owns advanced interactions.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "draft",
-    "prototypeStatus": "none",
-    "productionStatus": "not_started",
-    "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "documentationStatus": "accepted",
+    "prototypeStatus": "implemented",
+    "productionStatus": "implemented",
+    "testStatus": "passing",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "line",
       "area",
@@ -1085,10 +1085,12 @@ export const storybookCatalog = [
       "previous period",
       "moving average"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "15 Wykresy i dane/Trendy",
+    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/TrendChart.stories.tsx",
     "displaySectionTitle": "Wykresy i dane",
-    "displayTitle": "Trendy"
+    "displayTitle": "Trendy",
+    "storyExport": "TrendChartStory",
+    "accepted": true
   },
   {
     "id": "15.04",

@@ -1427,15 +1427,15 @@
       "storyClass": "component",
       "owner": "Analytics UI",
       "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-      "note": null,
+      "note": "Runtime owner: TrendChart. Promoted from 05.03; TrendChart owns line/area temporal visual grammar and actual/plan/previous period/moving average. ChartFrame remains the composition owner and 15.09 owns advanced interactions.",
       "group": null,
       "sourceStatus": "specified",
-      "documentationStatus": "draft",
-      "prototypeStatus": "none",
-      "productionStatus": "not_started",
-      "testStatus": "not_started",
-      "storyStatus": "planned",
-      "storyVisibility": "hidden",
+      "documentationStatus": "accepted",
+      "prototypeStatus": "implemented",
+      "productionStatus": "implemented",
+      "testStatus": "passing",
+      "storyStatus": "implemented",
+      "storyVisibility": "visible",
       "requirements": [
         "line",
         "area",
@@ -1444,10 +1444,12 @@
         "previous period",
         "moving average"
       ],
-      "storyTitle": null,
-      "storyFile": null,
+      "storyTitle": "15 Wykresy i dane/Trendy",
+      "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/TrendChart.stories.tsx",
       "displaySectionTitle": "Wykresy i dane",
-      "displayTitle": "Trendy"
+      "displayTitle": "Trendy",
+      "storyExport": "TrendChartStory",
+      "accepted": true
     },
     {
       "id": "15.04",
@@ -6278,8 +6280,8 @@
   ],
   "visibleStoryPolicy": {
     "sectionOverviewCount": 0,
-    "entryStoryCount": 22,
-    "visibleStoryCount": 22,
+    "entryStoryCount": 23,
+    "visibleStoryCount": 23,
     "plannedEntriesRemainInContract": true,
     "technicalIdentifiersVisibleInSidebar": false
   },
@@ -6291,9 +6293,9 @@
       "10.02",
       "10.11"
     ],
-    "activeStoryFiles": 8,
+    "activeStoryFiles": 9,
     "activeSectionOverviews": 0,
-    "activeEntryStories": 22,
+    "activeEntryStories": 23,
     "legacyPrototypeAllowed": false,
     "implementationSource": "apps/web/src/design-system"
   }

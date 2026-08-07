@@ -1,0 +1,207 @@
+.pd-trend-chart {
+  inline-size: 100%;
+  min-inline-size: 0;
+  color: var(--pd-text);
+}
+
+.pd-trend-chart__axis-caption {
+  display: flex;
+  align-items: center;
+  min-block-size: 1.25rem;
+  margin-block-end: var(--pd-space-2);
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: 0.68rem;
+  line-height: 1;
+  letter-spacing: 0.035em;
+}
+
+.pd-trend-chart__axis-caption span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.pd-trend-chart__plot {
+  inline-size: 100%;
+  block-size: 23rem;
+  min-block-size: 19rem;
+  min-inline-size: 0;
+}
+
+.pd-trend-chart .recharts-wrapper {
+  font-family: var(--pd-font-sans);
+}
+
+.pd-trend-chart .recharts-surface {
+  overflow: visible;
+}
+
+.pd-trend-chart .recharts-cartesian-axis-tick-value {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.012em;
+}
+
+.pd-trend-chart .recharts-cartesian-grid-horizontal line,
+.pd-trend-chart .recharts-line-curve,
+.pd-trend-chart .recharts-area-area {
+  vector-effect: non-scaling-stroke;
+}
+
+.pd-trend-chart .recharts-cartesian-grid-horizontal line {
+  shape-rendering: crispEdges;
+}
+
+.pd-trend-chart .recharts-surface:focus {
+  outline: none;
+}
+
+.pd-trend-chart .recharts-surface:focus-visible {
+  outline:
+    var(--pd-focus-width)
+    solid
+    var(--pd-focus-visible);
+  outline-offset: calc(var(--pd-focus-width) * -1);
+  border-radius: var(--pd-radius-small);
+}
+
+.pd-trend-chart__latest-point-ring,
+.pd-trend-chart__latest-point-core {
+  pointer-events: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.pd-trend-chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: var(--pd-space-4);
+  column-gap: var(--pd-space-8);
+  align-items: center;
+  margin: var(--pd-space-6) 0 0;
+  padding: 0;
+  color: var(--pd-text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  list-style: none;
+}
+
+.pd-trend-chart__legend li {
+  display: inline-flex;
+  gap: 0.7rem;
+  align-items: center;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.pd-trend-chart__legend li > span:last-child {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.pd-trend-chart__legend li[data-series="actual"] {
+  color: var(--pd-text);
+}
+
+.pd-trend-chart__legend li[data-series="actual"] > span:last-child {
+  font-weight: var(--pd-font-weight-medium);
+}
+
+.pd-trend-chart__swatch {
+  display: inline-block;
+  inline-size: 2.65rem;
+  flex: 0 0 2.65rem;
+  border-block-start:
+    3px
+    solid
+    var(--pd-data-actual);
+  border-radius: var(--pd-radius-pill);
+}
+
+.pd-trend-chart__legend li[data-series="plan"] .pd-trend-chart__swatch {
+  border-block-start-color: var(--pd-data-target);
+  border-block-start-style: dashed;
+  border-block-start-width: 2px;
+  opacity: 0.84;
+}
+
+.pd-trend-chart__legend li[data-series="previous-period"] .pd-trend-chart__swatch {
+  border-block-start-color: var(--pd-text-muted);
+  border-block-start-style: dotted;
+  border-block-start-width: 2px;
+  opacity: 0.76;
+}
+
+.pd-trend-chart__legend li[data-series="moving-average"] .pd-trend-chart__swatch {
+  border-block-start-color: var(--pd-data-series-2);
+  border-block-start-width: 2px;
+  opacity: 0.9;
+}
+
+[data-theme="dark"] .pd-trend-chart .recharts-cartesian-grid line {
+  stroke: var(--pd-separator);
+  stroke-opacity: 0.72;
+}
+
+[data-theme="dark"] .pd-trend-chart .recharts-cartesian-axis-tick-value {
+  fill: var(--pd-text-secondary);
+}
+
+[data-theme="dark"] .pd-trend-chart__legend {
+  color: var(--pd-text-secondary);
+}
+
+[data-theme="dark"] .pd-trend-chart__legend li[data-series="plan"] .pd-trend-chart__swatch {
+  opacity: 0.96;
+}
+
+[data-theme="dark"] .pd-trend-chart__legend li[data-series="previous-period"] .pd-trend-chart__swatch {
+  opacity: 0.9;
+}
+
+[data-theme="dark"] .pd-trend-chart__legend li[data-series="moving-average"] .pd-trend-chart__swatch {
+  opacity: 0.96;
+}
+
+@media (max-width: 760px) {
+  .pd-trend-chart__plot {
+    block-size: 20rem;
+    min-block-size: 17rem;
+  }
+
+  .pd-trend-chart__legend {
+    row-gap: var(--pd-space-3);
+    column-gap: var(--pd-space-6);
+    margin-block-start: var(--pd-space-5);
+  }
+}
+
+@media (max-width: 480px) {
+  .pd-trend-chart__plot {
+    block-size: 18rem;
+    min-block-size: 16rem;
+  }
+
+  .pd-trend-chart__legend {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--pd-space-3);
+  }
+
+  .pd-trend-chart__legend li {
+    align-items: center;
+  }
+
+  .pd-trend-chart__swatch {
+    inline-size: 2.2rem;
+    flex-basis: 2.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-trend-chart .recharts-wrapper *,
+  .pd-trend-chart .recharts-wrapper *::before,
+  .pd-trend-chart .recharts-wrapper *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

@@ -1,17 +1,19 @@
 {
   "fixtureId": "SB-102",
-  "storyTitle": "15 Wykresy i wizualizacje danych/Trendy",
+  "storyTitle": "15 Wykresy i dane/Trendy",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-03-trendy.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "TrendChart",
+    "ChartFrame"
+  ],
   "states": [
-    "ready",
-    "loading",
-    "empty",
-    "error",
-    "noData",
-    "singlePoint",
-    "negativeValues"
+    "line",
+    "area",
+    "actual",
+    "plan",
+    "previousPeriod",
+    "movingAverage"
   ],
   "viewports": [
     1440,
@@ -27,27 +29,29 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-accessible-name",
+    "verify-line-variant",
+    "verify-area-variant",
+    "verify-series-semantics"
   ],
   "visualAssertions": [
+    "foundation-shell-light",
+    "foundation-shell-dark",
     "1440-light",
     "1440-dark",
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-negativeValues"
+    "long-copy",
+    "no-horizontal-page-scroll",
+    "no-local-visual-overrides"
   ],
   "a11y": [
-    "keyboard-only",
-    "focus-visible",
     "accessible-name",
-    "live-region",
-    "200-percent-zoom"
+    "recharts-accessibility-layer",
+    "series-not-color-only",
+    "200-percent-zoom",
+    "reduced-motion"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

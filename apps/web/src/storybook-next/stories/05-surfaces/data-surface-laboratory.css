@@ -179,7 +179,6 @@
   stroke-dasharray: 7 5;
 }
 
-.pd-s53-chart-point,
 .pd-s53-chart-dot {
   fill: var(--pd-surface);
   stroke: var(--pd-data-accent);

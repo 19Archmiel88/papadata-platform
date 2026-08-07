@@ -54,7 +54,7 @@ function PromotedOwnerNotice({
   );
 }
 
-type ChartKind = 'trend' | 'comparison' | 'share' | 'correlation' | 'forecast' | 'waterfall' | 'funnel';
+type ChartKind = 'comparison' | 'share' | 'correlation' | 'forecast' | 'waterfall' | 'funnel';
 
 type ChartDescriptor = {
   readonly name: string;
@@ -68,28 +68,6 @@ type ChartDescriptor = {
 };
 
 const chartCopy: Record<ChartKind, ChartDescriptor> = {
-  trend: {
-    name: 'TrendChart',
-    purpose: {
-      pl: 'Zmiana metryki w czasie z celem i punktem wymagającym uwagi.',
-      en: 'Metric change over time with a target and an attention point.',
-    },
-    layers: {
-      pl: 'seria · cel · punkt · zakres',
-      en: 'series · target · point · range',
-    },
-    question: {
-      pl: 'Czy ROAS poprawia się względem celu?',
-      en: 'Is ROAS improving against target?',
-    },
-    metric: { pl: 'ROAS', en: 'ROAS' },
-    source: 'Google Ads + Shop',
-    range: { pl: '30 dni · dzień', en: '30 days · daily' },
-    reference: {
-      pl: 'Cel 4,50 · bieżący wynik 4,82',
-      en: 'Target 4.50 · current result 4.82',
-    },
-  },
   comparison: {
     name: 'ComparisonChart',
     purpose: {
@@ -234,31 +212,6 @@ function ChartGraphic({ kind }: { readonly kind: ChartKind }) {
         <line x1="48" y1="178" x2="392" y2="178" />
         <line x1="48" y1="24" x2="48" y2="178" />
       </g>
-
-      {kind === 'trend' ? (
-        <>
-          <path
-            className="pd-s53-chart-range"
-            d="M54 150 C110 126 142 138 194 104 S292 78 382 46 L382 74 C298 98 256 110 198 132 S116 154 54 170 Z"
-          />
-          <path
-            className="pd-s53-chart-line"
-            d="M54 158 C110 132 142 140 194 108 S292 82 382 52"
-          />
-          <path
-            className="pd-s53-chart-benchmark"
-            d="M54 126 C142 124 238 118 382 108"
-          />
-          <circle className="pd-s53-chart-point" cx="294" cy="80" r="5" />
-          <line className="pd-s53-chart-annotation" x1="294" y1="80" x2="330" y2="48" />
-          <g className="pd-s53-chart-labels">
-            <text x="54" y="198">1 lip</text>
-            <text textAnchor="end" x="382" y="198">31 lip</text>
-            <text x="58" y="120">{copy({ pl: 'cel 4,50', en: 'target 4.50' })}</text>
-            <text x="334" y="44">4,82</text>
-          </g>
-        </>
-      ) : null}
 
       {kind === 'comparison' ? (
         <>
@@ -1005,7 +958,18 @@ export function DataSurfaceLaboratory() {
     <StoryPage handoff={<Localized pl="10 / 15 / 18 — komponenty i wzorce danych" en="10 / 15 / 18 — data components and patterns" />} id="05.03" status="accepted" title={<Localized pl="Powierzchnie danych" en="Data surfaces" />} summary={<Localized pl="Panel istnieje tylko wtedy, gdy ma własną rolę, stan albo cykl interakcji. Dane, warstwy i działania nie tworzą poziomego scrolla ani kart wewnątrz kart." en="A panel exists only when it has its own role, state or interaction cycle. Data, layers and actions create neither horizontal scrolling nor cards inside cards." />} variants={<Localized pl="role · handoff KPI · wykresy · handoff ChartFrame · tabela · stany · warstwy" en="roles · KPI handoff · charts · ChartFrame handoff · table · states · layers" />}>
       <StorySection index="01" title={<Localized pl="Role powierzchni" en="Surface roles" />}><Roles /></StorySection>
       <StorySection index="02" title={<Localized pl="KPI — handoff" en="KPI — handoff" />} summary={<Localized pl="Warianty KPI zostały promowane do runtime ownera. Laboratorium nie utrzymuje drugiego katalogu MetricCard." en="KPI variants have been promoted to the runtime owner. The laboratory no longer maintains a second MetricCard catalogue." />}><PromotedOwnerNotice owner="15.02 MetricCard" title={{ pl: 'Promowane do Wykresy i dane', en: 'Promoted to Data visualizations' }} description={{ pl: 'Pełny kontrakt KPI, mikrotrendów, stanów i akcji jest od tej chwili własnością 15.02.', en: 'The full KPI, microtrend, state and action contract is now owned by 15.02.' }} /></StorySection>
-      <StorySection index="03" title={<Localized pl="Rodziny wykresów" en="Chart families" />} summary={<Localized pl="Każda rodzina pokazuje znaczenie kontraktowe, warstwy i metadane, a nie dekoracyjny szkic." en="Each family shows contract meaning, layers and metadata rather than a decorative sketch." />}><ChartFamilies /></StorySection>
+      <StorySection
+        index="03"
+        title={<Localized pl="Rodziny wykresów" en="Chart families" />}
+        summary={<Localized pl="Trend został promowany do 15.03. Laboratorium zachowuje wyłącznie handoff, a pozostałe rodziny czekają na swoich ownerów 15.04–15.07." en="Trend has been promoted to 15.03. The laboratory keeps only the handoff while the remaining families wait for their 15.04–15.07 owners." />}
+      >
+        <PromotedOwnerNotice
+          owner="15.03 TrendChart"
+          title={{ pl: 'Promowane do Wykresy i dane', en: 'Promoted to Data visualizations' }}
+          description={{ pl: 'Line, area, actual, plan, poprzedni okres i średnia krocząca są od tej chwili kontraktem runtime 15.03.', en: 'Line, area, actual, plan, previous period and moving average are now the 15.03 runtime contract.' }}
+        />
+        <ChartFamilies />
+      </StorySection>
       <StorySection index="04" title={<Localized pl="ChartFrame — handoff" en="ChartFrame — handoff" />} summary={<Localized pl="Pełny kontener wykresu został promowany do runtime ownera. 05.03 zachowuje wyłącznie zapis decyzji." en="The full chart container has been promoted to the runtime owner. 05.03 keeps only the decision record." />}><PromotedOwnerNotice owner="15.01 ChartFrame" title={{ pl: 'Promowane do Wykresy i dane', en: 'Promoted to Data visualizations' }} description={{ pl: 'Nagłówek, status, metadane, wizualizacja, legenda, wniosek i tabela alternatywna są teraz kontraktem 15.01.', en: 'Header, status, metadata, visualization, legend, insight and alternative table are now the 15.01 contract.' }} /></StorySection>
       <StorySection index="05" title={<Localized pl="Tabela — handoff i użycie" en="Table — handoff and usage" />} summary={<Localized pl="05.03 konsumuje 10.07 / DataTable. Szczegóły, podgląd eksportu i wyjaśnienie pozostają warstwami, bez lokalnego silnika tabeli i bez lokalnego Selecta." en="05.03 consumes 10.07 / DataTable. Details, export preview and explanation remain layers, with no local table engine or local Select." />}><DataTableSurface /></StorySection>
       <StorySection index="06" title={<Localized pl="Stany powierzchni" en="Surface states" />} summary={<Localized pl="Stany układają się pionowo lub w elastycznej siatce bez poziomego przewijania." en="States stack vertically or in a flexible grid without horizontal scrolling." />}><SurfaceStates /></StorySection>

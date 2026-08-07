@@ -24,6 +24,10 @@ export {
 } from './ChartFrame';
 
 export {
+  TrendChart,
+} from './TrendChart';
+
+export {
   Checkbox,
 } from './Checkbox';
 
@@ -201,6 +205,13 @@ export type {
   ChartFrameLabels,
   ChartFrameProps,
 } from './ChartFrame';
+
+export type {
+  TrendChartDatum,
+  TrendChartLabels,
+  TrendChartProps,
+  TrendChartVariant,
+} from './TrendChart';
 
 export type {
   CheckboxProps,

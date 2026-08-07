@@ -13,3 +13,4 @@ FileInput,apps/web/src/design-system/components/Field/FileInput.tsx,FileInputPro
 VerificationCodeInput,apps/web/src/design-system/components/VerificationCodeInput/VerificationCodeInput.tsx,VerificationCodeInputProps,10.03,review,Design System
 ChartFrame,apps/web/src/design-system/components/ChartFrame/ChartFrame.tsx,ChartFrameProps,15.01,review,Analytics UI
 MetricCard,apps/web/src/design-system/components/MetricCard/MetricCard.tsx,MetricCardProps,15.02,review,Analytics UI
+TrendChart,apps/web/src/design-system/components/TrendChart/TrendChart.tsx,TrendChartProps,15.03,accepted,Analytics UI

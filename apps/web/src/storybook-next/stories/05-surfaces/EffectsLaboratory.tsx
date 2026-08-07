@@ -58,7 +58,7 @@ function GlassDecision() {
 
 export function EffectsLaboratory() {
   return (
-    <StoryPage id="05.05" title={<Localized pl="Gradienty, światło i szkło" en="Gradients, light and glass" />} summary={<Localized pl="Efekt wizualny jest dozwolony tylko wtedy, gdy ma konkretną funkcję. Dekoracyjne gradienty, glow i glassmorphism są zabronione w AppShell." en="A visual effect is allowed only when it has a specific function. Decorative gradients, glow and glassmorphism are forbidden in AppShell." />} variants={<Localized pl="marka · dane · scrim · warstwa · light/dark" en="brand · data · scrim · layer · light/dark" />}>
+    <StoryPage handoff={<Localized pl="00.08 — Głębia i warstwy" en="00.08 — Depth and layers" />} id="05.05" title={<Localized pl="Gradienty, światło i szkło" en="Gradients, light and glass" />} summary={<Localized pl="Efekt wizualny jest dozwolony tylko wtedy, gdy ma konkretną funkcję. Dekoracyjne gradienty, glow i glassmorphism są zabronione w AppShell." en="A visual effect is allowed only when it has a specific function. Decorative gradients, glow and glassmorphism are forbidden in AppShell." />} variants={<Localized pl="marka · dane · scrim · warstwa · light/dark" en="brand · data · scrim · layer · light/dark" />}>
       <StorySection index="01" title={<Localized pl="Dozwolone i zakazane zastosowania" en="Allowed and forbidden uses" />}>
         <div className="pd-s55-effect-list">{effects.map((effect) => <EffectSample key={effect.kind} kind={effect.kind} />)}</div>
       </StorySection>

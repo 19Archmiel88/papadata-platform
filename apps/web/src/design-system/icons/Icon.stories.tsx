@@ -17,6 +17,9 @@ import {
   type PapaDataIconName,
 } from './Icon';
 
+import '../../storybook-next/presentation/story-presentation.css';
+import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../storybook-next/presentation/StoryPresentation';
+
 const meta = {
   title: '10 Komponenty bazowe/Ikony',
   component: Icon,
@@ -58,83 +61,9 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const pageStyle = {
-  minHeight: '100vh',
-  padding: 'var(--pd-layout-page-padding)',
-  backgroundColor: 'var(--pd-canvas)',
-  backgroundImage: 'var(--pd-canvas-gradient)',
-  backgroundAttachment: 'fixed',
-  backgroundRepeat: 'no-repeat',
-  backgroundSize: 'cover',
-  color: 'var(--pd-text)',
-} satisfies CSSProperties;
-
-const contentStyle = {
-  maxWidth: 'var(--pd-layout-content-max-width)',
-  margin: '0 auto',
-} satisfies CSSProperties;
-
-const headerStyle = {
-  display: 'grid',
-  gridTemplateColumns:
-    'repeat(auto-fit, minmax(min(280px, 100%), 1fr))',
-  gap: 'var(--pd-space-12)',
-  alignItems: 'end',
-  paddingBottom: 'var(--pd-space-8)',
-  borderBottom:
-    'var(--pd-border-width-subtle) solid var(--pd-separator-subtle)',
-} satisfies CSSProperties;
-
-const headerTitleStyle = {
-  maxWidth: '18ch',
-  margin: 0,
-  fontSize: 'var(--pd-type-size-display)',
-  fontWeight: 'var(--pd-font-weight-semibold)',
-  letterSpacing: 'var(--pd-letter-spacing)',
-  lineHeight: 'var(--pd-line-height-compact)',
-} satisfies CSSProperties;
-
-const headerSummaryStyle = {
-  maxWidth: '58ch',
-  margin: 0,
-  color: 'var(--pd-text-secondary)',
-  fontSize: 'var(--pd-type-size-body-large)',
-  lineHeight: 'var(--pd-line-height-relaxed)',
-} satisfies CSSProperties;
-
-const sectionStyle = {
-  paddingBlock: 'var(--pd-density-section-gap)',
-  borderBottom:
-    'var(--pd-border-width-subtle) solid var(--pd-separator-subtle)',
-} satisfies CSSProperties;
-
-const sectionHeaderStyle = {
-  display: 'grid',
-  gap: 'var(--pd-space-2)',
-  maxWidth: '74ch',
-  marginBottom: 'var(--pd-space-8)',
-} satisfies CSSProperties;
-
-const sectionTitleStyle = {
-  margin: 0,
-  fontSize: 'var(--pd-type-size-page)',
-  fontWeight: 'var(--pd-font-weight-semibold)',
-  letterSpacing: 'var(--pd-letter-spacing)',
-  lineHeight: 'var(--pd-line-height-heading)',
-} satisfies CSSProperties;
-
 const sectionSummaryStyle = {
   margin: 0,
   color: 'var(--pd-text-secondary)',
-} satisfies CSSProperties;
-
-const labelStyle = {
-  margin: '0 0 var(--pd-space-2)',
-  color: 'var(--pd-text-muted)',
-  fontFamily: 'var(--pd-font-mono)',
-  fontSize: 'var(--pd-type-size-caption)',
-  fontWeight: 'var(--pd-font-weight-medium)',
-  letterSpacing: 'var(--pd-letter-spacing)',
 } satisfies CSSProperties;
 
 const iconLanguageStyle = {
@@ -403,21 +332,24 @@ const languageRules = [
 
 function StorySection({
   children,
+  index,
   summary,
   title,
 }: {
   readonly children: ReactNode;
+  readonly index: string;
   readonly summary?: ReactNode;
   readonly title: ReactNode;
 }) {
   return (
-    <section style={sectionStyle}>
-      <header style={sectionHeaderStyle}>
-        <h2 style={sectionTitleStyle}>{title}</h2>
-        {summary ? <p style={sectionSummaryStyle}>{summary}</p> : null}
-      </header>
+    <StoryPresentationSection
+      className="pd-icon-section"
+      index={index}
+      summary={summary}
+      title={title}
+    >
       {children}
-    </section>
+    </StoryPresentationSection>
   );
 }
 
@@ -506,22 +438,27 @@ function renderSizeRow({
 export const Ikony: Story = {
   name: 'Ikony',
   render: (args) => (
-    <main style={pageStyle}>
-      <div style={contentStyle}>
-        <header style={headerStyle}>
-          <div>
-            <p style={labelStyle}>10.11 Ikony</p>
-            <h1 style={headerTitleStyle}>Ikony</h1>
-          </div>
-          <p style={headerSummaryStyle}>
-            Zamknięty katalog ikon dziedziczy kolor przez
-            currentColor. Ikony dekoracyjne są ukryte przed
-            technologiami asystującymi, a ikony informacyjne
-            mają nazwę dostępną.
-          </p>
-        </header>
+    <StoryPresentationPage
+      className="pd-icon-system"
+      headerAside={(
+        <StoryPresentationMeta
+          ariaLabel="Parametry kontraktu ikon"
+          items={[
+            { label: 'Geometria', value: '24×24' },
+            { label: 'Linia', value: '1.75' },
+            { label: 'Kolor', value: 'currentColor' },
+          ]}
+        />
+      )}
+      sectionCode="10"
+      sectionLabel="Komponenty bazowe"
+      storyId="10.11"
+      summary="Pełny katalog ikon należy do komponentu Icon. Fundamenty definiują wyłącznie reguły geometrii, koloru i znaczenia."
+      title="Ikony"
+    >
 
         <StorySection
+          index="01"
           title="Język ikon"
           summary="Jedna geometria i jedna grubość linii dla całego produktu."
         >
@@ -579,6 +516,7 @@ export const Ikony: Story = {
         </StorySection>
 
         <StorySection
+          index="02"
           title="Role semantyczne"
           summary="Ta sama ikona może być dekoracyjna albo informacyjna, ale jej nazwa dostępna wynika z roli."
         >
@@ -630,7 +568,7 @@ export const Ikony: Story = {
           </div>
         </StorySection>
 
-        <StorySection title="Rozmiary w realnym użyciu">
+        <StorySection index="03" title="Rozmiary w realnym użyciu">
           <div style={sizeLedgerStyle}>
             {renderSizeRow({
               title: '16 px',
@@ -685,6 +623,7 @@ export const Ikony: Story = {
         </StorySection>
 
         <StorySection
+          index="04"
           title="Katalog"
           summary="Ikony są grupowane według zadania, nie według wyglądu."
         >
@@ -692,8 +631,7 @@ export const Ikony: Story = {
             {iconCatalogGroups.map(renderCatalogGroup)}
           </div>
         </StorySection>
-      </div>
-    </main>
+    </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

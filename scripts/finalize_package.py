@@ -7,6 +7,14 @@ ROOT = Path(__file__).resolve().parents[1]
 AUTHOR = "Artur Wiśniewski"
 VERSION = "1.0"
 
+IGNORED_DIRS = {
+    '.git', '.hg', '.svn', '.idea', '.vscode', '__pycache__',
+    'node_modules', 'dist', 'build', 'coverage', '.next', '.turbo',
+    'storybook-static',
+}
+IGNORED_SUFFIXES = {'.png', '.jpg', '.jpeg', '.webp', '.pdf', '.zip', '.pyc'}
+IGNORED_FILES = {'MANIFEST.json', 'SHA256SUMS.txt'}
+
 
 def sha_file(path: Path) -> str:
     h = hashlib.sha256()
@@ -32,7 +40,10 @@ def main() -> int:
     for path in sorted(ROOT.rglob('*')):
         if not path.is_file():
             continue
-        if path.name in {'MANIFEST.json', 'SHA256SUMS.txt'}:
+        relative = path.relative_to(ROOT)
+        if any(part in IGNORED_DIRS for part in relative.parts):
+            continue
+        if path.name in IGNORED_FILES or path.suffix.lower() in IGNORED_SUFFIXES:
             continue
         files.append({
             'path': str(path.relative_to(ROOT)).replace('\\\\', '/'),

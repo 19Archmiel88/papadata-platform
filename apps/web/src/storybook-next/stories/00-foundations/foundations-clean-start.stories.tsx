@@ -25,26 +25,23 @@ import {
   formatPapaDataRelativeTime,
   motionTokens,
   type PapaDataRuntimeLocale,
+  type SemanticStatusTone,
 } from '../../../design-system/foundations';
-import {
-  type StatusBadgeTone,
-} from '../../../design-system/components';
 import {
   Icon,
   PapaDataBrand,
   type PapaDataIconName,
 } from '../../../design-system/icons';
-import '../foundations-demo.css';
+import '../../presentation/story-presentation.css';
 import './foundation-iconography-no-containers.css';
-import {
-  ArrowNorthEastIcon,
-  GlobeIcon,
-  MoonStarIcon,
-} from '../story-icons';
-import './foundation-lab-alignment.css';
 import './foundation-geometry-lab-only.css';
 import './foundation-select-target.css';
 import './foundation-status-catalog.css';
+import {
+  StoryPresentationMeta,
+  StoryPresentationPage,
+  StoryPresentationSection,
+} from '../../presentation/StoryPresentation';
 
 const meta = {
   title: '00 Fundamenty/Podstawy',
@@ -93,40 +90,27 @@ function FoundationPage({
   readonly children: ReactNode;
 }) {
   return (
-    <main className="pd-f0-page">
-      <div className="pd-f0-page__inner">
-        <header className="pd-f0-page__header">
-          <div className="pd-f0-page__label">
-            <span>00</span>
-            <span>
-              <Localized pl="Fundamenty" en="Foundations" />
-            </span>
-          </div>
-          <div className="pd-f0-page__heading">
-            <h1>{title}</h1>
-            <p>{summary}</p>
-          </div>
-          <dl className="pd-f0-page__meta" aria-label={copy({
+    <StoryPresentationPage
+      headerAside={
+        <StoryPresentationMeta
+          ariaLabel={copy({
             pl: 'Parametry prezentacji',
             en: 'Presentation parameters',
-          })}>
-            <div>
-              <dt><Localized pl="Układ" en="Layout" /></dt>
-              <dd><Localized pl="Systemowy" en="System" /></dd>
-            </div>
-            <div>
-              <dt><Localized pl="Powierzchnia" en="Surface" /></dt>
-              <dd><Localized pl="Neutralna" en="Neutral" /></dd>
-            </div>
-            <div>
-              <dt><Localized pl="Gęstość" en="Density" /></dt>
-              <dd><Localized pl="Sterowana globalnie" en="Global control" /></dd>
-            </div>
-          </dl>
-        </header>
-        {children}
-      </div>
-    </main>
+          })}
+          items={[
+            { label: <Localized pl="Układ" en="Layout" />, value: <Localized pl="Systemowy" en="System" /> },
+            { label: <Localized pl="Powierzchnia" en="Surface" />, value: <Localized pl="Neutralna" en="Neutral" /> },
+            { label: <Localized pl="Gęstość" en="Density" />, value: <Localized pl="Sterowana globalnie" en="Global control" /> },
+          ]}
+        />
+      }
+      sectionCode="00"
+      sectionLabel={<Localized pl="Fundamenty" en="Foundations" />}
+      summary={summary}
+      title={title}
+    >
+      {children}
+    </StoryPresentationPage>
   );
 }
 
@@ -142,20 +126,13 @@ function FoundationSection({
   readonly children: ReactNode;
 }) {
   return (
-    <section className="pd-f0-section">
-      <header className="pd-f0-section__header">
-        <span className="pd-f0-section__index" aria-hidden="true">
-          {index}
-        </span>
-        <div>
-          <h2>{title}</h2>
-          {summary ? <p>{summary}</p> : null}
-        </div>
-      </header>
-      <div className="pd-f0-section__content">
-        {children}
-      </div>
-    </section>
+    <StoryPresentationSection
+      index={index}
+      summary={summary}
+      title={title}
+    >
+      {children}
+    </StoryPresentationSection>
   );
 }
 
@@ -299,9 +276,9 @@ function FoundationButton({
   );
 }
 
-type FoundationStatusTone = StatusBadgeTone;
+type FoundationStatusTone = SemanticStatusTone;
 
-// Storybook reference helper only; status API is owned by StatusBadgeTone.
+// Storybook reference helper only; semantic tone is owned by Foundations.
 function StatusBadge({
   tone,
   children,
@@ -751,184 +728,49 @@ const semanticTones = [
   readonly usage: LocalizedCopy;
 }[];
 
-const statusToneLabels: Record<FoundationStatusTone, LocalizedCopy> = {
-  neutral: { pl: 'Neutralny', en: 'Neutral' },
-  info: { pl: 'Informacyjny', en: 'Informational' },
-  success: { pl: 'Sukces', en: 'Success' },
-  warning: { pl: 'Ostrzeżenie', en: 'Warning' },
-  critical: { pl: 'Krytyczny', en: 'Critical' },
-  processing: { pl: 'Przetwarzanie', en: 'Processing' },
-};
-
-type ProjectStatusItem = {
+const statusContractExamples = [
+  {
+    key: 'example.ready',
+    label: { pl: 'Gotowe', en: 'Ready' },
+    tone: 'info',
+    owner: { pl: 'domena produktu', en: 'product domain' },
+  },
+  {
+    key: 'example.processing',
+    label: { pl: 'Przetwarzanie', en: 'Processing' },
+    tone: 'processing',
+    owner: { pl: 'domena produktu', en: 'product domain' },
+  },
+  {
+    key: 'example.success',
+    label: { pl: 'Zakończone', en: 'Completed' },
+    tone: 'success',
+    owner: { pl: 'domena produktu', en: 'product domain' },
+  },
+  {
+    key: 'example.warning',
+    label: { pl: 'Wymaga uwagi', en: 'Needs attention' },
+    tone: 'warning',
+    owner: { pl: 'domena produktu', en: 'product domain' },
+  },
+  {
+    key: 'example.critical',
+    label: { pl: 'Zablokowane', en: 'Blocked' },
+    tone: 'critical',
+    owner: { pl: 'domena produktu', en: 'product domain' },
+  },
+  {
+    key: 'example.neutral',
+    label: { pl: 'Nieaktywne', en: 'Inactive' },
+    tone: 'neutral',
+    owner: { pl: 'domena produktu', en: 'product domain' },
+  },
+] as const satisfies readonly {
   readonly key: string;
   readonly label: LocalizedCopy;
   readonly tone: FoundationStatusTone;
-};
-
-type ProjectStatusGroup = {
-  readonly title: LocalizedCopy;
-  readonly description: LocalizedCopy;
-  readonly statuses: readonly ProjectStatusItem[];
-};
-
-const projectStatusGroups = [
-  {
-    title: { pl: 'Bazowe stany systemu', en: 'Base system states' },
-    description: { pl: 'Statusy przekrojowe dla usług, sekcji, kart i widoków danych.', en: 'Cross-product states for services, sections, cards and data views.' },
-    statuses: [
-      { key: 'ready', label: { pl: 'Gotowe', en: 'Ready' }, tone: 'info' },
-      { key: 'processing', label: { pl: 'Przetwarzanie', en: 'Processing' }, tone: 'processing' },
-      { key: 'running', label: { pl: 'W toku', en: 'Running' }, tone: 'processing' },
-      { key: 'queued', label: { pl: 'W kolejce', en: 'Queued' }, tone: 'processing' },
-      { key: 'retry_wait', label: { pl: 'Czeka na ponowienie', en: 'Waiting for retry' }, tone: 'warning' },
-      { key: 'partial', label: { pl: 'Częściowe', en: 'Partial' }, tone: 'warning' },
-      { key: 'no_data', label: { pl: 'Brak danych', en: 'No data' }, tone: 'neutral' },
-      { key: 'stale', label: { pl: 'Nieaktualne', en: 'Stale' }, tone: 'warning' },
-      { key: 'delayed', label: { pl: 'Opóźnione', en: 'Delayed' }, tone: 'warning' },
-      { key: 'invalid', label: { pl: 'Nieprawidłowe', en: 'Invalid' }, tone: 'critical' },
-      { key: 'conflicting', label: { pl: 'Konflikt', en: 'Conflict' }, tone: 'critical' },
-      { key: 'resync_required', label: { pl: 'Wymaga synchronizacji', en: 'Resync required' }, tone: 'warning' },
-      { key: 'manual_review_required', label: { pl: 'Wymaga sprawdzenia', en: 'Manual review required' }, tone: 'warning' },
-      { key: 'succeeded', label: { pl: 'Zakończone', en: 'Succeeded' }, tone: 'success' },
-      { key: 'failed', label: { pl: 'Błąd', en: 'Failed' }, tone: 'critical' },
-      { key: 'cancelled', label: { pl: 'Anulowane', en: 'Cancelled' }, tone: 'neutral' },
-      { key: 'blocked', label: { pl: 'Zablokowane', en: 'Blocked' }, tone: 'critical' },
-      { key: 'unknown', label: { pl: 'Nieznane', en: 'Unknown' }, tone: 'neutral' },
-      { key: 'unavailable', label: { pl: 'Niedostępne', en: 'Unavailable' }, tone: 'neutral' },
-    ],
-  },
-  {
-    title: { pl: 'Dostęp, konto i workspace', en: 'Access, account and workspace' },
-    description: { pl: 'Statusy tenantów, workspace, członkostw, zaproszeń i onboardingu.', en: 'Tenant, workspace, membership, invitation and onboarding states.' },
-    statuses: [
-      { key: 'active', label: { pl: 'Aktywne', en: 'Active' }, tone: 'success' },
-      { key: 'pending_verification', label: { pl: 'Czeka na weryfikację', en: 'Pending verification' }, tone: 'warning' },
-      { key: 'archived', label: { pl: 'Zarchiwizowane', en: 'Archived' }, tone: 'neutral' },
-      { key: 'invited', label: { pl: 'Zaproszony', en: 'Invited' }, tone: 'info' },
-      { key: 'revoked', label: { pl: 'Cofnięte', en: 'Revoked' }, tone: 'neutral' },
-      { key: 'pending', label: { pl: 'Oczekuje', en: 'Pending' }, tone: 'warning' },
-      { key: 'accepted', label: { pl: 'Przyjęte', en: 'Accepted' }, tone: 'success' },
-      { key: 'missing', label: { pl: 'Brakujące', en: 'Missing' }, tone: 'neutral' },
-      { key: 'deleted', label: { pl: 'Usunięte', en: 'Deleted' }, tone: 'neutral' },
-      { key: 'completed', label: { pl: 'Ukończone', en: 'Completed' }, tone: 'success' },
-      { key: 'not_started', label: { pl: 'Nie rozpoczęto', en: 'Not started' }, tone: 'neutral' },
-      { key: 'in_progress', label: { pl: 'W trakcie', en: 'In progress' }, tone: 'processing' },
-      { key: 'satisfied', label: { pl: 'Spełnione', en: 'Satisfied' }, tone: 'success' },
-    ],
-  },
-  {
-    title: { pl: 'Operacje i joby', en: 'Operations and jobs' },
-    description: { pl: 'Statusy pipeline, workera, importów, synców i zadań w tle.', en: 'Pipeline, worker, import, sync and background-job states.' },
-    statuses: [
-      { key: 'leased', label: { pl: 'Przypisane do workera', en: 'Leased' }, tone: 'processing' },
-      { key: 'fetching', label: { pl: 'Pobieranie', en: 'Fetching' }, tone: 'processing' },
-      { key: 'persisting_source', label: { pl: 'Zapis źródła', en: 'Persisting source' }, tone: 'processing' },
-      { key: 'normalizing', label: { pl: 'Normalizacja', en: 'Normalizing' }, tone: 'processing' },
-      { key: 'writing_canonical', label: { pl: 'Zapis kanoniczny', en: 'Writing canonical' }, tone: 'processing' },
-      { key: 'reconciling', label: { pl: 'Uzgadnianie', en: 'Reconciling' }, tone: 'processing' },
-      { key: 'retryable_failed', label: { pl: 'Błąd możliwy do ponowienia', en: 'Retryable failure' }, tone: 'warning' },
-      { key: 'terminal_failed', label: { pl: 'Błąd końcowy', en: 'Terminal failure' }, tone: 'critical' },
-      { key: 'dead_lettered', label: { pl: 'W kolejce błędów', en: 'Dead-lettered' }, tone: 'critical' },
-      { key: 'dlq', label: { pl: 'Wymaga obsługi technicznej', en: 'Requires technical handling' }, tone: 'critical' },
-      { key: 'cancel_requested', label: { pl: 'Żądanie anulowania', en: 'Cancel requested' }, tone: 'warning' },
-      { key: 'not_leased', label: { pl: 'Nieprzypisane', en: 'Not leased' }, tone: 'neutral' },
-    ],
-  },
-  {
-    title: { pl: 'Dane, metryki i readiness', en: 'Data, metrics and readiness' },
-    description: { pl: 'Statusy jakości obliczeń, integracji, źródeł i zależności usług.', en: 'Calculation quality, integration, source and service-dependency states.' },
-    statuses: [
-      { key: 'ok', label: { pl: 'Poprawne', en: 'OK' }, tone: 'success' },
-      { key: 'zero', label: { pl: 'Zero', en: 'Zero' }, tone: 'neutral' },
-      { key: 'not_configured', label: { pl: 'Nie skonfigurowano', en: 'Not configured' }, tone: 'neutral' },
-      { key: 'not_supported', label: { pl: 'Nieobsługiwane', en: 'Not supported' }, tone: 'neutral' },
-      { key: 'syncing', label: { pl: 'Synchronizacja', en: 'Syncing' }, tone: 'processing' },
-      { key: 'needs_reauth', label: { pl: 'Wymaga ponownego połączenia', en: 'Needs reauth' }, tone: 'warning' },
-      { key: 'permission_error', label: { pl: 'Brak uprawnień', en: 'Permission error' }, tone: 'critical' },
-      { key: 'network_error', label: { pl: 'Błąd sieci', en: 'Network error' }, tone: 'critical' },
-      { key: 'provider_error', label: { pl: 'Błąd dostawcy', en: 'Provider error' }, tone: 'critical' },
-      { key: 'error', label: { pl: 'Błąd', en: 'Error' }, tone: 'critical' },
-      { key: 'passed', label: { pl: 'Zgodne', en: 'Passed' }, tone: 'success' },
-      { key: 'mismatch', label: { pl: 'Niezgodność', en: 'Mismatch' }, tone: 'critical' },
-    ],
-  },
-  {
-    title: { pl: 'Commerce, płatności i zwroty', en: 'Commerce, payments and returns' },
-    description: { pl: 'Statusy zamówień, płatności, faktur, zwrotów i refundacji.', en: 'Order, payment, invoice, return and refund states.' },
-    statuses: [
-      { key: 'confirmed', label: { pl: 'Potwierdzone', en: 'Confirmed' }, tone: 'success' },
-      { key: 'paid', label: { pl: 'Opłacone', en: 'Paid' }, tone: 'success' },
-      { key: 'shipped', label: { pl: 'Wysłane', en: 'Shipped' }, tone: 'info' },
-      { key: 'delivered', label: { pl: 'Dostarczone', en: 'Delivered' }, tone: 'success' },
-      { key: 'refunded', label: { pl: 'Zwrócone', en: 'Refunded' }, tone: 'neutral' },
-      { key: 'partially_refunded', label: { pl: 'Częściowy zwrot', en: 'Partially refunded' }, tone: 'warning' },
-      { key: 'returned', label: { pl: 'Zwrócone przez klienta', en: 'Returned' }, tone: 'neutral' },
-      { key: 'authorized', label: { pl: 'Autoryzowana', en: 'Authorized' }, tone: 'info' },
-      { key: 'captured', label: { pl: 'Pobrana', en: 'Captured' }, tone: 'success' },
-      { key: 'open', label: { pl: 'Otwarta', en: 'Open' }, tone: 'info' },
-      { key: 'past_due', label: { pl: 'Po terminie', en: 'Past due' }, tone: 'critical' },
-      { key: 'requested', label: { pl: 'Zgłoszone', en: 'Requested' }, tone: 'info' },
-      { key: 'received', label: { pl: 'Odebrane', en: 'Received' }, tone: 'info' },
-    ],
-  },
-  {
-    title: { pl: 'Billing i KSeF', en: 'Billing and KSeF' },
-    description: { pl: 'Statusy subskrypcji, faktur oraz komunikacji z KSeF.', en: 'Subscription, invoice and KSeF communication states.' },
-    statuses: [
-      { key: 'trial', label: { pl: 'Okres próbny', en: 'Trial' }, tone: 'info' },
-      { key: 'draft', label: { pl: 'Szkic', en: 'Draft' }, tone: 'neutral' },
-      { key: 'ready_for_ksef', label: { pl: 'Gotowa do KSeF', en: 'Ready for KSeF' }, tone: 'info' },
-      { key: 'submitted', label: { pl: 'Wysłana', en: 'Submitted' }, tone: 'processing' },
-      { key: 'rejected', label: { pl: 'Odrzucone', en: 'Rejected' }, tone: 'critical' },
-      { key: 'offline_pending', label: { pl: 'Oczekuje offline', en: 'Offline pending' }, tone: 'warning' },
-      { key: 'correction_required', label: { pl: 'Wymaga korekty', en: 'Correction required' }, tone: 'warning' },
-    ],
-  },
-  {
-    title: { pl: 'Security, MFA i uprawnienia', en: 'Security, MFA and permissions' },
-    description: { pl: 'Statusy tokenów, dostępu tymczasowego, zatwierdzeń i wygasania.', en: 'Token, temporary access, approval and expiry states.' },
-    statuses: [
-      { key: 'approved', label: { pl: 'Zatwierdzone', en: 'Approved' }, tone: 'success' },
-      { key: 'expired', label: { pl: 'Wygasłe', en: 'Expired' }, tone: 'neutral' },
-      { key: 'expiring', label: { pl: 'Wygasa', en: 'Expiring' }, tone: 'warning' },
-    ],
-  },
-  {
-    title: { pl: 'Privacy, retencja i żądania użytkownika', en: 'Privacy, retention and user requests' },
-    description: { pl: 'Statusy weryfikacji tożsamości, retencji, usunięć i legal hold.', en: 'Identity verification, retention, deletion and legal-hold states.' },
-    statuses: [
-      { key: 'identity_verification_pending', label: { pl: 'Czeka na weryfikację tożsamości', en: 'Identity verification pending' }, tone: 'warning' },
-      { key: 'blocked_by_legal_hold', label: { pl: 'Zablokowane prawnie', en: 'Blocked by legal hold' }, tone: 'critical' },
-      { key: 'verification_pending', label: { pl: 'Czeka na weryfikację', en: 'Verification pending' }, tone: 'warning' },
-      { key: 'verified', label: { pl: 'Zweryfikowane', en: 'Verified' }, tone: 'success' },
-      { key: 'not_applicable', label: { pl: 'Nie dotyczy', en: 'Not applicable' }, tone: 'neutral' },
-      { key: 'not_found', label: { pl: 'Nie znaleziono', en: 'Not found' }, tone: 'neutral' },
-    ],
-  },
-  {
-    title: { pl: 'Uzgadnianie i reguły źródeł', en: 'Reconciliation and source rules' },
-    description: { pl: 'Statusy deduplikacji, source authority, kandydatów i reguł.', en: 'Deduplication, source-authority, candidate and rule states.' },
-    statuses: [
-      { key: 'automatic_match', label: { pl: 'Dopasowane automatycznie', en: 'Automatic match' }, tone: 'success' },
-      { key: 'manual_review', label: { pl: 'Do ręcznego sprawdzenia', en: 'Manual review' }, tone: 'warning' },
-      { key: 'retired', label: { pl: 'Wycofane', en: 'Retired' }, tone: 'neutral' },
-    ],
-  },
-  {
-    title: { pl: 'Dokumentacja, Storybook i projekt', en: 'Documentation, Storybook and project' },
-    description: { pl: 'Statusy rejestrów, kontraktów, macierzy testów i backlogu projektowego.', en: 'Registry, contract, test-matrix and project backlog states.' },
-    statuses: [
-      { key: 'specified', label: { pl: 'Wyspecyfikowane', en: 'Specified' }, tone: 'info' },
-      { key: 'planned', label: { pl: 'Zaplanowane', en: 'Planned' }, tone: 'neutral' },
-      { key: 'implemented', label: { pl: 'Zaimplementowane', en: 'Implemented' }, tone: 'success' },
-      { key: 'passing', label: { pl: 'Przechodzi testy', en: 'Passing' }, tone: 'success' },
-      { key: 'approved-target', label: { pl: 'Zatwierdzony cel', en: 'Approved target' }, tone: 'success' },
-      { key: 'required', label: { pl: 'Wymagane', en: 'Required' }, tone: 'warning' },
-      { key: 'used', label: { pl: 'Używane', en: 'Used' }, tone: 'info' },
-    ],
-  },
-] as const satisfies readonly ProjectStatusGroup[];
+  readonly owner: LocalizedCopy;
+}[];
 
 
 export const KolorySemantyczne: Story = {
@@ -1011,88 +853,57 @@ export const StatusySystemowe: Story = {
   name: 'Statusy systemowe',
   render: () => (
     <FoundationPage
-      title={<Localized pl="Statusy systemowe" en="System statuses" />}
-      summary={<Localized pl="Katalog oddziela znaczenie biznesowe od tonu wizualnego. Każdy status ma nazwę, stabilny klucz i przypisany ton." en="The catalog separates business meaning from visual tone. Every status has a name, stable key and assigned tone." />}
+      title={<Localized pl="Model statusu systemowego" en="System status model" />}
+      summary={<Localized pl="Fundament definiuje anatomię statusu i mapowanie na ton semantyczny. Konkretne klucze biznesowe należą do domen produktu, nie do design systemu." en="The foundation defines status anatomy and semantic-tone mapping. Concrete business keys belong to product domains, not the design system." />}
     >
       <FoundationSection
         index="01"
-        title={<Localized pl="Kategorie katalogu" en="Catalog categories" />}
-        summary={<Localized pl="Statusy są pogrupowane według obszaru produktu, a nie według koloru." en="Statuses are grouped by product domain, not by color." />}
+        title={<Localized pl="Kontrakt statusu" en="Status contract" />}
+        summary={<Localized pl="Każdy status składa się ze stabilnego klucza domenowego, czytelnej etykiety i jednego tonu semantycznego." en="Every status consists of a stable domain key, a readable label, and one semantic tone." />}
       >
-        <div className="pd-f0-status-index">
-          {projectStatusGroups.map((group, groupIndex) => (
-            <article key={group.title.pl}>
-              <span>{String(groupIndex + 1).padStart(2, '0')}</span>
-              <div>
-                <h3><Localized {...group.title} /></h3>
-                <p><Localized {...group.description} /></p>
-              </div>
-              <strong>
-                <Localized
-                  pl={`${group.statuses.length} statusów`}
-                  en={`${group.statuses.length} statuses`}
-                />
-              </strong>
-            </article>
+        <FoundationLedger label={copy({ pl: 'Przykłady mapowania statusu', en: 'Status mapping examples' })}>
+          {statusContractExamples.map((status) => (
+            <LedgerRow
+              key={status.key}
+              label={<StatusBadge tone={status.tone}><Localized {...status.label} /></StatusBadge>}
+              preview={<span className="pd-f0-status-tone">{status.tone}</span>}
+              value={<code>{status.key}</code>}
+              detail={copy(status.owner)}
+            />
           ))}
-        </div>
+        </FoundationLedger>
       </FoundationSection>
 
       <FoundationSection
         index="02"
-        title={<Localized pl="Katalog domenowy" en="Domain catalog" />}
-        summary={<Localized pl="Rozwiń kategorię, aby sprawdzić etykietę, klucz techniczny i ton każdego stanu." en="Expand a category to inspect each state's label, technical key and tone." />}
+        title={<Localized pl="Granica odpowiedzialności" en="Ownership boundary" />}
+        summary={<Localized pl="Design system nie utrzymuje katalogu statusów billingowych, security, commerce ani operacyjnych. Utrzymuje tylko role semantyczne i sposób ich prezentacji." en="The design system does not maintain billing, security, commerce, or operational status catalogs. It owns only semantic roles and their presentation." />}
       >
-        <p className="pd-f0-status-rule">
-          <Localized
-            pl="Kolor nie definiuje statusu. Status definiują jego nazwa i klucz, a ton jedynie wspiera priorytet komunikatu."
-            en="Color does not define a status. Its name and key do; tone only supports message priority."
+        <FoundationLedger label={copy({ pl: 'Własność statusów', en: 'Status ownership' })}>
+          <LedgerRow
+            label={<Localized pl="Fundamenty" en="Foundations" />}
+            preview={<StatusBadge tone="warning"><Localized pl="Ton" en="Tone" /></StatusBadge>}
+            value={<code>SemanticStatusTone</code>}
+            detail={copy({ pl: 'neutral / info / success / warning / critical / processing', en: 'neutral / info / success / warning / critical / processing' })}
           />
-        </p>
-        <div className="pd-f0-status-register">
-          {projectStatusGroups.map((group, groupIndex) => (
-            <details
-              className="pd-f0-status-group"
-              key={group.title.pl}
-              open={groupIndex === 0}
-            >
-              <summary>
-                <span>
-                  <strong><Localized {...group.title} /></strong>
-                  <small><Localized {...group.description} /></small>
-                </span>
-                <span className="pd-f0-status-count">
-                  <Localized
-                    pl={`${group.statuses.length} statusów`}
-                    en={`${group.statuses.length} statuses`}
-                  />
-                </span>
-              </summary>
-              <div className="pd-f0-status-table" role="table">
-                <div className="pd-f0-status-table__header" role="row">
-                  <span role="columnheader"><Localized pl="Etykieta" en="Label" /></span>
-                  <span role="columnheader"><Localized pl="Klucz techniczny" en="Technical key" /></span>
-                  <span role="columnheader"><Localized pl="Ton" en="Tone" /></span>
-                </div>
-                {group.statuses.map((status) => (
-                  <div className="pd-f0-status-item" role="row" key={`${group.title.pl}-${status.key}`}>
-                    <span role="cell">
-                      <StatusBadge tone={status.tone}><Localized {...status.label} /></StatusBadge>
-                    </span>
-                    <code role="cell">{status.key}</code>
-                    <span className="pd-f0-status-tone" role="cell">
-                      {copy(statusToneLabels[status.tone])}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </details>
-          ))}
-        </div>
+          <LedgerRow
+            label={<Localized pl="Domena produktu" en="Product domain" />}
+            preview={<code>order.paid</code>}
+            value={<Localized pl="klucz + etykieta" en="key + label" />}
+            detail={copy({ pl: 'Klucz biznesowy jest definiowany przy modelu domenowym.', en: 'The business key is defined next to the domain model.' })}
+          />
+          <LedgerRow
+            label={<Localized pl="Komponent" en="Component" />}
+            preview={<StatusBadge tone="success"><Localized pl="Opłacone" en="Paid" /></StatusBadge>}
+            value={<code>StatusBadge</code>}
+            detail={copy({ pl: 'Komponent renderuje status, ale nie jest właścicielem słownika biznesowego.', en: 'The component renders a status but does not own the business vocabulary.' })}
+          />
+        </FoundationLedger>
       </FoundationSection>
     </FoundationPage>
   ),
 };
+
 
 const spacingScale = [
   { token: '--pd-space-0', value: 0 },
@@ -1622,229 +1433,60 @@ export const GlebiaIWarstwy: Story = {
 };
 
 
-type FoundationProjectGraphicKey =
-  | PapaDataIconName
-  | 'arrow-north-east'
-  | 'globe'
-  | 'moon-star';
+const foundationIconPrinciples = [
+  {
+    rule: { pl: 'Geometria', en: 'Geometry' },
+    value: '24 × 24 / stroke 1.75',
+    detail: { pl: 'Wspólna geometria należy do komponentu Icon.', en: 'Shared geometry belongs to the Icon component.' },
+  },
+  {
+    rule: { pl: 'Kolor', en: 'Color' },
+    value: 'currentColor',
+    detail: { pl: 'Ikona dziedziczy kolor z kontekstu zamiast definiować własny.', en: 'The icon inherits color from context instead of defining its own.' },
+  },
+  {
+    rule: { pl: 'Rozmiar', en: 'Size' },
+    value: '16 / 20 / 24',
+    detail: { pl: 'Rozmiar wynika z roli kontrolki lub informacji.', en: 'Size follows the role of the control or information.' },
+  },
+  {
+    rule: { pl: 'Znaczenie', en: 'Meaning' },
+    value: 'label + context',
+    detail: { pl: 'Ikona wspiera treść; nie tworzy osobnego słownika biznesowego.', en: 'The icon supports content; it does not create a separate business vocabulary.' },
+  },
+] as const;
 
-type FoundationProjectGraphic = {
-  readonly key: FoundationProjectGraphicKey;
-  readonly label: LocalizedCopy;
-  readonly category: LocalizedCopy;
-  readonly source: LocalizedCopy;
-  readonly underline: boolean;
-  readonly note: LocalizedCopy;
-};
-
-const foundationProjectGraphics = [
-  {
-    key: 'home',
-    label: { pl: 'Home', en: 'Home' },
-    category: { pl: 'Nawigacja', en: 'Navigation' },
-    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
-    underline: false,
-    note: { pl: 'Ikona nawigacyjna bez dodatkowego akcentu.', en: 'Navigation icon without an additional accent.' },
-  },
-  {
-    key: 'search',
-    label: { pl: 'Search', en: 'Search' },
-    category: { pl: 'Akcja', en: 'Action' },
-    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
-    underline: false,
-    note: { pl: 'Akcja pomocnicza bez kreski pod symbolem.', en: 'Auxiliary action without an underline beneath the symbol.' },
-  },
-  {
-    key: 'integration',
-    label: { pl: 'Integration', en: 'Integration' },
-    category: { pl: 'Akcja', en: 'Action' },
-    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
-    underline: false,
-    note: { pl: 'Ikona połączenia lub przejścia do integracji.', en: 'Connection or integration entry icon.' },
-  },
-  {
-    key: 'arrow-north-east',
-    label: { pl: 'ArrowNorthEast', en: 'ArrowNorthEast' },
-    category: { pl: 'Grafika pomocnicza', en: 'Supporting graphic' },
-    source: { pl: 'storybook-next/stories/story-icons.tsx', en: 'storybook-next/stories/story-icons.tsx' },
-    underline: false,
-    note: { pl: 'Zewnętrzne przejście lub link bez dodatkowej kreski.', en: 'External transition or link without an additional underline.' },
-  },
-  {
-    key: 'data',
-    label: { pl: 'Data', en: 'Data' },
-    category: { pl: 'Dane', en: 'Data' },
-    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
-    underline: false,
-    note: { pl: 'Zbiór danych, warstwa danych lub zakres.', en: 'Dataset, data layer, or data scope.' },
-  },
-  {
-    key: 'trend',
-    label: { pl: 'Trend', en: 'Trend' },
-    category: { pl: 'Analiza', en: 'Analytics' },
-    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
-    underline: false,
-    note: { pl: 'Wykres i kierunek zmiany bez dekoracyjnej kreski.', en: 'Chart and change direction without a decorative underline.' },
-  },
-  {
-    key: 'billing',
-    label: { pl: 'Billing', en: 'Billing' },
-    category: { pl: 'Finanse', en: 'Finance' },
-    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
-    underline: false,
-    note: { pl: 'Płatności, rozliczenia i plan subskrypcji.', en: 'Payments, billing, and subscription plans.' },
-  },
-  {
-    key: 'security',
-    label: { pl: 'Security', en: 'Security' },
-    category: { pl: 'System', en: 'System' },
-    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
-    underline: false,
-    note: { pl: 'Bezpieczeństwo, zgodność i zaufanie bez kreski sygnałowej.', en: 'Security, compliance, and trust without a signal underline.' },
-  },
-  {
-    key: 'assistant',
-    label: { pl: 'Assistant', en: 'Assistant' },
-    category: { pl: 'System', en: 'System' },
-    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
-    underline: false,
-    note: { pl: 'Papa Asystent jako znak systemowy, bez linii pod spodem.', en: 'Papa Assistant as a system sign, without an underline.' },
-  },
-  {
-    key: 'success',
-    label: { pl: 'Success', en: 'Success' },
-    category: { pl: 'Status', en: 'Status' },
-    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
-    underline: false,
-    note: { pl: 'Status sukcesu pozostaje czystą ikoną liniową.', en: 'Success status remains a clean line icon.' },
-  },
-  {
-    key: 'warning',
-    label: { pl: 'Warning', en: 'Warning' },
-    category: { pl: 'Status / sygnał', en: 'Status / signal' },
-    source: { pl: 'design-system/icons/Icon.tsx', en: 'design-system/icons/Icon.tsx' },
-    underline: true,
-    note: { pl: 'Wariant sygnałowy ostrzeżenia używa akcentowej kreski pod symbolem.', en: 'The warning signal variant uses an accent underline beneath the symbol.' },
-  },
-  {
-    key: 'globe',
-    label: { pl: 'Globe', en: 'Globe' },
-    category: { pl: 'Grafika pomocnicza', en: 'Supporting graphic' },
-    source: { pl: 'storybook-next/stories/story-icons.tsx', en: 'storybook-next/stories/story-icons.tsx' },
-    underline: false,
-    note: { pl: 'Przełączanie języka lub zasięg, bez kreski.', en: 'Locale switch or scope, without an underline.' },
-  },
-  {
-    key: 'moon-star',
-    label: { pl: 'MoonStar', en: 'MoonStar' },
-    category: { pl: 'Grafika pomocnicza', en: 'Supporting graphic' },
-    source: { pl: 'storybook-next/stories/story-icons.tsx', en: 'storybook-next/stories/story-icons.tsx' },
-    underline: false,
-    note: { pl: 'Tryb motywu lub nocny, bez kreski pod ikoną.', en: 'Theme or night mode, without a line beneath the icon.' },
-  },
-] as const satisfies readonly FoundationProjectGraphic[];
-
-const foundationProjectGraphicGroups: ReadonlyArray<{
-  readonly title: LocalizedCopy;
-  readonly description: LocalizedCopy;
-  readonly keys: readonly FoundationProjectGraphicKey[];
-}> = [
-  {
-    title: { pl: 'Nawigacja i akcje', en: 'Navigation and actions' },
-    description: { pl: 'Ikony akcji i przejścia nie dostają osobnych kontenerów. Pokazujemy je jako lekkie elementy liniowe wspierające etykietę.', en: 'Action and transition icons do not get separate containers. We present them as lightweight line elements that support the label.' },
-    keys: ['home', 'search', 'integration', 'arrow-north-east'],
-  },
-  {
-    title: { pl: 'Dane i analiza', en: 'Data and analytics' },
-    description: { pl: 'Ikony danych zachowują wspólną geometrię i nie są opakowane w karty ani boxy.', en: 'Data icons keep a shared geometry and are not wrapped in cards or boxes.' },
-    keys: ['data', 'trend', 'billing'],
-  },
-  {
-    title: { pl: 'System i status', en: 'System and status' },
-    description: { pl: 'Status zawsze ma tekst. Dodatkowa kreska pod ikoną jest wyjątkiem zarezerwowanym tylko dla wariantu ostrzeżenia.', en: 'Status always includes text. The extra underline below the icon is an exception reserved only for the warning variant.' },
-    keys: ['security', 'assistant', 'success', 'warning'],
-  },
-  {
-    title: { pl: 'Grafiki środowiska', en: 'Environment graphics' },
-    description: { pl: 'Pomocnicze grafiki Storybooka dla globali: język i motyw. Również bez kontenerów i bez kreski.', en: 'Supporting Storybook graphics for globals: locale and theme. Also without containers and without an underline.' },
-    keys: ['globe', 'moon-star'],
-  },
-];
-
-function findFoundationProjectGraphic(
-  key: FoundationProjectGraphicKey,
-) {
-  return foundationProjectGraphics.find((item) => item.key === key)!;
-}
-
-function FoundationProjectGraphicSvg({
-  item,
-}: {
-  readonly item: FoundationProjectGraphic;
-}) {
-  switch (item.key) {
-    case 'arrow-north-east':
-      return <ArrowNorthEastIcon />;
-    case 'globe':
-      return <GlobeIcon />;
-    case 'moon-star':
-      return <MoonStarIcon />;
-    default:
-      return <Icon decorative name={item.key} size={20} />;
-  }
-}
-
-function FoundationProjectGraphicPreview({
-  item,
-}: {
-  readonly item: FoundationProjectGraphic;
-}) {
-  return (
-    <span
-      className="pd-f0-iconography-preview"
-      data-underline={item.underline ? 'true' : 'false'}
-      aria-hidden="true"
-    >
-      <FoundationProjectGraphicSvg item={item} />
-    </span>
-  );
-}
+const foundationIconRoleExamples = [
+  { icon: 'home', role: { pl: 'Nawigacja', en: 'Navigation' }, rule: { pl: 'Wspiera nazwę miejsca.', en: 'Supports the destination label.' } },
+  { icon: 'trend', role: { pl: 'Dane i analiza', en: 'Data and analytics' }, rule: { pl: 'Nie niesie własnego koloru serii.', en: 'Does not own a series color.' } },
+  { icon: 'warning', role: { pl: 'Status', en: 'Status' }, rule: { pl: 'Towarzyszy etykiecie statusu.', en: 'Accompanies the status label.' } },
+  { icon: 'assistant', role: { pl: 'System', en: 'System' }, rule: { pl: 'Identyfikuje funkcję, nie dekoruje powierzchni.', en: 'Identifies a function rather than decorating a surface.' } },
+] as const satisfies readonly {
+  readonly icon: PapaDataIconName;
+  readonly role: LocalizedCopy;
+  readonly rule: LocalizedCopy;
+}[];
 
 export const Ikonografia: Story = {
   name: 'Ikonografia',
   render: () => (
     <FoundationPage
       title={<Localized pl="Ikonografia" en="Iconography" />}
-      summary={<Localized pl="Fundamenty pokazują pełny katalog ikon i grafik używanych w projekcie. Bez dodatkowych kontenerów, bez przesuwania treści w prawo i z jasnym rozróżnieniem, gdzie pojawia się kreska pod symbolem." en="Foundations show the full catalog of icons and graphics used in the project. Without extra containers, without pushing content to the right, and with a clear distinction of where the underline appears beneath the symbol." />}
+      summary={<Localized pl="Fundament określa reguły języka ikon. Pełny katalog nazw i wariantów jest własnością komponentu 10.11 — Ikony." en="The foundation defines icon-language rules. The complete name and variant catalog is owned by component 10.11 — Icons." />}
     >
       <FoundationSection
         index="01"
-        title={<Localized pl="Komplet używanych ikon i grafik" en="Complete set of used icons and graphics" />}
-        summary={<Localized pl="To jest aktualny katalog źródeł występujących w projekcie: ikony z design systemu oraz dodatkowe grafiki pomocnicze Storybooka." en="This is the current source catalog used in the project: icons from the design system and supporting Storybook graphics." />}
+        title={<Localized pl="Reguły języka ikon" en="Icon-language rules" />}
+        summary={<Localized pl="Tu definiujemy zasady, które każda ikona systemowa musi zachować." en="This is where the rules every system icon must preserve are defined." />}
       >
-        <FoundationLedger label={copy({ pl: 'Katalog ikon i grafik projektu', en: 'Project icon and graphic catalog' })}>
-          {foundationProjectGraphics.map((item) => (
+        <FoundationLedger label={copy({ pl: 'Reguły ikonografii', en: 'Iconography rules' })}>
+          {foundationIconPrinciples.map((item) => (
             <LedgerRow
-              key={item.key}
-              label={(
-                <div className="pd-f0-iconography-label">
-                  <strong>{copy(item.label)}</strong>
-                  <span>{copy(item.note)}</span>
-                </div>
-              )}
-              preview={<FoundationProjectGraphicPreview item={item} />}
-              value={(
-                <div className="pd-f0-iconography-meta">
-                  <strong>{copy(item.category)}</strong>
-                  <span>{copy(item.source)}</span>
-                </div>
-              )}
-              detail={(
-                <div className="pd-f0-iconography-detail">
-                  <strong><Localized pl="Kreska pod spodem" en="Underline" /></strong>
-                  <span>{copy(item.underline ? { pl: 'Tak', en: 'Yes' } : { pl: 'Nie', en: 'No' })}</span>
-                </div>
-              )}
+              key={item.value}
+              label={copy(item.rule)}
+              preview={<Icon decorative name="data" size={20} />}
+              value={<code>{item.value}</code>}
+              detail={copy(item.detail)}
             />
           ))}
         </FoundationLedger>
@@ -1852,26 +1494,20 @@ export const Ikonografia: Story = {
 
       <FoundationSection
         index="02"
-        title={<Localized pl="Role i zasady użycia" en="Roles and usage rules" />}
-        summary={<Localized pl="Ikony i grafiki pozostają częścią układu listowego. Nie budujemy z nich osobnych kafli ani kart." en="Icons and graphics remain part of a list-based layout. We do not turn them into separate tiles or cards." />}
+        title={<Localized pl="Role reprezentatywne" en="Representative roles" />}
+        summary={<Localized pl="Pokazujemy tylko role potrzebne do zrozumienia zasady. To nie jest drugi katalog ikon." en="Only roles needed to understand the rule are shown. This is not a second icon catalog." />}
       >
         <div className="pd-f0-iconography-role-list">
-          {foundationProjectGraphicGroups.map((group) => (
-            <article className="pd-f0-iconography-role" key={group.title.pl}>
-              <header>
-                <h3>{copy(group.title)}</h3>
-                <p>{copy(group.description)}</p>
-              </header>
+          {foundationIconRoleExamples.map((item) => (
+            <article className="pd-f0-iconography-role" key={item.icon}>
               <div className="pd-f0-iconography-strip">
-                {group.keys.map((key) => {
-                  const item = findFoundationProjectGraphic(key);
-                  return (
-                    <span key={item.key}>
-                      <FoundationProjectGraphicPreview item={item} />
-                      <strong>{copy(item.label)}</strong>
-                    </span>
-                  );
-                })}
+                <span>
+                  <span className="pd-f0-iconography-preview">
+                    <Icon decorative name={item.icon} size={20} />
+                  </span>
+                  <strong>{copy(item.role)}</strong>
+                </span>
+                <p>{copy(item.rule)}</p>
               </div>
             </article>
           ))}
@@ -1880,40 +1516,23 @@ export const Ikonografia: Story = {
 
       <FoundationSection
         index="03"
-        title={<Localized pl="Kiedy pojawia się kreska" en="When the underline appears" />}
-        summary={<Localized pl="Kreska pod symbolem jest wyjątkiem, a nie stałą dekoracją całej ikonografii." en="The underline beneath a symbol is an exception, not a default decoration for the whole iconography." />}
+        title={<Localized pl="Własność katalogu" en="Catalog ownership" />}
+        summary={<Localized pl="Nowa ikona trafia do publicznego rejestru Icon i do story 10.11. Fundamenty nie kopiują listy nazw." en="A new icon goes to the public Icon registry and story 10.11. Foundations do not copy the list of names." />}
       >
         <FoundationVariant
-          title={<Localized pl="Wariant sygnałowy vs. zwykły" en="Signal variant vs. regular" />}
-          description={<Localized pl="Pokazujemy to na prostych wierszach: ostrzeżenie ma kreskę, pozostałe symbole nie." en="We show it in simple rows: warning uses the underline, the remaining symbols do not." />}
+          title={<Localized pl="Jedno źródło prawdy" en="Single source of truth" />}
+          description={<Localized pl="00.09 opisuje zasady. 10.11 dokumentuje komponent i pełny katalog. Provider marks oraz logo marki pozostają osobnymi rodzinami." en="00.09 defines rules. 10.11 documents the component and complete catalog. Provider marks and brand marks remain separate families." />}
+          token={<code>10.11 / Icon</code>}
         >
           <div className="pd-f0-iconography-note">
-            <p>
-              <Localized
-                pl="W projekcie kreska pod ikoną jest dozwolona tylko dla przygotowanego wariantu sygnałowego. Nie dokładamy jej do wszystkich ikon systemowych."
-                en="In this project, the underline beneath the icon is allowed only for the prepared signal variant. We do not add it to all system icons."
-              />
-            </p>
-            <FoundationLedger label={copy({ pl: 'Porównanie wariantów ikonografii', en: 'Iconography variant comparison' })}>
-              {(['warning', 'success', 'assistant', 'security'] as const satisfies readonly FoundationProjectGraphicKey[]).map((key) => {
-                const item = findFoundationProjectGraphic(key);
-                return (
-                  <LedgerRow
-                    key={item.key}
-                    label={<strong>{copy(item.label)}</strong>}
-                    preview={<FoundationProjectGraphicPreview item={item} />}
-                    value={copy(item.underline ? { pl: 'wariant sygnałowy', en: 'signal variant' } : { pl: 'wariant standardowy', en: 'standard variant' })}
-                    detail={copy(item.underline ? { pl: 'kreska: tak', en: 'underline: yes' } : { pl: 'kreska: nie', en: 'underline: no' })}
-                  />
-                );
-              })}
-            </FoundationLedger>
+            <p><Localized pl="Nie dodajemy lokalnych list ikon w Laboratorium ani w stories ekranów." en="Do not add local icon lists in the Laboratory or screen stories." /></p>
           </div>
         </FoundationVariant>
       </FoundationSection>
     </FoundationPage>
   ),
 };
+
 
 function MotionDemo({
   reduced,

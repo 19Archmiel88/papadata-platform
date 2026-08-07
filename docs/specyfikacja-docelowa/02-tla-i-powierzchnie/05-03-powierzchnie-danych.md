@@ -10,6 +10,9 @@ updated_at: 2026-08-06T00:00:00+02:00
 
 # Powierzchnie danych
 
+## Rola Laboratorium i handoff
+`05.03` porównuje archetypy powierzchni danych. Nie jest trwałym właścicielem `MetricCard`, `ChartFrame`, `DataTable`, panelu szczegółów, dowodów ani rekomendacji. Po akceptacji odpowiedzialności są promowane odpowiednio do warstw `10 / 15 / 18`.
+
 ## Metadane
 
 | Pole | Wartość |

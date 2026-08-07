@@ -10,3 +10,8 @@ export type {
 export type {
   TextFieldProps,
 } from './TextField';
+
+export { FileInput } from './FileInput';
+export type { FileInputProps } from './FileInput';
+export { Textarea } from './Textarea';
+export type { TextareaProps } from './Textarea';

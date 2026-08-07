@@ -24,9 +24,12 @@ status: stage-01-accepted
 
 # Statusy systemowe
 
+## Source of truth i ownership
+Fundament definiuje wyłącznie anatomię statusu oraz semantic tones: `neutral`, `info`, `success`, `warning`, `critical`, `processing`. Konkretne klucze i etykiety billing/security/commerce/operations należą do modeli domenowych produktu. `StatusBadge` renderuje ton, ale nie jest właścicielem słownika biznesowego.
+
 ## Decyzja
 
-Jeden publiczny słownik statusów obowiązuje komponenty, Fundamenty i Laboratorium: `neutral`, `info`, `success`, `warning`, `critical`, `processing`.
+Jeden publiczny słownik **tonów semantycznych** obowiązuje komponenty, Fundamenty i Laboratorium: `neutral`, `info`, `success`, `warning`, `critical`, `processing`. Klucze statusów biznesowych pozostają własnością domen.
 
 ## Mapowanie
 

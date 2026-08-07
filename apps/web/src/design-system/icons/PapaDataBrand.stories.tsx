@@ -17,6 +17,9 @@ import type {
   PapaDataBrandProps,
 } from './PapaDataBrand';
 
+import '../../storybook-next/presentation/story-presentation.css';
+import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../storybook-next/presentation/StoryPresentation';
+
 const meta = {
   title: '10 Komponenty bazowe/Marka',
   component: PapaDataBrand,
@@ -27,16 +30,12 @@ const meta = {
     },
   },
   args: {
-    glow: true,
     label: 'PapaData logo',
     size: 'large',
     variant: 'lockup',
   },
   argTypes: {
     decorative: {
-      control: 'boolean',
-    },
-    glow: {
       control: 'boolean',
     },
     label: {
@@ -165,14 +164,14 @@ function StorySection({
   readonly title: string;
 }) {
   return (
-    <section className="pd-brand-section">
-      <header className="pd-brand-section__header">
-        <p className="pd-brand-kicker">{eyebrow}</p>
-        <h2>{title}</h2>
-        <p>{description}</p>
-      </header>
+    <StoryPresentationSection
+      className="pd-brand-section"
+      index={eyebrow}
+      summary={description}
+      title={title}
+    >
       {children}
-    </section>
+    </StoryPresentationSection>
   );
 }
 
@@ -211,34 +210,36 @@ function renderVariantRow(variant: VariantDefinition) {
 export const Marka: Story = {
   name: 'Marka',
   render: (args) => (
-    <main className="pd-brand-system">
-      <div className="pd-brand-system__inner">
-        <header className="pd-brand-hero">
-          <div>
-            <p className="pd-brand-kicker">10.01 Marka</p>
-            <h1>PapaDataBrand jako znak systemu.</h1>
-            <p className="pd-brand-hero__lead">
-              Komponent marki działa jak pozostałe elementy
-              design-systemu: bez dekoracyjnych kontenerów, oparty na
-              tokenach projektu i sprawdzalny w wariantach semantycznych.
-            </p>
-          </div>
-
+    <StoryPresentationPage
+      className="pd-brand-system"
+      headerAside={(
+        <div className="pd-brand-hero__aside">
+          <StoryPresentationMeta
+            ariaLabel="Parametry kontraktu marki"
+            items={[
+              { label: 'Komponent', value: 'PapaDataBrand' },
+              { label: 'Warianty', value: '4 semantyczne' },
+              { label: 'Status', value: 'accepted' },
+            ]}
+          />
           <div className="pd-brand-hero__sample">
-            <span
-              aria-hidden="true"
-              className="pd-brand-focus-strip"
-            />
+            <span aria-hidden="true" className="pd-brand-focus-strip" />
             <PapaDataBrand
               {...args}
               data-testid="brand-controlled"
-              glow
               label="PapaData controlled logo"
               size="large"
               variant="lockup"
             />
           </div>
-        </header>
+        </div>
+      )}
+      sectionCode="10"
+      sectionLabel="Komponenty bazowe"
+      storyId="10.01"
+      summary="Komponent marki działa jak pozostałe elementy design-systemu: bez dekoracyjnego glow, bez lokalnych efektów i z jednym publicznym API."
+      title="PapaDataBrand jako znak systemu."
+    >
 
         <StorySection
           description="Sygnet ma dokładnie trzy warstwy z dostarczonego kodu. Zmieniony jest tylko kolor: zostaje token marki z projektu."
@@ -250,7 +251,6 @@ export const Marka: Story = {
               <div className="pd-brand-language__line">
                 <PapaDataBrand
                   data-testid="brand-language-lockup"
-                  glow
                   label="PapaData logo"
                   size="large"
                   variant="lockup"
@@ -323,7 +323,6 @@ export const Marka: Story = {
               <div className="pd-brand-row__sample">
                 <PapaDataBrand
                   data-testid="brand-size-large"
-                  glow
                   label="PapaData large"
                   size="large"
                 />
@@ -335,8 +334,7 @@ export const Marka: Story = {
             </article>
           </div>
         </StorySection>
-      </div>
-    </main>
+    </StoryPresentationPage>
   ),
   play: async ({
     canvasElement,

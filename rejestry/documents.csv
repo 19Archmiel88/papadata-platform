@@ -35,7 +35,7 @@ path,title,words,sha256
 01-fundamenty/00-08-glebia-i-warstwy.md,Głębia i warstwy,181,c7f28cb5a9c248cc39e8502de823e7353f32dd69a67a6be942c5e21c99111020
 01-fundamenty/00-09-ikonografia.md,Ikonografia,172,28cf40375df8e08c00a242a7829611c0eb1f548379b07ed15485b433912fb9ad
 01-fundamenty/00-10-motion.md,Motion,157,3aa40084ac4606f4026369f86b8ab7996abfdcf0e6375fed8d95619c5efeb02d
-01-fundamenty/00-11-dostepnosc.md,Dostępność,248,c9c7fe88260ec50ae09f6591e3ca431b20db64cc2c8b3d0ce6067feac6363331
+01-fundamenty/00-11-dostepnosc.md,Dostępność,330,c30d1259088f824dc61a80cce2d2ba4be8df45202c66d37b17f5959b6595a1d3
 02-tla-i-powierzchnie/05-01-tlo-auth.md,Tło Auth,280,41b7a9dba1a66832dc20fd68e690065f52c41aa2580c4b8a4303d0d3efa7c7dc
 02-tla-i-powierzchnie/05-02-tlo-aplikacji.md,Tło aplikacji,275,74f3400afc113b20e4c1076a3db38c6463611fe86b12582c78421e471505343f
 02-tla-i-powierzchnie/05-03-powierzchnie-danych.md,Powierzchnie danych,273,2689f541804e23235f4ffccffb3d9322e6a7ecb990ede4b69af29a610502fabe
@@ -83,9 +83,9 @@ path,title,words,sha256
 03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-28-dostep-zablokowany.md,Dostęp zablokowany,342,e3d8f6030a6e115f7f6f3d57fdb8c03b9c021ef795eec2d2a09ffd7575853877
 03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-29-zakonczenie-procesu-i-wejscie-do-aplikacji.md,Zakończenie procesu i wejście do aplikacji,359,0fd1554d50bf66ae9608cedb0f312cb2b5b6fc0209b261c6342f0a915f245f57
 03-dostep-rejestracja-onboarding/procesy/onboarding-do-pierwszej-wartosci.md,Onboarding do pierwszej wartości — kontrakt procesu,299,5f39130b24186ef6a30e40de93587250a7476a09afcef650900a08e722d82664
-04-komponenty-bazowe/10-01-marka.md,Marka,491,4b1f5378c120227eb2d05ed48b23dfa83c0a47e7e923e6a8663245d2599b8593
-04-komponenty-bazowe/10-02-przyciski-i-akcje.md,Przyciski i akcje,518,7c59e17c20408216163a74ed1cf05445ffc78898b5f64b1d9f289cfedec60be0
-04-komponenty-bazowe/10-03-pola-tekstowe-i-formularzowe.md,Pola tekstowe i formularzowe,549,6d794fcbcf6b569f84288b430c97b797fc231c76b3acbd0f3f344394c222d9a8
+04-komponenty-bazowe/10-01-marka.md,Marka,485,58b3f5a3ee0c8736d4ccd0dc74457648eef1f8ea1890d6a40011c1ba623688e9
+04-komponenty-bazowe/10-02-przyciski-i-akcje.md,Przyciski i akcje,635,b3a4cac9d6235f31404772e837f6893e5eb1fcd156cc543720b785f993b2e2ce
+04-komponenty-bazowe/10-03-pola-tekstowe-i-formularzowe.md,Pola tekstowe i formularzowe,688,eadc58dc6fc341d1ec0ac43d269c8bcefb986a0036e6ea12d2f591f4eca04e5f
 04-komponenty-bazowe/10-04-kontrolki-wyboru.md,Kontrolki wyboru,515,4035aa51a182c1023e832dad1de596bc8275815376cd73176802c9c9df02f839
 04-komponenty-bazowe/10-05-komunikaty-i-statusy.md,Komunikaty i statusy,501,b81b64e073b74c09bdb4b135f256030948635a3c5afa8f1f336a46f90038871c
 04-komponenty-bazowe/10-06-ladowanie-i-postep.md,Ładowanie i postęp,527,2d3482d8a7a034da12a2fbbcb3eeb2c33e01895a3ab30c71885c8a661cc0a06d
@@ -93,7 +93,7 @@ path,title,words,sha256
 04-komponenty-bazowe/10-08-nawigacja-lokalna.md,Nawigacja lokalna,485,7b92736707ae7ad5b474c4f3d69437c4e14ef93c93eeca0d3a736a156253d4f8
 04-komponenty-bazowe/10-09-menu-popovery-i-tooltipy.md,"Menu, popovery i tooltipy",513,f71c8cce4c0f8889348fff9b25975ec4cddf555b040a27a0db457e7e76e14854
 04-komponenty-bazowe/10-10-dialogi-i-warstwy.md,Dialogi i warstwy,437,4681df437e1f126e6772517e987fd4df4b55abbbbb5f46ff0ad52d6898ba335b
-04-komponenty-bazowe/10-11-ikony.md,Ikony,425,eec52943f78e13ab45acdcee5d7234e1e2793cc7511126eae790219116719ed6
+04-komponenty-bazowe/10-11-ikony.md,Ikony,465,21e3f4d7f6b7b22f2618eab3ffd14f36d7a22c47d7102295c7f3bd7b5b585931
 04-komponenty-bazowe/10-12-data-i-zakres-czasu.md,Data i zakres czasu,443,7c1b248e09e2d6f9e0358cade3d9d478fce4adc35d25ac586866aa36fd2ec8e9
 04-komponenty-bazowe/komponenty/alertdialog.md,AlertDialog,325,444c64975231ae5f04555b1dbe6fb7869d9145b3cb371cf065edb286ade96e29
 04-komponenty-bazowe/komponenty/approvalpanel.md,ApprovalPanel,319,01cf2c3805d10f87a2e5ebea03e0c9208e8f7a2fc4decac9df44eaea65ead930

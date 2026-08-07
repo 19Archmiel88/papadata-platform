@@ -91,6 +91,12 @@ export const LinkAction = forwardRef<
           {endIcon}
         </span>
       ) : null}
+
+      <span
+        aria-hidden="true"
+        className="pd-inline-action__activity-line"
+        data-slot="activity-line"
+      />
     </a>
   );
 });

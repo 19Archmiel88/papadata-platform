@@ -1,6 +1,9 @@
 import type {
   PapaDataIconName,
 } from '../../icons';
+import type {
+  SemanticStatusTone,
+} from '../../foundations';
 
 export type FeedbackTone =
   | 'info'
@@ -8,13 +11,7 @@ export type FeedbackTone =
   | 'warning'
   | 'critical';
 
-export type StatusBadgeTone =
-  | 'neutral'
-  | 'info'
-  | 'success'
-  | 'warning'
-  | 'critical'
-  | 'processing';
+export type StatusBadgeTone = SemanticStatusTone;
 
 export function resolveFeedbackRole(
   tone: FeedbackTone,

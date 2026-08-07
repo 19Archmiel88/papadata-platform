@@ -109,6 +109,7 @@ export function DataSurfaceSelect<Value extends string>({
       </span>
       <div className="pd-s53-select__control">
         <button
+          data-lab-control="select-trigger"
           aria-controls={`${id}-listbox`}
           aria-expanded={open}
           aria-haspopup="listbox"
@@ -157,6 +158,7 @@ export function DataSurfaceSelect<Value extends string>({
           >
             {options.map((option, index) => (
               <button
+                data-lab-control="select-option"
                 aria-selected={option.value === value}
                 key={option.value}
                 onClick={() => selectOption(option)}

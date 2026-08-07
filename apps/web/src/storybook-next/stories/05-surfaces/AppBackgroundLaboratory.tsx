@@ -65,6 +65,7 @@ function ShellCanvas({
           >
             {['dashboard', 'campaigns', 'orders', 'customers'].map((item, index) => (
               <button
+                data-lab-control="shell-navigation"
                 key={item}
                 aria-current={activeNav === item ? 'page' : undefined}
                 className="pd-s52-shell__nav-item"
@@ -141,7 +142,7 @@ function ShellCanvas({
 
         {panelVisible ? (
           <>
-            <button aria-label={copy({ pl: 'Zamknij panel Papa', en: 'Close Papa panel' })} className="pd-s52-shell__scrim" onClick={() => setPapaOpen(false)} type="button" />
+            <button data-lab-control="overlay-scrim" aria-label={copy({ pl: 'Zamknij panel Papa', en: 'Close Papa panel' })} className="pd-s52-shell__scrim" onClick={() => setPapaOpen(false)} type="button" />
             <aside className="pd-s52-shell__papa" aria-label={copy({ pl: 'Panel Papa jako warstwa', en: 'Papa panel as a layer' })}>
               <header>
                 <div><span><Localized pl="Warstwa operacyjna" en="Operational layer" /></span><strong>Papa</strong></div>
@@ -190,6 +191,7 @@ export function AppBackgroundLaboratory() {
 
   return (
     <StoryPage
+      handoff={<Localized pl="20 — Powłoka produktu / AppShell" en="20 — Product shell / AppShell" />}
       id="05.02"
       title={<Localized pl="Tło aplikacji" en="Application background" />}
       summary={<Localized pl="Canvas oddziela nawigację od zadania. Powłoka nie jest kolekcją dekoracyjnych kart, a warstwa Papa nie zmniejsza głównego regionu treści." en="The canvas separates navigation from the task. The shell is not a collection of decorative cards, and the Papa layer does not shrink the main content region." />}
@@ -198,7 +200,7 @@ export function AppBackgroundLaboratory() {
       <StorySection index="01" title={<Localized pl="Układy powłoki" en="Shell layouts" />} summary={<Localized pl="Jeden reprezentatywny canvas pokazuje warianty bez mnożenia równorzędnych miniaturek." en="One representative canvas shows variants without multiplying equal miniatures." />}>
         <div className="pd-s52-variant-switch" role="group" aria-label={copy({ pl: 'Wybierz wariant powłoki', en: 'Choose shell variant' })}>
           {shellVariants.map((item) => (
-            <button key={item.id} aria-pressed={variant === item.id} onClick={() => setVariant(item.id)} type="button">{copy(item)}</button>
+            <button data-lab-control="variant-selector" key={item.id} aria-pressed={variant === item.id} onClick={() => setVariant(item.id)} type="button">{copy(item)}</button>
           ))}
         </div>
         <ShellCanvas variant={variant} />

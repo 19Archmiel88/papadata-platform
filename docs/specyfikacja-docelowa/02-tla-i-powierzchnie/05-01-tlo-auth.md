@@ -10,6 +10,9 @@ updated_at: 2026-08-06T00:00:00+02:00
 
 # Tło Auth
 
+## Rola Laboratorium i handoff
+`05.01` jest decision recordem dla canvasu Auth i relacji formularz–tło. Nie jest właścicielem AuthShell ani kompletnej macierzy ekranów dostępu. Po akceptacji wzorzec jest promowany do `25 — Access/Auth patterns`.
+
 ## Metadane
 
 | Pole | Wartość |

@@ -10,6 +10,9 @@ updated_at: 2026-08-06T00:00:00+02:00
 
 # Tło aplikacji
 
+## Rola Laboratorium i handoff
+`05.02` ocenia canvas aplikacji, relacje regionów i scroll ownership. Nie jest docelową specyfikacją AppShell. Po akceptacji decyzja przechodzi do `20 — Powłoka produktu / AppShell`.
+
 ## Metadane
 
 | Pole | Wartość |

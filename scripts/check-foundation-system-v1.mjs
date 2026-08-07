@@ -189,11 +189,20 @@ for (const entryId of foundationEntryIds) {
 for (const entryId of laboratoryEntryIds) {
   const entry = entries.get(entryId);
   ensure(entry, `Missing laboratory entry ${entryId}.`);
-  ensure(entry.sourceStatus === 'specified', `${entryId}: laboratory source must remain specified.`);
-  ensure(entry.documentationStatus === 'review', `${entryId}: laboratory documentation must remain in review.`);
-  ensure(entry.prototypeStatus === 'review', `${entryId}: laboratory prototype must remain in review.`);
   ensure(entry.productionStatus === 'not_started', `${entryId}: laboratory production must not be started.`);
-  ensure(entry.testStatus === 'not_started', `${entryId}: laboratory tests must remain not_started for Etap 01.`);
+
+  if (entryId === '05.04') {
+    ensure(entry.sourceStatus === 'accepted', '05.04: accepted separator decision must be marked accepted.');
+    ensure(entry.documentationStatus === 'accepted', '05.04: accepted separator decision documentation must be accepted.');
+    ensure(entry.prototypeStatus === 'implemented', '05.04: accepted separator decision prototype must be implemented.');
+    ensure(entry.testStatus === 'passing', '05.04: accepted separator decision static checks must pass.');
+    continue;
+  }
+
+  ensure(entry.sourceStatus === 'specified', `${entryId}: open laboratory source must remain specified.`);
+  ensure(entry.documentationStatus === 'review', `${entryId}: open laboratory documentation must remain in review.`);
+  ensure(entry.prototypeStatus === 'review', `${entryId}: open laboratory prototype must remain in review.`);
+  ensure(entry.testStatus === 'not_started', `${entryId}: open laboratory tests must remain not_started.`);
 }
 
 for (const token of componentSystem.foundationBaseline.requiredTokens) {
@@ -214,7 +223,7 @@ for (const exportName of componentSystem.foundationBaseline.requiredIconExports)
 
 for (const cssImport of [
   'foundation-iconography-no-containers.css',
-  'foundation-lab-alignment.css',
+  '../../presentation/story-presentation.css',
   'foundation-geometry-lab-only.css',
   'foundation-select-target.css',
   'foundation-status-catalog.css',
@@ -223,7 +232,8 @@ for (const cssImport of [
 }
 
 ensure(!surfacesStory.includes('communication-layers-lab.css'), 'Laboratorium decyzji must not import removed communication-layers-lab.css.');
-ensure(surfacesStory.includes('surfaces-laboratory.css'), 'Missing Laboratorium decyzji surface CSS import.');
+ensure(surfacesStory.includes('../../presentation/story-presentation.css'), 'Missing canonical Storybook presentation CSS import in Laboratorium.');
+ensure(surfacesStory.includes('auth-laboratory.css'), 'Missing 05.01 auth laboratory CSS import.');
 ensure(componentSystem.foundationBaseline.expectedActiveStoryCount === contract.activeVisualLayer.activeEntryStories, 'Component baseline active story count is stale.');
 
 for (const tokenName of [

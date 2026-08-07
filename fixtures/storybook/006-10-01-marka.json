@@ -3,12 +3,17 @@
   "storyTitle": "10 Komponenty bazowe/Marka",
   "sourceDocument": "04-komponenty-bazowe/10-01-marka.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "PapaDataBrand"
+  ],
   "states": [
-    "ready",
-    "loading",
-    "empty",
-    "error"
+    "lockup",
+    "mark",
+    "wordmark",
+    "decorative",
+    "small",
+    "medium",
+    "large"
   ],
   "viewports": [
     1440,
@@ -24,27 +29,27 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-variants",
+    "verify-sizes",
+    "verify-svg-geometry",
+    "verify-accessible-name",
+    "verify-decorative-hidden",
+    "verify-no-glow"
   ],
   "visualAssertions": [
+    "foundation-shell-light",
+    "foundation-shell-dark",
     "1440-light",
     "1440-dark",
     "768-reflow",
     "390-mobile",
-    "200-percent-zoom",
-    "reduced-motion",
-    "state-error"
+    "brand-geometry",
+    "no-decorative-glow",
+    "no-local-visual-overrides"
   ],
   "a11y": [
-    "keyboard-only",
-    "focus-visible",
     "accessible-name",
-    "live-region",
-    "200-percent-zoom"
+    "decorative-hidden"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

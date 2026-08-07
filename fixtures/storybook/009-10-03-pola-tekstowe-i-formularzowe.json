@@ -3,12 +3,21 @@
   "storyTitle": "10 Komponenty bazowe/Pola tekstowe i formularzowe",
   "sourceDocument": "04-komponenty-bazowe/10-03-pola-tekstowe-i-formularzowe.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "TextField",
+    "PasswordField",
+    "Textarea",
+    "FileInput",
+    "VerificationCodeInput"
+  ],
   "states": [
-    "ready",
-    "loading",
-    "empty",
-    "error"
+    "default",
+    "required",
+    "read-only",
+    "disabled",
+    "validation-error",
+    "password-visible",
+    "verification-code"
   ],
   "viewports": [
     1440,
@@ -24,27 +33,32 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
+    "verify-labels",
+    "verify-required",
+    "verify-readonly",
+    "verify-disabled",
+    "verify-validation-error",
+    "verify-password-toggle",
+    "verify-verification-code",
     "verify-keyboard-only"
   ],
   "visualAssertions": [
+    "foundation-shell-light",
+    "foundation-shell-dark",
     "1440-light",
     "1440-dark",
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-error"
+    "field-width-contract",
+    "no-local-visual-overrides"
   ],
   "a11y": [
     "keyboard-only",
     "focus-visible",
     "accessible-name",
-    "live-region",
+    "described-by",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-partial-tests"
 }

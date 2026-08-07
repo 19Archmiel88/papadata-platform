@@ -45,7 +45,9 @@
     "verify:backend-capabilities": "node tools/generate-backend-capability-docs.mjs --check",
     "docs:backend-contract-runtime": "node tools/generate-backend-contract-runtime.mjs",
     "verify:backend-contract-runtime": "node tools/generate-backend-contract-runtime.mjs --check",
-    "docs:backend": "node tools/generate-backend-contract-runtime.mjs && node tools/generate-backend-capability-docs.mjs"
+    "docs:backend": "node tools/generate-backend-contract-runtime.mjs && node tools/generate-backend-capability-docs.mjs",
+    "check:storybook-presentation": "pnpm --filter @papadata/web check-storybook-presentation",
+    "check:design-system-ownership": "node scripts/check-design-system-ownership.mjs"
   },
   "devDependencies": {
     "turbo": "2.10.5",

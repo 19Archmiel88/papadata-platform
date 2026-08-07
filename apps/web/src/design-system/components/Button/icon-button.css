@@ -30,13 +30,20 @@ button.pd-icon-button {
       var(--pd-motion-easing-standard);
 }
 
-.pd-icon-button::after,
-button.pd-icon-button::after {
-  content: "";
+.pd-icon-button__content {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-width: 0;
+}
+
+.pd-icon-button__activity-line {
   position: absolute;
-  right: var(--pd-space-2);
-  bottom: 0.28rem;
-  left: var(--pd-space-2);
+  right: 0;
+  bottom: -0.2rem;
+  left: 0;
   height: 2px;
   border-radius: var(--pd-radius-pill);
   background: var(--pd-icon-button-line);
@@ -57,10 +64,10 @@ button.pd-icon-button:focus-visible {
   color: var(--pd-icon-button-hover-color);
 }
 
-.pd-icon-button:hover::after,
-button.pd-icon-button:hover::after,
-.pd-icon-button:focus-visible::after,
-button.pd-icon-button:focus-visible::after {
+.pd-icon-button:hover .pd-icon-button__activity-line,
+button.pd-icon-button:hover .pd-icon-button__activity-line,
+.pd-icon-button:focus-visible .pd-icon-button__activity-line,
+button.pd-icon-button:focus-visible .pd-icon-button__activity-line {
   opacity: 1;
   transform: scaleX(1);
 }
@@ -127,9 +134,9 @@ button.pd-icon-button:focus-visible {
   opacity: 0.56;
 }
 
-.pd-icon-button[disabled]::after,
-.pd-icon-button[aria-disabled='true']::after,
-.pd-icon-button[data-disabled='true']::after {
+.pd-icon-button[disabled] .pd-icon-button__activity-line,
+.pd-icon-button[aria-disabled='true'] .pd-icon-button__activity-line,
+.pd-icon-button[data-disabled='true'] .pd-icon-button__activity-line {
   opacity: 0;
   transform: scaleX(0);
 }
@@ -153,7 +160,7 @@ button.pd-icon-button:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   .pd-icon-button,
-  .pd-icon-button::after,
+  .pd-icon-button__activity-line,
   .pd-icon-button svg {
     transition-duration: 1ms;
   }
@@ -170,8 +177,7 @@ button.pd-icon-button:focus-visible {
     color: ButtonText;
   }
 
-  .pd-icon-button::after,
-  button.pd-icon-button::after {
+  .pd-icon-button__activity-line {
     background: ButtonText;
   }
 

@@ -10,6 +10,9 @@ updated_at: 2026-08-06T00:00:00+02:00
 
 # Gradienty, światło i szkło
 
+## Rola Laboratorium i handoff
+`05.05` jest miejscem oceny efektów, nie ich drugim standardem. Zaakceptowane reguły głębi i warstw są promowane do `00.08 — Głębia i warstwy`; ograniczenia AppShell pozostają własnością powłoki produktu.
+
 ## Metadane
 
 | Pole | Wartość |

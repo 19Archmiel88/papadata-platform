@@ -34,7 +34,7 @@
   --pd-form-text: var(--pd-text);
   --pd-form-muted: var(--pd-text-muted);
   --pd-form-accent: var(--pd-brand);
-  --pd-form-ring: var(--pd-focus-visible);
+  --pd-form-ring: var(--pd-focus-ring);
 
   position: relative;
   display: flex;
@@ -61,10 +61,9 @@
 }
 
 .pd-form-control:focus-within {
-  border-color: var(--pd-form-accent);
-  box-shadow:
-    0 0 0 var(--pd-focus-ring-size) var(--pd-form-ring),
-    0 0 0 1px var(--pd-form-accent);
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: var(--pd-focus-offset);
+  box-shadow: 0 0 0 var(--pd-focus-ring-size) var(--pd-form-ring);
 }
 
 .pd-form-control[data-state='error'] {
@@ -111,6 +110,23 @@
   outline: 0;
   background: transparent;
   color: inherit;
+}
+
+.pd-form-control > .pd-form-control__input:focus,
+.pd-form-control > .pd-form-control__input:focus-visible,
+.pd-form-control > .pd-form-control__select:focus,
+.pd-form-control > .pd-form-control__select:focus-visible,
+.pd-form-control > .pd-form-control__search:focus,
+.pd-form-control > .pd-form-control__search:focus-visible,
+.pd-form-control > .pd-form-control__textarea:focus,
+.pd-form-control > .pd-form-control__textarea:focus-visible,
+.pd-form-control > .pd-form-control__file:focus,
+.pd-form-control > .pd-form-control__file:focus-visible {
+  border: 0;
+  outline: 0;
+  outline-offset: 0;
+  background-image: none;
+  box-shadow: none;
 }
 
 .pd-form-control__input::placeholder,
@@ -404,4 +420,56 @@
   color: var(--pd-text-muted);
   font-family: var(--pd-font-mono);
   font-size: var(--pd-type-size-caption);
+}
+
+.pd-form-control--textarea {
+  align-items: stretch;
+  min-height: 7.5rem;
+  padding-block: var(--pd-space-3);
+}
+
+.pd-form-control__textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 5rem;
+  padding: 0;
+  resize: vertical;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-form-control__textarea::placeholder {
+  color: var(--pd-form-muted);
+}
+
+.pd-form-control--file {
+  align-items: center;
+  padding-block: var(--pd-space-2);
+}
+
+.pd-form-control__file {
+  width: 100%;
+  min-width: 0;
+  color: var(--pd-text-secondary);
+  font: inherit;
+}
+
+.pd-form-control__file::file-selector-button {
+  margin-inline-end: var(--pd-space-3);
+  padding: var(--pd-space-2) var(--pd-space-3);
+  border: var(--pd-border-width-subtle) solid var(--pd-separator);
+  border-radius: var(--pd-radius-control);
+  background: transparent;
+  color: var(--pd-text);
+  cursor: pointer;
+  font: inherit;
+  font-weight: var(--pd-font-weight-medium);
+}
+
+.pd-form-control__file:disabled::file-selector-button {
+  cursor: not-allowed;
 }

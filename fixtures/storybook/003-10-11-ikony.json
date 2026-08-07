@@ -3,12 +3,16 @@
   "storyTitle": "10 Komponenty bazowe/Ikony",
   "sourceDocument": "04-komponenty-bazowe/10-11-ikony.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "Icon"
+  ],
   "states": [
-    "ready",
-    "loading",
-    "empty",
-    "error"
+    "decorative",
+    "informative",
+    "size-16",
+    "size-20",
+    "size-24",
+    "catalog"
   ],
   "viewports": [
     1440,
@@ -24,27 +28,26 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-decorative-hidden",
+    "verify-informative-label",
+    "verify-sizes",
+    "verify-current-color",
+    "verify-catalog"
   ],
   "visualAssertions": [
+    "foundation-shell-light",
+    "foundation-shell-dark",
     "1440-light",
     "1440-dark",
     "768-reflow",
     "390-mobile",
-    "200-percent-zoom",
-    "reduced-motion",
-    "state-error"
+    "icon-catalog",
+    "no-local-visual-overrides"
   ],
   "a11y": [
-    "keyboard-only",
-    "focus-visible",
-    "accessible-name",
-    "live-region",
-    "200-percent-zoom"
+    "decorative-hidden",
+    "informative-label",
+    "current-color"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

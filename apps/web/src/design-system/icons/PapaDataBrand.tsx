@@ -28,7 +28,6 @@ export type PapaDataBrandProps = Omit<
   | 'role'
 > & {
   readonly decorative?: boolean;
-  readonly glow?: boolean;
   readonly label?: string;
   readonly showMark?: boolean;
   readonly showWordmark?: boolean;
@@ -113,7 +112,6 @@ export const PapaDataBrand = memo(
       {
         className,
         decorative = false,
-        glow = false,
         label,
         showMark = true,
         showWordmark = true,
@@ -157,7 +155,6 @@ export const PapaDataBrand = memo(
           ? 'pd-lockup--wordmark-only pd-brand-lockup--wordmark-only'
           : null,
         isDecorative ? 'pd-brand-lockup--decorative' : null,
-        glow ? 'pd-brand-lockup--glow' : null,
         className,
       ]
         .filter(Boolean)

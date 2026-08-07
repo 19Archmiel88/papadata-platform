@@ -4,8 +4,8 @@ author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-C6CF31340BEB
-status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+status: review
+updated_at: 2026-08-06T21:48:00+01:00
 ---
 
 # Pola tekstowe i formularzowe
@@ -17,91 +17,139 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Identyfikator | 10.03 |
 | Nazwa polska | Pola tekstowe i formularzowe |
 | Nazwa techniczna | pola-tekstowe-i-formularzowe |
-| Typ dokumentu | indeks rodziny komponentów |
-| Wersja | 1.0 |
-| Status kontraktu | zatwierdzony stan docelowy |
+| Typ dokumentu | kontrakt rodziny komponentów |
+| Wersja | 1.2 |
+| Status kontraktu | review — wymaga odbioru wizualnego właściciela produktu |
 | Priorytet | P1 |
 | Właściciel | Design System |
 | Moduł | Komponenty bazowe — M02 |
-
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | IMPLEMENTED FOR REVIEW |
+| Status Storybooka | `10 Komponenty bazowe/Pola tekstowe i formularzowe` → `Pola formularzy` |
+| Plik Storybooka | `apps/web/src/design-system/components/Field/FormFields.stories.tsx` |
+| Status testów | PARTIAL — play i guard wdrożone; wymagany pełny runtime/build po instalacji paczki |
 
 ## Cel i decyzja docelowa
 
-„Pola tekstowe i formularzowe” jest współdzielonym kontraktem, a nie lokalnym układem jednego ekranu. Wzorzec ma jedną odpowiedzialność, korzysta z fundamentów i komponentów bazowych oraz udostępnia warianty wymagane przez domeny bez kopiowania implementacji.
+Rodzina 10.03 jest jednym kontraktem pól wejściowych. Nie tworzy lokalnego wyglądu formularza i nie kopiuje komponentów do Auth, Laboratorium ani ekranów domenowych.
 
-## Stan obecny
+Story używa dokładnie tego samego shellu prezentacyjnego co:
 
+- `00 Fundamenty/Podstawy`;
+- `05 Laboratorium decyzji/Tła i powierzchnie`;
+- `10.02 Przyciski i akcje`.
 
-## Zakres i wymagania
+Lokalny `field-family-showcase.css` może odpowiadać wyłącznie za szerokość i reflow przykładów. Nie może zmieniać canvasu, drabiny typograficznej, sekcji ani wyglądu komponentów.
 
-| Lp. | Wymaganie | Kontrakt | Dowód odbioru |
-| --- | --- | --- | --- |
-| 1 | text field | wymagany wariant lub stan | test Storybook + test interakcji |
-| 2 | password field | wymagany wariant lub stan | test Storybook + test interakcji |
-| 3 | NIP field | wymagany wariant lub stan | test Storybook + test interakcji |
-| 4 | select | wymagany wariant lub stan | test Storybook + test interakcji |
-| 5 | checkbox | wymagany wariant lub stan | test Storybook + test interakcji |
-| 6 | radio | wymagany wariant lub stan | test Storybook + test interakcji |
-| 7 | textarea | wymagany wariant lub stan | test Storybook + test interakcji |
-| 8 | verification code input | wymagany wariant lub stan | test Storybook + test interakcji |
-| 9 | file input | wymagany wariant lub stan | test Storybook + test interakcji |
-| 10 | walidacja | wymagany wariant lub stan | test Storybook + test interakcji |
-| 11 | helper text. | wymagany wariant lub stan | test Storybook + test interakcji |
+## Zakres 10.03
 
-## Anatomia
+| Lp. | Wymaganie | Implementacja |
+| --- | --- | --- |
+| 1 | TextField | `Field/TextField.tsx` |
+| 2 | PasswordField | `Field/PasswordField.tsx` |
+| 3 | Textarea | `Field/Textarea.tsx` |
+| 4 | FileInput | `Field/FileInput.tsx` |
+| 5 | VerificationCodeInput | `VerificationCodeInput/VerificationCodeInput.tsx` |
+| 6 | helper text | wspólny meta region pola |
+| 7 | walidacja | `aria-invalid`, message, error/valid |
+| 8 | required | natywny atrybut + widoczny znacznik |
+| 9 | disabled | osobny stan bez interakcji |
+| 10 | read-only | osobny stan, nie wariant disabled |
+
+`Select`, `Combobox`, `Checkbox`, `Radio`, `Switch`, `FilterChip`, `Tag` i multi-select należą do `10.04 Kontrolki wyboru` i nie są częścią 10.03.
+
+## Wspólna anatomia
 
 ```text
-pola-tekstowe-i-formularzowe
-├── semantic root
-├── header or accessible label
-├── primary content
-├── status / validation region
-├── primary action
-└── optional secondary actions or metadata
+field root
+├── label row
+│   ├── label
+│   └── required marker lub badge
+├── form control surface
+│   └── input / textarea / file / password control
+└── meta region
+    ├── helper text
+    └── optional validation message
 ```
 
-## Komponenty składowe
+## Kontrakt wizualny
 
-- PageHeader
-- DataStatusBanner
-- InlineNotice
-- Button
+- geometria, spacing, typografia, powierzchnia i focus wynikają z Fundamentów;
+- focus stosuje dokładnie wzorzec z `05.02 Tło aplikacji` → `Formularz` → `Kontrolowana długość linii` (`Nazwa raportu`, `Zakres`): pojedynczy zewnętrzny outline i ring na właścicielu `pd-form-control`; wewnętrzny input, password, textarea, file input ani pole kodu nie może renderować drugiej poziomej linii;
+- wszystkie pola używają wspólnych klas `pd-form-field`, `pd-form-control` i meta regionu;
+- `Textarea` rozszerza powierzchnię pionowo bez nowej estetyki;
+- `FileInput` zachowuje natywną semantykę `input type="file"` i tokenowy przycisk wyboru pliku;
+- `PasswordField` dodaje wyłącznie kontrolę widoczności, siłę i wymagania;
+- `VerificationCodeInput` dodaje wizualizację slotów bez automatycznego submitu;
+- lokalne story nie może nadpisywać produkcyjnych selektorów pól.
 
-Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
+## Decyzja wizualna — fokus bez poziomej linii
 
-## Kontrakt stanu
+Właściciel produktu odrzucił poziomą niebieską linię pojawiającą się wewnątrz `PasswordField` i `Textarea`. Wzorzec referencyjny stanowią surowe pola demonstracyjne w `05.02 Tło aplikacji`, sekcja `Formularz` → `Kontrolowana długość linii`: `Nazwa raportu` i `Zakres`.
 
-- Stan kontrolowany jest używany dla route, filtrów, formularza, selection i overlay.
-- Stan asynchroniczny rozróżnia loading, processing, retrying, success, recoverable error i terminal error.
-- Read-only, no-access i plan-restricted są osobnymi stanami, nie odmianą disabled.
-- Zmiana motywu, języka lub viewportu nie resetuje danych ani procesu.
+Kontrakt obowiązujący dla całej rodziny 10.03:
 
-## Interakcje i klawiatura
+1. fokus jest prezentowany wyłącznie na zewnętrznym właścicielu `.pd-form-control`;
+2. wewnętrzna kontrolka ma `border: 0`, `outline: 0`, `background-image: none` i `box-shadow: none` zarówno dla `:focus`, jak i `:focus-visible`;
+3. zabronione są focus underline realizowane przez `border-bottom`, inset shadow, gradient albo `scaleX`;
+4. fokus nie może zmieniać geometrii kontrolki;
+5. treść, walidacja, helper text, przycisk widoczności hasła i pozostałe zachowania komponentów pozostają bez zmian.
 
-Tab order odpowiada hierarchii zadania. Enter/Space uruchamiają natywne kontrolki; Escape zamyka najwyższą warstwę; strzałki są używane wyłącznie w komponentach z modelem composite widget. Focus restore jest obowiązkowy po każdej warstwie.
+## Stany
 
-## Responsywność
+- default;
+- focus-visible;
+- required;
+- error;
+- valid;
+- disabled;
+- read-only.
 
-Wide może używać kolumn lub detail panelu. Compact przechodzi w jedną kolumnę, zachowuje wszystkie funkcje i przenosi akcje drugorzędne do jawnego overflow. Tabele otrzymują scroll lub widok priorytetowych kolumn, a wykresy — tabelę alternatywną.
+Zmiana stanu nie może zmieniać szerokości ani podstawowej geometrii kontrolki.
 
-## Dostępność
+## Interakcje i dostępność
 
-Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kontrast, reduced motion, live region dla wyników asynchronicznych, reflow i brak informacji zależnej wyłącznie od koloru.
+- każda kontrolka ma powiązaną etykietę;
+- helper i message są podłączone przez `aria-describedby`;
+- error ustawia `aria-invalid="true"`;
+- required korzysta z natywnego `required`;
+- read-only korzysta z natywnego `readOnly`;
+- disabled blokuje interakcję;
+- przycisk widoczności hasła ma dostępną nazwę i `aria-controls`;
+- kod weryfikacyjny pozostaje jednym polem tekstowym dla technologii asystujących;
+- file input pozostaje natywną kontrolką pliku.
 
-## Storybook
+## Storybook i testy
 
-- Title: `10 Komponenty bazowe/Pola tekstowe i formularzowe`.
-- Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
-- Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
+Story `PolaFormularzy` prezentuje:
 
-## Testy i kryteria akceptacji
+1. TextField podstawowy, required i read-only;
+2. PasswordField z kontrolowaną widocznością i wymaganiami;
+3. Textarea;
+4. FileInput;
+5. walidację błędu;
+6. disabled;
+7. VerificationCodeInput.
 
-1. Wszystkie wymagania mają story i asercję testową.
-2. Wzorzec nie tworzy duplikatu komponentu bazowego.
-3. Stany błędu i brak dostępu mają recovery albo jednoznaczne zakończenie.
-4. Mobile i zoom 200% nie tracą funkcji.
-5. Klawiatura oraz focus restore przechodzą play test.
-6. Dokument jest linkowany przez co najmniej jeden ekran albo oznaczony jako fundament przyszłego użycia.
+Play test sprawdza:
+
+- wartości i role pól;
+- required, read-only, disabled i `aria-invalid`;
+- natywny element `textarea`;
+- `input type="file"`;
+- przełączanie widoczności hasła;
+- wpisanie pełnego kodu weryfikacyjnego;
+- brak wewnętrznego border-bottom, background-image, outline i box-shadow na skupionym input/password/textarea;
+- obecność jednego wspólnego outline i ringu na właścicielu `.pd-form-control`;
+- brak zmiany szerokości lub wysokości kontrolki po uzyskaniu fokusu.
+
+`check-storybook-presentation-contract.mjs` sprawdza, że 10.03 korzysta z zaakceptowanego shellu Fundamentów i nie wprowadza lokalnych override’ów.
+
+## Status odbioru
+
+Implementacja i dokumentacja są przygotowane do review. Status nie może zostać zmieniony na `accepted` ani `passing` przed:
+
+- typecheckiem;
+- buildem Storybooka;
+- przejściem play i axe;
+- kontrolą light/dark, PL/EN, desktop, reflow i zoom 200%;
+- wizualną akceptacją właściciela produktu.

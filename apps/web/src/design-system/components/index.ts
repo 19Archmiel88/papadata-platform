@@ -39,7 +39,9 @@ export {
   ErrorState,
 } from './ErrorState';
 export {
+  FileInput,
   PasswordField,
+  Textarea,
   TextField,
 } from './Field';
 export {
@@ -170,7 +172,9 @@ export type {
   ErrorStateVariant,
 } from './ErrorState';
 export type {
+  FileInputProps,
   PasswordFieldProps,
+  TextareaProps,
   TextFieldProps,
 } from './Field';
 export type {

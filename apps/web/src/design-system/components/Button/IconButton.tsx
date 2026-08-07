@@ -23,10 +23,7 @@ export type IconButtonVariant =
 export type IconButtonSize =
   | 'small'
   | 'medium'
-  | 'large'
-  | 'sm'
-  | 'md'
-  | 'lg';
+  | 'large';
 
 export type IconButtonProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -37,27 +34,13 @@ export type IconButtonProps = Omit<
   | 'role'
 > & {
   readonly icon: PapaDataIconName;
-  readonly label?: string;
+  readonly label: string;
   readonly loading?: boolean;
   readonly loadingLabel?: string;
   readonly pressed?: boolean | null;
   readonly size?: IconButtonSize;
-  readonly tooltip?: string;
   readonly variant?: IconButtonVariant;
 };
-
-function normalizeIconButtonSize(size: IconButtonSize): Exclude<IconButtonSize, 'sm' | 'md' | 'lg'> {
-  switch (size) {
-    case 'sm':
-      return 'small';
-    case 'md':
-      return 'medium';
-    case 'lg':
-      return 'large';
-    default:
-      return size;
-  }
-}
 
 export const IconButton = forwardRef<
   HTMLButtonElement,
@@ -72,7 +55,6 @@ export const IconButton = forwardRef<
     loadingLabel,
     pressed,
     size = 'medium',
-    tooltip,
     type = 'button',
     variant = 'secondary',
     ...props
@@ -80,16 +62,13 @@ export const IconButton = forwardRef<
   ref,
 ) {
   const isDisabled = disabled || loading;
-  const resolvedSize = normalizeIconButtonSize(size);
-  const resolvedLabel = label ?? tooltip ?? icon;
-  const accessibleName =
-    loading && loadingLabel
-      ? loadingLabel
-      : resolvedLabel;
+  const accessibleName = loading && loadingLabel
+    ? loadingLabel
+    : label;
   const rootClassName = [
     'pd-icon-button',
     `pd-icon-button--${variant}`,
-    `pd-icon-button--${resolvedSize}`,
+    `pd-icon-button--${size}`,
     className,
   ]
     .filter(Boolean)
@@ -115,20 +94,30 @@ export const IconButton = forwardRef<
           : undefined
       }
       data-loading={loading ? true : undefined}
-      data-size={resolvedSize}
+      data-size={size}
       data-variant={variant}
       disabled={isDisabled}
       role={undefined}
       type={type}
     >
-      {loading ? (
+      <span
+        className="pd-icon-button__content"
+        data-slot="activity-line-owner"
+      >
+        {loading ? (
+          <span
+            aria-hidden="true"
+            className="pd-icon-button__spinner"
+          />
+        ) : (
+          <Icon decorative name={icon} size={20} />
+        )}
         <span
           aria-hidden="true"
-          className="pd-icon-button__spinner"
+          className="pd-icon-button__activity-line"
+          data-slot="activity-line"
         />
-      ) : (
-        <Icon decorative name={icon} size={20} />
-      )}
+      </span>
     </button>
   );
 });

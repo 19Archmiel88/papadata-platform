@@ -10,6 +10,9 @@ updated_at: 2026-08-06T00:00:00+02:00
 
 # Separatory i obramowania
 
+## Status decyzji i handoff
+Decyzja laboratoryjna jest zaakceptowana. Kanonicznym właścicielem reguł separatorów i linii jest `00.07 — Linie i separacja`. Ten dokument pozostaje zapisem decyzji i nie może być używany jako alternatywna specyfikacja.
+
 ## Metadane
 
 | Pole | Wartość |
@@ -19,9 +22,9 @@ updated_at: 2026-08-06T00:00:00+02:00
 | Nazwa techniczna | separatory-i-obramowania |
 | Typ dokumentu | kontrakt powierzchni |
 | Wersja | 1.0 |
-| Status implementacji | PROTOTYP STORYBOOK — REVIEW |
+| Status implementacji | ACCEPTED DECISION RECORD — handoff do 00.07 |
 | Status Storybooka | mapa ról i zastosowań desktop light/dark |
-| Status testów | dedykowane testy Storybook interaction/axe: `not_started` |
+| Status testów | statyczny kontrakt ownership/presentation: `passing`; runtime pozostaje osobnym gate |
 
 ## Decyzja docelowa
 

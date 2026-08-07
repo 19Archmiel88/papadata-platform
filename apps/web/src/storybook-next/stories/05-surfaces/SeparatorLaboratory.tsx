@@ -51,7 +51,7 @@ function SeparationMap() {
       <div className="pd-s54-map__body">
         <nav aria-label={copy({ pl: 'Przykładowa nawigacja', en: 'Example navigation' })}>
           {(['sources', 'quality', 'history'] as const).map((item) => (
-            <button key={item} aria-current={active === item ? 'page' : undefined} onClick={() => setActive(item)} type="button">{item === 'sources' ? <Localized pl="Źródła" en="Sources" /> : item === 'quality' ? <Localized pl="Jakość" en="Quality" /> : <Localized pl="Historia" en="History" />}</button>
+            <button data-lab-control="section-navigation" key={item} aria-current={active === item ? 'page' : undefined} onClick={() => setActive(item)} type="button">{item === 'sources' ? <Localized pl="Źródła" en="Sources" /> : item === 'quality' ? <Localized pl="Jakość" en="Quality" /> : <Localized pl="Historia" en="History" />}</button>
           ))}
         </nav>
         <section>
@@ -93,7 +93,7 @@ function BorderAntiExample() {
 
 export function SeparatorLaboratory() {
   return (
-    <StoryPage id="05.04" title={<Localized pl="Separatory i obramowania" en="Separators and borders" />} summary={<Localized pl="Hairline divider buduje hierarchię. Active, focus i danger zachowują odrębne role i nie zastępują zwykłej granicy regionu." en="Hairline dividers build hierarchy. Active, focus and danger keep distinct roles and do not replace an ordinary region boundary." />} variants="subtle · default · strong · focus · active · danger">
+    <StoryPage handoff={<Localized pl="00.07 — Linie i separacja" en="00.07 — Lines and separation" />} id="05.04" status="accepted" title={<Localized pl="Separatory i obramowania" en="Separators and borders" />} summary={<Localized pl="Hairline divider buduje hierarchię. Active, focus i danger zachowują odrębne role i nie zastępują zwykłej granicy regionu." en="Hairline dividers build hierarchy. Active, focus and danger keep distinct roles and do not replace an ordinary region boundary." />} variants="subtle · default · strong · focus · active · danger">
       <StorySection index="01" title={<Localized pl="Poziomy i role linii" en="Line levels and roles" />}><LineLedger /></StorySection>
       <StorySection index="02" title={<Localized pl="Mapa separacji w aplikacji" en="Application separation map" />} summary={<Localized pl="Topbar, sidebar, treść i drawer są rozdzielone rolami, nie kartami wewnątrz kart." en="Topbar, sidebar, content and drawer are separated by roles, not cards inside cards." />}><SeparationMap /></StorySection>
       <StorySection index="03" title={<Localized pl="Katalog zastosowań" en="Usage catalogue" />}><UsageMatrix /></StorySection>

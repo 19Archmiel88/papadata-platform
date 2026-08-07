@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import { Button, Drawer, InlineNotice } from '../../../design-system/components';
+import { Button, Drawer, InlineNotice, TextAction } from '../../../design-system/components';
 import {
   KpiSparkline,
   type KpiSparklineTone,
@@ -187,7 +187,7 @@ function ChartFrame() {
       </header>
       <div className="pd-s53-chartframe__controls" role="group" aria-label={copy({ pl: 'Zakres dat wykresu', en: 'Chart date range' })}>
         {(['7', '30', 'custom'] as const).map((item) => (
-          <button aria-pressed={period === item} key={item} onClick={() => setPeriod(item)} type="button">{item === '7' ? <Localized pl="7 dni" en="7 days" /> : item === '30' ? <Localized pl="30 dni" en="30 days" /> : <Localized pl="Własny zakres" en="Custom range" />}</button>
+          <button data-lab-control="segmented-option" aria-pressed={period === item} key={item} onClick={() => setPeriod(item)} type="button">{item === '7' ? <Localized pl="7 dni" en="7 days" /> : item === '30' ? <Localized pl="30 dni" en="30 days" /> : <Localized pl="Własny zakres" en="Custom range" />}</button>
         ))}
         <span><Localized pl="Porównanie: poprzedni okres" en="Comparison: previous period" /></span>
       </div>
@@ -207,7 +207,7 @@ function ChartFrame() {
       <div className="pd-s53-chartframe__legend"><span data-series="revenue"><Localized pl="Przychód" en="Revenue" /></span><span data-series="cost"><Localized pl="Koszt reklamy" en="Ad cost" /></span><span data-series="benchmark">Benchmark</span></div>
       <div className="pd-s53-chartframe__details">
         <div role="tablist" aria-label={copy({ pl: 'Szczegóły wykresu', en: 'Chart details' })}>
-          {(['insight', 'data', 'sources'] as const).map((item) => <button aria-selected={detail === item} key={item} onClick={() => setDetail(item)} role="tab" type="button">{item === 'insight' ? <Localized pl="Wniosek" en="Insight" /> : item === 'data' ? <Localized pl="Tabela danych" en="Data table" /> : <Localized pl="Źródła" en="Sources" />}</button>)}
+          {(['insight', 'data', 'sources'] as const).map((item) => <button data-lab-control="tab" aria-selected={detail === item} key={item} onClick={() => setDetail(item)} role="tab" type="button">{item === 'insight' ? <Localized pl="Wniosek" en="Insight" /> : item === 'data' ? <Localized pl="Tabela danych" en="Data table" /> : <Localized pl="Źródła" en="Sources" />}</button>)}
         </div>
         <div role="tabpanel">
           {detail === 'insight' ? <p><Localized pl="Przychód rośnie szybciej niż koszt reklamy. Największy efekt pojawia się po zmianie budżetu, ale dwa dni mają niższą jakość atrybucji." en="Revenue grows faster than ad cost. The largest lift follows the budget change, but two days have lower attribution quality." /></p> : null}
@@ -350,7 +350,7 @@ function DataTableSurface() {
         </div>
         <div className="pd-s53-table-toolbar__actions">
           <span>{activeFilterCount > 0 ? copy({ pl: `Aktywne filtry: ${activeFilterCount}`, en: `Active filters: ${activeFilterCount}` }) : copy({ pl: 'Brak aktywnych filtrów', en: 'No active filters' })}</span>
-          {activeFilterCount > 0 ? <Button onClick={resetFilters} size="small" variant="link"><Localized pl="Wyczyść filtry" en="Clear filters" /></Button> : null}
+          {activeFilterCount > 0 ? <TextAction onClick={resetFilters} size="small" ><Localized pl="Wyczyść filtry" en="Clear filters" /></TextAction> : null}
           <Button onClick={() => setDensity((current) => current === 'comfortable' ? 'compact' : 'comfortable')} size="small" variant="secondary" aria-pressed={density === 'compact'}>{density === 'compact' ? <Localized pl="Gęstość: kompaktowa" en="Density: compact" /> : <Localized pl="Gęstość: wygodna" en="Density: comfortable" />}</Button>
           <Button onClick={() => setDrawer('columns')} size="small" variant="secondary"><Localized pl="Kolumny" en="Columns" /></Button>
           <Button onClick={() => setCollapsed((current) => !current)} size="small" variant="secondary" aria-expanded={!collapsed}>{collapsed ? <Localized pl="Rozwiń tabelę" en="Expand table" /> : <Localized pl="Zwiń do 1 wiersza" en="Collapse to 1 row" />}</Button>
@@ -361,7 +361,7 @@ function DataTableSurface() {
       {selected.length > 0 ? (
         <div className="pd-s53-table-bulk" role="status">
           <strong>{copy({ pl: `Zaznaczono: ${selected.length}`, en: `Selected: ${selected.length}` })}</strong>
-          <div><Button onClick={() => { setExportMode('selected'); setDrawer('export'); }} size="small" variant="secondary"><Localized pl="Eksportuj zaznaczone" en="Export selected" /></Button><Button onClick={() => setSelected([])} size="small" variant="link"><Localized pl="Wyczyść wybór" en="Clear selection" /></Button></div>
+          <div><Button onClick={() => { setExportMode('selected'); setDrawer('export'); }} size="small" variant="secondary"><Localized pl="Eksportuj zaznaczone" en="Export selected" /></Button><TextAction onClick={() => setSelected([])} size="small"><Localized pl="Wyczyść wybór" en="Clear selection" /></TextAction></div>
         </div>
       ) : null}
 
@@ -378,14 +378,14 @@ function DataTableSurface() {
                 {visibleColumns.includes('revenue') ? <td data-label={copy({ pl: 'Przychód', en: 'Revenue' })}>{row.revenue}</td> : null}
                 {visibleColumns.includes('margin') ? <td data-label={copy({ pl: 'Marża', en: 'Margin' })}>{row.margin}</td> : null}
                 {visibleColumns.includes('status') ? <td data-label="Status"><ReviewBadge tone={row.status === 'ready' ? 'success' : row.status === 'partial' ? 'warning' : 'info'}>{copy(tableStatusCopy[row.status])}</ReviewBadge></td> : null}
-                <td data-label={copy({ pl: 'Akcja', en: 'Action' })}><Button onClick={() => openDetail(row)} size="small" variant="link"><Localized pl="Szczegóły" en="Details" /></Button></td>
+                <td data-label={copy({ pl: 'Akcja', en: 'Action' })}><TextAction onClick={() => openDetail(row)} size="small"><Localized pl="Szczegóły" en="Details" /></TextAction></td>
               </tr>
             ))}
           </tbody>
         </table>
         {visibleRows.length === 0 ? <div className="pd-s53-table-empty"><strong><Localized pl="Brak wyników" en="No results" /></strong><p><Localized pl="Zmień wyszukiwanie lub wyczyść filtry. Stan pusty nie zastępuje tabeli poziomym scrollem." en="Change the search or clear filters. The empty state does not replace the table with horizontal scrolling." /></p><Button onClick={resetFilters} size="small" variant="secondary"><Localized pl="Wyczyść filtry" en="Clear filters" /></Button></div> : null}
       </div>
-      <footer className="pd-s53-table-footer"><span>{filtered.length} <Localized pl="rekordy" en="records" /></span><nav aria-label={copy({ pl: 'Paginacja tabeli', en: 'Table pagination' })}><Button disabled={currentPage === 0} onClick={() => setPage((current) => Math.max(0, current - 1))} size="small" variant="link"><Localized pl="Poprzednia" en="Previous" /></Button><span>{copy({ pl: `Strona ${currentPage + 1} z ${pageCount}`, en: `Page ${currentPage + 1} of ${pageCount}` })}</span><Button disabled={currentPage >= pageCount - 1} onClick={() => setPage((current) => Math.min(pageCount - 1, current + 1))} size="small" variant="link"><Localized pl="Następna" en="Next" /></Button></nav></footer>
+      <footer className="pd-s53-table-footer"><span>{filtered.length} <Localized pl="rekordy" en="records" /></span><nav aria-label={copy({ pl: 'Paginacja tabeli', en: 'Table pagination' })}><TextAction disabled={currentPage === 0} onClick={() => setPage((current) => Math.max(0, current - 1))} size="small"><Localized pl="Poprzednia" en="Previous" /></TextAction><span>{copy({ pl: `Strona ${currentPage + 1} z ${pageCount}`, en: `Page ${currentPage + 1} of ${pageCount}` })}</span><TextAction disabled={currentPage >= pageCount - 1} onClick={() => setPage((current) => Math.min(pageCount - 1, current + 1))} size="small"><Localized pl="Następna" en="Next" /></TextAction></nav></footer>
 
       <Drawer dismissible open={drawer === 'columns'} onOpenChange={(open) => setDrawer(open ? 'columns' : null)} side="right" title={copy({ pl: 'Widoczne kolumny', en: 'Visible columns' })} width={400} description={copy({ pl: 'Produkt, wybór i akcja pozostają zawsze widoczne.', en: 'Product, selection and action always remain visible.' })}>
         <fieldset className="pd-s53-column-options"><legend><Localized pl="Kolumny opcjonalne" en="Optional columns" /></legend>{tableColumnOptions.map((column) => <label key={column.id}><input checked={visibleColumns.includes(column.id)} onChange={() => toggleColumn(column.id)} type="checkbox" />{copy(column.label)}</label>)}</fieldset>
@@ -448,7 +448,7 @@ function Roles() {
 
 export function DataSurfaceLaboratory() {
   return (
-    <StoryPage id="05.03" title={<Localized pl="Powierzchnie danych" en="Data surfaces" />} summary={<Localized pl="Panel istnieje tylko wtedy, gdy ma własną rolę, stan albo cykl interakcji. Dane, warstwy i działania nie tworzą poziomego scrolla ani kart wewnątrz kart." en="A panel exists only when it has its own role, state or interaction cycle. Data, layers and actions create neither horizontal scrolling nor cards inside cards." />} variants={<Localized pl="role · KPI · wykresy · ChartFrame · tabela · stany · warstwy" en="roles · KPI · charts · ChartFrame · table · states · layers" />}>
+    <StoryPage handoff={<Localized pl="10 / 15 / 18 — komponenty i wzorce danych" en="10 / 15 / 18 — data components and patterns" />} id="05.03" title={<Localized pl="Powierzchnie danych" en="Data surfaces" />} summary={<Localized pl="Panel istnieje tylko wtedy, gdy ma własną rolę, stan albo cykl interakcji. Dane, warstwy i działania nie tworzą poziomego scrolla ani kart wewnątrz kart." en="A panel exists only when it has its own role, state or interaction cycle. Data, layers and actions create neither horizontal scrolling nor cards inside cards." />} variants={<Localized pl="role · KPI · wykresy · ChartFrame · tabela · stany · warstwy" en="roles · KPI · charts · ChartFrame · table · states · layers" />}>
       <StorySection index="01" title={<Localized pl="Role powierzchni" en="Surface roles" />}><Roles /></StorySection>
       <StorySection index="02" title={<Localized pl="Warianty KPI" en="KPI variants" />} summary={<Localized pl="Każdy lokalny wariant 05.03 ma mikrowykres wzrostowy, spadkowy albo stabilny. Kierunek nie zależy wyłącznie od koloru." en="Every local 05.03 variant has an upward, downward or stable microchart. Direction does not rely on color alone." />}><KpiVariants /></StorySection>
       <StorySection index="03" title={<Localized pl="Rodziny wykresów" en="Chart families" />} summary={<Localized pl="Każda rodzina pokazuje znaczenie kontraktowe, warstwy i metadane, a nie dekoracyjny szkic." en="Each family shows contract meaning, layers and metadata rather than a decorative sketch." />}><ChartFamilies /></StorySection>

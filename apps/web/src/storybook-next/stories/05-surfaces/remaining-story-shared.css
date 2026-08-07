@@ -1,11 +1,4 @@
-.pd-s5-next-page .pd-f0-page__inner {
-  inline-size: min(100%, 1180px);
-  margin-inline: auto;
-}
 
-.pd-s5-next-section .pd-f0-section__content {
-  min-inline-size: 0;
-}
 
 .pd-s5-review-badge {
   display: inline-flex;
@@ -55,4 +48,20 @@
   .pd-s5-next-decisions > div {
     grid-template-columns: 1fr;
   }
+}
+
+.pd-s5-ownership-note {
+  display: grid;
+  gap: var(--pd-space-2);
+  margin: 0;
+  padding-block: var(--pd-space-4);
+  border-block-end: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-s5-ownership-note > span {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
 }

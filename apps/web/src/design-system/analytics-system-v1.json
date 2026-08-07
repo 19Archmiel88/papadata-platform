@@ -1,0 +1,30 @@
+{
+  "name": "PapaData Analytics System",
+  "version": "1.0",
+  "stage": "A15.1",
+  "status": "review",
+  "owner": "Analytics UI",
+  "ownershipContract": "docs/storybook/SOURCE-OF-TRUTH-OWNERSHIP.md",
+  "runtimeApiRegistry": "rejestry/runtime-component-api.csv",
+  "entries": [
+    {
+      "id": "15.01",
+      "component": "ChartFrame",
+      "runtime": "apps/web/src/design-system/components/ChartFrame/ChartFrame.tsx",
+      "story": "apps/web/src/storybook-next/stories/15-data-visualizations/ChartFrame.stories.tsx",
+      "fixture": "fixtures/storybook/094-15-01-chartframe.json",
+      "status": "review"
+    },
+    {
+      "id": "15.02",
+      "component": "MetricCard",
+      "runtime": "apps/web/src/design-system/components/MetricCard/MetricCard.tsx",
+      "story": "apps/web/src/storybook-next/stories/15-data-visualizations/MetricCard.stories.tsx",
+      "fixture": "fixtures/storybook/096-15-02-metriccard.json",
+      "status": "review"
+    }
+  ],
+  "handoff": {
+    "05.03": "15.01/15.02"
+  }
+}

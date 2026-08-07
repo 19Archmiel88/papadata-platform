@@ -3,36 +3,41 @@
 
   --pd-canvas-gradient:
     radial-gradient(
-      circle at 12% 10%,
+      ellipse 72% 62% at -12% 22%,
       color-mix(
         in srgb,
-        var(--pd-brand-ambient) 72%,
-        transparent
-      ) 0,
-      transparent 34%
-    ),
-    radial-gradient(
-      circle at 88% 12%,
-      color-mix(
-        in srgb,
-        var(--pd-status-info-subtle) 82%,
-        transparent
-      ) 0,
-      transparent 28%
-    ),
-    linear-gradient(
-      140deg,
-      color-mix(
-        in srgb,
-        var(--pd-surface) 88%,
+        var(--pd-brand-ambient) 88%,
         transparent
       ) 0%,
-      transparent 48%,
       color-mix(
         in srgb,
-        var(--pd-brand-ambient) 24%,
+        var(--pd-brand-ambient) 34%,
         transparent
-      ) 100%
+      ) 48%,
+      transparent 82%
+    ),
+    radial-gradient(
+      ellipse 78% 68% at 108% 6%,
+      color-mix(
+        in srgb,
+        var(--pd-data-accent-subtle) 66%,
+        transparent
+      ) 0%,
+      color-mix(
+        in srgb,
+        var(--pd-data-accent-subtle) 24%,
+        transparent
+      ) 52%,
+      transparent 84%
+    ),
+    radial-gradient(
+      ellipse 58% 48% at 86% 104%,
+      color-mix(
+        in srgb,
+        var(--pd-data-accent-subtle) 24%,
+        transparent
+      ) 0%,
+      transparent 78%
     );
 
   --pd-font-sans:
@@ -136,8 +141,6 @@
     0 10px 24px -18px rgba(7, 27, 53, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.88);
 
-  --pd-glass-blur: 18px;
-  --pd-glass-saturation: 118%;
 
   --pd-motion-duration-instant: 70ms;
   --pd-motion-duration-fast: 110ms;

@@ -5,7 +5,7 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-C87562F9E702
 status: approved-target
-updated_at: 2026-08-06T00:00:00+02:00
+updated_at: 2026-08-07T00:00:00+02:00
 ---
 
 # Gradienty, światło i szkło
@@ -28,46 +28,51 @@ updated_at: 2026-08-06T00:00:00+02:00
 
 ## Decyzja docelowa
 
-Dekoracyjne gradienty, glow i glassmorphism są zabronione w AppShell. Efekt wizualny jest dopuszczony tylko wtedy, gdy ma konkretną rolę.
+AppShell używa jednego kanonicznego ambient canvasu opartego na `--pd-canvas-gradient`. Lokalne powierzchnie AppShell nie tworzą własnych dekoracyjnych gradientów, glow, halo ani glassmorphismu. Pozostały efekt wizualny jest dopuszczony tylko wtedy, gdy ma konkretną rolę.
 
 ## Stan prototypu Storybook 05.05
 
 Historia rozdziela:
 
+- kanoniczny ambient canvas aplikacji oparty na `--pd-canvas-gradient`;
 - kontrolowany gradient zasobu marki;
 - gradient wizualizacji kodujący dane;
 - scrim warstwy;
 - techniczny cień rzeczywistego overlayu;
-- powierzchnię premium wynikającą z proporcji, typografii i rytmu;
+- neutralną powierzchnię wynikającą z proporcji, typografii, rytmu i jakości danych;
 - odrzucony dekoracyjny chaos.
 
-Light i dark zachowują tę samą geometrię i nie używają neonowego halo. Próbki obu motywów korzystają z tych samych tokenów semantycznych `--pd-surface`, `--pd-text`, `--pd-separator` i `--pd-surface-subtle`; atrybut `data-theme` zmienia wartości tokenów zamiast wprowadzać lokalne kolory HEX. Cień występuje wyłącznie w przykładzie rzeczywistej warstwy. AppShell pozostaje nieprzezroczysty, bez blur i glass.
+Light i dark zachowują tę samą geometrię i nie używają neonowego halo. Globalny canvas korzysta z `--pd-canvas` oraz `--pd-canvas-gradient`, a lokalne powierzchnie nadal używają semantycznych tokenów `--pd-surface`, `--pd-text`, `--pd-separator` i `--pd-surface-subtle`. Atrybut `data-theme` zmienia wartości tokenów zamiast wprowadzać lokalne kolory HEX. Cień występuje wyłącznie w przykładzie rzeczywistej warstwy. Powierzchnie AppShell pozostają nieprzezroczyste, bez blur i glass.
 
 ## Decyzja dotycząca glass
 
-W AppShell glass, blur i glow są jednoznacznie zabronione. Dokumentacja nie ustanawia globalnej zgody na glassmorphism poza AppShell. Story oznacza ten obszar jako `BRAK DECYZJI W DOKUMENTACJI` i nie rozszerza efektu na inne komponenty.
+Na powierzchniach i kontrolkach AppShell glass, blur i glow są jednoznacznie zabronione. Kanoniczny ambient canvas nie jest glassmorphismem i nie używa blur ani halo. Dokumentacja nie ustanawia globalnej zgody na glassmorphism poza AppShell. Story oznacza ten obszar jako `BRAK DECYZJI W DOKUMENTACJI` i nie rozszerza efektu na inne komponenty.
 
 ## Reguły
 
-- gradient tylko dla marki albo wizualizacji, gdy koduje konkretną rolę
+- `--pd-canvas-gradient` jest jednym kanonicznym ambientowym tłem całej aplikacji
+- lokalne powierzchnie AppShell nie definiują własnych dekoracyjnych gradientów
+- gradient zasobu marki jest dopuszczony wyłącznie w kontrolowanym kontekście marki
+- gradient wizualizacji używa semantyki danych i koduje konkretną informację
 - overlay używa scrim i technicznego cienia
 - cień nie zastępuje semantycznej warstwy
-- tło nie obniża kontrastu ani widoczności focus ring
-- surface premium wynika z proporcji, danych, typografii i rytmu
-- brak dekoracyjnego glass, glow, halo i przypadkowego gradientu w AppShell
+- tło nie obniża czytelności treści ani widoczności focus ring
+- jakość neutralnej powierzchni wynika z proporcji, danych, typografii i rytmu
+- brak dekoracyjnego glass, glow i halo na powierzchniach AppShell
 
 ## Warianty wymagane przez katalog
 
+- ambient canvas aplikacji
 - gradient marki
 - gradient danych
 - scrim
 - techniczna głębia overlay
-- powierzchnia premium
+- neutralna powierzchnia
 - zakaz dekoracyjnego chaosu
 - light/dark
 
 ## Storybook i odbiór
 
-Przed akceptacją wymagane są: typecheck, Storybook build, checki katalogu/architektury/taksonomii, Foundation verification, `git diff --check`, desktop light/dark, kontrola kontrastu i focusu, potwierdzenie braku blur/glass/glow w dozwolonych przykładach oraz brak poziomego overflow. Historia pozostaje `review`.
+Przed akceptacją wymagane są: typecheck, Storybook build, checki katalogu/architektury/taksonomii, Foundation verification, `git diff --check`, desktop light/dark, kontrola kontrastu i focusu, potwierdzenie braku blur/glass/glow w dozwolonych przykładach oraz brak poziomego overflow. Historia ma status `accepted`.
 
 BRAK DECYZJI W DOKUMENTACJI: zastosowanie glassmorphism poza AppShell wymaga osobnego kontraktu i świadomej akceptacji. 05.05 nie ustanawia takiej reguły.

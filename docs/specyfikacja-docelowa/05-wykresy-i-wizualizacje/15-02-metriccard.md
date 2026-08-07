@@ -5,7 +5,7 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-79995BCF3B69
 status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+updated_at: 2026-08-07T08:24:00+02:00
 ---
 
 # MetricCard
@@ -21,109 +21,98 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Wersja | 1.0 |
 | Status kontraktu | zatwierdzony stan docelowy |
 | Priorytet | P1 |
-| Właściciel | Analytics UX |
+| Właściciel | Analytics UI |
 | Moduł | Wykresy i wizualizacje danych — M02 |
-
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | IMPLEMENTED — REVIEW |
+| Runtime source of truth | `apps/web/src/design-system/components/MetricCard/MetricCard.tsx` |
+| Storybook | `15 Wykresy i dane/MetricCard` |
+| Handoff | `05.03 → 15.02` |
 
 ## Cel i decyzja docelowa
 
-„MetricCard” jest współdzielonym kontraktem, a nie lokalnym układem jednego ekranu. Wzorzec ma jedną odpowiedzialność, korzysta z fundamentów i komponentów bazowych oraz udostępnia warianty wymagane przez domeny bez kopiowania implementacji.
+`MetricCard` jest kanoniczną powierzchnią KPI. Pokazuje wartość, jednostkę, porównanie, kierunek trendu, cel lub odchylenie, status danych, źródło, świeżość i opcjonalny mikrotrend. Nie jest małym ChartFrame i nie buduje pełnego dashboardu wewnątrz karty.
 
-## Stan obecny
+## Ownership
 
+- `15.02` jest jedynym Storybookowym właścicielem wariantów KPI i mikrotrendów;
+- `05.03` zachowuje wyłącznie decision record i handoff;
+- mikrotrend jest prywatną częścią MetricCard na tym etapie i nie tworzy osobnego publicznego `Sparkline`;
+- pełne rodziny wykresów należą do `15.03–15.07`;
+- pełny katalog stanów analitycznych zostanie domknięty w `15.08`.
 
-## Zakres i wymagania
+## Runtime API
 
-| Lp. | Wymaganie | Kontrakt | Dowód odbioru |
-| --- | --- | --- | --- |
-| 1 | wartość | wymagany wariant lub stan | test Storybook + test interakcji |
-| 2 | trend | wymagany wariant lub stan | test Storybook + test interakcji |
-| 3 | porównanie | wymagany wariant lub stan | test Storybook + test interakcji |
-| 4 | status danych | wymagany wariant lub stan | test Storybook + test interakcji |
-| 5 | zmiana definicji | wymagany wariant lub stan | test Storybook + test interakcji |
-| 6 | brak danych | wymagany wariant lub stan | test Storybook + test interakcji |
-| 7 | częściowe dane | wymagany wariant lub stan | test Storybook + test interakcji |
-| 8 | akcja wyjaśnienia przez Papa. | wymagany wariant lub stan | test Storybook + test interakcji |
+Publiczne React Props są własnością `apps/web/src/design-system/components/MetricCard/MetricCard.tsx`.
 
-## Warianty MetricCard
+Główne grupy API:
 
-MetricCard nie ma jednej obowiązkowej rozbudowanej anatomii dla całego systemu. Wymagane warianty projektowe:
+| Obszar | Runtime |
+| --- | --- |
+| identyfikacja | `metricId`, `label` |
+| wartość | `value`, `unit` |
+| porównanie | `comparison`, `signal` |
+| plan | `targetLabel`, `deviationLabel` |
+| mikrotrend | `sparklinePoints` |
+| status | `status`, `statusLabel`, `stateMessage` |
+| metadane | `sourceLabel`, `freshnessLabel`, `definitionChangeLabel` |
+| wyróżnienie | `emphasis` |
+| akcje | `detailAction`, `papaAction` |
 
-- podstawowy
-- z trendem
-- z celem
-- z odchyleniem
-- z mikrochartem
-- alarmowy lub rekomendacyjny
+`contracts/components/metriccard.ts` pozostaje kontraktem orkiestracyjnym/specyfikacyjnym dla view modelu ekranów i zdarzeń. Nie jest kopią React Props.
 
-Mikrochart, subtelne wypełnienie albo cień pod wykresem oraz graficzna strzałka kierunku należą do wariantu rozbudowanego. Nie są obowiązkowe dla każdego MetricCard.
+## Warianty
 
-Wariant Centrum Dowodzenia może zawierać: wartość, jednostkę, delta, okres porównawczy, cel lub plan, trend `up`, `down`, `flat` albo `unknown`, ikonę albo strzałkę kierunku, mikrochart, subtelne wypełnienie lub cień, źródło, zakres, świeżość, status danych oraz akcję szczegółów lub wyjaśnienia przez Papa.
+Warianty są kompozycją pól, nie zestawem sześciu wzajemnie wykluczających się komponentów:
 
-Ten dokument opisuje zatwierdzony kontrakt docelowy. Obecny kontrakt TypeScript pozostaje węższy i wymaga późniejszej synchronizacji z implementacją oraz kontraktami technicznymi.
+- podstawowy;
+- z trendem;
+- z celem;
+- z odchyleniem;
+- z mikrochartem;
+- alarmowy lub rekomendacyjny.
 
-## Anatomia
+`emphasis="alert"` i `emphasis="recommendation"` zmieniają jedynie wagę powierzchni. Znaczenie danych nadal wynika z tekstowego statusu, porównania i sygnału.
 
-```text
-metriccard
-├── semantic root
-├── header or accessible label
-├── primary content
-├── status / validation region
-├── primary action
-└── optional secondary actions or metadata
-```
+## Mikrotrend
 
-## Komponenty składowe
+Mikrotrend:
 
-- PageHeader
-- DataStatusBanner
-- InlineNotice
-- Button
-- EvidencePanel
-- RecommendationCard
-- DecisionCard
-- TextField
-- Select
-- Checkbox
-- Dialog
+- jest dekoracyjnym skrótem trendu;
+- nie ma osi, tooltipu ani niezależnego modelu interakcji;
+- nie zastępuje tekstowego porównania;
+- używa Foundation data/status tokens;
+- dla przebiegu płaskiego prowadzi linię przez neutralny środek dostępnej wysokości, zamiast przy dolnej krawędzi;
+- nie może rozrosnąć się w drugi ChartFrame.
 
-Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
+## Stany na etapie 15.02
 
-## Kontrakt stanu
-
-- Stan kontrolowany jest używany dla route, filtrów, formularza, selection i overlay.
-- Stan asynchroniczny rozróżnia loading, processing, retrying, success, recoverable error i terminal error.
-- Read-only, no-access i plan-restricted są osobnymi stanami, nie odmianą disabled.
-- Zmiana motywu, języka lub viewportu nie resetuje danych ani procesu.
-
-## Interakcje i klawiatura
-
-Tab order odpowiada hierarchii zadania. Enter/Space uruchamiają natywne kontrolki; Escape zamyka najwyższą warstwę; strzałki są używane wyłącznie w komponentach z modelem composite widget. Focus restore jest obowiązkowy po każdej warstwie.
+Story pokazuje `ready`, `partial`, `stale`, `processing` i `noData`. MetricCard zachowuje nazwę metryki w każdym stanie; gdy wartość nie istnieje, nie renderuje sztucznej liczby.
 
 ## Responsywność
 
-Wide może używać kolumn lub detail panelu. Compact przechodzi w jedną kolumnę, zachowuje wszystkie funkcje i przenosi akcje drugorzędne do jawnego overflow. Tabele otrzymują scroll lub widok priorytetowych kolumn, a wykresy — tabelę alternatywną.
+- KPI może żyć w siatce, ale sam komponent nie wymusza liczby kolumn;
+- długie label i comparison copy zawijają się;
+- akcje przechodzą do kolejnego wiersza;
+- nie powstaje poziomy scrollbar jako rozwiązanie layoutu.
 
-## Dostępność
+## Dostępność techniczna
 
-Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kontrast, reduced motion, live region dla wyników asynchronicznych, reflow i brak informacji zależnej wyłącznie od koloru.
+Formalne WCAG AA nie jest bramą biznesową. Wymagane pozostają poprawna semantyka, jawna nazwa KPI, tekstowy status danych, działające akcje i brak znaczenia przekazywanego wyłącznie przez kształt mikrowykresu.
 
-## Storybook
+## Storybook i testy
 
-- Title: `15 Wykresy i wizualizacje danych/MetricCard`.
-- Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
-- Pełna story komponentu pokazuje wszystkie warianty MetricCard; 05.03 pokazuje tylko reprezentatywne decyzje powierzchni.
-- Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
+- Story: `apps/web/src/storybook-next/stories/15-data-visualizations/MetricCard.stories.tsx`.
+- Story pokazuje pełny katalog wariantów, stany, light/dark i długi copy.
+- `dataState` (`ready`, `partial`, `stale`, `processing`, `noData`) i `emphasis` (`default`, `alert`, `recommendation`) są odrębnymi osiami kontraktu.
+- Wartości KPI, procenty i freshness w fixture są formatowane przez Foundation runtime.
+- `Szczegóły KPI` konsumują ikonę `data`, a `Wyjaśnij z Papa` ikonę `assistant` z 10.11; widoczna etykieta pozostaje nazwą akcji.
+- Play test uruchamia obie akcje i sprawdza dostępną nazwę sformatowanego KPI.
 
-## Testy i kryteria akceptacji
+## Kryteria akceptacji
 
-1. Wszystkie wymagania mają story i asercję testową.
-2. Wzorzec nie tworzy duplikatu komponentu bazowego.
-3. Stany błędu i brak dostępu mają recovery albo jednoznaczne zakończenie.
-4. Mobile i zoom 200% nie tracą funkcji.
-5. Klawiatura oraz focus restore przechodzą play test.
-6. Dokument jest linkowany przez co najmniej jeden ekran albo oznaczony jako fundament przyszłego użycia.
+1. Runtime MetricCard jest reużywalny i nie zależy od Laboratorium.
+2. Lokalny `KpiSparkline` z 05.03 zostaje usunięty.
+3. Storybook, fixture, registry i dokument wskazują 15.02 jako ownera.
+4. Nie istnieje backlogowy duplikat `10 Komponenty/MetricCard`.
+5. `typecheck`, Storybook build, analytics ownership guard oraz `git diff --check` przechodzą.
+6. Formalne `accepted` następuje dopiero po odbiorze wizualnym light/dark.

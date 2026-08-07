@@ -10,9 +10,10 @@ Każda decyzja ma jednego właściciela. Storybook może demonstrować tę samą
 
 1. **Fundamenty (`00`)** — tokeny, role semantyczne i reguły systemowe. Nie utrzymują katalogów komponentów ani słowników domenowych.
 2. **Komponenty bazowe (`10`)** — publiczne React API, zachowanie, warianty, stany i jedyny katalog danego komponentu. Runtime Props są własnością implementacji w `apps/web/src/design-system`.
-3. **Patterns / powłoka / wizualizacje** — kompozycje wielu komponentów: AuthShell, AppShell, ChartFrame, DataTable i podobne wzorce.
-4. **Laboratorium decyzji (`05`)** — tymczasowe miejsce porównania wariantów. Po akceptacji decyzja jest promowana do docelowego ownera. Laboratorium zostaje decision recordem, nie drugim source of truth.
-5. **Domena produktu** — konkretne status keys, provider branding, capabilities i słowniki biznesowe.
+3. **Wykresy i dane (`15`)** — runtime komponenty analityczne i ich zachowanie: ChartFrame, MetricCard oraz docelowe rodziny wizualizacji. Nie przejmują bazowych kontrolek z `10`.
+4. **Wzorce interfejsu (`18`) i powłoka (`20`)** — kompozycje wielu komponentów i stanów: page patterns, Auth/App shell, workflow tabel i warstw. Bazowy `DataTable` pozostaje w `10.07`.
+5. **Laboratorium decyzji (`05`)** — tymczasowe miejsce porównania wariantów. Po akceptacji decyzja jest promowana do docelowego ownera. Laboratorium zostaje decision recordem, nie drugim source of truth.
+6. **Domena produktu** — konkretne status keys, provider branding, capabilities i słowniki biznesowe.
 
 ## Kontrakty TypeScript
 
@@ -31,7 +32,12 @@ Dla komponentu zaimplementowanego runtime source of truth jest współlokowany z
 | marka | `10.01 / PapaDataBrand` | bez publicznego dekoracyjnego glow |
 | Auth canvas | `05.01` do decyzji | po decyzji handoff do `25 — Access/Auth patterns` |
 | App canvas / shell composition | `05.02` do decyzji | po decyzji handoff do `20 — Product Shell / AppShell` |
-| KPI / wykres / tabela / data layers | `05.03` do decyzji | handoff do `10 / 15 / 18` zgodnie z typem wzorca |
+| MetricCard / mikrotrend KPI | `15.02 / MetricCard` | `05.03` jest decision recordem; nie utrzymuje lokalnego katalogu KPI |
+| ChartFrame | `15.01 / ChartFrame` | kontener kompozycyjny; konkretne rodziny wykresów należą do `15.03–15.07` |
+| bazowy DataTable | `10.07 / DataTable` | `05.03` konsumuje go bez lokalnego `<table>`; workflow tabela + filtry + detail należy do `18.04` |
+| status danych | `00.04 + StatusBadge`, mapowanie `15 / Analytics` | `05.03` nie używa `ReviewBadge` jako drugiego runtime statusu |
+| Select | `10 / Select` | `05.03` nie utrzymuje `DataSurfaceSelect`; workflow filtrów należy do `18.04` |
+| pozostałe data layers | `15 / 18` zgodnie z rolą | `05.03` zachowuje tylko decyzję do czasu promocji |
 | efekty / głębia | `00.08` po decyzji | `05.05` porównuje warianty, nie tworzy drugiego standardu |
 | command button | `Button` | `<button>`, submit/command |
 | lightweight command | `TextAction` | `<button>`, komenda kontekstowa |

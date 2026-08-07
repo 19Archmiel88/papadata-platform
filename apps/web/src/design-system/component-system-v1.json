@@ -4,7 +4,7 @@
   "stage": "C2.1",
   "stageName": "Source of Truth & Ownership Alignment",
   "foundationBaseline": {
-    "expectedActiveStoryCount": 20,
+    "expectedActiveStoryCount": 22,
     "expectedActiveStoryFileCount": 2,
     "activeStoryFiles": [
       "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
@@ -157,8 +157,8 @@
     "requiredEntries": [
       "10.01",
       "10.02",
-      "10.11",
-      "10.03"
+      "10.03",
+      "10.11"
     ],
     "requiredPublicExports": [
       "apps/web/src/design-system/index.ts",

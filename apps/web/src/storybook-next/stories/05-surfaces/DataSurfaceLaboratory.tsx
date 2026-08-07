@@ -1,12 +1,27 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
-import { Button, Drawer, InlineNotice, TextAction } from '../../../design-system/components';
+import type {
+  DataColumn,
+  DataRow,
+} from '../../../../../../contracts/component-shared';
 import {
-  KpiSparkline,
-  type KpiSparklineTone,
-  type KpiSparklineTrend,
-} from './KpiSparkline';
-import { DataSurfaceSelect } from './DataSurfaceSelect';
+  Button,
+  DataTable,
+  Drawer,
+  InlineNotice,
+  StatusBadge,
+} from '../../../design-system/components';
+import type {
+  AnalyticsDataState,
+} from '../../../design-system/components';
+import {
+  resolveAnalyticsDataStateTone,
+} from '../../../design-system/components/Analytics';
+import {
+  formatPapaDataCurrency,
+  formatPapaDataNumber,
+  formatPapaDataPercent,
+} from '../../../design-system/foundations';
 import {
   DecisionRows,
   Localized,
@@ -14,68 +29,199 @@ import {
   StoryPage,
   StorySection,
   copy,
+  readLocale,
 } from './remaining-story-shared';
 import './remaining-story-shared.css';
 import './data-surface-laboratory.css';
 
-type KpiSample = {
-  readonly label: { readonly pl: string; readonly en: string };
-  readonly value: string;
-  readonly context: { readonly pl: string; readonly en: string };
-  readonly helper: { readonly pl: string; readonly en: string };
-  readonly trend: KpiSparklineTrend;
-  readonly signal: KpiSparklineTone;
-  readonly points: readonly number[];
-};
-
-const kpiSamples: readonly KpiSample[] = [
-  { label: { pl: 'Przychód', en: 'Revenue' }, value: '248 420 zł', context: { pl: '+12,4% okres do okresu', en: '+12.4% period over period' }, helper: { pl: 'Sygnał dodatni · trend wzrostowy · 30 dni', en: 'Positive signal · upward trend · 30 days' }, trend: 'up', signal: 'positive', points: [31, 34, 33, 39, 43, 42, 48, 54, 58] },
-  { label: { pl: 'Zamówienia', en: 'Orders' }, value: '1 284', context: { pl: '+6,8% przy stabilnym AOV', en: '+6.8% with stable AOV' }, helper: { pl: 'Sygnał dodatni · trend wzrostowy · 30 dni', en: 'Positive signal · upward trend · 30 days' }, trend: 'up', signal: 'positive', points: [42, 41, 45, 47, 46, 52, 55, 54, 60] },
-  { label: { pl: 'ROAS', en: 'ROAS' }, value: '4,82', context: { pl: 'Powyżej celu 4,40', en: 'Above 4.40 target' }, helper: { pl: 'Sygnał dodatni · trend stabilny · 30 dni', en: 'Positive signal · stable trend · 30 days' }, trend: 'flat', signal: 'positive', points: [49, 50, 48, 51, 50, 49, 51, 50, 50] },
-  { label: { pl: 'Koszt reklamy', en: 'Ad cost' }, value: '38 200 zł', context: { pl: 'Spadek kosztu jest korzystny', en: 'Lower cost is beneficial' }, helper: { pl: 'Sygnał dodatni · trend spadkowy · 30 dni', en: 'Positive signal · downward trend · 30 days' }, trend: 'down', signal: 'positive', points: [61, 59, 60, 55, 53, 54, 49, 47, 45] },
-  { label: { pl: 'Marża brutto', en: 'Gross margin' }, value: '31,7%', context: { pl: '-2,4 p.p. okres do okresu', en: '-2.4 pp period over period' }, helper: { pl: 'Sygnał ujemny · trend spadkowy · 30 dni', en: 'Negative signal · downward trend · 30 days' }, trend: 'down', signal: 'negative', points: [58, 57, 55, 56, 51, 49, 50, 46, 43] },
-  { label: { pl: 'Wartość zapasów', en: 'Inventory value' }, value: '46 800 zł', context: { pl: 'Bez istotnej zmiany', en: 'No material change' }, helper: { pl: 'Sygnał neutralny · trend stabilny · 30 dni', en: 'Neutral signal · stable trend · 30 days' }, trend: 'flat', signal: 'neutral', points: [50, 49, 51, 50, 50, 52, 50, 49, 50] },
-];
-
-const kpiBadgeTone: Record<
-  KpiSparklineTone,
-  'neutral' | 'success' | 'warning' | 'critical'
-> = {
-  positive: 'success',
-  negative: 'critical',
-  neutral: 'neutral',
-  warning: 'warning',
-};
-
-function KpiVariants() {
+function PromotedOwnerNotice({
+  owner,
+  title,
+  description,
+}: {
+  readonly owner: string;
+  readonly title: { readonly pl: string; readonly en: string };
+  readonly description: { readonly pl: string; readonly en: string };
+}) {
   return (
-    <div className="pd-s53-kpi-grid">
-      {kpiSamples.map((sample) => (
-        <article className="pd-s53-kpi" key={`${sample.value}-${sample.label.pl}`}>
-          <header>
-            <span>{copy(sample.label)}</span>
-            <ReviewBadge tone={kpiBadgeTone[sample.signal]}>{copy(sample.helper)}</ReviewBadge>
-          </header>
-          <strong>{sample.value}</strong>
-          <p>{copy(sample.context)}</p>
-          <KpiSparkline points={sample.points} tone={sample.signal} trend={sample.trend} />
-          <small><Localized pl="Źródło: sklep + reklamy · odświeżono 8 min temu" en="Source: store + ads · refreshed 8 min ago" /></small>
-        </article>
-      ))}
+    <div className="pd-s53-promoted-owner">
+      <div>
+        <ReviewBadge tone="success">{owner}</ReviewBadge>
+        <strong>{copy(title)}</strong>
+      </div>
+      <p>{copy(description)}</p>
     </div>
   );
 }
 
 type ChartKind = 'trend' | 'comparison' | 'share' | 'correlation' | 'forecast' | 'waterfall' | 'funnel';
 
-const chartCopy: Record<ChartKind, { readonly name: string; readonly purpose: { readonly pl: string; readonly en: string }; readonly layers: { readonly pl: string; readonly en: string } }> = {
-  trend: { name: 'TrendChart', purpose: { pl: 'Trend w czasie z benchmarkiem i adnotacją.', en: 'Time trend with benchmark and annotation.' }, layers: { pl: 'seria · benchmark · punkt · zakres', en: 'series · benchmark · point · range' } },
-  comparison: { name: 'ComparisonChart', purpose: { pl: 'Porównanie kategorii i delty.', en: 'Category comparison and delta.' }, layers: { pl: 'wartość · baza · delta', en: 'value · baseline · delta' } },
-  share: { name: 'ShareChart', purpose: { pl: 'Udział segmentów w całości.', en: 'Segment share of a whole.' }, layers: { pl: 'segmenty · udział · total', en: 'segments · share · total' } },
-  correlation: { name: 'CorrelationChart', purpose: { pl: 'Relacja dwóch zmiennych i trendline.', en: 'Relationship of two variables and trendline.' }, layers: { pl: 'oś X/Y · punkty · trendline', en: 'X/Y axes · points · trendline' } },
-  forecast: { name: 'ForecastChart', purpose: { pl: 'Actual, forecast i przedział ufności.', en: 'Actual, forecast and confidence interval.' }, layers: { pl: 'actual · forecast · confidence', en: 'actual · forecast · confidence' } },
-  waterfall: { name: 'WaterfallChart', purpose: { pl: 'Składowe zmiany wyniku.', en: 'Components of result change.' }, layers: { pl: 'start · wzrost · spadek · total', en: 'start · increase · decrease · total' } },
-  funnel: { name: 'FunnelChart', purpose: { pl: 'Konwersja etapów i drop-off.', en: 'Stage conversion and drop-off.' }, layers: { pl: 'etapy · konwersja · drop-off', en: 'stages · conversion · drop-off' } },
+type ChartDescriptor = {
+  readonly name: string;
+  readonly purpose: { readonly pl: string; readonly en: string };
+  readonly layers: { readonly pl: string; readonly en: string };
+  readonly question: { readonly pl: string; readonly en: string };
+  readonly metric: { readonly pl: string; readonly en: string };
+  readonly source: string;
+  readonly range: { readonly pl: string; readonly en: string };
+  readonly reference: { readonly pl: string; readonly en: string };
+};
+
+const chartCopy: Record<ChartKind, ChartDescriptor> = {
+  trend: {
+    name: 'TrendChart',
+    purpose: {
+      pl: 'Zmiana metryki w czasie z celem i punktem wymagającym uwagi.',
+      en: 'Metric change over time with a target and an attention point.',
+    },
+    layers: {
+      pl: 'seria · cel · punkt · zakres',
+      en: 'series · target · point · range',
+    },
+    question: {
+      pl: 'Czy ROAS poprawia się względem celu?',
+      en: 'Is ROAS improving against target?',
+    },
+    metric: { pl: 'ROAS', en: 'ROAS' },
+    source: 'Google Ads + Shop',
+    range: { pl: '30 dni · dzień', en: '30 days · daily' },
+    reference: {
+      pl: 'Cel 4,50 · bieżący wynik 4,82',
+      en: 'Target 4.50 · current result 4.82',
+    },
+  },
+  comparison: {
+    name: 'ComparisonChart',
+    purpose: {
+      pl: 'Porównanie kategorii z czytelną bazą odniesienia.',
+      en: 'Category comparison with a clear baseline.',
+    },
+    layers: {
+      pl: 'wartość · baza · delta',
+      en: 'value · baseline · delta',
+    },
+    question: {
+      pl: 'Który kanał generuje największy przychód?',
+      en: 'Which channel generates the most revenue?',
+    },
+    metric: { pl: 'Przychód', en: 'Revenue' },
+    source: 'GA4 + Ads',
+    range: { pl: 'Bieżący miesiąc', en: 'Current month' },
+    reference: {
+      pl: 'Linia odniesienia: poprzedni miesiąc',
+      en: 'Reference line: previous month',
+    },
+  },
+  share: {
+    name: 'ShareChart',
+    purpose: {
+      pl: 'Struktura całości z ograniczoną liczbą rozróżnialnych segmentów.',
+      en: 'Whole composition with a limited number of distinguishable segments.',
+    },
+    layers: {
+      pl: 'segment · udział · total',
+      en: 'segment · share · total',
+    },
+    question: {
+      pl: 'Jak dzieli się przychód między kanały?',
+      en: 'How is revenue split across channels?',
+    },
+    metric: { pl: 'Udział przychodu', en: 'Revenue share' },
+    source: 'GA4',
+    range: { pl: '30 dni', en: '30 days' },
+    reference: {
+      pl: '100% = 248 420 zł',
+      en: '100% = PLN 248,420',
+    },
+  },
+  correlation: {
+    name: 'CorrelationChart',
+    purpose: {
+      pl: 'Relacja dwóch zmiennych z trendline i czytelnymi osiami.',
+      en: 'Relationship between two variables with a trendline and readable axes.',
+    },
+    layers: {
+      pl: 'oś X/Y · punkty · trendline',
+      en: 'X/Y axes · points · trendline',
+    },
+    question: {
+      pl: 'Czy większy budżet poprawia ROAS?',
+      en: 'Does higher spend improve ROAS?',
+    },
+    metric: { pl: 'Budżet vs ROAS', en: 'Spend vs ROAS' },
+    source: 'Google Ads',
+    range: { pl: 'Kampanie · 30 dni', en: 'Campaigns · 30 days' },
+    reference: {
+      pl: 'Trendline + mediana kampanii',
+      en: 'Trendline + campaign median',
+    },
+  },
+  forecast: {
+    name: 'ForecastChart',
+    purpose: {
+      pl: 'Prognoza oddziela historię od przyszłości i pokazuje niepewność.',
+      en: 'Forecast separates history from the future and exposes uncertainty.',
+    },
+    layers: {
+      pl: 'actual · forecast · confidence',
+      en: 'actual · forecast · confidence',
+    },
+    question: {
+      pl: 'Gdzie znajdzie się przychód za 14 dni?',
+      en: 'Where will revenue be in 14 days?',
+    },
+    metric: { pl: 'Przychód prognozowany', en: 'Forecast revenue' },
+    source: 'Shop + model',
+    range: { pl: '14 dni prognozy', en: '14-day forecast' },
+    reference: {
+      pl: 'Przedział ufności 80%',
+      en: '80% confidence interval',
+    },
+  },
+  waterfall: {
+    name: 'WaterfallChart',
+    purpose: {
+      pl: 'Składowe zmiany wyniku od wartości początkowej do końcowej.',
+      en: 'Components of change from starting value to final result.',
+    },
+    layers: {
+      pl: 'start · wzrost · spadek · total',
+      en: 'start · increase · decrease · total',
+    },
+    question: {
+      pl: 'Co zbudowało zmianę marży?',
+      en: 'What drove the margin change?',
+    },
+    metric: { pl: 'Marża brutto', en: 'Gross margin' },
+    source: 'ERP + Ads',
+    range: { pl: 'Miesiąc do miesiąca', en: 'Month over month' },
+    reference: {
+      pl: '31,4% → 34,1%',
+      en: '31.4% → 34.1%',
+    },
+  },
+  funnel: {
+    name: 'FunnelChart',
+    purpose: {
+      pl: 'Konwersja etapów z czytelnym miejscem największego odpływu.',
+      en: 'Stage conversion with a clear largest drop-off point.',
+    },
+    layers: {
+      pl: 'etapy · konwersja · drop-off',
+      en: 'stages · conversion · drop-off',
+    },
+    question: {
+      pl: 'Na którym etapie tracimy użytkowników?',
+      en: 'At which stage do we lose users?',
+    },
+    metric: { pl: 'Konwersja lejka', en: 'Funnel conversion' },
+    source: 'GA4 + Shop',
+    range: { pl: '7 dni', en: '7 days' },
+    reference: {
+      pl: 'Sesja → zakup · 3,8%',
+      en: 'Session → purchase · 3.8%',
+    },
+  },
 };
 
 function ChartGraphic({ kind }: { readonly kind: ChartKind }) {
@@ -88,60 +234,142 @@ function ChartGraphic({ kind }: { readonly kind: ChartKind }) {
         <line x1="48" y1="178" x2="392" y2="178" />
         <line x1="48" y1="24" x2="48" y2="178" />
       </g>
+
       {kind === 'trend' ? (
         <>
-          <path className="pd-s53-chart-range" d="M54 150 C110 126 142 138 194 104 S292 78 382 46 L382 74 C298 98 256 110 198 132 S116 154 54 170 Z" />
-          <path className="pd-s53-chart-line" d="M54 158 C110 132 142 140 194 108 S292 82 382 52" />
-          <path className="pd-s53-chart-benchmark" d="M54 126 C142 124 238 118 382 108" />
+          <path
+            className="pd-s53-chart-range"
+            d="M54 150 C110 126 142 138 194 104 S292 78 382 46 L382 74 C298 98 256 110 198 132 S116 154 54 170 Z"
+          />
+          <path
+            className="pd-s53-chart-line"
+            d="M54 158 C110 132 142 140 194 108 S292 82 382 52"
+          />
+          <path
+            className="pd-s53-chart-benchmark"
+            d="M54 126 C142 124 238 118 382 108"
+          />
           <circle className="pd-s53-chart-point" cx="294" cy="80" r="5" />
           <line className="pd-s53-chart-annotation" x1="294" y1="80" x2="330" y2="48" />
+          <g className="pd-s53-chart-labels">
+            <text x="54" y="198">1 lip</text>
+            <text textAnchor="end" x="382" y="198">31 lip</text>
+            <text x="58" y="120">{copy({ pl: 'cel 4,50', en: 'target 4.50' })}</text>
+            <text x="334" y="44">4,82</text>
+          </g>
         </>
       ) : null}
+
       {kind === 'comparison' ? (
         <>
-          {[0, 1, 2, 3].map((index) => <rect className="pd-s53-chart-bar" height={54 + index * 20} key={index} width="34" x={70 + index * 76} y={124 - index * 20} />)}
+          <rect className="pd-s53-chart-bar pd-s53-chart-bar--series-1" height="58" width="42" x="68" y="120" />
+          <rect className="pd-s53-chart-bar pd-s53-chart-bar--series-2" height="88" width="42" x="144" y="90" />
+          <rect className="pd-s53-chart-bar pd-s53-chart-bar--series-3" height="116" width="42" x="220" y="62" />
+          <rect className="pd-s53-chart-bar pd-s53-chart-bar--series-4" height="74" width="42" x="296" y="104" />
           <line className="pd-s53-chart-benchmark" x1="56" y1="92" x2="370" y2="92" />
+          <g className="pd-s53-chart-labels">
+            <text textAnchor="middle" x="89" y="198">Email</text>
+            <text textAnchor="middle" x="165" y="198">Meta</text>
+            <text textAnchor="middle" x="241" y="198">Search</text>
+            <text textAnchor="middle" x="317" y="198">Direct</text>
+          </g>
         </>
       ) : null}
+
       {kind === 'share' ? (
         <>
           <circle className="pd-s53-chart-donut-base" cx="132" cy="104" r="58" />
           <path className="pd-s53-chart-donut-a" d="M132 46 A58 58 0 0 1 184 130" />
           <path className="pd-s53-chart-donut-b" d="M184 130 A58 58 0 0 1 98 151" />
-          <rect className="pd-s53-chart-legend" x="244" y="66" width="104" height="10" />
-          <rect className="pd-s53-chart-legend" x="244" y="98" width="76" height="10" />
-          <rect className="pd-s53-chart-legend" x="244" y="130" width="92" height="10" />
+          <path className="pd-s53-chart-donut-c" d="M98 151 A58 58 0 0 1 132 46" />
+          <g className="pd-s53-chart-labels">
+            <text className="pd-s53-chart-total" textAnchor="middle" x="132" y="101">100%</text>
+            <text textAnchor="middle" x="132" y="119">248 420 zł</text>
+            <text x="244" y="72">Search · 46%</text>
+            <text x="244" y="104">Meta · 32%</text>
+            <text x="244" y="136">Direct · 22%</text>
+          </g>
         </>
       ) : null}
+
       {kind === 'correlation' ? (
         <>
-          <path className="pd-s53-chart-benchmark" d="M70 160 L360 50" />
-          {[[86, 152], [124, 142], [168, 118], [212, 116], [258, 86], [306, 76], [350, 52]].map(([cx, cy]) => <circle className="pd-s53-chart-dot" cx={cx} cy={cy} key={`${cx}-${cy}`} r="5" />)}
+          <path className="pd-s53-chart-trendline" d="M70 160 L360 50" />
+          {[
+            [86, 152],
+            [124, 142],
+            [168, 118],
+            [212, 116],
+            [258, 86],
+            [306, 76],
+            [350, 52],
+          ].map(([cx, cy]) => (
+            <circle
+              className="pd-s53-chart-dot"
+              cx={cx}
+              cy={cy}
+              key={`${cx}-${cy}`}
+              r="5"
+            />
+          ))}
+          <g className="pd-s53-chart-labels">
+            <text x="52" y="26">ROAS</text>
+            <text textAnchor="end" x="390" y="198">{copy({ pl: 'budżet', en: 'spend' })}</text>
+          </g>
         </>
       ) : null}
+
       {kind === 'forecast' ? (
         <>
-          <path className="pd-s53-chart-range" d="M232 92 L382 42 L382 128 L232 120 Z" />
-          <path className="pd-s53-chart-line" d="M54 154 C116 138 174 110 232 92" />
-          <path className="pd-s53-chart-forecast" d="M232 92 C284 72 330 58 382 42" />
-          <line className="pd-s53-chart-annotation" x1="232" y1="48" x2="232" y2="168" />
+          <path
+            className="pd-s53-chart-range"
+            d="M232 92 L382 42 L382 128 L232 120 Z"
+          />
+          <path
+            className="pd-s53-chart-line"
+            d="M54 154 C116 138 174 110 232 92"
+          />
+          <path
+            className="pd-s53-chart-forecast"
+            d="M232 92 C284 72 330 58 382 42"
+          />
+          <line className="pd-s53-chart-annotation" x1="232" y1="42" x2="232" y2="178" />
+          <g className="pd-s53-chart-labels">
+            <text textAnchor="end" x="220" y="198">{copy({ pl: 'historia', en: 'actual' })}</text>
+            <text x="244" y="198">{copy({ pl: 'prognoza', en: 'forecast' })}</text>
+            <text x="248" y="58">80%</text>
+          </g>
         </>
       ) : null}
+
       {kind === 'waterfall' ? (
         <>
-          <rect className="pd-s53-chart-bar" x="64" y="112" width="42" height="66" />
-          <rect className="pd-s53-chart-bar pd-s53-chart-bar--positive" x="132" y="72" width="42" height="40" />
-          <rect className="pd-s53-chart-bar pd-s53-chart-bar--negative" x="200" y="98" width="42" height="26" />
-          <rect className="pd-s53-chart-bar pd-s53-chart-bar--positive" x="268" y="54" width="42" height="44" />
-          <rect className="pd-s53-chart-bar" x="336" y="54" width="42" height="124" />
-          <path className="pd-s53-chart-connector" d="M106 112 H132 M174 72 H200 M242 98 H268 M310 54 H336" />
+          <rect className="pd-s53-chart-bar pd-s53-chart-bar--series-1" x="60" y="112" width="42" height="66" />
+          <rect className="pd-s53-chart-bar pd-s53-chart-bar--positive" x="128" y="72" width="42" height="40" />
+          <rect className="pd-s53-chart-bar pd-s53-chart-bar--negative" x="196" y="98" width="42" height="26" />
+          <rect className="pd-s53-chart-bar pd-s53-chart-bar--positive" x="264" y="54" width="42" height="44" />
+          <rect className="pd-s53-chart-bar pd-s53-chart-bar--series-2" x="332" y="54" width="42" height="124" />
+          <path className="pd-s53-chart-connector" d="M102 112 H128 M170 72 H196 M238 98 H264 M306 54 H332" />
+          <g className="pd-s53-chart-labels">
+            <text textAnchor="middle" x="81" y="198">{copy({ pl: 'start', en: 'start' })}</text>
+            <text textAnchor="middle" x="149" y="198">{copy({ pl: 'cena', en: 'price' })}</text>
+            <text textAnchor="middle" x="217" y="198">Ads</text>
+            <text textAnchor="middle" x="285" y="198">Mix</text>
+            <text textAnchor="middle" x="353" y="198">{copy({ pl: 'wynik', en: 'result' })}</text>
+          </g>
         </>
       ) : null}
+
       {kind === 'funnel' ? (
         <>
-          <path className="pd-s53-chart-funnel" d="M78 38 H350 L320 72 H108 Z" />
+          <path className="pd-s53-chart-funnel pd-s53-chart-funnel--a" d="M78 38 H350 L320 72 H108 Z" />
           <path className="pd-s53-chart-funnel pd-s53-chart-funnel--b" d="M116 86 H312 L284 120 H144 Z" />
           <path className="pd-s53-chart-funnel pd-s53-chart-funnel--c" d="M154 134 H274 L252 168 H176 Z" />
+          <g className="pd-s53-chart-labels">
+            <text textAnchor="middle" x="214" y="59">{copy({ pl: 'Sesje · 100%', en: 'Sessions · 100%' })}</text>
+            <text textAnchor="middle" x="214" y="107">{copy({ pl: 'Produkt · 31%', en: 'Product · 31%' })}</text>
+            <text textAnchor="middle" x="214" y="155">{copy({ pl: 'Zakup · 3,8%', en: 'Purchase · 3.8%' })}</text>
+          </g>
         </>
       ) : null}
     </svg>
@@ -151,284 +379,610 @@ function ChartGraphic({ kind }: { readonly kind: ChartKind }) {
 function ChartFamilies() {
   return (
     <div className="pd-s53-chart-family-list">
-      {(Object.keys(chartCopy) as ChartKind[]).map((kind) => (
-        <article className="pd-s53-chart-family" key={kind}>
-          <header>
-            <div><span>{chartCopy[kind].name}</span><h3>{copy(chartCopy[kind].purpose)}</h3></div>
-            <ReviewBadge tone="info">{copy(chartCopy[kind].layers)}</ReviewBadge>
-          </header>
-          <div className="pd-s53-chart-family__body">
-            <ChartGraphic kind={kind} />
-            <dl>
-              <div><dt><Localized pl="Pytanie" en="Question" /></dt><dd><Localized pl="Co zmieniło się i dlaczego?" en="What changed and why?" /></dd></div>
-              <div><dt><Localized pl="Źródło" en="Source" /></dt><dd>Store + Ads</dd></div>
-              <div><dt><Localized pl="Zakres" en="Range" /></dt><dd><Localized pl="30 dni · porównanie okresu" en="30 days · period comparison" /></dd></div>
-            </dl>
+      {(Object.keys(chartCopy) as ChartKind[]).map((kind) => {
+        const descriptor = chartCopy[kind];
+
+        return (
+          <article className="pd-s53-chart-family" key={kind}>
+            <header>
+              <div>
+                <span>{descriptor.name}</span>
+                <h3>{copy(descriptor.purpose)}</h3>
+              </div>
+              <ReviewBadge tone="info">{copy(descriptor.layers)}</ReviewBadge>
+            </header>
+
+            <div className="pd-s53-chart-family__body">
+              <div className="pd-s53-chart-family__visual">
+                <ChartGraphic kind={kind} />
+              </div>
+
+              <dl>
+                <div>
+                  <dt><Localized pl="Pytanie" en="Question" /></dt>
+                  <dd>{copy(descriptor.question)}</dd>
+                </div>
+                <div>
+                  <dt><Localized pl="Metryka" en="Metric" /></dt>
+                  <dd>{copy(descriptor.metric)}</dd>
+                </div>
+                <div>
+                  <dt><Localized pl="Źródło" en="Source" /></dt>
+                  <dd>{descriptor.source}</dd>
+                </div>
+                <div>
+                  <dt><Localized pl="Zakres" en="Range" /></dt>
+                  <dd>{copy(descriptor.range)}</dd>
+                </div>
+                <div>
+                  <dt><Localized pl="Odniesienie" en="Reference" /></dt>
+                  <dd>{copy(descriptor.reference)}</dd>
+                </div>
+              </dl>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
+type ProductRow = {
+  readonly id: string;
+  readonly product: string;
+  readonly orders: number;
+  readonly revenue: number;
+  readonly margin: number;
+  readonly status: Extract<
+    AnalyticsDataState,
+    'ready' | 'partial' | 'stale'
+  >;
+};
+
+const tableRows: readonly ProductRow[] = [
+  { id: 'p-101', product: 'Młynek Pro', orders: 184, revenue: 48200, margin: 0.312, status: 'ready' },
+  { id: 'p-102', product: 'Kawa Classic', orders: 162, revenue: 37840, margin: 0.286, status: 'partial' },
+  { id: 'p-103', product: 'Filtry 100', orders: 128, revenue: 18420, margin: 0.341, status: 'stale' },
+  { id: 'p-104', product: 'Zestaw Barista', orders: 96, revenue: 29500, margin: 0.304, status: 'ready' },
+];
+
+function buildTableColumns(): readonly DataColumn[] {
+  return [
+    { id: 'product', label: copy({ pl: 'Produkt', en: 'Product' }), sortable: true },
+    { align: 'right', id: 'orders', label: copy({ pl: 'Zamówienia', en: 'Orders' }), sortable: true },
+    { align: 'right', id: 'revenue', label: copy({ pl: 'Przychód', en: 'Revenue' }), sortable: true },
+    { align: 'right', id: 'margin', label: copy({ pl: 'Marża', en: 'Margin' }), sortable: true },
+    { id: 'status', label: copy({ pl: 'Status danych', en: 'Data status' }) },
+  ];
+}
+
+const tableStatusCopy: Record<
+  ProductRow['status'],
+  { readonly pl: string; readonly en: string }
+> = {
+  ready: { pl: 'Gotowe', en: 'Ready' },
+  partial: { pl: 'Częściowe', en: 'Partial' },
+  stale: { pl: 'Nieaktualne', en: 'Stale' },
+};
+
+function DataTableSurface() {
+  const locale = readLocale();
+  const [sort, setSort] = useState<{
+    readonly columnId: string;
+    readonly direction: 'asc' | 'desc';
+  } | null>({
+    columnId: 'revenue',
+    direction: 'desc',
+  });
+  const [layer, setLayer] = useState<
+    'detail' | 'export' | 'papa' | null
+  >(null);
+  const [activeRow, setActiveRow] = useState<ProductRow | null>(null);
+  const columns = buildTableColumns();
+  const dataRows: readonly DataRow[] = tableRows.map((row) => ({
+    id: row.id,
+    product: row.product,
+    orders: formatPapaDataNumber(row.orders, locale),
+    revenue: formatPapaDataCurrency(row.revenue, locale),
+    margin: formatPapaDataPercent(row.margin, locale),
+    status: copy(tableStatusCopy[row.status]),
+  }));
+  const statusToneMap = {
+    [copy(tableStatusCopy.ready)]: 'success',
+    [copy(tableStatusCopy.partial)]: 'warning',
+    [copy(tableStatusCopy.stale)]: 'warning',
+  } as const;
+
+  const sortedColumn = sort
+    ? columns.find(({ id }) => id === sort.columnId)
+    : null;
+
+  const sortDescription = sort
+    ? `${sortedColumn?.label ?? sort.columnId} · ${copy({
+        pl: sort.direction === 'desc' ? 'malejąco' : 'rosnąco',
+        en: sort.direction === 'desc' ? 'descending' : 'ascending',
+      })}`
+    : copy({ pl: 'Brak sortowania', en: 'No sorting' });
+
+  const openRowLayer = (
+    rowId: string,
+    nextLayer: 'detail' | 'export' | 'papa',
+  ) => {
+    const row = tableRows.find((item) => item.id === rowId) ?? null;
+    setActiveRow(row);
+    setLayer(nextLayer);
+  };
+
+  return (
+    <div className="pd-s53-table-composition">
+      <p className="pd-s53-owner-note">
+        <Localized
+          pl="Owner bazowej tabeli: 10.07 / DataTable. Laboratorium pokazuje wyłącznie użycie tabeli w powierzchni oraz handoff warstw szczegółów, eksportu i wyjaśnienia."
+          en="Base table owner: 10.07 / DataTable. The laboratory only demonstrates table composition and the handoff for detail, export and explanation layers."
+        />
+      </p>
+
+      <div className="pd-s53-table-context">
+        <header>
+          <div>
+            <span><Localized pl="Powierzchnia operacyjna" en="Operational surface" /></span>
+            <h3><Localized pl="Produkty i wyniki sprzedaży" en="Products and sales results" /></h3>
           </div>
+
+          <StatusBadge
+            status={copy({ pl: 'Status danych', en: 'Data status' })}
+            text={copy({ pl: 'Gotowe', en: 'Ready' })}
+            tone="success"
+          />
+        </header>
+
+        <div className="pd-s53-table-context__meta">
+          <div>
+            <span><Localized pl="Zakres" en="Range" /></span>
+            <strong><Localized pl="4 produkty · 30 dni" en="4 products · 30 days" /></strong>
+          </div>
+          <div>
+            <span><Localized pl="Sortowanie" en="Sorting" /></span>
+            <strong>{sortDescription}</strong>
+          </div>
+          <div>
+            <span><Localized pl="Źródła" en="Sources" /></span>
+            <strong>Shop · ERP</strong>
+          </div>
+        </div>
+      </div>
+
+      <DataTable
+        actionsMenuItems={() => [
+          {
+            icon: 'data',
+            id: 'detail',
+            label: copy({ pl: 'Pokaż szczegóły', en: 'Show details' }),
+          },
+          {
+            icon: 'assistant',
+            id: 'papa',
+            label: copy({ pl: 'Wyjaśnij z Papa', en: 'Explain with Papa' }),
+          },
+          {
+            id: 'export',
+            label: copy({ pl: 'Podgląd eksportu', en: 'Export preview' }),
+          },
+        ]}
+        ariaLabel={copy({ pl: 'Produkty i wyniki sprzedaży', en: 'Products and sales results' })}
+        columns={columns}
+        density="comfortable"
+        emptyMessage={copy({ pl: 'Brak produktów dla bieżącego kontekstu.', en: 'No products for the current context.' })}
+        loading={false}
+        pagination={null}
+        rowCount={dataRows.length}
+        rows={dataRows}
+        selectedRowIds={[]}
+        sort={sort}
+        statusColumn={{
+          columnId: 'status',
+          label: copy({ pl: 'Status danych', en: 'Data status' }),
+          mapTone: statusToneMap,
+        }}
+        summary={copy({
+          pl: 'Kanoniczny DataTable bez domyślnego zaznaczenia. Akcje rekordu otwierają warstwy zamiast rozbudowywać tabelę lokalnym silnikiem.',
+          en: 'Canonical DataTable with no default selection. Row actions open layers instead of extending the table with a local engine.',
+        })}
+        onAction={(rowId, actionId) => {
+          if (actionId === 'detail') {
+            openRowLayer(rowId, 'detail');
+            return;
+          }
+
+          if (actionId === 'papa') {
+            openRowLayer(rowId, 'papa');
+            return;
+          }
+
+          if (actionId === 'export') {
+            openRowLayer(rowId, 'export');
+          }
+        }}
+        onSortChange={(columnId) => {
+          setSort((current) => {
+            if (current?.columnId === columnId) {
+              return {
+                columnId,
+                direction: current.direction === 'asc' ? 'desc' : 'asc',
+              };
+            }
+
+            return {
+              columnId,
+              direction: 'asc',
+            };
+          });
+        }}
+      />
+
+      <Drawer
+        dismissible
+        description={activeRow?.product ?? null}
+        open={layer === 'detail'}
+        side="right"
+        title={copy({ pl: 'Szczegóły rekordu', en: 'Record details' })}
+        width={460}
+        onOpenChange={(open) => setLayer(open ? 'detail' : null)}
+      >
+        {activeRow ? (
+          <dl className="pd-s53-detail-list">
+            <div><dt>ID</dt><dd>{activeRow.id}</dd></div>
+            <div><dt><Localized pl="Zamówienia" en="Orders" /></dt><dd>{formatPapaDataNumber(activeRow.orders, locale)}</dd></div>
+            <div><dt><Localized pl="Przychód" en="Revenue" /></dt><dd>{formatPapaDataCurrency(activeRow.revenue, locale)}</dd></div>
+            <div><dt><Localized pl="Marża" en="Margin" /></dt><dd>{formatPapaDataPercent(activeRow.margin, locale)}</dd></div>
+          </dl>
+        ) : null}
+      </Drawer>
+
+      <Drawer
+        dismissible
+        description={activeRow?.product ?? null}
+        open={layer === 'export'}
+        side="right"
+        title={copy({ pl: 'Podgląd eksportu', en: 'Export preview' })}
+        width={440}
+        onOpenChange={(open) => setLayer(open ? 'export' : null)}
+      >
+        <InlineNotice
+          message={copy({
+            pl: '05.03 pokazuje wyłącznie warstwę podglądu. Pełny workflow eksportu tabeli należy do 18.04 i nie jest implementowany drugi raz w Laboratorium.',
+            en: '05.03 demonstrates the preview layer only. The full table export workflow belongs to 18.04 and is not reimplemented in the Laboratory.',
+          })}
+          title={copy({ pl: 'Handoff eksportu', en: 'Export handoff' })}
+          tone="info"
+        />
+      </Drawer>
+
+      <Drawer
+        dismissible
+        description={activeRow?.product ?? null}
+        open={layer === 'papa'}
+        side="right"
+        title={copy({ pl: 'Wyjaśnij z Papa', en: 'Explain with Papa' })}
+        width={440}
+        onOpenChange={(open) => setLayer(open ? 'papa' : null)}
+      >
+        <InlineNotice
+          message={copy({
+            pl: 'Papa interpretuje wybrany rekord w kontekście danych. Warstwa korzysta z istniejącej roli akcji asystenta i nie tworzy nowego typu panelu tabeli.',
+            en: 'Papa interprets the selected record in data context. The layer uses the existing assistant action role and does not create a new table-panel type.',
+          })}
+          title={copy({ pl: 'Kontekst rekordu', en: 'Record context' })}
+          tone="info"
+        />
+      </Drawer>
+    </div>
+  );
+}
+
+const surfaceStates: readonly {
+  readonly id: AnalyticsDataState;
+  readonly title: { readonly pl: string; readonly en: string };
+  readonly body: { readonly pl: string; readonly en: string };
+  readonly value: { readonly pl: string; readonly en: string };
+  readonly meta: { readonly pl: string; readonly en: string };
+}[] = [
+  {
+    id: 'processing',
+    title: { pl: 'Przetwarzanie', en: 'Processing' },
+    body: {
+      pl: 'Geometria pozostaje stabilna, a użytkownik widzi zakres trwającej synchronizacji.',
+      en: 'Geometry stays stable while the user sees the scope of the running synchronization.',
+    },
+    value: { pl: 'Aktualizacja…', en: 'Updating…' },
+    meta: { pl: 'Synchronizacja 3 z 5 źródeł', en: 'Synchronizing 3 of 5 sources' },
+  },
+  {
+    id: 'noData',
+    title: { pl: 'Brak danych', en: 'No data' },
+    body: {
+      pl: 'Powierzchnia zachowuje miejsce danych i wyjaśnia, dlaczego bieżący zakres jest pusty.',
+      en: 'The surface preserves the data region and explains why the current range is empty.',
+    },
+    value: { pl: 'Brak wyniku', en: 'No result' },
+    meta: { pl: 'Zakres 1–31 lip 2026', en: 'Range Jul 1–31, 2026' },
+  },
+  {
+    id: 'partial',
+    title: { pl: 'Dane częściowe', en: 'Partial data' },
+    body: {
+      pl: 'Wynik pozostaje dostępny, ale jego kompletność jest jawnie ograniczona.',
+      en: 'The result remains available while its completeness is explicitly limited.',
+    },
+    value: { pl: '214 800 zł', en: 'PLN 214,800' },
+    meta: { pl: '3 z 5 źródeł gotowe', en: '3 of 5 sources ready' },
+  },
+  {
+    id: 'stale',
+    title: { pl: 'Dane nieaktualne', en: 'Stale data' },
+    body: {
+      pl: 'Ostatni poprawny wynik pozostaje czytelny razem z czasem jego odświeżenia.',
+      en: 'The last valid result remains readable together with its refresh time.',
+    },
+    value: { pl: '248 420 zł', en: 'PLN 248,420' },
+    meta: { pl: 'Ostatnie poprawne dane: 09:42', en: 'Last valid data: 09:42' },
+  },
+  {
+    id: 'providerError',
+    title: { pl: 'Błąd dostawcy', en: 'Provider error' },
+    body: {
+      pl: 'Błąd wskazuje konkretne źródło bez niszczenia geometrii pozostałej powierzchni.',
+      en: 'The error identifies a specific source without breaking the geometry of the remaining surface.',
+    },
+    value: { pl: 'Źródło niedostępne', en: 'Source unavailable' },
+    meta: { pl: 'Google Ads · autoryzacja', en: 'Google Ads · authorization' },
+  },
+];
+
+function SurfaceStateVisual({
+  state,
+}: {
+  readonly state: (typeof surfaceStates)[number];
+}) {
+  return (
+    <div className="pd-s53-state-surface" data-state={state.id}>
+      <header>
+        <span><Localized pl="Przychód kanałów" en="Channel revenue" /></span>
+        <strong>{copy(state.value)}</strong>
+      </header>
+
+      <div className="pd-s53-state-surface__plot" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+        <span />
+      </div>
+
+      <footer>{copy(state.meta)}</footer>
+    </div>
+  );
+}
+
+function SurfaceStates() {
+  return (
+    <div className="pd-s53-state-list">
+      {surfaceStates.map((state) => (
+        <article key={state.id}>
+          <header>
+            <StatusBadge
+              status={copy({ pl: 'Status danych', en: 'Data status' })}
+              text={copy(state.title)}
+              tone={resolveAnalyticsDataStateTone(state.id)}
+            />
+            <code>{state.id}</code>
+          </header>
+
+          <SurfaceStateVisual state={state} />
+
+          <p>{copy(state.body)}</p>
         </article>
       ))}
     </div>
   );
 }
 
-function ChartFrame() {
-  const [period, setPeriod] = useState<'7' | '30' | 'custom'>('30');
-  const [detail, setDetail] = useState<'insight' | 'data' | 'sources'>('insight');
+function WorkPanels() {
+  const [panel, setPanel] = useState<
+    'evidence' | 'recommendation' | 'workspace' | null
+  >(null);
 
   return (
-    <article className="pd-s53-chartframe">
-      <header className="pd-s53-chartframe__header">
-        <div>
-          <span><Localized pl="Pytanie biznesowe" en="Business question" /></span>
-          <h3><Localized pl="Czy wzrost budżetu poprawił rentowność kampanii?" en="Did the budget increase improve campaign profitability?" /></h3>
-          <p><Localized pl="Przychód, koszt reklamy i benchmark w jednym zadaniu decyzyjnym." en="Revenue, ad cost and benchmark in one decision task." /></p>
-        </div>
-        <ReviewBadge tone="success"><Localized pl="Dane aktualne · 8 min" en="Fresh data · 8 min" /></ReviewBadge>
-      </header>
-      <div className="pd-s53-chartframe__controls" role="group" aria-label={copy({ pl: 'Zakres dat wykresu', en: 'Chart date range' })}>
-        {(['7', '30', 'custom'] as const).map((item) => (
-          <button data-lab-control="segmented-option" aria-pressed={period === item} key={item} onClick={() => setPeriod(item)} type="button">{item === '7' ? <Localized pl="7 dni" en="7 days" /> : item === '30' ? <Localized pl="30 dni" en="30 days" /> : <Localized pl="Własny zakres" en="Custom range" />}</button>
-        ))}
-        <span><Localized pl="Porównanie: poprzedni okres" en="Comparison: previous period" /></span>
-      </div>
-      <div className="pd-s53-chartframe__visual">
-        <div className="pd-s53-chartframe__axis" aria-hidden="true"><span>300k</span><span>200k</span><span>100k</span><span>0</span></div>
-        <svg aria-label={copy({ pl: 'Przychód rośnie szybciej niż koszt reklamy; benchmark pozostaje poniżej wyniku', en: 'Revenue grows faster than ad cost; benchmark remains below the result' })} role="img" viewBox="0 0 760 330">
-          <g className="pd-s53-chart-grid-lines"><line x1="56" y1="56" x2="724" y2="56" /><line x1="56" y1="132" x2="724" y2="132" /><line x1="56" y1="208" x2="724" y2="208" /><line x1="56" y1="284" x2="724" y2="284" /></g>
-          <path className="pd-s53-chartframe__range" d="M68 248 C160 214 218 222 302 170 S470 116 704 66 L704 104 C486 142 424 170 310 202 S166 252 68 272 Z" />
-          <path className="pd-s53-chartframe__revenue" d="M68 258 C160 218 218 226 302 176 S470 120 704 76" />
-          <path className="pd-s53-chartframe__cost" d="M68 274 C178 254 252 252 350 218 S526 188 704 160" />
-          <path className="pd-s53-chartframe__benchmark" d="M68 212 C222 210 376 202 704 182" />
-          <circle className="pd-s53-chartframe__point" cx="470" cy="120" r="6" />
-          <line className="pd-s53-chart-annotation" x1="470" y1="120" x2="540" y2="72" />
-        </svg>
-        <div className="pd-s53-chartframe__annotation"><strong>+18,6%</strong><span><Localized pl="po zmianie budżetu" en="after budget change" /></span></div>
-      </div>
-      <div className="pd-s53-chartframe__legend"><span data-series="revenue"><Localized pl="Przychód" en="Revenue" /></span><span data-series="cost"><Localized pl="Koszt reklamy" en="Ad cost" /></span><span data-series="benchmark">Benchmark</span></div>
-      <div className="pd-s53-chartframe__details">
-        <div role="tablist" aria-label={copy({ pl: 'Szczegóły wykresu', en: 'Chart details' })}>
-          {(['insight', 'data', 'sources'] as const).map((item) => <button data-lab-control="tab" aria-selected={detail === item} key={item} onClick={() => setDetail(item)} role="tab" type="button">{item === 'insight' ? <Localized pl="Wniosek" en="Insight" /> : item === 'data' ? <Localized pl="Tabela danych" en="Data table" /> : <Localized pl="Źródła" en="Sources" />}</button>)}
-        </div>
-        <div role="tabpanel">
-          {detail === 'insight' ? <p><Localized pl="Przychód rośnie szybciej niż koszt reklamy. Największy efekt pojawia się po zmianie budżetu, ale dwa dni mają niższą jakość atrybucji." en="Revenue grows faster than ad cost. The largest lift follows the budget change, but two days have lower attribution quality." /></p> : null}
-          {detail === 'data' ? <table><thead><tr><th><Localized pl="Okres" en="Period" /></th><th><Localized pl="Przychód" en="Revenue" /></th><th><Localized pl="Koszt" en="Cost" /></th></tr></thead><tbody><tr><td>01–10</td><td>82 400 zł</td><td>18 900 zł</td></tr><tr><td>11–20</td><td>96 200 zł</td><td>20 100 zł</td></tr><tr><td>21–30</td><td>111 600 zł</td><td>22 400 zł</td></tr></tbody></table> : null}
-          {detail === 'sources' ? <p>Shopify · Google Ads · Meta Ads · <Localized pl="odświeżono 8 min temu" en="refreshed 8 min ago" /></p> : null}
-        </div>
-      </div>
-    </article>
-  );
-}
+    <div className="pd-s53-work-context">
+      <div className="pd-s53-work-context__base">
+        <header>
+          <div>
+            <span><Localized pl="Kontekst decyzji" en="Decision context" /></span>
+            <h3>
+              <Localized
+                pl="Kampania Search · rentowność"
+                en="Search campaign · profitability"
+              />
+            </h3>
+          </div>
 
-type TableRow = { readonly id: string; readonly product: string; readonly orders: number; readonly revenue: string; readonly margin: string; readonly status: 'ready' | 'partial' | 'stale' };
-type TableColumn = 'orders' | 'revenue' | 'margin' | 'status';
-type TableSort = 'product' | 'orders-desc' | 'revenue-desc';
-type TableStatusFilter = 'all' | 'ready' | 'attention';
-type TableDensity = 'comfortable' | 'compact';
-
-const tableRows: readonly TableRow[] = [
-  { id: 'p-101', product: 'Młynek Pro', orders: 184, revenue: '48 200 zł', margin: '31,2%', status: 'ready' },
-  { id: 'p-102', product: 'Kawa Classic', orders: 162, revenue: '37 840 zł', margin: '28,6%', status: 'partial' },
-  { id: 'p-103', product: 'Filtry 100', orders: 128, revenue: '18 420 zł', margin: '34,1%', status: 'stale' },
-  { id: 'p-104', product: 'Zestaw Barista', orders: 96, revenue: '29 500 zł', margin: '30,4%', status: 'ready' },
-];
-
-const tableColumnOptions: readonly { readonly id: TableColumn; readonly label: { readonly pl: string; readonly en: string } }[] = [
-  { id: 'orders', label: { pl: 'Zamówienia', en: 'Orders' } },
-  { id: 'revenue', label: { pl: 'Przychód', en: 'Revenue' } },
-  { id: 'margin', label: { pl: 'Marża', en: 'Margin' } },
-  { id: 'status', label: { pl: 'Status danych', en: 'Data status' } },
-];
-
-const tableStatusCopy: Record<TableRow['status'], { readonly pl: string; readonly en: string }> = {
-  ready: { pl: 'Gotowe', en: 'Ready' },
-  partial: { pl: 'Częściowe', en: 'Partial' },
-  stale: { pl: 'Nieaktualne', en: 'Stale' },
-};
-
-function revenueValue(value: string) {
-  return Number(value.replace(/[^0-9]/g, ''));
-}
-
-function DataTableSurface() {
-  const [collapsed, setCollapsed] = useState(false);
-  const [selected, setSelected] = useState<readonly string[]>([]);
-  const [query, setQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<TableStatusFilter>('all');
-  const [period, setPeriod] = useState<'30' | 'mtd'>('30');
-  const [sort, setSort] = useState<TableSort>('revenue-desc');
-  const [density, setDensity] = useState<TableDensity>('comfortable');
-  const [visibleColumns, setVisibleColumns] = useState<readonly TableColumn[]>(['orders', 'revenue', 'margin', 'status']);
-  const [page, setPage] = useState(0);
-  const [drawer, setDrawer] = useState<'export' | 'detail' | 'columns' | null>(null);
-  const [detailRow, setDetailRow] = useState<TableRow | null>(null);
-  const [exportMode, setExportMode] = useState<'visible' | 'selected' | 'all'>('visible');
-  const pageSize = 2;
-
-  const filtered = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-    const rows = tableRows.filter((row) => {
-      const matchesQuery = normalizedQuery.length === 0 || row.product.toLowerCase().includes(normalizedQuery);
-      const matchesStatus = statusFilter === 'all' || (statusFilter === 'ready' ? row.status === 'ready' : row.status !== 'ready');
-      return matchesQuery && matchesStatus;
-    });
-
-    return [...rows].sort((left, right) => {
-      if (sort === 'orders-desc') return right.orders - left.orders;
-      if (sort === 'revenue-desc') return revenueValue(right.revenue) - revenueValue(left.revenue);
-      return left.product.localeCompare(right.product, 'pl');
-    });
-  }, [query, sort, statusFilter]);
-
-  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const currentPage = Math.min(page, pageCount - 1);
-  const pageRows = filtered.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
-  const visibleRows = collapsed ? pageRows.slice(0, 1) : pageRows;
-  const activeFilterCount = Number(query.trim().length > 0) + Number(statusFilter !== 'all') + Number(period !== '30');
-  const allVisiblePageRowsSelected = pageRows.length > 0 && pageRows.every((row) => selected.includes(row.id));
-
-  const openDetail = (row: TableRow) => {
-    setDetailRow(row);
-    setDrawer('detail');
-  };
-
-  const toggleColumn = (column: TableColumn) => {
-    setVisibleColumns((current) => current.includes(column) ? current.filter((item) => item !== column) : [...current, column]);
-  };
-
-  const resetFilters = () => {
-    setQuery('');
-    setStatusFilter('all');
-    setPeriod('30');
-    setPage(0);
-  };
-
-  const togglePageSelection = (checked: boolean) => {
-    const pageIds = pageRows.map((row) => row.id);
-    setSelected((current) => checked ? Array.from(new Set([...current, ...pageIds])) : current.filter((id) => !pageIds.includes(id)));
-  };
-
-  return (
-    <div className="pd-s53-table-surface" data-density={density}>
-      <header className="pd-s53-table-toolbar">
-        <div className="pd-s53-table-toolbar__filters">
-          <label><span><Localized pl="Szukaj produkt" en="Search product" /></span><input onChange={(event) => { setQuery(event.target.value); setPage(0); }} type="search" value={query} /></label>
-          <DataSurfaceSelect
-            label={copy({ pl: 'Status', en: 'Status' })}
-            onValueChange={(value) => {
-              setStatusFilter(value);
-              setPage(0);
-            }}
-            options={[
-              { value: 'all', label: copy({ pl: 'Wszystkie', en: 'All' }) },
-              { value: 'ready', label: copy({ pl: 'Gotowe', en: 'Ready' }) },
-              { value: 'attention', label: copy({ pl: 'Wymagają uwagi', en: 'Needs attention' }) },
-            ] as const}
-            value={statusFilter}
+          <StatusBadge
+            status={copy({ pl: 'Status decyzji', en: 'Decision status' })}
+            text={copy({ pl: 'Wymaga decyzji', en: 'Decision required' })}
+            tone="warning"
           />
-          <DataSurfaceSelect
-            label={copy({ pl: 'Zakres', en: 'Range' })}
-            onValueChange={(value) => {
-              setPeriod(value);
-              setPage(0);
-            }}
-            options={[
-              { value: '30', label: copy({ pl: '30 dni', en: '30 days' }) },
-              { value: 'mtd', label: copy({ pl: 'Miesiąc do dziś', en: 'Month to date' }) },
-            ] as const}
-            value={period}
-          />
-          <DataSurfaceSelect
-            label={copy({ pl: 'Sortowanie', en: 'Sorting' })}
-            onValueChange={setSort}
-            options={[
-              { value: 'revenue-desc', label: copy({ pl: 'Przychód malejąco', en: 'Revenue descending' }) },
-              { value: 'orders-desc', label: copy({ pl: 'Zamówienia malejąco', en: 'Orders descending' }) },
-              { value: 'product', label: copy({ pl: 'Produkt A–Z', en: 'Product A–Z' }) },
-            ] as const}
-            value={sort}
-          />
-        </div>
-        <div className="pd-s53-table-toolbar__actions">
-          <span>{activeFilterCount > 0 ? copy({ pl: `Aktywne filtry: ${activeFilterCount}`, en: `Active filters: ${activeFilterCount}` }) : copy({ pl: 'Brak aktywnych filtrów', en: 'No active filters' })}</span>
-          {activeFilterCount > 0 ? <TextAction onClick={resetFilters} size="small" ><Localized pl="Wyczyść filtry" en="Clear filters" /></TextAction> : null}
-          <Button onClick={() => setDensity((current) => current === 'comfortable' ? 'compact' : 'comfortable')} size="small" variant="secondary" aria-pressed={density === 'compact'}>{density === 'compact' ? <Localized pl="Gęstość: kompaktowa" en="Density: compact" /> : <Localized pl="Gęstość: wygodna" en="Density: comfortable" />}</Button>
-          <Button onClick={() => setDrawer('columns')} size="small" variant="secondary"><Localized pl="Kolumny" en="Columns" /></Button>
-          <Button onClick={() => setCollapsed((current) => !current)} size="small" variant="secondary" aria-expanded={!collapsed}>{collapsed ? <Localized pl="Rozwiń tabelę" en="Expand table" /> : <Localized pl="Zwiń do 1 wiersza" en="Collapse to 1 row" />}</Button>
-          <Button onClick={() => setDrawer('export')} size="small" variant="secondary"><Localized pl="Eksport" en="Export" /></Button>
-        </div>
-      </header>
+        </header>
 
-      {selected.length > 0 ? (
-        <div className="pd-s53-table-bulk" role="status">
-          <strong>{copy({ pl: `Zaznaczono: ${selected.length}`, en: `Selected: ${selected.length}` })}</strong>
-          <div><Button onClick={() => { setExportMode('selected'); setDrawer('export'); }} size="small" variant="secondary"><Localized pl="Eksportuj zaznaczone" en="Export selected" /></Button><TextAction onClick={() => setSelected([])} size="small"><Localized pl="Wyczyść wybór" en="Clear selection" /></TextAction></div>
+        <div className="pd-s53-work-context__metrics">
+          <div>
+            <span>ROAS</span>
+            <strong>4,82</strong>
+            <small><Localized pl="cel 4,50" en="target 4.50" /></small>
+          </div>
+          <div>
+            <span><Localized pl="Przychód" en="Revenue" /></span>
+            <strong>+18,6%</strong>
+            <small><Localized pl="vs poprzedni okres" en="vs previous period" /></small>
+          </div>
+          <div>
+            <span><Localized pl="Atrybucja" en="Attribution" /></span>
+            <strong><Localized pl="Częściowa" en="Partial" /></strong>
+            <small><Localized pl="2 dni opóźnienia" en="2 days delayed" /></small>
+          </div>
         </div>
-      ) : null}
 
-      <div className="pd-s53-table-wrap">
-        <table>
-          <caption><Localized pl={period === '30' ? 'Produkty · ostatnie 30 dni. Domyślnie żaden rekord nie jest zaznaczony.' : 'Produkty · miesiąc do dziś. Domyślnie żaden rekord nie jest zaznaczony.'} en={period === '30' ? 'Products · last 30 days. No record is selected by default.' : 'Products · month to date. No record is selected by default.'} /></caption>
-          <thead><tr><th><input aria-label={copy({ pl: 'Zaznacz rekordy na bieżącej stronie', en: 'Select records on the current page' })} checked={allVisiblePageRowsSelected} onChange={(event) => togglePageSelection(event.target.checked)} type="checkbox" /></th><th><Localized pl="Produkt" en="Product" /></th>{visibleColumns.includes('orders') ? <th><Localized pl="Zamówienia" en="Orders" /></th> : null}{visibleColumns.includes('revenue') ? <th><Localized pl="Przychód" en="Revenue" /></th> : null}{visibleColumns.includes('margin') ? <th><Localized pl="Marża" en="Margin" /></th> : null}{visibleColumns.includes('status') ? <th>Status</th> : null}<th><Localized pl="Akcja" en="Action" /></th></tr></thead>
-          <tbody>
-            {visibleRows.map((row) => (
-              <tr key={row.id} data-selected={selected.includes(row.id) || undefined}>
-                <td data-label={copy({ pl: 'Wybór', en: 'Select' })}><input aria-label={`${copy({ pl: 'Zaznacz', en: 'Select' })} ${row.product}`} checked={selected.includes(row.id)} onChange={(event) => setSelected((current) => event.target.checked ? [...current, row.id] : current.filter((id) => id !== row.id))} type="checkbox" /></td>
-                <th data-label={copy({ pl: 'Produkt', en: 'Product' })} scope="row">{row.product}</th>
-                {visibleColumns.includes('orders') ? <td data-label={copy({ pl: 'Zamówienia', en: 'Orders' })}>{row.orders}</td> : null}
-                {visibleColumns.includes('revenue') ? <td data-label={copy({ pl: 'Przychód', en: 'Revenue' })}>{row.revenue}</td> : null}
-                {visibleColumns.includes('margin') ? <td data-label={copy({ pl: 'Marża', en: 'Margin' })}>{row.margin}</td> : null}
-                {visibleColumns.includes('status') ? <td data-label="Status"><ReviewBadge tone={row.status === 'ready' ? 'success' : row.status === 'partial' ? 'warning' : 'info'}>{copy(tableStatusCopy[row.status])}</ReviewBadge></td> : null}
-                <td data-label={copy({ pl: 'Akcja', en: 'Action' })}><TextAction onClick={() => openDetail(row)} size="small"><Localized pl="Szczegóły" en="Details" /></TextAction></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {visibleRows.length === 0 ? <div className="pd-s53-table-empty"><strong><Localized pl="Brak wyników" en="No results" /></strong><p><Localized pl="Zmień wyszukiwanie lub wyczyść filtry. Stan pusty nie zastępuje tabeli poziomym scrollem." en="Change the search or clear filters. The empty state does not replace the table with horizontal scrolling." /></p><Button onClick={resetFilters} size="small" variant="secondary"><Localized pl="Wyczyść filtry" en="Clear filters" /></Button></div> : null}
+        <div className="pd-s53-work-context__signal">
+          <div>
+            <span><Localized pl="Sygnał" en="Signal" /></span>
+            <strong>
+              <Localized
+                pl="Rentowność rośnie, ale jakość atrybucji ogranicza pewność decyzji."
+                en="Profitability is improving, but attribution quality limits decision confidence."
+              />
+            </strong>
+          </div>
+
+          <svg aria-hidden="true" viewBox="0 0 360 90">
+            <path className="pd-s53-work-context__benchmark" d="M10 58 H350" />
+            <path
+              className="pd-s53-work-context__trend"
+              d="M10 70 C54 64 78 68 112 52 S172 44 208 38 S278 34 350 18"
+            />
+            <circle cx="350" cy="18" r="4" />
+          </svg>
+        </div>
+
+        <p>
+          <Localized
+            pl="Dowody i rekomendacje otwierają się jako warstwy. Nie są kolejnymi blokami dokładanymi pod powierzchnią danych."
+            en="Evidence and recommendations open as layers. They are not additional blocks appended below the data surface."
+          />
+        </p>
+
+        <div className="pd-s53-work-context__actions">
+          <Button
+            onClick={() => setPanel('evidence')}
+            size="small"
+            variant="secondary"
+          >
+            <Localized pl="Otwórz dowody" en="Open evidence" />
+          </Button>
+
+          <Button
+            onClick={() => setPanel('recommendation')}
+            size="small"
+            variant="secondary"
+          >
+            <Localized pl="Otwórz rekomendację" en="Open recommendation" />
+          </Button>
+
+          <Button
+            onClick={() => setPanel('workspace')}
+            size="small"
+            variant="secondary"
+          >
+            <Localized pl="Otwórz panel roboczy" en="Open workspace" />
+          </Button>
+        </div>
       </div>
-      <footer className="pd-s53-table-footer"><span>{filtered.length} <Localized pl="rekordy" en="records" /></span><nav aria-label={copy({ pl: 'Paginacja tabeli', en: 'Table pagination' })}><TextAction disabled={currentPage === 0} onClick={() => setPage((current) => Math.max(0, current - 1))} size="small"><Localized pl="Poprzednia" en="Previous" /></TextAction><span>{copy({ pl: `Strona ${currentPage + 1} z ${pageCount}`, en: `Page ${currentPage + 1} of ${pageCount}` })}</span><TextAction disabled={currentPage >= pageCount - 1} onClick={() => setPage((current) => Math.min(pageCount - 1, current + 1))} size="small"><Localized pl="Następna" en="Next" /></TextAction></nav></footer>
 
-      <Drawer dismissible open={drawer === 'columns'} onOpenChange={(open) => setDrawer(open ? 'columns' : null)} side="right" title={copy({ pl: 'Widoczne kolumny', en: 'Visible columns' })} width={400} description={copy({ pl: 'Produkt, wybór i akcja pozostają zawsze widoczne.', en: 'Product, selection and action always remain visible.' })}>
-        <fieldset className="pd-s53-column-options"><legend><Localized pl="Kolumny opcjonalne" en="Optional columns" /></legend>{tableColumnOptions.map((column) => <label key={column.id}><input checked={visibleColumns.includes(column.id)} onChange={() => toggleColumn(column.id)} type="checkbox" />{copy(column.label)}</label>)}</fieldset>
-      </Drawer>
+      <Drawer
+        dismissible
+        open={panel !== null}
+        onOpenChange={(open) => setPanel(open ? panel : null)}
+        side="right"
+        title={
+          panel === 'evidence'
+            ? copy({ pl: 'Dowody', en: 'Evidence' })
+            : panel === 'recommendation'
+              ? copy({ pl: 'Rekomendacja', en: 'Recommendation' })
+              : copy({ pl: 'Panel roboczy', en: 'Workspace' })
+        }
+        width={480}
+        description={copy({
+          pl: 'Warstwa kontekstowa z Escape i przywróceniem fokusu.',
+          en: 'Contextual layer with Escape and focus restoration.',
+        })}
+      >
+        {panel === 'evidence' ? (
+          <ul className="pd-s53-evidence-list">
+            <li>
+              <Localized
+                pl="Przychód +18,6% po zmianie budżetu"
+                en="Revenue +18.6% after budget change"
+              />
+            </li>
+            <li>
+              <Localized
+                pl="Atrybucja częściowa przez 2 dni"
+                en="Partial attribution for 2 days"
+              />
+            </li>
+            <li>
+              <Localized
+                pl="Benchmark kategorii +11,2%"
+                en="Category benchmark +11.2%"
+              />
+            </li>
+          </ul>
+        ) : null}
 
-      <Drawer dismissible open={drawer === 'export'} onOpenChange={(open) => setDrawer(open ? 'export' : null)} primaryActionLabel={copy({ pl: 'Eksportuj CSV', en: 'Export CSV' })} secondaryActionLabel={copy({ pl: 'Anuluj', en: 'Cancel' })} side="right" title={copy({ pl: 'Podgląd eksportu', en: 'Export preview' })} width={420} description={copy({ pl: 'Warstwa nie przedłuża tabeli i przywraca fokus po zamknięciu.', en: 'The layer does not extend the table and restores focus after closing.' })}>
-        <fieldset className="pd-s53-export-options"><legend><Localized pl="Zakres danych" en="Data scope" /></legend><label><input checked={exportMode === 'visible'} name="export" onChange={() => setExportMode('visible')} type="radio" /><Localized pl="Bieżący widok i widoczne kolumny" en="Current view and visible columns" /></label><label><input checked={exportMode === 'selected'} disabled={selected.length === 0} name="export" onChange={() => setExportMode('selected')} type="radio" /><Localized pl="Zaznaczone rekordy" en="Selected records" /></label><label><input checked={exportMode === 'all'} name="export" onChange={() => setExportMode('all')} type="radio" /><Localized pl="Wszystkie dozwolone rekordy" en="All allowed records" /></label></fieldset>
-        <InlineNotice message={copy({ pl: 'Eksport nie obejmuje niedostępnych pól technicznych ani danych wyłączonych przez capability.', en: 'Export excludes unavailable technical fields and data blocked by capability.' })} title={copy({ pl: 'Polityka danych', en: 'Data policy' })} tone="info" />
-      </Drawer>
+        {panel === 'recommendation' ? (
+          <InlineNotice
+            message={copy({
+              pl: 'Utrzymaj budżet przez 7 dni i ponownie oceń jakość atrybucji.',
+              en: 'Keep the budget for 7 days and reassess attribution quality.',
+            })}
+            title={copy({
+              pl: 'Rekomendacja Papa',
+              en: 'Papa recommendation',
+            })}
+            tone="info"
+          />
+        ) : null}
 
-      <Drawer dismissible open={drawer === 'detail'} onOpenChange={(open) => setDrawer(open ? 'detail' : null)} side="right" title={copy({ pl: 'Szczegóły rekordu', en: 'Record details' })} width={460} description={detailRow?.product ?? null}>
-        {detailRow ? <dl className="pd-s53-detail-list"><div><dt>ID</dt><dd>{detailRow.id}</dd></div><div><dt><Localized pl="Zamówienia" en="Orders" /></dt><dd>{detailRow.orders}</dd></div><div><dt><Localized pl="Przychód" en="Revenue" /></dt><dd>{detailRow.revenue}</dd></div><div><dt><Localized pl="Marża" en="Margin" /></dt><dd>{detailRow.margin}</dd></div></dl> : null}
+        {panel === 'workspace' ? (
+          <div className="pd-s53-workspace-lines" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
+        ) : null}
       </Drawer>
     </div>
   );
 }
 
-const surfaceStates = [
-  { id: 'processing', tone: 'info' as const, title: { pl: 'Przetwarzanie', en: 'Processing' }, body: { pl: 'Geometria pozostaje stabilna, a postęp ma tekstowy opis.', en: 'Geometry stays stable and progress has a text description.' } },
-  { id: 'no data', tone: 'neutral' as const, title: { pl: 'Brak danych', en: 'No data' }, body: { pl: 'Powierzchnia wyjaśnia, dlaczego zestaw jest pusty i co można zrobić.', en: 'The surface explains why the set is empty and what can be done.' } },
-  { id: 'partial', tone: 'warning' as const, title: { pl: 'Dane częściowe', en: 'Partial data' }, body: { pl: 'Wynik jest dostępny, ale dwa źródła nie zakończyły synchronizacji.', en: 'The result is available, but two sources have not finished syncing.' } },
-  { id: 'stale', tone: 'warning' as const, title: { pl: 'Dane nieaktualne', en: 'Stale data' }, body: { pl: 'Widoczna jest data ostatniego poprawnego odświeżenia.', en: 'The last successful refresh date is visible.' } },
-  { id: 'provider error', tone: 'critical' as const, title: { pl: 'Błąd dostawcy', en: 'Provider error' }, body: { pl: 'Komunikat wskazuje konkretne źródło i bezpieczne działanie naprawcze.', en: 'The message identifies the source and a safe recovery action.' } },
-] as const;
-
-function SurfaceStates() {
-  return <div className="pd-s53-state-list">{surfaceStates.map((state) => <article key={state.id}><header><ReviewBadge tone={state.tone}>{state.id}</ReviewBadge><h3>{copy(state.title)}</h3></header><p>{copy(state.body)}</p><div aria-hidden="true"><span /><span /><span /></div></article>)}</div>;
-}
-
-function WorkPanels() {
-  const [panel, setPanel] = useState<'evidence' | 'recommendation' | 'workspace' | null>(null);
+function DataSurfaceAntiExample() {
   return (
-    <div className="pd-s53-work-context">
-      <div className="pd-s53-work-context__base">
-        <header><div><span><Localized pl="Kontekst decyzji" en="Decision context" /></span><h3><Localized pl="Kampania Search · rentowność" en="Search campaign · profitability" /></h3></div><ReviewBadge tone="warning"><Localized pl="Wymaga decyzji" en="Decision required" /></ReviewBadge></header>
-        <p><Localized pl="Dowody i rekomendacje otwierają się jako warstwy. Nie są kolejnymi blokami pod powierzchnią danych." en="Evidence and recommendations open as layers. They are not additional blocks below the data surface." /></p>
-        <div><Button onClick={() => setPanel('evidence')} size="small" variant="secondary"><Localized pl="Otwórz dowody" en="Open evidence" /></Button><Button onClick={() => setPanel('recommendation')} size="small" variant="secondary"><Localized pl="Otwórz rekomendację" en="Open recommendation" /></Button><Button onClick={() => setPanel('workspace')} size="small" variant="secondary"><Localized pl="Otwórz panel roboczy" en="Open workspace" /></Button></div>
+    <div className="pd-s53-anti-example">
+      <div className="pd-s53-anti-example__diagram" aria-hidden="true">
+        <div className="pd-s53-anti-example__cards">
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+
+        <div className="pd-s53-anti-example__nested">
+          <div>
+            <span />
+            <span />
+          </div>
+          <div />
+        </div>
       </div>
-      <Drawer dismissible open={panel !== null} onOpenChange={(open) => setPanel(open ? panel : null)} side="right" title={panel === 'evidence' ? copy({ pl: 'Dowody', en: 'Evidence' }) : panel === 'recommendation' ? copy({ pl: 'Rekomendacja', en: 'Recommendation' }) : copy({ pl: 'Panel roboczy', en: 'Workspace' })} width={480} description={copy({ pl: 'Warstwa kontekstowa z Escape i przywróceniem fokusu.', en: 'Contextual layer with Escape and focus restoration.' })}>
-        {panel === 'evidence' ? <ul><li><Localized pl="Przychód +18,6% po zmianie budżetu" en="Revenue +18.6% after budget change" /></li><li><Localized pl="Atrybucja częściowa przez 2 dni" en="Partial attribution for 2 days" /></li><li><Localized pl="Benchmark kategorii +11,2%" en="Category benchmark +11.2%" /></li></ul> : null}
-        {panel === 'recommendation' ? <InlineNotice message={copy({ pl: 'Utrzymaj budżet przez 7 dni i ponownie oceń jakość atrybucji.', en: 'Keep the budget for 7 days and reassess attribution quality.' })} title={copy({ pl: 'Rekomendacja Papa', en: 'Papa recommendation' })} tone="info" /> : null}
-        {panel === 'workspace' ? <div className="pd-s53-workspace-lines" aria-hidden="true"><span /><span /><span /><span /></div> : null}
-      </Drawer>
+
+      <div className="pd-s53-anti-example__scroll" aria-hidden="true">
+        <span />
+      </div>
+
+      <p>
+        <Localized
+          pl="Antywzorzec: każdy fragment danych dostaje własną kartę, kolejne panele są zagnieżdżane, a brak decyzji układowej maskuje sztuczny poziomy scrollbar."
+          en="Anti-pattern: every data fragment gets its own card, more panels are nested inside it, and a fake horizontal scrollbar masks the lack of a layout decision."
+        />
+      </p>
     </div>
   );
 }
@@ -448,15 +1002,21 @@ function Roles() {
 
 export function DataSurfaceLaboratory() {
   return (
-    <StoryPage handoff={<Localized pl="10 / 15 / 18 — komponenty i wzorce danych" en="10 / 15 / 18 — data components and patterns" />} id="05.03" title={<Localized pl="Powierzchnie danych" en="Data surfaces" />} summary={<Localized pl="Panel istnieje tylko wtedy, gdy ma własną rolę, stan albo cykl interakcji. Dane, warstwy i działania nie tworzą poziomego scrolla ani kart wewnątrz kart." en="A panel exists only when it has its own role, state or interaction cycle. Data, layers and actions create neither horizontal scrolling nor cards inside cards." />} variants={<Localized pl="role · KPI · wykresy · ChartFrame · tabela · stany · warstwy" en="roles · KPI · charts · ChartFrame · table · states · layers" />}>
+    <StoryPage handoff={<Localized pl="10 / 15 / 18 — komponenty i wzorce danych" en="10 / 15 / 18 — data components and patterns" />} id="05.03" status="accepted" title={<Localized pl="Powierzchnie danych" en="Data surfaces" />} summary={<Localized pl="Panel istnieje tylko wtedy, gdy ma własną rolę, stan albo cykl interakcji. Dane, warstwy i działania nie tworzą poziomego scrolla ani kart wewnątrz kart." en="A panel exists only when it has its own role, state or interaction cycle. Data, layers and actions create neither horizontal scrolling nor cards inside cards." />} variants={<Localized pl="role · handoff KPI · wykresy · handoff ChartFrame · tabela · stany · warstwy" en="roles · KPI handoff · charts · ChartFrame handoff · table · states · layers" />}>
       <StorySection index="01" title={<Localized pl="Role powierzchni" en="Surface roles" />}><Roles /></StorySection>
-      <StorySection index="02" title={<Localized pl="Warianty KPI" en="KPI variants" />} summary={<Localized pl="Każdy lokalny wariant 05.03 ma mikrowykres wzrostowy, spadkowy albo stabilny. Kierunek nie zależy wyłącznie od koloru." en="Every local 05.03 variant has an upward, downward or stable microchart. Direction does not rely on color alone." />}><KpiVariants /></StorySection>
+      <StorySection index="02" title={<Localized pl="KPI — handoff" en="KPI — handoff" />} summary={<Localized pl="Warianty KPI zostały promowane do runtime ownera. Laboratorium nie utrzymuje drugiego katalogu MetricCard." en="KPI variants have been promoted to the runtime owner. The laboratory no longer maintains a second MetricCard catalogue." />}><PromotedOwnerNotice owner="15.02 MetricCard" title={{ pl: 'Promowane do Wykresy i dane', en: 'Promoted to Data visualizations' }} description={{ pl: 'Pełny kontrakt KPI, mikrotrendów, stanów i akcji jest od tej chwili własnością 15.02.', en: 'The full KPI, microtrend, state and action contract is now owned by 15.02.' }} /></StorySection>
       <StorySection index="03" title={<Localized pl="Rodziny wykresów" en="Chart families" />} summary={<Localized pl="Każda rodzina pokazuje znaczenie kontraktowe, warstwy i metadane, a nie dekoracyjny szkic." en="Each family shows contract meaning, layers and metadata rather than a decorative sketch." />}><ChartFamilies /></StorySection>
-      <StorySection index="04" title={<Localized pl="Pełny ChartFrame" en="Full ChartFrame" />} summary={<Localized pl="Jedno pytanie, jedna wizualizacja i progresywne ujawnianie szczegółów. Zoom, brush i pan pozostają poza zatwierdzonym kontraktem." en="One question, one visualization and progressive disclosure. Zoom, brush and pan remain outside the approved contract." />}><ChartFrame /></StorySection>
-      <StorySection index="05" title={<Localized pl="System tabeli" en="Table system" />} summary={<Localized pl="Tabela nie zaznacza rekordu domyślnie. Szczegóły i eksport otwierają się jako warstwy z systemu OverlayRoot/Drawer." en="The table selects no record by default. Details and export open as OverlayRoot/Drawer layers." />}><DataTableSurface /></StorySection>
+      <StorySection index="04" title={<Localized pl="ChartFrame — handoff" en="ChartFrame — handoff" />} summary={<Localized pl="Pełny kontener wykresu został promowany do runtime ownera. 05.03 zachowuje wyłącznie zapis decyzji." en="The full chart container has been promoted to the runtime owner. 05.03 keeps only the decision record." />}><PromotedOwnerNotice owner="15.01 ChartFrame" title={{ pl: 'Promowane do Wykresy i dane', en: 'Promoted to Data visualizations' }} description={{ pl: 'Nagłówek, status, metadane, wizualizacja, legenda, wniosek i tabela alternatywna są teraz kontraktem 15.01.', en: 'Header, status, metadata, visualization, legend, insight and alternative table are now the 15.01 contract.' }} /></StorySection>
+      <StorySection index="05" title={<Localized pl="Tabela — handoff i użycie" en="Table — handoff and usage" />} summary={<Localized pl="05.03 konsumuje 10.07 / DataTable. Szczegóły, podgląd eksportu i wyjaśnienie pozostają warstwami, bez lokalnego silnika tabeli i bez lokalnego Selecta." en="05.03 consumes 10.07 / DataTable. Details, export preview and explanation remain layers, with no local table engine or local Select." />}><DataTableSurface /></StorySection>
       <StorySection index="06" title={<Localized pl="Stany powierzchni" en="Surface states" />} summary={<Localized pl="Stany układają się pionowo lub w elastycznej siatce bez poziomego przewijania." en="States stack vertically or in a flexible grid without horizontal scrolling." />}><SurfaceStates /></StorySection>
-      <StorySection index="07" title={<Localized pl="Panele robocze w kontekście" en="Work panels in context" />}><WorkPanels /></StorySection>
-      <StorySection index="08" title={<Localized pl="Decyzja i antyprzykład" en="Decision and anti-example" />}><DecisionRows accepted={<Localized pl="Jedna rola powierzchni, jawne stany, detale w warstwach, brak domyślnego zaznaczenia i brak poziomego scrolla." en="One surface role, explicit states, details in layers, no default selection and no horizontal scrolling." />} rejected={<Localized pl="Tabela i panele przedłużają stronę, wszystkie warianty są obok siebie, a poziomy scrollbar zastępuje decyzję układową." en="The table and panels extend the page, all variants sit side by side, and a horizontal scrollbar replaces a layout decision." />} /></StorySection>
+      <StorySection index="07" title={<Localized pl="Panele robocze w kontekście" en="Work panels in context" />} summary={<Localized pl="Powierzchnia pokazuje kontekst decyzji na canvasie, a dowody, rekomendacja i workspace otwierają się dopiero jako rzeczywiste warstwy." en="The surface shows decision context on the canvas, while evidence, recommendation and workspace open only as real layers." />}><WorkPanels /></StorySection>
+      <StorySection index="08" title={<Localized pl="Decyzja i antyprzykład" en="Decision and anti-example" />}>
+        <DecisionRows
+          accepted={<Localized pl="Jedna rola powierzchni, jawne stany, detale w warstwach, brak domyślnego zaznaczenia i brak poziomego scrolla." en="One surface role, explicit states, details in layers, no default selection and no horizontal scrolling." />}
+          rejected={<Localized pl="Tabela i panele przedłużają stronę, wszystkie warianty są obok siebie, a poziomy scrollbar zastępuje decyzję układową." en="The table and panels extend the page, all variants sit side by side, and a horizontal scrollbar replaces a layout decision." />}
+        />
+        <DataSurfaceAntiExample />
+      </StorySection>
     </StoryPage>
   );
 }

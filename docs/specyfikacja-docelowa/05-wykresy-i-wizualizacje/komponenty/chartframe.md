@@ -10,40 +10,30 @@ component_id: ChartFrame
 # ChartFrame
 
 ## Cel i odpowiedzialność
-`ChartFrame` rozwiązuje jeden określony problem interfejsu i nie przejmuje odpowiedzialności ekranu ani domenowego API. Kontrakt jest stanem docelowym wymagającym implementacji i testów.
+`ChartFrame` jest runtime kontenerem pojedynczej wizualizacji analitycznej. Odpowiada za kontekst, status, metadane, kompozycję istniejących kontrolek, miejsce na gotową wizualizację, legendę, wniosek i alternatywną tabelę. Nie implementuje konkretnego typu wykresu.
 
-## Anatomia
-title; subtitle; series; unit; dateRangeLabel; legendPosition; dataTableLabel.
+## Runtime source of truth
+Publiczne React API działającego komponentu jest własnością `apps/web/src/design-system/components/ChartFrame/ChartFrame.tsx`. Storybookowym ownerem jest `15.01`.
 
-Pełna anatomia projektowa obejmuje także pytanie biznesowe, opis kontekstu, status danych, porównanie okresów, wybór metryki, wybór źródła lub kanału, główną wizualizację, osie, skalę, legendę, adnotacje, tooltip, źródło, świeżość, narracyjne podsumowanie, akcje, tabelę alternatywną oraz możliwość wyjaśnienia wyniku przez Papa.
+`contracts/components/chartframe.ts` pozostaje kontraktem orkiestracyjnym/specyfikacyjnym dla screen view modelu i zdarzeń; nie jest kopią React Props.
 
-Obecny kontrakt TypeScript jest węższy niż kontrakt docelowy opisany powyżej. Brakujące pola projektowe wymagają późniejszej synchronizacji technicznej i nie są jeszcze istniejącym API komponentu.
-
-## Kanoniczny kontrakt TypeScript
-Jedyny kanoniczny kontrakt: `contracts/components/chartframe.ts`.
-
-| Pole / kontrakt | Typ | Reguła |
-|---|---|---|
-| `title` | `string` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `subtitle` | `string | null` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `series` | `ChartSeries[]` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `unit` | `string` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `dateRangeLabel` | `string` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `legendPosition` | `'top' | 'bottom' | 'hidden'` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `dataTableLabel` | `string` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-
-## Zdarzenia
-Zdarzenia mają identyfikator komponentu, nazwę działania, `correlationId` i typowany payload. Komponent nie wywołuje bezpośrednio endpointu — przekazuje intencję do właściciela ekranu.
+## Publiczne grupy Props
+- `title`, `businessQuestion`, `description`;
+- `status`, `statusLabel`, `stateMessage`, `stateAction`;
+- `sourceLabel`, `freshnessLabel`, `rangeLabel`;
+- `filters`, `actions`, `visualization`, `visualizationLabel`;
+- `legend`, `annotation`, `summary`;
+- `alternativeTable`, `alternativeTableLabel`;
+- `papaAction`.
 
 ## Stany i warianty
-Obsłuż: default, loading, empty, error, disabled, readonly i success, jeśli mają znaczenie dla tego komponentu. Nie renderuj akcji bez capability i nie ukrywaj przyczyny blokady.
+Na etapie 15.01 runtime obsługuje pełny typ `AnalyticsDataState`, a story demonstruje reprezentatywnie `ready`, `partial`, `processing` i `noData`. Pełny katalog zachowań stanu jest własnością 15.08.
 
-ChartFrame stosuje kanoniczne stany danych z `15-08-stany-danych.md` albo jawne mapowanie na ten dokument: loading → processing, empty → no data, partial → partial, stale → stale, error → konkretna przyczyna, np. provider error, unavailable albo conflict. Identyfikatory techniczne, np. `noData` albo `sourceError`, są zapisywane osobno i wyłącznie wtedy, gdy występują we właściwym kontrakcie. Ogólne `error` nie jest samodzielnym kanonicznym stanem ChartFrame, a `sourceError` nie jest nowym kanonicznym stanem dokumentacyjnym.
+## Ownership i handoff
+05.03 nie renderuje drugiego pełnego ChartFrame. Po promocji zachowuje wyłącznie decyzję i wskazanie ownera `15.01`.
 
-Nagłówek, kontekst, status, metadane, filtry i geometria powierzchni pozostają stabilne. Region legendy i region tabeli alternatywnej nie mogą powodować przypadkowego skoku geometrii, ale ich treść i dostępność zależą od konkretnego stanu. Nie wolno pokazywać legendy ani tabeli w sposób sugerujący dostępne dane, kiedy danych nie ma; region może zawierać komunikat zastępczy, być nieaktywny albo zachować zarezerwowane miejsce zgodnie z kontraktem widoku.
-
-## Dostępność
-Semantyczny element HTML, pełna obsługa klawiatury, focus-visible, nazwa dostępna, komunikaty dynamiczne przez właściwe live region oraz brak przekazywania znaczenia wyłącznie kolorem.
+## Dostępność techniczna
+Semantyczny region, jawny status, działające akcje, istniejące kontrolki klawiaturowe i alternatywna reprezentacja danych. Formalne WCAG AA nie jest bramą biznesową tego etapu.
 
 ## Konsumenci
 - `30.02` — Kolejka uwagi
@@ -86,9 +76,9 @@ Semantyczny element HTML, pełna obsługa klawiatury, focus-visible, nazwa dost�
 - `80.07` — Pomiar
 
 ## Storybook i testy
-Wymagane stories: wariant bazowy, wszystkie stany, długie polskie i angielskie etykiety, 200% zoom, dark/light, reduced motion oraz test interakcji dla każdej akcji. Target pozostaje backlogiem do chwili dodania fizycznego pliku story.
+Story 15.01 jest zaimplementowanym ownerem ChartFrame w statusie `review`. Pokazuje kompozycję z filtrem i bez filtra, reprezentatywne stany, długi copy, alternatywną tabelę oraz działające akcje. Pełny katalog zachowania stanów należy do 15.08.
 
-Story komponentu ChartFrame odpowiada za pełny katalog wariantów. Story 05.03 pokazuje jeden reprezentatywny pełny ChartFrame jako decyzję powierzchni.
+05.03 nie renderuje pełnego ChartFrame; zachowuje wyłącznie decision record i handoff do 15.01.
 
 ## Kryteria akceptacji
 1. `tsc --noEmit` kompiluje jedyny kontrakt kanoniczny.

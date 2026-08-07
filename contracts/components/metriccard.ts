@@ -1,5 +1,9 @@
 import type { BaseComponentProps, ComponentEvent } from '../component-shared';
 
+/**
+ * Orchestration contract used by screen/domain specifications.
+ * Runtime React props are owned by design-system/components/MetricCard/MetricCard.tsx.
+ */
 export interface MetricCardProps extends BaseComponentProps {
   metricId: string;
   title: string;

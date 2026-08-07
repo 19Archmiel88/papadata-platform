@@ -47,436 +47,108 @@
 
 
 
-.pd-s5-data-lab[data-lab-section="05.03"] .pd-s5-kpi-metric__sparkline {
-  display: grid;
-  min-width: 0;
-  height: 62px;
-  align-items: end;
-  color: var(--pd-data-series-1);
-}
-
-.pd-s5-data-lab[data-lab-section="05.03"] .pd-s5-kpi-metric__sparkline svg {
-  width: 100%;
-  height: 56px;
-  overflow: visible;
-}
-
-.pd-s5-data-lab[data-lab-section="05.03"] .pd-s5-kpi-sparkline__area {
-  fill: color-mix(in srgb, var(--pd-data-series-1) 12%, transparent);
-  stroke: none;
-}
-
-.pd-s5-data-lab[data-lab-section="05.03"] .pd-s5-kpi-sparkline__line {
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2.25;
-  vector-effect: non-scaling-stroke;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @media (max-width: 1180px) {
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 @media (max-width: 900px) {
-  
 
-  
 
-  
 
-  
+
+
+
+
 }
 
 @media (max-width: 760px) {
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 
@@ -1728,12 +1400,12 @@
 
 @media (max-width: 1180px) {
 
-  
+
 }
 
 @media (max-width: 760px) {
 
-  
+
 
   .pd-s5-auth-card > header {
     align-items: flex-start;
@@ -1753,49 +1425,49 @@
     min-width: 72px;
   }
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   .pd-s5-auth-rejected {
     grid-template-columns: minmax(0, 1fr);
@@ -1811,9 +1483,9 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  
 
-  
+
+
 }
 
 .pd-s5-page--auth .pd-f0-theme-preview,

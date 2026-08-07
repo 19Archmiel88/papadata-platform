@@ -47,6 +47,8 @@ Jeden publiczny słownik **tonów semantycznych** obowiązuje komponenty, Fundam
 - `danger` pozostaje wyłącznie nazwą tokenu koloru lub lokalnej roli obramowania/separatora
 - `muted` nie jest statusem domenowym i mapuje się na `neutral` albo rolę tekstową
 - status nie może być przekazywany wyłącznie kolorem
+- `StatusBadge` renderuje kanoniczny status; Laboratorium nie tworzy drugiego runtime badge dla `processing`, `partial`, `stale`, `noData` ani błędów danych
+- lokalny badge laboratoryjny może opisywać wyłącznie metadane decyzji/handoffu, nie status produktu
 - `implemented` oznacza tylko istnienie story lub kodu referencyjnego, nie akceptację ani produkcję
 
 ## Status odbioru Etapu 01

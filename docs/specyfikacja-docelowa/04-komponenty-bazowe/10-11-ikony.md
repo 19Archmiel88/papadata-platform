@@ -79,6 +79,8 @@ Canvas, typografia, szerokość treści, guttery, rytm sekcji i separatory pocho
 - `20 px` — przyciski, menu, listy i nawigacja;
 - `24 px` — nagłówki paneli, landmarki i ważne punkty orientacyjne.
 
+Te trzy rozmiary są demonstrowane wyłącznie przez ownera 10.11. Historie 05 i 15 mogą konsumować `Icon`, ale nie tworzą lokalnej sekcji rozmiarów. Akcje danych używają istniejącej roli `data`, a akcje Papa istniejącej roli `assistant`; widoczna etykieta nadal pozostaje źródłem dostępnej nazwy akcji.
+
 ## Katalog
 
 Katalog grupuje ikony według zadania:

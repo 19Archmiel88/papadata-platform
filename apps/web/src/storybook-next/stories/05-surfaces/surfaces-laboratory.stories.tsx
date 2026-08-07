@@ -88,7 +88,7 @@ function SurfacePage({
           items={[
             { label: <Localized pl="Rola" en="Role" />, value: <Localized pl="decision record" en="decision record" /> },
             { label: <Localized pl="Docelowy owner" en="Target owner" />, value: handoff },
-            { label: <Localized pl="Status" en="Status" />, value: 'review' },
+            { label: <Localized pl="Status" en="Status" />, value: 'accepted' },
           ]}
         />
       )}
@@ -1407,7 +1407,7 @@ export const TloAuth: Story = {
         </SurfaceVariant>
         <SurfaceVariant
           title={<Localized pl="Granice zakresu 05.01" en="05.01 scope boundaries" />}
-          description={<Localized pl="Status story pozostaje review; ta sekcja nie deklaruje produkcyjnego AuthShell ani akceptacji responsive." en="The story status remains review; this section does not declare production AuthShell or responsive acceptance." />}
+          description={<Localized pl="Status story jest accepted; ta sekcja nadal nie deklaruje produkcyjnego AuthShell ani akceptacji responsive." en="The story status is accepted; this section still does not declare production AuthShell or responsive acceptance." />}
           token="scope"
         >
           <AuthScopeBoundaryList />

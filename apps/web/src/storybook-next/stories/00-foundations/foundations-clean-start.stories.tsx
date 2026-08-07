@@ -7,13 +7,12 @@ import type {
   ReactNode,
 } from 'react';
 import {
-  useId,
-  useRef,
   useState,
 } from 'react';
 import {
   expect,
   userEvent,
+  waitFor,
   within,
 } from 'storybook/test';
 
@@ -28,14 +27,23 @@ import {
   type SemanticStatusTone,
 } from '../../../design-system/foundations';
 import {
+  Button,
+} from '../../../design-system/components/Button';
+import {
+  Select,
+} from '../../../design-system/components/Select';
+import {
+  StatusBadge,
+} from '../../../design-system/components/StatusBadge';
+import {
   Icon,
   PapaDataBrand,
   type PapaDataIconName,
 } from '../../../design-system/icons';
 import '../../presentation/story-presentation.css';
-import './foundation-iconography-no-containers.css';
-import './foundation-geometry-lab-only.css';
-import './foundation-select-target.css';
+import './foundation-iconography.css';
+import './foundation-geometry.css';
+import './foundation-accessibility.css';
 import './foundation-status-catalog.css';
 import {
   StoryPresentationMeta,
@@ -67,6 +75,16 @@ function readLocale(): PapaDataRuntimeLocale {
   return document.documentElement.dataset.locale === 'en'
     ? 'en'
     : 'pl';
+}
+
+function readTheme(): 'light' | 'dark' {
+  if (typeof document === 'undefined') {
+    return 'light';
+  }
+
+  return document.documentElement.dataset.theme === 'dark'
+    ? 'dark'
+    : 'light';
 }
 
 function copy(value: LocalizedCopy) {
@@ -248,52 +266,6 @@ function TokenCode({
   return <code className="pd-f0-token">{children}</code>;
 }
 
-// Storybook reference helper only; not a public Button API.
-function FoundationButton({
-  children,
-  tone = 'secondary',
-  icon,
-  onClick,
-  type = 'button',
-}: {
-  readonly children: ReactNode;
-  readonly tone?: 'primary' | 'secondary' | 'quiet';
-  readonly icon?: PapaDataIconName;
-  readonly onClick?: () => void;
-  readonly type?: 'button' | 'submit';
-}) {
-  return (
-    <button
-      className="pd-f0-button"
-      data-reference="demo-only"
-      data-tone={tone}
-      onClick={onClick}
-      type={type}
-    >
-      {icon ? <Icon decorative name={icon} size={16} /> : null}
-      <span>{children}</span>
-    </button>
-  );
-}
-
-type FoundationStatusTone = SemanticStatusTone;
-
-// Storybook reference helper only; semantic tone is owned by Foundations.
-function StatusBadge({
-  tone,
-  children,
-}: {
-  readonly tone: FoundationStatusTone;
-  readonly children: ReactNode;
-}) {
-  return (
-    <span className="pd-f0-status" data-reference="demo-only" data-tone={tone}>
-      <span aria-hidden="true" />
-      {children}
-    </span>
-  );
-}
-
 const visualPrinciples = [
   {
     number: '01',
@@ -444,11 +416,11 @@ export const KierunekWizualny: Story = {
         >
           <div className="pd-f0-decision-list">
             <div data-result="accepted">
-              <StatusBadge tone="success"><Localized pl="Stosujemy" en="Use" /></StatusBadge>
+              <StatusBadge status={copy({ pl: 'Status', en: 'Status' })} text={copy({ pl: 'Stosujemy', en: 'Use' })} tone="success" />
               <p><Localized pl="Neutralne powierzchnie, separatory, lokalne akcenty i czytelny rytm danych." en="Neutral surfaces, separators, local accents and a readable data rhythm." /></p>
             </div>
             <div data-result="rejected">
-              <StatusBadge tone="critical"><Localized pl="Odrzucamy" en="Avoid" /></StatusBadge>
+              <StatusBadge status={copy({ pl: 'Status', en: 'Status' })} text={copy({ pl: 'Odrzucamy', en: 'Avoid' })} tone="critical" />
               <p><Localized pl="Glow, ciężkie cienie, przypadkowe gradienty i osobną kartę dla każdego przykładu." en="Glow, heavy shadows, arbitrary gradients and a separate card for every example." /></p>
             </div>
           </div>
@@ -477,9 +449,9 @@ export const KierunekWizualny: Story = {
                   <span><Localized pl="Przychód netto" en="Net revenue" /></span>
                   <strong>1 248 590 zł</strong>
                 </div>
-                <FoundationButton icon="trend" tone="primary">
+                <Button startIcon={<Icon decorative name="trend" size={16} />} variant="primary">
                   <Localized pl="Otwórz analizę" en="Open analysis" />
-                </FoundationButton>
+                </Button>
               </div>
             </ThemePreview>
           }
@@ -494,9 +466,9 @@ export const KierunekWizualny: Story = {
                   <span><Localized pl="Przychód netto" en="Net revenue" /></span>
                   <strong>1 248 590 zł</strong>
                 </div>
-                <FoundationButton icon="trend" tone="primary">
+                <Button startIcon={<Icon decorative name="trend" size={16} />} variant="primary">
                   <Localized pl="Otwórz analizę" en="Open analysis" />
-                </FoundationButton>
+                </Button>
               </div>
             </ThemePreview>
           }
@@ -590,7 +562,6 @@ export const Typografia: Story = {
               </header>
               <div className="pd-f0-date-format">
                 <div className="pd-f0-inline-value">
-                  <Icon decorative name="data" size={20} />
                   <strong>{formatPapaDataDateRange(rangeStart, rangeEnd, locale)}</strong>
                 </div>
                 <dl>
@@ -718,11 +689,11 @@ const semanticTones = [
   {
     tone: 'processing',
     label: { pl: 'Przetwarzanie', en: 'Processing' },
-    token: '--pd-brand-accent',
+    token: '--pd-status-info',
     usage: { pl: 'Operacja trwa i system oczekuje na jej wynik.', en: 'An operation is running and the system is awaiting its result.' },
   },
 ] as const satisfies readonly {
-  readonly tone: FoundationStatusTone;
+  readonly tone: SemanticStatusTone;
   readonly label: LocalizedCopy;
   readonly token: string;
   readonly usage: LocalizedCopy;
@@ -768,7 +739,7 @@ const statusContractExamples = [
 ] as const satisfies readonly {
   readonly key: string;
   readonly label: LocalizedCopy;
-  readonly tone: FoundationStatusTone;
+  readonly tone: SemanticStatusTone;
   readonly owner: LocalizedCopy;
 }[];
 
@@ -814,7 +785,14 @@ export const KolorySemantyczne: Story = {
             </div>
           ))}
         </div>
-        <div className="pd-f0-mini-chart" aria-label={copy({ pl: 'Przykład palety danych', en: 'Data palette example' })}>
+        <div
+          className="pd-f0-mini-chart"
+          role="img"
+          aria-label={copy({
+            pl: 'Przykład palety danych',
+            en: 'Data palette example',
+          })}
+        >
           <span data-series="1" style={{ '--value': '68%' } as CSSProperties} />
           <span data-series="2" style={{ '--value': '44%' } as CSSProperties} />
           <span data-series="3" style={{ '--value': '57%' } as CSSProperties} />
@@ -838,7 +816,7 @@ export const KolorySemantyczne: Story = {
         <div className="pd-f0-tone-register">
           {semanticTones.map((item) => (
             <article key={item.tone}>
-              <StatusBadge tone={item.tone}><Localized {...item.label} /></StatusBadge>
+              <StatusBadge status={copy({ pl: 'Ton semantyczny', en: 'Semantic tone' })} text={copy(item.label)} tone={item.tone} />
               <TokenCode>{item.token}</TokenCode>
               <p><Localized {...item.usage} /></p>
             </article>
@@ -865,7 +843,13 @@ export const StatusySystemowe: Story = {
           {statusContractExamples.map((status) => (
             <LedgerRow
               key={status.key}
-              label={<StatusBadge tone={status.tone}><Localized {...status.label} /></StatusBadge>}
+              label={
+                <StatusBadge
+                  status={copy({ pl: 'Status', en: 'Status' })}
+                  text={copy(status.label)}
+                  tone={status.tone}
+                />
+              }
               preview={<span className="pd-f0-status-tone">{status.tone}</span>}
               value={<code>{status.key}</code>}
               detail={copy(status.owner)}
@@ -882,7 +866,7 @@ export const StatusySystemowe: Story = {
         <FoundationLedger label={copy({ pl: 'Własność statusów', en: 'Status ownership' })}>
           <LedgerRow
             label={<Localized pl="Fundamenty" en="Foundations" />}
-            preview={<StatusBadge tone="warning"><Localized pl="Ton" en="Tone" /></StatusBadge>}
+            preview={<StatusBadge status={copy({ pl: 'Status', en: 'Status' })} text={copy({ pl: 'Ton', en: 'Tone' })} tone="warning" />}
             value={<code>SemanticStatusTone</code>}
             detail={copy({ pl: 'neutral / info / success / warning / critical / processing', en: 'neutral / info / success / warning / critical / processing' })}
           />
@@ -894,7 +878,7 @@ export const StatusySystemowe: Story = {
           />
           <LedgerRow
             label={<Localized pl="Komponent" en="Component" />}
-            preview={<StatusBadge tone="success"><Localized pl="Opłacone" en="Paid" /></StatusBadge>}
+            preview={<StatusBadge status={copy({ pl: 'Status', en: 'Status' })} text={copy({ pl: 'Opłacone', en: 'Paid' })} tone="success" />}
             value={<code>StatusBadge</code>}
             detail={copy({ pl: 'Komponent renderuje status, ale nie jest właścicielem słownika biznesowego.', en: 'The component renders a status but does not own the business vocabulary.' })}
           />
@@ -947,24 +931,47 @@ export const SpacingIGrid: Story = {
         title={<Localized pl="Gęstość" en="Density" />}
         summary={<Localized pl="Wariant kompaktowy zmienia rytm, ale nie zmienia hierarchii ani wyglądu komponentu." en="Compact density changes rhythm without changing hierarchy or component identity." />}
       >
-        <ThemePair
-          light={
-            <ThemePreview theme="light" title={<Localized pl="Wygodna" en="Comfortable" />}>
-              <div className="pd-f0-density-demo" data-density="comfortable">
-                <div><span><Localized pl="Źródło danych" en="Data source" /></span><strong>Google Analytics 4</strong></div>
-                <div><span><Localized pl="Status" en="Status" /></span><StatusBadge tone="success"><Localized pl="Stabilne" en="Stable" /></StatusBadge></div>
+        <div className="pd-f0-theme-pair" data-reference="demo-only">
+          <ThemePreview
+            theme={readTheme()}
+            title={<Localized pl="Wygodna" en="Comfortable" />}
+          >
+            <div className="pd-f0-density-demo" data-density="comfortable">
+              <div>
+                <span><Localized pl="Źródło danych" en="Data source" /></span>
+                <strong>Google Analytics 4</strong>
               </div>
-            </ThemePreview>
-          }
-          dark={
-            <ThemePreview theme="dark" title={<Localized pl="Kompaktowa" en="Compact" />}>
-              <div className="pd-f0-density-demo" data-density="compact">
-                <div><span><Localized pl="Źródło danych" en="Data source" /></span><strong>Google Analytics 4</strong></div>
-                <div><span><Localized pl="Status" en="Status" /></span><StatusBadge tone="success"><Localized pl="Stabilne" en="Stable" /></StatusBadge></div>
+              <div>
+                <span><Localized pl="Status" en="Status" /></span>
+                <StatusBadge
+                  status={copy({ pl: 'Status', en: 'Status' })}
+                  text={copy({ pl: 'Stabilne', en: 'Stable' })}
+                  tone="success"
+                />
               </div>
-            </ThemePreview>
-          }
-        />
+            </div>
+          </ThemePreview>
+
+          <ThemePreview
+            theme={readTheme()}
+            title={<Localized pl="Kompaktowa" en="Compact" />}
+          >
+            <div className="pd-f0-density-demo" data-density="compact">
+              <div>
+                <span><Localized pl="Źródło danych" en="Data source" /></span>
+                <strong>Google Analytics 4</strong>
+              </div>
+              <div>
+                <span><Localized pl="Status" en="Status" /></span>
+                <StatusBadge
+                  status={copy({ pl: 'Status', en: 'Status' })}
+                  text={copy({ pl: 'Stabilne', en: 'Stable' })}
+                  tone="success"
+                />
+              </div>
+            </div>
+          </ThemePreview>
+        </div>
       </FoundationSection>
 
       <FoundationSection
@@ -1063,7 +1070,7 @@ const geometryBorderRows = [
   {
     name: 'accent',
     group: 'interaction',
-    token: '--pd-brand-accent',
+    token: '--pd-interactive',
     label: { pl: 'Akcent aktywny', en: 'Active accent' },
     detail: {
       pl: 'Aktywna kontrolka, nawigacja i znacznik wybranej opcji.',
@@ -1147,23 +1154,25 @@ function GeometryRadiusPreview({
   readonly name: (typeof geometryRadiusRows)[number]['name'];
 }) {
   return (
-    <div className="pd-f0-lab-radius-preview" data-radius={name} aria-hidden="true">
+    <div className="pd-f0-geometry-radius-preview" data-radius={name} aria-hidden="true">
       {name === 'control' ? (
-        <span className="pd-f0-lab-radius-control">
-          <span>Commerce</span>
-          <span>⌄</span>
+        <span className="pd-f0-geometry-radius-control">
+          <span />
+          <span />
         </span>
       ) : null}
       {name === 'overlay' ? (
-        <span className="pd-f0-lab-radius-overlay">
+        <span className="pd-f0-geometry-radius-overlay">
           <span />
           <span />
         </span>
       ) : null}
       {name === 'pill' ? (
         <>
-          <span className="pd-f0-lab-pill-dot" />
-          <span className="pd-f0-lab-pill-badge">Active</span>
+          <span className="pd-f0-geometry-pill-dot" />
+          <span className="pd-f0-geometry-pill-badge">
+            <Localized pl="Znacznik" en="Marker" />
+          </span>
         </>
       ) : null}
     </div>
@@ -1176,7 +1185,7 @@ function GeometryBorderPreview({
   readonly name: (typeof geometryBorderRows)[number]['name'];
 }) {
   return (
-    <div className="pd-f0-lab-border-preview" data-border={name} aria-hidden="true">
+    <div className="pd-f0-geometry-border-preview" data-border={name} aria-hidden="true">
       <span />
       <span />
       <span />
@@ -1234,26 +1243,31 @@ function DepthCanvas() {
         <header>
           <div>
             <span><Localized pl="Warstwa wymagająca uwagi" en="Attention layer" /></span>
-            <strong><Localized pl="Zastosować rekomendację?" en="Apply recommendation?" /></strong>
+            <strong><Localized pl="Najwyższy poziom treści" en="Highest content level" /></strong>
           </div>
-          <span><Localized pl="Zamknij" en="Close" /></span>
+          <span><Localized pl="Poziom 03" en="Level 03" /></span>
         </header>
         <div>
-          <p><Localized pl="Zmiana nie zostanie wykonana bez potwierdzenia użytkownika." en="The change will not be applied without user confirmation." /></p>
+          <p>
+            <Localized
+              pl="Overlay odcina kontekst bazowy i przejmuje najwyższy priorytet wizualny."
+              en="The overlay separates the base context and takes the highest visual priority."
+            />
+          </p>
           <dl>
             <div>
-              <dt><Localized pl="Wpływ" en="Impact" /></dt>
-              <dd>+7,80%</dd>
+              <dt><Localized pl="Warstwa" en="Layer" /></dt>
+              <dd>modal</dd>
             </div>
             <div>
-              <dt><Localized pl="Pewność" en="Confidence" /></dt>
-              <dd><Localized pl="Wysoka" en="High" /></dd>
+              <dt><Localized pl="Cień" en="Shadow" /></dt>
+              <dd>overlay</dd>
             </div>
           </dl>
         </div>
         <footer>
-          <span><Localized pl="Anuluj" en="Cancel" /></span>
-          <strong><Localized pl="Zatwierdź zmianę" en="Approve change" /></strong>
+          <span><Localized pl="Rola systemowa" en="System role" /></span>
+          <span>--pd-shadow-overlay</span>
         </footer>
       </div>
 
@@ -1280,12 +1294,12 @@ export const PromienieIGeometria: Story = {
         title={<Localized pl="Role geometryczne" en="Geometry roles" />}
         summary={<Localized pl="Każda rola ma jeden przykład, jeden token i jasno określony zakres użycia." en="Each role has one example, one token and a clearly defined scope." />}
       >
-        <div className="pd-f0-lab-only-grid" role="list" aria-label={copy({ pl: 'Role promieni', en: 'Radius roles' })}>
+        <div className="pd-f0-geometry-grid" role="list" aria-label={copy({ pl: 'Role promieni', en: 'Radius roles' })}>
           {geometryRadiusRows.map((item) => (
-            <article className="pd-f0-lab-only-card" key={item.name} role="listitem">
+            <article className="pd-f0-geometry-card" key={item.name} role="listitem">
               <GeometryRadiusPreview name={item.name} />
               <strong>{copy(item.label)}</strong>
-              <code className="pd-f0-lab-only-token">{item.token}</code>
+              <code className="pd-f0-geometry-token">{item.token}</code>
               <p>{copy(item.detail)}</p>
             </article>
           ))}
@@ -1331,10 +1345,10 @@ export const LinieISeparacja: Story = {
       >
         <div className="pd-f0-separation-grid" data-columns="2" role="list">
           {geometryBorderRows.filter((item) => item.group === 'structure').map((item) => (
-            <article className="pd-f0-lab-border-card" key={item.name} role="listitem">
+            <article className="pd-f0-geometry-border-card" key={item.name} role="listitem">
               <GeometryBorderPreview name={item.name} />
               <strong>{copy(item.label)}</strong>
-              <code className="pd-f0-lab-only-token">{item.token}</code>
+              <code className="pd-f0-geometry-token">{item.token}</code>
               <p>{copy(item.detail)}</p>
             </article>
           ))}
@@ -1348,10 +1362,10 @@ export const LinieISeparacja: Story = {
       >
         <div className="pd-f0-separation-grid" data-columns="1" role="list">
           {geometryBorderRows.filter((item) => item.group === 'interaction').map((item) => (
-            <article className="pd-f0-lab-border-card" key={item.name} role="listitem">
+            <article className="pd-f0-geometry-border-card" key={item.name} role="listitem">
               <GeometryBorderPreview name={item.name} />
               <strong>{copy(item.label)}</strong>
-              <code className="pd-f0-lab-only-token">{item.token}</code>
+              <code className="pd-f0-geometry-token">{item.token}</code>
               <p>{copy(item.detail)}</p>
             </article>
           ))}
@@ -1365,10 +1379,10 @@ export const LinieISeparacja: Story = {
       >
         <div className="pd-f0-separation-grid" data-columns="1" role="list">
           {geometryBorderRows.filter((item) => item.group === 'communication').map((item) => (
-            <article className="pd-f0-lab-border-card" key={item.name} role="listitem">
+            <article className="pd-f0-geometry-border-card" key={item.name} role="listitem">
               <GeometryBorderPreview name={item.name} />
               <strong>{copy(item.label)}</strong>
-              <code className="pd-f0-lab-only-token">{item.token}</code>
+              <code className="pd-f0-geometry-token">{item.token}</code>
               <p>{copy(item.detail)}</p>
             </article>
           ))}
@@ -1412,7 +1426,7 @@ export const GlebiaIWarstwy: Story = {
               <span className="pd-f0-depth-contract__level" role="cell">{item.level}</span>
               <div role="cell">
                 <strong>{copy(item.label)}</strong>
-                <code className="pd-f0-lab-only-token">{item.token}</code>
+                <code className="pd-f0-geometry-token">{item.token}</code>
               </div>
               <p role="cell">{copy(item.allowed)}</p>
               <p role="cell">{copy(item.forbidden)}</p>
@@ -1420,7 +1434,7 @@ export const GlebiaIWarstwy: Story = {
           ))}
         </div>
 
-        <p className="pd-f0-lab-only-note">
+        <p className="pd-f0-geometry-note">
           <Icon decorative name="warning" size={16} />
           <Localized
             pl="Struktura wewnątrz panelu nadal wynika z powierzchni, rytmu i separatorów. Cień nie może zastępować hierarchii."
@@ -1546,16 +1560,16 @@ function MotionDemo({
       <div className="pd-f0-motion-demo__track" aria-hidden="true">
         <span data-run={run ? 'true' : 'false'} />
       </div>
-      <FoundationButton
-        icon="trend"
+      <Button
+        startIcon={<Icon decorative name="trend" size={16} />}
         onClick={() => {
           setRun(false);
           window.requestAnimationFrame(() => setRun(true));
         }}
-        tone="primary"
+        variant="primary"
       >
         <Localized pl="Uruchom zmianę" en="Run change" />
-      </FoundationButton>
+      </Button>
       <p role="status">
         {run
           ? <Localized pl="Stan został zaktualizowany." en="State updated." />
@@ -1669,141 +1683,211 @@ export const MotionIReducedMotion: Story = {
   ),
 };
 
-function AccessibleChoice() {
-  const id = useId();
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const optionRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const [open, setOpen] = useState(false);
-  const options = ['CRM', 'Commerce', 'Analityka'] as const;
-  const [selected, setSelected] = useState<(typeof options)[number]>('CRM');
+const accessibilitySelectOptions = [
+  {
+    value: 'crm',
+    label: 'CRM',
+  },
+  {
+    value: 'commerce',
+    label: 'Commerce',
+  },
+  {
+    value: 'analytics',
+    label: 'Analityka',
+  },
+] as const;
 
-  const focusOption = (index: number) => {
-    const boundedIndex = Math.max(
-      0,
-      Math.min(index, options.length - 1),
-    );
+function AccessibilitySelectDemo() {
+  const [selected, setSelected] = useState('crm');
 
-    optionRefs.current[boundedIndex]?.focus();
-  };
-
-  const openList = (index: number) => {
-    setOpen(true);
-    window.requestAnimationFrame(() => focusOption(index));
-  };
-
-  const closeList = (returnFocus = true) => {
-    setOpen(false);
-
-    if (returnFocus) {
-      window.requestAnimationFrame(() => triggerRef.current?.focus());
-    }
-  };
-
-  const selectOption = (option: typeof options[number]) => {
-    setSelected(option);
-    closeList();
-  };
+  const selectedLabel =
+    accessibilitySelectOptions.find(
+      (option) => option.value === selected,
+    )?.label ?? 'CRM';
 
   return (
-    <div className="pd-f0-choice">
-      <label id={`${id}-label`}><Localized pl="Kanał danych" en="Data channel" /></label>
-      <p className="pd-f0-choice__help" id={`${id}-help`}>
-        <Localized
-          pl="Otwórz listę i wybierz kanał. Po zatwierdzeniu fokus wróci do przycisku."
-          en="Open the list and choose a channel. After selection, focus returns to the trigger."
+    <div className="pd-f0-accessibility-select-demo">
+      <div className="pd-f0-accessibility-select-control">
+        <Select
+          helperText={copy({
+            pl: 'Otwórz listę i wybierz kanał. Po zatwierdzeniu fokus wróci do kontrolki.',
+            en: 'Open the list and choose a channel. After selection, focus returns to the control.',
+          })}
+          label={copy({
+            pl: 'Kanał danych',
+            en: 'Data channel',
+          })}
+          onChange={(event) => {
+            setSelected(event.currentTarget.value);
+          }}
+          options={accessibilitySelectOptions}
+          placeholder={copy({
+            pl: 'Wybierz kanał',
+            en: 'Select channel',
+          })}
+          value={selected}
         />
-      </p>
-      <div className="pd-f0-choice__control">
-        <button
-          ref={triggerRef}
-          aria-controls={`${id}-listbox`}
-          aria-describedby={`${id}-help`}
-          aria-expanded={open}
-          aria-haspopup="listbox"
-          aria-labelledby={`${id}-label ${id}-value`}
-          className="pd-f0-choice__trigger"
-          onClick={() => {
-            if (open) {
-              closeList(false);
-            } else {
-              openList(options.indexOf(selected));
-            }
-          }}
-          onKeyDown={(event) => {
-            if (event.key === 'ArrowDown') {
-              event.preventDefault();
-              openList(options.indexOf(selected));
-            } else if (event.key === 'ArrowUp') {
-              event.preventDefault();
-              openList(options.length - 1);
-            } else if (event.key === 'Escape' && open) {
-              event.preventDefault();
-              closeList();
-            }
-          }}
-          type="button"
-        >
-          <span id={`${id}-value`}>{selected}</span>
-          <span aria-hidden="true">⌄</span>
-        </button>
-        {open ? (
-          <div
-            className="pd-f0-choice__list"
-            id={`${id}-listbox`}
-            role="listbox"
-            aria-labelledby={`${id}-label`}
-          >
-            {options.map((option, index) => (
-              <button
-                aria-selected={selected === option}
-                key={option}
-                onClick={() => selectOption(option)}
-                onKeyDown={(event) => {
-                  if (event.key === 'ArrowDown') {
-                    event.preventDefault();
-                    focusOption((index + 1) % options.length);
-                  } else if (event.key === 'ArrowUp') {
-                    event.preventDefault();
-                    focusOption((index - 1 + options.length) % options.length);
-                  } else if (event.key === 'Home') {
-                    event.preventDefault();
-                    focusOption(0);
-                  } else if (event.key === 'End') {
-                    event.preventDefault();
-                    focusOption(options.length - 1);
-                  } else if (event.key === 'Escape') {
-                    event.preventDefault();
-                    closeList();
-                  } else if (event.key === 'Tab') {
-                    closeList(false);
-                  }
-                }}
-                ref={(node) => {
-                  optionRefs.current[index] = node;
-                }}
-                role="option"
-                type="button"
-              >
-                <span>{option}</span>
-                {selected === option ? <span aria-hidden="true">✓</span> : null}
-              </button>
-            ))}
-          </div>
-        ) : null}
       </div>
-      <div className="pd-f0-choice__feedback">
+
+      <div className="pd-f0-accessibility-feedback">
         <p>
-          <strong><Localized pl="Nazwa dostępna" en="Accessible name" /></strong>
-          <span><Localized pl="Kanał danych, wybrano" en="Data channel, selected" />: {selected}</span>
+          <strong>
+            <Localized
+              pl="Nazwa dostępna"
+              en="Accessible name"
+            />
+          </strong>
+          <span>
+            <Localized
+              pl="Kanał danych, wybrano"
+              en="Data channel, selected"
+            />
+            : {selectedLabel}
+          </span>
         </p>
-        <p aria-live="polite" role="status">
-          <strong><Localized pl="Status" en="Status" /></strong>
-          <span><Localized pl="Wybrano" en="Selected" />: {selected}</span>
+
+        <p
+          aria-live="polite"
+          role="status"
+        >
+          <strong>
+            <Localized
+              pl="Status"
+              en="Status"
+            />
+          </strong>
+          <span>
+            <Localized
+              pl="Wybrano"
+              en="Selected"
+            />
+            : {selectedLabel}
+          </span>
         </p>
+
         <p>
-          <strong><Localized pl="Powrót fokusu" en="Focus return" /></strong>
-          <span><Localized pl="Po wyborze fokus wraca do przycisku Kanał danych." en="After selection, focus returns to the Data channel trigger." /></span>
+          <strong>
+            <Localized
+              pl="Powrót fokusu"
+              en="Focus return"
+            />
+          </strong>
+          <span>
+            <Localized
+              pl="Po wyborze fokus wraca do kontrolki Kanał danych."
+              en="After selection, focus returns to the Data channel control."
+            />
+          </span>
         </p>
+      </div>
+    </div>
+  );
+}
+
+function AccessibilityEvidenceDemo() {
+  const [nameChecked, setNameChecked] = useState(false);
+  const [focusChecked, setFocusChecked] = useState(false);
+
+  return (
+    <div className="pd-f0-evidence">
+      <div>
+        <Button
+          startIcon={<Icon decorative name="search" size={20} />}
+          onClick={() => {
+            setNameChecked((current) => !current);
+          }}
+          variant="secondary"
+        >
+          <Localized
+            pl={nameChecked ? 'Ukryj przykład nazwy' : 'Sprawdź nazwę kontrolki'}
+            en={nameChecked ? 'Hide name example' : 'Check control name'}
+          />
+        </Button>
+
+        <div>
+          <strong>
+            <Localized
+              pl="Nazwa kontrolki"
+              en="Control name"
+            />
+          </strong>
+          <p aria-live="polite">
+            {nameChecked ? (
+              <Localized
+                pl="Ikona pozostaje dekoracyjna, a tekst przycisku przekazuje pełną nazwę akcji."
+                en="The icon remains decorative while the button text provides the complete action name."
+              />
+            ) : (
+              <Localized
+                pl="Uruchom przykład, aby potwierdzić nazwę dostępną niezależną od ikony."
+                en="Run the example to confirm an accessible name that does not depend on the icon."
+              />
+            )}
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <StatusBadge
+          status={copy({ pl: 'Status', en: 'Status' })}
+          text={copy({
+            pl: 'Dane opóźnione',
+            en: 'Data delayed',
+          })}
+          tone="warning"
+        />
+
+        <div>
+          <strong>
+            <Localized
+              pl="Status tekstowy"
+              en="Text status"
+            />
+          </strong>
+          <p>
+            <Localized
+              pl="Kolor wspiera jednoznaczny tekst."
+              en="Color supports explicit text."
+            />
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <Button
+          onClick={() => {
+            setFocusChecked((current) => !current);
+          }}
+          variant="secondary"
+        >
+          <Localized
+            pl="Sprawdź fokus"
+            en="Check focus"
+          />
+        </Button>
+
+        <div>
+          <strong>
+            <Localized
+              pl="Widoczny fokus"
+              en="Visible focus"
+            />
+          </strong>
+          <p aria-live="polite">
+            {focusChecked ? (
+              <Localized
+                pl="Fokus pozostał na aktywowanej kontrolce."
+                en="Focus remained on the activated control."
+              />
+            ) : (
+              <Localized
+                pl="Aktywuj przycisk klawiaturą, aby sprawdzić zachowanie fokusu."
+                en="Activate the button with the keyboard to verify focus behavior."
+              />
+            )}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -1852,7 +1936,7 @@ export const Dostepnosc: Story = {
           description={<Localized pl="Ten sam wzorzec działa myszą i klawiaturą." en="The same pattern works with mouse and keyboard." />}
           surface="subtle"
         >
-          <AccessibleChoice />
+          <AccessibilitySelectDemo />
         </FoundationVariant>
       </FoundationSection>
 
@@ -1861,42 +1945,63 @@ export const Dostepnosc: Story = {
         title={<Localized pl="Dowody w interfejsie" en="Evidence in the interface" />}
         summary={<Localized pl="Wizualna prezentacja pokazuje rzeczywiste zachowanie, nie techniczny debugger." en="The visual presentation shows real behavior, not a technical debugger." />}
       >
-        <div className="pd-f0-evidence">
-          <div>
-            <button className="pd-f0-icon-button" aria-label={copy({ pl: 'Szukaj w danych', en: 'Search data' })} type="button">
-              <Icon decorative name="search" size={20} />
-            </button>
-            <div><strong><Localized pl="Nazwa kontrolki" en="Control name" /></strong><p><Localized pl="Ikona nie jest jedynym źródłem znaczenia." en="The icon is not the only source of meaning." /></p></div>
-          </div>
-          <div>
-            <StatusBadge tone="warning"><Localized pl="Dane opóźnione" en="Data delayed" /></StatusBadge>
-            <div><strong><Localized pl="Status tekstowy" en="Text status" /></strong><p><Localized pl="Kolor wspiera jednoznaczny tekst." en="Color supports explicit text." /></p></div>
-          </div>
-          <div>
-            <span className="pd-f0-focus-sample" tabIndex={0}><Localized pl="Element fokusowalny" en="Focusable element" /></span>
-            <div><strong><Localized pl="Widoczny fokus" en="Visible focus" /></strong><p><Localized pl="Obrys jest czytelny w obu motywach." en="The outline remains clear in both themes." /></p></div>
-          </div>
-        </div>
+        <AccessibilityEvidenceDemo />
       </FoundationSection>
     </FoundationPage>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const trigger = canvas.getByRole('button', {
-      name: /Kanał danych CRM|Data channel CRM/,
+    const trigger = canvas.getByRole('combobox', {
+      name: /Kanał danych|Data channel/,
     });
 
-    await userEvent.click(trigger);
+    trigger.focus();
+    await expect(trigger).toHaveFocus();
+
+    await userEvent.keyboard('{Enter}');
+
     const listbox = canvas.getByRole('listbox', {
       name: /Kanał danych|Data channel/,
     });
     await expect(listbox).toBeInTheDocument();
 
-    const commerce = canvas.getByRole('option', {
-      name: 'Commerce',
+    await userEvent.keyboard('{Escape}');
+
+    await waitFor(() => {
+      expect(trigger).toHaveFocus();
     });
-    await userEvent.click(commerce);
-    await expect(trigger).toHaveFocus();
-    await expect(canvas.getByRole('status')).toHaveTextContent(/Commerce/);
+
+    await expect(
+      canvas.queryByRole('listbox', {
+        name: /Kanał danych|Data channel/,
+      }),
+    ).not.toBeInTheDocument();
+
+    await userEvent.keyboard('{Enter}');
+    await userEvent.keyboard('{ArrowDown}{Enter}');
+
+    await waitFor(() => {
+      expect(trigger).toHaveFocus();
+    });
+
+    await expect(
+      canvas.getByRole('status'),
+    ).toHaveTextContent(/Commerce/);
+
+    const focusButton = canvas.getByRole('button', {
+      name: /Sprawdź fokus|Check focus/,
+    });
+
+    focusButton.focus();
+    await expect(focusButton).toHaveFocus();
+
+    await userEvent.keyboard('{Enter}');
+
+    await expect(focusButton).toHaveFocus();
+    await expect(
+      canvas.getByText(
+        /Fokus pozostał na aktywowanej kontrolce|Focus remained on the activated control/,
+      ),
+    ).toBeInTheDocument();
   },
 };

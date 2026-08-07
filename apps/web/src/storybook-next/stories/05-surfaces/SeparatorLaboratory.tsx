@@ -23,7 +23,7 @@ const lineRoles: ReadonlyArray<{
   { id: 'default', token: '--pd-separator', pl: 'Topbar, sidebar, drawer i główne regiony.', en: 'Topbar, sidebar, drawer and main regions.' },
   { id: 'strong', token: '--pd-separator-strong', pl: 'Mocniejsza granica ważnej powierzchni, nie domyślna ramka kart.', en: 'Stronger boundary of an important surface, not a default card frame.' },
   { id: 'focus', token: '--pd-focus-visible', pl: 'Osobna rola dostępności.', en: 'Separate accessibility role.' },
-  { id: 'active', token: '--pd-brand-accent', pl: 'Aktywna nawigacja albo kontrolka.', en: 'Active navigation or control.' },
+  { id: 'active', token: '--pd-interactive', pl: 'Aktywna nawigacja albo kontrolka.', en: 'Active navigation or control.' },
   { id: 'danger', token: '--pd-status-danger', pl: 'Status krytyczny, nie zwykły active border.', en: 'Critical status, not an ordinary active border.' },
 ];
 

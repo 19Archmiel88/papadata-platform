@@ -15,6 +15,7 @@ import {
 const contract = getContract();
 const componentSystem = readJson('apps/web/src/design-system/component-system-v1.json');
 const foundationStory = readText('apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx');
+const storyPresentation = readText('apps/web/src/storybook-next/presentation/story-presentation.css');
 const surfacesStory = readText('apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx');
 const theme = readText('apps/web/src/design-system/foundations/themes/carbon-pearl.css');
 const foundationsIndex = readText('apps/web/src/design-system/foundations/index.ts');
@@ -222,13 +223,52 @@ for (const exportName of componentSystem.foundationBaseline.requiredIconExports)
 }
 
 for (const cssImport of [
-  'foundation-iconography-no-containers.css',
   '../../presentation/story-presentation.css',
-  'foundation-geometry-lab-only.css',
-  'foundation-select-target.css',
+  'foundation-accessibility.css',
+  'foundation-geometry.css',
+  'foundation-iconography.css',
   'foundation-status-catalog.css',
 ]) {
-  ensure(foundationStory.includes(cssImport), `Missing Foundation CSS import ${cssImport}.`);
+  ensure(
+    foundationStory.includes(cssImport),
+    `Missing Foundation CSS import ${cssImport}.`,
+  );
+}
+
+const foundationStoriesDirectory =
+  'apps/web/src/storybook-next/stories/00-foundations';
+
+const foundationStoryFiles = new Set(
+  readdirSync(resolveFromRoot(foundationStoriesDirectory)),
+);
+
+for (const obsoleteCssImport of [
+  'foundation-iconography-no-containers.css',
+  'foundation-geometry-lab-only.css',
+  'foundation-select-target.css',
+]) {
+  ensure(
+    !foundationStory.includes(obsoleteCssImport),
+    `Obsolete Foundation CSS import ${obsoleteCssImport} must not return.`,
+  );
+  ensure(
+    !foundationStoryFiles.has(obsoleteCssImport),
+    `Obsolete Foundation CSS file ${obsoleteCssImport} must not return.`,
+  );
+}
+
+for (const obsoleteFoundationSelector of [
+  'pd-f0-icon-button',
+  'pd-f0-focus-sample',
+]) {
+  ensure(
+    !foundationStory.includes(obsoleteFoundationSelector),
+    `Obsolete Foundation selector ${obsoleteFoundationSelector} must not return to the Foundation story.`,
+  );
+  ensure(
+    !storyPresentation.includes(obsoleteFoundationSelector),
+    `Obsolete Foundation selector ${obsoleteFoundationSelector} must not return to the canonical presentation shell.`,
+  );
 }
 
 ensure(!surfacesStory.includes('communication-layers-lab.css'), 'Laboratorium decyzji must not import removed communication-layers-lab.css.');

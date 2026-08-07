@@ -41,6 +41,9 @@ const localCssSources = [
   ...readdirSync(resolveFromRoot('apps/web/src/storybook-next/stories/05-surfaces'))
     .filter((file) => file.endsWith('.css'))
     .map((file) => `apps/web/src/storybook-next/stories/05-surfaces/${file}`),
+  ...readdirSync(resolveFromRoot('apps/web/src/storybook-next/stories/15-data-visualizations'))
+    .filter((file) => file.endsWith('.css'))
+    .map((file) => `apps/web/src/storybook-next/stories/15-data-visualizations/${file}`),
   'apps/web/src/design-system/components/Button/action-showcase.css',
   'apps/web/src/design-system/components/Field/field-family-showcase.css',
 ];

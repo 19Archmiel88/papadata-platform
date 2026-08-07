@@ -10,39 +10,30 @@ component_id: MetricCard
 # MetricCard
 
 ## Cel i odpowiedzialność
-`MetricCard` rozwiązuje jeden określony problem interfejsu i nie przejmuje odpowiedzialności ekranu ani domenowego API. Kontrakt jest stanem docelowym wymagającym implementacji i testów.
+`MetricCard` jest runtime powierzchnią KPI: wartość, jednostka, porównanie, cel/odchylenie, status danych, metadane i opcjonalny mikrotrend. Nie jest małym ChartFrame.
 
-## Anatomia
-metricId; title; value; formattedValue; delta; target; trend; unit.
+## Runtime source of truth
+Publiczne React API działającego komponentu jest własnością `apps/web/src/design-system/components/MetricCard/MetricCard.tsx`. Storybookowym ownerem jest `15.02`.
 
-Anatomia bazowa wynika z kanonicznego kontraktu TypeScript. Warianty projektowe mogą rozszerzać prezentację o porównanie okresu, cel lub plan, odchylenie, mikrochart, status danych, źródło, zakres, świeżość oraz akcję szczegółów albo wyjaśnienia przez Papa, o ile ekran dostarcza te dane przez zatwierdzony view model.
+`contracts/components/metriccard.ts` pozostaje kontraktem orkiestracyjnym/specyfikacyjnym dla view modelu i zdarzeń; nie jest kopią React Props.
 
-## Kanoniczny kontrakt TypeScript
-Jedyny kanoniczny kontrakt: `contracts/components/metriccard.ts`.
+## Publiczne grupy Props
+- `metricId`, `label`, `value`, `unit`;
+- `comparison`, `signal`;
+- `targetLabel`, `deviationLabel`;
+- `sparklinePoints`;
+- `status`, `statusLabel`, `stateMessage`;
+- `sourceLabel`, `freshnessLabel`, `definitionChangeLabel`;
+- `emphasis`, `detailAction`, `papaAction`.
 
-| Pole / kontrakt | Typ | Reguła |
-|---|---|---|
-| `metricId` | `string` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `title` | `string` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `value` | `number | null` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `formattedValue` | `string` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `delta` | `number | null` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `target` | `number | null` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `trend` | `'up' | 'down' | 'flat' | 'unknown'` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `unit` | `string` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
+## Warianty
+Podstawowy, z trendem, z celem, z odchyleniem, z mikrochartem oraz alarmowy/rekomendacyjny są kompozycją jednego API. Mikrotrend pozostaje prywatnym elementem MetricCard do czasu ewentualnej osobnej decyzji produktowej.
 
-## Zdarzenia
-Zdarzenia mają identyfikator komponentu, nazwę działania, `correlationId` i typowany payload. Komponent nie wywołuje bezpośrednio endpointu — przekazuje intencję do właściciela ekranu.
+## Ownership i handoff
+05.03 nie utrzymuje lokalnego katalogu KPI ani `KpiSparkline`. Po promocji ownerem jest wyłącznie `15.02`.
 
-## Stany i warianty
-Obsłuż: default, loading, empty, error, disabled, readonly i success, jeśli mają znaczenie dla tego komponentu. Nie renderuj akcji bez capability i nie ukrywaj przyczyny blokady.
-
-Warianty MetricCard: podstawowy, z trendem, z celem, z odchyleniem, z mikrochartem oraz alarmowy lub rekomendacyjny. Mikrochart, subtelne wypełnienie albo cień pod wykresem oraz ikona albo strzałka kierunku są elementami wariantu rozbudowanego, nie obowiązkową anatomią każdego MetricCard.
-
-Kontrakt docelowy opisany w dokumentacji jest szerszy niż obecny kontrakt TypeScript. Do czasu synchronizacji kontraktów technicznych nie wolno przedstawiać pól wariantu rozbudowanego jako istniejącego API komponentu.
-
-## Dostępność
-Semantyczny element HTML, pełna obsługa klawiatury, focus-visible, nazwa dostępna, komunikaty dynamiczne przez właściwe live region oraz brak przekazywania znaczenia wyłącznie kolorem.
+## Dostępność techniczna
+KPI ma jawną nazwę, tekstowy status i działające akcje. Mikrotrend jest dekoracyjny i nie jest jedynym nośnikiem znaczenia. Formalne WCAG AA nie jest bramą biznesową tego etapu.
 
 ## Konsumenci
 - `30.02` — Kolejka uwagi
@@ -85,9 +76,9 @@ Semantyczny element HTML, pełna obsługa klawiatury, focus-visible, nazwa dost�
 - `80.07` — Pomiar
 
 ## Storybook i testy
-Wymagane stories: wariant bazowy, wszystkie stany, długie polskie i angielskie etykiety, 200% zoom, dark/light, reduced motion oraz test interakcji dla każdej akcji. Target pozostaje backlogiem do chwili dodania fizycznego pliku story.
+Story 15.02 jest zaimplementowanym ownerem MetricCard w statusie `review`. Pokazuje warianty KPI, reprezentatywne stany, długi copy, mikrotrend płaski oraz działające akcje szczegółów i Papa. Pełny katalog zachowania stanów należy do 15.08.
 
-Story komponentu MetricCard odpowiada za pełny katalog wariantów. Story 05.03 może pokazać wybrane warianty jako decyzję powierzchni, ale nie zastępuje testów komponentu.
+05.03 nie renderuje lokalnych wariantów MetricCard ani `KpiSparkline`; zachowuje wyłącznie decision record i handoff do 15.02.
 
 ## Kryteria akceptacji
 1. `tsc --noEmit` kompiluje jedyny kontrakt kanoniczny.

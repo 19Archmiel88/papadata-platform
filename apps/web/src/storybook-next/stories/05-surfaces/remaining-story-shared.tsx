@@ -1,5 +1,11 @@
 import type { ReactNode } from 'react';
 
+import {
+  StoryPresentationMeta,
+  StoryPresentationPage,
+  StoryPresentationSection,
+} from '../../presentation/StoryPresentation';
+
 export type LocalizedCopy = {
   readonly pl: string;
   readonly en: string;
@@ -26,44 +32,55 @@ export function StoryPage({
   title,
   summary,
   variants,
+  handoff,
+  status = 'review',
   children,
 }: {
   readonly id: string;
   readonly title: ReactNode;
   readonly summary: ReactNode;
   readonly variants: ReactNode;
+  readonly handoff: ReactNode;
+  readonly status?: 'review' | 'accepted';
   readonly children: ReactNode;
 }) {
   return (
-    <main className="pd-f0-page pd-s5-page pd-s5-next-page" data-story-id={id}>
-      <div className="pd-f0-page__inner">
-        <header className="pd-f0-page__header">
-          <div className="pd-f0-page__label">
-            <span>05</span>
-            <span><Localized pl="Laboratorium decyzji" en="Decision laboratory" /></span>
-          </div>
-          <div className="pd-f0-page__heading">
-            <h1>{title}</h1>
-            <p>{summary}</p>
-          </div>
-          <dl className="pd-f0-page__meta" aria-label={copy({ pl: 'Parametry kontraktu', en: 'Contract parameters' })}>
-            <div>
-              <dt><Localized pl="Kontrakt" en="Contract" /></dt>
-              <dd>{id}</dd>
-            </div>
-            <div>
-              <dt><Localized pl="Zakres review" en="Review scope" /></dt>
-              <dd>{variants}</dd>
-            </div>
-            <div>
-              <dt><Localized pl="Status" en="Status" /></dt>
-              <dd>review</dd>
-            </div>
-          </dl>
-        </header>
-        {children}
-      </div>
-    </main>
+    <StoryPresentationPage
+      className="pd-s5-page pd-s5-next-page"
+      headerAside={(
+        <StoryPresentationMeta
+          ariaLabel={copy({ pl: 'Parametry laboratorium decyzji', en: 'Decision laboratory parameters' })}
+          items={[
+            {
+              label: <Localized pl="Rola" en="Role" />,
+              value: <Localized pl="decision record" en="decision record" />,
+            },
+            {
+              label: <Localized pl="Docelowy owner" en="Target owner" />,
+              value: handoff,
+            },
+            {
+              label: <Localized pl="Status" en="Status" />,
+              value: status,
+            },
+          ]}
+        />
+      )}
+      sectionCode="05"
+      sectionLabel={<Localized pl="Laboratorium decyzji" en="Decision laboratory" />}
+      storyId={id}
+      summary={summary}
+      title={title}
+    >
+      <p className="pd-s5-ownership-note">
+        <Localized
+          pl="Laboratorium dokumentuje decyzję i jej warianty. Po akceptacji reguła jest promowana do wskazanego właściciela i nie pozostaje drugim źródłem prawdy."
+          en="The laboratory documents a decision and its variants. After approval, the rule is promoted to the target owner and does not remain a second source of truth."
+        />
+        <span>{variants}</span>
+      </p>
+      {children}
+    </StoryPresentationPage>
   );
 }
 
@@ -79,16 +96,14 @@ export function StorySection({
   readonly children: ReactNode;
 }) {
   return (
-    <section className="pd-f0-section pd-s5-next-section">
-      <header className="pd-f0-section__header">
-        <span className="pd-f0-section__index" aria-hidden="true">{index}</span>
-        <div>
-          <h2>{title}</h2>
-          {summary ? <p>{summary}</p> : null}
-        </div>
-      </header>
-      <div className="pd-f0-section__content">{children}</div>
-    </section>
+    <StoryPresentationSection
+      className="pd-s5-next-section"
+      index={index}
+      summary={summary}
+      title={title}
+    >
+      {children}
+    </StoryPresentationSection>
   );
 }
 

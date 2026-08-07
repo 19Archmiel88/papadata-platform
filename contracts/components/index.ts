@@ -37,6 +37,7 @@ export * from './funnelstep';
 export * from './iconbutton';
 export * from './inlinenotice';
 export * from './lineagegraph';
+export * from './linkaction';
 export * from './menu';
 export * from './metriccard';
 export * from './morningbrief';

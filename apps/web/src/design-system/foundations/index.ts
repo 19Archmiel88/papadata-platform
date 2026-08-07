@@ -2,6 +2,8 @@ export * from './layers';
 export * from './motion';
 export * from './radius';
 export * from './runtime';
+export * from './semanticStatus';
+export type { SemanticStatusTone } from './semanticStatus';
 export * from './shadows';
 export * from './spacing';
 export * from './themes';

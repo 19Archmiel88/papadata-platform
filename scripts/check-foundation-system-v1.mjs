@@ -15,6 +15,7 @@ import {
 const contract = getContract();
 const componentSystem = readJson('apps/web/src/design-system/component-system-v1.json');
 const foundationStory = readText('apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx');
+const storyPresentation = readText('apps/web/src/storybook-next/presentation/story-presentation.css');
 const surfacesStory = readText('apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx');
 const theme = readText('apps/web/src/design-system/foundations/themes/carbon-pearl.css');
 const foundationsIndex = readText('apps/web/src/design-system/foundations/index.ts');
@@ -189,11 +190,20 @@ for (const entryId of foundationEntryIds) {
 for (const entryId of laboratoryEntryIds) {
   const entry = entries.get(entryId);
   ensure(entry, `Missing laboratory entry ${entryId}.`);
-  ensure(entry.sourceStatus === 'specified', `${entryId}: laboratory source must remain specified.`);
-  ensure(entry.documentationStatus === 'review', `${entryId}: laboratory documentation must remain in review.`);
-  ensure(entry.prototypeStatus === 'review', `${entryId}: laboratory prototype must remain in review.`);
   ensure(entry.productionStatus === 'not_started', `${entryId}: laboratory production must not be started.`);
-  ensure(entry.testStatus === 'not_started', `${entryId}: laboratory tests must remain not_started for Etap 01.`);
+
+  if (entryId === '05.04') {
+    ensure(entry.sourceStatus === 'accepted', '05.04: accepted separator decision must be marked accepted.');
+    ensure(entry.documentationStatus === 'accepted', '05.04: accepted separator decision documentation must be accepted.');
+    ensure(entry.prototypeStatus === 'implemented', '05.04: accepted separator decision prototype must be implemented.');
+    ensure(entry.testStatus === 'passing', '05.04: accepted separator decision static checks must pass.');
+    continue;
+  }
+
+  ensure(entry.sourceStatus === 'specified', `${entryId}: open laboratory source must remain specified.`);
+  ensure(entry.documentationStatus === 'review', `${entryId}: open laboratory documentation must remain in review.`);
+  ensure(entry.prototypeStatus === 'review', `${entryId}: open laboratory prototype must remain in review.`);
+  ensure(entry.testStatus === 'not_started', `${entryId}: open laboratory tests must remain not_started.`);
 }
 
 for (const token of componentSystem.foundationBaseline.requiredTokens) {
@@ -213,17 +223,57 @@ for (const exportName of componentSystem.foundationBaseline.requiredIconExports)
 }
 
 for (const cssImport of [
-  'foundation-iconography-no-containers.css',
-  'foundation-lab-alignment.css',
-  'foundation-geometry-lab-only.css',
-  'foundation-select-target.css',
+  '../../presentation/story-presentation.css',
+  'foundation-accessibility.css',
+  'foundation-geometry.css',
+  'foundation-iconography.css',
   'foundation-status-catalog.css',
 ]) {
-  ensure(foundationStory.includes(cssImport), `Missing Foundation CSS import ${cssImport}.`);
+  ensure(
+    foundationStory.includes(cssImport),
+    `Missing Foundation CSS import ${cssImport}.`,
+  );
+}
+
+const foundationStoriesDirectory =
+  'apps/web/src/storybook-next/stories/00-foundations';
+
+const foundationStoryFiles = new Set(
+  readdirSync(resolveFromRoot(foundationStoriesDirectory)),
+);
+
+for (const obsoleteCssImport of [
+  'foundation-iconography-no-containers.css',
+  'foundation-geometry-lab-only.css',
+  'foundation-select-target.css',
+]) {
+  ensure(
+    !foundationStory.includes(obsoleteCssImport),
+    `Obsolete Foundation CSS import ${obsoleteCssImport} must not return.`,
+  );
+  ensure(
+    !foundationStoryFiles.has(obsoleteCssImport),
+    `Obsolete Foundation CSS file ${obsoleteCssImport} must not return.`,
+  );
+}
+
+for (const obsoleteFoundationSelector of [
+  'pd-f0-icon-button',
+  'pd-f0-focus-sample',
+]) {
+  ensure(
+    !foundationStory.includes(obsoleteFoundationSelector),
+    `Obsolete Foundation selector ${obsoleteFoundationSelector} must not return to the Foundation story.`,
+  );
+  ensure(
+    !storyPresentation.includes(obsoleteFoundationSelector),
+    `Obsolete Foundation selector ${obsoleteFoundationSelector} must not return to the canonical presentation shell.`,
+  );
 }
 
 ensure(!surfacesStory.includes('communication-layers-lab.css'), 'Laboratorium decyzji must not import removed communication-layers-lab.css.');
-ensure(surfacesStory.includes('surfaces-laboratory.css'), 'Missing Laboratorium decyzji surface CSS import.');
+ensure(surfacesStory.includes('../../presentation/story-presentation.css'), 'Missing canonical Storybook presentation CSS import in Laboratorium.');
+ensure(surfacesStory.includes('auth-laboratory.css'), 'Missing 05.01 auth laboratory CSS import.');
 ensure(componentSystem.foundationBaseline.expectedActiveStoryCount === contract.activeVisualLayer.activeEntryStories, 'Component baseline active story count is stale.');
 
 for (const tokenName of [

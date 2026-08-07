@@ -1,17 +1,24 @@
 {
   "fixtureId": "SB-096",
-  "storyTitle": "15 Wykresy i wizualizacje danych/MetricCard",
+  "storyTitle": "15 Wykresy i dane/MetricCard",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-02-metriccard.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "MetricCard",
+    "StatusBadge",
+    "TextAction"
+  ],
   "states": [
     "ready",
-    "loading",
-    "empty",
-    "error",
-    "noData",
-    "singlePoint",
-    "negativeValues"
+    "partial",
+    "stale",
+    "processing",
+    "noData"
+  ],
+  "emphasis": [
+    "default",
+    "alert",
+    "recommendation"
   ],
   "viewports": [
     1440,
@@ -27,27 +34,25 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-papa-action",
+    "verify-detail-action",
+    "verify-accessible-metric-name"
   ],
   "visualAssertions": [
+    "foundation-shell-light",
+    "foundation-shell-dark",
     "1440-light",
     "1440-dark",
     "768-reflow",
     "390-mobile",
-    "200-percent-zoom",
-    "reduced-motion",
-    "state-negativeValues"
+    "long-copy",
+    "no-horizontal-page-scroll",
+    "no-local-visual-overrides"
   ],
   "a11y": [
-    "keyboard-only",
-    "focus-visible",
     "accessible-name",
-    "live-region",
-    "200-percent-zoom"
+    "semantic-state",
+    "decorative-sparkline"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-static-and-play-contract"
 }

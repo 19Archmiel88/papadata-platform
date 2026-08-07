@@ -9,7 +9,14 @@ import {
 import './remaining-story-shared.css';
 import './effects-laboratory.css';
 
-type EffectKind = 'brand' | 'visualization' | 'scrim' | 'depth' | 'premium' | 'chaos';
+type EffectKind =
+  | 'canvas'
+  | 'brand'
+  | 'visualization'
+  | 'scrim'
+  | 'depth'
+  | 'neutral'
+  | 'chaos';
 
 const effects: ReadonlyArray<{
   readonly kind: EffectKind;
@@ -17,12 +24,90 @@ const effects: ReadonlyArray<{
   readonly title: { readonly pl: string; readonly en: string };
   readonly description: { readonly pl: string; readonly en: string };
 }> = [
-  { kind: 'brand', tone: 'success', title: { pl: 'Gradient zasobu marki', en: 'Brand asset gradient' }, description: { pl: 'Tylko w znaku, ilustracji albo kontrolowanym zasobie marki.', en: 'Only in a mark, illustration or controlled brand asset.' } },
-  { kind: 'visualization', tone: 'success', title: { pl: 'Gradient wizualizacji', en: 'Visualization gradient' }, description: { pl: 'Koduje zakres, gęstość albo przedział danych.', en: 'Encodes range, density or a data interval.' } },
-  { kind: 'scrim', tone: 'success', title: { pl: 'Scrim warstwy', en: 'Layer scrim' }, description: { pl: 'Oddziela overlay od dokumentu bez dekoracyjnego blur.', en: 'Separates an overlay from the document without decorative blur.' } },
-  { kind: 'depth', tone: 'success', title: { pl: 'Techniczna głębia', en: 'Technical depth' }, description: { pl: 'Cień wyłącznie dla rzeczywistej warstwy nakładanej.', en: 'Shadow only for a real overlay layer.' } },
-  { kind: 'premium', tone: 'success', title: { pl: 'Powierzchnia premium', en: 'Premium surface' }, description: { pl: 'Wynika z proporcji, typografii, rytmu i jakości danych.', en: 'Comes from proportion, typography, rhythm and data quality.' } },
-  { kind: 'chaos', tone: 'critical', title: { pl: 'Dekoracyjny chaos', en: 'Decorative chaos' }, description: { pl: 'Glow, halo, glass i przypadkowy gradient jako domyślne tło AppShell.', en: 'Glow, halo, glass and random gradients as the AppShell default.' } },
+  {
+    kind: 'canvas',
+    tone: 'success',
+    title: {
+      pl: 'Ambient canvas aplikacji',
+      en: 'Application ambient canvas',
+    },
+    description: {
+      pl: 'Jedno globalne tło produktu: ciągłe pola marki i danych w light/dark, bez glow, blur i halo.',
+      en: 'One global product background: continuous brand and data fields in light/dark, without glow, blur or halo.',
+    },
+  },
+  {
+    kind: 'brand',
+    tone: 'success',
+    title: {
+      pl: 'Gradient zasobu marki',
+      en: 'Brand asset gradient',
+    },
+    description: {
+      pl: 'Tylko w znaku, ilustracji albo kontrolowanym zasobie marki.',
+      en: 'Only in a mark, illustration or controlled brand asset.',
+    },
+  },
+  {
+    kind: 'visualization',
+    tone: 'success',
+    title: {
+      pl: 'Gradient wizualizacji',
+      en: 'Visualization gradient',
+    },
+    description: {
+      pl: 'Koduje zakres, gęstość albo przedział danych i korzysta z semantyki danych.',
+      en: 'Encodes range, density or a data interval and uses data semantics.',
+    },
+  },
+  {
+    kind: 'scrim',
+    tone: 'success',
+    title: {
+      pl: 'Scrim warstwy',
+      en: 'Layer scrim',
+    },
+    description: {
+      pl: 'Oddziela overlay od dokumentu bez dekoracyjnego blur.',
+      en: 'Separates an overlay from the document without decorative blur.',
+    },
+  },
+  {
+    kind: 'depth',
+    tone: 'success',
+    title: {
+      pl: 'Techniczna głębia',
+      en: 'Technical depth',
+    },
+    description: {
+      pl: 'Cień wyłącznie dla rzeczywistej warstwy nakładanej.',
+      en: 'Shadow only for a real overlay layer.',
+    },
+  },
+  {
+    kind: 'neutral',
+    tone: 'success',
+    title: {
+      pl: 'Neutralna powierzchnia',
+      en: 'Neutral surface',
+    },
+    description: {
+      pl: 'Jakość powierzchni wynika z proporcji, typografii, rytmu i danych, nie z dekoracyjnego efektu.',
+      en: 'Surface quality comes from proportion, typography, rhythm and data, not from decorative effects.',
+    },
+  },
+  {
+    kind: 'chaos',
+    tone: 'critical',
+    title: {
+      pl: 'Dekoracyjny chaos',
+      en: 'Decorative chaos',
+    },
+    description: {
+      pl: 'Lokalne gradienty powierzchni, glow, halo i glass traktowane jako dekoracja AppShell.',
+      en: 'Local surface gradients, glow, halo and glass treated as AppShell decoration.',
+    },
+  },
 ];
 
 function EffectSample({ kind }: { readonly kind: EffectKind }) {
@@ -50,22 +135,59 @@ function ThemeEffectPair() {
 function GlassDecision() {
   return (
     <div className="pd-s55-glass-decision">
-      <div><ReviewBadge tone="critical"><Localized pl="AppShell" en="AppShell" /></ReviewBadge><h3><Localized pl="Glass, blur i glow są zabronione" en="Glass, blur and glow are forbidden" /></h3><p><Localized pl="Powłoka używa nieprzezroczystych powierzchni, separatorów i jawnych warstw." en="The shell uses opaque surfaces, separators and explicit layers." /></p></div>
-      <div><ReviewBadge tone="info"><Localized pl="Poza AppShell" en="Outside AppShell" /></ReviewBadge><h3><Localized pl="Brak decyzji w dokumentacji" en="No decision in documentation" /></h3><p><Localized pl="Nie rozszerzamy glassmorphism na inne obszary bez osobnego kontraktu i akceptacji." en="We do not extend glassmorphism to other areas without a separate contract and approval." /></p></div>
+      <div>
+        <ReviewBadge tone="critical">
+          <Localized pl="Powierzchnie AppShell" en="AppShell surfaces" />
+        </ReviewBadge>
+
+        <h3>
+          <Localized
+            pl="Glass, blur i glow powierzchni są zabronione"
+            en="Surface glass, blur and glow are forbidden"
+          />
+        </h3>
+
+        <p>
+          <Localized
+            pl="AppShell może używać kanonicznego ambient canvasu, ale jego powierzchnie i kontrolki pozostają nieprzezroczyste, bez glassmorphismu i dekoracyjnego blur."
+            en="AppShell may use the canonical ambient canvas, but its surfaces and controls remain opaque, without glassmorphism or decorative blur."
+          />
+        </p>
+      </div>
+
+      <div>
+        <ReviewBadge tone="info">
+          <Localized pl="Poza AppShell" en="Outside AppShell" />
+        </ReviewBadge>
+
+        <h3>
+          <Localized
+            pl="Brak decyzji w dokumentacji"
+            en="No decision in documentation"
+          />
+        </h3>
+
+        <p>
+          <Localized
+            pl="Nie rozszerzamy glassmorphism na inne obszary bez osobnego kontraktu i akceptacji."
+            en="We do not extend glassmorphism to other areas without a separate contract and approval."
+          />
+        </p>
+      </div>
     </div>
   );
 }
 
 export function EffectsLaboratory() {
   return (
-    <StoryPage id="05.05" title={<Localized pl="Gradienty, światło i szkło" en="Gradients, light and glass" />} summary={<Localized pl="Efekt wizualny jest dozwolony tylko wtedy, gdy ma konkretną funkcję. Dekoracyjne gradienty, glow i glassmorphism są zabronione w AppShell." en="A visual effect is allowed only when it has a specific function. Decorative gradients, glow and glassmorphism are forbidden in AppShell." />} variants={<Localized pl="marka · dane · scrim · warstwa · light/dark" en="brand · data · scrim · layer · light/dark" />}>
+    <StoryPage handoff={<Localized pl="00.08 — Głębia i warstwy" en="00.08 — Depth and layers" />} id="05.05" status="accepted" title={<Localized pl="Gradienty, światło i szkło" en="Gradients, light and glass" />} summary={<Localized pl="Efekt wizualny jest dozwolony tylko wtedy, gdy ma konkretną funkcję. AppShell używa jednego kanonicznego ambient canvasu; lokalne powierzchnie nie tworzą dekoracyjnych gradientów, glow ani glassmorphismu." en="A visual effect is allowed only when it has a specific function. AppShell uses one canonical ambient canvas; local surfaces do not create decorative gradients, glow or glassmorphism." />} variants={<Localized pl="canvas · marka · dane · scrim · warstwa · light/dark" en="canvas · brand · data · scrim · layer · light/dark" />}>
       <StorySection index="01" title={<Localized pl="Dozwolone i zakazane zastosowania" en="Allowed and forbidden uses" />}>
         <div className="pd-s55-effect-list">{effects.map((effect) => <EffectSample key={effect.kind} kind={effect.kind} />)}</div>
       </StorySection>
       <StorySection index="02" title={<Localized pl="Light i dark" en="Light and dark" />} summary={<Localized pl="Motyw nie zmienia geometrii i nie potrzebuje neonowego podświetlenia." en="The theme does not change geometry and does not need neon lighting." />}><ThemeEffectPair /></StorySection>
       <StorySection index="03" title={<Localized pl="Decyzja o szkle" en="Glass decision" />}><GlassDecision /></StorySection>
       <StorySection index="04" title={<Localized pl="Decyzja docelowa" en="Target decision" />}>
-        <DecisionRows accepted={<Localized pl="Kontrolowany gradient marki lub danych, scrim oraz techniczny cień prawdziwego overlayu." en="Controlled brand or data gradient, scrim and technical shadow of a real overlay." />} rejected={<Localized pl="Glassmorphism, przypadkowy glow, halo i gradient jako domyślne tło AppShell." en="Glassmorphism, random glow, halo and gradients as the default AppShell background." />} />
+        <DecisionRows accepted={<Localized pl="Kanoniczny ambient canvas aplikacji, kontrolowany gradient marki lub danych, scrim oraz techniczny cień prawdziwego overlayu." en="The canonical application ambient canvas, controlled brand or data gradients, scrim and the technical shadow of a real overlay." />} rejected={<Localized pl="Lokalne dekoracyjne gradienty powierzchni, glassmorphism, przypadkowy glow i halo." en="Local decorative surface gradients, glassmorphism, random glow and halo." />} />
       </StorySection>
     </StoryPage>
   );

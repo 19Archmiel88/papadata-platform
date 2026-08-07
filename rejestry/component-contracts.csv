@@ -38,6 +38,7 @@ FunnelStep,04-komponenty-domenowe/funnel-step.md,contracts/components/funnelstep
 IconButton,04-komponenty-bazowe/komponenty/iconbutton.md,contracts/components/iconbutton.ts,IconButtonProps,IconButtonEvent,canonical,Artur Wiśniewski,1.0
 InlineNotice,04-komponenty-bazowe/komponenty/inlinenotice.md,contracts/components/inlinenotice.ts,InlineNoticeProps,InlineNoticeEvent,canonical,Artur Wiśniewski,1.0
 LineageGraph,04-komponenty-domenowe/lineage-graph.md,contracts/components/lineagegraph.ts,LineageGraphProps,LineageGraphEvent,canonical,Artur Wiśniewski,1.0
+LinkAction,04-komponenty-bazowe/komponenty/linkaction.md,contracts/components/linkaction.ts,LinkActionProps,LinkActionEvent,canonical,Artur Wiśniewski,1.0
 Menu,04-komponenty-bazowe/komponenty/menu.md,contracts/components/menu.ts,MenuProps,MenuEvent,canonical,Artur Wiśniewski,1.0
 MetricCard,05-wykresy-i-wizualizacje/komponenty/metriccard.md,contracts/components/metriccard.ts,MetricCardProps,MetricCardEvent,canonical,Artur Wiśniewski,1.0
 MorningBrief,04-komponenty-domenowe/morning-brief.md,contracts/components/morningbrief.ts,MorningBriefProps,MorningBriefEvent,canonical,Artur Wiśniewski,1.0

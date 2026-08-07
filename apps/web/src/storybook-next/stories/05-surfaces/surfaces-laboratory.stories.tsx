@@ -7,14 +7,19 @@ import {
   Checkbox,
   InlineNotice,
   PasswordField,
+  TextAction,
   TextField,
   VerificationCodeInput,
   type StatusBadgeTone,
 } from '../../../design-system/components';
 import { PapaDataBrand } from '../../../design-system/icons';
-import '../foundations-demo.css';
-import '../00-foundations/foundation-lab-alignment.css';
-import './surfaces-laboratory.css';
+import '../../presentation/story-presentation.css';
+import {
+  StoryPresentationMeta,
+  StoryPresentationPage,
+  StoryPresentationSection,
+} from '../../presentation/StoryPresentation';
+import './auth-laboratory.css';
 import { EffectsLaboratory } from './EffectsLaboratory';
 import { SeparatorLaboratory } from './SeparatorLaboratory';
 import { DataSurfaceLaboratory } from './DataSurfaceLaboratory';
@@ -55,12 +60,16 @@ function Localized({ pl, en }: LocalizedCopy) {
 
 
 function SurfacePage({
+  id,
+  handoff,
   title,
   summary,
   meta,
   className,
   children,
 }: {
+  readonly id: string;
+  readonly handoff: ReactNode;
   readonly title: ReactNode;
   readonly summary: ReactNode;
   readonly meta: ReadonlyArray<{
@@ -71,34 +80,33 @@ function SurfacePage({
   readonly children: ReactNode;
 }) {
   return (
-    <main className={['pd-f0-page', 'pd-s5-page', className].filter(Boolean).join(' ')}>
-      <div className="pd-f0-page__inner">
-        <header className="pd-f0-page__header">
-          <div className="pd-f0-page__label">
-            <span>05</span>
-            <span>
-              <Localized pl="Laboratorium decyzji" en="Decision laboratory" />
-            </span>
-          </div>
-          <div className="pd-f0-page__heading">
-            <h1>{title}</h1>
-            <p>{summary}</p>
-          </div>
-          <dl className="pd-f0-page__meta" aria-label={copy({
-            pl: 'Parametry kontraktu powierzchni',
-            en: 'Surface contract parameters',
-          })}>
-            {meta.map((item, index) => (
-              <div key={index}>
-                <dt>{item.label}</dt>
-                <dd>{item.value}</dd>
-              </div>
-            ))}
-          </dl>
-        </header>
-        {children}
-      </div>
-    </main>
+    <StoryPresentationPage
+      className={['pd-s5-page', className].filter(Boolean).join(' ')}
+      headerAside={(
+        <StoryPresentationMeta
+          ariaLabel={copy({ pl: 'Parametry kontraktu powierzchni', en: 'Surface contract parameters' })}
+          items={[
+            { label: <Localized pl="Rola" en="Role" />, value: <Localized pl="decision record" en="decision record" /> },
+            { label: <Localized pl="Docelowy owner" en="Target owner" />, value: handoff },
+            { label: <Localized pl="Status" en="Status" />, value: 'accepted' },
+          ]}
+        />
+      )}
+      sectionCode="05"
+      sectionLabel={<Localized pl="Laboratorium decyzji" en="Decision laboratory" />}
+      storyId={id}
+      summary={summary}
+      title={title}
+    >
+      <p className="pd-s5-ownership-note">
+        <Localized
+          pl="05.01 ocenia canvas Auth. Pełny AuthShell i przepływy dostępu należą do docelowej warstwy Access/Auth."
+          en="05.01 evaluates the Auth canvas. The complete AuthShell and access flows belong to the target Access/Auth layer."
+        />
+        <span>{meta[1]?.value}</span>
+      </p>
+      {children}
+    </StoryPresentationPage>
   );
 }
 
@@ -114,18 +122,13 @@ function SurfaceSection({
   readonly children: ReactNode;
 }) {
   return (
-    <section className="pd-f0-section">
-      <header className="pd-f0-section__header">
-        <span className="pd-f0-section__index" aria-hidden="true">
-          {index}
-        </span>
-        <div>
-          <h2>{title}</h2>
-          {summary ? <p>{summary}</p> : null}
-        </div>
-      </header>
-      <div className="pd-f0-section__content">{children}</div>
-    </section>
+    <StoryPresentationSection
+      index={index}
+      summary={summary}
+      title={title}
+    >
+      {children}
+    </StoryPresentationSection>
   );
 }
 
@@ -810,15 +813,13 @@ function AuthCard({
 
                   return (
                     <span className="pd-s5-auth-form__secondary-item" key={copy(action.label)}>
-                      <Button
+                      <TextAction
                         aria-describedby={action.disabled && actionDisabledReason ? actionReasonId : undefined}
                         disabled={action.disabled}
                         onClick={actionMessage ? () => announce(actionMessage) : undefined}
-                        type="button"
-                        variant="link"
                       >
                         {copy(action.label)}
-                      </Button>
+                      </TextAction>
                       {action.disabled && actionDisabledReason ? (
                         <span
                           className="pd-s5-auth-disabled-reason"
@@ -1329,6 +1330,8 @@ export const TloAuth: Story = {
   render: () => (
     <SurfacePage
       className="pd-s5-page--auth"
+      handoff={<Localized pl="25 — Access / Auth patterns" en="25 — Access / Auth patterns" />}
+      id="05.01"
       title={<Localized pl="Tło Auth" en="Auth background" />}
       summary={
         <Localized
@@ -1404,7 +1407,7 @@ export const TloAuth: Story = {
         </SurfaceVariant>
         <SurfaceVariant
           title={<Localized pl="Granice zakresu 05.01" en="05.01 scope boundaries" />}
-          description={<Localized pl="Status story pozostaje review; ta sekcja nie deklaruje produkcyjnego AuthShell ani akceptacji responsive." en="The story status remains review; this section does not declare production AuthShell or responsive acceptance." />}
+          description={<Localized pl="Status story jest accepted; ta sekcja nadal nie deklaruje produkcyjnego AuthShell ani akceptacji responsive." en="The story status is accepted; this section still does not declare production AuthShell or responsive acceptance." />}
           token="scope"
         >
           <AuthScopeBoundaryList />

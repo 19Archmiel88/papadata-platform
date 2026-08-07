@@ -12,20 +12,23 @@ component_id: Button
 ## Cel i odpowiedzialność
 `Button` rozwiązuje jeden określony problem interfejsu i nie przejmuje odpowiedzialności ekranu ani domenowego API. Kontrakt jest stanem docelowym wymagającym implementacji i testów.
 
-## Anatomia
-text; buttonType; size; loading; leadingIcon; trailingIcon.
+## Runtime source of truth
+Publiczne React API działającego komponentu jest własnością `apps/web/src/design-system/components/Button/Button.tsx`. Plik `contracts/components/button.ts` pozostaje kontraktem orkiestracyjnym/specyfikacyjnym dla ekranów i zdarzeń; nie jest kopią React Props.
 
-## Kanoniczny kontrakt TypeScript
-Jedyny kanoniczny kontrakt: `contracts/components/button.ts`.
+## Anatomia
+text; type; size; loading; startIcon; endIcon. Runtime dodatkowo przyjmuje `children` i natywne atrybuty `<button>`.
+
+## Kontrakt orkiestracyjny TypeScript
+Kontrakt orkiestracyjny/specyfikacyjny: `contracts/components/button.ts`.
 
 | Pole / kontrakt | Typ | Reguła |
 |---|---|---|
 | `text` | `string` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `buttonType` | `'button' | 'submit' | 'reset'` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `size` | `'sm' | 'md' | 'lg'` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
+| `type` | `'button' | 'submit' | 'reset'` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
+| `size` | `'small' | 'medium' | 'large'` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
 | `loading` | `boolean` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `leadingIcon` | `string | null` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
-| `trailingIcon` | `string | null` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
+| `startIcon` | `string | null` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
+| `endIcon` | `string | null` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
 
 ## Zdarzenia
 Zdarzenia mają identyfikator komponentu, nazwę działania, `correlationId` i typowany payload. Komponent nie wywołuje bezpośrednio endpointu — przekazuje intencję do właściciela ekranu.
@@ -171,7 +174,7 @@ Semantyczny element HTML, pełna obsługa klawiatury, focus-visible, nazwa dost�
 Wymagane stories: wariant bazowy, wszystkie stany, długie polskie i angielskie etykiety, 200% zoom, dark/light, reduced motion oraz test interakcji dla każdej akcji. Target pozostaje backlogiem do chwili dodania fizycznego pliku story.
 
 ## Kryteria akceptacji
-1. `tsc --noEmit` kompiluje jedyny kontrakt kanoniczny.
+1. `tsc --noEmit` kompiluje kontrakt orkiestracyjny, a runtime Props kompilują się z implementacją komponentu.
 2. Dokument, rejestr i macierz ekran–komponent wskazują ten sam component ID i plik kontraktu.
 3. Testy a11y nie wykazują naruszeń krytycznych.
 4. Komponent nie definiuje własnych tokenów ani duplikuje komponentu bazowego.

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "systemVersion": "Component System V1",
-  "stage": "C1.6",
-  "stageName": "integrate C1 stories, statuses and evidence",
+  "stage": "C2.1",
+  "stageName": "Source of Truth & Ownership Alignment",
   "foundationBaseline": {
-    "expectedActiveStoryCount": 19,
+    "expectedActiveStoryCount": 22,
     "expectedActiveStoryFileCount": 2,
     "activeStoryFiles": [
       "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
@@ -68,7 +68,9 @@
       "spacingTokens",
       "./layers",
       "layerTokens",
-      "layerContract"
+      "layerContract",
+      "./semanticStatus",
+      "SemanticStatusTone"
     ],
     "requiredIconExports": [
       "Icon",
@@ -87,7 +89,12 @@
     "TextAction",
     "LinkAction",
     "IconButton",
-    "ButtonGroup"
+    "ButtonGroup",
+    "TextField",
+    "PasswordField",
+    "Textarea",
+    "FileInput",
+    "VerificationCodeInput"
   ],
   "requiredComponentExports": [
     "Button",
@@ -108,7 +115,17 @@
     "IconButtonVariant",
     "ButtonGroup",
     "ButtonGroupProps",
-    "ButtonGroupOrientation"
+    "ButtonGroupOrientation",
+    "TextField",
+    "TextFieldProps",
+    "PasswordField",
+    "PasswordFieldProps",
+    "Textarea",
+    "TextareaProps",
+    "FileInput",
+    "FileInputProps",
+    "VerificationCodeInput",
+    "VerificationCodeInputProps"
   ],
   "plannedComponents": [
     "PapaDataBrand",
@@ -117,11 +134,17 @@
     "TextAction",
     "LinkAction",
     "IconButton",
-    "ButtonGroup"
+    "ButtonGroup",
+    "TextField",
+    "PasswordField",
+    "Textarea",
+    "FileInput",
+    "VerificationCodeInput"
   ],
   "activeComponentEntries": [
     "10.01",
     "10.02",
+    "10.03",
     "10.11"
   ],
   "finalizedComponentEntries": [
@@ -134,6 +157,7 @@
     "requiredEntries": [
       "10.01",
       "10.02",
+      "10.03",
       "10.11"
     ],
     "requiredPublicExports": [
@@ -141,5 +165,7 @@
       "apps/web/src/design-system/icons/index.ts",
       "apps/web/src/design-system/components/index.ts"
     ]
-  }
+  },
+  "ownershipContract": "docs/storybook/SOURCE-OF-TRUTH-OWNERSHIP.md",
+  "runtimeApiRegistry": "rejestry/runtime-component-api.csv"
 }

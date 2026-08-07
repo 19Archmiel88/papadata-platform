@@ -288,7 +288,7 @@
 }
 
 .pd-status-badge[data-tone='processing'] {
-  --pd-badge-accent: var(--pd-brand);
+  --pd-badge-accent: var(--pd-status-info);
 }
 
 .pd-status-badge__dot {

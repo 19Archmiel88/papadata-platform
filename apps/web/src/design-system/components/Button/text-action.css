@@ -53,8 +53,7 @@ a.pd-inline-action:focus-visible {
   color: currentColor;
 }
 
-.pd-inline-action__label::after {
-  content: "";
+.pd-inline-action__activity-line {
   position: absolute;
   right: 0;
   bottom: -0.22em;
@@ -72,8 +71,8 @@ a.pd-inline-action:focus-visible {
       var(--pd-motion-easing-emphasized);
 }
 
-.pd-inline-action:hover .pd-inline-action__label::after,
-.pd-inline-action:focus-visible .pd-inline-action__label::after {
+.pd-inline-action:hover .pd-inline-action__activity-line,
+.pd-inline-action:focus-visible .pd-inline-action__activity-line {
   opacity: 1;
   transform: scaleX(1);
 }
@@ -110,8 +109,8 @@ a.pd-inline-action:focus-visible {
   opacity: 0.56;
 }
 
-.pd-inline-action[disabled] .pd-inline-action__label::after,
-.pd-inline-action[aria-disabled='true'] .pd-inline-action__label::after {
+.pd-inline-action[disabled] .pd-inline-action__activity-line,
+.pd-inline-action[aria-disabled='true'] .pd-inline-action__activity-line {
   opacity: 0;
   transform: scaleX(0);
 }
@@ -119,7 +118,7 @@ a.pd-inline-action:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .pd-inline-action,
   .pd-inline-action__icon,
-  .pd-inline-action__label::after {
+  .pd-inline-action__activity-line {
     transition-duration: 1ms;
   }
 }
@@ -131,7 +130,7 @@ a.pd-inline-action:focus-visible {
     color: LinkText;
   }
 
-  .pd-inline-action__label::after {
+  .pd-inline-action__activity-line {
     background: LinkText;
   }
 

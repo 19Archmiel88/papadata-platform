@@ -87,6 +87,12 @@ export const TextAction = forwardRef<
           {endIcon}
         </span>
       ) : null}
+
+      <span
+        aria-hidden="true"
+        className="pd-inline-action__activity-line"
+        data-slot="activity-line"
+      />
     </button>
   );
 });

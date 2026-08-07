@@ -18,7 +18,7 @@ applies_to:
 approved_commit: "94ea15ab11d018252944b36fdc55df8b7462e30a"
 approved_evidence: "foundation-evidence/manifest.json"
 owner: Artur Wiśniewski
-updated_at: 2026-08-03
+updated_at: 2026-08-06
 status: stage-01-accepted
 ---
 
@@ -26,7 +26,7 @@ status: stage-01-accepted
 
 ## Decyzja
 
-Baseline Etapu 01 wymaga praktycznej dostępności desktopowej: semantyki HTML, obsługi klawiatury, widocznego focus-visible, tekstowych statusów i reduced motion. Formalne drobne odchylenia kontrastu w produkcie B2B są rekomendacją, jeśli nie blokują użycia.
+Baseline Etapu 01 wymaga praktycznej dostępności desktopowej: semantyki HTML, obsługi klawiatury, widocznego focus-visible w postaci jednego zewnętrznego ringu, tekstowych statusów i reduced motion. Formalne drobne odchylenia kontrastu w produkcie B2B są rekomendacją, jeśli nie blokują użycia.
 
 ## Macierz stanów interakcji
 
@@ -34,7 +34,7 @@ Baseline Etapu 01 wymaga praktycznej dostępności desktopowej: semantyki HTML, 
 |---|---|---|
 | default | stan bazowy | czytelna etykieta i rola |
 | hover | wskazanie kursorem | nie zmienia układu |
-| focus-visible | fokus klawiatury | widoczny ring lub linia fokusu |
+| focus-visible | fokus klawiatury | jeden widoczny zewnętrzny ring bez dodatkowej linii wewnątrz kontrolki |
 | active | akcja w trakcie naciśnięcia | krótkie potwierdzenie |
 | pressed | przełącznik wciśnięty | `aria-pressed` tam, gdzie dotyczy |
 | selected | element wybrany | tekst/ARIA poza kolorem |
@@ -43,6 +43,15 @@ Baseline Etapu 01 wymaga praktycznej dostępności desktopowej: semantyki HTML, 
 | invalid | dane wymagają korekty | opis błędu tekstem |
 | loading | operacja trwa | stan nie usuwa etykiety |
 | unavailable | funkcja niedostępna w kontekście | nie udaje disabled |
+
+## Kontrakt focus-visible
+
+- fokus klawiatury jest prezentowany jako jeden zewnętrzny ring oparty na `--pd-focus-visible`, `--pd-focus-width`, `--pd-focus-offset` i `--pd-focus-ring`;
+- globalny kontrakt nie używa niebieskiego podkreślenia `border-bottom` ani insetowej linii wewnątrz kontrolki;
+- komponent złożony, taki jak pole formularza, pokazuje ring na powierzchni właściciela przez `:focus-within`;
+- wewnętrzny `input`, `textarea`, `select` lub `file input` nie renderuje drugiego outline ani drugiego box-shadow;
+- focus nie może zmieniać geometrii, wysokości ani szerokości kontrolki;
+- forced colors zachowuje natywny kolor `Highlight` przez outline.
 
 ## Zakres komponentów
 

@@ -5,7 +5,7 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-8B85AF5FD2D0
 status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+updated_at: 2026-08-07T08:24:00+02:00
 ---
 
 # ChartFrame
@@ -21,116 +21,109 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Wersja | 1.0 |
 | Status kontraktu | zatwierdzony stan docelowy |
 | Priorytet | P0 |
-| Właściciel | Analytics UX |
+| Właściciel | Analytics UI |
 | Moduł | Wykresy i wizualizacje danych — M02 |
-
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | IMPLEMENTED — REVIEW |
+| Runtime source of truth | `apps/web/src/design-system/components/ChartFrame/ChartFrame.tsx` |
+| Storybook | `15 Wykresy i dane/ChartFrame` |
+| Handoff | `05.03 → 15.01` |
 
 ## Cel i decyzja docelowa
 
-„ChartFrame” jest współdzielonym kontraktem, a nie lokalnym układem jednego ekranu. Wzorzec ma jedną odpowiedzialność, korzysta z fundamentów i komponentów bazowych oraz udostępnia warianty wymagane przez domeny bez kopiowania implementacji.
+`ChartFrame` jest kanonicznym kontenerem pojedynczej wizualizacji analitycznej. Odpowiada za kontekst decyzji, status i świeżość danych, metadane, filtry i akcje, miejsce na wizualizację, legendę, adnotację, narracyjny wniosek oraz alternatywną reprezentację tabelaryczną.
 
-## Stan obecny
+Nie jest silnikiem wykresów. `TrendChart`, `ComparisonChart`, `ShareChart`, `ForecastChart` i pozostałe rodziny są przekazywane do niego jako gotowa wizualizacja. ChartFrame nie tworzy lokalnych wersji `Button`, `TextAction`, `SegmentedControl`, `DataTable` ani innych kontrolek.
 
+## Ownership
 
-## Zakres i wymagania
+- `15.01` jest jedynym Storybookowym właścicielem pełnego ChartFrame.
+- `05.03` zachowuje wyłącznie decision record i handoff; nie renderuje drugiego pełnego ChartFrame.
+- rodzaj wykresu pozostaje odpowiedzialnością `15.03–15.07`;
+- zachowanie pełnego katalogu stanów danych należy do `15.08`;
+- page-level readiness pozostaje w `18.08`.
 
-| Lp. | Wymaganie | Kontrakt | Dowód odbioru |
-| --- | --- | --- | --- |
-| 1 | nagłówek | wymagany wariant lub stan | test Storybook + test interakcji |
-| 2 | pytanie biznesowe | wymagany wariant lub stan | test Storybook + test interakcji |
-| 3 | status | wymagany wariant lub stan | test Storybook + test interakcji |
-| 4 | akcje | wymagany wariant lub stan | test Storybook + test interakcji |
-| 5 | metadane | wymagany wariant lub stan | test Storybook + test interakcji |
-| 6 | źródła | wymagany wariant lub stan | test Storybook + test interakcji |
-| 7 | świeżość danych | wymagany wariant lub stan | test Storybook + test interakcji |
-| 8 | wykres | wymagany wariant lub stan | test Storybook + test interakcji |
-| 9 | legenda | wymagany wariant lub stan | test Storybook + test interakcji |
-| 10 | adnotacje | wymagany wariant lub stan | test Storybook + test interakcji |
-| 11 | narracyjne podsumowanie | wymagany wariant lub stan | test Storybook + test interakcji |
-| 12 | tabela alternatywna | wymagany wariant lub stan | test Storybook + test interakcji |
-| 13 | akcja Papa Asystenta. | wymagany wariant lub stan | test Storybook + test interakcji |
+## Runtime API
 
-## Kontrakt docelowy i techniczny
+Publiczne React Props są własnością `apps/web/src/design-system/components/ChartFrame/ChartFrame.tsx`.
 
-Dokumentacja opisuje pełny kontrakt docelowy ChartFrame. Obecny kontrakt TypeScript jest węższy i obejmuje przede wszystkim `title`, `subtitle`, `series`, `unit`, `dateRangeLabel`, `legendPosition` i `dataTableLabel`. Brakujących pól docelowych nie wolno traktować jako istniejącej implementacji; wymagają późniejszej synchronizacji kontraktów technicznych i komponentu.
+Główne grupy API:
+
+| Obszar | Runtime |
+| --- | --- |
+| kontekst | `title`, `businessQuestion`, `description` |
+| status | `status`, `statusLabel`, `stateMessage`, `stateAction` |
+| metadane | `sourceLabel`, `freshnessLabel`, `rangeLabel` |
+| kompozycja | `filters`, `actions`, `visualization`, `legend`, `annotation` |
+| wniosek | `summary` |
+| alternatywa | `alternativeTable`, `alternativeTableLabel` |
+| Papa | `papaAction` |
+
+`contracts/components/chartframe.ts` pozostaje kontraktem orkiestracyjnym/specyfikacyjnym dla ekranów i zdarzeń. Nie jest kopią React Props.
 
 ## Anatomia
 
 ```text
-chartframe
-├── semantic root
-├── title or business question
-├── context description
-├── data status and freshness
-├── date range and period comparison
-├── metric selector
-├── source or channel selector
-├── main visualization
-├── axes and scale
-├── legend
-├── annotations
-├── tooltip model
+ChartFrame
+├── heading
+│   ├── title
+│   ├── business question
+│   ├── description
+│   └── data status
+├── metadata
+│   ├── source
+│   └── freshness
+├── toolbar
+│   ├── existing filters
+│   ├── existing actions
+│   └── range/comparison label
+├── visualization region
+│   ├── caller-owned visualization
+│   ├── optional annotation
+│   └── optional legend
 ├── narrative summary
-├── actions
-├── alternative data table
-└── Papa explanation action
+├── alternative data table disclosure
+└── optional Papa action
 ```
 
-## Komponenty składowe
+## Stany na etapie 15.01
 
-- PageHeader
-- DataStatusBanner
-- InlineNotice
-- Button
-- FilterBar
-- DataTable
-- Pagination
-- DetailPanel
-- ShareChart
-- ComparisonChart
-- EvidencePanel
-- RecommendationCard
-- DecisionCard
+W story 15.01 obowiązkowo pokazywane są reprezentatywne stany:
 
-Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
+- `ready` — pełna wizualizacja;
+- `partial` — wizualizacja pozostaje dostępna z jawnym statusem ograniczenia;
+- `processing` — kontekst pozostaje stabilny, region danych pokazuje loading;
+- `noData` — brak wizualizacji, komunikat i działająca akcja recovery.
 
-## Kontrakt stanu
-
-- Stan kontrolowany jest używany dla route, filtrów, formularza, selection i overlay.
-- Stan asynchroniczny rozróżnia loading, processing, retrying, success, recoverable error i terminal error.
-- Read-only, no-access i plan-restricted są osobnymi stanami, nie odmianą disabled.
-- Zmiana motywu, języka lub viewportu nie resetuje danych ani procesu.
-- ChartFrame używa kanonicznych stanów danych z `15-08-stany-danych.md`. Etykiety laboratoryjne mapują się na nazwy kanoniczne następująco: loading → processing, empty → no data, partial → partial, stale → stale, error → konkretna przyczyna, np. provider error, unavailable albo conflict. Identyfikatory techniczne, np. `noData` albo `sourceError`, są zapisywane osobno i wyłącznie wtedy, gdy występują we właściwym kontrakcie.
-- Nagłówek, kontekst, status, metadane, filtry i geometria powierzchni pozostają stabilne między stanami. Region legendy i region tabeli alternatywnej nie mogą powodować przypadkowego skoku geometrii, ale ich treść oraz dostępność zależą od konkretnego stanu.
-- Nie wolno pokazywać legendy ani tabeli alternatywnej w sposób sugerujący dostępne dane, kiedy danych nie ma. W stanie niedostępności region może zawierać komunikat zastępczy, być nieaktywny albo zachować zarezerwowane miejsce zgodnie z kontraktem widoku.
-
-## Interakcje i klawiatura
-
-Tab order odpowiada hierarchii zadania. Enter/Space uruchamiają natywne kontrolki; Escape zamyka najwyższą warstwę; strzałki są używane wyłącznie w komponentach z modelem composite widget. Focus restore jest obowiązkowy po każdej warstwie.
+Pełny katalog `ready / partial / stale / no data / conflict / provider error / processing / unavailable` zostanie domknięty w 15.08 bez tworzenia nowego ChartFrame.
 
 ## Responsywność
 
-Wide może używać kolumn lub detail panelu. Compact przechodzi w jedną kolumnę, zachowuje wszystkie funkcje i przenosi akcje drugorzędne do jawnego overflow. Tabele otrzymują scroll lub widok priorytetowych kolumn, a wykresy — tabelę alternatywną.
+- komponent nie wymusza poziomego scrolla strony;
+- toolbar zawija się, zamiast wychodzić poza powierzchnię;
+- nagłówek przechodzi w jedną kolumnę na małej szerokości;
+- adnotacja przestaje być warstwą absolutną na mobile i wchodzi do normalnego flow;
+- alternatywna tabela jest ujawniana progresywnie i zachowuje własne zasady reflow DataTable.
 
-## Dostępność
+## Dostępność techniczna
 
-Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kontrast, reduced motion, live region dla wyników asynchronicznych, reflow i brak informacji zależnej wyłącznie od koloru.
+Formalne WCAG AA nie jest bramą biznesową tego etapu. Nadal wymagane są poprawna semantyka, działające kontrolki, nazwy regionów/interakcji, obsługa klawiatury istniejących kontrolek oraz brak martwych CTA.
 
-## Storybook
+## Storybook i testy
 
-- Title: `15 Wykresy i wizualizacje danych/ChartFrame`.
-- Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
-- Pełna story komponentu pokazuje katalog wariantów ChartFrame; 05.03 pokazuje jeden reprezentatywny pełny ChartFrame.
-- Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
+- Story: `apps/web/src/storybook-next/stories/15-data-visualizations/ChartFrame.stories.tsx`.
+- Story korzysta z kanonicznego `StoryPresentation`.
+- Pełna kompozycja używa istniejących `SegmentedControl`, `TextAction` i `DataTable`.
+- Story pokazuje gotową kompozycję zarówno z filtrem, jak i bez filtra; filtr jest slotem caller-a, nie powierzchnią wewnątrz ChartFrame.
+- Wartości walutowe, procentowe i świeżość danych w fixture są formatowane przez Foundation runtime.
+- `Tabela danych` konsumuje ikonę `data`, a `Wyjaśnij z Papa` ikonę `assistant` z 10.11; widoczna etykieta pozostaje nazwą akcji.
+- Play test sprawdza akcję Papa, źródła, zmianę filtra, otwarcie alternatywnej tabeli oraz recovery dla `noData`.
+- Light/dark, 1440, tablet, mobile i długi copy są elementami odbioru wizualnego.
 
-## Testy i kryteria akceptacji
+## Kryteria akceptacji
 
-1. Wszystkie wymagania mają story i asercję testową.
-2. Wzorzec nie tworzy duplikatu komponentu bazowego.
-3. Stany błędu i brak dostępu mają recovery albo jednoznaczne zakończenie.
-4. Mobile i zoom 200% nie tracą funkcji.
-5. Klawiatura oraz focus restore przechodzą play test.
-6. Dokument jest linkowany przez co najmniej jeden ekran albo oznaczony jako fundament przyszłego użycia.
+1. Runtime komponent jest reużywalny i nie renderuje konkretnej rodziny wykresu.
+2. 05.03 nie utrzymuje drugiej pełnej implementacji ChartFrame.
+3. Storybook, fixture, registry i dokument wskazują 15.01 jako ownera.
+4. Nie istnieje backlogowy duplikat `10 Komponenty/ChartFrame`.
+5. `typecheck`, Storybook build, analytics ownership guard oraz `git diff --check` przechodzą.
+6. Formalne `accepted` następuje dopiero po odbiorze wizualnym light/dark.

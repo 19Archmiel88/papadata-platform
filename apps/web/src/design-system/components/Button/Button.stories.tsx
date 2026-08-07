@@ -36,6 +36,8 @@ import {
   TextAction,
 } from './TextAction';
 
+import '../../../storybook-next/presentation/story-presentation.css';
+import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../../storybook-next/presentation/StoryPresentation';
 import './action-showcase.css';
 
 const meta = {
@@ -100,14 +102,6 @@ const actionVariants = [
       'Operacja destrukcyjna zachowuje własny kolor statusowy i nie miesza się z brandem.',
     icon: 'warning',
   },
-  {
-    variant: 'link',
-    label: 'Otwórz raport',
-    intent: 'Przejście',
-    description:
-      'Lekka akcja nawigacyjna używana w treści, tabelach i opisach źródeł.',
-    icon: 'integration',
-  },
 ] satisfies ActionVariantDefinition[];
 
 function icon(name: PapaDataIconName) {
@@ -128,6 +122,32 @@ function assertNoLayoutShift(
   }
 }
 
+function assertActivityLineMatchesControl(control: HTMLElement) {
+  const line = control.querySelector<HTMLElement>(
+    '[data-slot="activity-line"]',
+  );
+  const owner = control.querySelector<HTMLElement>(
+    '[data-slot="activity-line-owner"]',
+  ) ?? control;
+
+  if (!line) {
+    throw new Error('Missing activity line.');
+  }
+
+  const lineRect = line.getBoundingClientRect();
+  const ownerRect = owner.getBoundingClientRect();
+  const controlRect = control.getBoundingClientRect();
+  const tolerance = 1;
+
+  if (Math.abs(lineRect.width - ownerRect.width) > tolerance) {
+    throw new Error('Activity line does not match its action content.');
+  }
+
+  if (lineRect.width - controlRect.width > tolerance) {
+    throw new Error('Activity line exceeds the clickable control.');
+  }
+}
+
 function StorySection({
   children,
   description,
@@ -140,32 +160,43 @@ function StorySection({
   readonly title: string;
 }) {
   return (
-    <section className="pd-action-section">
-      <header className="pd-action-section__header">
-        <p className="pd-action-kicker">{eyebrow}</p>
-        <h2>{title}</h2>
-        <p>{description}</p>
-      </header>
+    <StoryPresentationSection
+      className="pd-action-section"
+      index={eyebrow}
+      summary={description}
+      title={title}
+    >
       {children}
-    </section>
+    </StoryPresentationSection>
   );
 }
 
 function ActionsShowcase() {
   return (
-    <div className="pd-action-system">
-      <main className="pd-action-system__inner">
-        <header className="pd-action-hero">
-          <div>
-            <p className="pd-action-kicker">10.02 Przyciski i akcje</p>
-            <h1>Akcje jako precyzyjny system decyzji.</h1>
-            <p className="pd-action-hero__lead">
-              Przyciski, ikony i linki nie są opakowane w dekoracyjne
-              pudełka. Są samodzielnymi kontrolkami: czytelne w spoczynku,
-              wyraźne przy fokusu i spięte jedną subtelną kreską.
-            </p>
-          </div>
+    <StoryPresentationPage
+      className="pd-action-story"
+      headerAside={(
+        <StoryPresentationMeta
+          ariaLabel="Parametry kontraktu przycisków"
+          items={[
+            { label: 'Kontrakt', value: '10.02' },
+            { label: 'Źródło wyglądu', value: '00 Fundamenty' },
+            { label: 'Status', value: 'accepted' },
+          ]}
+        />
+      )}
+      sectionCode="10"
+      sectionLabel="Komponenty bazowe"
+      storyId="10.02"
+      summary="Przycisk wykonuje komendę, TextAction lekką komendę, LinkAction nawigację, a IconButton komendę ikonową. Każda semantyka ma jednego właściciela."
+      title="Akcje jako precyzyjny system decyzji."
+    >
 
+        <StorySection
+          description="Ten sam kontrakt wizualny działa w nagłówkach, tabelach, formularzach i przepływach bez lokalnych wariantów wyglądu."
+          eyebrow="00"
+          title="Podgląd systemu akcji"
+        >
           <div className="pd-action-hero__actions">
             <span aria-hidden="true" className="pd-action-focus-strip" />
             <ButtonGroup
@@ -185,7 +216,7 @@ function ActionsShowcase() {
               />
             </ButtonGroup>
           </div>
-        </header>
+        </StorySection>
 
         <StorySection
           description="Każdy wariant ma jasną rolę w produkcie. Hierarchia wynika z koloru, ciężaru tekstu, ikony i zachowania kreski, nie z dodatkowej ramki wokół przykładu."
@@ -441,8 +472,7 @@ function ActionsShowcase() {
             </ButtonGroup>
           </div>
         </StorySection>
-      </main>
-    </div>
+    </StoryPresentationPage>
   );
 }
 
@@ -469,6 +499,7 @@ export const Przyciski: Story = {
       'data-variant',
       'primary',
     );
+    assertActivityLineMatchesControl(primaryAction);
 
     await userEvent.tab();
     primaryAction.focus();
@@ -513,6 +544,7 @@ export const Przyciski: Story = {
       'data-variant',
       'primary',
     );
+    assertActivityLineMatchesControl(iconAction);
 
     const horizontalGroup = canvas.getByRole('group', {
       name: 'Sterowana grupa akcji',
@@ -538,6 +570,22 @@ export const Przyciski: Story = {
       'vertical',
     );
 
+    const fullWidthAction = canvas.getByRole('button', {
+      name: 'Kontynuuj konfigurację',
+    });
+    const fullWidthContent = fullWidthAction.querySelector<HTMLElement>(
+      '[data-slot="activity-line-owner"]',
+    );
+    assertActivityLineMatchesControl(fullWidthAction);
+
+    if (!fullWidthContent) {
+      throw new Error('Missing full-width action content owner.');
+    }
+
+    await expect(fullWidthAction.getBoundingClientRect().width).toBeGreaterThan(
+      fullWidthContent.getBoundingClientRect().width,
+    );
+
     const reviewGroup = canvas.getByRole('group', {
       name: 'Akcje rewizji',
     });
@@ -552,6 +600,7 @@ export const Przyciski: Story = {
     });
 
     await expect(reportLink).toHaveAttribute('href', '#raport-kwartalny');
+    assertActivityLineMatchesControl(reportLink);
 
     const textDecorationLine =
       getComputedStyle(reportLink).textDecorationLine;

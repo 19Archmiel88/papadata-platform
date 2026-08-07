@@ -47,6 +47,22 @@ Kanoniczna para fontów to Inter dla interfejsu użytkownika oraz JetBrains Mono
 - hierarchia wynika z rozmiaru, line-height i weight, nie z wersalików
 - dokumentacja i tokeny nie utrzymują konkurencyjnych fontów
 
+## Formatowanie danych
+
+Runtime source of truth dla lokalnego formatowania danych znajduje się w `apps/web/src/design-system/foundations/runtime/formatters.ts`. Konsumenci nie składają ręcznie liczb, walut, procentów, świeżości ani zakresów dat.
+
+Przykłady dla `pl`:
+
+- liczba: `1 284 590,42`;
+- waluta: `248 950,80 zł`;
+- wynik: `18,6%`;
+- aktualność: `4 minuty temu`;
+- zakres dat: `1–31 lip 2026`.
+
+Zakres dat jest wartością tekstową formatowaną przez Foundation runtime. Jego przykład w Fundamentach pozostaje płaski — bez dodatkowej karty lub powierzchni wewnątrz sekcji. Kontrolka wyboru dat należy do komponentu/wzorca, który ją konsumuje; 00.02 nie tworzy drugiego DateRangePicker.
+
+Kwoty i KPI używają cyfr tabelarycznych tam, gdzie stabilność szerokości wartości ma znaczenie dla porównania kolumn lub kart.
+
 ## Status odbioru Etapu 01
 
 - Dokument opisuje accepted desktop baseline light/dark dla stories `00.01-00.11`.

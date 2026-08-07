@@ -4,11 +4,14 @@ author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-A2B8308E9147
-status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+status: accepted
+updated_at: 2026-08-06T20:27:00+01:00
 ---
 
 # Ikony
+
+## Source of truth
+`10.11` i runtime `Icon` są jedynym właścicielem pełnego katalogu ikon. `00.09` definiuje wyłącznie reguły języka ikon. `StatusIcon` i `ProviderLogo` nie są wymaganiami tej sekcji; provider branding jest osobną rodziną.
 
 ## Metadane
 
@@ -17,81 +20,111 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Identyfikator | 10.11 |
 | Nazwa polska | Ikony |
 | Nazwa techniczna | ikony |
-| Typ dokumentu | indeks rodziny komponentów |
-| Wersja | 1.0 |
-| Status kontraktu | zatwierdzony stan docelowy |
+| Typ dokumentu | kontrakt komponentu bazowego |
+| Wersja | 1.1 |
+| Status kontraktu | accepted |
 | Priorytet | P1 |
 | Właściciel | Design System |
 | Moduł | Komponenty bazowe — M02 |
-
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | IMPLEMENTED |
+| Status Storybooka | `10 Komponenty bazowe/Ikony` → `Ikony` |
+| Plik Storybooka | `apps/web/src/design-system/icons/Icon.stories.tsx` |
+| Status testów | PASSING — play oraz guard prezentacji |
 
 ## Cel i decyzja docelowa
 
-„Ikony” jest współdzielonym kontraktem, a nie lokalnym układem jednego ekranu. Wzorzec ma jedną odpowiedzialność, korzysta z fundamentów i komponentów bazowych oraz udostępnia warianty wymagane przez domeny bez kopiowania implementacji.
+`Icon` jest zamkniętym komponentem ikon systemowych. Ikona nie niesie własnego koloru; dziedziczy `currentColor`, a znaczenie wynika z roli komponentu, statusu lub kontekstu danych.
 
-## Stan obecny
+Story 10.11 używa dokładnie tego samego shellu prezentacyjnego co:
 
+- `00 Fundamenty/Podstawy`;
+- `05 Laboratorium decyzji/Tła i powierzchnie`;
+- pozostałe zaakceptowane stories sekcji `10 Komponenty bazowe`.
 
-## Zakres i wymagania
+Canvas, typografia, szerokość treści, guttery, rytm sekcji i separatory pochodzą z klas `pd-f0-*`. Story nie definiuje lokalnego `pageStyle`, gradientu canvasu ani własnej drabiny typograficznej strony. Lokalne style mogą służyć wyłącznie do układu próbek ikon wewnątrz `pd-f0-section__content`.
 
-| Lp. | Wymaganie | Kontrakt | Dowód odbioru |
-| --- | --- | --- | --- |
-| 1 | stan domyślny | wymagany wariant lub stan | test Storybook + test interakcji |
+## Publiczny kontrakt
 
-## Anatomia
+- `name` wybiera ikonę z zamkniętego katalogu;
+- `size` przyjmuje `16`, `20` lub `24`;
+- `label` nadaje nazwę dostępną ikonie informacyjnej;
+- `decorative` ukrywa ikonę przed technologiami asystującymi;
+- pozostałe bezpieczne atrybuty SVG są przekazywane bez zmiany geometrii systemowej.
 
-```text
-ikony
-├── semantic root
-├── header or accessible label
-├── primary content
-├── status / validation region
-├── primary action
-└── optional secondary actions or metadata
-```
+## Geometria
 
-## Komponenty składowe
+- `viewBox="0 0 24 24"`;
+- `strokeWidth="1.75"`;
+- zakończenia linii są zaokrąglone;
+- kolor jest dziedziczony przez `currentColor`;
+- SVG ma `focusable="false"` i nie wchodzi samodzielnie do kolejności Tab.
 
-- PageHeader
-- DataStatusBanner
-- InlineNotice
-- Button
+## Role semantyczne
 
-Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
+### Ikona dekoracyjna
 
-## Kontrakt stanu
+- używana obok widocznej etykiety;
+- ma `aria-hidden="true"`;
+- nie ma `role="img"` ani dostępnej nazwy.
 
-- Stan kontrolowany jest używany dla route, filtrów, formularza, selection i overlay.
-- Stan asynchroniczny rozróżnia loading, processing, retrying, success, recoverable error i terminal error.
-- Read-only, no-access i plan-restricted są osobnymi stanami, nie odmianą disabled.
-- Zmiana motywu, języka lub viewportu nie resetuje danych ani procesu.
+### Ikona informacyjna
 
-## Interakcje i klawiatura
+- samodzielnie przekazuje znaczenie;
+- ma `role="img"`;
+- otrzymuje nazwę przez element `<title>` i `aria-labelledby`.
 
-Tab order odpowiada hierarchii zadania. Enter/Space uruchamiają natywne kontrolki; Escape zamyka najwyższą warstwę; strzałki są używane wyłącznie w komponentach z modelem composite widget. Focus restore jest obowiązkowy po każdej warstwie.
+## Rozmiary
 
-## Responsywność
+- `16 px` — metadane i informacje pomocnicze;
+- `20 px` — przyciski, menu, listy i nawigacja;
+- `24 px` — nagłówki paneli, landmarki i ważne punkty orientacyjne.
 
-Wide może używać kolumn lub detail panelu. Compact przechodzi w jedną kolumnę, zachowuje wszystkie funkcje i przenosi akcje drugorzędne do jawnego overflow. Tabele otrzymują scroll lub widok priorytetowych kolumn, a wykresy — tabelę alternatywną.
+Te trzy rozmiary są demonstrowane wyłącznie przez ownera 10.11. Historie 05 i 15 mogą konsumować `Icon`, ale nie tworzą lokalnej sekcji rozmiarów. Akcje danych używają istniejącej roli `data`, a akcje Papa istniejącej roli `assistant`; widoczna etykieta nadal pozostaje źródłem dostępnej nazwy akcji.
 
-## Dostępność
+## Katalog
 
-Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kontrast, reduced motion, live region dla wyników asynchronicznych, reflow i brak informacji zależnej wyłącznie od koloru.
+Katalog grupuje ikony według zadania:
 
-## Storybook
+- nawigacja;
+- analityka;
+- integracje;
+- operacje;
+- status.
 
-- Title: `10 Komponenty bazowe/Ikony`.
-- Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
-- Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
+Grupa nie zmienia komponentu ani jego geometrii. Kolor grupy jest kontekstem demonstracyjnym opartym na tokenach semantycznych.
 
-## Testy i kryteria akceptacji
+## Storybook i testy
 
-1. Wszystkie wymagania mają story i asercję testową.
-2. Wzorzec nie tworzy duplikatu komponentu bazowego.
-3. Stany błędu i brak dostępu mają recovery albo jednoznaczne zakończenie.
-4. Mobile i zoom 200% nie tracą funkcji.
-5. Klawiatura oraz focus restore przechodzą play test.
-6. Dokument jest linkowany przez co najmniej jeden ekran albo oznaczony jako fundament przyszłego użycia.
+Story `Ikony` pokazuje:
+
+1. język ikon i parametry geometrii;
+2. role dekoracyjną i informacyjną;
+3. rozmiary `16`, `20`, `24`;
+4. zamknięty katalog według zadań;
+5. light/dark przez global Storybooka;
+6. wspólny shell Fundamentów.
+
+Play test sprawdza:
+
+- `focusable="false"`;
+- `role="img"` i `aria-labelledby` dla ikony informacyjnej;
+- obecność dostępnego `<title>`;
+- `stroke="currentColor"`;
+- `aria-hidden="true"` i brak roli dla ikony dekoracyjnej;
+- szerokości SVG dla rozmiarów `16`, `20`, `24`;
+- obecność wszystkich ikon katalogu.
+
+`check-storybook-presentation-contract.mjs` blokuje:
+
+- lokalny `pageStyle`;
+- lokalny gradient canvasu;
+- brak importu wspólnego CSS Fundamentów;
+- brak klas wspólnego shellu `pd-f0-*`.
+
+## Kryteria akceptacji
+
+1. Grafika, geometria, katalog i publiczne API ikon pozostają bez zmian przy korektach prezentacji Storybooka.
+2. Tło, typografia i układ strony są identyczne z zaakceptowanym shellem Fundamentów.
+3. Znaczenie ikon nie zależy wyłącznie od koloru.
+4. Role dekoracyjne i informacyjne zachowują poprawną semantykę.
+5. Play, axe, typecheck, build Storybooka i guard prezentacji przechodzą.

@@ -24,6 +24,9 @@ status: stage-01-accepted
 
 # Ikonografia
 
+## Source of truth i granica z 10.11
+`00.09` definiuje język ikon: geometrię, stroke, `currentColor`, rozmiary, znaczenie i reguły użycia. Pełny katalog nazw i wariantów należy wyłącznie do `10.11 — Ikony` oraz runtime `Icon`. Provider marks i logo marki są osobnymi rodzinami.
+
 ## Decyzja
 
 Ikona wspiera etykietę i strukturę, ale nie zastępuje nazwy dostępnościowej w akcji krytycznej. Rejestr ikon i brand mark są oddzielone.

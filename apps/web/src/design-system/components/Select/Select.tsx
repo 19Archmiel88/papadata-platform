@@ -9,10 +9,14 @@ import {
   useEffect,
   useId,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 
+import type {
+  PapaDataRuntimeLocale,
+} from '../../foundations';
 import '../Field/field.css';
 import './select.css';
 import {
@@ -29,6 +33,26 @@ type SelectOption = {
   readonly value: string;
 };
 
+const selectRuntimeCopy: Record<
+  PapaDataRuntimeLocale,
+  {
+    readonly emptySearchMessage: string;
+    readonly searchLabelSuffix: string;
+    readonly searchPlaceholder: string;
+  }
+> = {
+  pl: {
+    emptySearchMessage: 'Brak wyników dla podanej frazy.',
+    searchLabelSuffix: 'wyszukiwanie',
+    searchPlaceholder: 'Szukaj opcji',
+  },
+  en: {
+    emptySearchMessage: 'No results for this query.',
+    searchLabelSuffix: 'search',
+    searchPlaceholder: 'Search options',
+  },
+};
+
 function resolveDescribedBy(
   describedBy: string | undefined,
   helperId: string | undefined,
@@ -43,6 +67,13 @@ function resolveDescribedBy(
   return ids.length > 0
     ? ids.join(' ')
     : undefined;
+}
+
+function resolveOptionId(
+  selectId: string,
+  optionValue: string,
+) {
+  return `${selectId}-option-${encodeURIComponent(optionValue)}`;
 }
 
 function findSelectedIndex(
@@ -112,17 +143,34 @@ function resolveInitialActiveIndex(
   return findBoundaryEnabledIndex(options, direction);
 }
 
+function focusTargetIsInside(
+  root: HTMLElement,
+  target: EventTarget | null,
+) {
+  return target instanceof Node && root.contains(target);
+}
+
 export type SelectProps = Omit<
   SelectHTMLAttributes<HTMLSelectElement>,
   | 'children'
+  | 'onBlur'
+  | 'onFocus'
   | 'required'
   | 'size'
   | 'value'
 > & {
+  readonly emptySearchMessage?: string;
   readonly helperText?: string | null;
   readonly invalid?: boolean;
   readonly label: string;
+  readonly locale?: PapaDataRuntimeLocale;
   readonly message?: string | null;
+  readonly onBlur?: (
+    event: ReactFocusEvent<HTMLDivElement>,
+  ) => void;
+  readonly onFocus?: (
+    event: ReactFocusEvent<HTMLDivElement>,
+  ) => void;
   readonly options: readonly SelectOption[];
   readonly placeholder: string;
   readonly readOnly?: boolean;
@@ -145,10 +193,12 @@ export const Select = forwardRef<
     autoFocus,
     className,
     disabled = false,
+    emptySearchMessage,
     helperText = null,
     id,
     invalid = false,
     label,
+    locale = 'pl',
     message = null,
     name,
     onBlur,
@@ -159,7 +209,7 @@ export const Select = forwardRef<
     readOnly = false,
     required = false,
     searchable = false,
-    searchPlaceholder = 'Szukaj opcji',
+    searchPlaceholder,
     status = 'default',
     valid = false,
     value,
@@ -179,6 +229,7 @@ export const Select = forwardRef<
   const listboxId = `${selectId}-listbox`;
   const nativeSelectId = `${selectId}-native`;
   const searchId = `${selectId}-search`;
+
   const rootRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const searchRef = useRef<HTMLInputElement | null>(null);
@@ -187,10 +238,12 @@ export const Select = forwardRef<
   const optionRefs = useRef<
     Record<string, HTMLButtonElement | null>
   >({});
+
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [uncontrolledValue, setUncontrolledValue] = useState(value);
   const [activeIndex, setActiveIndex] = useState(-1);
+
   const state = resolveFormControlState({
     disabled,
     invalid,
@@ -198,28 +251,66 @@ export const Select = forwardRef<
     status,
     valid,
   });
+
   const resolvedValue = onChange
     ? value
     : uncontrolledValue;
-  const filteredOptions = searchable
-    ? options.filter((option) =>
-        option.label.toLowerCase().includes(query.toLowerCase()),
-      )
-    : options;
+
+  const runtimeCopy = selectRuntimeCopy[locale];
+  const resolvedSearchPlaceholder =
+    searchPlaceholder ?? runtimeCopy.searchPlaceholder;
+  const resolvedEmptySearchMessage =
+    emptySearchMessage ?? runtimeCopy.emptySearchMessage;
+
+  const filteredOptions = useMemo(() => {
+    if (!searchable) {
+      return options;
+    }
+
+    const normalizedQuery = query
+      .trim()
+      .toLocaleLowerCase(locale);
+
+    if (!normalizedQuery) {
+      return options;
+    }
+
+    return options.filter((option) =>
+      option.label
+        .toLocaleLowerCase(locale)
+        .includes(normalizedQuery),
+    );
+  }, [
+    locale,
+    options,
+    query,
+    searchable,
+  ]);
+
   const selectedOption = options.find(
     (option) => option.value === resolvedValue,
   );
+
   const activeOption =
     activeIndex >= 0
       ? filteredOptions[activeIndex]
       : undefined;
+
+  const activeOptionId = activeOption
+    ? resolveOptionId(selectId, activeOption.value)
+    : undefined;
+
   const describedBy = resolveDescribedBy(
     ariaDescribedBy,
     helperId,
     messageId,
   );
 
-  useImperativeHandle(ref, () => nativeSelectRef.current!, []);
+  useImperativeHandle(
+    ref,
+    () => nativeSelectRef.current!,
+    [],
+  );
 
   useEffect(() => {
     if (onChange) {
@@ -286,11 +377,12 @@ export const Select = forwardRef<
       return;
     }
 
-    const nextIndex = resolveInitialActiveIndex(
-      filteredOptions,
-      resolvedValue,
+    setActiveIndex(
+      resolveInitialActiveIndex(
+        filteredOptions,
+        resolvedValue,
+      ),
     );
-    setActiveIndex(nextIndex);
   }, [
     filteredOptions,
     isOpen,
@@ -402,6 +494,15 @@ export const Select = forwardRef<
     });
   }
 
+  function moveToBoundary(direction: 1 | -1) {
+    setActiveIndex(
+      findBoundaryEnabledIndex(
+        filteredOptions,
+        direction,
+      ),
+    );
+  }
+
   function commitValue(nextValue: string) {
     const nextOption = options.find(
       (option) => option.value === nextValue,
@@ -419,7 +520,10 @@ export const Select = forwardRef<
       restoreFocus: true,
     });
 
-    if (!nativeSelectRef.current || nextValue === resolvedValue) {
+    if (
+      !nativeSelectRef.current
+      || nextValue === resolvedValue
+    ) {
       return;
     }
 
@@ -439,16 +543,34 @@ export const Select = forwardRef<
     commitValue(activeOption.value);
   }
 
-  function handleTriggerFocus(
-    event: ReactFocusEvent<HTMLButtonElement>,
+  function handleRootFocus(
+    event: ReactFocusEvent<HTMLDivElement>,
   ) {
-    onFocus?.(event as unknown as ReactFocusEvent<HTMLSelectElement>);
+    if (
+      focusTargetIsInside(
+        event.currentTarget,
+        event.relatedTarget,
+      )
+    ) {
+      return;
+    }
+
+    onFocus?.(event);
   }
 
-  function handleTriggerBlur(
-    event: ReactFocusEvent<HTMLButtonElement>,
+  function handleRootBlur(
+    event: ReactFocusEvent<HTMLDivElement>,
   ) {
-    onBlur?.(event as unknown as ReactFocusEvent<HTMLSelectElement>);
+    if (
+      focusTargetIsInside(
+        event.currentTarget,
+        event.relatedTarget,
+      )
+    ) {
+      return;
+    }
+
+    onBlur?.(event);
   }
 
   function handleTriggerKeyDown(
@@ -483,6 +605,26 @@ export const Select = forwardRef<
         return;
       }
 
+      case 'Home': {
+        if (!isOpen || searchable) {
+          return;
+        }
+
+        event.preventDefault();
+        moveToBoundary(1);
+        return;
+      }
+
+      case 'End': {
+        if (!isOpen || searchable) {
+          return;
+        }
+
+        event.preventDefault();
+        moveToBoundary(-1);
+        return;
+      }
+
       case 'Enter':
       case ' ': {
         event.preventDefault();
@@ -512,6 +654,7 @@ export const Select = forwardRef<
         if (isOpen) {
           closeList();
         }
+
         return;
       }
 
@@ -568,26 +711,19 @@ export const Select = forwardRef<
     onChange?.(event);
   }
 
-  function handleLabelClick() {
-    if (disabled) {
-      return;
-    }
-
-    triggerRef.current?.focus();
-  }
-
   return (
     <div
       className={joinClassNames('pd-select', className)}
       data-component="Select"
       data-state={state}
+      onBlur={handleRootBlur}
+      onFocus={handleRootFocus}
       ref={rootRef}
     >
       <label
         className="pd-form-field__label-row"
-        htmlFor={nativeSelectId}
+        htmlFor={selectId}
         id={labelId}
-        onClick={handleLabelClick}
       >
         <span className="pd-form-field__label">
           {label}
@@ -640,24 +776,35 @@ export const Select = forwardRef<
       >
         <button
           aria-activedescendant={
-            isOpen && activeOption
-              ? `${selectId}-option-${activeOption.value}`
+            !searchable && isOpen
+              ? activeOptionId
               : undefined
           }
           aria-controls={isOpen ? listboxId : undefined}
           aria-describedby={describedBy}
+          aria-disabled={
+            searchable && readOnly
+              ? true
+              : undefined
+          }
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           aria-invalid={state === 'error' ? true : undefined}
           aria-label={ariaLabel}
-          aria-labelledby={ariaLabelledBy ?? labelId}
-          aria-readonly={readOnly ? true : undefined}
+          aria-labelledby={
+            ariaLabelledBy
+            ?? (ariaLabel ? undefined : labelId)
+          }
+          aria-readonly={
+            !searchable && readOnly
+              ? true
+              : undefined
+          }
           autoFocus={autoFocus}
           className="pd-select__trigger"
           data-slot="select-trigger"
           disabled={disabled}
           id={selectId}
-          onBlur={handleTriggerBlur}
           onClick={() => {
             if (isOpen) {
               closeList();
@@ -666,10 +813,9 @@ export const Select = forwardRef<
 
             openList(1);
           }}
-          onFocus={handleTriggerFocus}
           onKeyDown={handleTriggerKeyDown}
           ref={triggerRef}
-          role="combobox"
+          role={searchable ? undefined : 'combobox'}
           type="button"
         >
           <span
@@ -682,6 +828,7 @@ export const Select = forwardRef<
           >
             {selectedOption?.label ?? placeholder}
           </span>
+
           <span
             aria-hidden="true"
             className="pd-select__indicator"
@@ -699,15 +846,29 @@ export const Select = forwardRef<
             {searchable ? (
               <div className="pd-select__search-shell">
                 <input
-                  aria-label={`${label} wyszukiwanie`}
+                  aria-activedescendant={activeOptionId}
+                  aria-autocomplete="list"
+                  aria-controls={listboxId}
+                  aria-describedby={describedBy}
+                  aria-expanded="true"
+                  aria-haspopup="listbox"
+                  aria-invalid={
+                    state === 'error'
+                      ? true
+                      : undefined
+                  }
+                  aria-label={`${label} ${runtimeCopy.searchLabelSuffix}`}
+                  autoComplete="off"
                   className="pd-select__search-input"
                   id={searchId}
                   onChange={(event) => {
                     setQuery(event.currentTarget.value);
                   }}
                   onKeyDown={handleSearchKeyDown}
-                  placeholder={searchPlaceholder}
+                  placeholder={resolvedSearchPlaceholder}
                   ref={searchRef}
+                  role="combobox"
+                  spellCheck={false}
                   type="text"
                   value={query}
                 />
@@ -715,7 +876,7 @@ export const Select = forwardRef<
             ) : null}
 
             <div
-              aria-label={label}
+              aria-labelledby={labelId}
               className="pd-select__listbox"
               id={listboxId}
               ref={listboxRef}
@@ -729,14 +890,33 @@ export const Select = forwardRef<
 
                   return (
                     <button
-                      aria-disabled={option.disabled ? true : undefined}
+                      aria-disabled={
+                        option.disabled
+                          ? true
+                          : undefined
+                      }
                       aria-selected={selected}
                       className="pd-select__option"
-                      data-active={active ? true : undefined}
-                      data-disabled={option.disabled ? true : undefined}
-                      data-selected={selected ? true : undefined}
+                      data-active={
+                        active
+                          ? true
+                          : undefined
+                      }
+                      data-disabled={
+                        option.disabled
+                          ? true
+                          : undefined
+                      }
+                      data-selected={
+                        selected
+                          ? true
+                          : undefined
+                      }
                       disabled={option.disabled}
-                      id={`${selectId}-option-${option.value}`}
+                      id={resolveOptionId(
+                        selectId,
+                        option.value,
+                      )}
                       key={option.value}
                       onClick={() => {
                         commitValue(option.value);
@@ -759,10 +939,15 @@ export const Select = forwardRef<
                       <span className="pd-select__option-text">
                         {option.label}
                       </span>
+
                       <span
                         aria-hidden="true"
                         className="pd-select__option-mark"
-                        data-selected={selected ? true : undefined}
+                        data-selected={
+                          selected
+                            ? true
+                            : undefined
+                        }
                       />
                     </button>
                   );
@@ -774,7 +959,7 @@ export const Select = forwardRef<
                   className="pd-select__empty-state"
                   role="option"
                 >
-                  Brak wyników dla podanej frazy.
+                  {resolvedEmptySearchMessage}
                 </div>
               )}
             </div>

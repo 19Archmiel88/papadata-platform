@@ -3,12 +3,20 @@
   "storyTitle": "10 Komponenty bazowe/Przyciski i akcje",
   "sourceDocument": "04-komponenty-bazowe/10-02-przyciski-i-akcje.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "Button",
+    "IconButton",
+    "TextAction",
+    "LinkAction",
+    "ButtonGroup"
+  ],
   "states": [
     "ready",
     "loading",
-    "empty",
-    "error"
+    "disabled",
+    "focus-visible",
+    "danger",
+    "full-width"
   ],
   "viewports": [
     1440,
@@ -24,27 +32,30 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-keyboard-only",
+    "verify-focus-visible",
+    "verify-loading-disabled",
+    "verify-activity-line-width",
+    "verify-full-width-content-line",
+    "verify-no-layout-shift"
   ],
   "visualAssertions": [
+    "foundation-shell-light",
+    "foundation-shell-dark",
     "1440-light",
     "1440-dark",
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-error"
+    "activity-line-fit-content",
+    "no-local-visual-overrides"
   ],
   "a11y": [
     "keyboard-only",
     "focus-visible",
     "accessible-name",
-    "live-region",
+    "aria-busy",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

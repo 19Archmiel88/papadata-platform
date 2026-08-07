@@ -1,0 +1,65 @@
+/*
+ * PapaData Storybook: 00 Fundamenty / Dostępność systemowa.
+ *
+ * Układ demonstracyjny dla runtime `Select`.
+ * Ten plik nie styluje anatomii ani stanów komponentu Select.
+ */
+
+.pd-f0-accessibility-select-demo {
+  display: grid;
+  min-width: 0;
+  gap: var(--pd-space-5);
+}
+
+.pd-f0-accessibility-select-control {
+  width: min(100%, 420px);
+  min-width: 0;
+}
+
+.pd-f0-accessibility-feedback {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-width: 0;
+  border-block: 1px solid var(--pd-separator);
+}
+
+.pd-f0-accessibility-feedback p {
+  display: grid;
+  min-width: 0;
+  gap: var(--pd-space-1);
+  margin: 0;
+  padding:
+    var(--pd-space-3)
+    var(--pd-space-3)
+    var(--pd-space-3)
+    0;
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+  line-height: var(--pd-line-height-relaxed);
+  overflow-wrap: anywhere;
+}
+
+.pd-f0-accessibility-feedback p + p {
+  padding-left: var(--pd-space-3);
+  border-left: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-f0-accessibility-feedback strong {
+  color: var(--pd-text);
+  font-weight: var(--pd-font-weight-medium);
+}
+
+@media (max-width: 820px) {
+  .pd-f0-accessibility-feedback {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-f0-accessibility-feedback p {
+    padding-inline: 0;
+  }
+
+  .pd-f0-accessibility-feedback p + p {
+    border-top: 1px solid var(--pd-separator-subtle);
+    border-left: 0;
+  }
+}

@@ -24,6 +24,9 @@ status: stage-01-accepted
 
 # Linie i separacja
 
+## Source of truth i handoff z 05.04
+Ten dokument jest kanonicznym właścicielem separatorów, obramowań i ról linii. `05.04 — Separatory i obramowania` jest decision recordem Laboratorium. Po akceptacji decyzje z 05.04 są promowane tutaj i nie tworzą drugiej specyfikacji.
+
 ## Decyzja
 
 Hairline divider i kontrolowana separacja są domyślnym sposobem budowania hierarchii, zamiast mnożenia kart i obramowań.

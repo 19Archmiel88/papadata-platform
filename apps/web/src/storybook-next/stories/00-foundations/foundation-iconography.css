@@ -1,0 +1,99 @@
+/*
+ * PapaData Storybook: 00 Fundamenty / Ikonografia.
+ *
+ * Ten plik odpowiada wyłącznie za układ dokumentacyjny przykładu.
+ * Geometria i semantyka SVG należą do runtime `Icon`.
+ */
+
+.pd-f0-iconography-role-list {
+  display: grid;
+  min-width: 0;
+  gap: 0;
+  border-block: 1px solid var(--pd-separator);
+}
+
+.pd-f0-iconography-role {
+  display: grid;
+  min-width: 0;
+  gap: var(--pd-space-3);
+  padding-block: var(--pd-space-4);
+  border-bottom: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-f0-iconography-role:last-child {
+  border-bottom: 0;
+}
+
+.pd-f0-iconography-role p {
+  max-width: 70ch;
+  margin: 0;
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+  line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-f0-iconography-strip {
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
+  align-items: center;
+  gap: var(--pd-space-3) var(--pd-space-5);
+}
+
+.pd-f0-iconography-strip > span {
+  display: inline-flex;
+  min-width: 120px;
+  max-width: 100%;
+  align-items: center;
+  gap: var(--pd-space-2);
+}
+
+.pd-f0-iconography-preview {
+  display: inline-grid;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--pd-text);
+}
+
+.pd-f0-iconography-preview svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  color: currentColor;
+}
+
+.pd-f0-iconography-note {
+  display: grid;
+  min-width: 0;
+  gap: var(--pd-space-2);
+  padding-block-start: var(--pd-space-4);
+  border-block-start: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-f0-iconography-note > p {
+  max-width: 70ch;
+  margin: 0;
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+  line-height: var(--pd-line-height-relaxed);
+}
+
+@media (max-width: 520px) {
+  .pd-f0-iconography-strip {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--pd-space-3);
+  }
+
+  .pd-f0-iconography-strip > span {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pd-f0-iconography-role {
+    gap: var(--pd-space-2);
+    padding-block: var(--pd-space-3);
+  }
+}

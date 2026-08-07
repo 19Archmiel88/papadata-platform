@@ -28,10 +28,8 @@ const shellVariants: ReadonlyArray<{
 
 function ShellCanvas({
   variant,
-  scrollDemo = false,
 }: {
   readonly variant: ShellVariant;
-  readonly scrollDemo?: boolean;
 }) {
   const [activeNav, setActiveNav] = useState('dashboard');
   const [papaOpen, setPapaOpen] = useState(variant === 'papa');
@@ -39,15 +37,13 @@ function ShellCanvas({
   const compact = variant === 'compact';
   const panelVisible = variant === 'papa' && papaOpen;
   const selectedVariant = shellVariants.find(({ id }) => id === variant);
-  const shellContext = scrollDemo
-    ? { pl: 'demonstracja właściciela scrolla', en: 'scroll owner demonstration' }
-    : {
-        pl: `wariant ${selectedVariant?.pl ?? variant}`,
-        en: `${selectedVariant?.en ?? variant} variant`,
-      };
+  const shellContext = {
+    pl: `wariant ${selectedVariant?.pl ?? variant}`,
+    en: `${selectedVariant?.en ?? variant} variant`,
+  };
 
   return (
-    <div className="pd-s52-shell" data-scroll-demo={scrollDemo || undefined} data-variant={variant}>
+    <div className="pd-s52-shell" data-variant={variant}>
       <header className="pd-s52-shell__topbar">
         <PapaDataBrand size="small" />
         <span className="pd-s52-shell__topbar-copy"><Localized pl="Sticky topbar · nieprzezroczysta powierzchnia" en="Sticky topbar · opaque surface" /></span>
@@ -65,6 +61,7 @@ function ShellCanvas({
           >
             {['dashboard', 'campaigns', 'orders', 'customers'].map((item, index) => (
               <button
+                data-lab-control="shell-navigation"
                 key={item}
                 aria-current={activeNav === item ? 'page' : undefined}
                 className="pd-s52-shell__nav-item"
@@ -109,39 +106,23 @@ function ShellCanvas({
             <div><span><Localized pl="Alerty" en="Alerts" /></span><strong>3</strong></div>
           </div>
 
-          <div
-            className="pd-s52-shell__work-area"
-            data-scroll-owner={scrollDemo ? 'content' : undefined}
-            role={scrollDemo ? 'region' : undefined}
-            aria-label={scrollDemo ? copy({
-              pl: 'Przewijany region danych — właściciel scrolla',
-              en: 'Scrollable data region — scroll owner',
-            }) : undefined}
-            tabIndex={scrollDemo ? 0 : undefined}
-          >
+          <div className="pd-s52-shell__work-area">
             <div className="pd-s52-shell__work-heading">
               <div>
-                <strong><Localized pl="Właściciel scrolla: region treści" en="Scroll owner: content region" /></strong>
-                <p><Localized pl="Topbar i nawigacja pozostają stabilne. Canvas nie zamienia każdej sekcji w kartę." en="Topbar and navigation remain stable. The canvas does not turn every section into a card." /></p>
+                <strong><Localized pl="Region roboczy" en="Working region" /></strong>
+                <p><Localized pl="Treść korzysta z jednego canvasu i jawnych granic regionów bez mnożenia dekoracyjnych kart." en="Content uses one canvas and explicit region boundaries without multiplying decorative cards." /></p>
               </div>
-              <ReviewBadge tone="info">scroll: content</ReviewBadge>
+              <ReviewBadge tone="info"><Localized pl="content" en="content" /></ReviewBadge>
             </div>
             <div className="pd-s52-shell__rows" aria-hidden="true">
               <span /><span /><span /><span /><span />
             </div>
-            {scrollDemo ? (
-              <div className="pd-s52-shell__scroll-proof">
-                <p><Localized pl="Dodatkowa treść pozostaje wewnątrz jedynego przewijanego regionu." en="Additional content stays inside the single scrollable region." /></p>
-                <p><Localized pl="Sticky topbar nie używa przezroczystego blur ani dekoracyjnego glass." en="The sticky topbar uses neither transparent blur nor decorative glass." /></p>
-                <p><Localized pl="Długi zestaw danych nie przesuwa nawigacji ani warstwy Papa." en="A long data set does not move navigation or the Papa layer." /></p>
-              </div>
-            ) : null}
           </div>
         </section>
 
         {panelVisible ? (
           <>
-            <button aria-label={copy({ pl: 'Zamknij panel Papa', en: 'Close Papa panel' })} className="pd-s52-shell__scrim" onClick={() => setPapaOpen(false)} type="button" />
+            <button data-lab-control="overlay-scrim" aria-label={copy({ pl: 'Zamknij panel Papa', en: 'Close Papa panel' })} className="pd-s52-shell__scrim" onClick={() => setPapaOpen(false)} type="button" />
             <aside className="pd-s52-shell__papa" aria-label={copy({ pl: 'Panel Papa jako warstwa', en: 'Papa panel as a layer' })}>
               <header>
                 <div><span><Localized pl="Warstwa operacyjna" en="Operational layer" /></span><strong>Papa</strong></div>
@@ -153,6 +134,80 @@ function ShellCanvas({
           </>
         ) : null}
       </div>
+    </div>
+  );
+}
+
+function ScrollOwnerProof() {
+  return (
+    <div className="pd-s52-scroll-owner">
+      <header className="pd-s52-scroll-owner__topbar">
+        <PapaDataBrand size="small" />
+        <span>
+          <Localized
+            pl="Topbar pozostaje poza przewijanym regionem"
+            en="Topbar stays outside the scrollable region"
+          />
+        </span>
+        <ReviewBadge tone="success">sticky</ReviewBadge>
+      </header>
+
+      <div className="pd-s52-scroll-owner__body">
+        <aside className="pd-s52-scroll-owner__nav" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </aside>
+
+        <section
+          aria-label={copy({
+            pl: 'Przewijany region danych — właściciel scrolla',
+            en: 'Scrollable data region — scroll owner',
+          })}
+          className="pd-s52-scroll-owner__viewport"
+          data-scroll-owner="content"
+          role="region"
+          tabIndex={0}
+        >
+          <header className="pd-s52-scroll-owner__heading">
+            <div>
+              <span><Localized pl="Region treści" en="Content region" /></span>
+              <strong>
+                <Localized
+                  pl="Jedyny właściciel scrolla"
+                  en="Single scroll owner"
+                />
+              </strong>
+            </div>
+            <ReviewBadge tone="info">scroll: content</ReviewBadge>
+          </header>
+
+          <div className="pd-s52-scroll-owner__rows" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
+
+          <p className="pd-s52-scroll-owner__inside">
+            <Localized
+              pl="Dłuższa treść pozostaje wewnątrz regionu. Scroll nie przesuwa topbara, nawigacji ani warstwy Papa."
+              en="Longer content stays inside this region. Scrolling does not move the topbar, navigation or Papa layer."
+            />
+          </p>
+        </section>
+      </div>
+
+      <p className="pd-s52-scroll-owner__caption">
+        <Localized
+          pl="Dowód pokazuje odpowiedzialność scrolla, a nie drugi wariant kompletnego AppShell."
+          en="This proof demonstrates scroll ownership rather than a second complete AppShell variant."
+        />
+      </p>
     </div>
   );
 }
@@ -190,7 +245,8 @@ export function AppBackgroundLaboratory() {
 
   return (
     <StoryPage
-      id="05.02"
+      handoff={<Localized pl="20 — Powłoka produktu / AppShell" en="20 — Product shell / AppShell" />}
+      id="05.02" status="accepted"
       title={<Localized pl="Tło aplikacji" en="Application background" />}
       summary={<Localized pl="Canvas oddziela nawigację od zadania. Powłoka nie jest kolekcją dekoracyjnych kart, a warstwa Papa nie zmniejsza głównego regionu treści." en="The canvas separates navigation from the task. The shell is not a collection of decorative cards, and the Papa layer does not shrink the main content region." />}
       variants={<Localized pl="sidebar · bez sidebara · Papa · compact" en="sidebar · no sidebar · Papa · compact" />}
@@ -198,15 +254,15 @@ export function AppBackgroundLaboratory() {
       <StorySection index="01" title={<Localized pl="Układy powłoki" en="Shell layouts" />} summary={<Localized pl="Jeden reprezentatywny canvas pokazuje warianty bez mnożenia równorzędnych miniaturek." en="One representative canvas shows variants without multiplying equal miniatures." />}>
         <div className="pd-s52-variant-switch" role="group" aria-label={copy({ pl: 'Wybierz wariant powłoki', en: 'Choose shell variant' })}>
           {shellVariants.map((item) => (
-            <button key={item.id} aria-pressed={variant === item.id} onClick={() => setVariant(item.id)} type="button">{copy(item)}</button>
+            <button data-lab-control="variant-selector" key={item.id} aria-pressed={variant === item.id} onClick={() => setVariant(item.id)} type="button">{copy(item)}</button>
           ))}
         </div>
         <ShellCanvas variant={variant} />
         <p className="pd-s52-deferred"><ReviewBadge tone="info"><Localized pl="Mobile i tablet: odroczone" en="Mobile and tablet: deferred" /></ReviewBadge> <Localized pl="Bieżące review obejmuje desktop light/dark. Nie pokazujemy makiety mobile udającej zaakceptowany produkt." en="The current review covers desktop light/dark. No mobile mock is shown as if it were an accepted product." /></p>
       </StorySection>
 
-      <StorySection index="02" title={<Localized pl="Właściciel scrolla" en="Scroll owner" />} summary={<Localized pl="Przewija się wyłącznie region treści; topbar i nawigacja pozostają stabilne." en="Only the content region scrolls; topbar and navigation remain stable." />}>
-        <ShellCanvas scrollDemo variant="sidebar" />
+      <StorySection index="02" title={<Localized pl="Właściciel scrolla" en="Scroll owner" />} summary={<Localized pl="Skupiony dowód pokazuje jeden przewijany region treści; topbar i nawigacja pozostają poza jego odpowiedzialnością." en="A focused proof shows one scrollable content region; the topbar and navigation stay outside its responsibility." />}>
+        <ScrollOwnerProof />
       </StorySection>
 
       <StorySection index="03" title={<Localized pl="Szerokość treści" en="Content width" />} summary={<Localized pl="Analiza wykorzystuje szeroki canvas, a formularz zachowuje czytelną długość linii." en="Analysis uses the wide canvas while a form keeps a readable line length." />}>

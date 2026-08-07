@@ -5,10 +5,13 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-683566C77344
 status: approved-target
-updated_at: 2026-08-06T00:00:00+02:00
+updated_at: 2026-08-07T00:00:00+02:00
 ---
 
 # Powierzchnie danych
+
+## Rola Laboratorium i handoff
+`05.03` porównuje archetypy powierzchni danych. Nie jest trwałym właścicielem `MetricCard`, `ChartFrame`, `DataTable`, panelu szczegółów, dowodów ani rekomendacji. Po akceptacji odpowiedzialności są promowane odpowiednio do warstw `10 / 15 / 18`.
 
 ## Metadane
 
@@ -35,51 +38,53 @@ Panel istnieje tylko wtedy, gdy ma własną rolę, stan albo cykl interakcji. St
 ## Wdrożony zakres laboratorium
 
 1. Role powierzchni.
-2. Warianty KPI.
+2. Handoff KPI do `15.02 MetricCard`.
 3. Rodziny wykresów.
-4. Pełny ChartFrame.
-5. System tabeli.
-6. Stany powierzchni.
+4. Handoff ChartFrame do `15.01 ChartFrame`.
+5. Użycie `10.07 DataTable` i handoff warstw tabeli.
+6. Stany powierzchni konsumujące kanoniczny model statusu.
 7. Panele robocze w kontekście.
 8. Decyzja i antyprzykład.
 
 W całej historii nie wolno używać poziomego scrolla jako rozwiązania układu. Elementy układają się pionowo albo w elastycznej siatce. Panele szczegółów, eksportu, dowodów i rekomendacji są warstwami zgodnymi z `00-08-glebia-i-warstwy.md`, a nie blokami przedłużającymi stronę.
 
-## Warianty KPI
+## KPI — handoff
 
-Każdy lokalny wariant KPI w 05.03 ma deterministyczny mikrowykres SVG: wzrostowy, spadkowy albo stabilny. Kierunek wynika z przebiegu linii, tekstowego opisu i kontekstu metryki, nie wyłącznie z koloru. Spadek kosztu może być korzystny. `unknown` i brak danych nie są przedstawiane jako fałszywy trend płaski.
-
-Mikrowykres rozdziela kierunek linii od sygnału biznesowego. Sygnał dodatni używa `--pd-status-success`, ujemny `--pd-status-danger`, neutralny `--pd-status-neutral`, a ostrzegawczy `--pd-status-warning`. Dlatego korzystny spadek kosztu pozostaje zielony, natomiast spadek marży jest czerwony. Tekst badge’a jawnie nazywa zarówno sygnał, jak i kierunek, więc znaczenie nie zależy wyłącznie od koloru. Lokalny, 12-procentowy `color-mix()` tworzy subtelne wypełnienie pod linią bez glow, drop-shadow ani ciężkich filtrów. Reguły SVG są ograniczone do KPI historii 05.03 i nie rozszerzają globalnego kontraktu produkcyjnego `MetricCard`.
+Warianty KPI i mikrotrend zostały promowane do `15.02 MetricCard`. 05.03 nie renderuje lokalnego katalogu KPI, nie utrzymuje `KpiSparkline` i nie definiuje drugiego języka sygnału. Laboratorium pokazuje jedynie informację o ownerze i zachowuje historię decyzji.
 
 ## Rodziny wykresów
 
-Historia pokazuje `TrendChart`, `ComparisonChart`, `ShareChart`, `CorrelationChart`, `ForecastChart`, `WaterfallChart` i `FunnelChart`. Każda rodzina przedstawia właściwe znaczenie kontraktowe, osie lub punkt odniesienia, metadane źródła i zakresu oraz warstwy analityczne. Wykresy nie są dekoracyjnymi szkicami.
+Historia pokazuje `TrendChart`, `ComparisonChart`, `ShareChart`, `CorrelationChart`, `ForecastChart`, `WaterfallChart` i `FunnelChart`. Każda rodzina odpowiada na inne pytanie biznesowe i ma własny kontekst metryki, źródła, zakresu oraz punktu odniesienia. Laboratorium nie prezentuje siedmiu miniaturek z identycznym opisem.
 
-Grid i osie mają niższą wagę niż dane. Benchmark jest rozróżniony linią przerywaną. Focus, insight i adnotacja nie polegają wyłącznie na kolorze. Zoom, brush, pan i crosshair pozostają poza zatwierdzonym kontraktem, dlatego nie są deklarowane jako gotowe funkcje.
+Serie analityczne używają ról `--pd-data-accent` oraz `--pd-data-series-*`. `--pd-brand-*` nie pełni roli koloru danych, a tony statusowe są używane tylko wtedy, gdy wykres rzeczywiście koduje semantyczny wzrost, spadek lub błąd. Grid i osie mają niższą wagę niż dane. Benchmark jest rozróżniony linią przerywaną. Zoom, brush, pan i crosshair pozostają poza zatwierdzonym kontraktem, dlatego nie są deklarowane jako gotowe funkcje.
 
-## Pełny ChartFrame
+## ChartFrame — handoff
 
-ChartFrame pokazuje jedno pytanie biznesowe, jeden główny wykres, status świeżości, zakres dat, porównanie okresu, legendę, adnotację i narracyjny wniosek. Dane, źródła i tabela alternatywna są ujawniane progresywnie przez zakładki. Nie ma przeładowanego brush zoomu, wielu nakładających się tooltipów ani dekoracyjnych filtrów SVG.
+Pełny kontener został promowany do `15.01 ChartFrame`. 05.03 nie renderuje lokalnej implementacji ChartFrame. Nagłówek, status, metadane, wizualizacja, legenda, wniosek, tabela alternatywna i akcja Papa są kontraktem 15.01.
 
-## System tabeli
+## Tabela — handoff i użycie
 
-Tabela domyślnie nie zaznacza żadnego rekordu. Przycisk „Zwiń do 1 wiersza” pokazuje pierwszy rekord bieżącej strony po filtrach i nie zmienia sortowania, strony, filtrów, widoczności kolumn, zaznaczeń ani danych źródłowych. `aria-expanded` odzwierciedla stan prezentacji.
+Bazowym ownerem tabeli jest `10.07 DataTable`. 05.03 konsumuje ten komponent bez lokalnego silnika `<table>`, bez własnego `DataSurfaceSelect`, bez własnej paginacji, wyboru kolumn, gęstości, filtrowania i mechanizmu zaznaczeń.
 
-Toolbar demonstruje wyszukiwanie, status, zakres, sortowanie, czyszczenie filtrów, gęstość, wybór widocznych kolumn i eksport. Paginacja zachowuje bieżący kontekst, a zaznaczenie rekordów ujawnia lokalny pasek działań zbiorczych. Produkt, wybór i akcja pozostają zawsze widoczne; kolumny opcjonalne są zarządzane w warstwie, a nie przez dodatkowy blok pod tabelą.
+Laboratorium pokazuje jedynie kontekst użycia tabeli oraz warstwy uruchamiane z akcji rekordu:
 
-Kontrolki Status, Zakres i Sortowanie używają lokalnego wzorca select zgodnego z zaakceptowanymi Fundamentami: przycisk wyzwalający z bursztynowym akcentem, panel `listbox` na warstwie popover, firmowy stan aktywny i znacznik wybranej opcji w formie kreski. Obsługiwane są strzałki, Home, End, Escape, Tab i powrót fokusu do triggera. Laboratorium nie używa natywnego menu przeglądarkowego ani nie rozszerza jeszcze globalnego kontraktu produkcyjnego Select.
+- `Pokaż szczegóły` używa istniejącej ikony `data` i otwiera warstwę szczegółów;
+- `Wyjaśnij z Papa` używa istniejącej ikony `assistant` i otwiera warstwę interpretacji;
+- `Podgląd eksportu` jest wyłącznie handoffem, ponieważ pełny workflow `FilterBar + DataTable + Pagination + actions + DetailPanel` należy do `18.04`.
 
-Szczegóły rekordu, wybór kolumn i podgląd eksportu otwierają się przez istniejący `Drawer`/`OverlayRoot`, obsługują Escape i przywrócenie fokusu. Eksport domyślnie używa bieżącego widoku i widocznych kolumn; może objąć zaznaczone rekordy albo wszystkie rekordy dozwolone przez capability i politykę danych.
-
-Tabela nie używa poziomego scrolla. Na wąskim reflow rekordy przechodzą do pionowej prezentacji z etykietami pól.
+Tabela domyślnie nie zaznacza żadnego rekordu. Laboratorium dodaje nad runtime `DataTable` wyłącznie kontekst powierzchni: zakres, źródła, status danych i aktualny opis sortowania. Nie implementuje własnego toolbara, filtrów, paginacji ani ColumnPicker. Liczby, waluty i procenty są formatowane przez Foundation runtime. Na wąskim reflow nie wolno wprowadzać poziomego scrolla jako zastępstwa decyzji układowej.
 
 ## Stany danych
 
-Laboratoryjne stany mapują się na kanoniczne: loading → processing, empty → no data, partial → partial, stale → stale, error → konkretna przyczyna, np. provider error. Ogólny `error` bez przyczyny nie jest używany. Stany zachowują geometrię i układają się bez poziomego przewijania.
+Laboratoryjne stany używają `AnalyticsDataState`, `resolveAnalyticsDataStateTone()` i kanonicznego `StatusBadge`. 05.03 nie mapuje `processing`, `partial`, `stale`, `noData` ani błędów danych przez lokalny `ReviewBadge`. Każdy stan korzysta z tej samej stabilnej anatomii powierzchni: nagłówek metryki, stały region danych, metadane świeżości/kompletności i tekstowy opis stanu. Stan zmienia informację, a nie konstrukcję powierzchni. Konkretny klucz stanu pozostaje własnością domeny/Analytics UI.
 
 ## Panele robocze
 
-Dowody, rekomendacja i panel roboczy są uruchamiane z kontekstu decyzji i otwierane jako warstwy. Nie są trzema równorzędnymi kartami pod wykresem lub tabelą. Warstwa ma nazwę, kontrolkę zamknięcia, Escape, scrim i focus restore wynikające z komponentu Drawer/OverlayRoot.
+Dowody, rekomendacja i panel roboczy są uruchamiane z rzeczywistego kontekstu decyzji zawierającego metryki, trend i sygnał biznesowy. Otwierają się jako warstwy ponad canvasem i nie są trzema równorzędnymi kartami dokładanymi pod wykresem lub tabelą. Warstwa ma nazwę, kontrolkę zamknięcia, Escape, scrim i focus restore wynikające z komponentu Drawer/OverlayRoot.
+
+## Decyzja i antyprzykład
+
+Story pokazuje również ograniczony wizualny antyprzykład. Demonstruje on kartę dla każdego fragmentu danych, zagnieżdżanie powierzchni i sztuczny poziomy scrollbar. Antyprzykład jest zamknięty we własnym regionie demonstracyjnym i nie wprowadza rzeczywistego poziomego overflow strony.
 
 ## Tokeny
 
@@ -91,8 +96,20 @@ Aktywny odbiór Stage 02 obejmuje desktop light/dark. Reflow nie może tworzyć 
 
 ## Storybook i odbiór
 
-Przed akceptacją wymagane są: typecheck, Storybook build, checki katalogu/architektury/taksonomii, Foundation verification, `git diff --check`, desktop light/dark, kontrola wszystkich ośmiu sekcji, klawiatury, focus, Drawer/OverlayRoot, Escape, focus restore, braku domyślnego zaznaczenia, zwijania tabeli, braku poziomego overflow i błędów konsoli. Historia pozostaje `review` do świadomej akceptacji użytkownika.
+Przed akceptacją wymagane są: typecheck, Storybook build, checki katalogu/architektury/taksonomii, Foundation verification, `git diff --check`, desktop light/dark, kontrola wszystkich ośmiu sekcji, klawiatury istniejących komponentów, focus, Drawer/OverlayRoot, Escape, focus restore, braku domyślnego zaznaczenia, braku lokalnego silnika tabeli/Selecta, braku poziomego overflow i błędów konsoli. Historia ma status `accepted`.
 
 BRAK DECYZJI W DOKUMENTACJI: szczegółowy kontrakt zoom, brush, pan i crosshair nie jest zatwierdzony. Funkcje nie są wdrażane w tym laboratorium.
 
 BRAK DECYZJI W DOKUMENTACJI: określenie „wykres kwadratowy” nie identyfikuje Treemap, Heatmap ani nowej rodziny i wymaga osobnej decyzji.
+
+
+## Handoff po promocji 15.01–15.02
+
+- archetyp pełnego `ChartFrame` został promowany do `15.01`; 05.03 nie utrzymuje drugiej implementacji;
+- warianty KPI i lokalny `KpiSparkline` zostały promowane do `15.02 MetricCard`; 05.03 nie utrzymuje drugiego katalogu KPI;
+- rodziny wykresów pozostają decyzją laboratoryjną do czasu implementacji `15.03–15.07`;
+- bazowa tabela jest konsumowana z `10.07 DataTable`; workflow filtrów, paginacji, akcji i detail należy do `18.04`;
+- stany danych konsumują kanoniczny `StatusBadge` i mapowanie Analytics; docelowe zachowanie rodzin danych pozostaje do promocji w `15.08`;
+- warstwy szczegółów/dowodów/rekomendacji pozostają decision recordem do czasu handoffu do `18.07`.
+
+Od tego etapu 05.03 jest źródłem historii decyzji, a nie runtime source of truth dla ChartFrame i MetricCard.

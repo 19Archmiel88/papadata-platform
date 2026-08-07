@@ -24,9 +24,12 @@ status: stage-01-accepted
 
 # Statusy systemowe
 
+## Source of truth i ownership
+Fundament definiuje wyłącznie anatomię statusu oraz semantic tones: `neutral`, `info`, `success`, `warning`, `critical`, `processing`. Konkretne klucze i etykiety billing/security/commerce/operations należą do modeli domenowych produktu. `StatusBadge` renderuje ton, ale nie jest właścicielem słownika biznesowego.
+
 ## Decyzja
 
-Jeden publiczny słownik statusów obowiązuje komponenty, Fundamenty i Laboratorium: `neutral`, `info`, `success`, `warning`, `critical`, `processing`.
+Jeden publiczny słownik **tonów semantycznych** obowiązuje komponenty, Fundamenty i Laboratorium: `neutral`, `info`, `success`, `warning`, `critical`, `processing`. Klucze statusów biznesowych pozostają własnością domen.
 
 ## Mapowanie
 
@@ -44,6 +47,8 @@ Jeden publiczny słownik statusów obowiązuje komponenty, Fundamenty i Laborato
 - `danger` pozostaje wyłącznie nazwą tokenu koloru lub lokalnej roli obramowania/separatora
 - `muted` nie jest statusem domenowym i mapuje się na `neutral` albo rolę tekstową
 - status nie może być przekazywany wyłącznie kolorem
+- `StatusBadge` renderuje kanoniczny status; Laboratorium nie tworzy drugiego runtime badge dla `processing`, `partial`, `stale`, `noData` ani błędów danych
+- lokalny badge laboratoryjny może opisywać wyłącznie metadane decyzji/handoffu, nie status produktu
 - `implemented` oznacza tylko istnienie story lub kodu referencyjnego, nie akceptację ani produkcję
 
 ## Status odbioru Etapu 01

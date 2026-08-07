@@ -5,10 +5,13 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-312E5D402457
 status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+updated_at: 2026-08-06T20:27:00+01:00
 ---
 
 # Przyciski i akcje
+
+## Source of truth i semantyka akcji
+Publiczne React API jest własnością runtime w `apps/web/src/design-system/components/Button`. Podział odpowiedzialności jest jednoznaczny: `Button` = command/submit, `TextAction` = lekka komenda, `LinkAction` = nawigacja przez `<a href>`, `IconButton` = komenda ikonowa. `Button` nie ma wariantu `link`.
 
 ## Metadane
 
@@ -17,89 +20,128 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Identyfikator | 10.02 |
 | Nazwa polska | Przyciski i akcje |
 | Nazwa techniczna | przyciski-i-akcje |
-| Typ dokumentu | indeks rodziny komponentów |
-| Wersja | 1.0 |
+| Typ dokumentu | kontrakt rodziny komponentów |
+| Wersja | 1.1 |
 | Status kontraktu | zatwierdzony stan docelowy |
 | Priorytet | P1 |
 | Właściciel | Design System |
 | Moduł | Komponenty bazowe — M02 |
-
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | IMPLEMENTED |
+| Status Storybooka | `10 Komponenty bazowe/Przyciski i akcje` → `Przyciski` |
+| Plik Storybooka | `apps/web/src/design-system/components/Button/Button.stories.tsx` |
+| Status testów | PASSING — play test + statyczny kontrakt prezentacji |
 
 ## Cel i decyzja docelowa
 
-„Przyciski i akcje” jest współdzielonym kontraktem, a nie lokalnym układem jednego ekranu. Wzorzec ma jedną odpowiedzialność, korzysta z fundamentów i komponentów bazowych oraz udostępnia warianty wymagane przez domeny bez kopiowania implementacji.
+Rodzina 10.02 jest jedynym źródłem produkcyjnych akcji PapaData. Laboratorium decyzji, ekrany i kolejne stories używają tych komponentów bez lokalnego zmieniania ich koloru, geometrii, typografii, focusu ani znacznika aktywności.
 
-## Stan obecny
+Story 10.02 nie ma własnego canvasu, drabiny typograficznej ani układu strony. Dziedziczy wspólną prezentację z jednego źródła prawdy:
 
+- `apps/web/src/storybook-next/presentation/StoryPresentation.tsx`;
+- `apps/web/src/storybook-next/presentation/story-presentation.css`;
+- klasy `pd-f0-page`, `pd-f0-page__*`, `pd-f0-section` i `pd-f0-section__*`.
 
-## Zakres i wymagania
+Lokalny `action-showcase.css` odpowiada wyłącznie za rozmieszczenie przykładów przycisków.
 
-| Lp. | Wymaganie | Kontrakt | Dowód odbioru |
-| --- | --- | --- | --- |
-| 1 | primary | wymagany wariant lub stan | test Storybook + test interakcji |
-| 2 | secondary | wymagany wariant lub stan | test Storybook + test interakcji |
-| 3 | ghost | wymagany wariant lub stan | test Storybook + test interakcji |
-| 4 | danger | wymagany wariant lub stan | test Storybook + test interakcji |
-| 5 | link | wymagany wariant lub stan | test Storybook + test interakcji |
-| 6 | icon button | wymagany wariant lub stan | test Storybook + test interakcji |
-| 7 | loading | wymagany wariant lub stan | test Storybook + test interakcji |
-| 8 | disabled | wymagany wariant lub stan | test Storybook + test interakcji |
-| 9 | destructive confirmation. | wymagany wariant lub stan | test Storybook + test interakcji |
+## Zakres komponentów
+
+- `Button`;
+- `IconButton`;
+- `TextAction`;
+- `LinkAction`;
+- `ButtonGroup`.
+
+## Warianty i stany wymagane
+
+| Lp. | Wymaganie | Dowód |
+| --- | --- | --- |
+| 1 | primary | story + play test |
+| 2 | secondary | story + play test |
+| 3 | ghost | story + play test |
+| 4 | danger | story + play test |
+| 5 | `TextAction` — lekka komenda | story + play test |
+| 6 | `LinkAction` — nawigacja `<a href>` | story + play test |
+| 7 | `IconButton` — komenda ikonowa | story + play test |
+| 8 | loading i `aria-busy` | story + play test |
+| 9 | disabled | story + play test |
+| 10 | button group poziomy i pionowy | story + play test |
+| 11 | small, medium i large | story + kontrola geometrii |
+| 12 | akcja full-width | regresja szerokości kreski |
+
+Potwierdzenie operacji destrukcyjnej jest odpowiedzialnością `Dialog` lub `AlertDialog`, a nie wariantem komponentu `Button`.
+
+## Kontrakt kreski aktywności
+
+Kreska hover/focus należy do klikanej akcji:
+
+1. Dla `Button` ma szerokość zawartości akcji: ikona początkowa, etykieta i ikona końcowa.
+2. Nie przejmuje szerokości komórki grida, kolumny, wiersza ani `fullWidth` rodzica.
+3. Dla `TextAction` i `LinkAction` obejmuje całą akcję wraz z ikoną, a nie tylko tekst etykiety.
+4. Dla `IconButton` pozostaje wewnątrz kontrolki ikonowej.
+5. Loading i disabled ukrywają kreskę bez zmiany geometrii.
+6. Lokalny CSS Storybooka i Laboratorium nie może nadpisywać selektorów `pd-button`, `pd-icon-button` ani `pd-inline-action`.
+
+W implementacji właściciel kreski jest oznaczony `data-slot="activity-line-owner"`, a sama kreska `data-slot="activity-line"`. Umożliwia to test szerokości w rzeczywistym runtime Storybooka.
 
 ## Anatomia
 
 ```text
-przyciski-i-akcje
-├── semantic root
-├── header or accessible label
-├── primary content
-├── status / validation region
-├── primary action
-└── optional secondary actions or metadata
+Button
+└── activity-line-owner (fit-content)
+    ├── opcjonalny spinner lub ikona początkowa
+    ├── label
+    ├── opcjonalna ikona końcowa
+    └── activity-line
 ```
 
-## Komponenty składowe
+## Fundamenty
 
-- PageHeader
-- DataStatusBanner
-- InlineNotice
-- Button
+Rodzina korzysta wyłącznie z tokenów `--pd-*` dla:
 
-Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
+- canvasu i powierzchni;
+- tekstu i hierarchii typograficznej;
+- koloru marki, interakcji i statusu danger;
+- spacingu, promieni, separatorów i focus-visible;
+- motion i reduced motion.
 
-## Kontrakt stanu
+Nie wolno definiować lokalnego odpowiednika zaakceptowanego tokenu ani lokalnego wyglądu komponentu w Storybooku lub Laboratorium.
 
-- Stan kontrolowany jest używany dla route, filtrów, formularza, selection i overlay.
-- Stan asynchroniczny rozróżnia loading, processing, retrying, success, recoverable error i terminal error.
-- Read-only, no-access i plan-restricted są osobnymi stanami, nie odmianą disabled.
-- Zmiana motywu, języka lub viewportu nie resetuje danych ani procesu.
+## Interakcje i dostępność
 
-## Interakcje i klawiatura
-
-Tab order odpowiada hierarchii zadania. Enter/Space uruchamiają natywne kontrolki; Escape zamyka najwyższą warstwę; strzałki są używane wyłącznie w komponentach z modelem composite widget. Focus restore jest obowiązkowy po każdej warstwie.
+- natywny `button` ma domyślnie `type="button"`;
+- Enter i Space uruchamiają kontrolkę;
+- focus-visible jest zawsze widoczny;
+- kontrolka ikonowa ma nazwę akcji;
+- `loading` ustawia `aria-busy="true"` i blokuje kliknięcie;
+- disabled nie jest dostępny jako aktywna akcja;
+- znaczenie wariantu nie zależy wyłącznie od koloru;
+- reduced motion nie usuwa rezultatu interakcji.
 
 ## Responsywność
 
-Wide może używać kolumn lub detail panelu. Compact przechodzi w jedną kolumnę, zachowuje wszystkie funkcje i przenosi akcje drugorzędne do jawnego overflow. Tabele otrzymują scroll lub widok priorytetowych kolumn, a wykresy — tabelę alternatywną.
+Komponent zachowuje swoją geometrię. To kontener decyduje o zawijaniu grupy lub użyciu `fullWidth`. Przy 200% zoomu i wąskim reflow:
 
-## Dostępność
+- etykieta może się bezpiecznie zawinąć;
+- ikony nie tracą proporcji;
+- kreska nadal odpowiada szerokości zawartości;
+- akcja nie powoduje poziomego scrolla strony.
 
-Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kontrast, reduced motion, live region dla wyników asynchronicznych, reflow i brak informacji zależnej wyłącznie od koloru.
+## Storybook i testy
 
-## Storybook
+Wymagane i wdrożone kontrole:
 
-- Title: `10 Komponenty bazowe/Przyciski i akcje`.
-- Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
-- Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
+1. Story używa dokładnie tego samego shellu co Fundamenty i Laboratorium.
+2. `action-showcase.css` nie redefiniuje tła, typografii strony ani produkcyjnych selektorów komponentów.
+3. Play test sprawdza warianty, loading, disabled, dostępne nazwy, grupy poziome i pionowe oraz brak zmiany geometrii.
+4. Play test porównuje szerokość `activity-line` z właścicielem treści dla zwykłego przycisku, linku, ikony i akcji full-width.
+5. `check-storybook-presentation-contract.mjs` blokuje ponowne wprowadzenie lokalnych odchyleń.
+6. `check-component-system-v1.mjs`, katalog, architektura, taksonomia, typecheck i build Storybooka pozostają bramkami odbioru.
 
-## Testy i kryteria akceptacji
+## Kryteria akceptacji
 
-1. Wszystkie wymagania mają story i asercję testową.
-2. Wzorzec nie tworzy duplikatu komponentu bazowego.
-3. Stany błędu i brak dostępu mają recovery albo jednoznaczne zakończenie.
-4. Mobile i zoom 200% nie tracą funkcji.
-5. Klawiatura oraz focus restore przechodzą play test.
-6. Dokument jest linkowany przez co najmniej jeden ekran albo oznaczony jako fundament przyszłego użycia.
+- tło, typografia i geometria strony są identyczne z zaakceptowanymi Fundamentami;
+- wygląd przycisków poza korektą kreski nie został zmieniony;
+- Laboratorium korzysta z produkcyjnych komponentów 10.02 bez lokalnych override’ów;
+- wszystkie testy statyczne i runtime przechodzą;
+- light/dark, PL/EN, desktop, reflow, zoom 200% i reduced motion nie tworzą odchyłów;
+- użytkownik zaakceptował końcowy wygląd story.

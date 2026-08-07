@@ -1,6 +1,3 @@
-import type {
-  CSSProperties,
-} from 'react';
 import {
   useState,
 } from 'react';
@@ -11,6 +8,7 @@ import type {
 import {
   expect,
   userEvent,
+  waitFor,
   within,
 } from 'storybook/test';
 
@@ -41,6 +39,21 @@ const baseOptions = [
   {
     value: 'crm',
     label: 'CRM podstawowy',
+  },
+  {
+    value: 'ga4',
+    label: 'Google Analytics 4',
+  },
+  {
+    value: 'meta',
+    label: 'Meta Ads',
+  },
+] as const;
+
+const englishOptions = [
+  {
+    value: 'crm',
+    label: 'Core CRM',
   },
   {
     value: 'ga4',
@@ -112,16 +125,6 @@ const longOptions = [
   },
 ] as const;
 
-const themePreviewStyle = {
-  display: 'grid',
-  gap: 'var(--pd-space-3)',
-  padding: 'var(--pd-space-4) 0 0 var(--pd-space-4)',
-  borderTop: 'var(--pd-border-width-subtle) solid var(--pd-separator-subtle)',
-  borderLeft: '2px solid color-mix(in srgb, var(--pd-brand-line) 48%, transparent)',
-  boxShadow:
-    '0 -1.2rem 2.2rem -2rem color-mix(in srgb, var(--pd-shadow-overlay) 24%, transparent), -1.2rem 0 2.2rem -2rem color-mix(in srgb, var(--pd-shadow-overlay) 24%, transparent)',
-} satisfies CSSProperties;
-
 type SelectPreviewProps = Omit<
   SelectProps,
   'value' | 'onChange'
@@ -138,10 +141,7 @@ function SelectPreview({
   const [value, setValue] = useState<string | null>(initialValue);
 
   return (
-    <div
-      data-theme={theme}
-      style={theme ? themePreviewStyle : undefined}
-    >
+    <div data-theme={theme}>
       <Select
         {...props}
         onChange={(event) => {
@@ -158,23 +158,28 @@ function SelectShowcase() {
     <main className="pd-form-story">
       <div className="pd-form-story__inner">
         <header className="pd-form-story__header">
-          <p className="pd-form-story__kicker">10 Komponenty/Lista wyboru</p>
+          <p className="pd-form-story__kicker">
+            10 Komponenty/Lista wyboru
+          </p>
           <h1>Lista wyboru z własną listą rozwijaną.</h1>
           <p className="pd-form-story__lead">
-            Komponent nie korzysta z natywnej listy przeglądarki. Przycisk
-            otwierający zachowuje wygląd pola PapaData, a lista opcji pozostaje
-            zgodna z motywem jasnym i ciemnym bez nowych zależności.
+            Komponent wykorzystuje własną warstwę listy zamiast natywnego
+            popupu przeglądarki. Zachowuje semantykę formularza, obsługę
+            klawiatury oraz spójny wygląd w motywie jasnym i ciemnym.
           </p>
         </header>
 
         <section className="pd-form-story__section">
           <h2>Warianty</h2>
+
           <div className="pd-form-story__grid">
             <article className="pd-form-story__card">
-              <span className="pd-form-story__eyebrow">wariant podstawowy</span>
+              <span className="pd-form-story__eyebrow">
+                wariant podstawowy
+              </span>
               <h3>Podstawowy wariant</h3>
               <SelectPreview
-                helperText="Własna lista rozwijana zachowuje styl pola i tokeny PapaData."
+                helperText="Lista rozwijana korzysta z tokenów i semantyki PapaData."
                 initialValue="crm"
                 label="Główne źródło danych"
                 options={baseOptions}
@@ -183,10 +188,12 @@ function SelectShowcase() {
             </article>
 
             <article className="pd-form-story__card">
-              <span className="pd-form-story__eyebrow">z wyszukiwaniem</span>
+              <span className="pd-form-story__eyebrow">
+                z wyszukiwaniem
+              </span>
               <h3>Wyszukiwanie wewnątrz komponentu</h3>
               <SelectPreview
-                helperText="Filtrowanie działa wewnątrz listy rozwijanej, bez dodatkowej biblioteki."
+                helperText="Po otwarciu wyszukiwanie przejmuje rolę combobox i wskazuje aktywną opcję."
                 initialValue={null}
                 label="Dostawca integracji"
                 options={baseOptions}
@@ -195,8 +202,29 @@ function SelectShowcase() {
               />
             </article>
 
-            <article className="pd-form-story__card" data-tone="error">
-              <span className="pd-form-story__eyebrow">błąd</span>
+            <article className="pd-form-story__card">
+              <span className="pd-form-story__eyebrow">
+                locale en
+              </span>
+              <h3>English runtime copy</h3>
+              <SelectPreview
+                helperText="Search labels, placeholder and empty state follow the component locale."
+                initialValue={null}
+                label="Integration provider"
+                locale="en"
+                options={englishOptions}
+                placeholder="Select provider"
+                searchable
+              />
+            </article>
+
+            <article
+              className="pd-form-story__card"
+              data-tone="error"
+            >
+              <span className="pd-form-story__eyebrow">
+                błąd
+              </span>
               <h3>Stan błędu</h3>
               <SelectPreview
                 helperText="Pole jest wymagane."
@@ -210,8 +238,13 @@ function SelectShowcase() {
               />
             </article>
 
-            <article className="pd-form-story__card" data-tone="muted">
-              <span className="pd-form-story__eyebrow">wyłączony</span>
+            <article
+              className="pd-form-story__card"
+              data-tone="muted"
+            >
+              <span className="pd-form-story__eyebrow">
+                wyłączony
+              </span>
               <h3>Stan wyłączony</h3>
               <SelectPreview
                 disabled
@@ -224,10 +257,12 @@ function SelectShowcase() {
             </article>
 
             <article className="pd-form-story__card">
-              <span className="pd-form-story__eyebrow">wymagane</span>
+              <span className="pd-form-story__eyebrow">
+                wymagane
+              </span>
               <h3>Pole wymagane</h3>
               <SelectPreview
-                helperText="Etykieta i gwiazdka pozostają zgodne z resztą pól."
+                helperText="Etykieta i oznaczenie wymagania pozostają zgodne z pozostałymi polami."
                 initialValue={null}
                 label="Typ źródła"
                 options={baseOptions}
@@ -237,10 +272,12 @@ function SelectShowcase() {
             </article>
 
             <article className="pd-form-story__card">
-              <span className="pd-form-story__eyebrow">opcja wyłączona</span>
+              <span className="pd-form-story__eyebrow">
+                opcja wyłączona
+              </span>
               <h3>Opcja wyłączona</h3>
               <SelectPreview
-                helperText="Opcja starszego systemu pozostaje widoczna, ale nieaktywna."
+                helperText="Opcja starszego systemu pozostaje widoczna, ale nie może zostać wybrana."
                 initialValue="crm"
                 label="Źródło operacyjne"
                 options={optionsWithDisabled}
@@ -249,10 +286,12 @@ function SelectShowcase() {
             </article>
 
             <article className="pd-form-story__card">
-              <span className="pd-form-story__eyebrow">długa lista</span>
+              <span className="pd-form-story__eyebrow">
+                długa lista
+              </span>
               <h3>Dłuższa lista</h3>
               <SelectPreview
-                helperText="Lista zachowuje własne przewijanie i aktywną opcję klawiaturową."
+                helperText="Lista zachowuje lokalne przewijanie i aktywną opcję klawiaturową."
                 initialValue="warehouse"
                 label="Zestaw danych"
                 options={longOptions}
@@ -261,10 +300,12 @@ function SelectShowcase() {
             </article>
 
             <article className="pd-form-story__card">
-              <span className="pd-form-story__eyebrow">długa lista z wyszukiwaniem</span>
+              <span className="pd-form-story__eyebrow">
+                długa lista z wyszukiwaniem
+              </span>
               <h3>Wyszukiwanie w długiej liście</h3>
               <SelectPreview
-                helperText="Filtrowanie zachowuje lokalny scroll i pusty stan bez systemowego paska przewijania."
+                helperText="Filtrowanie zachowuje lokalne przewijanie oraz pusty stan."
                 initialValue={null}
                 label="Zestaw danych z wyszukiwaniem"
                 options={longOptions}
@@ -274,7 +315,9 @@ function SelectShowcase() {
             </article>
 
             <article className="pd-form-story__card">
-              <span className="pd-form-story__eyebrow">pusty stan</span>
+              <span className="pd-form-story__eyebrow">
+                pusty stan
+              </span>
               <h3>Pusty stan po filtrowaniu</h3>
               <SelectPreview
                 helperText="Wpisz frazę bez dopasowań, na przykład zzz."
@@ -287,10 +330,12 @@ function SelectShowcase() {
             </article>
 
             <article className="pd-form-story__card">
-              <span className="pd-form-story__eyebrow">tryb jasny</span>
+              <span className="pd-form-story__eyebrow">
+                tryb jasny
+              </span>
               <h3>Podgląd jasny</h3>
               <SelectPreview
-                helperText="Ten sam komponent w motywie jasnym."
+                helperText="Ten sam komponent korzysta z tokenów aktywnego motywu jasnego."
                 initialValue="meta"
                 label="Wariant motywu"
                 options={baseOptions}
@@ -300,10 +345,12 @@ function SelectShowcase() {
             </article>
 
             <article className="pd-form-story__card">
-              <span className="pd-form-story__eyebrow">tryb ciemny</span>
+              <span className="pd-form-story__eyebrow">
+                tryb ciemny
+              </span>
               <h3>Podgląd ciemny</h3>
               <SelectPreview
-                helperText="Lista rozwijana nie używa białej systemowej listy opcji."
+                helperText="Ten sam komponent korzysta z tokenów aktywnego motywu ciemnego."
                 initialValue="ga4"
                 label="Wariant motywu"
                 options={baseOptions}
@@ -325,11 +372,13 @@ function EmptyStateAfterSearchDemo() {
     <main className="pd-form-story">
       <div className="pd-form-story__inner">
         <header className="pd-form-story__header">
-          <p className="pd-form-story__kicker">10 Komponenty/Lista wyboru</p>
+          <p className="pd-form-story__kicker">
+            10 Komponenty/Lista wyboru
+          </p>
           <h1>Pusty stan po wyszukiwaniu.</h1>
           <p className="pd-form-story__lead">
-            Wariant do sprawdzenia zachowania, gdy wpisana fraza nie pasuje
-            do żadnej opcji.
+            Wariant sprawdza zachowanie komponentu, gdy wpisana fraza
+            nie pasuje do żadnej opcji.
           </p>
         </header>
 
@@ -364,42 +413,129 @@ export const SelectStory: Story = {
     canvasElement,
   }) => {
     const canvas = within(canvasElement);
+
     const basicSelect = canvas.getByRole('combobox', {
       name: 'Główne źródło danych',
     });
 
-    await expect(basicSelect).toHaveTextContent('CRM podstawowy');
+    await expect(
+      basicSelect,
+    ).toHaveTextContent('CRM podstawowy');
+
     await userEvent.click(basicSelect);
     await userEvent.keyboard('{ArrowDown}{Enter}');
-    await expect(basicSelect).toHaveTextContent('Google Analytics 4');
 
-    const searchableSelect = canvas.getByRole('combobox', {
+    await expect(
+      basicSelect,
+    ).toHaveTextContent('Google Analytics 4');
+
+    const searchableTrigger = canvas.getByRole('button', {
       name: 'Dostawca integracji',
     });
-    await userEvent.click(searchableSelect);
 
-    const search = canvas.getByRole('textbox', {
+    await userEvent.click(searchableTrigger);
+
+    const search = canvas.getByRole('combobox', {
       name: 'Dostawca integracji wyszukiwanie',
     });
+
+    await waitFor(() => {
+      expect(search).toHaveFocus();
+    });
+
     await userEvent.type(search, 'Meta');
-    await expect(search).toHaveValue('Meta');
-    await expect(
-      canvas.getByRole('option', {
-        name: 'Meta Ads',
-      }),
-    ).toBeInTheDocument();
+
+    const metaOption = canvas.getByRole('option', {
+      name: 'Meta Ads',
+    });
+
+    await waitFor(() => {
+      expect(search).toHaveAttribute(
+        'aria-activedescendant',
+        metaOption.id,
+      );
+    });
 
     await userEvent.clear(search);
     await userEvent.type(search, 'zzz');
+
     await expect(
-      canvas.getByText('Brak wyników dla podanej frazy.'),
+      canvas.getByText(
+        'Brak wyników dla podanej frazy.',
+      ),
     ).toBeInTheDocument();
 
+    await waitFor(() => {
+      expect(search).not.toHaveAttribute(
+        'aria-activedescendant',
+      );
+    });
+
     await userEvent.keyboard('{Escape}');
-    await expect(searchableSelect).toHaveAttribute(
+
+    await expect(
+      searchableTrigger,
+    ).toHaveAttribute(
       'aria-expanded',
       'false',
     );
+
+    await waitFor(() => {
+      expect(searchableTrigger).toHaveFocus();
+    });
+
+    const englishTrigger = canvas.getByRole('button', {
+      name: 'Integration provider',
+    });
+
+    const englishLabel = canvas.getByText(
+      'Integration provider',
+      {
+        selector: '.pd-form-field__label',
+      },
+    );
+
+    await expect(
+      englishLabel.closest('label'),
+    ).toHaveAttribute(
+      'for',
+      englishTrigger.id,
+    );
+
+    await userEvent.click(englishLabel);
+
+    const englishSearch = canvas.getByRole('combobox', {
+      name: 'Integration provider search',
+    });
+
+    await waitFor(() => {
+      expect(englishSearch).toHaveFocus();
+    });
+
+    await expect(
+      englishSearch,
+    ).toHaveAttribute(
+      'placeholder',
+      'Search options',
+    );
+
+    await userEvent.type(englishSearch, 'zzz');
+
+    await expect(
+      canvas.getByText('No results for this query.'),
+    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(englishSearch).not.toHaveAttribute(
+        'aria-activedescendant',
+      );
+    });
+
+    await userEvent.keyboard('{Escape}');
+
+    await waitFor(() => {
+      expect(englishTrigger).toHaveFocus();
+    });
   },
 };
 
@@ -417,17 +553,27 @@ export const SelectEmptyStateStory: Story = {
     canvasElement,
   }) => {
     const canvas = within(canvasElement);
-    const select = canvas.getByRole('combobox', {
+
+    const trigger = canvas.getByRole('button', {
       name: 'Dostawca integracji',
     });
 
-    await userEvent.click(select);
-    const search = canvas.getByRole('textbox', {
+    await userEvent.click(trigger);
+
+    const search = canvas.getByRole('combobox', {
       name: 'Dostawca integracji wyszukiwanie',
     });
+
+    await waitFor(() => {
+      expect(search).toHaveFocus();
+    });
+
     await userEvent.type(search, 'bez-wyniku');
+
     await expect(
-      canvas.getByText('Brak wyników dla podanej frazy.'),
+      canvas.getByText(
+        'Brak wyników dla podanej frazy.',
+      ),
     ).toBeInTheDocument();
   },
 };

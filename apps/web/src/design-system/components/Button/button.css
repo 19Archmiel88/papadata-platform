@@ -10,7 +10,7 @@ button.pd-button {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: var(--pd-space-2);
+  gap: 0;
   min-width: 0;
   min-height: var(--pd-density-control-height);
   padding: 0 var(--pd-space-3);
@@ -34,13 +34,23 @@ button.pd-button {
       var(--pd-motion-easing-standard);
 }
 
-.pd-button::after,
-button.pd-button::after {
-  content: "";
+.pd-button__content {
+  position: relative;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pd-space-2);
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.pd-button__activity-line {
   position: absolute;
-  right: var(--pd-space-3);
-  bottom: 0.28rem;
-  left: var(--pd-space-3);
+  right: 0;
+  bottom: -0.2rem;
+  left: 0;
   height: 2px;
   border-radius: var(--pd-radius-pill);
   background: var(--pd-button-line);
@@ -61,10 +71,10 @@ button.pd-button:focus-visible {
   color: var(--pd-button-hover-color);
 }
 
-.pd-button:hover::after,
-button.pd-button:hover::after,
-.pd-button:focus-visible::after,
-button.pd-button:focus-visible::after {
+.pd-button:hover .pd-button__activity-line,
+button.pd-button:hover .pd-button__activity-line,
+.pd-button:focus-visible .pd-button__activity-line,
+button.pd-button:focus-visible .pd-button__activity-line {
   opacity: 1;
   transform: scaleX(1);
 }
@@ -88,10 +98,10 @@ button.pd-button[disabled],
   opacity: 0.56;
 }
 
-.pd-button[disabled]::after,
-button.pd-button[disabled]::after,
-.pd-button[aria-disabled='true']::after,
-.pd-button[data-disabled='true']::after {
+.pd-button[disabled] .pd-button__activity-line,
+button.pd-button[disabled] .pd-button__activity-line,
+.pd-button[aria-disabled='true'] .pd-button__activity-line,
+.pd-button[data-disabled='true'] .pd-button__activity-line {
   opacity: 0;
   transform: scaleX(0);
 }
@@ -151,15 +161,6 @@ button.pd-button[disabled]::after,
   --pd-button-line: var(--pd-status-danger);
 }
 
-.pd-button--link,
-.pd-button[data-variant='link'] {
-  --pd-button-color: var(--pd-interactive);
-  --pd-button-hover-color: var(--pd-interactive-hover);
-  --pd-button-line: var(--pd-brand-line);
-
-  min-height: 2rem;
-  padding-inline: var(--pd-space-1);
-}
 
 .pd-button--small,
 .pd-button[data-size='small'] {
@@ -207,8 +208,7 @@ button.pd-button[disabled]::after,
 @media (prefers-reduced-motion: reduce) {
   .pd-button,
   button.pd-button,
-  .pd-button::after,
-  button.pd-button::after,
+  .pd-button__activity-line,
   .pd-button__icon,
   .pd-button svg {
     transition-duration: 1ms;
@@ -226,8 +226,7 @@ button.pd-button[disabled]::after,
     color: ButtonText;
   }
 
-  .pd-button::after,
-  button.pd-button::after {
+  .pd-button__activity-line {
     background: ButtonText;
   }
 

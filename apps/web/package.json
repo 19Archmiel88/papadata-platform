@@ -16,9 +16,12 @@
     "check-storybook-taxonomy": "node ../../scripts/check-storybook-taxonomy.mjs --self-test",
     "check-storybook-architecture": "node ../../scripts/check-storybook-architecture.mjs --self-test",
     "check-foundation-system": "node ../../scripts/check-foundation-system-v1.mjs",
-    "check-component-system": "node ../../scripts/check-component-system-v1.mjs",
+    "check-component-system": "node ../../scripts/check-component-system-v1.mjs && node ../../scripts/check-storybook-presentation-contract.mjs && node ../../scripts/check-design-system-ownership.mjs",
     "verify-foundation-system": "node ../../scripts/verify-foundation-system-readonly.mjs",
-    "capture-foundation-evidence": "node ../../scripts/capture-foundation-evidence.mjs"
+    "capture-foundation-evidence": "node ../../scripts/capture-foundation-evidence.mjs",
+    "check-storybook-presentation": "node ../../scripts/check-storybook-presentation-contract.mjs",
+    "check-design-system-ownership": "node ../../scripts/check-design-system-ownership.mjs",
+    "check-analytics-system": "node ../../scripts/check-analytics-system-v1.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",

@@ -54,7 +54,7 @@ function PromotedOwnerNotice({
   );
 }
 
-type ChartKind = 'comparison' | 'share' | 'correlation' | 'forecast' | 'waterfall' | 'funnel';
+type ChartKind = 'share' | 'correlation' | 'forecast' | 'waterfall' | 'funnel';
 
 type ChartDescriptor = {
   readonly name: string;
@@ -68,28 +68,6 @@ type ChartDescriptor = {
 };
 
 const chartCopy: Record<ChartKind, ChartDescriptor> = {
-  comparison: {
-    name: 'ComparisonChart',
-    purpose: {
-      pl: 'Porównanie kategorii z czytelną bazą odniesienia.',
-      en: 'Category comparison with a clear baseline.',
-    },
-    layers: {
-      pl: 'wartość · baza · delta',
-      en: 'value · baseline · delta',
-    },
-    question: {
-      pl: 'Który kanał generuje największy przychód?',
-      en: 'Which channel generates the most revenue?',
-    },
-    metric: { pl: 'Przychód', en: 'Revenue' },
-    source: 'GA4 + Ads',
-    range: { pl: 'Bieżący miesiąc', en: 'Current month' },
-    reference: {
-      pl: 'Linia odniesienia: poprzedni miesiąc',
-      en: 'Reference line: previous month',
-    },
-  },
   share: {
     name: 'ShareChart',
     purpose: {
@@ -213,21 +191,6 @@ function ChartGraphic({ kind }: { readonly kind: ChartKind }) {
         <line x1="48" y1="24" x2="48" y2="178" />
       </g>
 
-      {kind === 'comparison' ? (
-        <>
-          <rect className="pd-s53-chart-bar pd-s53-chart-bar--series-1" height="58" width="42" x="68" y="120" />
-          <rect className="pd-s53-chart-bar pd-s53-chart-bar--series-2" height="88" width="42" x="144" y="90" />
-          <rect className="pd-s53-chart-bar pd-s53-chart-bar--series-3" height="116" width="42" x="220" y="62" />
-          <rect className="pd-s53-chart-bar pd-s53-chart-bar--series-4" height="74" width="42" x="296" y="104" />
-          <line className="pd-s53-chart-benchmark" x1="56" y1="92" x2="370" y2="92" />
-          <g className="pd-s53-chart-labels">
-            <text textAnchor="middle" x="89" y="198">Email</text>
-            <text textAnchor="middle" x="165" y="198">Meta</text>
-            <text textAnchor="middle" x="241" y="198">Search</text>
-            <text textAnchor="middle" x="317" y="198">Direct</text>
-          </g>
-        </>
-      ) : null}
 
       {kind === 'share' ? (
         <>
@@ -961,12 +924,17 @@ export function DataSurfaceLaboratory() {
       <StorySection
         index="03"
         title={<Localized pl="Rodziny wykresów" en="Chart families" />}
-        summary={<Localized pl="Trend został promowany do 15.03. Laboratorium zachowuje wyłącznie handoff, a pozostałe rodziny czekają na swoich ownerów 15.04–15.07." en="Trend has been promoted to 15.03. The laboratory keeps only the handoff while the remaining families wait for their 15.04–15.07 owners." />}
+        summary={<Localized pl="Trend i porównania zostały promowane do 15.03 i 15.04. Laboratorium zachowuje wyłącznie handoff, a pozostałe rodziny czekają na swoich ownerów 15.05–15.07." en="Trend and comparison have been promoted to 15.03 and 15.04. The laboratory keeps only the handoff while the remaining families wait for their 15.05–15.07 owners." />}
       >
         <PromotedOwnerNotice
           owner="15.03 TrendChart"
           title={{ pl: 'Promowane do Wykresy i dane', en: 'Promoted to Data visualizations' }}
           description={{ pl: 'Line, area, actual, plan, poprzedni okres i średnia krocząca są od tej chwili kontraktem runtime 15.03.', en: 'Line, area, actual, plan, previous period and moving average are now the 15.03 runtime contract.' }}
+        />
+        <PromotedOwnerNotice
+          owner="15.04 ComparisonChart"
+          title={{ pl: 'Promowane do Wykresy i dane', en: 'Promoted to Data visualizations' }}
+          description={{ pl: 'Bar, grouped bar, ranking, benchmark i porównanie okresów są od tej chwili kontraktem runtime 15.04.', en: 'Bar, grouped bar, ranking, benchmark and period comparison are now the 15.04 runtime contract.' }}
         />
         <ChartFamilies />
       </StorySection>

@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: 81eef0736fa11a1d452ee67e2b237cb2c2e5d213ffc8119ec9d2417db6d00519
+// SHA-256 źródła: 2550910332ebd9bccbb77327dc00836648861015c4661c271089f9b156dfc3eb
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -486,7 +486,7 @@ export const storybookCatalog = [
     "storyClass": "reference",
     "owner": "Design System",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": "Decision laboratory only. KPI/MetricCard promoted to 15.02 and ChartFrame promoted to 15.01; remaining chart families/tables/states/layers await 15/18 owners.",
+    "note": "Decision laboratory only. KPI/MetricCard promoted to 15.02, ChartFrame to 15.01, TrendChart to 15.03 and ComparisonChart to 15.04; remaining chart families/tables/states/layers await their 15/18 owners.",
     "group": null,
     "sourceStatus": "specified",
     "documentationStatus": "review",
@@ -1101,15 +1101,15 @@ export const storybookCatalog = [
     "storyClass": "component",
     "owner": "Analytics UI",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": null,
+    "note": "Runtime owner: ComparisonChart. Promoted from 05.03; owns categorical bar/grouped/ranking geometry, benchmark and period comparison. TrendChart owns continuous time, DataTable owns exact records and 15.09 owns advanced interactions.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "draft",
-    "prototypeStatus": "none",
-    "productionStatus": "not_started",
-    "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "documentationStatus": "review",
+    "prototypeStatus": "implemented",
+    "productionStatus": "implemented",
+    "testStatus": "passing",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "bar",
       "grouped bar",
@@ -1117,10 +1117,12 @@ export const storybookCatalog = [
       "benchmark",
       "period comparison"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "15 Wykresy i dane/Porównania",
+    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/ComparisonChart.stories.tsx",
     "displaySectionTitle": "Wykresy i dane",
-    "displayTitle": "Porównania"
+    "displayTitle": "Porównania",
+    "storyExport": "ComparisonChartStory",
+    "accepted": false
   },
   {
     "id": "15.05",

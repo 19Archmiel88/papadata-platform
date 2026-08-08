@@ -7,18 +7,27 @@ import {
   resolveFromRoot,
 } from './storybook-check-utils.mjs';
 
-const system = readJson('apps/web/src/design-system/analytics-system-v1.json');
+const system = readJson(
+  'apps/web/src/design-system/analytics-system-v1.json',
+);
 const contract = getContract();
-const entries = new Map(contract.entries.map((entry) => [entry.id, entry]));
+const entries = new Map(
+  contract.entries.map((entry) => [
+    entry.id,
+    entry,
+  ]),
+);
 
 ensure(
-  system.stage === 'A15.2',
-  'Analytics System must declare stage A15.2.',
+  system.stage === 'A15.3',
+  'Analytics System must declare stage A15.3.',
 );
+
 ensure(
   system.status === 'review',
-  'Analytics System A15.2 remains review until every entry is formally accepted.',
+  'Analytics System A15.3 remains review until every entry is formally accepted.',
 );
+
 ensure(
   system.chartEngine === 'recharts',
   'Analytics System must declare Recharts as the chart geometry engine.',
@@ -28,15 +37,20 @@ const expectedRuntimeOwners = [
   ['ChartFrame', '15.01'],
   ['MetricCard', '15.02'],
   ['TrendChart', '15.03'],
+  ['ComparisonChart', '15.04'],
 ];
 
 ensure(
   system.entries.length === expectedRuntimeOwners.length,
-  'Analytics System A15.2 must contain exactly 15.01-15.03 runtime owners.',
+  'Analytics System A15.3 must contain exactly 15.01-15.04 runtime owners.',
 );
 
 for (const item of system.entries) {
-  for (const path of [item.runtime, item.story, item.fixture]) {
+  for (const path of [
+    item.runtime,
+    item.story,
+    item.fixture,
+  ]) {
     ensure(
       existsSync(resolveFromRoot(path)),
       `${item.id}: missing ${path}`,
@@ -49,34 +63,46 @@ for (const item of system.entries) {
     entry?.storyStatus === 'implemented',
     `${item.id}: Storybook contract must be implemented.`,
   );
+
   ensure(
     entry?.storyVisibility === 'visible',
     `${item.id}: story must be visible.`,
   );
-  const expectedAccepted =
-    item.id === '15.03';
+
+  const expectedAccepted = (
+    item.id === '15.03'
+  );
 
   ensure(
     entry?.accepted === expectedAccepted,
     `${item.id}: Storybook visual acceptance status drift.`,
   );
+
   ensure(
     entry?.owner === 'Analytics UI',
     `${item.id}: Analytics UI must own the story.`,
   );
 }
 
-const runtimeRegistry = readText('rejestry/runtime-component-api.csv');
+const runtimeRegistry = readText(
+  'rejestry/runtime-component-api.csv',
+);
 
-for (const [component, storyId] of expectedRuntimeOwners) {
+for (const [
+  component,
+  storyId,
+] of expectedRuntimeOwners) {
   const row = runtimeRegistry
     .split('\n')
-    .find((line) => line.startsWith(`${component},`));
+    .find((line) => (
+      line.startsWith(`${component},`)
+    ));
 
-  const expectedStatus =
+  const expectedStatus = (
     storyId === '15.03'
       ? 'accepted'
-      : 'review';
+      : 'review'
+  );
 
   ensure(
     row?.includes(
@@ -86,29 +112,37 @@ for (const [component, storyId] of expectedRuntimeOwners) {
   );
 }
 
-const storybookRegistry = readText('rejestry/storybook.csv');
+const storybookRegistry = readText(
+  'rejestry/storybook.csv',
+);
 
 for (const title of [
   '15 Wykresy i dane/ChartFrame',
   '15 Wykresy i dane/MetricCard',
   '15 Wykresy i dane/Trendy',
+  '15 Wykresy i dane/Porównania',
 ]) {
   const rows = storybookRegistry
     .split('\n')
-    .filter((line) => line.startsWith(`${title},`));
+    .filter((line) => (
+      line.startsWith(`${title},`)
+    ));
 
   ensure(
     rows.length === 1,
     `${title}: expected exactly one Storybook registry owner.`,
   );
 
-  const expectedRegistryStatus =
+  const expectedRegistryStatus = (
     title === '15 Wykresy i dane/Trendy'
       ? 'implemented'
-      : 'review';
+      : 'review'
+  );
 
   ensure(
-    rows[0]?.includes(`,${expectedRegistryStatus},`),
+    rows[0]?.includes(
+      `,${expectedRegistryStatus},`,
+    ),
     `${title}: Storybook registry status drift.`,
   );
 }
@@ -117,9 +151,11 @@ for (const legacy of [
   '10 Komponenty/ChartFrame,',
   '10 Komponenty/MetricCard,',
   '10 Komponenty/TrendChart,',
+  '10 Komponenty/ComparisonChart,',
   '15 Wykresy i wizualizacje danych/ChartFrame,',
   '15 Wykresy i wizualizacje danych/MetricCard,',
   '15 Wykresy i wizualizacje danych/Trendy,',
+  '15 Wykresy i wizualizacje danych/Porównania,',
 ]) {
   ensure(
     !storybookRegistry.includes(legacy),
@@ -127,12 +163,17 @@ for (const legacy of [
   );
 }
 
-ensure(
-  !existsSync(
-    resolveFromRoot('fixtures/storybook/091-trendchart.json'),
-  ),
-  'Legacy 10/TrendChart fixture must be removed after 15.03 promotion.',
-);
+for (const legacyFixture of [
+  'fixtures/storybook/091-trendchart.json',
+  'fixtures/storybook/045-comparisonchart.json',
+]) {
+  ensure(
+    !existsSync(
+      resolveFromRoot(legacyFixture),
+    ),
+    `Legacy fixture must remain removed: ${legacyFixture}`,
+  );
+}
 
 const componentIndex = readText(
   'apps/web/src/design-system/components/index.ts',
@@ -145,6 +186,8 @@ for (const marker of [
   'MetricCardProps',
   'TrendChart',
   'TrendChartProps',
+  'ComparisonChart',
+  'ComparisonChartProps',
 ]) {
   ensure(
     componentIndex.includes(marker),
@@ -152,10 +195,26 @@ for (const marker of [
   );
 }
 
-for (const [path, marker] of [
-  ['contracts/components/chartframe.ts', 'Orchestration contract'],
-  ['contracts/components/metriccard.ts', 'Orchestration contract'],
-  ['contracts/components/trendchart.ts', 'Orchestration contract'],
+for (const [
+  path,
+  marker,
+] of [
+  [
+    'contracts/components/chartframe.ts',
+    'Orchestration contract',
+  ],
+  [
+    'contracts/components/metriccard.ts',
+    'Orchestration contract',
+  ],
+  [
+    'contracts/components/trendchart.ts',
+    'Orchestration contract',
+  ],
+  [
+    'contracts/components/comparisonchart.ts',
+    'Orchestration contract',
+  ],
 ]) {
   ensure(
     readText(path).includes(marker),
@@ -188,14 +247,52 @@ ensure(
   'TrendChart must not reimplement a raw SVG chart engine.',
 );
 
-const webPackage = readJson('apps/web/package.json');
+const comparisonRuntime = readText(
+  'apps/web/src/design-system/components/ComparisonChart/ComparisonChart.tsx',
+);
+
+for (const marker of [
+  "from 'recharts'",
+  'Bar',
+  'ComposedChart',
+  'ReferenceLine',
+  'ResponsiveContainer',
+  'accessibilityLayer',
+  "'grouped'",
+  "'ranking'",
+  'benchmark',
+]) {
+  ensure(
+    comparisonRuntime.includes(marker),
+    `ComparisonChart runtime missing ${marker}.`,
+  );
+}
 
 ensure(
-  Boolean(webPackage.dependencies?.recharts),
+  !comparisonRuntime.includes('<svg'),
+  'ComparisonChart must not reimplement a raw SVG chart engine.',
+);
+
+ensure(
+  !comparisonRuntime.includes('Tooltip'),
+  '15.04 must not take tooltip ownership from 15.09.',
+);
+
+const webPackage = readJson(
+  'apps/web/package.json',
+);
+
+ensure(
+  Boolean(
+    webPackage.dependencies?.recharts,
+  ),
   'Web package must depend on Recharts.',
 );
+
 ensure(
-  Boolean(webPackage.dependencies?.['react-is']),
+  Boolean(
+    webPackage.dependencies?.['react-is'],
+  ),
   'React 19 chart stack must declare react-is explicitly.',
 );
 
@@ -207,40 +304,65 @@ ensure(
   !lab.includes('function ChartFrame('),
   '05.03 must not keep a local ChartFrame implementation.',
 );
+
 ensure(
   !lab.includes('KpiSparkline'),
   '05.03 must not keep a local KPI sparkline implementation.',
 );
+
 ensure(
   !lab.includes('DataSurfaceSelect'),
   '05.03 must not keep a local Select implementation.',
 );
+
 ensure(
   !lab.includes('<table'),
   '05.03 must not keep a local table engine.',
 );
+
 ensure(
   lab.includes('<DataTable'),
   '05.03 must consume the canonical DataTable.',
 );
+
 ensure(
-  lab.includes('resolveAnalyticsDataStateTone'),
+  lab.includes(
+    'resolveAnalyticsDataStateTone',
+  ),
   '05.03 must consume the canonical analytics status mapping.',
 );
-ensure(
-  lab.includes('15.01')
-    && lab.includes('15.02')
-    && lab.includes('15.03'),
-  '05.03 must declare ChartFrame, MetricCard and TrendChart handoffs.',
-);
-ensure(
-  !lab.includes("name: 'TrendChart'"),
-  '05.03 must not keep a local TrendChart catalogue entry.',
-);
-ensure(
-  !lab.includes("kind === 'trend'"),
-  '05.03 must not keep local TrendChart SVG geometry.',
-);
+
+for (const handoff of [
+  '15.01',
+  '15.02',
+  '15.03',
+  '15.04',
+]) {
+  ensure(
+    lab.includes(handoff),
+    `05.03 missing analytics handoff ${handoff}.`,
+  );
+}
+
+for (const legacyName of [
+  "name: 'TrendChart'",
+  "name: 'ComparisonChart'",
+]) {
+  ensure(
+    !lab.includes(legacyName),
+    `05.03 must not keep local chart catalogue owner: ${legacyName}`,
+  );
+}
+
+for (const legacyGeometry of [
+  "kind === 'trend'",
+  "kind === 'comparison'",
+]) {
+  ensure(
+    !lab.includes(legacyGeometry),
+    `05.03 must not keep local chart geometry: ${legacyGeometry}`,
+  );
+}
 
 ensure(
   !existsSync(
@@ -250,6 +372,7 @@ ensure(
   ),
   'Legacy KpiSparkline file must remain removed.',
 );
+
 ensure(
   !existsSync(
     resolveFromRoot(
@@ -263,15 +386,35 @@ for (const path of [
   'apps/web/src/storybook-next/stories/15-data-visualizations/ChartFrame.stories.tsx',
   'apps/web/src/storybook-next/stories/15-data-visualizations/MetricCard.stories.tsx',
   'apps/web/src/storybook-next/stories/15-data-visualizations/TrendChart.stories.tsx',
+  'apps/web/src/storybook-next/stories/15-data-visualizations/ComparisonChart.stories.tsx',
 ]) {
   const source = readText(path);
 
   ensure(
-    source.includes('presentation/story-presentation.css'),
+    source.includes(
+      'presentation/story-presentation.css',
+    ),
     `${path}: must use canonical StoryPresentation.`,
   );
 }
 
+const comparisonStory = readText(
+  'apps/web/src/storybook-next/stories/15-data-visualizations/ComparisonChart.stories.tsx',
+);
+
+for (const marker of [
+  "title: '15 Wykresy i dane/Porównania'",
+  'TrendChart',
+  'DataTable',
+  'Small multiples',
+  'negative values',
+]) {
+  ensure(
+    comparisonStory.includes(marker),
+    `15.04 story missing decision/evidence marker: ${marker}`,
+  );
+}
+
 console.log(
-  'Analytics System A15.2 OK: TrendChart 15.03 is accepted; ChartFrame 15.01 and MetricCard 15.02 retain their existing review status.',
+  'Analytics System A15.3 OK: ComparisonChart 15.04 is the review owner of categorical comparisons; TrendChart 15.03 remains accepted.',
 );

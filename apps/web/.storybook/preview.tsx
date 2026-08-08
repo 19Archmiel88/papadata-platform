@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 import type {
   Decorator,
   Preview,
@@ -131,7 +133,7 @@ const preview: Preview = {
     viewport: {
       options: {
         desktopWide: {
-          name: 'Duży ekran',
+          name: 'Duży ekran — 1920 × 1080',
           styles: {
             width: '1920px',
             height: '1080px',
@@ -139,29 +141,29 @@ const preview: Preview = {
           type: 'desktop',
         },
 
-        desktopStandard: {
-          name: 'Desktop',
+        desktopReview: {
+          name: 'Desktop — 1440 × 1600',
           styles: {
             width: '1440px',
-            height: '1024px',
+            height: '1600px',
           },
           type: 'desktop',
         },
 
-        tablet: {
-          name: 'Tablet',
+        tabletReview: {
+          name: 'Tablet — 768 × 1400',
           styles: {
             width: '768px',
-            height: '1194px',
+            height: '1400px',
           },
           type: 'tablet',
         },
 
-        mobile: {
-          name: 'Telefon',
+        mobileReview: {
+          name: 'Telefon — 390 × 1200',
           styles: {
             width: '390px',
-            height: '844px',
+            height: '1200px',
           },
           type: 'mobile',
         },

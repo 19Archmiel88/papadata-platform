@@ -1,0 +1,329 @@
+.pd-comparison-chart {
+  inline-size: 100%;
+  min-inline-size: 0;
+  color: var(--pd-text);
+}
+
+.pd-comparison-chart__axis-caption {
+  display: flex;
+  align-items: center;
+  min-block-size: 1.25rem;
+  margin-block-end: var(--pd-space-2);
+  color: var(--pd-text-secondary);
+  font-family: var(--pd-font-mono);
+  font-size: 0.68rem;
+  line-height: 1;
+  letter-spacing: 0.035em;
+}
+
+.pd-comparison-chart__plot {
+  inline-size: 100%;
+  block-size: 22rem;
+  min-block-size: 18rem;
+  min-inline-size: 0;
+}
+
+.pd-comparison-chart[data-variant='ranking']
+  .pd-comparison-chart__plot {
+  block-size: 24rem;
+}
+
+.pd-comparison-chart .recharts-wrapper {
+  font-family: var(--pd-font-sans);
+}
+
+.pd-comparison-chart .recharts-surface {
+  overflow: visible;
+}
+
+.pd-comparison-chart
+  .recharts-cartesian-axis-tick-value {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.012em;
+}
+
+.pd-comparison-chart
+  .recharts-cartesian-grid line,
+.pd-comparison-chart
+  .recharts-rectangle,
+.pd-comparison-chart
+  .recharts-reference-line-line {
+  vector-effect: non-scaling-stroke;
+}
+
+.pd-comparison-chart
+  .recharts-cartesian-grid line {
+  shape-rendering: crispEdges;
+}
+
+.pd-comparison-chart
+  .recharts-cartesian-grid-horizontal line {
+  stroke: var(--pd-separator);
+  stroke-opacity: 0.78;
+}
+
+.pd-comparison-chart .recharts-surface:focus {
+  outline: none;
+}
+
+.pd-comparison-chart .recharts-surface:focus-visible {
+  outline:
+    var(--pd-focus-width)
+    solid
+    var(--pd-focus-visible);
+  outline-offset: calc(var(--pd-focus-width) * -1);
+  border-radius: var(--pd-radius-small);
+}
+
+.pd-comparison-chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: var(--pd-space-4);
+  column-gap: var(--pd-space-10);
+  align-items: center;
+  margin: var(--pd-space-7) 0 0;
+  padding: 0;
+  color: var(--pd-text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  list-style: none;
+}
+
+.pd-comparison-chart__legend li {
+  display: inline-flex;
+  gap: 0.75rem;
+  align-items: center;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.pd-comparison-chart__legend li > span:last-child {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.pd-comparison-chart__legend-label {
+  min-inline-size: 0;
+}
+
+.pd-comparison-chart__benchmark-value {
+  white-space: nowrap;
+}
+
+.pd-comparison-chart__legend
+  li[data-series-index='0'] {
+  color: var(--pd-text);
+}
+
+.pd-comparison-chart__legend
+  li[data-series-index='0']
+  > span:last-child {
+  font-weight: var(--pd-font-weight-medium);
+}
+
+.pd-comparison-chart__swatch {
+  display: inline-block;
+  inline-size: 1.35rem;
+  block-size: 0.68rem;
+  flex: 0 0 1.35rem;
+  background: var(--pd-data-actual);
+  border: 1px solid transparent;
+  border-radius: var(--pd-radius-small);
+}
+
+.pd-comparison-chart__legend
+  li[data-series-index='1']
+  .pd-comparison-chart__swatch {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      var(--pd-surface-subtle) 0,
+      var(--pd-surface-subtle) 6px,
+      var(--pd-data-series-2) 6px,
+      var(--pd-data-series-2) 7px,
+      var(--pd-surface-subtle) 7px,
+      var(--pd-surface-subtle) 11px
+    );
+  border-color: var(--pd-data-series-2);
+  opacity: 0.72;
+}
+
+.pd-comparison-chart__legend
+  li[data-series-index='2']
+  .pd-comparison-chart__swatch {
+  background: var(--pd-data-series-3);
+  opacity: 0.82;
+}
+
+.pd-comparison-chart__legend
+  li[data-series-index='3']
+  .pd-comparison-chart__swatch {
+  background: var(--pd-data-target);
+  opacity: 0.82;
+}
+
+.pd-comparison-chart__benchmark-swatch {
+  display: inline-block;
+  inline-size: 2.5rem;
+  block-size: 0;
+  flex: 0 0 2.5rem;
+  border-block-start:
+    2px
+    dashed
+    var(--pd-data-target);
+  opacity: 0.9;
+}
+
+.pd-comparison-chart__value-label {
+  fill: var(--pd-text-secondary);
+  font-family: var(--pd-font-sans);
+  font-size: 11px;
+  font-weight: var(--pd-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+.pd-comparison-chart__benchmark-line,
+.pd-comparison-chart__zero-line {
+  vector-effect: non-scaling-stroke;
+}
+
+.pd-comparison-chart
+  .recharts-reference-line
+  text {
+  paint-order: stroke;
+  stroke: var(--pd-surface);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+[data-theme='dark']
+  .pd-comparison-chart
+  .recharts-cartesian-grid line {
+  stroke: var(--pd-separator);
+  stroke-opacity: 0.72;
+}
+
+[data-theme='dark']
+  .pd-comparison-chart
+  .recharts-cartesian-axis-tick-value {
+  fill: var(--pd-text);
+  fill-opacity: 0.76;
+}
+
+[data-theme='dark']
+  .pd-comparison-chart
+  .pd-comparison-chart__benchmark-line {
+  stroke-opacity: 0.9;
+}
+
+[data-theme='dark']
+  .pd-comparison-chart__legend
+  li[data-series-index='1']
+  .pd-comparison-chart__swatch {
+  opacity: 0.64;
+}
+
+[data-theme='dark']
+  .pd-comparison-chart
+  .recharts-reference-line
+  text {
+  stroke: var(--pd-surface);
+  stroke-width: 4px;
+}
+
+@media (max-width: 820px) {
+  .pd-comparison-chart__plot {
+    block-size: 20rem;
+    min-block-size: 17rem;
+  }
+
+  .pd-comparison-chart[data-variant='ranking']
+    .pd-comparison-chart__plot {
+    block-size: 23rem;
+  }
+
+  .pd-comparison-chart__legend {
+    display: grid;
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+    gap:
+      var(--pd-space-4)
+      var(--pd-space-8);
+    align-items: start;
+    margin-block-start: var(--pd-space-6);
+  }
+
+  .pd-comparison-chart__legend li {
+    inline-size: 100%;
+    gap: 0.8rem;
+    align-items: center;
+  }
+
+  .pd-comparison-chart__benchmark-value {
+    display: none;
+  }
+
+  .pd-comparison-chart
+    .recharts-cartesian-axis-tick-value {
+    fill: var(--pd-text-secondary);
+  }
+
+  .pd-comparison-chart
+    .recharts-cartesian-grid-horizontal line {
+    stroke: var(--pd-separator);
+    stroke-opacity: 0.84;
+  }
+}
+
+@media (max-width: 620px) {
+  .pd-comparison-chart__legend {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    column-gap: var(--pd-space-7);
+  }
+
+  .pd-comparison-chart__benchmark-label {
+    display: none;
+  }
+
+  .pd-comparison-chart__legend
+    li[data-series-index='1']
+    .pd-comparison-chart__swatch {
+    background: var(--pd-data-series-2);
+    border-color: var(--pd-data-series-2);
+    opacity: 0.42;
+  }
+}
+
+@media (max-width: 480px) {
+  .pd-comparison-chart__plot {
+    block-size: 18rem;
+    min-block-size: 16rem;
+  }
+
+  .pd-comparison-chart[data-variant='ranking']
+    .pd-comparison-chart__plot {
+    block-size: 22rem;
+  }
+
+  .pd-comparison-chart__legend {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--pd-space-4);
+  }
+
+  .pd-comparison-chart__legend li {
+    inline-size: auto;
+    max-inline-size: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-comparison-chart .recharts-wrapper *,
+  .pd-comparison-chart .recharts-wrapper *::before,
+  .pd-comparison-chart .recharts-wrapper *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

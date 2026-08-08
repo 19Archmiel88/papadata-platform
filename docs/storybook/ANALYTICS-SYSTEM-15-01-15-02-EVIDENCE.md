@@ -1,10 +1,10 @@
-# Analytics System — 15.01 ChartFrame + 15.02 MetricCard + 15.03 TrendChart
+# Analytics System — 15.01 ChartFrame + 15.02 MetricCard + 15.03 TrendChart + 15.04 ComparisonChart
 
 ## Status
 
-`A15.2 — REVIEW / 15.03 ACCEPTED`
+`A15.3 — REVIEW / 15.03 ACCEPTED / 15.04 REVIEW`
 
-Zakres wdraża trzech pierwszych właścicieli runtime sekcji `15 — Wykresy i dane`.
+Zakres wdraża czterech pierwszych właścicieli runtime sekcji `15 — Wykresy i dane`.
 
 `15.03 TrendChart` jest formalnie zaakceptowany po pełnej walidacji technicznej i odbiorze wizualnym w light/dark dla 1440, 768 i 390 px.
 
@@ -51,7 +51,7 @@ TrendChart nie przejmuje:
 - lokalny `DataSurfaceSelect` i drugi silnik tabeli zostały usunięte wcześniej;
 - lokalna demonstracja `TrendChart` została usunięta z katalogu rodzin wykresów;
 - 05.03 wskazuje `15.03 TrendChart` jako jedynego ownera trendów;
-- pozostałe rodziny wykresów pozostają w Laboratorium jako decision record do czasu promocji do 15.04–15.07;
+- ComparisonChart został promowany do 15.04 i usunięty z lokalnego katalogu 05.03; pozostałe rodziny pozostają decision recordem do czasu promocji do 15.05–15.07;
 - legacy `10 Komponenty/TrendChart` nie jest drugim ownerem Storybooka.
 
 ## Bramy odbioru
@@ -69,3 +69,28 @@ TrendChart nie przejmuje:
 - long copy;
 - brak poziomego scrolla;
 - dopiero po odbiorze wizualnym `accepted` może zostać ustawione na `true`.
+
+
+## 15.04 — ComparisonChart
+
+Runtime source of truth:
+
+`apps/web/src/design-system/components/ComparisonChart/ComparisonChart.tsx`
+
+ComparisonChart jest właścicielem dyskretnego porównywania kategorii:
+`bar`, `grouped bar`, `ranking`, `benchmark` i `period comparison`.
+
+Silnikiem geometrii i skal pozostaje `Recharts`. PapaData posiada publiczne
+React API, skalę słupkową opartą o zero, semantykę serii, kodowanie okresu
+porównawczego, benchmark, legendę, responsywność i accessibility contract.
+
+ComparisonChart nie przejmuje:
+
+- ciągłego czasu z `15.03 / TrendChart`;
+- KPI i benchmarku pojedynczej metryki z `15.02 / MetricCard`;
+- dokładnych rekordów, sortowania i działań z `10.07 / DataTable`;
+- tooltipów, selection, zoomu, drill-down i cross-filteringu z `15.09`;
+- pełnej macierzy stanów danych z `15.08`.
+
+Status 15.04 pozostaje `review` do odbioru wizualnego light/dark dla
+1440 / 768 / 390, 200% zoom, long copy i wartości ujemnych.

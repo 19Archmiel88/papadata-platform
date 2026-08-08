@@ -24,6 +24,10 @@ export {
 } from './ChartFrame';
 
 export {
+  ComparisonChart,
+} from './ComparisonChart';
+
+export {
   TrendChart,
 } from './TrendChart';
 
@@ -205,6 +209,16 @@ export type {
   ChartFrameLabels,
   ChartFrameProps,
 } from './ChartFrame';
+
+export type {
+  ComparisonChartBenchmark,
+  ComparisonChartDatum,
+  ComparisonChartLabels,
+  ComparisonChartProps,
+  ComparisonChartRankingDirection,
+  ComparisonChartSeries,
+  ComparisonChartVariant,
+} from './ComparisonChart';
 
 export type {
   TrendChartDatum,

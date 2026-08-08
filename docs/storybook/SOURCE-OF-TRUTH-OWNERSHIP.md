@@ -35,6 +35,7 @@ Dla komponentu zaimplementowanego runtime source of truth jest współlokowany z
 | MetricCard / mikrotrend KPI | `15.02 / MetricCard` | `05.03` jest decision recordem; nie utrzymuje lokalnego katalogu KPI |
 | ChartFrame | `15.01 / ChartFrame` | kontener kompozycyjny; konkretne rodziny wykresów należą do `15.03–15.07` |
 | TrendChart | `15.03 / TrendChart` | line/area oraz actual/plan/previous period/moving average; Recharts jest silnikiem geometrii, ale nie właścicielem semantyki ani chrome ChartFrame |
+| ComparisonChart | `15.04 / ComparisonChart` | bar/grouped/ranking, benchmark i period comparison dla dyskretnych kategorii; Recharts jest silnikiem geometrii; czas ciągły należy do TrendChart, rekordy do DataTable, interakcje do 15.09 |
 | bazowy DataTable | `10.07 / DataTable` | `05.03` konsumuje go bez lokalnego `<table>`; workflow tabela + filtry + detail należy do `18.04` |
 | status danych | `00.04 + StatusBadge`, mapowanie `15 / Analytics` | `05.03` nie używa `ReviewBadge` jako drugiego runtime statusu |
 | Select | `10 / Select` | `05.03` nie utrzymuje `DataSurfaceSelect`; workflow filtrów należy do `18.04` |

@@ -24,6 +24,14 @@ export {
 } from './ChartFrame';
 
 export {
+  ComparisonChart,
+} from './ComparisonChart';
+
+export {
+  TrendChart,
+} from './TrendChart';
+
+export {
   Checkbox,
 } from './Checkbox';
 
@@ -201,6 +209,23 @@ export type {
   ChartFrameLabels,
   ChartFrameProps,
 } from './ChartFrame';
+
+export type {
+  ComparisonChartBenchmark,
+  ComparisonChartDatum,
+  ComparisonChartLabels,
+  ComparisonChartProps,
+  ComparisonChartRankingDirection,
+  ComparisonChartSeries,
+  ComparisonChartVariant,
+} from './ComparisonChart';
+
+export type {
+  TrendChartDatum,
+  TrendChartLabels,
+  TrendChartProps,
+  TrendChartVariant,
+} from './TrendChart';
 
 export type {
   CheckboxProps,

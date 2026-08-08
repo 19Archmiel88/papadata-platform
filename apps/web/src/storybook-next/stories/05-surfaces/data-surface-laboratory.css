@@ -164,22 +164,17 @@
   stroke-dasharray: 6 5;
 }
 
-.pd-s53-chart-benchmark,
 .pd-s53-chart-trendline {
   fill: none;
   stroke: var(--pd-text-muted);
   stroke-width: 1.5;
 }
 
-.pd-s53-chart-benchmark {
-  stroke-dasharray: 5 5;
-}
 
 .pd-s53-chart-trendline {
   stroke-dasharray: 7 5;
 }
 
-.pd-s53-chart-point,
 .pd-s53-chart-dot {
   fill: var(--pd-surface);
   stroke: var(--pd-data-accent);

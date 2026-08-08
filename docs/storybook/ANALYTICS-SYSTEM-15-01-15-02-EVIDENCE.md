@@ -1,10 +1,14 @@
-# Analytics System — 15.01 ChartFrame + 15.02 MetricCard
+# Analytics System — 15.01 ChartFrame + 15.02 MetricCard + 15.03 TrendChart + 15.04 ComparisonChart
 
 ## Status
 
-`IMPLEMENTED — REVIEW`
+`A15.3 — REVIEW / 15.03 ACCEPTED / 15.04 REVIEW`
 
-Ten zakres wdraża dwóch pierwszych właścicieli runtime sekcji `15 — Wykresy i dane`. Status pozostaje `review` do czasu walidacji WSL i odbioru wizualnego w jasnym oraz ciemnym motywie.
+Zakres wdraża czterech pierwszych właścicieli runtime sekcji `15 — Wykresy i dane`.
+
+`15.03 TrendChart` jest formalnie zaakceptowany po pełnej walidacji technicznej i odbiorze wizualnym w light/dark dla 1440, 768 i 390 px.
+
+Status całego A15.2 pozostaje `review`, ponieważ wpisy governance 15.01 i 15.02 nie są zmieniane w ramach formalnego zamknięcia 15.03.
 
 ## 15.01 — ChartFrame
 
@@ -20,24 +24,73 @@ Runtime source of truth:
 
 `apps/web/src/design-system/components/MetricCard/MetricCard.tsx`
 
-MetricCard jest właścicielem KPI, porównania, celu/odchylenia, statusu danych i prywatnego mikrowykresu. Mikrowykres nie jest osobnym publicznym komponentem na tym etapie.
+MetricCard jest właścicielem KPI, porównania, celu/odchylenia, statusu danych i prywatnego mikrowykresu. Mikrowykres nie jest osobnym publicznym komponentem.
+
+## 15.03 — TrendChart
+
+Runtime source of truth:
+
+`apps/web/src/design-system/components/TrendChart/TrendChart.tsx`
+
+TrendChart jest właścicielem temporalnej rodziny wykresów: `line`, `area`, `actual`, `plan`, `previous period` i `moving average`.
+
+Silnikiem geometrii i skal jest `Recharts`. PapaData pozostaje właścicielem publicznego React API, semantyki serii, foundation tokens, kodowania linii, legendy, responsywności i accessibility contract.
+
+TrendChart nie przejmuje:
+
+- nagłówka, statusu, źródła, świeżości ani akcji z ChartFrame;
+- KPI i prywatnego mikrotrendu MetricCard;
+- forecast/confidence z 15.07;
+- tooltipów, zoomu, selection, drill-down i cross-filtering z 15.09;
+- pełnej macierzy stanów danych z 15.08.
 
 ## Handoff z 05.03
 
-- lokalny ChartFrame z Laboratorium został usunięty;
-- lokalny `KpiSparkline` został usunięty;
-- lokalny `DataSurfaceSelect` i drugi silnik tabeli zostały usunięte z 05.03; bazowa tabela jest konsumowana z `10.07 DataTable`;
-- statusy powierzchni w 05.03 konsumują `StatusBadge` i kanoniczne mapowanie `AnalyticsDataState → SemanticStatusTone`;
-- 05.03 zachowuje wyłącznie decision record/handoff dla KPI i ChartFrame;
-- ChartFrame i MetricCard konsumują ikony `data` / `assistant` z 10.11 oraz Foundation runtime formatters w story/evidence;
-- pozostałe rodziny wykresów, stany i warstwy danych pozostają do promocji w 15.03–15.10 oraz 18.
+- lokalny ChartFrame z Laboratorium został usunięty wcześniej;
+- lokalny `KpiSparkline` został usunięty wcześniej;
+- lokalny `DataSurfaceSelect` i drugi silnik tabeli zostały usunięte wcześniej;
+- lokalna demonstracja `TrendChart` została usunięta z katalogu rodzin wykresów;
+- 05.03 wskazuje `15.03 TrendChart` jako jedynego ownera trendów;
+- ComparisonChart został promowany do 15.04 i usunięty z lokalnego katalogu 05.03; pozostałe rodziny pozostają decision recordem do czasu promocji do 15.05–15.07;
+- legacy `10 Komponenty/TrendChart` nie jest drugim ownerem Storybooka.
 
 ## Bramy odbioru
 
-- `check-analytics-system-v1.mjs` — ownership i brak duplikatów ChartFrame/KPI/Select/table engine;
-- `check-storybook-presentation-contract.mjs` — również lokalny CSS sekcji 15, bez override `pd-f0-*`;
-- `validate_all.py` — integralność repo;
+- `check-analytics-system-v1.mjs` — ownership 15.01–15.03, Recharts i brak legacy TrendChart;
+- `check-storybook-presentation-contract.mjs` — izolacja lokalnego CSS;
+- `check-storybook-catalog.mjs` — kontrakt i wygenerowany katalog;
+- `check-design-system-ownership.mjs` — jedna odpowiedzialność, jeden owner;
+- `validate_all.py` — integralność repo, jeśli skrypt jest dostępny;
 - web typecheck;
 - production Storybook build;
-- odbiór wizualny light/dark + 1440/768/390 + long copy;
+- odbiór wizualny light/dark;
+- 1440 / 768 / 390;
+- 200% zoom;
+- long copy;
+- brak poziomego scrolla;
 - dopiero po odbiorze wizualnym `accepted` może zostać ustawione na `true`.
+
+
+## 15.04 — ComparisonChart
+
+Runtime source of truth:
+
+`apps/web/src/design-system/components/ComparisonChart/ComparisonChart.tsx`
+
+ComparisonChart jest właścicielem dyskretnego porównywania kategorii:
+`bar`, `grouped bar`, `ranking`, `benchmark` i `period comparison`.
+
+Silnikiem geometrii i skal pozostaje `Recharts`. PapaData posiada publiczne
+React API, skalę słupkową opartą o zero, semantykę serii, kodowanie okresu
+porównawczego, benchmark, legendę, responsywność i accessibility contract.
+
+ComparisonChart nie przejmuje:
+
+- ciągłego czasu z `15.03 / TrendChart`;
+- KPI i benchmarku pojedynczej metryki z `15.02 / MetricCard`;
+- dokładnych rekordów, sortowania i działań z `10.07 / DataTable`;
+- tooltipów, selection, zoomu, drill-down i cross-filteringu z `15.09`;
+- pełnej macierzy stanów danych z `15.08`.
+
+Status 15.04 pozostaje `review` do odbioru wizualnego light/dark dla
+1440 / 768 / 390, 200% zoom, long copy i wartości ujemnych.

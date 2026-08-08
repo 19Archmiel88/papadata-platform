@@ -1,17 +1,21 @@
 {
   "fixtureId": "SB-097",
-  "storyTitle": "15 Wykresy i wizualizacje danych/Porównania",
+  "storyTitle": "15 Wykresy i dane/Porównania",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-04-porownania.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "ChartFrame",
+    "ComparisonChart"
+  ],
   "states": [
     "ready",
-    "loading",
-    "empty",
-    "error",
-    "noData",
-    "singlePoint",
-    "negativeValues"
+    "bar",
+    "groupedBar",
+    "ranking",
+    "benchmark",
+    "periodComparison",
+    "negativeValues",
+    "longCopy"
   ],
   "viewports": [
     1440,
@@ -27,11 +31,13 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-bar-variant",
+    "verify-grouped-variant",
+    "verify-ranking-variant",
+    "verify-benchmark-reference",
+    "verify-period-comparison",
+    "verify-negative-scale",
+    "verify-no-legacy-owner"
   ],
   "visualAssertions": [
     "1440-light",
@@ -39,15 +45,16 @@
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-negativeValues"
+    "long-copy",
+    "negative-values",
+    "no-horizontal-page-scroll",
+    "no-local-visual-overrides"
   ],
   "a11y": [
-    "keyboard-only",
-    "focus-visible",
     "accessible-name",
-    "live-region",
-    "200-percent-zoom"
+    "non-color-series-encoding",
+    "200-percent-zoom",
+    "mobile-reflow"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-static-contract"
 }

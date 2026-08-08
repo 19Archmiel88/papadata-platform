@@ -1,7 +1,7 @@
 {
   "name": "PapaData Analytics System",
-  "version": "1.0",
-  "stage": "A15.1",
+  "version": "1.2",
+  "stage": "A15.3",
   "status": "review",
   "owner": "Analytics UI",
   "ownershipContract": "docs/storybook/SOURCE-OF-TRUTH-OWNERSHIP.md",
@@ -22,9 +22,26 @@
       "story": "apps/web/src/storybook-next/stories/15-data-visualizations/MetricCard.stories.tsx",
       "fixture": "fixtures/storybook/096-15-02-metriccard.json",
       "status": "review"
+    },
+    {
+      "id": "15.03",
+      "component": "TrendChart",
+      "runtime": "apps/web/src/design-system/components/TrendChart/TrendChart.tsx",
+      "story": "apps/web/src/storybook-next/stories/15-data-visualizations/TrendChart.stories.tsx",
+      "fixture": "fixtures/storybook/102-15-03-trendy.json",
+      "status": "accepted"
+    },
+    {
+      "id": "15.04",
+      "component": "ComparisonChart",
+      "runtime": "apps/web/src/design-system/components/ComparisonChart/ComparisonChart.tsx",
+      "story": "apps/web/src/storybook-next/stories/15-data-visualizations/ComparisonChart.stories.tsx",
+      "fixture": "fixtures/storybook/097-15-04-porownania.json",
+      "status": "review"
     }
   ],
   "handoff": {
-    "05.03": "15.01/15.02"
-  }
+    "05.03": "15.01/15.02/15.03/15.04"
+  },
+  "chartEngine": "recharts"
 }

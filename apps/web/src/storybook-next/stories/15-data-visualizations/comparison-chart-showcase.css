@@ -1,0 +1,124 @@
+.pd-comparison-story {
+  min-inline-size: 0;
+}
+
+.pd-comparison-story__variants {
+  display: grid;
+  gap: var(--pd-space-12);
+  min-inline-size: 0;
+}
+
+.pd-comparison-story__variant {
+  display: grid;
+  gap: var(--pd-space-6);
+  min-inline-size: 0;
+}
+
+.pd-comparison-story__variant > header {
+  display: grid;
+  gap: var(--pd-space-2);
+  max-inline-size: 78ch;
+  padding-block-end: var(--pd-space-5);
+  border-block-end:
+    1px
+    solid
+    var(--pd-separator-subtle);
+}
+
+.pd-comparison-story__variant > header > span {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.pd-comparison-story__variant > header h3,
+.pd-comparison-story__variant > header p {
+  margin: 0;
+}
+
+.pd-comparison-story__variant > header h3 {
+  color: var(--pd-text);
+  font-size: 1rem;
+  font-weight: var(--pd-font-weight-medium);
+  line-height: 1.4;
+}
+
+.pd-comparison-story__variant > header p {
+  color: var(--pd-text-secondary);
+  line-height: 1.65;
+}
+
+.pd-comparison-story__decision-layout {
+  display: grid;
+  gap: var(--pd-space-10);
+  min-inline-size: 0;
+}
+
+.pd-comparison-story__decision-guide {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border-block-start:
+    1px
+    solid
+    var(--pd-separator-subtle);
+}
+
+.pd-comparison-story__decision-guide > div {
+  display: grid;
+  grid-template-columns:
+    minmax(9rem, 0.32fr)
+    minmax(0, 1fr);
+  gap: var(--pd-space-6);
+  padding-block: var(--pd-space-5);
+  border-block-end:
+    1px
+    solid
+    var(--pd-separator-subtle);
+}
+
+.pd-comparison-story__decision-guide dt,
+.pd-comparison-story__decision-guide dd {
+  margin: 0;
+}
+
+.pd-comparison-story__decision-guide dt {
+  color: var(--pd-text);
+  font-family: var(--pd-font-mono);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.pd-comparison-story__decision-guide dd {
+  max-inline-size: 72ch;
+  color: var(--pd-text-secondary);
+  line-height: 1.65;
+}
+
+@media (max-width: 640px) {
+  .pd-comparison-story__variants {
+    gap: var(--pd-space-10);
+  }
+
+  .pd-comparison-story__variant > header {
+    inline-size: 100%;
+    max-inline-size: none;
+  }
+
+  .pd-comparison-story__decision-layout {
+    gap: var(--pd-space-8);
+  }
+
+  .pd-comparison-story__decision-guide > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--pd-space-2);
+    inline-size: 100%;
+  }
+
+  .pd-comparison-story__decision-guide dt,
+  .pd-comparison-story__decision-guide dd {
+    inline-size: 100%;
+    max-inline-size: none;
+  }
+}

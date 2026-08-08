@@ -159,6 +159,134 @@ describe("BFF A02 security boundary", { concurrency: false }, () => {
     assert.equal(capturedFetch.calls[0]?.body, undefined);
   });
 
+  test("MFA confirmation updates BFF session assurance", async () => {
+    store.saveSession(sessionRecord({
+      authLevel: "session",
+      stepUpExpiresAt: "2026-01-01T00:00:00.000Z",
+    }));
+    const csrf = await issueCsrf();
+    capturedFetch.response = {
+      body: { verified: true },
+      status: 200,
+    };
+
+    const response = await inject(
+      "POST",
+      "/auth/mfa/confirm",
+      sessionHeaders("session-real", csrf),
+      { code: "123456" },
+    );
+
+    const updated = await store.findSession("session-real");
+
+    assert.equal(response.statusCode, 200);
+    assert.equal(updated?.authLevel, "mfa");
+    assert.equal(updated?.stepUpExpiresAt, null);
+    assert.equal(capturedFetch.calls[0]?.url, "http://api.internal:4000/v1/security/mfa/confirm");
+    assert.deepEqual(readJsonBody(capturedFetch.calls[0]?.body), { code: "123456" });
+  });
+
+  test("step-up upgrades BFF session and forwards step-up assurance to API", async () => {
+    const csrf = await issueCsrf();
+    const expiresAt = new Date(Date.now() + 300_000).toISOString();
+    capturedFetch.response = {
+      body: {
+        expiresAt,
+        proof: "server-side-proof-must-not-leak-to-browser",
+      },
+      status: 200,
+    };
+
+    const response = await inject(
+      "POST",
+      "/auth/step-up",
+      sessionHeaders("session-real", csrf),
+      {
+        code: "123456",
+        operationScope: "tenant.membership.manage",
+        targetReference: "invitation-real",
+      },
+    );
+
+    const updated = await store.findSession("session-real");
+    const body = JSON.parse(response.body) as {
+      readonly data?: {
+        readonly session?: {
+          readonly authLevel?: string;
+          readonly stepUpExpiresAt?: string;
+        };
+        readonly stepUpExpiresAt?: string;
+      };
+    };
+
+    assert.equal(response.statusCode, 200);
+    assert.equal(updated?.authLevel, "step_up");
+    assert.equal(updated?.stepUpExpiresAt, expiresAt);
+    assert.equal(body.data?.stepUpExpiresAt, expiresAt);
+    assert.equal(body.data?.session?.authLevel, "step_up");
+    assert.equal(body.data?.session?.stepUpExpiresAt, expiresAt);
+    assert.equal(response.body.includes("server-side-proof-must-not-leak-to-browser"), false);
+
+    const proxyCsrf = await issueCsrf();
+    await inject(
+      "POST",
+      "/api/v1/integrations/sync",
+      sessionHeaders("session-real", proxyCsrf),
+    );
+
+    const principal = decodeInternalPrincipal(
+      capturedFetch.calls.at(-1)?.headers.get(testConfig().internalPrincipalHeaderName) ?? "",
+    );
+
+    assert.equal(principal.auth_level, "step_up");
+    assert.equal(principal.step_up_expires_at, expiresAt);
+  });
+
+  test("step-up requires existing MFA assurance and does not call upstream from session-only auth", async () => {
+    store.saveSession(sessionRecord({ authLevel: "session" }));
+    const csrf = await issueCsrf();
+
+    const response = await inject(
+      "POST",
+      "/auth/step-up",
+      sessionHeaders("session-real", csrf),
+      {
+        code: "123456",
+        operationScope: "tenant.membership.manage",
+      },
+    );
+
+    const updated = await store.findSession("session-real");
+
+    assert.equal(response.statusCode, 403);
+    assert.equal(updated?.authLevel, "session");
+    assert.equal(capturedFetch.calls.length, 0);
+  });
+
+  test("failed step-up does not elevate the BFF session", async () => {
+    const csrf = await issueCsrf();
+    capturedFetch.response = {
+      body: { error: { code: "MFA_DENIED" } },
+      status: 403,
+    };
+
+    const response = await inject(
+      "POST",
+      "/auth/step-up",
+      sessionHeaders("session-real", csrf),
+      {
+        code: "000000",
+        operationScope: "tenant.membership.manage",
+      },
+    );
+
+    const updated = await store.findSession("session-real");
+
+    assert.equal(response.statusCode, 403);
+    assert.equal(updated?.authLevel, "mfa");
+    assert.equal(updated?.stepUpExpiresAt, null);
+  });
+
   test("proxy strips spoofed and hop-by-hop headers and generates internal principal", async () => {
     const csrf = await issueCsrf();
 
@@ -376,6 +504,10 @@ type CapturedFetch = {
   }>;
   fetch: typeof globalThis.fetch;
   mode: "ok" | "throw" | "timeout";
+  response: {
+    readonly body: unknown;
+    readonly status: number;
+  };
 };
 
 function createCapturedFetch(): CapturedFetch {
@@ -401,13 +533,31 @@ function createCapturedFetch(): CapturedFetch {
         });
       }
 
-      return new Response(JSON.stringify({ data: { ok: true } }), {
+      return new Response(JSON.stringify(captured.response.body), {
         headers: { "content-type": "application/json" },
-        status: 200,
+        status: captured.response.status,
       });
     }) as typeof globalThis.fetch,
     mode: "ok",
+    response: {
+      body: { data: { ok: true } },
+      status: 200,
+    },
   };
 
   return captured;
+}
+
+function readJsonBody(value: BodyInit | null | undefined): unknown {
+  if (typeof value !== "string") {
+    throw new TypeError("Expected captured fetch body to be a string.");
+  }
+
+  return JSON.parse(value);
+}
+
+function decodeInternalPrincipal(token: string): Record<string, unknown> {
+  const [, payload] = token.split(".");
+  assert.ok(payload);
+  return JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as Record<string, unknown>;
 }

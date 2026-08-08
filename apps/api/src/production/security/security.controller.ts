@@ -1,4 +1,4 @@
-import { Inject } from "@nestjs/common";
+import { ForbiddenException, Inject } from "@nestjs/common";
 import { Body, Controller, Post } from "@nestjs/common";
 import { Principal } from "../auth/principal.decorator.js";
 import type { RequestPrincipal } from "../auth/request-principal.js";
@@ -70,7 +70,7 @@ export class SecurityController {
       userId: principal.userId,
       code: body.code,
     })) {
-      throw new Error("MFA verification failed");
+      throw new ForbiddenException("MFA verification failed");
     }
 
     return this.stepUp.issue({

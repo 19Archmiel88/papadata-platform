@@ -28,6 +28,10 @@ export {
 } from './ComparisonChart';
 
 export {
+  CorrelationChart,
+} from './CorrelationChart';
+
+export {
   ShareChart,
 } from './ShareChart';
 
@@ -223,6 +227,17 @@ export type {
   ComparisonChartSeries,
   ComparisonChartVariant,
 } from './ComparisonChart';
+
+export type {
+  CorrelationChartCluster,
+  CorrelationChartEvidence,
+  CorrelationChartEvidenceLevel,
+  CorrelationChartLabels,
+  CorrelationChartPoint,
+  CorrelationChartPointRole,
+  CorrelationChartProps,
+  CorrelationChartVariant,
+} from './CorrelationChart';
 
 export type {
   ShareChartDisplay,

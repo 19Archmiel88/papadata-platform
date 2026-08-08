@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: fdede40417776921a5f93e7e9aa1ebdec53fb909ddbe1be1ee89a40f16797748
+// SHA-256 źródła: 038adebd4c6be2db82e149a4bc3795b52012b0c65fbe52c0db0b7f7afcbcaff2
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -1180,26 +1180,49 @@ export const storybookCatalog = [
     "storyClass": "component",
     "owner": "Analytics UI",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": null,
+    "note": "Runtime owner: CorrelationChart. Promoted from 05.03 and legacy 10 Komponenty/CorrelationChart; owns scatter plot, relationship chart, driver analysis, static outlier/cluster indication and correlation strength copy. Tooltip, hover, selection, drill-down and cross-filtering stay in 15.09; forecast/confidence stays in 15.07; full data states stay in 15.08.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "draft",
-    "prototypeStatus": "none",
-    "productionStatus": "not_started",
-    "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "documentationStatus": "review",
+    "prototypeStatus": "implemented",
+    "productionStatus": "implemented",
+    "testStatus": "passing",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
-      "scatter",
+      "scatter plot",
       "correlation",
       "relationship",
       "driver analysis",
-      "brak sugerowania przyczynowości bez dowodu"
+      "correlation strength copy",
+      "driver hypothesis",
+      "outlier indication",
+      "cluster indication",
+      "static indication without interaction",
+      "mobile",
+      "light and dark",
+      "long copy",
+      "brak sugerowania przyczynowości bez dowodu",
+      "label collision prevention",
+      "cluster label reduction",
+      "dark axis contrast",
+      "mobile label density",
+      "interaction handoff to 15.09",
+      "no color shadows",
+      "no marker glow",
+      "no source color shadows",
+      "no decorative halo",
+      "shape encoding",
+      "color is not sole point encoding",
+      "compact container label reduction",
+      "reduced vertical gridlines in dense charts"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "15 Wykresy i dane/Zależności i korelacje",
+    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/CorrelationChart.stories.tsx",
     "displaySectionTitle": "Wykresy i dane",
-    "displayTitle": "Zależności i korelacje"
+    "displayTitle": "Zależności i korelacje",
+    "storyExport": "CorrelationChartStory",
+    "accepted": false
   },
   {
     "id": "15.07",

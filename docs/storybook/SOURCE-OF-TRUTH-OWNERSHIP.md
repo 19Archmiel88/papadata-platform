@@ -37,6 +37,7 @@ Dla komponentu zaimplementowanego runtime source of truth jest współlokowany z
 | TrendChart | `15.03 / TrendChart` | line/area oraz actual/plan/previous period/moving average; Recharts jest silnikiem geometrii, ale nie właścicielem semantyki ani chrome ChartFrame |
 | ComparisonChart | `15.04 / ComparisonChart` | bar/grouped/ranking, benchmark i period comparison dla dyskretnych kategorii; Recharts jest silnikiem geometrii; czas ciągły należy do TrendChart, rekordy do DataTable, interakcje do 15.09 |
 | ShareChart | `15.05 / ShareChart` | donut/bar/stacked, part-to-whole i struktura udziałów; Recharts jest silnikiem geometrii; porównania kategorii należą do ComparisonChart, czas do TrendChart, rekordy do DataTable, interakcje do 15.09 |
+| CorrelationChart | `15.06 / CorrelationChart` | scatter plot, relationship chart, driver analysis jako `driver hypothesis`, statyczne outlier/cluster indication i copy siły korelacji; brak sugestii przyczynowości bez dowodu; forecast/confidence należy do 15.07, pełne data states do 15.08, interakcje do 15.09, rekordy do DataTable |
 | bazowy DataTable | `10.07 / DataTable` | `05.03` konsumuje go bez lokalnego `<table>`; workflow tabela + filtry + detail należy do `18.04` |
 | status danych | `00.04 + StatusBadge`, mapowanie `15 / Analytics` | `05.03` nie używa `ReviewBadge` jako drugiego runtime statusu |
 | Select | `10 / Select` | `05.03` nie utrzymuje `DataSurfaceSelect`; workflow filtrów należy do `18.04` |

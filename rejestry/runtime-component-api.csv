@@ -15,3 +15,4 @@ ChartFrame,apps/web/src/design-system/components/ChartFrame/ChartFrame.tsx,Chart
 MetricCard,apps/web/src/design-system/components/MetricCard/MetricCard.tsx,MetricCardProps,15.02,review,Analytics UI
 TrendChart,apps/web/src/design-system/components/TrendChart/TrendChart.tsx,TrendChartProps,15.03,accepted,Analytics UI
 ComparisonChart,apps/web/src/design-system/components/ComparisonChart/ComparisonChart.tsx,ComparisonChartProps,15.04,review,Analytics UI
+ShareChart,apps/web/src/design-system/components/ShareChart/ShareChart.tsx,ShareChartProps,15.05,review,Analytics UI

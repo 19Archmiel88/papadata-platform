@@ -54,7 +54,7 @@ function PromotedOwnerNotice({
   );
 }
 
-type ChartKind = 'share' | 'correlation' | 'forecast' | 'waterfall' | 'funnel';
+type ChartKind = 'correlation' | 'forecast' | 'waterfall' | 'funnel';
 
 type ChartDescriptor = {
   readonly name: string;
@@ -68,28 +68,6 @@ type ChartDescriptor = {
 };
 
 const chartCopy: Record<ChartKind, ChartDescriptor> = {
-  share: {
-    name: 'ShareChart',
-    purpose: {
-      pl: 'Struktura całości z ograniczoną liczbą rozróżnialnych segmentów.',
-      en: 'Whole composition with a limited number of distinguishable segments.',
-    },
-    layers: {
-      pl: 'segment · udział · total',
-      en: 'segment · share · total',
-    },
-    question: {
-      pl: 'Jak dzieli się przychód między kanały?',
-      en: 'How is revenue split across channels?',
-    },
-    metric: { pl: 'Udział przychodu', en: 'Revenue share' },
-    source: 'GA4',
-    range: { pl: '30 dni', en: '30 days' },
-    reference: {
-      pl: '100% = 248 420 zł',
-      en: '100% = PLN 248,420',
-    },
-  },
   correlation: {
     name: 'CorrelationChart',
     purpose: {
@@ -192,21 +170,6 @@ function ChartGraphic({ kind }: { readonly kind: ChartKind }) {
       </g>
 
 
-      {kind === 'share' ? (
-        <>
-          <circle className="pd-s53-chart-donut-base" cx="132" cy="104" r="58" />
-          <path className="pd-s53-chart-donut-a" d="M132 46 A58 58 0 0 1 184 130" />
-          <path className="pd-s53-chart-donut-b" d="M184 130 A58 58 0 0 1 98 151" />
-          <path className="pd-s53-chart-donut-c" d="M98 151 A58 58 0 0 1 132 46" />
-          <g className="pd-s53-chart-labels">
-            <text className="pd-s53-chart-total" textAnchor="middle" x="132" y="101">100%</text>
-            <text textAnchor="middle" x="132" y="119">248 420 zł</text>
-            <text x="244" y="72">Search · 46%</text>
-            <text x="244" y="104">Meta · 32%</text>
-            <text x="244" y="136">Direct · 22%</text>
-          </g>
-        </>
-      ) : null}
 
       {kind === 'correlation' ? (
         <>
@@ -918,13 +881,13 @@ function Roles() {
 
 export function DataSurfaceLaboratory() {
   return (
-    <StoryPage handoff={<Localized pl="10 / 15 / 18 — komponenty i wzorce danych" en="10 / 15 / 18 — data components and patterns" />} id="05.03" status="accepted" title={<Localized pl="Powierzchnie danych" en="Data surfaces" />} summary={<Localized pl="Panel istnieje tylko wtedy, gdy ma własną rolę, stan albo cykl interakcji. Dane, warstwy i działania nie tworzą poziomego scrolla ani kart wewnątrz kart." en="A panel exists only when it has its own role, state or interaction cycle. Data, layers and actions create neither horizontal scrolling nor cards inside cards." />} variants={<Localized pl="role · handoff KPI · wykresy · handoff ChartFrame · tabela · stany · warstwy" en="roles · KPI handoff · charts · ChartFrame handoff · table · states · layers" />}>
+    <StoryPage handoff={<Localized pl="10 / 15 / 18 — komponenty i wzorce danych" en="10 / 15 / 18 — data components and patterns" />} id="05.03" status="accepted" title={<Localized pl="Powierzchnie danych" en="Data surfaces" />} summary={<Localized pl="Panel istnieje tylko wtedy, gdy ma własną rolę, stan albo cykl interakcji. Dane, warstwy i działania nie tworzą poziomego scrolla ani kart wewnątrz kart." en="A panel exists only when it has its own role, state or interaction cycle. Data, layers and actions create neither horizontal scrolling nor cards inside cards." />} variants={<Localized pl="role · handoff KPI · handoff wykresów · handoff ChartFrame · tabela · stany · warstwy" en="roles · KPI handoff · charts · ChartFrame handoff · table · states · layers" />}>
       <StorySection index="01" title={<Localized pl="Role powierzchni" en="Surface roles" />}><Roles /></StorySection>
       <StorySection index="02" title={<Localized pl="KPI — handoff" en="KPI — handoff" />} summary={<Localized pl="Warianty KPI zostały promowane do runtime ownera. Laboratorium nie utrzymuje drugiego katalogu MetricCard." en="KPI variants have been promoted to the runtime owner. The laboratory no longer maintains a second MetricCard catalogue." />}><PromotedOwnerNotice owner="15.02 MetricCard" title={{ pl: 'Promowane do Wykresy i dane', en: 'Promoted to Data visualizations' }} description={{ pl: 'Pełny kontrakt KPI, mikrotrendów, stanów i akcji jest od tej chwili własnością 15.02.', en: 'The full KPI, microtrend, state and action contract is now owned by 15.02.' }} /></StorySection>
       <StorySection
         index="03"
         title={<Localized pl="Rodziny wykresów" en="Chart families" />}
-        summary={<Localized pl="Trend i porównania zostały promowane do 15.03 i 15.04. Laboratorium zachowuje wyłącznie handoff, a pozostałe rodziny czekają na swoich ownerów 15.05–15.07." en="Trend and comparison have been promoted to 15.03 and 15.04. The laboratory keeps only the handoff while the remaining families wait for their 15.05–15.07 owners." />}
+        summary={<Localized pl="Trend, porównania oraz udziały zostały promowane do 15.03, 15.04 i 15.05. Laboratorium zachowuje wyłącznie handoff, a pozostałe rodziny czekają na ownerów 15.06–15.07." en="Trend, comparison and share composition have been promoted to 15.03, 15.04 and 15.05. The laboratory keeps only the handoff while the remaining families wait for their 15.06–15.07 owners." />}
       >
         <PromotedOwnerNotice
           owner="15.03 TrendChart"
@@ -935,6 +898,11 @@ export function DataSurfaceLaboratory() {
           owner="15.04 ComparisonChart"
           title={{ pl: 'Promowane do Wykresy i dane', en: 'Promoted to Data visualizations' }}
           description={{ pl: 'Bar, grouped bar, ranking, benchmark i porównanie okresów są od tej chwili kontraktem runtime 15.04.', en: 'Bar, grouped bar, ranking, benchmark and period comparison are now the 15.04 runtime contract.' }}
+        />
+        <PromotedOwnerNotice
+          owner="15.05 ShareChart"
+          title={{ pl: 'Promowane do Wykresy i dane', en: 'Promoted to Data visualizations' }}
+          description={{ pl: 'Donut, bar, stacked i part-to-whole są od tej chwili kontraktem runtime 15.05.', en: 'Donut, bar, stacked and part-to-whole composition are now the 15.05 runtime contract.' }}
         />
         <ChartFamilies />
       </StorySection>

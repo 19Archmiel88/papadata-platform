@@ -28,6 +28,10 @@ export {
 } from './ComparisonChart';
 
 export {
+  ShareChart,
+} from './ShareChart';
+
+export {
   TrendChart,
 } from './TrendChart';
 
@@ -219,6 +223,13 @@ export type {
   ComparisonChartSeries,
   ComparisonChartVariant,
 } from './ComparisonChart';
+
+export type {
+  ShareChartDisplay,
+  ShareChartLabels,
+  ShareChartProps,
+  ShareChartSegment,
+} from './ShareChart';
 
 export type {
   TrendChartDatum,

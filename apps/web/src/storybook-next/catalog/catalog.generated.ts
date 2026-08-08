@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: 2550910332ebd9bccbb77327dc00836648861015c4661c271089f9b156dfc3eb
+// SHA-256 źródła: fdede40417776921a5f93e7e9aa1ebdec53fb909ddbe1be1ee89a40f16797748
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -1126,33 +1126,50 @@ export const storybookCatalog = [
   },
   {
     "id": "15.05",
-    "title": "Struktura i udział",
+    "title": "Udziały i struktura",
     "sectionId": "15",
     "sectionTitle": "Wykresy i wizualizacje danych",
     "folder": "15-data-visualizations",
     "storyClass": "component",
     "owner": "Analytics UI",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": null,
+    "note": "Runtime owner: ShareChart. Promoted from 05.03 and legacy 10 Komponenty/ShareChart; owns donut/bar/stacked part-to-whole composition. ComparisonChart owns categorical comparison, TrendChart owns continuous time, DataTable owns exact records and 15.09 owns advanced interactions.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "draft",
-    "prototypeStatus": "none",
-    "productionStatus": "not_started",
-    "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "documentationStatus": "review",
+    "prototypeStatus": "implemented",
+    "productionStatus": "implemented",
+    "testStatus": "passing",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
-      "stacked bar",
-      "share",
-      "composition",
-      "contribution",
-      "bez nieczytelnego nadużycia pie chart"
+      "donut",
+      "bar",
+      "stacked",
+      "part-to-whole",
+      "share breakdown",
+      "long copy",
+      "negative values policy",
+      "single segment indicator",
+      "small value grouping",
+      "mobile stacked labels",
+      "luminance matched share palette",
+      "dark axis contrast",
+      "compact mobile legend",
+      "minimum bar plot width",
+      "stacked track background",
+      "visible other segment",
+      "mobile label stack above bars",
+      "mobile metadata without hard dividers",
+      "high contrast swatches",
+      "shared mobile zero axis"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "15 Wykresy i dane/Udziały i struktura",
+    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/ShareChart.stories.tsx",
     "displaySectionTitle": "Wykresy i dane",
-    "displayTitle": "Struktura i udział"
+    "displayTitle": "Udziały i struktura",
+    "storyExport": "ShareChartStory",
+    "accepted": false
   },
   {
     "id": "15.06",

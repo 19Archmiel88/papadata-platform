@@ -1,17 +1,32 @@
 {
   "fixtureId": "SB-101",
-  "storyTitle": "15 Wykresy i wizualizacje danych/Struktura i udział",
+  "storyTitle": "15 Wykresy i dane/Udziały i struktura",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-05-struktura-i-udzial.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "ShareChart"
+  ],
   "states": [
     "ready",
-    "loading",
-    "empty",
-    "error",
-    "noData",
-    "singlePoint",
-    "negativeValues"
+    "donut",
+    "bar",
+    "stacked",
+    "partToWhole",
+    "shareBreakdown",
+    "longCopy",
+    "negativeValuesPolicy",
+    "singleSegmentIndicator",
+    "smallValueGrouping",
+    "mobileStackedLabels",
+    "luminanceMatchedPalette",
+    "compactMobileLegend",
+    "minimumBarPlotWidth",
+    "stackedTrackBackground",
+    "visibleOtherSegment",
+    "mobileLabelStackAboveBars",
+    "mobileMetadataWithoutHardDividers",
+    "highContrastSwatches",
+    "sharedMobileZeroAxis"
   ],
   "viewports": [
     1440,
@@ -27,11 +42,24 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-donut-variant",
+    "verify-bar-variant",
+    "verify-stacked-variant",
+    "verify-part-to-whole",
+    "verify-no-negative-share",
+    "verify-no-legacy-owner",
+    "verify-single-segment-is-not-button",
+    "verify-mobile-bar-labels-stack-above-bars",
+    "verify-small-donut-values-group-as-other",
+    "verify-dark-axis-contrast",
+    "verify-mobile-legend-is-compact",
+    "verify-bar-track-keeps-minimum-width",
+    "verify-stacked-has-track-background",
+    "verify-small-segment-groups-to-other",
+    "verify-mobile-share-bars-start-at-common-zero",
+    "verify-long-label-does-not-compress-bar",
+    "verify-mobile-metadata-has-no-divider-ladder",
+    "verify-dark-swatches-remain-visible"
   ],
   "visualAssertions": [
     "1440-light",
@@ -39,15 +67,27 @@
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-negativeValues"
+    "long-copy",
+    "no-horizontal-page-scroll",
+    "no-local-visual-overrides",
+    "single-segment-stacked-not-primary-button",
+    "mobile-long-label-bars-use-full-width",
+    "dark-mode-luminance-balance",
+    "axis-percent-labels-readable-in-dark",
+    "mobile-legend-does-not-dominate-chart",
+    "share-bar-keeps-comparison-width",
+    "stacked-bar-has-background-track",
+    "other-segment-visible-for-small-values",
+    "mobile-share-bars-use-full-width-tracks",
+    "long-copy-bar-remains-comparable",
+    "metadata-dividers-do-not-dominate-mobile",
+    "swatches-visible-in-dark-mode"
   ],
   "a11y": [
     "keyboard-only",
     "focus-visible",
     "accessible-name",
-    "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-static-contract"
 }

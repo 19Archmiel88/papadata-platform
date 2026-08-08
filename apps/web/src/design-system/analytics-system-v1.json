@@ -1,7 +1,7 @@
 {
   "name": "PapaData Analytics System",
   "version": "1.3",
-  "stage": "A15.4",
+  "stage": "A15.5",
   "status": "review",
   "owner": "Analytics UI",
   "ownershipContract": "docs/storybook/SOURCE-OF-TRUTH-OWNERSHIP.md",
@@ -46,10 +46,18 @@
       "story": "apps/web/src/storybook-next/stories/15-data-visualizations/ShareChart.stories.tsx",
       "fixture": "fixtures/storybook/101-15-05-struktura-i-udzial.json",
       "status": "review"
+    },
+    {
+      "id": "15.06",
+      "component": "CorrelationChart",
+      "runtime": "apps/web/src/design-system/components/CorrelationChart/CorrelationChart.tsx",
+      "story": "apps/web/src/storybook-next/stories/15-data-visualizations/CorrelationChart.stories.tsx",
+      "fixture": "fixtures/storybook/103-15-06-zaleznosci-i-korelacje.json",
+      "status": "review"
     }
   ],
   "handoff": {
-    "05.03": "15.01/15.02/15.03/15.04/15.05"
+    "05.03": "15.01/15.02/15.03/15.04/15.05/15.06"
   },
   "chartEngine": "recharts"
 }

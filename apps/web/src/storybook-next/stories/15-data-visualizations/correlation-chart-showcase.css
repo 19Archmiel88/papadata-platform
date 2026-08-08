@@ -1,0 +1,89 @@
+.pd-correlation-story__variants {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--pd-space-6);
+  min-inline-size: 0;
+}
+
+.pd-correlation-story__variant {
+  display: grid;
+  gap: var(--pd-space-4);
+  min-inline-size: 0;
+  padding-block: var(--pd-space-5);
+  border-block-start: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-correlation-story__variant header {
+  display: grid;
+  gap: var(--pd-space-2);
+  min-inline-size: 0;
+}
+
+.pd-correlation-story__variant header span {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+
+.pd-correlation-story__variant h3 {
+  margin: 0;
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-heading-5);
+  font-weight: var(--pd-font-weight-medium);
+  line-height: var(--pd-line-height-tight);
+}
+
+.pd-correlation-story__variant p {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+  line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-correlation-story__semantic-guide {
+  display: grid;
+  margin: 0;
+  border-block: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-correlation-story__semantic-guide > div {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.28fr) minmax(0, 1fr);
+  gap: var(--pd-space-5);
+  padding-block: var(--pd-space-4);
+}
+
+.pd-correlation-story__semantic-guide > div + div {
+  border-block-start: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-correlation-story__semantic-guide dt {
+  color: var(--pd-text);
+  font-weight: var(--pd-font-weight-medium);
+}
+
+.pd-correlation-story__semantic-guide dd {
+  min-inline-size: 0;
+  margin: 0;
+  color: var(--pd-text-secondary);
+  line-height: var(--pd-line-height-relaxed);
+  overflow-wrap: anywhere;
+}
+
+.pd-correlation-story__long-copy {
+  max-inline-size: 62rem;
+}
+
+@media (max-width: 1120px) {
+  .pd-correlation-story__variants {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .pd-correlation-story__semantic-guide > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--pd-space-2);
+  }
+}

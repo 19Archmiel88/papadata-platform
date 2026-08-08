@@ -19,13 +19,13 @@ const entries = new Map(
 );
 
 ensure(
-  system.stage === 'A15.4',
-  'Analytics System must declare stage A15.4.',
+  system.stage === 'A15.5',
+  'Analytics System must declare stage A15.5.',
 );
 
 ensure(
   system.status === 'review',
-  'Analytics System A15.4 remains review until every entry is formally accepted.',
+  'Analytics System A15.5 remains review until every entry is formally accepted.',
 );
 
 ensure(
@@ -39,11 +39,12 @@ const expectedRuntimeOwners = [
   ['TrendChart', '15.03'],
   ['ComparisonChart', '15.04'],
   ['ShareChart', '15.05'],
+  ['CorrelationChart', '15.06'],
 ];
 
 ensure(
   system.entries.length === expectedRuntimeOwners.length,
-  'Analytics System A15.4 must contain exactly 15.01-15.05 runtime owners.',
+  'Analytics System A15.5 must contain exactly 15.01-15.06 runtime owners.',
 );
 
 for (const item of system.entries) {
@@ -123,6 +124,7 @@ for (const title of [
   '15 Wykresy i dane/Trendy',
   '15 Wykresy i dane/Porównania',
   '15 Wykresy i dane/Udziały i struktura',
+  '15 Wykresy i dane/Zależności i korelacje',
 ]) {
   const rows = storybookRegistry
     .split('\n')
@@ -148,6 +150,25 @@ for (const title of [
     `${title}: Storybook registry status drift.`,
   );
 }
+
+const correlationLegacyRows = storybookRegistry
+  .split('\n')
+  .filter((line) => (
+    line.startsWith('10 Komponenty/CorrelationChart,')
+  ));
+
+ensure(
+  correlationLegacyRows.length === 1,
+  '10 Komponenty/CorrelationChart: expected one degraded handoff row.',
+);
+
+ensure(
+  correlationLegacyRows[0]?.includes(',deprecated,')
+    && correlationLegacyRows[0]?.includes(
+      'promoted-to-15-06-runtime-owner',
+    ),
+  '10 Komponenty/CorrelationChart must be degraded to 15.06 handoff.',
+);
 
 for (const legacy of [
   '10 Komponenty/ChartFrame,',
@@ -195,6 +216,8 @@ for (const marker of [
   'ComparisonChartProps',
   'ShareChart',
   'ShareChartProps',
+  'CorrelationChart',
+  'CorrelationChartProps',
 ]) {
   ensure(
     componentIndex.includes(marker),
@@ -224,6 +247,10 @@ for (const [
   ],
   [
     'contracts/components/sharechart.ts',
+    'Orchestration contract',
+  ],
+  [
+    'contracts/components/correlationchart.ts',
     'Orchestration contract',
   ],
 ]) {
@@ -323,6 +350,40 @@ ensure(
   '15.05 must not take tooltip ownership from 15.09.',
 );
 
+const correlationRuntime = readText(
+  'apps/web/src/design-system/components/CorrelationChart/CorrelationChart.tsx',
+);
+
+for (const marker of [
+  "from 'recharts'",
+  'ScatterChart',
+  'Scatter',
+  'ReferenceLine',
+  'ReferenceArea',
+  'ResponsiveContainer',
+  'accessibilityLayer',
+  "'scatter'",
+  "'relationship'",
+  "'driver-analysis'",
+  'driver-hypothesis',
+  'noCausality',
+]) {
+  ensure(
+    correlationRuntime.includes(marker),
+    `CorrelationChart runtime missing ${marker}.`,
+  );
+}
+
+ensure(
+  !correlationRuntime.includes('<svg'),
+  'CorrelationChart must not reimplement a raw SVG chart engine.',
+);
+
+ensure(
+  !correlationRuntime.includes('Tooltip'),
+  '15.06 must not take tooltip ownership from 15.09.',
+);
+
 const webPackage = readJson(
   'apps/web/package.json',
 );
@@ -383,6 +444,7 @@ for (const handoff of [
   '15.03',
   '15.04',
   '15.05',
+  '15.06',
 ]) {
   ensure(
     lab.includes(handoff),
@@ -394,6 +456,7 @@ for (const legacyName of [
   "name: 'TrendChart'",
   "name: 'ComparisonChart'",
   "name: 'ShareChart'",
+  "name: 'CorrelationChart'",
 ]) {
   ensure(
     !lab.includes(legacyName),
@@ -405,6 +468,7 @@ for (const legacyGeometry of [
   "kind === 'trend'",
   "kind === 'comparison'",
   "kind === 'share'",
+  "kind === 'correlation'",
 ]) {
   ensure(
     !lab.includes(legacyGeometry),
@@ -436,6 +500,7 @@ for (const path of [
   'apps/web/src/storybook-next/stories/15-data-visualizations/TrendChart.stories.tsx',
   'apps/web/src/storybook-next/stories/15-data-visualizations/ComparisonChart.stories.tsx',
   'apps/web/src/storybook-next/stories/15-data-visualizations/ShareChart.stories.tsx',
+  'apps/web/src/storybook-next/stories/15-data-visualizations/CorrelationChart.stories.tsx',
 ]) {
   const source = readText(path);
 
@@ -481,6 +546,32 @@ for (const marker of [
   );
 }
 
+const correlationStory = readText(
+  'apps/web/src/storybook-next/stories/15-data-visualizations/CorrelationChart.stories.tsx',
+);
+
+for (const marker of [
+  "title: '15 Wykresy i dane/Zależności i korelacje'",
+  'scatter plot',
+  'relationship chart',
+  'driver analysis',
+  'driver hypothesis',
+  'outlier',
+  'cluster',
+  'Korelacja i driver hypothesis nie są dowodem przyczynowości.',
+  'TrendChart',
+  'ComparisonChart',
+  'DataTable',
+  '15.07',
+  '15.08',
+  '15.09',
+]) {
+  ensure(
+    correlationStory.includes(marker),
+    `15.06 story missing decision/evidence marker: ${marker}`,
+  );
+}
+
 console.log(
-  'Analytics System A15.4 OK: ShareChart 15.05 is the review owner of part-to-whole composition; TrendChart 15.03 remains accepted.',
+  'Analytics System A15.5 OK: CorrelationChart 15.06 is the review owner of relationships and correlations; TrendChart 15.03 remains accepted.',
 );

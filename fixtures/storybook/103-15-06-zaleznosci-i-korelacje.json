@@ -3,15 +3,32 @@
   "storyTitle": "15 Wykresy i wizualizacje danych/Zależności i korelacje",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-06-zaleznosci-i-korelacje.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "CorrelationChart",
+    "ChartFrame"
+  ],
   "states": [
     "ready",
-    "loading",
-    "empty",
-    "error",
-    "noData",
-    "singlePoint",
-    "negativeValues"
+    "scatter",
+    "relationship",
+    "driverAnalysis",
+    "outlier",
+    "cluster",
+    "longCopy",
+    "noCausalityWithoutEvidence",
+    "labelCollisionPrevention",
+    "clusterLabelReduction",
+    "darkAxisContrast",
+    "mobileLabelDensity",
+    "interactionHandoffTo15_09",
+    "noColorShadows",
+    "noMarkerGlow",
+    "noSourceColorShadows",
+    "noDecorativeHalo",
+    "shapeEncoding",
+    "colorIsNotSoleEncoding",
+    "compactContainerLabelReduction",
+    "reducedVerticalGridlinesInDenseCharts"
   ],
   "viewports": [
     1440,
@@ -27,20 +44,45 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-scatter-variant",
+    "verify-relationship-variant",
+    "verify-driver-analysis-variant",
+    "verify-outlier-cluster-static",
+    "verify-correlation-strength-copy",
+    "verify-no-causality-without-evidence",
+    "verify-no-15-09-interaction",
+    "verify-cluster-labels-do-not-overlap",
+    "verify-dark-axis-and-grid-readable",
+    "verify-mobile-label-density",
+    "verify-pan-zoom-touch-targets-deferred-to-15-09",
+    "verify-point-roles-use-distinct-shapes",
+    "verify-color-is-not-the-only-encoding",
+    "verify-compact-variant-labels-are-reduced",
+    "verify-dense-gridlines-do-not-dominate-cluster"
   ],
   "visualAssertions": [
+    "foundation-shell-light",
+    "foundation-shell-dark",
     "1440-light",
     "1440-dark",
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-negativeValues"
+    "long-copy",
+    "no-horizontal-page-scroll",
+    "no-local-visual-overrides",
+    "cluster-labels-reduced",
+    "axis-grid-readable-in-dark",
+    "mobile-scatter-remains-readable",
+    "no-15-09-interaction-ownership",
+    "colored-markers-have-no-shadow",
+    "outlier-marker-has-no-glow",
+    "no-source-box-shadow-on-colored-markers",
+    "no-decorative-color-halo",
+    "standard-cluster-driver-outlier-have-distinct-shapes",
+    "point-roles-remain-readable-without-color-only-dependence",
+    "three-column-variant-has-reduced-label-clutter",
+    "cluster-chart-reduces-vertical-grid-noise"
   ],
   "a11y": [
     "keyboard-only",
@@ -49,5 +91,5 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-static-contract"
 }

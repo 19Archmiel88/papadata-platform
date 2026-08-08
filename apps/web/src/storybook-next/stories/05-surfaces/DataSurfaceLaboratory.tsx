@@ -54,7 +54,7 @@ function PromotedOwnerNotice({
   );
 }
 
-type ChartKind = 'correlation' | 'forecast' | 'waterfall' | 'funnel';
+type ChartKind = 'forecast' | 'waterfall' | 'funnel';
 
 type ChartDescriptor = {
   readonly name: string;
@@ -68,28 +68,6 @@ type ChartDescriptor = {
 };
 
 const chartCopy: Record<ChartKind, ChartDescriptor> = {
-  correlation: {
-    name: 'CorrelationChart',
-    purpose: {
-      pl: 'Relacja dwóch zmiennych z trendline i czytelnymi osiami.',
-      en: 'Relationship between two variables with a trendline and readable axes.',
-    },
-    layers: {
-      pl: 'oś X/Y · punkty · trendline',
-      en: 'X/Y axes · points · trendline',
-    },
-    question: {
-      pl: 'Czy większy budżet poprawia ROAS?',
-      en: 'Does higher spend improve ROAS?',
-    },
-    metric: { pl: 'Budżet vs ROAS', en: 'Spend vs ROAS' },
-    source: 'Google Ads',
-    range: { pl: 'Kampanie · 30 dni', en: 'Campaigns · 30 days' },
-    reference: {
-      pl: 'Trendline + mediana kampanii',
-      en: 'Trendline + campaign median',
-    },
-  },
   forecast: {
     name: 'ForecastChart',
     purpose: {
@@ -168,35 +146,6 @@ function ChartGraphic({ kind }: { readonly kind: ChartKind }) {
         <line x1="48" y1="178" x2="392" y2="178" />
         <line x1="48" y1="24" x2="48" y2="178" />
       </g>
-
-
-
-      {kind === 'correlation' ? (
-        <>
-          <path className="pd-s53-chart-trendline" d="M70 160 L360 50" />
-          {[
-            [86, 152],
-            [124, 142],
-            [168, 118],
-            [212, 116],
-            [258, 86],
-            [306, 76],
-            [350, 52],
-          ].map(([cx, cy]) => (
-            <circle
-              className="pd-s53-chart-dot"
-              cx={cx}
-              cy={cy}
-              key={`${cx}-${cy}`}
-              r="5"
-            />
-          ))}
-          <g className="pd-s53-chart-labels">
-            <text x="52" y="26">ROAS</text>
-            <text textAnchor="end" x="390" y="198">{copy({ pl: 'budżet', en: 'spend' })}</text>
-          </g>
-        </>
-      ) : null}
 
       {kind === 'forecast' ? (
         <>
@@ -887,7 +836,7 @@ export function DataSurfaceLaboratory() {
       <StorySection
         index="03"
         title={<Localized pl="Rodziny wykresów" en="Chart families" />}
-        summary={<Localized pl="Trend, porównania oraz udziały zostały promowane do 15.03, 15.04 i 15.05. Laboratorium zachowuje wyłącznie handoff, a pozostałe rodziny czekają na ownerów 15.06–15.07." en="Trend, comparison and share composition have been promoted to 15.03, 15.04 and 15.05. The laboratory keeps only the handoff while the remaining families wait for their 15.06–15.07 owners." />}
+        summary={<Localized pl="Trend, porównania, udziały oraz korelacje zostały promowane do 15.03, 15.04, 15.05 i 15.06. Laboratorium zachowuje wyłącznie handoff, a pozostałe rodziny czekają na ownerów kolejnych etapów." en="Trend, comparison, share composition and correlation have been promoted to 15.03, 15.04, 15.05 and 15.06. The laboratory keeps only the handoff while the remaining families wait for later owners." />}
       >
         <PromotedOwnerNotice
           owner="15.03 TrendChart"
@@ -903,6 +852,11 @@ export function DataSurfaceLaboratory() {
           owner="15.05 ShareChart"
           title={{ pl: 'Promowane do Wykresy i dane', en: 'Promoted to Data visualizations' }}
           description={{ pl: 'Donut, bar, stacked i part-to-whole są od tej chwili kontraktem runtime 15.05.', en: 'Donut, bar, stacked and part-to-whole composition are now the 15.05 runtime contract.' }}
+        />
+        <PromotedOwnerNotice
+          owner="15.06 CorrelationChart"
+          title={{ pl: 'Promowane do Wykresy i dane', en: 'Promoted to Data visualizations' }}
+          description={{ pl: 'Scatter plot, relationship chart, driver hypothesis oraz statyczne outlier/cluster indication są od tej chwili kontraktem runtime 15.06.', en: 'Scatter plot, relationship chart, driver hypothesis and static outlier/cluster indication are now the 15.06 runtime contract.' }}
         />
         <ChartFamilies />
       </StorySection>

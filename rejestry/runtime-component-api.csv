@@ -16,3 +16,4 @@ MetricCard,apps/web/src/design-system/components/MetricCard/MetricCard.tsx,Metri
 TrendChart,apps/web/src/design-system/components/TrendChart/TrendChart.tsx,TrendChartProps,15.03,accepted,Analytics UI
 ComparisonChart,apps/web/src/design-system/components/ComparisonChart/ComparisonChart.tsx,ComparisonChartProps,15.04,review,Analytics UI
 ShareChart,apps/web/src/design-system/components/ShareChart/ShareChart.tsx,ShareChartProps,15.05,review,Analytics UI
+CorrelationChart,apps/web/src/design-system/components/CorrelationChart/CorrelationChart.tsx,CorrelationChartProps,15.06,review,Analytics UI

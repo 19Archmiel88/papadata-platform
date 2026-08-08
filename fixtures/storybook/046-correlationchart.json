@@ -3,15 +3,12 @@
   "storyTitle": "10 Komponenty/CorrelationChart",
   "sourceDocument": "05-wykresy-i-wizualizacje/komponenty/correlationchart.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "CorrelationChart"
+  ],
   "states": [
-    "ready",
-    "loading",
-    "empty",
-    "error",
-    "noData",
-    "singlePoint",
-    "negativeValues"
+    "promotedTo15_06",
+    "handoff"
   ],
   "viewports": [
     1440,
@@ -27,20 +24,12 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-no-legacy-story-owner",
+    "verify-15-06-runtime-owner"
   ],
   "visualAssertions": [
-    "1440-light",
-    "1440-dark",
-    "768-reflow",
-    "390-mobile",
-    "200-percent-zoom",
-    "reduced-motion",
-    "state-negativeValues"
+    "legacy-story-hidden",
+    "runtime-owner-15-06"
   ],
   "a11y": [
     "keyboard-only",
@@ -49,5 +38,5 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "promoted-to-15-06-runtime-owner"
 }

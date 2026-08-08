@@ -1,11 +1,55 @@
-import type { BaseComponentProps, ComponentEvent } from '../component-shared';
+import type {
+  BaseComponentProps,
+  ComponentEvent,
+} from '../component-shared';
 
-export interface CorrelationChartProps extends BaseComponentProps {
-  xLabel: string;
-  yLabel: string;
-  points: Array<{ id: string; x: number; y: number; label: string }>;
-  correlation: number | null;
-  trendline: boolean;
+/**
+ * Orchestration contract used by screen/domain specifications.
+ * Runtime React props are owned by
+ * design-system/components/CorrelationChart/CorrelationChart.tsx.
+ */
+export type CorrelationChartVariant =
+  | 'scatter'
+  | 'relationship'
+  | 'driver-analysis';
+
+export type CorrelationPointRole =
+  | 'standard'
+  | 'driver-hypothesis'
+  | 'outlier'
+  | 'cluster';
+
+export interface CorrelationChartPoint {
+  readonly id: string;
+  readonly x: number;
+  readonly y: number;
+  readonly label: string;
+  readonly role?: CorrelationPointRole;
+  readonly clusterId?: string | null;
 }
 
-export type CorrelationChartEvent = ComponentEvent<{ type: 'correlationchart'; value?: string | number | boolean | null }>;
+export interface CorrelationChartCluster {
+  readonly id: string;
+  readonly label: string;
+  readonly description: string;
+  readonly xRange: readonly [number, number];
+  readonly yRange: readonly [number, number];
+}
+
+export interface CorrelationChartProps extends BaseComponentProps {
+  readonly xLabel: string;
+  readonly yLabel: string;
+  readonly points: readonly CorrelationChartPoint[];
+  readonly correlation: number | null;
+  readonly trendline: boolean;
+  readonly variant?: CorrelationChartVariant;
+  readonly clusters?: readonly CorrelationChartCluster[];
+  readonly relationshipLabel?: string | null;
+  readonly driverHypothesis?: string | null;
+  readonly causalEvidenceLabel?: string | null;
+}
+
+export type CorrelationChartEvent = ComponentEvent<{
+  type: 'correlationchart';
+  value?: string | number | boolean | null;
+}>;

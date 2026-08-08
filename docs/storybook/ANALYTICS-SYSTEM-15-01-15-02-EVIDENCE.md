@@ -1,10 +1,10 @@
-# Analytics System — 15.01 ChartFrame + 15.02 MetricCard + 15.03 TrendChart + 15.04 ComparisonChart
+# Analytics System — 15.01 ChartFrame + 15.02 MetricCard + 15.03 TrendChart + 15.04 ComparisonChart + 15.05 ShareChart
 
 ## Status
 
-`A15.3 — REVIEW / 15.03 ACCEPTED / 15.04 REVIEW`
+`A15.4 — REVIEW / 15.03 ACCEPTED / 15.04 REVIEW / 15.05 REVIEW`
 
-Zakres wdraża czterech pierwszych właścicieli runtime sekcji `15 — Wykresy i dane`.
+Zakres wdraża pięciu pierwszych właścicieli runtime sekcji `15 — Wykresy i dane`.
 
 `15.03 TrendChart` jest formalnie zaakceptowany po pełnej walidacji technicznej i odbiorze wizualnym w light/dark dla 1440, 768 i 390 px.
 
@@ -51,7 +51,7 @@ TrendChart nie przejmuje:
 - lokalny `DataSurfaceSelect` i drugi silnik tabeli zostały usunięte wcześniej;
 - lokalna demonstracja `TrendChart` została usunięta z katalogu rodzin wykresów;
 - 05.03 wskazuje `15.03 TrendChart` jako jedynego ownera trendów;
-- ComparisonChart został promowany do 15.04 i usunięty z lokalnego katalogu 05.03; pozostałe rodziny pozostają decision recordem do czasu promocji do 15.05–15.07;
+- ComparisonChart został promowany do 15.04 i usunięty z lokalnego katalogu 05.03; pozostałe rodziny pozostają decision recordem do czasu promocji do 15.06–15.07;
 - legacy `10 Komponenty/TrendChart` nie jest drugim ownerem Storybooka.
 
 ## Bramy odbioru
@@ -94,3 +94,56 @@ ComparisonChart nie przejmuje:
 
 Status 15.04 pozostaje `review` do odbioru wizualnego light/dark dla
 1440 / 768 / 390, 200% zoom, long copy i wartości ujemnych.
+
+
+## 15.05 — ShareChart
+
+Runtime source of truth:
+
+`apps/web/src/design-system/components/ShareChart/ShareChart.tsx`
+
+ShareChart jest właścicielem wizualizacji część–całość:
+`donut`, `bar`, `stacked`, `part-to-whole` i `share breakdown`.
+
+Silnikiem geometrii i skal pozostaje `Recharts`. PapaData posiada publiczne
+React API, semantykę segmentów, total, procent udziału, legendę, metadane,
+responsywność i accessibility contract.
+
+ShareChart nie przejmuje:
+
+- porównania kategorii, rankingów, benchmarków i period comparison z `15.04 / ComparisonChart`;
+- ciągłego czasu z `15.03 / TrendChart`;
+- dokładnych rekordów, sortowania i działań z `10.07 / DataTable`;
+- tooltipów, selection, zoomu, drill-down i cross-filteringu z `15.09`;
+- pełnej macierzy stanów danych z `15.08`.
+
+Status 15.05 pozostaje `review` do odbioru wizualnego light/dark dla
+1440 / 768 / 390, 200% zoom, long copy i przypadków brzegowych udziałów.
+
+### Korekty wizualne 15.05 przed commitem
+
+Po odbiorze screenshotów 1440 / 768 / 390 doprecyzowano:
+- single segment stacked bar nie może wyglądać jak primary button;
+- mobile bar z długą etykietą układa label nad paskiem;
+- donut grupuje wartości poniżej 3% jako `Pozostałe`;
+- lokalna paleta ShareChart wyrównuje luminancję segmentów w dark mode.
+
+Interaktywne rozwijanie `Pozostałe` pozostaje poza 15.05 i należy do 15.09.
+
+### Druga korekta wizualna 15.05
+
+Po dodatkowym przeglądzie skrajnych szerokości i motywów doprecyzowano:
+- ciemna oś procentowa ma wyższy kontrast;
+- legenda mobile używa zwartego układu dwukolumnowego;
+- share bar na mobile chroni minimalną szerokość paska;
+- stacked 100% ma tor tła i nie przypomina primary button;
+- story pokazuje segment poniżej 3% zgrupowany jako `Pozostałe`.
+
+### Trzecia korekta wizualna 15.05
+
+Po przeglądzie mobile / panel boczny doprecyzowano:
+- share bars na mobile układają label nad paskiem;
+- każdy pasek startuje z tej samej osi 0%;
+- mobile metadata nie tworzy gęstej drabinki dividerów;
+- swatche mają większy rozmiar i obrys dla dark mode;
+- stacked 100% ma widoczny track dzięki paddingowi i subtelnemu tłu.

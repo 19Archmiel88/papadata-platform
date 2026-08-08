@@ -220,32 +220,6 @@
   stroke-width: 1;
 }
 
-.pd-s53-chart-donut-base {
-  fill: none;
-  stroke: var(--pd-surface-subtle);
-  stroke-width: 22;
-}
-
-.pd-s53-chart-donut-a,
-.pd-s53-chart-donut-b,
-.pd-s53-chart-donut-c {
-  fill: none;
-  stroke-width: 22;
-  stroke-linecap: butt;
-}
-
-.pd-s53-chart-donut-a {
-  stroke: var(--pd-data-series-1);
-}
-
-.pd-s53-chart-donut-b {
-  stroke: var(--pd-data-series-2);
-}
-
-.pd-s53-chart-donut-c {
-  stroke: var(--pd-data-series-3);
-}
-
 .pd-s53-chart-funnel {
   stroke: none;
 }

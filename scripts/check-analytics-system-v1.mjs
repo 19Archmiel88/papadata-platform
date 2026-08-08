@@ -19,13 +19,13 @@ const entries = new Map(
 );
 
 ensure(
-  system.stage === 'A15.3',
-  'Analytics System must declare stage A15.3.',
+  system.stage === 'A15.4',
+  'Analytics System must declare stage A15.4.',
 );
 
 ensure(
   system.status === 'review',
-  'Analytics System A15.3 remains review until every entry is formally accepted.',
+  'Analytics System A15.4 remains review until every entry is formally accepted.',
 );
 
 ensure(
@@ -38,11 +38,12 @@ const expectedRuntimeOwners = [
   ['MetricCard', '15.02'],
   ['TrendChart', '15.03'],
   ['ComparisonChart', '15.04'],
+  ['ShareChart', '15.05'],
 ];
 
 ensure(
   system.entries.length === expectedRuntimeOwners.length,
-  'Analytics System A15.3 must contain exactly 15.01-15.04 runtime owners.',
+  'Analytics System A15.4 must contain exactly 15.01-15.05 runtime owners.',
 );
 
 for (const item of system.entries) {
@@ -121,6 +122,7 @@ for (const title of [
   '15 Wykresy i dane/MetricCard',
   '15 Wykresy i dane/Trendy',
   '15 Wykresy i dane/Porównania',
+  '15 Wykresy i dane/Udziały i struktura',
 ]) {
   const rows = storybookRegistry
     .split('\n')
@@ -152,10 +154,12 @@ for (const legacy of [
   '10 Komponenty/MetricCard,',
   '10 Komponenty/TrendChart,',
   '10 Komponenty/ComparisonChart,',
+  '10 Komponenty/ShareChart,',
   '15 Wykresy i wizualizacje danych/ChartFrame,',
   '15 Wykresy i wizualizacje danych/MetricCard,',
   '15 Wykresy i wizualizacje danych/Trendy,',
   '15 Wykresy i wizualizacje danych/Porównania,',
+  '15 Wykresy i wizualizacje danych/Struktura i udział,',
 ]) {
   ensure(
     !storybookRegistry.includes(legacy),
@@ -166,6 +170,7 @@ for (const legacy of [
 for (const legacyFixture of [
   'fixtures/storybook/091-trendchart.json',
   'fixtures/storybook/045-comparisonchart.json',
+  'fixtures/storybook/080-sharechart.json',
 ]) {
   ensure(
     !existsSync(
@@ -188,6 +193,8 @@ for (const marker of [
   'TrendChartProps',
   'ComparisonChart',
   'ComparisonChartProps',
+  'ShareChart',
+  'ShareChartProps',
 ]) {
   ensure(
     componentIndex.includes(marker),
@@ -213,6 +220,10 @@ for (const [
   ],
   [
     'contracts/components/comparisonchart.ts',
+    'Orchestration contract',
+  ],
+  [
+    'contracts/components/sharechart.ts',
     'Orchestration contract',
   ],
 ]) {
@@ -278,6 +289,40 @@ ensure(
   '15.04 must not take tooltip ownership from 15.09.',
 );
 
+const shareRuntime = readText(
+  'apps/web/src/design-system/components/ShareChart/ShareChart.tsx',
+);
+
+for (const marker of [
+  "from 'recharts'",
+  'PieChart',
+  'BarChart',
+  'Pie',
+  'Bar',
+  'Cell',
+  'ResponsiveContainer',
+  'accessibilityLayer',
+  "'donut'",
+  "'bar'",
+  "'stacked'",
+  'segments',
+]) {
+  ensure(
+    shareRuntime.includes(marker),
+    `ShareChart runtime missing ${marker}.`,
+  );
+}
+
+ensure(
+  !shareRuntime.includes('<svg'),
+  'ShareChart must not reimplement a raw SVG chart engine.',
+);
+
+ensure(
+  !shareRuntime.includes('Tooltip'),
+  '15.05 must not take tooltip ownership from 15.09.',
+);
+
 const webPackage = readJson(
   'apps/web/package.json',
 );
@@ -337,6 +382,7 @@ for (const handoff of [
   '15.02',
   '15.03',
   '15.04',
+  '15.05',
 ]) {
   ensure(
     lab.includes(handoff),
@@ -347,6 +393,7 @@ for (const handoff of [
 for (const legacyName of [
   "name: 'TrendChart'",
   "name: 'ComparisonChart'",
+  "name: 'ShareChart'",
 ]) {
   ensure(
     !lab.includes(legacyName),
@@ -357,6 +404,7 @@ for (const legacyName of [
 for (const legacyGeometry of [
   "kind === 'trend'",
   "kind === 'comparison'",
+  "kind === 'share'",
 ]) {
   ensure(
     !lab.includes(legacyGeometry),
@@ -387,6 +435,7 @@ for (const path of [
   'apps/web/src/storybook-next/stories/15-data-visualizations/MetricCard.stories.tsx',
   'apps/web/src/storybook-next/stories/15-data-visualizations/TrendChart.stories.tsx',
   'apps/web/src/storybook-next/stories/15-data-visualizations/ComparisonChart.stories.tsx',
+  'apps/web/src/storybook-next/stories/15-data-visualizations/ShareChart.stories.tsx',
 ]) {
   const source = readText(path);
 
@@ -415,6 +464,23 @@ for (const marker of [
   );
 }
 
+const shareStory = readText(
+  'apps/web/src/storybook-next/stories/15-data-visualizations/ShareChart.stories.tsx',
+);
+
+for (const marker of [
+  "title: '15 Wykresy i dane/Udziały i struktura'",
+  'ComparisonChart',
+  'TrendChart',
+  'DataTable',
+  'negative values',
+]) {
+  ensure(
+    shareStory.includes(marker),
+    `15.05 story missing decision/evidence marker: ${marker}`,
+  );
+}
+
 console.log(
-  'Analytics System A15.3 OK: ComparisonChart 15.04 is the review owner of categorical comparisons; TrendChart 15.03 remains accepted.',
+  'Analytics System A15.4 OK: ShareChart 15.05 is the review owner of part-to-whole composition; TrendChart 15.03 remains accepted.',
 );

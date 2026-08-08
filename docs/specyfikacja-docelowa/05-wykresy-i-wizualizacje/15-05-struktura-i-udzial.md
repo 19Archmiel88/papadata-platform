@@ -1,11 +1,11 @@
 ---
-version: 1.0
+version: 1.1
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
-owner: Artur Wiśniewski
+owner: Analytics UX
 id: DOC-10-14903FD7424D
-status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+status: review
+updated_at: 2026-08-08T21:09:00+01:00
 ---
 
 # Struktura i udział
@@ -16,90 +16,55 @@ updated_at: 2026-07-30T10:30:00+02:00
 | --- | --- |
 | Identyfikator | 15.05 |
 | Nazwa polska | Struktura i udział |
-| Nazwa techniczna | struktura-i-udzia |
-| Typ dokumentu | kontrakt wizualizacji |
-| Wersja | 1.0 |
-| Status kontraktu | zatwierdzony stan docelowy |
-| Priorytet | P1 |
-| Właściciel | Analytics UX |
-| Moduł | Wykresy i wizualizacje danych — M02 |
-
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Nazwa techniczna | struktura-i-udzial |
+| Runtime owner | `ShareChart` |
+| Source of truth | `apps/web/src/design-system/components/ShareChart/ShareChart.tsx` |
+| Storybook | `15 Wykresy i dane/Udziały i struktura` |
+| Status implementacji | REVIEW — runtime i story wdrożone, przed odbiorem wizualnym |
 
 ## Cel i decyzja docelowa
 
-„Struktura i udział” jest współdzielonym kontraktem, a nie lokalnym układem jednego ekranu. Wzorzec ma jedną odpowiedzialność, korzysta z fundamentów i komponentów bazowych oraz udostępnia warianty wymagane przez domeny bez kopiowania implementacji.
+`ShareChart` jest właścicielem pytań część–całość: jak segmenty składają się na total. Komponent nie zastępuje `ComparisonChart`, `TrendChart`, `DataTable` ani przyszłych interakcji 15.09.
 
-## Stan obecny
+## Zakres runtime
 
+| Wariant | Rola |
+| --- | --- |
+| `donut` | Mała liczba rozróżnialnych segmentów z widocznym totalem i legendą. |
+| `bar` | Czytelne porównanie udziałów segmentów bez przejmowania rankingu ComparisonChart. |
+| `stacked` | Kompaktowa struktura 100% z legendą jako tekstowym wyjaśnieniem. |
 
-## Zakres i wymagania
+## Granice ownership
 
-| Lp. | Wymaganie | Kontrakt | Dowód odbioru |
-| --- | --- | --- | --- |
-| 1 | udział kanałów | wymagany wariant lub stan | test Storybook + test interakcji |
-| 2 | udział produktów | wymagany wariant lub stan | test Storybook + test interakcji |
-| 3 | udział kampanii | wymagany wariant lub stan | test Storybook + test interakcji |
-| 4 | udział nowych/powracających klientów | wymagany wariant lub stan | test Storybook + test interakcji |
-| 5 | mix przychodu. | wymagany wariant lub stan | test Storybook + test interakcji |
-
-## Anatomia
-
-```text
-struktura-i-udzia
-├── semantic root
-├── header or accessible label
-├── primary content
-├── status / validation region
-├── primary action
-└── optional secondary actions or metadata
-```
-
-## Komponenty składowe
-
-- PageHeader
-- DataStatusBanner
-- InlineNotice
-- Button
-- ShareChart
-- ComparisonChart
-- DetailPanel
-- Tabs
-
-Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
-
-## Kontrakt stanu
-
-- Stan kontrolowany jest używany dla route, filtrów, formularza, selection i overlay.
-- Stan asynchroniczny rozróżnia loading, processing, retrying, success, recoverable error i terminal error.
-- Read-only, no-access i plan-restricted są osobnymi stanami, nie odmianą disabled.
-- Zmiana motywu, języka lub viewportu nie resetuje danych ani procesu.
-
-## Interakcje i klawiatura
-
-Tab order odpowiada hierarchii zadania. Enter/Space uruchamiają natywne kontrolki; Escape zamyka najwyższą warstwę; strzałki są używane wyłącznie w komponentach z modelem composite widget. Focus restore jest obowiązkowy po każdej warstwie.
-
-## Responsywność
-
-Wide może używać kolumn lub detail panelu. Compact przechodzi w jedną kolumnę, zachowuje wszystkie funkcje i przenosi akcje drugorzędne do jawnego overflow. Tabele otrzymują scroll lub widok priorytetowych kolumn, a wykresy — tabelę alternatywną.
+- Porównania kategorii, ranking, benchmark i period comparison należą do `15.04 / ComparisonChart`.
+- Czas ciągły należy do `15.03 / TrendChart`.
+- Dokładne rekordy, sortowanie i row actions należą do `10.07 / DataTable`.
+- Hover, tooltip, selection, drill-down i cross-filtering należą do `15.09`.
+- Pełna macierz stanów danych należy do `15.08`.
 
 ## Dostępność
 
-Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kontrast, reduced motion, live region dla wyników asynchronicznych, reflow i brak informacji zależnej wyłącznie od koloru.
+Wykres nie przekazuje znaczenia wyłącznie kolorem. Każdy segment ma tekstową legendę i metadane wartości. Mobile i 200% zoom nie mogą wymuszać poziomego scrolla strony.
 
 ## Storybook
 
-- Title: `15 Wykresy i wizualizacje danych/Struktura i udział`.
-- Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
-- Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
+- Title: `15 Wykresy i dane/Udziały i struktura`.
+- Runtime: `ShareChart`.
+- Wymagane widoki: light/dark, 1440 / 768 / 390, 200% zoom, long copy, single segment.
+- Status: review do odbioru wizualnego.
 
-## Testy i kryteria akceptacji
+## Reguły po odbiorze wizualnym
 
-1. Wszystkie wymagania mają story i asercję testową.
-2. Wzorzec nie tworzy duplikatu komponentu bazowego.
-3. Stany błędu i brak dostępu mają recovery albo jednoznaczne zakończenie.
-4. Mobile i zoom 200% nie tracą funkcji.
-5. Klawiatura oraz focus restore przechodzą play test.
-6. Dokument jest linkowany przez co najmniej jeden ekran albo oznaczony jako fundament przyszłego użycia.
+1. `stacked` z jednym segmentem nie może wyglądać jak primary button. Wariant 100% ma być cienkim wskaźnikiem struktury z obrysem, a nie dużym blokiem CTA.
+2. W widoku mobilnym długie etykiety wariantu `bar` układają się nad paskami, żeby pasek zawsze wykorzystywał pełną szerokość dostępnego obszaru.
+3. Segmenty donut poniżej 3% są grupowane jako `Pozostałe`. Rozbicie tej grupy przez hover/click należy do `15.09 — Interakcje i filtry`.
+4. Paleta `ShareChart` musi mieć zbliżoną luminancję segmentów w dark mode, żeby kolor nie sugerował fałszywej wagi biznesowej.
+
+5. Na mobile legenda używa zwartego układu dwukolumnowego, żeby nie oddzielać nadmiernie wykresu od jego kontekstu.
+6. Wykres `bar` na mobile utrzymuje minimalną szerokość części porównawczej: tekst jest ograniczony, a pasek pozostaje głównym nośnikiem proporcji.
+7. Oś procentowa w dark mode musi być czytelna z dystansu i nie może zlewać się z tłem.
+8. `stacked` używa toru tła, żeby pojedynczy segment 100% był jednoznacznie wskaźnikiem, a nie przyciskiem.
+
+9. Na mobile słupki udziałów układają etykietę nad torem, dzięki czemu każdy pasek startuje ze wspólnego punktu 0% i wykorzystuje pełną szerokość kolumny.
+10. Mobile metadata pod wykresami nie używa twardej drabinki dividerów; separację buduje odstęp.
+11. Swatche legendy mają obrys i rozmiar wystarczający do identyfikacji segmentu w dark mode.

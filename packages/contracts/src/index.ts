@@ -1150,3 +1150,4 @@ export * from "./ai-runtime.js";
 export * from "./environment-gates.js";
 
 export * from "./migrated-domain-policies.js";
+export * from "./authorization-role-policy.js";

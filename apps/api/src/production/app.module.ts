@@ -10,6 +10,7 @@ import { AuditController } from "./audit/audit.controller.js";
 import { AuditService } from "./audit/audit.service.js";
 import { CapabilityGuard } from "./auth/capability.guard.js";
 import { DeniedAccessAuditService } from "./auth/denied-access-audit.service.js";
+import { LivePrincipalAuthorizationService } from "./auth/live-principal-authorization.service.js";
 import {
   createPrincipalSessionStore,
   PRINCIPAL_CLOCK,
@@ -101,6 +102,7 @@ export const productionControllers = [
       useFactory: createPrincipalSessionStore,
     },
     PrincipalService,
+    LivePrincipalAuthorizationService,
     DeniedAccessAuditService,
     {
       provide: APP_GUARD,

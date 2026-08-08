@@ -1,7 +1,7 @@
 import { Inject } from "@nestjs/common";
 import { Injectable, UnauthorizedException, ConflictException } from "@nestjs/common";
 import { createHash } from "node:crypto";
-import { canonicalCapabilities } from "@papadata/contracts";
+import { tenantOwnerBootstrapCapabilities } from "@papadata/contracts";
 import { IdentityRepository, type IdentityMembershipRow } from "@papadata/database";
 import { ProductionDatabase } from "@papadata/database";
 import { Argon2PasswordService } from "../security/argon2.service.js";
@@ -36,7 +36,7 @@ export class IdentityService {
         displayName: input.displayName.trim(),
         tenantName: input.organizationName.trim(),
         workspaceName: input.workspaceName.trim(),
-        capabilities: canonicalCapabilities,
+        capabilities: tenantOwnerBootstrapCapabilities,
       });
       return {
         userId: result.user.userId,

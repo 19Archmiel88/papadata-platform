@@ -2,11 +2,13 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
+  ServiceUnavailableException,
   UnauthorizedException,
 } from "@nestjs/common";
 import type { CanActivate, ExecutionContext } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { DeniedAccessAuditService } from "./denied-access-audit.service.js";
+import { LivePrincipalAuthorizationService } from "./live-principal-authorization.service.js";
 import {
   meetsAuthenticationLevel,
   type RequestWithPrincipal,
@@ -21,6 +23,9 @@ export class CapabilityGuard implements CanActivate {
 
     @Inject(DeniedAccessAuditService)
     private readonly deniedAccessAudit: DeniedAccessAuditService,
+
+    @Inject(LivePrincipalAuthorizationService)
+    private readonly liveAuthorization: LivePrincipalAuthorizationService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -45,15 +50,25 @@ export class CapabilityGuard implements CanActivate {
       throw new UnauthorizedException("Request principal is required.");
     }
 
-    const missingCapabilities = policy.policy.capabilities.filter(
-      (capability) => !principal.capabilities.includes(capability),
-    );
+    const now = new Date();
+    const authorization = await this.liveAuthorization.authorize({
+      now,
+      principal,
+      requiredCapabilities: policy.policy.capabilities,
+    }).catch((error: unknown) => {
+      console.warn("Live authorization lookup failed", {
+        error: error instanceof Error ? error.message : "unknown",
+      });
+      throw new ServiceUnavailableException(
+        "Authorization data is unavailable.",
+      );
+    });
 
-    if (missingCapabilities.length > 0) {
+    if (!authorization.allowed) {
       await this.deniedAccessAudit.record({
         auditDeniedAccess: policy.policy.auditDeniedAccess,
         principal,
-        reason: "capability_required",
+        reason: authorization.reason,
         request,
         requiredAuthLevel: policy.policy.authLevel,
         requiredCapabilities: policy.policy.capabilities,
@@ -61,7 +76,7 @@ export class CapabilityGuard implements CanActivate {
       throw new ForbiddenException("Required capability is missing.");
     }
 
-    if (!meetsAuthenticationLevel(principal, policy.policy.authLevel, new Date())) {
+    if (!meetsAuthenticationLevel(principal, policy.policy.authLevel, now)) {
       await this.deniedAccessAudit.record({
         auditDeniedAccess: policy.policy.auditDeniedAccess,
         principal,

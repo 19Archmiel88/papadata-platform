@@ -253,12 +253,11 @@ export class PrincipalService {
       return null;
     }
 
-    const capabilities = readCapabilities(claims.caps);
+    const capabilities = readCapabilities(claims.caps) ?? [];
     const memberships = readMemberships(claims.memberships);
 
     if (
-      !capabilities
-      || !memberships
+      !memberships
       || !memberships.some(
         (membership) =>
           membership.tenantId === tenantId
@@ -505,9 +504,9 @@ function readMemberships(
 
     const tenantId = readString(item, "tenantId");
     const workspaceId = readString(item, "workspaceId");
-    const capabilities = readCapabilities(item.capabilities);
+    const capabilities = readCapabilities(item.capabilities) ?? [];
 
-    if (!tenantId || !workspaceId || !capabilities) {
+    if (!tenantId || !workspaceId) {
       return null;
     }
 

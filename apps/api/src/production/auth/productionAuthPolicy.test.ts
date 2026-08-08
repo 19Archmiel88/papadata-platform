@@ -23,6 +23,10 @@ import { ProductionAuthGuard } from "./auth.guard.js";
 import { CapabilityGuard } from "./capability.guard.js";
 import type { DeniedAccessAuditService } from "./denied-access-audit.service.js";
 import {
+  LivePrincipalAuthorizationService,
+  type LiveAuthorizationDecision,
+} from "./live-principal-authorization.service.js";
+import {
   AuditDeniedAccess,
   ExternalProviderEndpoint,
   InfrastructureEndpoint,
@@ -261,7 +265,7 @@ describe("production A01 auth and route policies", () => {
       principal: principal({ capabilities: ["reports.read"] }),
       url: "/v1/reports/report-1/download",
     };
-    const guard = capabilityGuard();
+    const guard = capabilityGuard(liveAuthorizationDenied());
 
     await assert.rejects(
       () => guard.canActivate(context("stepUp", request)),
@@ -276,7 +280,7 @@ describe("production A01 auth and route policies", () => {
     };
 
     await assert.rejects(
-      () => capabilityGuard().canActivate(context("stepUp", request)),
+      () => capabilityGuard(liveAuthorizationDenied()).canActivate(context("stepUp", request)),
       ForbiddenException,
     );
   });
@@ -539,7 +543,9 @@ function authGuard(principalService: PrincipalService): ProductionAuthGuard {
   return new ProductionAuthGuard(principalService, new Reflector());
 }
 
-function capabilityGuard(): CapabilityGuard {
+function capabilityGuard(
+  decision: LiveAuthorizationDecision = liveAuthorizationAllowed(),
+): CapabilityGuard {
   const audit: Pick<DeniedAccessAuditService, "record"> = {
     async record(): Promise<void> {},
   };
@@ -547,7 +553,34 @@ function capabilityGuard(): CapabilityGuard {
   return new CapabilityGuard(
     new Reflector(),
     audit as DeniedAccessAuditService,
+    liveAuthorization(decision),
   );
+}
+
+function liveAuthorization(
+  decision: LiveAuthorizationDecision,
+): LivePrincipalAuthorizationService {
+  return {
+    authorize: async () => decision,
+  } as unknown as LivePrincipalAuthorizationService;
+}
+
+function liveAuthorizationAllowed(): LiveAuthorizationDecision {
+  return {
+    allowed: true,
+    grantedCapabilities: canonicalCapabilities,
+    reason: null,
+    source: "live_database",
+  };
+}
+
+function liveAuthorizationDenied(): LiveAuthorizationDecision {
+  return {
+    allowed: false,
+    grantedCapabilities: [],
+    reason: "live_capability_missing",
+    source: "live_database",
+  };
 }
 
 function stubPrincipalService(
@@ -815,6 +848,24 @@ async function withProductionHttpApp(
 
     try {
       await app.init();
+
+      const liveAuthorizationService = app.get(LivePrincipalAuthorizationService, {
+        strict: false,
+      });
+      Object.defineProperty(liveAuthorizationService, "authorize", {
+        configurable: true,
+        value: async (input: {
+          readonly principal: RequestPrincipal;
+          readonly requiredCapabilities: readonly (typeof canonicalCapabilities)[number][];
+        }): Promise<LiveAuthorizationDecision> => {
+          const allowed = input.requiredCapabilities.every((capability) =>
+            input.principal.capabilities.includes(capability),
+          );
+          return allowed
+            ? liveAuthorizationAllowed()
+            : liveAuthorizationDenied();
+        },
+      });
 
       const sessionStore = app.get<TestMemoryPrincipalSessionStore>(
         PRINCIPAL_SESSION_STORE,

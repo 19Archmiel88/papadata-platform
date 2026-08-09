@@ -1,3 +1,19 @@
+.pd-s53-role-ledger,
+.pd-s53-promoted-owner,
+.pd-s53-chart-family-list,
+.pd-s53-chart-family,
+.pd-s53-chart-family__body,
+.pd-s53-table-composition,
+.pd-s53-table-context,
+.pd-s53-state-list,
+.pd-s53-work-context__base,
+.pd-s53-work-context__signal,
+.pd-s53-anti-example,
+.pd-s53-anti-example__diagram {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
 .pd-s53-role-ledger {
   display: grid;
   border-block: 1px solid var(--pd-separator-subtle);
@@ -69,6 +85,7 @@
 
 .pd-s53-chart-family > header {
   display: flex;
+  min-inline-size: 0;
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
@@ -97,6 +114,7 @@
 
 .pd-s53-chart-family__visual {
   min-inline-size: 0;
+  max-inline-size: 100%;
   padding-block: 0.5rem;
   border-block: 1px solid var(--pd-separator-subtle);
 }
@@ -136,6 +154,7 @@
 .pd-s53-chart-svg {
   display: block;
   inline-size: 100%;
+  max-inline-size: 100%;
   max-block-size: 16rem;
   overflow: visible;
 }
@@ -692,6 +711,17 @@
   .pd-s53-table-context > header,
   .pd-s53-work-context__base > header {
     flex-direction: column;
+  }
+
+  .pd-s53-role-ledger > div,
+  .pd-s53-promoted-owner,
+  .pd-s53-chart-family__body,
+  .pd-s53-table-context__meta,
+  .pd-s53-work-context__metrics,
+  .pd-s53-work-context__signal,
+  .pd-s53-anti-example__diagram {
+    min-inline-size: 0;
+    max-inline-size: 100%;
   }
 
   .pd-s53-chart-family > header {

@@ -1,14 +1,22 @@
 {
   "fixtureId": "SB-112",
-  "storyTitle": "18 Stany i wzorce przekrojowe/Układ strony i sekcji",
+  "storyTitle": "18 Wzorce interfejsu/Układ strony i sekcji",
   "sourceDocument": "21-stany-przekrojowe/18-01-uklad-strony-i-sekcji.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "StoryPresentationPage",
+    "StoryPresentationSection",
+    "StoryPresentationMeta",
+    "InlineNotice",
+    "StatusBadge",
+    "TextAction"
+  ],
   "states": [
     "ready",
-    "loading",
-    "empty",
-    "error"
+    "namedRegions",
+    "splitView",
+    "masterDetail",
+    "textAction"
   ],
   "viewports": [
     1440,
@@ -20,15 +28,12 @@
     "dark"
   ],
   "localeCases": [
-    "pl",
-    "en-long-copy"
+    "pl"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-heading-and-named-regions",
+    "exercise-text-action",
+    "exercise-master-detail"
   ],
   "visualAssertions": [
     "1440-light",
@@ -36,15 +41,15 @@
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-error"
+    "no-horizontal-page-scroll",
+    "open-layout-no-card-grid"
   ],
   "a11y": [
-    "keyboard-only",
+    "landmark-main",
+    "named-regions",
     "focus-visible",
     "accessible-name",
-    "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-cross-cutting-pattern"
 }

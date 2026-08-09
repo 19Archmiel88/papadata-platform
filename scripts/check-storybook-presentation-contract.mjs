@@ -37,22 +37,37 @@ for (const path of [
   ensure(!existsSync(resolveFromRoot(path)), `Legacy presentation CSS still exists: ${path}`);
 }
 
+function listCssSources(directory) {
+  const fullPath = resolveFromRoot(directory);
+
+  if (!existsSync(fullPath)) {
+    return [];
+  }
+
+  return readdirSync(fullPath)
+    .filter((file) => file.endsWith('.css'))
+    .map((file) => `${directory}/${file}`);
+}
+
 const localCssSources = [
-  ...readdirSync(resolveFromRoot('apps/web/src/storybook-next/stories/05-surfaces'))
-    .filter((file) => file.endsWith('.css'))
-    .map((file) => `apps/web/src/storybook-next/stories/05-surfaces/${file}`),
-  ...readdirSync(resolveFromRoot('apps/web/src/storybook-next/stories/15-data-visualizations'))
-    .filter((file) => file.endsWith('.css'))
-    .map((file) => `apps/web/src/storybook-next/stories/15-data-visualizations/${file}`),
+  ...listCssSources('apps/web/src/storybook-next/stories/05-surfaces'),
+  ...listCssSources('apps/web/src/storybook-next/stories/15-data-visualizations'),
+  ...listCssSources('apps/web/src/storybook-next/stories/18-cross-cutting-patterns'),
   'apps/web/src/design-system/components/Button/action-showcase.css',
   'apps/web/src/design-system/components/Field/field-family-showcase.css',
 ];
 const forbiddenSharedOverride = /\.(?:pd-f0-page|pd-f0-section)(?=[\s,:>{.#\[]|$)/;
 const forbiddenProductionOverride = /\.(?:pd-button|pd-icon-button|pd-inline-action)(?=[\s,:>{.#\[]|$)/;
+const forbiddenCrossCuttingProductionOverride = /\.(?:pd-button|pd-icon-button|pd-inline-action|pd-data-table|pd-table|pd-status-badge|pd-feedback-state|pd-feedback-surface|pd-skeleton|pd-spinner|pd-background-operation|pd-progress-indicator|pd-filter-bar|pd-search-field|pd-sort-control|pd-select|pd-drawer|pd-tabs|pd-data-list|pd-key-value-list|pd-overlay-root|pd-overlay-surface|pd-form-field|pd-form-control)(?=[\s,:>{.#\[]|$)/;
+const forbiddenCrossCuttingLanguage = /(?:card-grid|box-card|container-card|panel-card|glassmorphism|glow|halo|blur)/;
 for (const path of localCssSources) {
   const source = readText(path);
   ensure(!forbiddenSharedOverride.test(source), `${path}: local CSS overrides shared Storybook presentation.`);
-  ensure(!forbiddenProductionOverride.test(source), `${path}: showcase/lab CSS overrides a production action component.`);
+  ensure(!forbiddenProductionOverride.test(source), `${path}: showcase/lab CSS overrides a production component selector.`);
+  if (path.includes('/18-cross-cutting-patterns/')) {
+    ensure(!forbiddenCrossCuttingProductionOverride.test(source), `${path}: cross-cutting CSS overrides a production component selector.`);
+    ensure(!forbiddenCrossCuttingLanguage.test(source), `${path}: cross-cutting CSS uses forbidden card/tile/decorative language.`);
+  }
 }
 
 const fieldCss = readText('apps/web/src/design-system/components/Field/field.css');

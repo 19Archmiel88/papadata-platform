@@ -1,5 +1,7 @@
 .pd-tools-story {
   min-height: 100vh;
+  max-inline-size: 100vw;
+  overflow-x: clip;
   padding: clamp(var(--pd-space-5), 5vw, var(--pd-space-8));
   background: var(--pd-canvas);
   color: var(--pd-text);
@@ -7,6 +9,8 @@
 
 .pd-tools-story__inner {
   display: grid;
+  min-inline-size: 0;
+  max-inline-size: 100%;
   gap: var(--pd-space-6);
   width: min(100%, 84rem);
   margin: 0 auto;
@@ -86,6 +90,7 @@
 
 .pd-tools-story__surface {
   display: grid;
+  max-inline-size: 100%;
   gap: var(--pd-space-3);
   min-width: 0;
 }
@@ -104,6 +109,8 @@
 .pd-tools-story__stack {
   display: grid;
   gap: var(--pd-space-3);
+  min-inline-size: 0;
+  max-inline-size: 100%;
 }
 
 @media (max-width: 48rem) {
@@ -112,6 +119,10 @@
   }
 
   .pd-tools-story__row {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-tools-story__theme-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

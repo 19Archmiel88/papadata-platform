@@ -1,8 +1,8 @@
 ---
-version: 1.1
+version: 1.0
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
-owner: Analytics UX
+owner: Artur Wiśniewski
 id: DOC-10-14903FD7424D
 status: review
 updated_at: 2026-08-08T21:09:00+01:00

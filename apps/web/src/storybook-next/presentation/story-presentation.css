@@ -41,6 +41,8 @@
 
 .pd-f0-page {
   min-height: 100vh;
+  max-inline-size: 100vw;
+  overflow-x: clip;
   background: transparent;
   color: var(--pd-text);
   font-family: var(--pd-font-sans);
@@ -50,6 +52,8 @@
 
 .pd-f0-page__inner {
   width: min(100%, 1440px);
+  min-inline-size: 0;
+  max-inline-size: 100%;
   margin: 0 auto;
   padding: clamp(24px, 4vw, 56px);
 }
@@ -197,6 +201,7 @@
 .pd-f0-section__content {
   grid-column: 2;
   min-width: 0;
+  max-inline-size: 100%;
 }
 
 .pd-f0-variant {
@@ -243,6 +248,7 @@
 
 .pd-f0-variant__body {
   min-width: 0;
+  max-inline-size: 100%;
 }
 
 .pd-f0-variant[data-surface="subtle"] .pd-f0-variant__body,

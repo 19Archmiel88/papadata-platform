@@ -1,0 +1,1303 @@
+{
+  "responsiveResults": [
+    {
+      "storyId": "10-komponenty-bazowe-przyciski-i-akcje--przyciski",
+      "title": "10 Komponenty bazowe/Przyciski i akcje",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [
+        "Error: Activity line does not match its action content.\n    at S (http://127.0.0.1:6011/assets/Button.stories-C_lL8-2S.js:1:861)\n    at play (http://127.0.0.1:6011/assets/Button.stories-C_lL8-2S.js:1:10245)\n    at async bG.runPhase (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:607)\n    at async bG.render (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:3467)"
+      ],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-bazowe-przyciski-i-akcje--przyciski",
+      "title": "10 Komponenty bazowe/Przyciski i akcje",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [
+        "Error: Activity line does not match its action content.\n    at S (http://127.0.0.1:6011/assets/Button.stories-C_lL8-2S.js:1:861)\n    at play (http://127.0.0.1:6011/assets/Button.stories-C_lL8-2S.js:1:10245)\n    at async bG.runPhase (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:607)\n    at async bG.render (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:3467)"
+      ],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-breadcrumbs--breadcrumbs-story",
+      "title": "10 Komponenty/Breadcrumbs",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-breadcrumbs--breadcrumbs-story",
+      "title": "10 Komponenty/Breadcrumbs",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-searchfield--search-field-story",
+      "title": "10 Komponenty/SearchField",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-searchfield--search-field-story",
+      "title": "10 Komponenty/SearchField",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-filterchip--filter-chip-story",
+      "title": "10 Komponenty/FilterChip",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-filterchip--filter-chip-story",
+      "title": "10 Komponenty/FilterChip",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-segmentedcontrol--segmented-control-story",
+      "title": "10 Komponenty/SegmentedControl",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-segmentedcontrol--segmented-control-story",
+      "title": "10 Komponenty/SegmentedControl",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-sortcontrol--sort-control-story",
+      "title": "10 Komponenty/SortControl",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 1
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-sortcontrol--sort-control-story",
+      "title": "10 Komponenty/SortControl",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 1
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-toolbar--toolbar-story",
+      "title": "10 Komponenty/Toolbar",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-toolbar--toolbar-story",
+      "title": "10 Komponenty/Toolbar",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-filterbar--filter-bar-story",
+      "title": "10 Komponenty/FilterBar",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 1
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": true,
+        "overflow": 50,
+        "viewportWidth": 390,
+        "widest": 440
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-filterbar--filter-bar-story",
+      "title": "10 Komponenty/FilterBar",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 1
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": true,
+        "overflow": 50,
+        "viewportWidth": 768,
+        "widest": 818
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-dialog--dialog-story",
+      "title": "10 Komponenty/Dialog",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 1
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-dialog--dialog-story",
+      "title": "10 Komponenty/Dialog",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 1
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-tabs--tabs-story",
+      "title": "10 Komponenty/Tabs",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-tabs--tabs-story",
+      "title": "10 Komponenty/Tabs",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-kod-weryfikacyjny--verification-code-input-story",
+      "title": "10 Komponenty/Kod weryfikacyjny",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-kod-weryfikacyjny--verification-code-input-story",
+      "title": "10 Komponenty/Kod weryfikacyjny",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-układ-strony-i-sekcji--page-section-layout-story",
+      "title": "18 Wzorce interfejsu/Układ strony i sekcji",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-układ-strony-i-sekcji--page-section-layout-story",
+      "title": "18 Wzorce interfejsu/Układ strony i sekcji",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-empty-error-i-no-access--feedback-states-story",
+      "title": "18 Wzorce interfejsu/Empty, error i no-access",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-empty-error-i-no-access--feedback-states-story",
+      "title": "18 Wzorce interfejsu/Empty, error i no-access",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-ładowanie-danych-i-operacje-w-tle--loading-operations-story",
+      "title": "18 Wzorce interfejsu/Ładowanie danych i operacje w tle",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-ładowanie-danych-i-operacje-w-tle--loading-operations-story",
+      "title": "18 Wzorce interfejsu/Ładowanie danych i operacje w tle",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-tabela-z-filtrami-i-akcjami--filtered-table-actions-story",
+      "title": "18 Wzorce interfejsu/Tabela z filtrami i akcjami",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-tabela-z-filtrami-i-akcjami--filtered-table-actions-story",
+      "title": "18 Wzorce interfejsu/Tabela z filtrami i akcjami",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-panele-szczegółów-dowodów-i-rekomendacji--detail-evidence-recommendation-panels-story",
+      "title": "18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-panele-szczegółów-dowodów-i-rekomendacji--detail-evidence-recommendation-panels-story",
+      "title": "18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-status-danych-i-readiness--data-readiness-status-story",
+      "title": "18 Wzorce interfejsu/Status danych i readiness",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-status-danych-i-readiness--data-readiness-status-story",
+      "title": "18 Wzorce interfejsu/Status danych i readiness",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-macierz-stanów-przekrojowych--cross-state-matrix-story",
+      "title": "18 Wzorce interfejsu/Macierz stanów przekrojowych",
+      "viewport": "390",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-macierz-stanów-przekrojowych--cross-state-matrix-story",
+      "title": "18 Wzorce interfejsu/Macierz stanów przekrojowych",
+      "viewport": "768",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": []
+    }
+  ],
+  "storyResults": [
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "10-komponenty-bazowe-przyciski-i-akcje--przyciski",
+        "name": null,
+        "title": "10 Komponenty bazowe/Przyciski i akcje"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [
+        "Error: Activity line does not match its action content.\n    at S (http://127.0.0.1:6011/assets/Button.stories-C_lL8-2S.js:1:861)\n    at play (http://127.0.0.1:6011/assets/Button.stories-C_lL8-2S.js:1:10245)\n    at async bG.runPhase (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:607)\n    at async bG.render (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:3467)"
+      ],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "10-komponenty-breadcrumbs--breadcrumbs-story",
+        "name": null,
+        "title": "10 Komponenty/Breadcrumbs"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "10-komponenty-searchfield--search-field-story",
+        "name": null,
+        "title": "10 Komponenty/SearchField"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "10-komponenty-filterchip--filter-chip-story",
+        "name": null,
+        "title": "10 Komponenty/FilterChip"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "10-komponenty-segmentedcontrol--segmented-control-story",
+        "name": null,
+        "title": "10 Komponenty/SegmentedControl"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "10-komponenty-sortcontrol--sort-control-story",
+        "name": null,
+        "title": "10 Komponenty/SortControl"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 1
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "10-komponenty-toolbar--toolbar-story",
+        "name": null,
+        "title": "10 Komponenty/Toolbar"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "10-komponenty-filterbar--filter-bar-story",
+        "name": "Pasek filtrów",
+        "title": "10 Komponenty/FilterBar"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 1
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "10-komponenty-dialog--dialog-story",
+        "name": null,
+        "title": "10 Komponenty/Dialog"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 1
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "10-komponenty-tabs--tabs-story",
+        "name": null,
+        "title": "10 Komponenty/Tabs"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "10-komponenty-kod-weryfikacyjny--verification-code-input-story",
+        "name": null,
+        "title": "10 Komponenty/Kod weryfikacyjny"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "18-wzorce-interfejsu-układ-strony-i-sekcji--page-section-layout-story",
+        "name": null,
+        "title": "18 Wzorce interfejsu/Układ strony i sekcji"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "18-wzorce-interfejsu-empty-error-i-no-access--feedback-states-story",
+        "name": null,
+        "title": "18 Wzorce interfejsu/Empty, error i no-access"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "18-wzorce-interfejsu-ładowanie-danych-i-operacje-w-tle--loading-operations-story",
+        "name": null,
+        "title": "18 Wzorce interfejsu/Ładowanie danych i operacje w tle"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "18-wzorce-interfejsu-tabela-z-filtrami-i-akcjami--filtered-table-actions-story",
+        "name": null,
+        "title": "18 Wzorce interfejsu/Tabela z filtrami i akcjami"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "18-wzorce-interfejsu-panele-szczegółów-dowodów-i-rekomendacji--detail-evidence-recommendation-panels-story",
+        "name": null,
+        "title": "18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "18-wzorce-interfejsu-status-danych-i-readiness--data-readiness-status-story",
+        "name": null,
+        "title": "18 Wzorce interfejsu/Status danych i readiness"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "desktop",
+      "story": {
+        "id": "18-wzorce-interfejsu-macierz-stanów-przekrojowych--cross-state-matrix-story",
+        "name": null,
+        "title": "18 Wzorce interfejsu/Macierz stanów przekrojowych"
+      },
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440
+      },
+      "pageErrors": []
+    }
+  ],
+  "summary": {
+    "desktop": {
+      "consoleErrors": 1,
+      "critical": 0,
+      "pageErrors": 0,
+      "serious": 3
+    },
+    "filterKeyboardSequence": {
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768
+      },
+      "pageErrors": [],
+      "passed": true
+    },
+    "fullAudit": false,
+    "playScan": {
+      "failingCount": 7,
+      "results": [
+        {
+          "consoleFirst": "TestingLibraryElementError: Unable to find a label with the text of: Stan operacji: W toku\n\nIgnored nodes: comments, script, style\n<article\n  aria-describedby=\"_r_1_\"\n  aria-labelledby=\"_r_0_\"\n  class=\"pd-background-operation\"\n  data-status=\"running\"\n>\n  <header\n    class=\"pd-background-operation__header\"\n  >\n    <div\n      class=\"pd-background-operation__heading\"\n    >\n      <div\n        class=\"pd-background-operation__identity\"\n      >\n        <h3\n          class=\"pd-background-operation__title\"\n          id=\"_r_0_\"\n        >\n          Aktualizacja źródeł wydajności\n        </h3>\n        <div\n          class=\"pd-background-operation__meta\"\n        >\n          <span\n            class=\"pd-background-operation__meta-code\"\n          >\n            JOB-2048\n          </span>\n          <span>\n            30 lipca 2026, 10:14\n          </span>\n        </div>\n      </div>\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"processing\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__icon\"\n        >\n          <svg\n            aria-hidden=\"true\"\n            fill=\"none\"\n            focusable=\"false\"\n            height=\"16\"\n            stroke=\"currentColor\"\n            stroke-linecap=\"round\"\n            stroke-linejoin=\"round\"\n            stroke-width=\"1.75\"\n            viewBox=\"0 0 24 24\"\n            width=\"16\"\n          >\n            <path\n              d=\"M8 7H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3\"\n            />\n            <path\n              d=\"M13 3h8v8\"\n            />\n            <path\n              d=\"m10 14 11-11\"\n            />\n          </svg>\n        </span>\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Stan operacji: \n          </span>\n          W toku\n        </span>\n      </span>\n    </div>\n    <p\n      class=\"pd-background-operation__description\"\n      id=\"_r_1_\"\n    >\n      Łączenie sprzedaży, kampanii i kosztów platformy.\n    </p>\n  </header>\n  <div\n    class=\"pd-background-operation__progress\"\n  >\n    <div\n      class=\"pd-progress-indicator pd-background-operation__progress-indicator\"\n      data-indeterminate=\"false\"\n      data-tone=\"neutral\"\n      style=\"--pd-progress-value: 72%;\"\n    >\n      <div\n        class=\"pd-progress-indicator__header\"\n      >\n        <p\n          class=\"pd-progress-indicator__label\"\n          id=\"_r_3_\"\n        >\n          Postęp operacji\n        </p>\n        <span\n          class=\"pd-progress-indicator__value\"\n        >\n          72%\n        </span>\n      </div>\n      <div\n        aria-labelledby=\"_r_3_\"\n        aria-valuemax=\"100\"\n        aria-valuemin=\"0\"\n        aria-valuenow=\"72\"\n        aria-valuetext=\"Postęp operacji: 72%\"\n        class=\"pd-progress-indicator__track\"\n        role=\"progressbar\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-progress-indicator__fill\"\n        />\n      </div>\n    </div>\n  </div>\n  <footer\n    class=\"pd-background-operation__footer\"\n  >\n    <button\n      class=\"pd-button pd-button--ghost pd-button--small pd-background-operation__action\"\n      data-size=\"small\"\n      data-variant=\"ghost\"\n      type=\"button\"\n    >\n      <span\n        class=\"pd-button__content\"\n        data-slot=\"activity-line-owner\"\n      >\n        <span\n          class=\"pd-button__label\"\n        >\n          Anuluj\n        </span>\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-button__activity-line\"\n          data-slot=\"activity-line\"\n        />\n      </span>\n    </button>\n  </footer>\n</article>\n    at Object.getElementError (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:754:284)\n    at FL (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:759:233)\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:130:4040\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:757:377\n    at play (http://127.0.0.1:6011/assets/BackgroundOperationItem.stories-DiJwHj6I.js:1:3636)\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:3508\n    at bG.runPhase (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:613)\n    at bG.render (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:3478)",
+          "id": "10-komponenty-backgroundoperationitem--background-operation-item-story",
+          "pageFirst": null
+        },
+        {
+          "consoleFirst": "Error: Activity line does not match its action content.\n    at S (http://127.0.0.1:6011/assets/Button.stories-C_lL8-2S.js:1:861)\n    at play (http://127.0.0.1:6011/assets/Button.stories-C_lL8-2S.js:1:10245)\n    at async bG.runPhase (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:607)\n    at async bG.render (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:3467)",
+          "id": "10-komponenty-bazowe-przyciski-i-akcje--przyciski",
+          "pageFirst": null
+        },
+        {
+          "consoleFirst": "TestingLibraryElementError: Unable to find a label with the text of: Plik danych\n\nIgnored nodes: comments, script, style\n<div\n  id=\"storybook-root\"\n>\n  <div\n    class=\"pd-storybook-canvas\"\n  >\n    <main\n      class=\"pd-f0-page pd-field-family-story\"\n      data-story-id=\"10.03\"\n    >\n      <div\n        class=\"pd-f0-page__inner\"\n      >\n        <header\n          class=\"pd-f0-page__header\"\n        >\n          <div\n            class=\"pd-f0-page__label\"\n          >\n            <span>\n              10\n            </span>\n            <span>\n              Komponenty bazowe\n            </span>\n          </div>\n          <div\n            class=\"pd-f0-page__heading\"\n          >\n            <h1>\n              Pola jako jeden system danych wejściowych.\n            </h1>\n            <p>\n              Każde pole korzysta z tej samej etykiety, powierzchni, geometrii, informacji pomocniczej i walidacji. Story nie definiuje własnego canvasu ani lokalnej typografii.\n            </p>\n          </div>\n          <dl\n            aria-label=\"Parametry kontraktu pól formularzowych\"\n            class=\"pd-f0-page__meta\"\n          >\n            <div>\n              <dt>\n                Kontrakt\n              </dt>\n              <dd>\n                10.03\n              </dd>\n            </div>\n            <div>\n              <dt>\n                Źródło wyglądu\n              </dt>\n              <dd>\n                00 Fundamenty\n              </dd>\n            </div>\n            <div>\n              <dt>\n                Status\n              </dt>\n              <dd>\n                review\n              </dd>\n            </div>\n          </dl>\n        </header>\n        <section\n          class=\"pd-f0-section pd-field-family-section\"\n        >\n          <header\n            class=\"pd-f0-section__header\"\n          >\n            <span\n              aria-hidden=\"true\"\n              class=\"pd-f0-section__index\"\n            >\n              01\n            </span>\n            <div>\n              <h2>\n                TextField i kontrakt treści\n              </h2>\n              <p>\n                Pole podstawowe, wymagane i tylko do odczytu zachowują tę samą geometrię i strukturę opisu.\n              </p>\n            </div>\n          </header>\n          <div\n            class=\"pd-f0-section__content\"\n          >\n            <article\n              class=\"pd-f0-variant\"\n              data-reference=\"demo-only\"\n            >\n              <header\n                class=\"pd-f0-variant__header\"\n              >\n                <h3>\n                  Pole podstawowe\n                </h3>\n                <p>\n                  Etykieta, wartość i helper text należą do jednego komponentu.\n                </p>\n                <code>\n                  TextField\n                </code>\n              </header>\n              <div\n                class=\"pd-f0-variant__body\"\n              >\n                <div\n                  class=\"pd-form-field\"\n                  data-component=\"TextField\"\n                  data-state=\"default\"\n                >\n                  <label\n                    class=\"pd-form-field__label-row\"\n                    for=\"pd-text-field-_r_0_\"\n                  >\n                    <span\n                      class=\"pd-form-field__label\"\n                    >\n                      Nazwa raportu\n                    </span>\n                  </label>\n                  <div\n                    class=\"pd-form-control\"\n                    data-state=\"default\"\n                  >\n                    <input\n                      aria-describedby=\"pd-text-field-_r_0_-helper\"\n                      class=\"pd-form-control__input\"\n                      data-slot=\"input\"\n                      id=\"pd-text-field-_r_0_\"\n                      name=\"reportName\"\n                      type=\"text\"\n                      value=\"Raport dzienny\"\n                    />\n                  </div>\n                  <div\n                    class=\"pd-form-control__meta\"\n                  >\n                    <div\n                      class=\"pd-form-control__helper\"\n                      id=\"pd-text-field-_r_0_-helper\"\n                    >\n                      Nazwa jest widoczna w raportach i historii zmian.\n                    </div>\n                  </div>\n                </div>\n              </div>\n            </article>\n            <article\n              class=\"pd-f0-variant\"\n              data-reference=\"demo-only\"\n            >\n              <header\n                class=\"pd-f0-variant__header\"\n              >\n                <h3>\n                  Pole wymagane\n                </h3>\n                <p>\n                  Wymagalność jest komunikowana semantycznie i wizualnie.\n                </p>\n                <code>\n                  required\n                </code>\n              </header>\n              <div\n                class=\"pd-f0-variant__body\"\n              >\n                <div\n                  class=\"pd-form-field\"\n                  data-component=\"TextField\"\n                  data-state=\"default\"\n                >\n                  <label\n                    class=\"pd-form-field__label-row\"\n                    for=\"pd-text-field-_r_1_\"\n                  >\n                    <span\n                      class=\"pd-form-field__label\"\n                    >\n                      Nazwa źródła\n                      <span\n                        aria-hidden=\"true\"\n                        class=\"pd-form-field__required\"\n                      >\n                         \n                        *\n                      </span>\n                    </span>\n                  </label>\n                  <div\n                    class=\"pd-form-control\"\n                    data-state=\"default\"\n                  >\n                    <input\n                      aria-describedby=\"pd-text-field-_r_1_-helper\"\n                      class=\"pd-form-control__input\"\n                      data-slot=\"input\"\n                      id=\"pd-text-field-_r_1_\"\n                      name=\"sourceName\"\n                      required=\"\"\n                      type=\"text\"\n                      value=\"\"\n                    />\n                  </div>\n                  <div\n                    class=\"pd-form-control__meta\"\n                  >\n                    <div\n                      class=\"pd-form-control__helper\"\n                      id=\"pd-text-field-_r_1_-helper\"\n                    >\n                      Wartość jest wymagana przed zapisaniem konfiguracji.\n                    </div>\n                  </div>\n                </div>\n              </div>\n            </article>\n            <article\n              class=\"pd-f0-variant\"\n              data-reference=\"demo-only\"\n            >\n              <header\n                class=\"pd-f0-variant__header\"\n              >\n                <h3>\n                  Tylko do odczytu\n                </h3>\n                <p>\n                  Read-only pozostaje czytelne, ale nie udaje stanu disabled.\n                </p>\n                <code>\n                  read-only\n                </code>\n              </head...\n    at Object.getElementError (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:754:284)\n    at FL (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:759:233)\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:130:4040\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:757:377\n    at play (http://127.0.0.1:6011/assets/FormFields.stories-B2dlYPPg.js:1:6110)\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:3508\n    at bG.runPhase (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:613)\n    at bG.render (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:3478)",
+          "id": "10-komponenty-bazowe-pola-tekstowe-i-formularzowe--pola-formularzy",
+          "pageFirst": null
+        },
+        {
+          "consoleFirst": "TestingLibraryElementError: Unable to find a label with the text of: Przetwarzanie: Przetwarzanie\n\nIgnored nodes: comments, script, style\n<div\n  id=\"storybook-root\"\n>\n  <div\n    class=\"pd-storybook-canvas\"\n  >\n    <main\n      class=\"pd-feedback-story\"\n    >\n      <div\n        class=\"pd-feedback-story__inner\"\n      >\n        <header\n          class=\"pd-feedback-story__header\"\n        >\n          <p\n            class=\"pd-feedback-story__kicker\"\n          >\n            10 Komponenty/StatusBadge\n          </p>\n          <h1>\n            Status wymaga tekstu.\n          </h1>\n          <p\n            class=\"pd-feedback-story__lead\"\n          >\n            Status pozostaje lekką kapsułą z cienkim obrysem, kropką i tekstem. Kolor wzmacnia znaczenie, ale nie zastępuje etykiety.\n          </p>\n        </header>\n        <section\n          class=\"pd-feedback-story__section\"\n        >\n          <h2\n            class=\"pd-feedback-story__section-title\"\n          >\n            Warianty\n          </h2>\n          <div\n            class=\"pd-feedback-story__table\"\n          >\n            <div\n              class=\"pd-feedback-story__table-row\"\n            >\n              <span\n                class=\"pd-feedback-story__table-label\"\n              >\n                Stabilność danych\n              </span>\n              <span\n                class=\"pd-status-badge\"\n                data-tone=\"success\"\n              >\n                <span\n                  aria-hidden=\"true\"\n                  class=\"pd-status-badge__dot\"\n                />\n                <span\n                  class=\"pd-status-badge__text\"\n                >\n                  <span\n                    class=\"pd-visually-hidden\"\n                  >\n                    Stabilność: \n                  </span>\n                  Stabilne\n                </span>\n              </span>\n            </div>\n            <div\n              class=\"pd-feedback-story__table-row\"\n            >\n              <span\n                class=\"pd-feedback-story__table-label\"\n              >\n                Weryfikacja ręczna\n              </span>\n              <span\n                class=\"pd-status-badge\"\n                data-tone=\"warning\"\n              >\n                <span\n                  aria-hidden=\"true\"\n                  class=\"pd-status-badge__dot\"\n                />\n                <span\n                  class=\"pd-status-badge__text\"\n                >\n                  <span\n                    class=\"pd-visually-hidden\"\n                  >\n                    Weryfikacja: \n                  </span>\n                  Do sprawdzenia\n                </span>\n              </span>\n            </div>\n            <div\n              class=\"pd-feedback-story__table-row\"\n            >\n              <span\n                class=\"pd-feedback-story__table-label\"\n              >\n                Synchronizacja\n              </span>\n              <span\n                class=\"pd-status-badge\"\n                data-tone=\"critical\"\n              >\n                <span\n                  aria-hidden=\"true\"\n                  class=\"pd-status-badge__dot\"\n                />\n                <span\n                  class=\"pd-status-badge__text\"\n                >\n                  <span\n                    class=\"pd-visually-hidden\"\n                  >\n                    Synchronizacja: \n                  </span>\n                  Błąd synchronizacji\n                </span>\n              </span>\n            </div>\n            <div\n              class=\"pd-feedback-story__table-row\"\n            >\n              <span\n                class=\"pd-feedback-story__table-label\"\n              >\n                Stan początkowy\n              </span>\n              <span\n                class=\"pd-status-badge\"\n                data-tone=\"neutral\"\n              >\n                <span\n                  aria-hidden=\"true\"\n                  class=\"pd-status-badge__dot\"\n                />\n                <span\n                  class=\"pd-status-badge__text\"\n                >\n                  <span\n                    class=\"pd-visually-hidden\"\n                  >\n                    Start: \n                  </span>\n                  Nie rozpoczęto\n                </span>\n              </span>\n            </div>\n            <div\n              class=\"pd-feedback-story__table-row\"\n            >\n              <span\n                class=\"pd-feedback-story__table-label\"\n              >\n                Proces w toku\n              </span>\n              <span\n                class=\"pd-status-badge\"\n                data-tone=\"processing\"\n              >\n                <span\n                  aria-hidden=\"true\"\n                  class=\"pd-status-badge__dot\"\n                />\n                <span\n                  class=\"pd-status-badge__text\"\n                >\n                  <span\n                    class=\"pd-visually-hidden\"\n                  >\n                    Przetwarzanie: \n                  </span>\n                  Przetwarzanie\n                </span>\n              </span>\n            </div>\n          </div>\n        </section>\n        <section\n          class=\"pd-feedback-story__section\"\n        >\n          <h2\n            class=\"pd-feedback-story__section-title\"\n          >\n            Kierunek przyjęty i odrzucony\n          </h2>\n          <div\n            class=\"pd-feedback-story__direction-grid\"\n            data-theme=\"dark\"\n          >\n            <div\n              class=\"pd-feedback-story__direction-card\"\n            >\n              <div\n                class=\"pd-feedback-story__direction-item\"\n              >\n                <span\n                  class=\"pd-status-badge\"\n                  data-tone=\"success\"\n                >\n                  <span\n                    aria-hidden=\"true\"\n                    class=\"pd-status-badge__dot\"\n                  />\n                  <span\n                    class=\"pd-status-badge__text\"\n                  >\n                    <span\n                      class=\"pd-visually-hidden\"\n                    >\n                      Kierunek: \n                    </span>\n                    Przyjęte\n                  </span>\n                </span>\n                <div\n                  class=\"pd-feedback-story__direction-copy\"\n                >\n                  <h3>\n                    Neutralne powierzchnie, lokalny akcent\n                  </h3>\n                  <p>\n                    Spokojny canvas, precyzyjne separatory, duża czytelność danych i kolor używany oszczędnie wyłącznie do statusu.\n                  </p>\n                </div>\n              </div>\n              <div\n                class=\"pd-feedback-story__direction-item\"\n                data-tone=\"critical\"\n              >\n                <span\n                  class=\"pd-status-badge\"\n                  data-tone=\"critical\"\n                >\n                  <span\n                    aria-hidden=\"true\"\n                    class=\"pd-status-badge__dot\"\n                  />\n                  <span\n                    class=\"pd-status-badge__text\"\n                  >\n                    <span\n                      class=\"pd-visually-hidden\"\n                    >\n                      Kierunek: \n                    </span>\n                    Odrzucone\n                  </span>\n                </span>\n                <div\n                  class=\"pd-feedback-story__direction-copy\"\n                >\n                  <h3>\n                    Neonowe halo i nadmiar kart\n                  </h3>\n                  <p>\n                    Zbyt mocne poświaty, przypadkowe gradienty i ciężkie zamknięcie każdej informacji w osobnej karcie nie są kierunkiem PapaData.\n                  </p>\n                </div>\n              </div>\n            </div>\n          </div>\n        </section>\n        <section\n          class=\"pd-feedback-story__section\"\n        >\n          <h2\n            class=\"pd-feedback-story__section-title\"\n          >\n            Motywy\n          </h2>\n          <div\n            class=\"pd-feedback-story__theme-grid\"\n          >\n            <div\n              class=\"pd-feedback-story__theme-row\"\n            >\n              <span\n                class=\"pd-feedback-story__eyebrow\"\n              >\n                tryb jasny\n              </span>\n              <div\n                class=\"pd-feedback-story__inline-group\"\n              >\n                <span\n                  class=\"pd-status-badge\"\n                  data-tone=\"success\"\n                >\n                  <span\n                    aria-hidden=\"true\"\n                    class=\"pd-status-badge__dot\"\n                  />\n                  <span\n                    class=\"pd-status-badge__text\"\n                  >\n                    <span\n                      class=\"pd-visually-hidden\"\n                    >\n                      Import: \n                    </span>\n                    Stabilne\n                  </span>\n                </span>\n                <span\n                  class=\"pd-status-badge\"\n                  data-tone=\"processing\"\n                >\n                  <span\n                    aria-hidden=\"true\"\n                    class=\"pd-status-badge__dot\"\n                  />\n                  <span\n                    class=\"pd-status-badge__text\"\n                  >\n                    <span\n                      class=\"pd-visually-hidden\"\n                    >\n                      Analiza: \n                    </span>\n                    Przetwarzanie\n                  </span>\n                </span>\n              </div>\n            </div>\n            <div\n              class=\"pd-feedback-story__theme-row\"\n              data-theme=\"dark\"\n            >\n              <span\n                class=\"pd-feedback-story__eyebrow\"\n              >\n                tryb ciemny\n              </span>\n              <div\n                class=\"pd-feedback-story__inline-group\"\n              >\n                <span\n                  class=\"pd-status-badge\"\n                  data-tone=\"warning\"\n                >\n                  <span\n                    aria-hidden=\"true\"\n                    class=\"pd-status-badge__dot\"\n                  />\n                  <span\n                    class=\"pd-status-badge__text\"\n                  >\n                    <span\n                      class=\"pd-visually-hidden\"\n                    >\n                      Uprawnienia: \n                    </span>\n                    Do sprawdzenia\n                  </span>\n                </span>\n                <span\n                  class=\"pd-status-badge\"\n                  data-tone=\"critical\"\n                >\n                  <span\n                    aria-hidden=\"true\"\n                    class=\"pd-status-badge__dot\"\n                  />\n                  <span\n                    class=\"pd-status-badge__text\"\n                  >\n                    <span\n                      class=\"pd-visually-hidden\"\n                    >\n                      Integracja: \n                    </span>\n                    Błąd synchronizacji\n                  </span>\n                </span>\n              </div>\n            </div>\n          </div>\n        </section>\n      </div>\n    </main>\n  </div>\n</div>\n    at Object.getElementError (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:754:284)\n    at FL (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:759:233)\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:130:4040\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:757:377\n    at play (http://127.0.0.1:6011/assets/StatusBadge.stories-Dd2ruPCQ.js:1:4683)\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:3508\n    at bG.runPhase (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:613)\n    at bG.render (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:3478)",
+          "id": "10-komponenty-statusbadge--status-badge-story",
+          "pageFirst": null
+        },
+        {
+          "consoleFirst": "TestingLibraryElementError: Found multiple elements with the role \"button\" and name `/Płatne/`\n\nHere are the matching elements:\n\nIgnored nodes: comments, script, style\n<button\n  aria-pressed=\"false\"\n  class=\"pd-chart-interaction-layer__filter-button\"\n  type=\"button\"\n>\n  <span>\n    Płatne\n  </span>\n  <small>\n    Paid search i paid social\n  </small>\n</button>\n\nIgnored nodes: comments, script, style\n<button\n  aria-describedby=\"_r_3_\"\n  aria-pressed=\"false\"\n  class=\"pd-chart-interaction-layer__point-button\"\n  type=\"button\"\n>\n  <span>\n    D-2 · Płatne\n  </span>\n  <span\n    class=\"pd-chart-interaction-layer__point-value\"\n  >\n    +18,6%\n  </span>\n</button>\n\n(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).\n\nIgnored nodes: comments, script, style\n<div\n  id=\"storybook-root\"\n>\n  <div\n    class=\"pd-storybook-canvas\"\n  >\n    <main\n      class=\"pd-f0-page pd-a15-stage\"\n      data-story-id=\"15.09\"\n    >\n      <div\n        class=\"pd-f0-page__inner\"\n      >\n        <header\n          class=\"pd-f0-page__header\"\n        >\n          <div\n            class=\"pd-f0-page__label\"\n          >\n            <span>\n              15\n            </span>\n            <span>\n              Wykresy i dane\n            </span>\n          </div>\n          <div\n            class=\"pd-f0-page__heading\"\n          >\n            <h1>\n              Interakcje i filtry\n            </h1>\n            <p>\n              Interakcje są dostępne z klawiatury i nie zmieniają sensu danych. Geometria wykresów nadal należy do ownerów 15.03–15.07.\n            </p>\n          </div>\n          <dl\n            aria-label=\"Parametry kontraktu interakcji\"\n            class=\"pd-f0-page__meta\"\n          >\n            <div>\n              <dt>\n                Kontrakt\n              </dt>\n              <dd>\n                15.09\n              </dd>\n            </div>\n            <div>\n              <dt>\n                Owner\n              </dt>\n              <dd>\n                ChartInteractionLayer\n              </dd>\n            </div>\n            <div>\n              <dt>\n                Status\n              </dt>\n              <dd>\n                review\n              </dd>\n            </div>\n          </dl>\n        </header>\n        <section\n          class=\"pd-f0-section\"\n        >\n          <header\n            class=\"pd-f0-section__header\"\n          >\n            <span\n              aria-hidden=\"true\"\n              class=\"pd-f0-section__index\"\n            >\n              01\n            </span>\n            <div>\n              <h2>\n                Wspólny model interakcji\n              </h2>\n              <p>\n                Tooltip, hover, focus z klawiatury, selection, date range, reset, drill-down i cross-filtering w jednej warstwie.\n              </p>\n            </div>\n          </header>\n          <div\n            class=\"pd-f0-section__content\"\n          >\n            <section\n              aria-describedby=\"_r_1_\"\n              aria-labelledby=\"_r_0_\"\n              class=\"pd-chart-frame\"\n              data-data-state=\"ready\"\n            >\n              <header\n                class=\"pd-chart-frame__header\"\n              >\n                <div\n                  class=\"pd-chart-frame__heading\"\n                >\n                  <span\n                    class=\"pd-chart-frame__eyebrow\"\n                  >\n                    Który punkt trendu wymaga przejścia w szczegóły?\n                  </span>\n                  <h3\n                    id=\"_r_0_\"\n                  >\n                    Interaktywny trend z klawiaturą\n                  </h3>\n                  <p\n                    id=\"_r_1_\"\n                  >\n                    15.09 przejmuje tooltip, hover, focus z klawiatury, selection, date range, reset, drill-down i cross-filtering.\n                  </p>\n                </div>\n                <span\n                  class=\"pd-status-badge\"\n                  data-tone=\"success\"\n                >\n                  <span\n                    aria-hidden=\"true\"\n                    class=\"pd-status-badge__dot\"\n                  />\n                  <span\n                    class=\"pd-status-badge__text\"\n                  >\n                    <span\n                      class=\"pd-visually-hidden\"\n                    >\n                      Status danych: \n                    </span>\n                    Interakcje gotowe\n                  </span>\n                </span>\n              </header>\n              <dl\n                class=\"pd-chart-frame__metadata\"\n              >\n                <div>\n                  <dt>\n                    Źródło\n                  </dt>\n                  <dd>\n                    TrendChart + ChartInteractionLayer\n                  </dd>\n                </div>\n              </dl>\n              <div\n                class=\"pd-chart-frame__toolbar\"\n              >\n                <span\n                  class=\"pd-chart-frame__range\"\n                >\n                  Zakres dat: ostatnie 7 dni\n                </span>\n              </div>\n              <figure\n                class=\"pd-chart-frame__figure\"\n              >\n                <div\n                  aria-label=\"Warstwa interakcji i trend przychodu\"\n                  class=\"pd-chart-frame__visualization\"\n                  role=\"group\"\n                >\n                  <div\n                    aria-labelledby=\"_r_2_\"\n                    class=\"pd-chart-interaction-layer\"\n                    data-component=\"chart-interaction-layer\"\n                    role=\"group\"\n                  >\n                    <header\n                      class=\"pd-chart-interaction-layer__header\"\n                    >\n                      <div>\n                        <h3\n                          id=\"_r_2_\"\n                        >\n                          Warstwa interakcji wykresu\n                        </h3>\n                        <p>\n                          Każdy punkt jest przyciskiem dostępnym z klawiatury. Hover i focus aktualizują tę samą podpowiedź.\n                        </p>\n                      </div>\n                      <dl\n                        class=\"pd-chart-interaction-layer__meta\"\n                      >\n                        <div>\n                          <dt>\n                            Zakres dat\n                          </dt>\n                          <dd>\n                            Ostatnie 7 dni\n                          </dd>\n                        </div>\n                        <div>\n                          <dt>\n                            Cross-filtering\n                          </dt>\n                          <dd>\n                            Całość\n                          </dd>\n                        </div>\n                      </dl>\n                    </header>\n                    <div\n                      aria-label=\"Filtry wykresu\"\n                      class=\"pd-chart-interaction-layer__filters\"\n                      role=\"group\"\n                    >\n                      <button\n                        aria-pressed=\"true\"\n                        class=\"pd-chart-interaction-layer__filter-button\"\n                        data-active=\"true\"\n                        type=\"button\"\n                      >\n                        <span>\n                          Całość\n                        </span>\n                        <small>\n                          Wszystkie kanały\n                        </small>\n                      </button>\n                      <button\n                        aria-pressed=\"false\"\n                        class=\"pd-chart-interaction-layer__filter-button\"\n                        type=\"button\"\n                      >\n                        <span>\n                          Płatne\n                        </span...\n    at Object.getElementError (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:754:284)\n    at rp (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:130:3412)\n    at ip (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:130:3457)\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:132:10\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:757:377\n    at play (http://127.0.0.1:6011/assets/ChartInteractions.stories-DN3ypROB.js:1:7111)",
+          "id": "15-wykresy-i-dane-interakcje-i-filtry--chart-interactions-story",
+          "pageFirst": null
+        },
+        {
+          "consoleFirst": "TestingLibraryElementError: Unable to find an element with the text: TrendChart. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.\n\nIgnored nodes: comments, script, style\n<div\n  id=\"storybook-root\"\n>\n  <div\n    class=\"pd-storybook-canvas\"\n  >\n    <main\n      class=\"pd-f0-page pd-correlation-story\"\n      data-story-id=\"15.06\"\n    >\n      <div\n        class=\"pd-f0-page__inner\"\n      >\n        <header\n          class=\"pd-f0-page__header\"\n        >\n          <div\n            class=\"pd-f0-page__label\"\n          >\n            <span>\n              15\n            </span>\n            <span>\n              Wykresy i dane\n            </span>\n          </div>\n          <div\n            class=\"pd-f0-page__heading\"\n          >\n            <h1>\n              Korelacja pokazuje zależność, ale nie zastępuje dowodu przyczynowości.\n            </h1>\n            <p>\n              CorrelationChart odpowiada za scatter plot, relationship chart, driver analysis, statyczne outlier/cluster indication i copy siły korelacji bez sugerowania przyczynowości bez dowodu.\n            </p>\n          </div>\n          <dl\n            aria-label=\"Parametry kontraktu CorrelationChart\"\n            class=\"pd-f0-page__meta\"\n          >\n            <div>\n              <dt>\n                Kontrakt\n              </dt>\n              <dd>\n                15.06\n              </dd>\n            </div>\n            <div>\n              <dt>\n                Engine\n              </dt>\n              <dd>\n                Recharts\n              </dd>\n            </div>\n            <div>\n              <dt>\n                Status\n              </dt>\n              <dd>\n                review\n              </dd>\n            </div>\n          </dl>\n        </header>\n        <section\n          class=\"pd-f0-section\"\n        >\n          <header\n            class=\"pd-f0-section__header\"\n          >\n            <span\n              aria-hidden=\"true\"\n              class=\"pd-f0-section__index\"\n            >\n              01\n            </span>\n            <div>\n              <h2>\n                Kanoniczna kompozycja\n              </h2>\n              <p>\n                ChartFrame konsumuje gotowy CorrelationChart. Status, źródła, świeżość i wniosek pozostają w kontenerze, a wizualizacja odpowiada za relację dwóch miar.\n              </p>\n            </div>\n          </header>\n          <div\n            class=\"pd-f0-section__content\"\n          >\n            <section\n              aria-describedby=\"_r_1_\"\n              aria-labelledby=\"_r_0_\"\n              class=\"pd-chart-frame\"\n              data-data-state=\"ready\"\n            >\n              <header\n                class=\"pd-chart-frame__header\"\n              >\n                <div\n                  class=\"pd-chart-frame__heading\"\n                >\n                  <span\n                    class=\"pd-chart-frame__eyebrow\"\n                  >\n                    Które grupy kampanii pokazują zależność między budżetem mediowym i ROAS?\n                  </span>\n                  <h3\n                    id=\"_r_0_\"\n                  >\n                    Wyższy budżet występuje blisko wyższego ROAS w wybranych kampaniach\n                  </h3>\n                  <p\n                    id=\"_r_1_\"\n                  >\n                    CorrelationChart jest ownerem scatter, relationship i driver hypothesis analysis. ChartFrame utrzymuje status, źródło i wniosek biznesowy.\n                  </p>\n                </div>\n                <span\n                  class=\"pd-status-badge\"\n                  data-tone=\"success\"\n                >\n                  <span\n                    aria-hidden=\"true\"\n                    class=\"pd-status-badge__dot\"\n                  />\n                  <span\n                    class=\"pd-status-badge__text\"\n                  >\n                    <span\n                      class=\"pd-visually-hidden\"\n                    >\n                      Status danych: \n                    </span>\n                    Dane aktualne\n                  </span>\n                </span>\n              </header>\n              <dl\n                class=\"pd-chart-frame__metadata\"\n              >\n                <div>\n                  <dt>\n                    Źródło\n                  </dt>\n                  <dd>\n                    Google Ads + Shop\n                  </dd>\n                </div>\n                <div>\n                  <dt>\n                    Świeżość\n                  </dt>\n                  <dd>\n                    12 minut temu\n                  </dd>\n                </div>\n              </dl>\n              <div\n                class=\"pd-chart-frame__toolbar\"\n              >\n                <span\n                  class=\"pd-chart-frame__range\"\n                >\n                  Ostatnie 30 dni\n                </span>\n              </div>\n              <figure\n                class=\"pd-chart-frame__figure\"\n              >\n                <div\n                  aria-label=\"Zależność budżetu i ROAS\"\n                  class=\"pd-chart-frame__visualization\"\n                  role=\"group\"\n                >\n                  <div\n                    aria-label=\"Zależność budżetu mediowego i ROAS\"\n                    class=\"pd-correlation-chart\"\n                    data-causality-evidence=\"not-provided\"\n                    data-component=\"correlation-chart\"\n                    data-evidence-level=\"observed-correlation\"\n                    data-has-cluster=\"true\"\n                    data-variant=\"relationship\"\n                    role=\"group\"\n                  >\n                    <div\n                      class=\"pd-correlation-chart__axis-summary\"\n                    >\n                      <span>\n                        Indeks budżetu mediowego\n                      </span>\n                      <span>\n                        ROAS\n                      </span>\n                    </div>\n                    <div\n                      aria-hidden=\"true\"\n                      class=\"pd-correlation-chart__plot\"\n                      data-slot=\"plot\"\n                    >\n                      <div\n                        class=\"recharts-responsive-container\"\n                        style=\"width: 100%; height: 100%; min-width: 0px;\"\n                      >\n                        <div\n                          style=\"width: 0px; height: 0px; overflow: visible;\"\n                        />\n                      </div>\n                    </div>\n                    <ol\n                      aria-label=\"Legenda zależności\"\n                      class=\"pd-correlation-chart__legend\"\n                    >\n                      <li\n                        data-role=\"standard\"\n                      >\n                        <span\n                          aria-hidden=\"true\"\n                          class=\"pd-correlation-chart__swatch\"\n                          style=\"background: var(--pd-correlation-point);\"\n                        />\n                        <span>\n                          Punkt obserwacji\n                        </span>\n                      </li>\n                      <li\n                        data-role=\"cluster\"\n            ...\n    at Object.getElementError (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:754:284)\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:138:112\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:130:4040\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:757:377\n    at play (http://127.0.0.1:6011/assets/CorrelationChart.stories-C0Qm9kph.js:1:14103)\n    at async bG.runPhase (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:607)\n    at async bG.render (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:3467)",
+          "id": "15-wykresy-i-dane-zależności-i-korelacje--correlation-chart-story",
+          "pageFirst": null
+        },
+        {
+          "consoleFirst": "TestingLibraryElementError: Unable to find a label with the text of: /Przychód: 248[\\s\\u00a0]420,00[\\s\\u00a0]zł/\n\nIgnored nodes: comments, script, style\n<div\n  id=\"storybook-root\"\n>\n  <div\n    class=\"pd-storybook-canvas\"\n  >\n    <main\n      class=\"pd-f0-page pd-viz-story\"\n      data-story-id=\"15.02\"\n    >\n      <div\n        class=\"pd-f0-page__inner\"\n      >\n        <header\n          class=\"pd-f0-page__header\"\n        >\n          <div\n            class=\"pd-f0-page__label\"\n          >\n            <span>\n              15\n            </span>\n            <span>\n              Wykresy i dane\n            </span>\n          </div>\n          <div\n            class=\"pd-f0-page__heading\"\n          >\n            <h1>\n              Wskaźnik ma pokazywać sygnał, nie budować kolejny dashboard w karcie.\n            </h1>\n            <p>\n              MetricCard odpowiada za KPI, jego porównanie i mikrotrend. Nie jest małym ChartFrame i nie wprowadza własnych kontrolek.\n            </p>\n          </div>\n          <dl\n            aria-label=\"Parametry kontraktu MetricCard\"\n            class=\"pd-f0-page__meta\"\n          >\n            <div>\n              <dt>\n                Kontrakt\n              </dt>\n              <dd>\n                15.02\n              </dd>\n            </div>\n            <div>\n              <dt>\n                Handoff\n              </dt>\n              <dd>\n                05.03 → 15.02\n              </dd>\n            </div>\n            <div>\n              <dt>\n                Status\n              </dt>\n              <dd>\n                review\n              </dd>\n            </div>\n          </dl>\n        </header>\n        <section\n          class=\"pd-f0-section\"\n        >\n          <header\n            class=\"pd-f0-section__header\"\n          >\n            <span\n              aria-hidden=\"true\"\n              class=\"pd-f0-section__index\"\n            >\n              01\n            </span>\n            <div>\n              <h2>\n                Warianty kontraktowe\n              </h2>\n              <p>\n                Wariant wynika z potrzebnych danych. Publiczne API nie wymusza sześciu wzajemnie wykluczających się typów karty.\n              </p>\n            </div>\n          </header>\n          <div\n            class=\"pd-f0-section__content\"\n          >\n            <div\n              class=\"pd-viz-story__metric-grid\"\n            >\n              <article\n                aria-labelledby=\"_r_0_\"\n                class=\"pd-metric-card\"\n                data-data-state=\"ready\"\n                data-emphasis=\"default\"\n                data-metric-id=\"revenue\"\n                data-signal=\"neutral\"\n              >\n                <header\n                  class=\"pd-metric-card__header\"\n                >\n                  <span\n                    class=\"pd-metric-card__label\"\n                    id=\"_r_0_\"\n                  >\n                    Przychód\n                  </span>\n                </header>\n                <div\n                  class=\"pd-metric-card__value-region\"\n                >\n                  <p\n                    class=\"pd-metric-card__value\"\n                  >\n                    <span>\n                      248 420,00 zł\n                    </span>\n                  </p>\n                </div>\n                <div\n                  class=\"pd-metric-card__metadata\"\n                >\n                  <span>\n                    Sklep + reklamy\n                  </span>\n                  <span>\n                    8 minut temu\n                  </span>\n                </div>\n                <footer\n                  class=\"pd-metric-card__actions\"\n                >\n                  <button\n                    class=\"pd-inline-action pd-inline-action--button pd-inline-action--muted pd-inline-action--small\"\n                    data-action-kind=\"text\"\n                    data-size=\"small\"\n                    data-tone=\"muted\"\n                    type=\"button\"\n                  >\n                    <span\n                      aria-hidden=\"true\"\n                      class=\"pd-inline-action__icon\"\n                    >\n                      <svg\n                        aria-hidden=\"true\"\n                        fill=\"none\"\n                        focusable=\"false\"\n                        height=\"16\"\n                        stroke=\"currentColor\"\n                        stroke-linecap=\"round\"\n                        stroke-linejoin=\"round\"\n                        stroke-width=\"1.75\"\n                        viewBox=\"0 0 24 24\"\n                        width=\"16\"\n                      >\n                        <ellipse\n                          cx=\"12\"\n                          cy=\"5.5\"\n                          rx=\"7.5\"\n                          ry=\"3\"\n                        />\n                        <path\n                          d=\"M4.5 5.5v6c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-6\"\n                        />\n                        <path\n                          d=\"M4.5 11.5v6c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-6\"\n                        />\n                      </svg>\n                    </span>\n                    <span\n                      class=\"pd-inline-action__label\"\n                    >\n                      Szczegóły KPI\n                    </span>\n                    <span\n                      aria-hidden=\"true\"\n                      class=\"pd-inline-action__activity-line\"\n                      data-slot=\"activity-line\"\n                    />\n                  </button>\n                </footer>\n              </article>\n              <article\n                aria-labelledby=\"_r_3_\"\n                class=\"pd-metric-card\"\n                data-data-state=\"ready\"\n                data-emphasis=\"default\"\n                data-metric-id=\"orders\"\n                data-signal=\"positive\"\n              >\n                <header\n                  class=\"pd-metric-card__header\"\n                >\n                  <span\n                    class=\"pd-metric-card__label\"\n                    id=\"_r_3_\"\n                  >\n                    Zamówienia\n                  </span>\n                </header>\n                <div\n                  class=\"pd-metric-card__value-region\"\n                >\n                  <p\n                    class=\"pd-metric-card__value\"\n                  >\n                    <span>\n                      1284\n                    </span>\n                  </p>\n                  <p\n                    class=\"pd-metric-card__comparison\"\n                    data-direction=\"up\"\n                  >\n                    <span\n                      aria-hidden=\"true\"\n                    >\n                      ↗\n                    </span>\n                    <span>\n                      +12,4% okres do okresu\n                    </span>\n                  </p>\n                </div>\n                <div\n                  class=\"pd-metric-card__metadata\"\n                >\n                  <span>\n                    Sklep + reklamy\n                  </span>\n                  <span>\n                    8 minut temu\n                  </span>\n                </div>\n              </article>\n              <a...\n    at Object.getElementError (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:754:284)\n    at FL (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:759:233)\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:130:4040\n    at http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:757:377\n    at play (http://127.0.0.1:6011/assets/MetricCard.stories-DElBGtP5.js:1:5117)\n    at async bG.runPhase (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:607)\n    at async bG.render (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:3467)",
+          "id": "15-wykresy-i-dane-metriccard--metric-card-story",
+          "pageFirst": null
+        }
+      ],
+      "total": 49
+    },
+    "responsive": {
+      "consoleErrors": 2,
+      "critical": 0,
+      "overflow": 2,
+      "pageErrors": 0,
+      "serious": 6
+    },
+    "zoom": {
+      "consoleErrors": 1,
+      "critical": 0,
+      "overflow": 1,
+      "pageErrors": 0,
+      "serious": 2
+    }
+  },
+  "zoomResults": [
+    {
+      "storyId": "10-komponenty-bazowe-przyciski-i-akcje--przyciski",
+      "title": "10 Komponenty bazowe/Przyciski i akcje",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [
+        "Error: Activity line does not match its action content.\n    at S (http://127.0.0.1:6011/assets/Button.stories-C_lL8-2S.js:1:861)\n    at play (http://127.0.0.1:6011/assets/Button.stories-C_lL8-2S.js:1:10245)\n    at async bG.runPhase (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:607)\n    at async bG.render (http://127.0.0.1:6011/assets/iframe-BeC6j3uT.js:915:3467)"
+      ],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-breadcrumbs--breadcrumbs-story",
+      "title": "10 Komponenty/Breadcrumbs",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-dialog--dialog-story",
+      "title": "10 Komponenty/Dialog",
+      "axe": {
+        "critical": 0,
+        "serious": 1
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-filterbar--filter-bar-story",
+      "title": "10 Komponenty/FilterBar",
+      "axe": {
+        "critical": 0,
+        "serious": 1
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": true,
+        "overflow": 74,
+        "viewportWidth": 720,
+        "widest": 794
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-toolbar--toolbar-story",
+      "title": "10 Komponenty/Toolbar",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-searchfield--search-field-story",
+      "title": "10 Komponenty/SearchField",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-tabs--tabs-story",
+      "title": "10 Komponenty/Tabs",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "10-komponenty-kod-weryfikacyjny--verification-code-input-story",
+      "title": "10 Komponenty/Kod weryfikacyjny",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-układ-strony-i-sekcji--page-section-layout-story",
+      "title": "18 Wzorce interfejsu/Układ strony i sekcji",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-empty-error-i-no-access--feedback-states-story",
+      "title": "18 Wzorce interfejsu/Empty, error i no-access",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-ładowanie-danych-i-operacje-w-tle--loading-operations-story",
+      "title": "18 Wzorce interfejsu/Ładowanie danych i operacje w tle",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-tabela-z-filtrami-i-akcjami--filtered-table-actions-story",
+      "title": "18 Wzorce interfejsu/Tabela z filtrami i akcjami",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-panele-szczegółów-dowodów-i-rekomendacji--detail-evidence-recommendation-panels-story",
+      "title": "18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-status-danych-i-readiness--data-readiness-status-story",
+      "title": "18 Wzorce interfejsu/Status danych i readiness",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720
+      },
+      "pageErrors": []
+    },
+    {
+      "storyId": "18-wzorce-interfejsu-macierz-stanów-przekrojowych--cross-state-matrix-story",
+      "title": "18 Wzorce interfejsu/Macierz stanów przekrojowych",
+      "axe": {
+        "critical": 0,
+        "serious": 0
+      },
+      "consoleErrors": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720
+      },
+      "pageErrors": []
+    }
+  ]
+}

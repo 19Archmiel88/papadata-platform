@@ -52,12 +52,14 @@
   display: flex;
   align-items: center;
   min-block-size: 1.25rem;
+  min-inline-size: 0;
   margin-block-end: var(--pd-space-2);
   color: var(--pd-forecast-axis-color);
   font-family: var(--pd-font-mono);
   font-size: 0.75rem;
   line-height: 1.25;
   letter-spacing: 0.025em;
+  overflow-wrap: anywhere;
 }
 
 .pd-forecast-chart__plot {
@@ -65,10 +67,12 @@
   block-size: 23rem;
   min-block-size: 19rem;
   min-inline-size: 0;
+  overflow: visible;
 }
 
 .pd-forecast-chart .recharts-wrapper {
   font-family: var(--pd-font-sans);
+  overflow: visible;
 }
 
 .pd-forecast-chart .recharts-surface {
@@ -145,7 +149,7 @@
   row-gap: var(--pd-space-4);
   column-gap: var(--pd-space-8);
   align-items: center;
-  margin: var(--pd-space-7) 0 0;
+  margin: var(--pd-space-8) 0 0;
   padding: 0;
   color: var(--pd-forecast-legend-text);
   font-size: 0.9rem;

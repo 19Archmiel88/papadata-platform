@@ -3,9 +3,8 @@ version: 1.0
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
-id: DOC-10-9E5B8E7144D7
-status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+status: review
+updated_at: 2026-08-09T12:00:00+02:00
 ---
 
 # Układ strony i sekcji
@@ -16,82 +15,73 @@ updated_at: 2026-07-30T10:30:00+02:00
 | --- | --- |
 | Identyfikator | 18.01 |
 | Nazwa polska | Układ strony i sekcji |
-| Nazwa techniczna | ukad-strony-i-sekcji |
+| Nazwa techniczna | uklad-strony-i-sekcji |
 | Typ dokumentu | wzorzec przekrojowy |
 | Wersja | 1.0 |
-| Status kontraktu | zatwierdzony stan docelowy |
+| Status kontraktu | review wzorca Storybook; decyzja wizualna oczekuje na akceptację właścicielską |
 | Priorytet | P0 |
 | Właściciel | Design System |
-| Moduł | Stany i wzorce przekrojowe — M02/M03 |
+| Moduł | Wzorce interfejsu — 18 |
 
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | WDROŻONE W STORYBOOK — REVIEW |
+| Akceptacja właścicielska | `false` — wymaga osobnej akceptacji właściciela produktu |
+| Status Storybooka | `18 Wzorce interfejsu/Układ strony i sekcji` |
+| Status testów | fixture + play/audit dopasowane do realnej implementacji |
 
-## Cel i decyzja docelowa
+## Cel i realny zakres
 
-„Układ strony i sekcji” jest współdzielonym kontraktem, a nie lokalnym układem jednego ekranu. Wzorzec ma jedną odpowiedzialność, korzysta z fundamentów i komponentów bazowych oraz udostępnia warianty wymagane przez domeny bez kopiowania implementacji.
+Wzorzec pokazuje page header, section header, content region, split view i master-detail jako otwarty układ oparty o semantyczne regiony, typografię, rytm i separatory.
 
-## Stan obecny
+Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.* i nie zmienia `runtime-component-api.csv` ani `analytics-system-v1.json`.
 
+## Anatomia
+
+```text
+uklad-strony-i-sekcji
+├── nagłówek semantyczny
+├── treść wzorca
+├── status lub ograniczenie
+├── akcja albo recovery
+└── dowód Storybook / fixture / audyt
+```
+
+## Komponenty składowe
+
+- StoryPresentationPage
+- StoryPresentationSection
+- StoryPresentationMeta
+- InlineNotice
+- StatusBadge
+- TextAction
+
+Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook mają prefiks `pd-x18-*` i służą wyłącznie do układu, separatorów oraz rytmu.
 
 ## Zakres i wymagania
 
 | Lp. | Wymaganie | Kontrakt | Dowód odbioru |
 | --- | --- | --- | --- |
-| 1 | stan domyślny | wymagany wariant lub stan | test Storybook + test interakcji |
+| 1 | Page header | Nagłówek strony ustawia kontekst, status i akcję bez osobnego kontenera. | Storybook + fixture |
+| 2 | Content region | Regiony są nazwane i dostępne jako semantyczne sekcje. | Storybook + fixture |
+| 3 | Split view | Treść i region poboczny są rozdzielone rytmem oraz linią, nie kartami. | Storybook + fixture |
+| 4 | Master-detail | Wybór z listy zmienia szczegół bez przeładowania strony. | Storybook + fixture |
 
-## Anatomia
+## Kontrakt UI
 
-```text
-ukad-strony-i-sekcji
-├── semantic root
-├── header or accessible label
-├── primary content
-├── status / validation region
-├── primary action
-└── optional secondary actions or metadata
-```
-
-## Komponenty składowe
-
-- PageHeader
-- DataStatusBanner
-- InlineNotice
-- Button
-
-Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
-
-## Kontrakt stanu
-
-- Stan kontrolowany jest używany dla route, filtrów, formularza, selection i overlay.
-- Stan asynchroniczny rozróżnia loading, processing, retrying, success, recoverable error i terminal error.
-- Read-only, no-access i plan-restricted są osobnymi stanami, nie odmianą disabled.
-- Zmiana motywu, języka lub viewportu nie resetuje danych ani procesu.
-
-## Interakcje i klawiatura
-
-Tab order odpowiada hierarchii zadania. Enter/Space uruchamiają natywne kontrolki; Escape zamyka najwyższą warstwę; strzałki są używane wyłącznie w komponentach z modelem composite widget. Focus restore jest obowiązkowy po każdej warstwie.
-
-## Responsywność
-
-Wide może używać kolumn lub detail panelu. Compact przechodzi w jedną kolumnę, zachowuje wszystkie funkcje i przenosi akcje drugorzędne do jawnego overflow. Tabele otrzymują scroll lub widok priorytetowych kolumn, a wykresy — tabelę alternatywną.
-
-## Dostępność
-
-Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kontrast, reduced motion, live region dla wyników asynchronicznych, reflow i brak informacji zależnej wyłącznie od koloru.
+- Domyślny układ używa typografii, rytmu pionowego, separatorów i lekkich list.
+- Zamknięte powierzchnie występują tylko wtedy, gdy są semantycznie uzasadnione przez komponent bazowy.
+- Story nie tworzy lokalnych zamienników Button, TextAction, LinkAction, Select, DataTable, StatusBadge, EmptyState, ErrorState, Skeleton, Spinner, Drawer ani Tabs.
+- Story nie deklaruje playSteps ani visualAssertions bez pokrycia w runtime, play teście albo audycie.
 
 ## Storybook
 
-- Title: `18 Stany i wzorce przekrojowe/Układ strony i sekcji`.
-- Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
-- Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
+- Title: `18 Wzorce interfejsu/Układ strony i sekcji`.
+- File: `apps/web/src/storybook-next/stories/18-cross-cutting-patterns/PageSectionLayout.stories.tsx`.
+- Status: implemented / visible / review.
+- Accepted: false, do czasu osobnej akceptacji wizualnej.
 
 ## Testy i kryteria akceptacji
 
-1. Wszystkie wymagania mają story i asercję testową.
-2. Wzorzec nie tworzy duplikatu komponentu bazowego.
-3. Stany błędu i brak dostępu mają recovery albo jednoznaczne zakończenie.
-4. Mobile i zoom 200% nie tracą funkcji.
-5. Klawiatura oraz focus restore przechodzą play test.
-6. Dokument jest linkowany przez co najmniej jeden ekran albo oznaczony jako fundament przyszłego użycia.
+1. Play test sprawdza heading, main landmark, nazwane regiony i zmianę szczegółu.
+2. Audyt Storybook obejmuje 1440, 768, 390 oraz zoom 200%.
+3. Lokalny CSS nie override'uje `.pd-f0-*`, `.pd-button`, `.pd-inline-action`, `.pd-icon-button` ani produkcyjnych klas komponentów.
+4. Mobile 390 i zoom 200% są objęte audytem Storybook, jeżeli fixture deklaruje brak poziomego scrolla.

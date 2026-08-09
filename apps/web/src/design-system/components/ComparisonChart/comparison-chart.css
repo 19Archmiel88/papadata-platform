@@ -81,7 +81,7 @@
   row-gap: var(--pd-space-4);
   column-gap: var(--pd-space-10);
   align-items: center;
-  margin: var(--pd-space-7) 0 0;
+  margin: var(--pd-space-8) 0 0;
   padding: 0;
   color: var(--pd-text-secondary);
   font-size: 0.8rem;
@@ -279,7 +279,7 @@
   .pd-comparison-chart__legend {
     grid-template-columns:
       repeat(2, minmax(0, 1fr));
-    column-gap: var(--pd-space-7);
+    column-gap: var(--pd-space-8);
   }
 
   .pd-comparison-chart__benchmark-label {

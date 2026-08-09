@@ -1,14 +1,22 @@
 {
   "fixtureId": "SB-110",
-  "storyTitle": "18 Stany i wzorce przekrojowe/Status danych i readiness",
+  "storyTitle": "18 Wzorce interfejsu/Status danych i readiness",
   "sourceDocument": "21-stany-przekrojowe/18-08-status-danych-i-readiness.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "StatusBadge",
+    "InlineNotice"
+  ],
   "states": [
     "ready",
-    "loading",
-    "empty",
-    "error"
+    "syncing",
+    "delayed",
+    "partial",
+    "stale",
+    "blocked",
+    "unavailable",
+    "actionRequired",
+    "chartDataStateHandoff"
   ],
   "viewports": [
     1440,
@@ -20,15 +28,11 @@
     "dark"
   ],
   "localeCases": [
-    "pl",
-    "en-long-copy"
+    "pl"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-readiness-list",
+    "verify-chartdatastate-handoff"
   ],
   "visualAssertions": [
     "1440-light",
@@ -36,15 +40,14 @@
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-error"
+    "separator-list-readiness",
+    "no-horizontal-page-scroll"
   ],
   "a11y": [
-    "keyboard-only",
+    "list-name",
+    "status-badge-text",
     "focus-visible",
-    "accessible-name",
-    "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-cross-cutting-pattern"
 }

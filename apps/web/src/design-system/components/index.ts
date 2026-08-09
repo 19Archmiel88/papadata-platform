@@ -32,6 +32,10 @@ export {
 } from './CorrelationChart';
 
 export {
+  ForecastChart,
+} from './ForecastChart';
+
+export {
   ShareChart,
 } from './ShareChart';
 
@@ -238,6 +242,16 @@ export type {
   CorrelationChartProps,
   CorrelationChartVariant,
 } from './CorrelationChart';
+
+export type {
+  ForecastChartLabels,
+  ForecastChartProps,
+  ForecastChartQuality,
+  ForecastChartQualityLevel,
+  ForecastChartScenario,
+  ForecastChartScenarioTone,
+  ForecastChartSeriesPoint,
+} from './ForecastChart';
 
 export type {
   ShareChartDisplay,

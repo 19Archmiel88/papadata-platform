@@ -3,15 +3,13 @@
   "storyTitle": "10 Komponenty/ForecastChart",
   "sourceDocument": "05-wykresy-i-wizualizacje/komponenty/forecastchart.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "ForecastChart"
+  ],
   "states": [
-    "ready",
-    "loading",
-    "empty",
-    "error",
-    "noData",
-    "singlePoint",
-    "negativeValues"
+    "legacyHidden",
+    "promotedTo15_07",
+    "handoff"
   ],
   "viewports": [
     1440,
@@ -27,27 +25,19 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-legacy-story-hidden",
+    "verify-no-legacy-story-owner",
+    "verify-15-07-runtime-owner"
   ],
   "visualAssertions": [
-    "1440-light",
-    "1440-dark",
-    "768-reflow",
-    "390-mobile",
-    "200-percent-zoom",
-    "reduced-motion",
-    "state-negativeValues"
+    "legacy-story-hidden",
+    "runtime-owner-15-07"
   ],
   "a11y": [
     "keyboard-only",
     "focus-visible",
     "accessible-name",
-    "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "handoff-to-15-07-runtime-owner"
 }

@@ -13,18 +13,24 @@ export type CorrelationChartVariant =
   | 'relationship'
   | 'driver-analysis';
 
-export type CorrelationPointRole =
+export type CorrelationChartPointRole =
   | 'standard'
   | 'driver-hypothesis'
   | 'outlier'
   | 'cluster';
+
+/**
+ * Backward-compatible alias.
+ * Prefer CorrelationChartPointRole in new code.
+ */
+export type CorrelationPointRole = CorrelationChartPointRole;
 
 export interface CorrelationChartPoint {
   readonly id: string;
   readonly x: number;
   readonly y: number;
   readonly label: string;
-  readonly role?: CorrelationPointRole;
+  readonly role?: CorrelationChartPointRole;
   readonly clusterId?: string | null;
 }
 
@@ -36,7 +42,7 @@ export interface CorrelationChartCluster {
   readonly yRange: readonly [number, number];
 }
 
-export interface CorrelationChartProps extends BaseComponentProps {
+export interface CorrelationChartProps extends Omit<BaseComponentProps, 'variant'> {
   readonly xLabel: string;
   readonly yLabel: string;
   readonly points: readonly CorrelationChartPoint[];

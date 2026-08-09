@@ -18,14 +18,38 @@ const entries = new Map(
   ]),
 );
 
+function ensureArrayIncludes(
+  values,
+  expected,
+  message,
+) {
+  ensure(
+    Array.isArray(values)
+      && values.includes(expected),
+    message,
+  );
+}
+
+function ensureArrayExcludes(
+  values,
+  unexpected,
+  message,
+) {
+  ensure(
+    !Array.isArray(values)
+      || !values.includes(unexpected),
+    message,
+  );
+}
+
 ensure(
-  system.stage === 'A15.5',
-  'Analytics System must declare stage A15.5.',
+  system.stage === 'A15.6',
+  'Analytics System must declare stage A15.6.',
 );
 
 ensure(
   system.status === 'review',
-  'Analytics System A15.5 remains review until every entry is formally accepted.',
+  'Analytics System A15.6 remains review until every entry is formally accepted.',
 );
 
 ensure(
@@ -40,11 +64,12 @@ const expectedRuntimeOwners = [
   ['ComparisonChart', '15.04'],
   ['ShareChart', '15.05'],
   ['CorrelationChart', '15.06'],
+  ['ForecastChart', '15.07'],
 ];
 
 ensure(
   system.entries.length === expectedRuntimeOwners.length,
-  'Analytics System A15.5 must contain exactly 15.01-15.06 runtime owners.',
+  'Analytics System A15.6 must contain exactly 15.01-15.07 runtime owners.',
 );
 
 for (const item of system.entries) {
@@ -125,6 +150,7 @@ for (const title of [
   '15 Wykresy i dane/Porównania',
   '15 Wykresy i dane/Udziały i struktura',
   '15 Wykresy i dane/Zależności i korelacje',
+  '15 Wykresy i dane/Prognoza i AI',
 ]) {
   const rows = storybookRegistry
     .split('\n')
@@ -170,6 +196,147 @@ ensure(
   '10 Komponenty/CorrelationChart must be degraded to 15.06 handoff.',
 );
 
+const forecastLegacyRows = storybookRegistry
+  .split('\n')
+  .filter((line) => (
+    line.startsWith('10 Komponenty/ForecastChart,')
+  ));
+
+ensure(
+  forecastLegacyRows.length === 1,
+  '10 Komponenty/ForecastChart: expected one degraded handoff row.',
+);
+
+ensure(
+  forecastLegacyRows[0]?.includes(',deprecated,')
+    && forecastLegacyRows[0]?.includes(
+      'legacyHidden|promotedTo15_07|handoff',
+    )
+    && forecastLegacyRows[0]?.includes(
+      'verify-legacy-story-hidden|verify-no-legacy-story-owner|verify-15-07-runtime-owner',
+    )
+    && forecastLegacyRows[0]?.includes(
+      'handoff-to-15-07-runtime-owner',
+    ),
+  '10 Komponenty/ForecastChart must be degraded to 15.07 handoff.',
+);
+
+const forecastLegacyFixture = readJson(
+  'fixtures/storybook/059-forecastchart.json',
+);
+
+for (const state of [
+  'legacyHidden',
+  'promotedTo15_07',
+  'handoff',
+]) {
+  ensureArrayIncludes(
+    forecastLegacyFixture.states,
+    state,
+    `SB-059 legacy ForecastChart fixture missing state: ${state}`,
+  );
+}
+
+for (const step of [
+  'verify-legacy-story-hidden',
+  'verify-no-legacy-story-owner',
+  'verify-15-07-runtime-owner',
+]) {
+  ensureArrayIncludes(
+    forecastLegacyFixture.playSteps,
+    step,
+    `SB-059 legacy ForecastChart fixture missing play step: ${step}`,
+  );
+}
+
+ensureArrayExcludes(
+  forecastLegacyFixture.a11y,
+  'live-region',
+  'SB-059 legacy ForecastChart fixture must not require a live region.',
+);
+
+ensure(
+  forecastLegacyFixture.implementationStatus === 'handoff-to-15-07-runtime-owner',
+  'SB-059 legacy ForecastChart fixture must be a 15.07 handoff, not a runtime owner.',
+);
+
+const forecastFixture = readJson(
+  'fixtures/storybook/098-15-07-prognoza-i-ai.json',
+);
+
+for (const state of [
+  'ready',
+  'actual',
+  'forecast',
+  'uncertaintyBand',
+  'confidence',
+  'quality',
+  'staticScenarios',
+  'alternativeTable',
+  'longCopy',
+  'forecastNotFact',
+  'handoff15_08',
+  'handoff15_09',
+  'handoff15_10',
+]) {
+  ensureArrayIncludes(
+    forecastFixture.states,
+    state,
+    `SB-098 ForecastChart fixture missing state: ${state}`,
+  );
+}
+
+for (const step of [
+  'verify-chartframe-composition',
+  'verify-actual-forecast-split',
+  'verify-uncertainty-band',
+  'verify-confidence-copy',
+  'verify-quality-copy',
+  'verify-static-scenarios',
+  'verify-alternative-table',
+  'verify-forecast-not-fact',
+  'verify-no-recharts-tooltip',
+  'verify-no-15-09-interaction',
+  'verify-15-08-15-09-15-10-handoff',
+]) {
+  ensureArrayIncludes(
+    forecastFixture.playSteps,
+    step,
+    `SB-098 ForecastChart fixture missing play step: ${step}`,
+  );
+}
+
+for (const assertion of [
+  'uncertainty-band-visible',
+  'axis-and-legend-readable',
+  'alternative-table-affordance-visible',
+  'no-horizontal-page-scroll',
+  'no-runtime-owner-duplication',
+]) {
+  ensureArrayIncludes(
+    forecastFixture.visualAssertions,
+    assertion,
+    `SB-098 ForecastChart fixture missing visual assertion: ${assertion}`,
+  );
+}
+
+ensureArrayIncludes(
+  forecastFixture.a11y,
+  'alternative-table',
+  'SB-098 ForecastChart fixture must require an alternative table.',
+);
+
+ensureArrayExcludes(
+  forecastFixture.a11y,
+  'live-region',
+  'SB-098 ForecastChart fixture must not require a live region.',
+);
+
+ensure(
+  forecastFixture.implementationStatus === 'implemented-review-static-contract',
+  'SB-098 ForecastChart fixture must remain review/static until visual acceptance.',
+);
+
 for (const legacy of [
   '10 Komponenty/ChartFrame,',
   '10 Komponenty/MetricCard,',
@@ -181,6 +348,12 @@ for (const legacy of [
   '15 Wykresy i wizualizacje danych/Trendy,',
   '15 Wykresy i wizualizacje danych/Porównania,',
   '15 Wykresy i wizualizacje danych/Struktura i udział,',
+  '15 Wykresy i wizualizacje danych/Udziały i struktura,',
+  '15 Wykresy i wizualizacje danych/Zależności i korelacje,',
+  '15 Wykresy i wizualizacje danych/Prognoza i AI,',
+  '15 Wykresy i wizualizacje danych/Stany danych,',
+  '15 Wykresy i wizualizacje danych/Interakcje i filtry,',
+  '15 Wykresy i wizualizacje danych/Responsywność i dostępność,',
 ]) {
   ensure(
     !storybookRegistry.includes(legacy),
@@ -218,6 +391,8 @@ for (const marker of [
   'ShareChartProps',
   'CorrelationChart',
   'CorrelationChartProps',
+  'ForecastChart',
+  'ForecastChartProps',
 ]) {
   ensure(
     componentIndex.includes(marker),
@@ -253,10 +428,28 @@ for (const [
     'contracts/components/correlationchart.ts',
     'Orchestration contract',
   ],
+  [
+    'contracts/components/forecastchart.ts',
+    'Orchestration contract',
+  ],
 ]) {
   ensure(
     readText(path).includes(marker),
     `${path}: runtime/orchestration ownership is not explicit.`,
+  );
+}
+
+const forecastContract = readText(
+  'contracts/components/forecastchart.ts',
+);
+
+for (const marker of [
+  'Partial<ForecastChartLabels>',
+  'unit?: string | null',
+]) {
+  ensure(
+    forecastContract.includes(marker),
+    `contracts/components/forecastchart.ts missing ${marker}.`,
   );
 }
 
@@ -384,6 +577,45 @@ ensure(
   '15.06 must not take tooltip ownership from 15.09.',
 );
 
+const forecastRuntime = readText(
+  'apps/web/src/design-system/components/ForecastChart/ForecastChart.tsx',
+);
+
+for (const marker of [
+  "from 'recharts'",
+  'ComposedChart',
+  'Line',
+  'Area',
+  'ReferenceLine',
+  'ResponsiveContainer',
+  'accessibilityLayer',
+  'actual',
+  'forecast',
+  'lowerBound',
+  'upperBound',
+  'confidence',
+  'horizonLabel',
+  'unit',
+  'quality',
+  'scenarios',
+  'forecastDisclaimer',
+]) {
+  ensure(
+    forecastRuntime.includes(marker),
+    `ForecastChart runtime missing ${marker}.`,
+  );
+}
+
+ensure(
+  !forecastRuntime.includes('<svg'),
+  'ForecastChart must not reimplement a raw SVG chart engine.',
+);
+
+ensure(
+  !forecastRuntime.includes('Tooltip'),
+  '15.07 must not take tooltip ownership from 15.09.',
+);
+
 const webPackage = readJson(
   'apps/web/package.json',
 );
@@ -445,6 +677,7 @@ for (const handoff of [
   '15.04',
   '15.05',
   '15.06',
+  '15.07',
 ]) {
   ensure(
     lab.includes(handoff),
@@ -457,6 +690,7 @@ for (const legacyName of [
   "name: 'ComparisonChart'",
   "name: 'ShareChart'",
   "name: 'CorrelationChart'",
+  "name: 'ForecastChart'",
 ]) {
   ensure(
     !lab.includes(legacyName),
@@ -469,6 +703,7 @@ for (const legacyGeometry of [
   "kind === 'comparison'",
   "kind === 'share'",
   "kind === 'correlation'",
+  "kind === 'forecast'",
 ]) {
   ensure(
     !lab.includes(legacyGeometry),
@@ -501,6 +736,7 @@ for (const path of [
   'apps/web/src/storybook-next/stories/15-data-visualizations/ComparisonChart.stories.tsx',
   'apps/web/src/storybook-next/stories/15-data-visualizations/ShareChart.stories.tsx',
   'apps/web/src/storybook-next/stories/15-data-visualizations/CorrelationChart.stories.tsx',
+  'apps/web/src/storybook-next/stories/15-data-visualizations/ForecastChart.stories.tsx',
 ]) {
   const source = readText(path);
 
@@ -572,6 +808,38 @@ for (const marker of [
   );
 }
 
+const forecastStory = readText(
+  'apps/web/src/storybook-next/stories/15-data-visualizations/ForecastChart.stories.tsx',
+);
+
+for (const marker of [
+  "title: '15 Wykresy i dane/Prognoza i AI'",
+  'ForecastChart',
+  'actual',
+  'forecast',
+  'lowerBound',
+  'upperBound',
+  'uncertainty',
+  'confidence',
+  'quality',
+  'scenarios',
+  'alternativeTable',
+  'Tabela danych prognozy',
+  'recharts-tooltip-wrapper',
+  'Prognoza nie jest faktem.',
+  '15.08',
+  '15.09',
+  '15.10',
+  'Pewność zapytania',
+  'Granica zakresu: scenariusze i jakość danych',
+  'Podpowiedzi, wskazania po najechaniu',
+]) {
+  ensure(
+    forecastStory.includes(marker),
+    `15.07 story missing decision/evidence marker: ${marker}`,
+  );
+}
+
 console.log(
-  'Analytics System A15.5 OK: CorrelationChart 15.06 is the review owner of relationships and correlations; TrendChart 15.03 remains accepted.',
+  'Analytics System A15.6 OK: ForecastChart 15.07 is the review owner of forecast and AI semantics; TrendChart 15.03 remains accepted.',
 );

@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: 038adebd4c6be2db82e149a4bc3795b52012b0c65fbe52c0db0b7f7afcbcaff2
+// SHA-256 źródła: 0429f1f25288dc6f8afd93a6756ea4b00ddccf867cc43533f3e29af327b5977a
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -486,7 +486,7 @@ export const storybookCatalog = [
     "storyClass": "reference",
     "owner": "Design System",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": "Decision laboratory only. KPI/MetricCard promoted to 15.02, ChartFrame to 15.01, TrendChart to 15.03 and ComparisonChart to 15.04; remaining chart families/tables/states/layers await their 15/18 owners.",
+    "note": "Decision laboratory only. KPI/MetricCard promoted to 15.02, ChartFrame to 15.01, TrendChart to 15.03, ComparisonChart to 15.04, ShareChart to 15.05, CorrelationChart to 15.06 and ForecastChart to 15.07; remaining chart families/tables/states/layers await their 15/18 owners.",
     "group": null,
     "sourceStatus": "specified",
     "documentationStatus": "review",
@@ -1233,27 +1233,40 @@ export const storybookCatalog = [
     "storyClass": "component",
     "owner": "Analytics UI",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": null,
+    "note": "Runtime owner: ForecastChart. Owns actual vs forecast split, uncertainty band, confidence, quality copy and static scenarios. Forecast is not a fact; full data states stay in 15.08, tooltip/hover/selection/drill-down/cross-filtering stay in 15.09 and final responsive/a11y pass stays in 15.10.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "draft",
-    "prototypeStatus": "none",
-    "productionStatus": "not_started",
-    "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "documentationStatus": "review",
+    "prototypeStatus": "implemented",
+    "productionStatus": "implemented",
+    "testStatus": "passing",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "actual",
       "forecast",
-      "confidence range",
-      "scenariusze",
-      "ograniczenia",
-      "status jakości prognozy"
+      "lowerBound",
+      "upperBound",
+      "uncertainty band",
+      "confidence",
+      "quality",
+      "scenarios",
+      "forecast is not a fact",
+      "historical vs predicted split",
+      "static scenarios without interaction",
+      "light and dark",
+      "desktop tablet mobile",
+      "long copy",
+      "15.08 data states handoff",
+      "15.09 interaction handoff",
+      "15.10 responsive/a11y final pass handoff"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "15 Wykresy i dane/Prognoza i AI",
+    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/ForecastChart.stories.tsx",
     "displaySectionTitle": "Wykresy i dane",
-    "displayTitle": "Prognozy i AI"
+    "displayTitle": "Prognoza i AI",
+    "storyExport": "ForecastChartStory",
+    "accepted": false
   },
   {
     "id": "15.08",

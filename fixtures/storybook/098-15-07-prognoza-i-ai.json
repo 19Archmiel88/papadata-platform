@@ -1,17 +1,26 @@
 {
   "fixtureId": "SB-098",
-  "storyTitle": "15 Wykresy i wizualizacje danych/Prognoza i AI",
+  "storyTitle": "15 Wykresy i dane/Prognoza i AI",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-07-prognoza-i-ai.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "ChartFrame",
+    "ForecastChart"
+  ],
   "states": [
     "ready",
-    "loading",
-    "empty",
-    "error",
-    "noData",
-    "singlePoint",
-    "negativeValues"
+    "actual",
+    "forecast",
+    "uncertaintyBand",
+    "confidence",
+    "quality",
+    "staticScenarios",
+    "alternativeTable",
+    "longCopy",
+    "forecastNotFact",
+    "handoff15_08",
+    "handoff15_09",
+    "handoff15_10"
   ],
   "viewports": [
     1440,
@@ -27,11 +36,17 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-chartframe-composition",
+    "verify-actual-forecast-split",
+    "verify-uncertainty-band",
+    "verify-confidence-copy",
+    "verify-quality-copy",
+    "verify-static-scenarios",
+    "verify-alternative-table",
+    "verify-forecast-not-fact",
+    "verify-no-recharts-tooltip",
+    "verify-no-15-09-interaction",
+    "verify-15-08-15-09-15-10-handoff"
   ],
   "visualAssertions": [
     "1440-light",
@@ -39,15 +54,19 @@
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-negativeValues"
+    "long-copy",
+    "uncertainty-band-visible",
+    "axis-and-legend-readable",
+    "alternative-table-affordance-visible",
+    "no-horizontal-page-scroll",
+    "no-runtime-owner-duplication"
   ],
   "a11y": [
     "keyboard-only",
     "focus-visible",
     "accessible-name",
-    "live-region",
+    "alternative-table",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-static-contract"
 }

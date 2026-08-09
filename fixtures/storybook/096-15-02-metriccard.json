@@ -12,8 +12,9 @@
     "ready",
     "partial",
     "stale",
-    "processing",
-    "noData"
+    "loading",
+    "noData",
+    "legacyAliasProcessing"
   ],
   "emphasis": [
     "default",

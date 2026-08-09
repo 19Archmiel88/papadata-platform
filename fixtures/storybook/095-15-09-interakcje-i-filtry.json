@@ -1,17 +1,25 @@
 {
   "fixtureId": "SB-095",
-  "storyTitle": "15 Wykresy i wizualizacje danych/Interakcje i filtry",
+  "storyTitle": "15 Wykresy i dane/Interakcje i filtry",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-09-interakcje-i-filtry.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "ChartFrame",
+    "ChartInteractionLayer",
+    "TrendChart"
+  ],
   "states": [
     "ready",
-    "loading",
-    "empty",
-    "error",
-    "noData",
-    "singlePoint",
-    "negativeValues"
+    "tooltip",
+    "hover",
+    "keyboardFocus",
+    "selection",
+    "dateRange",
+    "reset",
+    "drillDown",
+    "crossFiltering",
+    "emptyPointsGuard",
+    "doesNotChangeDataMeaning"
   ],
   "viewports": [
     1440,
@@ -28,10 +36,15 @@
   ],
   "playSteps": [
     "focus-first-interactive",
-    "exercise-component-interaction",
+    "exercise-filter-change",
+    "exercise-hover-focus-tooltip",
+    "exercise-point-selection",
+    "exercise-reset",
+    "exercise-drill-down",
     "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-empty-points-guard",
+    "verify-keyboard-only",
+    "verify-data-semantics-unchanged"
   ],
   "visualAssertions": [
     "1440-light",
@@ -40,14 +53,18 @@
     "390-mobile",
     "200-percent-zoom",
     "reduced-motion",
-    "state-negativeValues"
+    "focus-ring-visible",
+    "interactive-controls-do-not-reflow-chart",
+    "no-horizontal-page-scroll"
   ],
   "a11y": [
     "keyboard-only",
     "focus-visible",
     "accessible-name",
     "live-region",
+    "aria-pressed",
+    "tooltip-describedby",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-interaction-system"
 }

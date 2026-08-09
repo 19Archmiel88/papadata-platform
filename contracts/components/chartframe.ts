@@ -1,4 +1,5 @@
 import type { BaseComponentProps, ChartSeries, ComponentEvent } from '../component-shared';
+import type { ChartDataStateKind } from './chartdatastate';
 
 /**
  * Orchestration contract used by screen/domain specifications.
@@ -7,6 +8,8 @@ import type { BaseComponentProps, ChartSeries, ComponentEvent } from '../compone
 export interface ChartFrameProps extends BaseComponentProps {
   title: string;
   subtitle: string | null;
+  status: ChartDataStateKind;
+  statusLabel: string;
   series: ChartSeries[];
   unit: string;
   dateRangeLabel: string;

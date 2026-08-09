@@ -24,74 +24,88 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Właściciel | Analytics UX |
 | Moduł | Wykresy i wizualizacje danych — M02 |
 
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | WDROŻONE W STORYBOOK — REVIEW QUALITY GATE |
+| Status Storybooka | `15 Wykresy i dane/Responsywność i dostępność`, visible, implemented |
+| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy A15.6 |
 
 ## Cel i decyzja docelowa
 
-„Responsywność i dostępność” jest współdzielonym kontraktem, a nie lokalnym układem jednego ekranu. Wzorzec ma jedną odpowiedzialność, korzysta z fundamentów i komponentów bazowych oraz udostępnia warianty wymagane przez domeny bez kopiowania implementacji.
+15.10 jest finalnym passem responsive i accessibility dla sekcji 15 po wdrożeniu ownerów 15.01–15.09. Nie dodaje nowych funkcji, nowej geometrii ani nowych runtime ownerów. Ujednolica odbiór wykresów na desktop/tablet/mobile, light/dark, długich tekstach, legendach, kontraście i alternatywnym opisie danych.
 
 ## Stan obecny
 
+Storybook `ChartAccessibilityReview` jest wdrożony jako quality gate 15.10. Pokazuje macierz ownerów 15.01–15.09 oraz listę wymagań końcowych: desktop/tablet/mobile, light/dark, długie legendy bez poziomego scrolla, kontrast, alternatywny opis danych i brak nowych funkcji.
 
 ## Zakres i wymagania
 
 | Lp. | Wymaganie | Kontrakt | Dowód odbioru |
 | --- | --- | --- | --- |
-| 1 | stan domyślny | wymagany wariant lub stan | test Storybook + test interakcji |
+| 1 | desktop / tablet / mobile | układ czytelny na 1440, 768 i 390 px | story + visual assertion |
+| 2 | light / dark | copy, osie, legendy i statusy zachowują kontrast | story + visual assertion |
+| 3 | long copy | długie tytuły, legendy i opisy zawijają się bez overlapu | story + `long-copy` |
+| 4 | legendy | legenda pozostaje czytelna i nie zasłania danych | story + `legend-readable` |
+| 5 | kontrast | mała typografia statusów i akcentów zachowuje czytelność | story + `contrast-copy-present` |
+| 6 | alternatywny opis danych | wykres ma tabelę lub opis tekstowy danych | story + `alternative-table-visible` |
+| 7 | no new features | finalny pass nie tworzy nowych interakcji ani geometrii | `pnpm check:analytics-system` |
+| 8 | owner matrix | ownerzy 15.01–15.09 są jawnie rozdzieleni | story + fixture |
 
 ## Anatomia
 
 ```text
-responsywnosc-i-dostepnosc
-├── semantic root
-├── header or accessible label
-├── primary content
-├── status / validation region
-├── primary action
-└── optional secondary actions or metadata
+15.10 quality gate
+├── section 15 owner matrix
+├── viewport and theme checklist
+├── long-copy and legend checks
+├── contrast and focus checks
+├── alternative data description
+└── no-new-features assertion
 ```
 
 ## Komponenty składowe
 
-- PageHeader
-- DataStatusBanner
-- InlineNotice
-- Button
+- `ChartFrame`
+- `MetricCard`
+- `TrendChart`
+- `ComparisonChart`
+- `ShareChart`
+- `CorrelationChart`
+- `ForecastChart`
+- `ChartDataState`
+- `ChartInteractionLayer`
 
-Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
+15.10 nie przejmuje publicznego API tych komponentów. Wskazuje regresje i oczekiwane kryteria odbioru.
 
 ## Kontrakt stanu
 
-- Stan kontrolowany jest używany dla route, filtrów, formularza, selection i overlay.
-- Stan asynchroniczny rozróżnia loading, processing, retrying, success, recoverable error i terminal error.
-- Read-only, no-access i plan-restricted są osobnymi stanami, nie odmianą disabled.
-- Zmiana motywu, języka lub viewportu nie resetuje danych ani procesu.
+- 15.10 nie definiuje nowego `dataState`.
+- Stan danych pozostaje własnością 15.08.
+- Interakcje pozostają własnością 15.09.
+- Jeżeli finalny pass ujawni regresję, naprawa ma trafić do właściwego ownera, a nie do lokalnego obejścia w story 15.10.
 
 ## Interakcje i klawiatura
 
-Tab order odpowiada hierarchii zadania. Enter/Space uruchamiają natywne kontrolki; Escape zamyka najwyższą warstwę; strzałki są używane wyłącznie w komponentach z modelem composite widget. Focus restore jest obowiązkowy po każdej warstwie.
+15.10 weryfikuje keyboard-only, focus-visible i focus restoration dla ownerów, które mają interakcje. Nie dodaje własnych tooltipów, zoomu, hover ani drill-down.
 
 ## Responsywność
 
-Wide może używać kolumn lub detail panelu. Compact przechodzi w jedną kolumnę, zachowuje wszystkie funkcje i przenosi akcje drugorzędne do jawnego overflow. Tabele otrzymują scroll lub widok priorytetowych kolumn, a wykresy — tabelę alternatywną.
+Wszystkie wykresy sekcji 15 muszą przejść desktop/tablet/mobile oraz zoom 200% bez poziomego scrolla strony, overlapu tekstu, utraty legendy i utraty alternatywnego odczytu danych.
 
 ## Dostępność
 
-Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kontrast, reduced motion, live region dla wyników asynchronicznych, reflow i brak informacji zależnej wyłącznie od koloru.
+Minimum WCAG 2.2 AA: kolejność nagłówków, dostępne nazwy, focus-visible, target size, kontrast, reduced motion, reflow, alternatywne dane dla wykresów i brak informacji zależnej wyłącznie od koloru.
 
 ## Storybook
 
-- Title: `15 Wykresy i wizualizacje danych/Responsywność i dostępność`.
-- Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
-- Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
+- Title: `15 Wykresy i dane/Responsywność i dostępność`.
+- Story: `ChartAccessibilityReviewStory`.
+- Status: implemented, visible, review quality gate.
+- Wymagane przypadki: owner matrix 15.01–15.09, desktop/tablet/mobile, light/dark, long copy, legendy, kontrast, alternatywny opis danych, brak nowych funkcji.
 
 ## Testy i kryteria akceptacji
 
-1. Wszystkie wymagania mają story i asercję testową.
-2. Wzorzec nie tworzy duplikatu komponentu bazowego.
-3. Stany błędu i brak dostępu mają recovery albo jednoznaczne zakończenie.
-4. Mobile i zoom 200% nie tracą funkcji.
-5. Klawiatura oraz focus restore przechodzą play test.
-6. Dokument jest linkowany przez co najmniej jeden ekran albo oznaczony jako fundament przyszłego użycia.
+1. Story 15.10 potwierdza macierz ownerów 15.01–15.09.
+2. Nie pojawia się nowy runtime owner ani nowa funkcja w 15.10.
+3. Każdy wykres sekcji 15 ma ścieżkę alternatywnego odczytu danych albo opis.
+4. Mobile i zoom 200% nie powodują poziomego scrolla strony.
+5. Light/dark zachowują kontrast osi, legend, statusów i opisów.
+6. Walidacja `pnpm check:analytics-system` potwierdza quality gate 15.10.

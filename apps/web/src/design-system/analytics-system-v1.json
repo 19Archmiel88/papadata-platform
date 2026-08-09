@@ -62,11 +62,37 @@
       "story": "apps/web/src/storybook-next/stories/15-data-visualizations/ForecastChart.stories.tsx",
       "fixture": "fixtures/storybook/098-15-07-prognoza-i-ai.json",
       "status": "review"
+    },
+    {
+      "id": "15.08",
+      "component": "ChartDataState",
+      "runtime": "apps/web/src/design-system/components/ChartDataState/ChartDataState.tsx",
+      "story": "apps/web/src/storybook-next/stories/15-data-visualizations/DataStates.stories.tsx",
+      "fixture": "fixtures/storybook/100-15-08-stany-danych.json",
+      "status": "review"
+    },
+    {
+      "id": "15.09",
+      "component": "ChartInteractionLayer",
+      "runtime": "apps/web/src/design-system/components/ChartInteractionLayer/ChartInteractionLayer.tsx",
+      "story": "apps/web/src/storybook-next/stories/15-data-visualizations/ChartInteractions.stories.tsx",
+      "fixture": "fixtures/storybook/095-15-09-interakcje-i-filtry.json",
+      "status": "review"
+    }
+  ],
+  "qualityGates": [
+    {
+      "id": "15.10",
+      "name": "Responsywność i dostępność",
+      "story": "apps/web/src/storybook-next/stories/15-data-visualizations/ChartAccessibilityReview.stories.tsx",
+      "fixture": "fixtures/storybook/099-15-10-responsywnosc-i-dostepnosc.json",
+      "status": "review"
     }
   ],
   "handoff": {
-    "05.03": "15.01/15.02/15.03/15.04/15.05/15.06/15.07",
-    "10 Komponenty/ForecastChart": "15.07"
+    "05.03": "15.01/15.02/15.03/15.04/15.05/15.06/15.07/15.08/15.09/15.10",
+    "10 Komponenty/ForecastChart": "15.07",
+    "15.07/ForecastChart": "15.08 data states, 15.09 interactions, 15.10 final responsive/a11y pass"
   },
   "chartEngine": "recharts"
 }

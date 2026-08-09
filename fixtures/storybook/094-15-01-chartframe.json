@@ -12,8 +12,9 @@
   "states": [
     "ready",
     "partial",
-    "processing",
-    "noData"
+    "loading",
+    "noData",
+    "legacyAliasProcessing"
   ],
   "viewports": [
     1440,

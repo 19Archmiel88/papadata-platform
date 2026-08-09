@@ -65,11 +65,13 @@ const expectedRuntimeOwners = [
   ['ShareChart', '15.05'],
   ['CorrelationChart', '15.06'],
   ['ForecastChart', '15.07'],
+  ['ChartDataState', '15.08'],
+  ['ChartInteractionLayer', '15.09'],
 ];
 
 ensure(
   system.entries.length === expectedRuntimeOwners.length,
-  'Analytics System A15.6 must contain exactly 15.01-15.07 runtime owners.',
+  'Analytics System A15.6 must contain exactly 15.01-15.09 runtime owners.',
 );
 
 for (const item of system.entries) {
@@ -111,6 +113,48 @@ for (const item of system.entries) {
   );
 }
 
+ensure(
+  Array.isArray(system.qualityGates),
+  'Analytics System A15.6 must declare quality gates.',
+);
+
+const finalA11yGate = system.qualityGates.find((gate) => (
+  gate.id === '15.10'
+));
+
+ensure(
+  finalA11yGate?.name === 'Responsywność i dostępność',
+  '15.10 quality gate must be declared explicitly.',
+);
+
+for (const path of [
+  finalA11yGate?.story,
+  finalA11yGate?.fixture,
+]) {
+  ensure(
+    typeof path === 'string'
+      && existsSync(resolveFromRoot(path)),
+    `15.10: missing ${path}`,
+  );
+}
+
+const finalA11yEntry = entries.get('15.10');
+
+ensure(
+  finalA11yEntry?.storyStatus === 'implemented',
+  '15.10: Storybook contract must be implemented.',
+);
+
+ensure(
+  finalA11yEntry?.storyVisibility === 'visible',
+  '15.10: story must be visible.',
+);
+
+ensure(
+  finalA11yEntry?.accepted === false,
+  '15.10: final pass remains review until visual acceptance.',
+);
+
 const runtimeRegistry = readText(
   'rejestry/runtime-component-api.csv',
 );
@@ -143,6 +187,113 @@ const storybookRegistry = readText(
   'rejestry/storybook.csv',
 );
 
+const chartFrameEntry = entries.get('15.01');
+const metricCardEntry = entries.get('15.02');
+const dataSurfaceLaboratoryEntry = entries.get('05.03');
+
+for (const promoted of [
+  'data states promoted to 15.08',
+  'interactions and filters promoted to 15.09',
+  'final responsive/a11y pass promoted to 15.10',
+]) {
+  ensureArrayIncludes(
+    dataSurfaceLaboratoryEntry?.requirements,
+    promoted,
+    `05.03: missing promoted owner handoff: ${promoted}`,
+  );
+}
+
+ensureArrayExcludes(
+  dataSurfaceLaboratoryEntry?.requirements,
+  'remaining data-state decisions',
+  '05.03: data states must not remain an open decision after 15.08.',
+);
+
+for (const [
+  entry,
+  marker,
+] of [
+  [
+    chartFrameEntry,
+    'ready/partial/loading/noData',
+  ],
+  [
+    metricCardEntry,
+    'loading/noData/stale',
+  ],
+]) {
+  ensureArrayIncludes(
+    entry?.requirements,
+    marker,
+    `${entry?.id}: contract must promote canonical loading.`,
+  );
+
+  ensureArrayIncludes(
+    entry?.requirements,
+    'processing legacy alias for loading',
+    `${entry?.id}: contract must keep processing only as a legacy alias.`,
+  );
+}
+
+for (const [
+  fixturePath,
+  fixtureId,
+] of [
+  [
+    'fixtures/storybook/094-15-01-chartframe.json',
+    'SB-094',
+  ],
+  [
+    'fixtures/storybook/096-15-02-metriccard.json',
+    'SB-096',
+  ],
+]) {
+  const fixture = readJson(fixturePath);
+
+  ensureArrayIncludes(
+    fixture.states,
+    'loading',
+    `${fixtureId}: fixture must use canonical loading.`,
+  );
+
+  ensureArrayIncludes(
+    fixture.states,
+    'legacyAliasProcessing',
+    `${fixtureId}: fixture must document processing as legacy alias.`,
+  );
+
+  ensureArrayExcludes(
+    fixture.states,
+    'processing',
+    `${fixtureId}: fixture states must not promote processing as canonical.`,
+  );
+}
+
+for (const [
+  title,
+  expectedStates,
+] of [
+  [
+    '15 Wykresy i dane/ChartFrame',
+    'ready|partial|loading|noData|legacyAliasProcessing',
+  ],
+  [
+    '15 Wykresy i dane/MetricCard',
+    'ready|partial|stale|loading|noData|legacyAliasProcessing',
+  ],
+]) {
+  const row = storybookRegistry
+    .split('\n')
+    .find((line) => (
+      line.startsWith(`${title},`)
+    ));
+
+  ensure(
+    row?.includes(expectedStates),
+    `${title}: registry must use canonical loading and explicit processing alias.`,
+  );
+}
+
 for (const title of [
   '15 Wykresy i dane/ChartFrame',
   '15 Wykresy i dane/MetricCard',
@@ -151,6 +302,9 @@ for (const title of [
   '15 Wykresy i dane/Udziały i struktura',
   '15 Wykresy i dane/Zależności i korelacje',
   '15 Wykresy i dane/Prognoza i AI',
+  '15 Wykresy i dane/Stany danych',
+  '15 Wykresy i dane/Interakcje i filtry',
+  '15 Wykresy i dane/Responsywność i dostępność',
 ]) {
   const rows = storybookRegistry
     .split('\n')
@@ -337,6 +491,182 @@ ensure(
   'SB-098 ForecastChart fixture must remain review/static until visual acceptance.',
 );
 
+const dataStatesFixture = readJson(
+  'fixtures/storybook/100-15-08-stany-danych.json',
+);
+
+for (const state of [
+  'loading',
+  'empty',
+  'noData',
+  'partial',
+  'stale',
+  'delayed',
+  'blocked',
+  'error',
+  'unavailable',
+  'sharedStateLanguage',
+  'noPerChartStates',
+]) {
+  ensureArrayIncludes(
+    dataStatesFixture.states,
+    state,
+    `SB-100 data states fixture missing state: ${state}`,
+  );
+}
+
+for (const step of [
+  'verify-loading-state',
+  'verify-empty-state',
+  'verify-no-data-state',
+  'verify-partial-state',
+  'verify-stale-state',
+  'verify-delayed-state',
+  'verify-blocked-state',
+  'verify-error-state',
+  'verify-unavailable-state',
+  'verify-shared-chartframe-state-system',
+]) {
+  ensureArrayIncludes(
+    dataStatesFixture.playSteps,
+    step,
+    `SB-100 data states fixture missing play step: ${step}`,
+  );
+}
+
+ensureArrayIncludes(
+  dataStatesFixture.a11y,
+  'live-region',
+  'SB-100 data states fixture must require a live region.',
+);
+
+ensure(
+  dataStatesFixture.implementationStatus === 'implemented-review-state-system',
+  'SB-100 data states fixture must be implemented as review state system.',
+);
+
+const interactionFixture = readJson(
+  'fixtures/storybook/095-15-09-interakcje-i-filtry.json',
+);
+
+for (const state of [
+  'tooltip',
+  'hover',
+  'keyboardFocus',
+  'selection',
+  'dateRange',
+  'reset',
+  'drillDown',
+  'crossFiltering',
+  'emptyPointsGuard',
+  'doesNotChangeDataMeaning',
+]) {
+  ensureArrayIncludes(
+    interactionFixture.states,
+    state,
+    `SB-095 interaction fixture missing state: ${state}`,
+  );
+}
+
+for (const step of [
+  'exercise-filter-change',
+  'exercise-hover-focus-tooltip',
+  'exercise-point-selection',
+  'exercise-reset',
+  'exercise-drill-down',
+  'verify-focus-restoration',
+  'verify-empty-points-guard',
+  'verify-keyboard-only',
+  'verify-data-semantics-unchanged',
+]) {
+  ensureArrayIncludes(
+    interactionFixture.playSteps,
+    step,
+    `SB-095 interaction fixture missing play step: ${step}`,
+  );
+}
+
+for (const assertion of [
+  'focus-ring-visible',
+  'interactive-controls-do-not-reflow-chart',
+  'no-horizontal-page-scroll',
+]) {
+  ensureArrayIncludes(
+    interactionFixture.visualAssertions,
+    assertion,
+    `SB-095 interaction fixture missing visual assertion: ${assertion}`,
+  );
+}
+
+for (const a11y of [
+  'keyboard-only',
+  'focus-visible',
+  'aria-pressed',
+  'tooltip-describedby',
+]) {
+  ensureArrayIncludes(
+    interactionFixture.a11y,
+    a11y,
+    `SB-095 interaction fixture missing a11y marker: ${a11y}`,
+  );
+}
+
+ensure(
+  interactionFixture.implementationStatus === 'implemented-review-interaction-system',
+  'SB-095 interaction fixture must be implemented as review interaction system.',
+);
+
+const finalPassFixture = readJson(
+  'fixtures/storybook/099-15-10-responsywnosc-i-dostepnosc.json',
+);
+
+for (const state of [
+  'desktop',
+  'tablet',
+  'mobile',
+  'light',
+  'dark',
+  'longCopy',
+  'legend',
+  'contrast',
+  'alternativeDataDescription',
+  'noNewFeatures',
+  'section15OwnerMatrix',
+]) {
+  ensureArrayIncludes(
+    finalPassFixture.states,
+    state,
+    `SB-099 final pass fixture missing state: ${state}`,
+  );
+}
+
+for (const step of [
+  'verify-owner-matrix-15-01-to-15-09',
+  'verify-desktop-tablet-mobile-copy',
+  'verify-light-dark-copy',
+  'verify-long-copy-reflow',
+  'verify-legend-readable',
+  'verify-alternative-data-description',
+  'verify-no-new-features',
+]) {
+  ensureArrayIncludes(
+    finalPassFixture.playSteps,
+    step,
+    `SB-099 final pass fixture missing play step: ${step}`,
+  );
+}
+
+ensureArrayIncludes(
+  finalPassFixture.a11y,
+  'alternative-table',
+  'SB-099 final pass fixture must require an alternative table.',
+);
+
+ensure(
+  finalPassFixture.implementationStatus === 'implemented-review-final-responsive-a11y-pass',
+  'SB-099 final pass fixture must be implemented as final responsive/a11y pass.',
+);
+
 for (const legacy of [
   '10 Komponenty/ChartFrame,',
   '10 Komponenty/MetricCard,',
@@ -381,6 +711,10 @@ const componentIndex = readText(
 for (const marker of [
   'ChartFrame',
   'ChartFrameProps',
+  'ChartDataState',
+  'ChartDataStateProps',
+  'ChartInteractionLayer',
+  'ChartInteractionLayerProps',
   'MetricCard',
   'MetricCardProps',
   'TrendChart',
@@ -406,6 +740,14 @@ for (const [
 ] of [
   [
     'contracts/components/chartframe.ts',
+    'Orchestration contract',
+  ],
+  [
+    'contracts/components/chartdatastate.ts',
+    'Orchestration contract',
+  ],
+  [
+    'contracts/components/chartinteractionlayer.ts',
     'Orchestration contract',
   ],
   [
@@ -616,6 +958,70 @@ ensure(
   '15.07 must not take tooltip ownership from 15.09.',
 );
 
+const chartDataStateRuntime = readText(
+  'apps/web/src/design-system/components/ChartDataState/ChartDataState.tsx',
+);
+
+for (const marker of [
+  'ChartDataState',
+  'loading',
+  'empty',
+  'noData',
+  'partial',
+  'stale',
+  'delayed',
+  'blocked',
+  'error',
+  'unavailable',
+  'aria-live',
+  'role={assertive ?',
+  'Skeleton',
+]) {
+  ensure(
+    chartDataStateRuntime.includes(marker),
+    `ChartDataState runtime missing ${marker}.`,
+  );
+}
+
+const chartFrameRuntime = readText(
+  'apps/web/src/design-system/components/ChartFrame/ChartFrame.tsx',
+);
+
+ensure(
+  chartFrameRuntime.includes('ChartDataState'),
+  'ChartFrame must consume the shared 15.08 ChartDataState runtime.',
+);
+
+const chartInteractionRuntime = readText(
+  'apps/web/src/design-system/components/ChartInteractionLayer/ChartInteractionLayer.tsx',
+);
+
+for (const marker of [
+  'ChartInteractionLayer',
+  'role="tooltip"',
+  'role="group"',
+  'onMouseEnter',
+  'onFocus',
+  'aria-pressed',
+  'dateRangeLabel',
+  'onReset',
+  'onDrillDown',
+  'crossFilter',
+  'emptySelection',
+  'hasPoints',
+  'data-state="empty-points"',
+]) {
+  ensure(
+    chartInteractionRuntime.includes(marker),
+    `ChartInteractionLayer runtime missing ${marker}.`,
+  );
+}
+
+ensure(
+  !chartInteractionRuntime.includes('role="toolbar"'),
+  'ChartInteractionLayer must not declare role="toolbar" without a toolbar keyboard model.',
+);
+
 const webPackage = readJson(
   'apps/web/package.json',
 );
@@ -678,6 +1084,9 @@ for (const handoff of [
   '15.05',
   '15.06',
   '15.07',
+  '15.08',
+  '15.09',
+  '15.10',
 ]) {
   ensure(
     lab.includes(handoff),
@@ -737,6 +1146,9 @@ for (const path of [
   'apps/web/src/storybook-next/stories/15-data-visualizations/ShareChart.stories.tsx',
   'apps/web/src/storybook-next/stories/15-data-visualizations/CorrelationChart.stories.tsx',
   'apps/web/src/storybook-next/stories/15-data-visualizations/ForecastChart.stories.tsx',
+  'apps/web/src/storybook-next/stories/15-data-visualizations/DataStates.stories.tsx',
+  'apps/web/src/storybook-next/stories/15-data-visualizations/ChartInteractions.stories.tsx',
+  'apps/web/src/storybook-next/stories/15-data-visualizations/ChartAccessibilityReview.stories.tsx',
 ]) {
   const source = readText(path);
 
@@ -840,6 +1252,133 @@ for (const marker of [
   );
 }
 
+const dataStatesStory = readText(
+  'apps/web/src/storybook-next/stories/15-data-visualizations/DataStates.stories.tsx',
+);
+
+for (const marker of [
+  "title: '15 Wykresy i dane/Stany danych'",
+  'ChartDataState',
+  'ChartFrame',
+  'loading',
+  'empty',
+  'noData',
+  'partial',
+  'stale',
+  'delayed',
+  'blocked',
+  'error',
+  'unavailable',
+  'Jeden spójny system stanów',
+  'Nie tworzymy osobnych stanów per wykres',
+]) {
+  ensure(
+    dataStatesStory.includes(marker),
+    `15.08 story missing decision/evidence marker: ${marker}`,
+  );
+}
+
+const interactionStory = readText(
+  'apps/web/src/storybook-next/stories/15-data-visualizations/ChartInteractions.stories.tsx',
+);
+
+for (const marker of [
+  "title: '15 Wykresy i dane/Interakcje i filtry'",
+  'ChartInteractionLayer',
+  'tooltip',
+  'hover',
+  'focus z klawiatury',
+  'selection',
+  'date range',
+  'reset',
+  'drill-down',
+  'cross-filtering',
+  'Focus restoration',
+  'Guard pustych punktów',
+  'Brak punktów interakcji',
+  'nie zmienia sensu danych',
+  '15.03–15.07',
+]) {
+  ensure(
+    interactionStory.includes(marker),
+    `15.09 story missing decision/evidence marker: ${marker}`,
+  );
+}
+
+const finalPassStory = readText(
+  'apps/web/src/storybook-next/stories/15-data-visualizations/ChartAccessibilityReview.stories.tsx',
+);
+
+for (const marker of [
+  "title: '15 Wykresy i dane/Responsywność i dostępność'",
+  'desktop / tablet / mobile',
+  'light / dark',
+  'długie legendy bez poziomego scrolla',
+  'alternatywny opis danych',
+  'nie dodaje nowych funkcji',
+  '15.08 ChartDataState',
+  '15.09 ChartInteractionLayer',
+]) {
+  ensure(
+    finalPassStory.includes(marker),
+    `15.10 story missing decision/evidence marker: ${marker}`,
+  );
+}
+
+for (const [
+  path,
+  markers,
+] of [
+  [
+    'docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-08-stany-danych.md',
+    [
+      'WDROŻONE W STORYBOOK — REVIEW',
+      '`15 Wykresy i dane/Stany danych`',
+      'kanoniczny stan trwającego pobierania to `loading`',
+      '`processing` pozostaje wyłącznie legacy aliasem',
+      'nie tworzy lokalnych stanów',
+    ],
+  ],
+  [
+    'docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-09-interakcje-i-filtry.md',
+    [
+      'WDROŻONE W STORYBOOK — REVIEW',
+      '`15 Wykresy i dane/Interakcje i filtry`',
+      '`role="group"`',
+      'focus restoration',
+      'pusta tablica punktów nie crashuje runtime',
+    ],
+  ],
+  [
+    'docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-10-responsywnosc-i-dostepnosc.md',
+    [
+      'WDROŻONE W STORYBOOK — REVIEW QUALITY GATE',
+      '`15 Wykresy i dane/Responsywność i dostępność`',
+      'Nie dodaje nowych funkcji',
+      'owner matrix 15.01–15.09',
+    ],
+  ],
+]) {
+  const source = readText(path);
+
+  ensure(
+    !source.includes('15 Wykresy i wizualizacje danych/'),
+    `${path}: must not keep legacy Storybook title.`,
+  );
+
+  ensure(
+    !source.includes('WYMAGA IMPLEMENTACJI'),
+    `${path}: implementation status is stale.`,
+  );
+
+  for (const marker of markers) {
+    ensure(
+      source.includes(marker),
+      `${path}: missing current source marker: ${marker}`,
+    );
+  }
+}
+
 console.log(
-  'Analytics System A15.6 OK: ForecastChart 15.07 is the review owner of forecast and AI semantics; TrendChart 15.03 remains accepted.',
+  'Analytics System A15.6 OK: 15.08 data states and 15.09 interactions are review owners; 15.10 responsive/a11y final pass is a review quality gate.',
 );

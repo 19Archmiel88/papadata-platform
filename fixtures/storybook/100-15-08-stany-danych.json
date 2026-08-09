@@ -1,17 +1,25 @@
 {
   "fixtureId": "SB-100",
-  "storyTitle": "15 Wykresy i wizualizacje danych/Stany danych",
+  "storyTitle": "15 Wykresy i dane/Stany danych",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-08-stany-danych.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "ChartFrame",
+    "ChartDataState",
+    "TrendChart"
+  ],
   "states": [
-    "ready",
     "loading",
     "empty",
-    "error",
     "noData",
-    "singlePoint",
-    "negativeValues"
+    "partial",
+    "stale",
+    "delayed",
+    "blocked",
+    "error",
+    "unavailable",
+    "sharedStateLanguage",
+    "noPerChartStates"
   ],
   "viewports": [
     1440,
@@ -27,11 +35,16 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-loading-state",
+    "verify-empty-state",
+    "verify-no-data-state",
+    "verify-partial-state",
+    "verify-stale-state",
+    "verify-delayed-state",
+    "verify-blocked-state",
+    "verify-error-state",
+    "verify-unavailable-state",
+    "verify-shared-chartframe-state-system"
   ],
   "visualAssertions": [
     "1440-light",
@@ -40,14 +53,17 @@
     "390-mobile",
     "200-percent-zoom",
     "reduced-motion",
-    "state-negativeValues"
+    "no-horizontal-page-scroll",
+    "state-language-consistent",
+    "state-actions-visible"
   ],
   "a11y": [
     "keyboard-only",
     "focus-visible",
     "accessible-name",
     "live-region",
+    "semantic-state",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-state-system"
 }

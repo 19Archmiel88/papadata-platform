@@ -1,17 +1,31 @@
 {
   "fixtureId": "SB-099",
-  "storyTitle": "15 Wykresy i wizualizacje danych/Responsywność i dostępność",
+  "storyTitle": "15 Wykresy i dane/Responsywność i dostępność",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-10-responsywnosc-i-dostepnosc.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "ChartFrame",
+    "TrendChart",
+    "ComparisonChart",
+    "ShareChart",
+    "CorrelationChart",
+    "ForecastChart",
+    "ChartDataState",
+    "ChartInteractionLayer"
+  ],
   "states": [
     "ready",
-    "loading",
-    "empty",
-    "error",
-    "noData",
-    "singlePoint",
-    "negativeValues"
+    "desktop",
+    "tablet",
+    "mobile",
+    "light",
+    "dark",
+    "longCopy",
+    "legend",
+    "contrast",
+    "alternativeDataDescription",
+    "noNewFeatures",
+    "section15OwnerMatrix"
   ],
   "viewports": [
     1440,
@@ -27,11 +41,13 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-owner-matrix-15-01-to-15-09",
+    "verify-desktop-tablet-mobile-copy",
+    "verify-light-dark-copy",
+    "verify-long-copy-reflow",
+    "verify-legend-readable",
+    "verify-alternative-data-description",
+    "verify-no-new-features"
   ],
   "visualAssertions": [
     "1440-light",
@@ -40,14 +56,19 @@
     "390-mobile",
     "200-percent-zoom",
     "reduced-motion",
-    "state-negativeValues"
+    "long-copy",
+    "legend-readable",
+    "contrast-copy-present",
+    "alternative-table-visible",
+    "no-horizontal-page-scroll"
   ],
   "a11y": [
     "keyboard-only",
     "focus-visible",
     "accessible-name",
-    "live-region",
+    "alternative-table",
+    "semantic-heading-order",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-final-responsive-a11y-pass"
 }

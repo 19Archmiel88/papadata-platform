@@ -1,5 +1,6 @@
 export type {
   AnalyticsAction,
+  AnalyticsCanonicalDataState,
   AnalyticsDataState,
   AnalyticsSignalTone,
   AnalyticsTrendDirection,
@@ -7,5 +8,8 @@ export type {
 
 export {
   analyticsStateHasRenderableData,
+  analyticsStateIsLoading,
+  analyticsStateRequiresAssertiveNotice,
+  normalizeAnalyticsDataState,
   resolveAnalyticsDataStateTone,
 } from './analyticsTypes';

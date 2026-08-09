@@ -2,12 +2,29 @@ import type { SemanticStatusTone } from '../../foundations';
 
 export type AnalyticsDataState =
   | 'ready'
+  | 'loading'
+  | 'empty'
+  | 'noData'
   | 'partial'
   | 'stale'
+  | 'delayed'
+  | 'blocked'
+  | 'error'
+  | 'unavailable'
   | 'processing'
-  | 'noData'
   | 'conflict'
-  | 'providerError'
+  | 'providerError';
+
+export type AnalyticsCanonicalDataState =
+  | 'ready'
+  | 'loading'
+  | 'empty'
+  | 'noData'
+  | 'partial'
+  | 'stale'
+  | 'delayed'
+  | 'blocked'
+  | 'error'
   | 'unavailable';
 
 export type AnalyticsTrendDirection =
@@ -29,14 +46,35 @@ export type AnalyticsAction = {
 
 const analyticsDataStateToneMap = {
   ready: 'success',
+  loading: 'processing',
+  empty: 'neutral',
+  noData: 'neutral',
   partial: 'warning',
   stale: 'warning',
+  delayed: 'warning',
+  blocked: 'critical',
+  error: 'critical',
+  unavailable: 'neutral',
   processing: 'processing',
-  noData: 'neutral',
   conflict: 'critical',
   providerError: 'critical',
-  unavailable: 'neutral',
 } satisfies Record<AnalyticsDataState, SemanticStatusTone>;
+
+const analyticsCanonicalStateMap = {
+  ready: 'ready',
+  loading: 'loading',
+  empty: 'empty',
+  noData: 'noData',
+  partial: 'partial',
+  stale: 'stale',
+  delayed: 'delayed',
+  blocked: 'blocked',
+  error: 'error',
+  unavailable: 'unavailable',
+  processing: 'loading',
+  conflict: 'blocked',
+  providerError: 'error',
+} satisfies Record<AnalyticsDataState, AnalyticsCanonicalDataState>;
 
 export function resolveAnalyticsDataStateTone(
   state: AnalyticsDataState,
@@ -44,10 +82,34 @@ export function resolveAnalyticsDataStateTone(
   return analyticsDataStateToneMap[state];
 }
 
+export function normalizeAnalyticsDataState(
+  state: AnalyticsDataState,
+): AnalyticsCanonicalDataState {
+  return analyticsCanonicalStateMap[state];
+}
+
+export function analyticsStateIsLoading(
+  state: AnalyticsDataState,
+): boolean {
+  return normalizeAnalyticsDataState(state) === 'loading';
+}
+
+export function analyticsStateRequiresAssertiveNotice(
+  state: AnalyticsDataState,
+): boolean {
+  const canonicalState = normalizeAnalyticsDataState(state);
+
+  return canonicalState === 'blocked'
+    || canonicalState === 'error';
+}
+
 export function analyticsStateHasRenderableData(
   state: AnalyticsDataState,
 ): boolean {
-  return state === 'ready'
-    || state === 'partial'
-    || state === 'stale';
+  const canonicalState = normalizeAnalyticsDataState(state);
+
+  return canonicalState === 'ready'
+    || canonicalState === 'partial'
+    || canonicalState === 'stale'
+    || canonicalState === 'delayed';
 }

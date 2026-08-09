@@ -18,3 +18,5 @@ ComparisonChart,apps/web/src/design-system/components/ComparisonChart/Comparison
 ShareChart,apps/web/src/design-system/components/ShareChart/ShareChart.tsx,ShareChartProps,15.05,review,Analytics UI
 CorrelationChart,apps/web/src/design-system/components/CorrelationChart/CorrelationChart.tsx,CorrelationChartProps,15.06,review,Analytics UI
 ForecastChart,apps/web/src/design-system/components/ForecastChart/ForecastChart.tsx,ForecastChartProps,15.07,review,Analytics UI
+ChartDataState,apps/web/src/design-system/components/ChartDataState/ChartDataState.tsx,ChartDataStateProps,15.08,review,Analytics UI
+ChartInteractionLayer,apps/web/src/design-system/components/ChartInteractionLayer/ChartInteractionLayer.tsx,ChartInteractionLayerProps,15.09,review,Analytics UI

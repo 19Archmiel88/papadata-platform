@@ -48,7 +48,8 @@
     "docs:backend": "node tools/generate-backend-contract-runtime.mjs && node tools/generate-backend-capability-docs.mjs",
     "check:storybook-presentation": "pnpm --filter @papadata/web check-storybook-presentation",
     "check:design-system-ownership": "node scripts/check-design-system-ownership.mjs",
-    "check:analytics-system": "pnpm --filter @papadata/web check-analytics-system"
+    "check:analytics-system": "pnpm --filter @papadata/web check-analytics-system",
+    "check:cross-cutting-patterns": "pnpm --filter @papadata/web check-cross-cutting-patterns"
   },
   "devDependencies": {
     "turbo": "2.10.5",

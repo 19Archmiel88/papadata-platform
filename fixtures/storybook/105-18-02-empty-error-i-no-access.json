@@ -1,14 +1,24 @@
 {
   "fixtureId": "SB-105",
-  "storyTitle": "18 Stany i wzorce przekrojowe/Empty, error i no-access",
+  "storyTitle": "18 Wzorce interfejsu/Empty, error i no-access",
   "sourceDocument": "21-stany-przekrojowe/18-02-empty-error-i-no-access.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "EmptyState",
+    "ErrorState",
+    "InlineNotice",
+    "Button",
+    "TextAction"
+  ],
   "states": [
-    "ready",
-    "loading",
     "empty",
-    "error"
+    "noResults",
+    "noData",
+    "error",
+    "blocked",
+    "forbidden",
+    "missingEntitlement",
+    "retry"
   ],
   "viewports": [
     1440,
@@ -20,15 +30,12 @@
     "dark"
   ],
   "localeCases": [
-    "pl",
-    "en-long-copy"
+    "pl"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-errorstate-alert",
+    "exercise-retry-action",
+    "verify-no-access-action-name"
   ],
   "visualAssertions": [
     "1440-light",
@@ -36,15 +43,14 @@
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-error"
+    "role-alert-only-errorstate",
+    "no-horizontal-page-scroll"
   ],
   "a11y": [
-    "keyboard-only",
+    "role-alert-errorstate",
     "focus-visible",
     "accessible-name",
-    "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-cross-cutting-pattern"
 }

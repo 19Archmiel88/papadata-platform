@@ -1,14 +1,24 @@
 {
   "fixtureId": "SB-113",
-  "storyTitle": "18 Stany i wzorce przekrojowe/Ładowanie danych i operacje w tle",
+  "storyTitle": "18 Wzorce interfejsu/Ładowanie danych i operacje w tle",
   "sourceDocument": "21-stany-przekrojowe/18-03-ladowanie-danych-i-operacje-w-tle.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "Skeleton",
+    "Spinner",
+    "Button",
+    "BackgroundOperationItem",
+    "ProgressIndicator",
+    "InlineNotice",
+    "TextAction"
+  ],
   "states": [
-    "ready",
     "loading",
-    "empty",
-    "error"
+    "queued",
+    "running",
+    "partialCompletion",
+    "cancelled",
+    "retry"
   ],
   "viewports": [
     1440,
@@ -20,15 +30,12 @@
     "dark"
   ],
   "localeCases": [
-    "pl",
-    "en-long-copy"
+    "pl"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-spinner-status",
+    "verify-progressbar",
+    "exercise-retry-action"
   ],
   "visualAssertions": [
     "1440-light",
@@ -36,15 +43,14 @@
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-error"
+    "background-operation-list",
+    "no-horizontal-page-scroll"
   ],
   "a11y": [
-    "keyboard-only",
+    "role-status-spinner",
+    "progressbar-name",
     "focus-visible",
-    "accessible-name",
-    "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-cross-cutting-pattern"
 }

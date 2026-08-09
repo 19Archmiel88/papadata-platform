@@ -78,7 +78,7 @@
 
 @media (max-width: 640px) {
   .pd-share-story__variant {
-    padding-block: var(--pd-space-7);
+    padding-block: var(--pd-space-8);
   }
 
   .pd-share-story__decision-guide > div {

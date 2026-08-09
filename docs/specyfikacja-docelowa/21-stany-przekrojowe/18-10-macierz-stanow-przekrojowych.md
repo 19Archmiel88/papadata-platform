@@ -3,9 +3,8 @@ version: 1.0
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
-id: DOC-10-320FD8BD6D06
-status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+status: review
+updated_at: 2026-08-09T12:00:00+02:00
 ---
 
 # Macierz stanów przekrojowych
@@ -19,79 +18,67 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Nazwa techniczna | macierz-stanow-przekrojowych |
 | Typ dokumentu | wzorzec przekrojowy |
 | Wersja | 1.0 |
-| Status kontraktu | zatwierdzony stan docelowy |
+| Status kontraktu | review wzorca Storybook; decyzja wizualna oczekuje na akceptację właścicielską |
 | Priorytet | P1 |
 | Właściciel | Design System |
-| Moduł | Stany i wzorce przekrojowe — M02/M03 |
+| Moduł | Wzorce interfejsu — 18 |
 
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | WDROŻONE W STORYBOOK — REVIEW |
+| Akceptacja właścicielska | `false` — wymaga osobnej akceptacji właściciela produktu |
+| Status Storybooka | `18 Wzorce interfejsu/Macierz stanów przekrojowych` |
+| Status testów | fixture + play/audit dopasowane do realnej implementacji |
 
-## Cel i decyzja docelowa
+## Cel i realny zakres
 
-„Macierz stanów przekrojowych” jest współdzielonym kontraktem, a nie lokalnym układem jednego ekranu. Wzorzec ma jedną odpowiedzialność, korzysta z fundamentów i komponentów bazowych oraz udostępnia warianty wymagane przez domeny bez kopiowania implementacji.
+Macierz przypisuje rodziny stanów do powierzchni i ownerów przez DataTable oraz lekką listę zasad, bez ściany checklist ani lokalnych kart.
 
-## Stan obecny
-
-
-## Zakres i wymagania
-
-| Lp. | Wymaganie | Kontrakt | Dowód odbioru |
-| --- | --- | --- | --- |
-| 1 | stan domyślny | wymagany wariant lub stan | test Storybook + test interakcji |
+Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.* i nie zmienia `runtime-component-api.csv` ani `analytics-system-v1.json`.
 
 ## Anatomia
 
 ```text
 macierz-stanow-przekrojowych
-├── semantic root
-├── header or accessible label
-├── primary content
-├── status / validation region
-├── primary action
-└── optional secondary actions or metadata
+├── nagłówek semantyczny
+├── treść wzorca
+├── status lub ograniczenie
+├── akcja albo recovery
+└── dowód Storybook / fixture / audyt
 ```
 
 ## Komponenty składowe
 
-- PageHeader
-- DataStatusBanner
+- DataTable
 - InlineNotice
-- Button
+- StatusBadge
 
-Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
+Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook mają prefiks `pd-x18-*` i służą wyłącznie do układu, separatorów oraz rytmu.
 
-## Kontrakt stanu
+## Zakres i wymagania
 
-- Stan kontrolowany jest używany dla route, filtrów, formularza, selection i overlay.
-- Stan asynchroniczny rozróżnia loading, processing, retrying, success, recoverable error i terminal error.
-- Read-only, no-access i plan-restricted są osobnymi stanami, nie odmianą disabled.
-- Zmiana motywu, języka lub viewportu nie resetuje danych ani procesu.
+| Lp. | Wymaganie | Kontrakt | Dowód odbioru |
+| --- | --- | --- | --- |
+| 1 | Rodziny stanów | Uniwersalne, dane, dostęp, billing, AI, operacje i integracje są widoczne w DataTable. | Storybook + fixture |
+| 2 | Statusy | Readiness rodzin stanów używa StatusBadge w status column. | Storybook + fixture |
+| 3 | Zasady | Przypisanie stanu opisuje semantykę, powierzchnię i recovery. | Storybook + fixture |
+| 4 | Brak duplikacji | Macierz nie zastępuje ownerów komponentów ani kontraktów 15.*. | Storybook + fixture |
 
-## Interakcje i klawiatura
+## Kontrakt UI
 
-Tab order odpowiada hierarchii zadania. Enter/Space uruchamiają natywne kontrolki; Escape zamyka najwyższą warstwę; strzałki są używane wyłącznie w komponentach z modelem composite widget. Focus restore jest obowiązkowy po każdej warstwie.
-
-## Responsywność
-
-Wide może używać kolumn lub detail panelu. Compact przechodzi w jedną kolumnę, zachowuje wszystkie funkcje i przenosi akcje drugorzędne do jawnego overflow. Tabele otrzymują scroll lub widok priorytetowych kolumn, a wykresy — tabelę alternatywną.
-
-## Dostępność
-
-Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kontrast, reduced motion, live region dla wyników asynchronicznych, reflow i brak informacji zależnej wyłącznie od koloru.
+- Domyślny układ używa typografii, rytmu pionowego, separatorów i lekkich list.
+- Zamknięte powierzchnie występują tylko wtedy, gdy są semantycznie uzasadnione przez komponent bazowy.
+- Story nie tworzy lokalnych zamienników Button, TextAction, LinkAction, Select, DataTable, StatusBadge, EmptyState, ErrorState, Skeleton, Spinner, Drawer ani Tabs.
+- Story nie deklaruje playSteps ani visualAssertions bez pokrycia w runtime, play teście albo audycie.
 
 ## Storybook
 
-- Title: `18 Stany i wzorce przekrojowe/Macierz stanów przekrojowych`.
-- Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
-- Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
+- Title: `18 Wzorce interfejsu/Macierz stanów przekrojowych`.
+- File: `apps/web/src/storybook-next/stories/18-cross-cutting-patterns/CrossStateMatrix.stories.tsx`.
+- Status: implemented / visible / review.
+- Accepted: false, do czasu osobnej akceptacji wizualnej.
 
 ## Testy i kryteria akceptacji
 
-1. Wszystkie wymagania mają story i asercję testową.
-2. Wzorzec nie tworzy duplikatu komponentu bazowego.
-3. Stany błędu i brak dostępu mają recovery albo jednoznaczne zakończenie.
-4. Mobile i zoom 200% nie tracą funkcji.
-5. Klawiatura oraz focus restore przechodzą play test.
-6. Dokument jest linkowany przez co najmniej jeden ekran albo oznaczony jako fundament przyszłego użycia.
+1. Play test sprawdza tabelę macierzy i listę zasad.
+2. Audyt Storybook obejmuje viewporty i zoom dla tej story.
+3. Lokalny CSS nie override'uje `.pd-f0-*`, `.pd-button`, `.pd-inline-action`, `.pd-icon-button` ani produkcyjnych klas komponentów.
+4. Mobile 390 i zoom 200% są objęte audytem Storybook, jeżeli fixture deklaruje brak poziomego scrolla.

@@ -7,10 +7,14 @@
 .pd-table {
   display: grid;
   gap: var(--pd-space-3);
+  min-inline-size: 0;
+  max-inline-size: 100%;
 }
 
 .pd-table__scroll {
   width: 100%;
+  min-inline-size: 0;
+  max-inline-size: 100%;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scrollbar-width: thin;
@@ -37,7 +41,7 @@
 }
 
 .pd-table__element {
-  min-width: var(--pd-table-min-width, 44rem);
+  min-width: min(var(--pd-table-min-width, 44rem), 100%);
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
@@ -161,11 +165,15 @@
 .pd-data-table {
   display: grid;
   gap: var(--pd-space-3);
+  min-inline-size: 0;
+  max-inline-size: 100%;
 }
 
 .pd-data-table__toolbar {
   display: flex;
   flex-wrap: wrap;
+  min-inline-size: 0;
+  max-inline-size: 100%;
   gap: var(--pd-space-3);
   align-items: center;
   justify-content: space-between;

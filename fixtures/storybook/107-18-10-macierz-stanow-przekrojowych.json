@@ -1,14 +1,22 @@
 {
   "fixtureId": "SB-107",
-  "storyTitle": "18 Stany i wzorce przekrojowe/Macierz stanów przekrojowych",
+  "storyTitle": "18 Wzorce interfejsu/Macierz stanów przekrojowych",
   "sourceDocument": "21-stany-przekrojowe/18-10-macierz-stanow-przekrojowych.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "DataTable",
+    "InlineNotice",
+    "StatusBadge"
+  ],
   "states": [
-    "ready",
-    "loading",
-    "empty",
-    "error"
+    "universalStates",
+    "dataStates",
+    "accessStates",
+    "billingStates",
+    "aiStates",
+    "operationStates",
+    "integrationStates",
+    "assignmentRules"
   ],
   "viewports": [
     1440,
@@ -20,15 +28,11 @@
     "dark"
   ],
   "localeCases": [
-    "pl",
-    "en-long-copy"
+    "pl"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-matrix-table",
+    "verify-assignment-rules"
   ],
   "visualAssertions": [
     "1440-light",
@@ -36,15 +40,14 @@
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-error"
+    "datatable-canonical-matrix",
+    "no-horizontal-page-scroll"
   ],
   "a11y": [
-    "keyboard-only",
+    "table-name",
+    "status-badge-text",
     "focus-visible",
-    "accessible-name",
-    "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-cross-cutting-pattern"
 }

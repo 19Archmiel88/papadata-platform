@@ -40,6 +40,30 @@ const mobileViewport = {
   height: 844,
 };
 
+const crossCuttingPatternTargets = [
+  {
+    title: '18 Wzorce interfejsu/Układ strony i sekcji',
+  },
+  {
+    title: '18 Wzorce interfejsu/Empty, error i no-access',
+  },
+  {
+    title: '18 Wzorce interfejsu/Ładowanie danych i operacje w tle',
+  },
+  {
+    title: '18 Wzorce interfejsu/Tabela z filtrami i akcjami',
+  },
+  {
+    title: '18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji',
+  },
+  {
+    title: '18 Wzorce interfejsu/Status danych i readiness',
+  },
+  {
+    title: '18 Wzorce interfejsu/Macierz stanów przekrojowych',
+  },
+];
+
 const matrixTargets = [
   {
     title: '10 Komponenty bazowe/Przyciski i akcje',
@@ -81,6 +105,7 @@ const matrixTargets = [
   {
     title: '10 Komponenty/Kod weryfikacyjny',
   },
+  ...crossCuttingPatternTargets,
 ];
 
 const zoomTargets = [
@@ -109,6 +134,7 @@ const zoomTargets = [
   {
     title: '10 Komponenty/Kod weryfikacyjny',
   },
+  ...crossCuttingPatternTargets,
 ];
 
 function resolveStoryId({
@@ -331,13 +357,19 @@ async function runFilterKeyboardSequence(browser) {
     region.getByText('Meta Ads EMEA'),
   ).toBeVisible();
 
-  const statusTrigger = region.getByRole('combobox', {
+  const statusTrigger = region.getByRole('button', {
     name: 'Status',
   });
 
   await statusTrigger.focus();
-  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('Enter');
   await page.waitForTimeout(120);
+  const statusSearch = region.getByRole('combobox', {
+    name: 'Status wyszukiwanie',
+  });
+
+  await expect(statusSearch).toBeVisible();
+  await statusSearch.focus();
   await page.keyboard.type('W toku');
   await page.keyboard.press('Enter');
   await page.waitForTimeout(150);

@@ -1,8 +1,8 @@
 ---
-version: 1.1
+version: 1.0
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
-owner: Analytics UX
+owner: Artur Wiśniewski
 status: review
 document_type: component-contract
 component_id: ShareChart
@@ -22,9 +22,9 @@ Kontrakt w `contracts/components/sharechart.ts` pozostaje kontraktem orkiestracy
 
 ## Kanoniczne warianty
 
-- `donut` — mała liczba segmentów w relacji część–całość.
-- `bar` — lista udziałów jako poziome share rows.
-- `stacked` — kompaktowa struktura 100%.
+- Wariant `donut` — mała liczba segmentów w relacji część–całość.
+- Wariant `bar` — lista udziałów jako poziome share rows.
+- Wariant `stacked` — kompaktowa struktura 100%.
 
 ## Granice
 
@@ -32,7 +32,25 @@ Kontrakt w `contracts/components/sharechart.ts` pozostaje kontraktem orkiestracy
 
 ## Konsumenci
 
-Konsumenci domenowi pozostają w rejestrach coverage. Ich przebudowa nie jest częścią promocji 15.05.
+- `30.04` — Plan vs wynik
+- `30.05` — Drivery wyniku
+- `30.06` — Źródła sprzedaży
+- `30.07` — Ruch
+- `30.09` — Klienci
+- `31.03` — Szczegóły kampanii
+- `31.04` — Atrybucja i sprzedaż
+- `32.01` — Przegląd
+- `33.02` — Katalog
+- `33.03` — Szczegóły
+- `33.06` — Wydajność
+- `34.02` — Segmenty
+- `34.07` — Analiza wpływu
+- `35.02` — Kanały
+- `35.04` — Lejek — szczegóły kroku
+- `35.08` — Strony wejścia
+- `41.05` — Nadrzędność źródła
+- `50.06` — Dowody
+- `50.08` — Laboratorium AI
 
 ## Kryteria akceptacji
 

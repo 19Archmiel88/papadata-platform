@@ -1,14 +1,26 @@
 {
   "fixtureId": "SB-111",
-  "storyTitle": "18 Stany i wzorce przekrojowe/Tabela z filtrami i akcjami",
+  "storyTitle": "18 Wzorce interfejsu/Tabela z filtrami i akcjami",
   "sourceDocument": "21-stany-przekrojowe/18-04-tabela-z-filtrami-i-akcjami.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "FilterBar",
+    "SearchField",
+    "Select",
+    "SortControl",
+    "DataTable",
+    "StatusBadge",
+    "Button",
+    "TextAction"
+  ],
   "states": [
     "ready",
-    "loading",
-    "empty",
-    "error"
+    "searchState",
+    "filterState",
+    "sortState",
+    "rowActionState",
+    "callerOwnedSelectedCount",
+    "noResults"
   ],
   "viewports": [
     1440,
@@ -20,15 +32,12 @@
     "dark"
   ],
   "localeCases": [
-    "pl",
-    "en-long-copy"
+    "pl"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "exercise-search-filter-sort",
+    "exercise-row-action",
+    "exercise-caller-owned-bulk-action"
   ],
   "visualAssertions": [
     "1440-light",
@@ -36,15 +45,15 @@
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-error"
+    "datatable-canonical-surface",
+    "no-horizontal-page-scroll"
   ],
   "a11y": [
-    "keyboard-only",
+    "table-name",
+    "form-control-labels",
+    "menu-action-name",
     "focus-visible",
-    "accessible-name",
-    "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-cross-cutting-pattern"
 }

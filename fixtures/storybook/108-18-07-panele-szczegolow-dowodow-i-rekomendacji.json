@@ -1,14 +1,25 @@
 {
   "fixtureId": "SB-108",
-  "storyTitle": "18 Stany i wzorce przekrojowe/Panele szczegółów, dowodów i rekomendacji",
+  "storyTitle": "18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji",
   "sourceDocument": "21-stany-przekrojowe/18-07-panele-szczegolow-dowodow-i-rekomendacji.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "Drawer",
+    "Tabs",
+    "DataList",
+    "InlineNotice",
+    "StatusBadge",
+    "Button",
+    "TextAction"
+  ],
   "states": [
-    "ready",
-    "loading",
-    "empty",
-    "error"
+    "drawerClosed",
+    "drawerOpen",
+    "detailsTab",
+    "evidenceTab",
+    "recommendationTab",
+    "escapeClosed",
+    "focusRestored"
   ],
   "viewports": [
     1440,
@@ -20,15 +31,14 @@
     "dark"
   ],
   "localeCases": [
-    "pl",
-    "en-long-copy"
+    "pl"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
+    "drawer-open",
+    "tabs-switch",
+    "drawer-escape-close",
     "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "leave-drawer-open-for-screenshot"
   ],
   "visualAssertions": [
     "1440-light",
@@ -36,15 +46,15 @@
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-error"
+    "semantic-drawer-panel",
+    "no-horizontal-page-scroll"
   ],
   "a11y": [
-    "keyboard-only",
+    "dialog-name",
+    "tablist-name",
+    "focus-restoration",
     "focus-visible",
-    "accessible-name",
-    "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-review-cross-cutting-pattern"
 }

@@ -1,0 +1,461 @@
+{
+  "baseUrl": "http://127.0.0.1:6011",
+  "generatedAt": "2026-08-09T08:09:14.470Z",
+  "summary": {
+    "consoleErrors": 0,
+    "pageErrors": 0,
+    "critical": 0,
+    "serious": 0,
+    "overflow": 0
+  },
+  "results": [
+    {
+      "key": "18-01",
+      "title": "18 Wzorce interfejsu/Układ strony i sekcji",
+      "storyId": "18-wzorce-interfejsu-układ-strony-i-sekcji--page-section-layout-story",
+      "viewport": "1440",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-01",
+      "title": "18 Wzorce interfejsu/Układ strony i sekcji",
+      "storyId": "18-wzorce-interfejsu-układ-strony-i-sekcji--page-section-layout-story",
+      "viewport": "768",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-01",
+      "title": "18 Wzorce interfejsu/Układ strony i sekcji",
+      "storyId": "18-wzorce-interfejsu-układ-strony-i-sekcji--page-section-layout-story",
+      "viewport": "390",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-01",
+      "title": "18 Wzorce interfejsu/Układ strony i sekcji",
+      "storyId": "18-wzorce-interfejsu-układ-strony-i-sekcji--page-section-layout-story",
+      "viewport": "zoom-200",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-02",
+      "title": "18 Wzorce interfejsu/Empty, error i no-access",
+      "storyId": "18-wzorce-interfejsu-empty-error-i-no-access--feedback-states-story",
+      "viewport": "1440",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-02",
+      "title": "18 Wzorce interfejsu/Empty, error i no-access",
+      "storyId": "18-wzorce-interfejsu-empty-error-i-no-access--feedback-states-story",
+      "viewport": "768",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-02",
+      "title": "18 Wzorce interfejsu/Empty, error i no-access",
+      "storyId": "18-wzorce-interfejsu-empty-error-i-no-access--feedback-states-story",
+      "viewport": "390",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-02",
+      "title": "18 Wzorce interfejsu/Empty, error i no-access",
+      "storyId": "18-wzorce-interfejsu-empty-error-i-no-access--feedback-states-story",
+      "viewport": "zoom-200",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-03",
+      "title": "18 Wzorce interfejsu/Ładowanie danych i operacje w tle",
+      "storyId": "18-wzorce-interfejsu-ładowanie-danych-i-operacje-w-tle--loading-operations-story",
+      "viewport": "1440",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-03",
+      "title": "18 Wzorce interfejsu/Ładowanie danych i operacje w tle",
+      "storyId": "18-wzorce-interfejsu-ładowanie-danych-i-operacje-w-tle--loading-operations-story",
+      "viewport": "768",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-03",
+      "title": "18 Wzorce interfejsu/Ładowanie danych i operacje w tle",
+      "storyId": "18-wzorce-interfejsu-ładowanie-danych-i-operacje-w-tle--loading-operations-story",
+      "viewport": "390",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-03",
+      "title": "18 Wzorce interfejsu/Ładowanie danych i operacje w tle",
+      "storyId": "18-wzorce-interfejsu-ładowanie-danych-i-operacje-w-tle--loading-operations-story",
+      "viewport": "zoom-200",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-04",
+      "title": "18 Wzorce interfejsu/Tabela z filtrami i akcjami",
+      "storyId": "18-wzorce-interfejsu-tabela-z-filtrami-i-akcjami--filtered-table-actions-story",
+      "viewport": "1440",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-04",
+      "title": "18 Wzorce interfejsu/Tabela z filtrami i akcjami",
+      "storyId": "18-wzorce-interfejsu-tabela-z-filtrami-i-akcjami--filtered-table-actions-story",
+      "viewport": "768",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-04",
+      "title": "18 Wzorce interfejsu/Tabela z filtrami i akcjami",
+      "storyId": "18-wzorce-interfejsu-tabela-z-filtrami-i-akcjami--filtered-table-actions-story",
+      "viewport": "390",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-04",
+      "title": "18 Wzorce interfejsu/Tabela z filtrami i akcjami",
+      "storyId": "18-wzorce-interfejsu-tabela-z-filtrami-i-akcjami--filtered-table-actions-story",
+      "viewport": "zoom-200",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-07",
+      "title": "18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji",
+      "storyId": "18-wzorce-interfejsu-panele-szczegółów-dowodów-i-rekomendacji--detail-evidence-recommendation-panels-story",
+      "viewport": "1440",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-07",
+      "title": "18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji",
+      "storyId": "18-wzorce-interfejsu-panele-szczegółów-dowodów-i-rekomendacji--detail-evidence-recommendation-panels-story",
+      "viewport": "768",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-07",
+      "title": "18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji",
+      "storyId": "18-wzorce-interfejsu-panele-szczegółów-dowodów-i-rekomendacji--detail-evidence-recommendation-panels-story",
+      "viewport": "390",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-07",
+      "title": "18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji",
+      "storyId": "18-wzorce-interfejsu-panele-szczegółów-dowodów-i-rekomendacji--detail-evidence-recommendation-panels-story",
+      "viewport": "zoom-200",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-08",
+      "title": "18 Wzorce interfejsu/Status danych i readiness",
+      "storyId": "18-wzorce-interfejsu-status-danych-i-readiness--data-readiness-status-story",
+      "viewport": "1440",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-08",
+      "title": "18 Wzorce interfejsu/Status danych i readiness",
+      "storyId": "18-wzorce-interfejsu-status-danych-i-readiness--data-readiness-status-story",
+      "viewport": "768",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-08",
+      "title": "18 Wzorce interfejsu/Status danych i readiness",
+      "storyId": "18-wzorce-interfejsu-status-danych-i-readiness--data-readiness-status-story",
+      "viewport": "390",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-08",
+      "title": "18 Wzorce interfejsu/Status danych i readiness",
+      "storyId": "18-wzorce-interfejsu-status-danych-i-readiness--data-readiness-status-story",
+      "viewport": "zoom-200",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-10",
+      "title": "18 Wzorce interfejsu/Macierz stanów przekrojowych",
+      "storyId": "18-wzorce-interfejsu-macierz-stanów-przekrojowych--cross-state-matrix-story",
+      "viewport": "1440",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 1440,
+        "widest": 1440,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-10",
+      "title": "18 Wzorce interfejsu/Macierz stanów przekrojowych",
+      "storyId": "18-wzorce-interfejsu-macierz-stanów-przekrojowych--cross-state-matrix-story",
+      "viewport": "768",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 768,
+        "widest": 768,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-10",
+      "title": "18 Wzorce interfejsu/Macierz stanów przekrojowych",
+      "storyId": "18-wzorce-interfejsu-macierz-stanów-przekrojowych--cross-state-matrix-story",
+      "viewport": "390",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 390,
+        "widest": 390,
+        "scrollableWindow": false
+      }
+    },
+    {
+      "key": "18-10",
+      "title": "18 Wzorce interfejsu/Macierz stanów przekrojowych",
+      "storyId": "18-wzorce-interfejsu-macierz-stanów-przekrojowych--cross-state-matrix-story",
+      "viewport": "zoom-200",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "axe": [],
+      "overflow": {
+        "hasOverflow": false,
+        "overflow": 0,
+        "viewportWidth": 720,
+        "widest": 720,
+        "scrollableWindow": false
+      }
+    }
+  ]
+}

@@ -24,99 +24,110 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Właściciel | Analytics UX |
 | Moduł | Wykresy i wizualizacje danych — M02 |
 
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | WDROŻONE W STORYBOOK — REVIEW |
+| Status Storybooka | `15 Wykresy i dane/Stany danych`, visible, implemented |
+| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy A15.6 |
 
 ## Cel i decyzja docelowa
 
-„Stany danych” jest współdzielonym kontraktem, a nie lokalnym układem jednego ekranu. Wzorzec ma jedną odpowiedzialność, korzysta z fundamentów i komponentów bazowych oraz udostępnia warianty wymagane przez domeny bez kopiowania implementacji.
+15.08 jest właścicielem wspólnego języka stanów danych dla wykresów analitycznych. Stan nie należy do pojedynczego wykresu; `ChartFrame` i wizualizacje konsumują jeden runtime `ChartDataState`, dzięki czemu loading, empty, no data, partial data, stale data, delayed, blocked, error i unavailable mają spójną semantykę.
 
 ## Stan obecny
 
+Runtime `ChartDataState` jest wdrożony jako owner 15.08 i jest konsumowany przez `ChartFrame`. Storybook pokazuje pełny słownik stanów w jednym miejscu oraz przykład użycia w kontenerze wykresu.
+
+Decyzja nazewnicza dla 15.01/15.02: kanoniczny stan trwającego pobierania to `loading`. `processing` pozostaje wyłącznie legacy aliasem publicznego typu `AnalyticsDataState` i jest normalizowany do `loading`. Analogicznie `conflict` jest aliasem `blocked`, a `providerError` aliasem `error`. Nowe rejestry i dokumenty promują nazwy kanoniczne.
 
 ## Zakres i wymagania
 
 | Lp. | Wymaganie | Kontrakt | Dowód odbioru |
 | --- | --- | --- | --- |
-| 1 | ready | wymagany wariant lub stan | test Storybook + test interakcji |
-| 2 | partial | wymagany wariant lub stan | test Storybook + test interakcji |
-| 3 | stale | wymagany wariant lub stan | test Storybook + test interakcji |
-| 4 | no data | wymagany wariant lub stan | test Storybook + test interakcji |
-| 5 | conflict | wymagany wariant lub stan | test Storybook + test interakcji |
-| 6 | provider error | wymagany wariant lub stan | test Storybook + test interakcji |
-| 7 | processing | wymagany wariant lub stan | test Storybook + test interakcji |
-| 8 | unavailable | wymagany wariant lub stan | test Storybook + test interakcji |
+| 1 | loading | stabilny szkielet i live region bez pustej osi | story + marker `data-chart-data-state="loading"` |
+| 2 | empty | filtr nie zwraca wyników; nie jest to awaria | story + tekst stanu pustego |
+| 3 | no data | źródło nie ma danych dla zakresu lub metryki | story + brak zastępczej wizualizacji |
+| 4 | partial data | wykres może być widoczny z oznaczeniem braków | story + alternatywna tabela |
+| 5 | stale data | dane starsze niż próg świeżości | story + status ostrzegawczy |
+| 6 | delayed | źródło raportuje opóźnienie | story + status opóźnienia |
+| 7 | blocked | dostęp lub policy blokuje odczyt | story + assertive notice |
+| 8 | error | błąd wymaga retry albo ścieżki naprawy | story + akcja naprawcza |
+| 9 | unavailable | źródło lub usługa czasowo niedostępne | story + stan informacyjny |
+| 10 | shared state language | jeden słownik dla ChartFrame i wizualizacji | `pnpm check:analytics-system` |
+| 11 | no per-chart states | brak lokalnych wariantów per wykres | `pnpm check:analytics-system` |
 
 ## Mapowanie nazw laboratoryjnych
 
-Nazwy kanoniczne pozostają bez zmian. 05.03 może używać uproszczonych etykiet laboratoryjnych, ale musi mapować je na słownik dokumentacyjny oraz, osobno, na identyfikator techniczny używany przez właściwy kontrakt:
+05.03 pozostaje laboratorium decyzji i korzysta z publicznego `AnalyticsDataState`, ale nie jest właścicielem słownika. Mapowanie obowiązujące po 15.08:
 
-| Etykieta w 05.03 | Nazwa kanoniczna | Identyfikator techniczny, jeśli występuje w kontrakcie |
+| Etykieta w 05.03 lub legacy | Nazwa kanoniczna | Identyfikator techniczny |
 | --- | --- | --- |
 | ready | ready | `ready` |
-| loading | processing | `processing` |
-| empty | no data | `noData` |
-| partial | partial | `partial` |
-| stale | stale | `stale` |
-| error | konkretna przyczyna | zależny od kontraktu, np. `sourceError`, `unavailable` albo `conflict` |
-
-Etykieta error jest skrótem laboratoryjnym i nie jest stanem kanonicznym. Nie mapuje się globalnie ani wyłącznie na jeden identyfikator techniczny. Przykład w 05.03 musi wskazać konkretną przyczynę kanoniczną, np. provider error, unavailable albo conflict, oraz identyfikator techniczny tylko wtedy, gdy przewiduje go właściwy kontrakt. `sourceError` może wystąpić wyłącznie jako identyfikator techniczny, nie jako nowy kanoniczny stan dokumentacyjny.
+| loading | loading | `loading` |
+| processing | loading | `processing` jako legacy alias |
+| empty | empty | `empty` |
+| no data | no data | `noData` |
+| partial | partial data | `partial` |
+| stale | stale data | `stale` |
+| delayed | delayed | `delayed` |
+| blocked | blocked | `blocked` |
+| conflict | blocked | `conflict` jako legacy alias |
+| error | error | `error` |
+| provider error | error | `providerError` jako legacy alias |
+| unavailable | unavailable | `unavailable` |
 
 ## Anatomia
 
 ```text
-stany-danych
+ChartDataState
 ├── semantic root
-├── header or accessible label
-├── primary content
-├── status / validation region
-├── primary action
-└── optional secondary actions or metadata
+├── accessible state name
+├── stable message
+├── optional action
+└── canonical data-state marker
 ```
 
 ## Komponenty składowe
 
-- PageHeader
-- DataStatusBanner
-- InlineNotice
-- Button
-- EvidencePanel
-- RecommendationCard
-- DecisionCard
+- `ChartDataState`
+- `ChartFrame`
+- `TrendChart` jako przykład renderowalnych danych
+- `DataTable` jako alternatywny odczyt danych
+- `TextAction` dla recovery
 
-Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
+Każdy składnik ma osobny kontrakt. 15.08 nie tworzy lokalnych stanów dla TrendChart, ComparisonChart, ShareChart, CorrelationChart ani ForecastChart.
 
 ## Kontrakt stanu
 
-- Stan kontrolowany jest używany dla route, filtrów, formularza, selection i overlay.
-- Stan asynchroniczny rozróżnia loading, processing, retrying, success, recoverable error i terminal error.
-- Read-only, no-access i plan-restricted są osobnymi stanami, nie odmianą disabled.
-- Zmiana motywu, języka lub viewportu nie resetuje danych ani procesu.
+- Kanoniczne stany 15.08 to `ready`, `loading`, `empty`, `noData`, `partial`, `stale`, `delayed`, `blocked`, `error` i `unavailable`.
+- Legacy aliasy `processing`, `conflict` i `providerError` są dozwolone wyłącznie dla kompatybilności publicznego runtime i muszą przejść przez `normalizeAnalyticsDataState()`.
+- Stany renderowalne (`ready`, `partial`, `stale`, `delayed`) mogą pokazywać wykres z widocznym statusem.
+- Stany nierenderowalne nie pokazują fikcyjnej geometrii ani wartości zero.
+- Zmiana motywu, języka lub viewportu nie zmienia semantyki stanu.
 
 ## Interakcje i klawiatura
 
-Tab order odpowiada hierarchii zadania. Enter/Space uruchamiają natywne kontrolki; Escape zamyka najwyższą warstwę; strzałki są używane wyłącznie w komponentach z modelem composite widget. Focus restore jest obowiązkowy po każdej warstwie.
+15.08 nie jest ownerem tooltipów, hover, selection, drill-down ani cross-filteringu. Te zachowania przejmuje 15.09. Stany danych muszą jednak mieć dostępną nazwę, poprawny `aria-live` i akcję możliwą do uruchomienia z klawiatury, jeśli recovery istnieje.
 
 ## Responsywność
 
-Wide może używać kolumn lub detail panelu. Compact przechodzi w jedną kolumnę, zachowuje wszystkie funkcje i przenosi akcje drugorzędne do jawnego overflow. Tabele otrzymują scroll lub widok priorytetowych kolumn, a wykresy — tabelę alternatywną.
+`ChartDataState` zachowuje stabilny układ w `ChartFrame` na desktop/tablet/mobile i przy zoom 200%. Renderowalne stany zachowują alternatywną tabelę danych.
 
 ## Dostępność
 
-Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kontrast, reduced motion, live region dla wyników asynchronicznych, reflow i brak informacji zależnej wyłącznie od koloru.
+Minimum WCAG 2.2 AA: semantyka statusu, dostępna nazwa, focus-visible dla akcji, kontrast, reduced motion dla loadingu, live region dla zmian asynchronicznych, reflow oraz brak informacji zależnej wyłącznie od koloru.
 
 ## Storybook
 
-- Title: `15 Wykresy i wizualizacje danych/Stany danych`.
-- Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
-- Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
+- Title: `15 Wykresy i dane/Stany danych`.
+- Story: `DataStatesStory`.
+- Status: implemented, visible, review.
+- Wymagane warianty: loading, empty, no data, partial data, stale data, delayed, blocked, error i unavailable.
+- Wymagane środowiska: light/dark, desktop/tablet/mobile, zoom 200%, reduced motion.
 
 ## Testy i kryteria akceptacji
 
-1. Wszystkie wymagania mają story i asercję testową.
-2. Wzorzec nie tworzy duplikatu komponentu bazowego.
-3. Stany błędu i brak dostępu mają recovery albo jednoznaczne zakończenie.
-4. Mobile i zoom 200% nie tracą funkcji.
-5. Klawiatura oraz focus restore przechodzą play test.
-6. Dokument jest linkowany przez co najmniej jeden ekran albo oznaczony jako fundament przyszłego użycia.
+1. Wszystkie stany kanoniczne mają story i marker runtime.
+2. `ChartFrame` konsumuje `ChartDataState`, zamiast tworzyć własny system.
+3. `processing` jest jawnie traktowany jako legacy alias `loading`, a nie drugi stan kanoniczny.
+4. Stany błędu i blokady mają recovery albo jednoznaczne zakończenie.
+5. Mobile i zoom 200% nie tracą informacji ani akcji.
+6. Walidacja `pnpm check:analytics-system` potwierdza ownerstwo 15.08.

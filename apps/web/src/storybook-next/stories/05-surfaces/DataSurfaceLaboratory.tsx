@@ -1030,8 +1030,8 @@ export function DataSurfaceLaboratory() {
         title={<Localized pl="Rodziny wykresów" en="Chart families" />}
         summary={
           <Localized
-            pl="Trend, porównania, udziały, korelacje i prognozy zostały promowane do 15.03, 15.04, 15.05, 15.06 i 15.07. Laboratorium zachowuje wyłącznie handoff, a pozostałe rodziny czekają na ownerów kolejnych etapów."
-            en="Trend, comparison, share composition, correlation and forecasts have been promoted to 15.03, 15.04, 15.05, 15.06 and 15.07. The laboratory keeps only the handoff while the remaining families wait for later owners."
+            pl="Trend, porównania, udziały, korelacje i prognozy zostały promowane do 15.03, 15.04, 15.05, 15.06 i 15.07. Stany danych, interakcje oraz finalny pass responsive/a11y należą do 15.08, 15.09 i 15.10. Laboratorium zachowuje wyłącznie handoff."
+            en="Trend, comparison, share composition, correlation and forecasts have been promoted to 15.03, 15.04, 15.05, 15.06 and 15.07. Data states, interactions and the final responsive/a11y pass belong to 15.08, 15.09 and 15.10. The laboratory keeps only the handoff."
           />
         }
       >
@@ -1118,6 +1118,42 @@ export function DataSurfaceLaboratory() {
 
       <StorySection
         index="05"
+        title={<Localized pl="Stany i interakcje — handoff" en="States and interactions — handoff" />}
+        summary={
+          <Localized
+            pl="05.03 nie jest ownerem stanów danych, interakcji wykresów ani finalnego passu sekcji 15."
+            en="05.03 is not the owner of data states, chart interactions or the final section 15 pass."
+          />
+        }
+      >
+        <PromotedOwnerNotice
+          owner="15.08 ChartDataState"
+          title={{ pl: 'Stany danych', en: 'Data states' }}
+          description={{
+            pl: 'Loading, empty, no data, partial, stale, delayed, blocked, error i unavailable są wspólnym systemem ChartFrame oraz wizualizacji.',
+            en: 'Loading, empty, no data, partial, stale, delayed, blocked, error and unavailable are a shared ChartFrame and visualization system.',
+          }}
+        />
+        <PromotedOwnerNotice
+          owner="15.09 ChartInteractionLayer"
+          title={{ pl: 'Interakcje i filtry', en: 'Interactions and filters' }}
+          description={{
+            pl: 'Tooltip, hover, focus z klawiatury, selection, reset, drill-down i cross-filtering nie należą już do laboratorium.',
+            en: 'Tooltip, hover, keyboard focus, selection, reset, drill-down and cross-filtering no longer belong to the laboratory.',
+          }}
+        />
+        <PromotedOwnerNotice
+          owner="15.10 Responsywność i dostępność"
+          title={{ pl: 'Finalny pass sekcji 15', en: 'Final section 15 pass' }}
+          description={{
+            pl: 'Responsive/a11y jest passem kontrolnym po ownerach 15.03–15.09 i nie dodaje nowej geometrii wykresów.',
+            en: 'Responsive/a11y is a control pass after owners 15.03–15.09 and does not add new chart geometry.',
+          }}
+        />
+      </StorySection>
+
+      <StorySection
+        index="06"
         title={<Localized pl="Tabela — handoff i użycie" en="Table — handoff and usage" />}
         summary={
           <Localized
@@ -1130,7 +1166,7 @@ export function DataSurfaceLaboratory() {
       </StorySection>
 
       <StorySection
-        index="06"
+        index="07"
         title={<Localized pl="Stany powierzchni" en="Surface states" />}
         summary={
           <Localized
@@ -1143,7 +1179,7 @@ export function DataSurfaceLaboratory() {
       </StorySection>
 
       <StorySection
-        index="07"
+        index="08"
         title={<Localized pl="Panele robocze w kontekście" en="Work panels in context" />}
         summary={
           <Localized
@@ -1156,7 +1192,7 @@ export function DataSurfaceLaboratory() {
       </StorySection>
 
       <StorySection
-        index="08"
+        index="09"
         title={<Localized pl="Decyzja i antyprzykład" en="Decision and anti-example" />}
       >
         <DecisionRows

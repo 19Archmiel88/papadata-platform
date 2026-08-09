@@ -1,0 +1,112 @@
+.pd-a15-stage {
+  color: var(--pd-text);
+}
+
+.pd-a15-stage__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--pd-space-5);
+}
+
+.pd-a15-stage__grid--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pd-a15-stage__state-card,
+.pd-a15-stage__audit-card {
+  display: grid;
+  gap: var(--pd-space-3);
+  min-inline-size: 0;
+  padding-block: var(--pd-space-4);
+  border-block-start: var(--pd-border-width-subtle) solid var(--pd-separator);
+}
+
+.pd-a15-stage__state-card h3,
+.pd-a15-stage__audit-card h3 {
+  margin: 0;
+  font-size: var(--pd-type-size-heading-5);
+  font-weight: var(--pd-font-weight-medium);
+  line-height: var(--pd-line-height-heading);
+}
+
+.pd-a15-stage__state-card p,
+.pd-a15-stage__audit-card p,
+.pd-a15-stage__note {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-a15-stage__note {
+  max-inline-size: 62rem;
+  margin-block-end: var(--pd-space-4);
+}
+
+.pd-a15-stage__compact-chart {
+  min-inline-size: 0;
+}
+
+.pd-a15-stage__table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-a15-stage__table caption {
+  padding-block-end: var(--pd-space-2);
+  color: var(--pd-text-secondary);
+  text-align: start;
+}
+
+.pd-a15-stage__table th,
+.pd-a15-stage__table td {
+  padding: var(--pd-space-2);
+  border-block-start: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  text-align: start;
+}
+
+.pd-a15-stage__table td:last-child,
+.pd-a15-stage__table th:last-child {
+  text-align: end;
+}
+
+.pd-a15-stage__interaction-result {
+  min-block-size: 1.5rem;
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-a15-stage__audit-list {
+  display: grid;
+  gap: var(--pd-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-a15-stage__audit-list li {
+  display: flex;
+  gap: var(--pd-space-2);
+  align-items: baseline;
+  min-inline-size: 0;
+}
+
+.pd-a15-stage__audit-list li::before {
+  content: '';
+  inline-size: 0.55rem;
+  block-size: 0.55rem;
+  flex: 0 0 0.55rem;
+  border-radius: var(--pd-radius-pill);
+  background: var(--pd-status-success);
+}
+
+.pd-a15-stage__audit-list span {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 960px) {
+  .pd-a15-stage__grid,
+  .pd-a15-stage__grid--two {
+    grid-template-columns: 1fr;
+  }
+}

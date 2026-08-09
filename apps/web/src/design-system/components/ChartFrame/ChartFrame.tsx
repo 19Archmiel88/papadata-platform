@@ -14,11 +14,12 @@ import type {
 } from '../Analytics';
 import {
   analyticsStateHasRenderableData,
+  analyticsStateIsLoading,
   resolveAnalyticsDataStateTone,
 } from '../Analytics';
 import { TextAction } from '../Button';
+import { ChartDataState } from '../ChartDataState';
 import { joinClassNames } from '../Field/fieldUtils';
-import { Skeleton } from '../Skeleton';
 import { StatusBadge } from '../StatusBadge';
 import './chart-frame.css';
 
@@ -63,10 +64,6 @@ export type ChartFrameProps = Omit<
   readonly visualizationLabel: string;
 };
 
-function isCriticalState(status: AnalyticsDataState): boolean {
-  return status === 'providerError' || status === 'conflict';
-}
-
 export const ChartFrame = forwardRef<HTMLElement, ChartFrameProps>(
   function ChartFrame(
     {
@@ -105,10 +102,9 @@ export const ChartFrame = forwardRef<HTMLElement, ChartFrameProps>(
     };
 
     const hasData = analyticsStateHasRenderableData(status);
-    const isProcessing = status === 'processing';
+    const isProcessing = analyticsStateIsLoading(status);
     const tone = resolveAnalyticsDataStateTone(status);
     const hasToolbar = Boolean(filters || actions || rangeLabel);
-    const criticalState = isCriticalState(status);
 
     return (
       <section
@@ -187,57 +183,7 @@ export const ChartFrame = forwardRef<HTMLElement, ChartFrameProps>(
           </div>
         ) : null}
 
-        {isProcessing ? (
-          <div
-            aria-label={statusLabel}
-            className="pd-chart-frame__loading"
-            role="status"
-          >
-            <div className="pd-chart-frame__loading-toolbar">
-              <Skeleton
-                animated
-                height="2rem"
-                lines={1}
-                shape="rect"
-                width="10rem"
-              />
-
-              <Skeleton
-                animated
-                height="2rem"
-                lines={1}
-                shape="rect"
-                width="7rem"
-              />
-            </div>
-
-            <Skeleton
-              animated
-              height="12rem"
-              lines={1}
-              shape="rect"
-              width="100%"
-            />
-
-            <div className="pd-chart-frame__loading-summary">
-              <Skeleton
-                animated
-                height="0.8rem"
-                lines={1}
-                shape="text"
-                width="34%"
-              />
-
-              <Skeleton
-                animated
-                height="0.9rem"
-                lines={2}
-                shape="text"
-                width="78%"
-              />
-            </div>
-          </div>
-        ) : hasData && visualization ? (
+        {hasData && visualization ? (
           <figure className="pd-chart-frame__figure">
             <div
               aria-label={visualizationLabel}
@@ -260,27 +206,13 @@ export const ChartFrame = forwardRef<HTMLElement, ChartFrameProps>(
             ) : null}
           </figure>
         ) : (
-          <div
-            aria-live={criticalState ? 'assertive' : 'polite'}
+          <ChartDataState
+            action={stateAction}
             className="pd-chart-frame__state"
-            role={criticalState ? 'alert' : 'status'}
-          >
-            <strong>{statusLabel}</strong>
-
-            <p>
-              {stateMessage
-                ?? 'Dane nie są obecnie dostępne dla tej wizualizacji.'}
-            </p>
-
-            {stateAction ? (
-              <TextAction
-                onClick={stateAction.onAction}
-                size="small"
-              >
-                {stateAction.label}
-              </TextAction>
-            ) : null}
-          </div>
+            message={stateMessage}
+            state={status}
+            title={statusLabel}
+          />
         )}
 
         {summary && hasData ? (

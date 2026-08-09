@@ -1,0 +1,58 @@
+.pd-chart-data-state {
+  display: grid;
+  gap: var(--pd-space-3);
+  min-block-size: 14rem;
+  align-content: center;
+  justify-items: start;
+  min-inline-size: 0;
+  padding-block: var(--pd-space-6);
+}
+
+.pd-chart-data-state strong {
+  font-size: var(--pd-type-size-heading-4);
+  font-weight: var(--pd-font-weight-medium);
+  line-height: var(--pd-line-height-heading);
+}
+
+.pd-chart-data-state p {
+  max-inline-size: 42rem;
+  margin: 0;
+  color: var(--pd-text-secondary);
+  line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-chart-data-state--loading {
+  inline-size: 100%;
+  justify-items: stretch;
+}
+
+.pd-chart-data-state__loading-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2);
+  align-items: center;
+}
+
+.pd-chart-data-state__loading-summary {
+  display: grid;
+  gap: var(--pd-space-2);
+  padding-block-start: var(--pd-space-2);
+  border-block-start: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+}
+
+.pd-chart-data-state[data-chart-data-state="partial"],
+.pd-chart-data-state[data-chart-data-state="stale"],
+.pd-chart-data-state[data-chart-data-state="delayed"] {
+  color: var(--pd-status-warning);
+}
+
+.pd-chart-data-state[data-chart-data-state="blocked"],
+.pd-chart-data-state[data-chart-data-state="error"] {
+  color: var(--pd-status-danger);
+}
+
+.pd-chart-data-state[data-chart-data-state="empty"],
+.pd-chart-data-state[data-chart-data-state="noData"],
+.pd-chart-data-state[data-chart-data-state="unavailable"] {
+  color: var(--pd-text);
+}

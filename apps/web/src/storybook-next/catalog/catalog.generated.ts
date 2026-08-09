@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: 0429f1f25288dc6f8afd93a6756ea4b00ddccf867cc43533f3e29af327b5977a
+// SHA-256 źródła: 1b6f487633c27c4e1f14ae962e084f8c459de949f7993e215337e065a3350b3c
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -486,7 +486,7 @@ export const storybookCatalog = [
     "storyClass": "reference",
     "owner": "Design System",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": "Decision laboratory only. KPI/MetricCard promoted to 15.02, ChartFrame to 15.01, TrendChart to 15.03, ComparisonChart to 15.04, ShareChart to 15.05, CorrelationChart to 15.06 and ForecastChart to 15.07; remaining chart families/tables/states/layers await their 15/18 owners.",
+    "note": "Decision laboratory only. KPI/MetricCard promoted to 15.02, ChartFrame to 15.01, TrendChart to 15.03, ComparisonChart to 15.04, ShareChart to 15.05, CorrelationChart to 15.06, ForecastChart to 15.07, data states to 15.08, interactions and filters to 15.09 and final responsive/a11y pass to 15.10; remaining chart families, tables and cross-cutting layers await their 15/18 owners.",
     "group": null,
     "sourceStatus": "specified",
     "documentationStatus": "review",
@@ -498,7 +498,9 @@ export const storybookCatalog = [
     "requirements": [
       "remaining chart-family decisions",
       "remaining table decisions",
-      "remaining data-state decisions",
+      "data states promoted to 15.08",
+      "interactions and filters promoted to 15.09",
+      "final responsive/a11y pass promoted to 15.10",
       "remaining detail/evidence/recommendation layer decisions",
       "handoff to 15/18"
     ],
@@ -1011,7 +1013,8 @@ export const storybookCatalog = [
       "summary",
       "alternative table",
       "Papa action",
-      "ready/partial/processing/noData",
+      "ready/partial/loading/noData",
+      "processing legacy alias for loading",
       "light/dark/reflow"
     ],
     "storyTitle": "15 Wykresy i dane/ChartFrame",
@@ -1049,7 +1052,8 @@ export const storybookCatalog = [
       "source/freshness",
       "definition change",
       "detail/Papa actions",
-      "processing/noData/stale",
+      "loading/noData/stale",
+      "processing legacy alias for loading",
       "light/dark/reflow"
     ],
     "storyTitle": "15 Wykresy i dane/MetricCard",
@@ -1277,15 +1281,15 @@ export const storybookCatalog = [
     "storyClass": "component",
     "owner": "Analytics UI",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": null,
+    "note": "Runtime owner: ChartDataState. Owns the shared analytics data-state language for ChartFrame and visualizations: loading, empty, no data, partial, stale, delayed, blocked, error and unavailable. Individual chart families must not define private state systems.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "draft",
-    "prototypeStatus": "none",
-    "productionStatus": "not_started",
-    "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "documentationStatus": "review",
+    "prototypeStatus": "implemented",
+    "productionStatus": "implemented",
+    "testStatus": "passing",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "loading",
       "empty",
@@ -1295,12 +1299,18 @@ export const storybookCatalog = [
       "delayed",
       "blocked",
       "error",
-      "unavailable"
+      "unavailable",
+      "shared ChartFrame state language",
+      "no per-chart state systems",
+      "polite/assertive live region",
+      "renderable partial/stale/delayed states"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "15 Wykresy i dane/Stany danych",
+    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/DataStates.stories.tsx",
     "displaySectionTitle": "Wykresy i dane",
-    "displayTitle": "Stany danych"
+    "displayTitle": "Stany danych",
+    "storyExport": "DataStatesStory",
+    "accepted": false
   },
   {
     "id": "15.09",
@@ -1311,15 +1321,15 @@ export const storybookCatalog = [
     "storyClass": "component",
     "owner": "Analytics UI",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": null,
+    "note": "Runtime owner: ChartInteractionLayer. Owns chart tooltip, hover, keyboard focus, selection, date range, reset, drill-down and cross-filtering behavior without changing data semantics or chart geometry.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "draft",
-    "prototypeStatus": "none",
-    "productionStatus": "not_started",
-    "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "documentationStatus": "review",
+    "prototypeStatus": "implemented",
+    "productionStatus": "implemented",
+    "testStatus": "passing",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "tooltip",
       "hover",
@@ -1328,15 +1338,20 @@ export const storybookCatalog = [
       "selection",
       "date range",
       "filtr",
-      "zoom",
       "reset",
       "drill-down",
-      "cross-filtering"
+      "cross-filtering",
+      "keyboard-only operation",
+      "focus-visible",
+      "does not change data meaning",
+      "15.03-15.07 chart geometry remains owned by chart families"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "15 Wykresy i dane/Interakcje i filtry",
+    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/ChartInteractions.stories.tsx",
     "displaySectionTitle": "Wykresy i dane",
-    "displayTitle": "Interakcje i filtry"
+    "displayTitle": "Interakcje i filtry",
+    "storyExport": "ChartInteractionsStory",
+    "accepted": false
   },
   {
     "id": "15.10",
@@ -1347,15 +1362,15 @@ export const storybookCatalog = [
     "storyClass": "component",
     "owner": "Analytics UI",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": null,
+    "note": "Quality gate: final responsive and accessibility pass for section 15 after 15.03-15.09. It does not add new features or new chart geometry owners.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "draft",
-    "prototypeStatus": "none",
-    "productionStatus": "not_started",
-    "testStatus": "not_started",
-    "storyStatus": "planned",
-    "storyVisibility": "hidden",
+    "documentationStatus": "review",
+    "prototypeStatus": "implemented",
+    "productionStatus": "implemented",
+    "testStatus": "passing",
+    "storyStatus": "implemented",
+    "storyVisibility": "visible",
     "requirements": [
       "desktop",
       "tablet",
@@ -1367,12 +1382,17 @@ export const storybookCatalog = [
       "klawiatura",
       "focus order",
       "reduced motion",
-      "brak polegania wyłącznie na kolorze"
+      "brak polegania wyłącznie na kolorze",
+      "no new features",
+      "section 15 final regression pass",
+      "15.01-15.09 owner matrix"
     ],
-    "storyTitle": null,
-    "storyFile": null,
+    "storyTitle": "15 Wykresy i dane/Responsywność i dostępność",
+    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/ChartAccessibilityReview.stories.tsx",
     "displaySectionTitle": "Wykresy i dane",
-    "displayTitle": "Responsywność i dostępność"
+    "displayTitle": "Responsywność i dostępność",
+    "storyExport": "ChartAccessibilityReviewStory",
+    "accepted": false
   },
   {
     "id": "18.01",

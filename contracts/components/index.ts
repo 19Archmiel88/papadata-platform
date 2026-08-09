@@ -11,6 +11,8 @@ export * from './budgetpacing';
 export * from './bulkactionbar';
 export * from './button';
 export * from './chartframe';
+export * from './chartdatastate';
+export * from './chartinteractionlayer';
 export * from './checkbox';
 export * from './cohortmatrix';
 export * from './columnpicker';

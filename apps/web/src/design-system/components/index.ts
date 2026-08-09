@@ -24,6 +24,14 @@ export {
 } from './ChartFrame';
 
 export {
+  ChartDataState,
+} from './ChartDataState';
+
+export {
+  ChartInteractionLayer,
+} from './ChartInteractionLayer';
+
+export {
   ComparisonChart,
 } from './ComparisonChart';
 
@@ -184,6 +192,7 @@ export {
 
 export type {
   AnalyticsAction,
+  AnalyticsCanonicalDataState,
   AnalyticsDataState,
   AnalyticsSignalTone,
   AnalyticsTrendDirection,
@@ -221,6 +230,18 @@ export type {
   ChartFrameLabels,
   ChartFrameProps,
 } from './ChartFrame';
+
+export type {
+  ChartDataStateLabels,
+  ChartDataStateProps,
+} from './ChartDataState';
+
+export type {
+  ChartInteractionFilter,
+  ChartInteractionLayerLabels,
+  ChartInteractionLayerProps,
+  ChartInteractionPoint,
+} from './ChartInteractionLayer';
 
 export type {
   ComparisonChartBenchmark,

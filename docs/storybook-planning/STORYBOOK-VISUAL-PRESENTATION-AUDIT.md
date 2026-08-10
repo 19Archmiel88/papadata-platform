@@ -62,3 +62,21 @@ Decyzje:
 - `Button`, `IconButton`, `TextAction` i `LinkAction` używają tego samego motywu.
 - Kolor kreski w akcjach wynika z bieżącego wariantu kontroli (`currentColor`), więc akcje destrukcyjne nie udają brandowego CTA.
 - Focus ring nie jest zastępowany kreską. Kreska jest motywem hover/focus, ale dostępnościowy focus zostaje osobnym stanem.
+
+
+## Patch 3 — Storybook taxonomy cleanup
+
+Status: proposed patch package generated from user-provided source ZIP on 2026-08-10.
+
+Zakres:
+- Usunięto z aktywnego Storybooka niezaakceptowaną sekcję `10 Komponenty` przez wyłączenie legacy story files.
+- Przeniesiono zaakceptowane elementy bazowe do `00 Fundamenty`:
+  - `00 Fundamenty/Marka`,
+  - `00 Fundamenty/Ikony`,
+  - `00 Fundamenty/Przyciski i akcje`,
+  - `00 Fundamenty/Pola tekstowe i formularzowe`.
+- Usunięto z aktywnego Storybooka sekcję `20 Powłoka` przez wyłączenie niezaakceptowanego story `OverlayRoot i system warstw`.
+- Dodano jawny `storySort`, żeby kolejność Storybooka zaczynała się od `00 Fundamenty`, a potem przechodziła przez `05`, `15`, `18`.
+- Zaktualizowano kontrakt Storybooka, wygenerowany katalog i mapowanie `component-system-v1`.
+
+Świadomie nie usunięto runtime component source. Zmiana dotyczy widoczności i taksonomii Storybooka, nie kasowania komponentów używanych przez aplikację.

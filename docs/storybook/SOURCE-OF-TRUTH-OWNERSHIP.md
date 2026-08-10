@@ -32,8 +32,8 @@ Jeżeli kontrakt orkiestracyjny i runtime React props różnią się szczegóło
 | status tones | `00.03/00.04` | Fundament definiuje ton i anatomię; domena definiuje konkretne klucze. |
 | separatory i linie | `00.07` | `05.04` jest decision recordem / handoffem. |
 | reguły ikon | `00.09` | Geometria, `currentColor`, znaczenie i zasady użycia ikon. |
-| pełny katalog ikon | `10.11 / Icon` | Jedyny katalog nazw i wariantów ikon. |
-| marka | `10.01 / PapaDataBrand` | Bez publicznego dekoracyjnego glow w bazowym API. |
+| pełny katalog ikon | `00.13 / Icon` | Jedyny katalog nazw i wariantów ikon. |
+| marka | `00.12 / PapaDataBrand` | Bez publicznego dekoracyjnego glow w bazowym API. |
 | Auth canvas | `05.01` do decyzji | Po decyzji handoff do `25 — Access/Auth patterns`. |
 | App canvas / shell composition | `05.02` do decyzji | Po decyzji handoff do `20 — Product Shell / AppShell`. |
 | MetricCard / mikrotrend KPI | `15.02 / MetricCard` | `05.03` jest decision recordem; nie utrzymuje lokalnego katalogu KPI. |

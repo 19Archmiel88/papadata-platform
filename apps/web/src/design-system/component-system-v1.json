@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "systemVersion": "Component System V1",
-  "stage": "C2.1",
-  "stageName": "Source of Truth & Ownership Alignment",
+  "stage": "C2.2",
+  "stageName": "Storybook Taxonomy Cleanup — Foundation-integrated Component Evidence",
   "foundationBaseline": {
     "expectedActiveStoryCount": 37,
     "expectedActiveStoryFileCount": 23,
@@ -163,23 +163,23 @@
     "VerificationCodeInput"
   ],
   "activeComponentEntries": [
-    "10.01",
-    "10.02",
-    "10.03",
-    "10.11"
+    "00.12",
+    "00.13",
+    "00.14",
+    "00.15"
   ],
   "finalizedComponentEntries": [
-    "10.01",
-    "10.02",
-    "10.11"
+    "00.12",
+    "00.13",
+    "00.14"
   ],
   "evidence": {
     "document": "docs/storybook/COMPONENT-SYSTEM-V1-EVIDENCE.md",
     "requiredEntries": [
-      "10.01",
-      "10.02",
-      "10.03",
-      "10.11"
+      "00.12",
+      "00.13",
+      "00.14",
+      "00.15"
     ],
     "requiredPublicExports": [
       "apps/web/src/design-system/index.ts",

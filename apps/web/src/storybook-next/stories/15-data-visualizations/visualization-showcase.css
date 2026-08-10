@@ -171,3 +171,29 @@
     gap: var(--pd-space-3);
   }
 }
+
+
+/* -------------------------------------------------------------------------- */
+/* PapaData visual presentation pass — chart story alignment                    */
+/* -------------------------------------------------------------------------- */
+
+.pd-viz-story__variant-row,
+.pd-viz-story__state-row {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--pd-space-4);
+}
+
+.pd-viz-story__row-copy {
+  max-inline-size: 72ch;
+}
+
+.pd-viz-story__variant-row > :not(.pd-viz-story__row-copy),
+.pd-viz-story__state-row > :not(.pd-viz-story__row-copy) {
+  min-inline-size: 0;
+  inline-size: 100%;
+  max-inline-size: 100%;
+}
+
+.pd-viz-story__variant-list {
+  min-inline-size: 0;
+}

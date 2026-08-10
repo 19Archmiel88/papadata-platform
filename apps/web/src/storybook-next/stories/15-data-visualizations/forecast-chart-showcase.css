@@ -304,3 +304,24 @@
     color: var(--pd-interactive);
   }
 }
+
+
+/* -------------------------------------------------------------------------- */
+/* PapaData visual presentation pass — forecast story alignment                 */
+/* -------------------------------------------------------------------------- */
+
+.pd-forecast-story__variants > article {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--pd-space-6);
+}
+
+.pd-forecast-story__variants header {
+  max-inline-size: 72ch;
+  padding-block-start: 0;
+}
+
+.pd-forecast-story__chart-frame {
+  inline-size: 100%;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}

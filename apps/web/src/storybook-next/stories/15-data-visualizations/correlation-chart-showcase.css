@@ -94,3 +94,23 @@
     gap: var(--pd-space-2);
   }
 }
+
+
+/* -------------------------------------------------------------------------- */
+/* PapaData visual presentation pass — correlation story alignment              */
+/* -------------------------------------------------------------------------- */
+
+.pd-correlation-story__variant {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--pd-space-5);
+}
+
+.pd-correlation-story__variant header {
+  max-inline-size: 72ch;
+}
+
+.pd-correlation-story__variant [data-component='correlation-chart'] {
+  inline-size: 100%;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}

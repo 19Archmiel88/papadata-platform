@@ -1,3 +1,5 @@
+@import '../foundations/brand-flow-line.css';
+
 .pd-brand-lockup {
   --brand-logo-base-fill: var(--pd-surface-raised);
   --brand-logo-base-stroke: var(--pd-separator-subtle);
@@ -346,4 +348,31 @@
     color: CanvasText;
     text-shadow: none;
   }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* PapaData BrandFlowLine primitive — brand lockup                              */
+/* -------------------------------------------------------------------------- */
+
+.pd-brand-lockup {
+  --pd-brand-flow-line-edge: var(--pd-brand-ambient);
+  --pd-brand-flow-line-core: var(--pd-brand);
+}
+
+.pd-brand-lockup::after {
+  height: var(--pd-brand-flow-line-height);
+  border-radius: var(--pd-brand-flow-line-radius);
+  background: var(--pd-brand-flow-line-background);
+  box-shadow: var(--pd-brand-flow-line-shadow);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: var(--pd-brand-flow-line-transition);
+}
+
+.pd-brand-focus-strip {
+  height: var(--pd-brand-flow-line-height);
+  border-radius: var(--pd-brand-flow-line-radius);
+  background: var(--pd-brand-flow-line-background);
+  box-shadow: var(--pd-brand-flow-line-shadow);
 }

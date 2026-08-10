@@ -1,3 +1,5 @@
+@import '../../foundations/brand-flow-line.css';
+
 .pd-button,
 button.pd-button {
   --pd-button-color: var(--pd-text);
@@ -234,4 +236,26 @@ button.pd-button[disabled] .pd-button__activity-line,
   button.pd-button[disabled] {
     color: GrayText;
   }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* PapaData BrandFlowLine primitive — button actions                            */
+/* -------------------------------------------------------------------------- */
+
+.pd-button,
+button.pd-button {
+  --pd-brand-flow-line-edge:
+    color-mix(in srgb, currentColor 38%, transparent);
+  --pd-brand-flow-line-core: currentColor;
+}
+
+.pd-button__activity-line {
+  height: var(--pd-brand-flow-line-height);
+  border-radius: var(--pd-brand-flow-line-radius);
+  background: var(--pd-brand-flow-line-background);
+  box-shadow: var(--pd-brand-flow-line-shadow);
+  transform: scaleX(var(--pd-brand-flow-line-rest-scale));
+  transform-origin: center;
+  transition: var(--pd-brand-flow-line-transition);
 }

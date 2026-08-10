@@ -199,18 +199,54 @@
 }
 
 .pd-f0-section__content {
-  grid-column: 2;
+  grid-column: 1 / -1;
   min-width: 0;
+  max-inline-size: 100%;
+}
+
+.pd-f0-section[data-layout="narrow"] .pd-f0-section__content {
+  grid-column: 2;
+}
+
+.pd-f0-section[data-layout="wide"] .pd-f0-section__content,
+.pd-f0-section[data-layout="showcase"] .pd-f0-section__content,
+.pd-f0-section[data-layout="full"] .pd-f0-section__content {
+  grid-column: 1 / -1;
+}
+
+.pd-f0-section[data-layout="showcase"] .pd-f0-section__content {
+  display: grid;
+  gap: clamp(20px, 3vw, 40px);
+}
+
+.pd-f0-section[data-layout="full"] {
+  margin-inline: calc(clamp(24px, 4vw, 56px) * -1);
+}
+
+.pd-f0-section[data-layout="full"] .pd-f0-section__header {
+  padding-inline: clamp(24px, 4vw, 56px);
+}
+
+.pd-f0-section[data-layout="full"] .pd-f0-section__content {
   max-inline-size: 100%;
 }
 
 .pd-f0-variant {
   display: grid;
-  grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.55fr);
-  gap: clamp(22px, 3vw, 42px);
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(14px, 2vw, 24px);
   align-items: start;
   padding-block: 26px;
   border-top: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-f0-variant[data-layout="split"] {
+  grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.55fr);
+  gap: clamp(22px, 3vw, 42px);
+}
+
+.pd-f0-variant[data-layout="showcase"] {
+  gap: clamp(18px, 2.5vw, 32px);
 }
 
 .pd-f0-variant:first-child {
@@ -1521,4 +1557,30 @@
   .pd-f0-number-alignment strong {
     min-width: 0;
   }
+}
+
+/* -------------------------------------------------------------------------- */
+/* PapaData visual presentation pass — global alignment                         */
+/* -------------------------------------------------------------------------- */
+
+.pd-f0-section,
+.pd-f0-section__header,
+.pd-f0-section__content,
+.pd-f0-variant,
+.pd-f0-variant__body {
+  min-inline-size: 0;
+}
+
+.pd-f0-section__content > * {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.pd-f0-variant__header {
+  max-inline-size: 72ch;
+}
+
+.pd-f0-variant__body > * {
+  min-inline-size: 0;
+  max-inline-size: 100%;
 }

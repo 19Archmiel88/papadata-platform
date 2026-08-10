@@ -1,0 +1,52 @@
+/* -------------------------------------------------------------------------- */
+/* PapaData BrandFlowLine                                                       */
+/* -------------------------------------------------------------------------- */
+
+/*
+  BrandFlowLine jest wspólnym motywem kreski PapaData:
+  - startuje ze środka,
+  - ma miękkie/fade'owane końce,
+  - zachowuje subtelny cień,
+  - nie zastępuje focus ringa.
+*/
+
+:root {
+  --pd-brand-flow-line-height: 2px;
+  --pd-brand-flow-line-radius: var(--pd-radius-pill);
+  --pd-brand-flow-line-rest-scale: 0.08;
+  --pd-brand-flow-line-active-scale: 1;
+  --pd-brand-flow-line-edge: var(--pd-brand-ambient);
+  --pd-brand-flow-line-core: var(--pd-brand);
+  --pd-brand-flow-line-background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--pd-brand-flow-line-edge) 20%,
+      var(--pd-brand-flow-line-core) 50%,
+      var(--pd-brand-flow-line-edge) 80%,
+      transparent 100%
+    );
+  --pd-brand-flow-line-shadow:
+    0 2px 8px 0 var(--pd-brand-flow-line-edge);
+  --pd-brand-flow-line-transition:
+    opacity var(--pd-motion-duration-standard)
+      var(--pd-motion-easing-emphasized),
+    transform var(--pd-motion-duration-deliberate)
+      var(--pd-motion-easing-emphasized);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --pd-brand-flow-line-transition:
+      opacity 1ms var(--pd-motion-easing-standard),
+      transform 1ms var(--pd-motion-easing-standard);
+  }
+}
+
+@media (forced-colors: active) {
+  :root {
+    --pd-brand-flow-line-edge: CanvasText;
+    --pd-brand-flow-line-core: CanvasText;
+    --pd-brand-flow-line-shadow: none;
+  }
+}

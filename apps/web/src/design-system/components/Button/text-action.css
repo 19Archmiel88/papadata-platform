@@ -1,3 +1,5 @@
+@import '../../foundations/brand-flow-line.css';
+
 .pd-inline-action,
 button.pd-inline-action,
 a.pd-inline-action {
@@ -147,4 +149,27 @@ a.pd-inline-action:focus-visible {
   .pd-inline-action[aria-disabled='true'] {
     color: GrayText;
   }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* PapaData BrandFlowLine primitive — inline actions                            */
+/* -------------------------------------------------------------------------- */
+
+.pd-inline-action,
+button.pd-inline-action,
+a.pd-inline-action {
+  --pd-brand-flow-line-edge:
+    color-mix(in srgb, currentColor 38%, transparent);
+  --pd-brand-flow-line-core: currentColor;
+}
+
+.pd-inline-action__activity-line {
+  height: var(--pd-brand-flow-line-height);
+  border-radius: var(--pd-brand-flow-line-radius);
+  background: var(--pd-brand-flow-line-background);
+  box-shadow: var(--pd-brand-flow-line-shadow);
+  transform: scaleX(var(--pd-brand-flow-line-rest-scale));
+  transform-origin: center;
+  transition: var(--pd-brand-flow-line-transition);
 }

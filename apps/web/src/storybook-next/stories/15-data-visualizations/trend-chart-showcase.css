@@ -69,3 +69,24 @@
     padding-block: var(--pd-space-6);
   }
 }
+
+
+/* -------------------------------------------------------------------------- */
+/* PapaData visual presentation pass — trend story alignment                    */
+/* -------------------------------------------------------------------------- */
+
+.pd-trend-story__variants,
+.pd-trend-story__variant {
+  min-inline-size: 0;
+  max-inline-size: none;
+}
+
+.pd-trend-story__variant {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--pd-space-5);
+}
+
+.pd-trend-story__variant > * {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}

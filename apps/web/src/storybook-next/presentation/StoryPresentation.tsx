@@ -7,6 +7,13 @@ export type StoryPresentationMetaItem = {
   readonly value: ReactNode;
 };
 
+export type StoryPresentationSectionLayout =
+  | 'standard'
+  | 'narrow'
+  | 'wide'
+  | 'showcase'
+  | 'full';
+
 export function StoryPresentationMeta({
   ariaLabel,
   className,
@@ -85,12 +92,14 @@ export function StoryPresentationSection({
   children,
   className,
   index,
+  layout = 'standard',
   summary,
   title,
 }: {
   readonly children: ReactNode;
   readonly className?: string;
   readonly index: ReactNode;
+  readonly layout?: StoryPresentationSectionLayout;
   readonly summary?: ReactNode;
   readonly title: ReactNode;
 }) {
@@ -102,7 +111,7 @@ export function StoryPresentationSection({
     .join(' ');
 
   return (
-    <section className={rootClassName}>
+    <section className={rootClassName} data-layout={layout}>
       <header className="pd-f0-section__header">
         <span className="pd-f0-section__index" aria-hidden="true">
           {index}

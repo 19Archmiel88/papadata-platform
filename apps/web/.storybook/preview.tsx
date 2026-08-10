@@ -130,6 +130,17 @@ const preview: Preview = {
       test: 'error',
     },
 
+    options: {
+      storySort: {
+        order: [
+          '00 Fundamenty',
+          '05 Laboratorium decyzji',
+          '15 Wykresy i dane',
+          '18 Wzorce interfejsu',
+        ],
+      },
+    },
+
     viewport: {
       options: {
         desktopWide: {

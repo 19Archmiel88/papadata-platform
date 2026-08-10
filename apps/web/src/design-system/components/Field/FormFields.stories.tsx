@@ -35,7 +35,7 @@ import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection 
 import './field-family-showcase.css';
 
 const meta = {
-  title: '10 Komponenty bazowe/Pola tekstowe i formularzowe',
+  title: '00 Fundamenty/Pola tekstowe i formularzowe',
   component: TextField,
   parameters: {
     layout: 'fullscreen',

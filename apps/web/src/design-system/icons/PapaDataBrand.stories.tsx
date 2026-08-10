@@ -21,7 +21,7 @@ import '../../storybook-next/presentation/story-presentation.css';
 import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../storybook-next/presentation/StoryPresentation';
 
 const meta = {
-  title: '10 Komponenty bazowe/Marka',
+  title: '00 Fundamenty/Marka',
   component: PapaDataBrand,
   parameters: {
     layout: 'fullscreen',

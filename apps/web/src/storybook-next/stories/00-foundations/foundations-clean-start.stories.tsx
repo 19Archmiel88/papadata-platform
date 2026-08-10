@@ -1486,7 +1486,7 @@ export const Ikonografia: Story = {
   render: () => (
     <FoundationPage
       title={<Localized pl="Ikonografia" en="Iconography" />}
-      summary={<Localized pl="Fundament określa reguły języka ikon. Pełny katalog nazw i wariantów jest własnością komponentu 10.11 — Ikony." en="The foundation defines icon-language rules. The complete name and variant catalog is owned by component 10.11 — Icons." />}
+      summary={<Localized pl="Fundament określa reguły języka ikon. Pełny katalog nazw i wariantów jest własnością komponentu 00.13 — Ikony." en="The foundation defines icon-language rules. The complete name and variant catalog is owned by component 10.11 — Icons." />}
     >
       <FoundationSection
         index="01"
@@ -1535,7 +1535,7 @@ export const Ikonografia: Story = {
       >
         <FoundationVariant
           title={<Localized pl="Jedno źródło prawdy" en="Single source of truth" />}
-          description={<Localized pl="00.09 opisuje zasady. 10.11 dokumentuje komponent i pełny katalog. Provider marks oraz logo marki pozostają osobnymi rodzinami." en="00.09 defines rules. 10.11 documents the component and complete catalog. Provider marks and brand marks remain separate families." />}
+          description={<Localized pl="00.09 opisuje zasady. 00.13 dokumentuje komponent i pełny katalog. Provider marks oraz logo marki pozostają osobnymi rodzinami." en="00.09 defines rules. 00.13 documents the component and complete catalog. Provider marks and brand marks remain separate families." />}
           token={<code>10.11 / Icon</code>}
         >
           <div className="pd-f0-iconography-note">

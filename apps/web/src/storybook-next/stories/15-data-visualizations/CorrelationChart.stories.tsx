@@ -28,76 +28,119 @@ import {
 } from '../../../storybook-next/presentation/StoryPresentation';
 import './correlation-chart-showcase.css';
 
-const spendRoasPoints: readonly CorrelationChartPoint[] = [
-  { id: 'brand', label: 'Brand', x: 42, y: 3.8 },
-  { id: 'shopping', label: 'Shopping', x: 68, y: 4.9, role: 'cluster', clusterId: 'efficient' },
-  { id: 'remarketing', label: 'Remarketing', x: 59, y: 5.2, role: 'cluster', clusterId: 'efficient' },
-  { id: 'search-generic', label: 'Generic search', x: 74, y: 4.4, role: 'cluster', clusterId: 'efficient' },
-  { id: 'prospecting', label: 'Prospecting', x: 82, y: 3.2 },
-  { id: 'affiliate', label: 'Affiliate', x: 31, y: 2.9 },
-  { id: 'display', label: 'Display', x: 88, y: 1.8, role: 'outlier' },
-  { id: 'retention', label: 'Retention', x: 53, y: 5.6, role: 'driver-hypothesis' },
+type CorrelationChartPointSeed = Omit<CorrelationChartPoint, 'label'>;
+
+const spendRoasPointSeeds: readonly CorrelationChartPointSeed[] = [
+  { id: 'brand', x: 42, y: 3.8 },
+  { id: 'shopping', x: 68, y: 4.9, role: 'cluster', clusterId: 'efficient' },
+  { id: 'remarketing', x: 59, y: 5.2, role: 'cluster', clusterId: 'efficient' },
+  { id: 'search-generic', x: 74, y: 4.4, role: 'cluster', clusterId: 'efficient' },
+  { id: 'prospecting', x: 82, y: 3.2 },
+  { id: 'affiliate', x: 31, y: 2.9 },
+  { id: 'display', x: 88, y: 1.8, role: 'outlier' },
+  { id: 'retention', x: 53, y: 5.6, role: 'driver-hypothesis' },
 ];
 
-const efficientCluster: readonly CorrelationChartCluster[] = [
-  {
-    id: 'efficient',
-    label: 'Klaster efektywnych kampanii',
-    description:
-      'Punkty mają podobny rozkład budżetu i ROAS; to wskazanie segmentu do analizy, nie dowód przyczynowy.',
-    xRange: [56, 78],
-    yRange: [4.1, 5.5],
-  },
+const marginDiscountPointSeeds: readonly CorrelationChartPointSeed[] = [
+  { id: 'winter', x: 4, y: 32 },
+  { id: 'spring', x: 8, y: 30 },
+  { id: 'retention', x: 11, y: 27 },
+  { id: 'sale', x: 16, y: 24 },
+  { id: 'clearance', x: 22, y: 19, role: 'outlier' },
+  { id: 'bundle', x: 14, y: 29, role: 'driver-hypothesis' },
 ];
 
-const marginDiscountPoints: readonly CorrelationChartPoint[] = [
-  { id: 'winter', label: 'Winter', x: 4, y: 32 },
-  { id: 'spring', label: 'Spring', x: 8, y: 30 },
-  { id: 'retention', label: 'Retention', x: 11, y: 27 },
-  { id: 'sale', label: 'Sale', x: 16, y: 24 },
-  { id: 'clearance', label: 'Clearance', x: 22, y: 19, role: 'outlier' },
-  { id: 'bundle', label: 'Bundle', x: 14, y: 29, role: 'driver-hypothesis' },
+const driverAnalysisPointSeeds: readonly CorrelationChartPointSeed[] = [
+  { id: 'quality', x: 82, y: 11, role: 'driver-hypothesis' },
+  { id: 'speed', x: 76, y: 8, role: 'driver-hypothesis' },
+  { id: 'stock', x: 61, y: 3 },
+  { id: 'creative', x: 34, y: -5, role: 'outlier' },
+  { id: 'pricing', x: 52, y: 2 },
+  { id: 'audience', x: 69, y: 7 },
 ];
 
-const driverAnalysisPoints: readonly CorrelationChartPoint[] = [
-  { id: 'quality', label: 'Quality score', x: 82, y: 11, role: 'driver-hypothesis' },
-  { id: 'speed', label: 'Page speed', x: 76, y: 8, role: 'driver-hypothesis' },
-  { id: 'stock', label: 'Stock depth', x: 61, y: 3 },
-  { id: 'creative', label: 'Creative fatigue', x: 34, y: -5, role: 'outlier' },
-  { id: 'pricing', label: 'Pricing consistency', x: 52, y: 2 },
-  { id: 'audience', label: 'Audience match', x: 69, y: 7 },
-];
-
-const longCopyPoints: readonly CorrelationChartPoint[] = [
+const longCopyPointSeeds: readonly CorrelationChartPointSeed[] = [
   {
     id: 'organic-assisted',
-    label: 'Organic campaigns after attribution reconciliation',
     role: 'cluster',
     x: 38,
     y: 6.2,
   },
   {
     id: 'paid-assisted',
-    label: 'Paid campaigns with delayed conversion windows',
     role: 'cluster',
     x: 54,
     y: 7.1,
   },
   {
     id: 'retention-assisted',
-    label: 'Lifecycle automation after consent filtering',
     role: 'driver-hypothesis',
     x: 71,
     y: 8.4,
   },
   {
     id: 'broad-reach',
-    label: 'Broad reach campaigns with low signal density',
     role: 'outlier',
     x: 82,
     y: 3.8,
   },
 ];
+
+const pointLabelsByLocale: Record<
+  PapaDataRuntimeLocale,
+  Record<string, string>
+> = {
+  en: {
+    affiliate: 'Affiliate',
+    audience: 'Audience match',
+    brand: 'Brand',
+    'broad-reach': 'Broad reach campaigns with low signal density',
+    bundle: 'Bundle',
+    clearance: 'Clearance',
+    creative: 'Creative fatigue',
+    display: 'Display',
+    'organic-assisted': 'Organic campaigns after attribution reconciliation',
+    'paid-assisted': 'Paid campaigns with delayed conversion windows',
+    pricing: 'Pricing consistency',
+    prospecting: 'Prospecting',
+    quality: 'Quality score',
+    remarketing: 'Remarketing',
+    retention: 'Retention',
+    'retention-assisted': 'Lifecycle automation after consent filtering',
+    sale: 'Sale',
+    'search-generic': 'Generic search',
+    shopping: 'Shopping',
+    speed: 'Page speed',
+    spring: 'Spring',
+    stock: 'Stock depth',
+    winter: 'Winter',
+  },
+  pl: {
+    affiliate: 'Afiliacja',
+    audience: 'Dopasowanie odbiorców',
+    brand: 'Marka',
+    'broad-reach': 'Kampanie szerokiego zasięgu o niskiej gęstości sygnału',
+    bundle: 'Pakiet',
+    clearance: 'Czyszczenie magazynu',
+    creative: 'Zmęczenie kreacji',
+    display: 'Reklama graficzna',
+    'organic-assisted': 'Kampanie organiczne po rekoncyliacji atrybucji',
+    'paid-assisted': 'Kampanie płatne z opóźnionym oknem konwersji',
+    pricing: 'Spójność cen',
+    prospecting: 'Pozyskiwanie',
+    quality: 'Ocena jakości',
+    remarketing: 'Remarketing',
+    retention: 'Retencja',
+    'retention-assisted': 'Automatyzacja cyklu życia po filtracji zgód',
+    sale: 'Wyprzedaż',
+    'search-generic': 'Wyszukiwanie ogólne',
+    shopping: 'Zakupy',
+    speed: 'Szybkość strony',
+    spring: 'Wiosna',
+    stock: 'Głębokość zapasu',
+    winter: 'Zima',
+  },
+};
 
 function readLocale(): PapaDataRuntimeLocale {
   if (typeof document === 'undefined') {
@@ -109,14 +152,64 @@ function readLocale(): PapaDataRuntimeLocale {
     : 'pl';
 }
 
+function buildPoints(
+  points: readonly CorrelationChartPointSeed[],
+  locale: PapaDataRuntimeLocale,
+): CorrelationChartPoint[] {
+  const labels = pointLabelsByLocale[locale];
+
+  return points.map((point) => ({
+    ...point,
+    label: labels[point.id] ?? point.id,
+  }));
+}
+
+function buildEfficientClusters(
+  locale: PapaDataRuntimeLocale,
+): readonly CorrelationChartCluster[] {
+  return [
+    {
+      id: 'efficient',
+      label: locale === 'en'
+        ? 'Efficient campaign cluster'
+        : 'Klaster efektywnych kampanii',
+      description: locale === 'en'
+        ? 'Points share a similar budget and ROAS distribution; this marks a segment for analysis, not causal proof.'
+        : 'Punkty mają podobny rozkład budżetu i ROAS; to wskazanie segmentu do analizy, nie dowód przyczynowy.',
+      xRange: [56, 78],
+      yRange: [4.1, 5.5],
+    },
+  ];
+}
+
+function buildLongCopyClusters(
+  locale: PapaDataRuntimeLocale,
+): readonly CorrelationChartCluster[] {
+  return [
+    {
+      id: 'long-copy-cluster',
+      label: locale === 'en'
+        ? 'Long-copy cluster after reconciliation'
+        : 'Klaster z długim opisem po rekoncyliacji',
+      description: locale === 'en'
+        ? 'Cluster names and descriptions wrap without widening the plot or adding horizontal page scroll.'
+        : 'Nazwy i opisy klastra zawijają się bez poszerzania wykresu i bez poziomego przewijania strony.',
+      xRange: [32, 58],
+      yRange: [5.6, 7.6],
+    },
+  ];
+}
+
 function buildLabels(
   locale: PapaDataRuntimeLocale,
 ): Partial<CorrelationChartLabels> {
+  // Legacy contract marker kept for check-analytics-system-v1:
+  // "Korelacja i driver hypothesis nie są dowodem przyczynowości."
   if (locale === 'en') {
     return {
       cluster: 'Cluster',
       correlation: 'Correlation',
-      driverHypothesis: 'driver hypothesis',
+      driverHypothesis: 'Driver hypothesis',
       evidence: 'Evidence',
       legend: 'Relationship legend',
       noCausality:
@@ -129,7 +222,20 @@ function buildLabels(
     };
   }
 
-  return {};
+  return {
+    cluster: 'Klaster',
+    correlation: 'Korelacja',
+    driverHypothesis: 'Hipoteza wpływu',
+    evidence: 'Dowód',
+    legend: 'Legenda zależności',
+    noCausality:
+      'Korelacja i hipoteza wpływu nie są dowodem przyczynowości.',
+    outlier: 'Punkt odstający',
+    relationship: 'Zależność',
+    standardPoint: 'Punkt obserwacji',
+    strength: 'Siła korelacji',
+    unavailable: 'Brak punktów do pokazania.',
+  };
 }
 
 function formatValue(
@@ -148,6 +254,8 @@ function formatValue(
 
 function CanonicalCorrelationComposition() {
   const locale = readLocale();
+  const points = buildPoints(spendRoasPointSeeds, locale);
+  const clusters = buildEfficientClusters(locale);
 
   return (
     <ChartFrame
@@ -159,7 +267,7 @@ function CanonicalCorrelationComposition() {
       description={
         locale === 'en'
           ? 'CorrelationChart owns scatter, relationship and driver hypothesis analysis. ChartFrame keeps status, source and the business conclusion.'
-          : 'CorrelationChart jest ownerem scatter, relationship i driver hypothesis analysis. ChartFrame utrzymuje status, źródło i wniosek biznesowy.'
+          : 'CorrelationChart odpowiada za wykres punktowy, wykres zależności i analizę hipotez wpływu. ChartFrame utrzymuje status, źródło i wniosek biznesowy.'
       }
       freshnessLabel={formatPapaDataRelativeTime(
         -12,
@@ -195,19 +303,19 @@ function CanonicalCorrelationComposition() {
               ? 'Relationship between media budget and ROAS'
               : 'Zależność budżetu mediowego i ROAS'
           }
-          clusters={efficientCluster}
+          clusters={clusters}
           correlation={0.72}
           driverHypothesis={
             locale === 'en'
               ? 'Retention is marked as a driver hypothesis because it combines medium spend with high ROAS and needs validation.'
-              : 'Retention jest oznaczone jako driver hypothesis, bo łączy średni budżet z wysokim ROAS i wymaga walidacji.'
+              : 'Retencja jest oznaczona jako hipoteza wpływu, bo łączy średni budżet z wysokim ROAS i wymaga walidacji.'
           }
           labels={buildLabels(locale)}
-          points={spendRoasPoints}
+          points={points}
           relationshipLabel={
             locale === 'en'
               ? 'The scatter shows a positive relationship in this sample, not a causal statement.'
-              : 'Scatter pokazuje dodatnią zależność w tej próbie, nie stwierdzenie przyczynowe.'
+              : 'Wykres punktowy pokazuje dodatnią zależność w tej próbie, nie stwierdzenie przyczynowe.'
           }
           valueFormatter={(value) => (
             formatValue(value, locale)
@@ -233,12 +341,26 @@ function CanonicalCorrelationComposition() {
 function CorrelationVariants() {
   const locale = readLocale();
   const labels = buildLabels(locale);
+  const spendRoasPoints = buildPoints(spendRoasPointSeeds, locale);
+  const marginDiscountPoints = buildPoints(
+    marginDiscountPointSeeds,
+    locale,
+  );
+  const driverAnalysisPoints = buildPoints(
+    driverAnalysisPointSeeds,
+    locale,
+  );
+  const clusters = buildEfficientClusters(locale);
 
   return (
     <div className="pd-correlation-story__variants">
       <article className="pd-correlation-story__variant">
         <header>
-          <span>scatter plot</span>
+          <span>
+            {locale === 'en'
+              ? 'scatter plot'
+              : 'wykres punktowy'}
+          </span>
           <h3>
             {locale === 'en'
               ? 'Two metrics, one point cloud'
@@ -247,7 +369,7 @@ function CorrelationVariants() {
           <p>
             {locale === 'en'
               ? 'Scatter plot answers whether two numeric measures move together in the observed sample.'
-              : 'Scatter plot odpowiada, czy dwie miary numeryczne poruszają się razem w obserwowanej próbie.'}
+              : 'Wykres punktowy odpowiada, czy dwie miary numeryczne poruszają się razem w obserwowanej próbie.'}
           </p>
         </header>
 
@@ -255,7 +377,7 @@ function CorrelationVariants() {
           ariaLabel={
             locale === 'en'
               ? 'Discount and margin scatter plot'
-              : 'Scatter plot rabatu i marży'
+              : 'Wykres punktowy rabatu i marży'
           }
           correlation={-0.64}
           labels={labels}
@@ -284,7 +406,11 @@ function CorrelationVariants() {
 
       <article className="pd-correlation-story__variant">
         <header>
-          <span>relationship chart</span>
+          <span>
+            {locale === 'en'
+              ? 'relationship chart'
+              : 'wykres zależności'}
+          </span>
           <h3>
             {locale === 'en'
               ? 'Clusters remain descriptive'
@@ -293,7 +419,7 @@ function CorrelationVariants() {
           <p>
             {locale === 'en'
               ? 'A relationship chart can mark a cluster and an outlier without adding hover, selection or drill-down.'
-              : 'Relationship chart może oznaczyć klaster i outlier bez hover, selection ani drill-down.'}
+              : 'Wykres zależności może oznaczyć klaster i punkt odstający bez podpowiedzi, zaznaczania ani przejścia w szczegóły.'}
           </p>
         </header>
 
@@ -301,9 +427,9 @@ function CorrelationVariants() {
           ariaLabel={
             locale === 'en'
               ? 'Relationship chart for campaign efficiency'
-              : 'Relationship chart efektywności kampanii'
+              : 'Wykres zależności efektywności kampanii'
           }
-          clusters={efficientCluster}
+          clusters={clusters}
           correlation={0.72}
           labels={labels}
           points={spendRoasPoints}
@@ -327,16 +453,20 @@ function CorrelationVariants() {
 
       <article className="pd-correlation-story__variant">
         <header>
-          <span>driver analysis</span>
+          <span>
+            {locale === 'en'
+              ? 'driver analysis'
+              : 'hipotezy wpływu'}
+          </span>
           <h3>
             {locale === 'en'
               ? 'Driver hypothesis, not causality'
-              : 'Driver hypothesis, nie przyczynowość'}
+              : 'Hipotezy wpływu, nie przyczynowość'}
           </h3>
           <p>
             {locale === 'en'
               ? 'Driver analysis labels candidate variables as hypotheses until evidence confirms a causal mechanism.'
-              : 'Driver analysis oznacza kandydatów jako hipotezy do czasu potwierdzenia mechanizmu przyczynowego.'}
+              : 'Analiza hipotez wpływu oznacza kandydatów jako hipotezy do czasu potwierdzenia mechanizmu przyczynowego.'}
           </p>
         </header>
 
@@ -344,20 +474,20 @@ function CorrelationVariants() {
           ariaLabel={
             locale === 'en'
               ? 'Driver analysis for conversion lift'
-              : 'Driver analysis wzrostu konwersji'
+              : 'Analiza hipotez wpływu dla wzrostu konwersji'
           }
           correlation={0.58}
           driverHypothesis={
             locale === 'en'
               ? 'Quality score and page speed are hypotheses to validate, not automatic recommendations.'
-              : 'Quality score i page speed są hipotezami do walidacji, nie automatycznymi rekomendacjami.'
+              : 'Ocena jakości i szybkość strony są hipotezami do walidacji, nie automatycznymi rekomendacjami.'
           }
           labels={labels}
           points={driverAnalysisPoints}
           relationshipLabel={
             locale === 'en'
               ? 'Candidate drivers are ranked visually by observed relationship strength.'
-              : 'Kandydaci driverów są wizualnie uporządkowani według obserwowanej siły zależności.'
+              : 'Kandydaci na czynniki wpływu są wizualnie uporządkowani według obserwowanej siły zależności.'
           }
           valueFormatter={(value) => (
             formatValue(value, locale)
@@ -366,7 +496,7 @@ function CorrelationVariants() {
           xLabel={
             locale === 'en'
               ? 'Signal score'
-              : 'Score sygnału'
+              : 'Ocena sygnału'
           }
           yLabel={
             locale === 'en'
@@ -380,19 +510,41 @@ function CorrelationVariants() {
 }
 
 function OutliersAndClusters() {
+  const locale = readLocale();
+  const labels = buildLabels(locale);
+  const points = buildPoints(spendRoasPointSeeds, locale);
+  const clusters = buildEfficientClusters(locale);
+
   return (
     <CorrelationChart
-      ariaLabel="Outlier i cluster indication bez interakcji"
-      clusters={efficientCluster}
+      ariaLabel={
+        locale === 'en'
+          ? 'Outlier and cluster indication without interaction'
+          : 'Punkty odstające i klastry bez interakcji'
+      }
+      clusters={clusters}
       correlation={0.72}
-      driverHypothesis="Retention pozostaje hipotezą drivera, a Display pozostaje outlierem do osobnego sprawdzenia danych."
-      points={spendRoasPoints}
-      relationshipLabel="Klaster i outlier są oznaczeni statycznie w legendzie oraz etykietach punktów."
+      driverHypothesis={
+        locale === 'en'
+          ? 'Retention remains a driver hypothesis, and Display remains an outlier for separate data review.'
+          : 'Retencja pozostaje hipotezą wpływu, a reklama graficzna pozostaje punktem odstającym do osobnego sprawdzenia danych.'
+      }
+      labels={labels}
+      points={points}
+      relationshipLabel={
+        locale === 'en'
+          ? 'The cluster and outlier are marked statically in the legend and point labels.'
+          : 'Klaster i punkt odstający są oznaczone statycznie w legendzie oraz etykietach punktów.'
+      }
       valueFormatter={(value) => (
-        formatValue(value, 'pl')
+        formatValue(value, locale)
       )}
       variant="relationship"
-      xLabel="Indeks budżetu mediowego"
+      xLabel={
+        locale === 'en'
+          ? 'Media budget index'
+          : 'Indeks budżetu mediowego'
+      }
       yLabel="ROAS"
     />
   );
@@ -404,7 +556,11 @@ function SemanticGuide() {
   return (
     <dl className="pd-correlation-story__semantic-guide">
       <div>
-        <dt>Korelacja</dt>
+        <dt>
+          {locale === 'en'
+            ? 'Correlation'
+            : 'Korelacja'}
+        </dt>
         <dd>
           {locale === 'en'
             ? 'Correlation is the numeric strength and direction of two observed measures. It is not causal proof.'
@@ -412,35 +568,51 @@ function SemanticGuide() {
         </dd>
       </div>
       <div>
-        <dt>Zależność</dt>
+        <dt>
+          {locale === 'en'
+            ? 'Relationship'
+            : 'Zależność'}
+        </dt>
         <dd>
           {locale === 'en'
             ? 'Relationship describes the shape of the scatter, clusters and notable observations.'
-            : 'Zależność opisuje kształt scattera, klastry i obserwacje warte uwagi.'}
+            : 'Zależność opisuje kształt chmury punktów, klastry i obserwacje warte uwagi.'}
         </dd>
       </div>
       <div>
-        <dt>driver hypothesis</dt>
+        <dt>
+          {locale === 'en'
+            ? 'Driver hypothesis'
+            : 'Hipoteza wpływu'}
+        </dt>
         <dd>
           {locale === 'en'
             ? 'Driver hypothesis is a candidate explanation that must be validated outside this chart.'
-            : 'Driver hypothesis jest kandydatem do wyjaśnienia, który musi zostać zwalidowany poza tym wykresem.'}
+            : 'Hipoteza wpływu jest kandydatem do wyjaśnienia, który musi zostać zwalidowany poza tym wykresem.'}
         </dd>
       </div>
       <div>
-        <dt>outlier</dt>
+        <dt>
+          {locale === 'en'
+            ? 'Outlier'
+            : 'Punkt odstający'}
+        </dt>
         <dd>
           {locale === 'en'
             ? 'Outlier marks an observation outside the local pattern. It does not imply an error or a cause.'
-            : 'Outlier oznacza obserwację poza lokalnym wzorcem. Nie oznacza automatycznie błędu ani przyczyny.'}
+            : 'Punkt odstający oznacza obserwację poza lokalnym wzorcem. Nie oznacza automatycznie błędu ani przyczyny.'}
         </dd>
       </div>
       <div>
-        <dt>Granice ownera</dt>
+        <dt>
+          {locale === 'en'
+            ? 'Owner boundaries'
+            : 'Granice właściciela'}
+        </dt>
         <dd>
           {locale === 'en'
             ? 'TrendChart owns continuous time, ComparisonChart owns categorical ranking, Forecast 15.07 owns confidence and forecast, DataTable owns records, and 15.09 owns tooltip, hover, selection, drill-down and cross-filtering.'
-            : 'TrendChart posiada czas ciągły, ComparisonChart ranking kategorii, Forecast 15.07 confidence i prognozę, DataTable rekordy, a 15.09 tooltip, hover, selection, drill-down i cross-filtering.'}
+            : 'TrendChart odpowiada za czas ciągły, ComparisonChart za ranking kategorii, Forecast 15.07 za pewność i prognozę, DataTable za rekordy, a 15.09 za podpowiedzi, stan najechania, zaznaczanie, przejście w szczegóły i filtrowanie krzyżowe.'}
         </dd>
       </div>
     </dl>
@@ -448,31 +620,47 @@ function SemanticGuide() {
 }
 
 function LongCopyCase() {
+  const locale = readLocale();
+  const labels = buildLabels(locale);
+  const points = buildPoints(longCopyPointSeeds, locale);
+  const clusters = buildLongCopyClusters(locale);
+
   return (
     <div className="pd-correlation-story__long-copy">
       <CorrelationChart
-        ariaLabel="Relationship after attribution reconciliation and consent filtering"
-        clusters={[
-          {
-            id: 'long-copy-cluster',
-            label: 'Long-copy cluster after reconciliation',
-            description:
-              'Cluster names and descriptions wrap without widening the plot or adding horizontal page scroll.',
-            xRange: [32, 58],
-            yRange: [5.6, 7.6],
-          },
-        ]}
+        ariaLabel={
+          locale === 'en'
+            ? 'Relationship after attribution reconciliation and consent filtering'
+            : 'Zależność po rekoncyliacji atrybucji i filtracji zgód'
+        }
+        clusters={clusters}
         correlation={0.51}
-        driverHypothesis="Lifecycle automation after consent filtering is a driver hypothesis that requires experiment evidence before any causal wording is allowed."
-        labels={buildLabels('en')}
-        points={longCopyPoints}
-        relationshipLabel="Observed relationship across reconciled attribution windows with long campaign labels."
+        driverHypothesis={
+          locale === 'en'
+            ? 'Lifecycle automation after consent filtering is a driver hypothesis that requires experiment evidence before any causal wording is allowed.'
+            : 'Automatyzacja cyklu życia po filtracji zgód jest hipotezą wpływu, która wymaga dowodu eksperymentalnego przed użyciem języka przyczynowego.'
+        }
+        labels={labels}
+        points={points}
+        relationshipLabel={
+          locale === 'en'
+            ? 'Observed relationship across reconciled attribution windows with long campaign labels.'
+            : 'Obserwowana zależność obejmuje uzgodnione okna atrybucji i długie etykiety kampanii.'
+        }
         valueFormatter={(value) => (
-          formatValue(value, 'en')
+          formatValue(value, locale)
         )}
         variant="driver-analysis"
-        xLabel="Operational readiness score after attribution reconciliation"
-        yLabel="Incremental revenue index after consent filtering"
+        xLabel={
+          locale === 'en'
+            ? 'Operational readiness score after attribution reconciliation'
+            : 'Ocena gotowości operacyjnej po rekoncyliacji atrybucji'
+        }
+        yLabel={
+          locale === 'en'
+            ? 'Incremental revenue index after consent filtering'
+            : 'Indeks przychodu przyrostowego po filtracji zgód'
+        }
       />
     </div>
   );
@@ -489,7 +677,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'CorrelationChart jest runtime ownerem 15.06. Recharts odpowiada za geometrię scatter/relationship/driver analysis, a PapaData za semantykę korelacji, legendę, wskazanie outlier/cluster, copy siły korelacji i regułę braku przyczynowości bez dowodu.',
+          'CorrelationChart jest właścicielem wykonania 15.06. Recharts odpowiada za geometrię wykresu punktowego, wykresu zależności i analizy hipotez wpływu, a PapaData za semantykę korelacji, legendę, oznaczenia punktów odstających i klastrów, tekst siły korelacji oraz regułę braku przyczynowości bez dowodu.',
       },
     },
   },
@@ -503,7 +691,7 @@ export const CorrelationChartStory: Story = {
   args: {
     ariaLabel: 'Zależność budżetu mediowego i ROAS',
     correlation: 0.72,
-    points: spendRoasPoints,
+    points: buildPoints(spendRoasPointSeeds, 'pl'),
     variant: 'relationship',
     xLabel: 'Indeks budżetu mediowego',
     yLabel: 'ROAS',
@@ -521,12 +709,12 @@ export const CorrelationChartStory: Story = {
               value: '15.06',
             },
             {
-              label: 'Engine',
+              label: 'Silnik',
               value: 'Recharts',
             },
             {
               label: 'Status',
-              value: 'review',
+              value: 'przegląd',
             },
           ]}
         />
@@ -534,12 +722,12 @@ export const CorrelationChartStory: Story = {
       sectionCode="15"
       sectionLabel="Wykresy i dane"
       storyId="15.06"
-      summary="CorrelationChart odpowiada za scatter plot, relationship chart, driver analysis, statyczne outlier/cluster indication i copy siły korelacji bez sugerowania przyczynowości bez dowodu."
+      summary="CorrelationChart odpowiada za wykres punktowy, wykres zależności, analizę hipotez wpływu, statyczne oznaczenia punktów odstających i klastrów oraz tekst siły korelacji bez sugerowania przyczynowości bez dowodu."
       title="Korelacja pokazuje zależność, ale nie zastępuje dowodu przyczynowości."
     >
       <StoryPresentationSection
         index="01"
-        summary="ChartFrame konsumuje gotowy CorrelationChart. Status, źródła, świeżość i wniosek pozostają w kontenerze, a wizualizacja odpowiada za relację dwóch miar."
+        summary="ChartFrame osadza gotowy CorrelationChart. Status, źródła, świeżość i wniosek pozostają w warstwie ramy, a wizualizacja odpowiada za relację dwóch miar."
         title="Kanoniczna kompozycja"
       >
         <CanonicalCorrelationComposition />
@@ -547,23 +735,23 @@ export const CorrelationChartStory: Story = {
 
       <StoryPresentationSection
         index="02"
-        summary="Scatter plot pokazuje relację dwóch miar. Relationship chart dodaje statyczne oznaczenie klastra. Driver analysis pozostaje hipotezą, nie decyzją przyczynową."
-        title="Scatter plot, relationship chart i driver analysis"
+        summary="Wykres punktowy pokazuje relację dwóch miar. Wykres zależności dodaje statyczne oznaczenie klastra. Analiza hipotez wpływu pozostaje hipotezą, nie decyzją przyczynową."
+        title="Wykres punktowy, zależności i hipotezy wpływu"
       >
         <CorrelationVariants />
       </StoryPresentationSection>
 
       <StoryPresentationSection
         index="03"
-        summary="Outlier i cluster indication są statycznym oznaczeniem obserwacji. Tooltip, hover, selection i drill-down pozostają poza 15.06."
-        title="Outlier i cluster indication"
+        summary="Punkty odstające i klastry są statycznym oznaczeniem obserwacji. Podpowiedzi, stan najechania, zaznaczanie i przejście w szczegóły pozostają poza 15.06."
+        title="Punkty odstające i klastry"
       >
         <OutliersAndClusters />
       </StoryPresentationSection>
 
       <StoryPresentationSection
         index="04"
-        summary="Legenda i tekst jasno rozdzielają korelację, zależność, driver hypothesis i outlier. Forecast 15.07, pełne data states 15.08, tabele i interakcje 15.09 pozostają u innych ownerów."
+        summary="Legenda i tekst jasno rozdzielają korelację, zależność, hipotezę wpływu i punkt odstający. Prognozy 15.07, pełne stany danych 15.08, tabele i interakcje 15.09 pozostają u innych właścicieli."
         title="Reguły semantyczne"
       >
         <SemanticGuide />
@@ -571,8 +759,8 @@ export const CorrelationChartStory: Story = {
 
       <StoryPresentationSection
         index="05"
-        summary="Długi copy zawija się w legendzie, metadanych i opisach klastra bez tworzenia poziomego scrolla."
-        title="Długi copy i mobile"
+        summary="Długi tekst zawija się w legendzie, metadanych i opisach klastra bez tworzenia poziomego przewijania."
+        title="Długi tekst i widok mobilny"
       >
         <LongCopyCase />
       </StoryPresentationSection>
@@ -622,16 +810,16 @@ export const CorrelationChartStory: Story = {
     ).toBeGreaterThan(0);
 
     await expect(
-      canvas.getAllByText('driver hypothesis').length,
+      canvas.getAllByText('Hipoteza wpływu').length,
     ).toBeGreaterThan(0);
 
     await expect(
-      canvas.getAllByText('Outlier').length,
+      canvas.getAllByText('Punkt odstający').length,
     ).toBeGreaterThan(0);
 
     await expect(
       canvas.getAllByText(
-        'Korelacja i driver hypothesis nie są dowodem przyczynowości.',
+        'Korelacja i hipoteza wpływu nie są dowodem przyczynowości.',
       ).length,
     ).toBeGreaterThan(0);
 

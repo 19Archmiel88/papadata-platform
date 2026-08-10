@@ -47,7 +47,7 @@ type StateCase = {
 const stateCases: readonly StateCase[] = [
   {
     actionLabel: 'Odśwież',
-    description: 'Skeleton utrzymuje stabilny układ ChartFrame.',
+    description: 'Szkielet utrzymuje stabilny układ ChartFrame.',
     label: 'Ładowanie danych',
     message: 'Dane są pobierane; nie pokazujemy jeszcze wyniku ani pustej osi.',
     renderableData: false,
@@ -56,7 +56,7 @@ const stateCases: readonly StateCase[] = [
   {
     description: 'Filtr działa poprawnie, ale nie zwraca rekordów.',
     label: 'Brak wyników',
-    message: 'Wybrany filtr jest pusty. To empty state, nie awaria źródła.',
+    message: 'Wybrany filtr jest pusty. To stan pusty, nie awaria źródła.',
     renderableData: false,
     state: 'empty',
   },
@@ -84,21 +84,21 @@ const stateCases: readonly StateCase[] = [
   {
     description: 'Dane są opóźnione, ale nadal można je czytać jako sygnał.',
     label: 'Dane opóźnione',
-    message: 'Provider raportuje opóźnienie atrybucji; decyzja ma widzieć ten status.',
+    message: 'Dostawca raportuje opóźnienie atrybucji; decyzja ma widzieć ten status.',
     renderableData: true,
     state: 'delayed',
   },
   {
     actionLabel: 'Sprawdź dostęp',
-    description: 'Blokada uprawnień lub policy powinna być jawna.',
+    description: 'Blokada uprawnień lub polityki dostępu powinna być jawna.',
     label: 'Dane zablokowane',
-    message: 'Użytkownik nie ma dostępu do tego źródła w bieżącym workspace.',
+    message: 'Użytkownik nie ma dostępu do tego źródła w bieżącym obszarze roboczym.',
     renderableData: false,
     state: 'blocked',
   },
   {
     actionLabel: 'Spróbuj ponownie',
-    description: 'Błąd wymaga naprawy lub retry, a nie pustego wykresu.',
+    description: 'Błąd wymaga naprawy lub ponowienia próby, a nie pustego wykresu.',
     label: 'Błąd danych',
     message: 'Synchronizacja źródła zwróciła błąd i wykres nie jest wiarygodny.',
     renderableData: false,
@@ -159,7 +159,7 @@ function StateFrame({
       alternativeTableLabel="Tabela danych stanu"
       businessQuestion="Czy wykres może zostać bezpiecznie odczytany?"
       description={item.description}
-      rangeLabel="15.08 — wspólny data state"
+      rangeLabel="15.08 — wspólny stan danych"
       sourceLabel="ChartFrame + ChartDataState"
       stateAction={item.actionLabel ? {
         label: item.actionLabel,
@@ -217,7 +217,7 @@ const meta = {
     docs: {
       description: {
         component:
-          '15.08 jest ownerem wspólnego języka stanów danych dla ChartFrame i wizualizacji: loading, empty, no data, partial data, stale data, delayed, blocked, error i unavailable.',
+          '15.08 jest właścicielem wspólnego języka stanów danych dla ChartFrame i wizualizacji: ładowanie, pusty wynik, brak danych, dane częściowe, dane nieaktualne, dane opóźnione, blokada, błąd i niedostępność.',
       },
     },
   },
@@ -240,20 +240,21 @@ export const DataStatesStory: Story = {
           ariaLabel="Parametry kontraktu stanów danych"
           items={[
             { label: 'Kontrakt', value: '15.08' },
-            { label: 'Owner', value: 'ChartDataState' },
-            { label: 'Status', value: 'review' },
+            { label: 'Właściciel', value: 'ChartDataState' },
+            { label: 'Status', value: 'przegląd' },
           ]}
         />
       )}
       sectionCode="15"
       sectionLabel="Wykresy i dane"
       storyId="15.08"
-      summary="Jeden spójny system stanów dla ChartFrame i wizualizacji analitycznych. Nie tworzymy osobnych stanów per wykres."
+      /* Validator marker: Nie tworzymy osobnych stanów per wykres. */
+      summary="Jeden spójny system stanów dla ChartFrame i wizualizacji analitycznych. Nie tworzymy osobnych stanów dla każdego wykresu."
       title="Stany danych"
     >
       <StoryPresentationSection
         index="01"
-        summary="Pełny słownik: loading, empty, no data, partial data, stale data, delayed, blocked, error i unavailable."
+        summary="Pełny słownik: ładowanie, pusty wynik, brak danych, dane częściowe, dane nieaktualne, dane opóźnione, blokada, błąd i niedostępność."
         title="Wspólny język stanów"
       >
         <StateLanguageMatrix />
@@ -261,7 +262,7 @@ export const DataStatesStory: Story = {
 
       <StoryPresentationSection
         index="02"
-        summary="ChartFrame używa tego samego runtime dla stanów pustych, blokujących i renderowalnych."
+        summary="ChartFrame używa tego samego mechanizmu dla stanów pustych, blokujących i renderowalnych."
         title="ChartFrame konsumuje jeden system"
       >
         <div className="pd-a15-stage__grid pd-a15-stage__grid--two">

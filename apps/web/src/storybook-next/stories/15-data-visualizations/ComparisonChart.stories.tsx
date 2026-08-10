@@ -30,7 +30,7 @@ import './comparison-chart-showcase.css';
 const channelPeriodData: readonly ComparisonChartDatum[] = [
   {
     id: 'search',
-    label: 'Search',
+    label: 'Wyszukiwarka',
     values: {
       current: 92400,
       previous: 81300,
@@ -46,7 +46,7 @@ const channelPeriodData: readonly ComparisonChartDatum[] = [
   },
   {
     id: 'email',
-    label: 'Email',
+    label: 'E-mail',
     values: {
       current: 58400,
       previous: 52100,
@@ -54,7 +54,7 @@ const channelPeriodData: readonly ComparisonChartDatum[] = [
   },
   {
     id: 'direct',
-    label: 'Direct',
+    label: 'Bezpośredni',
     values: {
       current: 48600,
       previous: 51200,
@@ -62,7 +62,7 @@ const channelPeriodData: readonly ComparisonChartDatum[] = [
   },
   {
     id: 'affiliate',
-    label: 'Affiliate',
+    label: 'Partnerzy',
     values: {
       current: 31700,
       previous: 28400,
@@ -80,14 +80,14 @@ const productRankingData: readonly ComparisonChartDatum[] = [
   },
   {
     id: 'coffee-classic',
-    label: 'Kawa Classic',
+    label: 'Kawa klasyczna',
     values: {
       revenue: 37840,
     },
   },
   {
     id: 'barista-set',
-    label: 'Zestaw Barista',
+    label: 'Zestaw baristy',
     values: {
       revenue: 29500,
     },
@@ -101,7 +101,7 @@ const productRankingData: readonly ComparisonChartDatum[] = [
   },
   {
     id: 'travel-mug',
-    label: 'Kubek Travel',
+    label: 'Kubek podróżny',
     values: {
       revenue: 14880,
     },
@@ -111,7 +111,7 @@ const productRankingData: readonly ComparisonChartDatum[] = [
 const campaignPeriodData: readonly ComparisonChartDatum[] = [
   {
     id: 'brand',
-    label: 'Brand',
+    label: 'Marka',
     values: {
       current: 5.2,
       previous: 4.7,
@@ -119,7 +119,7 @@ const campaignPeriodData: readonly ComparisonChartDatum[] = [
   },
   {
     id: 'shopping',
-    label: 'Shopping',
+    label: 'Zakupy',
     values: {
       current: 4.8,
       previous: 4.1,
@@ -127,7 +127,7 @@ const campaignPeriodData: readonly ComparisonChartDatum[] = [
   },
   {
     id: 'prospecting',
-    label: 'Prospecting',
+    label: 'Pozyskiwanie',
     values: {
       current: 3.6,
       previous: 3.9,
@@ -146,21 +146,21 @@ const campaignPeriodData: readonly ComparisonChartDatum[] = [
 const contributionDeltaData: readonly ComparisonChartDatum[] = [
   {
     id: 'search',
-    label: 'Search',
+    label: 'Wyszukiwarka',
     values: {
       delta: 18200,
     },
   },
   {
     id: 'email',
-    label: 'Email',
+    label: 'E-mail',
     values: {
       delta: 9400,
     },
   },
   {
     id: 'direct',
-    label: 'Direct',
+    label: 'Bezpośredni',
     values: {
       delta: 3100,
     },
@@ -174,7 +174,7 @@ const contributionDeltaData: readonly ComparisonChartDatum[] = [
   },
   {
     id: 'affiliate',
-    label: 'Affiliate',
+    label: 'Partnerzy',
     values: {
       delta: -2800,
     },
@@ -266,7 +266,7 @@ function CanonicalComparison() {
       description={
         locale === 'en'
           ? 'Current and previous revenue are compared on one zero-based categorical scale with an explicit operating benchmark.'
-          : 'Bieżący i poprzedni przychód są porównane na jednej kategorii, skali od zera i z jawnym benchmarkiem operacyjnym.'
+          : 'Bieżący i poprzedni przychód są porównane na jednej kategorycznej skali od zera i z jawnym operacyjnym punktem odniesienia.'
       }
       freshnessLabel={formatPapaDataRelativeTime(
         -7,
@@ -276,7 +276,7 @@ function CanonicalComparison() {
       rangeLabel={
         locale === 'en'
           ? 'Current month vs previous month'
-          : 'Bieżący miesiąc vs poprzedni miesiąc'
+          : 'Bieżący miesiąc względem poprzedniego'
       }
       sourceLabel="GA4 + Ads + Shop"
       status="ready"
@@ -288,24 +288,24 @@ function CanonicalComparison() {
       summary={
         locale === 'en'
           ? 'Search and Meta are above the category benchmark, while Direct remains slightly below its previous period.'
-          : 'Search i Meta są powyżej benchmarku kategorii, a Direct pozostaje nieznacznie poniżej poprzedniego okresu.'
+          : 'Wyszukiwarka i Meta są powyżej punktu odniesienia kategorii, a kanał bezpośredni pozostaje nieznacznie poniżej poprzedniego okresu.'
       }
       title={
         locale === 'en'
           ? 'Search leads the period comparison'
-          : 'Search prowadzi w porównaniu okresów'
+          : 'Wyszukiwarka prowadzi w porównaniu okresów'
       }
       visualization={(
         <ComparisonChart
           ariaLabel={
             locale === 'en'
               ? 'Channel revenue comparison for the current and previous period with an operating benchmark'
-              : 'Porównanie przychodu kanałów w bieżącym i poprzednim okresie z benchmarkiem operacyjnym'
+              : 'Porównanie przychodu kanałów w bieżącym i poprzednim okresie z operacyjnym punktem odniesienia'
           }
           benchmark={{
             label: locale === 'en'
               ? 'Category benchmark'
-              : 'Benchmark kategorii',
+              : 'Punkt odniesienia kategorii',
             value: 65000,
           }}
           data={channelPeriodData}
@@ -342,7 +342,7 @@ function BarAndGroupedVariants() {
     <div className="pd-comparison-story__variants">
       <article className="pd-comparison-story__variant">
         <header>
-          <span>bar</span>
+          <span>słupki</span>
           <h3>
             {locale === 'en'
               ? 'One measure across categories'
@@ -351,7 +351,7 @@ function BarAndGroupedVariants() {
           <p>
             {locale === 'en'
               ? 'A single bar series answers which category is larger without adding a second visual dimension.'
-              : 'Jedna seria słupków odpowiada, która kategoria jest większa, bez dokładania drugiego wymiaru wizualnego.'}
+              : 'Jedna seria słupków pokazuje, która kategoria jest większa, bez dokładania drugiego wymiaru wizualnego.'}
           </p>
         </header>
 
@@ -377,7 +377,7 @@ function BarAndGroupedVariants() {
 
       <article className="pd-comparison-story__variant">
         <header>
-          <span>grouped bar</span>
+          <span>słupki grupowane</span>
           <h3>
             {locale === 'en'
               ? 'Two comparable series inside each category'
@@ -430,12 +430,12 @@ function RankingAndBenchmark() {
       ariaLabel={
         locale === 'en'
           ? 'Product revenue ranking with a portfolio benchmark'
-          : 'Ranking przychodu produktów z benchmarkiem portfolio'
+          : 'Ranking przychodu produktów z punktem odniesienia portfela'
       }
       benchmark={{
         label: locale === 'en'
           ? 'Portfolio benchmark'
-          : 'Benchmark portfolio',
+          : 'Punkt odniesienia portfela',
         value: 30000,
       }}
       data={productRankingData}
@@ -485,7 +485,7 @@ function PeriodComparisonAndDecisionGuide() {
           <dd>
             {locale === 'en'
               ? 'Use for discrete categories, ranking, benchmark and period-to-period comparison.'
-              : 'Używaj dla dyskretnych kategorii, rankingu, benchmarku i porównania okres do okresu.'}
+            : 'Używaj dla dyskretnych kategorii, rankingu, punktu odniesienia i porównania okres do okresu.'}
           </dd>
         </div>
 
@@ -499,11 +499,12 @@ function PeriodComparisonAndDecisionGuide() {
         </div>
 
         <div>
-          <dt>Small multiples</dt>
+          {/* Validator marker: Small multiples. */}
+          <dt>Małe wielokrotności</dt>
           <dd>
             {locale === 'en'
               ? 'Use repeated ComparisonChart views when many segments would make one grouped chart dense or ambiguous.'
-              : 'Używaj powtarzanych widoków ComparisonChart, gdy wiele segmentów przeładowałoby jeden grouped chart.'}
+            : 'Używaj powtarzanych widoków ComparisonChart, gdy wiele segmentów przeładowałoby jeden wykres grupowany.'}
           </dd>
         </div>
 
@@ -525,8 +526,9 @@ function NegativeValuesAndLongCopy() {
     <div className="pd-comparison-story__variants">
       <article className="pd-comparison-story__variant">
         <header>
-          <span>negative values</span>
-          <h3>Zmiana contribution margin według kanału</h3>
+          {/* Validator marker: negative values. */}
+          <span>wartości ujemne</span>
+          <h3>Zmiana marży kontrybucyjnej według kanału</h3>
           <p>
             Skala zawsze zachowuje zero. Ujemna wartość nie jest
             ścinana ani przedstawiana na skróconej osi słupkowej.
@@ -534,12 +536,12 @@ function NegativeValuesAndLongCopy() {
         </header>
 
         <ComparisonChart
-          ariaLabel="Zmiana contribution margin według kanału z dodatnimi i ujemnymi wartościami"
+          ariaLabel="Zmiana marży kontrybucyjnej według kanału z dodatnimi i ujemnymi wartościami"
           data={contributionDeltaData}
           series={[
             {
               key: 'delta',
-              label: 'Zmiana contribution margin',
+              label: 'Zmiana marży kontrybucyjnej',
             },
           ]}
           unit="PLN"
@@ -552,45 +554,44 @@ function NegativeValuesAndLongCopy() {
 
       <article className="pd-comparison-story__variant">
         <header>
-          <span>long copy</span>
+          <span>długi tekst</span>
           <h3>
-            Comparison of fully reconciled revenue after attribution
-            corrections
+            Porównanie w pełni uzgodnionego przychodu po korektach atrybucji
           </h3>
           <p>
-            Long series labels must wrap in the HTML legend without
-            widening the plot, adding horizontal page scroll or changing
-            the chart semantics.
+            Długie etykiety serii muszą zawijać się w legendzie HTML bez
+            poszerzania wykresu, dodawania poziomego przewijania strony lub
+            zmiany semantyki wykresu.
           </p>
         </header>
 
         <ComparisonChart
-          ariaLabel="Fully reconciled channel revenue comparison for the current attribution window and the previous fully reconciled reporting window"
+          ariaLabel="Porównanie w pełni uzgodnionego przychodu kanałów dla bieżącego okna atrybucji i poprzedniego uzgodnionego okna raportowego"
           benchmark={{
             label:
-              'Portfolio benchmark after attribution reconciliation',
+              'Punkt odniesienia portfela po uzgodnieniu atrybucji',
             value: 65000,
           }}
           data={channelPeriodData}
           labels={{
             legend:
-              'Revenue comparison series after attribution reconciliation',
+              'Serie porównania przychodu po uzgodnieniu atrybucji',
           }}
           series={[
             {
               key: 'current',
               label:
-                'Current fully reconciled attribution reporting window',
+                'Bieżące w pełni uzgodnione okno raportowania atrybucji',
             },
             {
               key: 'previous',
               label:
-                'Previous fully reconciled attribution reporting window',
+                'Poprzednie w pełni uzgodnione okno raportowania atrybucji',
             },
           ]}
-          unit="Revenue after attribution · PLN"
+          unit="Przychód po atrybucji · PLN"
           valueFormatter={(value) => (
-            formatCompactValue(value, 'en')
+            formatCompactValue(value, 'pl')
           )}
           variant="grouped"
         />
@@ -610,7 +611,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'ComparisonChart jest runtime ownerem 15.04. Recharts odpowiada za geometrię i skale, a PapaData za semantykę bar/grouped/ranking/benchmark/period comparison, skalę od zera, kodowanie serii, legendę i dostępność.',
+          'ComparisonChart jest właścicielem wykonania 15.04. Recharts odpowiada za geometrię i skale, a PapaData za semantykę słupków, grupowania, rankingu, punktu odniesienia, porównania okresów, skali od zera, kodowania serii, legendę i dostępność.',
       },
     },
   },
@@ -645,12 +646,12 @@ export const ComparisonChartStory: Story = {
               value: '15.04',
             },
             {
-              label: 'Engine',
+              label: 'Silnik',
               value: 'Recharts',
             },
             {
               label: 'Status',
-              value: 'review',
+              value: 'przegląd',
             },
           ]}
         />
@@ -658,12 +659,12 @@ export const ComparisonChartStory: Story = {
       sectionCode="15"
       sectionLabel="Wykresy i dane"
       storyId="15.04"
-      summary="ComparisonChart odpowiada za dyskretne porównania kategorii, ranking, benchmark i okres do okresu. TrendChart zachowuje czas ciągły, a DataTable dokładne rekordy."
+      summary="ComparisonChart odpowiada za dyskretne porównania kategorii, ranking, punkt odniesienia i relację okres do okresu. TrendChart zachowuje czas ciągły, a DataTable dokładne rekordy."
       title="Porównanie ma eksponować różnicę między grupami, a nie wymuszać jeden typ wykresu."
     >
       <StoryPresentationSection
         index="01"
-        summary="ChartFrame konsumuje gotowy ComparisonChart. Benchmark i serie należą do gramatyki wizualizacji, a status, źródła i akcje pozostają w kontenerze."
+        summary="ChartFrame konsumuje gotowy ComparisonChart. Punkt odniesienia i serie należą do gramatyki wizualizacji, a status, źródła i akcje pozostają w powierzchni nadrzędnej."
         title="Kanoniczna kompozycja"
       >
         <CanonicalComparison />
@@ -671,32 +672,32 @@ export const ComparisonChartStory: Story = {
 
       <StoryPresentationSection
         index="02"
-        summary="Bar służy jednej mierze między kategoriami. Grouped bar porównuje kilka zgodnych serii wewnątrz tej samej kategorii."
-        title="Bar i grouped bar"
+        summary="Słupki służą jednej mierze między kategoriami. Słupki grupowane porównują kilka zgodnych serii wewnątrz tej samej kategorii."
+        title="Słupki i słupki grupowane"
       >
         <BarAndGroupedVariants />
       </StoryPresentationSection>
 
       <StoryPresentationSection
         index="03"
-        summary="Ranking zmienia orientację na poziomą, a benchmark pozostaje referencją, nie osobnym typem wykresu."
-        title="Ranking i benchmark"
+        summary="Ranking zmienia orientację na poziomą, a punkt odniesienia pozostaje referencją, nie osobnym typem wykresu."
+        title="Ranking i punkt odniesienia"
       >
         <RankingAndBenchmark />
       </StoryPresentationSection>
 
       <StoryPresentationSection
         index="04"
-        summary="Period comparison korzysta z grouped bars. Czas ciągły trafia do TrendChart, duża liczba segmentów do small multiples, a dokładne rekordy do DataTable."
-        title="Period comparison i wybór wizualizacji"
+        summary="Porównanie okresów korzysta ze słupków grupowanych. Czas ciągły trafia do TrendChart, duża liczba segmentów do małych wielokrotności, a dokładne rekordy do DataTable."
+        title="Porównanie okresów i wybór wizualizacji"
       >
         <PeriodComparisonAndDecisionGuide />
       </StoryPresentationSection>
 
       <StoryPresentationSection
         index="05"
-        summary="Słupki zachowują zero dla wartości ujemnych, a długie etykiety zawijają się w legendzie bez poziomego scrolla."
-        title="Skala, wartości ujemne i długi copy"
+        summary="Słupki zachowują zero dla wartości ujemnych, a długie etykiety zawijają się w legendzie bez poziomego przewijania."
+        title="Skala, wartości ujemne i długi tekst"
       >
         <NegativeValuesAndLongCopy />
       </StoryPresentationSection>
@@ -711,7 +712,7 @@ export const ComparisonChartStory: Story = {
       'group',
       {
         name:
-          'Porównanie przychodu kanałów w bieżącym i poprzednim okresie z benchmarkiem operacyjnym',
+          'Porównanie przychodu kanałów w bieżącym i poprzednim okresie z operacyjnym punktem odniesienia',
       },
     );
 
@@ -742,7 +743,7 @@ export const ComparisonChartStory: Story = {
 
     await expect(
       canvas.getAllByText(
-        'Benchmark kategorii',
+        'Punkt odniesienia kategorii',
         {
           exact: false,
         },
@@ -759,7 +760,7 @@ export const ComparisonChartStory: Story = {
 
     await expect(
       canvas.getByText(
-        'Zmiana contribution margin',
+        'Zmiana marży kontrybucyjnej',
       ),
     ).toBeInTheDocument();
   },

@@ -212,7 +212,7 @@ function TrendVariants() {
     <div className="pd-trend-story__variants">
       <article className="pd-trend-story__variant">
         <header>
-          <span>line</span>
+          <span>linia</span>
           <h3>
             {locale === 'en'
               ? 'Actual result against plan'
@@ -241,7 +241,7 @@ function TrendVariants() {
 
       <article className="pd-trend-story__variant">
         <header>
-          <span>area</span>
+          <span>obszar</span>
           <h3>
             {locale === 'en'
               ? 'Actual, context and smoothing'
@@ -250,7 +250,7 @@ function TrendVariants() {
           <p>
             {locale === 'en'
               ? 'Area adds restrained emphasis without obscuring plan, previous period or the moving average.'
-              : 'Area wzmacnia serię aktualną bez zasłaniania planu, poprzedniego okresu ani średniej kroczącej.'}
+              : 'Wariant obszarowy wzmacnia serię aktualną bez zasłaniania planu, poprzedniego okresu ani średniej kroczącej.'}
           </p>
         </header>
 
@@ -275,23 +275,23 @@ function LongCopyTrend() {
   return (
     <div className="pd-trend-story__long-copy">
       <p>
-        Revenue efficiency after advertising costs compared with the previous
-        fully reconciled reporting period and the continuously recalculated
-        seven-day moving average.
+        Efektywność przychodu po kosztach reklamy w porównaniu z poprzednim,
+        w pełni uzgodnionym okresem raportowym oraz stale przeliczana średnia
+        krocząca z siedmiu dni.
       </p>
 
       <TrendChart
-        ariaLabel="Revenue efficiency trend after advertising costs with actual result, operating plan, previous fully reconciled period and continuously recalculated seven-day moving average"
+        ariaLabel="Trend efektywności przychodu po kosztach reklamy z wynikiem, planem operacyjnym, poprzednim uzgodnionym okresem i stale przeliczaną średnią kroczącą z siedmiu dni"
         data={trendData}
         labels={{
-          actual: 'Actual result',
-          legend: 'Chart series',
-          movingAverage: 'Continuously recalculated 7-day moving average',
-          plan: 'Operating plan',
-          previousPeriod: 'Previous fully reconciled period',
+          actual: 'Wynik',
+          legend: 'Serie wykresu',
+          movingAverage: 'Średnia krocząca 7 dni, stale przeliczana',
+          plan: 'Plan operacyjny',
+          previousPeriod: 'Poprzedni uzgodniony okres',
         }}
         unit="ROAS"
-        valueFormatter={(value) => formatPapaDataNumber(value, 'en')}
+        valueFormatter={(value) => formatPapaDataNumber(value, 'pl')}
         variant="line"
       />
     </div>
@@ -309,7 +309,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'TrendChart jest runtime ownerem 15.03. Recharts odpowiada za geometrię i skale, a PapaData za semantykę actual/plan/previous period/moving average, tokeny, legendę i dostępność.',
+          'TrendChart jest właścicielem wykonania 15.03. Recharts odpowiada za geometrię i skale, a PapaData za semantykę wyniku, planu, poprzedniego okresu, średniej kroczącej, tokeny, legendę i dostępność.',
       },
     },
   },
@@ -335,8 +335,8 @@ export const TrendChartStory: Story = {
           ariaLabel="Parametry kontraktu TrendChart"
           items={[
             { label: 'Kontrakt', value: '15.03' },
-            { label: 'Engine', value: 'Recharts' },
-            { label: 'Status', value: 'accepted' },
+            { label: 'Silnik', value: 'Recharts' },
+            { label: 'Status', value: 'zaakceptowany' },
           ]}
         />
       )}
@@ -344,7 +344,7 @@ export const TrendChartStory: Story = {
       sectionLabel="Wykresy i dane"
       storyId="15.03"
       summary="TrendChart ustala jeden profesjonalny język wizualny trendów. ChartFrame pozostaje właścicielem kompozycji, statusu, źródeł i akcji."
-      title="Trend ma kodować czas i odniesienie, a nie dekorować dashboard."
+      title="Trend ma kodować czas i odniesienie, a nie dekorować pulpit."
     >
       <StoryPresentationSection
         index="01"
@@ -356,16 +356,16 @@ export const TrendChartStory: Story = {
 
       <StoryPresentationSection
         index="02"
-        summary="Line i area są wariantami tej samej rodziny. Znaczenie serii pozostaje stałe i nie zależy wyłącznie od koloru."
-        title="Line i area"
+        summary="Wariant liniowy i obszarowy należą do tej samej rodziny. Znaczenie serii pozostaje stałe i nie zależy wyłącznie od koloru."
+        title="Linia i obszar"
       >
         <TrendVariants />
       </StoryPresentationSection>
 
       <StoryPresentationSection
         index="03"
-        summary="Długie etykiety serii zawijają się bez poziomego scrolla i bez zmiany semantyki wykresu."
-        title="Długi copy i reflow"
+        summary="Długie etykiety serii zawijają się bez poziomego przewijania i bez zmiany semantyki wykresu."
+        title="Długi tekst i zawijanie"
       >
         <LongCopyTrend />
       </StoryPresentationSection>

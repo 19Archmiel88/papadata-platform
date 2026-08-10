@@ -70,33 +70,38 @@ export const LinkAction = forwardRef<
       role={undefined}
       type={undefined}
     >
-      {startIcon ? (
-        <span
-          aria-hidden="true"
-          className="pd-inline-action__icon"
-        >
-          {startIcon}
-        </span>
-      ) : null}
-
-      <span className="pd-inline-action__label">
-        {children}
-      </span>
-
-      {endIcon ? (
-        <span
-          aria-hidden="true"
-          className="pd-inline-action__icon"
-        >
-          {endIcon}
-        </span>
-      ) : null}
-
       <span
-        aria-hidden="true"
-        className="pd-inline-action__activity-line"
-        data-slot="activity-line"
-      />
+        className="pd-inline-action__content"
+        data-slot="activity-line-owner"
+      >
+        {startIcon ? (
+          <span
+            aria-hidden="true"
+            className="pd-inline-action__icon"
+          >
+            {startIcon}
+          </span>
+        ) : null}
+
+        <span className="pd-inline-action__label">
+          {children}
+        </span>
+
+        {endIcon ? (
+          <span
+            aria-hidden="true"
+            className="pd-inline-action__icon"
+          >
+            {endIcon}
+          </span>
+        ) : null}
+
+        <span
+          aria-hidden="true"
+          className="pd-inline-action__activity-line"
+          data-slot="activity-line"
+        />
+      </span>
     </a>
   );
 });

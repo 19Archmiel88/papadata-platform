@@ -1,17 +1,11 @@
 .pd-feedback-surface {
   --pd-feedback-accent: var(--pd-status-info);
   --pd-feedback-tint: var(--pd-status-info-subtle);
-  --pd-feedback-border: color-mix(
-    in srgb,
-    var(--pd-feedback-accent) 24%,
-    var(--pd-separator-subtle)
-  );
 
   display: grid;
   gap: var(--pd-space-3);
   padding: var(--pd-space-3) var(--pd-space-4);
-  border: var(--pd-border-width-subtle) solid var(--pd-feedback-border);
-  border-left-width: 2px;
+  border: 0;
   border-radius: calc(var(--pd-radius-control) * 0.9);
   background:
     linear-gradient(
@@ -27,6 +21,7 @@
         var(--pd-surface-overlay)
       )
     );
+  box-shadow: var(--pd-shadow-raised);
   color: var(--pd-text);
 }
 
@@ -130,19 +125,11 @@
   display: grid;
   gap: var(--pd-space-3);
   padding: clamp(var(--pd-space-4), 2vw, var(--pd-space-5))
-    0
+    var(--pd-space-4)
     clamp(var(--pd-space-4), 2vw, var(--pd-space-5))
     var(--pd-space-4);
-  border-top: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
-  border-left: 2px solid
-    color-mix(
-      in srgb,
-      var(--pd-feedback-state-accent) 64%,
-      var(--pd-separator-subtle)
-    );
-  border-right: 0;
-  border-bottom: 0;
-  border-radius: 0;
+  border: 0;
+  border-radius: calc(var(--pd-radius-control) * 0.9);
   background:
     linear-gradient(
       180deg,
@@ -153,6 +140,7 @@
       ),
       color-mix(in srgb, var(--pd-surface-overlay) 100%, transparent)
     );
+  box-shadow: var(--pd-shadow-raised);
 }
 
 .pd-feedback-state[data-variant='empty'] {
@@ -313,35 +301,13 @@
 
 .pd-toast {
   width: min(100%, 26rem);
-  border-color: transparent;
-  border-left-width: 0;
   background:
     linear-gradient(
       180deg,
       color-mix(in srgb, var(--pd-surface-raised) 96%, var(--pd-feedback-tint)),
       color-mix(in srgb, var(--pd-surface-overlay) 100%, transparent)
     );
-  box-shadow:
-    0 0 0 1px color-mix(
-      in srgb,
-      var(--pd-feedback-accent) 8%,
-      transparent
-    ),
-    0 0.65rem 1.5rem color-mix(
-      in srgb,
-      var(--pd-shadow-overlay) 14%,
-      transparent
-    ),
-    0 1.5rem 3.4rem color-mix(
-      in srgb,
-      var(--pd-shadow-overlay) 12%,
-      transparent
-    ),
-    0 2.8rem 5.8rem color-mix(
-      in srgb,
-      var(--pd-shadow-overlay) 8%,
-      transparent
-    );
+  box-shadow: var(--pd-shadow-floating);
 }
 
 @media (max-width: 720px) {

@@ -4,7 +4,6 @@ import type {
 
 const config: StorybookConfig = {
   stories: [
-    '../src/**/*.mdx',
     '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
   ],
 
@@ -21,6 +20,15 @@ const config: StorybookConfig = {
   staticDirs: [
     '../public',
   ],
+  viteFinal: async (config) => {
+    config.build = {
+      ...config.build,
+      chunkSizeWarningLimit: 1500,
+    };
+
+    return config;
+  },
+
 };
 
 export default config;

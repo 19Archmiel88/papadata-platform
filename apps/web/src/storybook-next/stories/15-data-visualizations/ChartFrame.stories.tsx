@@ -98,7 +98,7 @@ function buildTableRows(
 function CompositionFixtureGraphic() {
   return (
     <svg
-      aria-label="Przychód rośnie szybciej niż koszt reklamy, a wynik pozostaje powyżej benchmarku."
+      aria-label="Przychód rośnie szybciej niż koszt reklamy, a wynik pozostaje powyżej punktu odniesienia."
       className="pd-viz-story__composition-fixture"
       role="img"
       viewBox="0 0 760 330"
@@ -140,7 +140,7 @@ function ChartLegend() {
     <ul className="pd-viz-story__legend">
       <li data-series="revenue">Przychód</li>
       <li data-series="cost">Koszt reklamy</li>
-      <li data-series="benchmark">Benchmark</li>
+      <li data-series="benchmark">Punkt odniesienia</li>
     </ul>
   );
 }
@@ -198,11 +198,11 @@ function ReadyChartFrame({
         </div>
       )}
       businessQuestion={longCopy
-        ? 'Did the increase in acquisition budget improve campaign profitability without degrading contribution margin across the full comparison window?'
+        ? 'Czy wzrost budżetu akwizycji poprawił rentowność kampanii bez pogorszenia marży kontrybucyjnej w całym oknie porównania?'
         : 'Czy wzrost budżetu poprawił rentowność kampanii?'}
       description={longCopy
-        ? 'Revenue, advertising cost and the operating benchmark are shown together so the decision can be made without switching between unrelated dashboard cards.'
-        : 'Przychód, koszt reklamy i benchmark w jednym zadaniu decyzyjnym.'}
+        ? 'Przychód, koszt reklamy i operacyjny punkt odniesienia są pokazane razem, aby decyzja nie wymagała przełączania między niepowiązanymi kartami panelu.'
+        : 'Przychód, koszt reklamy i punkt odniesienia w jednym zadaniu decyzyjnym.'}
       filters={withFilters ? (
         <SegmentedControl
           ariaLabel="Zakres dat wykresu"
@@ -219,10 +219,10 @@ function ReadyChartFrame({
       freshnessLabel={formatPapaDataRelativeTime(-8, 'minute', locale)}
       legend={<ChartLegend />}
       labels={longCopy ? {
-        dataStatus: 'Data status',
-        freshness: 'Freshness',
-        insight: 'Insight',
-        source: 'Source',
+        dataStatus: 'Status danych',
+        freshness: 'Świeżość',
+        insight: 'Wniosek',
+        source: 'Źródło',
       } : undefined}
       papaAction={{
         label: 'Wyjaśnij z Papa',
@@ -240,7 +240,7 @@ function ReadyChartFrame({
       )}
       title="Rentowność kampanii"
       visualization={<CompositionFixtureGraphic />}
-      visualizationLabel="Trend przychodu, kosztu reklamy i benchmarku"
+      visualizationLabel="Trend przychodu, kosztu reklamy i punktu odniesienia"
     />
   );
 }
@@ -317,37 +317,37 @@ export const ChartFrameStory: Story = {
           ariaLabel="Parametry kontraktu ChartFrame"
           items={[
             { label: 'Kontrakt', value: '15.01' },
-            { label: 'Handoff', value: '05.03 → 15.01' },
-            { label: 'Status', value: 'review' },
+            { label: 'Przekazanie', value: '05.03 → 15.01' },
+            { label: 'Status', value: 'przegląd' },
           ]}
         />
       )}
       sectionCode="15"
       sectionLabel="Wykresy i dane"
       storyId="15.01"
-      summary="ChartFrame organizuje jedno pytanie biznesowe i jedną wizualizację. Nie implementuje własnego wykresu, Selecta, Buttona ani tabeli."
+      summary="ChartFrame organizuje jedno pytanie biznesowe i jedną wizualizację. Nie implementuje własnego wykresu, wyboru zakresu, przycisku ani tabeli."
       title="Jedna powierzchnia analityczna, jeden właściciel kompozycji."
     >
       <StoryPresentationSection
         index="01"
-        summary="Pełny wariant konsumuje gotową wizualizację, istniejące kontrolki i DataTable. Fixture wykresu pokazuje wyłącznie slot kompozycyjny; styl linii, benchmarku i serii nie jest kontraktem 15.01 i należy do 15.03+."
+        summary="Pełny wariant konsumuje gotową wizualizację, istniejące kontrolki i DataTable. Przykład wykresu pokazuje wyłącznie miejsce kompozycyjne; styl linii, punktu odniesienia i serii nie jest kontraktem 15.01 i należy do 15.03+."
         title="Kanoniczna kompozycja"
       >
         <p className="pd-viz-story__fixture-note">
-          Fixture kompozycyjne — nie definiuje języka wizualnego wykresów.
+          Przykład kompozycyjny — nie definiuje języka wizualnego wykresów.
         </p>
         <div className="pd-viz-story__variant-list">
           <div className="pd-viz-story__variant-row">
             <div className="pd-viz-story__row-copy">
               <h3>Z filtrem</h3>
-              <p>Zakres czasu jest kontrolką caller-a i nie tworzy dodatkowej powierzchni ChartFrame.</p>
+              <p>Zakres czasu jest kontrolką ekranu nadrzędnego i nie tworzy dodatkowej powierzchni ChartFrame.</p>
             </div>
             <ReadyChartFrame />
           </div>
           <div className="pd-viz-story__variant-row">
             <div className="pd-viz-story__row-copy">
               <h3>Bez filtra</h3>
-              <p>Ten sam kontrakt działa bez toolbaru filtrów, gdy ekran nie wymaga wyboru zakresu.</p>
+              <p>Ten sam kontrakt działa bez paska filtrów, gdy ekran nie wymaga wyboru zakresu.</p>
             </div>
             <ReadyChartFrame withFilters={false} />
           </div>
@@ -356,7 +356,7 @@ export const ChartFrameStory: Story = {
 
       <StoryPresentationSection
         index="02"
-        summary="ChartFrame zachowuje nagłówek i kontekst. Stan danych zmienia region danych, nie tworzy innego layoutu."
+        summary="ChartFrame zachowuje nagłówek i kontekst. Stan danych zmienia region danych, nie tworzy innego układu."
         title="Stany reprezentatywne"
       >
         <div className="pd-viz-story__state-list">
@@ -380,7 +380,7 @@ export const ChartFrameStory: Story = {
           <div className="pd-viz-story__state-row">
             <div className="pd-viz-story__row-copy">
               <h3>Brak danych</h3>
-              <p>Recovery jest częścią stanu, a nie martwą kontrolką.</p>
+              <p>Akcja naprawcza jest częścią stanu, a nie martwą kontrolką.</p>
             </div>
             <NoDataChartFrame />
           </div>
@@ -389,8 +389,8 @@ export const ChartFrameStory: Story = {
 
       <StoryPresentationSection
         index="03"
-        summary="Długie pytanie i opis nie wymuszają poziomego scrolla ani drugiego wariantu komponentu."
-        title="Długi copy i reflow"
+        summary="Długie pytanie i opis nie wymuszają poziomego przewijania ani drugiego wariantu komponentu."
+        title="Długi tekst i zawijanie"
       >
         <div className="pd-viz-story__long-copy">
           <ReadyChartFrame longCopy />

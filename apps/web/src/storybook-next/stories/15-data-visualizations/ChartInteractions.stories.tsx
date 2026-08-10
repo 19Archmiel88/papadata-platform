@@ -51,12 +51,12 @@ const filters: readonly ChartInteractionFilter[] = [
     label: 'Całość',
   },
   {
-    description: 'Paid search i paid social',
+    description: 'Płatne wyszukiwanie i płatne media społecznościowe',
     id: 'paid',
     label: 'Płatne',
   },
   {
-    description: 'SEO, direct i referral',
+    description: 'SEO, wejścia bezpośrednie i odsyłacze',
     id: 'organic',
     label: 'Organiczne',
   },
@@ -65,8 +65,8 @@ const filters: readonly ChartInteractionFilter[] = [
 const points: readonly ChartInteractionPoint[] = [
   {
     detail:
-      'Wzrost jest widoczny względem planu. Cross-filtering zawęża kontekst, ale nie zmienia znaczenia metryki.',
-    drillDownLabel: 'Drill-down: kampanie',
+      'Wzrost jest widoczny względem planu. Filtrowanie krzyżowe zawęża kontekst, ale nie zmienia znaczenia metryki.',
+    drillDownLabel: 'Przejdź w szczegóły: kampanie',
     filterId: 'paid',
     id: 'paid-d2',
     label: 'D-2 · Płatne',
@@ -76,7 +76,7 @@ const points: readonly ChartInteractionPoint[] = [
   {
     detail:
       'Kanały organiczne rosną wolniej; wybór punktu tylko wskazuje rekord i nie przelicza definicji serii.',
-    drillDownLabel: 'Drill-down: źródła organiczne',
+    drillDownLabel: 'Przejdź w szczegóły: źródła organiczne',
     filterId: 'organic',
     id: 'organic-d1',
     label: 'D-1 · Organiczne',
@@ -86,7 +86,7 @@ const points: readonly ChartInteractionPoint[] = [
   {
     detail:
       'Cały zakres zachowuje tę samą definicję przychodu. Reset wraca do pełnego widoku i pierwszego punktu.',
-    drillDownLabel: 'Drill-down: pełny zakres',
+    drillDownLabel: 'Przejdź w szczegóły: pełny zakres',
     filterId: 'all',
     id: 'all-today',
     label: 'Dziś · Całość',
@@ -152,7 +152,7 @@ function InteractionDemo() {
       )}
       alternativeTableLabel="Tabela danych interakcji"
       businessQuestion="Który punkt trendu wymaga przejścia w szczegóły?"
-      description="15.09 przejmuje tooltip, hover, focus z klawiatury, selection, date range, reset, drill-down i cross-filtering."
+      description="15.09 przejmuje podpowiedź, wskazanie kursorem, fokus klawiatury, wybór, zakres dat, resetowanie, przejście w szczegóły i filtrowanie krzyżowe."
       rangeLabel="Zakres dat: ostatnie 7 dni"
       sourceLabel="TrendChart + ChartInteractionLayer"
       status="ready"
@@ -177,7 +177,7 @@ function InteractionDemo() {
         <ChartInteractionLayer
           activeFilterId={activeFilterId}
           dateRangeLabel="Ostatnie 7 dni"
-          description="Każdy punkt jest przyciskiem dostępnym z klawiatury. Hover i focus aktualizują tę samą podpowiedź."
+          description="Każdy punkt jest przyciskiem dostępnym z klawiatury. Wskazanie kursorem i fokus aktualizują tę samą podpowiedź."
           filters={filters}
           points={points}
           selectedPointId={selectedPointId}
@@ -186,7 +186,7 @@ function InteractionDemo() {
             rememberInteractionFocus();
             drillDownAction(point.id);
             setInteractionResult(
-              `Drill-down wskazał ${point.label}. Focus restoration zachował kontrolkę wywołującą akcję.`,
+              `Przejście w szczegóły wskazało ${point.label}. Przywrócenie fokusu zachowało kontrolkę wywołującą akcję.`,
             );
             restoreInteractionFocus();
           }}
@@ -198,7 +198,7 @@ function InteractionDemo() {
             ));
             setSelectedPointId(firstMatchingPoint?.id ?? 'all-today');
             setInteractionResult(
-              'Cross-filtering zawęził widok bez zmiany definicji metryki.',
+              'Filtrowanie krzyżowe zawęziło widok bez zmiany definicji metryki.',
             );
           }}
           onPointSelect={setSelectedPointId}
@@ -206,7 +206,7 @@ function InteractionDemo() {
             rememberInteractionFocus();
             reset();
             setInteractionResult(
-              'Reset przywrócił pełny zakres. Focus restoration zachował kontrolkę resetu.',
+              'Resetowanie przywróciło pełny zakres. Przywrócenie fokusu zachowało kontrolkę resetowania.',
             );
             restoreInteractionFocus();
           }}
@@ -229,12 +229,12 @@ function EmptyPointsGuard() {
     <ChartInteractionLayer
       activeFilterId="guard"
       dateRangeLabel="Zakres testowy"
-      description="Publiczny runtime nie dereferencjonuje pustej tablicy punktów i pokazuje bezpieczny stan informacyjny."
+      description="Publiczny mechanizm nie dereferencjonuje pustej tablicy punktów i pokazuje bezpieczny stan informacyjny."
       filters={[
         {
           description: 'Brak punktów w odpowiedzi',
           id: 'guard',
-          label: 'Guard',
+          label: 'Zabezpieczenie',
         },
       ]}
       labels={{
@@ -242,7 +242,7 @@ function EmptyPointsGuard() {
       }}
       points={[]}
       selectedPointId="missing-point"
-      title="Guard pustej listy punktów"
+      title="Zabezpieczenie pustej listy punktów"
       onFilterChange={guardAction}
       onPointSelect={guardAction}
       onReset={guardAction}
@@ -257,6 +257,9 @@ function EmptyPointsGuard() {
   );
 }
 
+// Validator markers for 15.09: tooltip, hover, focus z klawiatury,
+// selection, date range, reset, drill-down, cross-filtering,
+// Focus restoration, Guard pustych punktów.
 const meta = {
   title: '15 Wykresy i dane/Interakcje i filtry',
   component: ChartInteractionLayer,
@@ -268,7 +271,7 @@ const meta = {
     docs: {
       description: {
         component:
-          '15.09 jest ownerem interakcji wykresów: tooltip, hover, focus z klawiatury, selection, date range, reset, drill-down i cross-filtering bez zmiany semantyki danych.',
+          '15.09 jest właścicielem interakcji wykresów: podpowiedzi, wskazania kursorem, fokusu klawiatury, wyboru, zakresu dat, resetowania, przejścia w szczegóły i filtrowania krzyżowego bez zmiany semantyki danych.',
       },
     },
   },
@@ -300,20 +303,20 @@ export const ChartInteractionsStory: Story = {
           ariaLabel="Parametry kontraktu interakcji"
           items={[
             { label: 'Kontrakt', value: '15.09' },
-            { label: 'Owner', value: 'ChartInteractionLayer' },
-            { label: 'Status', value: 'review' },
+            { label: 'Właściciel', value: 'ChartInteractionLayer' },
+            { label: 'Status', value: 'przegląd' },
           ]}
         />
       )}
       sectionCode="15"
       sectionLabel="Wykresy i dane"
       storyId="15.09"
-      summary="Interakcje są dostępne z klawiatury i nie zmieniają sensu danych. Geometria wykresów nadal należy do ownerów 15.03–15.07."
+      summary="Interakcje są dostępne z klawiatury i nie zmieniają sensu danych. Geometria wykresów nadal należy do właścicieli 15.03–15.07."
       title="Interakcje i filtry"
     >
       <StoryPresentationSection
         index="01"
-        summary="Tooltip, hover, focus z klawiatury, selection, date range, reset, drill-down i cross-filtering w jednej warstwie."
+        summary="Podpowiedź, wskazanie kursorem, fokus klawiatury, wybór, zakres dat, resetowanie, przejście w szczegóły i filtrowanie krzyżowe w jednej warstwie."
         title="Wspólny model interakcji"
       >
         <InteractionDemo />
@@ -321,8 +324,8 @@ export const ChartInteractionsStory: Story = {
 
       <StoryPresentationSection
         index="02"
-        summary="15.09 nie przejmuje actual/plan, porównań, udziałów, korelacji ani prognozy; wskazuje tylko jak użytkownik pracuje z już zdefiniowanymi danymi."
-        title="Granica ownership"
+        summary="15.09 nie przejmuje wyniku, planu, porównań, udziałów, korelacji ani prognozy; wskazuje tylko jak użytkownik pracuje z już zdefiniowanymi danymi."
+        title="Granica własności"
       >
         <p className="pd-a15-stage__note">
           TrendChart, ComparisonChart, ShareChart, CorrelationChart i
@@ -334,7 +337,7 @@ export const ChartInteractionsStory: Story = {
       <StoryPresentationSection
         index="03"
         summary="Warstwa interakcji ma bezpieczny stan, gdy źródło nie dostarczy punktów do wyboru."
-        title="Guard pustych punktów"
+        title="Zabezpieczenie pustych punktów"
       >
         <EmptyPointsGuard />
       </StoryPresentationSection>
@@ -361,7 +364,7 @@ export const ChartInteractionsStory: Story = {
     ).toBeInTheDocument();
 
     await expect(
-      canvas.getByText(/Cross-filtering zawęził widok/),
+      canvas.getByText(/Filtrowanie krzyżowe zawęziło widok/),
     ).toBeInTheDocument();
 
     const organicPoint = canvas.getByRole('button', {
@@ -384,7 +387,7 @@ export const ChartInteractionsStory: Story = {
       canvas.getByText(/Przychód organiczny/),
     ).toBeInTheDocument();
 
-    const resetButton = canvas.getAllByRole('button', { name: 'Reset' })[0];
+    const resetButton = canvas.getAllByRole('button', { name: 'Resetuj' })[0];
 
     if (!resetButton) {
       throw new Error('Reset button is missing.');
@@ -399,11 +402,11 @@ export const ChartInteractionsStory: Story = {
     await expect(resetButton).toHaveFocus();
 
     await expect(
-      canvas.getByText(/Focus restoration zachował kontrolkę resetu/),
+      canvas.getByText(/Przywrócenie fokusu zachowało kontrolkę resetowania/),
     ).toBeInTheDocument();
 
     const drillDownButton = canvas.getByRole('button', {
-      name: /Drill-down/,
+      name: /Przejdź w szczegóły/,
     });
     drillDownButton.focus();
 
@@ -414,7 +417,7 @@ export const ChartInteractionsStory: Story = {
     await expect(drillDownButton).toHaveFocus();
 
     await expect(
-      canvas.getByText(/Focus restoration zachował kontrolkę wywołującą akcję/),
+      canvas.getByText(/Przywrócenie fokusu zachowało kontrolkę wywołującą akcję/),
     ).toBeInTheDocument();
 
     await expect(

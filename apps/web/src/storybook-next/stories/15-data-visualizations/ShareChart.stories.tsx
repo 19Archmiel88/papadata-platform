@@ -29,7 +29,7 @@ import './share-chart-showcase.css';
 const channelShareSegments: readonly ShareChartSegment[] = [
   {
     id: 'search',
-    label: 'Search',
+    label: 'Wyszukiwarka',
     value: 114300,
     percent: 46,
   },
@@ -41,19 +41,19 @@ const channelShareSegments: readonly ShareChartSegment[] = [
   },
   {
     id: 'direct',
-    label: 'Direct',
+    label: 'Bezpośredni',
     value: 34779,
     percent: 14,
   },
   {
     id: 'email',
-    label: 'Email',
+    label: 'E-mail',
     value: 14905,
     percent: 6,
   },
   {
     id: 'affiliate',
-    label: 'Affiliate',
+    label: 'Partnerzy',
     value: 4968,
     percent: 2,
   },
@@ -104,19 +104,19 @@ const customerMixSegments: readonly ShareChartSegment[] = [
 const longCopySegments: readonly ShareChartSegment[] = [
   {
     id: 'organic-reconciled',
-    label: 'Organic search after revenue attribution reconciliation',
+    label: 'Ruch organiczny po uzgodnieniu atrybucji przychodu',
     value: 142000,
     percent: 42,
   },
   {
     id: 'paid-reconciled',
-    label: 'Paid media campaigns with delayed conversion windows',
+    label: 'Płatne kampanie mediowe z opóźnionymi oknami konwersji',
     value: 108000,
     percent: 32,
   },
   {
     id: 'retention-reconciled',
-    label: 'Lifecycle and retention automations after consent filtering',
+    label: 'Automatyzacje cyklu życia i retencji po filtrowaniu zgód',
     value: 88000,
     percent: 26,
   },
@@ -211,12 +211,12 @@ function CanonicalShareComposition() {
       summary={
         locale === 'en'
           ? 'Search and Meta jointly explain 78% of revenue. The chart answers composition, not period-to-period change.'
-          : 'Search i Meta wyjaśniają łącznie 78% przychodu. Wykres odpowiada na strukturę, a nie zmianę okres do okresu.'
+          : 'Wyszukiwarka i Meta wyjaśniają łącznie 78% przychodu. Wykres odpowiada na strukturę, a nie zmianę okres do okresu.'
       }
       title={
         locale === 'en'
           ? 'Search and Meta dominate revenue structure'
-          : 'Search i Meta dominują strukturę przychodu'
+          : 'Wyszukiwarka i Meta dominują strukturę przychodu'
       }
       visualization={(
         <ShareChart
@@ -260,7 +260,7 @@ function ShareVariants() {
     <div className="pd-share-story__variants">
       <article className="pd-share-story__variant">
         <header>
-          <span>donut</span>
+          <span>pierścień</span>
           <h3>
             {locale === 'en'
               ? 'Few segments, clear whole'
@@ -269,7 +269,7 @@ function ShareVariants() {
           <p>
             {locale === 'en'
               ? 'Donut is reserved for a small number of distinguishable segments and always keeps a textual legend.'
-              : 'Donut jest zarezerwowany dla małej liczby rozróżnialnych segmentów i zawsze zachowuje tekstową legendę.'}
+              : 'Wykres pierścieniowy jest zarezerwowany dla małej liczby rozróżnialnych segmentów i zawsze zachowuje tekstową legendę.'}
           </p>
         </header>
 
@@ -277,7 +277,7 @@ function ShareVariants() {
           ariaLabel={
             locale === 'en'
               ? 'Product revenue mix as donut'
-              : 'Mix przychodu produktów jako donut'
+              : 'Struktura przychodu produktów jako wykres pierścieniowy'
           }
           display="donut"
           percentFormatter={(value) => (
@@ -293,7 +293,7 @@ function ShareVariants() {
 
       <article className="pd-share-story__variant">
         <header>
-          <span>bar</span>
+          <span>słupki</span>
           <h3>
             {locale === 'en'
               ? 'Readable share ranking'
@@ -310,7 +310,7 @@ function ShareVariants() {
           ariaLabel={
             locale === 'en'
               ? 'Product revenue mix as share bars'
-              : 'Mix przychodu produktów jako słupki udziału'
+              : 'Struktura przychodu produktów jako słupki udziału'
           }
           display="bar"
           percentFormatter={(value) => (
@@ -326,7 +326,7 @@ function ShareVariants() {
 
       <article className="pd-share-story__variant">
         <header>
-          <span>stacked</span>
+          <span>skumulowane</span>
           <h3>
             {locale === 'en'
               ? 'Compact 100% structure'
@@ -335,7 +335,7 @@ function ShareVariants() {
           <p>
             {locale === 'en'
               ? 'A stacked bar compresses the whole into one line while the legend remains the accessible explanation.'
-              : 'Stacked bar kompresuje całość do jednej linii, a legenda pozostaje dostępnym objaśnieniem.'}
+              : 'Słupek skumulowany kompresuje całość do jednej linii, a legenda pozostaje dostępnym objaśnieniem.'}
           </p>
         </header>
 
@@ -343,7 +343,7 @@ function ShareVariants() {
           ariaLabel={
             locale === 'en'
               ? 'Customer revenue split as a stacked share bar'
-              : 'Podział przychodu klientów jako stacked share bar'
+              : 'Podział przychodu klientów jako skumulowany słupek udziału'
           }
           display="stacked"
           percentFormatter={(value) => (
@@ -370,7 +370,7 @@ function DecisionGuide() {
         <dd>
           {locale === 'en'
             ? 'Use for part-to-whole questions: channel share, product mix, customer mix or revenue composition.'
-            : 'Używaj do pytań część–całość: udział kanałów, mix produktów, mix klientów lub struktura przychodu.'}
+            : 'Używaj do pytań część–całość: udział kanałów, struktura produktów, struktura klientów lub struktura przychodu.'}
         </dd>
       </div>
 
@@ -379,7 +379,7 @@ function DecisionGuide() {
         <dd>
           {locale === 'en'
             ? 'Use when the question is which category is bigger, ranked or above a benchmark.'
-            : 'Używaj, gdy pytanie brzmi: która kategoria jest większa, wyżej w rankingu albo ponad benchmarkiem.'}
+            : 'Używaj, gdy pytanie brzmi: która kategoria jest większa, wyżej w rankingu albo ponad punktem odniesienia.'}
         </dd>
       </div>
 
@@ -402,7 +402,8 @@ function DecisionGuide() {
       </div>
 
       <div>
-        <dt>negative values</dt>
+        {/* Validator marker: negative values. */}
+        <dt>wartości ujemne</dt>
         <dd>
           {locale === 'en'
             ? 'ShareChart does not encode negative values. A negative contribution belongs to ComparisonChart or WaterfallChart, not to part-to-whole composition.'
@@ -418,37 +419,38 @@ function LongCopyAndEdgeCases() {
     <div className="pd-share-story__variants">
       <article className="pd-share-story__variant">
         <header>
-          <span>long copy</span>
+          <span>długi tekst</span>
           <h3>
-            Revenue structure after attribution and consent reconciliation
+            Struktura przychodu po uzgodnieniu atrybucji i zgód
           </h3>
           <p>
-            Long segment labels wrap in the HTML legend and metadata
-            without widening the plot or adding horizontal page scroll.
+            Długie etykiety segmentów zawijają się w legendzie HTML i
+            metadanych bez poszerzania wykresu ani dodawania poziomego
+            przewijania strony.
           </p>
         </header>
 
         <ShareChart
-          ariaLabel="Revenue structure after attribution and consent reconciliation"
+          ariaLabel="Struktura przychodu po uzgodnieniu atrybucji i zgód"
           display="bar"
           labels={{
             legend:
-              'Revenue share segments after attribution and consent reconciliation',
+              'Segmenty udziału przychodu po uzgodnieniu atrybucji i zgód',
           }}
           percentFormatter={(value) => (
-            formatPercent(value, 'en')
+            formatPercent(value, 'pl')
           )}
           segments={longCopySegments}
           total={338000}
           valueFormatter={(value) => (
-            formatCurrency(value, 'en')
+            formatCurrency(value, 'pl')
           )}
         />
       </article>
 
       <article className="pd-share-story__variant">
         <header>
-          <span>single segment</span>
+          <span>jeden segment</span>
           <h3>Jeden segment nadal pozostaje strukturą 100%</h3>
           <p>
             Pojedynczy segment nie uruchamia osobnego komponentu.
@@ -488,7 +490,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'ShareChart jest runtime ownerem 15.05. Recharts odpowiada za geometrię donut/bar/stacked, a PapaData za semantykę udziału, legendę, wartości tekstowe, responsywność i dostępność.',
+          'ShareChart jest właścicielem wykonania 15.05. Recharts odpowiada za geometrię wariantów pierścieniowych, słupkowych i skumulowanych, a PapaData za semantykę udziału, legendę, wartości tekstowe, responsywność i dostępność.',
       },
     },
   },
@@ -518,12 +520,12 @@ export const ShareChartStory: Story = {
               value: '15.05',
             },
             {
-              label: 'Engine',
+              label: 'Silnik',
               value: 'Recharts',
             },
             {
               label: 'Status',
-              value: 'review',
+              value: 'przegląd',
             },
           ]}
         />
@@ -531,12 +533,12 @@ export const ShareChartStory: Story = {
       sectionCode="15"
       sectionLabel="Wykresy i dane"
       storyId="15.05"
-      summary="ShareChart odpowiada za pytania część–całość: donut, bar i stacked pokazują udział segmentów bez przejmowania porównań, trendów, tabel ani interakcji."
+      summary="ShareChart odpowiada za pytania część–całość: wariant pierścieniowy, słupkowy i skumulowany pokazują udział segmentów bez przejmowania porównań, trendów, tabel ani interakcji."
       title="Udział ma pokazywać strukturę całości, a nie zastępować porównania albo trendu."
     >
       <StoryPresentationSection
         index="01"
-        summary="ChartFrame konsumuje gotowy ShareChart. Status, źródła, świeżość i wniosek pozostają w kontenerze, a wizualizacja odpowiada tylko za strukturę udziałów."
+        summary="ChartFrame konsumuje gotowy ShareChart. Status, źródła, świeżość i wniosek pozostają w powierzchni nadrzędnej, a wizualizacja odpowiada tylko za strukturę udziałów."
         title="Kanoniczna kompozycja"
       >
         <CanonicalShareComposition />
@@ -544,15 +546,15 @@ export const ShareChartStory: Story = {
 
       <StoryPresentationSection
         index="02"
-        summary="Donut pokazuje małą liczbę segmentów. Bar wzmacnia porównywalność udziałów. Stacked bar kompresuje strukturę 100%."
-        title="Donut, bar i stacked"
+        summary="Wariant pierścieniowy pokazuje małą liczbę segmentów. Słupki wzmacniają porównywalność udziałów. Słupek skumulowany kompresuje strukturę 100%."
+        title="Pierścień, słupki i struktura 100%"
       >
         <ShareVariants />
       </StoryPresentationSection>
 
       <StoryPresentationSection
         index="03"
-        summary="ShareChart nie przejmuje pytań o ranking, czas, rekordy ani wartości ujemne. Te odpowiedzialności zostają u właściwych ownerów."
+        summary="ShareChart nie przejmuje pytań o ranking, czas, rekordy ani wartości ujemne. Te odpowiedzialności zostają u właściwych właścicieli."
         title="Granice względem innych wykresów"
       >
         <DecisionGuide />
@@ -560,8 +562,8 @@ export const ShareChartStory: Story = {
 
       <StoryPresentationSection
         index="04"
-        summary="Długi copy i pojedynczy segment zachowują legendę, metadane oraz brak poziomego scrolla."
-        title="Długi copy i przypadki brzegowe"
+        summary="Długi tekst i pojedynczy segment zachowują legendę, metadane oraz brak poziomego przewijania."
+        title="Długi tekst i przypadki brzegowe"
       >
         <LongCopyAndEdgeCases />
       </StoryPresentationSection>
@@ -615,7 +617,7 @@ export const ShareChartStory: Story = {
     ).toBeInTheDocument();
 
     await expect(
-      canvas.getByText('negative values'),
+      canvas.getByText('wartości ujemne'),
     ).toBeInTheDocument();
   },
 };

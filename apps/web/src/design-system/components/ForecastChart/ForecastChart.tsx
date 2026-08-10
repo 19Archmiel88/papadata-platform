@@ -252,6 +252,22 @@ function resolveYAxisScale(
   };
 }
 
+function resolveYAxisWidth(
+  ticks: readonly number[],
+  formatValue: (value: number) => string,
+): number {
+  const longestLabelLength = ticks.reduce((longestLength, tick) => {
+    const labelLength = formatValue(tick).length;
+
+    return Math.max(longestLength, labelLength);
+  }, 0);
+
+  return Math.min(
+    116,
+    Math.max(68, Math.ceil(longestLabelLength * 7.5) + 24),
+  );
+}
+
 function toSeriesMap(
   series: readonly ForecastChartSeriesPoint[],
 ): Map<string, number | null> {
@@ -388,6 +404,7 @@ export function ForecastChart({
     domain,
     ticks,
   } = resolveYAxisScale(chartData);
+  const yAxisWidth = resolveYAxisWidth(ticks, formatValue);
 
   return (
     <div
@@ -425,10 +442,10 @@ export function ForecastChart({
               accessibilityLayer
               data={chartData}
               margin={{
-                bottom: 5,
-                left: 0,
-                right: 13,
-                top: 13,
+                bottom: 12,
+                left: 8,
+                right: 34,
+                top: 24,
               }}
             >
               <CartesianGrid
@@ -467,7 +484,7 @@ export function ForecastChart({
                 tickLine={false}
                 tickMargin={14}
                 ticks={ticks}
-                width={64}
+                width={yAxisWidth}
               />
 
               {hasUncertainty ? (

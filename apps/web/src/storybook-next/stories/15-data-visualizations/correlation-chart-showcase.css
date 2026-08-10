@@ -1,13 +1,15 @@
 .pd-correlation-story__variants {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--pd-space-6);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--pd-space-8);
   min-inline-size: 0;
 }
 
 .pd-correlation-story__variant {
   display: grid;
-  gap: var(--pd-space-4);
+  grid-template-columns: minmax(13rem, 0.3fr) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--pd-space-6);
   min-inline-size: 0;
   padding-block: var(--pd-space-5);
   border-block-start: 1px solid var(--pd-separator-subtle);
@@ -17,6 +19,7 @@
   display: grid;
   gap: var(--pd-space-2);
   min-inline-size: 0;
+  max-inline-size: 24rem;
 }
 
 .pd-correlation-story__variant header span {
@@ -39,6 +42,10 @@
   color: var(--pd-text-secondary);
   font-size: var(--pd-type-size-body-small);
   line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-correlation-story__variant [data-component='correlation-chart'] {
+  min-inline-size: 0;
 }
 
 .pd-correlation-story__semantic-guide {
@@ -75,8 +82,8 @@
   max-inline-size: 62rem;
 }
 
-@media (max-width: 1120px) {
-  .pd-correlation-story__variants {
+@media (max-width: 960px) {
+  .pd-correlation-story__variant {
     grid-template-columns: minmax(0, 1fr);
   }
 }

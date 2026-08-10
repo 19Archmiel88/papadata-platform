@@ -119,12 +119,12 @@ type TrendSegment = readonly [
 const defaultLabels: CorrelationChartLabels = {
   cluster: 'Klaster',
   correlation: 'Korelacja',
-  driverHypothesis: 'Driver hypothesis',
+  driverHypothesis: 'Hipoteza wpływu',
   evidence: 'Dowód',
   legend: 'Legenda zależności',
   noCausality:
-    'Korelacja i driver hypothesis nie są dowodem przyczynowości.',
-  outlier: 'Outlier',
+    'Korelacja i hipoteza wpływu nie są dowodem przyczynowości.',
+  outlier: 'Punkt odstający',
   relationship: 'Zależność',
   standardPoint: 'Punkt obserwacji',
   strength: 'Siła korelacji',
@@ -785,7 +785,7 @@ export function CorrelationChart({
               <dt>{resolvedLabels.driverHypothesis}</dt>
               <dd>
                 {driverHypothesis
-                  ?? 'Hipoteza drivera wymaga osobnej walidacji przed decyzją przyczynową.'}
+                  ?? 'Hipoteza wpływu wymaga osobnej walidacji przed decyzją przyczynową.'}
               </dd>
             </div>
             <div>

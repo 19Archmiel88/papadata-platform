@@ -9,7 +9,6 @@ a.pd-inline-action {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: var(--pd-space-1);
   min-width: 0;
   min-height: 0;
   padding: 0;
@@ -30,6 +29,16 @@ a.pd-inline-action {
       var(--pd-motion-easing-standard),
     opacity var(--pd-motion-duration-fast)
       var(--pd-motion-easing-standard);
+}
+
+.pd-inline-action__content {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pd-space-1);
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .pd-inline-action:hover,

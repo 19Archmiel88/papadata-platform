@@ -124,10 +124,10 @@
   inset-inline-end: var(--pd-space-4);
   max-inline-size: min(18rem, 52%);
   padding: var(--pd-space-2) var(--pd-space-3);
-  border: var(--pd-border-width-subtle) solid var(--pd-separator);
+  border: 0;
   border-radius: var(--pd-radius-small);
-  background: var(--pd-surface-raised);
-  box-shadow: var(--pd-shadow-control);
+  background: var(--pd-surface-overlay);
+  box-shadow: var(--pd-shadow-floating);
 }
 
 .pd-chart-frame__legend {

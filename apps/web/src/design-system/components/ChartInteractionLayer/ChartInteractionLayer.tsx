@@ -57,12 +57,12 @@ export type ChartInteractionLayerProps = Omit<
 };
 
 const defaultLabels: ChartInteractionLayerLabels = {
-  crossFilter: 'Cross-filtering',
+  crossFilter: 'Filtrowanie krzyżowe',
   dateRange: 'Zakres dat',
   drillDown: 'Przejdź w szczegóły',
   emptySelection: 'Brak punktów interakcji',
   filters: 'Filtry wykresu',
-  reset: 'Reset',
+  reset: 'Resetuj',
   selection: 'Wybór punktu lub serii',
   tooltip: 'Podpowiedź danych',
 };

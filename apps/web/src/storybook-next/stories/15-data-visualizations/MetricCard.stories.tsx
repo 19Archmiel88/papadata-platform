@@ -207,8 +207,8 @@ export const MetricCardStory: Story = {
           ariaLabel="Parametry kontraktu MetricCard"
           items={[
             { label: 'Kontrakt', value: '15.02' },
-            { label: 'Handoff', value: '05.03 → 15.02' },
-            { label: 'Status', value: 'review' },
+            { label: 'Przekazanie', value: '05.03 → 15.02' },
+            { label: 'Status', value: 'przegląd' },
           ]}
         />
       )}
@@ -216,7 +216,7 @@ export const MetricCardStory: Story = {
       sectionLabel="Wykresy i dane"
       storyId="15.02"
       summary="MetricCard odpowiada za KPI, jego porównanie i mikrotrend. Nie jest małym ChartFrame i nie wprowadza własnych kontrolek."
-      title="Wskaźnik ma pokazywać sygnał, nie budować kolejny dashboard w karcie."
+      title="Wskaźnik ma pokazywać sygnał, nie budować kolejnego panelu w karcie."
     >
       <StoryPresentationSection
         index="01"
@@ -228,7 +228,7 @@ export const MetricCardStory: Story = {
 
       <StoryPresentationSection
         index="02"
-        summary="Processing, no data i stale zachowują tożsamość metryki i nie udają pełnej wartości."
+        summary="Przetwarzanie, brak danych i dane nieaktualne zachowują tożsamość metryki i nie udają pełnej wartości."
         title="Stany danych"
       >
         <MetricStates />
@@ -236,29 +236,29 @@ export const MetricCardStory: Story = {
 
       <StoryPresentationSection
         index="03"
-        summary="Długi tytuł i opis porównania zawijają się bez poziomego scrolla."
-        title="Długi copy i reflow"
+        summary="Długi tytuł i opis porównania zawijają się bez poziomego przewijania."
+        title="Długi tekst i zawijanie"
       >
         <div className="pd-viz-story__long-copy">
           <MetricCard
             comparison={{
               direction: 'down',
-              label: 'Down 3.8 percentage points compared with the same acquisition cohort in the previous fully reconciled reporting window',
+              label: 'Spadek o 3,8 p.p. względem tej samej kohorty akwizycji w poprzednim, w pełni uzgodnionym oknie raportowym',
             }}
-            freshnessLabel={formatPapaDataRelativeTime(-18, 'minute', 'en')}
-            label="Contribution margin after advertising costs for returning customers"
+            freshnessLabel={formatPapaDataRelativeTime(-18, 'minute', 'pl')}
+            label="Marża kontrybucyjna po kosztach reklamy dla powracających klientów"
             labels={{
-              dataStatus: 'Data status',
-              deviation: 'Deviation',
-              target: 'Target',
+              dataStatus: 'Status danych',
+              deviation: 'Odchylenie',
+              target: 'Cel',
             }}
             metricId="long-copy-margin"
             signal="negative"
-            sourceLabel="commerce + advertising + attribution"
+            sourceLabel="handel + reklamy + atrybucja"
             sparklinePoints={[58, 57, 55, 56, 51, 49, 50, 46, 43]}
             status="partial"
-            statusLabel="Partial data"
-            value={formatPapaDataPercent(0.279, 'en')}
+            statusLabel="Dane częściowe"
+            value={formatPapaDataPercent(0.279, 'pl')}
           />
         </div>
       </StoryPresentationSection>

@@ -500,12 +500,12 @@ export const ForecastChartStory: Story = {
               value: '15.07',
             },
             {
-              label: 'Engine',
+              label: 'Silnik',
               value: 'Recharts',
             },
             {
               label: 'Status',
-              value: 'review',
+              value: 'przegląd',
             },
           ]}
         />
@@ -542,8 +542,8 @@ export const ForecastChartStory: Story = {
 
       <StoryPresentationSection
         index="04"
-        summary="Komponent zachowuje czytelność, gdy opis, legenda i scenariusze są dłuższe niż standardowe. To test reflow, nie nowy wariant funkcjonalny."
-        title="Długi copy i reflow"
+        summary="Komponent zachowuje czytelność, gdy opis, legenda i scenariusze są dłuższe niż standardowe. To test zawijania, nie nowy wariant funkcjonalny."
+        title="Długi tekst i zawijanie"
       >
         <LongCopyForecast />
       </StoryPresentationSection>

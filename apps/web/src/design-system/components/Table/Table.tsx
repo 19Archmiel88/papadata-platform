@@ -8,9 +8,6 @@ import {
   joinClassNames,
 } from '../Field/fieldUtils';
 import {
-  EmptyState,
-} from '../EmptyState';
-import {
   Skeleton,
 } from '../Skeleton';
 import '../Data/data.css';
@@ -26,53 +23,78 @@ export type TableRowValue =
 export type TableRow = {
   readonly id: string;
   readonly selected?: boolean;
-  readonly [key: string]: TableRowValue;
+  readonly [key: string]:
+    TableRowValue;
 };
 
 export type TableColumn = {
-  readonly align?: 'left' | 'right' | 'center';
+  readonly align?:
+    | 'left'
+    | 'right'
+    | 'center';
   readonly id: string;
   readonly label: string;
   readonly renderCell?:
     | ((
-        row: TableRow,
-      ) => ReactNode)
+      row: TableRow,
+    ) => ReactNode)
     | undefined;
+  readonly renderHeader?:
+    ReactNode;
   readonly sortable?: boolean;
-  readonly width?: string | number;
+  readonly width?:
+    string | number;
 };
 
 export type TableProps = Omit<
   HTMLAttributes<HTMLDivElement>,
-  | 'children'
+  'children'
 > & {
   readonly ariaLabel?: string;
-  readonly caption?: string | null;
-  readonly columns: readonly TableColumn[];
-  readonly density?: 'comfortable' | 'compact';
+  readonly caption?:
+    string | null;
+  readonly captionVisuallyHidden?:
+    boolean;
+  readonly columns:
+    readonly TableColumn[];
+  readonly density?:
+    | 'comfortable'
+    | 'compact';
   readonly emptyMessage?: string;
   readonly emptyTitle?: string;
   readonly loading?: boolean;
   readonly loadingRows?: number;
-  readonly minWidth?: string | number;
-  readonly rows: readonly TableRow[];
+  readonly minWidth?:
+    string | number;
+  readonly rowHeaderColumnId?:
+    string | null;
+  readonly rows:
+    readonly TableRow[];
   readonly sort?:
     | {
-        readonly columnId: string;
-        readonly direction: 'asc' | 'desc';
-      }
+      readonly columnId: string;
+      readonly direction:
+        | 'asc'
+        | 'desc';
+    }
     | null;
+  readonly stickyHeader?: boolean;
   readonly onSort?:
     | ((
-        columnId: string,
-      ) => void)
+      columnId: string,
+    ) => void)
     | undefined;
 };
 
 function resolveWidth(
-  value: string | number | undefined,
+  value:
+    | string
+    | number
+    | undefined,
 ) {
-  if (typeof value === 'number') {
+  if (
+    typeof value === 'number'
+  ) {
     return `${value}px`;
   }
 
@@ -82,20 +104,50 @@ function resolveWidth(
 function renderCellValue(
   value: TableRowValue,
 ) {
-  if (typeof value === 'boolean') {
-    return value ? 'Tak' : 'Nie';
+  if (
+    typeof value === 'boolean'
+  ) {
+    return value
+      ? 'Tak'
+      : 'Nie';
   }
 
-  if (value === null || value === undefined) {
+  if (
+    value === null
+    || value === undefined
+  ) {
     return '—';
   }
 
   return value;
 }
 
+function resolveSortLabel(
+  columnLabel: string,
+  sortState:
+    | 'asc'
+    | 'desc'
+    | undefined,
+) {
+  if (
+    sortState === 'asc'
+  ) {
+    return `Sortuj po kolumnie ${columnLabel}. Obecnie rosnąco.`;
+  }
+
+  if (
+    sortState === 'desc'
+  ) {
+    return `Sortuj po kolumnie ${columnLabel}. Obecnie malejąco.`;
+  }
+
+  return `Sortuj po kolumnie ${columnLabel}.`;
+}
+
 export function Table({
   ariaLabel,
   caption = null,
+  captionVisuallyHidden = false,
   className,
   columns,
   density = 'comfortable',
@@ -105,26 +157,51 @@ export function Table({
   loadingRows = 4,
   minWidth = '46rem',
   onSort,
+  rowHeaderColumnId = null,
   rows,
   sort = null,
+  stickyHeader = false,
   style,
   ...props
 }: TableProps) {
+  const resolvedStyle = {
+    ...style,
+    '--pd-table-min-width':
+      resolveWidth(
+        minWidth,
+      ),
+  } as CSSProperties;
+
   if (loading) {
     return (
       <div
         {...props}
-        className={joinClassNames(
-          'pd-table',
-          className,
-        )}
+        aria-busy="true"
+        aria-live="polite"
+        className={
+          joinClassNames(
+            'pd-table',
+            className,
+          )
+        }
         data-density={density}
+        style={resolvedStyle}
       >
-        <div className="pd-table__state">
-          <div className="pd-table__skeleton">
-            {Array.from({
-              length: loadingRows,
-            }).map((_, index) => (
+        <div
+          className="pd-table__loading"
+          role="status"
+        >
+          <span className="pd-visually-hidden">
+            Ładowanie danych tabeli
+          </span>
+
+          {Array.from({
+            length: loadingRows,
+          }).map(
+            (
+              _,
+              index: number,
+            ) => (
               <Skeleton
                 key={`row-${index}`}
                 height={18}
@@ -132,29 +209,39 @@ export function Table({
                 shape="text"
                 width="100%"
               />
-            ))}
-          </div>
+            ),
+          )}
         </div>
       </div>
     );
   }
 
-  if (rows.length === 0) {
+  if (
+    rows.length === 0
+  ) {
     return (
       <div
         {...props}
-        className={joinClassNames(
-          'pd-table',
-          className,
-        )}
+        className={
+          joinClassNames(
+            'pd-table',
+            className,
+          )
+        }
         data-density={density}
+        style={resolvedStyle}
       >
-        <div className="pd-table__state">
-          <EmptyState
-            message={emptyMessage}
-            title={emptyTitle}
-            variant="empty"
-          />
+        <div
+          className="pd-table__empty"
+          role="status"
+        >
+          <p className="pd-table__empty-title">
+            {emptyTitle}
+          </p>
+
+          <p className="pd-table__empty-message">
+            {emptyMessage}
+          </p>
         </div>
       </div>
     );
@@ -163,117 +250,203 @@ export function Table({
   return (
     <div
       {...props}
-      className={joinClassNames(
-        'pd-table',
-        className,
-      )}
+      className={
+        joinClassNames(
+          'pd-table',
+          className,
+        )
+      }
       data-density={density}
-      style={{
-        ...style,
-        '--pd-table-min-width':
-          resolveWidth(minWidth),
-      } as CSSProperties}
+      data-sticky-header={
+        stickyHeader
+          ? true
+          : undefined
+      }
+      style={resolvedStyle}
     >
       <div className="pd-table__scroll">
         <table
-          aria-label={ariaLabel}
-          className="pd-table__element"
+          aria-label={
+            ariaLabel
+          }
+          className="pd-table__table"
         >
           {caption ? (
-            <caption className="pd-table__caption">
+            <caption
+              className={
+                joinClassNames(
+                  'pd-table__caption',
+                  captionVisuallyHidden
+                    ? 'pd-visually-hidden'
+                    : null,
+                )
+              }
+            >
               {caption}
             </caption>
           ) : null}
+
           <thead className="pd-table__head">
             <tr>
-              {columns.map((column) => {
-                const sortState =
-                  sort?.columnId === column.id
-                    ? sort.direction
-                    : undefined;
+              {columns.map(
+                (
+                  column:
+                    TableColumn,
+                ) => {
+                  const sortState =
+                    sort?.columnId
+                    === column.id
+                      ? sort.direction
+                      : undefined;
 
-                return (
-                  <th
-                    key={column.id}
-                    aria-sort={
-                      sortState === 'asc'
-                        ? 'ascending'
-                        : sortState === 'desc'
-                          ? 'descending'
-                          : column.sortable
-                            ? 'none'
-                            : undefined
-                    }
-                    data-align={
-                      column.align ?? 'left'
-                    }
-                    scope="col"
-                    style={{
-                      width: resolveWidth(
-                        column.width,
-                      ),
-                    }}
-                  >
-                    {column.sortable ? (
-                      <button
-                        className="pd-table__sort-button"
-                        type="button"
-                        onClick={() => {
-                          onSort?.(column.id);
-                        }}
-                      >
-                        <span>{column.label}</span>
-                        <span
-                          aria-hidden="true"
-                          className="pd-table__sort-indicator"
-                        >
-                          {sortState === 'asc'
-                            ? '↑'
-                            : sortState === 'desc'
-                              ? '↓'
-                              : '↕'}
-                        </span>
-                      </button>
-                    ) : (
-                      column.label
-                    )}
-                  </th>
-                );
-              })}
+                  return (
+                    <th
+                      key={
+                        column.id
+                      }
+                      aria-sort={
+                        sortState
+                        === 'asc'
+                          ? 'ascending'
+                          : sortState
+                            === 'desc'
+                            ? 'descending'
+                            : column.sortable
+                              ? 'none'
+                              : undefined
+                      }
+                      data-align={
+                        column.align
+                        ?? 'left'
+                      }
+                      scope="col"
+                      style={{
+                        width:
+                          resolveWidth(
+                            column.width,
+                          ),
+                      }}
+                    >
+                      {column.renderHeader
+                        ? column.renderHeader
+                        : column.sortable
+                          ? (
+                            <button
+                              aria-label={
+                                resolveSortLabel(
+                                  column.label,
+                                  sortState,
+                                )
+                              }
+                              className="pd-table__sort-button"
+                              type="button"
+                              onClick={() => {
+                                onSort?.(
+                                  column.id,
+                                );
+                              }}
+                            >
+                              <span>
+                                {
+                                  column.label
+                                }
+                              </span>
+
+                              <span
+                                aria-hidden="true"
+                                className="pd-table__sort-indicator"
+                              >
+                                {sortState
+                                  === 'asc'
+                                  ? '↑'
+                                  : sortState
+                                    === 'desc'
+                                    ? '↓'
+                                    : '↕'}
+                              </span>
+                            </button>
+                          )
+                          : column.label}
+                    </th>
+                  );
+                },
+              )}
             </tr>
           </thead>
+
           <tbody className="pd-table__body">
-            {rows.map((row) => (
-              <tr
-                key={row.id}
-                data-interactive={columns.some(
-                  (column) =>
-                    typeof column.renderCell === 'function',
-                )}
-                data-selected={
-                  row.selected
-                    ? true
-                    : undefined
-                }
-              >
-                {columns.map((column) => (
-                  <td
-                    key={`${row.id}-${column.id}`}
-                    data-align={
-                      column.align ?? 'left'
-                    }
-                  >
-                    <div className="pd-table__cell-wrap">
-                      {column.renderCell
-                        ? column.renderCell(row)
-                        : renderCellValue(
-                            row[column.id],
-                          )}
-                    </div>
-                  </td>
-                ))}
-              </tr>
-            ))}
+            {rows.map(
+              (
+                row:
+                  TableRow,
+              ) => (
+                <tr
+                  key={row.id}
+                  data-selected={
+                    row.selected
+                      ? true
+                      : undefined
+                  }
+                >
+                  {columns.map(
+                    (
+                      column:
+                        TableColumn,
+                    ) => {
+                      const content =
+                        column.renderCell
+                          ? column.renderCell(
+                            row,
+                          )
+                          : renderCellValue(
+                            row[
+                              column.id
+                            ],
+                          );
+
+                      if (
+                        rowHeaderColumnId
+                        && column.id
+                          === rowHeaderColumnId
+                      ) {
+                        return (
+                          <th
+                            key={`${row.id}-${column.id}`}
+                            data-align={
+                              column.align
+                              ?? 'left'
+                            }
+                            scope="row"
+                          >
+                            <div className="pd-table__cell-wrap">
+                              {
+                                content
+                              }
+                            </div>
+                          </th>
+                        );
+                      }
+
+                      return (
+                        <td
+                          key={`${row.id}-${column.id}`}
+                          data-align={
+                            column.align
+                            ?? 'left'
+                          }
+                        >
+                          <div className="pd-table__cell-wrap">
+                            {
+                              content
+                            }
+                          </div>
+                        </td>
+                      );
+                    },
+                  )}
+                </tr>
+              ),
+            )}
           </tbody>
         </table>
       </div>

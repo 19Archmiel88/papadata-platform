@@ -156,7 +156,7 @@ export const SegmentedControlStory: Story = {
             <div className="pd-tools-story__theme-column">
               <h3>Tryb jasny</h3>
               <p className="pd-tools-story__theme-copy">
-                Aktywny segment lekko podnosi się ponad neutralne tło.
+                Aktywny segment używa dolnego akcentu bez dodatkowego kontenera.
               </p>
               <SegmentedPreview
                 initialValue="stable"

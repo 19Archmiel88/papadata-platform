@@ -64,7 +64,13 @@
       "teeny-request>uuid": "11.1.1",
       "fast-uri@3.1.4": "3.1.5",
       "fast-uri@4.1.1": "4.1.2"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "argon2",
+      "esbuild",
+      "msgpackr-extract",
+      "protobufjs"
+    ]
   },
   "engines": {
     "node": "24.18.0",

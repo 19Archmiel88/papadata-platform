@@ -141,11 +141,79 @@ for (const workflow of workflows) {
 
 const parity = await text("compose.production-parity.yml");
 const parityPreparation = await text("tools/prepare-production-parity.sh");
-assert(parity.includes("packages/database/scripts/migrate.sh"), "Production parity does not use the canonical migration runner.");
-assert(parity.includes("--tls-port") && parity.includes("--requirepass"), "Production parity Redis must require TLS and authentication.");
-assert(parityPreparation.includes("REDIS_CA_BASE64"), "Production parity preparation does not emit Redis CA verification material.");
-assert(parityPreparation.includes("openssl req"), "Production parity preparation does not generate local TLS material.");
-assert(!parity.includes("papadata-local-secret") && !parity.includes("papadata-local}"), "Production parity contains local credential fallbacks.");
+const parityPreparationImplementation = await text(
+  "tools/prepare-production-parity.mjs",
+);
+const parityEnvironmentLibrary = await text(
+  "tools/lib/production-parity-env.mjs",
+);
+const parityEnvironmentContract = JSON.parse(
+  await text("config/production-parity-env.contract.json"),
+);
+
+assert(
+  parity.includes("packages/database/scripts/migrate.sh"),
+  "Production parity does not use the canonical migration runner.",
+);
+assert(
+  parity.includes("--tls-port") && parity.includes("--requirepass"),
+  "Production parity Redis must require TLS and authentication.",
+);
+
+assert(
+  parityPreparation.includes("prepare-production-parity.mjs"),
+  "Production parity shell entrypoint must delegate to the canonical Node preparation implementation.",
+);
+
+const redisCaContract = parityEnvironmentContract.entries.find(
+  (entry) => entry.name === "REDIS_CA_BASE64",
+);
+
+assert(
+  redisCaContract?.source?.kind === "fileBase64"
+    && redisCaContract.source.path ===
+      ".runtime/backend-production-parity/redis-tls/ca.crt",
+  "Production parity environment contract does not derive REDIS_CA_BASE64 from the generated Redis CA certificate.",
+);
+
+assert(
+  parityEnvironmentLibrary.includes('source.kind === "fileBase64"')
+    && parityEnvironmentLibrary.includes('toString("base64")'),
+  "Production parity environment generator does not implement file-backed base64 secret/config material.",
+);
+
+for (const required of [
+  "generateRedisTls",
+  "runOpenSsl",
+  "ca.crt",
+  "ca.key",
+  "server.crt",
+  "server.key",
+  "server.csr",
+]) {
+  assert(
+    parityPreparationImplementation.includes(required),
+    `Production parity TLS preparation is missing ${required}.`,
+  );
+}
+
+assert(
+  parityPreparationImplementation.includes('"req", "-x509"')
+    && parityPreparationImplementation.includes('"x509", "-req"'),
+  "Production parity preparation does not generate a local Redis CA and signed server certificate.",
+);
+
+assert(
+  parityPreparationImplementation.includes("hasValidCertificate")
+    && parityPreparationImplementation.includes("-checkend"),
+  "Production parity preparation does not validate existing Redis TLS certificate lifetime.",
+);
+
+assert(
+  !parity.includes("papadata-local-secret")
+    && !parity.includes("papadata-local}"),
+  "Production parity contains local credential fallbacks.",
+);
 
 const storage = await text("packages/storage/src/index.ts");
 assert(storage.includes("deleteAllVersions"), "Object storage adapter has no version-aware deletion method.");

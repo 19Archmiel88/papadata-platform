@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "program": "LOCAL-PRODUCTION-PARITY",
+  "implementedScope": [
+    "LP-0",
+    "LP-1",
+    "LP-2",
+    "LP-3",
+    "LP-4"
+  ],
+  "baseline": {
+    "repository": "19Archmiel88/papadata-platform",
+    "commit": "8b05902f7f166bee0b2d3d28aa34dfbde151e2f9",
+    "branch": "main"
+  },
+  "canonicalLocalEndpoint": {
+    "hostname": "papadata.localhost",
+    "origin": "https://papadata.localhost",
+    "scheme": "https",
+    "port": 443
+  },
+  "webDeploymentModel": {
+    "decision": "immutable-static-web-container",
+    "localParity": "The production web artifact is served from a container behind the local HTTPS edge.",
+    "gcp": "The same immutable static web artifact is served by a Cloud Run web service behind the public HTTPS Load Balancer.",
+    "implementationStage": "LP-5",
+    "reason": "A containerized static SPA keeps build/runtime parity between local Docker Compose and GCP while preserving one public origin."
+  },
+  "routing": [
+    {
+      "match": "/api/*",
+      "publicOwner": "bff",
+      "localTarget": "bff-production:3001",
+      "gcpTarget": "Cloud Run BFF serverless NEG"
+    },
+    {
+      "match": "/*",
+      "publicOwner": "web",
+      "localTarget": "web-production",
+      "gcpTarget": "Cloud Run web serverless NEG"
+    }
+  ],
+  "serviceExposure": {
+    "edge": "public",
+    "web": "edge-only",
+    "bff": "edge-only",
+    "api": "private",
+    "worker": "private",
+    "postgres": "private-with-loopback-diagnostics",
+    "redis": "private-with-loopback-diagnostics",
+    "objectStorage": "private-with-loopback-diagnostics",
+    "otel": "private-with-loopback-diagnostics"
+  },
+  "gcpMapping": [
+    {
+      "local": "postgres-production",
+      "gcp": "Cloud SQL PostgreSQL 16"
+    },
+    {
+      "local": "redis-production",
+      "gcp": "Memorystore Redis 7.2 with AUTH/TLS"
+    },
+    {
+      "local": "minio",
+      "gcp": "Cloud Storage"
+    },
+    {
+      "local": "api-production",
+      "gcp": "Cloud Run API"
+    },
+    {
+      "local": "bff-production",
+      "gcp": "Cloud Run BFF"
+    },
+    {
+      "local": "worker-production",
+      "gcp": "Cloud Run worker/job runtime"
+    },
+    {
+      "local": "otel-collector",
+      "gcp": "OpenTelemetry -> Google observability backend"
+    },
+    {
+      "local": "web-production (LP-5)",
+      "gcp": "Cloud Run web (LP-5)"
+    },
+    {
+      "local": "HTTPS edge (LP-6)",
+      "gcp": "HTTPS Load Balancer + Certificate Manager + Cloud Armor"
+    }
+  ],
+  "parityMatrix": [
+    {
+      "capability": "PostgreSQL major version",
+      "local": "PostgreSQL 16.13",
+      "gcp": "POSTGRES_16",
+      "status": "close",
+      "acceptance": "Same major; managed patch lifecycle remains a staging responsibility."
+    },
+    {
+      "capability": "Redis engine",
+      "local": "Redis 7.2 container with TLS/AUTH",
+      "gcp": "REDIS_7_2 with TLS/AUTH",
+      "status": "close",
+      "acceptance": "Managed failover/maintenance behavior must be tested on GCP."
+    },
+    {
+      "capability": "Object storage",
+      "local": "MinIO S3-compatible",
+      "gcp": "Cloud Storage",
+      "status": "emulated",
+      "acceptance": "IAM, signed URLs, retention and GCS semantics require staging tests."
+    },
+    {
+      "capability": "BFF/API identity boundary",
+      "local": "Shared HMAC principal secrets",
+      "gcp": "Cloud Run invocation identity plus internal principal contract",
+      "status": "partial",
+      "acceptance": "Cloud Run identity cannot be reproduced 1:1 locally."
+    },
+    {
+      "capability": "Public HTTPS edge",
+      "local": "Contract only in LP-0..LP-4",
+      "gcp": "HTTPS Load Balancer + managed certificate + Cloud Armor",
+      "status": "deferred",
+      "acceptance": "Implemented locally in LP-6; GCP behavior accepted in staging."
+    },
+    {
+      "capability": "Web runtime",
+      "local": "Real React runtime in LP-4; production static container deferred to LP-5",
+      "gcp": "Cloud Run static web container deferred to LP-5",
+      "status": "partial",
+      "acceptance": "LP-4 proves routing/auth code; LP-5/LP-6 prove production transport."
+    },
+    {
+      "capability": "Autoscaling/HA/PITR/managed maintenance",
+      "local": "Not faithfully emulatable",
+      "gcp": "Managed platform behavior",
+      "status": "staging-only",
+      "acceptance": "Never claim local 1:1; use explicit GCP staging evidence."
+    }
+  ],
+  "scopeBoundary": {
+    "included": [
+      "Environment contract and parity matrix",
+      "Workstation preflight",
+      "Runtime env/secrets SSOT and drift gates",
+      "Backend parity hardening plus restart/failure harness",
+      "Real frontend router, Auth, session bootstrap, BFF client, CSRF, AppShell and first protected screen"
+    ],
+    "deferred": [
+      "LP-5 production web container and Cloud Run web",
+      "LP-6 local HTTPS edge/certificate/host installation",
+      "LP-7 local email delivery",
+      "LP-8 deterministic product seed",
+      "LP-9 provider simulator",
+      "LP-10+ complete customer vertical and browser E2E"
+    ]
+  }
+}

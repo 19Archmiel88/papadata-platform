@@ -1,0 +1,555 @@
+{
+  "schemaVersion": 1,
+  "baselineCommit": "8b05902f7f166bee0b2d3d28aa34dfbde151e2f9",
+  "contractId": "papadata-runtime-env-v1",
+  "localContract": "config/local-production-parity.contract.json",
+  "generatedEnvFile": ".env.production-parity",
+  "generatedExampleFile": ".env.production-parity.example",
+  "frontend": {
+    "baseUrlVariable": "VITE_BFF_BASE_URL",
+    "productionParityDefault": "",
+    "meaning": "Empty means same-origin /api via the canonical edge. A non-empty value is a development-only override."
+  },
+  "entries": [
+    {
+      "name": "NODE_ENV",
+      "scope": [
+        "api",
+        "bff",
+        "worker"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "production"
+      },
+      "example": "production"
+    },
+    {
+      "name": "POSTGRES_PASSWORD",
+      "scope": [
+        "compose",
+        "migrate"
+      ],
+      "secret": true,
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-random-migrator-secret"
+    },
+    {
+      "name": "PAPADATA_APP_PASSWORD",
+      "scope": [
+        "compose",
+        "api"
+      ],
+      "secret": true,
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-random-application-secret"
+    },
+    {
+      "name": "PAPADATA_PLATFORM_PASSWORD",
+      "scope": [
+        "compose",
+        "worker"
+      ],
+      "secret": true,
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-random-platform-secret"
+    },
+    {
+      "name": "PAPADATA_TEST_PASSWORD",
+      "scope": [
+        "compose",
+        "migrate"
+      ],
+      "secret": true,
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-random-test-secret"
+    },
+    {
+      "name": "REDIS_PASSWORD",
+      "scope": [
+        "compose",
+        "redis"
+      ],
+      "secret": true,
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-random-redis-secret"
+    },
+    {
+      "name": "MINIO_ROOT_USER",
+      "scope": [
+        "compose",
+        "storage"
+      ],
+      "source": {
+        "kind": "randomUser",
+        "prefix": "parity-",
+        "bytes": 6
+      },
+      "example": "papadata-parity"
+    },
+    {
+      "name": "MINIO_ROOT_PASSWORD",
+      "scope": [
+        "compose",
+        "storage"
+      ],
+      "secret": true,
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-random-minio-secret"
+    },
+    {
+      "name": "DATABASE_URL",
+      "scope": [
+        "api"
+      ],
+      "secret": true,
+      "terraform": {
+        "secretKey": "database_url",
+        "envName": "DATABASE_URL"
+      },
+      "source": {
+        "kind": "template",
+        "value": "postgresql://papadata_app:${PAPADATA_APP_PASSWORD}@postgres-production:5432/papadata"
+      },
+      "example": "postgresql://papadata_app:replace-with-random-application-secret@postgres-production:5432/papadata"
+    },
+    {
+      "name": "SCHEDULER_DATABASE_URL",
+      "scope": [
+        "worker"
+      ],
+      "secret": true,
+      "terraform": {
+        "secretKey": "scheduler_database_url",
+        "envName": "SCHEDULER_DATABASE_URL"
+      },
+      "source": {
+        "kind": "template",
+        "value": "postgresql://papadata_platform:${PAPADATA_PLATFORM_PASSWORD}@postgres-production:5432/papadata"
+      },
+      "example": "postgresql://papadata_platform:replace-with-random-platform-secret@postgres-production:5432/papadata"
+    },
+    {
+      "name": "REDIS_URL",
+      "scope": [
+        "api",
+        "bff",
+        "worker"
+      ],
+      "secret": true,
+      "terraform": {
+        "secretKey": "redis_url",
+        "envName": "REDIS_URL"
+      },
+      "source": {
+        "kind": "template",
+        "value": "rediss://default:${REDIS_PASSWORD}@redis-production:6379"
+      },
+      "example": "rediss://default:replace-with-random-redis-secret@redis-production:6379"
+    },
+    {
+      "name": "REDIS_CA_BASE64",
+      "scope": [
+        "api",
+        "bff",
+        "worker"
+      ],
+      "secret": false,
+      "terraform": {
+        "secretKey": "redis_ca_base64",
+        "envName": "REDIS_CA_BASE64"
+      },
+      "source": {
+        "kind": "fileBase64",
+        "path": ".runtime/backend-production-parity/redis-tls/ca.crt"
+      },
+      "example": "replace-with-base64-ca"
+    },
+    {
+      "name": "PAPADATA_STORAGE_DRIVER",
+      "scope": [
+        "api",
+        "worker"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "minio"
+      },
+      "example": "minio"
+    },
+    {
+      "name": "PAPADATA_STORAGE_BUCKET",
+      "scope": [
+        "api",
+        "worker"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "papadata-artifacts"
+      },
+      "example": "papadata-artifacts"
+    },
+    {
+      "name": "PAPADATA_STORAGE_ENDPOINT",
+      "scope": [
+        "api",
+        "worker"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "http://minio:9000"
+      },
+      "example": "http://minio:9000"
+    },
+    {
+      "name": "PAPADATA_STORAGE_ACCESS_KEY",
+      "scope": [
+        "api",
+        "worker"
+      ],
+      "secret": true,
+      "source": {
+        "kind": "reference",
+        "from": "MINIO_ROOT_USER"
+      },
+      "example": "papadata-parity"
+    },
+    {
+      "name": "PAPADATA_STORAGE_SECRET_KEY",
+      "scope": [
+        "api",
+        "worker"
+      ],
+      "secret": true,
+      "source": {
+        "kind": "reference",
+        "from": "MINIO_ROOT_PASSWORD"
+      },
+      "example": "replace-with-random-minio-secret"
+    },
+    {
+      "name": "PAPADATA_API_AUTH_ACTIVE_SECRET",
+      "scope": [
+        "api"
+      ],
+      "secret": true,
+      "terraform": {
+        "secretKey": "api_auth_active_secret",
+        "envName": "PAPADATA_API_AUTH_ACTIVE_SECRET"
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-shared-32-byte-internal-active-secret"
+    },
+    {
+      "name": "PAPADATA_API_AUTH_PREVIOUS_SECRET",
+      "scope": [
+        "api"
+      ],
+      "secret": true,
+      "terraform": {
+        "secretKey": "api_auth_previous_secret",
+        "envName": "PAPADATA_API_AUTH_PREVIOUS_SECRET"
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-shared-32-byte-internal-previous-secret"
+    },
+    {
+      "name": "PAPADATA_API_AUTH_ISSUER",
+      "scope": [
+        "api"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "papadata-bff"
+      },
+      "example": "papadata-bff"
+    },
+    {
+      "name": "PAPADATA_API_AUTH_AUDIENCE",
+      "scope": [
+        "api"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "papadata-api"
+      },
+      "example": "papadata-api"
+    },
+    {
+      "name": "PAPADATA_API_AUTH_SESSION_STORE",
+      "scope": [
+        "api"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "redis-auth-state"
+      },
+      "example": "redis-auth-state"
+    },
+    {
+      "name": "PAPADATA_API_AUTH_SESSION_REDIS_PREFIX",
+      "scope": [
+        "api"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "papadata:auth"
+      },
+      "example": "papadata:auth"
+    },
+    {
+      "name": "PAPADATA_INFRASTRUCTURE_AUTH_TOKEN",
+      "scope": [
+        "api"
+      ],
+      "secret": true,
+      "terraform": {
+        "secretKey": "infrastructure_auth_token",
+        "envName": "PAPADATA_INFRASTRUCTURE_AUTH_TOKEN"
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-32-byte-random-infra-token"
+    },
+    {
+      "name": "MFA_ENCRYPTION_KEY",
+      "scope": [
+        "api"
+      ],
+      "secret": true,
+      "terraform": {
+        "secretKey": "mfa_encryption_key",
+        "envName": "MFA_ENCRYPTION_KEY"
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-64-hex-character-mfa-key"
+    },
+    {
+      "name": "BFF_PORT",
+      "scope": [
+        "bff"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "3001"
+      },
+      "example": "3001"
+    },
+    {
+      "name": "API_ORIGIN",
+      "scope": [
+        "bff"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "http://api-production:4000"
+      },
+      "example": "http://api-production:4000"
+    },
+    {
+      "name": "BFF_ALLOWED_ORIGINS",
+      "scope": [
+        "bff"
+      ],
+      "source": {
+        "kind": "contract",
+        "path": "canonicalLocalEndpoint.origin"
+      },
+      "example": "https://papadata.localhost"
+    },
+    {
+      "name": "BFF_PUBLIC_HOSTS",
+      "scope": [
+        "bff"
+      ],
+      "source": {
+        "kind": "template",
+        "value": "${LOCAL_PUBLIC_HOST},${LOCAL_PUBLIC_HOST}:53001"
+      },
+      "virtualInputs": [
+        "LOCAL_PUBLIC_HOST"
+      ],
+      "example": "papadata.localhost,papadata.localhost:53001"
+    },
+    {
+      "name": "BFF_COOKIE_SECRET",
+      "scope": [
+        "bff"
+      ],
+      "secret": true,
+      "terraform": {
+        "secretKey": "bff_cookie_secret",
+        "envName": "BFF_COOKIE_SECRET"
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-32-byte-random-cookie-secret-active"
+    },
+    {
+      "name": "BFF_COOKIE_PREVIOUS_SECRET",
+      "scope": [
+        "bff"
+      ],
+      "secret": true,
+      "terraform": {
+        "secretKey": "bff_cookie_previous_secret",
+        "envName": "BFF_COOKIE_PREVIOUS_SECRET"
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-32-byte-random-cookie-secret-previous"
+    },
+    {
+      "name": "BFF_CSRF_SECRET",
+      "scope": [
+        "bff"
+      ],
+      "secret": true,
+      "terraform": {
+        "secretKey": "bff_csrf_secret",
+        "envName": "BFF_CSRF_SECRET"
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-32-byte-random-csrf-secret"
+    },
+    {
+      "name": "BFF_INTERNAL_AUTH_ACTIVE_SECRET",
+      "scope": [
+        "bff"
+      ],
+      "secret": true,
+      "source": {
+        "kind": "reference",
+        "from": "PAPADATA_API_AUTH_ACTIVE_SECRET"
+      },
+      "example": "replace-with-shared-32-byte-internal-active-secret"
+    },
+    {
+      "name": "BFF_INTERNAL_AUTH_PREVIOUS_SECRET",
+      "scope": [
+        "bff"
+      ],
+      "secret": true,
+      "source": {
+        "kind": "reference",
+        "from": "PAPADATA_API_AUTH_PREVIOUS_SECRET"
+      },
+      "example": "replace-with-shared-32-byte-internal-previous-secret"
+    },
+    {
+      "name": "BFF_INTERNAL_AUTH_ISSUER",
+      "scope": [
+        "bff"
+      ],
+      "source": {
+        "kind": "reference",
+        "from": "PAPADATA_API_AUTH_ISSUER"
+      },
+      "example": "papadata-bff"
+    },
+    {
+      "name": "BFF_INTERNAL_AUTH_AUDIENCE",
+      "scope": [
+        "bff"
+      ],
+      "source": {
+        "kind": "reference",
+        "from": "PAPADATA_API_AUTH_AUDIENCE"
+      },
+      "example": "papadata-api"
+    },
+    {
+      "name": "BFF_SESSION_STORE",
+      "scope": [
+        "bff"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "redis-auth-state"
+      },
+      "example": "redis-auth-state"
+    },
+    {
+      "name": "BFF_SESSION_REDIS_PREFIX",
+      "scope": [
+        "bff"
+      ],
+      "source": {
+        "kind": "reference",
+        "from": "PAPADATA_API_AUTH_SESSION_REDIS_PREFIX"
+      },
+      "example": "papadata:auth"
+    },
+    {
+      "name": "BFF_RATE_LIMIT_MAX",
+      "scope": [
+        "bff"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "300"
+      },
+      "example": "300"
+    },
+    {
+      "name": "BFF_RATE_LIMIT_WINDOW_MS",
+      "scope": [
+        "bff"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "60000"
+      },
+      "example": "60000"
+    },
+    {
+      "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
+      "scope": [
+        "api",
+        "bff",
+        "worker"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "http://otel-collector:4318"
+      },
+      "example": "http://otel-collector:4318"
+    }
+  ]
+}

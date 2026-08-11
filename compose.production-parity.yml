@@ -1,6 +1,7 @@
 services:
   postgres-production:
     image: postgres:16.13-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_DB: papadata
       POSTGRES_USER: papadata_migrator
@@ -9,7 +10,7 @@ services:
       PAPADATA_PLATFORM_PASSWORD: ${PAPADATA_PLATFORM_PASSWORD:?PAPADATA_PLATFORM_PASSWORD is required}
       PAPADATA_TEST_PASSWORD: ${PAPADATA_TEST_PASSWORD:?PAPADATA_TEST_PASSWORD is required}
     ports:
-      - "55432:5432"
+      - "127.0.0.1:55432:5432"
     volumes:
       - papadata_pg_data:/var/lib/postgresql/data
       - ./infra/postgres/init/01-create-production-parity-roles.sh:/docker-entrypoint-initdb.d/001-create-runtime-roles.sh:ro
@@ -18,9 +19,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+      start_period: 5s
 
   redis-production:
-    image: redis:7.4-alpine
+    image: redis:7.2-alpine
+    restart: unless-stopped
     command:
       - /bin/sh
       - -c
@@ -37,7 +40,7 @@ services:
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
     ports:
-      - "56379:6379"
+      - "127.0.0.1:56379:6379"
     volumes:
       - papadata_redis_data:/data
       - ./.runtime/backend-production-parity/redis-tls:/run/papadata-redis-tls:ro
@@ -51,16 +54,18 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+      start_period: 5s
 
   minio:
     image: minio/minio:RELEASE.2025-07-23T15-54-02Z
+    restart: unless-stopped
     command: server /data --console-address :9001
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:?MINIO_ROOT_USER is required}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD is required}
     ports:
-      - "59000:9000"
-      - "59001:9001"
+      - "127.0.0.1:59000:9000"
+      - "127.0.0.1:59001:9001"
     volumes:
       - papadata_minio_data:/data
 
@@ -81,12 +86,13 @@ services:
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.130.1
+    restart: unless-stopped
     command: ["--config=/etc/otelcol/config.yaml"]
     volumes:
       - ./infra/otel/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
     ports:
-      - "54317:4317"
-      - "54318:4318"
+      - "127.0.0.1:54317:4317"
+      - "127.0.0.1:54318:4318"
 
   migrate-production:
     image: postgres:16.13-alpine
@@ -115,6 +121,11 @@ services:
     build:
       context: .
       dockerfile: infra/production/api.Dockerfile
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 20s
+    security_opt:
+      - no-new-privileges:true
     env_file: [.env.production-parity]
     depends_on:
       migrate-production:
@@ -126,26 +137,67 @@ services:
       otel-collector:
         condition: service_started
     ports:
-      - "54000:4000"
+      - "127.0.0.1:54000:4000"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - >-
+          fetch('http://127.0.0.1:4000/readyz')
+          .then((response) => { if (!response.ok) process.exit(1); })
+          .catch(() => process.exit(1))
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
 
   bff-production:
     build:
       context: .
       dockerfile: infra/production/bff.Dockerfile
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 20s
+    security_opt:
+      - no-new-privileges:true
     env_file: [.env.production-parity]
     environment:
       NODE_ENV: production-parity
     depends_on:
-      - api-production
+      api-production:
+        condition: service_healthy
+      redis-production:
+        condition: service_healthy
     ports:
-      - "53001:3001"
+      - "127.0.0.1:53001:3001"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - >-
+          fetch('http://127.0.0.1:3001/readyz')
+          .then((response) => { if (!response.ok) process.exit(1); })
+          .catch(() => process.exit(1))
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
 
   worker-production:
     build:
       context: .
       dockerfile: infra/production/worker.Dockerfile
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
+    security_opt:
+      - no-new-privileges:true
     env_file: [.env.production-parity]
     depends_on:
+      migrate-production:
+        condition: service_completed_successfully
       postgres-production:
         condition: service_healthy
       redis-production:

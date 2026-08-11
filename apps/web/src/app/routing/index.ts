@@ -1,7 +1,8 @@
-/**
- * Punkt eksportu modułu:
- * src/app/routing
- *
- * Moduł nie zawiera kodu legacy.
- */
-export {};
+export {
+  AppRouter,
+} from './AppRouter';
+export {
+  navigate,
+  safeReturnTo,
+  useLocationPath,
+} from './navigation';

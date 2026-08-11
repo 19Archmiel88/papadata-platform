@@ -35,7 +35,15 @@ import './cross-cutting-patterns.css';
 
 const saveRecommendationAction = fn();
 
-function DrawerContent() {
+type DrawerContentProps = {
+  readonly onPostpone: () => void;
+  readonly onSave: () => void;
+};
+
+function DrawerContent({
+  onPostpone,
+  onSave,
+}: DrawerContentProps) {
   const [activeTab, setActiveTab] =
     useState('details');
 
@@ -217,14 +225,32 @@ function DrawerContent() {
   ];
 
   return (
-    <Tabs
-      activation="manual"
-      activeId={activeTab}
-      ariaLabel="Zakładki panelu szczegółów"
-      items={items}
-      orientation="horizontal"
-      onActiveIdChange={setActiveTab}
-    />
+    <div className="pd-x18-drawer-content">
+      <Tabs
+        activation="manual"
+        activeId={activeTab}
+        ariaLabel="Zakładki panelu szczegółów"
+        items={items}
+        orientation="horizontal"
+        onActiveIdChange={setActiveTab}
+      />
+
+      <div
+        aria-label="Akcje panelu decyzji"
+        className="pd-x18-drawer-actions"
+      >
+        <TextAction
+          tone="muted"
+          onClick={onPostpone}
+        >
+          Odłóż decyzję
+        </TextAction>
+
+        <TextAction onClick={onSave}>
+          Zapisz rekomendację
+        </TextAction>
+      </div>
+    </div>
   );
 }
 
@@ -253,6 +279,14 @@ function DetailPanelPattern() {
   }, [
     open,
   ]);
+
+  const closeWithMessage = (
+    nextMessage: string,
+  ) => {
+    restoreFocusRef.current = true;
+    setOpen(false);
+    setMessage(nextMessage);
+  };
 
   return (
     <div className="pd-x18-stack">
@@ -322,11 +356,10 @@ function DetailPanelPattern() {
       </TextAction>
 
       <Drawer
+        className="pd-x18-decision-drawer"
         description="Panel szczegółów korzysta z zakładek: szczegóły, dowody i rekomendacja."
         dismissible
         open={open}
-        primaryActionLabel="Zapisz rekomendację"
-        secondaryActionLabel="Odłóż decyzję"
         side="right"
         title="Panel decyzji jakości leadów"
         width={560}
@@ -342,12 +375,21 @@ function DetailPanelPattern() {
             );
           }
 
-          if (reason === 'primary-action') {
-            saveRecommendationAction();
-          }
         }}
       >
-        <DrawerContent />
+        <DrawerContent
+          onPostpone={() => {
+            closeWithMessage(
+              'Decyzja odłożona; focus wraca do przycisku otwarcia panelu.',
+            );
+          }}
+          onSave={() => {
+            saveRecommendationAction();
+            closeWithMessage(
+              'Rekomendacja zapisana; focus wraca do przycisku otwarcia panelu.',
+            );
+          }}
+        />
       </Drawer>
     </div>
   );
@@ -378,7 +420,7 @@ export const DetailEvidenceRecommendationPanelsStory: Story = {
           items={[
             { label: 'Kontrakt', value: '18.07' },
             { label: 'Warstwa', value: 'Drawer' },
-            { label: 'Status', value: 'review' },
+            { label: 'Status', value: 'W przeglądzie' },
           ]}
         />
       )}
@@ -407,6 +449,16 @@ export const DetailEvidenceRecommendationPanelsStory: Story = {
       canvas.getByRole('heading', {
         name: 'Panele szczegółów, dowodów i rekomendacji',
       }),
+    ).toBeInTheDocument();
+
+    await userEvent.click(
+      canvas.getByRole('button', {
+        name: 'Zapisz notatkę kontekstową',
+      }),
+    );
+
+    await expect(
+      canvas.getByText(/Akcja kontekstowa nie otwiera/),
     ).toBeInTheDocument();
 
     const openButton = canvas.getByRole('button', {

@@ -1758,8 +1758,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/catalog/catalog.generated.ts",
-      "bytes": 178852,
-      "sha256": "599a9b2284ec6070eff29705a00690bf14c3306a2401c79cd3568659b2e487dc"
+      "bytes": 179494,
+      "sha256": "013ff65851ca5b4d2e27a37ac33e1681d0c71c9c83ba6599ced6294e74b910ef"
     },
     {
       "path": "apps/web/src/storybook-next/catalog/catalog.ts",
@@ -2008,33 +2008,33 @@
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DataDecisionWorkspace.stories.tsx",
-      "bytes": 10277,
-      "sha256": "3c90e5c14fb62251a0f3d47abc8693b78b17feb841c938e87a3b492d82bd7e19"
+      "bytes": 12714,
+      "sha256": "11d04efc6eaf185994ac1064f40f3bae696f5d8cb03d5df530aaa9dfc7dd3b84"
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DataReadinessStatus.stories.tsx",
-      "bytes": 5641,
-      "sha256": "2e56d104181e0ecdc21cfa0f58c3c4ebb1d3ccfdd12b83312654c712112f84a1"
+      "bytes": 5837,
+      "sha256": "bc8ced17245ecd1b854ad0c51c0318087013be3f19db7108fe5c1f8dd45dec03"
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DetailEvidenceRecommendationPanels.stories.tsx",
-      "bytes": 13212,
-      "sha256": "909925eb6eecf51d56152023c0ac5edce2e2c5e7c0541fd5142016d2ff7d018f"
+      "bytes": 14390,
+      "sha256": "b46c4d87563ee1a671a1b60ca66655842ad596efeda8ee0119c676ef838f4fe0"
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/FeedbackStates.stories.tsx",
-      "bytes": 10921,
-      "sha256": "eda9be2be3f3edcbb61eff9011fb7245772a3c0e9bb4da945c19bdaf58815c10"
+      "bytes": 13150,
+      "sha256": "302f4ac7a91f89984e19b652adfa28a5094491e1ede3e40383629d82b79bffd1"
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/FilteredTableActions.stories.tsx",
-      "bytes": 55703,
-      "sha256": "f96dd7706d3ffcfa9138002b2be8fe6ff3b53eaba2ed1014593d987ed3d59e3c"
+      "bytes": 58458,
+      "sha256": "f5640f4d975ebd0a4742f0589717ae94e2145aa16b1f807cef4332017c4d7119"
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/LoadingOperations.stories.tsx",
-      "bytes": 8816,
-      "sha256": "dbfc5337b4cb2229d90e7e7abf5e9137f94208fd007bc94598e4ebff9a5b083b"
+      "bytes": 9097,
+      "sha256": "e240c564eb42ba0650d5944d06b9ac09b68f5607396cc0950b20f6e0fc3e2009"
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/PageSectionLayout.stories.tsx",
@@ -2043,13 +2043,13 @@
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/cross-cutting-patterns.css",
-      "bytes": 28410,
-      "sha256": "3b93e835f8ef2ef11929ee48ba06d1f666bddf9f36c777d7eef801e1b1b50fe0"
+      "bytes": 29652,
+      "sha256": "79fa67889de79d954ccfe687b835d1065dffdad765f583e6c298e97dae0faa8f"
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/data-decision-workspace.css",
-      "bytes": 127,
-      "sha256": "b196a7d9e8d45828ecc1da3a2c0f34e0c047836b0bbba63d1bb19605edba25fd"
+      "bytes": 1229,
+      "sha256": "8c558449a69a5ff241af33f10a23560cc16f7a66a5a588005c37edde292f7d19"
     },
     {
       "path": "apps/web/src/storybook-next/stories/story-icons.tsx",
@@ -2058,8 +2058,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/storybook-contract.json",
-      "bytes": 200941,
-      "sha256": "e1524aaff2038899e92863df793519f95e11364da46ceb6f70c08cc69469ede6"
+      "bytes": 201599,
+      "sha256": "1d440f966eedcddf6479e5420e603918a86453297f9ed1b0bf470f49c3fed899"
     },
     {
       "path": "apps/web/src/storybook-next/storybook-taxonomy-map.json",
@@ -5173,18 +5173,18 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/21-stany-przekrojowe/18-02-empty-error-i-no-access.md",
-      "bytes": 3420,
-      "sha256": "092c78f3cc779fa528d6a3cebd1c617b32b155165674bee24af10f1f42ca66a7"
+      "bytes": 4279,
+      "sha256": "48302aee7bffb99d31be2d6b6cd9561342d1e04a9664f83d1651d775051bfab4"
     },
     {
       "path": "docs/specyfikacja-docelowa/21-stany-przekrojowe/18-03-ladowanie-danych-i-operacje-w-tle.md",
-      "bytes": 3602,
-      "sha256": "aa4fb41c11ebe99bfb8d8a878e88ecbdbcdce202f15d4e0f165344192bbf0e7c"
+      "bytes": 3722,
+      "sha256": "0626386351ec97fc36af005afa3f328ca18c7cdd62b2a3251c7d408b2e925258"
     },
     {
       "path": "docs/specyfikacja-docelowa/21-stany-przekrojowe/18-04-tabela-z-filtrami-i-akcjami.md",
-      "bytes": 3508,
-      "sha256": "8740d204ac2d442d88ddaffcc5f9c00d6788cbb79bb8ca1c6dbe48976cf5fc34"
+      "bytes": 3693,
+      "sha256": "a3539e7a5b59599668a9b31395fd19d60b574389b8cd849692f46de4c4ac2ff5"
     },
     {
       "path": "docs/specyfikacja-docelowa/21-stany-przekrojowe/18-05-potwierdzenia-i-operacje-destrukcyjne.md",
@@ -5198,13 +5198,13 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/21-stany-przekrojowe/18-07-panele-szczegolow-dowodow-i-rekomendacji.md",
-      "bytes": 3610,
-      "sha256": "29a5a7bbc41c807a46c28fce8c88394bdbc2d96f53269daca2f701236e473349"
+      "bytes": 3639,
+      "sha256": "18e1e39d535aa9a5eb15821877e7435a9ad506f51ed55dce05a916162c6d6d16"
     },
     {
       "path": "docs/specyfikacja-docelowa/21-stany-przekrojowe/18-08-status-danych-i-readiness.md",
-      "bytes": 3406,
-      "sha256": "3d99a0eb3ba20f39a457e5cce2be49db1bdbfee83355de5d35fe56f87702524c"
+      "bytes": 3543,
+      "sha256": "7fae143460b9596117e8e46cdd9b16e733a88a6e75252899e7a873e0ec60a055"
     },
     {
       "path": "docs/specyfikacja-docelowa/21-stany-przekrojowe/18-09-formularze-zlozone-i-kreatory.md",
@@ -5218,8 +5218,8 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/21-stany-przekrojowe/18-11-data-decision-workspace.md",
-      "bytes": 3428,
-      "sha256": "86f318ccf56538c017ed4c8836dadfc262dbd561344fbd8cfa738c8ab813b7e5"
+      "bytes": 3728,
+      "sha256": "f33f00c00c01a37cd4177440548ec0aadf0eeb5af28f7a481037777429abe2b2"
     },
     {
       "path": "docs/specyfikacja-docelowa/22-mapy-i-indeksy/99-01-mapowanie-specyfikacji-m01-m15.md",
@@ -9088,8 +9088,8 @@
     },
     {
       "path": "fixtures/storybook/105-18-02-empty-error-i-no-access.json",
-      "bytes": 1054,
-      "sha256": "01efade5759c67b07737941d7f78b913465c249fc59c55c767fc5693c4b77736"
+      "bytes": 1154,
+      "sha256": "a9201c488aa1bb6851e57949441ac5a5001a1215fb405b3e7f56c6659c7b7371"
     },
     {
       "path": "fixtures/storybook/106-18-09-formularze-zlozone-i-kreatory.json",
@@ -9103,8 +9103,8 @@
     },
     {
       "path": "fixtures/storybook/108-18-07-panele-szczegolow-dowodow-i-rekomendacji.json",
-      "bytes": 1185,
-      "sha256": "14c9092d2d65be5e0af8f5a03f8299816713c96b3131f74bcac5567d9e238579"
+      "bytes": 1198,
+      "sha256": "c6f6287d953172de77540819070c5a6e6258a1f655772af8b4e007c1fe6c50c4"
     },
     {
       "path": "fixtures/storybook/109-18-05-potwierdzenia-i-operacje-destrukcyjne.json",
@@ -9113,13 +9113,13 @@
     },
     {
       "path": "fixtures/storybook/110-18-08-status-danych-i-readiness.json",
-      "bytes": 996,
-      "sha256": "71b245f45ead12d694298593654da71942b3277d4875f7526894bede3ca1eded"
+      "bytes": 1010,
+      "sha256": "96b9d4bc0efc02eff657fccfc292f389ab05650253c1e979f6acbd853aeccbfb"
     },
     {
       "path": "fixtures/storybook/111-18-04-tabela-z-filtrami-i-akcjami.json",
-      "bytes": 1153,
-      "sha256": "fa9d79d3f2017f505782a1b98498a364afbfde7e7e69d2ba359776ba0c6afb17"
+      "bytes": 1273,
+      "sha256": "80d5be6a076a3f66998ad4a77ef530bfba6059da4d9339892b51a1195f32556f"
     },
     {
       "path": "fixtures/storybook/112-18-01-uklad-strony-i-sekcji.json",
@@ -9128,8 +9128,8 @@
     },
     {
       "path": "fixtures/storybook/113-18-03-ladowanie-danych-i-operacje-w-tle.json",
-      "bytes": 1089,
-      "sha256": "2510d22c2f56d91d630c8c277ee5c84e8e4debe609a540538501d25d4838be2b"
+      "bytes": 1121,
+      "sha256": "07dded6a9598bb3e9cd0b71556d51bc4035b32e5ed7605122bf06dbb60b172e0"
     },
     {
       "path": "fixtures/storybook/114-20-11-powloka-mobilna.json",
@@ -9713,8 +9713,8 @@
     },
     {
       "path": "fixtures/storybook/230-18-11-data-decision-workspace.json",
-      "bytes": 964,
-      "sha256": "6955be952590a33b28450b21bc2df7c0db932dee7a4f8c48fc4f6c12e43487fc"
+      "bytes": 1090,
+      "sha256": "f737b2d0c43ba272b713f9e17852b462a4b90fa69262c1735bb824eab3a4c9e0"
     },
     {
       "path": "fixtures/storybook/230-50-12-ai-action-approval.json",
@@ -10678,8 +10678,8 @@
     },
     {
       "path": "rejestry/documents.csv",
-      "bytes": 67131,
-      "sha256": "af31b562bd22b1f5b1f5a2f47bea816ae479bf1cf749ba8ac86aed3649d5c6b0"
+      "bytes": 67262,
+      "sha256": "7ae79c9ea66444654bb1474169c94344c5aaf59f8e6cff25cdcb19e5462d2030"
     },
     {
       "path": "rejestry/entities.csv",
@@ -10713,8 +10713,8 @@
     },
     {
       "path": "rejestry/storybook.csv",
-      "bytes": 157859,
-      "sha256": "f7d60ce954bf5efba2d67e7dcd45abfe4d7b0effce77cc33006c4e15a3761fb6"
+      "bytes": 158485,
+      "sha256": "a6aa9105717d862d2641276fab36b33a1ea146a620308e67f37b9c5548557709"
     },
     {
       "path": "rejestry/ui-actions.csv",
@@ -10738,8 +10738,8 @@
     },
     {
       "path": "scripts/check-cross-cutting-patterns-v1.mjs",
-      "bytes": 13074,
-      "sha256": "9ad9727ba72779e06b0797cfd2ab6ab5f7966f4c4523e11ff6d0734d025e483c"
+      "bytes": 13874,
+      "sha256": "2f423061b3cbfcf36789d7b29ccc7d9c55d2292970f929029634df32b32b3f95"
     },
     {
       "path": "scripts/check-design-system-ownership.mjs",

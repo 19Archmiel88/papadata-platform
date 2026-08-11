@@ -5,14 +5,16 @@
   "screenId": null,
   "components": [
     "ChartFrame",
+    "TrendChart",
     "DataTable",
     "InlineNotice",
     "StatusBadge",
-    "Toast",
-    "Icon"
+    "Toast"
   ],
   "states": [
     "ready",
+    "chartFrameTrend",
+    "dataTableAlternative",
     "recommendationLayer",
     "assistantSidecar",
     "operationalToast"
@@ -30,7 +32,9 @@
     "pl"
   ],
   "playSteps": [
-    "verify-decision-workspace-anatomy"
+    "verify-decision-workspace-anatomy",
+    "verify-chartframe-trend",
+    "verify-datatable-alternative"
   ],
   "visualAssertions": [
     "1440-light",
@@ -43,9 +47,9 @@
   ],
   "a11y": [
     "region-name",
-    "image-label",
+    "group-label",
     "focus-visible",
     "200-percent-zoom"
   ],
-  "implementationStatus": "implemented-review-cross-cutting-pattern"
+  "implementationStatus": "implemented-accepted-cross-cutting-pattern"
 }

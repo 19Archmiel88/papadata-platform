@@ -7,18 +7,18 @@
     "EmptyState",
     "ErrorState",
     "InlineNotice",
-    "Button",
     "TextAction"
   ],
   "states": [
     "empty",
     "noResults",
-    "noData",
+    "operationalNoData",
     "error",
     "blocked",
     "forbidden",
     "missingEntitlement",
-    "retry"
+    "retry",
+    "chartDataStateHandoff"
   ],
   "viewports": [
     1440,
@@ -34,8 +34,10 @@
   ],
   "playSteps": [
     "verify-errorstate-alert",
+    "verify-alert-role-is-scoped",
     "exercise-retry-action",
-    "verify-no-access-action-name"
+    "exercise-access-request-action",
+    "exercise-entitlement-action"
   ],
   "visualAssertions": [
     "1440-light",
@@ -52,5 +54,5 @@
     "accessible-name",
     "200-percent-zoom"
   ],
-  "implementationStatus": "implemented-review-cross-cutting-pattern"
+  "implementationStatus": "implemented-accepted-cross-cutting-pattern"
 }

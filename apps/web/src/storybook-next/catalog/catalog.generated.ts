@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: e1524aaff2038899e92863df793519f95e11364da46ceb6f70c08cc69469ede6
+// SHA-256 źródła: 1d440f966eedcddf6479e5420e603918a86453297f9ed1b0bf470f49c3fed899
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -1347,10 +1347,10 @@ export const storybookCatalog = [
     "storyClass": "pattern",
     "owner": "Product UI",
     "layer": "WARSTWA II — WZORCE I POWŁOKA",
-    "note": "Storybook-only cross-cutting pattern. Composes EmptyState, ErrorState, InlineNotice, Button and TextAction for empty, no results, no data, error, blocked, forbidden, missing entitlement and retry. role=alert is limited to real ErrorState.",
+    "note": "Storybook-only cross-cutting pattern. Composes EmptyState, ErrorState, InlineNotice and TextAction for general feedback routing: empty, no results, operational no data outside charts, error, blocked, forbidden, missing entitlement and retry. Analytics data states remain owned by 15.08 ChartDataState; role=alert is limited to real ErrorState.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "review",
+    "documentationStatus": "accepted",
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
@@ -1359,21 +1359,23 @@ export const storybookCatalog = [
     "requirements": [
       "empty state",
       "no results",
-      "no data",
+      "operational no data outside charts",
       "error",
       "blocked",
       "forbidden",
       "missing entitlement",
       "retry",
       "ErrorState role alert only for real error",
-      "no focus restoration claim"
+      "no focus restoration claim",
+      "handoff to 15.08 ChartDataState for analytics data states",
+      "visible actions have play-covered effects"
     ],
     "storyTitle": "18 Wzorce interfejsu/Routing feedbacku",
     "storyFile": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/FeedbackStates.stories.tsx",
     "displaySectionTitle": "Wzorce interfejsu",
     "displayTitle": "Brak danych, błędy i brak dostępu",
     "storyExport": "FeedbackStatesStory",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "18.03",
@@ -1384,10 +1386,10 @@ export const storybookCatalog = [
     "storyClass": "pattern",
     "owner": "Product UI",
     "layer": "WARSTWA II — WZORCE I POWŁOKA",
-    "note": "Storybook-only cross-cutting pattern. Composes Skeleton, Spinner, loading Button, BackgroundOperationItem, ProgressIndicator and InlineNotice for loading and background operations. Live/status semantics come from real loading/progress components only.",
+    "note": "Storybook-only cross-cutting pattern. Composes Skeleton, Spinner, loading Button, BackgroundOperationItem, ProgressIndicator and InlineNotice for loading and background operations. Live/status semantics come from real loading/progress components only; cancel and retry actions have play-covered local effects.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "review",
+    "documentationStatus": "accepted",
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
@@ -1400,6 +1402,7 @@ export const storybookCatalog = [
       "partial completion",
       "cancelled",
       "retry",
+      "cancel action",
       "Skeleton",
       "Spinner role status",
       "Button loading",
@@ -1411,7 +1414,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Wzorce interfejsu",
     "displayTitle": "Ładowanie i operacje w tle",
     "storyExport": "LoadingOperationsStory",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "18.04",
@@ -1422,10 +1425,10 @@ export const storybookCatalog = [
     "storyClass": "pattern",
     "owner": "Product UI",
     "layer": "WARSTWA II — WZORCE I POWŁOKA",
-    "note": "Storybook-only cross-cutting pattern. Uses FilterBar, SearchField, Select, SortControl, DataTable, StatusBadge, Button and TextAction. Search, filter, sort and row action are real story state; caller-owned bulk count is explicit and no checkbox row selection is claimed.",
+    "note": "Storybook-only cross-cutting pattern. Uses FilterBar, SearchField, Select, SortControl, SegmentedControl, Checkbox, DataTable, StatusBadge and Button. Search, filter, sort, row action, density and column visibility are real story state; selected count is caller-owned and checkbox selection comes from DataTable.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "review",
+    "documentationStatus": "accepted",
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
@@ -1436,6 +1439,8 @@ export const storybookCatalog = [
       "SearchField",
       "Select",
       "SortControl",
+      "SegmentedControl",
+      "Checkbox",
       "DataTable canonical surface",
       "StatusBadge",
       "search state",
@@ -1443,14 +1448,15 @@ export const storybookCatalog = [
       "sort state",
       "row action state",
       "caller-owned selected count",
-      "no fake checkbox row selection"
+      "DataTable checkbox selection",
+      "column visibility"
     ],
     "storyTitle": "18 Wzorce interfejsu/Tabela z filtrami i akcjami",
     "storyFile": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/FilteredTableActions.stories.tsx",
     "displaySectionTitle": "Wzorce interfejsu",
     "displayTitle": "Tabela z filtrami i akcjami",
     "storyExport": "FilteredTableActionsStory",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "18.05",
@@ -1527,7 +1533,7 @@ export const storybookCatalog = [
     "note": "Storybook-only cross-cutting pattern. Uses Drawer as the semantic detail layer and Tabs for details, evidence and recommendation. Escape close and focus restoration are covered by the story play path.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "review",
+    "documentationStatus": "accepted",
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
@@ -1550,7 +1556,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Wzorce interfejsu",
     "displayTitle": "Panele szczegółów i rekomendacji",
     "storyExport": "DetailEvidenceRecommendationPanelsStory",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "18.08",
@@ -1561,10 +1567,10 @@ export const storybookCatalog = [
     "storyClass": "pattern",
     "owner": "Product UI",
     "layer": "WARSTWA II — WZORCE I POWŁOKA",
-    "note": "Storybook-only cross-cutting pattern. Shows cross-domain readiness with StatusBadge, InlineNotice and separator lists. Analytics chart data states remain owned by 15.08 ChartDataState; analytics-system-v1.json is unchanged.",
+    "note": "Storybook-only cross-cutting pattern. Shows cross-domain operational readiness with StatusBadge, InlineNotice and separator lists. Analytics chart data states remain owned by 15.08 ChartDataState; analytics-system-v1.json is unchanged.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "review",
+    "documentationStatus": "accepted",
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
@@ -1573,9 +1579,9 @@ export const storybookCatalog = [
     "requirements": [
       "ready",
       "syncing",
-      "delayed",
-      "partial",
-      "stale",
+      "operational delayed",
+      "operational partial",
+      "operational stale",
       "blocked",
       "unavailable",
       "action required",
@@ -1588,7 +1594,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Wzorce interfejsu",
     "displayTitle": "Gotowość i status danych",
     "storyExport": "DataReadinessStatusStory",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "18.09",
@@ -1671,32 +1677,34 @@ export const storybookCatalog = [
     "storyClass": "pattern",
     "owner": "Product UI",
     "layer": "WARSTWA II — WZORCE I POWŁOKA",
-    "note": "Produktowy wzorzec decyzji po decyzji Brand Atmosphere: dane, rekomendacja, sidecar Papa Asystenta i toast. Konsumuje zasady powierzchni z 00.",
+    "note": "Produktowy wzorzec decyzji: ChartFrame z TrendChart, alternatywa DataTable, rekomendacja, sidecar Papa Asystenta, InlineNotice i Toast. Konsumuje zasady powierzchni z 00, wykresy z 15 i workflow tabeli z 18.04.",
     "group": "Decision workspace",
     "sourceStatus": "specified",
-    "documentationStatus": "review",
+    "documentationStatus": "accepted",
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "requirements": [
-      "application canvas",
+      "ChartFrame",
+      "TrendChart",
+      "DataTable alternative",
       "data surface",
       "recommendation panel",
+      "InlineNotice ownership boundary",
       "Papa Assistant sidecar",
-      "toast",
+      "Toast",
       "no scrim",
-      "light mode",
-      "dark mode",
-      "surface hierarchy from 00"
+      "surface hierarchy from 00",
+      "handoff to 15 and 18.04"
     ],
     "storyTitle": "18 Wzorce interfejsu/DataDecisionWorkspace",
     "storyFile": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DataDecisionWorkspace.stories.tsx",
     "displaySectionTitle": "Wzorce interfejsu",
     "displayTitle": "DataDecisionWorkspace",
     "storyExport": "DataDecisionWorkspaceStory",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "25.01",

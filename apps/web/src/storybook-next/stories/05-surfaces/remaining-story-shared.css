@@ -65,3 +65,38 @@
   font-family: var(--pd-font-mono);
   font-size: var(--pd-type-size-caption);
 }
+
+
+/* PapaData 05 decision-lab canvas polish. */
+.pd-s5-page {
+  background: transparent;
+}
+
+.pd-s5-page .pd-f0-variant {
+  align-items: start;
+}
+
+.pd-s5-page .pd-f0-variant__body {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.pd-s5-page :where(
+  .pd-s5-auth-matrix,
+  .pd-s5-shell-grid,
+  .pd-s5-data-grid,
+  .pd-s5-gradient-grid,
+  .pd-s5-next-decisions
+) {
+  max-inline-size: 100%;
+  overflow-x: clip;
+}
+
+.pd-s5-page :where(article, section, div) {
+  min-inline-size: 0;
+}
+
+:root[data-density="compact"] .pd-s5-page,
+.pd-storybook-canvas[data-density="compact"] .pd-s5-page {
+  --pd-s5-density-gap: var(--pd-space-4);
+}

@@ -1,9 +1,56 @@
 /*
  * PapaData Storybook: 00 Fundamenty / Dostępność systemowa.
  *
- * Układ demonstracyjny dla runtime `Select`.
- * Ten plik nie styluje anatomii ani stanów komponentu Select.
+ * Układ demonstracyjny dla kontraktu dostępności komponentów.
+ * Ten plik nie styluje anatomii ani stanów runtime `Select`.
  */
+
+.pd-f0-accessibility-behavior-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--pd-space-4);
+  min-width: 0;
+}
+
+.pd-f0-accessibility-behavior-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--pd-space-3);
+  min-width: 0;
+  padding-block: var(--pd-space-4);
+  border-block-start: 1px solid var(--pd-separator);
+  color: var(--pd-text-secondary);
+}
+
+.pd-f0-accessibility-behavior-card svg {
+  color: var(--pd-data-accent);
+}
+
+.pd-f0-accessibility-behavior-card h3 {
+  margin: 0;
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-body);
+  font-weight: var(--pd-font-weight-semibold);
+  line-height: var(--pd-line-height-tight);
+}
+
+.pd-f0-accessibility-behavior-card p {
+  margin: var(--pd-space-2) 0 0;
+  font-size: var(--pd-type-size-body-small);
+  line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-f0-accessibility-behavior-card code {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  margin-block-start: var(--pd-space-3);
+  color: var(--pd-text);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+  overflow-wrap: anywhere;
+}
 
 .pd-f0-accessibility-select-demo {
   display: grid;
@@ -61,5 +108,28 @@
   .pd-f0-accessibility-feedback p + p {
     border-top: 1px solid var(--pd-separator-subtle);
     border-left: 0;
+  }
+}
+
+
+.pd-f0-accessibility-select-demo {
+  max-inline-size: 760px;
+  padding-block: var(--pd-space-4);
+  border-block: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-f0-accessibility-select-control {
+  width: min(100%, 460px);
+}
+
+@media (max-width: 1160px) {
+  .pd-f0-accessibility-behavior-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .pd-f0-accessibility-behavior-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

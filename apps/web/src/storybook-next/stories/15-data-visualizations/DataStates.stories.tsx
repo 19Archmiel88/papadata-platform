@@ -217,7 +217,7 @@ const meta = {
     docs: {
       description: {
         component:
-          '15.08 jest właścicielem wspólnego języka stanów danych dla ChartFrame i wizualizacji: ładowanie, pusty wynik, brak danych, dane częściowe, dane nieaktualne, dane opóźnione, blokada, błąd i niedostępność.',
+          '15.08 jest właścicielem analitycznego języka stanów danych dla ChartFrame i wizualizacji. Wygląd ogólnych komunikatów, badge’y i toastów pozostaje w 00 / Powierzchnie i komunikaty.',
       },
     },
   },
@@ -249,13 +249,13 @@ export const DataStatesStory: Story = {
       sectionLabel="Wykresy i dane"
       storyId="15.08"
       /* Validator marker: Nie tworzymy osobnych stanów per wykres. */
-      summary="Jeden spójny system stanów dla ChartFrame i wizualizacji analitycznych. Nie tworzymy osobnych stanów dla każdego wykresu."
+      summary="Jeden spójny system stanów analitycznych dla ChartFrame i wizualizacji. Nie tworzymy osobnych stanów dla każdego wykresu ani prywatnego systemu komunikatów."
       title="Stany danych"
     >
       <StoryPresentationSection
         index="01"
-        summary="Pełny słownik: ładowanie, pusty wynik, brak danych, dane częściowe, dane nieaktualne, dane opóźnione, blokada, błąd i niedostępność."
-        title="Wspólny język stanów"
+        summary="Analityczny słownik: ładowanie, pusty wynik, brak danych, dane częściowe, dane nieaktualne, dane opóźnione, blokada, błąd i niedostępność."
+        title="Analityczny język stanów danych"
       >
         <StateLanguageMatrix />
       </StoryPresentationSection>

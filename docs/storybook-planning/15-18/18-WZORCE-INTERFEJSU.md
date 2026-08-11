@@ -8,7 +8,7 @@ Owner: `Product UI`
 
 ## Cel sekcji
 
-Sekcja pokazuje jak istniejace komponenty skladaja sie w powtarzalne zachowania produktu. Nie tworzy nowych prymitywow wizualnych, jesli istnieja juz w sekcji 10 lub 15.
+Sekcja pokazuje jak istniejace komponenty skladaja sie w powtarzalne zachowania produktu. Nie tworzy nowych prymitywow wizualnych, jesli istnieja juz w sekcji 00 lub 15.
 
 Kazdy wzorzec musi miec jednego ownera i byc niezalezny od konkretnej domeny biznesowej.
 
@@ -28,7 +28,7 @@ Powinien pokazac:
 
 Nie zawiera topbara ani sidebara aplikacji - to nalezy do 20.
 
-## 18.02 - Empty, error i no-access
+## 18.02 - Routing feedbacku
 
 Wlasciciel koncowych stanow uzytkownika i recovery.
 
@@ -67,8 +67,8 @@ Rozdziela page loading od lokalnego loadingu komponentu.
 To PATTERN kompozycyjny, nie nowy DataTable.
 
 Konsumuje:
-- DataTable z 10.07;
-- FilterBar / kontrolki z 10;
+- runtime DataTable;
+- akcje, pola i kontrolki zgodne z 00;
 - Pagination;
 - selection;
 - bulk actions;
@@ -137,7 +137,7 @@ Powinien pokazac:
 
 Nie definiuje ponownie wygladu EvidencePanel/RecommendationCard.
 
-## 18.08 - Status danych i readiness
+## 18.08 - Readiness operacyjny
 
 Wlasciciel komunikacji gotowosci danych na poziomie WIDOKU lub WORKFLOW.
 
@@ -154,7 +154,7 @@ Zakres:
 
 Granica z 15.08:
 - `15.08` okresla rendering analitycznego komponentu;
-- `18.08` okresla komunikat, akcje i konsekwencje dla calego procesu/widoku.
+- `18.08` okresla gotowość operacyjną procesu/widoku przez użycie `StatusBadge` i `InlineNotice` z 00; nie tworzy drugiego słownika statusów.
 
 ## 18.09 - Formularze zlozone i kreatory
 
@@ -173,7 +173,7 @@ Zakres:
 - partial failure;
 - resume flow.
 
-Konsumuje pola i kontrolki z 10. Nie implementuje nowych inputow.
+Konsumuje pola i kontrolki zgodne z 00.15. Nie implementuje nowych inputow.
 
 ## 18.10 - Macierz stanow przekrojowych
 

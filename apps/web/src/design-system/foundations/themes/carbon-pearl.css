@@ -6,12 +6,12 @@
       ellipse 72% 62% at -12% 22%,
       color-mix(
         in srgb,
-        var(--pd-brand-ambient) 88%,
+        var(--pd-brand-ambient) 54%,
         transparent
       ) 0%,
       color-mix(
         in srgb,
-        var(--pd-brand-ambient) 34%,
+        var(--pd-brand-ambient) 18%,
         transparent
       ) 48%,
       transparent 82%
@@ -20,12 +20,12 @@
       ellipse 78% 68% at 108% 6%,
       color-mix(
         in srgb,
-        var(--pd-data-accent-subtle) 66%,
+        var(--pd-data-accent-subtle) 42%,
         transparent
       ) 0%,
       color-mix(
         in srgb,
-        var(--pd-data-accent-subtle) 24%,
+        var(--pd-data-accent-subtle) 14%,
         transparent
       ) 52%,
       transparent 84%
@@ -34,7 +34,7 @@
       ellipse 58% 48% at 86% 104%,
       color-mix(
         in srgb,
-        var(--pd-data-accent-subtle) 24%,
+        var(--pd-data-accent-subtle) 12%,
         transparent
       ) 0%,
       transparent 78%
@@ -162,17 +162,19 @@
 [data-theme="light"] {
   color-scheme: light;
 
-  --pd-canvas: #f4f1ea;
+  --pd-canvas: #f5f7fa;
 
-  --pd-surface: #fcfdff;
-  --pd-surface-subtle: #edf3f8;
+  --pd-surface: #fbfcfe;
+  --pd-surface-subtle: #eef3f7;
   --pd-surface-raised: #ffffff;
+  --pd-surface-soft: color-mix(in srgb, var(--pd-surface) 78%, var(--pd-canvas));
+  --pd-surface-sunken: #eef2f6;
   --pd-surface-overlay: rgba(252, 253, 255, 0.96);
-  --pd-surface-active: #e4edfb;
-  --pd-surface-data: #f7fbff;
+  --pd-surface-active: #e7eef9;
+  --pd-surface-data: #f8fbff;
   --pd-surface-panel: #ffffff;
 
-  --pd-separator-subtle: #e2eaf3;
+  --pd-separator-subtle: #dfe7ef;
   --pd-separator: #cbd8e6;
   --pd-separator-strong: #a9b9cc;
 
@@ -192,13 +194,13 @@
   --pd-brand-highlight: #c77a22;
   --pd-brand-accent: #a96012;
   --pd-brand-line: #b66d19;
-  --pd-brand-ambient: rgba(169, 96, 18, 0.18);
+  --pd-brand-ambient: rgba(169, 96, 18, 0.11);
   --pd-brand-on: #fff7e8;
   --pd-brand-action: #8f510d;
   --pd-brand-action-hover: #744009;
   --pd-brand-action-active: #512b06;
   --pd-brand-action-on: #fff7e8;
-  --pd-brand-glow: rgba(169, 96, 18, 0.18);
+  --pd-brand-glow: rgba(169, 96, 18, 0.13);
 
   --pd-data-accent: #008aa3;
   --pd-data-accent-hover: #04748a;
@@ -261,6 +263,8 @@
   --pd-surface: #0d141d;
   --pd-surface-subtle: #121c28;
   --pd-surface-raised: #1a2635;
+  --pd-surface-soft: color-mix(in srgb, var(--pd-surface) 70%, var(--pd-canvas));
+  --pd-surface-sunken: #0a1118;
   --pd-surface-overlay: rgba(28, 41, 57, 0.97);
   --pd-surface-active: #203854;
   --pd-surface-data: #102637;

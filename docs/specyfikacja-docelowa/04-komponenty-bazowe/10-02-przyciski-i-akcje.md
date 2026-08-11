@@ -11,7 +11,7 @@ updated_at: 2026-08-06T20:27:00+01:00
 # Przyciski i akcje
 
 ## Source of truth i semantyka akcji
-Publiczne React API jest własnością runtime w `apps/web/src/design-system/components/Button`. Podział odpowiedzialności jest jednoznaczny: `Button` = command/submit, `TextAction` = lekka komenda, `LinkAction` = nawigacja przez `<a href>`, `IconButton` = komenda ikonowa. `Button` nie ma wariantu `link`.
+Publiczne React API jest własnością runtime w `apps/web/src/design-system/components/Button`. Aktywnym ownerem Storybooka jest `00.14 — Przyciski i akcje`. Podział odpowiedzialności jest jednoznaczny: `Button` = command/submit, `TextAction` = lekka komenda, `LinkAction` = nawigacja przez `<a href>`, `IconButton` = komenda ikonowa. `Button` nie ma wariantu `link`.
 
 ## Metadane
 
@@ -27,15 +27,15 @@ Publiczne React API jest własnością runtime w `apps/web/src/design-system/com
 | Właściciel | Design System |
 | Moduł | Komponenty bazowe — M02 |
 | Status implementacji | IMPLEMENTED |
-| Status Storybooka | `10 Komponenty bazowe/Przyciski i akcje` → `Przyciski` |
+| Status Storybooka | `00 Fundamenty/05 Akcje i wejścia/Przyciski i akcje` → `Przyciski` |
 | Plik Storybooka | `apps/web/src/design-system/components/Button/Button.stories.tsx` |
 | Status testów | PASSING — play test + statyczny kontrakt prezentacji |
 
 ## Cel i decyzja docelowa
 
-Rodzina 10.02 jest jedynym źródłem produkcyjnych akcji PapaData. Laboratorium decyzji, ekrany i kolejne stories używają tych komponentów bez lokalnego zmieniania ich koloru, geometrii, typografii, focusu ani znacznika aktywności.
+Runtime rodziny akcji jest jedynym źródłem produkcyjnych akcji PapaData, a `00.14` jest jedyną aktywną prezentacją Storybooka. Laboratorium decyzji, ekrany i kolejne stories używają tych komponentów bez lokalnego zmieniania ich koloru, geometrii, typografii, focusu ani znacznika aktywności.
 
-Story 10.02 nie ma własnego canvasu, drabiny typograficznej ani układu strony. Dziedziczy wspólną prezentację z jednego źródła prawdy:
+Story `00.14` nie ma własnego canvasu, drabiny typograficznej ani układu strony. Dziedziczy wspólną prezentację z jednego źródła prawdy:
 
 - `apps/web/src/storybook-next/presentation/StoryPresentation.tsx`;
 - `apps/web/src/storybook-next/presentation/story-presentation.css`;
@@ -141,7 +141,7 @@ Wymagane i wdrożone kontrole:
 
 - tło, typografia i geometria strony są identyczne z zaakceptowanymi Fundamentami;
 - wygląd przycisków poza korektą kreski nie został zmieniony;
-- Laboratorium korzysta z produkcyjnych komponentów 10.02 bez lokalnych override’ów;
+- Laboratorium korzysta z produkcyjnych komponentów akcji bez lokalnych override’ów;
 - wszystkie testy statyczne i runtime przechodzą;
 - light/dark, PL/EN, desktop, reflow, zoom 200% i reduced motion nie tworzą odchyłów;
 - użytkownik zaakceptował końcowy wygląd story.

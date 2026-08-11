@@ -1,7 +1,7 @@
 {
-  "fixtureId": "SB-010",
-  "storyTitle": "10 Komponenty bazowe/Przyciski i akcje",
-  "sourceDocument": "04-komponenty-bazowe/10-02-przyciski-i-akcje.md",
+  "fixtureId": "SB-005",
+  "storyTitle": "00 Fundamenty/05 Akcje i wejścia/Przyciski i akcje",
+  "sourceDocument": "01-fundamenty/00-14-przyciski-i-akcje.md",
   "screenId": null,
   "components": [
     "Button",

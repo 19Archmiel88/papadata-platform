@@ -30,6 +30,24 @@
     0 0 0 1px var(--pd-form-accent);
 }
 
+
+/* PapaData focus polish — one visible ring belongs to the composite shell. */
+.pd-select__trigger-shell:focus-within {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: var(--pd-focus-offset);
+  box-shadow: 0 0 0 var(--pd-focus-ring-size) var(--pd-form-ring);
+}
+
+.pd-select__trigger:focus,
+.pd-select__trigger:focus-visible {
+  outline: 0;
+  box-shadow: none;
+}
+
+.pd-select__trigger-shell[data-open='true']:focus-within {
+  outline-color: var(--pd-focus-visible);
+}
+
 .pd-select__trigger {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

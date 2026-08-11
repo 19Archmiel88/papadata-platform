@@ -1,22 +1,21 @@
 {
-  "fixtureId": "SB-110",
-  "storyTitle": "18 Wzorce interfejsu/Readiness operacyjny",
-  "sourceDocument": "21-stany-przekrojowe/18-08-status-danych-i-readiness.md",
+  "fixtureId": "SB-230",
+  "storyTitle": "18 Wzorce interfejsu/DataDecisionWorkspace",
+  "sourceDocument": "21-stany-przekrojowe/18-11-data-decision-workspace.md",
   "screenId": null,
   "components": [
+    "ChartFrame",
+    "DataTable",
+    "InlineNotice",
     "StatusBadge",
-    "InlineNotice"
+    "Toast",
+    "Icon"
   ],
   "states": [
     "ready",
-    "syncing",
-    "delayed",
-    "partial",
-    "stale",
-    "blocked",
-    "unavailable",
-    "actionRequired",
-    "chartDataStateHandoff"
+    "recommendationLayer",
+    "assistantSidecar",
+    "operationalToast"
   ],
   "viewports": [
     1440,
@@ -31,8 +30,7 @@
     "pl"
   ],
   "playSteps": [
-    "verify-readiness-list",
-    "verify-chartdatastate-handoff"
+    "verify-decision-workspace-anatomy"
   ],
   "visualAssertions": [
     "1440-light",
@@ -40,12 +38,12 @@
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "separator-list-readiness",
+    "decision-workspace-consumes-00",
     "no-horizontal-page-scroll"
   ],
   "a11y": [
-    "list-name",
-    "status-badge-text",
+    "region-name",
+    "image-label",
     "focus-visible",
     "200-percent-zoom"
   ],

@@ -115,7 +115,7 @@ Formalne WCAG AA nie jest bramą biznesową tego etapu. Nadal wymagane są popra
 - Pełna kompozycja używa istniejących `SegmentedControl`, `TextAction` i `DataTable`.
 - Story pokazuje gotową kompozycję zarówno z filtrem, jak i bez filtra; filtr jest slotem caller-a, nie powierzchnią wewnątrz ChartFrame.
 - Wartości walutowe, procentowe i świeżość danych w fixture są formatowane przez Foundation runtime.
-- `Tabela danych` konsumuje ikonę `data`, a `Wyjaśnij z Papa` ikonę `assistant` z 10.11; widoczna etykieta pozostaje nazwą akcji.
+- `Tabela danych` konsumuje ikonę `data`, a `Wyjaśnij z Papa` ikonę `assistant` z `00.13`; widoczna etykieta pozostaje nazwą akcji.
 - Play test sprawdza akcję Papa, źródła, zmianę filtra, otwarcie alternatywnej tabeli oraz recovery dla `noData`.
 - Light/dark, 1440, tablet, mobile i długi copy są elementami odbioru wizualnego.
 

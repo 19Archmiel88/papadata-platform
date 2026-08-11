@@ -38,7 +38,7 @@ updated_at: 2026-08-08T21:09:00+01:00
 
 - Porównania kategorii, ranking, benchmark i period comparison należą do `15.04 / ComparisonChart`.
 - Czas ciągły należy do `15.03 / TrendChart`.
-- Dokładne rekordy, sortowanie i row actions należą do `10.07 / DataTable`.
+- Dokładne rekordy, sortowanie i row actions należą do runtime `DataTable` oraz wzorca workflow `18.04`.
 - Hover, tooltip, selection, drill-down i cross-filtering należą do `15.09`.
 - Pełna macierz stanów danych należy do `15.08`.
 

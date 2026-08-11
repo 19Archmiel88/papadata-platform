@@ -11,7 +11,7 @@ updated_at: 2026-08-07T00:00:00+02:00
 # Powierzchnie danych
 
 ## Rola Laboratorium i handoff
-`05.03` porównuje archetypy powierzchni danych. Nie jest trwałym właścicielem `MetricCard`, `ChartFrame`, `DataTable`, panelu szczegółów, dowodów ani rekomendacji. Po akceptacji odpowiedzialności są promowane odpowiednio do warstw `10 / 15 / 18`.
+`05.03` porównuje archetypy powierzchni danych. Nie jest trwałym właścicielem `MetricCard`, `ChartFrame`, `DataTable`, panelu szczegółów, dowodów ani rekomendacji. Po akceptacji odpowiedzialności są promowane odpowiednio do warstw `00 / 15 / 18`.
 
 ## Metadane
 
@@ -41,7 +41,7 @@ Panel istnieje tylko wtedy, gdy ma własną rolę, stan albo cykl interakcji. St
 2. Handoff KPI do `15.02 MetricCard`.
 3. Rodziny wykresów.
 4. Handoff ChartFrame do `15.01 ChartFrame`.
-5. Użycie `10.07 DataTable` i handoff warstw tabeli.
+5. Użycie runtime `DataTable` i handoff workflow tabeli do `18.04`.
 6. Stany powierzchni konsumujące kanoniczny model statusu.
 7. Panele robocze w kontekście.
 8. Decyzja i antyprzykład.
@@ -64,7 +64,7 @@ Pełny kontener został promowany do `15.01 ChartFrame`. 05.03 nie renderuje lok
 
 ## Tabela — handoff i użycie
 
-Bazowym ownerem tabeli jest `10.07 DataTable`. 05.03 konsumuje ten komponent bez lokalnego silnika `<table>`, bez własnego `DataSurfaceSelect`, bez własnej paginacji, wyboru kolumn, gęstości, filtrowania i mechanizmu zaznaczeń.
+Bazowy `DataTable` pozostaje runtime komponentem, a aktywnym ownerem workflow tabeli w Storybooku jest `18.04`. 05.03 konsumuje ten komponent bez lokalnego silnika `<table>`, bez własnego `DataSurfaceSelect`, bez własnej paginacji, wyboru kolumn, gęstości, filtrowania i mechanizmu zaznaczeń.
 
 Laboratorium pokazuje jedynie kontekst użycia tabeli oraz warstwy uruchamiane z akcji rekordu:
 
@@ -108,7 +108,7 @@ BRAK DECYZJI W DOKUMENTACJI: określenie „wykres kwadratowy” nie identyfikuj
 - archetyp pełnego `ChartFrame` został promowany do `15.01`; 05.03 nie utrzymuje drugiej implementacji;
 - warianty KPI i lokalny `KpiSparkline` zostały promowane do `15.02 MetricCard`; 05.03 nie utrzymuje drugiego katalogu KPI;
 - rodziny wykresów pozostają decyzją laboratoryjną do czasu implementacji `15.03–15.07`;
-- bazowa tabela jest konsumowana z `10.07 DataTable`; workflow filtrów, paginacji, akcji i detail należy do `18.04`;
+- bazowa tabela jest konsumowana jako runtime `DataTable`; workflow filtrów, paginacji, akcji i detail należy do `18.04`;
 - stany danych konsumują kanoniczny `StatusBadge` i mapowanie Analytics; docelowe zachowanie rodzin danych pozostaje do promocji w `15.08`;
 - warstwy szczegółów/dowodów/rekomendacji pozostają decision recordem do czasu handoffu do `18.07`.
 

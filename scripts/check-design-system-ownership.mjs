@@ -11,7 +11,7 @@ const componentSystem = readJson('apps/web/src/design-system/component-system-v1
 const contract = getContract();
 const entries = new Map(contract.entries.map((entry) => [entry.id, entry]));
 
-ensure(componentSystem.stage === 'C2.1', 'Component System must declare C2.1 ownership alignment.');
+ensure(componentSystem.stage === 'C2.2', 'Component System must declare C2.2 ownership alignment.');
 ensure(
   componentSystem.ownershipContract === 'docs/storybook/SOURCE-OF-TRUTH-OWNERSHIP.md',
   'Missing canonical ownership contract path.',
@@ -24,7 +24,7 @@ ensure(
 const ownership = readText(componentSystem.ownershipContract);
 for (const marker of [
   'Fundamenty (`00`)',
-  'Komponenty bazowe (`10`)',
+  'Zaakceptowane elementy bazowe (`00.12–00.15`)',
   'Laboratorium decyzji (`05`)',
   'contracts/components/*.ts',
   'decision recordem',
@@ -38,8 +38,36 @@ for (const component of componentSystem.requiredComponents) {
   ensure(runtimeRegistry.includes(`${component},`), `Runtime API registry missing ${component}.`);
 }
 
+for (const [
+  component,
+  storyId,
+  status,
+] of [
+  ['PapaDataBrand', '00.12', 'accepted'],
+  ['Icon', '00.13', 'accepted'],
+  ['Button', '00.14', 'accepted'],
+  ['TextAction', '00.14', 'accepted'],
+  ['LinkAction', '00.14', 'accepted'],
+  ['IconButton', '00.14', 'accepted'],
+  ['ButtonGroup', '00.14', 'accepted'],
+  ['TextField', '00.15', 'review'],
+  ['PasswordField', '00.15', 'review'],
+  ['Textarea', '00.15', 'review'],
+  ['FileInput', '00.15', 'review'],
+  ['VerificationCodeInput', '00.15', 'review'],
+]) {
+  const row = runtimeRegistry
+    .split('\n')
+    .find((line) => line.startsWith(`${component},`));
+
+  ensure(
+    row?.includes(`,${storyId},${status},Design System`),
+    `${component}: runtime API registry must point to active 00 owner ${storyId}.`,
+  );
+}
+
 const storybookRegistry = readText('rejestry/storybook.csv');
-for (const title of ['10 Komponenty bazowe/Marka', '10 Komponenty bazowe/Ikony']) {
+for (const title of ['00 Fundamenty/03 Marka', '00 Fundamenty/04 Ikony']) {
   const row = storybookRegistry.split('\n').find((line) => line.startsWith(`${title},`));
   ensure(row?.includes(',implemented,'), `${title}: registry must reflect the implemented story.`);
 }
@@ -76,11 +104,11 @@ for (const path of storySources) {
 const foundationStory = readText(storySources[0]);
 ensure(foundationStory.includes('SemanticStatusTone'), '00.04 must own semantic status tone without importing component tone.');
 ensure(!foundationStory.includes('StatusBadgeTone'), 'Foundation must not depend on component StatusBadgeTone.');
-ensure(foundationStory.includes('10.11 — Ikony'), '00.09 must hand the full icon catalogue to 10.11.');
+ensure(foundationStory.includes('00.13 — Ikony'), '00.09 must hand the full icon catalogue to 00.13.');
 ensure(!foundationStory.includes('foundationProjectGraphics'), '00.09 must not keep a duplicate full icon catalogue.');
 ensure(
   !existsSync(resolveFromRoot('apps/web/src/storybook-next/stories/00-foundations/foundation-iconography-project-catalog.css')),
-  '00.09 legacy full-catalogue CSS must be removed after handoff to 10.11.',
+  '00.09 legacy full-catalogue CSS must be removed after handoff to 00.13.',
 );
 
 const buttonSource = readText('apps/web/src/design-system/components/Button/Button.tsx');
@@ -88,9 +116,9 @@ const iconButtonSource = readText('apps/web/src/design-system/components/Button/
 const buttonStory = readText('apps/web/src/design-system/components/Button/Button.stories.tsx');
 ensure(!buttonSource.includes("'link'"), 'Button runtime must not own navigation/link variant.');
 ensure(!buttonSource.includes('buttonType'), 'Button runtime must use native type as the single submit/command source.');
-ensure(!buttonStory.includes("variant: 'link'"), '10.02 story must not document Button link variant.');
-ensure(buttonStory.includes('LinkAction'), '10.02 must demonstrate LinkAction as navigation owner.');
-ensure(buttonStory.includes('TextAction'), '10.02 must demonstrate TextAction as lightweight command owner.');
+ensure(!buttonStory.includes("variant: 'link'"), '00.14 story must not document Button link variant.');
+ensure(buttonStory.includes('LinkAction'), '00.14 must demonstrate LinkAction as navigation owner.');
+ensure(buttonStory.includes('TextAction'), '00.14 must demonstrate TextAction as lightweight command owner.');
 ensure(/readonly label: string;/.test(iconButtonSource), 'IconButton must require an explicit accessible label.');
 ensure(!iconButtonSource.includes('?? icon'), 'IconButton must not fall back to a technical icon name.');
 
@@ -107,11 +135,11 @@ const brandSource = readText('apps/web/src/design-system/icons/PapaDataBrand.tsx
 const brandStory = readText('apps/web/src/design-system/icons/PapaDataBrand.stories.tsx');
 ensure(!/readonly glow\??:/.test(brandSource), 'PapaDataBrand runtime must not expose decorative glow.');
 ensure(!brandSource.includes('pd-brand-lockup--glow'), 'PapaDataBrand runtime must not construct a glow variant.');
-ensure(!/\bglow\s*[=}]|glow:/.test(brandStory), '10.01 story must not expose a glow control/prop.');
+ensure(!/\bglow\s*[=}]|glow:/.test(brandStory), '00.12 story must not expose a glow control/prop.');
 
 for (const [id, expected] of [
   ['00.07', '05.04'],
-  ['00.09', '10.11'],
+  ['00.09', '00.13'],
   ['05.01', 'Access/Auth'],
   ['05.02', 'AppShell'],
   ['05.03', '15/18'],
@@ -121,9 +149,9 @@ for (const [id, expected] of [
   ensure(entries.get(id)?.note?.replaceAll(' ', '').includes(expected.replaceAll(' ', '')), `${id}: missing ownership handoff ${expected}.`);
 }
 ensure(entries.get('05.04')?.accepted === true, '05.04 accepted decision record must be marked accepted.');
-ensure(!entries.get('10.02')?.requirements?.includes('link'), '10.02 contract still claims Button link variant.');
-ensure(!entries.get('10.11')?.requirements?.includes('ProviderLogo'), '10.11 contract still claims ProviderLogo.');
-ensure(!entries.get('10.11')?.requirements?.includes('StatusIcon'), '10.11 contract still claims StatusIcon.');
+ensure(!entries.get('00.14')?.requirements?.includes('link'), '00.14 contract still claims Button link variant.');
+ensure(!entries.get('00.13')?.requirements?.includes('ProviderLogo'), '00.13 contract still claims ProviderLogo.');
+ensure(!entries.get('00.13')?.requirements?.includes('StatusIcon'), '00.13 contract still claims StatusIcon.');
 
 const labDirectory = resolveFromRoot('apps/web/src/storybook-next/stories/05-surfaces');
 ensure(!existsSync(resolveFromRoot('apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.css')), 'Legacy surfaces-laboratory.css must be removed.');

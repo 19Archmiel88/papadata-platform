@@ -280,7 +280,7 @@ function FeedbackStateMatrix() {
 }
 
 const meta = {
-  title: '18 Wzorce interfejsu/Empty, error i no-access',
+  title: '18 Wzorce interfejsu/Routing feedbacku',
   parameters: {
     layout: 'fullscreen',
     a11y: {
@@ -294,13 +294,13 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const FeedbackStatesStory: Story = {
-  name: 'Empty, error i no-access',
+  name: 'Routing feedbacku',
   render: () => (
     <StoryPresentationPage
       className="pd-x18-story"
       headerAside={(
         <StoryPresentationMeta
-          ariaLabel="Parametry wzorca stanów feedback"
+          ariaLabel="Parametry routingu feedbacku"
           items={[
             { label: 'Kontrakt', value: '18.02' },
             { label: 'Komponenty', value: 'EmptyState / ErrorState' },
@@ -311,13 +311,13 @@ export const FeedbackStatesStory: Story = {
       sectionCode="18"
       sectionLabel="Wzorce interfejsu"
       storyId="18.02"
-      summary="Wspólny język pustych stanów, błędów i braku dostępu korzysta z istniejących komponentów feedback. Alert pojawia się tylko przy rzeczywistym ErrorState."
-      title="Empty, error i no-access"
+      summary="Wzorzec wybiera właściwy element feedbacku z 00 / Powierzchnie i komunikaty. Nie definiuje drugiej biblioteki komunikatów ani stanów."
+      title="Routing feedbacku"
     >
       <StoryPresentationSection
         index="01"
-        summary="Empty, no results, no data, error, blocked, forbidden, missing entitlement i retry bez lokalnych zamienników komponentów."
-        title="Kanoniczne stany feedback"
+        summary="Macierz decyduje, kiedy użyć EmptyState, ErrorState albo InlineNotice. Kanoniczny wygląd pozostaje w 00."
+        title="Macierz routingu feedbacku"
       >
         <FeedbackStateMatrix />
       </StoryPresentationSection>
@@ -330,7 +330,7 @@ export const FeedbackStatesStory: Story = {
 
     await expect(
       canvas.getByRole('heading', {
-        name: 'Empty, error i no-access',
+        name: 'Routing feedbacku',
       }),
     ).toBeInTheDocument();
 

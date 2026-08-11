@@ -58,6 +58,10 @@ const expectedFoundationDocs = [
   '00-09-ikonografia.md',
   '00-10-motion.md',
   '00-11-dostepnosc.md',
+  '00-12-marka.md',
+  '00-13-ikony.md',
+  '00-14-przyciski-i-akcje.md',
+  '00-15-pola-tekstowe-i-formularzowe.md',
 ];
 const requiredDocumentMetadata = [
   'story_id:',

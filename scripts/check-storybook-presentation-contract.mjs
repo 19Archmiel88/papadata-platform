@@ -57,22 +57,20 @@ const localCssSources = [
   'apps/web/src/design-system/components/Field/field-family-showcase.css',
 ];
 const forbiddenSharedOverride = /\.(?:pd-f0-page|pd-f0-section)(?=[\s,:>{.#\[]|$)/;
-const forbiddenProductionOverride = /\.(?:pd-button|pd-icon-button|pd-inline-action)(?=[\s,:>{.#\[]|$)/;
-const forbiddenCrossCuttingProductionOverride = /\.(?:pd-button|pd-icon-button|pd-inline-action|pd-data-table|pd-table|pd-status-badge|pd-feedback-state|pd-feedback-surface|pd-skeleton|pd-spinner|pd-background-operation|pd-progress-indicator|pd-filter-bar|pd-search-field|pd-sort-control|pd-select|pd-drawer|pd-tabs|pd-data-list|pd-key-value-list|pd-overlay-root|pd-overlay-surface|pd-form-field|pd-form-control)(?=[\s,:>{.#\[]|$)/;
+const forbiddenProductionOverride = /\.(?:pd-button|pd-icon-button|pd-inline-action|pd-data-table|pd-table|pd-status-badge|pd-feedback-state|pd-feedback-surface|pd-skeleton|pd-spinner|pd-background-operation|pd-progress-indicator|pd-filter-bar|pd-search-field|pd-sort-control|pd-select|pd-drawer|pd-tabs|pd-data-list|pd-key-value-list|pd-overlay-root|pd-overlay-surface|pd-form-field|pd-form-control|pd-form-check|pd-verification-code)(?=[\s,:>{.#\[]|$)/;
 const forbiddenCrossCuttingLanguage = /(?:card-grid|box-card|container-card|panel-card|glassmorphism|glow|halo|blur)/;
 for (const path of localCssSources) {
   const source = readText(path);
   ensure(!forbiddenSharedOverride.test(source), `${path}: local CSS overrides shared Storybook presentation.`);
   ensure(!forbiddenProductionOverride.test(source), `${path}: showcase/lab CSS overrides a production component selector.`);
   if (path.includes('/18-cross-cutting-patterns/')) {
-    ensure(!forbiddenCrossCuttingProductionOverride.test(source), `${path}: cross-cutting CSS overrides a production component selector.`);
     ensure(!forbiddenCrossCuttingLanguage.test(source), `${path}: cross-cutting CSS uses forbidden card/tile/decorative language.`);
   }
 }
 
 const fieldCss = readText('apps/web/src/design-system/components/Field/field.css');
-ensure(fieldCss.includes('.pd-form-control > .pd-form-control__textarea:focus'), '10.03: nested field controls must suppress native inner focus treatment.');
-ensure(fieldCss.includes('outline: var(--pd-focus-width) solid var(--pd-focus-visible);'), '10.03: composite field must retain Foundation focus outline.');
+ensure(fieldCss.includes('.pd-form-control > .pd-form-control__textarea:focus'), '00.15: nested field controls must suppress native inner focus treatment.');
+ensure(fieldCss.includes('outline: var(--pd-focus-width) solid var(--pd-focus-visible);'), '00.15: composite field must retain Foundation focus outline.');
 
 const buttonSource = readText('apps/web/src/design-system/components/Button/Button.tsx');
 const iconButtonSource = readText('apps/web/src/design-system/components/Button/IconButton.tsx');
@@ -89,5 +87,5 @@ for (const [label, source, activityClass] of [
 }
 
 const contract = getContract();
-ensure(contract.entries.find((entry) => entry.id === '10.02')?.storyStatus === 'implemented', '10.02 must remain implemented.');
+ensure(contract.entries.find((entry) => entry.id === '00.14')?.storyStatus === 'implemented', '00.14 must remain implemented.');
 console.log('Storybook presentation contract OK: canonical shell + isolated local demos.');

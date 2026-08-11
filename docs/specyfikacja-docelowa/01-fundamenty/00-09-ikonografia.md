@@ -24,8 +24,8 @@ status: stage-01-accepted
 
 # Ikonografia
 
-## Source of truth i granica z 10.11
-`00.09` definiuje język ikon: geometrię, stroke, `currentColor`, rozmiary, znaczenie i reguły użycia. Pełny katalog nazw i wariantów należy wyłącznie do `10.11 — Ikony` oraz runtime `Icon`. Provider marks i logo marki są osobnymi rodzinami.
+## Source of truth i granica z 00.13
+`00.09` definiuje język ikon: geometrię, stroke, `currentColor`, rozmiary, znaczenie i reguły użycia. Pełny katalog nazw i wariantów należy wyłącznie do `00.13 — Ikony` oraz runtime `Icon`. Provider marks i logo marki są osobnymi rodzinami.
 
 ## Decyzja
 

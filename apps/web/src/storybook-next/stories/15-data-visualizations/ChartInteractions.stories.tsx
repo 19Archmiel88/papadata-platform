@@ -31,7 +31,6 @@ import {
   StoryPresentationSection,
 } from '../../../storybook-next/presentation/StoryPresentation';
 import {
-  type AnalyticsLocalizedCopy,
   Localized,
   readAnalyticsLocale as readLocale,
   Story15Page,
@@ -99,13 +98,6 @@ const interactionLabels = {
     tooltip: 'Podpowiedź danych',
   },
 } as const;
-
-function pick(
-  copy: AnalyticsLocalizedCopy,
-  locale: PapaDataRuntimeLocale,
-): string {
-  return copy[locale];
-}
 
 function buildFilters(locale: PapaDataRuntimeLocale): readonly ChartInteractionFilter[] {
   return [

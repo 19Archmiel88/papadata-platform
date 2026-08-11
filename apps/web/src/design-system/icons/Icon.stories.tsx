@@ -16,12 +16,15 @@ import {
   papaDataIconNames,
   type PapaDataIconName,
 } from './Icon';
+import type {
+  PapaDataRuntimeLocale,
+} from '../foundations';
 
 import '../../storybook-next/presentation/story-presentation.css';
 import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../storybook-next/presentation/StoryPresentation';
 
 const meta = {
-  title: '00 Fundamenty/Ikony',
+  title: '00 Fundamenty/04 Ikony',
   component: Icon,
   parameters: {
     layout: 'fullscreen',
@@ -60,6 +63,42 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
+
+type LocalizedCopy = {
+  readonly pl: string;
+  readonly en: string;
+};
+
+function readLocale(): PapaDataRuntimeLocale {
+  if (typeof document === 'undefined') {
+    return 'pl';
+  }
+
+  return document.documentElement.dataset.locale === 'en'
+    ? 'en'
+    : 'pl';
+}
+
+function readTheme(): 'light' | 'dark' {
+  if (typeof document === 'undefined') {
+    return 'light';
+  }
+
+  return document.documentElement.dataset.theme === 'dark'
+    ? 'dark'
+    : 'light';
+}
+
+function copy(value: LocalizedCopy) {
+  return readLocale() === 'en' ? value.en : value.pl;
+}
+
+function Localized({
+  pl,
+  en,
+}: LocalizedCopy) {
+  return <>{copy({ pl, en })}</>;
+}
 
 const sectionSummaryStyle = {
   margin: 0,
@@ -242,89 +281,104 @@ const catalogItemStyle = {
 } satisfies CSSProperties;
 
 const iconCategoryLabels = {
-  home: 'Strona glowna',
-  search: 'Wyszukiwanie',
-  trend: 'Trend',
-  data: 'Dane',
-  integration: 'Integracja',
-  assistant: 'Assistant',
-  security: 'Bezpieczenstwo',
-  billing: 'Rozliczenia',
-  success: 'Success',
-  warning: 'Warning',
-} satisfies Record<PapaDataIconName, string>;
+  home: { pl: 'Strona główna', en: 'Home' },
+  search: { pl: 'Wyszukiwanie', en: 'Search' },
+  trend: { pl: 'Trend', en: 'Trend' },
+  data: { pl: 'Dane', en: 'Data' },
+  integration: { pl: 'Integracja', en: 'Integration' },
+  assistant: { pl: 'Asystent', en: 'Assistant' },
+  security: { pl: 'Bezpieczeństwo', en: 'Security' },
+  billing: { pl: 'Rozliczenia', en: 'Billing' },
+  success: { pl: 'Sukces', en: 'Success' },
+  warning: { pl: 'Ostrzeżenie', en: 'Warning' },
+} satisfies Record<PapaDataIconName, LocalizedCopy>;
 
 const iconCatalogGroups: readonly {
   readonly borderColor: string;
-  readonly description: string;
+  readonly description: LocalizedCopy;
   readonly icons: readonly PapaDataIconName[];
-  readonly title: string;
+  readonly title: LocalizedCopy;
 }[] = [
   {
     borderColor: 'var(--pd-separator)',
-    description: 'Nawigacja i wyszukiwanie w strukturze produktu.',
+    description: {
+      pl: 'Nawigacja i wyszukiwanie w strukturze produktu.',
+      en: 'Navigation and search in the product structure.',
+    },
     icons: [
       'home',
       'search',
     ],
-    title: 'Nawigacja',
+    title: { pl: 'Nawigacja', en: 'Navigation' },
   },
   {
     borderColor: 'var(--pd-data-accent)',
-    description: 'Metryki, trendy i zbiory danych.',
+    description: {
+      pl: 'Metryki, trendy i zbiory danych.',
+      en: 'Metrics, trends and datasets.',
+    },
     icons: [
       'trend',
       'data',
     ],
-    title: 'Analityka',
+    title: { pl: 'Analityka', en: 'Analytics' },
   },
   {
     borderColor: 'var(--pd-brand)',
-    description: 'Połączenia, asystent i przepływy automatyzacji.',
+    description: {
+      pl: 'Połączenia, asystent i przepływy automatyzacji.',
+      en: 'Connections, assistant and automation flows.',
+    },
     icons: [
       'integration',
       'assistant',
     ],
-    title: 'Integracje',
+    title: { pl: 'Integracje', en: 'Integrations' },
   },
   {
     borderColor: 'var(--pd-interactive)',
-    description: 'Operacje konta, rozliczenia i bezpieczeństwo.',
+    description: {
+      pl: 'Operacje konta, rozliczenia i bezpieczeństwo.',
+      en: 'Account operations, billing and security.',
+    },
     icons: [
       'billing',
       'security',
     ],
-    title: 'Operacje',
+    title: { pl: 'Operacje', en: 'Operations' },
   },
   {
     borderColor: 'var(--pd-status-warning)',
-    description: 'Statusy pozytywne i ostrzegawcze.',
+    description: {
+      pl: 'Statusy pozytywne i ostrzegawcze.',
+      en: 'Positive and warning statuses.',
+    },
     icons: [
       'success',
       'warning',
     ],
-    title: 'Status',
+    title: { pl: 'Status', en: 'Status' },
   },
 ] as const;
 
 const languageRules = [
   {
-    label: 'Geometria',
+    label: { pl: 'Geometria', en: 'Geometry' },
     value: '24x24',
     token: 'viewBox="0 0 24 24"',
   },
   {
-    label: 'Linia',
+    label: { pl: 'Linia', en: 'Line' },
     value: '1.75',
     token: 'strokeWidth',
   },
   {
-    label: 'Zakończenia',
+    label: { pl: 'Zakończenia', en: 'Caps' },
     value: 'round',
     token: 'strokeLinecap',
   },
   {
-    label: 'Kolor',
+    label: { pl: 'Kolor', en: 'Color' },
     value: 'currentColor',
     token: 'inherit',
   },
@@ -364,7 +418,7 @@ function Token({
 function renderCatalogGroup(group: typeof iconCatalogGroups[number]) {
   return (
     <article
-      key={group.title}
+      key={group.title.pl}
       style={{
         ...catalogArticleStyle,
         borderTop:
@@ -372,8 +426,8 @@ function renderCatalogGroup(group: typeof iconCatalogGroups[number]) {
       }}
     >
       <header style={semanticTextStyle}>
-        <strong>{group.title}</strong>
-        <p style={bodySmallStyle}>{group.description}</p>
+        <strong>{copy(group.title)}</strong>
+        <p style={bodySmallStyle}>{copy(group.description)}</p>
       </header>
       <div style={catalogListStyle}>
         {group.icons.map((name) => (
@@ -383,7 +437,7 @@ function renderCatalogGroup(group: typeof iconCatalogGroups[number]) {
               name={name}
               size={20}
             />
-            <span>{iconCategoryLabels[name]}</span>
+            <span>{copy(iconCategoryLabels[name])}</span>
             <Token>{name}</Token>
           </span>
         ))}
@@ -442,25 +496,33 @@ export const Ikony: Story = {
       className="pd-icon-system"
       headerAside={(
         <StoryPresentationMeta
-          ariaLabel="Parametry kontraktu ikon"
+          ariaLabel={copy({
+            pl: 'Parametry kontraktu ikon',
+            en: 'Icon contract parameters',
+          })}
           items={[
-            { label: 'Geometria', value: '24×24' },
-            { label: 'Linia', value: '1.75' },
-            { label: 'Kolor', value: 'currentColor' },
+            { label: <Localized pl="Motyw" en="Theme" />, value: readTheme() === 'dark' ? <Localized pl="Ciemny" en="Dark" /> : <Localized pl="Jasny" en="Light" /> },
+            { label: <Localized pl="Język" en="Language" />, value: readLocale().toUpperCase() },
+            { label: <Localized pl="Kolor" en="Color" />, value: 'currentColor' },
           ]}
         />
       )}
-      sectionCode="10"
-      sectionLabel="Komponenty bazowe"
-      storyId="10.11"
-      summary="Pełny katalog ikon należy do komponentu Icon. Fundamenty definiują wyłącznie reguły geometrii, koloru i znaczenia."
-      title="Ikony"
+      sectionCode="00"
+      sectionLabel={<Localized pl="Fundamenty" en="Foundations" />}
+      storyId="00.13"
+      summary={
+        <Localized
+          pl="04 Ikony pokazuje publiczny komponent Icon, katalog nazw i realne zastosowania. 01 Fundamenty wizualne definiują tylko reguły geometrii, koloru i znaczenia."
+          en="04 Icons shows the public Icon component, name catalog and real usage. 01 Visual foundations define only geometry, color and meaning rules."
+        />
+      }
+      title={<Localized pl="Icon jako katalog runtime." en="Icon as the runtime catalog." />}
     >
 
         <StorySection
           index="01"
-          title="Język ikon"
-          summary="Jedna geometria i jedna grubość linii dla całego produktu."
+          title={<Localized pl="Kontrakt komponentu" en="Component contract" />}
+          summary={<Localized pl="Icon dziedziczy kolor z kontekstu i zachowuje jedną geometrię dla całego produktu." en="Icon inherits color from context and keeps one geometry for the entire product." />}
         >
           <div style={iconLanguageStyle}>
             <article style={iconLanguageSampleStyle}>
@@ -468,6 +530,7 @@ export const Ikony: Story = {
                 <Icon
                   {...args}
                   data-testid="icon-controlled"
+                  label={copy({ pl: 'Ikona kontrolowana', en: 'Controlled icon' })}
                   size={24}
                   style={previewIconStyle}
                 />
@@ -497,14 +560,16 @@ export const Ikony: Story = {
                 />
               </span>
               <p style={sectionSummaryStyle}>
-                Ikona nie niesie własnego koloru. Znaczenie wynika
-                z roli, przycisku, statusu albo kontekstu danych.
+                <Localized
+                  pl="Ikona nie niesie własnego koloru. Znaczenie wynika z roli, przycisku, statusu albo kontekstu danych."
+                  en="An icon does not carry its own color. Meaning comes from role, button, status or data context."
+                />
               </p>
             </article>
             <dl style={specListStyle}>
               {languageRules.map((rule) => (
                 <div key={rule.token} style={specRowStyle}>
-                  <dt style={specTermStyle}>{rule.label}</dt>
+                  <dt style={specTermStyle}>{copy(rule.label)}</dt>
                   <dd style={specDescriptionStyle}>
                     <strong>{rule.value}</strong>
                     <Token>{rule.token}</Token>
@@ -517,14 +582,13 @@ export const Ikony: Story = {
 
         <StorySection
           index="02"
-          title="Role semantyczne"
-          summary="Ta sama ikona może być dekoracyjna albo informacyjna, ale jej nazwa dostępna wynika z roli."
+          title={<Localized pl="Dostępność i znaczenie" en="Accessibility and meaning" />}
+          summary={<Localized pl="Ta sama ikona może być dekoracyjna albo informacyjna, ale jej nazwa dostępna wynika z roli w interfejsie." en="The same icon can be decorative or informative, but its accessible name follows its interface role." />}
         >
           <div style={semanticGridStyle}>
             {renderSemanticArticle({
-              title: 'Dekoracyjna',
-              description:
-                'Przy tekście ikona jest ukryta dla czytnika.',
+              title: <Localized pl="Dekoracyjna" en="Decorative" />,
+              description: <Localized pl="Przy tekście ikona jest ukryta dla czytnika." en="Next to text, the icon is hidden from screen readers." />,
               icon: (
                 <span
                   data-testid="icon-decorative"
@@ -545,9 +609,8 @@ export const Ikony: Story = {
             })}
 
             {renderSemanticArticle({
-              title: 'Informacyjna',
-              description:
-                'Jeśli ikona sama przekazuje stan, dostaje własną nazwę.',
+              title: <Localized pl="Informacyjna" en="Informative" />,
+              description: <Localized pl="Jeśli ikona sama przekazuje stan, dostaje własną nazwę." en="When the icon itself communicates state, it receives its own name." />,
               icon: (
                 <span
                   style={{
@@ -556,7 +619,7 @@ export const Ikony: Story = {
                   }}
                 >
                   <Icon
-                    label="Security status"
+                    label={copy({ pl: 'Status bezpieczeństwa', en: 'Security status' })}
                     name="security"
                     size={24}
                     style={previewIconStyle}
@@ -568,12 +631,11 @@ export const Ikony: Story = {
           </div>
         </StorySection>
 
-        <StorySection index="03" title="Rozmiary w realnym użyciu">
+        <StorySection index="03" title={<Localized pl="Rozmiary w realnym użyciu" en="Sizes in real use" />}>
           <div style={sizeLedgerStyle}>
             {renderSizeRow({
               title: '16 px',
-              description:
-                'Metadane, drobne etykiety i informacje pomocnicze.',
+              description: <Localized pl="Metadane, drobne etykiety i informacje pomocnicze." en="Metadata, small labels and helper information." />,
               icon: (
                 <>
                   <Icon
@@ -583,14 +645,13 @@ export const Ikony: Story = {
                     style={{ color: 'var(--pd-data-accent)' }}
                   />
                   <span>CRM</span>
-                  <Token>12 rekordów</Token>
+                  <Token>{copy({ pl: '12 rekordów', en: '12 records' })}</Token>
                 </>
               ),
             })}
             {renderSizeRow({
               title: '20 px',
-              description:
-                'Przyciski, pozycje menu, listy i nawigacja boczna.',
+              description: <Localized pl="Przyciski, pozycje menu, listy i nawigacja boczna." en="Buttons, menu items, lists and side navigation." />,
               icon: (
                 <>
                   <Icon
@@ -599,14 +660,13 @@ export const Ikony: Story = {
                     size={20}
                     style={{ color: 'var(--pd-brand-strong)' }}
                   />
-                  <span>Połącz</span>
+                  <span><Localized pl="Połącz" en="Connect" /></span>
                 </>
               ),
             })}
             {renderSizeRow({
               title: '24 px',
-              description:
-                'Nagłówki paneli, landmarki i ważne punkty orientacyjne.',
+              description: <Localized pl="Nagłówki paneli, landmarki i ważne punkty orientacyjne." en="Panel headers, landmarks and important orientation points." />,
               icon: (
                 <>
                   <Icon
@@ -615,7 +675,7 @@ export const Ikony: Story = {
                     size={24}
                     style={{ color: 'var(--pd-brand-strong)' }}
                   />
-                  <span>Asystent</span>
+                  <span><Localized pl="Asystent" en="Assistant" /></span>
                 </>
               ),
             })}
@@ -624,8 +684,8 @@ export const Ikony: Story = {
 
         <StorySection
           index="04"
-          title="Katalog"
-          summary="Ikony są grupowane według zadania, nie według wyglądu."
+          title={<Localized pl="Katalog" en="Catalog" />}
+          summary={<Localized pl="Ikony są grupowane według zadania, nie według wyglądu. Ikony z przyszłych bibliotek trafiają do tego rejestru albo pozostają lokalnym assetem biblioteki, jeśli nie są częścią języka produktu." en="Icons are grouped by task, not by appearance. Icons from future libraries enter this registry or remain a local library asset when they are not part of the product language." />}
         >
           <div style={catalogGridStyle}>
             {iconCatalogGroups.map(renderCatalogGroup)}
@@ -637,7 +697,7 @@ export const Ikony: Story = {
     const canvas = within(canvasElement);
 
     const controlled = canvas.getByRole('img', {
-      name: 'Controlled icon',
+      name: copy({ pl: 'Ikona kontrolowana', en: 'Controlled icon' }),
     });
     await expect(controlled).toHaveAttribute(
       'focusable',
@@ -663,12 +723,12 @@ export const Ikony: Story = {
         : null;
 
     expect(controlledTitle?.textContent).toBe(
-      'Controlled icon',
+      copy({ pl: 'Ikona kontrolowana', en: 'Controlled icon' }),
     );
 
     await expect(
       canvas.getByRole('img', {
-        name: 'Security status',
+        name: copy({ pl: 'Status bezpieczeństwa', en: 'Security status' }),
       }),
     ).toBeInTheDocument();
 

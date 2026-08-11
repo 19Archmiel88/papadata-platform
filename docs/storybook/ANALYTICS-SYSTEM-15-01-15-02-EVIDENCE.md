@@ -91,7 +91,7 @@ ComparisonChart nie przejmuje:
 
 - ciągłego czasu z `15.03 / TrendChart`;
 - KPI i benchmarku pojedynczej metryki z `15.02 / MetricCard`;
-- dokładnych rekordów, sortowania i działań z `10.07 / DataTable`;
+- dokładnych rekordów, sortowania i działań z runtime `DataTable` oraz wzorca `18.04`;
 - tooltipów, selection, zoomu, drill-down i cross-filteringu z `15.09`;
 - pełnej macierzy stanów danych z `15.08`.
 
@@ -116,7 +116,7 @@ ShareChart nie przejmuje:
 
 - porównania kategorii, rankingów, benchmarków i period comparison z `15.04 / ComparisonChart`;
 - ciągłego czasu z `15.03 / TrendChart`;
-- dokładnych rekordów, sortowania i działań z `10.07 / DataTable`;
+- dokładnych rekordów, sortowania i działań z runtime `DataTable` oraz wzorca `18.04`;
 - tooltipów, selection, zoomu, drill-down i cross-filteringu z `15.09`;
 - pełnej macierzy stanów danych z `15.08`.
 
@@ -174,7 +174,7 @@ CorrelationChart nie przejmuje:
 - forecast/confidence z `15.07`;
 - pełnej macierzy stanów danych z `15.08`;
 - tooltipów, hover, selection, drill-down i cross-filteringu z `15.09`;
-- dokładnych rekordów, sortowania i działań z `10.07 / DataTable`.
+- dokładnych rekordów, sortowania i działań z runtime `DataTable` oraz wzorca `18.04`.
 
 Obowiązująca reguła semantyczna: korelacja, zależność i `driver hypothesis`
 nie są dowodem przyczynowości. Komponent pokazuje komunikat no-causality,

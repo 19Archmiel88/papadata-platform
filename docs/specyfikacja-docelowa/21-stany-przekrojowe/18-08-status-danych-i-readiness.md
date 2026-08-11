@@ -7,15 +7,15 @@ status: review
 updated_at: 2026-08-09T12:00:00+02:00
 ---
 
-# Status danych i readiness
+# Readiness operacyjny
 
 ## Metadane
 
 | Pole | Wartość |
 | --- | --- |
 | Identyfikator | 18.08 |
-| Nazwa polska | Status danych i readiness |
-| Nazwa techniczna | status-danych-i-readiness |
+| Nazwa polska | Readiness operacyjny |
+| Nazwa techniczna | readiness-operacyjny |
 | Typ dokumentu | wzorzec przekrojowy |
 | Wersja | 1.0 |
 | Status kontraktu | review wzorca Storybook; decyzja wizualna oczekuje na akceptację właścicielską |
@@ -25,7 +25,7 @@ updated_at: 2026-08-09T12:00:00+02:00
 
 | Status implementacji | WDROŻONE W STORYBOOK — REVIEW |
 | Akceptacja właścicielska | `false` — wymaga osobnej akceptacji właściciela produktu |
-| Status Storybooka | `18 Wzorce interfejsu/Status danych i readiness` |
+| Status Storybooka | `18 Wzorce interfejsu/Readiness operacyjny` |
 | Status testów | fixture + play/audit dopasowane do realnej implementacji |
 
 ## Cel i realny zakres
@@ -70,7 +70,7 @@ Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook maj�
 
 ## Storybook
 
-- Title: `18 Wzorce interfejsu/Status danych i readiness`.
+- Title: `18 Wzorce interfejsu/Readiness operacyjny`.
 - File: `apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DataReadinessStatus.stories.tsx`.
 - Status: implemented / visible / review.
 - Accepted: false, do czasu osobnej akceptacji wizualnej.

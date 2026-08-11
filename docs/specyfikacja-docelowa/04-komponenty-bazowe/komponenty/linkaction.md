@@ -32,4 +32,4 @@ Publiczne React API: `apps/web/src/design-system/components/Button/LinkAction.ts
 ## Konsumenci
 
 ## Storybook i testy
-Właściciel demonstracji: `10.02 — Przyciski i akcje`.
+Właściciel demonstracji: `00.14 — Przyciski i akcje`.

@@ -1,17 +1,4 @@
 /*
-  Story 10.03 uses the accepted 00 Foundations presentation shell.
+  Story 00.15 uses the accepted 00 Foundations presentation shell.
   This file owns only responsive arrangement inside component examples.
 */
-
-.pd-field-family-story .pd-form-field,
-.pd-field-family-story .pd-verification-code {
-  width: min(100%, 42rem);
-}
-
-
-@media (max-width: 820px) {
-  .pd-field-family-story .pd-form-field,
-  .pd-field-family-story .pd-verification-code {
-    width: 100%;
-  }
-}

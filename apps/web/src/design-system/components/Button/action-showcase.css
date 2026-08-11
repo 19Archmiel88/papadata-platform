@@ -1,5 +1,5 @@
 /*
-  Story 10.02 uses the accepted 00 Foundations presentation shell.
+  Story 00.14 uses the accepted 00 Foundations presentation shell.
   This file owns only the arrangement of button examples. It must not
   redefine the page canvas, typography hierarchy or component visuals.
 */
@@ -20,13 +20,17 @@
 }
 
 .pd-action-ledger,
-.pd-action-state-ledger {
+.pd-action-state-ledger,
+.pd-action-usage-ledger,
+.pd-action-context-ledger {
   display: grid;
   border-top: var(--pd-border-width-subtle) solid var(--pd-separator);
 }
 
 .pd-action-row,
-.pd-action-state-row {
+.pd-action-state-row,
+.pd-action-usage-row,
+.pd-action-context-row {
   display: grid;
   grid-template-columns:
     minmax(11rem, 0.32fr)
@@ -41,17 +45,37 @@
 }
 
 .pd-action-row > :nth-child(2),
-.pd-action-state-row > :nth-child(2) {
+.pd-action-state-row > :nth-child(2),
+.pd-action-usage-row > :nth-child(2),
+.pd-action-context-row > :nth-child(2) {
   min-width: 0;
   justify-self: start;
 }
 
+.pd-action-usage-row {
+  grid-template-columns:
+    minmax(11rem, 0.28fr)
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+}
+
+.pd-action-context-row {
+  grid-template-columns:
+    minmax(11rem, 0.24fr)
+    minmax(18rem, 0.42fr)
+    minmax(0, 1fr);
+}
+
 .pd-action-row h3,
 .pd-action-state-row h3,
+.pd-action-usage-row h3,
+.pd-action-context-row h3,
 .pd-action-inline h3,
 .pd-action-review h3,
 .pd-action-row p,
 .pd-action-state-row p,
+.pd-action-usage-row p,
+.pd-action-context-row p,
 .pd-action-inline p,
 .pd-action-review p {
   margin: 0;
@@ -59,6 +83,8 @@
 
 .pd-action-row h3,
 .pd-action-state-row h3,
+.pd-action-usage-row h3,
+.pd-action-context-row h3,
 .pd-action-inline h3,
 .pd-action-review h3 {
   font-weight: var(--pd-font-weight-medium);
@@ -66,10 +92,20 @@
 
 .pd-action-row p,
 .pd-action-state-row p,
+.pd-action-usage-row p,
+.pd-action-context-row p,
 .pd-action-inline p,
 .pd-action-review p {
   color: var(--pd-text-secondary);
   line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-action-usage-row strong {
+  display: block;
+  margin-bottom: var(--pd-space-1);
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-caption);
+  font-weight: var(--pd-font-weight-semibold);
 }
 
 .pd-action-row__meta,
@@ -137,20 +173,24 @@
   border-top: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
 }
 
-.pd-action-review .pd-button-group[data-orientation='vertical'] {
+.pd-action-review__stacked-actions {
   width: 100%;
 }
 
 @media (max-width: 860px) {
   .pd-action-row,
   .pd-action-state-row,
+  .pd-action-usage-row,
+  .pd-action-context-row,
   .pd-action-inline-grid,
   .pd-action-review {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .pd-action-row,
-  .pd-action-state-row {
+  .pd-action-state-row,
+  .pd-action-usage-row,
+  .pd-action-context-row {
     gap: var(--pd-space-4);
   }
 

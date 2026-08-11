@@ -824,15 +824,15 @@ export const CorrelationChartStory: Story = {
     ).toBeGreaterThan(0);
 
     await expect(
-      canvas.getByText('TrendChart'),
+      canvas.getByText(/TrendChart odpowiada za czas ciągły/),
     ).toBeInTheDocument();
 
     await expect(
-      canvas.getByText('ComparisonChart'),
+      canvas.getByText(/ComparisonChart za ranking kategorii/),
     ).toBeInTheDocument();
 
     await expect(
-      canvas.getByText('DataTable'),
+      canvas.getByText(/DataTable za rekordy/),
     ).toBeInTheDocument();
   },
 };

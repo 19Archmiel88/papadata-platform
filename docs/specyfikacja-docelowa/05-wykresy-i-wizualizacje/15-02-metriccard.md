@@ -105,7 +105,7 @@ Formalne WCAG AA nie jest bramą biznesową. Wymagane pozostają poprawna semant
 - Story pokazuje pełny katalog wariantów, stany, light/dark i długi copy.
 - `dataState` (`ready`, `partial`, `stale`, `processing`, `noData`) i `emphasis` (`default`, `alert`, `recommendation`) są odrębnymi osiami kontraktu.
 - Wartości KPI, procenty i freshness w fixture są formatowane przez Foundation runtime.
-- `Szczegóły KPI` konsumują ikonę `data`, a `Wyjaśnij z Papa` ikonę `assistant` z 10.11; widoczna etykieta pozostaje nazwą akcji.
+- `Szczegóły KPI` konsumują ikonę `data`, a `Wyjaśnij z Papa` ikonę `assistant` z `00.13`; widoczna etykieta pozostaje nazwą akcji.
 - Play test uruchamia obie akcje i sprawdza dostępną nazwę sformatowanego KPI.
 
 ## Kryteria akceptacji

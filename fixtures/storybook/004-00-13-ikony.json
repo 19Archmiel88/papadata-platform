@@ -1,19 +1,18 @@
 {
-  "fixtureId": "SB-006",
-  "storyTitle": "10 Komponenty bazowe/Marka",
-  "sourceDocument": "04-komponenty-bazowe/10-01-marka.md",
+  "fixtureId": "SB-004",
+  "storyTitle": "00 Fundamenty/04 Ikony",
+  "sourceDocument": "01-fundamenty/00-13-ikony.md",
   "screenId": null,
   "components": [
-    "PapaDataBrand"
+    "Icon"
   ],
   "states": [
-    "lockup",
-    "mark",
-    "wordmark",
     "decorative",
-    "small",
-    "medium",
-    "large"
+    "informative",
+    "size-16",
+    "size-20",
+    "size-24",
+    "catalog"
   ],
   "viewports": [
     1440,
@@ -29,12 +28,11 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "verify-variants",
-    "verify-sizes",
-    "verify-svg-geometry",
-    "verify-accessible-name",
     "verify-decorative-hidden",
-    "verify-no-glow"
+    "verify-informative-label",
+    "verify-sizes",
+    "verify-current-color",
+    "verify-catalog"
   ],
   "visualAssertions": [
     "foundation-shell-light",
@@ -43,13 +41,13 @@
     "1440-dark",
     "768-reflow",
     "390-mobile",
-    "brand-geometry",
-    "no-decorative-glow",
+    "icon-catalog",
     "no-local-visual-overrides"
   ],
   "a11y": [
-    "accessible-name",
-    "decorative-hidden"
+    "decorative-hidden",
+    "informative-label",
+    "current-color"
   ],
   "implementationStatus": "implemented-passing-static-and-play-contract"
 }

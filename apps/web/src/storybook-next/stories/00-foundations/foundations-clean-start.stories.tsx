@@ -37,7 +37,6 @@ import {
 } from '../../../design-system/components/StatusBadge';
 import {
   Icon,
-  PapaDataBrand,
   type PapaDataIconName,
 } from '../../../design-system/icons';
 import '../../presentation/story-presentation.css';
@@ -52,7 +51,7 @@ import {
 } from '../../presentation/StoryPresentation';
 
 const meta = {
-  title: '00 Fundamenty/Podstawy',
+  title: '00 Fundamenty/01 Fundamenty wizualne',
   parameters: {
     layout: 'fullscreen',
   },
@@ -116,8 +115,8 @@ function FoundationPage({
             en: 'Presentation parameters',
           })}
           items={[
-            { label: <Localized pl="Układ" en="Layout" />, value: <Localized pl="Systemowy" en="System" /> },
-            { label: <Localized pl="Powierzchnia" en="Surface" />, value: <Localized pl="Neutralna" en="Neutral" /> },
+            { label: <Localized pl="Motyw" en="Theme" />, value: readTheme() === 'dark' ? <Localized pl="Ciemny" en="Dark" /> : <Localized pl="Jasny" en="Light" /> },
+            { label: <Localized pl="Język" en="Language" />, value: readLocale().toUpperCase() },
             { label: <Localized pl="Gęstość" en="Density" />, value: <Localized pl="Sterowana globalnie" en="Global control" /> },
           ]}
         />
@@ -302,138 +301,135 @@ const visualPrinciples = [
   },
 ] as const;
 
+const foundationSequence = [
+  {
+    step: '01',
+    title: {
+      pl: 'Canvas i powierzchnie',
+      en: 'Canvas and surfaces',
+    },
+    owner: '02',
+    detail: {
+      pl: 'Najpierw tło robocze, powierzchnia danych, warstwa pomocnicza i overlay.',
+      en: 'Start with working background, data surface, supporting layer and overlay.',
+    },
+  },
+  {
+    step: '02',
+    title: {
+      pl: 'Kolor',
+      en: 'Color',
+    },
+    owner: '00.03',
+    detail: {
+      pl: 'Kolor ma znaczenie: marka, interakcja, dane i status nie mieszają ról.',
+      en: 'Color has meaning: brand, interaction, data and status do not mix roles.',
+    },
+  },
+  {
+    step: '03',
+    title: {
+      pl: 'Typografia',
+      en: 'Typography',
+    },
+    owner: '00.02',
+    detail: {
+      pl: 'Tekst, liczby, waluty i zakresy czasu muszą być gotowe na PL i EN.',
+      en: 'Copy, numbers, currency and date ranges must work in PL and EN.',
+    },
+  },
+  {
+    step: '04',
+    title: {
+      pl: 'Marka',
+      en: 'Brand',
+    },
+    owner: '03',
+    detail: {
+      pl: 'Znak identyfikuje produkt. Nie definiuje palety danych ani wyglądu powierzchni.',
+      en: 'The mark identifies the product. It does not define the data palette or surface look.',
+    },
+  },
+  {
+    step: '05',
+    title: {
+      pl: 'Ikonografia i katalog ikon',
+      en: 'Iconography and icon catalog',
+    },
+    owner: '00.09 / 04',
+    detail: {
+      pl: 'Fundament opisuje zasady ikon, a pełny katalog należy do komponentu Icon.',
+      en: 'The foundation defines icon rules, while the full catalog belongs to Icon.',
+    },
+  },
+  {
+    step: '06',
+    title: {
+      pl: 'Układ, forma i ruch',
+      en: 'Layout, shape and motion',
+    },
+    owner: '00.05-00.11',
+    detail: {
+      pl: 'Odstęp, promień, separacja, głębia, motion i dostępność tworzą ramę pracy.',
+      en: 'Spacing, radius, separation, depth, motion and accessibility create the work frame.',
+    },
+  },
+  {
+    step: '07',
+    title: {
+      pl: 'Akcje i wejścia',
+      en: 'Actions and inputs',
+    },
+    owner: '05',
+    detail: {
+      pl: 'Przyciski i pola pokazują użycie fundamentów w kontrolkach, bez własnego języka wizualnego.',
+      en: 'Buttons and fields show foundations in controls without creating a private visual language.',
+    },
+  },
+] as const;
+
 export const KierunekWizualny: Story = {
   name: 'Kierunek wizualny',
   render: () => (
     <FoundationPage
-      title={<Localized pl="Kierunek wizualny" en="Visual direction" />}
+      title={<Localized pl="Start fundamentów wizualnych" en="Visual foundations start" />}
       summary={
         <Localized
-          pl="Jedna zasada prezentacji dla całego systemu: spokojny canvas, precyzyjne separatory i lokalny akcent marki."
-          en="One presentation rule for the entire system: calm canvas, precise separators and a local brand accent."
+          pl="Ta story ustawia kolejność czytania 00: od materiału interfejsu, przez kolor i typografię, do komponentów. Przyszłe biblioteki wykresów, kalendarzy i komunikatów mają konsumować te reguły."
+          en="This story sets the reading order for 00: from interface material, through color and typography, to components. Future chart, calendar and messaging libraries should consume these rules."
         />
       }
     >
       <FoundationSection
         index="01"
-        title={<Localized pl="Tożsamość marki" en="Brand identity" />}
+        title={<Localized pl="Kolejność czytania" en="Reading order" />}
         summary={
           <Localized
-            pl="Marka identyfikuje produkt. Kolor danych i statusu zachowuje własne znaczenie."
-            en="Brand identifies the product. Data and status colors retain their own meaning."
+            pl="Fundamenty prowadzą od tła i znaczeń do konkretnych kontrolek. To jest mapa pracy dla 15 Wykresy i dane oraz 18 Wzorce interfejsu."
+            en="Foundations move from background and meaning to concrete controls. This is the work map for 15 Charts and data and 18 Interface patterns."
           />
         }
       >
-        <FoundationVariant
-          title={<Localized pl="Logo pełne" en="Full logo" />}
-          description={
-            <Localized
-              pl="Sygnet i logotyp występują bez dekoracyjnego glow. Wolna przestrzeń buduje rangę znaku."
-              en="Mark and wordmark appear without decorative glow. Clear space gives the identity its weight."
-            />
-          }
-          token="--pd-brand"
-        >
-          <div className="pd-f0-brand-lockup-demo">
-            <PapaDataBrand label="PapaData logo" size="large" />
-            <p>
-              <Localized
-                pl="Bursztyn pozostaje akcentem marki, nie kolorem całego interfejsu."
-                en="Amber remains a brand accent, not the color of the entire interface."
-              />
-            </p>
-          </div>
-        </FoundationVariant>
-
-        <FoundationVariant
-          title={<Localized pl="Role semantyczne" en="Semantic roles" />}
-          description={
-            <Localized
-              pl="Każdy kolor ma jedną odpowiedzialność i nie przejmuje roli innego obszaru."
-              en="Each color has one responsibility and does not take over another area."
-            />
-          }
-        >
-          <FoundationLedger label={copy({ pl: 'Role kolorów', en: 'Color roles' })}>
+        <FoundationLedger label={copy({ pl: 'Chronologia fundamentów', en: 'Foundations chronology' })}>
+          {foundationSequence.map((item) => (
             <LedgerRow
-              label={<Localized pl="Marka" en="Brand" />}
-              preview={<span className="pd-f0-swatch" data-color="brand" />}
-              value={<TokenCode>--pd-brand</TokenCode>}
-              detail={<Localized pl="Logo i główne akcje marki" en="Logo and primary brand actions" />}
+              detail={copy(item.detail)}
+              key={item.step}
+              label={copy(item.title)}
+              preview={<span className="pd-f0-status-tone">{item.step}</span>}
+              value={<code>{item.owner}</code>}
             />
-            <LedgerRow
-              label={<Localized pl="Interakcja" en="Interaction" />}
-              preview={<span className="pd-f0-swatch" data-color="interactive" />}
-              value={<TokenCode>--pd-interactive</TokenCode>}
-              detail={<Localized pl="Linki, fokus i aktywne kontrolki" en="Links, focus and active controls" />}
-            />
-            <LedgerRow
-              label={<Localized pl="Dane" en="Data" />}
-              preview={<span className="pd-f0-swatch" data-color="data" />}
-              value={<TokenCode>--pd-data-accent</TokenCode>}
-              detail={<Localized pl="Wykresy i informacja analityczna" en="Charts and analytical information" />}
-            />
-            <LedgerRow
-              label={<Localized pl="Status" en="Status" />}
-              preview={<span className="pd-f0-swatch" data-color="status" />}
-              value={<TokenCode>--pd-status-*</TokenCode>}
-              detail={<Localized pl="Stan procesu i walidacja" en="Process state and validation" />}
-            />
-          </FoundationLedger>
-        </FoundationVariant>
+          ))}
+        </FoundationLedger>
       </FoundationSection>
 
       <FoundationSection
         index="02"
-        title={<Localized pl="Zasady projektowe" en="Design principles" />}
+        title={<Localized pl="Materiał interfejsu" en="Interface material" />}
         summary={
           <Localized
-            pl="Te same reguły obowiązują komponent, story i ekran produktu."
-            en="The same rules apply to a component, a story and a product screen."
-          />
-        }
-      >
-        <div className="pd-f0-principles">
-          {visualPrinciples.map((principle) => (
-            <article key={principle.number}>
-              <span>{principle.number}</span>
-              <div>
-                <h3>{copy(principle.title)}</h3>
-                <p>{copy(principle.description)}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        <FoundationVariant
-          title={<Localized pl="Kierunek akceptowany i odrzucony" en="Accepted and rejected direction" />}
-          description={
-            <Localized
-              pl="Porównanie nie jest kartą demonstracyjną. To prosta lista decyzji."
-              en="The comparison is not a demo card. It is a direct decision list."
-            />
-          }
-        >
-          <div className="pd-f0-decision-list">
-            <div data-result="accepted">
-              <StatusBadge status={copy({ pl: 'Status', en: 'Status' })} text={copy({ pl: 'Stosujemy', en: 'Use' })} tone="success" />
-              <p><Localized pl="Neutralne powierzchnie, separatory, lokalne akcenty i czytelny rytm danych." en="Neutral surfaces, separators, local accents and a readable data rhythm." /></p>
-            </div>
-            <div data-result="rejected">
-              <StatusBadge status={copy({ pl: 'Status', en: 'Status' })} text={copy({ pl: 'Odrzucamy', en: 'Avoid' })} tone="critical" />
-              <p><Localized pl="Glow, ciężkie cienie, przypadkowe gradienty i osobną kartę dla każdego przykładu." en="Glow, heavy shadows, arbitrary gradients and a separate card for every example." /></p>
-            </div>
-          </div>
-        </FoundationVariant>
-      </FoundationSection>
-
-      <FoundationSection
-        index="03"
-        title={<Localized pl="Motyw jasny i ciemny" en="Light and dark theme" />}
-        summary={
-          <Localized
-            pl="Każdy motyw ma własną pełną powierzchnię. Nie mieszamy jasnych tokenów z ciemnym canvasem."
-            en="Each theme has its own complete surface. Light tokens are never mixed with a dark canvas."
+            pl="Każdy motyw ma własny canvas i własne powierzchnie. Nie mieszamy jasnych tokenów z ciemnym tłem ani odwrotnie."
+            en="Each theme has its own canvas and surfaces. Light tokens are not mixed with a dark background, or the reverse."
           />
         }
       >
@@ -474,6 +470,50 @@ export const KierunekWizualny: Story = {
           }
         />
       </FoundationSection>
+
+      <FoundationSection
+        index="03"
+        title={<Localized pl="Zasady projektowe" en="Design principles" />}
+        summary={
+          <Localized
+            pl="Te same reguły obowiązują komponent, story, ekran produktu i bibliotekę zewnętrzną osadzoną w PapaData."
+            en="The same rules apply to a component, a story, a product screen and an external library embedded in PapaData."
+          />
+        }
+      >
+        <div className="pd-f0-principles">
+          {visualPrinciples.map((principle) => (
+            <article key={principle.number}>
+              <span>{principle.number}</span>
+              <div>
+                <h3>{copy(principle.title)}</h3>
+                <p>{copy(principle.description)}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <FoundationVariant
+          title={<Localized pl="Kierunek akceptowany i odrzucony" en="Accepted and rejected direction" />}
+          description={
+            <Localized
+              pl="Porównanie nie jest kartą demonstracyjną. To prosta lista decyzji."
+              en="The comparison is not a demo card. It is a direct decision list."
+            />
+          }
+        >
+          <div className="pd-f0-decision-list">
+            <div data-result="accepted">
+              <StatusBadge status={copy({ pl: 'Status', en: 'Status' })} text={copy({ pl: 'Stosujemy', en: 'Use' })} tone="success" />
+              <p><Localized pl="Neutralne powierzchnie, separatory, lokalne akcenty i czytelny rytm danych." en="Neutral surfaces, separators, local accents and a readable data rhythm." /></p>
+            </div>
+            <div data-result="rejected">
+              <StatusBadge status={copy({ pl: 'Status', en: 'Status' })} text={copy({ pl: 'Odrzucamy', en: 'Avoid' })} tone="critical" />
+              <p><Localized pl="Glow, ciężkie cienie, przypadkowe gradienty i osobną kartę dla każdego przykładu." en="Glow, heavy shadows, arbitrary gradients and a separate card for every example." /></p>
+            </div>
+          </div>
+        </FoundationVariant>
+      </FoundationSection>
     </FoundationPage>
   ),
 };
@@ -487,7 +527,7 @@ const typographyRows = [
   { token: '--pd-type-size-caption', role: { pl: 'Metadane', en: 'Metadata' }, sample: { pl: 'Źródło: GA4', en: 'Source: GA4' }, kind: 'caption' },
 ] as const;
 
-export const Typografia: Story = {
+const TypografiaStory: Story = {
   name: 'Typografia',
   render: () => {
     const locale = readLocale();
@@ -654,6 +694,45 @@ const semanticColors = [
 
 const dataSeries = ['1', '2', '3', '4', '5', '6'] as const;
 
+const actionColorRows = [
+  {
+    label: { pl: 'Komenda główna', en: 'Primary command' },
+    token: '--pd-brand-action',
+    color: 'brand-action',
+    detail: {
+      pl: 'Zapis, zatwierdzenie, publikacja albo uruchomienie przepływu.',
+      en: 'Save, approve, publish or start a flow.',
+    },
+  },
+  {
+    label: { pl: 'Nawigacja', en: 'Navigation' },
+    token: '--pd-interactive',
+    color: 'interactive',
+    detail: {
+      pl: 'Przejście do raportu, rekordu, integracji albo szczegółu.',
+      en: 'Move to a report, record, integration or detail.',
+    },
+  },
+  {
+    label: { pl: 'Akcja w danych', en: 'Data action' },
+    token: '--pd-data-accent',
+    color: 'data',
+    detail: {
+      pl: 'Eksploracja zakresu danych, serii, rekordu albo źródła.',
+      en: 'Explore a data scope, series, record or source.',
+    },
+  },
+  {
+    label: { pl: 'Akcja destrukcyjna', en: 'Destructive action' },
+    token: '--pd-status-danger',
+    color: 'danger-action',
+    detail: {
+      pl: 'Usunięcie, odłączenie albo operacja z nieodwracalnym skutkiem.',
+      en: 'Delete, disconnect or an operation with an irreversible effect.',
+    },
+  },
+] as const;
+
 
 const semanticTones = [
   {
@@ -771,6 +850,24 @@ export const KolorySemantyczne: Story = {
 
       <FoundationSection
         index="02"
+        title={<Localized pl="Kolor akcji" en="Action color" />}
+        summary={<Localized pl="Kolor akcji komunikuje rodzaj decyzji. Nie służy do ozdabiania przycisku ani wyróżniania lokalnego fragmentu UI." en="Action color communicates the type of decision. It is not for decorating a button or highlighting a local UI fragment." />}
+      >
+        <FoundationLedger label={copy({ pl: 'Kolory akcji', en: 'Action colors' })}>
+          {actionColorRows.map((item) => (
+            <LedgerRow
+              detail={copy(item.detail)}
+              key={item.token}
+              label={copy(item.label)}
+              preview={<span className="pd-f0-color-chip" data-color={item.color} />}
+              value={<TokenCode>{item.token}</TokenCode>}
+            />
+          ))}
+        </FoundationLedger>
+      </FoundationSection>
+
+      <FoundationSection
+        index="03"
         title={<Localized pl="Paleta danych" en="Data palette" />}
         summary={<Localized pl="Serie są rozróżnialne, ale pozostają spokojne na analitycznym canvasie." en="Series remain distinguishable while staying calm on an analytical canvas." />}
       >
@@ -803,9 +900,9 @@ export const KolorySemantyczne: Story = {
       </FoundationSection>
 
       <FoundationSection
-        index="03"
-        title={<Localized pl="Tony komunikatów" en="Message tones" />}
-        summary={<Localized pl="Kolor wspiera tekst, ikonę lub stan. Nigdy nie jest jedynym nośnikiem znaczenia." en="Color supports text, icon or state. It is never the only carrier of meaning." />}
+        index="04"
+        title={<Localized pl="Role tonów semantycznych" en="Semantic tone roles" />}
+        summary={<Localized pl="Ta story opisuje znaczenie tonów. UI komunikatu, badge'a i toasta jest kanonicznie w 00 / 02 Powierzchnie i komunikaty." en="This story describes tone meaning. Notice, badge and toast UI is canonical in 00 / 02 Surfaces and messaging." />}
       >
         <p className="pd-f0-status-rule">
           <Localized
@@ -816,7 +913,7 @@ export const KolorySemantyczne: Story = {
         <div className="pd-f0-tone-register">
           {semanticTones.map((item) => (
             <article key={item.tone}>
-              <StatusBadge status={copy({ pl: 'Ton semantyczny', en: 'Semantic tone' })} text={copy(item.label)} tone={item.tone} />
+              <span className="pd-f0-status-tone">{copy(item.label)}</span>
               <TokenCode>{item.token}</TokenCode>
               <p><Localized {...item.usage} /></p>
             </article>
@@ -827,29 +924,25 @@ export const KolorySemantyczne: Story = {
   ),
 };
 
+export const Typografia = TypografiaStory;
+
 export const StatusySystemowe: Story = {
-  name: 'Statusy systemowe',
+  name: 'Role semantyczne statusów',
   render: () => (
     <FoundationPage
-      title={<Localized pl="Model statusu systemowego" en="System status model" />}
-      summary={<Localized pl="Fundament definiuje anatomię statusu i mapowanie na ton semantyczny. Konkretne klucze biznesowe należą do domen produktu, nie do design systemu." en="The foundation defines status anatomy and semantic-tone mapping. Concrete business keys belong to product domains, not the design system." />}
+      title={<Localized pl="Role semantyczne statusów" en="Semantic status roles" />}
+      summary={<Localized pl="Fundament definiuje znaczenie roli statusu i mapowanie na ton. Wygląd StatusBadge jest kanonicznie pokazany w 00 / 02 Powierzchnie i komunikaty." en="The foundation defines status-role meaning and tone mapping. StatusBadge appearance is canonical in 00 / 02 Surfaces and messaging." />}
     >
       <FoundationSection
         index="01"
         title={<Localized pl="Kontrakt statusu" en="Status contract" />}
         summary={<Localized pl="Każdy status składa się ze stabilnego klucza domenowego, czytelnej etykiety i jednego tonu semantycznego." en="Every status consists of a stable domain key, a readable label, and one semantic tone." />}
       >
-        <FoundationLedger label={copy({ pl: 'Przykłady mapowania statusu', en: 'Status mapping examples' })}>
+        <FoundationLedger label={copy({ pl: 'Przykłady mapowania semantycznego', en: 'Semantic mapping examples' })}>
           {statusContractExamples.map((status) => (
             <LedgerRow
               key={status.key}
-              label={
-                <StatusBadge
-                  status={copy({ pl: 'Status', en: 'Status' })}
-                  text={copy(status.label)}
-                  tone={status.tone}
-                />
-              }
+              label={copy(status.label)}
               preview={<span className="pd-f0-status-tone">{status.tone}</span>}
               value={<code>{status.key}</code>}
               detail={copy(status.owner)}
@@ -866,7 +959,7 @@ export const StatusySystemowe: Story = {
         <FoundationLedger label={copy({ pl: 'Własność statusów', en: 'Status ownership' })}>
           <LedgerRow
             label={<Localized pl="Fundamenty" en="Foundations" />}
-            preview={<StatusBadge status={copy({ pl: 'Status', en: 'Status' })} text={copy({ pl: 'Ton', en: 'Tone' })} tone="warning" />}
+            preview={<span className="pd-f0-status-tone">warning</span>}
             value={<code>SemanticStatusTone</code>}
             detail={copy({ pl: 'neutral / info / success / warning / critical / processing', en: 'neutral / info / success / warning / critical / processing' })}
           />
@@ -878,8 +971,8 @@ export const StatusySystemowe: Story = {
           />
           <LedgerRow
             label={<Localized pl="Komponent" en="Component" />}
-            preview={<StatusBadge status={copy({ pl: 'Status', en: 'Status' })} text={copy({ pl: 'Opłacone', en: 'Paid' })} tone="success" />}
-            value={<code>StatusBadge</code>}
+            preview={<span className="pd-f0-status-tone">success</span>}
+            value={<code>00 / 02 Powierzchnie i komunikaty / StatusBadge</code>}
             detail={copy({ pl: 'Komponent renderuje status, ale nie jest właścicielem słownika biznesowego.', en: 'The component renders a status but does not own the business vocabulary.' })}
           />
         </FoundationLedger>
@@ -901,6 +994,41 @@ const spacingScale = [
   { token: '--pd-space-10', value: 40 },
   { token: '--pd-space-12', value: 48 },
   { token: '--pd-space-16', value: 64 },
+] as const;
+
+const layoutSpacingRows = [
+  {
+    label: { pl: 'Desktop', en: 'Desktop' },
+    value: '12 columns / 64',
+    detail: {
+      pl: 'Sekcje analityczne oddziela duży rytm pionowy, a regiony pracy rozdziela linia.',
+      en: 'Analytical sections use a large vertical rhythm, while work regions are separated by a line.',
+    },
+  },
+  {
+    label: { pl: 'Tablet', en: 'Tablet' },
+    value: '8 columns / 40',
+    detail: {
+      pl: 'Panel boczny przechodzi pod treść albo w warstwę, ale kolejność informacji zostaje zachowana.',
+      en: 'A side panel moves below content or into a layer, while information order is preserved.',
+    },
+  },
+  {
+    label: { pl: 'Mobile', en: 'Mobile' },
+    value: '4 columns / 24',
+    detail: {
+      pl: 'Akcje i pola układają się pionowo. Nie dodajemy lokalnych kart, żeby odzyskać oddech.',
+      en: 'Actions and fields stack vertically. Local cards are not added to regain breathing room.',
+    },
+  },
+  {
+    label: { pl: 'Tabela i formularz', en: 'Table and form' },
+    value: '8 / 12 / 16',
+    detail: {
+      pl: 'Wiersz, helper text i komunikat używają mniejszych odstępów niż sekcja lub panel.',
+      en: 'Rows, helper text and messages use smaller spacing than a section or panel.',
+    },
+  },
 ] as const;
 
 export const SpacingIGrid: Story = {
@@ -928,6 +1056,23 @@ export const SpacingIGrid: Story = {
 
       <FoundationSection
         index="02"
+        title={<Localized pl="Rytm layoutu" en="Layout rhythm" />}
+        summary={<Localized pl="Odstęp opisuje relację elementów: sekcja, panel, tabela, formularz i wąski ekran mają różny rytm." en="Spacing describes element relationships: section, panel, table, form and narrow screens use different rhythm." />}
+      >
+        <FoundationLedger label={copy({ pl: 'Rytm układu', en: 'Layout rhythm' })}>
+          {layoutSpacingRows.map((item) => (
+            <LedgerRow
+              detail={copy(item.detail)}
+              key={item.value}
+              label={copy(item.label)}
+              value={<code>{item.value}</code>}
+            />
+          ))}
+        </FoundationLedger>
+      </FoundationSection>
+
+      <FoundationSection
+        index="03"
         title={<Localized pl="Gęstość" en="Density" />}
         summary={<Localized pl="Wariant kompaktowy zmienia rytm, ale nie zmienia hierarchii ani wyglądu komponentu." en="Compact density changes rhythm without changing hierarchy or component identity." />}
       >
@@ -975,7 +1120,7 @@ export const SpacingIGrid: Story = {
       </FoundationSection>
 
       <FoundationSection
-        index="03"
+        index="04"
         title={<Localized pl="Responsywna siatka" en="Responsive grid" />}
         summary={<Localized pl="Kolumny zmieniają liczbę, ale zawartość zachowuje kolejność i minimalną szerokość." en="Column count changes while content preserves order and minimum width." />}
       >
@@ -1012,19 +1157,36 @@ const geometryRadiusRows = [
   },
   {
     name: 'overlay',
-    token: '--pd-radius-overlay',
-    label: { pl: 'Powierzchnia', en: 'Surface' },
+    token: '--pd-radius-surface',
+    label: { pl: 'Panel', en: 'Panel' },
     detail: {
-      pl: 'Panel, modal, drawer, toast i inne rzeczywiste warstwy.',
-      en: 'Panel, modal, drawer, toast and other real layers.',
+      pl: 'Powierzchnia danych, sidecar, panel konfiguracji i stały inspector.',
+      en: 'Data surface, sidecar, configuration panel and persistent inspector.',
     },
     contract: {
-      pl: 'Promień pojawia się tylko wtedy, gdy element tworzy odrębną powierzchnię.',
-      en: 'The radius appears only when the element creates a distinct surface.',
+      pl: 'Panel jest funkcjonalnym regionem pracy, ale nie marketingową kartą.',
+      en: 'A panel is a functional work region, not a marketing card.',
     },
     avoid: {
-      pl: 'Nie opakowujemy nim każdego fragmentu dokumentacji.',
-      en: 'Do not wrap every documentation fragment with it.',
+      pl: 'Nie opakowujemy nim każdego wiersza, przykładu ani małej sekcji.',
+      en: 'Do not wrap every row, example or small section with it.',
+    },
+  },
+  {
+    name: 'modal',
+    token: '--pd-radius-overlay',
+    label: { pl: 'Overlay', en: 'Overlay' },
+    detail: {
+      pl: 'Modal, popover, toast i warstwa wymagająca czytelnego odcięcia.',
+      en: 'Modal, popover, toast and a layer requiring clear separation.',
+    },
+    contract: {
+      pl: 'Overlay tworzy tymczasowy poziom ponad canvasem i ma wyraźną ścieżkę powrotu.',
+      en: 'Overlay creates a temporary level above the canvas and keeps a clear return path.',
+    },
+    avoid: {
+      pl: 'Nie używamy overlay jako domyślnej powierzchni danych.',
+      en: 'Do not use overlay as the default data surface.',
     },
   },
   {
@@ -1051,7 +1213,7 @@ const geometryBorderRows = [
     name: 'structure',
     group: 'structure',
     token: '--pd-separator',
-    label: { pl: 'Linia strukturalna', en: 'Structural line' },
+    label: { pl: 'Separator sekcji', en: 'Section separator' },
     detail: {
       pl: 'Topbar, granice canvasu i główne regiony aplikacji.',
       en: 'Topbar, canvas boundaries and main application regions.',
@@ -1061,7 +1223,7 @@ const geometryBorderRows = [
     name: 'subtle',
     group: 'structure',
     token: '--pd-separator-subtle',
-    label: { pl: 'Separator wewnętrzny', en: 'Internal separator' },
+    label: { pl: 'Separator tabeli', en: 'Table separator' },
     detail: {
       pl: 'Wiersze danych, nagłówki paneli, listy zmian i sekcje pomocnicze.',
       en: 'Data rows, panel headers, change lists and supporting sections.',
@@ -1089,6 +1251,60 @@ const geometryBorderRows = [
   },
 ] as const;
 
+const separationDecisionRows = [
+  {
+    label: { pl: 'Ten sam kontekst', en: 'Same context' },
+    value: { pl: 'linia', en: 'line' },
+    detail: {
+      pl: 'Sekcje, wiersze, grupy danych i nagłówki zostają na tym samym canvasie.',
+      en: 'Sections, rows, data groups and headers stay on the same canvas.',
+    },
+  },
+  {
+    label: { pl: 'Nowy kontekst pracy', en: 'New work context' },
+    value: { pl: 'powierzchnia', en: 'surface' },
+    detail: {
+      pl: 'Panel, sidecar, popover i modal dostają własną powierzchnię, bo zmieniają poziom pracy.',
+      en: 'Panel, sidecar, popover and modal get their own surface because they change the work level.',
+    },
+  },
+  {
+    label: { pl: 'Aktywny wybór', en: 'Active selection' },
+    value: { pl: 'lokalny akcent', en: 'local accent' },
+    detail: {
+      pl: 'Aktywna karta, zakładka albo filtr używa krótkiej linii, nie pełnej kolorowej ramki.',
+      en: 'An active tab, filter or item uses a short line, not a fully colored frame.',
+    },
+  },
+  {
+    label: { pl: 'Status przy treści', en: 'Status near content' },
+    value: { pl: 'linia statusu', en: 'status line' },
+    detail: {
+      pl: 'Komunikat przy danych ma tekst i semantyczną linię zamiast dużego kolorowego kontenera.',
+      en: 'A data notice has text and a semantic line instead of a large colored container.',
+    },
+  },
+] as const;
+
+const separationBoundaryRows = [
+  {
+    title: { pl: 'Linia zachowuje ciągłość', en: 'Line preserves continuity' },
+    detail: {
+      pl: 'Używamy jej, gdy użytkownik nadal pracuje w tym samym obszarze danych.',
+      en: 'Use it when the user remains in the same data work area.',
+    },
+    mode: 'line',
+  },
+  {
+    title: { pl: 'Powierzchnia zmienia poziom', en: 'Surface changes level' },
+    detail: {
+      pl: 'Nową powierzchnię wprowadzamy dopiero dla panelu, overlayu albo niezależnego kontekstu.',
+      en: 'Introduce a new surface only for a panel, overlay or independent context.',
+    },
+    mode: 'surface',
+  },
+] as const;
+
 const geometryDepthRows = [
   {
     level: '00',
@@ -1096,8 +1312,8 @@ const geometryDepthRows = [
     token: '--pd-shadow-none',
     label: { pl: 'Canvas bazowy', en: 'Base canvas' },
     allowed: {
-      pl: 'Canvas, region danych, tabela i zwykła sekcja robocza.',
-      en: 'Canvas, data region, table and normal working section.',
+      pl: 'Canvas aplikacji, szeroka powierzchnia danych i zwykła sekcja robocza.',
+      en: 'Application canvas, broad data surface and normal working section.',
     },
     forbidden: {
       pl: 'Nie służy do modali ani elementów ponad treścią.',
@@ -1110,12 +1326,12 @@ const geometryDepthRows = [
     token: '--pd-shadow-raised',
     label: { pl: 'Panel uniesiony', en: 'Raised panel' },
     allowed: {
-      pl: 'Panel wspierający, notification rail i lokalna powierzchnia robocza.',
-      en: 'Supporting panel, notification rail and local working surface.',
+      pl: 'Panel rekomendacji, assistant sidecar i stała warstwa wspierająca.',
+      en: 'Recommendation panel, assistant sidecar and persistent support layer.',
     },
     forbidden: {
-      pl: 'Nie zastępuje separatorów wewnątrz panelu.',
-      en: 'Does not replace separators inside the panel.',
+      pl: 'Nie zastępuje separatorów ani nie zasłania danych scrimem.',
+      en: 'Does not replace separators or cover data with a scrim.',
     },
   },
   {
@@ -1128,8 +1344,8 @@ const geometryDepthRows = [
       en: 'Dropdown, popover, toast and short-lived operational layer.',
     },
     forbidden: {
-      pl: 'Nie używamy go do stałych regionów layoutu.',
-      en: 'Do not use it for persistent layout regions.',
+      pl: 'Nie używamy go do assistant sidecar ani stałych regionów layoutu.',
+      en: 'Do not use it for assistant sidecar or persistent layout regions.',
     },
   },
   {
@@ -1142,8 +1358,8 @@ const geometryDepthRows = [
       en: 'Modal, auth form and top attention layer.',
     },
     forbidden: {
-      pl: 'Nie może stać się domyślnym cieniem zwykłych kart.',
-      en: 'Must not become the default shadow for ordinary cards.',
+      pl: 'Nie jest trybem Papa Asystenta ani domyślnym cieniem zwykłych kart.',
+      en: 'Is not the Papa Assistant mode or the default shadow for ordinary cards.',
     },
   },
 ] as const;
@@ -1163,6 +1379,12 @@ function GeometryRadiusPreview({
       ) : null}
       {name === 'overlay' ? (
         <span className="pd-f0-geometry-radius-overlay">
+          <span />
+          <span />
+        </span>
+      ) : null}
+      {name === 'modal' ? (
+        <span className="pd-f0-geometry-radius-overlay" data-kind="modal">
           <span />
           <span />
         </span>
@@ -1193,24 +1415,99 @@ function GeometryBorderPreview({
   );
 }
 
+function SeparationWorkspacePreview() {
+  return (
+    <div
+      className="pd-f0-line-workspace"
+      role="img"
+      aria-label={copy({
+        pl: 'Przykład użycia separatorów w obszarze danych: separator sekcji, separator tabeli, aktywny akcent i linia statusu.',
+        en: 'Example of separators in a data workspace: section separator, table separator, active accent and status line.',
+      })}
+    >
+      <header className="pd-f0-line-workspace__header">
+        <div>
+          <span><Localized pl="Powierzchnia danych" en="Data surface" /></span>
+          <strong><Localized pl="Sprzedaż i koszt pozyskania" en="Sales and acquisition cost" /></strong>
+        </div>
+        <p><Localized pl="Ostatnie 30 dni" en="Last 30 days" /></p>
+      </header>
+
+      <div className="pd-f0-line-workspace__metrics" aria-hidden="true">
+        <div>
+          <span><Localized pl="Przychód" en="Revenue" /></span>
+          <strong>1 248 590 zł</strong>
+        </div>
+        <div>
+          <span>ROAS</span>
+          <strong>4,9</strong>
+        </div>
+        <div>
+          <span><Localized pl="Alerty" en="Alerts" /></span>
+          <strong>3</strong>
+        </div>
+      </div>
+
+      <div className="pd-f0-line-workspace__tabs" aria-hidden="true">
+        <span data-active="true"><Localized pl="Wykres" en="Chart" /></span>
+        <span><Localized pl="Tabela" en="Table" /></span>
+        <span><Localized pl="Wniosek" en="Finding" /></span>
+      </div>
+
+      <div className="pd-f0-line-workspace__table" aria-hidden="true">
+        <div data-head="true">
+          <span><Localized pl="Kanał" en="Channel" /></span>
+          <span><Localized pl="Przychód" en="Revenue" /></span>
+          <span>ROAS</span>
+          <span><Localized pl="Status" en="Status" /></span>
+        </div>
+        <div>
+          <span>Commerce</span>
+          <span>742 100 zł</span>
+          <span>5,8</span>
+          <span><Localized pl="Gotowe" en="Ready" /></span>
+        </div>
+        <div>
+          <span>Meta Ads</span>
+          <span>386 420 zł</span>
+          <span>4,1</span>
+          <span><Localized pl="Do uwagi" en="Needs review" /></span>
+        </div>
+        <div>
+          <span>GA4</span>
+          <span>120 070 zł</span>
+          <span>3,7</span>
+          <span><Localized pl="Gotowe" en="Ready" /></span>
+        </div>
+      </div>
+
+      <aside className="pd-f0-line-workspace__status">
+        <strong><Localized pl="Linia statusu" en="Status line" /></strong>
+        <p><Localized pl="Koszt w Meta Ads rośnie szybciej niż przychód. Komunikat pozostaje w kontekście danych." en="Meta Ads cost is rising faster than revenue. The notice stays in the data context." /></p>
+      </aside>
+    </div>
+  );
+}
+
 function DepthCanvas() {
   return (
     <div
       className="pd-f0-depth-stage__canvas"
       role="img"
       aria-label={copy({
-        pl: 'Relacja pomiędzy bazą, panelem uniesionym, elementem pływającym i overlayem',
-        en: 'Relationship between the base, raised panel, floating element and overlay',
+        pl: 'Relacja pomiędzy canvasem aplikacji, powierzchnią danych, panelem rekomendacji, sidecarem Papa Asystenta, popoverem, toastem i modalem',
+        en: 'Relationship between application canvas, data surface, recommendation panel, Papa Assistant sidecar, popover, toast and modal',
       })}
     >
       <div className="pd-f0-depth-stage__base" data-shadow="none">
         <div className="pd-f0-depth-stage__base-heading">
           <div>
-            <span><Localized pl="Warstwa bazowa" en="Base layer" /></span>
-            <strong><Localized pl="Przychód i kampanie" en="Revenue and campaigns" /></strong>
+            <span><Localized pl="Canvas aplikacji" en="Application canvas" /></span>
+            <strong><Localized pl="Przychód, kampanie i decyzje" en="Revenue, campaigns and decisions" /></strong>
           </div>
           <span><Localized pl="Aktualizacja 2 min temu" en="Updated 2 min ago" /></span>
         </div>
+
         <div className="pd-f0-depth-stage__metrics">
           <div>
             <span><Localized pl="Przychód" en="Revenue" /></span>
@@ -1225,58 +1522,129 @@ function DepthCanvas() {
             <strong>3</strong>
           </div>
         </div>
+
+        <div className="pd-f0-depth-stage__workspace">
+          <section className="pd-f0-depth-stage__data-surface" data-shadow="none">
+            <header className="pd-f0-depth-stage__data-header">
+              <div>
+                <span><Localized pl="Powierzchnia danych" en="Data surface" /></span>
+                <strong><Localized pl="Trend sprzedaży i kosztów" en="Sales and cost trend" /></strong>
+              </div>
+
+              <dl>
+                <div>
+                  <dt><Localized pl="Wykres" en="Chart" /></dt>
+                  <dd>15.01 / ChartFrame</dd>
+                </div>
+                <div>
+                  <dt><Localized pl="Tabela" en="Table" /></dt>
+                  <dd>DataTable runtime / 18.04 workflow</dd>
+                </div>
+              </dl>
+            </header>
+
+            <div className="pd-f0-depth-stage__data-toolbar">
+              <span><Localized pl="30 dni" en="30 days" /></span>
+              <span>Meta Ads · GA4 · Commerce</span>
+              <span><Localized pl="Dane gotowe" en="Data ready" /></span>
+            </div>
+
+            <div className="pd-f0-depth-stage__data-body">
+              <div className="pd-f0-depth-stage__chart" aria-hidden="true">
+                <span className="pd-f0-depth-stage__chart-grid" />
+                <span className="pd-f0-depth-stage__chart-line" data-line="revenue" />
+                <span className="pd-f0-depth-stage__chart-line" data-line="cost" />
+                <span className="pd-f0-depth-stage__chart-point" data-point="one" />
+                <span className="pd-f0-depth-stage__chart-point" data-point="two" />
+                <span className="pd-f0-depth-stage__chart-point" data-point="three" />
+              </div>
+
+              <div className="pd-f0-depth-stage__table" aria-hidden="true">
+                <div className="pd-f0-depth-stage__table-row" data-head="true">
+                  <span><Localized pl="Kanał" en="Channel" /></span>
+                  <span><Localized pl="Przychód" en="Revenue" /></span>
+                  <span>ROAS</span>
+                </div>
+                <div className="pd-f0-depth-stage__table-row">
+                  <span>Commerce</span>
+                  <span>742 100 zł</span>
+                  <span>5,8</span>
+                </div>
+                <div className="pd-f0-depth-stage__table-row">
+                  <span>Meta Ads</span>
+                  <span>386 420 zł</span>
+                  <span>4,1</span>
+                </div>
+                <div className="pd-f0-depth-stage__table-row">
+                  <span>GA4</span>
+                  <span>120 070 zł</span>
+                  <span>3,7</span>
+                </div>
+              </div>
+            </div>
+
+            <footer className="pd-f0-depth-stage__data-status">
+              <span><Localized pl="Status danych" en="Data status" /></span>
+              <strong><Localized pl="Gotowe do analizy bez dodatkowych ramek" en="Ready for analysis without extra frames" /></strong>
+            </footer>
+          </section>
+        </div>
       </div>
 
       <div className="pd-f0-depth-stage__raised" data-shadow="raised">
-        <span><Localized pl="Panel uniesiony" en="Raised panel" /></span>
-        <strong><Localized pl="Rekomendacje" en="Recommendations" /></strong>
-        <p><Localized pl="Wspiera analizę, ale pozostaje częścią canvasu." en="Supports analysis while remaining part of the canvas." /></p>
+        <span><Localized pl="Panel rekomendacji" en="Recommendation panel" /></span>
+        <strong><Localized pl="Przenieś budżet z kosztownych kampanii" en="Shift budget from costly campaigns" /></strong>
+        <p><Localized pl="Warstwa pomaga w decyzji, ale nie odcina użytkownika od wykresu ani tabeli." en="The layer supports the decision without cutting the user off from the chart or table." /></p>
       </div>
 
-      <div className="pd-f0-depth-stage__floating" data-shadow="floating">
-        <span><Localized pl="Element pływający" en="Floating element" /></span>
-        <strong><Localized pl="Źródła danych" en="Data sources" /></strong>
-        <p>Meta Ads · GA4 · Commerce</p>
-      </div>
-
-      <div className="pd-f0-depth-stage__overlay" data-shadow="overlay">
-        <header>
+      <aside className="pd-f0-depth-stage__assistant" data-shadow="raised">
+        <header className="pd-f0-depth-stage__assistant-header">
+          <Icon decorative name="assistant" size={16} />
           <div>
-            <span><Localized pl="Warstwa wymagająca uwagi" en="Attention layer" /></span>
-            <strong><Localized pl="Najwyższy poziom treści" en="Highest content level" /></strong>
+            <span><Localized pl="Papa Asystent" en="Papa Assistant" /></span>
+            <strong><Localized pl="Sidecar bez scrimu" en="Sidecar without scrim" /></strong>
           </div>
-          <span><Localized pl="Poziom 03" en="Level 03" /></span>
         </header>
-        <div>
-          <p>
-            <Localized
-              pl="Overlay odcina kontekst bazowy i przejmuje najwyższy priorytet wizualny."
-              en="The overlay separates the base context and takes the highest visual priority."
-            />
-          </p>
-          <dl>
-            <div>
-              <dt><Localized pl="Warstwa" en="Layer" /></dt>
-              <dd>modal</dd>
-            </div>
-            <div>
-              <dt><Localized pl="Cień" en="Shadow" /></dt>
-              <dd>overlay</dd>
-            </div>
-          </dl>
+
+        <div className="pd-f0-depth-stage__assistant-context">
+          <span><Localized pl="Kontekst" en="Context" /></span>
+          <strong>15.01 ChartFrame · DataTable runtime · 18.04</strong>
         </div>
-        <footer>
-          <span><Localized pl="Rola systemowa" en="System role" /></span>
-          <span>--pd-shadow-overlay</span>
-        </footer>
-      </div>
+
+        <div className="pd-f0-depth-stage__assistant-thread">
+          <section>
+            <span><Localized pl="Wniosek" en="Finding" /></span>
+            <p><Localized pl="ROAS spada szybciej niż przychód w kampaniach prospectingowych." en="ROAS is dropping faster than revenue in prospecting campaigns." /></p>
+          </section>
+          <section>
+            <span><Localized pl="Następny krok" en="Next step" /></span>
+            <p><Localized pl="Porównaj segmenty kosztu z ostatnich 7 dni przed zmianą budżetu." en="Compare cost segments from the last 7 days before changing budget." /></p>
+          </section>
+        </div>
+
+        <div className="pd-f0-depth-stage__assistant-composer">
+          <span><Localized pl="Zapytaj o widoczny zakres danych" en="Ask about the visible data range" /></span>
+          <strong><Localized pl="Wyślij" en="Send" /></strong>
+        </div>
+      </aside>
 
       <div className="pd-f0-depth-stage__toast" data-shadow="floating">
         <span className="pd-f0-depth-stage__toast-marker" />
         <div>
-          <strong><Localized pl="Rekomendacja przygotowana" en="Recommendation prepared" /></strong>
-          <p><Localized pl="Zapisano jako wersję roboczą." en="Saved as a draft." /></p>
+          <strong><Localized pl="Widok zapisany" en="View saved" /></strong>
+          <p><Localized pl="Toast jest operacyjny i nie zmienia układu." en="The toast is operational and does not change the layout." /></p>
         </div>
+      </div>
+
+      <div className="pd-f0-depth-stage__popover" data-shadow="floating">
+        <strong><Localized pl="Popover filtra" en="Filter popover" /></strong>
+        <span><Localized pl="Zakres: ostatnie 30 dni" en="Range: last 30 days" /></span>
+      </div>
+
+      <div className="pd-f0-depth-stage__modal" data-shadow="overlay">
+        <span><Localized pl="Overlay" en="Overlay" /></span>
+        <strong><Localized pl="Potwierdź zmianę budżetu" en="Confirm budget change" /></strong>
+        <p><Localized pl="Modal odcina kontekst tylko dla decyzji wymagającej uwagi." en="A modal cuts off context only for a decision requiring attention." /></p>
       </div>
     </div>
   );
@@ -1287,7 +1655,7 @@ export const PromienieIGeometria: Story = {
   render: () => (
     <FoundationPage
       title={<Localized pl="Promienie i geometria" en="Radii and geometry" />}
-      summary={<Localized pl="Trzy role geometryczne porządkują kontrolki, rzeczywiste powierzchnie i małe znaczniki. Promień wynika z funkcji, nie z dekoracji." en="Three geometry roles organize controls, real surfaces and compact markers. Radius follows function, not decoration." />}
+      summary={<Localized pl="Cztery role geometryczne porządkują kontrolki, panele, overlay i małe znaczniki. Promień wynika z funkcji, nie z dekoracji." en="Four geometry roles organize controls, panels, overlays and compact markers. Radius follows function, not decoration." />}
     >
       <FoundationSection
         index="01"
@@ -1336,32 +1704,40 @@ export const LinieISeparacja: Story = {
   render: () => (
     <FoundationPage
       title={<Localized pl="Linie i separacja" en="Lines and separation" />}
-      summary={<Localized pl="Linie są uporządkowane według trzech funkcji: struktury, interakcji i komunikacji. Nie tworzymy dekoracyjnej palety ramek." en="Lines are organized by three functions: structure, interaction and communication. We do not create a decorative border palette." />}
+      summary={<Localized pl="Linia jest narzędziem porządku w workspace: rozdziela, wskazuje aktywność albo komunikuje stan bez tworzenia kolejnej karty." en="A line is a workspace ordering tool: it separates, marks activity or communicates state without creating another card." />}
     >
       <FoundationSection
         index="01"
-        title={<Localized pl="Struktura" en="Structure" />}
-        summary={<Localized pl="Główne granice i wewnętrzne podziały mają różną wagę i nie są zamienne." en="Main boundaries and internal divisions have different weight and are not interchangeable." />}
+        title={<Localized pl="Kiedy linia zamiast karty" en="When a line replaces a card" />}
+        summary={<Localized pl="PapaData ma czytać się jak ledger i przestrzeń decyzyjna. Nowa powierzchnia pojawia się dopiero wtedy, gdy zmienia się poziom pracy." en="PapaData should read like a ledger and decision workspace. A new surface appears only when the work level changes." />}
       >
-        <div className="pd-f0-separation-grid" data-columns="2" role="list">
-          {geometryBorderRows.filter((item) => item.group === 'structure').map((item) => (
-            <article className="pd-f0-geometry-border-card" key={item.name} role="listitem">
-              <GeometryBorderPreview name={item.name} />
-              <strong>{copy(item.label)}</strong>
-              <code className="pd-f0-geometry-token">{item.token}</code>
-              <p>{copy(item.detail)}</p>
-            </article>
+        <FoundationLedger label={copy({ pl: 'Decyzje separacji', en: 'Separation decisions' })}>
+          {separationDecisionRows.map((item) => (
+            <LedgerRow
+              detail={copy(item.detail)}
+              key={item.label.pl}
+              label={copy(item.label)}
+              value={<code>{copy(item.value)}</code>}
+            />
           ))}
-        </div>
+        </FoundationLedger>
       </FoundationSection>
 
       <FoundationSection
         index="02"
-        title={<Localized pl="Interakcja" en="Interaction" />}
-        summary={<Localized pl="Akcent pojawia się lokalnie i wskazuje wybrany lub aktywny element." en="The accent appears locally and identifies a selected or active element." />}
+        title={<Localized pl="Realny układ roboczy" en="Real workspace layout" />}
+        summary={<Localized pl="Ten sam obszar danych używa separatora sekcji, separatorów tabeli, aktywnego akcentu i linii statusu bez budowania pudełek wokół każdego fragmentu." en="The same data area uses a section separator, table separators, an active accent and a status line without boxing every fragment." />}
       >
-        <div className="pd-f0-separation-grid" data-columns="1" role="list">
-          {geometryBorderRows.filter((item) => item.group === 'interaction').map((item) => (
+        <SeparationWorkspacePreview />
+      </FoundationSection>
+
+      <FoundationSection
+        index="03"
+        title={<Localized pl="Cztery role linii" en="Four line roles" />}
+        summary={<Localized pl="Każda rola ma własny token i zakres. Nie mieszamy separatora tabeli z akcentem aktywnym ani linią statusu." en="Each role has its own token and scope. Table separators are not mixed with active accents or status lines." />}
+      >
+        <div className="pd-f0-separation-grid" data-columns="4" role="list">
+          {geometryBorderRows.map((item) => (
             <article className="pd-f0-geometry-border-card" key={item.name} role="listitem">
               <GeometryBorderPreview name={item.name} />
               <strong>{copy(item.label)}</strong>
@@ -1373,17 +1749,18 @@ export const LinieISeparacja: Story = {
       </FoundationSection>
 
       <FoundationSection
-        index="03"
-        title={<Localized pl="Komunikacja" en="Communication" />}
-        summary={<Localized pl="Status używa semantycznej linii i tekstu zamiast pełnego kolorowego kontenera." en="Status uses a semantic line and text instead of a fully colored container." />}
+        index="04"
+        title={<Localized pl="Granica użycia" en="Usage boundary" />}
+        summary={<Localized pl="Separator nie jest dekoracją ani zamiennikiem hierarchii. Jeśli element jest osobnym kontekstem, dostaje powierzchnię. Jeśli jest częścią tego samego kontekstu, wystarczy linia." en="A separator is not decoration or a replacement for hierarchy. If an element is a separate context, it gets a surface. If it belongs to the same context, a line is enough." />}
       >
-        <div className="pd-f0-separation-grid" data-columns="1" role="list">
-          {geometryBorderRows.filter((item) => item.group === 'communication').map((item) => (
-            <article className="pd-f0-geometry-border-card" key={item.name} role="listitem">
-              <GeometryBorderPreview name={item.name} />
-              <strong>{copy(item.label)}</strong>
-              <code className="pd-f0-geometry-token">{item.token}</code>
-              <p>{copy(item.detail)}</p>
+        <div className="pd-f0-line-boundary-grid">
+          {separationBoundaryRows.map((item) => (
+            <article data-mode={item.mode} key={item.mode}>
+              <span aria-hidden="true" />
+              <div>
+                <h3>{copy(item.title)}</h3>
+                <p>{copy(item.detail)}</p>
+              </div>
             </article>
           ))}
         </div>
@@ -1397,12 +1774,12 @@ export const GlebiaIWarstwy: Story = {
   render: () => (
     <FoundationPage
       title={<Localized pl="Głębia i warstwy" en="Depth and layers" />}
-      summary={<Localized pl="Cień komunikuje zmianę poziomu. Wszystkie warstwy pokazujemy w jednej relacji, a ich kontrakt zapisujemy w stałej kolejności od canvasu do overlayu." en="Shadow communicates a level change. All layers are shown in one relationship and their contract follows a fixed order from canvas to overlay." />}
+      summary={<Localized pl="Cień komunikuje zmianę poziomu. Warstwy pokazujemy w jednej relacji: canvas, powierzchnia danych, sidecar, popover, toast i modal." en="Shadow communicates a level change. Layers are shown in one relationship: canvas, data surface, sidecar, popover, toast and modal." />}
     >
       <FoundationSection
         index="01"
         title={<Localized pl="Hierarchia warstw" en="Layer hierarchy" />}
-        summary={<Localized pl="Canvas, panel, element pływający i overlay muszą być czytelne jako jeden system." en="Canvas, panel, floating element and overlay must read as one system." />}
+        summary={<Localized pl="Canvas, powierzchnia danych, panel rekomendacji, Papa Asystent, popover, toast i modal muszą być czytelne jako jeden system." en="Canvas, data surface, recommendation panel, Papa Assistant, popover, toast and modal must read as one system." />}
       >
         <div className="pd-f0-depth-stage">
           <DepthCanvas />
@@ -1486,7 +1863,7 @@ export const Ikonografia: Story = {
   render: () => (
     <FoundationPage
       title={<Localized pl="Ikonografia" en="Iconography" />}
-      summary={<Localized pl="Fundament określa reguły języka ikon. Pełny katalog nazw i wariantów jest własnością komponentu 00.13 — Ikony." en="The foundation defines icon-language rules. The complete name and variant catalog is owned by component 10.11 — Icons." />}
+      summary={<Localized pl="Fundament określa reguły języka ikon. Pełny katalog nazw i wariantów jest własnością story 04 Ikony i komponentu Icon." en="The foundation defines icon-language rules. The complete name and variant catalog is owned by story 04 Icons and the Icon component." />}
     >
       <FoundationSection
         index="01"
@@ -1531,12 +1908,12 @@ export const Ikonografia: Story = {
       <FoundationSection
         index="03"
         title={<Localized pl="Własność katalogu" en="Catalog ownership" />}
-        summary={<Localized pl="Nowa ikona trafia do publicznego rejestru Icon i do story 10.11. Fundamenty nie kopiują listy nazw." en="A new icon goes to the public Icon registry and story 10.11. Foundations do not copy the list of names." />}
+        summary={<Localized pl="Nowa ikona trafia do publicznego rejestru Icon i do story 04 Ikony. Fundamenty nie kopiują listy nazw." en="A new icon goes to the public Icon registry and story 04 Icons. Foundations do not copy the list of names." />}
       >
         <FoundationVariant
           title={<Localized pl="Jedno źródło prawdy" en="Single source of truth" />}
-          description={<Localized pl="00.09 opisuje zasady. 00.13 dokumentuje komponent i pełny katalog. Provider marks oraz logo marki pozostają osobnymi rodzinami." en="00.09 defines rules. 00.13 documents the component and complete catalog. Provider marks and brand marks remain separate families." />}
-          token={<code>10.11 / Icon</code>}
+          description={<Localized pl="00.09 opisuje zasady. 00.13 — Ikony dokumentuje komponent i pełny katalog. Provider marks oraz logo marki pozostają osobnymi rodzinami." en="00.09 defines rules. 00.13 - Icons documents the component and complete catalog. Provider marks and brand marks remain separate families." />}
+          token={<code>00.13 / Icon</code>}
         >
           <div className="pd-f0-iconography-note">
             <p><Localized pl="Nie dodajemy lokalnych list ikon w Laboratorium ani w stories ekranów." en="Do not add local icon lists in the Laboratory or screen stories." /></p>
@@ -1607,6 +1984,49 @@ function MotionModePreview({
   );
 }
 
+const motionUseRows = [
+  {
+    label: { pl: 'Hover', en: 'Hover' },
+    value: 'color / line',
+    detail: {
+      pl: 'Wskazuje gotowość kontrolki do interakcji bez przesuwania layoutu.',
+      en: 'Shows a control is ready for interaction without shifting layout.',
+    },
+  },
+  {
+    label: { pl: 'Focus', en: 'Focus' },
+    value: ':focus-visible',
+    detail: {
+      pl: 'Fokus jest stanem systemowym, nie animacją dekoracyjną.',
+      en: 'Focus is a system state, not decorative animation.',
+    },
+  },
+  {
+    label: { pl: 'Loading', en: 'Loading' },
+    value: 'aria-busy',
+    detail: {
+      pl: 'Ruch może potwierdzać zajętość, ale stan musi być czytelny tekstowo.',
+      en: 'Motion may confirm busy state, but the state must be text-readable.',
+    },
+  },
+  {
+    label: { pl: 'Enter / exit', en: 'Enter / exit' },
+    value: 'layer relation',
+    detail: {
+      pl: 'Warstwa pokazuje relację z triggerem i zachowuje jasną ścieżkę powrotu.',
+      en: 'A layer shows its relation to the trigger and keeps a clear return path.',
+    },
+  },
+  {
+    label: { pl: 'Reduced motion', en: 'Reduced motion' },
+    value: 'no translation',
+    detail: {
+      pl: 'Rezultat pozostaje ten sam bez przesunięć, pulsowania i ciągłego ruchu.',
+      en: 'The result remains the same without translation, pulsing or continuous movement.',
+    },
+  },
+] as const;
+
 export const MotionIReducedMotion: Story = {
   name: 'Motion i ograniczenie ruchu',
   render: () => (
@@ -1624,6 +2044,16 @@ export const MotionIReducedMotion: Story = {
           <article><span>02</span><div><h3><Localized pl="Wejście warstwy" en="Layer entry" /></h3><p><Localized pl="Pokazuje relację triggera z dialogiem lub popoverem." en="Shows the relationship between a trigger and a dialog or popover." /></p></div></article>
           <article><span>03</span><div><h3><Localized pl="Zmiana priorytetu" en="Priority change" /></h3><p><Localized pl="Kieruje uwagę bez pulsowania i ciągłego ruchu." en="Guides attention without pulsing or continuous motion." /></p></div></article>
         </div>
+        <FoundationLedger label={copy({ pl: 'Mapa ruchu funkcjonalnego', en: 'Functional motion map' })}>
+          {motionUseRows.map((item) => (
+            <LedgerRow
+              detail={copy(item.detail)}
+              key={item.value}
+              label={copy(item.label)}
+              value={<code>{item.value}</code>}
+            />
+          ))}
+        </FoundationLedger>
       </FoundationSection>
 
       <FoundationSection
@@ -1785,134 +2215,107 @@ function AccessibilitySelectDemo() {
   );
 }
 
-function AccessibilityEvidenceDemo() {
-  const [nameChecked, setNameChecked] = useState(false);
-  const [focusChecked, setFocusChecked] = useState(false);
+const accessibilityRows = [
+  { title: { pl: 'Fokus', en: 'Focus' }, detail: { pl: 'Każda kontrolka ma widoczny focus-visible bez przesuwania układu.', en: 'Every control has visible focus-visible without shifting layout.' }, token: ':focus-visible' },
+  { title: { pl: 'Klawiatura', en: 'Keyboard' }, detail: { pl: 'Tab, Enter, Space, Escape i strzałki wynikają z roli komponentu.', en: 'Tab, Enter, Space, Escape and arrows come from the component role.' }, token: 'keyboard' },
+  { title: { pl: 'Nazwa dostępna', en: 'Accessible name' }, detail: { pl: 'Nazwa opisuje akcję albo dane; ikona nie jest jedynym nośnikiem znaczenia.', en: 'The name describes the action or data; the icon is not the only carrier of meaning.' }, token: 'aria-label' },
+  { title: { pl: 'Status live', en: 'Live status' }, detail: { pl: 'Zmiany asynchroniczne są ogłaszane bez kradzieży fokusu.', en: 'Async changes are announced without stealing focus.' }, token: 'aria-live' },
+  { title: { pl: 'Status tekstowy', en: 'Text status' }, detail: { pl: 'Kolor ma zawsze tekstowy odpowiednik i nie działa samodzielnie.', en: 'Color always has a text equivalent and never works alone.' }, token: 'text + color' },
+  { title: { pl: 'Zoom i reflow', en: 'Zoom and reflow' }, detail: { pl: 'Widok działa przy 200% i składa się bez poziomego scrolla strony.', en: 'The view works at 200% and reflows without page-level horizontal scroll.' }, token: '200%' },
+  { title: { pl: 'Forced colors', en: 'Forced colors' }, detail: { pl: 'Obrys, tekst i stan pozostają rozpoznawalne w trybie wymuszonych kolorów.', en: 'Outline, text and state stay recognizable in forced-colors mode.' }, token: '@media forced-colors' },
+] as const;
 
+const accessibilityBehaviorRows = [
+  {
+    title: { pl: 'Pole i formularz', en: 'Field and form' },
+    icon: 'data',
+    detail: { pl: 'Label, helper, error, required i disabled muszą być czytelne bez znajomości koloru.', en: 'Label, helper, error, required and disabled must be readable without relying on color.' },
+    requirement: { pl: 'nazwa + opis + stan', en: 'name + description + state' },
+  },
+  {
+    title: { pl: 'Tabela i lista', en: 'Table and list' },
+    icon: 'search',
+    detail: { pl: 'Sortowanie, selekcja, puste wyniki i akcje w wierszu zachowują kolejność fokusu.', en: 'Sorting, selection, empty results and row actions preserve focus order.' },
+    requirement: { pl: 'kolejność + status', en: 'order + status' },
+  },
+  {
+    title: { pl: 'Wykres i dane', en: 'Chart and data' },
+    icon: 'trend',
+    detail: { pl: 'Wizualizacja dostaje alternatywny tekst, tabelę danych albo czytelny opis wyniku.', en: 'A visualization receives alt text, a data table or a readable result summary.' },
+    requirement: { pl: 'alternatywa danych', en: 'data alternative' },
+  },
+  {
+    title: { pl: 'Overlay i modal', en: 'Overlay and modal' },
+    icon: 'integration',
+    detail: { pl: 'Warstwa przejmuje fokus, zamyka się przewidywalnie i oddaje fokus do źródła.', en: 'The layer takes focus, closes predictably and returns focus to the source.' },
+    requirement: { pl: 'pułapka + powrót fokusu', en: 'trap + focus return' },
+  },
+  {
+    title: { pl: 'Toast i komunikat', en: 'Toast and notice' },
+    icon: 'success',
+    detail: { pl: 'Krótki status jest ogłaszany, ale nie zastępuje komunikatu przy błędzie formularza.', en: 'A short status is announced but does not replace a form-level error notice.' },
+    requirement: { pl: 'aria-live + granica użycia', en: 'aria-live + usage boundary' },
+  },
+] satisfies ReadonlyArray<{
+  readonly title: LocalizedCopy;
+  readonly icon: PapaDataIconName;
+  readonly detail: LocalizedCopy;
+  readonly requirement: LocalizedCopy;
+}>;
+
+const accessibilityLibraryRows = [
+  { title: { pl: 'Kalendarz', en: 'Calendar' }, detail: { pl: 'Biblioteka może być zewnętrzna, ale wybór daty musi mieć label, klawiaturę i status błędu.', en: 'The library may be external, but date selection needs a label, keyboard support and error status.' } },
+  { title: { pl: 'Zaawansowana tabela', en: 'Advanced table' }, detail: { pl: 'Wirtualizacja nie może zgubić nazwy kolumny, fokusu ani statusu ładowania.', en: 'Virtualization must not lose column names, focus or loading status.' } },
+  { title: { pl: 'Wykres', en: 'Chart' }, detail: { pl: 'Canvas lub SVG musi mieć tekstową interpretację danych i stanów.', en: 'Canvas or SVG must have a text interpretation of data and states.' } },
+  { title: { pl: 'Popover', en: 'Popover' }, detail: { pl: 'Otwarcie, Escape, klik poza i powrót fokusu są częścią kontraktu.', en: 'Open, Escape, outside click and focus return are part of the contract.' } },
+] as const;
+
+function AccessibilityBehaviorGrid() {
   return (
-    <div className="pd-f0-evidence">
-      <div>
-        <Button
-          startIcon={<Icon decorative name="search" size={20} />}
-          onClick={() => {
-            setNameChecked((current) => !current);
-          }}
-          variant="secondary"
+    <div className="pd-f0-accessibility-behavior-grid">
+      {accessibilityBehaviorRows.map((item) => (
+        <article
+          className="pd-f0-accessibility-behavior-card"
+          key={item.title.pl}
         >
-          <Localized
-            pl={nameChecked ? 'Ukryj przykład nazwy' : 'Sprawdź nazwę kontrolki'}
-            en={nameChecked ? 'Hide name example' : 'Check control name'}
-          />
-        </Button>
-
-        <div>
-          <strong>
-            <Localized
-              pl="Nazwa kontrolki"
-              en="Control name"
-            />
-          </strong>
-          <p aria-live="polite">
-            {nameChecked ? (
-              <Localized
-                pl="Ikona pozostaje dekoracyjna, a tekst przycisku przekazuje pełną nazwę akcji."
-                en="The icon remains decorative while the button text provides the complete action name."
-              />
-            ) : (
-              <Localized
-                pl="Uruchom przykład, aby potwierdzić nazwę dostępną niezależną od ikony."
-                en="Run the example to confirm an accessible name that does not depend on the icon."
-              />
-            )}
-          </p>
-        </div>
-      </div>
-
-      <div>
-        <StatusBadge
-          status={copy({ pl: 'Status', en: 'Status' })}
-          text={copy({
-            pl: 'Dane opóźnione',
-            en: 'Data delayed',
-          })}
-          tone="warning"
-        />
-
-        <div>
-          <strong>
-            <Localized
-              pl="Status tekstowy"
-              en="Text status"
-            />
-          </strong>
-          <p>
-            <Localized
-              pl="Kolor wspiera jednoznaczny tekst."
-              en="Color supports explicit text."
-            />
-          </p>
-        </div>
-      </div>
-
-      <div>
-        <Button
-          onClick={() => {
-            setFocusChecked((current) => !current);
-          }}
-          variant="secondary"
-        >
-          <Localized
-            pl="Sprawdź fokus"
-            en="Check focus"
-          />
-        </Button>
-
-        <div>
-          <strong>
-            <Localized
-              pl="Widoczny fokus"
-              en="Visible focus"
-            />
-          </strong>
-          <p aria-live="polite">
-            {focusChecked ? (
-              <Localized
-                pl="Fokus pozostał na aktywowanej kontrolce."
-                en="Focus remained on the activated control."
-              />
-            ) : (
-              <Localized
-                pl="Aktywuj przycisk klawiaturą, aby sprawdzić zachowanie fokusu."
-                en="Activate the button with the keyboard to verify focus behavior."
-              />
-            )}
-          </p>
-        </div>
-      </div>
+          <Icon decorative name={item.icon} size={20} />
+          <div>
+            <h3>{copy(item.title)}</h3>
+            <p>{copy(item.detail)}</p>
+            <code>{copy(item.requirement)}</code>
+          </div>
+        </article>
+      ))}
     </div>
   );
 }
 
-const accessibilityRows = [
-  { title: { pl: 'Fokus', en: 'Focus' }, detail: { pl: 'Widoczny focus-visible na każdej kontrolce.', en: 'Visible focus-visible on every control.' }, token: ':focus-visible' },
-  { title: { pl: 'Klawiatura', en: 'Keyboard' }, detail: { pl: 'Tab, Enter, Space, Escape i strzałki zgodnie z rolą.', en: 'Tab, Enter, Space, Escape and arrows follow the role.' }, token: 'keyboard' },
-  { title: { pl: 'Nazwa', en: 'Name' }, detail: { pl: 'Nazwa opisuje akcję, nie wygląd ikony.', en: 'The name describes the action, not the icon appearance.' }, token: 'aria-label' },
-  { title: { pl: 'Komunikat', en: 'Announcement' }, detail: { pl: 'Zmiana asynchroniczna jest ogłaszana bez przenoszenia fokusu.', en: 'Async change is announced without moving focus.' }, token: 'aria-live' },
-  { title: { pl: 'Status', en: 'Status' }, detail: { pl: 'Kolor zawsze ma tekstowy odpowiednik.', en: 'Color always has a textual equivalent.' }, token: 'text + color' },
-  { title: { pl: 'Reflow', en: 'Reflow' }, detail: { pl: 'Interfejs działa przy 200% bez poziomego scrolla strony.', en: 'The interface works at 200% without page-level horizontal scrolling.' }, token: '200%' },
-] as const;
+function AccessibilityLibraryLedger() {
+  return (
+    <FoundationLedger label={copy({ pl: 'Zasady dla bibliotek zewnętrznych', en: 'Rules for external libraries' })}>
+      {accessibilityLibraryRows.map((item) => (
+        <LedgerRow
+          key={item.title.pl}
+          label={copy(item.title)}
+          value={<Localized pl="nie narzucamy biblioteki" en="library agnostic" />}
+          detail={copy(item.detail)}
+        />
+      ))}
+    </FoundationLedger>
+  );
+}
 
 export const Dostepnosc: Story = {
   name: 'Dostępność systemowa',
   render: () => (
     <FoundationPage
       title={<Localized pl="Dostępność systemowa" en="System accessibility" />}
-      summary={<Localized pl="Dostępność jest częścią kontraktu komponentu, a nie osobną warstwą dodawaną po projekcie." en="Accessibility is part of the component contract, not a layer added after design." />}
+      summary={<Localized pl="Praktyczny kontrakt dla komponentów: kontrolka ma nazwę, fokus, klawiaturę, status i czytelny reflow w każdym motywie oraz języku." en="A practical component contract: every control has a name, focus, keyboard behavior, status and readable reflow in every theme and language." />}
     >
       <FoundationSection
         index="01"
-        title={<Localized pl="Kontrakt" en="Contract" />}
-        summary={<Localized pl="Każdy komponent przechodzi przez te same sześć warstw." en="Every component passes through the same six layers." />}
+        title={<Localized pl="Warstwy kontraktu" en="Contract layers" />}
+        summary={<Localized pl="To są wymagania projektowe dla komponentów, nie raport z testów." en="These are design requirements for components, not a test report." />}
       >
         <FoundationLedger label={copy({ pl: 'Kontrakt dostępności', en: 'Accessibility contract' })}>
           {accessibilityRows.map((item) => (
@@ -1928,24 +2331,31 @@ export const Dostepnosc: Story = {
 
       <FoundationSection
         index="02"
+        title={<Localized pl="Zachowania komponentów" en="Component behaviors" />}
+        summary={<Localized pl="Ten sam kontrakt dotyczy pól, tabel, wykresów, overlayów i komunikatów." en="The same contract applies to fields, tables, charts, overlays and notices." />}
+      >
+        <AccessibilityBehaviorGrid />
+      </FoundationSection>
+
+      <FoundationSection
+        index="03"
         title={<Localized pl="Przykład interaktywny" en="Interactive example" />}
-        summary={<Localized pl="Kontrolka ma widoczną etykietę, nazwę dostępną, status i powrót fokusu." en="The control has a visible label, accessible name, status and focus return." />}
+        summary={<Localized pl="Demo pokazuje realną kontrolkę: etykietę, nazwę dostępną, status live i powrót fokusu." en="The demo shows a real control: label, accessible name, live status and focus return." />}
       >
         <FoundationVariant
           title={<Localized pl="Wybór kanału" en="Channel selection" />}
           description={<Localized pl="Ten sam wzorzec działa myszą i klawiaturą." en="The same pattern works with mouse and keyboard." />}
-          surface="subtle"
         >
           <AccessibilitySelectDemo />
         </FoundationVariant>
       </FoundationSection>
 
       <FoundationSection
-        index="03"
-        title={<Localized pl="Dowody w interfejsie" en="Evidence in the interface" />}
-        summary={<Localized pl="Wizualna prezentacja pokazuje rzeczywiste zachowanie, nie techniczny debugger." en="The visual presentation shows real behavior, not a technical debugger." />}
+        index="04"
+        title={<Localized pl="Granice dla bibliotek" en="Boundaries for libraries" />}
+        summary={<Localized pl="Fundament nie wybiera biblioteki wykresów, tabel ani kalendarza. Narzuca zachowanie, które każda z nich musi zachować." en="The foundation does not choose a chart, table or calendar library. It defines behavior every library must preserve." />}
       >
-        <AccessibilityEvidenceDemo />
+        <AccessibilityLibraryLedger />
       </FoundationSection>
     </FoundationPage>
   ),
@@ -1988,19 +2398,9 @@ export const Dostepnosc: Story = {
       canvas.getByRole('status'),
     ).toHaveTextContent(/Commerce/);
 
-    const focusButton = canvas.getByRole('button', {
-      name: /Sprawdź fokus|Check focus/,
-    });
-
-    focusButton.focus();
-    await expect(focusButton).toHaveFocus();
-
-    await userEvent.keyboard('{Enter}');
-
-    await expect(focusButton).toHaveFocus();
     await expect(
       canvas.getByText(
-        /Fokus pozostał na aktywowanej kontrolce|Focus remained on the activated control/,
+        /label, klawiaturę i status błędu|label, keyboard support and error status/,
       ),
     ).toBeInTheDocument();
   },

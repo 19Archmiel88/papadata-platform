@@ -30,8 +30,22 @@ const withPapaDataRuntime: Decorator = (
     );
   }
 
+  const canvasKey = [
+    runtimeGlobals.theme,
+    runtimeGlobals.locale,
+    runtimeGlobals.density,
+    runtimeGlobals.motion,
+  ].join(':');
+
   return (
-    <div className="pd-storybook-canvas">
+    <div
+      className="pd-storybook-canvas"
+      data-density={runtimeGlobals.density}
+      data-locale={runtimeGlobals.locale}
+      data-motion={runtimeGlobals.motion}
+      data-theme={runtimeGlobals.theme}
+      key={canvasKey}
+    >
       <Story />
     </div>
   );
@@ -134,6 +148,37 @@ const preview: Preview = {
       storySort: {
         order: [
           '00 Fundamenty',
+          [
+            '01 Fundamenty wizualne',
+            [
+              'Kierunek wizualny',
+              'Kolory semantyczne',
+              'Typografia',
+              'Role semantyczne statusów',
+              'Odstępy i siatka',
+              'Promienie i geometria',
+              'Linie i separacja',
+              'Głębia i warstwy',
+              'Ikonografia',
+              'Animacje',
+              'Dostępność',
+            ],
+            '02 Powierzchnie i komunikaty',
+            [
+              'Canvas, tło i powierzchnie',
+              'Komunikat w kontekście',
+              'Status obiektu',
+              'Toast operacyjny',
+              'Stany puste, błędy i blokady',
+            ],
+            '03 Marka',
+            '04 Ikony',
+            '05 Akcje i wejścia',
+            [
+              'Przyciski i akcje',
+              'Pola tekstowe i formularzowe',
+            ],
+          ],
           '05 Laboratorium decyzji',
           '15 Wykresy i dane',
           '18 Wzorce interfejsu',

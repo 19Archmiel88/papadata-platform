@@ -16,12 +16,15 @@ import {
 import type {
   PapaDataBrandProps,
 } from './PapaDataBrand';
+import type {
+  PapaDataRuntimeLocale,
+} from '../foundations';
 
 import '../../storybook-next/presentation/story-presentation.css';
 import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../storybook-next/presentation/StoryPresentation';
 
 const meta = {
-  title: '00 Fundamenty/Marka',
+  title: '00 Fundamenty/03 Marka',
   component: PapaDataBrand,
   parameters: {
     layout: 'fullscreen',
@@ -71,20 +74,58 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+type LocalizedCopy = {
+  readonly pl: string;
+  readonly en: string;
+};
+
 type VariantDefinition = {
-  readonly description: ReactNode;
+  readonly description: LocalizedCopy;
   readonly id: string;
-  readonly label: string;
+  readonly label: LocalizedCopy;
   readonly props: PapaDataBrandProps;
   readonly token: string;
 };
 
+function readLocale(): PapaDataRuntimeLocale {
+  if (typeof document === 'undefined') {
+    return 'pl';
+  }
+
+  return document.documentElement.dataset.locale === 'en'
+    ? 'en'
+    : 'pl';
+}
+
+function readTheme(): 'light' | 'dark' {
+  if (typeof document === 'undefined') {
+    return 'light';
+  }
+
+  return document.documentElement.dataset.theme === 'dark'
+    ? 'dark'
+    : 'light';
+}
+
+function copy(value: LocalizedCopy) {
+  return readLocale() === 'en' ? value.en : value.pl;
+}
+
+function Localized({
+  pl,
+  en,
+}: LocalizedCopy) {
+  return <>{copy({ pl, en })}</>;
+}
+
 const semanticVariants = [
   {
     id: 'lockup',
-    label: 'Lockup informacyjny',
-    description:
-      'Pełny znak z nazwą dostępną dla miejsc, gdzie logo samo identyfikuje produkt.',
+    label: { pl: 'Lockup informacyjny', en: 'Informational lockup' },
+    description: {
+      pl: 'Pełny znak z nazwą dostępną dla miejsc, gdzie logo samo identyfikuje produkt.',
+      en: 'Full mark with accessible name for places where the logo identifies the product by itself.',
+    },
     props: {
       label: 'PapaData logo',
       size: 'small',
@@ -94,9 +135,11 @@ const semanticVariants = [
   },
   {
     id: 'mark',
-    label: 'Sygnet',
-    description:
-      'Sam warstwowy znak. Bez kreski pod spodem, zgodnie z wariantem mark-only.',
+    label: { pl: 'Sygnet', en: 'Mark' },
+    description: {
+      pl: 'Sam warstwowy znak. Bez kreski pod spodem, zgodnie z wariantem mark-only.',
+      en: 'The layered mark alone. No underline, aligned with the mark-only variant.',
+    },
     props: {
       label: 'PapaData sygnet',
       size: 'small',
@@ -106,9 +149,11 @@ const semanticVariants = [
   },
   {
     id: 'wordmark',
-    label: 'Wordmark',
-    description:
-      'Sam napis PapaData, kiedy kontekst już niesie znak marki.',
+    label: { pl: 'Wordmark', en: 'Wordmark' },
+    description: {
+      pl: 'Sam napis PapaData, kiedy kontekst już niesie znak marki.',
+      en: 'The PapaData wordmark alone, when context already carries the brand mark.',
+    },
     props: {
       label: 'PapaData logotyp',
       size: 'small',
@@ -118,9 +163,11 @@ const semanticVariants = [
   },
   {
     id: 'decorative',
-    label: 'Dekoracyjny',
-    description:
-      'Pełny znak jako ozdoba obok treści. Ukryty przed technologiami asystującymi.',
+    label: { pl: 'Dekoracyjny', en: 'Decorative' },
+    description: {
+      pl: 'Pełny znak jako ozdoba obok treści. Ukryty przed technologiami asystującymi.',
+      en: 'Full mark as decoration next to content. Hidden from assistive technology.',
+    },
     props: {
       size: 'small',
       variant: 'decorative',
@@ -131,26 +178,86 @@ const semanticVariants = [
 
 const brandRules = [
   {
-    label: 'Geometria',
+    label: { pl: 'Geometria', en: 'Geometry' },
     value: '100x100',
     token: 'viewBox="0 0 100 100"',
   },
   {
-    label: 'Warstwy',
-    value: '3 stacki',
+    label: { pl: 'Warstwy', en: 'Layers' },
+    value: { pl: '3 stacki', en: '3 stacks' },
     token: 'base / mid / top',
   },
   {
-    label: 'Kolor',
-    value: 'projektowy',
+    label: { pl: 'Kolor', en: 'Color' },
+    value: { pl: 'projektowy', en: 'design token' },
     token: '--pd-brand',
   },
   {
-    label: 'Interakcja',
+    label: { pl: 'Interakcja', en: 'Interaction' },
     value: 'center-out',
     token: '::after',
   },
 ] as const;
+
+const brandPlacementRows = [
+  {
+    id: 'shell',
+    title: { pl: 'App shell', en: 'App shell' },
+    detail: {
+      pl: 'Stały znak orientacyjny w powłoce produktu.',
+      en: 'A stable orientation mark in the product shell.',
+    },
+    props: {
+      label: 'PapaData app shell',
+      size: 'small',
+      variant: 'lockup',
+    },
+  },
+  {
+    id: 'auth',
+    title: { pl: 'Auth', en: 'Auth' },
+    detail: {
+      pl: 'Pełna identyfikacja przy wejściu do aplikacji.',
+      en: 'Full identity at the application entry point.',
+    },
+    props: {
+      label: 'PapaData auth',
+      size: 'medium',
+      variant: 'lockup',
+    },
+  },
+  {
+    id: 'empty',
+    title: { pl: 'Empty state', en: 'Empty state' },
+    detail: {
+      pl: 'Sygnet może wspierać pusty stan wysokiego poziomu.',
+      en: 'The mark may support a high-level empty state.',
+    },
+    props: {
+      label: 'PapaData empty state',
+      size: 'small',
+      variant: 'mark',
+    },
+  },
+  {
+    id: 'export',
+    title: { pl: 'Dokument eksportu', en: 'Export document' },
+    detail: {
+      pl: 'Wordmark identyfikuje eksport bez przenoszenia UI aplikacji.',
+      en: 'The wordmark identifies an export without carrying application UI.',
+    },
+    props: {
+      label: 'PapaData export',
+      size: 'small',
+      variant: 'wordmark',
+    },
+  },
+] satisfies readonly {
+  readonly id: string;
+  readonly title: LocalizedCopy;
+  readonly detail: LocalizedCopy;
+  readonly props: PapaDataBrandProps;
+}[];
 
 function StorySection({
   children,
@@ -159,9 +266,9 @@ function StorySection({
   title,
 }: {
   readonly children: ReactNode;
-  readonly description: string;
+  readonly description: ReactNode;
   readonly eyebrow: string;
-  readonly title: string;
+  readonly title: ReactNode;
 }) {
   return (
     <StoryPresentationSection
@@ -187,7 +294,7 @@ function renderVariantRow(variant: VariantDefinition) {
   return (
     <article className="pd-brand-row" key={variant.id}>
       <div>
-        <h3>{variant.label}</h3>
+        <h3>{copy(variant.label)}</h3>
         <p className="pd-brand-row__meta">
           brand-{variant.id}
         </p>
@@ -200,7 +307,7 @@ function renderVariantRow(variant: VariantDefinition) {
         />
       </div>
       <p>
-        {variant.description}
+        {copy(variant.description)}
         <Token>{variant.token}</Token>
       </p>
     </article>
@@ -215,10 +322,14 @@ export const Marka: Story = {
       headerAside={(
         <div className="pd-brand-hero__aside">
           <StoryPresentationMeta
-            ariaLabel="Parametry kontraktu marki"
+            ariaLabel={copy({
+              pl: 'Parametry kontraktu marki',
+              en: 'Brand contract parameters',
+            })}
             items={[
-              { label: 'Komponent', value: 'PapaDataBrand' },
-              { label: 'Warianty', value: '4 semantyczne' },
+              { label: <Localized pl="Motyw" en="Theme" />, value: readTheme() === 'dark' ? <Localized pl="Ciemny" en="Dark" /> : <Localized pl="Jasny" en="Light" /> },
+              { label: <Localized pl="Język" en="Language" />, value: readLocale().toUpperCase() },
+              { label: <Localized pl="Warianty" en="Variants" />, value: <Localized pl="4 semantyczne" en="4 semantic" /> },
               { label: 'Status', value: 'accepted' },
             ]}
           />
@@ -234,17 +345,22 @@ export const Marka: Story = {
           </div>
         </div>
       )}
-      sectionCode="10"
-      sectionLabel="Komponenty bazowe"
-      storyId="10.01"
-      summary="Komponent marki działa jak pozostałe elementy design-systemu: bez dekoracyjnego glow, bez lokalnych efektów i z jednym publicznym API."
-      title="PapaDataBrand jako znak systemu."
+      sectionCode="00"
+      sectionLabel={<Localized pl="Fundamenty" en="Foundations" />}
+      storyId="00.12"
+      summary={
+        <Localized
+          pl="Marka identyfikuje produkt i miejsca wysokiego poziomu. Nie definiuje palety danych, powierzchni, ikon ani lokalnego stylu ekranów."
+          en="The brand identifies the product and high-level placements. It does not define the data palette, surfaces, icons or local screen style."
+        />
+      }
+      title={<Localized pl="Marka jako identyfikacja produktu." en="Brand as product identity." />}
     >
 
         <StorySection
-          description="Sygnet ma dokładnie trzy warstwy z dostarczonego kodu. Zmieniony jest tylko kolor: zostaje token marki z projektu."
+          description={<Localized pl="Sygnet i wordmark identyfikują PapaData w shellu, wejściu do aplikacji, eksporcie i miejscach pustych wysokiego poziomu." en="The mark and wordmark identify PapaData in the shell, app entry, exports and high-level empty placements." />}
           eyebrow="01"
-          title="Język marki"
+          title={<Localized pl="Identyfikacja produktu" en="Product identity" />}
         >
           <div className="pd-brand-language">
             <article className="pd-brand-language__sample">
@@ -257,18 +373,19 @@ export const Marka: Story = {
                 />
               </div>
               <p>
-                Warstwowy sygnet, dwuczęściowy wordmark i kreska hover
-                rozchodząca się od środka pozostają częścią jednego
-                komponentu.
+                <Localized
+                  pl="Warstwowy sygnet, dwuczęściowy wordmark i kreska hover pozostają częścią jednego komponentu. Kolor marki nie przejmuje roli statusu ani danych."
+                  en="The layered mark, two-part wordmark and hover line remain parts of one component. Brand color does not take over status or data roles."
+                />
               </p>
             </article>
 
             <dl className="pd-brand-spec-list">
               {brandRules.map((rule) => (
                 <div className="pd-brand-spec-row" key={rule.token}>
-                  <dt>{rule.label}</dt>
+                  <dt>{copy(rule.label)}</dt>
                   <dd>
-                    <strong>{rule.value}</strong>
+                    <strong>{typeof rule.value === 'string' ? rule.value : copy(rule.value)}</strong>
                     <Token>{rule.token}</Token>
                   </dd>
                 </div>
@@ -278,9 +395,9 @@ export const Marka: Story = {
         </StorySection>
 
         <StorySection
-          description="Lockup informacyjny, Sygnet, Wordmark i Dekoracyjny są tym samym znakiem z różną semantyką dostępności."
+          description={<Localized pl="Lockup informacyjny, Sygnet, Wordmark i Dekoracyjny są tym samym znakiem z różną semantyką dostępności." en="Informational lockup, Mark, Wordmark and Decorative are the same identity with different accessibility semantics." />}
           eyebrow="02"
-          title="Warianty komponentu"
+          title={<Localized pl="Warianty komponentu" en="Component variants" />}
         >
           <div className="pd-brand-ledger">
             {semanticVariants.map(renderVariantRow)}
@@ -288,9 +405,9 @@ export const Marka: Story = {
         </StorySection>
 
         <StorySection
-          description="Rozmiary odpowiadają realnym miejscom użycia, tak jak w story ikon i przycisków."
+          description={<Localized pl="Rozmiary odpowiadają realnym miejscom użycia, tak jak w story ikon i przycisków." en="Sizes map to real usage contexts, like in icon and button stories." />}
           eyebrow="03"
-          title="Rozmiary w produkcie"
+          title={<Localized pl="Rozmiary w produkcie" en="Product sizes" />}
         >
           <div className="pd-brand-size-ledger">
             <article className="pd-brand-size-row">
@@ -303,7 +420,7 @@ export const Marka: Story = {
               </div>
               <div>
                 <h3>Small</h3>
-                <p>Nawigacja, topbar i zwarte powierzchnie.</p>
+                <p><Localized pl="Nawigacja, topbar i zwarte powierzchnie." en="Navigation, topbar and compact surfaces." /></p>
               </div>
             </article>
             <article className="pd-brand-size-row">
@@ -316,7 +433,7 @@ export const Marka: Story = {
               </div>
               <div>
                 <h3>Medium</h3>
-                <p>Domyślny lockup dla powłoki aplikacji.</p>
+                <p><Localized pl="Domyślny lockup dla powłoki aplikacji." en="Default lockup for the application shell." /></p>
               </div>
             </article>
             <article className="pd-brand-size-row">
@@ -329,9 +446,32 @@ export const Marka: Story = {
               </div>
               <div>
                 <h3>Large</h3>
-                <p>Ekrany wejściowe i miejsca wysokiego poziomu.</p>
+                <p><Localized pl="Ekrany wejściowe i miejsca wysokiego poziomu." en="Entry screens and high-level contexts." /></p>
               </div>
             </article>
+          </div>
+        </StorySection>
+
+        <StorySection
+          description={<Localized pl="Marka pojawia się w miejscach identyfikacji produktu. Nie używamy jej jako ozdobnika lokalnych paneli ani substytutu statusu." en="The brand appears where the product needs identification. It is not used as local panel decoration or a status substitute." />}
+          eyebrow="04"
+          title={<Localized pl="Miejsca użycia" en="Placements" />}
+        >
+          <div className="pd-brand-placement-ledger">
+            {brandPlacementRows.map((item) => (
+              <article className="pd-brand-placement-row" key={item.id}>
+                <div className="pd-brand-row__sample">
+                  <PapaDataBrand
+                    {...item.props}
+                    data-testid={`brand-placement-${item.id}`}
+                  />
+                </div>
+                <div>
+                  <h3>{copy(item.title)}</h3>
+                  <p>{copy(item.detail)}</p>
+                </div>
+              </article>
+            ))}
           </div>
         </StorySection>
     </StoryPresentationPage>
@@ -345,10 +485,10 @@ export const Marka: Story = {
       canvas.getByTestId('brand-controlled'),
     ).toBeInTheDocument();
 
-    await expect(canvas.getByText('Lockup informacyjny')).toBeInTheDocument();
-    await expect(canvas.getByText('Sygnet')).toBeInTheDocument();
+    await expect(canvas.getByText(copy({ pl: 'Lockup informacyjny', en: 'Informational lockup' }))).toBeInTheDocument();
+    await expect(canvas.getByText(copy({ pl: 'Sygnet', en: 'Mark' }))).toBeInTheDocument();
     await expect(canvas.getByText('Wordmark')).toBeInTheDocument();
-    await expect(canvas.getByText('Dekoracyjny')).toBeInTheDocument();
+    await expect(canvas.getByText(copy({ pl: 'Dekoracyjny', en: 'Decorative' }))).toBeInTheDocument();
 
     const lockup = canvas.getByTestId('brand-language-lockup');
     const mark = canvas.getByTestId('brand-mark');

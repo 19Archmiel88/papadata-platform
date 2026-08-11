@@ -7,15 +7,15 @@ status: review
 updated_at: 2026-08-09T12:00:00+02:00
 ---
 
-# Empty, error i no-access
+# Routing feedbacku
 
 ## Metadane
 
 | Pole | Wartość |
 | --- | --- |
 | Identyfikator | 18.02 |
-| Nazwa polska | Empty, error i no-access |
-| Nazwa techniczna | empty-error-i-no-access |
+| Nazwa polska | Routing feedbacku |
+| Nazwa techniczna | routing-feedbacku |
 | Typ dokumentu | wzorzec przekrojowy |
 | Wersja | 1.0 |
 | Status kontraktu | review wzorca Storybook; decyzja wizualna oczekuje na akceptację właścicielską |
@@ -25,7 +25,7 @@ updated_at: 2026-08-09T12:00:00+02:00
 
 | Status implementacji | WDROŻONE W STORYBOOK — REVIEW |
 | Akceptacja właścicielska | `false` — wymaga osobnej akceptacji właściciela produktu |
-| Status Storybooka | `18 Wzorce interfejsu/Empty, error i no-access` |
+| Status Storybooka | `18 Wzorce interfejsu/Routing feedbacku` |
 | Status testów | fixture + play/audit dopasowane do realnej implementacji |
 
 ## Cel i realny zakres
@@ -73,7 +73,7 @@ Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook maj�
 
 ## Storybook
 
-- Title: `18 Wzorce interfejsu/Empty, error i no-access`.
+- Title: `18 Wzorce interfejsu/Routing feedbacku`.
 - File: `apps/web/src/storybook-next/stories/18-cross-cutting-patterns/FeedbackStates.stories.tsx`.
 - Status: implemented / visible / review.
 - Accepted: false, do czasu osobnej akceptacji wizualnej.

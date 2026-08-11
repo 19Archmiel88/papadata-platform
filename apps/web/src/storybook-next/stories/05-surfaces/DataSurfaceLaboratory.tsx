@@ -401,8 +401,8 @@ function DataTableSurface() {
     <div className="pd-s53-table-composition">
       <p className="pd-s53-owner-note">
         <Localized
-          pl="Owner bazowej tabeli: 10.07 / DataTable. Laboratorium pokazuje wyłącznie użycie tabeli w powierzchni oraz handoff warstw szczegółów, eksportu i wyjaśnienia."
-          en="Base table owner: 10.07 / DataTable. The laboratory only demonstrates table composition and the handoff for detail, export and explanation layers."
+          pl="Owner bazowej tabeli: runtime DataTable; wzorzec pracy z tabelą należy do 18.04. Laboratorium pokazuje wyłącznie użycie tabeli w powierzchni oraz handoff warstw szczegółów, eksportu i wyjaśnienia."
+          en="Base table owner: runtime DataTable; table workflow pattern belongs to 18.04. The laboratory only demonstrates table composition and the handoff for detail, export and explanation layers."
         />
       </p>
 
@@ -1157,8 +1157,8 @@ export function DataSurfaceLaboratory() {
         title={<Localized pl="Tabela — handoff i użycie" en="Table — handoff and usage" />}
         summary={
           <Localized
-            pl="05.03 konsumuje 10.07 / DataTable. Szczegóły, podgląd eksportu i wyjaśnienie pozostają warstwami, bez lokalnego silnika tabeli i bez lokalnego Selecta."
-            en="05.03 consumes 10.07 / DataTable. Details, export preview and explanation remain layers, with no local table engine or local Select."
+            pl="05.03 konsumuje runtime DataTable oraz wzorzec 18.04. Szczegóły, podgląd eksportu i wyjaśnienie pozostają warstwami, bez lokalnego silnika tabeli i bez lokalnego Selecta."
+            en="05.03 consumes runtime DataTable and the 18.04 pattern. Details, export preview and explanation remain layers, with no local table engine or local Select."
           />
         }
       >

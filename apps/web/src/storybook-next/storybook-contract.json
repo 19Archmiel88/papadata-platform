@@ -1,7 +1,7 @@
 {
   "name": "PapaData Storybook — finalna struktura katalogu",
   "expectedSectionCount": 20,
-  "expectedEntryCount": 204,
+  "expectedEntryCount": 210,
   "storyClasses": [
     "reference",
     "component",
@@ -128,9 +128,9 @@
       "storyClass": "reference",
       "owner": "Design System",
       "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-      "entryCount": 15,
+      "entryCount": 20,
       "displayTitle": "Fundamenty",
-      "description": "Podstawowe zasady wizualne, typografia, kolory, statusy, odstępy, geometria, separacja, głębia, ruch, dostępność oraz zaakceptowane elementy bazowe interfejsu."
+      "description": "Podstawowe zasady wizualne, powierzchnie, komunikaty, typografia, kolory, statusy, odstępy, geometria, separacja, głębia, ruch, dostępność oraz zaakceptowane elementy bazowe interfejsu."
     },
     {
       "id": "05",
@@ -161,9 +161,9 @@
       "storyClass": "pattern",
       "owner": "Product UI",
       "layer": "WARSTWA II — WZORCE I POWŁOKA",
-      "entryCount": 10,
+      "entryCount": 11,
       "displayTitle": "Wzorce interfejsu",
-      "description": "Powtarzalne układy, stany, operacje, formularze i zachowania przekrojowe."
+      "description": "Powtarzalne układy, stany, operacje, komunikaty, decyzje, formularze i zachowania przekrojowe."
     },
     {
       "id": "25",
@@ -368,7 +368,7 @@
         "dark mode",
         "akcent marki"
       ],
-      "storyTitle": "00 Fundamenty/Podstawy",
+      "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
       "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Kierunek wizualny",
@@ -408,7 +408,7 @@
         "wyrównanie kwot",
         "bezpieczne zawijanie identyfikatorów"
       ],
-      "storyTitle": "00 Fundamenty/Podstawy",
+      "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
       "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Typografia",
@@ -446,7 +446,7 @@
         "ton przetwarzania",
         "kontrast light/dark"
       ],
-      "storyTitle": "00 Fundamenty/Podstawy",
+      "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
       "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Kolory semantyczne",
@@ -455,7 +455,7 @@
     },
     {
       "id": "00.04",
-      "title": "Statusy systemowe",
+      "title": "Role semantyczne statusów",
       "sectionId": "00",
       "sectionTitle": "Fundamenty",
       "folder": "00-foundations",
@@ -480,10 +480,10 @@
         "light mode",
         "dark mode"
       ],
-      "storyTitle": "00 Fundamenty/Podstawy",
+      "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
       "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
       "displaySectionTitle": "Fundamenty",
-      "displayTitle": "Statusy systemowe",
+      "displayTitle": "Role semantyczne statusów",
       "storyExport": "StatusySystemowe",
       "accepted": true
     },
@@ -518,7 +518,7 @@
         "compact",
         "jawne viewporty Storybooka"
       ],
-      "storyTitle": "00 Fundamenty/Podstawy",
+      "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
       "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Odstępy i siatka",
@@ -543,7 +543,7 @@
       "testStatus": "passing",
       "storyStatus": "implemented",
       "storyVisibility": "visible",
-      "storyTitle": "00 Fundamenty/Podstawy",
+      "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
       "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
       "displaySectionTitle": "Fundamenty",
       "requirements": [
@@ -578,7 +578,7 @@
       "testStatus": "passing",
       "storyStatus": "implemented",
       "storyVisibility": "visible",
-      "storyTitle": "00 Fundamenty/Podstawy",
+      "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
       "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
       "displaySectionTitle": "Fundamenty",
       "requirements": [
@@ -613,7 +613,7 @@
       "testStatus": "passing",
       "storyStatus": "implemented",
       "storyVisibility": "visible",
-      "storyTitle": "00 Fundamenty/Podstawy",
+      "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
       "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
       "displaySectionTitle": "Fundamenty",
       "requirements": [
@@ -660,7 +660,7 @@
         "dostępna nazwa",
         "handoff pełnego katalogu do 00.13"
       ],
-      "storyTitle": "00 Fundamenty/Podstawy",
+      "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
       "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Ikonografia",
@@ -702,7 +702,7 @@
         "przerwanie animacji",
         "play testy interakcji"
       ],
-      "storyTitle": "00 Fundamenty/Podstawy",
+      "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
       "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Animacje",
@@ -741,12 +741,181 @@
         "mobile reflow",
         "kontrast light/dark"
       ],
-      "storyTitle": "00 Fundamenty/Podstawy",
+      "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
       "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Dostępność",
       "storyExport": "Dostepnosc",
       "accepted": true
+    },
+    {
+      "id": "00.16",
+      "title": "Canvas, tło i powierzchnie",
+      "sectionId": "00",
+      "sectionTitle": "Fundamenty",
+      "folder": "00-foundations",
+      "storyClass": "reference",
+      "owner": "Design System",
+      "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
+      "note": "Kanoniczny kontrakt powierzchni i komunikatów po decyzji Brand Atmosphere.",
+      "group": "Powierzchnie i komunikaty",
+      "sourceStatus": "accepted",
+      "documentationStatus": "review",
+      "prototypeStatus": "implemented",
+      "productionStatus": "not_started",
+      "testStatus": "passing",
+      "storyStatus": "implemented",
+      "storyVisibility": "visible",
+      "storyTitle": "00 Fundamenty/02 Powierzchnie i komunikaty",
+      "storyFile": "apps/web/src/storybook-next/stories/00-foundations/surface-messaging.stories.tsx",
+      "displaySectionTitle": "Fundamenty",
+      "requirements": [
+        "canvas aplikacji",
+        "tło robocze",
+        "surface",
+        "floating",
+        "overlay",
+        "separator",
+        "shadow",
+        "motyw jasny",
+        "motyw ciemny"
+      ],
+      "displayTitle": "Canvas, tło i powierzchnie",
+      "storyExport": "HierarchiaPowierzchni",
+      "accepted": false
+    },
+    {
+      "id": "00.17",
+      "title": "Komunikat w kontekście",
+      "sectionId": "00",
+      "sectionTitle": "Fundamenty",
+      "folder": "00-foundations",
+      "storyClass": "reference",
+      "owner": "Design System",
+      "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
+      "note": "Kanoniczny kontrakt powierzchni i komunikatów po decyzji Brand Atmosphere.",
+      "group": "Powierzchnie i komunikaty",
+      "sourceStatus": "accepted",
+      "documentationStatus": "review",
+      "prototypeStatus": "implemented",
+      "productionStatus": "not_started",
+      "testStatus": "passing",
+      "storyStatus": "implemented",
+      "storyVisibility": "visible",
+      "storyTitle": "00 Fundamenty/02 Powierzchnie i komunikaty",
+      "storyFile": "apps/web/src/storybook-next/stories/00-foundations/surface-messaging.stories.tsx",
+      "displaySectionTitle": "Fundamenty",
+      "requirements": [
+        "info",
+        "success",
+        "warning",
+        "critical",
+        "komunikat w kontekście",
+        "nie toast",
+        "motyw jasny",
+        "motyw ciemny"
+      ],
+      "displayTitle": "Komunikat w kontekście",
+      "storyExport": "KomunikatWKontekscie",
+      "accepted": false
+    },
+    {
+      "id": "00.18",
+      "title": "Status obiektu",
+      "sectionId": "00",
+      "sectionTitle": "Fundamenty",
+      "folder": "00-foundations",
+      "storyClass": "reference",
+      "owner": "Design System",
+      "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
+      "note": "Kanoniczny kontrakt powierzchni i komunikatów po decyzji Brand Atmosphere.",
+      "group": "Powierzchnie i komunikaty",
+      "sourceStatus": "accepted",
+      "documentationStatus": "review",
+      "prototypeStatus": "implemented",
+      "productionStatus": "not_started",
+      "testStatus": "passing",
+      "storyStatus": "implemented",
+      "storyVisibility": "visible",
+      "storyTitle": "00 Fundamenty/02 Powierzchnie i komunikaty",
+      "storyFile": "apps/web/src/storybook-next/stories/00-foundations/surface-messaging.stories.tsx",
+      "displaySectionTitle": "Fundamenty",
+      "requirements": [
+        "ton statusu",
+        "mapowanie semantyczne",
+        "neutral",
+        "success",
+        "warning",
+        "critical",
+        "info"
+      ],
+      "displayTitle": "Status obiektu",
+      "storyExport": "StatusObiektu",
+      "accepted": false
+    },
+    {
+      "id": "00.19",
+      "title": "Toast operacyjny",
+      "sectionId": "00",
+      "sectionTitle": "Fundamenty",
+      "folder": "00-foundations",
+      "storyClass": "reference",
+      "owner": "Design System",
+      "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
+      "note": "Kanoniczny kontrakt powierzchni i komunikatów po decyzji Brand Atmosphere.",
+      "group": "Powierzchnie i komunikaty",
+      "sourceStatus": "accepted",
+      "documentationStatus": "review",
+      "prototypeStatus": "implemented",
+      "productionStatus": "not_started",
+      "testStatus": "passing",
+      "storyStatus": "implemented",
+      "storyVisibility": "visible",
+      "storyTitle": "00 Fundamenty/02 Powierzchnie i komunikaty",
+      "storyFile": "apps/web/src/storybook-next/stories/00-foundations/surface-messaging.stories.tsx",
+      "displaySectionTitle": "Fundamenty",
+      "requirements": [
+        "krótkotrwała operacja",
+        "powierzchnia floating",
+        "success",
+        "warning",
+        "nie zmienia układu"
+      ],
+      "displayTitle": "Toast operacyjny",
+      "storyExport": "ToastOperacyjny",
+      "accepted": false
+    },
+    {
+      "id": "00.20",
+      "title": "Stany puste, błędy i blokady",
+      "sectionId": "00",
+      "sectionTitle": "Fundamenty",
+      "folder": "00-foundations",
+      "storyClass": "reference",
+      "owner": "Design System",
+      "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
+      "note": "Kanoniczny kontrakt powierzchni i komunikatów po decyzji Brand Atmosphere.",
+      "group": "Powierzchnie i komunikaty",
+      "sourceStatus": "accepted",
+      "documentationStatus": "review",
+      "prototypeStatus": "implemented",
+      "productionStatus": "not_started",
+      "testStatus": "passing",
+      "storyStatus": "implemented",
+      "storyVisibility": "visible",
+      "storyTitle": "00 Fundamenty/02 Powierzchnie i komunikaty",
+      "storyFile": "apps/web/src/storybook-next/stories/00-foundations/surface-messaging.stories.tsx",
+      "displaySectionTitle": "Fundamenty",
+      "requirements": [
+        "pusty stan",
+        "błąd możliwy do naprawy",
+        "stan blokady",
+        "wspólna anatomia",
+        "akcja kontekstowa"
+      ],
+      "displayTitle": "Stany puste, błędy i blokady",
+      "storyExport": "StanyPusteBledyIBlokady",
+      "accepted": false
     },
     {
       "id": "00.12",
@@ -775,11 +944,12 @@
         "dark",
         "brak dekoracyjnego glow w bazowym API"
       ],
-      "storyTitle": "00 Fundamenty/Marka",
+      "storyTitle": "00 Fundamenty/03 Marka",
       "storyFile": "apps/web/src/design-system/icons/PapaDataBrand.stories.tsx",
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Marka",
-      "storyExport": "Marka"
+      "storyExport": "Marka",
+      "accepted": true
     },
     {
       "id": "00.14",
@@ -800,22 +970,26 @@
       "storyStatus": "implemented",
       "storyVisibility": "visible",
       "requirements": [
-        "primary",
-        "secondary",
-        "ghost",
-        "danger",
+        "kiedy uzyc Button vs TextAction vs LinkAction vs IconButton",
+        "primary jako akcja glowna",
+        "secondary jako akcja wspierajaca",
+        "ghost jako akcja lekka",
+        "danger jako akcja destrukcyjna",
         "TextAction command",
         "LinkAction navigation",
         "IconButton",
         "loading",
         "disabled",
-        "ButtonGroup"
+        "ButtonGroup",
+        "akcje w ChartFrame, DataTable, formularzu i panelu bocznym",
+        "mobile/full-width vertical action group"
       ],
-      "storyTitle": "00 Fundamenty/Przyciski i akcje",
+      "storyTitle": "00 Fundamenty/05 Akcje i wejścia/Przyciski i akcje",
       "storyFile": "apps/web/src/design-system/components/Button/Button.stories.tsx",
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Przyciski i akcje",
-      "storyExport": "Przyciski"
+      "storyExport": "Przyciski",
+      "accepted": true
     },
     {
       "id": "00.15",
@@ -847,11 +1021,12 @@
         "disabled",
         "read-only"
       ],
-      "storyTitle": "00 Fundamenty/Pola tekstowe i formularzowe",
+      "storyTitle": "00 Fundamenty/05 Akcje i wejścia/Pola tekstowe i formularzowe",
       "storyFile": "apps/web/src/design-system/components/Field/FormFields.stories.tsx",
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Pola tekstowe i formularzowe",
-      "storyExport": "PolaFormularzy"
+      "storyExport": "PolaFormularzy",
+      "accepted": false
     },
     {
       "id": "00.13",
@@ -882,11 +1057,12 @@
         "light",
         "dark"
       ],
-      "storyTitle": "00 Fundamenty/Ikony",
+      "storyTitle": "00 Fundamenty/04 Ikony",
       "storyFile": "apps/web/src/design-system/icons/Icon.stories.tsx",
       "displaySectionTitle": "Fundamenty",
       "displayTitle": "Ikony",
-      "storyExport": "Ikony"
+      "storyExport": "Ikony",
+      "accepted": true
     },
     {
       "id": "05.01",
@@ -1500,7 +1676,7 @@
     },
     {
       "id": "18.02",
-      "title": "Empty, error i no-access",
+      "title": "Routing feedbacku",
       "sectionId": "18",
       "sectionTitle": "Wzorce i stany przekrojowe",
       "folder": "18-cross-cutting-patterns",
@@ -1528,7 +1704,7 @@
         "ErrorState role alert only for real error",
         "no focus restoration claim"
       ],
-      "storyTitle": "18 Wzorce interfejsu/Empty, error i no-access",
+      "storyTitle": "18 Wzorce interfejsu/Routing feedbacku",
       "storyFile": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/FeedbackStates.stories.tsx",
       "displaySectionTitle": "Wzorce interfejsu",
       "displayTitle": "Brak danych, błędy i brak dostępu",
@@ -1714,7 +1890,7 @@
     },
     {
       "id": "18.08",
-      "title": "Status danych i readiness",
+      "title": "Readiness operacyjny",
       "sectionId": "18",
       "sectionTitle": "Wzorce i stany przekrojowe",
       "folder": "18-cross-cutting-patterns",
@@ -1743,7 +1919,7 @@
         "InlineNotice",
         "handoff to 15.08 ChartDataState for chart data states"
       ],
-      "storyTitle": "18 Wzorce interfejsu/Status danych i readiness",
+      "storyTitle": "18 Wzorce interfejsu/Readiness operacyjny",
       "storyFile": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DataReadinessStatus.stories.tsx",
       "displaySectionTitle": "Wzorce interfejsu",
       "displayTitle": "Gotowość i status danych",
@@ -1820,6 +1996,42 @@
       "displaySectionTitle": "Wzorce interfejsu",
       "displayTitle": "Macierz stanów przekrojowych",
       "storyExport": "CrossStateMatrixStory",
+      "accepted": false
+    },
+    {
+      "id": "18.11",
+      "title": "DataDecisionWorkspace",
+      "sectionId": "18",
+      "sectionTitle": "Wzorce i stany przekrojowe",
+      "folder": "18-cross-cutting-patterns",
+      "storyClass": "pattern",
+      "owner": "Product UI",
+      "layer": "WARSTWA II — WZORCE I POWŁOKA",
+      "note": "Produktowy wzorzec decyzji po decyzji Brand Atmosphere: dane, rekomendacja, sidecar Papa Asystenta i toast. Konsumuje zasady powierzchni z 00.",
+      "group": "Decision workspace",
+      "sourceStatus": "specified",
+      "documentationStatus": "review",
+      "prototypeStatus": "implemented",
+      "productionStatus": "not_started",
+      "testStatus": "passing",
+      "storyStatus": "implemented",
+      "storyVisibility": "visible",
+      "requirements": [
+        "application canvas",
+        "data surface",
+        "recommendation panel",
+        "Papa Assistant sidecar",
+        "toast",
+        "no scrim",
+        "light mode",
+        "dark mode",
+        "surface hierarchy from 00"
+      ],
+      "storyTitle": "18 Wzorce interfejsu/DataDecisionWorkspace",
+      "storyFile": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DataDecisionWorkspace.stories.tsx",
+      "displaySectionTitle": "Wzorce interfejsu",
+      "displayTitle": "DataDecisionWorkspace",
+      "storyExport": "DataDecisionWorkspaceStory",
       "accepted": false
     },
     {
@@ -5812,8 +6024,8 @@
   ],
   "visibleStoryPolicy": {
     "sectionOverviewCount": 0,
-    "entryStoryCount": 37,
-    "visibleStoryCount": 37,
+    "entryStoryCount": 43,
+    "visibleStoryCount": 43,
     "plannedEntriesRemainInContract": true,
     "technicalIdentifiersVisibleInSidebar": false
   },
@@ -5825,9 +6037,9 @@
       "00.13",
       "00.14"
     ],
-    "activeStoryFiles": 23,
+    "activeStoryFiles": 25,
     "activeSectionOverviews": 0,
-    "activeEntryStories": 37,
+    "activeEntryStories": 43,
     "legacyPrototypeAllowed": false,
     "implementationSource": "apps/web/src/design-system"
   }

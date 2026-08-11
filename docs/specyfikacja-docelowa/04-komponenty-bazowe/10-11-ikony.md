@@ -11,7 +11,7 @@ updated_at: 2026-08-06T20:27:00+01:00
 # Ikony
 
 ## Source of truth
-`10.11` i runtime `Icon` są jedynym właścicielem pełnego katalogu ikon. `00.09` definiuje wyłącznie reguły języka ikon. `StatusIcon` i `ProviderLogo` nie są wymaganiami tej sekcji; provider branding jest osobną rodziną.
+`00.13` i runtime `Icon` są jedynym właścicielem pełnego katalogu ikon w Storybooku. `00.09` definiuje wyłącznie reguły języka ikon. `StatusIcon` i `ProviderLogo` nie są wymaganiami tej sekcji; provider branding jest osobną rodziną.
 
 ## Metadane
 
@@ -27,7 +27,7 @@ updated_at: 2026-08-06T20:27:00+01:00
 | Właściciel | Design System |
 | Moduł | Komponenty bazowe — M02 |
 | Status implementacji | IMPLEMENTED |
-| Status Storybooka | `10 Komponenty bazowe/Ikony` → `Ikony` |
+| Status Storybooka | `00 Fundamenty/04 Ikony` → `Ikony` |
 | Plik Storybooka | `apps/web/src/design-system/icons/Icon.stories.tsx` |
 | Status testów | PASSING — play oraz guard prezentacji |
 
@@ -35,11 +35,11 @@ updated_at: 2026-08-06T20:27:00+01:00
 
 `Icon` jest zamkniętym komponentem ikon systemowych. Ikona nie niesie własnego koloru; dziedziczy `currentColor`, a znaczenie wynika z roli komponentu, statusu lub kontekstu danych.
 
-Story 10.11 używa dokładnie tego samego shellu prezentacyjnego co:
+Story `00.13` używa dokładnie tego samego shellu prezentacyjnego co:
 
-- `00 Fundamenty/Podstawy`;
-- `05 Laboratorium decyzji/Tła i powierzchnie`;
-- pozostałe zaakceptowane stories sekcji `10 Komponenty bazowe`.
+- `00 Fundamenty/01 Fundamenty wizualne`;
+- `00 Fundamenty/02 Powierzchnie i komunikaty`;
+- pozostałe zaakceptowane elementy bazowe w `00.12-00.15`.
 
 Canvas, typografia, szerokość treści, guttery, rytm sekcji i separatory pochodzą z klas `pd-f0-*`. Story nie definiuje lokalnego `pageStyle`, gradientu canvasu ani własnej drabiny typograficznej strony. Lokalne style mogą służyć wyłącznie do układu próbek ikon wewnątrz `pd-f0-section__content`.
 
@@ -79,7 +79,7 @@ Canvas, typografia, szerokość treści, guttery, rytm sekcji i separatory pocho
 - `20 px` — przyciski, menu, listy i nawigacja;
 - `24 px` — nagłówki paneli, landmarki i ważne punkty orientacyjne.
 
-Te trzy rozmiary są demonstrowane wyłącznie przez ownera 10.11. Historie 05 i 15 mogą konsumować `Icon`, ale nie tworzą lokalnej sekcji rozmiarów. Akcje danych używają istniejącej roli `data`, a akcje Papa istniejącej roli `assistant`; widoczna etykieta nadal pozostaje źródłem dostępnej nazwy akcji.
+Te trzy rozmiary są demonstrowane wyłącznie przez ownera `00.13`. Historie 05, 15 i 18 mogą konsumować `Icon`, ale nie tworzą lokalnej sekcji rozmiarów. Akcje danych używają istniejącej roli `data`, a akcje Papa istniejącej roli `assistant`; widoczna etykieta nadal pozostaje źródłem dostępnej nazwy akcji.
 
 ## Katalog
 

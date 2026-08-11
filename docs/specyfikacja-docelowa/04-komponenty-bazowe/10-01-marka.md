@@ -11,7 +11,7 @@ updated_at: 2026-08-06T20:27:00+01:00
 # Marka
 
 ## Source of truth
-Runtime `PapaDataBrandProps` w `apps/web/src/design-system/icons/PapaDataBrand.tsx` jest publicznym API komponentu. Bazowy komponent marki nie posiada dekoracyjnego `glow`; ewentualne efekty marketingowe nie są częścią jego API. Provider logos należą do osobnej rodziny integracyjnej.
+Runtime `PapaDataBrandProps` w `apps/web/src/design-system/icons/PapaDataBrand.tsx` jest publicznym API komponentu. Aktywnym ownerem Storybooka jest `00.12 — Marka`. Bazowy komponent marki nie posiada dekoracyjnego `glow`; ewentualne efekty marketingowe nie są częścią jego API. Provider logos należą do osobnej rodziny integracyjnej.
 
 ## Metadane
 
@@ -27,7 +27,7 @@ Runtime `PapaDataBrandProps` w `apps/web/src/design-system/icons/PapaDataBrand.t
 | Właściciel | Design System |
 | Moduł | Komponenty bazowe — M02 |
 | Status implementacji | IMPLEMENTED |
-| Status Storybooka | `10 Komponenty bazowe/Marka` → `Marka` |
+| Status Storybooka | `00 Fundamenty/03 Marka` → `Marka` |
 | Plik Storybooka | `apps/web/src/design-system/icons/PapaDataBrand.stories.tsx` |
 | Status testów | PASSING — play oraz guard prezentacji |
 
@@ -35,11 +35,11 @@ Runtime `PapaDataBrandProps` w `apps/web/src/design-system/icons/PapaDataBrand.t
 
 `PapaDataBrand` jest jednym komponentem marki. Sygnet, wordmark i lockup nie są kopiowane do lokalnych stories ani ekranów. Zmiana wariantu wpływa na zakres znaku i semantykę dostępności, ale nie tworzy nowego stylu marki.
 
-Story 10.01 używa dokładnie tego samego shellu prezentacyjnego co:
+Story `00.12` używa dokładnie tego samego shellu prezentacyjnego co:
 
-- `00 Fundamenty/Podstawy`;
-- `05 Laboratorium decyzji/Tła i powierzchnie`;
-- pozostałe zaakceptowane stories sekcji `10 Komponenty bazowe`.
+- `00 Fundamenty/01 Fundamenty wizualne`;
+- `00 Fundamenty/02 Powierzchnie i komunikaty`;
+- pozostałe zaakceptowane elementy bazowe w `00.12-00.15`.
 
 Canvas, typografia, szerokość treści, guttery, rytm sekcji i separatory pochodzą z klas `pd-f0-*`. Lokalny CSS marki może stylować wyłącznie sam znak i układy demonstracyjne wewnątrz zawartości sekcji. Nie może definiować własnego canvasu, page paddingu ani drabiny typograficznej strony.
 
@@ -101,7 +101,7 @@ Play test sprawdza:
 
 `check-storybook-presentation-contract.mjs` blokuje:
 
-- lokalny canvas i gradient story 10.01;
+- lokalny canvas i gradient story marki;
 - lokalny page padding;
 - brak importu wspólnego CSS Fundamentów;
 - brak klas wspólnego shellu `pd-f0-*`.

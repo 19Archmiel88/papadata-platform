@@ -494,8 +494,16 @@
   background: var(--pd-interactive);
 }
 
+.pd-f0-color-chip[data-color="brand-action"] {
+  background: var(--pd-brand-action);
+}
+
 .pd-f0-color-chip[data-color="data"] {
   background: var(--pd-data-accent);
+}
+
+.pd-f0-color-chip[data-color="danger-action"] {
+  background: var(--pd-status-danger);
 }
 
 .pd-f0-color-chip[data-color="focus"] {
@@ -1583,4 +1591,158 @@
 .pd-f0-variant__body > * {
   min-inline-size: 0;
   max-inline-size: 100%;
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* PapaData presentation polish — canvas, depth, controls and overflow          */
+/* -------------------------------------------------------------------------- */
+
+.pd-f0-page {
+  --pd-f0-page-padding: clamp(24px, 4vw, 56px);
+  --pd-f0-section-gap: clamp(28px, 4vw, 56px);
+  --pd-f0-section-padding: clamp(44px, 5vw, 72px);
+  --pd-f0-soft-line:
+    linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--pd-separator) 66%, transparent) 18%,
+      color-mix(in srgb, var(--pd-separator) 92%, transparent) 50%,
+      color-mix(in srgb, var(--pd-separator) 66%, transparent) 82%,
+      transparent
+    );
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface) 46%, transparent),
+      transparent 24rem
+    );
+}
+
+.pd-f0-page__inner {
+  padding: var(--pd-f0-page-padding);
+}
+
+.pd-f0-page__header {
+  position: relative;
+  border-bottom: 0;
+}
+
+.pd-f0-page__header::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: var(--pd-f0-soft-line);
+  content: '';
+}
+
+.pd-f0-page__meta {
+  border-block-color: color-mix(in srgb, var(--pd-separator-subtle) 78%, transparent);
+  background: color-mix(in srgb, var(--pd-surface) 28%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--pd-surface-raised) 70%, transparent);
+}
+
+.pd-f0-section {
+  gap: var(--pd-f0-section-gap);
+  padding-block: var(--pd-f0-section-padding);
+}
+
+.pd-f0-section__header {
+  position: relative;
+}
+
+.pd-f0-section__index {
+  color: color-mix(in srgb, var(--pd-text-muted) 76%, transparent);
+}
+
+.pd-f0-variant {
+  position: relative;
+  border-top: 0;
+}
+
+.pd-f0-variant::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: var(--pd-f0-soft-line);
+  content: '';
+}
+
+.pd-f0-variant:first-child::before {
+  display: none;
+}
+
+.pd-f0-variant[data-surface="subtle"] .pd-f0-variant__body,
+.pd-f0-variant[data-surface="data"] .pd-f0-variant__body,
+.pd-f0-theme-preview {
+  border-color: color-mix(in srgb, var(--pd-separator-subtle) 74%, transparent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-raised) 54%, transparent),
+      color-mix(in srgb, var(--pd-surface-soft) 72%, transparent)
+    );
+  box-shadow:
+    0 18px 44px -38px color-mix(in srgb, var(--pd-text) 36%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--pd-surface-raised) 82%, transparent);
+}
+
+.pd-f0-theme-preview {
+  background-color: var(--pd-surface-soft);
+}
+
+.pd-f0-page,
+.pd-f0-page__inner,
+.pd-f0-section,
+.pd-f0-section__content,
+.pd-f0-variant,
+.pd-f0-variant__body {
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+}
+
+.pd-f0-variant__header,
+.pd-f0-page__heading,
+.pd-f0-page__meta,
+.pd-f0-theme-preview,
+.pd-f0-ledger,
+.pd-f0-principles,
+.pd-f0-metric-strip,
+.pd-f0-series,
+.pd-f0-format-grid,
+.pd-f0-long-content-grid {
+  min-inline-size: 0;
+}
+
+:root[data-density="compact"] .pd-f0-page,
+.pd-storybook-canvas[data-density="compact"] .pd-f0-page {
+  --pd-f0-page-padding: clamp(18px, 3vw, 40px);
+  --pd-f0-section-gap: clamp(20px, 3vw, 40px);
+  --pd-f0-section-padding: clamp(34px, 4vw, 56px);
+}
+
+:root[data-density="compact"] .pd-f0-variant,
+.pd-storybook-canvas[data-density="compact"] .pd-f0-variant {
+  gap: clamp(10px, 1.5vw, 18px);
+  padding-block: 20px;
+}
+
+:root[data-motion="reduced"] .pd-f0-page *,
+:root[data-motion="reduced"] .pd-f0-page *::before,
+:root[data-motion="reduced"] .pd-f0-page *::after,
+.pd-storybook-canvas[data-motion="reduced"] .pd-f0-page *,
+.pd-storybook-canvas[data-motion="reduced"] .pd-f0-page *::before,
+.pd-storybook-canvas[data-motion="reduced"] .pd-f0-page *::after {
+  transition-duration: 1ms !important;
+  animation-duration: 1ms !important;
+}
+
+@media (max-width: 920px) {
+  .pd-f0-section[data-layout="narrow"] .pd-f0-section__content {
+    grid-column: 1 / -1;
+  }
 }

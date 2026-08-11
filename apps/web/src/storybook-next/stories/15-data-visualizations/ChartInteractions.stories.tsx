@@ -352,7 +352,9 @@ export const ChartInteractionsStory: Story = {
       canvas.getByRole('heading', { name: 'Interakcje i filtry' }),
     ).toBeInTheDocument();
 
-    const paidFilter = canvas.getByRole('button', { name: /Płatne/ });
+    const paidFilter = canvas.getByRole('button', {
+      name: /Płatne wyszukiwanie/,
+    });
     paidFilter.focus();
 
     await expect(paidFilter).toHaveFocus();

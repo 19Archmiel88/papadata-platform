@@ -10,6 +10,10 @@ updated_at: 2026-08-06T21:48:00+01:00
 
 # Pola tekstowe i formularzowe
 
+## Source of truth
+
+Publiczne React API jest własnością runtime w `apps/web/src/design-system/components/Field` oraz `apps/web/src/design-system/components/VerificationCodeInput`. Aktywnym ownerem Storybooka jest `00.15 — Pola tekstowe i formularzowe`. Ten dokument zostaje kontraktem runtime/reference.
+
 ## Metadane
 
 | Pole | Wartość |
@@ -24,23 +28,23 @@ updated_at: 2026-08-06T21:48:00+01:00
 | Właściciel | Design System |
 | Moduł | Komponenty bazowe — M02 |
 | Status implementacji | IMPLEMENTED FOR REVIEW |
-| Status Storybooka | `10 Komponenty bazowe/Pola tekstowe i formularzowe` → `Pola formularzy` |
+| Status Storybooka | `00 Fundamenty/05 Akcje i wejścia/Pola tekstowe i formularzowe` → `Pola formularzy` |
 | Plik Storybooka | `apps/web/src/design-system/components/Field/FormFields.stories.tsx` |
 | Status testów | PARTIAL — play i guard wdrożone; wymagany pełny runtime/build po instalacji paczki |
 
 ## Cel i decyzja docelowa
 
-Rodzina 10.03 jest jednym kontraktem pól wejściowych. Nie tworzy lokalnego wyglądu formularza i nie kopiuje komponentów do Auth, Laboratorium ani ekranów domenowych.
+Runtime rodziny pól jest jednym kontraktem wejść danych, a `00.15` jest jedyną aktywną prezentacją Storybooka. Nie tworzy lokalnego wyglądu formularza i nie kopiuje komponentów do Auth, Laboratorium ani ekranów domenowych.
 
 Story używa dokładnie tego samego shellu prezentacyjnego co:
 
-- `00 Fundamenty/Podstawy`;
-- `05 Laboratorium decyzji/Tła i powierzchnie`;
-- `10.02 Przyciski i akcje`.
+- `00 Fundamenty/01 Fundamenty wizualne`;
+- `00 Fundamenty/02 Powierzchnie i komunikaty`;
+- `00.14 Przyciski i akcje`.
 
 Lokalny `field-family-showcase.css` może odpowiadać wyłącznie za szerokość i reflow przykładów. Nie może zmieniać canvasu, drabiny typograficznej, sekcji ani wyglądu komponentów.
 
-## Zakres 10.03
+## Zakres runtime
 
 | Lp. | Wymaganie | Implementacja |
 | --- | --- | --- |
@@ -55,7 +59,7 @@ Lokalny `field-family-showcase.css` może odpowiadać wyłącznie za szerokość
 | 9 | disabled | osobny stan bez interakcji |
 | 10 | read-only | osobny stan, nie wariant disabled |
 
-`Select`, `Combobox`, `Checkbox`, `Radio`, `Switch`, `FilterChip`, `Tag` i multi-select należą do `10.04 Kontrolki wyboru` i nie są częścią 10.03.
+`Select`, `Combobox`, `Checkbox`, `Radio`, `Switch`, `FilterChip`, `Tag` i multi-select są osobnymi kontrolkami, ale ich label, helper, walidacja, focus i materiał powierzchni dziedziczą decyzje `00.15`.
 
 ## Wspólna anatomia
 
@@ -86,7 +90,7 @@ field root
 
 Właściciel produktu odrzucił poziomą niebieską linię pojawiającą się wewnątrz `PasswordField` i `Textarea`. Wzorzec referencyjny stanowią surowe pola demonstracyjne w `05.02 Tło aplikacji`, sekcja `Formularz` → `Kontrolowana długość linii`: `Nazwa raportu` i `Zakres`.
 
-Kontrakt obowiązujący dla całej rodziny 10.03:
+Kontrakt obowiązujący dla całej rodziny pól:
 
 1. fokus jest prezentowany wyłącznie na zewnętrznym właścicielu `.pd-form-control`;
 2. wewnętrzna kontrolka ma `border: 0`, `outline: 0`, `background-image: none` i `box-shadow: none` zarówno dla `:focus`, jak i `:focus-visible`;
@@ -142,7 +146,7 @@ Play test sprawdza:
 - obecność jednego wspólnego outline i ringu na właścicielu `.pd-form-control`;
 - brak zmiany szerokości lub wysokości kontrolki po uzyskaniu fokusu.
 
-`check-storybook-presentation-contract.mjs` sprawdza, że 10.03 korzysta z zaakceptowanego shellu Fundamentów i nie wprowadza lokalnych override’ów.
+`check-storybook-presentation-contract.mjs` sprawdza, że `00.15` korzysta z zaakceptowanego shellu Fundamentów i nie wprowadza lokalnych override’ów.
 
 ## Status odbioru
 

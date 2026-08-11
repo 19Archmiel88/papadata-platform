@@ -2,7 +2,7 @@
 
 ## Docelowy lancuch
 
-`00 Fundamenty -> 10 Komponenty Bazowe -> 15 Wykresy i dane -> 18 Wzorce interfejsu -> 20 Powloka produktu -> ekrany domenowe`
+`00 Fundamenty -> 05 Laboratorium decyzji -> 15 Wykresy i dane -> 18 Wzorce interfejsu -> ekrany domenowe`
 
 Laboratorium `05` jest boczna sciezka decyzyjna, a nie kolejny poziom zaleznosci runtime.
 
@@ -23,15 +23,17 @@ Laboratorium `05` jest boczna sciezka decyzyjna, a nie kolejny poziom zaleznosci
 | tabela + filtry + detail handoff | 18.04 Tabela z filtrami i akcjami |
 | evidence/recommendation/detail composition | 18.07 Panele szczegolow, dowodow i rekomendacji |
 | readiness calego widoku | 18.08 Status danych i readiness |
+| powierzchnie, komunikaty, statusy i toast | 00 Powierzchnie i komunikaty |
+| decision workspace: dane + rekomendacja + sidecar + toast | 18.11 DataDecisionWorkspace |
 
 Po promocji 05.03 nie powinno byc utrzymywane jako drugi katalog produkcyjnych wariantow.
 
 ## Granice krytyczne
 
-### 10.07 vs 18.04
+### Runtime DataTable vs 18.04
 
-- 10.07 jest wlascicielem `DataTable`.
-- 05.03 konsumuje `DataTable` i nie utrzymuje lokalnego silnika tabeli ani `DataSurfaceSelect`.
+- Bazowy `DataTable` pozostaje runtime komponentem, ale nie ma aktywnego roota `10 Komponenty` w Storybooku.
+- 05.03 konsumuje `DataTable` jako decision record i nie utrzymuje lokalnego silnika tabeli ani `DataSurfaceSelect`.
 - 18.04 jest wlascicielem workflow `FilterBar + DataTable + Pagination + actions + DetailPanel`.
 
 ### 15.08 vs 18.08
@@ -44,12 +46,19 @@ Po promocji 05.03 nie powinno byc utrzymywane jako drugi katalog produkcyjnych w
 - 18.05: confirmation ryzykownej/destrukcyjnej decyzji.
 - 18.06: authorization/approval/step-up przed dopuszczeniem do decyzji.
 
-### 18.01 vs 20.01
+### 18.01 vs przyszła powłoka produktu
 
 - 18.01: layout tresci strony wewnatrz content area.
-- 20.01: AppShell, topbar, sidebar, global overlay i routing shell.
+- Powłoka produktu, topbar, sidebar, global overlay i routing shell pozostają poza aktywnym Storybookiem do czasu osobnej akceptacji.
 
 ### 15.07 vs 50 Papa Asystent
 
 - 15.07: wizualizacja forecast/confidence/scenario.
 - 50: interakcja z AI, evidence, approval i dzialania AI.
+
+
+### 00 Powierzchnie i komunikaty vs 18 DataDecisionWorkspace
+
+- 00 definiuje kontrakt powierzchni, komunikatów i stanów: `Canvas, tło i powierzchnie`, `Komunikat w kontekście`, `Status obiektu`, `Toast operacyjny`, `Stany puste, błędy i blokady`. `00 / 01 Fundamenty wizualne / Role semantyczne statusów` opisuje tylko znaczenie tonu, nie UI badge'a.
+- 18 konsumuje ten kontrakt w realnym układzie pracy. `DataDecisionWorkspace` nie staje się drugim źródłem prawdy dla tokenów, cieni ani statusów.
+- AI jest akcentem i asystą w przepływie decyzji, nie osobnym stylem kart ani niezależnym językiem kolorów.

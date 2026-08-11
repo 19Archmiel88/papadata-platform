@@ -1,6 +1,6 @@
 {
   "fixtureId": "SB-105",
-  "storyTitle": "18 Wzorce interfejsu/Empty, error i no-access",
+  "storyTitle": "18 Wzorce interfejsu/Routing feedbacku",
   "sourceDocument": "21-stany-przekrojowe/18-02-empty-error-i-no-access.md",
   "screenId": null,
   "components": [

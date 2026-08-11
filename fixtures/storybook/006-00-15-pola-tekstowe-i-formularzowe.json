@@ -1,7 +1,7 @@
 {
-  "fixtureId": "SB-009",
-  "storyTitle": "10 Komponenty bazowe/Pola tekstowe i formularzowe",
-  "sourceDocument": "04-komponenty-bazowe/10-03-pola-tekstowe-i-formularzowe.md",
+  "fixtureId": "SB-006",
+  "storyTitle": "00 Fundamenty/05 Akcje i wejścia/Pola tekstowe i formularzowe",
+  "sourceDocument": "01-fundamenty/00-15-pola-tekstowe-i-formularzowe.md",
   "screenId": null,
   "components": [
     "TextField",

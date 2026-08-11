@@ -135,7 +135,7 @@ function ReadinessList() {
 }
 
 const meta = {
-  title: '18 Wzorce interfejsu/Status danych i readiness',
+  title: '18 Wzorce interfejsu/Readiness operacyjny',
   parameters: {
     layout: 'fullscreen',
     a11y: {
@@ -149,7 +149,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const DataReadinessStatusStory: Story = {
-  name: 'Status danych i readiness',
+  name: 'Readiness operacyjny',
   render: () => (
     <StoryPresentationPage
       className="pd-x18-story"
@@ -166,12 +166,12 @@ export const DataReadinessStatusStory: Story = {
       sectionCode="18"
       sectionLabel="Wzorce interfejsu"
       storyId="18.08"
-      summary="Readiness jest przekrojowym językiem gotowości obszaru. Nie przejmuje analitycznych stanów wykresu, które pozostają w 15.08 ChartDataState."
-      title="Status danych i readiness"
+      summary="Readiness pokazuje gotowość obszaru produktu i konsumuje StatusBadge/InlineNotice z 00. Nie tworzy drugiego słownika statusów ani nie przejmuje 15.08 ChartDataState."
+      title="Readiness operacyjny"
     >
       <StoryPresentationSection
         index="01"
-        summary="Ready, syncing, delayed, partial, stale, blocked, unavailable i action required jako lekka lista z separatorami."
+        summary="Gotowość operacyjna jako lista użyć kontekstowych. Wygląd badge'a i notice pozostaje własnością 00."
         title="Przekrojowa gotowość danych"
       >
         <ReadinessList />
@@ -185,7 +185,7 @@ export const DataReadinessStatusStory: Story = {
 
     await expect(
       canvas.getByRole('heading', {
-        name: 'Status danych i readiness',
+        name: 'Readiness operacyjny',
       }),
     ).toBeInTheDocument();
 

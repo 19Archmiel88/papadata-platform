@@ -69,14 +69,36 @@ Decyzje:
 Status: proposed patch package generated from user-provided source ZIP on 2026-08-10.
 
 Zakres:
-- Usunięto z aktywnego Storybooka niezaakceptowaną sekcję `10 Komponenty` przez wyłączenie legacy story files.
+- Usunięto z aktywnego Storybooka niezaakceptowaną sekcję `10 Komponenty`; zaakceptowane elementy bazowe pozostają w `00 Fundamenty`.
 - Przeniesiono zaakceptowane elementy bazowe do `00 Fundamenty`:
-  - `00 Fundamenty/Marka`,
-  - `00 Fundamenty/Ikony`,
-  - `00 Fundamenty/Przyciski i akcje`,
-  - `00 Fundamenty/Pola tekstowe i formularzowe`.
-- Usunięto z aktywnego Storybooka sekcję `20 Powłoka` przez wyłączenie niezaakceptowanego story `OverlayRoot i system warstw`.
+  - `00 Fundamenty/03 Marka`,
+  - `00 Fundamenty/04 Ikony`,
+  - `00 Fundamenty/05 Akcje i wejścia/Przyciski i akcje`,
+  - `00 Fundamenty/05 Akcje i wejścia/Pola tekstowe i formularzowe`.
+- Usunięto z aktywnego Storybooka sekcję `20 Powłoka`; runtime OverlayRoot nie jest prezentowany jako zaakceptowana powierzchnia.
 - Dodano jawny `storySort`, żeby kolejność Storybooka zaczynała się od `00 Fundamenty`, a potem przechodziła przez `05`, `15`, `18`.
 - Zaktualizowano kontrakt Storybooka, wygenerowany katalog i mapowanie `component-system-v1`.
 
 Świadomie nie usunięto runtime component source. Zmiana dotyczy widoczności i taksonomii Storybooka, nie kasowania komponentów używanych przez aplikację.
+
+
+## Patch 3 — global canvas, controls and accessibility polish
+
+Decision: finish the remaining Storybook presentation issues in the active taxonomy after PR #41.
+
+Implemented scope:
+
+- light canvas is cooler and less yellow/milky;
+- shared Storybook canvas carries runtime `theme`, `locale`, `density` and `motion` attributes;
+- stories remount on runtime global changes to prevent stale locale/density/motion state;
+- density and reduced-motion controls affect the shared presentation shell;
+- accepted 00 component stories no longer show legacy `10 Komponenty bazowe` page chrome;
+- Select focus is reduced to one composite focus-visible ring;
+- 00/05 demo surfaces use shared separators and subtle depth rather than accidental containers;
+- overflow protection is scoped to Storybook/presentation surfaces, not blindly applied to runtime components.
+
+Out of scope:
+
+- full business-copy translation of every 18.x and 15.x story body;
+- Dependabot updates;
+- production app screen redesign.

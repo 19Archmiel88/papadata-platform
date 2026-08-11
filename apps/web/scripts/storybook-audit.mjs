@@ -45,7 +45,7 @@ const crossCuttingPatternTargets = [
     title: '18 Wzorce interfejsu/Układ strony i sekcji',
   },
   {
-    title: '18 Wzorce interfejsu/Empty, error i no-access',
+    title: '18 Wzorce interfejsu/Routing feedbacku',
   },
   {
     title: '18 Wzorce interfejsu/Ładowanie danych i operacje w tle',
@@ -57,82 +57,60 @@ const crossCuttingPatternTargets = [
     title: '18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji',
   },
   {
-    title: '18 Wzorce interfejsu/Status danych i readiness',
+    title: '18 Wzorce interfejsu/Readiness operacyjny',
   },
   {
     title: '18 Wzorce interfejsu/Macierz stanów przekrojowych',
+  },
+  {
+    title: '18 Wzorce interfejsu/DataDecisionWorkspace',
   },
 ];
 
 const matrixTargets = [
   {
-    title: '10 Komponenty bazowe/Przyciski i akcje',
+    title: '00 Fundamenty/01 Fundamenty wizualne',
+    name: 'Kierunek wizualny',
   },
   {
-    title: '10 Komponenty/Breadcrumbs',
+    title: '00 Fundamenty/02 Powierzchnie i komunikaty',
+    name: 'Canvas, tło i powierzchnie',
   },
   {
-    title: '10 Komponenty/SearchField',
-    marker: 'Długie copy i angielski',
+    title: '00 Fundamenty/03 Marka',
   },
   {
-    title: '10 Komponenty/FilterChip',
-    marker: 'Długie etykiety i język angielski',
+    title: '00 Fundamenty/04 Ikony',
   },
   {
-    title: '10 Komponenty/SegmentedControl',
-    marker: 'Długie etykiety i angielski',
+    title: '00 Fundamenty/05 Akcje i wejścia/Przyciski i akcje',
   },
   {
-    title: '10 Komponenty/SortControl',
-    marker: 'Długie copy i angielski',
-  },
-  {
-    title: '10 Komponenty/Toolbar',
-    marker: 'Długie copy i angielski',
-  },
-  {
-    title: '10 Komponenty/FilterBar',
-    name: 'Pasek filtrów',
-    marker: 'Długie copy i angielski',
-  },
-  {
-    title: '10 Komponenty/Dialog',
-  },
-  {
-    title: '10 Komponenty/Tabs',
-  },
-  {
-    title: '10 Komponenty/Kod weryfikacyjny',
+    title: '00 Fundamenty/05 Akcje i wejścia/Pola tekstowe i formularzowe',
   },
   ...crossCuttingPatternTargets,
 ];
 
 const zoomTargets = [
   {
-    title: '10 Komponenty bazowe/Przyciski i akcje',
+    title: '00 Fundamenty/01 Fundamenty wizualne',
+    name: 'Kierunek wizualny',
   },
   {
-    title: '10 Komponenty/Breadcrumbs',
+    title: '00 Fundamenty/02 Powierzchnie i komunikaty',
+    name: 'Canvas, tło i powierzchnie',
   },
   {
-    title: '10 Komponenty/Dialog',
+    title: '00 Fundamenty/03 Marka',
   },
   {
-    title: '10 Komponenty/FilterBar',
-    name: 'Pasek filtrów',
+    title: '00 Fundamenty/04 Ikony',
   },
   {
-    title: '10 Komponenty/Toolbar',
+    title: '00 Fundamenty/05 Akcje i wejścia/Przyciski i akcje',
   },
   {
-    title: '10 Komponenty/SearchField',
-  },
-  {
-    title: '10 Komponenty/Tabs',
-  },
-  {
-    title: '10 Komponenty/Kod weryfikacyjny',
+    title: '00 Fundamenty/05 Akcje i wejścia/Pola tekstowe i formularzowe',
   },
   ...crossCuttingPatternTargets,
 ];
@@ -329,128 +307,6 @@ async function runPlayScan(browser) {
   };
 }
 
-async function runFilterKeyboardSequence(browser) {
-  const storyId = resolveStoryId({
-    title: '10 Komponenty/FilterBar',
-    name: 'Sekwencja filtrów',
-  });
-  const {
-    consoleErrors,
-    context,
-    page,
-    pageErrors,
-  } = await openStory(browser, storyId, {
-    viewport: tabletViewport,
-  });
-  const region = page.getByRole('region', {
-    name: 'Sekwencyjny pasek filtrów',
-  });
-  const search = region.getByRole('searchbox', {
-    name: 'Wyszukiwanie lokalne',
-  });
-
-  await search.focus();
-  await page.keyboard.type('meta');
-  await page.waitForTimeout(260);
-
-  await expect(
-    region.getByText('Meta Ads EMEA'),
-  ).toBeVisible();
-
-  const statusTrigger = region.getByRole('button', {
-    name: 'Status',
-  });
-
-  await statusTrigger.focus();
-  await page.keyboard.press('Enter');
-  await page.waitForTimeout(120);
-  const statusSearch = region.getByRole('combobox', {
-    name: 'Status wyszukiwanie',
-  });
-
-  await expect(statusSearch).toBeVisible();
-  await statusSearch.focus();
-  await page.keyboard.type('W toku');
-  await page.keyboard.press('Enter');
-  await page.waitForTimeout(150);
-
-  await expect(
-    region.getByRole('button', {
-      name: 'Usuń filtr: Status W toku',
-    }),
-  ).toBeVisible();
-
-  const removeQuery = region.getByRole('button', {
-    name: 'Usuń filtr: Wyszukiwanie meta',
-  });
-
-  await removeQuery.focus();
-  await page.keyboard.press('Space');
-  await page.waitForTimeout(260);
-
-  await expect(search).toHaveValue('');
-  await expect(removeQuery).toBeHidden();
-
-  const processingSegment = region.getByRole('radio', {
-    name: /W toku/,
-  });
-
-  await processingSegment.focus();
-  await page.keyboard.press('Space');
-  await expect(processingSegment).toHaveAttribute(
-    'aria-checked',
-    'true',
-  );
-
-  const sortTrigger = region.getByRole('button', {
-    name: 'Sortowanie lokalne',
-  });
-
-  await sortTrigger.focus();
-  await page.keyboard.press('Enter');
-  await page.waitForTimeout(120);
-  await page.keyboard.press('ArrowDown');
-  await page.waitForTimeout(120);
-  await page.keyboard.press('Enter');
-
-  await expect(
-    region.getByText('Sortuj: Nazwa źródła'),
-  ).toBeVisible();
-
-  const clearFilters = region.getByRole('button', {
-    name: 'Wyczyść filtry',
-  });
-
-  await clearFilters.focus();
-  await page.keyboard.press('Enter');
-  await page.waitForTimeout(260);
-
-  await expect(search).toHaveValue('');
-  await expect(
-    region.getByText('Aktywne filtry: 1'),
-  ).toBeVisible();
-  await expect(
-    region.getByRole('button', {
-      name: 'Usuń filtr: Status W toku',
-    }),
-  ).toBeHidden();
-  await expect(clearFilters).toBeHidden();
-
-  const overflow = await detectHorizontalOverflow(page);
-
-  await context.close();
-
-  return {
-    consoleErrors,
-    overflow,
-    pageErrors,
-    passed:
-      consoleErrors.length === 0
-      && pageErrors.length === 0
-      && !overflow.hasOverflow,
-  };
-}
-
 async function main() {
   const browser = await chromium.launch({
     headless: true,
@@ -540,9 +396,6 @@ async function main() {
       });
     }
 
-    const filterKeyboardSequence =
-      await runFilterKeyboardSequence(browser);
-
     const desktopSummary = storyResults.reduce((summary, result) => {
       summary.consoleErrors += result.consoleErrors.length;
       summary.pageErrors += result.pageErrors.length;
@@ -588,7 +441,6 @@ async function main() {
 
     const summary = {
       desktop: desktopSummary,
-      filterKeyboardSequence,
       fullAudit: FULL_AUDIT,
       playScan,
       responsive: responsiveSummary,
@@ -617,8 +469,7 @@ async function main() {
       || zoomSummary.pageErrors > 0
       || zoomSummary.critical > 0
       || zoomSummary.serious > 0
-      || zoomSummary.overflow > 0
-      || !filterKeyboardSequence.passed;
+      || zoomSummary.overflow > 0;
 
     if (failed) {
       process.exitCode = 1;

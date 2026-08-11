@@ -491,14 +491,6 @@
   min-width: 0;
 }
 
-.pd-s5-auth-form :where(.pd-form-field, .pd-form-check, .pd-verification-code) {
-  min-width: 0;
-}
-
-.pd-s5-auth-form :where(.pd-form-control__helper, .pd-form-check__helper, .pd-verification-code__helper) {
-  color: color-mix(in srgb, var(--pd-text-secondary) 90%, var(--pd-text));
-}
-
 .pd-s5-auth-form__actions {
   display: grid;
   justify-items: start;
@@ -1574,26 +1566,6 @@
     width: 100%;
   }
 
-
-  .pd-s5-page--auth .pd-form-control {
-    align-items: stretch;
-    flex-wrap: wrap;
-  }
-
-  .pd-s5-page--auth .pd-form-control__toggle {
-    width: 100%;
-    min-height: 36px;
-    text-align: left;
-  }
-
-  .pd-s5-page--auth .pd-verification-code__slots {
-    gap: 4px;
-  }
-
-  .pd-s5-page--auth .pd-verification-code__slot {
-    min-height: 40px;
-    font-size: var(--pd-type-size-body);
-  }
 
   .pd-s5-auth-state-proof,
   .pd-s5-auth-deferred {

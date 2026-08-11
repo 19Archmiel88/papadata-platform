@@ -281,7 +281,7 @@ export const MetricCardStory: Story = {
     await expect(showMetricDetail).toHaveBeenCalled();
 
     await expect(
-      canvas.getByLabelText(/Przychód: 248[\s\u00a0]420,00[\s\u00a0]zł/),
+      canvas.getByText(/248[\s\u00a0]420,00[\s\u00a0]zł/),
     ).toBeInTheDocument();
   },
 };

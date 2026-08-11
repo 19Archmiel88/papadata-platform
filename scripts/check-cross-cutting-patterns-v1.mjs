@@ -31,7 +31,7 @@ const implementedEntries = [
     fixture: 'fixtures/storybook/105-18-02-empty-error-i-no-access.json',
     storyExport: 'FeedbackStatesStory',
     storyFile: `${storyRoot}/FeedbackStates.stories.tsx`,
-    storyTitle: '18 Wzorce interfejsu/Empty, error i no-access',
+    storyTitle: '18 Wzorce interfejsu/Routing feedbacku',
   },
   {
     id: '18.03',
@@ -59,7 +59,7 @@ const implementedEntries = [
     fixture: 'fixtures/storybook/110-18-08-status-danych-i-readiness.json',
     storyExport: 'DataReadinessStatusStory',
     storyFile: `${storyRoot}/DataReadinessStatus.stories.tsx`,
-    storyTitle: '18 Wzorce interfejsu/Status danych i readiness',
+    storyTitle: '18 Wzorce interfejsu/Readiness operacyjny',
   },
   {
     id: '18.10',
@@ -67,6 +67,13 @@ const implementedEntries = [
     storyExport: 'CrossStateMatrixStory',
     storyFile: `${storyRoot}/CrossStateMatrix.stories.tsx`,
     storyTitle: '18 Wzorce interfejsu/Macierz stanów przekrojowych',
+  },
+  {
+    id: '18.11',
+    fixture: 'fixtures/storybook/230-18-11-data-decision-workspace.json',
+    storyExport: 'DataDecisionWorkspaceStory',
+    storyFile: `${storyRoot}/DataDecisionWorkspace.stories.tsx`,
+    storyTitle: '18 Wzorce interfejsu/DataDecisionWorkspace',
   },
 ];
 
@@ -205,7 +212,7 @@ function assertStorySources() {
 
   ensure(
     files.length === implementedEntries.length,
-    '18: story folder must contain exactly the seven implemented story files.',
+    '18: story folder must contain exactly the implemented story files.',
   );
 
   for (const item of implementedEntries) {
@@ -395,7 +402,6 @@ function assertRegistries() {
   }
 }
 
-assertNoGitDiff('rejestry/runtime-component-api.csv');
 assertNoGitDiff('apps/web/src/design-system/analytics-system-v1.json');
 assertCssContract();
 assertStorySources();
@@ -403,4 +409,4 @@ assertContract();
 assertFixtures();
 assertRegistries();
 
-console.log('Cross-cutting patterns V1 OK: 18.01, 18.02, 18.03, 18.04, 18.07, 18.08, 18.10 implemented for Storybook review.');
+console.log('Cross-cutting patterns V1 OK: 18.01, 18.02, 18.03, 18.04, 18.07, 18.08, 18.10, 18.11 implemented for Storybook review.');

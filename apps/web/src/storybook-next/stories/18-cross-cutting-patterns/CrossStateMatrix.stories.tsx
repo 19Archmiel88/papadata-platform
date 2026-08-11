@@ -28,7 +28,6 @@ const columns: readonly DataColumn[] = [
   {
     id: 'family',
     label: 'Rodzina stanów',
-    sortable: true,
     width: 190,
   },
   {
@@ -43,13 +42,12 @@ const columns: readonly DataColumn[] = [
   },
   {
     id: 'owner',
-    label: 'Owner',
+    label: 'Właściciel',
     width: 180,
   },
   {
     id: 'readiness',
-    label: 'Readiness',
-    sortable: true,
+    label: 'Gotowość',
     width: 170,
   },
 ];
@@ -59,67 +57,59 @@ const rows: readonly DataRow[] = [
     family: 'Uniwersalne',
     id: 'universal',
     owner: 'Design System',
-    readiness: 'Review',
-    states: 'empty, error, loading, blocked',
-    surface: 'Page, section, feedback',
+    readiness: 'W przeglądzie',
+    states: 'pusty, błąd, ładowanie, zablokowany',
+    surface: 'Strona, sekcja, feedback',
   },
   {
-    family: 'Dane',
+    family: 'Dane analityczne',
     id: 'data',
-    owner: 'Data Platform',
-    readiness: 'Review',
-    states: 'no data, partial, stale, delayed',
-    surface: 'DataTable, list, chart handoff',
+    owner: '15.08 / ChartDataState',
+    readiness: 'W przeglądzie',
+    states: 'brak danych, częściowe, nieaktualne, opóźnione',
+    surface: 'ChartFrame, wykres, tabela alternatywna',
   },
   {
     family: 'Dostęp',
     id: 'access',
     owner: 'IAM',
-    readiness: 'Review',
-    states: 'forbidden, no-access, missing entitlement',
-    surface: 'EmptyState, ErrorState, notice',
+    readiness: 'W przeglądzie',
+    states: 'brak dostępu, blokada, brak uprawnienia',
+    surface: 'EmptyState, ErrorState, komunikat',
   },
   {
     family: 'Billing',
     id: 'billing',
     owner: 'Billing',
-    readiness: 'Planned',
-    states: 'trial, overdue, limited, locked',
-    surface: 'Billing surfaces',
+    readiness: 'Planowane',
+    states: 'okres próbny, zaległość, limit, blokada',
+    surface: 'Powierzchnie billingowe',
   },
   {
     family: 'AI',
     id: 'ai',
     owner: 'AI Runtime',
-    readiness: 'Planned',
-    states: 'model review, low confidence, unavailable',
-    surface: 'AI recommendation panels',
+    readiness: 'Planowane',
+    states: 'przegląd modelu, niska pewność, niedostępne',
+    surface: 'Panele rekomendacji AI',
   },
   {
     family: 'Operacje',
     id: 'operations',
     owner: 'Operations',
-    readiness: 'Review',
-    states: 'queued, running, cancelled, retry',
+    readiness: 'W przeglądzie',
+    states: 'w kolejce, trwa, anulowane, ponów',
     surface: 'BackgroundOperationItem',
   },
   {
     family: 'Integracje',
     id: 'integrations',
     owner: 'Integrations',
-    readiness: 'Review',
-    states: 'syncing, reconnect, provider delayed',
-    surface: 'Integration status surfaces',
+    readiness: 'W przeglądzie',
+    states: 'synchronizacja, ponowne połączenie, opóźnienie providera',
+    surface: 'Powierzchnie statusu integracji',
   },
 ];
-
-function readinessTone(
-  readiness: DataRow['readiness'],
-) {
-  return readiness === 'Review'
-    ? 'success'
-    : 'neutral';
-}
 
 function AssignmentRules() {
   return (
@@ -139,9 +129,9 @@ function AssignmentRules() {
         </span>
       </div>
       <div className="pd-x18-matrix-rule">
-        <span className="pd-x18-term">Na końcu recovery</span>
+        <span className="pd-x18-term">Na końcu ścieżka naprawy</span>
         <span className="pd-x18-description">
-          Retry, reconnect i action required pojawiają się tylko wtedy, gdy
+          Ponowienie, ponowne połączenie i wymagana akcja pojawiają się tylko wtedy, gdy
           użytkownik ma realny następny krok.
         </span>
       </div>
@@ -160,15 +150,15 @@ function ResponsiveMatrixList() {
           <div className="pd-x18-status-row">
             <span className="pd-x18-term">{row.family}</span>
             <StatusBadge
-              status="Readiness"
+              status="Gotowość"
               text={String(row.readiness)}
-              tone={readinessTone(row.readiness)}
+              tone="neutral"
             />
           </div>
           <span className="pd-x18-description">{row.states}</span>
           <span className="pd-x18-description">{row.surface}</span>
           <span className="pd-x18-description">
-            Owner: {row.owner}
+            Właściciel: {row.owner}
           </span>
         </li>
       ))}
@@ -201,7 +191,7 @@ export const CrossStateMatrixStory: Story = {
           items={[
             { label: 'Kontrakt', value: '18.10' },
             { label: 'Powierzchnia', value: 'DataTable' },
-            { label: 'Status', value: 'review' },
+            { label: 'Status', value: 'W przeglądzie' },
           ]}
         />
       )}
@@ -218,11 +208,11 @@ export const CrossStateMatrixStory: Story = {
       >
         <div className="pd-x18-stack">
           <InlineNotice
-            message="18.10 porządkuje wybór stanu przekrojowego. Nie zastępuje ownerów komponentów ani domenowych kontraktów 15.*."
+            message="18.10 porządkuje wybór stanu przekrojowego. Gotowość procesu danych pozostaje przy domenach, a analityczne stany prezentacyjne pozostają przy 15.08 ChartDataState."
             title="Macierz jako decyzja przypisania"
             tone="info"
           />
-          <div className="pd-x18-data-scroll pd-x18-matrix-table">
+          <div className="pd-x18-matrix-table">
             <DataTable
               ariaLabel="Macierz rodzin stanów przekrojowych"
               columns={columns}
@@ -231,18 +221,16 @@ export const CrossStateMatrixStory: Story = {
               loading={false}
               pagination={null}
               rowCount={rows.length}
+              rowHeaderColumnId="family"
               rows={rows}
               selectedRowIds={[]}
-              sort={{
-                columnId: 'family',
-                direction: 'asc',
-              }}
+              sort={null}
               statusColumn={{
                 columnId: 'readiness',
-                label: 'Readiness',
+                label: 'Gotowość',
                 mapTone: {
-                  Planned: 'neutral',
-                  Review: 'success',
+                  Planowane: 'neutral',
+                  'W przeglądzie': 'neutral',
                 },
               }}
               summary="Macierz rodzin stanów przekrojowych i przypisanych powierzchni."
@@ -273,8 +261,8 @@ export const CrossStateMatrixStory: Story = {
     ).toBeInTheDocument();
 
     const matrixTable = canvas.queryByRole('table', {
-        name: 'Macierz rodzin stanów przekrojowych',
-      });
+      name: 'Macierz rodzin stanów przekrojowych',
+    });
     const matrixList = canvas.queryByRole('list', {
       name: 'Lista rodzin stanów przekrojowych',
     });
@@ -282,6 +270,20 @@ export const CrossStateMatrixStory: Story = {
     await expect(
       matrixTable ?? matrixList,
     ).toBeInTheDocument();
+
+    if (matrixTable) {
+      await expect(
+        canvas.getByRole('rowheader', {
+          name: 'Uniwersalne',
+        }),
+      ).toBeInTheDocument();
+
+      await expect(
+        canvas.queryByRole('button', {
+          name: /Sortuj po kolumnie/,
+        }),
+      ).not.toBeInTheDocument();
+    }
 
     await expect(
       canvas.getAllByText('Integracje')[0],

@@ -1758,8 +1758,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/catalog/catalog.generated.ts",
-      "bytes": 178823,
-      "sha256": "b6e0674f01b6808d7547ee099dcc6ad420cb880e083ca1c55ab4ff60da58de6b"
+      "bytes": 178824,
+      "sha256": "d292b997f5c85d2c7b60b11efb5084779c12a468c41b11e812b37f4d63ef7035"
     },
     {
       "path": "apps/web/src/storybook-next/catalog/catalog.ts",
@@ -2003,8 +2003,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/CrossStateMatrix.stories.tsx",
-      "bytes": 7904,
-      "sha256": "ac797aa1ce2f8bca3847568447b399a8482269af860524ce5aca8203db339656"
+      "bytes": 8221,
+      "sha256": "03f0cdb0e4eae78bb9ea833f06353f3f1caf464955aeaf8ed4a990bb4fe2fefc"
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DataDecisionWorkspace.stories.tsx",
@@ -2043,8 +2043,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/cross-cutting-patterns.css",
-      "bytes": 29164,
-      "sha256": "eb5e46e7ad4db23cb45bf6a621a16fc4d935cc25ad69f77def22edf75a766bb3"
+      "bytes": 28962,
+      "sha256": "f05e068b0365aac85da36f56b2e340e6f237000f3f5d79e6393930d2d5c539e0"
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/data-decision-workspace.css",
@@ -2058,8 +2058,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/storybook-contract.json",
-      "bytes": 200910,
-      "sha256": "a2fd1b1cd82592f49317211b1294ced00d2d05165b643087902a72bfc5010d27"
+      "bytes": 200911,
+      "sha256": "e6303da8c9c9d2131be8f21610b87cd1bd9b2f3d39d093443c77e12aeefb3f9a"
     },
     {
       "path": "apps/web/src/storybook-next/storybook-taxonomy-map.json",
@@ -5213,8 +5213,8 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/21-stany-przekrojowe/18-10-macierz-stanow-przekrojowych.md",
-      "bytes": 3443,
-      "sha256": "76afa12fb557c57f550c6ca00e542125448045ee547d32f75fce7b5073d6e022"
+      "bytes": 3974,
+      "sha256": "9b8126d679ad55fb0b4ef1b3a561833d0808bf6294ca747c295a8f79b250fbfc"
     },
     {
       "path": "docs/specyfikacja-docelowa/21-stany-przekrojowe/18-11-data-decision-workspace.md",
@@ -9098,8 +9098,8 @@
     },
     {
       "path": "fixtures/storybook/107-18-10-macierz-stanow-przekrojowych.json",
-      "bytes": 1033,
-      "sha256": "57d14c2a0eab37ed0a69190e022c51ac6db7291fecd001abb1913a17f008b9c2"
+      "bytes": 1071,
+      "sha256": "ec5592d2f48c199395dde82d8b4c8c49ca10750ef04277b92676cfd0cb77627e"
     },
     {
       "path": "fixtures/storybook/108-18-07-panele-szczegolow-dowodow-i-rekomendacji.json",
@@ -10679,7 +10679,7 @@
     {
       "path": "rejestry/documents.csv",
       "bytes": 67131,
-      "sha256": "a4e0b30529ab6f82bc08c7b98a65d5d2f64a5301e6aec1f68dd7cc1d638ff626"
+      "sha256": "a83ae0f699c218e7804f9391ba262179d051290d66f72d999f3fe30c0ef7a6ab"
     },
     {
       "path": "rejestry/entities.csv",
@@ -10713,8 +10713,8 @@
     },
     {
       "path": "rejestry/storybook.csv",
-      "bytes": 157736,
-      "sha256": "5b1e251f0992def2f83390e02da41ccfed6d713d7e0a1393be7bd9c90d2cf602"
+      "bytes": 157784,
+      "sha256": "a549cee576aa0849496488dd13536d6338aceae61cb3de31e1c3794bbc4a4afc"
     },
     {
       "path": "rejestry/ui-actions.csv",
@@ -10738,8 +10738,8 @@
     },
     {
       "path": "scripts/check-cross-cutting-patterns-v1.mjs",
-      "bytes": 12751,
-      "sha256": "dce663cbf2aa4f476d395f047156ea86882ffc5a89dbdad7a6dea948688f5b10"
+      "bytes": 12942,
+      "sha256": "4b60945406fa17dd37be347743ce265d6603e5e4b16fc90080808ccb41795624"
     },
     {
       "path": "scripts/check-design-system-ownership.mjs",

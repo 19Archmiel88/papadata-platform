@@ -963,18 +963,6 @@
 /* Pozostałe wzorce 18                                                       */
 /* -------------------------------------------------------------------------- */
 
-.pd-x18-data-scroll {
-  max-inline-size: 100%;
-  min-inline-size: 0;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scrollbar-width: thin;
-}
-
-.pd-x18-data-scroll > * {
-  min-inline-size: 0;
-}
-
 .pd-x18-matrix-list {
   display: none;
 }

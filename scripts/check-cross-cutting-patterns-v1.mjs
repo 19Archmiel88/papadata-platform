@@ -63,7 +63,10 @@ const implementedEntries = [
   },
   {
     id: '18.10',
+    accepted: true,
+    documentationStatus: 'accepted',
     fixture: 'fixtures/storybook/107-18-10-macierz-stanow-przekrojowych.json',
+    implementationStatus: 'implemented-accepted-cross-cutting-pattern',
     storyExport: 'CrossStateMatrixStory',
     storyFile: `${storyRoot}/CrossStateMatrix.stories.tsx`,
     storyTitle: '18 Wzorce interfejsu/Macierz stanów przekrojowych',
@@ -262,11 +265,11 @@ function assertContract() {
     ensure(entry, `${item.id}: missing Storybook contract entry.`);
     ensure(entry.storyStatus === 'implemented', `${item.id}: must be implemented.`);
     ensure(entry.storyVisibility === 'visible', `${item.id}: must be visible.`);
-    ensure(entry.documentationStatus === 'review', `${item.id}: docs must be review.`);
+    ensure(entry.documentationStatus === (item.documentationStatus ?? 'review'), `${item.id}: docs status drift.`);
     ensure(entry.prototypeStatus === 'implemented', `${item.id}: prototype must be implemented.`);
     ensure(entry.productionStatus === 'not_started', `${item.id}: production status must remain not_started for pattern-only scope.`);
     ensure(entry.testStatus === 'passing', `${item.id}: test status must be passing.`);
-    ensure(entry.accepted === false, `${item.id}: visual acceptance must remain false.`);
+    ensure(entry.accepted === (item.accepted ?? false), `${item.id}: visual acceptance drift.`);
     ensure(entry.storyFile === item.storyFile, `${item.id}: storyFile drift.`);
     ensure(entry.storyTitle === item.storyTitle, `${item.id}: storyTitle drift.`);
     ensure(entry.storyExport === item.storyExport, `${item.id}: storyExport drift.`);
@@ -322,7 +325,7 @@ function assertFixtures() {
     const a11y = fixture.a11y ?? [];
 
     ensure(fixture.storyTitle === item.storyTitle, `${item.id}: fixture storyTitle drift.`);
-    ensure(fixture.implementationStatus === 'implemented-review-cross-cutting-pattern', `${item.id}: fixture implementation status drift.`);
+    ensure(fixture.implementationStatus === (item.implementationStatus ?? 'implemented-review-cross-cutting-pattern'), `${item.id}: fixture implementation status drift.`);
     ensure(fixture.components.length > 0, `${item.id}: fixture must list real components.`);
     ensure(fixture.localeCases.length === 1 && fixture.localeCases[0] === 'pl', `${item.id}: fixture must only claim implemented PL locale.`);
     ensureArrayIncludes(visualAssertions, 'no-horizontal-page-scroll', `${item.id}: fixture must declare no-horizontal-page-scroll for audit coverage.`);
@@ -409,4 +412,4 @@ assertContract();
 assertFixtures();
 assertRegistries();
 
-console.log('Cross-cutting patterns V1 OK: 18.01, 18.02, 18.03, 18.04, 18.07, 18.08, 18.10, 18.11 implemented for Storybook review.');
+console.log('Cross-cutting patterns V1 OK: 18.01, 18.02, 18.03, 18.04, 18.07, 18.08, 18.11 in Storybook review; 18.10 accepted.');

@@ -1972,7 +1972,7 @@
       "note": "Storybook-only cross-cutting pattern. Uses DataTable as the canonical state matrix for universal, data, access, billing, AI, operation and integration state families, with assignment rules as separator list.",
       "group": null,
       "sourceStatus": "specified",
-      "documentationStatus": "review",
+      "documentationStatus": "accepted",
       "prototypeStatus": "implemented",
       "productionStatus": "not_started",
       "testStatus": "passing",
@@ -1996,7 +1996,7 @@
       "displaySectionTitle": "Wzorce interfejsu",
       "displayTitle": "Macierz stanów przekrojowych",
       "storyExport": "CrossStateMatrixStory",
-      "accepted": false
+      "accepted": true
     },
     {
       "id": "18.11",

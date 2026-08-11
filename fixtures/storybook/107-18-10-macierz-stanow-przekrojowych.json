@@ -32,6 +32,7 @@
   ],
   "playSteps": [
     "verify-matrix-table",
+    "verify-row-header-family",
     "verify-assignment-rules"
   ],
   "visualAssertions": [
@@ -45,9 +46,9 @@
   ],
   "a11y": [
     "table-name",
+    "row-header-family",
     "status-badge-text",
-    "focus-visible",
     "200-percent-zoom"
   ],
-  "implementationStatus": "implemented-review-cross-cutting-pattern"
+  "implementationStatus": "implemented-accepted-cross-cutting-pattern"
 }

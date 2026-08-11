@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: a2fd1b1cd82592f49317211b1294ced00d2d05165b643087902a72bfc5010d27
+// SHA-256 źródła: e6303da8c9c9d2131be8f21610b87cd1bd9b2f3d39d093443c77e12aeefb3f9a
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -1635,7 +1635,7 @@ export const storybookCatalog = [
     "note": "Storybook-only cross-cutting pattern. Uses DataTable as the canonical state matrix for universal, data, access, billing, AI, operation and integration state families, with assignment rules as separator list.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "review",
+    "documentationStatus": "accepted",
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
@@ -1659,7 +1659,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Wzorce interfejsu",
     "displayTitle": "Macierz stanów przekrojowych",
     "storyExport": "CrossStateMatrixStory",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "18.11",

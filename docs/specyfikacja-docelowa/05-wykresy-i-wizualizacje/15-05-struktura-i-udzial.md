@@ -4,23 +4,23 @@ author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-14903FD7424D
-status: review
+status: accepted
 updated_at: 2026-08-08T21:09:00+01:00
 ---
 
-# Struktura i udział
+# Udziały i struktura
 
 ## Metadane
 
 | Pole | Wartość |
 | --- | --- |
 | Identyfikator | 15.05 |
-| Nazwa polska | Struktura i udział |
+| Nazwa polska | Udziały i struktura |
 | Nazwa techniczna | struktura-i-udzial |
 | Runtime owner | `ShareChart` |
 | Source of truth | `apps/web/src/design-system/components/ShareChart/ShareChart.tsx` |
-| Storybook | `15 Wykresy i dane/Udziały i struktura` |
-| Status implementacji | REVIEW — runtime i story wdrożone, przed odbiorem wizualnym |
+| Storybook | `15 Wykresy i dane/02 Rodziny wykresów/Udziały i struktura` |
+| Status implementacji | ACCEPTED — runtime i story wdrożone, po odbiorze wizualnym |
 
 ## Cel i decyzja docelowa
 
@@ -48,10 +48,10 @@ Wykres nie przekazuje znaczenia wyłącznie kolorem. Każdy segment ma tekstową
 
 ## Storybook
 
-- Title: `15 Wykresy i dane/Udziały i struktura`.
+- Title: `15 Wykresy i dane/02 Rodziny wykresów/Udziały i struktura`.
 - Runtime: `ShareChart`.
 - Wymagane widoki: light/dark, 1440 / 768 / 390, 200% zoom, long copy, single segment.
-- Status: review do odbioru wizualnego.
+- Status: accepted po odbiorze wizualnym 2026-08-11.
 
 ## Reguły po odbiorze wizualnym
 
@@ -68,3 +68,11 @@ Wykres nie przekazuje znaczenia wyłącznie kolorem. Każdy segment ma tekstową
 9. Na mobile słupki udziałów układają etykietę nad torem, dzięki czemu każdy pasek startuje ze wspólnego punktu 0% i wykorzystuje pełną szerokość kolumny.
 10. Mobile metadata pod wykresami nie używa twardej drabinki dividerów; separację buduje odstęp.
 11. Swatche legendy mają obrys i rozmiar wystarczający do identyfikacji segmentu w dark mode.
+
+## Zasada canvasu i warstw interpretacyjnych
+
+Dla całej sekcji 15 obowiązuje rozdzielenie powierzchni danych od warstw pomocniczych i interpretacyjnych. Powierzchnia danych zawiera wyłącznie bezpośrednią wizualizację danych: wykres, właściwą legendę, źródło, zakres, świeżość i status danych. Alternatywne tabele, listy obserwacji, opisowe legendy, scenariusze, horyzont, pewność, jakość predykcji, podpowiedzi, wnioski, rekomendacje, sidecary, overlaye, toasty i komentarze interpretacyjne są osobnymi warstwami na głównym canvasie, z własną głębią i statusem. Nie są częścią obszaru wykresu.
+
+### Fizyczne kryterium akceptacji wizualnej
+
+Warstwy pomocnicze i interpretacyjne muszą być fizycznie poza powierzchnią danych. Wariant jest niezaakceptowany, jeżeli podpowiedź, wniosek, rekomendacja, alert, ryzyko, komentarz interpretacyjny, lista obserwacji, opisowa legenda, scenariusz, horyzont, pewność albo jakość predykcji siedzi jako boczny lub dolny panel tej samej ramy wykresu. Tabela danych może rozwinąć się płasko pod wykresem bez dodatkowej powierzchni i bez wpływu na wysokość Papa Asystenta. Dopuszczalne układy dla warstw interpretacyjnych to prawa szyna canvasu o czytelnej szerokości na desktopie oraz osobna warstwa pod powierzchnią danych na węższych viewportach.

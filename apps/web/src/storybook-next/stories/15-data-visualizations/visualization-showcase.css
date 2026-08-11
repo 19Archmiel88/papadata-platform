@@ -59,6 +59,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--pd-space-4);
+  justify-content: center;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -102,28 +103,28 @@
 
 .pd-viz-story__composition-fixture .revenue {
   fill: none;
-  stroke: color-mix(in srgb, var(--pd-text-secondary) 72%, transparent);
+  stroke: var(--pd-data-series-1);
   stroke-linecap: round;
   stroke-width: 3;
 }
 
 .pd-viz-story__composition-fixture .cost {
   fill: none;
-  stroke: color-mix(in srgb, var(--pd-text-muted) 76%, transparent);
+  stroke: var(--pd-data-series-2);
   stroke-linecap: round;
   stroke-width: 2.4;
 }
 
 .pd-viz-story__composition-fixture .benchmark {
   fill: none;
-  stroke: color-mix(in srgb, var(--pd-text-muted) 58%, transparent);
+  stroke: var(--pd-data-target);
   stroke-dasharray: 6 5;
   stroke-width: 1.5;
 }
 
 .pd-viz-story__composition-fixture .point {
   fill: var(--pd-surface);
-  stroke: var(--pd-text-secondary);
+  stroke: var(--pd-data-series-1);
   stroke-width: 2;
 }
 

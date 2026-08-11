@@ -210,7 +210,7 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
     const isProcessing = status === 'processing';
     const hasValue = value !== null && !isProcessing;
     const tone = resolveAnalyticsDataStateTone(status);
-    const showStatusBadge = status !== 'ready';
+    const showStatusBadge = Boolean(statusLabel);
     const showSparkline = sparklinePoints.length > 1 && hasValue;
     const showBenchmarks = Boolean(
       hasValue && (targetLabel || deviationLabel),

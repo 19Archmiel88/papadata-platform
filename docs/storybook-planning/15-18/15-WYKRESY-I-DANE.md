@@ -1,6 +1,4 @@
-# 15 - Wykresy i wizualizacje danych
-
-Storybook display title: `Wykresy i dane`
+# 15 - Wykresy i dane
 
 Story class: `component`
 
@@ -84,7 +82,7 @@ Zakres:
 
 Ma rozstrzygnac kiedy uzywamy grouped bars, lines, small multiples lub tabeli zamiast wymuszac jeden typ wykresu.
 
-## 15.05 - Struktura i udzial
+## 15.05 - Udzialy i struktura
 
 Wlasciciel wizualizacji composition/share.
 
@@ -182,3 +180,15 @@ Zakres:
 - pelnego workflow AI;
 - przypadkowych eksperymentow wizualnych pozostawionych po 05.03;
 - duplikatu DataTable, EvidencePanel czy RecommendationCard.
+
+## Zasada warstw canvasu
+
+Obowiązujący dokument: `SECTION-15-CANVAS-LAYER-RULE.md`. Podpowiedzi, wnioski, rekomendacje, tabele alternatywne, listy obserwacji, opisowe legendy, scenariusze, horyzont, pewność i jakość predykcji nie są częścią obszaru wykresu; są osobnymi warstwami na głównym canvasie z własną głębią i statusem.
+
+### Doprecyzowanie wizualne
+
+Dla story 15 domyślny układ desktopowy używa prawej szyny canvasu dla podpowiedzi, wniosków, rekomendacji, alertów, ryzyk i komentarzy interpretacyjnych. Elementy te nie mogą być dolnym ani bocznym panelem tej samej ramy wykresu. Tabela danych rozwija się płasko pod wykresem bez dodatkowej powierzchni i bez zmiany wysokości Papa Asystenta.
+
+### Status odbioru wizualnego
+
+Wygląd sekcji 15 jest zaakceptowany po pełnym skanie 2026-08-11. Akceptowany układ `ChartFrame` ma legendę jako ostatni element wykresu, prawą szynę `Papa Asystent` + `Panel rekomendacji` o wysokości powierzchni wykresu oraz stabilne wiersze `Podpowiedź danych` bez przesunięć na hover/focus.

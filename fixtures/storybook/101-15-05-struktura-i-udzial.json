@@ -1,6 +1,6 @@
 {
   "fixtureId": "SB-101",
-  "storyTitle": "15 Wykresy i dane/Udziały i struktura",
+  "storyTitle": "15 Wykresy i dane/02 Rodziny wykresów/Udziały i struktura",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-05-struktura-i-udzial.md",
   "screenId": null,
   "components": [
@@ -89,5 +89,5 @@
     "accessible-name",
     "200-percent-zoom"
   ],
-  "implementationStatus": "implemented-review-static-contract"
+  "implementationStatus": "implemented-passing-static-contract"
 }

@@ -404,11 +404,11 @@ export function TrendChart({
                 dot={false}
                 isAnimationActive={false}
                 name={resolvedLabels.previousPeriod}
-                stroke="var(--pd-text-muted)"
-                strokeDasharray="2 7"
+                stroke="var(--pd-data-series-7)"
                 strokeLinecap="round"
-                strokeOpacity={0.64}
-                strokeWidth={1.5}
+                strokeLinejoin="round"
+                strokeOpacity={0.82}
+                strokeWidth={1.7}
                 type="monotone"
               />
             ) : null}
@@ -421,11 +421,11 @@ export function TrendChart({
                 dot={false}
                 isAnimationActive={false}
                 name={resolvedLabels.plan}
-                stroke="var(--pd-data-target)"
-                strokeDasharray="7 6"
+                stroke="var(--pd-data-series-8)"
                 strokeLinecap="round"
-                strokeOpacity={0.82}
-                strokeWidth={1.6}
+                strokeLinejoin="round"
+                strokeOpacity={0.9}
+                strokeWidth={1.8}
                 type="monotone"
               />
             ) : null}

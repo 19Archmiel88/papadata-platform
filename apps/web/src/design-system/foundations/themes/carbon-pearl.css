@@ -211,6 +211,10 @@
   --pd-data-series-4: #6b55b5;
   --pd-data-series-5: #2f7d67;
   --pd-data-series-6: #a34c18;
+  --pd-data-series-7: #b23a73;
+  --pd-data-series-8: #3f6f1f;
+  --pd-data-series-9: #4a6fc7;
+  --pd-data-series-10: #8a4f0d;
   --pd-data-actual: #145bd7;
   --pd-data-target: #071b35;
   --pd-data-forecast: #008aa3;
@@ -307,6 +311,10 @@
   --pd-data-series-4: #a691ff;
   --pd-data-series-5: #68d8b0;
   --pd-data-series-6: #ffad67;
+  --pd-data-series-7: #ff91c3;
+  --pd-data-series-8: #a7d96a;
+  --pd-data-series-9: #9db7ff;
+  --pd-data-series-10: #f0a84d;
   --pd-data-actual: #76adff;
   --pd-data-target: #f2f7fb;
   --pd-data-forecast: #55d7e5;

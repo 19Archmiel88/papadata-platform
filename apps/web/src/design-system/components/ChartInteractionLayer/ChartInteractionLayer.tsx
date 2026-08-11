@@ -6,7 +6,7 @@ import {
   useId,
 } from 'react';
 
-import { TextAction } from '../Button';
+import { Button, TextAction } from '../Button';
 import { joinClassNames } from '../Field/fieldUtils';
 import './chart-interaction-layer.css';
 
@@ -143,20 +143,18 @@ export function ChartInteractionLayer({
         role="group"
       >
         {filters.map((filter) => (
-          <button
+          <Button
+            aria-label={filter.description ?? filter.label}
             aria-pressed={filter.id === activeFilterId}
             className="pd-chart-interaction-layer__filter-button"
             data-active={filter.id === activeFilterId ? 'true' : undefined}
             key={filter.id}
             onClick={() => onFilterChange(filter.id)}
-            type="button"
+            size="small"
+            variant={filter.id === activeFilterId ? 'secondary' : 'ghost'}
           >
-            <span>{filter.label}</span>
-
-            {filter.description ? (
-              <small>{filter.description}</small>
-            ) : null}
-          </button>
+            {filter.label}
+          </Button>
         ))}
 
         <TextAction
@@ -174,7 +172,10 @@ export function ChartInteractionLayer({
           {children}
         </div>
 
-        <div className="pd-chart-interaction-layer__panel">
+        <div
+          className="pd-chart-interaction-layer__panel"
+          data-status={hasPoints ? 'ready' : 'empty'}
+        >
           <div
             aria-live="polite"
             className="pd-chart-interaction-layer__tooltip"
@@ -195,22 +196,24 @@ export function ChartInteractionLayer({
           >
             {hasPoints ? (
               points.map((point) => (
-                <button
+                <Button
                   aria-describedby={tooltipId}
                   aria-pressed={point.id === selectedPoint.id}
                   className="pd-chart-interaction-layer__point-button"
                   data-active={point.id === selectedPoint.id ? 'true' : undefined}
+                  fullWidth
                   key={point.id}
                   onClick={() => onPointSelect(point.id)}
                   onFocus={() => onPointSelect(point.id)}
                   onMouseEnter={() => onPointSelect(point.id)}
-                  type="button"
+                  size="small"
+                  variant="ghost"
                 >
                   <span>{point.label}</span>
                   <span className="pd-chart-interaction-layer__point-value">
                     {point.valueLabel}
                   </span>
-                </button>
+                </Button>
               ))
             ) : (
               <p

@@ -374,7 +374,6 @@ export function ShareChart({
       {hasData ? (
         <>
           <div
-            aria-hidden="true"
             className="pd-share-chart__plot"
             data-display={display}
           >
@@ -474,6 +473,8 @@ export function ShareChart({
                         isAnimationActive={false}
                         maxBarSize={22}
                         radius={[0, 7, 7, 0]}
+                        stroke="none"
+                        strokeWidth={0}
                       >
                         {runtimeSegments.map((segment) => (
                           <Cell
@@ -570,8 +571,8 @@ export function ShareChart({
                           key={segment.id}
                           radius={radius}
                           stackId="share"
-                          stroke="var(--pd-surface)"
-                          strokeWidth={1}
+                          stroke="none"
+                          strokeWidth={0}
                         />
                       );
                     })}
@@ -581,12 +582,12 @@ export function ShareChart({
             ) : null}
           </div>
 
-          <ShareLegend
+          <ShareMeta
             labels={resolvedLabels}
             segments={runtimeSegments}
           />
 
-          <ShareMeta
+          <ShareLegend
             labels={resolvedLabels}
             segments={runtimeSegments}
           />

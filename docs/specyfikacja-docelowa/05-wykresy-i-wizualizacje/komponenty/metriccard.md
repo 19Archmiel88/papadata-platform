@@ -33,7 +33,7 @@ Podstawowy, z trendem, z celem, z odchyleniem, z mikrochartem oraz alarmowy/reko
 05.03 nie utrzymuje lokalnego katalogu KPI ani `KpiSparkline`. Po promocji ownerem jest wyłącznie `15.02`.
 
 ## Dostępność techniczna
-KPI ma jawną nazwę, tekstowy status i działające akcje. Mikrotrend jest dekoracyjny i nie jest jedynym nośnikiem znaczenia. Formalne WCAG AA nie jest bramą biznesową tego etapu.
+Minimum WCAG 2.2 AA jest obowiązkowym zakresem tej story i każdej następnej. Wymagane są: semantic HTML, accessible name, focus-visible, keyboard-only tam, gdzie dotyczy, reduced motion, reflow/responsywność, brak informacji wyłącznie kolorem oraz tekstowe stany empty/error/loading/no-data. KPI ma jawną nazwę, tekstowy status i działające akcje. Mikrotrend jest dekoracyjny i nie jest jedynym nośnikiem znaczenia.
 
 ## Konsumenci
 - `30.02` — Kolejka uwagi
@@ -76,7 +76,7 @@ KPI ma jawną nazwę, tekstowy status i działające akcje. Mikrotrend jest deko
 - `80.07` — Pomiar
 
 ## Storybook i testy
-Story 15.02 jest zaimplementowanym ownerem MetricCard w statusie `review`. Pokazuje warianty KPI, reprezentatywne stany, długi copy, mikrotrend płaski oraz działające akcje szczegółów i Papa. Pełny katalog zachowania stanów należy do 15.08.
+Story 15.02 jest zaimplementowanym ownerem MetricCard w statusie `accepted`. Pokazuje warianty KPI, reprezentatywne stany, długi copy, mikrotrend płaski oraz działające akcje szczegółów i Papa. Pełny katalog zachowania stanów należy do 15.08.
 
 05.03 nie renderuje lokalnych wariantów MetricCard ani `KpiSparkline`; zachowuje wyłącznie decision record i handoff do 15.02.
 

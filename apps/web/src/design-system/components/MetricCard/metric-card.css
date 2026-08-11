@@ -6,26 +6,18 @@
 }
 
 .pd-metric-card[data-emphasis='alert'] {
-  border-block-end-color: color-mix(
-    in srgb,
-    var(--pd-status-warning) 54%,
-    var(--pd-separator-subtle)
-  );
+  border-block-end-color: var(--pd-status-warning);
 }
 
 .pd-metric-card[data-emphasis='recommendation'] {
-  border-block-end-color: color-mix(
-    in srgb,
-    var(--pd-data-accent) 46%,
-    var(--pd-separator-subtle)
-  );
+  border-block-end-color: var(--pd-data-accent);
 }
 
 .pd-metric-card__header {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--pd-space-3);
   align-items: flex-start;
-  justify-content: space-between;
 }
 
 .pd-metric-card__label {
@@ -130,11 +122,8 @@
 }
 
 .pd-metric-card__sparkline-area {
-  fill: color-mix(
-    in srgb,
-    currentColor 12%,
-    transparent
-  );
+  fill: currentColor;
+  opacity: 0.12;
   stroke: none;
 }
 
@@ -216,7 +205,11 @@
 
 @media (max-width: 540px) {
   .pd-metric-card__header {
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-metric-card__header .pd-status-badge {
+    justify-self: end;
   }
 
   .pd-metric-card__benchmarks > div {

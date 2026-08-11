@@ -33,7 +33,7 @@ Na etapie 15.01 runtime obsługuje pełny typ `AnalyticsDataState`, a story demo
 05.03 nie renderuje drugiego pełnego ChartFrame. Po promocji zachowuje wyłącznie decyzję i wskazanie ownera `15.01`.
 
 ## Dostępność techniczna
-Semantyczny region, jawny status, działające akcje, istniejące kontrolki klawiaturowe i alternatywna reprezentacja danych. Formalne WCAG AA nie jest bramą biznesową tego etapu.
+Minimum WCAG 2.2 AA jest obowiązkowym zakresem tej story i każdej następnej. Wymagane są: semantic HTML, accessible name, focus-visible, keyboard-only tam, gdzie dotyczy, reduced motion, reflow/responsywność, brak informacji wyłącznie kolorem oraz tekstowe stany empty/error/loading/no-data. `ChartFrame` musi zachować alternatywną reprezentację danych i nazwaną powierzchnię wizualizacji.
 
 ## Konsumenci
 - `30.02` — Kolejka uwagi
@@ -76,7 +76,7 @@ Semantyczny region, jawny status, działające akcje, istniejące kontrolki klaw
 - `80.07` — Pomiar
 
 ## Storybook i testy
-Story 15.01 jest zaimplementowanym ownerem ChartFrame w statusie `review`. Pokazuje kompozycję z filtrem i bez filtra, reprezentatywne stany, długi copy, alternatywną tabelę oraz działające akcje. Pełny katalog zachowania stanów należy do 15.08.
+Story 15.01 jest zaimplementowanym ownerem ChartFrame w statusie `accepted`. Pokazuje kompozycję z filtrem i bez filtra, reprezentatywne stany, długi copy, alternatywną tabelę oraz działające akcje. Pełny katalog zachowania stanów należy do 15.08.
 
 05.03 nie renderuje pełnego ChartFrame; zachowuje wyłącznie decision record i handoff do 15.01.
 

@@ -20,10 +20,14 @@ import {
 } from '../../../design-system/foundations';
 import '../../../storybook-next/presentation/story-presentation.css';
 import {
-  StoryPresentationMeta,
-  StoryPresentationPage,
   StoryPresentationSection,
 } from '../../../storybook-next/presentation/StoryPresentation';
+import {
+  AnalyticsChartSurface,
+  Localized,
+  readAnalyticsLocale as readLocale,
+  Story15Page,
+} from './analytics-story-helpers';
 import './share-chart-showcase.css';
 
 const channelShareSegments: readonly ShareChartSegment[] = [
@@ -122,14 +126,84 @@ const longCopySegments: readonly ShareChartSegment[] = [
   },
 ];
 
-function readLocale(): PapaDataRuntimeLocale {
-  if (typeof document === 'undefined') {
-    return 'pl';
-  }
+const shareSegmentLabelCopy: Record<
+  string,
+  Record<PapaDataRuntimeLocale, string>
+> = {
+  affiliate: {
+    en: 'Affiliates',
+    pl: 'Partnerzy',
+  },
+  coffee: {
+    en: 'Coffee',
+    pl: 'Kawa',
+  },
+  direct: {
+    en: 'Direct',
+    pl: 'Bezpośredni',
+  },
+  email: {
+    en: 'Email',
+    pl: 'E-mail',
+  },
+  filters: {
+    en: 'Filters',
+    pl: 'Filtry',
+  },
+  grinders: {
+    en: 'Grinders',
+    pl: 'Młynki',
+  },
+  meta: {
+    en: 'Meta',
+    pl: 'Meta',
+  },
+  new: {
+    en: 'New customers',
+    pl: 'Nowi klienci',
+  },
+  'organic-reconciled': {
+    en: 'Organic traffic after revenue attribution reconciliation',
+    pl: 'Ruch organiczny po uzgodnieniu atrybucji przychodu',
+  },
+  'paid-reconciled': {
+    en: 'Paid media campaigns with delayed conversion windows',
+    pl: 'Płatne kampanie mediowe z opóźnionymi oknami konwersji',
+  },
+  retention: {
+    en: 'Retention',
+    pl: 'Retencja',
+  },
+  'retention-reconciled': {
+    en: 'Lifecycle and retention automations after consent filtering',
+    pl: 'Automatyzacje cyklu życia i retencji po filtrowaniu zgód',
+  },
+  returning: {
+    en: 'Returning customers',
+    pl: 'Powracający klienci',
+  },
+  search: {
+    en: 'Search',
+    pl: 'Wyszukiwarka',
+  },
+  sets: {
+    en: 'Sets',
+    pl: 'Zestawy',
+  },
+  single: {
+    en: 'Shopify',
+    pl: 'Shopify',
+  },
+};
 
-  return document.documentElement.dataset.locale === 'en'
-    ? 'en'
-    : 'pl';
+function localizeShareSegments(
+  segments: readonly ShareChartSegment[],
+  locale: PapaDataRuntimeLocale,
+): readonly ShareChartSegment[] {
+  return segments.map((segment) => ({
+    ...segment,
+    label: shareSegmentLabelCopy[segment.id]?.[locale] ?? segment.label,
+  }));
 }
 
 function formatCompactValue(
@@ -237,7 +311,7 @@ function CanonicalShareComposition() {
           percentFormatter={(value) => (
             formatPercent(value, locale)
           )}
-          segments={channelShareSegments}
+          segments={localizeShareSegments(channelShareSegments, locale)}
           total={248420}
           valueFormatter={(value) => (
             formatCurrency(value, locale)
@@ -255,6 +329,14 @@ function CanonicalShareComposition() {
 
 function ShareVariants() {
   const locale = readLocale();
+  const localizedProductMixSegments = localizeShareSegments(
+    productMixSegments,
+    locale,
+  );
+  const localizedCustomerMixSegments = localizeShareSegments(
+    customerMixSegments,
+    locale,
+  );
 
   return (
     <div className="pd-share-story__variants">
@@ -273,22 +355,46 @@ function ShareVariants() {
           </p>
         </header>
 
-        <ShareChart
-          ariaLabel={
-            locale === 'en'
-              ? 'Product revenue mix as donut'
-              : 'Struktura przychodu produktów jako wykres pierścieniowy'
-          }
-          display="donut"
-          percentFormatter={(value) => (
-            formatPercent(value, locale)
-          )}
-          segments={productMixSegments}
-          total={126960}
-          valueFormatter={(value) => (
-            formatCurrency(value, locale)
-          )}
-        />
+        <AnalyticsChartSurface
+          businessQuestion={{
+            en: 'What is the product revenue mix?',
+            pl: 'Jaka jest struktura przychodu produktów?',
+          }}
+          description={{
+            en: 'The donut variant stays inside ChartFrame and keeps a textual legend as the accessible source of segment meaning.',
+            pl: 'Wariant pierścieniowy pozostaje w ChartFrame i zachowuje tekstową legendę jako dostępne źródło znaczenia segmentów.',
+          }}
+          rangeLabel={{
+            en: 'Product mix',
+            pl: 'Struktura produktów',
+          }}
+          sourceLabel="ShareChart / ChartFrame"
+          title={{
+            en: 'Product revenue mix as donut',
+            pl: 'Struktura przychodu produktów jako pierścień',
+          }}
+          visualizationLabel={{
+            en: 'Product revenue mix as donut',
+            pl: 'Struktura przychodu produktów jako wykres pierścieniowy',
+          }}
+        >
+          <ShareChart
+            ariaLabel={
+              locale === 'en'
+                ? 'Product revenue mix as donut'
+                : 'Struktura przychodu produktów jako wykres pierścieniowy'
+            }
+            display="donut"
+            percentFormatter={(value) => (
+              formatPercent(value, locale)
+            )}
+            segments={localizedProductMixSegments}
+            total={126960}
+            valueFormatter={(value) => (
+              formatCurrency(value, locale)
+            )}
+          />
+        </AnalyticsChartSurface>
       </article>
 
       <article className="pd-share-story__variant">
@@ -306,22 +412,46 @@ function ShareVariants() {
           </p>
         </header>
 
-        <ShareChart
-          ariaLabel={
-            locale === 'en'
-              ? 'Product revenue mix as share bars'
-              : 'Struktura przychodu produktów jako słupki udziału'
-          }
-          display="bar"
-          percentFormatter={(value) => (
-            formatPercent(value, locale)
-          )}
-          segments={productMixSegments}
-          total={126960}
-          valueFormatter={(value) => (
-            formatCurrency(value, locale)
-          )}
-        />
+        <AnalyticsChartSurface
+          businessQuestion={{
+            en: 'Which product group has the largest share?',
+            pl: 'Która grupa produktów ma największy udział?',
+          }}
+          description={{
+            en: 'Share bars improve comparability without changing the part-to-whole question.',
+            pl: 'Słupki udziału zwiększają porównywalność bez zmiany pytania o część całości.',
+          }}
+          rangeLabel={{
+            en: 'Product mix',
+            pl: 'Struktura produktów',
+          }}
+          sourceLabel="ShareChart / ChartFrame"
+          title={{
+            en: 'Product revenue mix as share bars',
+            pl: 'Struktura przychodu produktów jako słupki',
+          }}
+          visualizationLabel={{
+            en: 'Product revenue mix as share bars',
+            pl: 'Struktura przychodu produktów jako słupki udziału',
+          }}
+        >
+          <ShareChart
+            ariaLabel={
+              locale === 'en'
+                ? 'Product revenue mix as share bars'
+                : 'Struktura przychodu produktów jako słupki udziału'
+            }
+            display="bar"
+            percentFormatter={(value) => (
+              formatPercent(value, locale)
+            )}
+            segments={localizedProductMixSegments}
+            total={126960}
+            valueFormatter={(value) => (
+              formatCurrency(value, locale)
+            )}
+          />
+        </AnalyticsChartSurface>
       </article>
 
       <article className="pd-share-story__variant">
@@ -339,22 +469,46 @@ function ShareVariants() {
           </p>
         </header>
 
-        <ShareChart
-          ariaLabel={
-            locale === 'en'
-              ? 'Customer revenue split as a stacked share bar'
-              : 'Podział przychodu klientów jako skumulowany słupek udziału'
-          }
-          display="stacked"
-          percentFormatter={(value) => (
-            formatPercent(value, locale)
-          )}
-          segments={customerMixSegments}
-          total={248420}
-          valueFormatter={(value) => (
-            formatCurrency(value, locale)
-          )}
-        />
+        <AnalyticsChartSurface
+          businessQuestion={{
+            en: 'How does revenue split between returning and new customers?',
+            pl: 'Jak przychód dzieli się między klientów powracających i nowych?',
+          }}
+          description={{
+            en: 'The stacked variant compresses the whole into one track while ChartFrame keeps source, status and summary text.',
+            pl: 'Wariant skumulowany kompresuje całość do jednej ścieżki, a ChartFrame utrzymuje źródło, status i wniosek.',
+          }}
+          rangeLabel={{
+            en: 'Customer mix',
+            pl: 'Struktura klientów',
+          }}
+          sourceLabel="ShareChart / ChartFrame"
+          title={{
+            en: 'Customer revenue split',
+            pl: 'Podział przychodu klientów',
+          }}
+          visualizationLabel={{
+            en: 'Customer revenue split as a stacked share bar',
+            pl: 'Podział przychodu klientów jako skumulowany słupek udziału',
+          }}
+        >
+          <ShareChart
+            ariaLabel={
+              locale === 'en'
+                ? 'Customer revenue split as a stacked share bar'
+                : 'Podział przychodu klientów jako skumulowany słupek udziału'
+            }
+            display="stacked"
+            percentFormatter={(value) => (
+              formatPercent(value, locale)
+            )}
+            segments={localizedCustomerMixSegments}
+            total={248420}
+            valueFormatter={(value) => (
+              formatCurrency(value, locale)
+            )}
+          />
+        </AnalyticsChartSurface>
       </article>
     </div>
   );
@@ -415,72 +569,138 @@ function DecisionGuide() {
 }
 
 function LongCopyAndEdgeCases() {
+  const locale = readLocale();
+
   return (
     <div className="pd-share-story__variants">
       <article className="pd-share-story__variant">
         <header>
-          <span>długi tekst</span>
+          <span>{locale === 'en' ? 'long copy' : 'długi tekst'}</span>
           <h3>
-            Struktura przychodu po uzgodnieniu atrybucji i zgód
+            {locale === 'en'
+              ? 'Revenue mix after attribution and consent reconciliation'
+              : 'Struktura przychodu po uzgodnieniu atrybucji i zgód'}
           </h3>
           <p>
-            Długie etykiety segmentów zawijają się w legendzie HTML i
-            metadanych bez poszerzania wykresu ani dodawania poziomego
-            przewijania strony.
+            {locale === 'en'
+              ? 'Long segment labels wrap in the HTML legend and metadata without widening the chart or adding horizontal page scroll.'
+              : 'Długie etykiety segmentów zawijają się w legendzie HTML i metadanych bez poszerzania wykresu ani dodawania poziomego przewijania strony.'}
           </p>
         </header>
 
-        <ShareChart
-          ariaLabel="Struktura przychodu po uzgodnieniu atrybucji i zgód"
-          display="bar"
-          labels={{
-            legend:
-              'Segmenty udziału przychodu po uzgodnieniu atrybucji i zgód',
+        <AnalyticsChartSurface
+          businessQuestion={{
+            en: 'Can long segment labels stay readable?',
+            pl: 'Czy długie etykiety segmentów pozostają czytelne?',
           }}
-          percentFormatter={(value) => (
-            formatPercent(value, 'pl')
-          )}
-          segments={longCopySegments}
-          total={338000}
-          valueFormatter={(value) => (
-            formatCurrency(value, 'pl')
-          )}
-        />
+          description={{
+            en: 'Long labels are a reflow case for the shared data surface, not a new share-chart surface.',
+            pl: 'Długie etykiety są przypadkiem reflow wspólnej powierzchni danych, nie nową powierzchnią wykresu udziałów.',
+          }}
+          rangeLabel={{
+            en: 'Long-copy regression',
+            pl: 'Regresja długiego tekstu',
+          }}
+          sourceLabel="ShareChart / ChartFrame"
+          title={{
+            en: 'Revenue mix after attribution and consent reconciliation',
+            pl: 'Struktura przychodu po uzgodnieniu atrybucji i zgód',
+          }}
+          visualizationLabel={{
+            en: 'Revenue mix after attribution and consent reconciliation',
+            pl: 'Struktura przychodu po uzgodnieniu atrybucji i zgód',
+          }}
+        >
+          <ShareChart
+            ariaLabel={
+              locale === 'en'
+                ? 'Revenue mix after attribution and consent reconciliation'
+                : 'Struktura przychodu po uzgodnieniu atrybucji i zgód'
+            }
+            display="bar"
+            labels={{
+              legend: locale === 'en'
+                ? 'Revenue share segments after attribution and consent reconciliation'
+                : 'Segmenty udziału przychodu po uzgodnieniu atrybucji i zgód',
+            }}
+            percentFormatter={(value) => (
+              formatPercent(value, locale)
+            )}
+            segments={localizeShareSegments(longCopySegments, locale)}
+            total={338000}
+            valueFormatter={(value) => (
+              formatCurrency(value, locale)
+            )}
+          />
+        </AnalyticsChartSurface>
       </article>
 
       <article className="pd-share-story__variant">
         <header>
-          <span>jeden segment</span>
-          <h3>Jeden segment nadal pozostaje strukturą 100%</h3>
+          <span>{locale === 'en' ? 'single segment' : 'jeden segment'}</span>
+          <h3>
+            {locale === 'en'
+              ? 'One segment still remains a 100% structure'
+              : 'Jeden segment nadal pozostaje strukturą 100%'}
+          </h3>
           <p>
-            Pojedynczy segment nie uruchamia osobnego komponentu.
-            Legenda i metadane zachowują ten sam kontrakt.
+            {locale === 'en'
+              ? 'A single segment does not activate a separate component. Legend and metadata keep the same contract.'
+              : 'Pojedynczy segment nie uruchamia osobnego komponentu. Legenda i metadane zachowują ten sam kontrakt.'}
           </p>
         </header>
 
-        <ShareChart
-          ariaLabel="Udział jednego segmentu w całości"
-          display="stacked"
-          segments={[
-            {
-              id: 'single',
-              label: 'Shopify',
-              value: 248420,
-              percent: 100,
-            },
-          ]}
-          total={248420}
-          valueFormatter={(value) => (
-            formatCurrency(value, 'pl')
-          )}
-        />
+        <AnalyticsChartSurface
+          businessQuestion={{
+            en: 'Does a single segment preserve the same contract?',
+            pl: 'Czy pojedynczy segment zachowuje ten sam kontrakt?',
+          }}
+          description={{
+            en: 'One segment still renders text, value and 100% structure inside the shared ChartFrame surface.',
+            pl: 'Jeden segment nadal renderuje tekst, wartość i strukturę 100% we wspólnej powierzchni ChartFrame.',
+          }}
+          rangeLabel={{
+            en: 'Single segment',
+            pl: 'Jeden segment',
+          }}
+          sourceLabel="ShareChart / ChartFrame"
+          title={{
+            en: 'Single segment share',
+            pl: 'Udział jednego segmentu',
+          }}
+          visualizationLabel={{
+            en: 'Single segment share of the whole',
+            pl: 'Udział jednego segmentu w całości',
+          }}
+        >
+          <ShareChart
+            ariaLabel={
+              locale === 'en'
+                ? 'Single segment share of the whole'
+                : 'Udział jednego segmentu w całości'
+            }
+            display="stacked"
+            segments={localizeShareSegments([
+              {
+                id: 'single',
+                label: 'Shopify',
+                value: 248420,
+                percent: 100,
+              },
+            ], locale)}
+            total={248420}
+            valueFormatter={(value) => (
+              formatCurrency(value, locale)
+            )}
+          />
+        </AnalyticsChartSurface>
       </article>
     </div>
   );
 }
 
 const meta = {
-  title: '15 Wykresy i dane/Udziały i struktura',
+  title: '15 Wykresy i dane/02 Rodziny wykresów/Udziały i struktura',
   component: ShareChart,
   parameters: {
     layout: 'fullscreen',
@@ -509,32 +729,39 @@ export const ShareChartStory: Story = {
   },
   name: 'Udziały i struktura',
   render: () => (
-    <StoryPresentationPage
+    <Story15Page
       className="pd-share-story"
-      headerAside={(
-        <StoryPresentationMeta
-          ariaLabel="Parametry kontraktu ShareChart"
-          items={[
-            {
-              label: 'Kontrakt',
-              value: '15.05',
-            },
-            {
-              label: 'Silnik',
-              value: 'Recharts',
-            },
-            {
-              label: 'Status',
-              value: 'przegląd',
-            },
-          ]}
+      metaAriaLabel={{
+        en: 'ShareChart contract parameters',
+        pl: 'Parametry kontraktu ShareChart',
+      }}
+      metaItems={[
+        {
+          label: <Localized pl="Kontrakt" en="Contract" />,
+          value: '15.05',
+        },
+        {
+          label: <Localized pl="Silnik" en="Engine" />,
+          value: 'Recharts',
+        },
+        {
+          label: <Localized pl="Status" en="Status" />,
+          value: <Localized pl="przegląd" en="review" />,
+        },
+      ]}
+      storyId="15.05"
+      summary={(
+        <Localized
+          en="ShareChart owns part-to-whole questions: donut, bar and stacked variants show segment share without taking over comparisons, trends, tables or interactions."
+          pl="ShareChart odpowiada za pytania część–całość: wariant pierścieniowy, słupkowy i skumulowany pokazują udział segmentów bez przejmowania porównań, trendów, tabel ani interakcji."
         />
       )}
-      sectionCode="15"
-      sectionLabel="Wykresy i dane"
-      storyId="15.05"
-      summary="ShareChart odpowiada za pytania część–całość: wariant pierścieniowy, słupkowy i skumulowany pokazują udział segmentów bez przejmowania porównań, trendów, tabel ani interakcji."
-      title="Udział ma pokazywać strukturę całości, a nie zastępować porównania albo trendu."
+      title={(
+        <Localized
+          en="A share chart should show the structure of a whole, not replace comparison or trend."
+          pl="Udział ma pokazywać strukturę całości, a nie zastępować porównania albo trendu."
+        />
+      )}
     >
       <StoryPresentationSection
         index="01"
@@ -567,7 +794,7 @@ export const ShareChartStory: Story = {
       >
         <LongCopyAndEdgeCases />
       </StoryPresentationSection>
-    </StoryPresentationPage>
+    </Story15Page>
   ),
   play: async ({
     canvasElement,

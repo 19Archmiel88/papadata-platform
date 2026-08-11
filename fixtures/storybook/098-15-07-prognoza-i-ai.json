@@ -1,6 +1,6 @@
 {
   "fixtureId": "SB-098",
-  "storyTitle": "15 Wykresy i dane/Prognoza i AI",
+  "storyTitle": "15 Wykresy i dane/02 Rodziny wykresów/Prognoza i AI",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-07-prognoza-i-ai.md",
   "screenId": null,
   "components": [
@@ -68,5 +68,5 @@
     "alternative-table",
     "200-percent-zoom"
   ],
-  "implementationStatus": "implemented-review-static-contract"
+  "implementationStatus": "implemented-passing-static-contract"
 }

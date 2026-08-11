@@ -16,22 +16,22 @@
   max-inline-size: 62ch;
 }
 
-.pd-share-story__variant > header span {
+.pd-share-story__variant > header > span {
   color: var(--pd-text-muted);
   font-family: var(--pd-font-mono);
   font-size: 0.72rem;
   line-height: 1;
 }
 
-.pd-share-story__variant h3 {
+.pd-share-story__variant > header h3 {
   margin: 0;
   color: var(--pd-text);
-  font-size: clamp(1rem, 1.35vw, 1.2rem);
+  font-size: var(--pd-type-size-body-large);
   font-weight: 500;
   line-height: 1.35;
 }
 
-.pd-share-story__variant p {
+.pd-share-story__variant > header p {
   margin: 0;
   color: var(--pd-text-secondary);
   line-height: 1.65;

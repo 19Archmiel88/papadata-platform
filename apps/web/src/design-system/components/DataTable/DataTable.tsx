@@ -207,7 +207,7 @@ function DataTableActionsCell({
         <button
           aria-label={`${label} dla wiersza ${rowId}`}
           className={joinClassNames(
-            'pd-pagination__button',
+            'pd-pagination-nav__button',
             'pd-data-table__action-trigger',
           )}
           type="button"

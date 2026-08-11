@@ -76,6 +76,7 @@
   row-gap: var(--pd-space-4);
   column-gap: var(--pd-space-8);
   align-items: center;
+  justify-content: center;
   margin: var(--pd-space-6) 0 0;
   padding: 0;
   color: var(--pd-text-secondary);
@@ -184,6 +185,7 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--pd-space-3);
+    justify-items: center;
   }
 
   .pd-trend-chart__legend li {

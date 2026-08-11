@@ -18,19 +18,19 @@
   border-block-start: 1px solid var(--pd-separator-subtle);
 }
 
-.pd-trend-story__variant header {
+.pd-trend-story__variant > header {
   display: grid;
   gap: var(--pd-space-2);
   padding-block-start: var(--pd-space-2);
 }
 
-.pd-trend-story__variant header > span {
+.pd-trend-story__variant > header > span {
   color: var(--pd-text-muted);
   font-family: var(--pd-font-mono);
   font-size: var(--pd-type-size-caption);
 }
 
-.pd-trend-story__variant h3 {
+.pd-trend-story__variant > header h3 {
   margin: 0;
   color: var(--pd-text);
   font-size: var(--pd-type-size-body-large);
@@ -38,7 +38,7 @@
   line-height: var(--pd-line-height-heading);
 }
 
-.pd-trend-story__variant p,
+.pd-trend-story__variant > header p,
 .pd-trend-story__long-copy > p {
   max-inline-size: 62ch;
   margin: 0;
@@ -58,7 +58,7 @@
     gap: var(--pd-space-5);
   }
 
-  .pd-trend-story__variant header {
+  .pd-trend-story__variant > header {
     max-inline-size: 46rem;
     padding-block-start: 0;
   }

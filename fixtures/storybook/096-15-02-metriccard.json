@@ -1,6 +1,6 @@
 {
   "fixtureId": "SB-096",
-  "storyTitle": "15 Wykresy i dane/MetricCard",
+  "storyTitle": "15 Wykresy i dane/01 Powierzchnie analityczne/MetricCard",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-02-metriccard.md",
   "screenId": null,
   "components": [
@@ -55,5 +55,5 @@
     "semantic-state",
     "decorative-sparkline"
   ],
-  "implementationStatus": "implemented-review-static-and-play-contract"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

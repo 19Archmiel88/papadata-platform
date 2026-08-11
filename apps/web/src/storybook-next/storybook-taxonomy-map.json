@@ -155,15 +155,15 @@
     },
     {
       "sectionId": "15",
-      "currentTitle": "Wykresy i wizualizacje danych",
+      "currentTitle": "Wykresy i dane",
       "currentFolder": "15-data-visualizations",
       "primaryRootId": "20",
       "plannedPath": [
         "20 Wzorce",
-        "Wykresy i wizualizacje danych"
+        "Wykresy i dane"
       ],
       "disposition": "consolidate",
-      "decision": "Wykresy są wzorcami danych i nie tworzą osobnego kanonicznego rootu."
+      "decision": "Wykresy i dane są wzorcami danych i nie tworzą osobnego kanonicznego rootu."
     },
     {
       "sectionId": "18",

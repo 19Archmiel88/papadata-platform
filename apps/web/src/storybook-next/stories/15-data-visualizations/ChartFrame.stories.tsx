@@ -33,10 +33,13 @@ import {
 } from '../../../design-system/foundations';
 import '../../../storybook-next/presentation/story-presentation.css';
 import {
-  StoryPresentationMeta,
-  StoryPresentationPage,
   StoryPresentationSection,
 } from '../../../storybook-next/presentation/StoryPresentation';
+import {
+  Localized,
+  readAnalyticsLocale as readLocale,
+  Story15Page,
+} from './analytics-story-helpers';
 import './visualization-showcase.css';
 
 const papaAction = fn();
@@ -59,16 +62,6 @@ const tableColumns: readonly DataColumn[] = [
     label: 'Koszt reklamy',
   },
 ];
-
-function readLocale(): PapaDataRuntimeLocale {
-  if (typeof document === 'undefined') {
-    return 'pl';
-  }
-
-  return document.documentElement.dataset.locale === 'en'
-    ? 'en'
-    : 'pl';
-}
 
 function buildTableRows(
   locale: PapaDataRuntimeLocale,
@@ -280,7 +273,7 @@ function NoDataChartFrame() {
 }
 
 const meta = {
-  title: '15 Wykresy i dane/ChartFrame',
+  title: '15 Wykresy i dane/01 Powierzchnie analityczne/ChartFrame',
   component: ChartFrame,
   parameters: {
     layout: 'fullscreen',
@@ -310,23 +303,39 @@ export const ChartFrameStory: Story = {
   },
   name: 'Kontener wykresu',
   render: () => (
-    <StoryPresentationPage
+    <Story15Page
       className="pd-viz-story"
-      headerAside={(
-        <StoryPresentationMeta
-          ariaLabel="Parametry kontraktu ChartFrame"
-          items={[
-            { label: 'Kontrakt', value: '15.01' },
-            { label: 'Przekazanie', value: '05.03 → 15.01' },
-            { label: 'Status', value: 'przegląd' },
-          ]}
+      metaAriaLabel={{
+        pl: 'Parametry kontraktu ChartFrame',
+        en: 'ChartFrame contract parameters',
+      }}
+      metaItems={[
+        {
+          label: <Localized pl="Kontrakt" en="Contract" />,
+          value: '15.01',
+        },
+        {
+          label: <Localized pl="Przekazanie" en="Handoff" />,
+          value: '05.03 -> 15.01',
+        },
+        {
+          label: <Localized pl="Status" en="Status" />,
+          value: <Localized pl="przegląd" en="review" />,
+        },
+      ]}
+      storyId="15.01"
+      summary={(
+        <Localized
+          pl="ChartFrame organizuje jedno pytanie biznesowe i jedną wizualizację. Nie implementuje własnego wykresu, wyboru zakresu, przycisku ani tabeli."
+          en="ChartFrame organizes one business question and one visualization. It does not implement its own chart, range picker, button or table."
         />
       )}
-      sectionCode="15"
-      sectionLabel="Wykresy i dane"
-      storyId="15.01"
-      summary="ChartFrame organizuje jedno pytanie biznesowe i jedną wizualizację. Nie implementuje własnego wykresu, wyboru zakresu, przycisku ani tabeli."
-      title="Jedna powierzchnia analityczna, jeden właściciel kompozycji."
+      title={(
+        <Localized
+          pl="Jedna powierzchnia analityczna, jeden właściciel kompozycji."
+          en="One analytics surface, one composition owner."
+        />
+      )}
     >
       <StoryPresentationSection
         index="01"
@@ -396,7 +405,7 @@ export const ChartFrameStory: Story = {
           <ReadyChartFrame longCopy />
         </div>
       </StoryPresentationSection>
-    </StoryPresentationPage>
+    </Story15Page>
   ),
   play: async ({
     canvasElement,

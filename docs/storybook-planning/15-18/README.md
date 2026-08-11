@@ -16,7 +16,7 @@ Po sekcjach:
 
 kolejne dwie sekcje Storybooka powinny byc realizowane w tej kolejnosci:
 
-1. `15 - Wykresy i wizualizacje danych` (`Wykresy i dane`)
+1. `15 - Wykresy i dane`
 2. `18 - Wzorce i stany przekrojowe` (`Wzorce interfejsu`)
 
 Dopiero po nich powinien wejsc `20 - Powloka produktu i nawigacja`.
@@ -40,3 +40,11 @@ Najpierw nalezy zastosowac i zweryfikowac paczke `Source of Truth & Ownership Al
 - `18-WZORCE-INTERFEJSU.md` - dokladny zakres 18.01-18.10.
 - `OWNERSHIP-AND-HANDOFF.md` - granice odpowiedzialnosci i promocja decyzji z Laboratorium.
 - `ACCEPTANCE-GATES.md` - kryteria techniczne i wizualne przed uznaniem sekcji za accepted.
+
+## Zasada warstw canvasu
+
+Obowiązujący dokument: `SECTION-15-CANVAS-LAYER-RULE.md`. Podpowiedzi, wnioski, rekomendacje, tabele alternatywne, listy obserwacji, opisowe legendy, scenariusze, horyzont, pewność i jakość predykcji nie są częścią obszaru wykresu; są osobnymi warstwami na głównym canvasie z własną głębią i statusem.
+
+### Doprecyzowanie wizualne
+
+Dla story 15 domyślny układ desktopowy używa prawej szyny canvasu dla podpowiedzi, wniosków, rekomendacji, alertów, ryzyk i komentarzy interpretacyjnych. Elementy te nie mogą być dolnym ani bocznym panelem tej samej ramy wykresu.

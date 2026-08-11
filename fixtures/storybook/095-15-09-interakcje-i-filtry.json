@@ -1,6 +1,6 @@
 {
   "fixtureId": "SB-095",
-  "storyTitle": "15 Wykresy i dane/Interakcje i filtry",
+  "storyTitle": "15 Wykresy i dane/03 Stany i interakcje/Interakcje i filtry",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-09-interakcje-i-filtry.md",
   "screenId": null,
   "components": [
@@ -66,5 +66,5 @@
     "tooltip-describedby",
     "200-percent-zoom"
   ],
-  "implementationStatus": "implemented-review-interaction-system"
+  "implementationStatus": "implemented-passing-interaction-system"
 }

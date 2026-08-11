@@ -21,7 +21,10 @@ const cssPath = `${storyRoot}/cross-cutting-patterns.css`;
 const implementedEntries = [
   {
     id: '18.01',
+    accepted: true,
+    documentationStatus: 'accepted',
     fixture: 'fixtures/storybook/112-18-01-uklad-strony-i-sekcji.json',
+    implementationStatus: 'implemented-accepted-cross-cutting-pattern',
     storyExport: 'PageSectionLayoutStory',
     storyFile: `${storyRoot}/PageSectionLayout.stories.tsx`,
     storyTitle: '18 Wzorce interfejsu/Układ strony i sekcji',
@@ -412,4 +415,4 @@ assertContract();
 assertFixtures();
 assertRegistries();
 
-console.log('Cross-cutting patterns V1 OK: 18.01, 18.02, 18.03, 18.04, 18.07, 18.08, 18.11 in Storybook review; 18.10 accepted.');
+console.log('Cross-cutting patterns V1 OK: 18.01 and 18.10 accepted; 18.02, 18.03, 18.04, 18.07, 18.08, 18.11 in Storybook review.');

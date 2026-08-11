@@ -8,6 +8,7 @@
     "StoryPresentationSection",
     "StoryPresentationMeta",
     "InlineNotice",
+    "SectionNavigation",
     "StatusBadge",
     "TextAction"
   ],
@@ -33,6 +34,7 @@
   "playSteps": [
     "verify-heading-and-named-regions",
     "exercise-text-action",
+    "verify-section-navigation-current",
     "exercise-master-detail"
   ],
   "visualAssertions": [
@@ -47,9 +49,10 @@
   "a11y": [
     "landmark-main",
     "named-regions",
+    "aria-current-active-navigation",
     "focus-visible",
     "accessible-name",
     "200-percent-zoom"
   ],
-  "implementationStatus": "implemented-review-cross-cutting-pattern"
+  "implementationStatus": "implemented-accepted-cross-cutting-pattern"
 }

@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: e6303da8c9c9d2131be8f21610b87cd1bd9b2f3d39d093443c77e12aeefb3f9a
+// SHA-256 źródła: e1524aaff2038899e92863df793519f95e11364da46ceb6f70c08cc69469ede6
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -1314,7 +1314,7 @@ export const storybookCatalog = [
     "note": "Storybook-only cross-cutting pattern. Shows page header, section header, content region, split view and master-detail with open composition, typography and separators instead of decorative cards.",
     "group": null,
     "sourceStatus": "specified",
-    "documentationStatus": "review",
+    "documentationStatus": "accepted",
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
@@ -1327,6 +1327,7 @@ export const storybookCatalog = [
       "split view",
       "master-detail",
       "named regions",
+      "SectionNavigation",
       "TextAction",
       "open layout without decorative cards"
     ],
@@ -1335,7 +1336,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Wzorce interfejsu",
     "displayTitle": "Układ strony i sekcji",
     "storyExport": "PageSectionLayoutStory",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "18.02",

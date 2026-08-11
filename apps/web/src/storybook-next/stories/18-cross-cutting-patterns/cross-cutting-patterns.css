@@ -164,37 +164,6 @@
     var(--pd-separator-subtle);
 }
 
-.pd-x18-nav-list {
-  display: grid;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.pd-x18-nav-list li {
-  padding-block: var(--pd-space-3);
-  border-block-end:
-    var(--pd-border-width-subtle)
-    solid
-    var(--pd-separator-subtle);
-}
-
-.pd-x18-nav-list button {
-  inline-size: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--pd-text-secondary);
-  cursor: pointer;
-  font: inherit;
-  text-align: start;
-}
-
-.pd-x18-nav-list button[data-active='true'] {
-  color: var(--pd-text);
-}
-
-.pd-x18-nav-list button:focus-visible,
 .pd-x18-segment-button:focus-visible,
 .pd-x18-row-action:focus-visible {
   outline:

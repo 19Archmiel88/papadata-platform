@@ -1758,8 +1758,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/catalog/catalog.generated.ts",
-      "bytes": 178824,
-      "sha256": "d292b997f5c85d2c7b60b11efb5084779c12a468c41b11e812b37f4d63ef7035"
+      "bytes": 178852,
+      "sha256": "599a9b2284ec6070eff29705a00690bf14c3306a2401c79cd3568659b2e487dc"
     },
     {
       "path": "apps/web/src/storybook-next/catalog/catalog.ts",
@@ -2038,13 +2038,13 @@
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/PageSectionLayout.stories.tsx",
-      "bytes": 8635,
-      "sha256": "df56ba6b2e751755432eddef730fa598501ed39bf0dfc5c5d3e3fba3590ec406"
+      "bytes": 8898,
+      "sha256": "95119dd419b0c832819903242c3d2199207c9faaa15df1de25ab6feb70465da6"
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/cross-cutting-patterns.css",
-      "bytes": 28962,
-      "sha256": "f05e068b0365aac85da36f56b2e340e6f237000f3f5d79e6393930d2d5c539e0"
+      "bytes": 28410,
+      "sha256": "3b93e835f8ef2ef11929ee48ba06d1f666bddf9f36c777d7eef801e1b1b50fe0"
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/data-decision-workspace.css",
@@ -2058,8 +2058,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/storybook-contract.json",
-      "bytes": 200911,
-      "sha256": "e6303da8c9c9d2131be8f21610b87cd1bd9b2f3d39d093443c77e12aeefb3f9a"
+      "bytes": 200941,
+      "sha256": "e1524aaff2038899e92863df793519f95e11364da46ceb6f70c08cc69469ede6"
     },
     {
       "path": "apps/web/src/storybook-next/storybook-taxonomy-map.json",
@@ -5168,8 +5168,8 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/21-stany-przekrojowe/18-01-uklad-strony-i-sekcji.md",
-      "bytes": 3526,
-      "sha256": "67081143302a43868d1948921f1bfd91ccc58c01c8e433f3be63440fe41d7c10"
+      "bytes": 3735,
+      "sha256": "473153e41e0263cb37c1bb63e0b57161c625735540c58bbe209261cee9187afc"
     },
     {
       "path": "docs/specyfikacja-docelowa/21-stany-przekrojowe/18-02-empty-error-i-no-access.md",
@@ -9123,8 +9123,8 @@
     },
     {
       "path": "fixtures/storybook/112-18-01-uklad-strony-i-sekcji.json",
-      "bytes": 1089,
-      "sha256": "49e157c1d4b54a4c1cdbff0cabae35edf82f5a6ced1a6723db4ab1d3edeb922e"
+      "bytes": 1195,
+      "sha256": "4145bc8828e98031a1d1f267ac9ec211355432ce4f0cb153fbd90396b9575b3f"
     },
     {
       "path": "fixtures/storybook/113-18-03-ladowanie-danych-i-operacje-w-tle.json",
@@ -10679,7 +10679,7 @@
     {
       "path": "rejestry/documents.csv",
       "bytes": 67131,
-      "sha256": "a83ae0f699c218e7804f9391ba262179d051290d66f72d999f3fe30c0ef7a6ab"
+      "sha256": "af31b562bd22b1f5b1f5a2f47bea816ae479bf1cf749ba8ac86aed3649d5c6b0"
     },
     {
       "path": "rejestry/entities.csv",
@@ -10713,8 +10713,8 @@
     },
     {
       "path": "rejestry/storybook.csv",
-      "bytes": 157784,
-      "sha256": "a549cee576aa0849496488dd13536d6338aceae61cb3de31e1c3794bbc4a4afc"
+      "bytes": 157859,
+      "sha256": "f7d60ce954bf5efba2d67e7dcd45abfe4d7b0effce77cc33006c4e15a3761fb6"
     },
     {
       "path": "rejestry/ui-actions.csv",
@@ -10738,8 +10738,8 @@
     },
     {
       "path": "scripts/check-cross-cutting-patterns-v1.mjs",
-      "bytes": 12942,
-      "sha256": "4b60945406fa17dd37be347743ce265d6603e5e4b16fc90080808ccb41795624"
+      "bytes": 13074,
+      "sha256": "9ad9727ba72779e06b0797cfd2ab6ab5f7966f4c4523e11ff6d0734d025e483c"
     },
     {
       "path": "scripts/check-design-system-ownership.mjs",

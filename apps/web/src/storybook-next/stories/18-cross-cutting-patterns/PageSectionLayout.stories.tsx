@@ -14,6 +14,7 @@ import {
 
 import {
   InlineNotice,
+  SectionNavigation,
   StatusBadge,
   TextAction,
 } from '../../../design-system/components';
@@ -27,11 +28,24 @@ import './cross-cutting-patterns.css';
 
 const inspectLayoutAction = fn();
 
+const masterDetailItems = [
+  {
+    href: '#przeglad-zadania',
+    id: 'overview',
+    label: 'Przegląd zadania',
+  },
+  {
+    href: '#dowody-i-zrodla',
+    id: 'evidence',
+    label: 'Dowody i źródła',
+  },
+] as const;
+
 function PageSectionPattern() {
   const [activeRegion, setActiveRegion] =
     useState('overview');
   const [message, setMessage] = useState(
-    'Widok pokazuje domyślną hierarchię: nagłówek strony, region treści, podział i relację master-detail.',
+    'Widok pokazuje domyślną hierarchię: nagłówek strony, region treści, podział i relację lista-szczegół.',
   );
 
   const activateRegion = (regionId: string) => {
@@ -50,7 +64,7 @@ function PageSectionPattern() {
         className="pd-x18-region"
       >
         <div className="pd-x18-region__header">
-          <p className="pd-x18-region__eyebrow">Page header</p>
+          <p className="pd-x18-region__eyebrow">Nagłówek strony</p>
           <h3 className="pd-x18-region__title">
             Jedna teza, status i lekka akcja prowadzą użytkownika do treści
           </h3>
@@ -65,11 +79,11 @@ function PageSectionPattern() {
           <div className="pd-x18-meta-row">
             <StatusBadge
               status="Status wzorca"
-              text="Review"
+              text="W przeglądzie"
               tone="info"
             />
             <span className="pd-x18-description">
-              Landmark `main` pochodzi z StoryPresentationPage.
+              Punkt orientacyjny `main` pochodzi z StoryPresentationPage.
             </span>
           </div>
           <TextAction
@@ -91,9 +105,9 @@ function PageSectionPattern() {
       >
         <div className="pd-x18-flow-region">
           <div className="pd-x18-flow-region__header">
-            <p className="pd-x18-region__eyebrow">Section header</p>
+            <p className="pd-x18-region__eyebrow">Nagłówek sekcji</p>
             <h3 className="pd-x18-flow-region__title">
-              Content region zachowuje rytm pionowy
+              Region treści zachowuje rytm pionowy
             </h3>
             <p className="pd-x18-flow-region__text">
               Sekcja ma nagłówek, opis i treść rozdzieloną liniami. Brak
@@ -145,36 +159,29 @@ function PageSectionPattern() {
       </section>
 
       <section
-        aria-label="Relacja master-detail"
+        aria-label="Relacja lista-szczegół"
         className="pd-x18-master-detail"
       >
         <div className="pd-x18-master-detail__master">
-          <ul className="pd-x18-nav-list">
-            <li>
-              <button
-                data-active={activeRegion === 'overview' ? true : undefined}
-                type="button"
-                onClick={() => {
-                  activateRegion('overview');
-                }}
-              >
-                Przegląd zadania
-              </button>
-            </li>
-            <li>
-              <button
-                data-active={activeRegion === 'evidence' ? true : undefined}
-                type="button"
-                onClick={() => {
-                  activateRegion('evidence');
-                }}
-              >
-                Dowody i źródła
-              </button>
-            </li>
-          </ul>
+          <SectionNavigation
+            activeId={activeRegion}
+            aria-controls="pd-x18-master-detail-panel"
+            ariaLabel="Nawigacja relacji lista-szczegół"
+            itemProps={(item) => ({
+              onClick: (event) => {
+                event.preventDefault();
+                activateRegion(item.id);
+              },
+            })}
+            items={masterDetailItems}
+            orientation="vertical"
+            size="compact"
+          />
         </div>
-        <div className="pd-x18-master-detail__detail">
+        <div
+          className="pd-x18-master-detail__detail"
+          id="pd-x18-master-detail-panel"
+        >
           <div className="pd-x18-flow-region__header">
             <h3 className="pd-x18-flow-region__title">
               {activeRegion === 'evidence'
@@ -218,8 +225,8 @@ export const PageSectionLayoutStory: Story = {
           ariaLabel="Parametry wzorca układu"
           items={[
             { label: 'Kontrakt', value: '18.01' },
-            { label: 'Zakres', value: 'Pattern only' },
-            { label: 'Status', value: 'review' },
+            { label: 'Zakres', value: 'Tylko wzorzec' },
+            { label: 'Status', value: 'W przeglądzie' },
           ]}
         />
       )}
@@ -231,7 +238,7 @@ export const PageSectionLayoutStory: Story = {
     >
       <StoryPresentationSection
         index="01"
-        summary="Page header, section header, content region, split view i master-detail w jednym otwartym wzorcu."
+        summary="Nagłówek strony, nagłówek sekcji, region treści, podział i relacja lista-szczegół w jednym otwartym wzorcu."
         title="Otwarta kompozycja strony"
       >
         <PageSectionPattern />
@@ -275,11 +282,17 @@ export const PageSectionLayoutStory: Story = {
       canvas.getByText(/bez dokładania osobnego kafla/),
     ).toBeInTheDocument();
 
+    const evidenceNavigationItem = canvas.getByRole('link', {
+      name: 'Dowody i źródła',
+    });
+
     await userEvent.click(
-      canvas.getByRole('button', {
-        name: 'Dowody i źródła',
-      }),
+      evidenceNavigationItem,
     );
+
+    await expect(
+      evidenceNavigationItem,
+    ).toHaveAttribute('aria-current', 'page');
 
     await expect(
       canvas.getByRole('heading', {

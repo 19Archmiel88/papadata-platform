@@ -1651,7 +1651,7 @@
       "note": "Storybook-only cross-cutting pattern. Shows page header, section header, content region, split view and master-detail with open composition, typography and separators instead of decorative cards.",
       "group": null,
       "sourceStatus": "specified",
-      "documentationStatus": "review",
+      "documentationStatus": "accepted",
       "prototypeStatus": "implemented",
       "productionStatus": "not_started",
       "testStatus": "passing",
@@ -1664,6 +1664,7 @@
         "split view",
         "master-detail",
         "named regions",
+        "SectionNavigation",
         "TextAction",
         "open layout without decorative cards"
       ],
@@ -1672,7 +1673,7 @@
       "displaySectionTitle": "Wzorce interfejsu",
       "displayTitle": "Układ strony i sekcji",
       "storyExport": "PageSectionLayoutStory",
-      "accepted": false
+      "accepted": true
     },
     {
       "id": "18.02",

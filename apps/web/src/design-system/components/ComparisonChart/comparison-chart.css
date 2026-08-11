@@ -81,6 +81,7 @@
   row-gap: var(--pd-space-4);
   column-gap: var(--pd-space-10);
   align-items: center;
+  justify-content: center;
   margin: var(--pd-space-8) 0 0;
   padding: 0;
   color: var(--pd-text-secondary);
@@ -134,18 +135,8 @@
 .pd-comparison-chart__legend
   li[data-series-index='1']
   .pd-comparison-chart__swatch {
-  background:
-    repeating-linear-gradient(
-      135deg,
-      var(--pd-surface-subtle) 0,
-      var(--pd-surface-subtle) 6px,
-      var(--pd-data-series-2) 6px,
-      var(--pd-data-series-2) 7px,
-      var(--pd-surface-subtle) 7px,
-      var(--pd-surface-subtle) 11px
-    );
-  border-color: var(--pd-data-series-2);
-  opacity: 0.72;
+  background: var(--pd-data-series-2);
+  opacity: 0.88;
 }
 
 .pd-comparison-chart__legend
@@ -164,13 +155,12 @@
 
 .pd-comparison-chart__benchmark-swatch {
   display: inline-block;
-  inline-size: 2.5rem;
-  block-size: 0;
-  flex: 0 0 2.5rem;
-  border-block-start:
-    2px
-    dashed
-    var(--pd-data-target);
+  inline-size: 1.35rem;
+  block-size: 0.68rem;
+  flex: 0 0 1.35rem;
+  border: 1px solid transparent;
+  border-radius: var(--pd-radius-small);
+  background: var(--pd-data-target);
   opacity: 0.9;
 }
 
@@ -250,6 +240,7 @@
       var(--pd-space-4)
       var(--pd-space-8);
     align-items: start;
+    justify-items: center;
     margin-block-start: var(--pd-space-6);
   }
 
@@ -290,8 +281,7 @@
     li[data-series-index='1']
     .pd-comparison-chart__swatch {
     background: var(--pd-data-series-2);
-    border-color: var(--pd-data-series-2);
-    opacity: 0.42;
+    opacity: 0.88;
   }
 }
 
@@ -310,6 +300,7 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--pd-space-4);
+    justify-items: center;
   }
 
   .pd-comparison-chart__legend li {

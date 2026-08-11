@@ -22,10 +22,14 @@ import {
 } from '../../../design-system/foundations';
 import '../../../storybook-next/presentation/story-presentation.css';
 import {
-  StoryPresentationMeta,
-  StoryPresentationPage,
   StoryPresentationSection,
 } from '../../../storybook-next/presentation/StoryPresentation';
+import {
+  AnalyticsChartSurface,
+  Localized,
+  readAnalyticsLocale as readLocale,
+  Story15Page,
+} from './analytics-story-helpers';
 import './correlation-chart-showcase.css';
 
 type CorrelationChartPointSeed = Omit<CorrelationChartPoint, 'label'>;
@@ -142,16 +146,6 @@ const pointLabelsByLocale: Record<
   },
 };
 
-function readLocale(): PapaDataRuntimeLocale {
-  if (typeof document === 'undefined') {
-    return 'pl';
-  }
-
-  return document.documentElement.dataset.locale === 'en'
-    ? 'en'
-    : 'pl';
-}
-
 function buildPoints(
   points: readonly CorrelationChartPointSeed[],
   locale: PapaDataRuntimeLocale,
@@ -214,6 +208,7 @@ function buildLabels(
       legend: 'Relationship legend',
       noCausality:
         'Correlation and driver hypothesis are not causal proof.',
+      observations: 'Observation list',
       outlier: 'Outlier',
       relationship: 'Relationship',
       standardPoint: 'Observation',
@@ -230,6 +225,7 @@ function buildLabels(
     legend: 'Legenda zależności',
     noCausality:
       'Korelacja i hipoteza wpływu nie są dowodem przyczynowości.',
+    observations: 'Lista obserwacji',
     outlier: 'Punkt odstający',
     relationship: 'Zależność',
     standardPoint: 'Punkt obserwacji',
@@ -373,35 +369,59 @@ function CorrelationVariants() {
           </p>
         </header>
 
-        <CorrelationChart
-          ariaLabel={
-            locale === 'en'
-              ? 'Discount and margin scatter plot'
-              : 'Wykres punktowy rabatu i marży'
-          }
-          correlation={-0.64}
-          labels={labels}
-          points={marginDiscountPoints}
-          relationshipLabel={
-            locale === 'en'
-              ? 'Discount and margin have a negative correlation in the observed periods.'
-              : 'Rabat i marża mają ujemną korelację w obserwowanych okresach.'
-          }
-          valueFormatter={(value) => (
-            formatValue(value, locale)
-          )}
-          variant="scatter"
-          xLabel={
-            locale === 'en'
-              ? 'Discount %'
-              : 'Rabat %'
-          }
-          yLabel={
-            locale === 'en'
-              ? 'Margin %'
-              : 'Marża %'
-          }
-        />
+        <AnalyticsChartSurface
+          businessQuestion={{
+            en: 'Do discount and margin move together?',
+            pl: 'Czy rabat i marża poruszają się razem?',
+          }}
+          description={{
+            en: 'The scatter plot is embedded in ChartFrame and remains a relationship view, not a bare canvas object.',
+            pl: 'Wykres punktowy jest osadzony w ChartFrame i pozostaje widokiem zależności, nie gołym obiektem na canvasie.',
+          }}
+          rangeLabel={{
+            en: 'Observed periods',
+            pl: 'Obserwowane okresy',
+          }}
+          sourceLabel="CorrelationChart / ChartFrame"
+          title={{
+            en: 'Discount and margin scatter plot',
+            pl: 'Wykres punktowy rabatu i marży',
+          }}
+          visualizationLabel={{
+            en: 'Discount and margin scatter plot',
+            pl: 'Wykres punktowy rabatu i marży',
+          }}
+        >
+          <CorrelationChart
+            ariaLabel={
+              locale === 'en'
+                ? 'Discount and margin scatter plot'
+                : 'Wykres punktowy rabatu i marży'
+            }
+            correlation={-0.64}
+            labels={labels}
+            points={marginDiscountPoints}
+            relationshipLabel={
+              locale === 'en'
+                ? 'Discount and margin have a negative correlation in the observed periods.'
+                : 'Rabat i marża mają ujemną korelację w obserwowanych okresach.'
+            }
+            valueFormatter={(value) => (
+              formatValue(value, locale)
+            )}
+            variant="scatter"
+            xLabel={
+              locale === 'en'
+                ? 'Discount %'
+                : 'Rabat %'
+            }
+            yLabel={
+              locale === 'en'
+                ? 'Margin %'
+                : 'Marża %'
+            }
+          />
+        </AnalyticsChartSurface>
       </article>
 
       <article className="pd-correlation-story__variant">
@@ -423,32 +443,56 @@ function CorrelationVariants() {
           </p>
         </header>
 
-        <CorrelationChart
-          ariaLabel={
-            locale === 'en'
-              ? 'Relationship chart for campaign efficiency'
-              : 'Wykres zależności efektywności kampanii'
-          }
-          clusters={clusters}
-          correlation={0.72}
-          labels={labels}
-          points={spendRoasPoints}
-          relationshipLabel={
-            locale === 'en'
-              ? 'Cluster marking groups similar observations only.'
-              : 'Oznaczenie klastra grupuje tylko podobne obserwacje.'
-          }
-          valueFormatter={(value) => (
-            formatValue(value, locale)
-          )}
-          variant="relationship"
-          xLabel={
-            locale === 'en'
-              ? 'Media budget index'
-              : 'Indeks budżetu mediowego'
-          }
-          yLabel="ROAS"
-        />
+        <AnalyticsChartSurface
+          businessQuestion={{
+            en: 'Which campaign observations form a descriptive cluster?',
+            pl: 'Które obserwacje kampanii tworzą opisowy klaster?',
+          }}
+          description={{
+            en: 'Cluster and outlier markers stay static; interaction ownership remains in 15.09.',
+            pl: 'Oznaczenia klastra i punktu odstającego pozostają statyczne; interakcje należą do 15.09.',
+          }}
+          rangeLabel={{
+            en: 'Campaign efficiency',
+            pl: 'Efektywność kampanii',
+          }}
+          sourceLabel="CorrelationChart / ChartFrame"
+          title={{
+            en: 'Relationship chart for campaign efficiency',
+            pl: 'Wykres zależności efektywności kampanii',
+          }}
+          visualizationLabel={{
+            en: 'Relationship chart for campaign efficiency',
+            pl: 'Wykres zależności efektywności kampanii',
+          }}
+        >
+          <CorrelationChart
+            ariaLabel={
+              locale === 'en'
+                ? 'Relationship chart for campaign efficiency'
+                : 'Wykres zależności efektywności kampanii'
+            }
+            clusters={clusters}
+            correlation={0.72}
+            labels={labels}
+            points={spendRoasPoints}
+            relationshipLabel={
+              locale === 'en'
+                ? 'Cluster marking groups similar observations only.'
+                : 'Oznaczenie klastra grupuje tylko podobne obserwacje.'
+            }
+            valueFormatter={(value) => (
+              formatValue(value, locale)
+            )}
+            variant="relationship"
+            xLabel={
+              locale === 'en'
+                ? 'Media budget index'
+                : 'Indeks budżetu mediowego'
+            }
+            yLabel="ROAS"
+          />
+        </AnalyticsChartSurface>
       </article>
 
       <article className="pd-correlation-story__variant">
@@ -470,40 +514,64 @@ function CorrelationVariants() {
           </p>
         </header>
 
-        <CorrelationChart
-          ariaLabel={
-            locale === 'en'
-              ? 'Driver analysis for conversion lift'
-              : 'Analiza hipotez wpływu dla wzrostu konwersji'
-          }
-          correlation={0.58}
-          driverHypothesis={
-            locale === 'en'
-              ? 'Quality score and page speed are hypotheses to validate, not automatic recommendations.'
-              : 'Ocena jakości i szybkość strony są hipotezami do walidacji, nie automatycznymi rekomendacjami.'
-          }
-          labels={labels}
-          points={driverAnalysisPoints}
-          relationshipLabel={
-            locale === 'en'
-              ? 'Candidate drivers are ranked visually by observed relationship strength.'
-              : 'Kandydaci na czynniki wpływu są wizualnie uporządkowani według obserwowanej siły zależności.'
-          }
-          valueFormatter={(value) => (
-            formatValue(value, locale)
-          )}
-          variant="driver-analysis"
-          xLabel={
-            locale === 'en'
-              ? 'Signal score'
-              : 'Ocena sygnału'
-          }
-          yLabel={
-            locale === 'en'
-              ? 'Conversion delta'
-              : 'Zmiana konwersji'
-          }
-        />
+        <AnalyticsChartSurface
+          businessQuestion={{
+            en: 'Which variables are only driver hypotheses?',
+            pl: 'Które zmienne są tylko hipotezami wpływu?',
+          }}
+          description={{
+            en: 'Driver analysis labels hypotheses and keeps causal language blocked until external evidence exists.',
+            pl: 'Analiza hipotez wpływu oznacza hipotezy i blokuje język przyczynowy do czasu zewnętrznego dowodu.',
+          }}
+          rangeLabel={{
+            en: 'Driver hypothesis review',
+            pl: 'Przegląd hipotez wpływu',
+          }}
+          sourceLabel="CorrelationChart / ChartFrame"
+          title={{
+            en: 'Driver analysis for conversion lift',
+            pl: 'Analiza hipotez wpływu dla wzrostu konwersji',
+          }}
+          visualizationLabel={{
+            en: 'Driver analysis for conversion lift',
+            pl: 'Analiza hipotez wpływu dla wzrostu konwersji',
+          }}
+        >
+          <CorrelationChart
+            ariaLabel={
+              locale === 'en'
+                ? 'Driver analysis for conversion lift'
+                : 'Analiza hipotez wpływu dla wzrostu konwersji'
+            }
+            correlation={0.58}
+            driverHypothesis={
+              locale === 'en'
+                ? 'Quality score and page speed are hypotheses to validate, not automatic recommendations.'
+                : 'Ocena jakości i szybkość strony są hipotezami do walidacji, nie automatycznymi rekomendacjami.'
+            }
+            labels={labels}
+            points={driverAnalysisPoints}
+            relationshipLabel={
+              locale === 'en'
+                ? 'Candidate drivers are ranked visually by observed relationship strength.'
+                : 'Kandydaci na czynniki wpływu są wizualnie uporządkowani według obserwowanej siły zależności.'
+            }
+            valueFormatter={(value) => (
+              formatValue(value, locale)
+            )}
+            variant="driver-analysis"
+            xLabel={
+              locale === 'en'
+                ? 'Signal score'
+                : 'Ocena sygnału'
+            }
+            yLabel={
+              locale === 'en'
+                ? 'Conversion delta'
+                : 'Zmiana konwersji'
+            }
+          />
+        </AnalyticsChartSurface>
       </article>
     </div>
   );
@@ -516,37 +584,61 @@ function OutliersAndClusters() {
   const clusters = buildEfficientClusters(locale);
 
   return (
-    <CorrelationChart
-      ariaLabel={
-        locale === 'en'
-          ? 'Outlier and cluster indication without interaction'
-          : 'Punkty odstające i klastry bez interakcji'
-      }
-      clusters={clusters}
-      correlation={0.72}
-      driverHypothesis={
-        locale === 'en'
-          ? 'Retention remains a driver hypothesis, and Display remains an outlier for separate data review.'
-          : 'Retencja pozostaje hipotezą wpływu, a reklama graficzna pozostaje punktem odstającym do osobnego sprawdzenia danych.'
-      }
-      labels={labels}
-      points={points}
-      relationshipLabel={
-        locale === 'en'
-          ? 'The cluster and outlier are marked statically in the legend and point labels.'
-          : 'Klaster i punkt odstający są oznaczone statycznie w legendzie oraz etykietach punktów.'
-      }
-      valueFormatter={(value) => (
-        formatValue(value, locale)
-      )}
-      variant="relationship"
-      xLabel={
-        locale === 'en'
-          ? 'Media budget index'
-          : 'Indeks budżetu mediowego'
-      }
-      yLabel="ROAS"
-    />
+    <AnalyticsChartSurface
+      businessQuestion={{
+        en: 'Which observations are outliers or static clusters?',
+        pl: 'Które obserwacje są punktami odstającymi albo statycznymi klastrami?',
+      }}
+      description={{
+        en: 'Outlier and cluster information is textual and structural, not color-only and not interactive.',
+        pl: 'Informacja o punkcie odstającym i klastrze jest tekstowa oraz strukturalna, nie wyłącznie kolorystyczna i nie interaktywna.',
+      }}
+      rangeLabel={{
+        en: 'Static evidence markers',
+        pl: 'Statyczne oznaczenia dowodów',
+      }}
+      sourceLabel="CorrelationChart / ChartFrame"
+      title={{
+        en: 'Outlier and cluster indication without interaction',
+        pl: 'Punkty odstające i klastry bez interakcji',
+      }}
+      visualizationLabel={{
+        en: 'Outlier and cluster indication without interaction',
+        pl: 'Punkty odstające i klastry bez interakcji',
+      }}
+    >
+      <CorrelationChart
+        ariaLabel={
+          locale === 'en'
+            ? 'Outlier and cluster indication without interaction'
+            : 'Punkty odstające i klastry bez interakcji'
+        }
+        clusters={clusters}
+        correlation={0.72}
+        driverHypothesis={
+          locale === 'en'
+            ? 'Retention remains a driver hypothesis, and Display remains an outlier for separate data review.'
+            : 'Retencja pozostaje hipotezą wpływu, a reklama graficzna pozostaje punktem odstającym do osobnego sprawdzenia danych.'
+        }
+        labels={labels}
+        points={points}
+        relationshipLabel={
+          locale === 'en'
+            ? 'The cluster and outlier are marked statically in the legend and point labels.'
+            : 'Klaster i punkt odstający są oznaczone statycznie w legendzie oraz etykietach punktów.'
+        }
+        valueFormatter={(value) => (
+          formatValue(value, locale)
+        )}
+        variant="relationship"
+        xLabel={
+          locale === 'en'
+            ? 'Media budget index'
+            : 'Indeks budżetu mediowego'
+        }
+        yLabel="ROAS"
+      />
+    </AnalyticsChartSurface>
   );
 }
 
@@ -627,47 +719,71 @@ function LongCopyCase() {
 
   return (
     <div className="pd-correlation-story__long-copy">
-      <CorrelationChart
-        ariaLabel={
-          locale === 'en'
-            ? 'Relationship after attribution reconciliation and consent filtering'
-            : 'Zależność po rekoncyliacji atrybucji i filtracji zgód'
-        }
-        clusters={clusters}
-        correlation={0.51}
-        driverHypothesis={
-          locale === 'en'
-            ? 'Lifecycle automation after consent filtering is a driver hypothesis that requires experiment evidence before any causal wording is allowed.'
-            : 'Automatyzacja cyklu życia po filtracji zgód jest hipotezą wpływu, która wymaga dowodu eksperymentalnego przed użyciem języka przyczynowego.'
-        }
-        labels={labels}
-        points={points}
-        relationshipLabel={
-          locale === 'en'
-            ? 'Observed relationship across reconciled attribution windows with long campaign labels.'
-            : 'Obserwowana zależność obejmuje uzgodnione okna atrybucji i długie etykiety kampanii.'
-        }
-        valueFormatter={(value) => (
-          formatValue(value, locale)
-        )}
-        variant="driver-analysis"
-        xLabel={
-          locale === 'en'
-            ? 'Operational readiness score after attribution reconciliation'
-            : 'Ocena gotowości operacyjnej po rekoncyliacji atrybucji'
-        }
-        yLabel={
-          locale === 'en'
-            ? 'Incremental revenue index after consent filtering'
-            : 'Indeks przychodu przyrostowego po filtracji zgód'
-        }
-      />
+      <AnalyticsChartSurface
+        businessQuestion={{
+          en: 'Can long campaign labels remain readable?',
+          pl: 'Czy długie etykiety kampanii pozostają czytelne?',
+        }}
+        description={{
+          en: 'Long labels are kept out of the plot area and moved to the observation list so the data surface remains readable.',
+          pl: 'Długie etykiety nie trafiają do pola wykresu; przechodzą do listy obserwacji, żeby powierzchnia danych pozostała czytelna.',
+        }}
+        rangeLabel={{
+          en: 'Long-copy regression',
+          pl: 'Regresja długiego tekstu',
+        }}
+        sourceLabel="CorrelationChart / ChartFrame"
+        title={{
+          en: 'Relationship after attribution and consent reconciliation',
+          pl: 'Zależność po rekoncyliacji atrybucji i filtracji zgód',
+        }}
+        visualizationLabel={{
+          en: 'Relationship after attribution reconciliation and consent filtering',
+          pl: 'Zależność po rekoncyliacji atrybucji i filtracji zgód',
+        }}
+      >
+        <CorrelationChart
+          ariaLabel={
+            locale === 'en'
+              ? 'Relationship after attribution reconciliation and consent filtering'
+              : 'Zależność po rekoncyliacji atrybucji i filtracji zgód'
+          }
+          clusters={clusters}
+          correlation={0.51}
+          driverHypothesis={
+            locale === 'en'
+              ? 'Lifecycle automation after consent filtering is a driver hypothesis that requires experiment evidence before any causal wording is allowed.'
+              : 'Automatyzacja cyklu życia po filtracji zgód jest hipotezą wpływu, która wymaga dowodu eksperymentalnego przed użyciem języka przyczynowego.'
+          }
+          labels={labels}
+          points={points}
+          relationshipLabel={
+            locale === 'en'
+              ? 'Observed relationship across reconciled attribution windows with long campaign labels.'
+              : 'Obserwowana zależność obejmuje uzgodnione okna atrybucji i długie etykiety kampanii.'
+          }
+          valueFormatter={(value) => (
+            formatValue(value, locale)
+          )}
+          variant="driver-analysis"
+          xLabel={
+            locale === 'en'
+              ? 'Operational readiness score after attribution reconciliation'
+              : 'Ocena gotowości operacyjnej po rekoncyliacji atrybucji'
+          }
+          yLabel={
+            locale === 'en'
+              ? 'Incremental revenue index after consent filtering'
+              : 'Indeks przychodu przyrostowego po filtracji zgód'
+          }
+        />
+      </AnalyticsChartSurface>
     </div>
   );
 }
 
 const meta = {
-  title: '15 Wykresy i dane/Zależności i korelacje',
+  title: '15 Wykresy i dane/02 Rodziny wykresów/Zależności i korelacje',
   component: CorrelationChart,
   parameters: {
     layout: 'fullscreen',
@@ -698,32 +814,39 @@ export const CorrelationChartStory: Story = {
   },
   name: 'Zależności i korelacje',
   render: () => (
-    <StoryPresentationPage
+    <Story15Page
       className="pd-correlation-story"
-      headerAside={(
-        <StoryPresentationMeta
-          ariaLabel="Parametry kontraktu CorrelationChart"
-          items={[
-            {
-              label: 'Kontrakt',
-              value: '15.06',
-            },
-            {
-              label: 'Silnik',
-              value: 'Recharts',
-            },
-            {
-              label: 'Status',
-              value: 'przegląd',
-            },
-          ]}
+      metaAriaLabel={{
+        en: 'CorrelationChart contract parameters',
+        pl: 'Parametry kontraktu CorrelationChart',
+      }}
+      metaItems={[
+        {
+          label: <Localized pl="Kontrakt" en="Contract" />,
+          value: '15.06',
+        },
+        {
+          label: <Localized pl="Silnik" en="Engine" />,
+          value: 'Recharts',
+        },
+        {
+          label: <Localized pl="Status" en="Status" />,
+          value: <Localized pl="przegląd" en="review" />,
+        },
+      ]}
+      storyId="15.06"
+      summary={(
+        <Localized
+          en="CorrelationChart owns scatter plot, relationship chart, driver hypothesis analysis, static outlier and cluster markers, and correlation-strength copy without suggesting causality without evidence."
+          pl="CorrelationChart odpowiada za wykres punktowy, wykres zależności, analizę hipotez wpływu, statyczne oznaczenia punktów odstających i klastrów oraz tekst siły korelacji bez sugerowania przyczynowości bez dowodu."
         />
       )}
-      sectionCode="15"
-      sectionLabel="Wykresy i dane"
-      storyId="15.06"
-      summary="CorrelationChart odpowiada za wykres punktowy, wykres zależności, analizę hipotez wpływu, statyczne oznaczenia punktów odstających i klastrów oraz tekst siły korelacji bez sugerowania przyczynowości bez dowodu."
-      title="Korelacja pokazuje zależność, ale nie zastępuje dowodu przyczynowości."
+      title={(
+        <Localized
+          en="Correlation shows a relationship, but it does not replace causal proof."
+          pl="Korelacja pokazuje zależność, ale nie zastępuje dowodu przyczynowości."
+        />
+      )}
     >
       <StoryPresentationSection
         index="01"
@@ -764,7 +887,7 @@ export const CorrelationChartStory: Story = {
       >
         <LongCopyCase />
       </StoryPresentationSection>
-    </StoryPresentationPage>
+    </Story15Page>
   ),
   play: async ({
     canvasElement,

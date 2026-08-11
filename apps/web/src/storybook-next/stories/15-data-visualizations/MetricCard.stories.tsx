@@ -17,31 +17,23 @@ import {
   formatPapaDataNumber,
   formatPapaDataPercent,
   formatPapaDataRelativeTime,
-  type PapaDataRuntimeLocale,
 } from '../../../design-system/foundations';
 import '../../../storybook-next/presentation/story-presentation.css';
 import {
-  StoryPresentationMeta,
-  StoryPresentationPage,
   StoryPresentationSection,
 } from '../../../storybook-next/presentation/StoryPresentation';
+import {
+  Localized,
+  readAnalyticsLocale as readLocale,
+  Story15Page,
+} from './analytics-story-helpers';
 import './visualization-showcase.css';
 
 const explainMetric = fn();
 const showMetricDetail = fn();
 
-function readLocale(): PapaDataRuntimeLocale {
-  if (typeof document === 'undefined') {
-    return 'pl';
-  }
-
-  return document.documentElement.dataset.locale === 'en'
-    ? 'en'
-    : 'pl';
-}
-
 const meta = {
-  title: '15 Wykresy i dane/MetricCard',
+  title: '15 Wykresy i dane/01 Powierzchnie analityczne/MetricCard',
   component: MetricCard,
   parameters: {
     layout: 'fullscreen',
@@ -75,10 +67,10 @@ function MetricVariants() {
       <MetricCard
         {...sharedMetadata}
         detailAction={{
-          label: 'Szczegóły KPI',
+          label: locale === 'en' ? 'KPI details' : 'Szczegóły KPI',
           onAction: showMetricDetail,
         }}
-        label="Przychód"
+        label={locale === 'en' ? 'Revenue' : 'Przychód'}
         metricId="revenue"
         value={formatPapaDataCurrency(248420, locale)}
       />
@@ -86,9 +78,11 @@ function MetricVariants() {
         {...sharedMetadata}
         comparison={{
           direction: 'up',
-          label: '+12,4% okres do okresu',
+          label: locale === 'en'
+            ? '+12.4% period over period'
+            : '+12,4% okres do okresu',
         }}
-        label="Zamówienia"
+        label={locale === 'en' ? 'Orders' : 'Zamówienia'}
         metricId="orders"
         signal="positive"
         value={formatPapaDataNumber(1284, locale)}
@@ -97,7 +91,9 @@ function MetricVariants() {
         {...sharedMetadata}
         comparison={{
           direction: 'flat',
-          label: 'Stabilnie względem poprzedniego okresu',
+          label: locale === 'en'
+            ? 'Stable versus the previous period'
+            : 'Stabilnie względem poprzedniego okresu',
         }}
         label="ROAS"
         metricId="roas"
@@ -110,10 +106,12 @@ function MetricVariants() {
         {...sharedMetadata}
         comparison={{
           direction: 'down',
-          label: '-2,4 p.p. okres do okresu',
+          label: locale === 'en'
+            ? '-2.4 pp period over period'
+            : '-2,4 p.p. okres do okresu',
         }}
-        deviationLabel="-1,1 p.p. do planu"
-        label="Marża brutto"
+        deviationLabel={locale === 'en' ? '-1.1 pp to plan' : '-1,1 p.p. do planu'}
+        label={locale === 'en' ? 'Gross margin' : 'Marża brutto'}
         metricId="gross-margin"
         signal="negative"
         value={formatPapaDataPercent(0.317, locale)}
@@ -122,29 +120,33 @@ function MetricVariants() {
         {...sharedMetadata}
         comparison={{
           direction: 'down',
-          label: 'Koszt spadł o 7,8% — kierunek korzystny',
+          label: locale === 'en'
+            ? 'Cost down 7.8% - favorable direction'
+            : 'Koszt spadł o 7,8% — kierunek korzystny',
         }}
-        label="Koszt reklamy"
+        label={locale === 'en' ? 'Ad cost' : 'Koszt reklamy'}
         metricId="ad-cost"
         signal="positive"
         sparklinePoints={[61, 59, 60, 55, 53, 54, 49, 47, 45]}
         value={formatPapaDataCurrency(38200, locale)}
       />
       <MetricCard
-        definitionChangeLabel="Definicja metryki zmieniona 1 sie"
+        definitionChangeLabel={locale === 'en'
+          ? 'Metric definition changed on Aug 1'
+          : 'Definicja metryki zmieniona 1 sie'}
         emphasis="recommendation"
         freshnessLabel={formatPapaDataRelativeTime(-8, 'minute', locale)}
-        label="Konwersja"
+        label={locale === 'en' ? 'Conversion' : 'Konwersja'}
         metricId="conversion"
         papaAction={{
-          label: 'Wyjaśnij z Papa',
+          label: locale === 'en' ? 'Explain with Papa' : 'Wyjaśnij z Papa',
           onAction: explainMetric,
         }}
         signal="warning"
-        sourceLabel="GA4 + zamówienia"
+        sourceLabel={locale === 'en' ? 'GA4 + orders' : 'GA4 + zamówienia'}
         sparklinePoints={[48, 50, 49, 46, 44, 45, 42, 41, 40]}
         status="partial"
-        statusLabel="Dane częściowe"
+        statusLabel={locale === 'en' ? 'Partial data' : 'Dane częściowe'}
         value={formatPapaDataPercent(0.038, locale)}
       />
     </div>
@@ -157,33 +159,37 @@ function MetricStates() {
   return (
     <div className="pd-viz-story__metric-state-grid">
       <MetricCard
-        label="Przychód"
+        label={locale === 'en' ? 'Revenue' : 'Przychód'}
         metricId="revenue-processing"
         status="processing"
-        statusLabel="Przetwarzanie"
+        statusLabel={locale === 'en' ? 'Processing' : 'Przetwarzanie'}
         value={null}
       />
       <MetricCard
         label="ROAS"
         metricId="roas-no-data"
-        stateMessage="Połącz konto reklamowe albo zmień zakres, aby policzyć ROAS."
+        stateMessage={locale === 'en'
+          ? 'Connect an ad account or change the range to calculate ROAS.'
+          : 'Połącz konto reklamowe albo zmień zakres, aby policzyć ROAS.'}
         status="noData"
-        statusLabel="Brak danych"
+        statusLabel={locale === 'en' ? 'No data' : 'Brak danych'}
         value={null}
       />
       <MetricCard
         comparison={{
           direction: 'down',
-          label: '-4,1% okres do okresu',
+          label: locale === 'en'
+            ? '-4.1% period over period'
+            : '-4,1% okres do okresu',
         }}
         emphasis="alert"
         freshnessLabel={formatPapaDataRelativeTime(-2, 'hour', locale)}
-        label="Marża brutto"
+        label={locale === 'en' ? 'Gross margin' : 'Marża brutto'}
         metricId="margin-stale"
         signal="warning"
-        sourceLabel="Sklep"
+        sourceLabel={locale === 'en' ? 'Store' : 'Sklep'}
         status="stale"
-        statusLabel="Dane nieświeże"
+        statusLabel={locale === 'en' ? 'Stale data' : 'Dane nieświeże'}
         value={formatPapaDataPercent(0.294, locale)}
       />
     </div>
@@ -199,24 +205,43 @@ export const MetricCardStory: Story = {
     value: '248 420',
   },
   name: 'Karta wskaźnika',
-  render: () => (
-    <StoryPresentationPage
+  render: () => {
+    const locale = readLocale();
+
+    return (
+    <Story15Page
       className="pd-viz-story"
-      headerAside={(
-        <StoryPresentationMeta
-          ariaLabel="Parametry kontraktu MetricCard"
-          items={[
-            { label: 'Kontrakt', value: '15.02' },
-            { label: 'Przekazanie', value: '05.03 → 15.02' },
-            { label: 'Status', value: 'przegląd' },
-          ]}
+      metaAriaLabel={{
+        pl: 'Parametry kontraktu MetricCard',
+        en: 'MetricCard contract parameters',
+      }}
+      metaItems={[
+        {
+          label: <Localized pl="Kontrakt" en="Contract" />,
+          value: '15.02',
+        },
+        {
+          label: <Localized pl="Przekazanie" en="Handoff" />,
+          value: '05.03 -> 15.02',
+        },
+        {
+          label: <Localized pl="Status" en="Status" />,
+          value: <Localized pl="przegląd" en="review" />,
+        },
+      ]}
+      storyId="15.02"
+      summary={(
+        <Localized
+          pl="MetricCard odpowiada za KPI, jego porównanie i mikrotrend. Nie jest małym ChartFrame i nie wprowadza własnych kontrolek."
+          en="MetricCard owns the KPI, comparison and microtrend. It is not a small ChartFrame and does not add private controls."
         />
       )}
-      sectionCode="15"
-      sectionLabel="Wykresy i dane"
-      storyId="15.02"
-      summary="MetricCard odpowiada za KPI, jego porównanie i mikrotrend. Nie jest małym ChartFrame i nie wprowadza własnych kontrolek."
-      title="Wskaźnik ma pokazywać sygnał, nie budować kolejnego panelu w karcie."
+      title={(
+        <Localized
+          pl="Wskaźnik ma pokazywać sygnał, nie budować kolejnego panelu w karcie."
+          en="A metric should expose the signal, not build another panel inside a card."
+        />
+      )}
     >
       <StoryPresentationSection
         index="01"
@@ -243,27 +268,34 @@ export const MetricCardStory: Story = {
           <MetricCard
             comparison={{
               direction: 'down',
-              label: 'Spadek o 3,8 p.p. względem tej samej kohorty akwizycji w poprzednim, w pełni uzgodnionym oknie raportowym',
+              label: locale === 'en'
+                ? 'Down 3.8 pp versus the same acquisition cohort in the previous fully reconciled reporting window'
+                : 'Spadek o 3,8 p.p. względem tej samej kohorty akwizycji w poprzednim, w pełni uzgodnionym oknie raportowym',
             }}
-            freshnessLabel={formatPapaDataRelativeTime(-18, 'minute', 'pl')}
-            label="Marża kontrybucyjna po kosztach reklamy dla powracających klientów"
+            freshnessLabel={formatPapaDataRelativeTime(-18, 'minute', locale)}
+            label={locale === 'en'
+              ? 'Contribution margin after advertising costs for returning customers'
+              : 'Marża kontrybucyjna po kosztach reklamy dla powracających klientów'}
             labels={{
-              dataStatus: 'Status danych',
-              deviation: 'Odchylenie',
-              target: 'Cel',
+              dataStatus: locale === 'en' ? 'Data status' : 'Status danych',
+              deviation: locale === 'en' ? 'Deviation' : 'Odchylenie',
+              target: locale === 'en' ? 'Target' : 'Cel',
             }}
             metricId="long-copy-margin"
             signal="negative"
-            sourceLabel="handel + reklamy + atrybucja"
+            sourceLabel={locale === 'en'
+              ? 'commerce + ads + attribution'
+              : 'handel + reklamy + atrybucja'}
             sparklinePoints={[58, 57, 55, 56, 51, 49, 50, 46, 43]}
             status="partial"
-            statusLabel="Dane częściowe"
-            value={formatPapaDataPercent(0.279, 'pl')}
+            statusLabel={locale === 'en' ? 'Partial data' : 'Dane częściowe'}
+            value={formatPapaDataPercent(0.279, locale)}
           />
         </div>
       </StoryPresentationSection>
-    </StoryPresentationPage>
-  ),
+    </Story15Page>
+    );
+  },
   play: async ({
     canvasElement,
   }) => {

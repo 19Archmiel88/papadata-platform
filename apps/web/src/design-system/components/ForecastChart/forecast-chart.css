@@ -149,6 +149,7 @@
   row-gap: var(--pd-space-4);
   column-gap: var(--pd-space-8);
   align-items: center;
+  justify-content: center;
   margin: var(--pd-space-8) 0 0;
   padding: 0;
   color: var(--pd-forecast-legend-text);
@@ -350,6 +351,7 @@
   .pd-forecast-chart__legend {
     row-gap: var(--pd-space-3);
     column-gap: var(--pd-space-6);
+    justify-content: center;
     margin-block-start: var(--pd-space-5);
     font-size: 0.88rem;
   }
@@ -369,6 +371,7 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--pd-space-3);
+    justify-items: center;
   }
 
   .pd-forecast-chart__swatch {

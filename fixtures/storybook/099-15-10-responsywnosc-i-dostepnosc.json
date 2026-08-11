@@ -1,6 +1,6 @@
 {
   "fixtureId": "SB-099",
-  "storyTitle": "15 Wykresy i dane/Responsywność i dostępność",
+  "storyTitle": "15 Wykresy i dane/04 Jakość prezentacji/Responsywność i dostępność",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-10-responsywnosc-i-dostepnosc.md",
   "screenId": null,
   "components": [
@@ -70,5 +70,5 @@
     "semantic-heading-order",
     "200-percent-zoom"
   ],
-  "implementationStatus": "implemented-review-final-responsive-a11y-pass"
+  "implementationStatus": "implemented-passing-final-responsive-a11y-pass"
 }

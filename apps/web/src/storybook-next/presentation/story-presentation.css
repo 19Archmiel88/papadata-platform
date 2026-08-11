@@ -707,6 +707,27 @@
   background: var(--pd-data-series-6);
 }
 
+
+.pd-f0-series [data-series="7"],
+.pd-f0-mini-chart [data-series="7"] {
+  background: var(--pd-data-series-7);
+}
+
+.pd-f0-series [data-series="8"],
+.pd-f0-mini-chart [data-series="8"] {
+  background: var(--pd-data-series-8);
+}
+
+.pd-f0-series [data-series="9"],
+.pd-f0-mini-chart [data-series="9"] {
+  background: var(--pd-data-series-9);
+}
+
+.pd-f0-series [data-series="10"],
+.pd-f0-mini-chart [data-series="10"] {
+  background: var(--pd-data-series-10);
+}
+
 /* -------------------------------------------------------------------------- */
 /* Ledger, spacing, density, grid, radius and shadow samples                   */
 /* -------------------------------------------------------------------------- */

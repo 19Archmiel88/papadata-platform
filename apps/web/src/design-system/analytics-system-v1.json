@@ -2,7 +2,7 @@
   "name": "PapaData Analytics System",
   "version": "1.4",
   "stage": "A15.6",
-  "status": "review",
+  "status": "accepted",
   "owner": "Analytics UI",
   "ownershipContract": "docs/storybook/SOURCE-OF-TRUTH-OWNERSHIP.md",
   "runtimeApiRegistry": "rejestry/runtime-component-api.csv",
@@ -13,7 +13,7 @@
       "runtime": "apps/web/src/design-system/components/ChartFrame/ChartFrame.tsx",
       "story": "apps/web/src/storybook-next/stories/15-data-visualizations/ChartFrame.stories.tsx",
       "fixture": "fixtures/storybook/094-15-01-chartframe.json",
-      "status": "review"
+      "status": "accepted"
     },
     {
       "id": "15.02",
@@ -21,7 +21,7 @@
       "runtime": "apps/web/src/design-system/components/MetricCard/MetricCard.tsx",
       "story": "apps/web/src/storybook-next/stories/15-data-visualizations/MetricCard.stories.tsx",
       "fixture": "fixtures/storybook/096-15-02-metriccard.json",
-      "status": "review"
+      "status": "accepted"
     },
     {
       "id": "15.03",
@@ -37,7 +37,7 @@
       "runtime": "apps/web/src/design-system/components/ComparisonChart/ComparisonChart.tsx",
       "story": "apps/web/src/storybook-next/stories/15-data-visualizations/ComparisonChart.stories.tsx",
       "fixture": "fixtures/storybook/097-15-04-porownania.json",
-      "status": "review"
+      "status": "accepted"
     },
     {
       "id": "15.05",
@@ -45,7 +45,7 @@
       "runtime": "apps/web/src/design-system/components/ShareChart/ShareChart.tsx",
       "story": "apps/web/src/storybook-next/stories/15-data-visualizations/ShareChart.stories.tsx",
       "fixture": "fixtures/storybook/101-15-05-struktura-i-udzial.json",
-      "status": "review"
+      "status": "accepted"
     },
     {
       "id": "15.06",
@@ -53,7 +53,7 @@
       "runtime": "apps/web/src/design-system/components/CorrelationChart/CorrelationChart.tsx",
       "story": "apps/web/src/storybook-next/stories/15-data-visualizations/CorrelationChart.stories.tsx",
       "fixture": "fixtures/storybook/103-15-06-zaleznosci-i-korelacje.json",
-      "status": "review"
+      "status": "accepted"
     },
     {
       "id": "15.07",
@@ -61,7 +61,7 @@
       "runtime": "apps/web/src/design-system/components/ForecastChart/ForecastChart.tsx",
       "story": "apps/web/src/storybook-next/stories/15-data-visualizations/ForecastChart.stories.tsx",
       "fixture": "fixtures/storybook/098-15-07-prognoza-i-ai.json",
-      "status": "review"
+      "status": "accepted"
     },
     {
       "id": "15.08",
@@ -69,7 +69,7 @@
       "runtime": "apps/web/src/design-system/components/ChartDataState/ChartDataState.tsx",
       "story": "apps/web/src/storybook-next/stories/15-data-visualizations/DataStates.stories.tsx",
       "fixture": "fixtures/storybook/100-15-08-stany-danych.json",
-      "status": "review"
+      "status": "accepted"
     },
     {
       "id": "15.09",
@@ -77,7 +77,7 @@
       "runtime": "apps/web/src/design-system/components/ChartInteractionLayer/ChartInteractionLayer.tsx",
       "story": "apps/web/src/storybook-next/stories/15-data-visualizations/ChartInteractions.stories.tsx",
       "fixture": "fixtures/storybook/095-15-09-interakcje-i-filtry.json",
-      "status": "review"
+      "status": "accepted"
     }
   ],
   "qualityGates": [
@@ -86,7 +86,7 @@
       "name": "Responsywność i dostępność",
       "story": "apps/web/src/storybook-next/stories/15-data-visualizations/ChartAccessibilityReview.stories.tsx",
       "fixture": "fixtures/storybook/099-15-10-responsywnosc-i-dostepnosc.json",
-      "status": "review"
+      "status": "accepted"
     }
   ],
   "handoff": {

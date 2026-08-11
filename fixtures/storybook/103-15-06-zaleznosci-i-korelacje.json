@@ -1,6 +1,6 @@
 {
   "fixtureId": "SB-103",
-  "storyTitle": "15 Wykresy i wizualizacje danych/Zależności i korelacje",
+  "storyTitle": "15 Wykresy i dane/02 Rodziny wykresów/Zależności i korelacje",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-06-zaleznosci-i-korelacje.md",
   "screenId": null,
   "components": [
@@ -91,5 +91,5 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "implemented-review-static-contract"
+  "implementationStatus": "implemented-passing-static-contract"
 }

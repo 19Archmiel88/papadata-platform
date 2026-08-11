@@ -4,7 +4,7 @@
   "creator": "Artur Wiśniewski",
   "owner": "Artur Wiśniewski",
   "status": "PASS",
-  "file_count": 2180,
+  "file_count": 2182,
   "files": [
     {
       "path": ".dockerignore",
@@ -733,8 +733,8 @@
     },
     {
       "path": "apps/web/src/design-system/analytics-system-v1.json",
-      "bytes": 4088,
-      "sha256": "f8b3d8b43d1c0f7fc7f819305412b1ff47221eb5c72c58b815b567bc222a9885"
+      "bytes": 4108,
+      "sha256": "0fd6cb1310810b9390d2d9f5847f0c22acb2aa5309c43b26d3d74504b3d9845d"
     },
     {
       "path": "apps/web/src/design-system/component-system-v1.json",
@@ -743,8 +743,8 @@
     },
     {
       "path": "apps/web/src/design-system/components/Analytics/analyticsTypes.ts",
-      "bytes": 2504,
-      "sha256": "b8a255f40510a2d0a027fcdf4da5a68face90f6de444dafe8d10f817d96d01be"
+      "bytes": 2501,
+      "sha256": "950bd1819ed98ca1a30fb01a42ed372a011cbadb84d77352621418d0a857109e"
     },
     {
       "path": "apps/web/src/design-system/components/Analytics/index.ts",
@@ -833,8 +833,8 @@
     },
     {
       "path": "apps/web/src/design-system/components/ChartDataState/ChartDataState.tsx",
-      "bytes": 4948,
-      "sha256": "8ece79556e9e3b39e57da881381f2fa0e7449d4f80143e2e7fdd044f6f7f4853"
+      "bytes": 4941,
+      "sha256": "d9bb6dd878ebf4e10dc04a035c3d40bb2c58c7f20abd40a2dd87bda3e436147b"
     },
     {
       "path": "apps/web/src/design-system/components/ChartDataState/chart-data-state.css",
@@ -848,13 +848,13 @@
     },
     {
       "path": "apps/web/src/design-system/components/ChartFrame/ChartFrame.tsx",
-      "bytes": 6933,
-      "sha256": "1effe864f879f928401bf540a37fc2cc617b9592eb28c63b299ef6937ddad3c0"
+      "bytes": 11891,
+      "sha256": "7d4a8f70cf1f40b2cf86e9c59e7c1a49d1e3fa4f593dcc517b9b70cc191c5157"
     },
     {
       "path": "apps/web/src/design-system/components/ChartFrame/chart-frame.css",
-      "bytes": 6713,
-      "sha256": "fe758454bc13c8d171fbae62a7b0f8f742f86e3e15889a9765255c645310e2cf"
+      "bytes": 19722,
+      "sha256": "6aadc9e6c5c914cbf5c3bace89757a06046d3df313e08401c2e61f7afbf89781"
     },
     {
       "path": "apps/web/src/design-system/components/ChartFrame/index.ts",
@@ -863,13 +863,13 @@
     },
     {
       "path": "apps/web/src/design-system/components/ChartInteractionLayer/ChartInteractionLayer.tsx",
-      "bytes": 6847,
-      "sha256": "27dcff493830222a3a395bbeb36324631f2eabd8a8ea8f0ce94abbd215147256"
+      "bytes": 7001,
+      "sha256": "e25b9ae252860621c49ee3c9bc4129277931ec58174ca69295f7060e8edbc2cb"
     },
     {
       "path": "apps/web/src/design-system/components/ChartInteractionLayer/chart-interaction-layer.css",
-      "bytes": 6279,
-      "sha256": "b8d3b4dfc69b788ac87d6896a962702e166306257ba8d8496dbac501e00b1d90"
+      "bytes": 6514,
+      "sha256": "c10d5b70b0780954d084343c84df983027eb14076fb18c8fe1c152d03b1c691b"
     },
     {
       "path": "apps/web/src/design-system/components/ChartInteractionLayer/index.ts",
@@ -888,13 +888,13 @@
     },
     {
       "path": "apps/web/src/design-system/components/ComparisonChart/ComparisonChart.tsx",
-      "bytes": 15949,
-      "sha256": "31942387412169f1aa77dad0ff81bbdb550dddc6855399c12ddcd2516c191b83"
+      "bytes": 14317,
+      "sha256": "4eb002f5a5f5955fbd3d0ff3892087f3c364af72210433b8a04c66b40395e82d"
     },
     {
       "path": "apps/web/src/design-system/components/ComparisonChart/comparison-chart.css",
-      "bytes": 6843,
-      "sha256": "3969f494974135ba9284902777f3ed5f28576501668681dd3a7073a720894928"
+      "bytes": 6652,
+      "sha256": "3a79ee9f127372a16397de7a89d370b6003af0358862cbf059783f41ebb41484"
     },
     {
       "path": "apps/web/src/design-system/components/ComparisonChart/index.ts",
@@ -903,13 +903,13 @@
     },
     {
       "path": "apps/web/src/design-system/components/CorrelationChart/CorrelationChart.tsx",
-      "bytes": 20116,
-      "sha256": "316d00b0f18455a8c835f0a3b307aabdac616287f6dd18a7d5ddc006a7ab1883"
+      "bytes": 21030,
+      "sha256": "7ab511a02136b1e63e40d7d9f6c0f587171bca842f0831869bdb46284d95c3cb"
     },
     {
       "path": "apps/web/src/design-system/components/CorrelationChart/correlation-chart.css",
-      "bytes": 9856,
-      "sha256": "16979a13f388e3e25fe7b816b611765df038992f47fd03283b3faa0d3b531914"
+      "bytes": 13361,
+      "sha256": "c5528f450ad588526082c6a76206d0c5e1b9ad4280a1ddf40283cc356c26640a"
     },
     {
       "path": "apps/web/src/design-system/components/CorrelationChart/index.ts",
@@ -943,8 +943,8 @@
     },
     {
       "path": "apps/web/src/design-system/components/DataTable/DataTable.tsx",
-      "bytes": 12082,
-      "sha256": "5317822aecb7786b90a2be6098b3e72eea62930b1859ceae50d88e57abba8775"
+      "bytes": 12087,
+      "sha256": "237af46e13f936096dda12cd38141e97256c891df3bc1a8845dc9bdf900af610"
     },
     {
       "path": "apps/web/src/design-system/components/DataTable/index.ts",
@@ -1093,13 +1093,13 @@
     },
     {
       "path": "apps/web/src/design-system/components/ForecastChart/ForecastChart.tsx",
-      "bytes": 19028,
-      "sha256": "55eff5130245b720d20fdd513ece86ecbd19038c6be98b01b65eae9a4baa186a"
+      "bytes": 18988,
+      "sha256": "82704ddc6582fcf192397c281690c5390780431de4a609fb6a41f1bd1914eb33"
     },
     {
       "path": "apps/web/src/design-system/components/ForecastChart/forecast-chart.css",
-      "bytes": 11499,
-      "sha256": "08cdad22e97a5b021aab9a4beca650e059614c50cf60324e0c7f6b305f9c241b"
+      "bytes": 11582,
+      "sha256": "6f2df44a95cd53100e29e4410f01237d806fd52bc881faf8db769c420303859e"
     },
     {
       "path": "apps/web/src/design-system/components/ForecastChart/index.ts",
@@ -1148,8 +1148,8 @@
     },
     {
       "path": "apps/web/src/design-system/components/MetricCard/MetricCard.tsx",
-      "bytes": 9492,
-      "sha256": "f0a802666fe61148b03921e6bdcce2bfc1da26299a44909d9d99e1840fb5f207"
+      "bytes": 9495,
+      "sha256": "e787333525c439ad76c592d44be5ae306fdfda666446af83bea438807121a643"
     },
     {
       "path": "apps/web/src/design-system/components/MetricCard/index.ts",
@@ -1158,8 +1158,8 @@
     },
     {
       "path": "apps/web/src/design-system/components/MetricCard/metric-card.css",
-      "bytes": 5432,
-      "sha256": "74e23f6fc59245e5ca4850d74dac722533cfdb3237ebd7ca34177284e761a1da"
+      "bytes": 5361,
+      "sha256": "e5020365cfe1c8fa34a225a4312549807ca1e65ae4add680d5ee78fb38db23e2"
     },
     {
       "path": "apps/web/src/design-system/components/Navigation/navigation-showcase.css",
@@ -1288,8 +1288,8 @@
     },
     {
       "path": "apps/web/src/design-system/components/ShareChart/ShareChart.tsx",
-      "bytes": 16010,
-      "sha256": "11ac75b296b08b608ae450543c3615a5b3c85e2585db3f8e0a60fce3434c18f8"
+      "bytes": 16044,
+      "sha256": "b80725cb967f10c6ed5be2ae29a5589f5baf179e647a8851689a73e37536fafe"
     },
     {
       "path": "apps/web/src/design-system/components/ShareChart/index.ts",
@@ -1298,8 +1298,8 @@
     },
     {
       "path": "apps/web/src/design-system/components/ShareChart/share-chart.css",
-      "bytes": 9504,
-      "sha256": "14551719a93408669a77e2be7786023d0bb9a0277546d7b134ea82af7600bbab"
+      "bytes": 9512,
+      "sha256": "14f38eb97d182c5764808c8c24280d7906688a48122e40e140171af80de62afc"
     },
     {
       "path": "apps/web/src/design-system/components/Skeleton/Skeleton.tsx",
@@ -1353,8 +1353,8 @@
     },
     {
       "path": "apps/web/src/design-system/components/Table/Table.tsx",
-      "bytes": 10702,
-      "sha256": "b6af48ec837e95c6de5552db046e315275659c1da4219dfc7eca07736a5b1d01"
+      "bytes": 10721,
+      "sha256": "15a1076cd66ca222760a59d9cbc0c3b0d0d9923d2927ec138fc373c7cce2b6d0"
     },
     {
       "path": "apps/web/src/design-system/components/Table/index.ts",
@@ -1403,8 +1403,8 @@
     },
     {
       "path": "apps/web/src/design-system/components/TrendChart/TrendChart.tsx",
-      "bytes": 12827,
-      "sha256": "8303e722e6e9b947be5ef608d423072ac1e722238c9ce80b7c586da0b9568686"
+      "bytes": 12833,
+      "sha256": "c44dd9f8c8b2491e42bec18de7aba74e016a6f1d37dcbbb30afccba5d388ae3b"
     },
     {
       "path": "apps/web/src/design-system/components/TrendChart/index.ts",
@@ -1413,8 +1413,8 @@
     },
     {
       "path": "apps/web/src/design-system/components/TrendChart/trend-chart.css",
-      "bytes": 4692,
-      "sha256": "b89b31bee1e164324aede446857fa6aca1dc98c814a5d875df76340085b6d91b"
+      "bytes": 4746,
+      "sha256": "a79555cd8bdd92bcdc4646d1e0d01d123837c2d3e82a4ec2ce33849c4790f181"
     },
     {
       "path": "apps/web/src/design-system/components/VerificationCodeInput/VerificationCodeInput.tsx",
@@ -1488,8 +1488,8 @@
     },
     {
       "path": "apps/web/src/design-system/foundations/themes/carbon-pearl.css",
-      "bytes": 12329,
-      "sha256": "9fc3f8fa9588e46c915dd0f385309c175fa4aaeff71b2ae6e6d7df7a78d2b049"
+      "bytes": 12579,
+      "sha256": "22e614db1776cfa8595e7144dc6efd6fe40a7cfd1a5bb09e368622ea80717e9f"
     },
     {
       "path": "apps/web/src/design-system/foundations/themes/index.ts",
@@ -1503,8 +1503,8 @@
     },
     {
       "path": "apps/web/src/design-system/foundations/tokens/colors.ts",
-      "bytes": 3706,
-      "sha256": "c7d0f1a2396e0fe0ca00a57441ca4a6a9ffa03efb561168caeb919f1261c31a7"
+      "bytes": 3884,
+      "sha256": "9e2e0ea3921c87c6e6110eff8f4fadf775146d46d88c8cfaba5e436583326032"
     },
     {
       "path": "apps/web/src/design-system/foundations/tokens/index.ts",
@@ -1758,8 +1758,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/catalog/catalog.generated.ts",
-      "bytes": 178536,
-      "sha256": "b308981abce601d5dbd5c6c6ba2ba4f9f1113e1b6b9f37bf96ca2f20881ff031"
+      "bytes": 178823,
+      "sha256": "b6e0674f01b6808d7547ee099dcc6ad420cb880e083ca1c55ab4ff60da58de6b"
     },
     {
       "path": "apps/web/src/storybook-next/catalog/catalog.ts",
@@ -1808,8 +1808,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/presentation/story-presentation.css",
-      "bytes": 39481,
-      "sha256": "5eaedab61f99a8cf2d27dcf0c303176ed3a1123e6a3a6ba820735782acef6f36"
+      "bytes": 39937,
+      "sha256": "7477a63ab26ea69f759e794cb9cd40669945b344de2fead5ffef1ba23e855d19"
     },
     {
       "path": "apps/web/src/storybook-next/stories/.gitkeep",
@@ -1838,8 +1838,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
-      "bytes": 97246,
-      "sha256": "3b5876e2d4e4386ff8cf36c9f588c2a7696648e0fe4dbbc98ac8a6f3a2067e70"
+      "bytes": 97728,
+      "sha256": "2dff687f67748a7cb948d406bf127f10b776a49ef4c2d4b80da87d46bd743858"
     },
     {
       "path": "apps/web/src/storybook-next/stories/00-foundations/surface-messaging.css",
@@ -1913,58 +1913,63 @@
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/ChartAccessibilityReview.stories.tsx",
-      "bytes": 8478,
-      "sha256": "20277c25be7d91b6b1965a90640fbe71922b33e1ac1f92e4a214081d5835ea5b"
+      "bytes": 14568,
+      "sha256": "4916eddd85c44c72f187c28498b00cdb94150cf82cd71fa2fe9449f0a6e7494f"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/ChartFrame.stories.tsx",
-      "bytes": 13603,
-      "sha256": "654031501d2febac47804a915d0e5eb06be97c1bc56b39e7bfb2860ce1f28c8e"
+      "bytes": 13926,
+      "sha256": "2b31c6a8cc925782806b3deb1eeeb4666c51b390c631c22b12352a3acb92be87"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/ChartInteractions.stories.tsx",
-      "bytes": 13633,
-      "sha256": "c7948b186a2e2569841e0a2e25267743f19a5ab6ef586d2d72a17a70c2308cbf"
+      "bytes": 22669,
+      "sha256": "9a194b4546bc10af8042b622ece277028b664df6bcf3c7d6cb3a22a82313b6ed"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/ComparisonChart.stories.tsx",
-      "bytes": 20020,
-      "sha256": "3b3dda017d636cb44b7dc53d55f23ab20a3e490537d05c9cf85e8acfa6178869"
+      "bytes": 29813,
+      "sha256": "b5d0dce72b21437e3af62e6b529537c069ca06b770f48fcb3da397014d1e613e"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/CorrelationChart.stories.tsx",
-      "bytes": 27014,
-      "sha256": "dd539e652ee1ab37792d0f6948072f761de873be35a1116e81dec995d7690527"
+      "bytes": 32809,
+      "sha256": "8b6ef29770e0c1db7f0f494abcac0ed7d35ebeb39b3e73a358b7ccb59d397323"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/DataStates.stories.tsx",
-      "bytes": 9326,
-      "sha256": "27d6b2c0a6172e6938a4612c9894e114e41229fa2326b1d5800e1e71c7b68fe2"
+      "bytes": 14942,
+      "sha256": "08b98443f3b0a3b298c4f2cb4d5180e06ed15dfb2af22734b3709c53cdcd45d2"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/ForecastChart.stories.tsx",
-      "bytes": 18286,
-      "sha256": "acdfcf4bb70ec32f73db671cd42638d31f84ee40d72cdea79ae8d05fccf9c6c5"
+      "bytes": 29083,
+      "sha256": "a41d95158600210fe3be069d20c16d2e8f69b0fbc40ef3703d37b33f7136c927"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/MetricCard.stories.tsx",
-      "bytes": 8430,
-      "sha256": "397a92c40ca74c2753b197bbc93e73cc6df7429cf473cdb21ed1a25129fc1d18"
+      "bytes": 10394,
+      "sha256": "273a33a3d673166c1bfbfb4a3cb2f47a23f52c11dd550b21b8870a08a6985b19"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/ShareChart.stories.tsx",
-      "bytes": 17042,
-      "sha256": "5039992de468ee0e23656382a157ad62968dc1179d5d4784f6ce5734b0e692ce"
+      "bytes": 25494,
+      "sha256": "af4cb9c453dce5301c40926967037e7b28d63b515c137dd4478a4f3bb77108d0"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/TrendChart.stories.tsx",
-      "bytes": 11383,
-      "sha256": "09ceff152640b2b22a9efad4f186dc1d11a91cc05dcaf9a3d184dbab17d7df1b"
+      "bytes": 16586,
+      "sha256": "4416445292efd80a1dbb0f48765296db22d963123f86f8a91f92d18046cca402"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/analytics-final-stages.css",
-      "bytes": 2332,
-      "sha256": "d49ea106095d0b449b41e1d1cd2a39e4c7e636fe87b521cdddeea08ac5dd9c04"
+      "bytes": 5196,
+      "sha256": "5bcc78496c1b04b363a252a5424fa9d3e0f53134ef76dc3ec6a46539a1f47b1c"
+    },
+    {
+      "path": "apps/web/src/storybook-next/stories/15-data-visualizations/analytics-story-helpers.tsx",
+      "bytes": 5060,
+      "sha256": "799949908018219274c9bf280cd73ecd6ae32176cfc5bd667e93d1f2cf06da03"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/comparison-chart-showcase.css",
@@ -1973,28 +1978,28 @@
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/correlation-chart-showcase.css",
-      "bytes": 2826,
-      "sha256": "73d952cfaa968b2eaf152c1d9732e9af96a66a9b6b14dc6975c96e8ea05ae34a"
+      "bytes": 2852,
+      "sha256": "2cf31ce25de1ad12d66994b775f479a4a08c9a44f7468c20872fd045c62066ad"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/forecast-chart-showcase.css",
-      "bytes": 9402,
-      "sha256": "de64f9275400877c6636376a088277ab0a5e7e375ad4e4c9bf6d869a34b3f046"
+      "bytes": 6122,
+      "sha256": "10272fcaf55745056840311f8e1a5f384723f9a1fffa23b265a6ea85ca2dcb73"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/share-chart-showcase.css",
-      "bytes": 1817,
-      "sha256": "ef0c8c8c71b8a591313b946de2cbd76fd11a5a69d381c8c2a07ed3467582045a"
+      "bytes": 1840,
+      "sha256": "8d3406b1c42f105baa2e667674683e22e45500855270855597954c6be9358b4c"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/trend-chart-showcase.css",
-      "bytes": 2073,
-      "sha256": "eeefdd0b799cd8e91c4bc949244cb68aa137fcf023627d38580408d28f0113e5"
+      "bytes": 2097,
+      "sha256": "9059821b49113a8cb311d01ab0b96c9ecf72ce70cfff98f0e8f56c4eb1d243be"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/visualization-showcase.css",
-      "bytes": 4594,
-      "sha256": "202a44ebf6f9617e97d1f517b9323318ae01146ce6ec46fde9224fc88d544768"
+      "bytes": 4512,
+      "sha256": "ea39081fcd3244cf3b641d00825a78592328c8a37c515acf192803cc1fc1c44b"
     },
     {
       "path": "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/CrossStateMatrix.stories.tsx",
@@ -2053,13 +2058,13 @@
     },
     {
       "path": "apps/web/src/storybook-next/storybook-contract.json",
-      "bytes": 200638,
-      "sha256": "57f6b0475159e241710f866223407a5749b6783e247b1c192e3ab1524f6e0b66"
+      "bytes": 200910,
+      "sha256": "a2fd1b1cd82592f49317211b1294ced00d2d05165b643087902a72bfc5010d27"
     },
     {
       "path": "apps/web/src/storybook-next/storybook-taxonomy-map.json",
-      "bytes": 14495,
-      "sha256": "42b7cd074c7ce600ef94d4de13b2406a888ce85a130f8c300d6064866ebe502d"
+      "bytes": 14472,
+      "sha256": "68342a3641ac5e29954e5a03a50caa2040d483772ddd68dea97ad10788d4544f"
     },
     {
       "path": "apps/web/src/storybook-next/styles/.gitkeep",
@@ -3528,8 +3533,8 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/01-fundamenty/00-03-kolory-semantyczne.md",
-      "bytes": 1830,
-      "sha256": "1d870782cb5cee40dfd92891fa9ca249e2055bb5893a2e81f4719b8b47eff38c"
+      "bytes": 2309,
+      "sha256": "5720808e0bf9a0d07db01f928fee59e11bca3dbde12433375e9c00206c8b21d2"
     },
     {
       "path": "docs/specyfikacja-docelowa/01-fundamenty/00-04-statusy-systemowe.md",
@@ -4258,58 +4263,58 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-01-chartframe.md",
-      "bytes": 5525,
-      "sha256": "f879874e7852998a96cc8c9daf39a91aa15732c590a8c90adb69bb77e9fc7d8a"
+      "bytes": 9342,
+      "sha256": "2158ed57033fc22be3d05408b03cca7a9cc15cda26b0b1dbbd7f96a74b87fb19"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-02-metriccard.md",
-      "bytes": 4771,
-      "sha256": "1420449dd07be5512ad33787173e4c6de65d2a8630e15cfda0a4c1bec7712b93"
+      "bytes": 6313,
+      "sha256": "2461b0809a4f3fe09b3ad6f91ec39362d4a719a23c716cc68a2fae1e5d0c2db5"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-03-trendy.md",
-      "bytes": 4100,
-      "sha256": "f45093f50b418c60d5798935144df4db998776c27fafd9e06120a483e7543595"
+      "bytes": 5404,
+      "sha256": "3e0f793988e709853c430d26ea3bf1853399e034b91e709e5d2390e96ec57833"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-04-porownania.md",
-      "bytes": 4141,
-      "sha256": "4c9d0b82f699cdca82e91e459d78a45bde952afce7f9ebb1774254b35f39b9f3"
+      "bytes": 5493,
+      "sha256": "517571677a77c43f2f737ff479c332a357f725bf5641435670d6868c90ee20ae"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-05-struktura-i-udzial.md",
-      "bytes": 3490,
-      "sha256": "1585e9b73102c6f852258dc2447421e1d79e6e52e191f654e223e89c6120841f"
+      "bytes": 4886,
+      "sha256": "200b335f8937ab50e0c72915544e52621a485eda092ec5c568c0c0db24e60bb5"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-06-zaleznosci-i-korelacje.md",
-      "bytes": 4131,
-      "sha256": "778830e177d1728669fa845ac47c19884f471fc1215b6b995bf35ca6818417d4"
+      "bytes": 6203,
+      "sha256": "5acb9636b52bd3d8232a95df6e0fe4fe489f42b89e67864737a6408948bb1859"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-07-prognoza-i-ai.md",
-      "bytes": 4131,
-      "sha256": "f1373108e50ba93685aca7455f6549f2a34cfa13fbb431693d07150f73350830"
+      "bytes": 5485,
+      "sha256": "7f7f80bba7c97eac66ea1189cc999f48f44fc9ffaef1f682fc18f3105489570d"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-08-stany-danych.md",
-      "bytes": 6295,
-      "sha256": "fdc45eb7f945db56910b21345ef781a871a4d2c40c27fef96f10d2f16b39b755"
+      "bytes": 7695,
+      "sha256": "3a53939a6f18e7f0c130dfcff11a0bca3598a6973bc76ae72aff2ea41bfcc944"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-09-interakcje-i-filtry.md",
-      "bytes": 5377,
-      "sha256": "a78b8d425f41eb34c6707e846f6064453a67203a3af491f9287a0757120d46a3"
+      "bytes": 7086,
+      "sha256": "aaa8514271565aba4f580b850ddc237fdca245a989666af852cb30b0a4a1375d"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-10-responsywnosc-i-dostepnosc.md",
-      "bytes": 4693,
-      "sha256": "6c24791bd16e90ee597d43f6d0952e831e0224e5e70f2c056b594c6c93a098fb"
+      "bytes": 6523,
+      "sha256": "b647b2b77fafc92c74571890a675809aa5c83997c1e009436d745206a8127b91"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/komponenty/chartframe.md",
-      "bytes": 3593,
-      "sha256": "682e7941ecc56e8e7505612040555f5c59083162e0260847f7886c9cbc65d40e"
+      "bytes": 3816,
+      "sha256": "09bffa684a05adbe5577d9c52a2794779973324b54df3fcbfd4b2904c2ce5e68"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/komponenty/comparisonchart.md",
@@ -4333,8 +4338,8 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/komponenty/metriccard.md",
-      "bytes": 3463,
-      "sha256": "1a7f0b063a88deabaddbfd1a96ffd9272ed09773f4e63c4885b530800c5e771f"
+      "bytes": 3709,
+      "sha256": "6ebe712b6da3258372dc2810d71e703f4a7742fdae574f5e1078cd9f8836bb31"
     },
     {
       "path": "docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/komponenty/sharechart.md",
@@ -5258,8 +5263,8 @@
     },
     {
       "path": "docs/specyfikacja-docelowa/22-mapy-i-indeksy/storybook-backlog-scenariusze.md",
-      "bytes": 106223,
-      "sha256": "ef166e1fad9e6e73f3fb9f26d2b46db93124128a7b7966aff0450b84ccc870b5"
+      "bytes": 106053,
+      "sha256": "6d037f8fe58ff75aba7b47969072e445e7879b31a21257316e2fbc7007628cf6"
     },
     {
       "path": "docs/specyfikacja-docelowa/22-mapy-i-indeksy/storybook-target-backlog.md",
@@ -5753,8 +5758,8 @@
     },
     {
       "path": "docs/storybook-planning/15-18/15-WYKRESY-I-DANE.md",
-      "bytes": 4954,
-      "sha256": "30ba60c7441bca3877636a46fb5a7f2346a2aa6e953315f55d3917768e7f8cd1"
+      "bytes": 5961,
+      "sha256": "ccc873ec0519e6d24e543c4f4185b6231ba530c97f03bc59be768d2657b65915"
     },
     {
       "path": "docs/storybook-planning/15-18/18-WZORCE-INTERFEJSU.md",
@@ -5773,8 +5778,13 @@
     },
     {
       "path": "docs/storybook-planning/15-18/README.md",
-      "bytes": 1739,
-      "sha256": "cb0121b1482ccb4178e2ff7141793ca6ebfe0ddb5767d670ec438f9ca1b9d4f6"
+      "bytes": 2319,
+      "sha256": "936904d0f1e46fa9610975812e316f4314b31fb3a4289362a7c9bd43b835dcd9"
+    },
+    {
+      "path": "docs/storybook-planning/15-18/SECTION-15-CANVAS-LAYER-RULE.md",
+      "bytes": 2060,
+      "sha256": "abdff22f2528e47b16dc86d3fd5dd648de713f2af079107bc3a235be4d7d9d9f"
     },
     {
       "path": "docs/storybook-planning/20-25/20-POWLOKA-PRODUKTU-I-NAWIGACJA.md",
@@ -9023,53 +9033,53 @@
     },
     {
       "path": "fixtures/storybook/094-15-01-chartframe.json",
-      "bytes": 1085,
-      "sha256": "be1a6ce43ead52aecba2967ea867f1c5ba6df0f25a653dcf50cba0fe3c329dec"
+      "bytes": 1114,
+      "sha256": "4375a8e7156c2c8163e58ea842788dd13a075c6d86230d9a495e7e7eb2c211c9"
     },
     {
       "path": "fixtures/storybook/095-15-09-interakcje-i-filtry.json",
-      "bytes": 1458,
-      "sha256": "b9cf2bfa96774bf9de7646dfd6a7934009f3267a1053a612db16c0e6c9a11c66"
+      "bytes": 1481,
+      "sha256": "cda9b27e74d8db8769e493b17986ea880e34e4a3f40282bf389f573ceda2444a"
     },
     {
       "path": "fixtures/storybook/096-15-02-metriccard.json",
-      "bytes": 1089,
-      "sha256": "64f4365c955389dc123fbbb66af9908d853085058cc0a40948ba5d35d64bf968"
+      "bytes": 1118,
+      "sha256": "677230ec943062b40932f880c93533dd80d3f462991e7a2c05739332d60b2596"
     },
     {
       "path": "fixtures/storybook/097-15-04-porownania.json",
-      "bytes": 1170,
-      "sha256": "cf95b8497e006e2d30506aa19b8b237de399ec08bc5be61f9d75540dd16ef6cd"
+      "bytes": 1192,
+      "sha256": "cc6133a46382c59d6709e9010186d7e72dada0920ffbbec1d123a9cfffd5fcb9"
     },
     {
       "path": "fixtures/storybook/098-15-07-prognoza-i-ai.json",
-      "bytes": 1536,
-      "sha256": "917701a7a4c970e984b367be204d55bf45d03f8fc7c920206d27626b01a45462"
+      "bytes": 1559,
+      "sha256": "065ef4d653689babbd72380dc707a93b1d5e4dca653b45cf260968391628068e"
     },
     {
       "path": "fixtures/storybook/099-15-10-responsywnosc-i-dostepnosc.json",
-      "bytes": 1553,
-      "sha256": "276de44c80abc89ec19eebbde3688ba7b5b4686372f62979633f96da5aa413d7"
+      "bytes": 1578,
+      "sha256": "9366d32d1b6084c7a49a237f29123e270589f94754df70512cdd7690a59469da"
     },
     {
       "path": "fixtures/storybook/100-15-08-stany-danych.json",
-      "bytes": 1358,
-      "sha256": "1b38140498076ec315340cffbe85951eb898f3c33775a0515cb72d6d108cccf5"
+      "bytes": 1381,
+      "sha256": "2407c48fbcc3e0bf7f60b2487cb8373eec5e5d836e80958a05558457b3f4b37d"
     },
     {
       "path": "fixtures/storybook/101-15-05-struktura-i-udzial.json",
-      "bytes": 2502,
-      "sha256": "46cd899ad0b0aefe6752b1e71d3b2f983ec20312020ef4b686d93c3021ae9420"
+      "bytes": 2524,
+      "sha256": "3f78627d0e7db65a9cff7fe4a66d61d971850ac1a53d90f3bf827caa99c3f428"
     },
     {
       "path": "fixtures/storybook/102-15-03-trendy.json",
-      "bytes": 1096,
-      "sha256": "90fcd01fde2ebc60c4ceeff08787d72cf7a79340376d99fbb17d5ac4d0beea6a"
+      "bytes": 1117,
+      "sha256": "405f92abf43defd7a821251ec3431175db368ce9cd0c6a32705c770aa858895c"
     },
     {
       "path": "fixtures/storybook/103-15-06-zaleznosci-i-korelacje.json",
-      "bytes": 2578,
-      "sha256": "5b1b4fd4a9f47b0d5280b473a50fffbd9f8514ebd9d82258acb39c50da8936b2"
+      "bytes": 2585,
+      "sha256": "40e9b239fb54d7bdc122b14acba52a7c819036b0f7d81496200c98fd3a30df4a"
     },
     {
       "path": "fixtures/storybook/104-18-06-approval-step-up-i-ochrona-zmian.json",
@@ -10698,13 +10708,13 @@
     },
     {
       "path": "rejestry/runtime-component-api.csv",
-      "bytes": 2612,
-      "sha256": "f58eb6af7743d6ac1c83fac7def36d6bd1e22aaff88ef252d6b3049792c0b944"
+      "bytes": 2628,
+      "sha256": "83c1da214a6839afe9ef4e392a62a4af3ce7c398a48e88b2663a99456dc780e8"
     },
     {
       "path": "rejestry/storybook.csv",
-      "bytes": 157365,
-      "sha256": "21823873a960cab5aa627c1548b0f34472ff4e411a1bdf2991f33e5c65c2244b"
+      "bytes": 157736,
+      "sha256": "5b1e251f0992def2f83390e02da41ccfed6d713d7e0a1393be7bd9c90d2cf602"
     },
     {
       "path": "rejestry/ui-actions.csv",
@@ -10718,8 +10728,8 @@
     },
     {
       "path": "scripts/check-analytics-system-v1.mjs",
-      "bytes": 31046,
-      "sha256": "2bd0de0e71bac1e76b8c685ec8faf5b7d011357b59619e4b47cd3ed3387ae331"
+      "bytes": 31680,
+      "sha256": "43d5f29916bb7719849c8488d7911b4d60bdaf7ebc2f1e007d1c107b75fdde91"
     },
     {
       "path": "scripts/check-component-system-v1.mjs",

@@ -2,7 +2,6 @@ import type {
   HTMLAttributes,
 } from 'react';
 import {
-  useId,
   useState,
 } from 'react';
 import {
@@ -78,10 +77,16 @@ const defaultLabels: ComparisonChartLabels = {
 };
 
 const seriesTokens = [
-  'var(--pd-data-actual)',
+  'var(--pd-data-series-1)',
   'var(--pd-data-series-2)',
   'var(--pd-data-series-3)',
-  'var(--pd-data-target)',
+  'var(--pd-data-series-4)',
+  'var(--pd-data-series-5)',
+  'var(--pd-data-series-6)',
+  'var(--pd-data-series-7)',
+  'var(--pd-data-series-8)',
+  'var(--pd-data-series-9)',
+  'var(--pd-data-series-10)',
 ] as const;
 
 function formatDefaultValue(value: number): string {
@@ -188,14 +193,8 @@ export function ComparisonChart({
   variant = 'bar',
   ...props
 }: ComparisonChartProps) {
-  const reactId = useId();
-
   const [isCompactPlot, setIsCompactPlot] =
     useState(false);
-
-  const stripePatternId = (
-    `pd-comparison-stripe-${reactId.replaceAll(':', '')}`
-  );
 
   const resolvedLabels: ComparisonChartLabels = {
     ...defaultLabels,
@@ -358,28 +357,6 @@ export function ComparisonChart({
                   }
             }
           >
-            <defs>
-              <pattern
-                height="10"
-                id={stripePatternId}
-                patternUnits="userSpaceOnUse"
-                width="10"
-              >
-                <rect
-                  fill="var(--pd-surface-subtle)"
-                  height="10"
-                  width="10"
-                />
-                <path
-                  d="M-3 3 L3 -3 M2 12 L12 2 M9 13 L13 9"
-                  fill="none"
-                  stroke="var(--pd-data-series-2)"
-                  strokeOpacity={0.5}
-                  strokeWidth="1"
-                />
-              </pattern>
-            </defs>
-
             <CartesianGrid
               horizontal={!isRanking}
               stroke="var(--pd-separator-subtle)"
@@ -480,7 +457,6 @@ export function ComparisonChart({
                   )}`,
                 }}
                 stroke="var(--pd-data-target)"
-                strokeDasharray="5 6"
                 strokeOpacity={0.78}
                 strokeWidth={1.55}
                 x={visibleBenchmark.value}
@@ -501,7 +477,6 @@ export function ComparisonChart({
                   )}`,
                 }}
                 stroke="var(--pd-data-target)"
-                strokeDasharray="5 6"
                 strokeOpacity={0.78}
                 strokeWidth={1.55}
                 y={visibleBenchmark.value}
@@ -511,25 +486,13 @@ export function ComparisonChart({
             {runtimeSeries.map((item) => (
               <Bar
                 dataKey={item.dataKey}
-                fill={
-                  item.index === 1
-                    ? (
-                        isCompactPlot
-                          ? 'var(--pd-data-series-2)'
-                          : `url(#${stripePatternId})`
-                      )
-                    : resolveSeriesToken(item.index)
-                }
+                fill={resolveSeriesToken(item.index)}
                 fillOpacity={
                   item.index === 0
                     ? 1
                     : item.index === 1
-                      ? (
-                          isCompactPlot
-                            ? 0.34
-                            : 0.78
-                        )
-                      : 0.76
+                      ? 0.88
+                      : 0.82
                 }
                 isAnimationActive={false}
                 key={item.key}
@@ -550,27 +513,9 @@ export function ComparisonChart({
                 }
                 name={item.label}
                 radius={4}
-                stroke={resolveSeriesToken(item.index)}
-                strokeOpacity={
-                  item.index === 0
-                    ? 0.32
-                    : item.index === 1
-                      ? (
-                          isCompactPlot
-                            ? 0.78
-                            : 0.56
-                        )
-                      : 0.26
-                }
-                strokeWidth={
-                  item.index === 1
-                    ? (
-                        isCompactPlot
-                          ? 1.1
-                          : 1
-                      )
-                    : 0.6
-                }
+                stroke="none"
+                strokeOpacity={0}
+                strokeWidth={0}
               >
                 {isRanking && item.index === 0 ? (
                   <LabelList

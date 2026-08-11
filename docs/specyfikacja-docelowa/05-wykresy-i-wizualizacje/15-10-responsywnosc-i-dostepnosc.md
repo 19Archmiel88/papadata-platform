@@ -22,11 +22,11 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Status kontraktu | zatwierdzony stan docelowy |
 | Priorytet | P1 |
 | Właściciel | Analytics UX |
-| Moduł | Wykresy i wizualizacje danych — M02 |
+| Moduł | Wykresy i dane — M02 |
 
-| Status implementacji | WDROŻONE W STORYBOOK — REVIEW QUALITY GATE |
-| Status Storybooka | `15 Wykresy i dane/Responsywność i dostępność`, visible, implemented |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy A15.6 |
+| Status implementacji | WDROŻONE W STORYBOOK — ACCEPTED QUALITY GATE |
+| Status Storybooka | `15 Wykresy i dane/04 Jakość prezentacji/Responsywność i dostępność`, visible, implemented, accepted |
+| Status testów | kontrakt testów zdefiniowany; odbiór wizualny zaakceptowany po pełnym skanie 2026-08-11 |
 
 ## Cel i decyzja docelowa
 
@@ -94,11 +94,17 @@ Wszystkie wykresy sekcji 15 muszą przejść desktop/tablet/mobile oraz zoom 200
 
 Minimum WCAG 2.2 AA: kolejność nagłówków, dostępne nazwy, focus-visible, target size, kontrast, reduced motion, reflow, alternatywne dane dla wykresów i brak informacji zależnej wyłącznie od koloru.
 
+
+
+## Kolor i kreskowanie
+
+Dla większej liczby serii danych obowiązuje rozszerzona paleta `--pd-data-series-1`–`--pd-data-series-10`. Kreskowanie nie zastępuje brakującego koloru serii. Może pojawić się tylko jako dodatkowy sygnał semantyczny dla granicy prognozy, przedziału niepewności lub referencji pomocniczej, przy zachowaniu tekstowej legendy i braku informacji zależnej wyłącznie od koloru albo kreski.
+
 ## Storybook
 
-- Title: `15 Wykresy i dane/Responsywność i dostępność`.
+- Title: `15 Wykresy i dane/04 Jakość prezentacji/Responsywność i dostępność`.
 - Story: `ChartAccessibilityReviewStory`.
-- Status: implemented, visible, review quality gate.
+- Status: implemented, visible, accepted quality gate.
 - Wymagane przypadki: owner matrix 15.01–15.09, desktop/tablet/mobile, light/dark, long copy, legendy, kontrast, alternatywny opis danych, brak nowych funkcji.
 
 ## Testy i kryteria akceptacji
@@ -109,3 +115,11 @@ Minimum WCAG 2.2 AA: kolejność nagłówków, dostępne nazwy, focus-visible, t
 4. Mobile i zoom 200% nie powodują poziomego scrolla strony.
 5. Light/dark zachowują kontrast osi, legend, statusów i opisów.
 6. Walidacja `pnpm check:analytics-system` potwierdza quality gate 15.10.
+
+## Zasada canvasu i warstw interpretacyjnych
+
+Dla całej sekcji 15 obowiązuje rozdzielenie powierzchni danych od warstw pomocniczych i interpretacyjnych. Powierzchnia danych zawiera wyłącznie bezpośrednią wizualizację danych: wykres, właściwą legendę, źródło, zakres, świeżość i status danych. Alternatywne tabele, listy obserwacji, opisowe legendy, scenariusze, horyzont, pewność, jakość predykcji, podpowiedzi, wnioski, rekomendacje, sidecary, overlaye, toasty i komentarze interpretacyjne są osobnymi warstwami na głównym canvasie, z własną głębią i statusem. Nie są częścią obszaru wykresu.
+
+### Fizyczne kryterium akceptacji wizualnej
+
+Warstwy pomocnicze i interpretacyjne muszą być fizycznie poza powierzchnią danych. Wariant jest niezaakceptowany, jeżeli podpowiedź, wniosek, rekomendacja, alert, ryzyko, komentarz interpretacyjny, lista obserwacji, opisowa legenda, scenariusz, horyzont, pewność albo jakość predykcji siedzi jako boczny lub dolny panel tej samej ramy wykresu. Tabela danych może rozwinąć się płasko pod wykresem bez dodatkowej powierzchni i bez wpływu na wysokość Papa Asystenta. Dopuszczalne układy dla warstw interpretacyjnych to prawa szyna canvasu o czytelnej szerokości na desktopie oraz osobna warstwa pod powierzchnią danych na węższych viewportach.

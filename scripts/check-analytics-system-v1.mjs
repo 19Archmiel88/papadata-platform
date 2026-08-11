@@ -48,8 +48,8 @@ ensure(
 );
 
 ensure(
-  system.status === 'review',
-  'Analytics System A15.6 remains review until every entry is formally accepted.',
+  system.status === 'accepted',
+  'Analytics System A15.6 must be accepted after the section 15 visual scan.',
 );
 
 ensure(
@@ -98,12 +98,8 @@ for (const item of system.entries) {
     `${item.id}: story must be visible.`,
   );
 
-  const expectedAccepted = (
-    item.id === '15.03'
-  );
-
   ensure(
-    entry?.accepted === expectedAccepted,
+    entry?.accepted === true,
     `${item.id}: Storybook visual acceptance status drift.`,
   );
 
@@ -151,8 +147,8 @@ ensure(
 );
 
 ensure(
-  finalA11yEntry?.accepted === false,
-  '15.10: final pass remains review until visual acceptance.',
+  finalA11yEntry?.accepted === true,
+  '15.10: final pass must be accepted after visual acceptance.',
 );
 
 const runtimeRegistry = readText(
@@ -169,15 +165,9 @@ for (const [
       line.startsWith(`${component},`)
     ));
 
-  const expectedStatus = (
-    storyId === '15.03'
-      ? 'accepted'
-      : 'review'
-  );
-
   ensure(
     row?.includes(
-      `,${storyId},${expectedStatus},Analytics UI`,
+      `,${storyId},accepted,Analytics UI`,
     ),
     `${component}: runtime registry ownership/status drift.`,
   );
@@ -274,11 +264,11 @@ for (const [
   expectedStates,
 ] of [
   [
-    '15 Wykresy i dane/ChartFrame',
+    '15 Wykresy i dane/01 Powierzchnie analityczne/ChartFrame',
     'ready|partial|loading|noData|legacyAliasProcessing',
   ],
   [
-    '15 Wykresy i dane/MetricCard',
+    '15 Wykresy i dane/01 Powierzchnie analityczne/MetricCard',
     'ready|partial|stale|loading|noData|legacyAliasProcessing',
   ],
 ]) {
@@ -295,16 +285,16 @@ for (const [
 }
 
 for (const title of [
-  '15 Wykresy i dane/ChartFrame',
-  '15 Wykresy i dane/MetricCard',
-  '15 Wykresy i dane/Trendy',
-  '15 Wykresy i dane/Porównania',
-  '15 Wykresy i dane/Udziały i struktura',
-  '15 Wykresy i dane/Zależności i korelacje',
-  '15 Wykresy i dane/Prognoza i AI',
-  '15 Wykresy i dane/Stany danych',
-  '15 Wykresy i dane/Interakcje i filtry',
-  '15 Wykresy i dane/Responsywność i dostępność',
+  '15 Wykresy i dane/01 Powierzchnie analityczne/ChartFrame',
+  '15 Wykresy i dane/01 Powierzchnie analityczne/MetricCard',
+  '15 Wykresy i dane/02 Rodziny wykresów/Trendy',
+  '15 Wykresy i dane/02 Rodziny wykresów/Porównania',
+  '15 Wykresy i dane/02 Rodziny wykresów/Udziały i struktura',
+  '15 Wykresy i dane/02 Rodziny wykresów/Zależności i korelacje',
+  '15 Wykresy i dane/02 Rodziny wykresów/Prognoza i AI',
+  '15 Wykresy i dane/03 Stany i interakcje/Stany danych',
+  '15 Wykresy i dane/03 Stany i interakcje/Interakcje i filtry',
+  '15 Wykresy i dane/04 Jakość prezentacji/Responsywność i dostępność',
 ]) {
   const rows = storybookRegistry
     .split('\n')
@@ -317,15 +307,9 @@ for (const title of [
     `${title}: expected exactly one Storybook registry owner.`,
   );
 
-  const expectedRegistryStatus = (
-    title === '15 Wykresy i dane/Trendy'
-      ? 'implemented'
-      : 'review'
-  );
-
   ensure(
     rows[0]?.includes(
-      `,${expectedRegistryStatus},`,
+      ',implemented,',
     ),
     `${title}: Storybook registry status drift.`,
   );
@@ -487,8 +471,8 @@ ensureArrayExcludes(
 );
 
 ensure(
-  forecastFixture.implementationStatus === 'implemented-review-static-contract',
-  'SB-098 ForecastChart fixture must remain review/static until visual acceptance.',
+  forecastFixture.implementationStatus === 'implemented-passing-static-contract',
+  'SB-098 ForecastChart fixture must be accepted after visual acceptance.',
 );
 
 const dataStatesFixture = readJson(
@@ -541,8 +525,8 @@ ensureArrayIncludes(
 );
 
 ensure(
-  dataStatesFixture.implementationStatus === 'implemented-review-state-system',
-  'SB-100 data states fixture must be implemented as review state system.',
+  dataStatesFixture.implementationStatus === 'implemented-passing-state-system',
+  'SB-100 data states fixture must be implemented as accepted state system.',
 );
 
 const interactionFixture = readJson(
@@ -612,8 +596,8 @@ for (const a11y of [
 }
 
 ensure(
-  interactionFixture.implementationStatus === 'implemented-review-interaction-system',
-  'SB-095 interaction fixture must be implemented as review interaction system.',
+  interactionFixture.implementationStatus === 'implemented-passing-interaction-system',
+  'SB-095 interaction fixture must be implemented as accepted interaction system.',
 );
 
 const finalPassFixture = readJson(
@@ -663,8 +647,8 @@ ensureArrayIncludes(
 );
 
 ensure(
-  finalPassFixture.implementationStatus === 'implemented-review-final-responsive-a11y-pass',
-  'SB-099 final pass fixture must be implemented as final responsive/a11y pass.',
+  finalPassFixture.implementationStatus === 'implemented-passing-final-responsive-a11y-pass',
+  'SB-099 final pass fixture must be implemented as accepted final responsive/a11y pass.',
 );
 
 for (const legacy of [
@@ -673,6 +657,17 @@ for (const legacy of [
   '10 Komponenty/TrendChart,',
   '10 Komponenty/ComparisonChart,',
   '10 Komponenty/ShareChart,',
+  '15 Wykresy i dane/ChartFrame,',
+  '15 Wykresy i dane/MetricCard,',
+  '15 Wykresy i dane/Trendy,',
+  '15 Wykresy i dane/Porównania,',
+  '15 Wykresy i dane/Struktura i udział,',
+  '15 Wykresy i dane/Udziały i struktura,',
+  '15 Wykresy i dane/Zależności i korelacje,',
+  '15 Wykresy i dane/Prognoza i AI,',
+  '15 Wykresy i dane/Stany danych,',
+  '15 Wykresy i dane/Interakcje i filtry,',
+  '15 Wykresy i dane/Responsywność i dostępność,',
   '15 Wykresy i wizualizacje danych/ChartFrame,',
   '15 Wykresy i wizualizacje danych/MetricCard,',
   '15 Wykresy i wizualizacje danych/Trendy,',
@@ -1165,7 +1160,7 @@ const comparisonStory = readText(
 );
 
 for (const marker of [
-  "title: '15 Wykresy i dane/Porównania'",
+  "title: '15 Wykresy i dane/02 Rodziny wykresów/Porównania'",
   'TrendChart',
   'DataTable',
   'Small multiples',
@@ -1182,7 +1177,7 @@ const shareStory = readText(
 );
 
 for (const marker of [
-  "title: '15 Wykresy i dane/Udziały i struktura'",
+  "title: '15 Wykresy i dane/02 Rodziny wykresów/Udziały i struktura'",
   'ComparisonChart',
   'TrendChart',
   'DataTable',
@@ -1199,7 +1194,7 @@ const correlationStory = readText(
 );
 
 for (const marker of [
-  "title: '15 Wykresy i dane/Zależności i korelacje'",
+  "title: '15 Wykresy i dane/02 Rodziny wykresów/Zależności i korelacje'",
   'scatter plot',
   'relationship chart',
   'driver analysis',
@@ -1225,7 +1220,7 @@ const forecastStory = readText(
 );
 
 for (const marker of [
-  "title: '15 Wykresy i dane/Prognoza i AI'",
+  "title: '15 Wykresy i dane/02 Rodziny wykresów/Prognoza i AI'",
   'ForecastChart',
   'actual',
   'forecast',
@@ -1257,7 +1252,7 @@ const dataStatesStory = readText(
 );
 
 for (const marker of [
-  "title: '15 Wykresy i dane/Stany danych'",
+  "title: '15 Wykresy i dane/03 Stany i interakcje/Stany danych'",
   'ChartDataState',
   'ChartFrame',
   'loading',
@@ -1283,7 +1278,7 @@ const interactionStory = readText(
 );
 
 for (const marker of [
-  "title: '15 Wykresy i dane/Interakcje i filtry'",
+  "title: '15 Wykresy i dane/03 Stany i interakcje/Interakcje i filtry'",
   'ChartInteractionLayer',
   'tooltip',
   'hover',
@@ -1310,7 +1305,7 @@ const finalPassStory = readText(
 );
 
 for (const marker of [
-  "title: '15 Wykresy i dane/Responsywność i dostępność'",
+  "title: '15 Wykresy i dane/04 Jakość prezentacji/Responsywność i dostępność'",
   'desktop / tablet / mobile',
   'light / dark',
   'długie legendy bez poziomego scrolla',
@@ -1332,8 +1327,8 @@ for (const [
   [
     'docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-08-stany-danych.md',
     [
-      'WDROŻONE W STORYBOOK — REVIEW',
-      '`15 Wykresy i dane/Stany danych`',
+      'WDROŻONE W STORYBOOK — ACCEPTED',
+      '`15 Wykresy i dane/03 Stany i interakcje/Stany danych`',
       'kanoniczny stan trwającego pobierania to `loading`',
       '`processing` pozostaje wyłącznie legacy aliasem',
       'nie tworzy lokalnych stanów',
@@ -1342,8 +1337,8 @@ for (const [
   [
     'docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-09-interakcje-i-filtry.md',
     [
-      'WDROŻONE W STORYBOOK — REVIEW',
-      '`15 Wykresy i dane/Interakcje i filtry`',
+      'WDROŻONE W STORYBOOK — ACCEPTED',
+      '`15 Wykresy i dane/03 Stany i interakcje/Interakcje i filtry`',
       '`role="group"`',
       'focus restoration',
       'pusta tablica punktów nie crashuje runtime',
@@ -1352,8 +1347,8 @@ for (const [
   [
     'docs/specyfikacja-docelowa/05-wykresy-i-wizualizacje/15-10-responsywnosc-i-dostepnosc.md',
     [
-      'WDROŻONE W STORYBOOK — REVIEW QUALITY GATE',
-      '`15 Wykresy i dane/Responsywność i dostępność`',
+      'WDROŻONE W STORYBOOK — ACCEPTED QUALITY GATE',
+      '`15 Wykresy i dane/04 Jakość prezentacji/Responsywność i dostępność`',
       'Nie dodaje nowych funkcji',
       'owner matrix 15.01–15.09',
     ],
@@ -1380,5 +1375,5 @@ for (const [
 }
 
 console.log(
-  'Analytics System A15.6 OK: 15.08 data states and 15.09 interactions are review owners; 15.10 responsive/a11y final pass is a review quality gate.',
+  'Analytics System A15.6 OK: section 15 visual acceptance is synchronized across runtime owners, fixtures and registries.',
 );

@@ -586,11 +586,10 @@ export function ForecastChart({
                   isAnimationActive={false}
                   name={resolvedLabels.forecast}
                   stroke="var(--pd-data-forecast)"
-                  strokeDasharray="7 6"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeOpacity={0.96}
-                  strokeWidth={2.4}
+                  strokeWidth={2.6}
                   type="monotone"
                 />
               ) : null}
@@ -602,43 +601,6 @@ export function ForecastChart({
           {resolvedLabels.unavailable}
         </p>
       )}
-
-      {hasLegend ? (
-        <ul
-          aria-label={resolvedLabels.legend}
-          className="pd-forecast-chart__legend"
-        >
-          {hasActual ? (
-            <li data-series="actual">
-              <span
-                aria-hidden="true"
-                className="pd-forecast-chart__swatch"
-              />
-              <span>{resolvedLabels.actual}</span>
-            </li>
-          ) : null}
-
-          {hasForecast ? (
-            <li data-series="forecast">
-              <span
-                aria-hidden="true"
-                className="pd-forecast-chart__swatch"
-              />
-              <span>{resolvedLabels.forecast}</span>
-            </li>
-          ) : null}
-
-          {hasUncertainty ? (
-            <li data-series="uncertainty">
-              <span
-                aria-hidden="true"
-                className="pd-forecast-chart__swatch"
-              />
-              <span>{resolvedLabels.uncertainty}</span>
-            </li>
-          ) : null}
-        </ul>
-      ) : null}
 
       {hasEvidence ? (
         <div className="pd-forecast-chart__evidence">
@@ -701,6 +663,43 @@ export function ForecastChart({
       >
         {resolvedLabels.forecastDisclaimer}
       </p>
+
+      {hasLegend ? (
+        <ul
+          aria-label={resolvedLabels.legend}
+          className="pd-forecast-chart__legend"
+        >
+          {hasActual ? (
+            <li data-series="actual">
+              <span
+                aria-hidden="true"
+                className="pd-forecast-chart__swatch"
+              />
+              <span>{resolvedLabels.actual}</span>
+            </li>
+          ) : null}
+
+          {hasForecast ? (
+            <li data-series="forecast">
+              <span
+                aria-hidden="true"
+                className="pd-forecast-chart__swatch"
+              />
+              <span>{resolvedLabels.forecast}</span>
+            </li>
+          ) : null}
+
+          {hasUncertainty ? (
+            <li data-series="uncertainty">
+              <span
+                aria-hidden="true"
+                className="pd-forecast-chart__swatch"
+              />
+              <span>{resolvedLabels.uncertainty}</span>
+            </li>
+          ) : null}
+        </ul>
+      ) : null}
     </div>
   );
 }

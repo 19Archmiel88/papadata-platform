@@ -22,11 +22,11 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Status kontraktu | zatwierdzony stan docelowy |
 | Priorytet | P1 |
 | Właściciel | Analytics UX |
-| Moduł | Wykresy i wizualizacje danych — M02 |
+| Moduł | Wykresy i dane — M02 |
 
-| Status implementacji | WDROŻONE W STORYBOOK — REVIEW |
-| Status Storybooka | `15 Wykresy i dane/Interakcje i filtry`, visible, implemented |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy A15.6 |
+| Status implementacji | WDROŻONE W STORYBOOK — ACCEPTED |
+| Status Storybooka | `15 Wykresy i dane/03 Stany i interakcje/Interakcje i filtry`, visible, implemented, accepted |
+| Status testów | kontrakt testów zdefiniowany; odbiór wizualny zaakceptowany po pełnym skanie 2026-08-11 |
 
 ## Cel i decyzja docelowa
 
@@ -52,6 +52,7 @@ Kontener filtrów używa `role="group"`, nie `role="toolbar"`, ponieważ runtime
 | 8 | cross-filtering | filtr zawęża kontekst bez zmiany metryki | play step `exercise-filter-change` |
 | 9 | focus restoration | akcje przywracają fokus na kontrolkę wywołującą | play step `verify-focus-restoration` |
 | 10 | empty points guard | pusta tablica punktów nie crashuje runtime | story + marker `data-state="empty-points"` |
+| 11 | stable point rows | hover/focus/active nie zmienia wysokości ani szerokości wierszy wyboru punktu | visual assertion `interactive-controls-do-not-reflow-chart` |
 
 ## Anatomia
 
@@ -98,9 +99,9 @@ Minimum WCAG 2.2 AA: dostępna nazwa grupy, `aria-pressed` dla selection i filtr
 
 ## Storybook
 
-- Title: `15 Wykresy i dane/Interakcje i filtry`.
+- Title: `15 Wykresy i dane/03 Stany i interakcje/Interakcje i filtry`.
 - Story: `ChartInteractionsStory`.
-- Status: implemented, visible, review.
+- Status: implemented, visible, accepted.
 - Wymagane przypadki: filter change, hover/focus tooltip, point selection, reset, drill-down, focus restoration, empty points guard i niezmieniona semantyka danych.
 - Wymagane środowiska: light/dark, desktop/tablet/mobile, zoom 200%, reduced motion.
 
@@ -112,3 +113,12 @@ Minimum WCAG 2.2 AA: dostępna nazwa grupy, `aria-pressed` dla selection i filtr
 4. Warstwa używa `role="group"` zamiast `role="toolbar"`, dopóki nie ma pełnego modelu toolbar.
 5. Interakcje nie zmieniają znaczenia danych ani ownerstwa 15.03–15.07.
 6. Walidacja `pnpm check:analytics-system` potwierdza ownerstwo 15.09.
+7. Wiersze podpowiedzi danych mają stałą geometrię; zmiana aktywnego punktu nie przesuwa etykiety, wartości ani sąsiednich wierszy.
+
+## Zasada canvasu i warstw interpretacyjnych
+
+Dla całej sekcji 15 obowiązuje rozdzielenie powierzchni danych od warstw pomocniczych i interpretacyjnych. Powierzchnia danych zawiera wyłącznie bezpośrednią wizualizację danych: wykres, właściwą legendę, źródło, zakres, świeżość i status danych. Alternatywne tabele, listy obserwacji, opisowe legendy, scenariusze, horyzont, pewność, jakość predykcji, podpowiedzi, wnioski, rekomendacje, sidecary, overlaye, toasty i komentarze interpretacyjne są osobnymi warstwami na głównym canvasie, z własną głębią i statusem. Nie są częścią obszaru wykresu.
+
+### Fizyczne kryterium akceptacji wizualnej
+
+Warstwy pomocnicze i interpretacyjne muszą być fizycznie poza powierzchnią danych. Wariant jest niezaakceptowany, jeżeli podpowiedź, wniosek, rekomendacja, alert, ryzyko, komentarz interpretacyjny, lista obserwacji, opisowa legenda, scenariusz, horyzont, pewność albo jakość predykcji siedzi jako boczny lub dolny panel tej samej ramy wykresu. Tabela danych może rozwinąć się płasko pod wykresem bez dodatkowej powierzchni i bez wpływu na wysokość Papa Asystenta. Dopuszczalne układy dla warstw interpretacyjnych to prawa szyna canvasu o czytelnej szerokości na desktopie oraz osobna warstwa pod powierzchnią danych na węższych viewportach.

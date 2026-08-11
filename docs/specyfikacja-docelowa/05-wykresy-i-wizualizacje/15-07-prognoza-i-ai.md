@@ -22,11 +22,11 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Status kontraktu | zatwierdzony stan docelowy |
 | Priorytet | P1 |
 | Właściciel | Analytics UX |
-| Moduł | Wykresy i wizualizacje danych — M02 |
+| Moduł | Wykresy i dane — M02 |
 
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | WDROŻONE W STORYBOOK — ACCEPTED |
+| Status Storybooka | `15 Wykresy i dane/02 Rodziny wykresów/Prognoza i AI`, visible, implemented, accepted |
+| Status testów | kontrakt testów zdefiniowany; odbiór wizualny zaakceptowany po pełnym skanie 2026-08-11 |
 
 ## Cel i decyzja docelowa
 
@@ -92,9 +92,9 @@ Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kon
 
 ## Storybook
 
-- Title: `15 Wykresy i wizualizacje danych/Prognoza i AI`.
+- Title: `15 Wykresy i dane/02 Rodziny wykresów/Prognoza i AI`.
 - Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
-- Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
+- Status: implemented, visible, accepted.
 
 ## Testy i kryteria akceptacji
 
@@ -104,3 +104,11 @@ Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kon
 4. Mobile i zoom 200% nie tracą funkcji.
 5. Klawiatura oraz focus restore przechodzą play test.
 6. Dokument jest linkowany przez co najmniej jeden ekran albo oznaczony jako fundament przyszłego użycia.
+
+## Zasada canvasu i warstw interpretacyjnych
+
+Dla całej sekcji 15 obowiązuje rozdzielenie powierzchni danych od warstw pomocniczych i interpretacyjnych. Powierzchnia danych zawiera wyłącznie bezpośrednią wizualizację danych: wykres, właściwą legendę, źródło, zakres, świeżość i status danych. Alternatywne tabele, listy obserwacji, opisowe legendy, scenariusze, horyzont, pewność, jakość predykcji, podpowiedzi, wnioski, rekomendacje, sidecary, overlaye, toasty i komentarze interpretacyjne są osobnymi warstwami na głównym canvasie, z własną głębią i statusem. Nie są częścią obszaru wykresu.
+
+### Fizyczne kryterium akceptacji wizualnej
+
+Warstwy pomocnicze i interpretacyjne muszą być fizycznie poza powierzchnią danych. Wariant jest niezaakceptowany, jeżeli podpowiedź, wniosek, rekomendacja, alert, ryzyko, komentarz interpretacyjny, lista obserwacji, opisowa legenda, scenariusz, horyzont, pewność albo jakość predykcji siedzi jako boczny lub dolny panel tej samej ramy wykresu. Tabela danych może rozwinąć się płasko pod wykresem bez dodatkowej powierzchni i bez wpływu na wysokość Papa Asystenta. Dopuszczalne układy dla warstw interpretacyjnych to prawa szyna canvasu o czytelnej szerokości na desktopie oraz osobna warstwa pod powierzchnią danych na węższych viewportach.

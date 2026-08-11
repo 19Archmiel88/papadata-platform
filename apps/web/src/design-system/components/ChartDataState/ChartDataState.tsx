@@ -48,7 +48,7 @@ const defaultLabels: ChartDataStateLabels = {
   loading: 'Ładowanie danych',
   noData: 'Brak danych',
   partial: 'Dane częściowe',
-  ready: 'Dane gotowe',
+  ready: 'Dane aktualne',
   stale: 'Dane nieaktualne',
   unavailable: 'Dane niedostępne',
 };
@@ -69,7 +69,7 @@ const defaultMessages: ChartDataStateLabels = {
   partial:
     'Część danych jest dostępna, ale wynik wymaga oznaczenia zakresu braków.',
   ready:
-    'Dane są gotowe do odczytu i mogą zasilać wizualizację.',
+    'Dane są aktualne i mogą zasilać wizualizację.',
   stale:
     'Dane są starsze niż oczekiwano. Wykres może być pokazany, ale status musi być widoczny.',
   unavailable:

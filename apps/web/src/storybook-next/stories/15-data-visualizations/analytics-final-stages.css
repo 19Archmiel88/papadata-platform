@@ -1,5 +1,21 @@
 .pd-a15-stage {
   color: var(--pd-text);
+  --pd-a15-depth-revenue: var(--pd-data-series-2);
+  --pd-a15-depth-margin: var(--pd-data-series-5);
+  --pd-a15-depth-alert: var(--pd-data-negative);
+  --pd-a15-depth-cost: var(--pd-data-series-4);
+  --pd-a15-depth-decision: var(--pd-data-series-3);
+  --pd-a15-depth-insight: var(--pd-data-series-4);
+  --pd-a15-depth-status: var(--pd-status-success);
+  --pd-a15-depth-rule: var(--pd-separator);
+  --pd-a15-depth-rule-soft: var(--pd-separator-subtle);
+  --pd-a15-depth-panel-surface: var(--pd-surface-panel);
+  --pd-a15-depth-panel-soft: var(--pd-surface);
+}
+
+[data-theme="dark"] .pd-a15-stage {
+  --pd-a15-depth-panel-surface: var(--pd-surface-panel);
+  --pd-a15-depth-panel-soft: var(--pd-surface);
 }
 
 .pd-a15-stage__grid {
@@ -17,8 +33,47 @@
   display: grid;
   gap: var(--pd-space-3);
   min-inline-size: 0;
-  padding-block: var(--pd-space-4);
-  border-block-start: var(--pd-border-width-subtle) solid var(--pd-separator);
+  padding: var(--pd-space-4) 0;
+  border-block-start:
+    var(--pd-border-width-subtle)
+    solid
+    var(--pd-a15-depth-card-accent, var(--pd-a15-depth-rule));
+  border-block-end:
+    var(--pd-border-width-subtle)
+    solid
+    var(--pd-a15-depth-rule-soft);
+  background: transparent;
+  box-shadow: none;
+}
+
+.pd-a15-stage__audit-card:nth-child(1) {
+  --pd-a15-depth-card-accent: var(--pd-a15-depth-revenue);
+}
+
+.pd-a15-stage__audit-card:nth-child(2) {
+  --pd-a15-depth-card-accent: var(--pd-a15-depth-margin);
+}
+
+.pd-a15-stage__audit-card:nth-child(3) {
+  --pd-a15-depth-card-accent: var(--pd-a15-depth-decision);
+}
+
+.pd-a15-stage__audit-card:nth-child(4) {
+  --pd-a15-depth-card-accent: var(--pd-a15-depth-cost);
+}
+
+.pd-a15-stage__audit-card:nth-child(5) {
+  --pd-a15-depth-card-accent: var(--pd-a15-depth-insight);
+}
+
+.pd-a15-stage__audit-card:nth-child(6) {
+  --pd-a15-depth-card-accent: var(--pd-a15-depth-alert);
+}
+
+.pd-a15-stage__audit-card:nth-child(7),
+.pd-a15-stage__audit-card:nth-child(8),
+.pd-a15-stage__audit-card:nth-child(9) {
+  --pd-a15-depth-card-accent: var(--pd-a15-depth-status);
 }
 
 .pd-a15-stage__state-card h3,
@@ -44,29 +99,64 @@
 
 .pd-a15-stage__compact-chart {
   min-inline-size: 0;
+  overflow: hidden;
+  border: var(--pd-border-width-subtle) solid var(--pd-a15-depth-rule);
+  border-top-color: var(--pd-a15-depth-revenue);
+  border-radius: var(--pd-radius-surface);
+  background: var(--pd-a15-depth-panel-surface);
+  box-shadow: none;
 }
 
 .pd-a15-stage__table {
   inline-size: 100%;
+  min-inline-size: min(42rem, 100%);
   border-collapse: collapse;
+  table-layout: fixed;
+  color: var(--pd-text);
   font-size: var(--pd-type-size-body-small);
+  background: transparent;
 }
 
 .pd-a15-stage__table caption {
   padding-block-end: var(--pd-space-2);
   color: var(--pd-text-secondary);
+  line-height: var(--pd-line-height-relaxed);
   text-align: start;
 }
 
-.pd-a15-stage__table th,
-.pd-a15-stage__table td {
-  padding: var(--pd-space-2);
-  border-block-start: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+.pd-a15-stage__table thead th {
+  padding: 0 var(--pd-space-3) var(--pd-space-2) 0;
+  border-block-end:
+    var(--pd-border-width-subtle)
+    solid
+    var(--pd-a15-depth-rule-soft);
+  color: var(--pd-text-secondary);
+  font-weight: var(--pd-font-weight-medium);
+  line-height: var(--pd-line-height-compact);
   text-align: start;
+  vertical-align: bottom;
+}
+
+.pd-a15-stage__table tbody th,
+.pd-a15-stage__table tbody td {
+  padding: var(--pd-space-2) var(--pd-space-3) var(--pd-space-2) 0;
+  border-block-start:
+    var(--pd-border-width-subtle)
+    solid
+    var(--pd-a15-depth-rule-soft);
+  text-align: start;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.pd-a15-stage__table tbody th {
+  color: var(--pd-text);
+  font-weight: var(--pd-font-weight-medium);
 }
 
 .pd-a15-stage__table td:last-child,
 .pd-a15-stage__table th:last-child {
+  padding-inline-end: 0;
   text-align: end;
 }
 
@@ -97,7 +187,7 @@
   block-size: 0.55rem;
   flex: 0 0 0.55rem;
   border-radius: var(--pd-radius-pill);
-  background: var(--pd-status-success);
+  background: var(--pd-a15-depth-status);
 }
 
 .pd-a15-stage__audit-list span {
@@ -109,4 +199,10 @@
   .pd-a15-stage__grid--two {
     grid-template-columns: 1fr;
   }
+}
+
+
+/* Section 15 chart composition wrapper. Depth is owned by ChartFrame through 00 Foundation classes. */
+.pd-a15-canvas-composition {
+  min-inline-size: 0;
 }

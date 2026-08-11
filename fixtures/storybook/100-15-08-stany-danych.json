@@ -1,6 +1,6 @@
 {
   "fixtureId": "SB-100",
-  "storyTitle": "15 Wykresy i dane/Stany danych",
+  "storyTitle": "15 Wykresy i dane/03 Stany i interakcje/Stany danych",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-08-stany-danych.md",
   "screenId": null,
   "components": [
@@ -65,5 +65,5 @@
     "semantic-state",
     "200-percent-zoom"
   ],
-  "implementationStatus": "implemented-review-state-system"
+  "implementationStatus": "implemented-passing-state-system"
 }

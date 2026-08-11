@@ -269,7 +269,7 @@ export function Table({
           aria-label={
             ariaLabel
           }
-          className="pd-table__table"
+          className="pd-table__element pd-table__table"
         >
           {caption ? (
             <caption

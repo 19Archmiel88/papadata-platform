@@ -692,7 +692,7 @@ const semanticColors = [
   { role: { pl: 'Fokus', en: 'Focus' }, token: '--pd-focus-visible', color: 'focus' },
 ] as const;
 
-const dataSeries = ['1', '2', '3', '4', '5', '6'] as const;
+const dataSeries = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] as const;
 
 const actionColorRows = [
   {
@@ -869,7 +869,7 @@ export const KolorySemantyczne: Story = {
       <FoundationSection
         index="03"
         title={<Localized pl="Paleta danych" en="Data palette" />}
-        summary={<Localized pl="Serie są rozróżnialne, ale pozostają spokojne na analitycznym canvasie." en="Series remain distinguishable while staying calm on an analytical canvas." />}
+        summary={<Localized pl="Serie są rozróżnialne, pozostają spokojne na powierzchni danych i używają dodatkowych kolorów zamiast kreskowania przy większej liczbie kategorii." en="Series remain distinguishable on data surfaces and use additional colors rather than dashed substitutes when category count grows." />}
       >
         <div className="pd-f0-series">
           {dataSeries.map((series) => (
@@ -896,6 +896,10 @@ export const KolorySemantyczne: Story = {
           <span data-series="4" style={{ '--value': '32%' } as CSSProperties} />
           <span data-series="5" style={{ '--value': '76%' } as CSSProperties} />
           <span data-series="6" style={{ '--value': '49%' } as CSSProperties} />
+          <span data-series="7" style={{ '--value': '62%' } as CSSProperties} />
+          <span data-series="8" style={{ '--value': '38%' } as CSSProperties} />
+          <span data-series="9" style={{ '--value': '54%' } as CSSProperties} />
+          <span data-series="10" style={{ '--value': '71%' } as CSSProperties} />
         </div>
       </FoundationSection>
 

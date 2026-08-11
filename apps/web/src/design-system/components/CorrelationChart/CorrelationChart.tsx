@@ -65,6 +65,7 @@ export type CorrelationChartLabels = {
   readonly evidence: string;
   readonly legend: string;
   readonly noCausality: string;
+  readonly observations: string;
   readonly outlier: string;
   readonly relationship: string;
   readonly standardPoint: string;
@@ -94,6 +95,7 @@ export type CorrelationChartProps = Omit<
 type RuntimePoint = Required<
   Pick<CorrelationChartPoint, 'id' | 'label' | 'x' | 'y'>
 > & {
+  readonly annotationIndex: number;
   readonly annotationLabel: string;
   readonly clusterId: string | null;
   readonly role: CorrelationChartPointRole;
@@ -124,6 +126,7 @@ const defaultLabels: CorrelationChartLabels = {
   legend: 'Legenda zależności',
   noCausality:
     'Korelacja i hipoteza wpływu nie są dowodem przyczynowości.',
+  observations: 'Lista obserwacji',
   outlier: 'Punkt odstający',
   relationship: 'Zależność',
   standardPoint: 'Punkt obserwacji',
@@ -265,7 +268,7 @@ function normalizePoints(
 ): readonly RuntimePoint[] {
   const visibleClusterLabels = new Set<string>();
 
-  return points.flatMap((point) => {
+  return points.flatMap((point, index) => {
     if (
       !Number.isFinite(point.x)
       || !Number.isFinite(point.y)
@@ -292,8 +295,9 @@ function normalizePoints(
 
     return [{
       id: point.id,
+      annotationIndex: index + 1,
       annotationLabel: shouldShowAnnotation
-        ? point.label
+        ? String(index + 1)
         : '',
       clusterId: point.clusterId ?? null,
       label: point.label,
@@ -465,6 +469,15 @@ function formatCorrelationValue(
   return `${prefix}${correlation.toFixed(2)}`;
 }
 
+function formatObservationMeasure(
+  point: RuntimePoint,
+  xLabel: string,
+  yLabel: string,
+  valueFormatter: (value: number) => string,
+): string {
+  return `${xLabel}: ${valueFormatter(point.x)} · ${yLabel}: ${valueFormatter(point.y)}`;
+}
+
 function resolveStrengthCopy(
   correlation: number | null,
   labels: CorrelationChartLabels,
@@ -600,7 +613,6 @@ export function CorrelationChart({
           </div>
 
           <div
-            aria-hidden="true"
             className="pd-correlation-chart__plot"
             data-slot="plot"
           >
@@ -613,10 +625,10 @@ export function CorrelationChart({
               <ScatterChart
                 accessibilityLayer
                 margin={{
-                  bottom: 24,
-                  left: 4,
-                  right: 18,
-                  top: 18,
+                  bottom: 18,
+                  left: 10,
+                  right: 26,
+                  top: 24,
                 }}
               >
                 <CartesianGrid
@@ -629,13 +641,6 @@ export function CorrelationChart({
                   axisLine={false}
                   dataKey="x"
                   domain={xScale.domain}
-                  label={{
-                    fill: 'var(--pd-text-secondary)',
-                    fontSize: 11,
-                    offset: 2,
-                    position: 'insideBottomRight',
-                    value: xLabel,
-                  }}
                   tick={{
                     fill: 'var(--pd-text-secondary)',
                     fontSize: 11.5,
@@ -651,14 +656,6 @@ export function CorrelationChart({
                   axisLine={false}
                   dataKey="y"
                   domain={yScale.domain}
-                  label={{
-                    angle: -90,
-                    fill: 'var(--pd-text-secondary)',
-                    fontSize: 11,
-                    offset: 0,
-                    position: 'insideLeft',
-                    value: yLabel,
-                  }}
                   tick={{
                     fill: 'var(--pd-text-secondary)',
                     fontSize: 11.5,
@@ -668,7 +665,7 @@ export function CorrelationChart({
                   tickMargin={12}
                   ticks={yScale.ticks}
                   type="number"
-                  width={58}
+                  width={64}
                 />
 
                 <ZAxis
@@ -740,36 +737,38 @@ export function CorrelationChart({
           </div>
 
           <ol
-            aria-label={resolvedLabels.legend}
-            className="pd-correlation-chart__legend"
+            aria-label={resolvedLabels.observations}
+            className="pd-correlation-chart__observations"
           >
-            {(
-              [
-                'standard',
-                'cluster',
-                'driver-hypothesis',
-                'outlier',
-              ] as const
-            ).map((role) => (
+            {runtimePoints.map((point) => (
               <li
-                data-role={role}
-                key={role}
+                data-role={point.role}
+                key={point.id}
               >
-                <span
-                  aria-hidden="true"
-                  className="pd-correlation-chart__swatch"
-                  style={{
-                    background: roleColors[role],
-                  }}
-                />
-                <span>
-                  {resolvedLabels[pointRoleLabels[role]]}
+                <span className="pd-correlation-chart__observation-marker">
+                  {point.annotationIndex}
+                </span>
+                <span className="pd-correlation-chart__observation-copy">
+                  <strong>{point.label}</strong>
+                  <span>
+                    {resolvedLabels[pointRoleLabels[point.role]]}
+                  </span>
+                </span>
+                <span className="pd-correlation-chart__observation-measure">
+                  {formatObservationMeasure(
+                    point,
+                    xLabel,
+                    yLabel,
+                    formatValue,
+                  )}
                 </span>
               </li>
             ))}
           </ol>
 
-          <dl className="pd-correlation-chart__semantics">
+          <dl
+            className="pd-correlation-chart__semantics"
+          >
             <div>
               <dt>{resolvedLabels.correlation}</dt>
               <dd>{strengthCopy}</dd>
@@ -799,7 +798,9 @@ export function CorrelationChart({
           </dl>
 
           {normalizedClusters.length > 0 ? (
-            <ul className="pd-correlation-chart__cluster-notes">
+            <ul
+              className="pd-correlation-chart__cluster-notes"
+            >
               {normalizedClusters.map((cluster) => (
                 <li key={cluster.id}>
                   <strong>{cluster.label}</strong>
@@ -808,6 +809,36 @@ export function CorrelationChart({
               ))}
             </ul>
           ) : null}
+
+          <ol
+            aria-label={resolvedLabels.legend}
+            className="pd-correlation-chart__legend"
+          >
+            {(
+              [
+                'standard',
+                'cluster',
+                'driver-hypothesis',
+                'outlier',
+              ] as const
+            ).map((role) => (
+              <li
+                data-role={role}
+                key={role}
+              >
+                <span
+                  aria-hidden="true"
+                  className="pd-correlation-chart__swatch"
+                  style={{
+                    background: roleColors[role],
+                  }}
+                />
+                <span>
+                  {resolvedLabels[pointRoleLabels[role]]}
+                </span>
+              </li>
+            ))}
+          </ol>
         </>
       ) : (
         <p

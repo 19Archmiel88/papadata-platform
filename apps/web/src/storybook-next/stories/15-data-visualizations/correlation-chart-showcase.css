@@ -15,21 +15,21 @@
   border-block-start: 1px solid var(--pd-separator-subtle);
 }
 
-.pd-correlation-story__variant header {
+.pd-correlation-story__variant > header {
   display: grid;
   gap: var(--pd-space-2);
   min-inline-size: 0;
   max-inline-size: 24rem;
 }
 
-.pd-correlation-story__variant header span {
+.pd-correlation-story__variant > header > span {
   color: var(--pd-text-muted);
   font-family: var(--pd-font-mono);
   font-size: 0.72rem;
   line-height: 1.2;
 }
 
-.pd-correlation-story__variant h3 {
+.pd-correlation-story__variant > header h3 {
   margin: 0;
   color: var(--pd-text);
   font-size: var(--pd-type-size-heading-5);
@@ -37,7 +37,7 @@
   line-height: var(--pd-line-height-tight);
 }
 
-.pd-correlation-story__variant p {
+.pd-correlation-story__variant > header p {
   margin: 0;
   color: var(--pd-text-secondary);
   font-size: var(--pd-type-size-body-small);
@@ -105,7 +105,7 @@
   gap: var(--pd-space-5);
 }
 
-.pd-correlation-story__variant header {
+.pd-correlation-story__variant > header {
   max-inline-size: 72ch;
 }
 

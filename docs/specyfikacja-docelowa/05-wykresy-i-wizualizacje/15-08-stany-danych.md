@@ -22,11 +22,11 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Status kontraktu | zatwierdzony stan docelowy |
 | Priorytet | P1 |
 | Właściciel | Analytics UX |
-| Moduł | Wykresy i wizualizacje danych — M02 |
+| Moduł | Wykresy i dane — M02 |
 
-| Status implementacji | WDROŻONE W STORYBOOK — REVIEW |
-| Status Storybooka | `15 Wykresy i dane/Stany danych`, visible, implemented |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy A15.6 |
+| Status implementacji | WDROŻONE W STORYBOOK — ACCEPTED |
+| Status Storybooka | `15 Wykresy i dane/03 Stany i interakcje/Stany danych`, visible, implemented, accepted |
+| Status testów | kontrakt testów zdefiniowany; odbiór wizualny zaakceptowany po pełnym skanie 2026-08-11 |
 
 ## Cel i decyzja docelowa
 
@@ -117,9 +117,9 @@ Minimum WCAG 2.2 AA: semantyka statusu, dostępna nazwa, focus-visible dla akcji
 
 ## Storybook
 
-- Title: `15 Wykresy i dane/Stany danych`.
+- Title: `15 Wykresy i dane/03 Stany i interakcje/Stany danych`.
 - Story: `DataStatesStory`.
-- Status: implemented, visible, review.
+- Status: implemented, visible, accepted.
 - Wymagane warianty: loading, empty, no data, partial data, stale data, delayed, blocked, error i unavailable.
 - Wymagane środowiska: light/dark, desktop/tablet/mobile, zoom 200%, reduced motion.
 
@@ -131,3 +131,11 @@ Minimum WCAG 2.2 AA: semantyka statusu, dostępna nazwa, focus-visible dla akcji
 4. Stany błędu i blokady mają recovery albo jednoznaczne zakończenie.
 5. Mobile i zoom 200% nie tracą informacji ani akcji.
 6. Walidacja `pnpm check:analytics-system` potwierdza ownerstwo 15.08.
+
+## Zasada canvasu i warstw interpretacyjnych
+
+Dla całej sekcji 15 obowiązuje rozdzielenie powierzchni danych od warstw pomocniczych i interpretacyjnych. Powierzchnia danych zawiera wyłącznie bezpośrednią wizualizację danych: wykres, właściwą legendę, źródło, zakres, świeżość i status danych. Alternatywne tabele, listy obserwacji, opisowe legendy, scenariusze, horyzont, pewność, jakość predykcji, podpowiedzi, wnioski, rekomendacje, sidecary, overlaye, toasty i komentarze interpretacyjne są osobnymi warstwami na głównym canvasie, z własną głębią i statusem. Nie są częścią obszaru wykresu.
+
+### Fizyczne kryterium akceptacji wizualnej
+
+Warstwy pomocnicze i interpretacyjne muszą być fizycznie poza powierzchnią danych. Wariant jest niezaakceptowany, jeżeli podpowiedź, wniosek, rekomendacja, alert, ryzyko, komentarz interpretacyjny, lista obserwacji, opisowa legenda, scenariusz, horyzont, pewność albo jakość predykcji siedzi jako boczny lub dolny panel tej samej ramy wykresu. Tabela danych może rozwinąć się płasko pod wykresem bez dodatkowej powierzchni i bez wpływu na wysokość Papa Asystenta. Dopuszczalne układy dla warstw interpretacyjnych to prawa szyna canvasu o czytelnej szerokości na desktopie oraz osobna warstwa pod powierzchnią danych na węższych viewportach.

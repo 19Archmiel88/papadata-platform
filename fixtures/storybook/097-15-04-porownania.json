@@ -1,6 +1,6 @@
 {
   "fixtureId": "SB-097",
-  "storyTitle": "15 Wykresy i dane/Porównania",
+  "storyTitle": "15 Wykresy i dane/02 Rodziny wykresów/Porównania",
   "sourceDocument": "05-wykresy-i-wizualizacje/15-04-porownania.md",
   "screenId": null,
   "components": [
@@ -56,5 +56,5 @@
     "200-percent-zoom",
     "mobile-reflow"
   ],
-  "implementationStatus": "implemented-review-static-contract"
+  "implementationStatus": "implemented-passing-static-contract"
 }

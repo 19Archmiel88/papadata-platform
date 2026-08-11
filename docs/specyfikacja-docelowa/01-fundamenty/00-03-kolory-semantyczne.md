@@ -43,6 +43,12 @@ Kolor jest rolą semantyczną. Akcent marki nie komunikuje warning ani critical,
 - nie używać starych nazw `legacy surface alias`, `legacy border alias` ani `legacy text alias`
 - drobne odchylenie kontrastu w B2B jest rekomendacją, jeśli nie blokuje czytelności
 
+
+
+## Paleta danych dla większych serii
+
+Paleta danych obejmuje `--pd-data-series-1`–`--pd-data-series-10`. Przy większej liczbie kategorii lub serii wykres używa kolejnych kolorów z palety danych, a nie kreskowania jako substytutu brakującego koloru. Linie kreskowane są zarezerwowane wyłącznie dla znaczeń semantycznych, takich jak granica prognozy, przedział niepewności lub referencja pomocnicza, i zawsze muszą mieć opis tekstowy w legendzie albo metadanych.
+
 ## Status odbioru Etapu 01
 
 - Dokument opisuje accepted desktop baseline light/dark dla stories `00.01-00.11`.

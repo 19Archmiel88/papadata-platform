@@ -21,10 +21,14 @@ import {
 } from '../../../design-system/foundations';
 import '../../../storybook-next/presentation/story-presentation.css';
 import {
-  StoryPresentationMeta,
-  StoryPresentationPage,
   StoryPresentationSection,
 } from '../../../storybook-next/presentation/StoryPresentation';
+import {
+  AnalyticsChartSurface,
+  Localized,
+  readAnalyticsLocale as readLocale,
+  Story15Page,
+} from './analytics-story-helpers';
 import './comparison-chart-showcase.css';
 
 const channelPeriodData: readonly ComparisonChartDatum[] = [
@@ -181,14 +185,76 @@ const contributionDeltaData: readonly ComparisonChartDatum[] = [
   },
 ];
 
-function readLocale(): PapaDataRuntimeLocale {
-  if (typeof document === 'undefined') {
-    return 'pl';
-  }
+const comparisonLabelCopy: Record<
+  string,
+  Record<PapaDataRuntimeLocale, string>
+> = {
+  affiliate: {
+    en: 'Affiliates',
+    pl: 'Partnerzy',
+  },
+  'barista-set': {
+    en: 'Barista set',
+    pl: 'Zestaw baristy',
+  },
+  brand: {
+    en: 'Brand',
+    pl: 'Marka',
+  },
+  'coffee-classic': {
+    en: 'Classic coffee',
+    pl: 'Kawa klasyczna',
+  },
+  direct: {
+    en: 'Direct',
+    pl: 'Bezpośredni',
+  },
+  email: {
+    en: 'Email',
+    pl: 'E-mail',
+  },
+  filters: {
+    en: 'Filters 100',
+    pl: 'Filtry 100',
+  },
+  'grinder-pro': {
+    en: 'Grinder Pro',
+    pl: 'Młynek Pro',
+  },
+  meta: {
+    en: 'Meta',
+    pl: 'Meta',
+  },
+  prospecting: {
+    en: 'Prospecting',
+    pl: 'Pozyskiwanie',
+  },
+  remarketing: {
+    en: 'Remarketing',
+    pl: 'Remarketing',
+  },
+  search: {
+    en: 'Search',
+    pl: 'Wyszukiwarka',
+  },
+  shopping: {
+    en: 'Shopping',
+    pl: 'Zakupy',
+  },
+  'travel-mug': {
+    en: 'Travel mug',
+    pl: 'Kubek podróżny',
+  },
+};
 
-  return document.documentElement.dataset.locale === 'en'
-    ? 'en'
-    : 'pl';
+function localizeComparisonData(
+  data: readonly ComparisonChartDatum[],
+  locale: PapaDataRuntimeLocale,
+): readonly ComparisonChartDatum[] {
+  return data.map((datum) => ({
+    ...datum,
+    label: comparisonLabelCopy[datum.id]?.[locale] ?? datum.label,
+  }));
 }
 
 function buildPeriodSeries(
@@ -308,7 +374,7 @@ function CanonicalComparison() {
               : 'Punkt odniesienia kategorii',
             value: 65000,
           }}
-          data={channelPeriodData}
+          data={localizeComparisonData(channelPeriodData, locale)}
           labels={{
             legend: locale === 'en'
               ? 'Comparison series'
@@ -337,6 +403,10 @@ function CanonicalComparison() {
 
 function BarAndGroupedVariants() {
   const locale = readLocale();
+  const localizedChannelPeriodData = localizeComparisonData(
+    channelPeriodData,
+    locale,
+  );
 
   return (
     <div className="pd-comparison-story__variants">
@@ -355,24 +425,48 @@ function BarAndGroupedVariants() {
           </p>
         </header>
 
-        <ComparisonChart
-          ariaLabel={
-            locale === 'en'
-              ? 'Revenue by acquisition channel'
-              : 'Przychód według kanału akwizycji'
-          }
-          data={channelPeriodData}
-          series={buildRevenueSeries(locale)}
-          unit={
-            locale === 'en'
-              ? 'Revenue · PLN'
-              : 'Przychód · PLN'
-          }
-          valueFormatter={(value) => (
-            formatCompactValue(value, locale)
-          )}
-          variant="bar"
-        />
+        <AnalyticsChartSurface
+          businessQuestion={{
+            en: 'Which channel brings the most revenue?',
+            pl: 'Który kanał przynosi największy przychód?',
+          }}
+          description={{
+            en: 'The bar variant is rendered inside ChartFrame and keeps category comparison separate from temporal trends.',
+            pl: 'Wariant słupkowy renderuje się w ChartFrame i oddziela porównanie kategorii od trendu czasowego.',
+          }}
+          rangeLabel={{
+            en: 'Current month',
+            pl: 'Bieżący miesiąc',
+          }}
+          sourceLabel="ComparisonChart / ChartFrame"
+          title={{
+            en: 'Revenue by acquisition channel',
+            pl: 'Przychód według kanału akwizycji',
+          }}
+          visualizationLabel={{
+            en: 'Revenue by acquisition channel',
+            pl: 'Przychód według kanału akwizycji',
+          }}
+        >
+          <ComparisonChart
+            ariaLabel={
+              locale === 'en'
+                ? 'Revenue by acquisition channel'
+                : 'Przychód według kanału akwizycji'
+            }
+            data={localizedChannelPeriodData}
+            series={buildRevenueSeries(locale)}
+            unit={
+              locale === 'en'
+                ? 'Revenue - PLN'
+                : 'Przychód - PLN'
+            }
+            valueFormatter={(value) => (
+              formatCompactValue(value, locale)
+            )}
+            variant="bar"
+          />
+        </AnalyticsChartSurface>
       </article>
 
       <article className="pd-comparison-story__variant">
@@ -390,24 +484,48 @@ function BarAndGroupedVariants() {
           </p>
         </header>
 
-        <ComparisonChart
-          ariaLabel={
-            locale === 'en'
-              ? 'Current and previous revenue by acquisition channel'
-              : 'Bieżący i poprzedni przychód według kanału akwizycji'
-          }
-          data={channelPeriodData}
-          series={buildPeriodSeries(locale)}
-          unit={
-            locale === 'en'
-              ? 'Revenue · PLN'
-              : 'Przychód · PLN'
-          }
-          valueFormatter={(value) => (
-            formatCompactValue(value, locale)
-          )}
-          variant="grouped"
-        />
+        <AnalyticsChartSurface
+          businessQuestion={{
+            en: 'Which channel improved versus the previous period?',
+            pl: 'Który kanał poprawił wynik względem poprzedniego okresu?',
+          }}
+          description={{
+            en: 'Grouped bars compare compatible series without relying on color alone.',
+            pl: 'Słupki grupowane porównują zgodne serie bez polegania wyłącznie na kolorze.',
+          }}
+          rangeLabel={{
+            en: 'Current vs previous month',
+            pl: 'Bieżący względem poprzedniego miesiąca',
+          }}
+          sourceLabel="ComparisonChart / ChartFrame"
+          title={{
+            en: 'Current and previous revenue',
+            pl: 'Bieżący i poprzedni przychód',
+          }}
+          visualizationLabel={{
+            en: 'Current and previous revenue by acquisition channel',
+            pl: 'Bieżący i poprzedni przychód według kanału akwizycji',
+          }}
+        >
+          <ComparisonChart
+            ariaLabel={
+              locale === 'en'
+                ? 'Current and previous revenue by acquisition channel'
+                : 'Bieżący i poprzedni przychód według kanału akwizycji'
+            }
+            data={localizedChannelPeriodData}
+            series={buildPeriodSeries(locale)}
+            unit={
+              locale === 'en'
+                ? 'Revenue - PLN'
+                : 'Przychód - PLN'
+            }
+            valueFormatter={(value) => (
+              formatCompactValue(value, locale)
+            )}
+            variant="grouped"
+          />
+        </AnalyticsChartSurface>
       </article>
     </div>
   );
@@ -415,6 +533,10 @@ function BarAndGroupedVariants() {
 
 function RankingAndBenchmark() {
   const locale = readLocale();
+  const localizedProductRankingData = localizeComparisonData(
+    productRankingData,
+    locale,
+  );
 
   const series: readonly ComparisonChartSeries[] = [
     {
@@ -426,30 +548,54 @@ function RankingAndBenchmark() {
   ];
 
   return (
-    <ComparisonChart
-      ariaLabel={
-        locale === 'en'
-          ? 'Product revenue ranking with a portfolio benchmark'
-          : 'Ranking przychodu produktów z punktem odniesienia portfela'
-      }
-      benchmark={{
-        label: locale === 'en'
-          ? 'Portfolio benchmark'
-          : 'Punkt odniesienia portfela',
-        value: 30000,
+    <AnalyticsChartSurface
+      businessQuestion={{
+        en: 'Which products lead the revenue ranking?',
+        pl: 'Które produkty prowadzą w rankingu przychodu?',
       }}
-      data={productRankingData}
-      series={series}
-      unit={
-        locale === 'en'
-          ? 'Revenue · PLN'
-          : 'Przychód · PLN'
-      }
-      valueFormatter={(value) => (
-        formatCompactValue(value, locale)
-      )}
-      variant="ranking"
-    />
+      description={{
+        en: 'Ranking changes chart orientation but still consumes the shared analytics data surface.',
+        pl: 'Ranking zmienia orientację wykresu, ale nadal konsumuje wspólną powierzchnię danych analitycznych.',
+      }}
+      rangeLabel={{
+        en: 'Portfolio benchmark',
+        pl: 'Punkt odniesienia portfela',
+      }}
+      sourceLabel="ComparisonChart / ChartFrame"
+      title={{
+        en: 'Product revenue ranking',
+        pl: 'Ranking przychodu produktów',
+      }}
+      visualizationLabel={{
+        en: 'Product revenue ranking with a portfolio benchmark',
+        pl: 'Ranking przychodu produktów z punktem odniesienia portfela',
+      }}
+    >
+      <ComparisonChart
+        ariaLabel={
+          locale === 'en'
+            ? 'Product revenue ranking with a portfolio benchmark'
+            : 'Ranking przychodu produktów z punktem odniesienia portfela'
+        }
+        benchmark={{
+          label: locale === 'en'
+            ? 'Portfolio benchmark'
+            : 'Punkt odniesienia portfela',
+          value: 30000,
+        }}
+        data={localizedProductRankingData}
+        series={series}
+        unit={
+          locale === 'en'
+            ? 'Revenue - PLN'
+            : 'Przychód - PLN'
+        }
+        valueFormatter={(value) => (
+          formatCompactValue(value, locale)
+        )}
+        variant="ranking"
+      />
+    </AnalyticsChartSurface>
   );
 }
 
@@ -458,26 +604,50 @@ function PeriodComparisonAndDecisionGuide() {
 
   return (
     <div className="pd-comparison-story__decision-layout">
-      <ComparisonChart
-        ariaLabel={
-          locale === 'en'
-            ? 'Campaign ROAS for the current and previous period'
-            : 'ROAS kampanii dla bieżącego i poprzedniego okresu'
-        }
-        benchmark={{
-          label: locale === 'en'
-            ? 'Operating target'
-            : 'Cel operacyjny',
-          value: 4.5,
+      <AnalyticsChartSurface
+        businessQuestion={{
+          en: 'Which campaign is above target in the period comparison?',
+          pl: 'Która kampania jest powyżej celu w porównaniu okresów?',
         }}
-        data={campaignPeriodData}
-        series={buildPeriodSeries(locale)}
-        unit="ROAS"
-        valueFormatter={(value) => (
-          formatRoas(value, locale)
-        )}
-        variant="grouped"
-      />
+        description={{
+          en: 'The period comparison uses grouped bars; continuous time stays with TrendChart.',
+          pl: 'Porównanie okresów korzysta ze słupków grupowanych; czas ciągły pozostaje w TrendChart.',
+        }}
+        rangeLabel={{
+          en: 'Current vs previous period',
+          pl: 'Bieżący względem poprzedniego okresu',
+        }}
+        sourceLabel="ComparisonChart / ChartFrame"
+        title={{
+          en: 'Campaign ROAS period comparison',
+          pl: 'Porównanie okresów ROAS kampanii',
+        }}
+        visualizationLabel={{
+          en: 'Campaign ROAS for the current and previous period',
+          pl: 'ROAS kampanii dla bieżącego i poprzedniego okresu',
+        }}
+      >
+        <ComparisonChart
+          ariaLabel={
+            locale === 'en'
+              ? 'Campaign ROAS for the current and previous period'
+              : 'ROAS kampanii dla bieżącego i poprzedniego okresu'
+          }
+          benchmark={{
+            label: locale === 'en'
+              ? 'Operating target'
+              : 'Cel operacyjny',
+            value: 4.5,
+          }}
+          data={localizeComparisonData(campaignPeriodData, locale)}
+          series={buildPeriodSeries(locale)}
+          unit="ROAS"
+          valueFormatter={(value) => (
+            formatRoas(value, locale)
+          )}
+          variant="grouped"
+        />
+      </AnalyticsChartSurface>
 
       <dl className="pd-comparison-story__decision-guide">
         <div>
@@ -522,86 +692,161 @@ function PeriodComparisonAndDecisionGuide() {
 }
 
 function NegativeValuesAndLongCopy() {
+  const locale = readLocale();
+
   return (
     <div className="pd-comparison-story__variants">
       <article className="pd-comparison-story__variant">
         <header>
           {/* Validator marker: negative values. */}
-          <span>wartości ujemne</span>
-          <h3>Zmiana marży kontrybucyjnej według kanału</h3>
+          <span>
+            {locale === 'en' ? 'negative values' : 'wartości ujemne'}
+          </span>
+          <h3>
+            {locale === 'en'
+              ? 'Contribution margin delta by channel'
+              : 'Zmiana marży kontrybucyjnej według kanału'}
+          </h3>
           <p>
-            Skala zawsze zachowuje zero. Ujemna wartość nie jest
-            ścinana ani przedstawiana na skróconej osi słupkowej.
+            {locale === 'en'
+              ? 'The scale always preserves zero. A negative value is not clipped or shown on a shortened bar axis.'
+              : 'Skala zawsze zachowuje zero. Ujemna wartość nie jest ścinana ani przedstawiana na skróconej osi słupkowej.'}
           </p>
         </header>
 
-        <ComparisonChart
-          ariaLabel="Zmiana marży kontrybucyjnej według kanału z dodatnimi i ujemnymi wartościami"
-          data={contributionDeltaData}
-          series={[
-            {
-              key: 'delta',
-              label: 'Zmiana marży kontrybucyjnej',
-            },
-          ]}
-          unit="PLN"
-          valueFormatter={(value) => (
-            formatCompactValue(value, 'pl')
-          )}
-          variant="bar"
-        />
+        <AnalyticsChartSurface
+          businessQuestion={{
+            en: 'Which channel contributed negatively?',
+            pl: 'Który kanał miał ujemny wkład?',
+          }}
+          description={{
+            en: 'The scale preserves zero and text labels; negative value meaning is not conveyed by color alone.',
+            pl: 'Skala zachowuje zero i etykiety tekstowe; znaczenie wartości ujemnej nie wynika wyłącznie z koloru.',
+          }}
+          rangeLabel={{
+            en: 'Contribution delta',
+            pl: 'Zmiana wkładu',
+          }}
+          sourceLabel="ComparisonChart / ChartFrame"
+          title={{
+            en: 'Contribution margin delta by channel',
+            pl: 'Zmiana marży kontrybucyjnej według kanału',
+          }}
+          visualizationLabel={{
+            en: 'Contribution margin delta by channel with positive and negative values',
+            pl: 'Zmiana marży kontrybucyjnej według kanału z dodatnimi i ujemnymi wartościami',
+          }}
+        >
+          <ComparisonChart
+            ariaLabel={
+              locale === 'en'
+                ? 'Contribution margin delta by channel with positive and negative values'
+                : 'Zmiana marży kontrybucyjnej według kanału z dodatnimi i ujemnymi wartościami'
+            }
+            data={localizeComparisonData(contributionDeltaData, locale)}
+            series={[
+              {
+                key: 'delta',
+                label: locale === 'en'
+                  ? 'Contribution margin delta'
+                  : 'Zmiana marży kontrybucyjnej',
+              },
+            ]}
+            unit="PLN"
+            valueFormatter={(value) => (
+              formatCompactValue(value, locale)
+            )}
+            variant="bar"
+          />
+        </AnalyticsChartSurface>
       </article>
 
       <article className="pd-comparison-story__variant">
         <header>
-          <span>długi tekst</span>
+          <span>{locale === 'en' ? 'long copy' : 'długi tekst'}</span>
           <h3>
-            Porównanie w pełni uzgodnionego przychodu po korektach atrybucji
+            {locale === 'en'
+              ? 'Fully reconciled revenue after attribution adjustments'
+              : 'Porównanie w pełni uzgodnionego przychodu po korektach atrybucji'}
           </h3>
           <p>
-            Długie etykiety serii muszą zawijać się w legendzie HTML bez
-            poszerzania wykresu, dodawania poziomego przewijania strony lub
-            zmiany semantyki wykresu.
+            {locale === 'en'
+              ? 'Long series labels must wrap in the HTML legend without widening the chart, adding horizontal page scroll or changing chart semantics.'
+              : 'Długie etykiety serii muszą zawijać się w legendzie HTML bez poszerzania wykresu, dodawania poziomego przewijania strony lub zmiany semantyki wykresu.'}
           </p>
         </header>
 
-        <ComparisonChart
-          ariaLabel="Porównanie w pełni uzgodnionego przychodu kanałów dla bieżącego okna atrybucji i poprzedniego uzgodnionego okna raportowego"
-          benchmark={{
-            label:
-              'Punkt odniesienia portfela po uzgodnieniu atrybucji',
-            value: 65000,
+        <AnalyticsChartSurface
+          businessQuestion={{
+            en: 'Can long reconciled labels reflow inside the data surface?',
+            pl: 'Czy długie uzgodnione etykiety zawijają się w powierzchni danych?',
           }}
-          data={channelPeriodData}
-          labels={{
-            legend:
-              'Serie porównania przychodu po uzgodnieniu atrybucji',
+          description={{
+            en: 'Long labels remain inside HTML legend and ChartFrame metadata without horizontal page scroll.',
+            pl: 'Długie etykiety pozostają w legendzie HTML i metadanych ChartFrame bez poziomego przewijania strony.',
           }}
-          series={[
-            {
-              key: 'current',
-              label:
-                'Bieżące w pełni uzgodnione okno raportowania atrybucji',
-            },
-            {
-              key: 'previous',
-              label:
-                'Poprzednie w pełni uzgodnione okno raportowania atrybucji',
-            },
-          ]}
-          unit="Przychód po atrybucji · PLN"
-          valueFormatter={(value) => (
-            formatCompactValue(value, 'pl')
-          )}
-          variant="grouped"
-        />
+          rangeLabel={{
+            en: 'Attribution reconciliation',
+            pl: 'Uzgodnienie atrybucji',
+          }}
+          sourceLabel="ComparisonChart / ChartFrame"
+          title={{
+            en: 'Fully reconciled attributed revenue',
+            pl: 'W pełni uzgodniony przychód po atrybucji',
+          }}
+          visualizationLabel={{
+            en: 'Fully reconciled attributed channel revenue for current and previous reporting windows',
+            pl: 'Porównanie w pełni uzgodnionego przychodu kanałów dla bieżącego okna atrybucji i poprzedniego uzgodnionego okna raportowego',
+          }}
+        >
+          <ComparisonChart
+            ariaLabel={
+              locale === 'en'
+                ? 'Fully reconciled attributed channel revenue for current and previous reporting windows'
+                : 'Porównanie w pełni uzgodnionego przychodu kanałów dla bieżącego okna atrybucji i poprzedniego uzgodnionego okna raportowego'
+            }
+            benchmark={{
+              label: locale === 'en'
+                ? 'Portfolio benchmark after attribution reconciliation'
+                : 'Punkt odniesienia portfela po uzgodnieniu atrybucji',
+              value: 65000,
+            }}
+            data={localizeComparisonData(channelPeriodData, locale)}
+            labels={{
+              legend: locale === 'en'
+                ? 'Revenue comparison series after attribution reconciliation'
+                : 'Serie porównania przychodu po uzgodnieniu atrybucji',
+            }}
+            series={[
+              {
+                key: 'current',
+                label: locale === 'en'
+                  ? 'Current fully reconciled attribution reporting window'
+                  : 'Bieżące w pełni uzgodnione okno raportowania atrybucji',
+              },
+              {
+                key: 'previous',
+                label: locale === 'en'
+                  ? 'Previous fully reconciled attribution reporting window'
+                  : 'Poprzednie w pełni uzgodnione okno raportowania atrybucji',
+              },
+            ]}
+            unit={locale === 'en'
+              ? 'Attributed revenue - PLN'
+              : 'Przychód po atrybucji - PLN'}
+            valueFormatter={(value) => (
+              formatCompactValue(value, locale)
+            )}
+            variant="grouped"
+          />
+        </AnalyticsChartSurface>
       </article>
     </div>
   );
 }
 
 const meta = {
-  title: '15 Wykresy i dane/Porównania',
+  title: '15 Wykresy i dane/02 Rodziny wykresów/Porównania',
   component: ComparisonChart,
   parameters: {
     layout: 'fullscreen',
@@ -635,32 +880,39 @@ export const ComparisonChartStory: Story = {
   },
   name: 'Porównania',
   render: () => (
-    <StoryPresentationPage
+    <Story15Page
       className="pd-comparison-story"
-      headerAside={(
-        <StoryPresentationMeta
-          ariaLabel="Parametry kontraktu ComparisonChart"
-          items={[
-            {
-              label: 'Kontrakt',
-              value: '15.04',
-            },
-            {
-              label: 'Silnik',
-              value: 'Recharts',
-            },
-            {
-              label: 'Status',
-              value: 'przegląd',
-            },
-          ]}
+      metaAriaLabel={{
+        en: 'ComparisonChart contract parameters',
+        pl: 'Parametry kontraktu ComparisonChart',
+      }}
+      metaItems={[
+        {
+          label: <Localized pl="Kontrakt" en="Contract" />,
+          value: '15.04',
+        },
+        {
+          label: <Localized pl="Silnik" en="Engine" />,
+          value: 'Recharts',
+        },
+        {
+          label: <Localized pl="Status" en="Status" />,
+          value: <Localized pl="przegląd" en="review" />,
+        },
+      ]}
+      storyId="15.04"
+      summary={(
+        <Localized
+          en="ComparisonChart owns discrete category comparisons, ranking, benchmark and period-to-period relation. TrendChart keeps continuous time and DataTable keeps exact records."
+          pl="ComparisonChart odpowiada za dyskretne porównania kategorii, ranking, punkt odniesienia i relację okres do okresu. TrendChart zachowuje czas ciągły, a DataTable dokładne rekordy."
         />
       )}
-      sectionCode="15"
-      sectionLabel="Wykresy i dane"
-      storyId="15.04"
-      summary="ComparisonChart odpowiada za dyskretne porównania kategorii, ranking, punkt odniesienia i relację okres do okresu. TrendChart zachowuje czas ciągły, a DataTable dokładne rekordy."
-      title="Porównanie ma eksponować różnicę między grupami, a nie wymuszać jeden typ wykresu."
+      title={(
+        <Localized
+          en="A comparison should expose the difference between groups, not force one chart type."
+          pl="Porównanie ma eksponować różnicę między grupami, a nie wymuszać jeden typ wykresu."
+        />
+      )}
     >
       <StoryPresentationSection
         index="01"
@@ -701,7 +953,7 @@ export const ComparisonChartStory: Story = {
       >
         <NegativeValuesAndLongCopy />
       </StoryPresentationSection>
-    </StoryPresentationPage>
+    </Story15Page>
   ),
   play: async ({
     canvasElement,

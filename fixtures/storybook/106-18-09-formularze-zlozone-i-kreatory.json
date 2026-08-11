@@ -1,14 +1,24 @@
 {
   "fixtureId": "SB-106",
-  "storyTitle": "18 Stany i wzorce przekrojowe/Formularze złożone i kreatory",
+  "storyTitle": "18 Wzorce interfejsu/Formularze złożone i kreatory",
   "sourceDocument": "21-stany-przekrojowe/18-09-formularze-zlozone-i-kreatory.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "TextField",
+    "Select",
+    "Checkbox",
+    "Dialog",
+    "Button",
+    "InlineNotice"
+  ],
   "states": [
-    "ready",
-    "loading",
-    "empty",
-    "error"
+    "stepBasicData",
+    "stepConditions",
+    "stepReview",
+    "validationSummary",
+    "dirtyState",
+    "unsavedChangesDialog",
+    "submitting"
   ],
   "viewports": [
     1440,
@@ -20,15 +30,15 @@
     "dark"
   ],
   "localeCases": [
-    "pl",
-    "en-long-copy"
+    "pl"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "trigger-required-field-validation",
+    "complete-textfield-and-select",
+    "complete-checkbox-step",
+    "open-unsaved-changes-dialog",
+    "return-to-editing-from-dialog",
+    "submit-form-processing"
   ],
   "visualAssertions": [
     "1440-light",
@@ -36,15 +46,14 @@
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-error"
+    "complex-form-reflow",
+    "no-horizontal-page-scroll"
   ],
   "a11y": [
-    "keyboard-only",
+    "form-control-labels",
+    "dialog-accessible-name",
     "focus-visible",
-    "accessible-name",
-    "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-accepted-cross-cutting-pattern"
 }

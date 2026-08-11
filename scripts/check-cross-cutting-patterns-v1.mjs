@@ -60,6 +60,26 @@ const implementedEntries = [
     storyTitle: '18 Wzorce interfejsu/Tabela z filtrami i akcjami',
   },
   {
+    id: '18.05',
+    accepted: true,
+    documentationStatus: 'accepted',
+    fixture: 'fixtures/storybook/109-18-05-potwierdzenia-i-operacje-destrukcyjne.json',
+    implementationStatus: 'implemented-accepted-cross-cutting-pattern',
+    storyExport: 'DestructiveConfirmationsStory',
+    storyFile: `${storyRoot}/DestructiveConfirmations.stories.tsx`,
+    storyTitle: '18 Wzorce interfejsu/Potwierdzenia i operacje destrukcyjne',
+  },
+  {
+    id: '18.06',
+    accepted: true,
+    documentationStatus: 'accepted',
+    fixture: 'fixtures/storybook/104-18-06-approval-step-up-i-ochrona-zmian.json',
+    implementationStatus: 'implemented-accepted-cross-cutting-pattern',
+    storyExport: 'ApprovalProtectionStory',
+    storyFile: `${storyRoot}/ApprovalProtection.stories.tsx`,
+    storyTitle: '18 Wzorce interfejsu/Approval, step-up i ochrona zmian',
+  },
+  {
     id: '18.07',
     accepted: true,
     documentationStatus: 'accepted',
@@ -78,6 +98,16 @@ const implementedEntries = [
     storyExport: 'DataReadinessStatusStory',
     storyFile: `${storyRoot}/DataReadinessStatus.stories.tsx`,
     storyTitle: '18 Wzorce interfejsu/Readiness operacyjny',
+  },
+  {
+    id: '18.09',
+    accepted: true,
+    documentationStatus: 'accepted',
+    fixture: 'fixtures/storybook/106-18-09-formularze-zlozone-i-kreatory.json',
+    implementationStatus: 'implemented-accepted-cross-cutting-pattern',
+    storyExport: 'ComplexFormsWizardsStory',
+    storyFile: `${storyRoot}/ComplexFormsWizards.stories.tsx`,
+    storyTitle: '18 Wzorce interfejsu/Formularze złożone i kreatory',
   },
   {
     id: '18.10',
@@ -101,11 +131,7 @@ const implementedEntries = [
   },
 ];
 
-const plannedEntries = [
-  '18.05',
-  '18.06',
-  '18.09',
-];
+const plannedEntries = [];
 
 const forbiddenProductionSelectors = [
   'pd-f0-page',
@@ -372,8 +398,9 @@ function assertFixtures() {
 
     if (playSteps.some((step) => step.includes('focus-restoration'))) {
       ensure(
-        item.id === '18.07',
-        `${item.id}: focus restoration is only implemented in 18.07 Drawer story.`,
+        item.id === '18.05'
+          || item.id === '18.07',
+        `${item.id}: focus restoration must be backed by a real overlay play path.`,
       );
     }
 
@@ -384,7 +411,14 @@ function assertFixtures() {
       );
     }
 
-    if (playSteps.some((step) => step.includes('role-alert')) || a11y.some((step) => step.includes('role-alert'))) {
+    if (playSteps.some((step) => step === 'role-alertdialog') || a11y.some((step) => step === 'role-alertdialog')) {
+      ensure(
+        item.id === '18.05',
+        `${item.id}: role-alertdialog is only covered by 18.05 AlertDialog.`,
+      );
+    }
+
+    if (playSteps.some((step) => step === 'role-alert') || a11y.some((step) => step === 'role-alert')) {
       ensure(
         item.id === '18.02',
         `${item.id}: role-alert is only covered by 18.02 ErrorState.`,
@@ -414,16 +448,6 @@ function assertRegistries() {
     );
   }
 
-  for (const id of [
-    '18-05',
-    '18-06',
-    '18-09',
-  ]) {
-    ensure(
-      storybookRegistry.includes(`${id}-`),
-      `${id}: planned registry row missing.`,
-    );
-  }
 }
 
 assertNoGitDiff('apps/web/src/design-system/analytics-system-v1.json');
@@ -433,4 +457,4 @@ assertContract();
 assertFixtures();
 assertRegistries();
 
-console.log('Cross-cutting patterns V1 OK: 18.01, 18.02, 18.03, 18.04, 18.07, 18.08, 18.10 and 18.11 accepted; planned 18.05, 18.06 and 18.09 remain hidden.');
+console.log('Cross-cutting patterns V1 OK: section 18 accepted entries 18.01 through 18.11 are implemented, visible, accepted and productionStatus=not_started.');

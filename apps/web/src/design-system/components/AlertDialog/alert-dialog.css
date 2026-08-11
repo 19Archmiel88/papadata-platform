@@ -1,0 +1,7 @@
+.pd-alert-dialog {
+  inline-size: min(100% - var(--pd-space-6), 34rem);
+}
+
+.pd-alert-dialog__actions {
+  justify-content: flex-end;
+}

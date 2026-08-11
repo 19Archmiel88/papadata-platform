@@ -321,6 +321,84 @@
     var(--pd-separator-subtle);
 }
 
+.pd-x18-confirmation-layout,
+.pd-x18-approval-layout {
+  align-items: stretch;
+}
+
+.pd-x18-form-flow {
+  display: grid;
+  gap: var(--pd-space-5);
+  min-inline-size: 0;
+  max-inline-size: 58rem;
+}
+
+.pd-x18-form-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-inline-size: 0;
+  border-block:
+    var(--pd-border-width-subtle)
+    solid
+    var(--pd-separator-subtle);
+}
+
+.pd-x18-form-step {
+  display: grid;
+  gap: var(--pd-space-1);
+  min-inline-size: 0;
+  padding: var(--pd-space-3);
+  color: var(--pd-text-secondary);
+  line-height: var(--pd-line-height-compact);
+}
+
+.pd-x18-form-step + .pd-x18-form-step {
+  border-inline-start:
+    var(--pd-border-width-subtle)
+    solid
+    var(--pd-separator-subtle);
+}
+
+.pd-x18-form-step > span {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-label);
+  letter-spacing: 0.035em;
+}
+
+.pd-x18-form-step[data-active='true'] {
+  color: var(--pd-text);
+  box-shadow:
+    inset 0 -2px 0
+    var(--pd-brand-line);
+}
+
+.pd-x18-form-section {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pd-space-4);
+  min-inline-size: 0;
+  padding-block: var(--pd-space-4);
+  border-block:
+    var(--pd-border-width-subtle)
+    solid
+    var(--pd-separator-subtle);
+}
+
+.pd-x18-form-section > * {
+  min-inline-size: 0;
+}
+
+.pd-x18-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-3);
+  align-items: center;
+  justify-content: flex-end;
+  min-inline-size: 0;
+  padding-block-start: var(--pd-space-2);
+}
+
 /* -------------------------------------------------------------------------- */
 /* 18.04 — analityczna tabela                                                 */
 /* -------------------------------------------------------------------------- */
@@ -1298,6 +1376,7 @@
   .pd-x18-feedback-stage,
   .pd-x18-feedback-gallery,
   .pd-x18-loading-grid,
+  .pd-x18-form-section,
   .pd-x18-readiness-line,
   .pd-x18-drawer-metrics,
   .pd-x18-drawer-metrics--wide {
@@ -1424,6 +1503,23 @@
 
   .pd-x18-analytics-actions {
     inline-size: 100%;
+    justify-content: flex-start;
+  }
+
+  .pd-x18-form-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-x18-form-step + .pd-x18-form-step {
+    border-block-start:
+      var(--pd-border-width-subtle)
+      solid
+      var(--pd-separator-subtle);
+    border-inline-start: 0;
+  }
+
+  .pd-x18-form-actions {
+    align-items: stretch;
     justify-content: flex-start;
   }
 }

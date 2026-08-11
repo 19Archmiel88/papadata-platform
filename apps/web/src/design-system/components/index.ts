@@ -1,4 +1,12 @@
 export {
+  AlertDialog,
+} from './AlertDialog';
+
+export {
+  ApprovalPanel,
+} from './ApprovalPanel';
+
+export {
   analyticsStateHasRenderableData,
   resolveAnalyticsDataStateTone,
 } from './Analytics';
@@ -189,6 +197,17 @@ export {
 export {
   VerificationCodeInput,
 } from './VerificationCodeInput';
+
+export type {
+  AlertDialogProps,
+} from './AlertDialog';
+
+export type {
+  ApprovalPanelApprover,
+  ApprovalPanelApproverStatus,
+  ApprovalPanelProps,
+  ApprovalPanelRisk,
+} from './ApprovalPanel';
 
 export type {
   AnalyticsAction,

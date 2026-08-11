@@ -4,8 +4,8 @@ author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-4D5F69650D7B
-status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+status: accepted
+updated_at: 2026-08-12T00:19:42+02:00
 ---
 
 # Approval, step-up i ochrona zmian
@@ -19,81 +19,79 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Nazwa techniczna | approval-step-up-i-ochrona-zmian |
 | Typ dokumentu | wzorzec przekrojowy |
 | Wersja | 1.0 |
-| Status kontraktu | zatwierdzony stan docelowy |
+| Status kontraktu | accepted wzorca Storybook; decyzja wizualna zaakceptowana właścicielsko |
 | Priorytet | P1 |
 | Właściciel | Design System |
-| Moduł | Stany i wzorce przekrojowe — M02/M03 |
+| Moduł | Wzorce interfejsu — 18 |
 
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | WDROŻONE W STORYBOOK — ACCEPTED |
+| Akceptacja właścicielska | `true` — zaakceptowane właścicielsko dla zakresu Storybook/pattern-only |
+| Status Storybooka | `18 Wzorce interfejsu/Approval, step-up i ochrona zmian` |
+| Status produkcyjny | `not_started` — zakres pattern-only |
+| Status testów | `passing` — fixture + play/audit dopasowane do realnej implementacji |
 
-## Cel i decyzja docelowa
+## Cel i realny zakres
 
-„Approval, step-up i ochrona zmian” jest współdzielonym kontraktem, a nie lokalnym układem jednego ekranu. Wzorzec ma jedną odpowiedzialność, korzysta z fundamentów i komponentów bazowych oraz udostępnia warianty wymagane przez domeny bez kopiowania implementacji.
+Wzorzec pokazuje dodatkowy warunek autoryzacji przed dopuszczeniem zmiany chronionej. `ApprovalPanel` prezentuje `subjectId`, `subjectLabel`, `risk`, listę approverów i `expiresAt`; akcja pozostaje zablokowana, dopóki approval nie jest zatwierdzony.
 
-## Stan obecny
-
-
-## Zakres i wymagania
-
-| Lp. | Wymaganie | Kontrakt | Dowód odbioru |
-| --- | --- | --- | --- |
-| 1 | stan domyślny | wymagany wariant lub stan | test Storybook + test interakcji |
+18.06 nie jest potwierdzeniem operacji. 18.05 odpowiada na pytanie „czy na pewno wykonać operację?”, a 18.06 odpowiada „czy warunek autoryzacji/approval jest spełniony?”.
 
 ## Anatomia
 
 ```text
 approval-step-up-i-ochrona-zmian
-├── semantic root
-├── header or accessible label
-├── primary content
-├── status / validation region
-├── primary action
-└── optional secondary actions or metadata
+├── opis zmiany chronionej
+├── ApprovalPanel
+├── status pending / approved / rejected
+├── ryzyko, approverzy i wygaśnięcie
+└── akcja zablokowana do spełnienia warunku
 ```
 
 ## Komponenty składowe
 
-- PageHeader
-- DataStatusBanner
-- InlineNotice
-- Button
 - ApprovalPanel
-- AlertDialog
+- Button
+- InlineNotice
+- StatusBadge
 
-Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
+Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook mają prefiks `pd-x18-*` i służą wyłącznie do układu, separatorów oraz rytmu.
 
-## Kontrakt stanu
+## Zakres i wymagania
 
-- Stan kontrolowany jest używany dla route, filtrów, formularza, selection i overlay.
-- Stan asynchroniczny rozróżnia loading, processing, retrying, success, recoverable error i terminal error.
-- Read-only, no-access i plan-restricted są osobnymi stanami, nie odmianą disabled.
-- Zmiana motywu, języka lub viewportu nie resetuje danych ani procesu.
+| Lp. | Wymaganie | Kontrakt | Dowód odbioru |
+| --- | --- | --- | --- |
+| 1 | Pending approval | Jeden approver oczekuje, a akcja chroniona jest disabled. | Storybook + play |
+| 2 | Approved approval | Wszyscy approverzy zatwierdzili zmianę, a akcja jest dostępna. | Storybook + play |
+| 3 | Rejected approval | Odrzucony approval blokuje akcję i pokazuje krytyczny komunikat. | Storybook + play |
+| 4 | Ryzyko i wygaśnięcie | Panel pokazuje ryzyko wysokie oraz termin wygaśnięcia approval. | Storybook + play |
+| 5 | Blokada akcji | Button pozostaje zablokowany do spełnienia warunku. | Storybook + play |
 
-## Interakcje i klawiatura
+## Poza zakresem
 
-Tab order odpowiada hierarchii zadania. Enter/Space uruchamiają natywne kontrolki; Escape zamyka najwyższą warstwę; strzałki są używane wyłącznie w komponentach z modelem composite widget. Focus restore jest obowiązkowy po każdej warstwie.
+- reauthentication, MFA i step-up UI;
+- lokalny flow 25.09;
+- potwierdzenie destrukcyjne z 18.05;
+- approval backendowy lub domenowy endpoint wykonania zmiany.
 
-## Responsywność
+Step-up ma handoff do 25.09 i wymaga osobnego właściciela procesu. Ten dokument nie udaje MFA ani ponownego uwierzytelnienia.
 
-Wide może używać kolumn lub detail panelu. Compact przechodzi w jedną kolumnę, zachowuje wszystkie funkcje i przenosi akcje drugorzędne do jawnego overflow. Tabele otrzymują scroll lub widok priorytetowych kolumn, a wykresy — tabelę alternatywną.
+## Kontrakt UI
 
-## Dostępność
-
-Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kontrast, reduced motion, live region dla wyników asynchronicznych, reflow i brak informacji zależnej wyłącznie od koloru.
+- Story nie tworzy lokalnego zamiennika `ApprovalPanel`.
+- Status approval jest jawny tekstowo, nie wyłącznie kolorem.
+- Akcja chroniona jest widoczna, lecz niedostępna do spełnienia warunku.
+- Story nie deklaruje playSteps ani visualAssertions bez pokrycia w runtime, play teście albo audycie.
 
 ## Storybook
 
-- Title: `18 Stany i wzorce przekrojowe/Approval, step-up i ochrona zmian`.
-- Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
-- Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
+- Title: `18 Wzorce interfejsu/Approval, step-up i ochrona zmian`.
+- File: `apps/web/src/storybook-next/stories/18-cross-cutting-patterns/ApprovalProtection.stories.tsx`.
+- Status: implemented / visible / accepted.
+- Accepted: true dla zaakceptowanego zakresu Storybook/pattern-only.
+- Production status: not_started.
 
 ## Testy i kryteria akceptacji
 
-1. Wszystkie wymagania mają story i asercję testową.
-2. Wzorzec nie tworzy duplikatu komponentu bazowego.
-3. Stany błędu i brak dostępu mają recovery albo jednoznaczne zakończenie.
-4. Mobile i zoom 200% nie tracą funkcji.
-5. Klawiatura oraz focus restore przechodzą play test.
-6. Dokument jest linkowany przez co najmniej jeden ekran albo oznaczony jako fundament przyszłego użycia.
+1. Play test sprawdza pending, approved, rejected, blokadę przycisku i wykonanie akcji dopiero po approval.
+2. Fixture deklaruje tylko PL i kroki realnie pokryte w play/audycie.
+3. Mobile 390 i zoom 200% są objęte audytem Storybook, jeżeli fixture deklaruje brak poziomego scrolla.

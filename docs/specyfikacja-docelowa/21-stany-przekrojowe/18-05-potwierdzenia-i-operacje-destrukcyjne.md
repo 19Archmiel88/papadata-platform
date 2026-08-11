@@ -4,8 +4,8 @@ author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-E68E7655F9D1
-status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+status: accepted
+updated_at: 2026-08-12T00:19:42+02:00
 ---
 
 # Potwierdzenia i operacje destrukcyjne
@@ -19,81 +19,78 @@ updated_at: 2026-07-30T10:30:00+02:00
 | Nazwa techniczna | potwierdzenia-i-operacje-destrukcyjne |
 | Typ dokumentu | wzorzec przekrojowy |
 | Wersja | 1.0 |
-| Status kontraktu | zatwierdzony stan docelowy |
+| Status kontraktu | accepted wzorca Storybook; decyzja wizualna zaakceptowana właścicielsko |
 | Priorytet | P1 |
 | Właściciel | Design System |
-| Moduł | Stany i wzorce przekrojowe — M02/M03 |
+| Moduł | Wzorce interfejsu — 18 |
 
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | WDROŻONE W STORYBOOK — ACCEPTED |
+| Akceptacja właścicielska | `true` — zaakceptowane właścicielsko dla zakresu Storybook/pattern-only |
+| Status Storybooka | `18 Wzorce interfejsu/Potwierdzenia i operacje destrukcyjne` |
+| Status produkcyjny | `not_started` — zakres pattern-only |
+| Status testów | `passing` — fixture + play/audit dopasowane do realnej implementacji |
 
-## Cel i decyzja docelowa
+## Cel i realny zakres
 
-„Potwierdzenia i operacje destrukcyjne” jest współdzielonym kontraktem, a nie lokalnym układem jednego ekranu. Wzorzec ma jedną odpowiedzialność, korzysta z fundamentów i komponentów bazowych oraz udostępnia warianty wymagane przez domeny bez kopiowania implementacji.
+Wzorzec pokazuje świadome potwierdzenie operacji destrukcyjnej przez realny `AlertDialog` i `Button`. Story rozdziela otwarcie potwierdzenia, jasny opis skutku, anulowanie, zamknięcie Escape z powrotem focusu oraz potwierdzenie destrukcyjnej akcji.
 
-## Stan obecny
-
-
-## Zakres i wymagania
-
-| Lp. | Wymaganie | Kontrakt | Dowód odbioru |
-| --- | --- | --- | --- |
-| 1 | stan domyślny | wymagany wariant lub stan | test Storybook + test interakcji |
+Zakres jest Storybook/pattern-only. Dokument nie dodaje approval, OTP, MFA, typed confirmation ani domenowego endpointu wykonania operacji.
 
 ## Anatomia
 
 ```text
 potwierdzenia-i-operacje-destrukcyjne
-├── semantic root
-├── header or accessible label
-├── primary content
-├── status / validation region
-├── primary action
-└── optional secondary actions or metadata
+├── opis operacji i skutku
+├── akcja otwarcia potwierdzenia
+├── AlertDialog z opisem skutku
+├── anulowanie lub destrukcyjne potwierdzenie
+└── status decyzji użytkownika
 ```
 
 ## Komponenty składowe
 
-- PageHeader
-- DataStatusBanner
-- InlineNotice
-- Button
-- ApprovalPanel
 - AlertDialog
+- Button
+- InlineNotice
+- StatusBadge
 
-Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
+Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook mają prefiks `pd-x18-*` i służą wyłącznie do układu, separatorów oraz rytmu.
 
-## Kontrakt stanu
+## Zakres i wymagania
 
-- Stan kontrolowany jest używany dla route, filtrów, formularza, selection i overlay.
-- Stan asynchroniczny rozróżnia loading, processing, retrying, success, recoverable error i terminal error.
-- Read-only, no-access i plan-restricted są osobnymi stanami, nie odmianą disabled.
-- Zmiana motywu, języka lub viewportu nie resetuje danych ani procesu.
+| Lp. | Wymaganie | Kontrakt | Dowód odbioru |
+| --- | --- | --- | --- |
+| 1 | Otwarcie potwierdzenia | Przycisk otwiera `AlertDialog` z rolą `alertdialog`. | Storybook + play |
+| 2 | Jasny opis skutku | Treść dialogu opisuje konsekwencję dla integracji i synchronizacji danych. | Storybook + play |
+| 3 | Anulowanie | Akcja anulowania zamyka dialog i nie wykonuje operacji. | Storybook + play |
+| 4 | Escape i focus restore | Escape zamyka realny overlay, a focus wraca do przycisku otwarcia. | Storybook + play |
+| 5 | Destrukcyjne potwierdzenie | Potwierdzenie używa wariantu destrukcyjnego i zapisuje wynik w stanie story. | Storybook + play |
 
-## Interakcje i klawiatura
+## Poza zakresem
 
-Tab order odpowiada hierarchii zadania. Enter/Space uruchamiają natywne kontrolki; Escape zamyka najwyższą warstwę; strzałki są używane wyłącznie w komponentach z modelem composite widget. Focus restore jest obowiązkowy po każdej warstwie.
+- typed confirmation;
+- OTP, MFA albo reauthentication;
+- approval lub drugi approver;
+- loading/result z domenowego endpointu;
+- publiczny flow produkcyjny.
 
-## Responsywność
+## Kontrakt UI
 
-Wide może używać kolumn lub detail panelu. Compact przechodzi w jedną kolumnę, zachowuje wszystkie funkcje i przenosi akcje drugorzędne do jawnego overflow. Tabele otrzymują scroll lub widok priorytetowych kolumn, a wykresy — tabelę alternatywną.
-
-## Dostępność
-
-Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kontrast, reduced motion, live region dla wyników asynchronicznych, reflow i brak informacji zależnej wyłącznie od koloru.
+- Story nie tworzy lokalnego zamiennika `AlertDialog`, `Dialog` ani `Button`.
+- AlertDialog jest jedyną warstwą potwierdzenia.
+- Znaczenie ryzyka nie jest komunikowane wyłącznie kolorem.
+- Story nie deklaruje playSteps ani visualAssertions bez pokrycia w runtime, play teście albo audycie.
 
 ## Storybook
 
-- Title: `18 Stany i wzorce przekrojowe/Potwierdzenia i operacje destrukcyjne`.
-- Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
-- Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
+- Title: `18 Wzorce interfejsu/Potwierdzenia i operacje destrukcyjne`.
+- File: `apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DestructiveConfirmations.stories.tsx`.
+- Status: implemented / visible / accepted.
+- Accepted: true dla zaakceptowanego zakresu Storybook/pattern-only.
+- Production status: not_started.
 
 ## Testy i kryteria akceptacji
 
-1. Wszystkie wymagania mają story i asercję testową.
-2. Wzorzec nie tworzy duplikatu komponentu bazowego.
-3. Stany błędu i brak dostępu mają recovery albo jednoznaczne zakończenie.
-4. Mobile i zoom 200% nie tracą funkcji.
-5. Klawiatura oraz focus restore przechodzą play test.
-6. Dokument jest linkowany przez co najmniej jeden ekran albo oznaczony jako fundament przyszłego użycia.
+1. Play test otwiera AlertDialog, sprawdza opis skutku, anuluje, zamyka Escape, sprawdza focus restore i potwierdza operację destrukcyjną.
+2. Fixture deklaruje tylko PL i kroki realnie pokryte w play/audycie.
+3. Mobile 390 i zoom 200% są objęte audytem Storybook, jeżeli fixture deklaruje brak poziomego scrolla.

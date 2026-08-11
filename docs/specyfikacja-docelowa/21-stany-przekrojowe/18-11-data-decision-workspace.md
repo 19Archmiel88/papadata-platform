@@ -3,8 +3,8 @@ version: 1.0
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
-status: review
-updated_at: 2026-08-11T00:00:00+02:00
+status: accepted
+updated_at: 2026-08-11T12:00:00+02:00
 ---
 
 # DataDecisionWorkspace
@@ -18,19 +18,19 @@ updated_at: 2026-08-11T00:00:00+02:00
 | Nazwa techniczna | data-decision-workspace |
 | Typ dokumentu | wzorzec przekrojowy |
 | Wersja | 1.0 |
-| Status kontraktu | review wzorca Storybook; decyzja wizualna oczekuje na akceptację właścicielską |
+| Status kontraktu | accepted wzorca Storybook; decyzja wizualna zaakceptowana właścicielsko |
 | Priorytet | P1 |
 | Właściciel | Product UI |
 | Moduł | Wzorce interfejsu — 18 |
 
-| Status implementacji | WDROŻONE W STORYBOOK — REVIEW |
-| Akceptacja właścicielska | `false` — wymaga osobnej akceptacji właściciela produktu |
+| Status implementacji | WDROŻONE W STORYBOOK — ACCEPTED |
+| Akceptacja właścicielska | `true` — zaakceptowane właścicielsko dla zakresu Storybook/pattern-only |
 | Status Storybooka | `18 Wzorce interfejsu/DataDecisionWorkspace` |
 | Status testów | fixture + audit dopasowane do realnej implementacji |
 
 ## Cel i realny zakres
 
-Wzorzec pokazuje produktową kompozycję decyzji: obszar danych, rekomendację, sidecar Papa Asystenta i toast operacyjny. `18.11` nie tworzy nowych tokenów, statusów, powierzchni ani lokalnych wariantów komunikatów. Źródłem zasad wizualnych pozostaje `00`, właścicielem wykresów i danych pozostaje `15`, a workflow tabeli należy do `18.04`.
+Wzorzec pokazuje produktową kompozycję decyzji: obszar danych w ChartFrame, TrendChart, alternatywę DataTable, rekomendację, sidecar Papa Asystenta i toast operacyjny. `18.11` nie tworzy nowych tokenów, statusów, powierzchni ani lokalnych wariantów komunikatów. Źródłem zasad wizualnych pozostaje `00`, właścicielem wykresów i danych pozostaje `15`, a workflow tabeli należy do `18.04`.
 
 Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu i nie zmienia ownerów `00`, `15` ani istniejącego runtime API.
 
@@ -48,19 +48,19 @@ data-decision-workspace
 ## Komponenty składowe
 
 - ChartFrame
+- TrendChart
 - DataTable
 - InlineNotice
 - StatusBadge
 - Toast
-- Icon
 
-Wzorzec konsumuje fundamenty z `00`. Lokalne klasy Storybook mają prefiks `pd-x18-*` i służą wyłącznie do decyzji kompozycyjnej tej story.
+Wzorzec konsumuje fundamenty z `00` i komponenty z `15`/runtime. Lokalne klasy Storybook mają prefiks `pd-x18-*` i służą wyłącznie do decyzji kompozycyjnej tej story.
 
 ## Zakres i wymagania
 
 | Lp. | Wymaganie | Kontrakt | Dowód odbioru |
 | --- | --- | --- | --- |
-| 1 | Dane jako główny obszar pracy | Wykres i tabela są w jednej powierzchni danych. | Storybook + fixture |
+| 1 | Dane jako główny obszar pracy | ChartFrame utrzymuje powierzchnię danych, TrendChart renderuje wykres, a DataTable jest alternatywą tabelaryczną. | Storybook + fixture |
 | 2 | Rekomendacja | Warstwa pomaga w decyzji i nie zastępuje danych. | Storybook + fixture |
 | 3 | Papa Asystent | Sidecar jest panelowy, bez scrimu i bez przejmowania ownerstwa komunikatów. | Storybook + fixture |
 | 4 | Toast | Potwierdza operację i nie zmienia układu strony. | Storybook + fixture |
@@ -76,12 +76,13 @@ Wzorzec konsumuje fundamenty z `00`. Lokalne klasy Storybook mają prefiks `pd-x
 
 - Title: `18 Wzorce interfejsu/DataDecisionWorkspace`.
 - File: `apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DataDecisionWorkspace.stories.tsx`.
-- Status: implemented / visible / review.
-- Accepted: false, do czasu osobnej akceptacji wizualnej.
+- Status: implemented / visible / accepted.
+- Accepted: true dla zaakceptowanego zakresu Storybook/pattern-only.
 
 ## Testy i kryteria akceptacji
 
-1. Fixture wskazuje `18.11` jako pattern review, a nie runtime component.
-2. Audyt Storybook obejmuje viewporty i zoom dla tej story.
-3. Lokalny CSS nie override'uje klas produkcyjnych ani fundamentów `00`.
-4. Brak poziomego scrolla strony na mobile i przy zoom 200%.
+1. Fixture wskazuje `18.11` jako wzorzec Storybook/pattern-only, a nie runtime component.
+2. Play test sprawdza ChartFrame/TrendChart, rekomendację, sidecar, toast i alternatywną tabelę DataTable.
+3. Audyt Storybook obejmuje viewporty i zoom dla tej story.
+4. Lokalny CSS nie override'uje klas produkcyjnych ani fundamentów `00`.
+5. Brak poziomego scrolla strony na mobile i przy zoom 200%.

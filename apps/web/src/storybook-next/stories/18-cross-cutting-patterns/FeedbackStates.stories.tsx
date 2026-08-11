@@ -27,7 +27,12 @@ import {
 import './cross-cutting-patterns.css';
 
 const retryAction = fn();
-const entitlementAction = fn();
+const emptySourceAction = fn();
+const requirementsAction = fn();
+const filterAction = fn();
+const blockerAction = fn();
+const planAction = fn();
+const accessRequestAction = fn();
 
 const feedbackRoutes = [
   {
@@ -35,63 +40,72 @@ const feedbackRoutes = [
     component: 'EmptyState',
     description: 'Obszar istnieje, ale użytkownik nie dodał jeszcze danych.',
     id: '01',
-    label: 'Empty',
+    label: 'Stan pusty',
   },
   {
     alert: 'nie',
     component: 'EmptyState',
     description: 'Filtry działają, ale nie zwracają żadnego wyniku.',
     id: '02',
-    label: 'No results',
+    label: 'Brak wyników',
   },
   {
     alert: 'nie',
     component: 'EmptyState',
-    description: 'Źródło nie ma danych dla metryki; to nie jest awaria.',
+    description:
+      'Operacyjny widok nie ma danych poza wykresem; analityczne stany danych pozostają w 15.08.',
     id: '03',
-    label: 'No data',
+    label: 'Brak danych operacyjnych',
   },
   {
     alert: 'tak',
     component: 'ErrorState',
-    description: 'Błąd systemowy wymaga roli alertu i ścieżki recovery.',
+    description: 'Błąd systemowy wymaga roli alertu i ścieżki naprawy.',
     id: '04',
-    label: 'Error',
+    label: 'Błąd systemowy',
   },
   {
     alert: 'nie',
     component: 'InlineNotice',
     description: 'Proces czeka na zależność, ale użytkownik nie musi reagować alarmowo.',
     id: '05',
-    label: 'Blocked',
+    label: 'Blokada procesu',
   },
   {
     alert: 'nie',
     component: 'EmptyState',
     description: 'Brak dostępu jest stanem uprawnień, nie błędem systemowym.',
     id: '06',
-    label: 'Forbidden',
+    label: 'Brak dostępu',
   },
   {
     alert: 'nie',
     component: 'InlineNotice',
-    description: 'Brak entitlementu produktowego jest oddzielony od awarii.',
+    description: 'Brak uprawnienia produktowego jest oddzielony od awarii.',
     id: '07',
-    label: 'Missing entitlement',
+    label: 'Brak uprawnienia w planie',
   },
   {
     alert: 'nie',
     component: 'TextAction',
-    description: 'Retry pokazujemy tylko wtedy, gdy operację można realnie ponowić.',
+    description: 'Ponowienie pokazujemy tylko wtedy, gdy operację można realnie ponowić.',
     id: '08',
-    label: 'Retry',
+    label: 'Ponowienie',
   },
 ] as const;
 
 function FeedbackStateMatrix() {
-  const [retryMessage, setRetryMessage] = useState(
-    'Retry nie został jeszcze uruchomiony.',
+  const [feedbackMessage, setFeedbackMessage] = useState(
+    'Nie uruchomiono jeszcze żadnej akcji feedbacku.',
   );
+
+  const recordFeedbackAction = (
+    action: () => void,
+    message: string,
+  ) => {
+    action();
+    setFeedbackMessage(message);
+  };
 
   return (
     <div className="pd-x18-stack pd-x18-feedback-pattern">
@@ -115,7 +129,7 @@ function FeedbackStateMatrix() {
               {route.component}
             </span>
             <span className="pd-x18-feedback-route__alert">
-              alert: {route.alert}
+              rola alertu: {route.alert}
             </span>
           </div>
         ))}
@@ -132,7 +146,7 @@ function FeedbackStateMatrix() {
               className="pd-x18-region__title"
               id="pd-x18-feedback-error-title"
             >
-              Error dostaje pełną uwagę
+              Awaria dostaje pełną uwagę
             </h3>
             <p className="pd-x18-region__text">
               Tylko rzeczywista awaria używa ErrorState i `role=alert`. Akcje
@@ -149,9 +163,9 @@ function FeedbackStateMatrix() {
             title="Nie udało się pobrać danych"
             variant="integration"
             onRetry={() => {
-              retryAction();
-              setRetryMessage(
-                'Retry wysłany. Użytkownik dostał jawny komunikat o ponowieniu.',
+              recordFeedbackAction(
+                retryAction,
+                'Ponowienie wysłane. Użytkownik dostał jawny komunikat o ponowieniu.',
               );
             }}
           />
@@ -160,7 +174,7 @@ function FeedbackStateMatrix() {
             aria-live="polite"
             className="pd-x18-note pd-x18-feedback-live-note"
           >
-            {retryMessage}
+            {feedbackMessage}
           </div>
         </section>
 
@@ -174,7 +188,7 @@ function FeedbackStateMatrix() {
               className="pd-x18-region__title"
               id="pd-x18-feedback-non-alert-title"
             >
-              Blokady i recovery zostają lekkie
+              Blokady i naprawa zostają lekkie
             </h3>
             <p className="pd-x18-region__text">
               Informują o zależności albo możliwej akcji, ale nie konkurują
@@ -189,6 +203,12 @@ function FeedbackStateMatrix() {
                 message="Import czeka na zaakceptowanie mapowania pól przez właściciela danych."
                 title="Proces zablokowany"
                 tone="info"
+                onAction={() => {
+                  recordFeedbackAction(
+                    blockerAction,
+                    'Szczegóły blokady zostały odnotowane jako lekka akcja informacyjna.',
+                  );
+                }}
               />
             </div>
             <div className="pd-x18-feedback-compact-item">
@@ -198,7 +218,10 @@ function FeedbackStateMatrix() {
                 title="Brak uprawnienia w planie"
                 tone="info"
                 onAction={() => {
-                  entitlementAction();
+                  recordFeedbackAction(
+                    planAction,
+                    'Przejście do planu zostało odnotowane bez eskalacji do alertu.',
+                  );
                 }}
               />
             </div>
@@ -208,9 +231,9 @@ function FeedbackStateMatrix() {
               </p>
               <TextAction
                 onClick={() => {
-                  retryAction();
-                  setRetryMessage(
-                    'Retry z akcji tekstowej został zapisany jako jawny stan story.',
+                  recordFeedbackAction(
+                    retryAction,
+                    'Ponowienie z akcji tekstowej zostało zapisane jako jawny stan story.',
                   );
                 }}
               >
@@ -248,6 +271,18 @@ function FeedbackStateMatrix() {
               secondaryActionLabel="Zobacz wymagania"
               title="Brak źródeł danych"
               variant="empty"
+              onPrimaryAction={() => {
+                recordFeedbackAction(
+                  emptySourceAction,
+                  'Dodanie pierwszego źródła zostało odnotowane jako akcja stanu pustego.',
+                );
+              }}
+              onSecondaryAction={() => {
+                recordFeedbackAction(
+                  requirementsAction,
+                  'Wymagania źródeł zostały otwarte jako pomocnicza akcja stanu pustego.',
+                );
+              }}
             />
           </div>
           <div className="pd-x18-feedback-example">
@@ -256,12 +291,18 @@ function FeedbackStateMatrix() {
               primaryActionLabel="Wyczyść filtry"
               title="Brak wyników"
               variant="search"
+              onPrimaryAction={() => {
+                recordFeedbackAction(
+                  filterAction,
+                  'Wyczyszczenie filtrów zostało odnotowane jako akcja dla braku wyników.',
+                );
+              }}
             />
           </div>
           <div className="pd-x18-feedback-example">
             <EmptyState
-              message="Provider nie przekazuje wartości dla tej metryki w wybranym okresie."
-              title="Brak danych w źródle"
+              message="Źródło operacyjne nie przekazuje wartości dla tego widoku."
+              title="Brak danych operacyjnych"
               variant="configuration"
             />
           </div>
@@ -271,6 +312,12 @@ function FeedbackStateMatrix() {
               primaryActionLabel="Poproś o dostęp"
               title="Nie masz dostępu"
               variant="forbidden"
+              onPrimaryAction={() => {
+                recordFeedbackAction(
+                  accessRequestAction,
+                  'Prośba o dostęp została wysłana do właściciela danych.',
+                );
+              }}
             />
           </div>
         </div>
@@ -304,19 +351,19 @@ export const FeedbackStatesStory: Story = {
           items={[
             { label: 'Kontrakt', value: '18.02' },
             { label: 'Komponenty', value: 'EmptyState / ErrorState' },
-            { label: 'Status', value: 'review' },
+            { label: 'Status', value: 'W przeglądzie' },
           ]}
         />
       )}
       sectionCode="18"
       sectionLabel="Wzorce interfejsu"
       storyId="18.02"
-      summary="Wzorzec wybiera właściwy element feedbacku z 00 / Powierzchnie i komunikaty. Nie definiuje drugiej biblioteki komunikatów ani stanów."
+      summary="Wzorzec wybiera właściwy element feedbacku z 00 / Powierzchnie i komunikaty. Analityczne stany danych pozostają przy 15.08 / ChartDataState."
       title="Routing feedbacku"
     >
       <StoryPresentationSection
         index="01"
-        summary="Macierz decyduje, kiedy użyć EmptyState, ErrorState albo InlineNotice. Kanoniczny wygląd pozostaje w 00."
+        summary="Macierz decyduje, kiedy użyć EmptyState, ErrorState albo InlineNotice. Kanoniczny wygląd pozostaje w 00, a stany wykresów w 15.08."
         title="Macierz routingu feedbacku"
       >
         <FeedbackStateMatrix />
@@ -340,6 +387,10 @@ export const FeedbackStatesStory: Story = {
       }),
     ).toBeInTheDocument();
 
+    await expect(
+      canvas.getAllByRole('alert'),
+    ).toHaveLength(1);
+
     await userEvent.click(
       canvas.getByRole('button', {
         name: 'Ponów synchronizację',
@@ -347,13 +398,27 @@ export const FeedbackStatesStory: Story = {
     );
 
     await expect(
-      canvas.getByText(/Retry wysłany/),
+      canvas.getByText(/Ponowienie wysłane/),
     ).toBeInTheDocument();
 
-    await expect(
+    await userEvent.click(
       canvas.getByRole('button', {
         name: 'Poproś o dostęp',
       }),
+    );
+
+    await expect(
+      canvas.getByText(/Prośba o dostęp została wysłana/),
+    ).toBeInTheDocument();
+
+    await userEvent.click(
+      canvas.getByRole('button', {
+        name: 'Sprawdź plan',
+      }),
+    );
+
+    await expect(
+      canvas.getByText(/Przejście do planu zostało odnotowane/),
     ).toBeInTheDocument();
   },
 };

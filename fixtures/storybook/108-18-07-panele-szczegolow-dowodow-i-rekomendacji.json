@@ -7,7 +7,6 @@
     "Drawer",
     "Tabs",
     "DataList",
-    "InlineNotice",
     "StatusBadge",
     "Button",
     "TextAction"
@@ -35,6 +34,7 @@
   ],
   "playSteps": [
     "drawer-open",
+    "exercise-context-action",
     "tabs-switch",
     "drawer-escape-close",
     "verify-focus-restoration",
@@ -56,5 +56,5 @@
     "focus-visible",
     "200-percent-zoom"
   ],
-  "implementationStatus": "implemented-review-cross-cutting-pattern"
+  "implementationStatus": "implemented-accepted-cross-cutting-pattern"
 }

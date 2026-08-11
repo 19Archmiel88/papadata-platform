@@ -25,6 +25,7 @@ import {
   SearchField,
   SegmentedControl,
   Select,
+  SortControl,
   StatusBadge,
 } from '../../../design-system/components';
 import '../../../storybook-next/presentation/story-presentation.css';
@@ -130,7 +131,7 @@ const optionalColumnIds: readonly ColumnId[] = [
   'trend',
 ];
 
-const initialVisibleColumnIds: readonly ColumnId[] = [
+const sortColumnIds: readonly SortId[] = [
   'campaign',
   'revenue',
   'change',
@@ -139,7 +140,16 @@ const initialVisibleColumnIds: readonly ColumnId[] = [
   'cvr',
   'orders',
   'margin',
-  'trend',
+  'status',
+];
+
+const initialVisibleColumnIds: readonly ColumnId[] = [
+  'campaign',
+  'revenue',
+  'change',
+  'cost',
+  'roas',
+  'orders',
   'status',
 ];
 
@@ -197,7 +207,7 @@ const columnCatalog: Record<ColumnId, DataColumn> = {
     id: 'margin',
     label: 'Marża',
     sortable: true,
-    width: 108,
+    width: 132,
   },
   trend: {
     align: 'center',
@@ -207,10 +217,11 @@ const columnCatalog: Record<ColumnId, DataColumn> = {
     width: 126,
   },
   status: {
+    align: 'center',
     id: 'status',
     label: 'Sygnał',
     sortable: true,
-    width: 154,
+    width: 180,
   },
 };
 
@@ -818,6 +829,10 @@ function FilteredTablePattern() {
     setSelectedRowIds,
   ] = useState<readonly string[]>([]);
   const [
+    searchResetVersion,
+    setSearchResetVersion,
+  ] = useState(0);
+  const [
     detailRecordId,
     setDetailRecordId,
   ] = useState<string | null>(null);
@@ -932,9 +947,22 @@ function FilteredTablePattern() {
           columnId,
         ),
       )
-      .map((columnId) =>
-        columnCatalog[columnId],
-      );
+      .map((columnId) => ({
+        ...columnCatalog[columnId],
+        sortable: false,
+      }));
+
+  const sortOptions =
+    sortColumnIds
+      .filter((columnId) =>
+        visibleColumnIds.includes(
+          columnId,
+        ),
+      )
+      .map((columnId) => ({
+        id: columnId,
+        label: columnCatalog[columnId].label,
+      }));
 
   const pageDataRows =
     pageRows.map(toDataRow);
@@ -1085,6 +1113,13 @@ function FilteredTablePattern() {
     setPageIndex(0);
   };
 
+  const clearSearch = () => {
+    setQuery('');
+    setSearchResetVersion(
+      (current) => current + 1,
+    );
+  };
+
   const handleRowSelection = (
     rowId: string,
   ) => {
@@ -1157,8 +1192,16 @@ function FilteredTablePattern() {
             setSortDirection('desc');
           }
 
+          setActionMessage(
+            `Ukryto kolumnę ${columnCatalog[columnId].label}.`,
+          );
+
           return next;
         }
+
+        setActionMessage(
+          `Pokazano kolumnę ${columnCatalog[columnId].label}.`,
+        );
 
         return columnOrder.filter(
           (id) =>
@@ -1170,7 +1213,7 @@ function FilteredTablePattern() {
   };
 
   const resetView = () => {
-    setQuery('');
+    clearSearch();
     setChannelFilter('all');
     setStatusFilter('all');
     setRangeFilter('30d');
@@ -1361,40 +1404,11 @@ function FilteredTablePattern() {
         </header>
 
         <FilterBar
-          actions={(
-            <div className="pd-x18-analytics-actions">
-              <Button
-                aria-expanded={settingsOpen}
-                size="small"
-                variant="secondary"
-                onClick={() => {
-                  setSettingsOpen(
-                    (current) =>
-                      !current,
-                  );
-                }}
-              >
-                Widok tabeli
-              </Button>
-
-              <Button
-                size="small"
-                variant="secondary"
-                onClick={() => {
-                  exportAllAction();
-                  setActionMessage(
-                    `Eksport obejmuje ${resultCountLabel} i ${visibleColumnLabel} widocznych kolumn.`,
-                  );
-                }}
-              >
-                Eksportuj
-              </Button>
-            </div>
-          )}
           activeCount={activeFilterCount}
           availableFilters={(
             <div className="pd-x18-analytics-filters">
               <Select
+                className="pd-x18-analytics-filter-select"
                 label="Kanał"
                 options={[
                   {
@@ -1430,6 +1444,7 @@ function FilteredTablePattern() {
               />
 
               <Select
+                className="pd-x18-analytics-filter-select"
                 label="Sygnał"
                 options={[
                   {
@@ -1465,6 +1480,7 @@ function FilteredTablePattern() {
               />
 
               <Select
+                className="pd-x18-analytics-filter-select"
                 label="Okres"
                 options={[
                   {
@@ -1490,27 +1506,86 @@ function FilteredTablePattern() {
                   resetPage();
                 }}
               />
+
+              <SortControl
+                ariaLabel="Sortowanie wyników kampanii"
+                className="pd-x18-analytics-filter-sort"
+                direction={sortDirection}
+                label="Sortuj"
+                options={sortOptions}
+                selectedId={sortId}
+                size="compact"
+                onDirectionChange={(nextDirection) => {
+                  setSortDirection(nextDirection);
+                  resetPage();
+                  setActionMessage(
+                    nextDirection === 'asc'
+                      ? 'Zmieniono kierunek sortowania na rosnący.'
+                      : 'Zmieniono kierunek sortowania na malejący.',
+                  );
+                }}
+                onSelectedIdChange={(nextSortId) => {
+                  const resolvedSortId =
+                    nextSortId as SortId;
+
+                  setSortId(resolvedSortId);
+                  resetPage();
+                  setActionMessage(
+                    `Sortowanie ustawiono na kolumnę ${columnCatalog[resolvedSortId].label}.`,
+                  );
+                }}
+              />
+
+              <div className="pd-x18-analytics-filter-actions">
+                <Button
+                  aria-expanded={settingsOpen}
+                  size="small"
+                  variant="ghost"
+                  onClick={() => {
+                    setSettingsOpen(
+                      (current) =>
+                        !current,
+                    );
+                  }}
+                >
+                  Widok tabeli
+                </Button>
+
+                <Button
+                  size="small"
+                  variant="ghost"
+                  onClick={() => {
+                    exportAllAction();
+                    setActionMessage(
+                      `Eksport obejmuje ${resultCountLabel} i ${visibleColumnLabel} widocznych kolumn.`,
+                    );
+                  }}
+                >
+                  Eksportuj
+                </Button>
+              </div>
             </div>
           )}
           className="pd-x18-analytics-filter-bar"
           clearFiltersLabel="Wyczyść filtry"
           collapsible={false}
           compact
-          emptyLabel="Brak aktywnych filtrów."
+          emptyLabel=""
           filters={activeFilters}
-          resultCount={filteredRows.length}
+          resultCount={null}
           search={(
             <SearchField
               className="pd-x18-analytics-search"
               debounceMs={0}
               hideLabel={false}
+              key={`campaign-search-${searchResetVersion}`}
               label="Szukaj kampanii"
               loading={false}
               placeholder="Kampania, kanał lub właściciel"
               query={query}
               resultCount={filteredRows.length}
               onClear={() => {
-                setQuery('');
+                clearSearch();
                 resetPage();
               }}
               onQueryChange={(nextQuery) => {
@@ -1520,7 +1595,7 @@ function FilteredTablePattern() {
             />
           )}
           onClearFilters={() => {
-            setQuery('');
+            clearSearch();
             setChannelFilter('all');
             setStatusFilter('all');
             setRangeFilter('30d');
@@ -1528,7 +1603,7 @@ function FilteredTablePattern() {
           }}
           onRemoveFilter={(filterId) => {
             if (filterId === 'query') {
-              setQuery('');
+              clearSearch();
               resetPage();
             }
 
@@ -1779,7 +1854,7 @@ function FilteredTablePattern() {
             loading={
               dataMode === 'loading'
             }
-            minWidth="78rem"
+            minWidth="82rem"
             noResults={
               filteredRows.length === 0
             }
@@ -1836,10 +1911,7 @@ function FilteredTablePattern() {
               onToggleVisible:
                 handlePageSelection,
             }}
-            sort={{
-              columnId: sortId,
-              direction: sortDirection,
-            }}
+            sort={null}
             statusColumn={{
               columnId: 'status',
               label: 'Sygnał analityczny',
@@ -1896,34 +1968,6 @@ function FilteredTablePattern() {
                     : `Usunięto kampanię ${recordLabel} z zaznaczenia.`,
                 );
               }
-            }}
-            onSortChange={(columnId) => {
-              const nextSortId =
-                columnId as SortId;
-
-              if (
-                nextSortId === sortId
-              ) {
-                setSortDirection(
-                  (current) =>
-                    current === 'asc'
-                      ? 'desc'
-                      : 'asc',
-                );
-              } else {
-                setSortId(
-                  nextSortId,
-                );
-
-                setSortDirection(
-                  nextSortId === 'campaign'
-                  || nextSortId === 'status'
-                    ? 'asc'
-                    : 'desc',
-                );
-              }
-
-              resetPage();
             }}
           />
 
@@ -2147,7 +2191,7 @@ export const FilteredTableActionsStory: Story = {
             },
             {
               label: 'Status',
-              value: 'review',
+              value: 'W przeglądzie',
             },
           ]}
         />
@@ -2231,10 +2275,25 @@ export const FilteredTableActionsStory: Story = {
       canvas.getByRole(
         'button',
         {
-          name: /Sortuj po kolumnie ROAS/,
+          name: 'Sortowanie wyników kampanii',
         },
       ),
     );
+
+    await userEvent.click(
+      canvas.getByRole(
+        'menuitem',
+        {
+          name: 'ROAS',
+        },
+      ),
+    );
+
+    await expect(
+      await canvas.findByText(
+        'Sortowanie ustawiono na kolumnę ROAS.',
+      ),
+    ).toBeInTheDocument();
 
     const search =
       canvas.getByRole(
@@ -2382,5 +2441,65 @@ export const FilteredTableActionsStory: Story = {
         },
       ),
     ).toBeChecked();
+
+    const trendColumnToggle =
+      canvas.getByRole(
+        'checkbox',
+        {
+          name: 'Trend',
+        },
+      );
+    const trendColumnLabel =
+      trendColumnToggle.closest('label');
+
+    await userEvent.click(
+      trendColumnLabel
+        ?? trendColumnToggle,
+    );
+
+    await expect(
+      canvas.getByText(
+        'Pokazano kolumnę Trend.',
+      ),
+    ).toBeInTheDocument();
+
+    await userEvent.click(
+      canvas.getByRole(
+        'button',
+        {
+          name: 'Przywróć widok',
+        },
+      ),
+    );
+
+    const tableScroll =
+      canvasElement.querySelector<HTMLElement>(
+        '.pd-x18-analytics-data-table .pd-table__scroll',
+      );
+
+    if (tableScroll) {
+      tableScroll.scrollLeft = 0;
+    }
+
+    await expect(
+      canvas.getByRole(
+        'searchbox',
+        {
+          name: 'Szukaj kampanii',
+        },
+      ),
+    ).toHaveValue('');
+
+    await expect(
+      canvas.getByRole(
+        'button',
+        {
+          name: 'Widok tabeli',
+        },
+      ),
+    ).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
   },
 };

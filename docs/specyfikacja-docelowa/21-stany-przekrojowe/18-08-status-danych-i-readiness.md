@@ -3,8 +3,8 @@ version: 1.0
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
-status: review
-updated_at: 2026-08-09T12:00:00+02:00
+status: accepted
+updated_at: 2026-08-11T12:00:00+02:00
 ---
 
 # Readiness operacyjny
@@ -18,19 +18,19 @@ updated_at: 2026-08-09T12:00:00+02:00
 | Nazwa techniczna | readiness-operacyjny |
 | Typ dokumentu | wzorzec przekrojowy |
 | Wersja | 1.0 |
-| Status kontraktu | review wzorca Storybook; decyzja wizualna oczekuje na akceptację właścicielską |
+| Status kontraktu | accepted wzorca Storybook; decyzja wizualna zaakceptowana właścicielsko |
 | Priorytet | P1 |
 | Właściciel | Design System |
 | Moduł | Wzorce interfejsu — 18 |
 
-| Status implementacji | WDROŻONE W STORYBOOK — REVIEW |
-| Akceptacja właścicielska | `false` — wymaga osobnej akceptacji właściciela produktu |
+| Status implementacji | WDROŻONE W STORYBOOK — ACCEPTED |
+| Akceptacja właścicielska | `true` — zaakceptowane właścicielsko dla zakresu Storybook/pattern-only |
 | Status Storybooka | `18 Wzorce interfejsu/Readiness operacyjny` |
 | Status testów | fixture + play/audit dopasowane do realnej implementacji |
 
 ## Cel i realny zakres
 
-Wzorzec pokazuje cross-domain readiness przez StatusBadge, InlineNotice i listy separatorowe. Stany danych wykresów analitycznych pozostają własnością 15.08 ChartDataState.
+Wzorzec pokazuje przekrojową gotowość operacyjną przez StatusBadge, InlineNotice i listy separatorowe. Stany danych wykresów analitycznych pozostają własnością 15.08 ChartDataState.
 
 Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.* i nie zmienia `runtime-component-api.csv` ani `analytics-system-v1.json`.
 
@@ -41,7 +41,7 @@ status-danych-i-readiness
 ├── nagłówek semantyczny
 ├── treść wzorca
 ├── status lub ograniczenie
-├── akcja albo recovery
+├── akcja albo ścieżka naprawy
 └── dowód Storybook / fixture / audyt
 ```
 
@@ -56,10 +56,10 @@ Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook maj�
 
 | Lp. | Wymaganie | Kontrakt | Dowód odbioru |
 | --- | --- | --- | --- |
-| 1 | Ready / syncing | Gotowość i synchronizacja są widoczne przekrojowo. | Storybook + fixture |
-| 2 | Delayed / partial / stale | Ograniczenia danych są opisane jako wpływ na decyzję. | Storybook + fixture |
-| 3 | Blocked / unavailable | Blokada i niedostępność są oddzielone od zwykłego loadingu. | Storybook + fixture |
-| 4 | Action required | Status wskazuje potrzebny następny krok klienta. | Storybook + fixture |
+| 1 | Gotowe / synchronizacja | Gotowość i synchronizacja są widoczne przekrojowo. | Storybook + fixture |
+| 2 | Opóźnienie procesu / zakres częściowy / do odświeżenia | Ograniczenia procesu danych są opisane jako wpływ na decyzję, bez przejmowania stanów 15.08. | Storybook + fixture |
+| 3 | Zablokowane / niedostępne | Blokada i niedostępność są oddzielone od zwykłego ładowania. | Storybook + fixture |
+| 4 | Wymaga działania | Status wskazuje potrzebny następny krok klienta. | Storybook + fixture |
 
 ## Kontrakt UI
 
@@ -72,8 +72,8 @@ Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook maj�
 
 - Title: `18 Wzorce interfejsu/Readiness operacyjny`.
 - File: `apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DataReadinessStatus.stories.tsx`.
-- Status: implemented / visible / review.
-- Accepted: false, do czasu osobnej akceptacji wizualnej.
+- Status: implemented / visible / accepted.
+- Accepted: true dla zaakceptowanego zakresu Storybook/pattern-only.
 
 ## Testy i kryteria akceptacji
 

@@ -35,6 +35,7 @@
   "playSteps": [
     "verify-spinner-status",
     "verify-progressbar",
+    "exercise-cancel-action",
     "exercise-retry-action"
   ],
   "visualAssertions": [
@@ -52,5 +53,5 @@
     "focus-visible",
     "200-percent-zoom"
   ],
-  "implementationStatus": "implemented-review-cross-cutting-pattern"
+  "implementationStatus": "implemented-accepted-cross-cutting-pattern"
 }

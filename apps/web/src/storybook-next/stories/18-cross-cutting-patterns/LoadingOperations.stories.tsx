@@ -44,7 +44,7 @@ function LoadingExamples() {
           className="pd-x18-loading-item"
         >
           <div className="pd-x18-region__header">
-            <h3 className="pd-x18-region__title">Loading</h3>
+            <h3 className="pd-x18-region__title">Ładowanie</h3>
             <p className="pd-x18-region__text">
               Skeleton utrzymuje strukturę regionu, a Spinner komunikuje
               aktywne pobieranie.
@@ -76,10 +76,10 @@ function LoadingExamples() {
           className="pd-x18-loading-item"
         >
           <div className="pd-x18-region__header">
-            <h3 className="pd-x18-region__title">Running</h3>
+            <h3 className="pd-x18-region__title">Operacja w toku</h3>
             <p className="pd-x18-region__text">
-              Przycisk w stanie loading pokazuje operację caller-owned bez
-              tworzenia osobnego komponentu.
+              Przycisk w stanie ładowania pokazuje operację należącą do
+              widoku bez tworzenia osobnego komponentu.
             </p>
           </div>
           <div className="pd-x18-action-row">
@@ -111,7 +111,7 @@ function LoadingExamples() {
       >
         <div className="pd-x18-region__header">
           <h3 className="pd-x18-region__title">
-            Queued, running, partial, cancelled i retry
+            Kolejka, przebieg, część, anulowanie i ponowienie
           </h3>
           <p className="pd-x18-region__text">
             BackgroundOperationItem opisuje stan pracy w tle, a ProgressIndicator
@@ -173,7 +173,7 @@ function LoadingExamples() {
             progress={42}
             startedAt="start 09:48"
             status="failed"
-            title="Import wymagający retry"
+            title="Import wymagający ponowienia"
             onAction={() => {
               retryImportAction();
               setOperationMessage(
@@ -193,12 +193,12 @@ function LoadingExamples() {
             Bezpieczny status asynchroniczny
           </h3>
           <p className="pd-x18-region__text">
-            Wzorzec pokazuje postęp i decyzję recovery bez zasłaniania całej
+            Wzorzec pokazuje postęp i decyzję naprawy bez zasłaniania całej
             strony.
           </p>
         </div>
         <ProgressIndicator
-          description="Wskaźnik raportuje realny progressbar dla operacji częściowej."
+          description="Wskaźnik raportuje realny pasek postępu dla operacji częściowej."
           indeterminate={false}
           label="Postęp zbiorczy operacji"
           max={100}
@@ -241,19 +241,19 @@ export const LoadingOperationsStory: Story = {
           items={[
             { label: 'Kontrakt', value: '18.03' },
             { label: 'Komponenty', value: 'Skeleton / Spinner' },
-            { label: 'Status', value: 'review' },
+            { label: 'Status', value: 'W przeglądzie' },
           ]}
         />
       )}
       sectionCode="18"
       sectionLabel="Wzorce interfejsu"
       storyId="18.03"
-      summary="Ładowanie danych i operacje w tle używają istniejących komponentów loading, progress i background operation. Story nie deklaruje fikcyjnych live regionów."
+      summary="Ładowanie danych i operacje w tle używają istniejących komponentów dla ładowania, postępu i operacji w tle. Story nie deklaruje fikcyjnych live regionów."
       title="Ładowanie danych i operacje w tle"
     >
       <StoryPresentationSection
         index="01"
-        summary="Loading, queued, running, partial completion, cancelled i retry w jednym przepływie asynchronicznym."
+        summary="Ładowanie, kolejka, przebieg, częściowe zakończenie, anulowanie i ponowienie w jednym przepływie asynchronicznym."
         title="Operacje bez blokowania strony"
       >
         <LoadingExamples />
@@ -283,6 +283,16 @@ export const LoadingOperationsStory: Story = {
       canvas.getByRole('progressbar', {
         name: 'Postęp zbiorczy operacji',
       }),
+    ).toBeInTheDocument();
+
+    await userEvent.click(
+      canvas.getByRole('button', {
+        name: 'Anuluj operację',
+      }),
+    );
+
+    await expect(
+      canvas.getByText(/Anulowanie zostało zapisane/),
     ).toBeInTheDocument();
 
     await userEvent.click(

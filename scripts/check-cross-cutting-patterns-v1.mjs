@@ -31,6 +31,9 @@ const implementedEntries = [
   },
   {
     id: '18.02',
+    accepted: true,
+    documentationStatus: 'accepted',
+    implementationStatus: 'implemented-accepted-cross-cutting-pattern',
     fixture: 'fixtures/storybook/105-18-02-empty-error-i-no-access.json',
     storyExport: 'FeedbackStatesStory',
     storyFile: `${storyRoot}/FeedbackStates.stories.tsx`,
@@ -38,6 +41,9 @@ const implementedEntries = [
   },
   {
     id: '18.03',
+    accepted: true,
+    documentationStatus: 'accepted',
+    implementationStatus: 'implemented-accepted-cross-cutting-pattern',
     fixture: 'fixtures/storybook/113-18-03-ladowanie-danych-i-operacje-w-tle.json',
     storyExport: 'LoadingOperationsStory',
     storyFile: `${storyRoot}/LoadingOperations.stories.tsx`,
@@ -45,6 +51,9 @@ const implementedEntries = [
   },
   {
     id: '18.04',
+    accepted: true,
+    documentationStatus: 'accepted',
+    implementationStatus: 'implemented-accepted-cross-cutting-pattern',
     fixture: 'fixtures/storybook/111-18-04-tabela-z-filtrami-i-akcjami.json',
     storyExport: 'FilteredTableActionsStory',
     storyFile: `${storyRoot}/FilteredTableActions.stories.tsx`,
@@ -52,6 +61,9 @@ const implementedEntries = [
   },
   {
     id: '18.07',
+    accepted: true,
+    documentationStatus: 'accepted',
+    implementationStatus: 'implemented-accepted-cross-cutting-pattern',
     fixture: 'fixtures/storybook/108-18-07-panele-szczegolow-dowodow-i-rekomendacji.json',
     storyExport: 'DetailEvidenceRecommendationPanelsStory',
     storyFile: `${storyRoot}/DetailEvidenceRecommendationPanels.stories.tsx`,
@@ -59,6 +71,9 @@ const implementedEntries = [
   },
   {
     id: '18.08',
+    accepted: true,
+    documentationStatus: 'accepted',
+    implementationStatus: 'implemented-accepted-cross-cutting-pattern',
     fixture: 'fixtures/storybook/110-18-08-status-danych-i-readiness.json',
     storyExport: 'DataReadinessStatusStory',
     storyFile: `${storyRoot}/DataReadinessStatus.stories.tsx`,
@@ -76,6 +91,9 @@ const implementedEntries = [
   },
   {
     id: '18.11',
+    accepted: true,
+    documentationStatus: 'accepted',
+    implementationStatus: 'implemented-accepted-cross-cutting-pattern',
     fixture: 'fixtures/storybook/230-18-11-data-decision-workspace.json',
     storyExport: 'DataDecisionWorkspaceStory',
     storyFile: `${storyRoot}/DataDecisionWorkspace.stories.tsx`,
@@ -415,4 +433,4 @@ assertContract();
 assertFixtures();
 assertRegistries();
 
-console.log('Cross-cutting patterns V1 OK: 18.01 and 18.10 accepted; 18.02, 18.03, 18.04, 18.07, 18.08, 18.11 in Storybook review.');
+console.log('Cross-cutting patterns V1 OK: 18.01, 18.02, 18.03, 18.04, 18.07, 18.08, 18.10 and 18.11 accepted; planned 18.05, 18.06 and 18.09 remain hidden.');

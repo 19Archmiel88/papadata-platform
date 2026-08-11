@@ -5,13 +5,27 @@ import type {
 import type {
   ReactNode,
 } from 'react';
+import {
+  expect,
+  userEvent,
+  within,
+} from 'storybook/test';
 
+import type {
+  DataColumn,
+  DataRow,
+} from '../../../../../../contracts/component-shared';
+import {
+  ChartFrame,
+  DataTable,
+  InlineNotice,
+  StatusBadge,
+  Toast,
+  TrendChart,
+} from '../../../design-system/components';
 import type {
   PapaDataRuntimeLocale,
 } from '../../../design-system/foundations';
-import {
-  Icon,
-} from '../../../design-system/icons';
 import '../../../storybook-next/presentation/story-presentation.css';
 import {
   StoryPresentationMeta,
@@ -25,12 +39,113 @@ const meta = {
   title: '18 Wzorce interfejsu/DataDecisionWorkspace',
   parameters: {
     layout: 'fullscreen',
+    a11y: {
+      test: 'error',
+    },
   },
 } satisfies Meta;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
+
+const decisionTrendData = [
+  {
+    actual: 3.8,
+    label: 'T-6',
+    plan: 4.1,
+    previousPeriod: 4.4,
+  },
+  {
+    actual: 3.7,
+    label: 'T-5',
+    plan: 4.1,
+    previousPeriod: 4.2,
+  },
+  {
+    actual: 3.5,
+    label: 'T-4',
+    plan: 4.0,
+    previousPeriod: 4.0,
+  },
+  {
+    actual: 3.2,
+    label: 'T-3',
+    plan: 4.0,
+    previousPeriod: 3.9,
+  },
+  {
+    actual: 3.1,
+    label: 'T-2',
+    plan: 3.9,
+    previousPeriod: 3.7,
+  },
+  {
+    actual: 2.9,
+    label: 'T-1',
+    plan: 3.9,
+    previousPeriod: 3.5,
+  },
+] as const;
+
+const decisionTableColumns: readonly DataColumn[] = [
+  {
+    id: 'channel',
+    label: 'Kanał',
+    width: 180,
+  },
+  {
+    align: 'right',
+    id: 'revenue',
+    label: 'Przychód',
+    width: 150,
+  },
+  {
+    align: 'right',
+    id: 'cost',
+    label: 'Koszt',
+    width: 130,
+  },
+  {
+    align: 'right',
+    id: 'roas',
+    label: 'ROAS',
+    width: 128,
+  },
+  {
+    align: 'center',
+    id: 'decision',
+    label: 'Sygnał',
+    width: 190,
+  },
+];
+
+const decisionTableRows: readonly DataRow[] = [
+  {
+    channel: 'Meta Ads',
+    cost: '386 420 zł',
+    decision: 'Zmniejszyć budżet',
+    id: 'meta-ads',
+    revenue: '1 248 590 zł',
+    roas: '3,2',
+  },
+  {
+    channel: 'Google Ads',
+    cost: '214 800 zł',
+    decision: 'Utrzymać',
+    id: 'google-ads',
+    revenue: '982 100 zł',
+    roas: '4,6',
+  },
+  {
+    channel: 'Commerce',
+    cost: '126 900 zł',
+    decision: 'Sprawdzić marżę',
+    id: 'commerce',
+    revenue: '742 100 zł',
+    roas: '5,8',
+  },
+];
 
 type LocalizedCopy = {
   readonly pl: string;
@@ -73,14 +188,16 @@ function PatternPage({
         <StoryPresentationMeta
           ariaLabel={copy({ pl: 'Parametry wzorca', en: 'Pattern parameters' })}
           items={[
-            { label: <Localized pl="Owner" en="Owner" />, value: '18' },
+            { label: <Localized pl="Właściciel wzorca" en="Owner" />, value: '18' },
+            { label: <Localized pl="Status" en="Status" />, value: <Localized pl="W przeglądzie" en="In review" /> },
             { label: <Localized pl="Źródło zasad" en="Rule source" />, value: '00' },
-            { label: <Localized pl="Tryb" en="Mode" />, value: <Localized pl="Decision workspace" en="Decision workspace" /> },
+            { label: <Localized pl="Tryb" en="Mode" />, value: <Localized pl="Przestrzeń decyzji" en="Decision workspace" /> },
           ]}
         />
       }
       sectionCode="18"
       sectionLabel={<Localized pl="Wzorce interfejsu" en="Interface patterns" />}
+      storyId="18.11"
       summary={summary}
       title={title}
     >
@@ -91,150 +208,178 @@ function PatternPage({
 
 function DecisionWorkspaceCanvas() {
   return (
-    <div className="pd-f0-depth-stage pd-x18-decision-workspace">
-      <div
-        className="pd-f0-depth-stage__canvas"
-        role="region"
-        aria-label={copy({
-          pl: 'Wzorzec decyzji: dane po lewej, asystent po prawej, rekomendacja jako warstwa pomocnicza i toast jako efekt akcji',
-          en: 'Decision pattern: data on the left, assistant on the right, recommendation as a supporting layer and toast as an action result',
+    <div
+      aria-label={copy({
+        pl: 'Wzorzec decyzji danych z ChartFrame, DataTable, rekomendacją, sidecarem asystenta i toastem',
+        en: 'Data decision pattern with ChartFrame, DataTable, recommendation, assistant sidecar and toast',
+      })}
+      className="pd-x18-decision-workspace"
+      role="region"
+    >
+      <InlineNotice
+        message={copy({
+          pl: '18.11 składa zaakceptowane właścicielstwa: 00 dla powierzchni i komunikatów, 15 dla wykresu oraz 18.04 dla workflow tabeli.',
+          en: '18.11 composes accepted owners: 00 for surfaces and messages, 15 for the chart and 18.04 for the table workflow.',
         })}
-      >
-        <div className="pd-f0-depth-stage__base" data-shadow="none">
-          <div className="pd-f0-depth-stage__base-heading">
-            <div>
-              <span><Localized pl="Canvas aplikacji" en="Application canvas" /></span>
-              <strong><Localized pl="Przychód, kampanie i decyzje" en="Revenue, campaigns and decisions" /></strong>
+        title={copy({
+          pl: 'Granica odpowiedzialności',
+          en: 'Ownership boundary',
+        })}
+        tone="info"
+      />
+
+      <div className="pd-x18-decision-workspace__stage">
+        <ChartFrame
+          alternativeTable={(
+            <DataTable
+              ariaLabel={copy({
+                pl: 'Tabela kampanii w przestrzeni decyzji',
+                en: 'Campaign table in the decision workspace',
+              })}
+              className="pd-x18-decision-workspace__data-table"
+              columns={decisionTableColumns}
+              emptyMessage={copy({
+                pl: 'Brak kampanii w decyzji.',
+                en: 'No campaigns in the decision.',
+              })}
+              loading={false}
+              minWidth="46rem"
+              rowCount={decisionTableRows.length}
+              rowHeaderColumnId="channel"
+              rows={decisionTableRows}
+              selectedRowIds={[]}
+              sort={null}
+              statusColumn={{
+                columnId: 'decision',
+                label: copy({
+                  pl: 'Sygnał decyzji',
+                  en: 'Decision signal',
+                }),
+                mapTone: {
+                  'Sprawdzić marżę': 'warning',
+                  'Utrzymać': 'neutral',
+                  'Zmniejszyć budżet': 'danger',
+                },
+              }}
+              summary={copy({
+                pl: 'Tabela kampanii konsumuje DataTable; pełny workflow tabeli należy do 18.04.',
+                en: 'Campaign table consumes DataTable; the full table workflow belongs to 18.04.',
+              })}
+            />
+          )}
+          alternativeTableLabel={copy({
+            pl: 'Tabela kampanii',
+            en: 'Campaign table',
+          })}
+          annotation={(
+            <div className="pd-x18-decision-workspace__recommendation">
+              <StatusBadge
+                status={copy({
+                  pl: 'Ocena',
+                  en: 'Assessment',
+                })}
+                text={copy({
+                  pl: 'Do decyzji',
+                  en: 'Decision needed',
+                })}
+                tone="warning"
+              />
+              <strong>
+                <Localized
+                  en="Shift budget from costly prospecting campaigns."
+                  pl="Przenieś budżet z kosztownych kampanii prospectingowych."
+                />
+              </strong>
+              <p>
+                <Localized
+                  en="The recommendation supports the decision without replacing the chart, table or source evidence."
+                  pl="Rekomendacja wspiera decyzję, ale nie zastępuje wykresu, tabeli ani dowodów źródłowych."
+                />
+              </p>
             </div>
-            <span><Localized pl="Aktualizacja 2 min temu" en="Updated 2 min ago" /></span>
-          </div>
+          )}
+          businessQuestion={copy({
+            pl: 'Który budżet wymaga decyzji po spadku efektywności?',
+            en: 'Which budget needs a decision after the efficiency drop?',
+          })}
+          description={copy({
+            pl: 'ChartFrame utrzymuje pytanie, status, źródła i wniosek. TrendChart odpowiada za wykres, a DataTable za alternatywę tabelaryczną.',
+            en: 'ChartFrame keeps the question, status, sources and finding. TrendChart owns the chart and DataTable owns the table alternative.',
+          })}
+          freshnessLabel={copy({
+            pl: 'Aktualizacja 2 min temu',
+            en: 'Updated 2 min ago',
+          })}
+          rangeLabel={copy({
+            pl: 'Ostatnie 30 dni',
+            en: 'Last 30 days',
+          })}
+          sourceLabel="Meta Ads + GA4 + Commerce"
+          status="ready"
+          statusLabel={copy({
+            pl: 'Dane aktualne',
+            en: 'Data current',
+          })}
+          summary={(
+            <p>
+              <Localized
+                en="ROAS is dropping faster than revenue in prospecting campaigns, so the next step is a budget decision with source evidence still visible."
+                pl="ROAS spada szybciej niż przychód w kampaniach prospectingowych, więc następny krok to decyzja budżetowa z widocznymi dowodami źródłowymi."
+              />
+            </p>
+          )}
+          title={copy({
+            pl: 'Efektywność kampanii i decyzja budżetowa',
+            en: 'Campaign efficiency and budget decision',
+          })}
+          visualization={(
+            <TrendChart
+              ariaLabel={copy({
+                pl: 'Trend decyzyjny ROAS z planem',
+                en: 'Decision ROAS trend with plan',
+              })}
+              data={decisionTrendData}
+              labels={{
+                actual: copy({
+                  pl: 'Wynik ROAS',
+                  en: 'ROAS result',
+                }),
+                plan: copy({
+                  pl: 'Plan operacyjny',
+                  en: 'Operating plan',
+                }),
+                previousPeriod: copy({
+                  pl: 'Poprzedni okres',
+                  en: 'Previous period',
+                }),
+              }}
+              unit="ROAS"
+              valueFormatter={(value) =>
+                new Intl.NumberFormat('pl-PL', {
+                  maximumFractionDigits: 1,
+                  minimumFractionDigits: 1,
+                }).format(value)}
+            />
+          )}
+          visualizationLabel={copy({
+            pl: 'Wykres trendu ROAS',
+            en: 'ROAS trend chart',
+          })}
+        />
 
-          <div className="pd-f0-depth-stage__metrics">
-            <div>
-              <span><Localized pl="Przychód" en="Revenue" /></span>
-              <strong>1 248 590 zł</strong>
-            </div>
-            <div>
-              <span><Localized pl="Marża" en="Margin" /></span>
-              <strong>24,8%</strong>
-            </div>
-            <div>
-              <span><Localized pl="Alerty" en="Alerts" /></span>
-              <strong>3</strong>
-            </div>
-          </div>
-
-          <div className="pd-f0-depth-stage__workspace">
-            <section className="pd-f0-depth-stage__data-surface" data-shadow="none">
-              <header className="pd-f0-depth-stage__data-header">
-                <div>
-                  <span><Localized pl="Powierzchnia danych" en="Data surface" /></span>
-                  <strong><Localized pl="Trend sprzedaży i kosztów" en="Sales and cost trend" /></strong>
-                </div>
-
-                <dl>
-                  <div>
-                    <dt><Localized pl="Wykres" en="Chart" /></dt>
-                    <dd>15.01 / ChartFrame</dd>
-                  </div>
-                  <div>
-                    <dt><Localized pl="Tabela" en="Table" /></dt>
-                    <dd>DataTable runtime / 18.04 workflow</dd>
-                  </div>
-                </dl>
-              </header>
-
-              <div className="pd-f0-depth-stage__data-toolbar">
-                <span><Localized pl="30 dni" en="30 days" /></span>
-                <span>Meta Ads · GA4 · Commerce</span>
-                <span><Localized pl="Dane gotowe" en="Data ready" /></span>
-              </div>
-
-              <div className="pd-f0-depth-stage__data-body">
-                <div className="pd-f0-depth-stage__chart" aria-hidden="true">
-                  <span className="pd-f0-depth-stage__chart-grid" />
-                  <span className="pd-f0-depth-stage__chart-line" data-line="revenue" />
-                  <span className="pd-f0-depth-stage__chart-line" data-line="cost" />
-                  <span className="pd-f0-depth-stage__chart-point" data-point="one" />
-                  <span className="pd-f0-depth-stage__chart-point" data-point="two" />
-                  <span className="pd-f0-depth-stage__chart-point" data-point="three" />
-                </div>
-
-                <div className="pd-f0-depth-stage__table" aria-hidden="true">
-                  <div className="pd-f0-depth-stage__table-row" data-head="true">
-                    <span><Localized pl="Kanał" en="Channel" /></span>
-                    <span><Localized pl="Przychód" en="Revenue" /></span>
-                    <span>ROAS</span>
-                  </div>
-                  <div className="pd-f0-depth-stage__table-row">
-                    <span>Commerce</span>
-                    <span>742 100 zł</span>
-                    <span>5,8</span>
-                  </div>
-                  <div className="pd-f0-depth-stage__table-row">
-                    <span>Meta Ads</span>
-                    <span>386 420 zł</span>
-                    <span>4,1</span>
-                  </div>
-                  <div className="pd-f0-depth-stage__table-row">
-                    <span>GA4</span>
-                    <span>120 070 zł</span>
-                    <span>3,7</span>
-                  </div>
-                </div>
-              </div>
-
-              <footer className="pd-f0-depth-stage__data-status">
-                <span><Localized pl="Status danych" en="Data status" /></span>
-                <strong><Localized pl="Gotowe do analizy bez dodatkowych ramek" en="Ready for analysis without extra frames" /></strong>
-              </footer>
-            </section>
-          </div>
-        </div>
-
-        <div className="pd-f0-depth-stage__raised" data-shadow="raised">
-          <span><Localized pl="Panel rekomendacji" en="Recommendation panel" /></span>
-          <strong><Localized pl="Przenieś budżet z kosztownych kampanii" en="Shift budget from costly campaigns" /></strong>
-          <p><Localized pl="Warstwa pomaga w decyzji, ale nie odcina użytkownika od wykresu ani tabeli." en="The layer supports the decision without cutting the user off from the chart or table." /></p>
-        </div>
-
-        <aside className="pd-f0-depth-stage__assistant" data-shadow="raised">
-          <header className="pd-f0-depth-stage__assistant-header">
-            <Icon decorative name="assistant" size={16} />
-            <div>
-              <span><Localized pl="Papa Asystent" en="Papa Assistant" /></span>
-              <strong><Localized pl="Sidecar bez scrimu" en="Sidecar without scrim" /></strong>
-            </div>
-          </header>
-
-          <div className="pd-f0-depth-stage__assistant-context">
-            <span><Localized pl="Kontekst" en="Context" /></span>
-            <strong>15.01 ChartFrame · DataTable runtime · 18.04</strong>
-          </div>
-
-          <div className="pd-f0-depth-stage__assistant-thread">
-            <section>
-              <span><Localized pl="Wniosek" en="Finding" /></span>
-              <p><Localized pl="ROAS spada szybciej niż przychód w kampaniach prospectingowych." en="ROAS is dropping faster than revenue in prospecting campaigns." /></p>
-            </section>
-            <section>
-              <span><Localized pl="Następny krok" en="Next step" /></span>
-              <p><Localized pl="Porównaj segmenty kosztu z ostatnich 7 dni przed zmianą budżetu." en="Compare cost segments from the last 7 days before changing budget." /></p>
-            </section>
-          </div>
-
-          <div className="pd-f0-depth-stage__assistant-composer">
-            <span><Localized pl="Zapytaj o widoczny zakres danych" en="Ask about the visible data range" /></span>
-            <strong><Localized pl="Wyślij" en="Send" /></strong>
-          </div>
-        </aside>
-
-        <div className="pd-f0-depth-stage__toast" data-shadow="floating">
-          <span className="pd-f0-depth-stage__toast-marker" />
-          <div>
-            <strong><Localized pl="Widok zapisany" en="View saved" /></strong>
-            <p><Localized pl="Toast jest operacyjny i nie zmienia układu." en="The toast is operational and does not change the layout." /></p>
-          </div>
+        <div className="pd-x18-decision-workspace__toast">
+          <Toast
+            message={copy({
+              pl: 'Toast jest operacyjny i nie zmienia układu przestrzeni decyzji.',
+              en: 'The toast is operational and does not change the decision workspace layout.',
+            })}
+            title={copy({
+              pl: 'Widok zapisany',
+              en: 'View saved',
+            })}
+            toastId="decision-workspace-saved"
+            tone="success"
+          />
         </div>
       </div>
     </div>
@@ -257,4 +402,53 @@ export const DataDecisionWorkspaceStory: Story = {
       </StoryPresentationSection>
     </PatternPage>
   ),
+  play: async ({
+    canvasElement,
+  }) => {
+    const canvas = within(canvasElement);
+
+    await expect(
+      canvas.getByRole('heading', {
+        name: 'DataDecisionWorkspace',
+      }),
+    ).toBeInTheDocument();
+
+    await expect(
+      canvas.getByText('W przeglądzie'),
+    ).toBeInTheDocument();
+
+    await expect(
+      canvas.getByRole('region', {
+        name: /Wzorzec decyzji danych/,
+      }),
+    ).toBeInTheDocument();
+
+    await expect(
+      canvas.getByRole('group', {
+        name: 'Trend decyzyjny ROAS z planem',
+      }),
+    ).toBeInTheDocument();
+
+    await expect(
+      canvas.getByText('Panel rekomendacji'),
+    ).toBeInTheDocument();
+
+    await expect(
+      canvas.getByText('Papa Asystent'),
+    ).toBeInTheDocument();
+
+    await expect(
+      canvas.getByText('Widok zapisany'),
+    ).toBeInTheDocument();
+
+    await userEvent.click(
+      canvas.getByText('Tabela kampanii'),
+    );
+
+    await expect(
+      canvas.getByRole('table', {
+        name: 'Tabela kampanii w przestrzeni decyzji',
+      }),
+    ).toBeInTheDocument();
+  },
 };

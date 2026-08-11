@@ -3,8 +3,8 @@ version: 1.0
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
-status: review
-updated_at: 2026-08-09T12:00:00+02:00
+status: accepted
+updated_at: 2026-08-11T12:00:00+02:00
 ---
 
 # Ładowanie danych i operacje w tle
@@ -18,19 +18,19 @@ updated_at: 2026-08-09T12:00:00+02:00
 | Nazwa techniczna | ladowanie-danych-i-operacje-w-tle |
 | Typ dokumentu | wzorzec przekrojowy |
 | Wersja | 1.0 |
-| Status kontraktu | review wzorca Storybook; decyzja wizualna oczekuje na akceptację właścicielską |
+| Status kontraktu | accepted wzorca Storybook; decyzja wizualna zaakceptowana właścicielsko |
 | Priorytet | P1 |
 | Właściciel | Design System |
 | Moduł | Wzorce interfejsu — 18 |
 
-| Status implementacji | WDROŻONE W STORYBOOK — REVIEW |
-| Akceptacja właścicielska | `false` — wymaga osobnej akceptacji właściciela produktu |
+| Status implementacji | WDROŻONE W STORYBOOK — ACCEPTED |
+| Akceptacja właścicielska | `true` — zaakceptowane właścicielsko dla zakresu Storybook/pattern-only |
 | Status Storybooka | `18 Wzorce interfejsu/Ładowanie danych i operacje w tle` |
 | Status testów | fixture + play/audit dopasowane do realnej implementacji |
 
 ## Cel i realny zakres
 
-Wzorzec pokazuje loading, queued, running, partial completion, cancelled i retry przez Skeleton, Spinner, Button loading, BackgroundOperationItem i ProgressIndicator.
+Wzorzec pokazuje ładowanie, kolejkę, operację w toku, częściowe zakończenie, anulowanie i ponowienie przez Skeleton, Spinner, Button loading, BackgroundOperationItem i ProgressIndicator.
 
 Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.* i nie zmienia `runtime-component-api.csv` ani `analytics-system-v1.json`.
 
@@ -41,7 +41,7 @@ ladowanie-danych-i-operacje-w-tle
 ├── nagłówek semantyczny
 ├── treść wzorca
 ├── status lub ograniczenie
-├── akcja albo recovery
+├── akcja albo ścieżka naprawy
 └── dowód Storybook / fixture / audyt
 ```
 
@@ -61,10 +61,10 @@ Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook maj�
 
 | Lp. | Wymaganie | Kontrakt | Dowód odbioru |
 | --- | --- | --- | --- |
-| 1 | Loading | Skeleton stabilizuje region, a Spinner komunikuje rzeczywisty role status. | Storybook + fixture |
-| 2 | Queued / running | Operacje w tle pokazują status i postęp bez blokowania strony. | Storybook + fixture |
-| 3 | Partial / cancelled | Częściowe zakończenie i anulowanie są odróżnione od błędu. | Storybook + fixture |
-| 4 | Retry | Retry występuje tylko jako realna akcja przy operacji failed. | Storybook + fixture |
+| 1 | Ładowanie | Skeleton stabilizuje region, a Spinner komunikuje rzeczywisty role status. | Storybook + fixture |
+| 2 | Kolejka / operacja w toku | Operacje w tle pokazują status i postęp bez blokowania strony. | Storybook + fixture |
+| 3 | Częściowe zakończenie / anulowanie | Częściowe zakończenie i anulowanie są odróżnione od błędu. | Storybook + fixture |
+| 4 | Ponowienie | Ponowienie występuje tylko jako realna akcja przy operacji failed. | Storybook + fixture |
 
 ## Kontrakt UI
 
@@ -77,12 +77,12 @@ Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook maj�
 
 - Title: `18 Wzorce interfejsu/Ładowanie danych i operacje w tle`.
 - File: `apps/web/src/storybook-next/stories/18-cross-cutting-patterns/LoadingOperations.stories.tsx`.
-- Status: implemented / visible / review.
-- Accepted: false, do czasu osobnej akceptacji wizualnej.
+- Status: implemented / visible / accepted.
+- Accepted: true dla zaakceptowanego zakresu Storybook/pattern-only.
 
 ## Testy i kryteria akceptacji
 
-1. Play test sprawdza Spinner, progressbar i realną akcję Ponów import.
+1. Play test sprawdza Spinner, pasek postępu, realne anulowanie i realną akcję Ponów import.
 2. Nie ma deklaracji fikcyjnego live region poza komponentami, które same go renderują.
 3. Lokalny CSS nie override'uje `.pd-f0-*`, `.pd-button`, `.pd-inline-action`, `.pd-icon-button` ani produkcyjnych klas komponentów.
 4. Mobile 390 i zoom 200% są objęte audytem Storybook, jeżeli fixture deklaruje brak poziomego scrolla.

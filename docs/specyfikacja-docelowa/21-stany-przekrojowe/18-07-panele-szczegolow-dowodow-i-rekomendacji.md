@@ -3,8 +3,8 @@ version: 1.0
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
-status: review
-updated_at: 2026-08-09T12:00:00+02:00
+status: accepted
+updated_at: 2026-08-11T12:00:00+02:00
 ---
 
 # Panele szczegółów, dowodów i rekomendacji
@@ -18,13 +18,13 @@ updated_at: 2026-08-09T12:00:00+02:00
 | Nazwa techniczna | panele-szczegolow-dowodow-i-rekomendacji |
 | Typ dokumentu | wzorzec przekrojowy |
 | Wersja | 1.0 |
-| Status kontraktu | review wzorca Storybook; decyzja wizualna oczekuje na akceptację właścicielską |
+| Status kontraktu | accepted wzorca Storybook; decyzja wizualna zaakceptowana właścicielsko |
 | Priorytet | P1 |
 | Właściciel | Design System |
 | Moduł | Wzorce interfejsu — 18 |
 
-| Status implementacji | WDROŻONE W STORYBOOK — REVIEW |
-| Akceptacja właścicielska | `false` — wymaga osobnej akceptacji właściciela produktu |
+| Status implementacji | WDROŻONE W STORYBOOK — ACCEPTED |
+| Akceptacja właścicielska | `true` — zaakceptowane właścicielsko dla zakresu Storybook/pattern-only |
 | Status Storybooka | `18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji` |
 | Status testów | fixture + play/audit dopasowane do realnej implementacji |
 
@@ -50,7 +50,6 @@ panele-szczegolow-dowodow-i-rekomendacji
 - Drawer
 - Tabs
 - DataList
-- InlineNotice
 - StatusBadge
 - Button
 - TextAction
@@ -77,12 +76,12 @@ Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook maj�
 
 - Title: `18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji`.
 - File: `apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DetailEvidenceRecommendationPanels.stories.tsx`.
-- Status: implemented / visible / review.
-- Accepted: false, do czasu osobnej akceptacji wizualnej.
+- Status: implemented / visible / accepted.
+- Accepted: true dla zaakceptowanego zakresu Storybook/pattern-only.
 
 ## Testy i kryteria akceptacji
 
-1. Play test sprawdza dialog, Tabs, Escape close i focus restoration.
+1. Play test sprawdza akcję kontekstową, dialog, Tabs, Escape close i focus restoration.
 2. Story kończy z otwartym panelem rekomendacji do screenshotu.
 3. Lokalny CSS nie override'uje `.pd-f0-*`, `.pd-button`, `.pd-inline-action`, `.pd-icon-button` ani produkcyjnych klas komponentów.
 4. Mobile 390 i zoom 200% są objęte audytem Storybook, jeżeli fixture deklaruje brak poziomego scrolla.

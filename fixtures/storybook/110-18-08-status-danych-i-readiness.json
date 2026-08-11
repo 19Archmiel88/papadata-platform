@@ -10,9 +10,9 @@
   "states": [
     "ready",
     "syncing",
-    "delayed",
-    "partial",
-    "stale",
+    "operationalDelayed",
+    "operationalPartial",
+    "operationalStale",
     "blocked",
     "unavailable",
     "actionRequired",
@@ -46,8 +46,7 @@
   "a11y": [
     "list-name",
     "status-badge-text",
-    "focus-visible",
     "200-percent-zoom"
   ],
-  "implementationStatus": "implemented-review-cross-cutting-pattern"
+  "implementationStatus": "implemented-accepted-cross-cutting-pattern"
 }

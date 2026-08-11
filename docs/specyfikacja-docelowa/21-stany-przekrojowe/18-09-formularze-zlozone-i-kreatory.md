@@ -4,8 +4,8 @@ author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-2955643C98C1
-status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+status: accepted
+updated_at: 2026-08-12T00:19:42+02:00
 ---
 
 # Formularze złożone i kreatory
@@ -16,86 +16,82 @@ updated_at: 2026-07-30T10:30:00+02:00
 | --- | --- |
 | Identyfikator | 18.09 |
 | Nazwa polska | Formularze złożone i kreatory |
-| Nazwa techniczna | formularze-zozone-i-kreatory |
+| Nazwa techniczna | formularze-zlozone-i-kreatory |
 | Typ dokumentu | wzorzec przekrojowy |
 | Wersja | 1.0 |
-| Status kontraktu | zatwierdzony stan docelowy |
+| Status kontraktu | accepted wzorca Storybook; decyzja wizualna zaakceptowana właścicielsko |
 | Priorytet | P1 |
 | Właściciel | Design System |
-| Moduł | Stany i wzorce przekrojowe — M02/M03 |
+| Moduł | Wzorce interfejsu — 18 |
 
-| Status implementacji | DECYZJA DOCELOWA — WYMAGA IMPLEMENTACJI |
-| Status Storybooka | jawnie wskazany w sekcji Storybook |
-| Status testów | kontrakt testów zdefiniowany; implementacja śledzona w macierzy |
+| Status implementacji | WDROŻONE W STORYBOOK — ACCEPTED |
+| Akceptacja właścicielska | `true` — zaakceptowane właścicielsko dla zakresu Storybook/pattern-only |
+| Status Storybooka | `18 Wzorce interfejsu/Formularze złożone i kreatory` |
+| Status produkcyjny | `not_started` — zakres pattern-only |
+| Status testów | `passing` — fixture + play/audit dopasowane do realnej implementacji |
 
-## Cel i decyzja docelowa
+## Cel i realny zakres
 
-„Formularze złożone i kreatory” jest współdzielonym kontraktem, a nie lokalnym układem jednego ekranu. Wzorzec ma jedną odpowiedzialność, korzysta z fundamentów i komponentów bazowych oraz udostępnia warianty wymagane przez domeny bez kopiowania implementacji.
+Wzorzec pokazuje wieloetapowy formularz złożony z istniejących komponentów: `TextField`, `Select`, `Checkbox`, `Dialog`, `Button` i `InlineNotice`. Story obejmuje sekwencję kroków, walidację pól wymaganych, zapis szkicu, dialog zmian niezapisanych oraz wysłanie konfiguracji.
 
-## Stan obecny
+Zakres jest Storybook/pattern-only. Dokument nie tworzy publicznego komponentu `Wizard`, nie definiuje nowych inputów i nie deklaruje server validation bez kontraktu backendowego.
 
+## Anatomia
+
+```text
+formularze-zlozone-i-kreatory
+├── wskaźnik kroków
+├── pola formularzowe z 00.15
+├── walidacja i status szkicu
+├── Dialog zmian niezapisanych
+└── przegląd i wysłanie
+```
+
+## Komponenty składowe
+
+- TextField
+- Select
+- Checkbox
+- Dialog
+- Button
+- InlineNotice
+
+Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook mają prefiks `pd-x18-*` i służą wyłącznie do układu, separatorów oraz rytmu.
 
 ## Zakres i wymagania
 
 | Lp. | Wymaganie | Kontrakt | Dowód odbioru |
 | --- | --- | --- | --- |
-| 1 | stan domyślny | wymagany wariant lub stan | test Storybook + test interakcji |
+| 1 | Sekwencja kroków | Story przechodzi przez dane podstawowe, warunki i przegląd. | Storybook + play |
+| 2 | Walidacja | Próba przejścia bez wymaganych danych pokazuje summary i komunikaty pól. | Storybook + play |
+| 3 | Zmiany niezapisane | Anulowanie brudnego formularza otwiera realny `Dialog`. | Storybook + play |
+| 4 | Zapis szkicu | Akcja zapisuje stan story bez deklarowania backendu. | Storybook |
+| 5 | Submit processing | `Button.loading` pokazuje wysyłanie i końcowy status. | Storybook + play |
 
-## Anatomia
+## Poza zakresem
 
-```text
-formularze-zozone-i-kreatory
-├── semantic root
-├── header or accessible label
-├── primary content
-├── status / validation region
-├── primary action
-└── optional secondary actions or metadata
-```
+- publiczny komponent `Wizard`;
+- server validation i partial recovery bez kontraktu backendowego;
+- routing resume flow;
+- nowe komponenty inputów.
 
-## Komponenty składowe
+## Kontrakt UI
 
-- PageHeader
-- DataStatusBanner
-- InlineNotice
-- Button
-- TextField
-- Select
-- Checkbox
-- Dialog
-
-Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
-
-## Kontrakt stanu
-
-- Stan kontrolowany jest używany dla route, filtrów, formularza, selection i overlay.
-- Stan asynchroniczny rozróżnia loading, processing, retrying, success, recoverable error i terminal error.
-- Read-only, no-access i plan-restricted są osobnymi stanami, nie odmianą disabled.
-- Zmiana motywu, języka lub viewportu nie resetuje danych ani procesu.
-
-## Interakcje i klawiatura
-
-Tab order odpowiada hierarchii zadania. Enter/Space uruchamiają natywne kontrolki; Escape zamyka najwyższą warstwę; strzałki są używane wyłącznie w komponentach z modelem composite widget. Focus restore jest obowiązkowy po każdej warstwie.
-
-## Responsywność
-
-Wide może używać kolumn lub detail panelu. Compact przechodzi w jedną kolumnę, zachowuje wszystkie funkcje i przenosi akcje drugorzędne do jawnego overflow. Tabele otrzymują scroll lub widok priorytetowych kolumn, a wykresy — tabelę alternatywną.
-
-## Dostępność
-
-Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kontrast, reduced motion, live region dla wyników asynchronicznych, reflow i brak informacji zależnej wyłącznie od koloru.
+- Story używa wyłącznie istniejących pól i kontrolek zgodnych z 00.15.
+- Sekwencja kroków jest kompozycją story, nie nowym publicznym API.
+- Dialog zmian niezapisanych korzysta z runtime `Dialog`.
+- Story nie deklaruje playSteps ani visualAssertions bez pokrycia w runtime, play teście albo audycie.
 
 ## Storybook
 
-- Title: `18 Stany i wzorce przekrojowe/Formularze złożone i kreatory`.
-- Wymagane stories: każdy wiersz wymagań, light/dark, PL/EN, desktop/tablet/mobile, keyboard, error i reduced motion.
-- Status: planowane, chyba że ścieżka została potwierdzona w inwentarzu snapshotu.
+- Title: `18 Wzorce interfejsu/Formularze złożone i kreatory`.
+- File: `apps/web/src/storybook-next/stories/18-cross-cutting-patterns/ComplexFormsWizards.stories.tsx`.
+- Status: implemented / visible / accepted.
+- Accepted: true dla zaakceptowanego zakresu Storybook/pattern-only.
+- Production status: not_started.
 
 ## Testy i kryteria akceptacji
 
-1. Wszystkie wymagania mają story i asercję testową.
-2. Wzorzec nie tworzy duplikatu komponentu bazowego.
-3. Stany błędu i brak dostępu mają recovery albo jednoznaczne zakończenie.
-4. Mobile i zoom 200% nie tracą funkcji.
-5. Klawiatura oraz focus restore przechodzą play test.
-6. Dokument jest linkowany przez co najmniej jeden ekran albo oznaczony jako fundament przyszłego użycia.
+1. Play test sprawdza walidację, uzupełnienie TextField, wybór Select, Checkbox, przejście do przeglądu, Dialog zmian niezapisanych i submit.
+2. Fixture deklaruje tylko PL i kroki realnie pokryte w play/audycie.
+3. Mobile 390 i zoom 200% są objęte audytem Storybook, jeżeli fixture deklaruje brak poziomego scrolla.

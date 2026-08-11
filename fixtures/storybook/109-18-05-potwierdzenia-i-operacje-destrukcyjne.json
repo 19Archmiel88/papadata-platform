@@ -1,14 +1,20 @@
 {
   "fixtureId": "SB-109",
-  "storyTitle": "18 Stany i wzorce przekrojowe/Potwierdzenia i operacje destrukcyjne",
+  "storyTitle": "18 Wzorce interfejsu/Potwierdzenia i operacje destrukcyjne",
   "sourceDocument": "21-stany-przekrojowe/18-05-potwierdzenia-i-operacje-destrukcyjne.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "AlertDialog",
+    "Button",
+    "InlineNotice",
+    "StatusBadge"
+  ],
   "states": [
-    "ready",
-    "loading",
-    "empty",
-    "error"
+    "confirmationClosed",
+    "confirmationOpen",
+    "cancelled",
+    "escapeClosed",
+    "destructiveConfirmed"
   ],
   "viewports": [
     1440,
@@ -20,15 +26,15 @@
     "dark"
   ],
   "localeCases": [
-    "pl",
-    "en-long-copy"
+    "pl"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "open-alertdialog-confirmation",
+    "verify-destructive-impact-copy",
+    "cancel-alertdialog",
+    "verify-alertdialog-escape-close",
+    "verify-alertdialog-focus-restoration",
+    "confirm-destructive-action"
   ],
   "visualAssertions": [
     "1440-light",
@@ -36,15 +42,14 @@
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-error"
+    "alertdialog-destructive-surface",
+    "no-horizontal-page-scroll"
   ],
   "a11y": [
-    "keyboard-only",
-    "focus-visible",
+    "role-alertdialog",
     "accessible-name",
-    "live-region",
+    "focus-visible",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-accepted-cross-cutting-pattern"
 }

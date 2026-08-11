@@ -354,11 +354,11 @@ path,title,words,sha256
 21-stany-przekrojowe/18-02-empty-error-i-no-access.md,Routing feedbacku,472,48302aee7bffb99d31be2d6b6cd9561342d1e04a9664f83d1651d775051bfab4
 21-stany-przekrojowe/18-03-ladowanie-danych-i-operacje-w-tle.md,Ładowanie danych i operacje w tle,393,0626386351ec97fc36af005afa3f328ca18c7cdd62b2a3251c7d408b2e925258
 21-stany-przekrojowe/18-04-tabela-z-filtrami-i-akcjami.md,Tabela z filtrami i akcjami,388,a3539e7a5b59599668a9b31395fd19d60b574389b8cd849692f46de4c4ac2ff5
-21-stany-przekrojowe/18-05-potwierdzenia-i-operacje-destrukcyjne.md,Potwierdzenia i operacje destrukcyjne,414,c33c83f94dbaa7ef317b06518f57147f9b9c4766ba12877d85ea041f9be81f95
-21-stany-przekrojowe/18-06-approval-step-up-i-ochrona-zmian.md,"Approval, step-up i ochrona zmian",418,dd8be6db87fdee5b78c6b10a6cb695b3cf28ec7dd1bdb637d7d6566bf2045568
+21-stany-przekrojowe/18-05-potwierdzenia-i-operacje-destrukcyjne.md,Potwierdzenia i operacje destrukcyjne,398,302ac5883bb4d124083d17fd727bc3d4394703fe4eb7974e2a7e5d07d0472511
+21-stany-przekrojowe/18-06-approval-step-up-i-ochrona-zmian.md,"Approval, step-up i ochrona zmian",424,530c9c2bc692218d64ef1b93cf2483bd4ded4101a0711e0f1a1211e0f1f7519e
 21-stany-przekrojowe/18-07-panele-szczegolow-dowodow-i-rekomendacji.md,"Panele szczegółów, dowodów i rekomendacji",379,18e1e39d535aa9a5eb15821877e7435a9ad506f51ed55dce05a916162c6d6d16
 21-stany-przekrojowe/18-08-status-danych-i-readiness.md,Readiness operacyjny,364,7fae143460b9596117e8e46cdd9b16e733a88a6e75252899e7a873e0ec60a055
-21-stany-przekrojowe/18-09-formularze-zlozone-i-kreatory.md,Formularze złożone i kreatory,416,e0b709374081f6d0b497034fdbb8ac2f9e06659d8bd2c99586298a2ceb35d828
+21-stany-przekrojowe/18-09-formularze-zlozone-i-kreatory.md,Formularze złożone i kreatory,403,19c3b17414dcc9ad48badedfccf80b0b5df878ad6e94d5b246a1dc9927be3ff5
 21-stany-przekrojowe/18-10-macierz-stanow-przekrojowych.md,Macierz stanów przekrojowych,533,9b8126d679ad55fb0b4ef1b3a561833d0808bf6294ca747c295a8f79b250fbfc
 21-stany-przekrojowe/18-11-data-decision-workspace.md,DataDecisionWorkspace,397,f33f00c00c01a37cd4177440548ec0aadf0eeb5af28f7a481037777429abe2b2
 22-mapy-i-indeksy/99-01-mapowanie-specyfikacji-m01-m15.md,Mapowanie specyfikacji M01–M15,135,5270af312fa24692d610ad16a7cc3e7c670b5cc157b576d03747c4e2f3fee903

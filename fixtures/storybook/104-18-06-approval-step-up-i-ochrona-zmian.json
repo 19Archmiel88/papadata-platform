@@ -1,14 +1,20 @@
 {
   "fixtureId": "SB-104",
-  "storyTitle": "18 Stany i wzorce przekrojowe/Approval, step-up i ochrona zmian",
+  "storyTitle": "18 Wzorce interfejsu/Approval, step-up i ochrona zmian",
   "sourceDocument": "21-stany-przekrojowe/18-06-approval-step-up-i-ochrona-zmian.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "ApprovalPanel",
+    "Button",
+    "InlineNotice",
+    "StatusBadge"
+  ],
   "states": [
-    "ready",
-    "loading",
-    "empty",
-    "error"
+    "approvalPending",
+    "approvalApproved",
+    "approvalRejected",
+    "actionBlockedUntilApproval",
+    "approvalExpiryVisible"
   ],
   "viewports": [
     1440,
@@ -20,15 +26,14 @@
     "dark"
   ],
   "localeCases": [
-    "pl",
-    "en-long-copy"
+    "pl"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "exercise-component-interaction",
-    "verify-focus-restoration",
-    "verify-live-region",
-    "verify-keyboard-only"
+    "verify-pending-blocked-action",
+    "switch-to-approved-approval",
+    "execute-protected-action-after-approval",
+    "switch-to-rejected-approval",
+    "verify-rejected-blocks-action"
   ],
   "visualAssertions": [
     "1440-light",
@@ -36,15 +41,14 @@
     "768-reflow",
     "390-mobile",
     "200-percent-zoom",
-    "reduced-motion",
-    "state-error"
+    "approval-panel-statuses",
+    "no-horizontal-page-scroll"
   ],
   "a11y": [
-    "keyboard-only",
+    "approval-region-name",
+    "button-disabled-state",
     "focus-visible",
-    "accessible-name",
-    "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-accepted-cross-cutting-pattern"
 }

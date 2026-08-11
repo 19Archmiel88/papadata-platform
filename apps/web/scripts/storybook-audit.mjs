@@ -54,10 +54,19 @@ const crossCuttingPatternTargets = [
     title: '18 Wzorce interfejsu/Tabela z filtrami i akcjami',
   },
   {
+    title: '18 Wzorce interfejsu/Potwierdzenia i operacje destrukcyjne',
+  },
+  {
+    title: '18 Wzorce interfejsu/Approval, step-up i ochrona zmian',
+  },
+  {
     title: '18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji',
   },
   {
     title: '18 Wzorce interfejsu/Readiness operacyjny',
+  },
+  {
+    title: '18 Wzorce interfejsu/Formularze złożone i kreatory',
   },
   {
     title: '18 Wzorce interfejsu/Macierz stanów przekrojowych',

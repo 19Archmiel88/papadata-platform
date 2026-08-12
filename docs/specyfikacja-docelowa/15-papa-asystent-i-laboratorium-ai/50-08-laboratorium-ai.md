@@ -7,6 +7,7 @@ status: approved-target
 document_type: runtime-screen
 screen_id: 50.08
 runtime_surface: yes
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 # Laboratorium AI
 

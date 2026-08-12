@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-D841F3044B90
 status: approved-target
 updated_at: 2026-08-06T00:00:00+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Tło Auth
@@ -27,9 +28,9 @@ updated_at: 2026-08-06T00:00:00+02:00
 | Właściciel | Design System Lead |
 | Moduł | M02 — Design System |
 
-| Status implementacji | PROTOTYP STORYBOOK — REVIEW |
-| Status Storybooka | 05.01 wdrożone jako lokalna kompozycja desktop light/dark z formularzem osadzonym bezpośrednio na canvasie, jednym pełnym wariantem logowania oraz kompaktowymi próbkami stanów rejestracji, MFA, resetu i zaproszenia; historia pozostaje w review |
-| Status testów | Dedykowane testy interaction/play i utrwalony test axe: `not_started`; jednorazowa kontrola runtime/axe oraz walidacje techniczne są wymagane przed akceptacją wizualną i nie zmieniają `testStatus` |
+| Status implementacji | PROTOTYP STORYBOOK — ACCEPTED DECISION RECORD |
+| Status Storybooka | accepted decision record; docelowy owner produkcyjny: 25 Access/Auth patterns |
+| Status testów | walidacje statyczne i kontraktowe: passing; dokument nie deklaruje produkcyjnego AuthShell ani odbioru responsive |
 
 ## Decyzja docelowa
 
@@ -37,7 +38,7 @@ Spokojny publiczny canvas z czytelną kolumną formularza osadzoną bezpośredni
 
 ## Stan prototypu Storybook 05.01
 
-Prototyp Storybooka istnieje i pozostaje w review. Bieżący zakres 05.01 porządkuje kompozycję desktopową, reprezentatywne stany formularzy, rozwiązanie właściwe, antyprzykład oraz granice review. Jest to lokalna demonstracja Storybooka, nie produkcyjny `AuthShell`.
+Prototyp Storybooka jest zaakceptowanym decision recordem. Zakres 05.01 porządkuje kompozycję desktopową, reprezentatywne stany formularzy, rozwiązanie właściwe, antyprzykład oraz granice handoffu. Jest to lokalna demonstracja Storybooka, nie produkcyjny `AuthShell`.
 
 Wdrożony układ porządkuje warianty wymagane przez katalog:
 
@@ -47,7 +48,7 @@ Wdrożony układ porządkuje warianty wymagane przez katalog:
 - reset hasła `auth-18/20` pokazuje reprezentatywny stan `loading`: opisane pole e-mail i kontrolkę przetwarzania;
 - zaproszenie `auth-15` pokazuje reprezentatywny stan `blocked`: komunikat, adres odbiorcy i zablokowaną decyzję wejścia;
 - osobny dowód globalny pokazuje `serviceUnavailable`/global error bez lokalnego retry;
-- mobile i tablet pozostają odroczone oraz poza bieżącym desktopowym review;
+- mobile i tablet pozostają odroczone oraz poza bieżącym desktopowym decision record;
 - sekcja decyzji pokazuje rozwiązanie właściwe zgodne z Fundamentami oraz antyprzykład z konkretnymi naruszeniami.
 
 Zachowania demonstracyjne są deterministyczne i lokalne:
@@ -58,7 +59,7 @@ Zachowania demonstracyjne są deterministyczne i lokalne:
 - w stanach `rateLimited`, `loading` i `blocked` pojedyncza kontrolka związana ze stanem ma widoczny powód disabled; `serviceUnavailable` jest nieinteraktywnym dowodem bez fikcyjnej akcji retry;
 - mobile i tablet są przedstawione wyłącznie jako zwięzła informacja o odroczonym zakresie, bez makiety udającej zaakceptowany projekt responsive.
 
-Prototyp nie jest produkcyjnym `AuthShell`, nie wdraża produkcyjnego Auth FSM, nie komunikuje się z API i nie zmienia produkcyjnych ekranów Auth. Nie zmienia statusu historii na accepted, nie oznacza produkcyjnej akceptacji i nie kończy formalnego odbioru responsive. W tej zmianie nie zmieniono Fundamentów, globalnych tokenów, manifestów ani historycznych hashy.
+Prototyp nie jest produkcyjnym `AuthShell`, nie wdraża produkcyjnego Auth FSM, nie komunikuje się z API i nie zmienia produkcyjnych ekranów Auth. Status `accepted decision record` oznacza zamknięcie decyzji laboratorium, a nie produkcyjną akceptację Auth ani responsive. W tej zmianie nie zmieniono Fundamentów, globalnych tokenów, manifestów ani historycznych hashy.
 
 ## Rozwiązanie właściwe
 
@@ -95,7 +96,7 @@ Antyprzykład nie jest interaktywny i nie zawiera pozornie aktywnych kontrolek.
 
 ## Granice zakresu 05.01
 
-- **Aktywne review**: desktop light/dark, reprezentatywne stany formularzy i porównanie decyzji.
+- **Accepted decision record**: desktop light/dark, reprezentatywne stany formularzy i porównanie decyzji.
 - **Odroczone**: mobile i tablet pozostają wymaganiem katalogu, ale bez formalnego odbioru w 05.01.
 - **Mock lokalny**: formularze i komunikaty demonstrują zachowania Storybooka, nie produkcyjny `AuthShell`.
 - **Poza zakresem**: pełny Auth FSM, backend, API, produkcyjne ekrany Auth i produkcyjna akceptacja.
@@ -124,7 +125,7 @@ Surface
 - centralna oś sekcji ma zachować wspólny rytm dla formularzy, podglądów light/dark oraz decyzji; maksymalna szerokość nie może powodować pustej, jednostronnej przestrzeni canvasu
 - podglądy light/dark i powierzchnie decyzyjne nie używają ciężkiego cienia; separację budują hairline, różnica tła i rytm
 - powtarzalne metadane operacji i stanu są widoczne w wariancie głównym; w wariantach porównawczych tę rolę pełnią identyfikator powierzchni i status w nagłówku, a pełne formularze są zastąpione reprezentatywnymi próbkami
-- mobile i tablet są wymaganiami docelowymi, ale pozostają odroczone w bieżącym review
+- mobile i tablet są wymaganiami docelowymi, ale pozostają odroczone w bieżącym decision record
 - widoczne kontrolki muszą mieć lokalne działanie demonstracyjne, widoczny powód disabled albo zostać zastąpione nieinteraktywną prezentacją
 
 ## Warianty wymagane przez katalog
@@ -136,7 +137,7 @@ Surface
 - tło zaproszenia
 - wariant light
 - wariant dark
-- wariant mobile — odroczony poza bieżącym review 05.01.
+- wariant mobile — odroczony poza zaakceptowanym decision record 05.01.
 
 ## Tokeny
 
@@ -161,12 +162,12 @@ W Storybook 05.01 formularze używają istniejących komponentów `TextField`, `
 - hasło logowania używa `autocomplete="current-password"`, a nowe hasła używają `autocomplete="new-password"`;
 - MFA używa `VerificationCodeInput` z `inputMode="numeric"` i `autocomplete="one-time-code"`;
 - focus pozostaje widoczny na komponentach DS, a kolejność klawiaturowa wynika z kolejności treści formularza;
-- układ nie wymaga stałej wysokości, przy zoomie 200% zachowuje pełną treść, a przy reflow 400% przechodzi do jednej kolumny bez poziomego przepełnienia;
+- układ nie wymaga stałej wysokości, a kontrole viewportu/zoomu służą wyłącznie potwierdzeniu braku poziomego przepełnienia;
 - etykiety przycisków widoczności hasła oraz komunikaty MFA muszą być lokalizowane w PL i EN.
 
 ## Storybook i odbiór
 
-Wymagane docelowo: light, dark, desktop, tablet, mobile, zoom 200%, reflow 400%, high content density, empty/error oraz porównanie z antyprzykładem. W aktywnym Stage 02 tablet i mobile pozostają odroczone, natomiast reflow wąskiego viewportu jest kontrolą dostępności historii, a nie projektem produkcyjnego mobile. Kryterium odbioru stanowi brak utraty funkcji, brak poziomego przewijania i brak dekoracyjnych wrapperów bez odpowiedzialności.
+Wymagane docelowo: light, dark, desktop, tablet, mobile, kontrola wąskiego viewportu, high content density, empty/error oraz porównanie z antyprzykładem. W aktywnym Stage 02 tablet i mobile pozostają odroczone, natomiast wąski viewport jest kontrolą układu historii, a nie projektem produkcyjnego mobile. Kryterium odbioru stanowi brak utraty funkcji, brak poziomego przewijania i brak dekoracyjnych wrapperów bez odpowiedzialności.
 
 W stanie 05.01 odbiór dotyczy desktop light/dark, reprezentatywnych stanów formularzy, lokalnych zachowań demonstracyjnych, dostępności pól, braku martwych kontrolek oraz porównania rozwiązania właściwego z opisanym antyprzykładem. Tablet i mobile pozostają odroczone jako formalny odbiór responsive. Pełna obsługa Auth FSM, backend, produkcyjny `AuthShell` i produkcyjne ekrany Auth pozostają poza tym zadaniem.
 
@@ -180,13 +181,12 @@ Zakres testów 05.01:
 - kontrola klawiatury;
 - kontrola focus;
 - kontrola konsoli;
-- kontrola zoom 200%;
-- kontrola reflow 400% lub równoważnego viewportu 320–360 CSS px;
+- kontrola wąskiego viewportu 320–360 CSS px;
 - kontrola light/dark;
 - kontrola accepted/rejected light/dark;
 - screenshot pełnej historii light/dark oraz zbliżeń accepted/rejected.
 
-Stan walidacji 05.01 pozostaje rozdzielony: historia ma status `review`, a dedykowane testy interaction/play oraz utrwalony test axe mają status `not_started`. Jednorazowe uruchomienie axe podczas kontroli runtime nie jest równoznaczne z dodaniem testu do repozytorium i nie zmienia `testStatus`. Przed akceptacją należy ponownie wykonać `typecheck`, Storybook build, dostępne checki Storybooka, Foundation verification, `git diff --check`, kontrolę konsoli, klawiatury, focus, zoom 200%, reflow 400% oraz screenshoty light/dark. Przejście walidacji technicznych nie zmienia statusu historii na accepted.
+Stan walidacji 05.01 pozostaje rozdzielony: historia ma status `accepted decision record`, a dowód techniczny nie oznacza produkcyjnej akceptacji Auth, responsive ani backendu. Dla utrzymania tego statusu należy wykonywać typecheck, Storybook build, dostępne checki Storybooka, Foundation verification, `git diff --check`, kontrolę konsoli oraz podstawowy gate dostępności: Contrast, Keyboard, Focus, Forms, Semantics, ARIA, Alt text, Error states.
 
 LOKALNA DECYZJA STORYBOOK 05.01: opcja `rememberDevice` w głównym wariancie logowania jest domyślnie niezaznaczona. Decyzja porządkuje lokalną demonstrację i nie ustanawia wartości początkowej globalnego kontraktu produkcyjnego.
 

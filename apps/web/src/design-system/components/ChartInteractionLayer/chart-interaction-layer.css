@@ -181,7 +181,7 @@
 }
 
 .pd-chart-interaction-layer__point-button[data-active='true'] {
-  background: color-mix(in srgb, var(--pd-accent) 10%, transparent);
+  background: color-mix(in srgb, var(--pd-brand-accent) 10%, transparent);
   color: var(--pd-text);
 }
 

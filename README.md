@@ -28,7 +28,8 @@ Dokumentacja definiuje docelowe fundamenty, komponenty, ekrany, API, Auth, przep
 ```bash
 python3 scripts/validate_all.py .
 npx tsc --project tsconfig.contracts.json --noEmit
-sha256sum -c SHA256SUMS.txt
+pnpm typecheck
+pnpm test
 ```
 
 ## Instalacja

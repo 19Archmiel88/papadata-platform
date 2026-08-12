@@ -5,12 +5,30 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-LEGAL-025
 updated_at: 2026-07-30T15:05:00+02:00
-status: approved-template
+status: legal-template
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Checklista prawna, organizacyjna i compliance przed go-live
 
-> **Status dokumentu:** rozbudowany szablon wdrożeniowy. Przed publikacją lub podpisaniem należy uzupełnić wszystkie pola `[DO UZUPEŁNIENIA]`, zweryfikować zgodność z rzeczywistą architekturą, cennikiem i procesami oraz uzyskać zatwierdzenie prawnika, księgowości i — w odpowiednim zakresie — IOD/DPO. Dokument nie jest indywidualną opinią prawną.
+> **Status dokumentu:** `legal-template`, nie `accepted-production`. Przed publikacją lub podpisaniem należy uzupełnić wszystkie pola `[DO UZUPEŁNIENIA]`, zweryfikować zgodność z rzeczywistą architekturą, cennikiem i procesami oraz uzyskać zatwierdzenie prawnika, księgowości i — w odpowiednim zakresie — IOD/DPO. Dokument nie jest indywidualną opinią prawną.
+
+## Gate go-live P0/P1
+
+### P0 - blokery publikacji
+
+- [ ] każdy dokument prawny używany publicznie ma status produkcyjny nadany poza szablonem i dowód zatwierdzenia Legal;
+- [ ] wszystkie pola `[DO UZUPEŁNIENIA]`, `[WARIANT]`, nazwy spółki, ceny, SLA, podatki, kraje i procesy zostały zastąpione konkretnymi danymi;
+- [ ] Privacy, Cookies, DPA, lista podprocesorów, ROPA/DPIA, AI terms i retencja są zgodne z rzeczywistą architekturą, providerami i regionami danych;
+- [ ] checkout, billing, zgody, archiwizacja wersji dokumentów i trwały nośnik są przetestowane end-to-end;
+- [ ] Legal, Finance/Tax, IOD/DPO, Security, Operations i Engineering mają podpisane decyzje w tabeli akceptacji.
+
+### P1 - wymagane przed pełnym rolloutem
+
+- [ ] proces zmian dokumentów, wersjonowania, archiwum i powiadomień klientów ma właściciela operacyjnego;
+- [ ] SLA, incident communication, DSAR, deletion/export, legal hold i podprocesorzy mają runbook oraz dowody testów;
+- [ ] order form, warianty planów, refundy, reklamacje i B2C/prosumer są doprecyzowane dla rynków MVP;
+- [ ] cykliczny przegląd prawny, bezpieczeństwa i księgowości jest wpisany w release calendar.
 
 ## A. Dane spółki i model sprzedaży
 

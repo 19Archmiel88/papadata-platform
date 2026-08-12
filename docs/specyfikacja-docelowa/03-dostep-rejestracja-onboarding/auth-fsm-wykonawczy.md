@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 status: approved-target
 updated_at: 2026-07-30T12:30:00+02:00
 id: DOC-AUTH-FSM-EXECUTION
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 # Auth FSM — model wykonawczy 1.0 po audycie
 

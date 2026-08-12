@@ -34,8 +34,33 @@ for (const marker of [
 }
 
 const runtimeRegistry = readText(componentSystem.runtimeApiRegistry);
+const runtimeRegistryRows = new Map(
+  runtimeRegistry
+    .trimEnd()
+    .split('\n')
+    .slice(1)
+    .map((line) => [line.split(',')[0], line]),
+);
 for (const component of componentSystem.requiredComponents) {
-  ensure(runtimeRegistry.includes(`${component},`), `Runtime API registry missing ${component}.`);
+  ensure(runtimeRegistryRows.has(component), `Runtime API registry missing ${component}.`);
+}
+
+const componentIndex = readText('apps/web/src/design-system/components/index.ts');
+const publicComponentExports = new Set();
+for (const match of componentIndex.matchAll(/export\s+\{([\s\S]*?)\}\s+from\s+'\.\/[^']+';/g)) {
+  for (const name of match[1].split(',').map((item) => item.trim()).filter(Boolean)) {
+    if (/^[A-Z]/.test(name)) {
+      publicComponentExports.add(name);
+    }
+  }
+}
+for (const component of publicComponentExports) {
+  const row = runtimeRegistryRows.get(component);
+  ensure(row, `Runtime API registry missing public component export ${component}.`);
+  const [, sourceFile,, storyId, status] = row.split(',');
+  ensure(sourceFile && existsSync(resolveFromRoot(sourceFile)), `${component}: runtime API source file does not exist.`);
+  ensure(storyId, `${component}: runtime API registry must declare owner story or target.`);
+  ensure(['accepted', 'review'].includes(status), `${component}: runtime API status must be accepted or review.`);
 }
 
 for (const [
@@ -50,15 +75,13 @@ for (const [
   ['LinkAction', '00.14', 'accepted'],
   ['IconButton', '00.14', 'accepted'],
   ['ButtonGroup', '00.14', 'accepted'],
-  ['TextField', '00.15', 'review'],
-  ['PasswordField', '00.15', 'review'],
-  ['Textarea', '00.15', 'review'],
-  ['FileInput', '00.15', 'review'],
-  ['VerificationCodeInput', '00.15', 'review'],
+  ['TextField', '00.15', 'accepted'],
+  ['PasswordField', '00.15', 'accepted'],
+  ['Textarea', '00.15', 'accepted'],
+  ['FileInput', '00.15', 'accepted'],
+  ['VerificationCodeInput', '00.15', 'accepted'],
 ]) {
-  const row = runtimeRegistry
-    .split('\n')
-    .find((line) => line.startsWith(`${component},`));
+  const row = runtimeRegistryRows.get(component);
 
   ensure(
     row?.includes(`,${storyId},${status},Design System`),
@@ -149,6 +172,11 @@ for (const [id, expected] of [
   ensure(entries.get(id)?.note?.replaceAll(' ', '').includes(expected.replaceAll(' ', '')), `${id}: missing ownership handoff ${expected}.`);
 }
 ensure(entries.get('05.04')?.accepted === true, '05.04 accepted decision record must be marked accepted.');
+for (const entryId of ['05.01', '05.02', '05.03', '05.04', '05.05']) {
+  const entry = entries.get(entryId);
+  ensure(entry?.accepted === true, `${entryId}: laboratory decision record must be marked accepted.`);
+  ensure(entry?.productionStatus === 'not_started', `${entryId}: laboratory decision record must not become production runtime.`);
+}
 ensure(!entries.get('00.14')?.requirements?.includes('link'), '00.14 contract still claims Button link variant.');
 ensure(!entries.get('00.13')?.requirements?.includes('ProviderLogo'), '00.13 contract still claims ProviderLogo.');
 ensure(!entries.get('00.13')?.requirements?.includes('StatusIcon'), '00.13 contract still claims StatusIcon.');

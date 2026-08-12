@@ -35,6 +35,10 @@ import {
   StoryPresentationSection,
 } from '../../../storybook-next/presentation/StoryPresentation';
 import './cross-cutting-patterns.css';
+import {
+  Localized,
+  copy,
+} from './cross-cutting-story-helpers';
 
 const rowAction = fn();
 const bulkExportAction = fn();
@@ -1432,7 +1436,7 @@ function FilteredTablePattern() {
                     value: 'email',
                   },
                 ]}
-                placeholder="Wybierz kanał"
+                placeholder={copy({ en: 'Select channel', pl: 'Wybierz kanał' })}
                 value={channelFilter}
                 onChange={(event) => {
                   setChannelFilter(
@@ -1468,7 +1472,7 @@ function FilteredTablePattern() {
                     value: 'risk',
                   },
                 ]}
-                placeholder="Wybierz sygnał"
+                placeholder={copy({ en: 'Select signal', pl: 'Wybierz sygnał' })}
                 value={statusFilter}
                 onChange={(event) => {
                   setStatusFilter(
@@ -1496,7 +1500,7 @@ function FilteredTablePattern() {
                     value: '90d',
                   },
                 ]}
-                placeholder="Wybierz okres"
+                placeholder={copy({ en: 'Select period', pl: 'Wybierz okres' })}
                 value={rangeFilter}
                 onChange={(event) => {
                   setRangeFilter(
@@ -1581,7 +1585,10 @@ function FilteredTablePattern() {
               key={`campaign-search-${searchResetVersion}`}
               label="Szukaj kampanii"
               loading={false}
-              placeholder="Kampania, kanał lub właściciel"
+              placeholder={copy({
+                en: 'Campaign, channel or owner',
+                pl: 'Kampania, kanał lub właściciel',
+              })}
               query={query}
               resultCount={filteredRows.length}
               onClear={() => {
@@ -1733,7 +1740,7 @@ function FilteredTablePattern() {
                       value: 'error',
                     },
                   ]}
-                  placeholder="Wybierz stan"
+                  placeholder={copy({ en: 'Select state', pl: 'Wybierz stan' })}
                   value={dataMode}
                   onChange={(event) => {
                     setDataMode(
@@ -2182,30 +2189,36 @@ export const FilteredTableActionsStory: Story = {
           ariaLabel="Parametry wzorca tabeli"
           items={[
             {
-              label: 'Kontrakt',
+              label: <Localized en="Contract" pl="Kontrakt" />,
               value: '18.04',
             },
             {
-              label: 'Powierzchnia',
+              label: <Localized en="Surface" pl="Powierzchnia" />,
               value: 'DataTable',
             },
             {
-              label: 'Status',
-              value: 'W przeglądzie',
+              label: <Localized en="Status" pl="Status" />,
+              value: <Localized en="In review" pl="W przeglądzie" />,
             },
           ]}
         />
       )}
       sectionCode="18"
-      sectionLabel="Wzorce interfejsu"
+      sectionLabel={<Localized en="Interface patterns" pl="Wzorce interfejsu" />}
       storyId="18.04"
-      summary="Analityczna tabela łączy filtrowanie, sortowanie, selekcję, konfigurację kolumn, eksport i szczegół rekordu z metrykami biznesowymi, dynamiką oraz trendem."
-      title="Tabela z filtrami i akcjami"
+      summary={<Localized
+        en="The analytics table combines filtering, sorting, selection, column configuration, export and record details with business metrics, momentum and trend."
+        pl="Analityczna tabela łączy filtrowanie, sortowanie, selekcję, konfigurację kolumn, eksport i szczegół rekordu z metrykami biznesowymi, dynamiką oraz trendem."
+      />}
+      title={<Localized en="Table with filters and actions" pl="Tabela z filtrami i akcjami" />}
     >
       <StoryPresentationSection
         index="01"
-        summary="Główna powierzchnia służy analizie wyników kampanii. Sterowanie pozostaje kompaktowe, a konfiguracja i szczegół działają jako warstwy pomocnicze."
-        title="Analiza wyników bez utraty kontekstu"
+        summary={<Localized
+          en="The main surface supports campaign performance analysis. Controls stay compact, while configuration and details work as supporting layers."
+          pl="Główna powierzchnia służy analizie wyników kampanii. Sterowanie pozostaje kompaktowe, a konfiguracja i szczegół działają jako warstwy pomocnicze."
+        />}
+        title={<Localized en="Results analysis without losing context" pl="Analiza wyników bez utraty kontekstu" />}
       >
         <FilteredTablePattern />
       </StoryPresentationSection>

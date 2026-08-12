@@ -7,6 +7,7 @@ status: approved-target
 document_type: policy
 screen_id: 50.03
 runtime_surface: no
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 # Tryby pracy
 

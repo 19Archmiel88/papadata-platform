@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-14903FD7424D
 status: accepted
 updated_at: 2026-08-08T21:09:00+01:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Udziały i struktura

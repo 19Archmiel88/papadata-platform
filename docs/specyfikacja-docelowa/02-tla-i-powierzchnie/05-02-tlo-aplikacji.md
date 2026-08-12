@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-57FE6FF39170
 status: approved-target
 updated_at: 2026-08-06T00:00:00+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Tło aplikacji
@@ -27,9 +28,9 @@ updated_at: 2026-08-06T00:00:00+02:00
 | Właściciel | Design System Lead |
 | Moduł | M02 — Design System |
 
-| Status implementacji | PROTOTYP STORYBOOK — REVIEW |
-| Status Storybooka | reprezentatywna historia desktop light/dark; nie jest produkcyjnym AppShell |
-| Status testów | dedykowane interaction/play i utrwalone axe: `not_started`; walidacja techniczna wymagana przed akceptacją |
+| Status implementacji | PROTOTYP STORYBOOK — ACCEPTED DECISION RECORD |
+| Status Storybooka | accepted decision record; docelowy owner produkcyjny: 20 Product Shell / AppShell |
+| Status testów | walidacje statyczne i kontraktowe: passing; dokument nie deklaruje runtime AppShell |
 
 ## Decyzja docelowa
 
@@ -41,7 +42,7 @@ Prototyp pokazuje jeden reprezentatywny canvas z przełączanymi wariantami: sid
 
 Sekcja właściciela scrolla używa skupionego dowodu zamiast powtarzać drugi kompletny AppShell. Pokazuje jeden przewijany region treści przy stabilnym topbarze i nawigacji pozostających poza odpowiedzialnością scrolla. Region jest dostępny w sekwencji klawiaturowej przez `tabIndex=0`, ma jednoznaczną nazwę i widoczny focus oparty na `--pd-focus-visible`. Lokalny scrollbar tego regionu używa neutralnego tracka i akcentowego thumba opartego wyłącznie na istniejących tokenach PapaData; hover i active wzmacniają akcent bez glow, blur ani ciężkiego cienia. Sticky topbar jest nieprzezroczysty i nie używa blur, glow ani glass. Sekcja szerokości treści rozróżnia szeroki region analityczny i kontrolowaną długość formularza. Decyzja i antyprzykład wyjaśniają, dlaczego karty wewnątrz kart i mechaniczne ściskanie przez panel są odrzucane.
 
-Mobile i tablet pozostają wymaganiami katalogu, ale są odroczone poza bieżącym desktopowym review. Story nie pokazuje makiety mobile udającej zaakceptowany produkt.
+Mobile i tablet pozostają wymaganiami katalogu, ale są odroczone poza bieżącym desktopowym decision record. Story nie pokazuje makiety mobile udającej zaakceptowany produkt.
 
 ## Reguły
 
@@ -90,6 +91,6 @@ Landmark wynika z rzeczywistej roli i ma nazwę unikalną dla wariantu lub demon
 
 ## Storybook i odbiór
 
-Przed akceptacją wymagane są: typecheck, Storybook build, checki katalogu/architektury/taksonomii, Foundation verification, `git diff --check`, desktop light/dark, kontrola interakcji wariantów, panelu Papa, scroll ownera, klawiatury, focus, konsoli i braku poziomego overflow. Przejście walidacji nie zmienia statusu `review` na `accepted`.
+Dla utrzymania statusu accepted decision record wymagane są: typecheck, Storybook build, checki katalogu/architektury/taksonomii, Foundation verification, `git diff --check`, desktop light/dark, kontrola interakcji wariantów, panelu Papa, scroll ownera, klawiatury, focus, konsoli i braku poziomego overflow. Przejście walidacji utrzymuje status `accepted decision record`, bez deklarowania produkcyjnego runtime.
 
 BRAK DECYZJI W DOKUMENTACJI: kontrakt 05.02 nie definiuje produkcyjnego publicznego API AppShell ani pełnego przepływu OverlayRoot. Story pozostaje lokalnym laboratorium struktury.

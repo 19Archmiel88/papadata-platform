@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-C87562F9E702
 status: approved-target
 updated_at: 2026-08-07T00:00:00+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Gradienty, światło i szkło
@@ -22,9 +23,9 @@ updated_at: 2026-08-07T00:00:00+02:00
 | Nazwa techniczna | gradienty-swiatlo-i-szklo |
 | Typ dokumentu | kontrakt powierzchni |
 | Wersja | 1.0 |
-| Status implementacji | PROTOTYP STORYBOOK — REVIEW |
-| Status Storybooka | decyzje funkcjonalne desktop light/dark |
-| Status testów | dedykowane interaction/play i utrwalone axe: `not_started` |
+| Status implementacji | PROTOTYP STORYBOOK — ACCEPTED DECISION RECORD |
+| Status Storybooka | accepted decision record; docelowy owner produkcyjny: 00.08 Głębia i warstwy |
+| Status testów | walidacje statyczne i kontraktowe: passing; dokument nie deklaruje lokalnego glass/glow runtime |
 
 ## Decyzja docelowa
 
@@ -73,6 +74,6 @@ Na powierzchniach i kontrolkach AppShell glass, blur i glow są jednoznacznie za
 
 ## Storybook i odbiór
 
-Przed akceptacją wymagane są: typecheck, Storybook build, checki katalogu/architektury/taksonomii, Foundation verification, `git diff --check`, desktop light/dark, kontrola kontrastu i focusu, potwierdzenie braku blur/glass/glow w dozwolonych przykładach oraz brak poziomego overflow. Historia ma status `accepted`.
+Dla utrzymania statusu accepted decision record wymagane są: typecheck, Storybook build, checki katalogu/architektury/taksonomii, Foundation verification, `git diff --check`, desktop light/dark, kontrola kontrastu i focusu, potwierdzenie braku blur/glass/glow w dozwolonych przykładach oraz brak poziomego overflow. Historia ma status `accepted`.
 
 BRAK DECYZJI W DOKUMENTACJI: zastosowanie glassmorphism poza AppShell wymaga osobnego kontraktu i świadomej akceptacji. 05.05 nie ustanawia takiej reguły.

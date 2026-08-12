@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-4AF5EFAB439D
 status: approved-target
 updated_at: 2026-08-07T00:00:00+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Separatory i obramowania
@@ -22,9 +23,9 @@ Decyzja laboratoryjna jest zaakceptowana. Kanonicznym właścicielem reguł sepa
 | Nazwa techniczna | separatory-i-obramowania |
 | Typ dokumentu | kontrakt powierzchni |
 | Wersja | 1.0 |
-| Status implementacji | ACCEPTED DECISION RECORD — handoff do 00.07 |
-| Status Storybooka | mapa ról i zastosowań desktop light/dark |
-| Status testów | statyczny kontrakt ownership/presentation: `passing`; runtime pozostaje osobnym gate |
+| Status implementacji | PROTOTYP STORYBOOK — ACCEPTED DECISION RECORD |
+| Status Storybooka | accepted decision record; docelowy owner produkcyjny: 00.07 Linie i separacja |
+| Status testów | walidacje statyczne i kontraktowe: passing; dokument nie deklaruje osobnego runtime separatorów |
 
 ## Decyzja docelowa
 
@@ -58,4 +59,4 @@ Mapa aplikacji demonstruje topbar, sidebar, region treści i wizualną próbkę 
 
 ## Storybook i odbiór
 
-Przed akceptacją wymagane są: typecheck, Storybook build, checki Storybooka i Fundamentów, `git diff --check`, desktop light/dark, kontrola widocznego focusu, aktywnej nawigacji, rozróżnienia danger/active/focus, braku poziomego overflow i zgodności tokenów z `00-07-linie-i-separacja.md`. Historia ma status `accepted`.
+Dla utrzymania statusu accepted decision record wymagane są: typecheck, Storybook build, checki Storybooka i Fundamentów, `git diff --check`, desktop light/dark, kontrola widocznego focusu, aktywnej nawigacji, rozróżnienia danger/active/focus, braku poziomego overflow i zgodności tokenów z `00-07-linie-i-separacja.md`. Historia ma status `accepted`.

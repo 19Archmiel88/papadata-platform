@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 status: review
 document_type: component-contract
 component_id: ShareChart
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # ShareChart

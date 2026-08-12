@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 status: approved-target
 document_type: e2e-flow
 flow_id: 90.17
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 # Pilot do abonamentu
 

@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 status: approved-target
 updated_at: 2026-07-30T12:30:00+02:00
 id: DOC-API-SCHEMA-CATALOG
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 # Kanoniczny katalog DTO i schematów API 1.0
 Ten dokument zamyka wymaganie audytu F-002: każda nazwa request/response z rejestru API ma definicję w `contracts/api-schemas.ts`, `contracts/api-schemas.json` oraz `contracts/openapi-1.0.json`. Markdown nie jest jedynym źródłem kontraktu; kanoniczne źródło typów znajduje się w katalogu `contracts/`.

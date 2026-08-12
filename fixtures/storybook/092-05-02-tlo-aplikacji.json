@@ -1,0 +1,26 @@
+{
+  "id": "05.02",
+  "sourceDocument": "02-tla-i-powierzchnie/05-02-tlo-aplikacji.md",
+  "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie/Tło aplikacji",
+  "role": "accepted-decision-record",
+  "productionRuntimeStatus": "not_started",
+  "states": [
+    "shell-canvas",
+    "scroll-owner",
+    "papa-panel-layer",
+    "compact",
+    "handoff-appshell"
+  ],
+  "playSteps": [
+    "verify-handoff-owner",
+    "verify-scroll-owner",
+    "verify-no-production-appshell"
+  ],
+  "visualAssertions": [
+    "1440-light",
+    "1440-dark",
+    "no-card-shell-duplication",
+    "no-local-source-of-truth"
+  ],
+  "implementationStatus": "implemented-accepted-decision-record"
+}

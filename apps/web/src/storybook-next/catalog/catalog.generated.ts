@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: 875630f7de30186ea25efe601cf31e18a6b4b4e88df1027b356a9ed24224ba58
+// SHA-256 źródła: e1b601ba471de21552aebfde57e120d6f3435e3cbc48abd77bf4c04b251adc7f
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -663,13 +663,13 @@ export const storybookCatalog = [
     "storyClass": "component",
     "owner": "Design System",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": "Pola formularzowe zostały przeniesione z dawnej sekcji 10 do Fundamentów; rodzina pozostaje do dalszego przeglądu wizualnego.",
+    "note": "Accepted Foundation owner for text and form inputs. Auth and complex-form patterns consume this owner; visual review is closed for the baseline field family.",
     "group": null,
-    "sourceStatus": "specified",
-    "documentationStatus": "review",
-    "prototypeStatus": "review",
+    "sourceStatus": "accepted",
+    "documentationStatus": "accepted",
+    "prototypeStatus": "implemented",
     "productionStatus": "implemented",
-    "testStatus": "partial",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "requirements": [
@@ -689,7 +689,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Pola tekstowe i formularzowe",
     "storyExport": "PolaFormularzy",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "00.13",
@@ -736,13 +736,13 @@ export const storybookCatalog = [
     "storyClass": "reference",
     "owner": "Design System",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": "Decision laboratory only. After approval the canonical owner is 25 — Access/Auth patterns; 05.01 does not own AuthShell.",
+    "note": "Accepted decision record. Canonical production owner is 25 — Access/Auth patterns; 05.01 does not own AuthShell, Auth FSM or production Auth screens.",
     "group": null,
-    "sourceStatus": "specified",
-    "documentationStatus": "review",
-    "prototypeStatus": "review",
+    "sourceStatus": "accepted",
+    "documentationStatus": "accepted",
+    "prototypeStatus": "implemented",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "requirements": [
@@ -758,7 +758,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Tła i powierzchnie",
     "displayTitle": "Ekrany dostępu",
     "storyExport": "TloAuth",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "05.02",
@@ -769,13 +769,13 @@ export const storybookCatalog = [
     "storyClass": "reference",
     "owner": "Design System",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": "Decision laboratory only. After approval the canonical owner is 20 — Product Shell / AppShell.",
+    "note": "Accepted decision record. Canonical production owner is 20 — Product Shell / AppShell; 05.02 does not own runtime AppShell.",
     "group": null,
-    "sourceStatus": "specified",
-    "documentationStatus": "review",
-    "prototypeStatus": "review",
+    "sourceStatus": "accepted",
+    "documentationStatus": "accepted",
+    "prototypeStatus": "implemented",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "requirements": [
@@ -791,7 +791,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Tła i powierzchnie",
     "displayTitle": "Tło aplikacji",
     "storyExport": "CanvasAplikacji",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "05.03",
@@ -802,13 +802,13 @@ export const storybookCatalog = [
     "storyClass": "reference",
     "owner": "Design System",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": "Decision laboratory only. KPI/MetricCard promoted to 15.02, ChartFrame to 15.01, TrendChart to 15.03, ComparisonChart to 15.04, ShareChart to 15.05, CorrelationChart to 15.06, ForecastChart to 15.07, data states to 15.08, interactions and filters to 15.09 and final responsive/a11y pass to 15.10; remaining chart families, tables and cross-cutting layers await their 15/18 owners.",
+    "note": "Accepted decision record. KPI/MetricCard, ChartFrame, chart families, data states, interactions and responsive/a11y pass are handed off to 15/18 owners; 05.03 is not a second source of truth.",
     "group": null,
-    "sourceStatus": "specified",
-    "documentationStatus": "review",
-    "prototypeStatus": "review",
+    "sourceStatus": "accepted",
+    "documentationStatus": "accepted",
+    "prototypeStatus": "implemented",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "requirements": [
@@ -825,7 +825,7 @@ export const storybookCatalog = [
     "displaySectionTitle": "Tła i powierzchnie",
     "displayTitle": "Powierzchnie danych",
     "storyExport": "PowierzchniaDanych",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "05.04",
@@ -867,13 +867,13 @@ export const storybookCatalog = [
     "storyClass": "reference",
     "owner": "Design System",
     "layer": "WARSTWA I — FUNDAMENTY I SYSTEM WIZUALNY",
-    "note": "Decision laboratory only. Accepted effect/depth rules are promoted to 00.08; AppShell keeps its own no-glass/no-glow constraint.",
+    "note": "Accepted decision record. Canonical effect and depth rules are promoted to 00.08; AppShell keeps its own no-glass/no-glow constraint.",
     "group": null,
-    "sourceStatus": "specified",
-    "documentationStatus": "review",
-    "prototypeStatus": "review",
+    "sourceStatus": "accepted",
+    "documentationStatus": "accepted",
+    "prototypeStatus": "implemented",
     "productionStatus": "not_started",
-    "testStatus": "not_started",
+    "testStatus": "passing",
     "storyStatus": "implemented",
     "storyVisibility": "visible",
     "requirements": [
@@ -884,14 +884,15 @@ export const storybookCatalog = [
       "overlay glass, jeżeli zatwierdzony",
       "wariant bez efektu",
       "light/dark",
-      "zakaz przypadkowego glow i halo"
+      "zakaz przypadkowego glow i halo",
+      "handoff do 00.08"
     ],
     "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie",
     "storyFile": "apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx",
     "displaySectionTitle": "Tła i powierzchnie",
     "displayTitle": "Gradienty i światło",
     "storyExport": "GradientySwiatloISzklo",
-    "accepted": false
+    "accepted": true
   },
   {
     "id": "15.01",

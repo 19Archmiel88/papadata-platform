@@ -258,7 +258,7 @@ export function AppBackgroundLaboratory() {
           ))}
         </div>
         <ShellCanvas variant={variant} />
-        <p className="pd-s52-deferred"><ReviewBadge tone="info"><Localized pl="Mobile i tablet: odroczone" en="Mobile and tablet: deferred" /></ReviewBadge> <Localized pl="Bieżące review obejmuje desktop light/dark. Nie pokazujemy makiety mobile udającej zaakceptowany produkt." en="The current review covers desktop light/dark. No mobile mock is shown as if it were an accepted product." /></p>
+        <p className="pd-s52-deferred"><ReviewBadge tone="info"><Localized pl="Mobile i tablet: odroczone" en="Mobile and tablet: deferred" /></ReviewBadge> <Localized pl="Decision record obejmuje desktop light/dark. Nie pokazujemy makiety mobile udającej zaakceptowany produkt." en="The decision record covers desktop light/dark. No mobile mock is shown as if it were an accepted product." /></p>
       </StorySection>
 
       <StorySection index="02" title={<Localized pl="Właściciel scrolla" en="Scroll owner" />} summary={<Localized pl="Skupiony dowód pokazuje jeden przewijany region treści; topbar i nawigacja pozostają poza jego odpowiedzialnością." en="A focused proof shows one scrollable content region; the topbar and navigation stay outside its responsibility." />}>

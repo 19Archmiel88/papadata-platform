@@ -166,7 +166,7 @@ function FormFieldsShowcase() {
             { label: <Localized pl="Kontrakt" en="Contract" />, value: '00.15' },
             { label: <Localized pl="Motyw" en="Theme" />, value: readTheme() === 'dark' ? <Localized pl="Ciemny" en="Dark" /> : <Localized pl="Jasny" en="Light" /> },
             { label: <Localized pl="Język" en="Language" />, value: readLocale().toUpperCase() },
-            { label: 'Status', value: 'review' },
+            { label: 'Status', value: 'accepted' },
           ]}
         />
       )}

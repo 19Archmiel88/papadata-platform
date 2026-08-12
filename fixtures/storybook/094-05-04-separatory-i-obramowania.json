@@ -1,0 +1,28 @@
+{
+  "id": "05.04",
+  "sourceDocument": "02-tla-i-powierzchnie/05-04-separatory-i-obramowania.md",
+  "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie/Separatory i obramowania",
+  "role": "accepted-decision-record",
+  "productionRuntimeStatus": "not_started",
+  "states": [
+    "subtle",
+    "default",
+    "strong",
+    "focus",
+    "active",
+    "danger",
+    "handoff-00-07"
+  ],
+  "playSteps": [
+    "verify-handoff-owner",
+    "verify-separator-roles",
+    "verify-no-production-runtime"
+  ],
+  "visualAssertions": [
+    "1440-light",
+    "1440-dark",
+    "foundation-lines",
+    "no-local-source-of-truth"
+  ],
+  "implementationStatus": "implemented-accepted-decision-record"
+}

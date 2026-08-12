@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 status: approved-target
 document_type: component-contract
 component_id: Checkbox
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 # Checkbox
 

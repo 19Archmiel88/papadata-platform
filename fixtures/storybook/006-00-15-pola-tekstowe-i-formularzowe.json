@@ -60,5 +60,5 @@
     "described-by",
     "200-percent-zoom"
   ],
-  "implementationStatus": "implemented-review-partial-tests"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

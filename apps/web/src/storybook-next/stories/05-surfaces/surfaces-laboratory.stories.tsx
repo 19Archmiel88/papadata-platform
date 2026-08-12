@@ -460,8 +460,8 @@ const authDemoConfig: Record<AuthMode, AuthDemoConfig> = {
         },
         disabled: true,
         disabledReason: {
-          pl: 'Stany alternatywnych metod wymagają pełnego Auth FSM poza bieżącym review 05.01.',
-          en: 'Alternative-method states require the full Auth FSM outside the current 05.01 review.',
+          pl: 'Stany alternatywnych metod wymagają pełnego Auth FSM poza decision record 05.01.',
+          en: 'Alternative-method states require the full Auth FSM outside the 05.01 decision record.',
         },
       },
       {
@@ -998,8 +998,8 @@ const authRejectedViolations = [
 const authScopeBoundaries = [
   {
     label: {
-      pl: 'Aktywne review',
-      en: 'Active review',
+      pl: 'Accepted decision record',
+      en: 'Accepted decision record',
     },
     value: {
       pl: 'desktop light/dark, reprezentatywne stany formularzy i porównanie decyzji',
@@ -1013,8 +1013,8 @@ const authScopeBoundaries = [
       en: 'Deferred',
     },
     value: {
-      pl: 'mobile i tablet pozostają wymaganiem katalogu, ale są poza bieżącym review 05.01',
-      en: 'mobile and tablet remain catalog requirements, but are outside the current 05.01 review',
+      pl: 'mobile i tablet pozostają wymaganiem katalogu, ale są poza decision record 05.01',
+      en: 'mobile and tablet remain catalog requirements, but are outside the 05.01 decision record',
     },
     tone: 'info',
   },
@@ -1059,7 +1059,7 @@ function AuthThemeSample() {
       <div aria-hidden="true">
         <header>
           <PapaDataBrand size="small" />
-          <span><Localized pl="review desktopowe" en="desktop review" /></span>
+          <span><Localized pl="decision record desktop" en="desktop decision record" /></span>
         </header>
         <div className="pd-s5-auth-theme-sample__copy">
           <span><Localized pl="Dostęp" en="Access" /></span>
@@ -1113,7 +1113,7 @@ function AuthAcceptedExample() {
       <div className="pd-s5-auth-accepted-shell">
         <div className="pd-s5-auth-accepted-shell__brand">
           <PapaDataBrand size="small" />
-          <span><Localized pl="review desktopowe" en="desktop review" /></span>
+          <span><Localized pl="decision record desktop" en="desktop decision record" /></span>
         </div>
         <div className="pd-s5-auth-accepted-shell__form" aria-hidden="true">
           <span data-role="eyebrow"><Localized pl="Dostęp" en="Access" /></span>
@@ -1205,8 +1205,8 @@ function AuthScopeBoundaryList() {
   return (
     <dl
       aria-label={copy({
-        pl: 'Granice zakresu review 05.01',
-        en: '05.01 review scope boundaries',
+        pl: 'Granice zakresu decision record 05.01',
+        en: '05.01 decision record scope boundaries',
       })}
       className="pd-s5-auth-scope-boundaries"
     >
@@ -1227,8 +1227,8 @@ function AuthMatrix() {
     <div
       className="pd-s5-auth-matrix"
       aria-label={copy({
-        pl: 'Kompozycja wariantów Auth dla desktopowego review',
-        en: 'Auth variant composition for desktop review',
+        pl: 'Kompozycja wariantów Auth dla desktopowego decision record',
+        en: 'Auth variant composition for desktop decision record',
       })}
     >
       <div className="pd-s5-auth-primary">
@@ -1316,8 +1316,8 @@ function AuthMatrix() {
         </StatusBadge>
         <p>
           <Localized
-            pl="Mobile i tablet pozostają wymaganiem katalogu, ale nie są projektowane ani odbierane w bieżącym desktopowym review 05.01."
-            en="Mobile and tablet remain catalog requirements, but they are not designed or accepted in the current 05.01 desktop review."
+            pl="Mobile i tablet pozostają wymaganiem katalogu, ale nie są projektowane ani odbierane w decision record 05.01."
+            en="Mobile and tablet remain catalog requirements, but they are not designed or accepted in the 05.01 decision record."
           />
         </p>
       </aside>
@@ -1392,7 +1392,7 @@ export const TloAuth: Story = {
       <SurfaceSection
         index="03"
         title={<Localized pl="Decyzja i antyprzykład" en="Decision and anti-example" />}
-        summary={<Localized pl="Porównanie pokazuje właściwy kierunek 05.01, konkretne naruszenia antyprzykładu oraz granice aktywnego review." en="The comparison shows the 05.01 direction, concrete anti-example violations and active review boundaries." />}
+        summary={<Localized pl="Porównanie pokazuje właściwy kierunek 05.01, konkretne naruszenia antyprzykładu oraz granice accepted decision record." en="The comparison shows the 05.01 direction, concrete anti-example violations and accepted decision record boundaries." />}
       >
         <DecisionList
           accepted={<Localized pl="Spokojny canvas, formularz bez obramowanego wrappera, hairline separacja i jedno dominujące CTA." en="Calm canvas, a form without a bordered wrapper, hairline separation and one dominant CTA." />}
@@ -1401,7 +1401,7 @@ export const TloAuth: Story = {
         <SurfaceVariant
           title={<Localized pl="Rozwiązanie właściwe i odrzucone" en="Accepted and rejected solution" />}
           description={<Localized pl="Oba przykłady są statyczną demonstracją Storybooka. Aktywne formularze pozostają w sekcji 01." en="Both examples are a static Storybook demonstration. Active forms remain in section 01." />}
-          token="05.01 review"
+          token="05.01 decision record"
         >
           <AuthDecisionComparison />
         </SurfaceVariant>

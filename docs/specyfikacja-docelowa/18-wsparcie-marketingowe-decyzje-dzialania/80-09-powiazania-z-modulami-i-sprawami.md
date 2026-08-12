@@ -7,6 +7,7 @@ status: approved-target
 document_type: runtime-screen
 screen_id: 80.09
 runtime_surface: yes
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 # Powiązania z modułami i sprawami
 

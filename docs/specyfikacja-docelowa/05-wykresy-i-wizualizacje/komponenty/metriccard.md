@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 status: approved-target
 document_type: component-contract
 component_id: MetricCard
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 # MetricCard
 
@@ -33,7 +34,7 @@ Podstawowy, z trendem, z celem, z odchyleniem, z mikrochartem oraz alarmowy/reko
 05.03 nie utrzymuje lokalnego katalogu KPI ani `KpiSparkline`. Po promocji ownerem jest wyłącznie `15.02`.
 
 ## Dostępność techniczna
-Minimum WCAG 2.2 AA jest obowiązkowym zakresem tej story i każdej następnej. Wymagane są: semantic HTML, accessible name, focus-visible, keyboard-only tam, gdzie dotyczy, reduced motion, reflow/responsywność, brak informacji wyłącznie kolorem oraz tekstowe stany empty/error/loading/no-data. KPI ma jawną nazwę, tekstowy status i działające akcje. Mikrotrend jest dekoracyjny i nie jest jedynym nośnikiem znaczenia.
+Podstawowy gate dostępności dla tej story obejmuje tylko: Contrast, Keyboard, Focus, Forms, Semantics, ARIA, Alt text, Error states.
 
 ## Konsumenci
 - `30.02` — Kolejka uwagi

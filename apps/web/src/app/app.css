@@ -54,7 +54,7 @@
 .runtime-auth__form {
   display: grid;
   gap: var(--pd-space-5);
-  margin-top: var(--pd-space-7);
+  margin-top: var(--pd-space-8);
 }
 
 .runtime-alert {

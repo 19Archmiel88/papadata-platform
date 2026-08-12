@@ -5,6 +5,7 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 status: approved-target
 id: DOC-STORYBOOK-BACKLOG-EXECUTION
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 # Storybook backlog — scenariusze, fixture i play tests
 

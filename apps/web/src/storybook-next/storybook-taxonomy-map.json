@@ -6,9 +6,9 @@
   "sourceContract": "apps/web/src/storybook-next/storybook-contract.json",
   "decisionDocument": "docs/storybook/STORYBOOK-TAXONOMY-DECISIONS.md",
   "baselineContractIdentitySha256": "b87fb78aba30c844d870b9742db465c6210ce66ab6aff621c58be9328146f17a",
-  "expectedSectionCount": 22,
-  "expectedEntryCount": 220,
-  "purpose": "Logiczne przypisanie 220 wymagan do kanonicznych rootow po aktywacji pierwszej transzy komponentow Component System V1.",
+  "expectedSectionCount": 20,
+  "expectedEntryCount": 210,
+  "purpose": "Logiczne przypisanie 210 wymagan z aktywnego kontraktu Storybooka do kanonicznych rootow po aktywacji pierwszej transzy komponentow Component System V1.",
   "policies": {
     "preserveEntryIds": true,
     "requirementsRemainInContract": true,

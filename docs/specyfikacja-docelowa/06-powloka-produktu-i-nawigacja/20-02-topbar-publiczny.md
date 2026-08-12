@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-26BB8851E295
 status: approved-target
 updated_at: 2026-07-30T10:30:00+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Topbar publiczny

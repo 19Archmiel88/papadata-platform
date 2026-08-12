@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-8B85AF5FD2D0
 status: approved-target
 updated_at: 2026-08-07T08:24:00+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # ChartFrame
@@ -115,7 +116,7 @@ Przy większej liczbie serii wykres używa rozszerzonej palety `--pd-data-series
 
 ## Dostępność techniczna
 
-Minimum WCAG 2.2 AA jest obowiązkowym zakresem tej story i każdej następnej. Wymagane są: semantic HTML, accessible name, focus-visible, keyboard-only tam, gdzie dotyczy, reduced motion, reflow/responsywność, brak informacji wyłącznie kolorem oraz tekstowe stany empty/error/loading/no-data.
+Podstawowy gate dostępności dla tej story obejmuje tylko: Contrast, Keyboard, Focus, Forms, Semantics, ARIA, Alt text, Error states.
 
 ## Storybook i testy
 

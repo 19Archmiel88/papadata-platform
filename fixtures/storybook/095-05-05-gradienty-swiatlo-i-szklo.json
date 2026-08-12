@@ -1,0 +1,27 @@
+{
+  "id": "05.05",
+  "sourceDocument": "02-tla-i-powierzchnie/05-05-gradienty-swiatlo-i-szklo.md",
+  "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie/Gradienty i światło",
+  "role": "accepted-decision-record",
+  "productionRuntimeStatus": "not_started",
+  "states": [
+    "brand-gradient",
+    "data-gradient",
+    "scrim",
+    "depth-layer",
+    "no-effect",
+    "handoff-00-08"
+  ],
+  "playSteps": [
+    "verify-handoff-owner",
+    "verify-no-glassmorphism-owner",
+    "verify-no-production-runtime"
+  ],
+  "visualAssertions": [
+    "1440-light",
+    "1440-dark",
+    "foundation-depth",
+    "no-local-source-of-truth"
+  ],
+  "implementationStatus": "implemented-accepted-decision-record"
+}

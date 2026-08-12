@@ -8,6 +8,7 @@ title: OpenAPI
 type: architektura-operacje
 status: approved-target
 updated_at: 2026-07-30T07:30:00+00:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # OpenAPI
@@ -51,7 +52,7 @@ Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 ## Decyzje naprawcze
 
 - Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktu `<nieprawidlowy-placeholder-generatora>`.
+- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
 - Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
 - Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
 

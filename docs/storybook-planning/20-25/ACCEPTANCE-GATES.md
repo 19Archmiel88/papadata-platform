@@ -2,7 +2,7 @@
 
 ## Zasada
 
-Formalny WCAG AA nie jest blockerem biznesowym tej paczki. Nadal wymagamy jednak poprawności semantycznej i interakcyjnej tam, gdzie jej brak powoduje błędne działanie komponentu: natywne role, label, focus przy overlay, brak martwych kontrolek, state preservation i poprawna obsługa klawiatury dla elementów, które z definicji jej wymagają.
+Podstawowy gate dostępności dla Storybooka i ekranów produkcyjnych obejmuje tylko: Contrast, Keyboard, Focus, Forms, Semantics, ARIA, Alt text, Error states.
 
 ## Gate wspólny
 
@@ -14,6 +14,7 @@ Każde story przed `accepted` musi spełniać:
 - brak lokalnych kopii komponentów z `10`;
 - brak lokalnych kopii patterns z `18`;
 - brak martwych buttonów/linków/triggers;
+- podstawowy gate dostępności: Contrast, Keyboard, Focus, Forms, Semantics, ARIA, Alt text, Error states;
 - widoczny stan loading/error/empty/no-access tam, gdzie kontrakt przewiduje taki wynik;
 - TypeScript/typecheck;
 - Storybook build;

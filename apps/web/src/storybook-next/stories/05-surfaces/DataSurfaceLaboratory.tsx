@@ -980,7 +980,7 @@ export function DataSurfaceLaboratory() {
         />
       }
       id="05.03"
-      status="review"
+      status="accepted"
       title={<Localized pl="Powierzchnie danych" en="Data surfaces" />}
       summary={
         <Localized

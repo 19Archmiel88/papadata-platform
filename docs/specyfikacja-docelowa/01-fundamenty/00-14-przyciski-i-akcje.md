@@ -21,6 +21,7 @@ approved_commit: "runtime-owner-migration-00.14"
 approved_evidence: "apps/web/src/storybook-next/storybook-contract.json"
 status: stage-01-accepted
 updated_at: 2026-08-11
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Przyciski i akcje

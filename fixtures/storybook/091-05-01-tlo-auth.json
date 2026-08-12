@@ -1,0 +1,26 @@
+{
+  "id": "05.01",
+  "sourceDocument": "02-tla-i-powierzchnie/05-01-tlo-auth.md",
+  "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie/Tło Auth",
+  "role": "accepted-decision-record",
+  "productionRuntimeStatus": "not_started",
+  "states": [
+    "desktop-light",
+    "desktop-dark",
+    "auth-form-states",
+    "decision-comparison",
+    "handoff-access-auth"
+  ],
+  "playSteps": [
+    "verify-handoff-owner",
+    "verify-no-production-authshell",
+    "verify-local-actions-only"
+  ],
+  "visualAssertions": [
+    "1440-light",
+    "1440-dark",
+    "no-production-screen-claim",
+    "no-local-source-of-truth"
+  ],
+  "implementationStatus": "implemented-accepted-decision-record"
+}

@@ -46,6 +46,13 @@ const laboratoryEntryIds = [
   '05.04',
   '05.05',
 ];
+const laboratoryDecisionRecordHandoffs = new Map([
+  ['05.01', 'Access/Auth'],
+  ['05.02', 'AppShell'],
+  ['05.03', '15/18'],
+  ['05.04', '00.07'],
+  ['05.05', '00.08'],
+]);
 const expectedFoundationDocs = [
   '00-01-kierunek-wizualny.md',
   '00-02-typografia.md',
@@ -195,19 +202,17 @@ for (const entryId of laboratoryEntryIds) {
   const entry = entries.get(entryId);
   ensure(entry, `Missing laboratory entry ${entryId}.`);
   ensure(entry.productionStatus === 'not_started', `${entryId}: laboratory production must not be started.`);
+  ensure(entry.sourceStatus === 'accepted', `${entryId}: laboratory decision source must be accepted.`);
+  ensure(entry.documentationStatus === 'accepted', `${entryId}: laboratory decision documentation must be accepted.`);
+  ensure(entry.prototypeStatus === 'implemented', `${entryId}: laboratory decision prototype must be implemented.`);
+  ensure(entry.testStatus === 'passing', `${entryId}: laboratory decision static checks must pass.`);
+  ensure(entry.accepted === true, `${entryId}: laboratory decision record must be marked accepted.`);
 
-  if (entryId === '05.04') {
-    ensure(entry.sourceStatus === 'accepted', '05.04: accepted separator decision must be marked accepted.');
-    ensure(entry.documentationStatus === 'accepted', '05.04: accepted separator decision documentation must be accepted.');
-    ensure(entry.prototypeStatus === 'implemented', '05.04: accepted separator decision prototype must be implemented.');
-    ensure(entry.testStatus === 'passing', '05.04: accepted separator decision static checks must pass.');
-    continue;
-  }
-
-  ensure(entry.sourceStatus === 'specified', `${entryId}: open laboratory source must remain specified.`);
-  ensure(entry.documentationStatus === 'review', `${entryId}: open laboratory documentation must remain in review.`);
-  ensure(entry.prototypeStatus === 'review', `${entryId}: open laboratory prototype must remain in review.`);
-  ensure(entry.testStatus === 'not_started', `${entryId}: open laboratory tests must remain not_started.`);
+  const expectedHandoff = laboratoryDecisionRecordHandoffs.get(entryId);
+  ensure(
+    entry.note?.replaceAll(' ', '').includes(expectedHandoff.replaceAll(' ', '')),
+    `${entryId}: laboratory decision record missing handoff ${expectedHandoff}.`,
+  );
 }
 
 for (const token of componentSystem.foundationBaseline.requiredTokens) {

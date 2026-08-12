@@ -5,10 +5,10 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 story_id: "00.15"
 story_title: "Pola tekstowe i formularzowe"
-decision_status: "review"
+decision_status: "accepted"
 prototype_status: "implemented"
 production_status: "implemented"
-test_status: "partial"
+test_status: "passing"
 applies_to:
   - desktop
   - tablet
@@ -19,15 +19,16 @@ applies_to:
   - en
 approved_commit: "runtime-owner-migration-00.15"
 approved_evidence: "apps/web/src/storybook-next/storybook-contract.json"
-status: stage-01-review
+status: stage-01-accepted
 updated_at: 2026-08-11
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Pola tekstowe i formularzowe
 
 ## Cel
 
-`00.15` jest aktywnym ownerem Storybooka dla wejść danych: etykieta, helper, error, required, disabled, read-only oraz walidacja. Fundament określa zachowanie i wygląd pola, ale nie narzuca jednej biblioteki formularzy, kalendarza ani zaawansowanych kontrolek.
+`00.15` jest zaakceptowanym ownerem Storybooka dla wejść danych: etykieta, helper, error, required, disabled, read-only oraz walidacja. Fundament określa zachowanie i wygląd pola, ale nie narzuca jednej biblioteki formularzy, kalendarza ani zaawansowanych kontrolek.
 
 ## Source of truth
 

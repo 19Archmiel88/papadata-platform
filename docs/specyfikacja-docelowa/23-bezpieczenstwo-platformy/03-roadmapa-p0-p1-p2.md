@@ -8,6 +8,7 @@ title: Roadmapa P0/P1/P2
 type: architektura-operacje
 status: approved-target
 updated_at: 2026-07-30T07:30:00+00:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Roadmapa P0/P1/P2

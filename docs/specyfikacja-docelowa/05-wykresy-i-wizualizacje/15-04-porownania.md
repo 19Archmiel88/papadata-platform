@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-2927435BA9A6
 status: approved-target
 updated_at: 2026-07-30T10:30:00+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Porównania
@@ -89,7 +90,7 @@ Wide może używać kolumn lub detail panelu. Compact przechodzi w jedną kolumn
 
 ## Dostępność
 
-Minimum WCAG 2.2 AA: semantyka, dostępna nazwa, focus-visible, target size, kontrast, reduced motion, live region dla wyników asynchronicznych, reflow i brak informacji zależnej wyłącznie od koloru.
+Podstawowy gate dostępności: Contrast, Keyboard, Focus, Forms, Semantics, ARIA, Alt text, Error states.
 
 ## Storybook
 

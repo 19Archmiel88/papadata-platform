@@ -33,7 +33,7 @@ export function StoryPage({
   summary,
   variants,
   handoff,
-  status = 'review',
+  status = 'accepted',
   children,
 }: {
   readonly id: string;
@@ -41,7 +41,7 @@ export function StoryPage({
   readonly summary: ReactNode;
   readonly variants: ReactNode;
   readonly handoff: ReactNode;
-  readonly status?: 'review' | 'accepted';
+  readonly status?: 'accepted';
   readonly children: ReactNode;
 }) {
   return (
@@ -115,7 +115,7 @@ export function ReviewBadge({
   readonly children: ReactNode;
 }) {
   return (
-    <span className="pd-s5-review-badge" data-tone={tone}>
+    <span className="pd-s5-decision-badge" data-tone={tone}>
       <span aria-hidden="true" />
       {children}
     </span>

@@ -4,8 +4,8 @@
   "stage": "C2.2",
   "stageName": "Storybook Taxonomy Cleanup — Foundation-integrated Component Evidence",
   "foundationBaseline": {
-    "expectedActiveStoryCount": 43,
-    "expectedActiveStoryFileCount": 25,
+    "expectedActiveStoryCount": 46,
+    "expectedActiveStoryFileCount": 28,
     "activeStoryFiles": [
       "apps/web/src/design-system/components/Button/Button.stories.tsx",
       "apps/web/src/design-system/components/Field/FormFields.stories.tsx",
@@ -24,9 +24,12 @@
       "apps/web/src/storybook-next/stories/15-data-visualizations/MetricCard.stories.tsx",
       "apps/web/src/storybook-next/stories/15-data-visualizations/ShareChart.stories.tsx",
       "apps/web/src/storybook-next/stories/15-data-visualizations/TrendChart.stories.tsx",
+      "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/ApprovalProtection.stories.tsx",
+      "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/ComplexFormsWizards.stories.tsx",
       "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/CrossStateMatrix.stories.tsx",
       "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DataDecisionWorkspace.stories.tsx",
       "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DataReadinessStatus.stories.tsx",
+      "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DestructiveConfirmations.stories.tsx",
       "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/DetailEvidenceRecommendationPanels.stories.tsx",
       "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/FeedbackStates.stories.tsx",
       "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/FilteredTableActions.stories.tsx",
@@ -173,7 +176,8 @@
   "finalizedComponentEntries": [
     "00.12",
     "00.13",
-    "00.14"
+    "00.14",
+    "00.15"
   ],
   "evidence": {
     "document": "docs/storybook/COMPONENT-SYSTEM-V1-EVIDENCE.md",

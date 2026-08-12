@@ -1,0 +1,178 @@
+{
+  "date": "2026-08-12",
+  "stories": 10,
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 900
+    }
+  ],
+  "results": [
+    {
+      "id": "15-wykresy-i-dane-04-jakość-prezentacji-responsywność-i-dostępność--chart-accessibility-review-story",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 2284.328125,
+      "textLength": 2764,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-01-powierzchnie-analityczne-chartframe--chart-frame-story",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 6836.578125,
+      "textLength": 5500,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-03-stany-i-interakcje-interakcje-i-filtry--chart-interactions-story",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 3154.5625,
+      "textLength": 3043,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-02-rodziny-wykresów-porównania--comparison-chart-story",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 8101.671875,
+      "textLength": 5827,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-02-rodziny-wykresów-zależności-i-korelacje--correlation-chart-story",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 12195.296875,
+      "textLength": 10636,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-03-stany-i-interakcje-stany-danych--data-states-story",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 5925.625,
+      "textLength": 5243,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-02-rodziny-wykresów-prognoza-i-ai--forecast-chart-story",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 6377.015625,
+      "textLength": 6227,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-01-powierzchnie-analityczne-metriccard--metric-card-story",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 2287.265625,
+      "textLength": 1744,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-02-rodziny-wykresów-udziały-i-struktura--share-chart-story",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 6229.328125,
+      "textLength": 5788,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-02-rodziny-wykresów-trendy--trend-chart-story",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 4622.703125,
+      "textLength": 2875,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-04-jakość-prezentacji-responsywność-i-dostępność--chart-accessibility-review-story",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 4196.15625,
+      "textLength": 2750,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-01-powierzchnie-analityczne-chartframe--chart-frame-story",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 9771.578125,
+      "textLength": 5500,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-03-stany-i-interakcje-interakcje-i-filtry--chart-interactions-story",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 5760.203125,
+      "textLength": 3025,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-02-rodziny-wykresów-porównania--comparison-chart-story",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 10335.203125,
+      "textLength": 5711,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-02-rodziny-wykresów-zależności-i-korelacje--correlation-chart-story",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 17649.8125,
+      "textLength": 10636,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-03-stany-i-interakcje-stany-danych--data-states-story",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 12264.671875,
+      "textLength": 5243,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-02-rodziny-wykresów-prognoza-i-ai--forecast-chart-story",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 9973.328125,
+      "textLength": 6104,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-01-powierzchnie-analityczne-metriccard--metric-card-story",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 4459.59375,
+      "textLength": 1744,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-02-rodziny-wykresów-udziały-i-struktura--share-chart-story",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 9738.796875,
+      "textLength": 5564,
+      "horizontalOverflow": false
+    },
+    {
+      "id": "15-wykresy-i-dane-02-rodziny-wykresów-trendy--trend-chart-story",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 5978.109375,
+      "textLength": 2715,
+      "horizontalOverflow": false
+    }
+  ]
+}

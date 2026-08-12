@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-CC1E0D61FF04
 status: approved-target
 updated_at: 2026-07-30T10:30:00+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Global search i Command Palette

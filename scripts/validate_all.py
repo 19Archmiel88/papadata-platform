@@ -100,6 +100,26 @@ def validate(root:Path):
    if not t.exists():broken.append((str(p.relative_to(root)),target))
  if broken:err('BROKEN_LINKS',f'{len(broken)} niedziałających linków; przykłady {broken[:5]}')
  checks['broken_links']=len(broken)
+ # route target/runtime split
+ routes=read_csv(root/'rejestry/routes.csv')
+ required_route_fields={'route','document','title','status','ownership','runtime_status','runtime_source','storybook_screen_status'}
+ runtime_routes=set()
+ for r in routes:
+  missing=required_route_fields-set(r)
+  if missing:err('ROUTE_FIELDS',f"{r.get('route','<unknown>')}: {sorted(missing)}")
+  if r.get('status')=='target':
+   if r.get('ownership')!='target-canonical':err('ROUTE_TARGET_OWNERSHIP',r.get('route',''))
+   if r.get('runtime_status')!='not_started':err('ROUTE_TARGET_RUNTIME_STATUS',r.get('route',''))
+   if r.get('runtime_source'):err('ROUTE_TARGET_RUNTIME_SOURCE',r.get('route',''))
+  if r.get('status')=='implemented':
+   if r.get('ownership')!='runtime-implemented':err('ROUTE_RUNTIME_OWNERSHIP',r.get('route',''))
+   if r.get('runtime_status')!='implemented':err('ROUTE_RUNTIME_STATUS',r.get('route',''))
+   if not r.get('runtime_source'):err('ROUTE_RUNTIME_SOURCE',r.get('route',''))
+   runtime_routes.add(r.get('route',''))
+  if r.get('ownership')=='canonical-runtime' and r.get('runtime_status')!='implemented':err('ROUTE_FALSE_RUNTIME',r.get('route',''))
+ for route in ['/login','/register','/app','/app/command-center']:
+  if route not in runtime_routes:err('ROUTE_RUNTIME_MISSING',route)
+ checks['runtime_routes']=len(runtime_routes)
  # clean-package boundary
  forbidden_patterns={
   'PROVENANCE_METADATA':r'(?i)source_' + r'refs?:|\bS' + r'RC-[A-Z0-9-]+',
@@ -219,6 +239,8 @@ def validate(root:Path):
  # Storybook backlog fixtures
  stories=read_csv(root/'rejestry/storybook.csv')
  for r in stories:
+  if r.get('registry_scope')!='target-backlog-registry':err('STORY_REGISTRY_SCOPE',r['story_title'])
+  if r.get('active_sidebar_source')!='apps/web/src/storybook-next/storybook-contract.json':err('STORY_ACTIVE_SOURCE',r['story_title'])
   fp=root/r['fixture_id']
   if not fp.exists():err('STORY_FIXTURE',r['fixture_id']);continue
   obj=json.loads(fp.read_text(encoding='utf-8'))

@@ -5,6 +5,7 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 status: accepted
 updated_at: 2026-08-11T12:00:00+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Readiness operacyjny

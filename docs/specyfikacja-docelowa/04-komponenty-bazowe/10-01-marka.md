@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-AB3E60357706
 status: accepted
 updated_at: 2026-08-06T20:27:00+01:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Marka

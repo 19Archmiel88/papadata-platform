@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-4D5F69650D7B
 status: accepted
 updated_at: 2026-08-12T00:19:42+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Approval, step-up i ochrona zmian

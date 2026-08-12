@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 title: Auth statechart 1.0
 type: auth-statechart
 status: approved-target
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Auth statechart 1.0

@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-GOV-037
 updated_at: 2026-07-30T15:05:00+02:00
 status: approved-target
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Potwierdzenie wprowadzenia priorytetów P0

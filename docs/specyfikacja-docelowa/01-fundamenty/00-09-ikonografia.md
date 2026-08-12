@@ -20,6 +20,7 @@ approved_evidence: "foundation-evidence/manifest.json"
 owner: Artur Wiśniewski
 updated_at: 2026-08-03
 status: stage-01-accepted
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Ikonografia

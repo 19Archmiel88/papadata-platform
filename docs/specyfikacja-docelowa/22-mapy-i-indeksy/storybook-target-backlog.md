@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 title: Storybook target backlog 1.0
 type: storybook-backlog
 status: approved-target
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Storybook target backlog 1.0

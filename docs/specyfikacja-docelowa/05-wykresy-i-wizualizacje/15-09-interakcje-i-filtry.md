@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-EE3E67615F4B
 status: approved-target
 updated_at: 2026-07-30T10:30:00+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Interakcje i filtry
@@ -95,7 +96,7 @@ Warstwa przechodzi z układu wykres + panel do jednej kolumny na mniejszych view
 
 ## Dostępność
 
-Minimum WCAG 2.2 AA: dostępna nazwa grupy, `aria-pressed` dla selection i filtrów, `aria-describedby` dla punktów, widoczny focus, obsługa keyboard-only, brak informacji zależnej wyłącznie od koloru oraz focus restoration po akcjach.
+Podstawowy gate dostępności: Contrast, Keyboard, Focus, Forms, Semantics, ARIA, Alt text, Error states.
 
 ## Storybook
 

@@ -1,0 +1,27 @@
+{
+  "id": "05.03",
+  "sourceDocument": "02-tla-i-powierzchnie/05-03-powierzchnie-danych.md",
+  "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie/Powierzchnie danych",
+  "role": "accepted-decision-record",
+  "productionRuntimeStatus": "not_started",
+  "states": [
+    "surface-roles",
+    "kpi-handoff",
+    "chart-handoff",
+    "table-handoff",
+    "states-handoff",
+    "layers-handoff"
+  ],
+  "playSteps": [
+    "verify-handoff-owner",
+    "verify-runtime-datatable-consumption",
+    "verify-no-second-chart-source"
+  ],
+  "visualAssertions": [
+    "1440-light",
+    "1440-dark",
+    "no-horizontal-page-scroll",
+    "no-local-source-of-truth"
+  ],
+  "implementationStatus": "implemented-accepted-decision-record"
+}

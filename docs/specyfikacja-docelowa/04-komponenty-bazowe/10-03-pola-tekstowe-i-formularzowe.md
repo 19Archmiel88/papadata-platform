@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-C6CF31340BEB
 status: review
 updated_at: 2026-08-06T21:48:00+01:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Pola tekstowe i formularzowe

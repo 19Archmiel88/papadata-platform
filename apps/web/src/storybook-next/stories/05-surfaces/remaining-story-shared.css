@@ -1,6 +1,6 @@
 
 
-.pd-s5-review-badge {
+.pd-s5-decision-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -9,17 +9,17 @@
   color: var(--pd-text-secondary);
 }
 
-.pd-s5-review-badge > span {
+.pd-s5-decision-badge > span {
   inline-size: 0.42rem;
   block-size: 0.42rem;
   border-radius: var(--pd-radius-pill);
   background: currentColor;
 }
 
-.pd-s5-review-badge[data-tone="success"] { color: var(--pd-status-success); }
-.pd-s5-review-badge[data-tone="warning"] { color: var(--pd-status-warning); }
-.pd-s5-review-badge[data-tone="critical"] { color: var(--pd-status-danger); }
-.pd-s5-review-badge[data-tone="info"] { color: var(--pd-status-info); }
+.pd-s5-decision-badge[data-tone="success"] { color: var(--pd-status-success); }
+.pd-s5-decision-badge[data-tone="warning"] { color: var(--pd-status-warning); }
+.pd-s5-decision-badge[data-tone="critical"] { color: var(--pd-status-danger); }
+.pd-s5-decision-badge[data-tone="info"] { color: var(--pd-status-info); }
 
 .pd-s5-next-decisions {
   display: grid;
@@ -94,9 +94,4 @@
 
 .pd-s5-page :where(article, section, div) {
   min-inline-size: 0;
-}
-
-:root[data-density="compact"] .pd-s5-page,
-.pd-storybook-canvas[data-density="compact"] .pd-s5-page {
-  --pd-s5-density-gap: var(--pd-space-4);
 }

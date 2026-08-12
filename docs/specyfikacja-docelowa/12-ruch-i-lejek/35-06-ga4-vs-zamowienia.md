@@ -7,6 +7,7 @@ status: approved-target
 document_type: runtime-screen
 screen_id: 35.06
 runtime_surface: yes
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 # GA4 vs zamówienia
 

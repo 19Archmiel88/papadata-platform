@@ -31,6 +31,10 @@ import {
   StoryPresentationSection,
 } from '../../../storybook-next/presentation/StoryPresentation';
 import './cross-cutting-patterns.css';
+import {
+  Localized,
+  copy,
+} from './cross-cutting-story-helpers';
 
 const saveDraftAction = fn();
 const submitConfigurationAction = fn();
@@ -54,20 +58,36 @@ type FormErrors = Partial<
   >
 >;
 
-const syncScopeOptions = [
+const syncScopeOptionCopy = [
   {
-    label: 'Tylko nowe dane',
+    label: {
+      en: 'New data only',
+      pl: 'Tylko nowe dane',
+    },
     value: 'new',
   },
   {
-    label: 'Ostatnie 30 dni',
+    label: {
+      en: 'Last 30 days',
+      pl: 'Ostatnie 30 dni',
+    },
     value: '30d',
   },
   {
-    label: 'Pełny zakres dostępny w źródle',
+    label: {
+      en: 'Full range available in the source',
+      pl: 'Pełny zakres dostępny w źródle',
+    },
     value: 'full',
   },
 ];
+
+function buildSyncScopeOptions() {
+  return syncScopeOptionCopy.map((option) => ({
+    label: copy(option.label),
+    value: option.value,
+  }));
+}
 
 const initialForm: FormState = {
   includeHistorical: false,
@@ -81,12 +101,12 @@ function resolveStepLabel(
 ) {
   switch (step) {
     case 2:
-      return 'Przegląd';
+      return copy({ en: 'Review', pl: 'Przegląd' });
     case 1:
-      return 'Warunki';
+      return copy({ en: 'Conditions', pl: 'Warunki' });
     case 0:
     default:
-      return 'Dane podstawowe';
+      return copy({ en: 'Basics', pl: 'Dane podstawowe' });
   }
 }
 
@@ -98,10 +118,10 @@ function validateStep(
     return {
       sourceName: form.sourceName.trim()
         ? undefined
-        : 'Podaj nazwę konfiguracji.',
+        : copy({ en: 'Enter a configuration name.', pl: 'Podaj nazwę konfiguracji.' }),
       syncScope: form.syncScope
         ? undefined
-        : 'Wybierz zakres synchronizacji.',
+        : copy({ en: 'Select the synchronization range.', pl: 'Wybierz zakres synchronizacji.' }),
     };
   }
 
@@ -109,7 +129,7 @@ function validateStep(
     return {
       owner: form.owner.trim()
         ? undefined
-        : 'Podaj właściciela biznesowego.',
+        : copy({ en: 'Enter the business owner.', pl: 'Podaj właściciela biznesowego.' }),
     };
   }
 
@@ -132,7 +152,7 @@ function ComplexFormPattern() {
   const [dirty, setDirty] =
     useState(false);
   const [notice, setNotice] =
-    useState('Szkic nie ma jeszcze zmian.');
+    useState(copy({ en: 'The draft has no changes yet.', pl: 'Szkic nie ma jeszcze zmian.' }));
   const [noticeTone, setNoticeTone] =
     useState<'info' | 'success' | 'warning'>('info');
   const [showDiscardDialog, setShowDiscardDialog] =
@@ -140,9 +160,14 @@ function ComplexFormPattern() {
   const [submitting, setSubmitting] =
     useState(false);
 
+  const syncScopeOptions = useMemo(
+    () => buildSyncScopeOptions(),
+    [],
+  );
+
   const selectedScope = useMemo(
     () => syncScopeOptions.find((option) => option.value === form.syncScope),
-    [form.syncScope],
+    [form.syncScope, syncScopeOptions],
   );
 
   function updateForm(
@@ -154,7 +179,10 @@ function ComplexFormPattern() {
     }));
     setDirty(true);
     setNoticeTone('info');
-    setNotice('Masz niezapisane zmiany w konfiguracji.');
+    setNotice(copy({
+      en: 'You have unsaved changes in the configuration.',
+      pl: 'Masz niezapisane zmiany w konfiguracji.',
+    }));
   }
 
   function goNext() {
@@ -168,7 +196,10 @@ function ComplexFormPattern() {
     if (hasErrors(nextErrors)) {
       setNoticeTone('warning');
       setNotice(
-        'Uzupełnij wymagane pola przed przejściem do kolejnego kroku.',
+        copy({
+          en: 'Complete the required fields before moving to the next step.',
+          pl: 'Uzupełnij wymagane pola przed przejściem do kolejnego kroku.',
+        }),
       );
       return;
     }
@@ -178,7 +209,10 @@ function ComplexFormPattern() {
       2,
     ) as FormStep);
     setNoticeTone('info');
-    setNotice(`Krok ${resolveStepLabel(step)} został sprawdzony.`);
+    setNotice(copy({
+      en: `Step ${resolveStepLabel(step)} has been checked.`,
+      pl: `Krok ${resolveStepLabel(step)} został sprawdzony.`,
+    }));
   }
 
   function goBack() {
@@ -187,7 +221,10 @@ function ComplexFormPattern() {
       0,
     ) as FormStep);
     setNoticeTone('info');
-    setNotice('Wrócono do poprzedniego kroku.');
+    setNotice(copy({
+      en: 'Returned to the previous step.',
+      pl: 'Wrócono do poprzedniego kroku.',
+    }));
   }
 
   function submitForm() {
@@ -201,7 +238,10 @@ function ComplexFormPattern() {
     if (hasErrors(nextErrors)) {
       setNoticeTone('warning');
       setNotice(
-        'Przegląd wymaga kompletnego formularza przed wysłaniem.',
+        copy({
+          en: 'Review requires a complete form before submission.',
+          pl: 'Przegląd wymaga kompletnego formularza przed wysłaniem.',
+        }),
       );
       return;
     }
@@ -212,14 +252,17 @@ function ComplexFormPattern() {
       setSubmitting(false);
       setDirty(false);
       setNoticeTone('success');
-      setNotice('Konfiguracja została wysłana do przeglądu.');
+      setNotice(copy({
+        en: 'The configuration has been submitted for review.',
+        pl: 'Konfiguracja została wysłana do przeglądu.',
+      }));
     }, 120);
   }
 
   return (
     <div className="pd-x18-form-flow">
       <section
-        aria-label="Kroki formularza"
+        aria-label={copy({ en: 'Form steps', pl: 'Kroki formularza' })}
         className="pd-x18-form-steps"
       >
         {[
@@ -241,19 +284,24 @@ function ComplexFormPattern() {
 
       <InlineNotice
         message={notice}
-        title={dirty ? 'Zmiany robocze' : 'Status formularza'}
+        title={dirty
+          ? copy({ en: 'Draft changes', pl: 'Zmiany robocze' })
+          : copy({ en: 'Form status', pl: 'Status formularza' })}
         tone={noticeTone}
       />
 
       {step === 0 ? (
         <section
-          aria-label="Dane podstawowe konfiguracji"
+          aria-label={copy({ en: 'Configuration basics', pl: 'Dane podstawowe konfiguracji' })}
           className="pd-x18-form-section"
         >
           <TextField
-            helperText="Nazwa widoczna dla zespołu operacyjnego."
+            helperText={copy({
+              en: 'Name visible to the operations team.',
+              pl: 'Nazwa widoczna dla zespołu operacyjnego.',
+            })}
             invalid={Boolean(errors.sourceName)}
-            label="Nazwa konfiguracji"
+            label={copy({ en: 'Configuration name', pl: 'Nazwa konfiguracji' })}
             message={errors.sourceName ?? null}
             onChange={(event) => {
               updateForm({
@@ -266,7 +314,7 @@ function ComplexFormPattern() {
           />
           <Select
             invalid={Boolean(errors.syncScope)}
-            label="Zakres synchronizacji"
+            label={copy({ en: 'Synchronization range', pl: 'Zakres synchronizacji' })}
             message={errors.syncScope ?? null}
             onChange={(event: ChangeEvent<HTMLSelectElement>) => {
               updateForm({
@@ -274,7 +322,7 @@ function ComplexFormPattern() {
               });
             }}
             options={syncScopeOptions}
-            placeholder="Wybierz zakres"
+            placeholder={copy({ en: 'Select range', pl: 'Wybierz zakres' })}
             required
             status={errors.syncScope ? 'error' : 'default'}
             value={form.syncScope}
@@ -284,13 +332,16 @@ function ComplexFormPattern() {
 
       {step === 1 ? (
         <section
-          aria-label="Warunki uruchomienia"
+          aria-label={copy({ en: 'Launch conditions', pl: 'Warunki uruchomienia' })}
           className="pd-x18-form-section"
         >
           <TextField
-            helperText="Osoba odpowiedzialna za odbiór danych."
+            helperText={copy({
+              en: 'Person responsible for data acceptance.',
+              pl: 'Osoba odpowiedzialna za odbiór danych.',
+            })}
             invalid={Boolean(errors.owner)}
-            label="Właściciel biznesowy"
+            label={copy({ en: 'Business owner', pl: 'Właściciel biznesowy' })}
             message={errors.owner ?? null}
             onChange={(event) => {
               updateForm({
@@ -303,8 +354,14 @@ function ComplexFormPattern() {
           />
           <Checkbox
             checked={form.includeHistorical}
-            helperText="Opcja zmienia zakres startowej synchronizacji."
-            label="Uwzględnij dane historyczne przy pierwszym uruchomieniu"
+            helperText={copy({
+              en: 'This option changes the initial synchronization range.',
+              pl: 'Opcja zmienia zakres startowej synchronizacji.',
+            })}
+            label={copy({
+              en: 'Include historical data on first run',
+              pl: 'Uwzględnij dane historyczne przy pierwszym uruchomieniu',
+            })}
             onChange={(event) => {
               updateForm({
                 includeHistorical: event.currentTarget.checked,
@@ -317,25 +374,27 @@ function ComplexFormPattern() {
 
       {step === 2 ? (
         <section
-          aria-label="Przegląd przed wysłaniem"
+          aria-label={copy({ en: 'Review before submission', pl: 'Przegląd przed wysłaniem' })}
           className="pd-x18-form-section"
         >
           <dl className="pd-x18-drawer-ledger">
             <div>
-              <dt>Nazwa</dt>
+              <dt><Localized en="Name" pl="Nazwa" /></dt>
               <dd>{form.sourceName}</dd>
             </div>
             <div>
-              <dt>Zakres</dt>
-              <dd>{selectedScope?.label ?? 'Nie wybrano'}</dd>
+              <dt><Localized en="Range" pl="Zakres" /></dt>
+              <dd>{selectedScope?.label ?? copy({ en: 'Not selected', pl: 'Nie wybrano' })}</dd>
             </div>
             <div>
-              <dt>Właściciel</dt>
+              <dt><Localized en="Owner" pl="Właściciel" /></dt>
               <dd>{form.owner}</dd>
             </div>
             <div>
-              <dt>Dane historyczne</dt>
-              <dd>{form.includeHistorical ? 'Tak' : 'Nie'}</dd>
+              <dt><Localized en="Historical data" pl="Dane historyczne" /></dt>
+              <dd>{form.includeHistorical
+                ? copy({ en: 'Yes', pl: 'Tak' })
+                : copy({ en: 'No', pl: 'Nie' })}</dd>
             </div>
           </dl>
         </section>
@@ -348,7 +407,7 @@ function ComplexFormPattern() {
           type="button"
           variant="ghost"
         >
-          Wstecz
+          <Localized en="Back" pl="Wstecz" />
         </Button>
         <Button
           onClick={() => {
@@ -358,24 +417,30 @@ function ComplexFormPattern() {
             }
 
             setNoticeTone('info');
-            setNotice('Brak zmian do odrzucenia.');
+            setNotice(copy({
+              en: 'There are no changes to discard.',
+              pl: 'Brak zmian do odrzucenia.',
+            }));
           }}
           type="button"
           variant="secondary"
         >
-          Anuluj konfigurację
+          <Localized en="Cancel configuration" pl="Anuluj konfigurację" />
         </Button>
         <Button
           onClick={() => {
             saveDraftAction();
             setDirty(false);
             setNoticeTone('success');
-            setNotice('Szkic konfiguracji został zapisany.');
+            setNotice(copy({
+              en: 'Configuration draft has been saved.',
+              pl: 'Szkic konfiguracji został zapisany.',
+            }));
           }}
           type="button"
           variant="secondary"
         >
-          Zapisz szkic
+          <Localized en="Save draft" pl="Zapisz szkic" />
         </Button>
         {step < 2 ? (
           <Button
@@ -383,30 +448,36 @@ function ComplexFormPattern() {
             type="button"
             variant="primary"
           >
-            Dalej
+            <Localized en="Next" pl="Dalej" />
           </Button>
         ) : (
           <Button
             loading={submitting}
-            loadingLabel="Wysyłanie konfiguracji"
+            loadingLabel={copy({
+              en: 'Submitting configuration',
+              pl: 'Wysyłanie konfiguracji',
+            })}
             onClick={submitForm}
             type="button"
             variant="primary"
           >
-            Wyślij konfigurację
+            <Localized en="Submit configuration" pl="Wyślij konfigurację" />
           </Button>
         )}
       </div>
 
       <Dialog
         closeOnEscape
-        description="Masz niezapisane zmiany w konfiguracji. Możesz wrócić do edycji albo odrzucić szkic."
+        description={copy({
+          en: 'You have unsaved configuration changes. You can return to editing or discard the draft.',
+          pl: 'Masz niezapisane zmiany w konfiguracji. Możesz wrócić do edycji albo odrzucić szkic.',
+        })}
         destructive
         modal
         open={showDiscardDialog}
-        primaryActionLabel="Odrzuć zmiany"
-        secondaryActionLabel="Wróć do edycji"
-        title="Odrzucić niezapisane zmiany?"
+        primaryActionLabel={copy({ en: 'Discard changes', pl: 'Odrzuć zmiany' })}
+        secondaryActionLabel={copy({ en: 'Return to editing', pl: 'Wróć do edycji' })}
+        title={copy({ en: 'Discard unsaved changes?', pl: 'Odrzucić niezapisane zmiany?' })}
         onOpenChange={(nextOpen, reason) => {
           setShowDiscardDialog(nextOpen);
 
@@ -420,12 +491,18 @@ function ComplexFormPattern() {
             setDirty(false);
             setErrors({});
             setNoticeTone('info');
-            setNotice('Zmiany zostały odrzucone.');
+            setNotice(copy({
+              en: 'Changes have been discarded.',
+              pl: 'Zmiany zostały odrzucone.',
+            }));
             return;
           }
 
           setNoticeTone('info');
-          setNotice('Edycja została wznowiona bez utraty danych.');
+          setNotice(copy({
+            en: 'Editing resumed without data loss.',
+            pl: 'Edycja została wznowiona bez utraty danych.',
+          }));
         }}
       />
     </div>
@@ -455,22 +532,28 @@ export const ComplexFormsWizardsStory: Story = {
         <StoryPresentationMeta
           ariaLabel="Parametry wzorca formularza"
           items={[
-            { label: 'Kontrakt', value: '18.09' },
-            { label: 'Komponenty', value: 'TextField / Select / Dialog' },
-            { label: 'Status', value: 'W przeglądzie' },
+            { label: <Localized en="Contract" pl="Kontrakt" />, value: '18.09' },
+            { label: <Localized en="Components" pl="Komponenty" />, value: 'TextField / Select / Dialog' },
+            { label: <Localized en="Status" pl="Status" />, value: <Localized en="In review" pl="W przeglądzie" /> },
           ]}
         />
       )}
       sectionCode="18"
-      sectionLabel="Wzorce interfejsu"
+      sectionLabel={<Localized en="Interface patterns" pl="Wzorce interfejsu" />}
       storyId="18.09"
-      summary="Złożony formularz składa istniejące pola, kontrolki i Dialog dla zmian niezapisanych bez tworzenia publicznego komponentu Wizard."
-      title="Formularze złożone i kreatory"
+      summary={<Localized
+        en="A complex form composes existing fields, controls and Dialog for unsaved changes without creating a public Wizard component."
+        pl="Złożony formularz składa istniejące pola, kontrolki i Dialog dla zmian niezapisanych bez tworzenia publicznego komponentu Wizard."
+      />}
+      title={<Localized en="Complex forms and wizards" pl="Formularze złożone i kreatory" />}
     >
       <StoryPresentationSection
         index="01"
-        summary="Sekwencja kroków, walidacja, szkic, dialog zmian niezapisanych i wysłanie są stanem story opartym na komponentach runtime."
-        title="Wieloetapowy formularz roboczy"
+        summary={<Localized
+          en="The step sequence, validation, draft, unsaved-changes dialog and submission are story state built on runtime components."
+          pl="Sekwencja kroków, walidacja, szkic, dialog zmian niezapisanych i wysłanie są stanem story opartym na komponentach runtime."
+        />}
+        title={<Localized en="Multi-step working form" pl="Wieloetapowy formularz roboczy" />}
       >
         <ComplexFormPattern />
       </StoryPresentationSection>

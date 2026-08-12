@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 status: approved-target
 document_type: auth-surface
 surface_id: auth-28
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 # Dostęp zablokowany
 

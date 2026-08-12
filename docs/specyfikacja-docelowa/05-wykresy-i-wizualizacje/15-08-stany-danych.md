@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-913B883643FF
 status: approved-target
 updated_at: 2026-07-30T10:30:00+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Stany danych
@@ -113,7 +114,7 @@ Każdy składnik ma osobny kontrakt. 15.08 nie tworzy lokalnych stanów dla Tren
 
 ## Dostępność
 
-Minimum WCAG 2.2 AA: semantyka statusu, dostępna nazwa, focus-visible dla akcji, kontrast, reduced motion dla loadingu, live region dla zmian asynchronicznych, reflow oraz brak informacji zależnej wyłącznie od koloru.
+Podstawowy gate dostępności: Contrast, Keyboard, Focus, Forms, Semantics, ARIA, Alt text, Error states.
 
 ## Storybook
 

@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-6F46AAEA71C6
 status: approved-target
 updated_at: 2026-07-30T10:30:00+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Macierz ekran–Storybook–test

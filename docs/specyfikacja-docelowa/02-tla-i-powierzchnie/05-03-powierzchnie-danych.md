@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-683566C77344
 status: approved-target
 updated_at: 2026-08-07T00:00:00+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Powierzchnie danych
@@ -27,9 +28,9 @@ updated_at: 2026-08-07T00:00:00+02:00
 | Właściciel | Design System Lead |
 | Moduł | M02 — Design System |
 
-| Status implementacji | PROTOTYP STORYBOOK — REVIEW |
-| Status Storybooka | jedna historia 05.03 z ośmioma reprezentatywnymi sekcjami |
-| Status testów | dedykowane interaction/play i utrwalone axe: `not_started`; walidacja techniczna i runtime wymagana przed akceptacją |
+| Status implementacji | PROTOTYP STORYBOOK — ACCEPTED DECISION RECORD |
+| Status Storybooka | accepted decision record; docelowi ownerzy produkcyjni: 15/18 |
+| Status testów | walidacje statyczne i kontraktowe: passing; dokument nie deklaruje drugiego ownera wykresów, tabel ani warstw przekrojowych |
 
 ## Decyzja docelowa
 
@@ -96,7 +97,7 @@ Aktywny odbiór Stage 02 obejmuje desktop light/dark. Reflow nie może tworzyć 
 
 ## Storybook i odbiór
 
-Przed akceptacją wymagane są: typecheck, Storybook build, checki katalogu/architektury/taksonomii, Foundation verification, `git diff --check`, desktop light/dark, kontrola wszystkich ośmiu sekcji, klawiatury istniejących komponentów, focus, Drawer/OverlayRoot, Escape, focus restore, braku domyślnego zaznaczenia, braku lokalnego silnika tabeli/Selecta, braku poziomego overflow i błędów konsoli. Historia ma status `accepted`.
+Dla utrzymania statusu accepted decision record wymagane są: typecheck, Storybook build, checki katalogu/architektury/taksonomii, Foundation verification, `git diff --check`, desktop light/dark, kontrola wszystkich ośmiu sekcji, klawiatury istniejących komponentów, focus, Drawer/OverlayRoot, Escape, focus restore, braku domyślnego zaznaczenia, braku lokalnego silnika tabeli/Selecta, braku poziomego overflow i błędów konsoli. Historia ma status `accepted`.
 
 BRAK DECYZJI W DOKUMENTACJI: szczegółowy kontrakt zoom, brush, pan i crosshair nie jest zatwierdzony. Funkcje nie są wdrażane w tym laboratorium.
 

@@ -6,6 +6,7 @@ owner: Artur Wiśniewski
 id: DOC-10-CB1B6AF6A835
 status: approved-target
 updated_at: 2026-07-30T10:30:00+02:00
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
 # Responsywność i dostępność
@@ -92,7 +93,7 @@ Wszystkie wykresy sekcji 15 muszą przejść desktop/tablet/mobile oraz zoom 200
 
 ## Dostępność
 
-Minimum WCAG 2.2 AA: kolejność nagłówków, dostępne nazwy, focus-visible, target size, kontrast, reduced motion, reflow, alternatywne dane dla wykresów i brak informacji zależnej wyłącznie od koloru.
+Podstawowy gate dostępności: Contrast, Keyboard, Focus, Forms, Semantics, ARIA, Alt text, Error states.
 
 
 

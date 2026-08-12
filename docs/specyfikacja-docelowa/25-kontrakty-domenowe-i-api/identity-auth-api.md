@@ -5,6 +5,7 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 status: approved-target
 document_type: domain-api-contract
+work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 # Identity/Auth API — kontrakt kanoniczny
 

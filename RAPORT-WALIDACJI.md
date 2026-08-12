@@ -3,7 +3,7 @@
 - Status: **PASS**
 - Błędy: **0**
 - Ostrzeżenia: **0**
-- Dokumenty specyfikacji: **465**
+- Dokumenty specyfikacji: **470**
 - Niedziałające linki: **0**
 - Odwołania do materiałów wejściowych: **0**
 - Niedziałające odwołania dokumentowe w rejestrach: **0**
@@ -12,7 +12,7 @@
 - Komponenty kanoniczne: **79**
 - Powierzchnie Auth: **29**
 - Kroki E2E: **124**
-- Targety Storybook: **281**
+- Targety Storybook: **287**
 - Priorytety P0 / metryki / integracje MVP / szablony prawne: **12 / 58 / 7 / 26**
 
 ## Kontrole
@@ -21,4 +21,4 @@ Walidator sprawdza metadane, linki lokalne, czystość paczki, dokumenty wskazan
 
 ## Uwagi po audycie
 
-Raport został odtworzony po poprawkach P0/P1. Manifest projektu został przebudowany na aktualny zestaw stabilnych plików, bez plików samoweryfikujących. Pełne `pnpm verify` wymaga docelowego toolchainu repozytorium: Node 24.18.0 i pnpm 10.29.3.
+Raport został zaktualizowany po domknięciu P2, czyszczeniu archiwów i przebudowie `MANIFEST.json`. W bieżącym cyklu wykonano walidację dokumentacji, guardy Storybook/design-system, typecheck, testy, build web oraz build Storybooka.

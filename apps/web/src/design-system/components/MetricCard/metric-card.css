@@ -230,3 +230,37 @@
     justify-content: flex-start;
   }
 }
+
+/* Enterprise BI redesign: metrics become decision tiles. */
+.pd-metric-card {
+  padding: var(--pd-space-5);
+  border: 1px solid color-mix(in srgb, var(--pd-separator) 76%, transparent);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-panel) 88%, transparent), color-mix(in srgb, var(--pd-surface-raised) 68%, transparent));
+  box-shadow: var(--pd-shadow-control);
+}
+
+.pd-metric-card[data-emphasis='alert'] {
+  border-color: color-mix(in srgb, var(--pd-status-warning) 54%, var(--pd-separator));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--pd-status-warning) 18%, transparent),
+    var(--pd-shadow-control);
+}
+
+.pd-metric-card__label {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.pd-metric-card__value > span {
+  font-weight: var(--pd-font-weight-semibold);
+  letter-spacing: -0.045em;
+}
+
+.pd-metric-card__sparkline {
+  width: min(100%, 11rem);
+}

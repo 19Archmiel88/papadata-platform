@@ -791,3 +791,51 @@
     padding: var(--pd-space-4);
   }
 }
+
+/* Enterprise BI redesign: analytical chart cards with premium contrast. */
+.pd-chart-frame {
+  --pd-chart-frame-accent: var(--pd-data-accent);
+  --pd-chart-frame-insight: var(--pd-brand-strong);
+  --pd-chart-frame-rule: color-mix(in srgb, var(--pd-separator) 82%, transparent);
+  --pd-chart-frame-rule-soft: color-mix(in srgb, var(--pd-separator-subtle) 88%, transparent);
+  --pd-chart-frame-surface: var(--pd-surface-panel);
+  --pd-chart-frame-region: color-mix(in srgb, var(--pd-surface-data) 72%, var(--pd-surface-panel));
+
+  border-radius: 20px;
+  border-top-width: 3px;
+  background:
+    radial-gradient(ellipse 64% 34% at 100% 0%, color-mix(in srgb, var(--pd-data-accent-subtle) 72%, transparent), transparent 66%),
+    linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-panel) 92%, transparent), var(--pd-surface-panel));
+  box-shadow: var(--pd-shadow-raised);
+}
+
+.pd-chart-frame__header {
+  padding: clamp(18px, 2vw, 28px);
+}
+
+.pd-chart-frame__eyebrow,
+.pd-chart-frame__metadata dt {
+  font-family: var(--pd-font-mono);
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.pd-chart-frame__heading h3 {
+  font-weight: var(--pd-font-weight-semibold);
+  letter-spacing: -0.028em;
+}
+
+.pd-chart-frame__metadata {
+  padding-top: var(--pd-space-3);
+  border-top: 1px solid var(--pd-chart-frame-rule-soft);
+}
+
+.pd-chart-frame__metadata dd {
+  color: var(--pd-text-secondary);
+}
+
+.pd-chart-frame__figure,
+.pd-chart-frame__visualization {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--pd-chart-frame-region) 92%, transparent), color-mix(in srgb, var(--pd-surface-panel) 76%, transparent));
+}

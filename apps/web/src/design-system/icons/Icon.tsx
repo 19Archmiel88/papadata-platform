@@ -17,6 +17,14 @@ export const papaDataIconNames = [
   'billing',
   'success',
   'warning',
+  'calendar',
+  'theme',
+  'notifications',
+  'menu',
+  'products',
+  'customers',
+  'decisions',
+  'help',
 ] as const;
 
 export type PapaDataIconName =
@@ -106,6 +114,62 @@ function IconPaths({
           <rect x="3" y="5" width="18" height="14" rx="2" />
           <path d="M3 9h18" />
           <path d="M7 15h4" />
+        </>
+      );
+    case 'calendar':
+      return (
+        <>
+          <rect x="4" y="5.5" width="16" height="14.5" rx="2" />
+          <path d="M8 3v5M16 3v5M4 10h16" />
+        </>
+      );
+    case 'theme':
+      return (
+        <>
+          <circle cx="12" cy="12" r="4.5" />
+          <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" />
+        </>
+      );
+    case 'notifications':
+      return (
+        <>
+          <path d="M6 10a6 6 0 0 1 12 0v4l2 3H4l2-3Z" />
+          <path d="M9.5 20h5" />
+        </>
+      );
+    case 'menu':
+      return (
+        <>
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </>
+      );
+    case 'products':
+      return (
+        <>
+          <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Z" />
+          <path d="m4 7.5 8 4.5 8-4.5M12 12v9" />
+        </>
+      );
+    case 'customers':
+      return (
+        <>
+          <circle cx="9" cy="8" r="3" />
+          <circle cx="17" cy="9" r="2.5" />
+          <path d="M3.5 20c.5-4 2.8-6 5.5-6s5 2 5.5 6M14 15.5c2.8-.8 5.5 1 6.5 4.5" />
+        </>
+      );
+    case 'decisions':
+      return (
+        <>
+          <rect x="5" y="4" width="14" height="17" rx="2" />
+          <path d="M9 4V2.5h6V4M8 10h8M8 14h5M8 18h4" />
+        </>
+      );
+    case 'help':
+      return (
+        <>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M9.5 9a2.7 2.7 0 0 1 5.2 1c0 2-2.7 2.2-2.7 4M12 17.5h.01" />
         </>
       );
     case 'success':

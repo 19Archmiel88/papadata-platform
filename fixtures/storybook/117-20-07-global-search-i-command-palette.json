@@ -1,9 +1,14 @@
 {
   "fixtureId": "SB-117",
-  "storyTitle": "20 Powłoka/Global search i Command Palette",
+  "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/Global search i Command Palette",
   "sourceDocument": "06-powloka-produktu-i-nawigacja/20-07-global-search-i-command-palette.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "CommandPalette",
+    "Dialog",
+    "TextField",
+    "EmptyState"
+  ],
   "states": [
     "ready",
     "loading",
@@ -46,5 +51,5 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

@@ -1,20 +1,28 @@
 {
   "fixtureId": "SB-171",
-  "storyTitle": "31 Kampanie płatne/Lista kampanii",
+  "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne/Lista kampanii",
   "sourceDocument": "08-kampanie-platne/31-02-lista-kampanii.md",
   "screenId": "31.02",
   "components": [
+    "BusinessScreen",
     "PageHeader",
-    "InlineNotice",
-    "Button",
+    "DataStatusBanner",
     "FilterBar",
-    "DataTable",
-    "Pagination",
-    "DetailPanel",
+    "SearchField",
+    "Combobox",
+    "DateRangePicker",
     "MetricCard",
     "ChartFrame",
-    "TrendChart",
-    "Tabs"
+    "ComparisonChart",
+    "ShareChart",
+    "DataTable",
+    "DetailPanel",
+    "EvidencePanel",
+    "RecommendationCard",
+    "AttributionComparison",
+    "BudgetPacing",
+    "InlineNotice",
+    "Panel"
   ],
   "states": [
     "ready",
@@ -62,5 +70,8 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract",
+  "runtimeRoute": "/app/campaigns/lista-kampanii",
+  "storyFile": "apps/web/src/storybook-next/stories/31-paid-campaigns/Campaigns.stories.tsx",
+  "storyExport": "CampaignsListStory"
 }

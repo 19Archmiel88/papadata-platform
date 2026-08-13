@@ -279,3 +279,66 @@
     border-block-end: 0;
   }
 }
+
+/* Premium foundation direction: messages and statuses use depth first, color second. */
+.pd-f0-surface-grid,
+.pd-f0-usage-grid,
+.pd-f0-status-object-grid,
+.pd-f0-toast-lab,
+.pd-f0-state-anatomy,
+.pd-f0-state-grid {
+  gap: var(--pd-space-4);
+}
+
+.pd-f0-surface-card,
+.pd-f0-usage-card,
+.pd-f0-status-object-card,
+.pd-f0-toast-sample,
+.pd-f0-state-card,
+.pd-f0-inline-notice {
+  border: 0;
+  border-radius: var(--pd-radius-overlay);
+  background: color-mix(in srgb, var(--pd-surface-panel) 80%, transparent);
+  box-shadow: var(--pd-shadow-raised);
+}
+
+.pd-f0-toast-sample {
+  border-inline-start: 0;
+  box-shadow: var(--pd-shadow-floating);
+}
+
+.pd-f0-toast-sample::before,
+.pd-f0-inline-notice::before,
+.pd-f0-status-object-card::before {
+  content: "";
+  display: block;
+  inline-size: 28px;
+  block-size: 3px;
+  border-radius: var(--pd-radius-pill);
+  background: var(--pd-brand-accent);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--pd-brand-accent) 28%, transparent);
+}
+
+.pd-f0-toast-sample[data-tone="warning"]::before {
+  background: var(--pd-status-warning);
+}
+
+.pd-f0-toast-sample[data-tone="progress"]::before {
+  background: var(--pd-interactive);
+}
+
+.pd-f0-status-object-card[data-tone="success"]::before {
+  background: var(--pd-status-success);
+}
+
+.pd-f0-status-object-card[data-tone="critical"]::before {
+  background: var(--pd-status-danger);
+}
+
+.pd-f0-status-object-card[data-tone="processing"]::before {
+  background: var(--pd-interactive);
+}
+
+.pd-f0-status-object-card[data-tone="neutral"]::before {
+  background: var(--pd-text-muted);
+}

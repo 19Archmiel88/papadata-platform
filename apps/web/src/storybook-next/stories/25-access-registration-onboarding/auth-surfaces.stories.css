@@ -1,0 +1,43 @@
+.pd-s25-page .pd-f0-page__inner {
+  width: min(100%, 1440px);
+}
+
+.pd-s25-stage {
+  container-type: inline-size;
+  min-width: 0;
+  min-height: auto;
+  overflow: visible;
+  border-radius: var(--pd-radius-surface);
+  background: var(--pd-canvas-gradient, var(--pd-canvas));
+  box-shadow: none;
+}
+
+.pd-s25-stage--full {
+  width: 100%;
+}
+
+.pd-s25-stage > [data-auth-mode] {
+  min-height: auto;
+}
+
+.pd-s25-grid,
+.pd-s25-grid--three {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 680px), 1fr));
+  gap: var(--pd-space-5);
+  align-items: stretch;
+}
+
+.pd-s25-grid--compact,
+.pd-s25-grid--three.pd-s25-grid--compact {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 620px), 1fr));
+}
+
+@media (max-width: 1180px) {
+  .pd-s25-grid,
+  .pd-s25-grid--three,
+  .pd-s25-grid--compact,
+  .pd-s25-grid--three.pd-s25-grid--compact {
+    grid-template-columns: 1fr;
+  }
+}

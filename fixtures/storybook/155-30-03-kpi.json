@@ -1,22 +1,35 @@
 {
   "fixtureId": "SB-155",
-  "storyTitle": "30 Centrum Dowodzenia/KPI",
+  "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/KPI",
   "sourceDocument": "07-centrum-dowodzenia/30-03-kpi.md",
   "screenId": "30.03",
   "components": [
+    "BusinessScreen",
     "PageHeader",
-    "InlineNotice",
-    "Button",
+    "DataStatusBanner",
+    "FilterBar",
+    "SearchField",
+    "Combobox",
+    "DateRangePicker",
     "MetricCard",
     "ChartFrame",
     "TrendChart",
-    "ForecastChart",
+    "ComparisonChart",
+    "ShareChart",
+    "DataTable",
+    "DecisionQueue",
     "DetailPanel",
-    "Tabs",
-    "TextField",
-    "Select",
-    "Checkbox",
-    "Dialog"
+    "EvidencePanel",
+    "RecommendationCard",
+    "MorningBrief",
+    "AssistantComposer",
+    "ResultDrivers",
+    "SalesSources",
+    "FunnelChart",
+    "FunnelStep",
+    "WaterfallChart",
+    "InlineNotice",
+    "Panel"
   ],
   "states": [
     "ready",
@@ -64,5 +77,8 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract",
+  "runtimeRoute": "/app/command-center/kpi",
+  "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+  "storyExport": "CommandCenterKpiStory"
 }

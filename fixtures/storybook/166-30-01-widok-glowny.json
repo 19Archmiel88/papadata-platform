@@ -1,25 +1,18 @@
 {
   "fixtureId": "SB-166",
-  "storyTitle": "30 Centrum Dowodzenia/Widok główny",
+  "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/Widok główny",
   "sourceDocument": "07-centrum-dowodzenia/30-01-widok-glowny.md",
   "screenId": "30.01",
   "components": [
-    "AssistantComposer",
-    "BrandLockup",
-    "BrandMark",
-    "Button",
-    "Combobox",
-    "DataTable",
-    "DateRangePicker",
-    "DetailPanel",
-    "IconButton",
-    "Panel",
-    "StatusBadge",
-    "TextAction",
-    "TextArea",
+    "BusinessScreen",
     "PageHeader",
+    "DataStatusBanner",
+    "MetricCard",
+    "MorningBrief",
+    "DataTable",
     "InlineNotice",
-    "MorningBrief"
+    "Panel",
+    "Button"
   ],
   "states": [
     "ready",
@@ -45,10 +38,10 @@
     "en-long-copy"
   ],
   "playSteps": [
-    "focus-first-interactive",
-    "activate-primary-action",
-    "verify-focus-restoration",
-    "verify-live-region",
+    "verify-overview-heading",
+    "verify-priority-brief",
+    "verify-kpi-register",
+    "verify-no-fake-export",
     "verify-keyboard-only"
   ],
   "visualAssertions": [
@@ -67,5 +60,8 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract",
+  "runtimeRoute": "/app/command-center/widok-glowny",
+  "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+  "storyExport": "CommandCenterOverviewStory"
 }

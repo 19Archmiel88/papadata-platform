@@ -1,15 +1,35 @@
 {
   "fixtureId": "SB-167",
-  "storyTitle": "30 Centrum Dowodzenia/Źródła sprzedaży",
+  "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/Źródła sprzedaży",
   "sourceDocument": "07-centrum-dowodzenia/30-06-zrodla-sprzedazy.md",
   "screenId": "30.06",
   "components": [
+    "BusinessScreen",
     "PageHeader",
-    "InlineNotice",
-    "Button",
-    "ShareChart",
+    "DataStatusBanner",
+    "FilterBar",
+    "SearchField",
+    "Combobox",
+    "DateRangePicker",
+    "MetricCard",
+    "ChartFrame",
+    "TrendChart",
     "ComparisonChart",
-    "SalesSources"
+    "ShareChart",
+    "DataTable",
+    "DecisionQueue",
+    "DetailPanel",
+    "EvidencePanel",
+    "RecommendationCard",
+    "MorningBrief",
+    "AssistantComposer",
+    "ResultDrivers",
+    "SalesSources",
+    "FunnelChart",
+    "FunnelStep",
+    "WaterfallChart",
+    "InlineNotice",
+    "Panel"
   ],
   "states": [
     "ready",
@@ -57,5 +77,8 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract",
+  "runtimeRoute": "/app/command-center/zrodla-sprzedazy",
+  "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+  "storyExport": "CommandCenterSalesSourcesStory"
 }

@@ -1600,3 +1600,57 @@
     padding: 14px;
   }
 }
+
+/* Premium foundation direction: geometry is separated by shadow and material, not visible contours. */
+.pd-f0-geometry-grid,
+.pd-f0-separation-grid,
+.pd-f0-geometry-contract,
+.pd-f0-depth-contract {
+  border-block: 0;
+  border-radius: var(--pd-radius-overlay);
+  background: color-mix(in srgb, var(--pd-surface-panel) 76%, transparent);
+  box-shadow: var(--pd-shadow-raised);
+  overflow: hidden;
+}
+
+.pd-f0-geometry-card,
+.pd-f0-geometry-border-card,
+.pd-f0-geometry-contract article,
+.pd-f0-depth-contract article,
+.pd-f0-depth-contract__header {
+  border-color: color-mix(in srgb, var(--pd-text) 7%, transparent);
+}
+
+.pd-f0-geometry-card,
+.pd-f0-geometry-border-card {
+  background: transparent;
+}
+
+.pd-f0-geometry-radius-preview,
+.pd-f0-geometry-border-preview,
+.pd-f0-line-boundary-grid article,
+.pd-f0-depth-stage,
+.pd-f0-depth-contract article[data-shadow] {
+  border: 0;
+  background: color-mix(in srgb, var(--pd-surface-raised) 80%, transparent);
+  box-shadow: var(--pd-shadow-raised);
+}
+
+.pd-f0-geometry-radius-control,
+.pd-f0-geometry-radius-overlay,
+.pd-f0-geometry-pill-badge,
+.pd-f0-geometry-token {
+  border: 0;
+  background: color-mix(in srgb, var(--pd-surface-panel) 86%, transparent);
+  box-shadow: var(--pd-shadow-control);
+}
+
+.pd-f0-geometry-radius-overlay[data-kind="modal"] {
+  border-color: transparent;
+  box-shadow: var(--pd-shadow-overlay);
+}
+
+.pd-f0-line-boundary-grid article > span {
+  background: color-mix(in srgb, var(--pd-brand-accent) 72%, transparent);
+  box-shadow: var(--pd-shadow-control);
+}

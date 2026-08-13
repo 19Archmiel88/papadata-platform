@@ -1,9 +1,14 @@
 {
   "fixtureId": "SB-124",
-  "storyTitle": "20 Powłoka/Workspace switcher",
+  "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/Workspace switcher",
   "sourceDocument": "06-powloka-produktu-i-nawigacja/20-06-workspace-switcher.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "WorkspaceSwitcher",
+    "StatusBadge",
+    "EmptyState",
+    "ErrorState"
+  ],
   "states": [
     "ready",
     "loading",
@@ -46,5 +51,5 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

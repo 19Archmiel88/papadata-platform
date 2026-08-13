@@ -1,0 +1,302 @@
+.pd-business-screen {
+  display: grid;
+  gap: var(--pd-space-6);
+  min-width: 0;
+}
+
+.pd-business-screen__filters {
+  align-items: start;
+  display: grid;
+  gap: var(--pd-space-4);
+  grid-template-columns: minmax(18rem, 1fr) minmax(28rem, 2fr);
+  min-width: 0;
+}
+
+.pd-business-screen__layout {
+  align-items: start;
+  display: grid;
+  gap: var(--pd-space-6);
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+  min-width: 0;
+}
+
+.pd-business-screen__metrics {
+  display: grid;
+  gap: var(--pd-space-4);
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-width: 0;
+}
+
+.pd-business-screen__main,
+.pd-business-screen__side,
+.pd-business-screen__stack {
+  display: grid;
+  gap: var(--pd-space-5);
+  min-width: 0;
+}
+
+.pd-business-screen__cards {
+  display: grid;
+  gap: var(--pd-space-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
+}
+
+.pd-business-screen__diagnostics {
+  display: grid;
+  gap: var(--pd-space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pd-business-screen__diagnostics li {
+  border: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-surface);
+  display: grid;
+  gap: var(--pd-space-2);
+  padding: var(--pd-space-4);
+}
+
+.pd-business-screen__diagnostics li[data-severity="error"] {
+  border-color: var(--pd-status-danger-border);
+}
+
+.pd-business-screen__diagnostics li[data-severity="warning"] {
+  border-color: var(--pd-status-warning);
+}
+
+.pd-business-screen__diagnostics strong {
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-business-screen__diagnostics span,
+.pd-business-screen__diagnostics small {
+  color: var(--pd-text-muted);
+}
+
+@media (max-width: 1180px) {
+  .pd-business-screen__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-business-screen__side {
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 860px) {
+  .pd-business-screen__filters,
+  .pd-business-screen__metrics,
+  .pd-business-screen__cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Enterprise BI redesign: dense but composed decision workspace. */
+.pd-business-screen {
+  gap: clamp(18px, 2vw, 28px);
+}
+
+.pd-business-screen[data-mode='storybook'] {
+  padding-inline: clamp(10px, 1vw, 18px);
+}
+
+.pd-business-screen__filters {
+  grid-template-columns: minmax(16rem, 0.8fr) minmax(24rem, 1.6fr);
+  gap: var(--pd-space-3);
+  padding: var(--pd-space-4);
+  border: 1px solid color-mix(in srgb, var(--pd-separator) 76%, transparent);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-panel) 80%, transparent), color-mix(in srgb, var(--pd-surface-raised) 52%, transparent));
+  box-shadow: var(--pd-shadow-control);
+}
+
+.pd-business-screen__layout {
+  grid-template-columns: minmax(0, 1fr) minmax(19rem, 25rem);
+  gap: clamp(22px, 2.4vw, 34px);
+}
+
+.pd-business-screen__metrics {
+  gap: var(--pd-space-4);
+}
+
+.pd-business-screen__main,
+.pd-business-screen__side,
+.pd-business-screen__stack {
+  gap: var(--pd-space-5);
+}
+
+.pd-business-screen__side {
+  position: sticky;
+  top: calc(var(--pd-space-6) + 64px);
+}
+
+.pd-business-screen__cards {
+  gap: var(--pd-space-4);
+}
+
+.pd-business-screen__diagnostics li {
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--pd-surface-panel) 86%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 10%, transparent);
+}
+
+@media (max-width: 1180px) {
+  .pd-business-screen__side {
+    position: static;
+  }
+}
+
+.pd-business-screen__system-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2);
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: var(--pd-space-2) var(--pd-space-3);
+  border: 1px solid color-mix(in srgb, var(--pd-separator) 66%, transparent);
+  border-radius: 999px;
+  color: var(--pd-text-muted);
+  background: color-mix(in srgb, var(--pd-surface-panel) 72%, transparent);
+  box-shadow: var(--pd-shadow-control);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.pd-business-screen__system-strip span + span::before {
+  content: '•';
+  margin-inline-end: var(--pd-space-2);
+  color: var(--pd-brand-line);
+}
+
+/* Enterprise BI refinement: clearer density, stronger decision hierarchy, no blue/navy dominance. */
+.pd-business-screen {
+  --pd-business-side-width: clamp(21rem, 24vw, 27rem);
+}
+
+.pd-business-screen__filters {
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-panel) 88%, transparent), color-mix(in srgb, var(--pd-surface-raised) 62%, transparent));
+  box-shadow:
+    var(--pd-shadow-control),
+    inset 0 1px 0 color-mix(in srgb, white 30%, transparent);
+}
+
+[data-theme='dark'] .pd-business-screen__filters {
+  box-shadow:
+    var(--pd-shadow-control),
+    inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
+}
+
+.pd-business-screen__layout {
+  grid-template-columns: minmax(0, 1fr) var(--pd-business-side-width);
+}
+
+.pd-business-screen__metrics {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) minmax(0, 1.1fr);
+}
+
+.pd-business-screen__side {
+  gap: var(--pd-space-4);
+}
+
+.pd-business-screen__system-strip {
+  border-radius: 14px;
+  color: color-mix(in srgb, var(--pd-text-muted) 82%, var(--pd-text));
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--pd-surface-panel) 84%, transparent), color-mix(in srgb, var(--pd-surface-subtle) 60%, var(--pd-brand-ambient)));
+}
+
+.pd-business-screen__system-strip span + span::before {
+  color: var(--pd-enterprise-focus, var(--pd-data-accent));
+}
+
+@media (max-width: 1180px) {
+  .pd-business-screen__layout,
+  .pd-business-screen__metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 30.01 Command Center overview: decision-first specialization. */
+.pd-business-screen--overview {
+  gap: clamp(20px, 2.2vw, 32px);
+}
+
+.pd-business-screen--overview[data-mode='storybook'] {
+  padding-inline: clamp(8px, 1vw, 14px);
+}
+
+.pd-command-overview__brief,
+.pd-command-overview__status,
+.pd-command-overview__register {
+  min-width: 0;
+}
+
+.pd-command-overview__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--pd-space-4);
+  min-width: 0;
+}
+
+.pd-command-overview__register {
+  display: grid;
+  gap: var(--pd-space-4);
+  padding-block-start: var(--pd-space-2);
+}
+
+.pd-command-overview__section-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--pd-space-4);
+}
+
+.pd-command-overview__section-header > div {
+  display: grid;
+  gap: var(--pd-space-1);
+}
+
+.pd-command-overview__section-header p,
+.pd-command-overview__section-header h2 {
+  margin: 0;
+}
+
+.pd-command-overview__section-header p,
+.pd-command-overview__section-header > span {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-command-overview__section-header p {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pd-command-overview__section-header h2 {
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-heading-small);
+  line-height: var(--pd-line-height-tight);
+}
+
+@media (max-width: 860px) {
+  .pd-command-overview__metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-command-overview__section-header {
+    align-items: start;
+    flex-direction: column;
+    gap: var(--pd-space-2);
+  }
+}

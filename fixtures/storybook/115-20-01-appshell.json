@@ -1,9 +1,17 @@
 {
   "fixtureId": "SB-115",
-  "storyTitle": "20 Powłoka/AppShell",
+  "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/AppShell",
   "sourceDocument": "06-powloka-produktu-i-nawigacja/20-01-appshell.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "ProductShellFrame",
+    "AuthenticatedTopbar",
+    "Sidebar",
+    "WorkspaceSwitcher",
+    "CommandPalette",
+    "NotificationCenter",
+    "OperationCenter"
+  ],
   "states": [
     "ready",
     "loading",
@@ -46,5 +54,5 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

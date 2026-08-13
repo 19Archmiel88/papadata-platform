@@ -1,14 +1,35 @@
 {
   "fixtureId": "SB-160",
-  "storyTitle": "30 Centrum Dowodzenia/Produkty",
+  "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/Produkty",
   "sourceDocument": "07-centrum-dowodzenia/30-08-produkty.md",
   "screenId": "30.08",
   "components": [
+    "BusinessScreen",
     "PageHeader",
-    "InlineNotice",
-    "Button",
+    "DataStatusBanner",
+    "FilterBar",
+    "SearchField",
+    "Combobox",
+    "DateRangePicker",
+    "MetricCard",
+    "ChartFrame",
+    "TrendChart",
+    "ComparisonChart",
+    "ShareChart",
+    "DataTable",
+    "DecisionQueue",
     "DetailPanel",
-    "Tabs"
+    "EvidencePanel",
+    "RecommendationCard",
+    "MorningBrief",
+    "AssistantComposer",
+    "ResultDrivers",
+    "SalesSources",
+    "FunnelChart",
+    "FunnelStep",
+    "WaterfallChart",
+    "InlineNotice",
+    "Panel"
   ],
   "states": [
     "ready",
@@ -56,5 +77,8 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract",
+  "runtimeRoute": "/app/command-center/produkty",
+  "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+  "storyExport": "CommandCenterProductsStory"
 }

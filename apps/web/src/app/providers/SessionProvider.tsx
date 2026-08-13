@@ -28,6 +28,7 @@ type SessionContextValue = {
   readonly login: (input: {
     readonly email: string;
     readonly password: string;
+    readonly rememberDevice?: boolean;
   }) => Promise<void>;
   readonly register: (input: {
     readonly email: string;
@@ -73,6 +74,7 @@ export function SessionProvider({
   const login = useCallback(async (input: {
     readonly email: string;
     readonly password: string;
+    readonly rememberDevice?: boolean;
   }) => {
     const result = await bffClient.login(input);
     setSession(result.session);

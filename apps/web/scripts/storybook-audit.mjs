@@ -1,6 +1,18 @@
 import {
+  createReadStream,
+  existsSync,
   readFileSync,
+  statSync,
 } from 'node:fs';
+import {
+  createServer,
+} from 'node:http';
+import {
+  dirname,
+  extname,
+  relative,
+  resolve,
+} from 'node:path';
 import {
   fileURLToPath,
 } from 'node:url';
@@ -10,22 +22,28 @@ import {
   expect,
 } from '@playwright/test';
 
-const BASE_URL =
-  process.env.STORYBOOK_URL
-  ?? 'http://127.0.0.1:6010';
 const FULL_AUDIT =
   process.argv.includes('--full');
+const BUSINESS_SCREEN_AUDIT =
+  process.argv.includes('--business-screens');
+const SERVE_STATIC =
+  process.argv.includes('--serve-static')
+  && !process.env.STORYBOOK_URL;
 const currentFile =
   fileURLToPath(import.meta.url);
+const webRoot =
+  dirname(dirname(currentFile));
+const storybookStaticDir =
+  resolve(webRoot, 'storybook-static');
 const storyIndexPath =
-  currentFile.replace(
-    /scripts\/storybook-audit\.mjs$/,
-    'storybook-static/index.json',
-  );
+  resolve(storybookStaticDir, 'index.json');
 const storyIndex = JSON.parse(
   readFileSync(storyIndexPath, 'utf8'),
 );
 const entries = Object.values(storyIndex.entries);
+let baseUrl =
+  process.env.STORYBOOK_URL
+  ?? 'http://127.0.0.1:6010';
 
 const desktopViewport = {
   width: 1440,
@@ -76,6 +94,86 @@ const crossCuttingPatternTargets = [
   },
 ];
 
+
+const businessScreenTargets = [
+  {
+    title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
+    name: 'Command Center Overview Story',
+  },
+  {
+    title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
+    name: 'Command Center Attention Queue Story',
+  },
+  {
+    title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
+    name: 'Command Center Kpi Story',
+  },
+  {
+    title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
+    name: 'Command Center Plan Performance Story',
+  },
+  {
+    title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
+    name: 'Command Center Drivers Story',
+  },
+  {
+    title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
+    name: 'Command Center Sales Sources Story',
+  },
+  {
+    title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
+    name: 'Command Center Traffic Story',
+  },
+  {
+    title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
+    name: 'Command Center Products Story',
+  },
+  {
+    title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
+    name: 'Command Center Customers Story',
+  },
+  {
+    title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
+    name: 'Command Center Funnel Story',
+  },
+  {
+    title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
+    name: 'Command Center Recommendations Story',
+  },
+  {
+    title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
+    name: 'Command Center Sales Signals Story',
+  },
+  {
+    title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
+    name: 'Command Center Waterfall Story',
+  },
+  {
+    title: '31 Kampanie płatne/Ekrany produkcyjne',
+    name: 'Campaigns Overview Story',
+  },
+  {
+    title: '31 Kampanie płatne/Ekrany produkcyjne',
+    name: 'Campaigns List Story',
+  },
+  {
+    title: '31 Kampanie płatne/Ekrany produkcyjne',
+    name: 'Campaigns Detail Story',
+  },
+  {
+    title: '31 Kampanie płatne/Ekrany produkcyjne',
+    name: 'Campaigns Attribution Story',
+  },
+  {
+    title: '31 Kampanie płatne/Ekrany produkcyjne',
+    name: 'Campaigns Budget Story',
+  },
+  {
+    title: '31 Kampanie płatne/Ekrany produkcyjne',
+    name: 'Campaigns Diagnostics Story',
+  },
+];
+
 const matrixTargets = [
   {
     title: '00 Fundamenty/01 Fundamenty wizualne',
@@ -123,6 +221,125 @@ const zoomTargets = [
   },
   ...crossCuttingPatternTargets,
 ];
+
+const contentTypes = {
+  '.css': 'text/css; charset=utf-8',
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.map': 'application/json; charset=utf-8',
+  '.png': 'image/png',
+  '.svg': 'image/svg+xml; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+};
+
+function resolveStaticFile(requestUrl) {
+  const url = new URL(
+    requestUrl ?? '/',
+    'http://127.0.0.1',
+  );
+  const pathname = decodeURIComponent(url.pathname);
+  const normalizedPath = pathname === '/'
+    ? '/index.html'
+    : pathname;
+  const filePath = resolve(
+    storybookStaticDir,
+    `.${normalizedPath}`,
+  );
+  const relativePath = relative(
+    storybookStaticDir,
+    filePath,
+  );
+
+  if (
+    relativePath.startsWith('..')
+    || relativePath === ''
+    || resolve(filePath) === storybookStaticDir
+  ) {
+    return null;
+  }
+
+  return filePath;
+}
+
+async function startStaticStorybookServer() {
+  if (!existsSync(storybookStaticDir)) {
+    throw new Error(
+      `Brak katalogu Storybook bundle: ${storybookStaticDir}. Najpierw uruchom build-storybook.`,
+    );
+  }
+
+  if (!existsSync(storyIndexPath)) {
+    throw new Error(
+      `Brak indeksu Storybook bundle: ${storyIndexPath}. Najpierw uruchom build-storybook.`,
+    );
+  }
+
+  const server = createServer((request, response) => {
+    const filePath = resolveStaticFile(request.url);
+
+    if (!filePath || !existsSync(filePath)) {
+      response.writeHead(404, {
+        'content-type': 'text/plain; charset=utf-8',
+      });
+      response.end('Not found');
+      return;
+    }
+
+    const stat = statSync(filePath);
+
+    if (!stat.isFile()) {
+      response.writeHead(404, {
+        'content-type': 'text/plain; charset=utf-8',
+      });
+      response.end('Not found');
+      return;
+    }
+
+    response.writeHead(200, {
+      'content-length': stat.size,
+      'content-type': contentTypes[extname(filePath)] ?? 'application/octet-stream',
+    });
+    createReadStream(filePath).pipe(response);
+  });
+
+  await new Promise((resolveServer, rejectServer) => {
+    server.once('error', rejectServer);
+    server.listen(0, '127.0.0.1', () => {
+      server.off('error', rejectServer);
+      resolveServer();
+    });
+  });
+
+  const address = server.address();
+
+  if (!address || typeof address === 'string') {
+    throw new Error('Nie udało się ustalić adresu lokalnego serwera Storybook bundle.');
+  }
+
+  baseUrl = `http://127.0.0.1:${address.port}`;
+
+  return server;
+}
+
+async function stopStaticStorybookServer(server) {
+  if (!server) {
+    return;
+  }
+
+  await new Promise((resolveServer, rejectServer) => {
+    server.close((error) => {
+      if (error) {
+        rejectServer(error);
+        return;
+      }
+
+      resolveServer();
+    });
+  });
+}
 
 function resolveStoryId({
   title,
@@ -202,7 +419,7 @@ async function openStory(
   });
 
   await page.goto(
-    `${BASE_URL}/iframe.html?id=${storyId}&viewMode=story`,
+    `${baseUrl}/iframe.html?id=${storyId}&viewMode=story`,
     {
       waitUntil: 'domcontentloaded',
       timeout: 10000,
@@ -317,6 +534,9 @@ async function runPlayScan(browser) {
 }
 
 async function main() {
+  const staticServer = SERVE_STATIC
+    ? await startStaticStorybookServer()
+    : null;
   const browser = await chromium.launch({
     headless: true,
   });
@@ -324,13 +544,16 @@ async function main() {
   try {
     const playScan = await runPlayScan(browser);
     const storyResults = [];
+    const activeTargets = BUSINESS_SCREEN_AUDIT
+      ? businessScreenTargets
+      : matrixTargets;
     const desktopStories = FULL_AUDIT
       ? entries.map((entry) => ({
           id: entry.id,
           name: entry.name,
           title: entry.title,
         }))
-      : matrixTargets.map((target) => ({
+      : activeTargets.map((target) => ({
           id: resolveStoryId(target),
           name: target.name ?? null,
           title: target.title,
@@ -354,7 +577,7 @@ async function main() {
 
     const responsiveResults = [];
 
-    for (const target of matrixTargets) {
+    for (const target of activeTargets) {
       const storyId = resolveStoryId(target);
 
       for (const viewport of [
@@ -449,6 +672,7 @@ async function main() {
     });
 
     const summary = {
+      businessScreenAudit: BUSINESS_SCREEN_AUDIT,
       desktop: desktopSummary,
       fullAudit: FULL_AUDIT,
       playScan,
@@ -485,6 +709,7 @@ async function main() {
     }
   } finally {
     await browser.close();
+    await stopStaticStorybookServer(staticServer);
   }
 }
 

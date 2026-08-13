@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from pathlib import Path
-import argparse,csv,hashlib,json,re,subprocess,sys,tempfile,shutil,urllib.parse
+import argparse,csv,hashlib,json,re,subprocess,sys,tempfile,shutil,urllib.parse,os
 from collections import Counter,defaultdict
 
 IGNORED_DIRS={
@@ -63,10 +63,18 @@ def is_ignored_path(p:Path,root:Path):
  if p.suffix.lower() in IGNORED_SUFFIXES:return True
  return any(pat.match(p.name) for pat in IGNORED_BACKUP_PATTERNS)
 def iter_repo_files(root:Path):
- for p in root.rglob('*'):
-  if not p.is_file():continue
-  if is_ignored_path(p,root):continue
-  yield p
+ for current, dirs, files in os.walk(root):
+  current_path=Path(current)
+  try:rel=current_path.relative_to(root)
+  except ValueError:continue
+  dirs[:]=[d for d in dirs if d not in IGNORED_DIRS]
+  if any(part in IGNORED_DIRS for part in rel.parts):
+   dirs[:]=[]
+   continue
+  for name in files:
+   p=current_path/name
+   if is_ignored_path(p,root):continue
+   yield p
 def iter_manifest_scope_files(root:Path,manifest_paths:set[str]):
  roots={p.split('/',1)[0] for p in manifest_paths}
  for p in iter_repo_files(root):

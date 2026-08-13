@@ -1,7 +1,2 @@
-/**
- * Punkt eksportu modułu:
- * src/screens/customers
- *
- * Moduł nie zawiera kodu legacy.
- */
-export {};
+export { CustomersScreen } from '../CustomersScreen';
+export type { CustomersScreenProps } from '../CustomersScreen';

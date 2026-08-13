@@ -21,7 +21,7 @@ Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 | Wymaganie | Reguła |
 | --- | --- |
 | Model komercyjny | bezpłatna aplikacja towarzysząca istniejącej odpłatnej usłudze B2B |
-| Brak artefaktu generatora placeholderów | wszystkie identyfikatory jako `{{runId}}`, `{{artifactId}}`, `{{deviceId}}` |
+| Brak artefaktu generatora placeholderów | identyfikatory techniczne muszą mieć jawne nazwy bez składni generatora |
 | Privacy | App Store Privacy Labels i Google Data Safety |
 | Account deletion | procedura dostępna i testowalna |
 

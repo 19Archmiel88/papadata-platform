@@ -1,14 +1,83 @@
-import { useEffect } from 'react';
+import type { ReactNode } from 'react';
+import {
+  lazy,
+  Suspense,
+  useEffect,
+} from 'react';
 
-import { Button } from '../../design-system';
-import { AuthPage } from '../../features/auth/AuthPage';
-import { CommandCenterScreen } from '../../screens/CommandCenterScreen';
-import { AppShell } from '../../shell/AppShell';
+import { Button } from '../../design-system/components/Button';
+import {
+  PublicTopbar,
+} from '../../shell/topbar';
 import { useSession } from '../providers';
 import {
   navigate,
   useLocationPath,
 } from './navigation';
+
+const AuthPage = lazy(async () => {
+  const module = await import('../../features/auth/AuthPage');
+
+  return {
+    default: module.AuthPage,
+  };
+});
+
+const AppShell = lazy(async () => {
+  const module = await import('../../shell/AppShell');
+
+  return {
+    default: module.AppShell,
+  };
+});
+
+const CampaignsScreen = lazy(async () => {
+  const module = await import('../../screens/CampaignsScreen');
+
+  return {
+    default: module.CampaignsScreen,
+  };
+});
+
+const CustomersScreen = lazy(async () => {
+  const module = await import('../../screens/CustomersScreen');
+
+  return {
+    default: module.CustomersScreen,
+  };
+});
+
+const OrdersScreen = lazy(async () => {
+  const module = await import('../../screens/OrdersScreen');
+
+  return {
+    default: module.OrdersScreen,
+  };
+});
+
+const ProductsScreen = lazy(async () => {
+  const module = await import('../../screens/ProductsScreen');
+
+  return {
+    default: module.ProductsScreen,
+  };
+});
+
+const TrafficScreen = lazy(async () => {
+  const module = await import('../../screens/TrafficScreen');
+
+  return {
+    default: module.TrafficScreen,
+  };
+});
+
+const CommandCenterScreen = lazy(async () => {
+  const module = await import('../../screens/CommandCenterScreen');
+
+  return {
+    default: module.CommandCenterScreen,
+  };
+});
 
 export function AppRouter() {
   const location = useLocationPath();
@@ -42,43 +111,178 @@ export function AppRouter() {
   }
 
   if (pathname === '/') {
-    return <Redirect to={status === 'authenticated' ? '/app' : '/login'} />;
+    return <Redirect to={status === 'authenticated' ? '/app' : '/auth'} />;
+  }
+
+  if (pathname === '/auth') {
+    return status === 'authenticated'
+      ? <Redirect to="/app" />
+      : (
+          <RouteSuspense>
+            <PublicAuthShell>
+              <AuthPage mode="entry" />
+            </PublicAuthShell>
+          </RouteSuspense>
+        );
   }
 
   if (pathname === '/login') {
     return status === 'authenticated'
       ? <Redirect to="/app" />
-      : <AuthPage mode="login" />;
+      : (
+          <RouteSuspense>
+            <PublicAuthShell>
+              <AuthPage mode="login" />
+            </PublicAuthShell>
+          </RouteSuspense>
+        );
   }
 
   if (pathname === '/register') {
     return status === 'authenticated'
       ? <Redirect to="/app" />
-      : <AuthPage mode="register" />;
+      : (
+          <RouteSuspense>
+            <PublicAuthShell>
+              <AuthPage mode="register" />
+            </PublicAuthShell>
+          </RouteSuspense>
+        );
+  }
+
+  if (pathname === '/mfa') {
+    return status === 'anonymous'
+      ? <Redirect to="/login" />
+      : (
+          <RouteSuspense>
+            <PublicAuthShell>
+              <AuthPage mode="mfa" />
+            </PublicAuthShell>
+          </RouteSuspense>
+        );
+  }
+
+  if (pathname === '/recover-access') {
+    return status === 'authenticated'
+      ? <Redirect to="/app" />
+      : (
+          <RouteSuspense>
+            <PublicAuthShell>
+              <AuthPage mode="recover" />
+            </PublicAuthShell>
+          </RouteSuspense>
+        );
   }
 
   if (pathname === '/app' || pathname.startsWith('/app/')) {
     if (status !== 'authenticated') {
       const returnTo = encodeURIComponent(location);
-      return <Redirect to={`/login?returnTo=${returnTo}`} />;
+      return <Redirect to={`/auth?returnTo=${returnTo}`} />;
     }
 
-    if (pathname === '/app' || pathname === '/app/command-center') {
+    if (pathname === '/app' || pathname.startsWith('/app/command-center')) {
       return (
-        <AppShell>
-          <CommandCenterScreen />
-        </AppShell>
+        <RouteSuspense>
+          <AppShell>
+            <CommandCenterScreen path={pathname} />
+          </AppShell>
+        </RouteSuspense>
+      );
+    }
+
+    if (pathname === '/app/campaigns' || pathname.startsWith('/app/campaigns/')) {
+      return (
+        <RouteSuspense>
+          <AppShell>
+            <CampaignsScreen path={pathname} />
+          </AppShell>
+        </RouteSuspense>
+      );
+    }
+
+    if (pathname === '/app/orders' || pathname.startsWith('/app/orders/')) {
+      return (
+        <RouteSuspense>
+          <AppShell>
+            <OrdersScreen path={pathname} />
+          </AppShell>
+        </RouteSuspense>
+      );
+    }
+
+    if (pathname === '/app/products' || pathname.startsWith('/app/products/')) {
+      return (
+        <RouteSuspense>
+          <AppShell>
+            <ProductsScreen path={pathname} />
+          </AppShell>
+        </RouteSuspense>
+      );
+    }
+
+    if (pathname === '/app/customers' || pathname.startsWith('/app/customers/')) {
+      return (
+        <RouteSuspense>
+          <AppShell>
+            <CustomersScreen path={pathname} />
+          </AppShell>
+        </RouteSuspense>
+      );
+    }
+
+    if (pathname === '/app/traffic' || pathname.startsWith('/app/traffic/')) {
+      return (
+        <RouteSuspense>
+          <AppShell>
+            <TrafficScreen path={pathname} />
+          </AppShell>
+        </RouteSuspense>
       );
     }
 
     return (
-      <AppShell>
-        <NotFound />
-      </AppShell>
+      <RouteSuspense>
+        <AppShell>
+          <NotFound />
+        </AppShell>
+      </RouteSuspense>
     );
   }
 
   return <NotFound />;
+}
+
+function PublicAuthShell({
+  children,
+}: {
+  readonly children: ReactNode;
+}) {
+  return (
+    <div className="pd-auth-route-shell">
+      <PublicTopbar onNavigate={navigate} />
+      {children}
+    </div>
+  );
+}
+
+function RouteSuspense({
+  children,
+}: {
+  readonly children: ReactNode;
+}) {
+  return (
+    <Suspense
+      fallback={(
+        <main className="runtime-status">
+          <p className="runtime-status__brand">PapaData</p>
+          <h1>Ładowanie widoku…</h1>
+          <p>Frontend przygotowuje ekran runtime.</p>
+        </main>
+      )}
+    >
+      {children}
+    </Suspense>
+  );
 }
 
 function Redirect({

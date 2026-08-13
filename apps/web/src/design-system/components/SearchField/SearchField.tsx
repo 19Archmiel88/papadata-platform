@@ -157,6 +157,7 @@ export const SearchField = forwardRef<
 
     const emitQueryChange = () => {
       debounceTimerRef.current = null;
+      previousQueryRef.current = draftQuery;
       onQueryChange(draftQuery);
     };
 

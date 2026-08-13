@@ -1,0 +1,248 @@
+import type {
+  ShellCommandResult,
+  ShellNavigationGroup,
+  ShellNotification,
+  ShellOperation,
+  ShellUser,
+  ShellWorkspace,
+} from './shellTypes';
+
+export const defaultShellUser: ShellUser = {
+  displayName: 'Artur Wiśniewski',
+  email: 'artur@papadata.local',
+  role: 'Owner workspace',
+};
+
+export const defaultShellWorkspaces = [
+  {
+    capabilities: [
+      'analytics.read',
+      'integrations.manage',
+      'billing.read',
+    ],
+    id: 'commerce',
+    name: 'Commerce PL',
+    role: 'Owner',
+    statusText: 'Aktywny',
+    tone: 'success',
+  },
+  {
+    capabilities: [
+      'analytics.read',
+    ],
+    id: 'marketplace',
+    name: 'Marketplace EU',
+    role: 'Analityk',
+    statusText: 'Tylko odczyt',
+    tone: 'info',
+  },
+  {
+    capabilities: [],
+    disabled: true,
+    id: 'archive',
+    name: 'Archiwum 2025',
+    role: 'Brak dostępu',
+    statusText: 'Zablokowany',
+    tone: 'warning',
+  },
+] satisfies readonly ShellWorkspace[];
+
+export const defaultShellNavigation = [
+  {
+    id: 'analytics',
+    label: 'Analiza',
+    items: [
+      {
+        icon: 'home',
+        id: 'command-center',
+        label: 'Centrum Dowodzenia',
+        path: '/app/command-center',
+      },
+      {
+        icon: 'trend',
+        id: 'campaigns',
+        label: 'Kampanie płatne',
+        path: '/app/campaigns',
+      },
+      {
+        icon: 'data',
+        id: 'orders',
+        label: 'Zamówienia',
+        path: '/app/orders',
+      },
+      {
+        icon: 'products',
+        id: 'products',
+        label: 'Produkty',
+        path: '/app/products',
+      },
+      {
+        icon: 'customers',
+        id: 'customers',
+        label: 'Klienci',
+        path: '/app/customers',
+      },
+      {
+        icon: 'trend',
+        id: 'traffic',
+        label: 'Ruch na stronie',
+        path: '/app/traffic',
+      },
+    ],
+  },
+  {
+    id: 'ai',
+    label: 'AI',
+    items: [
+      {
+        disabled: true,
+        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym runtime.',
+        icon: 'assistant',
+        id: 'papa',
+        label: 'Laboratorium Papa Asystenta',
+        path: '/app/papa/laboratorium-ai',
+      },
+    ],
+  },
+  {
+    id: 'data-integrations',
+    label: 'Dane i integracje',
+    items: [
+      {
+        disabled: true,
+        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym runtime.',
+        icon: 'integration',
+        id: 'integrations',
+        label: 'Integracje',
+        path: '/app/integrations/katalog-integracji',
+      },
+    ],
+  },
+  {
+    id: 'administration',
+    label: 'Administracja',
+    items: [
+      {
+        disabled: true,
+        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym runtime.',
+        icon: 'security',
+        id: 'settings',
+        label: 'Ustawienia',
+        path: '/app/settings/organizacja',
+      },
+      {
+        disabled: true,
+        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym runtime.',
+        icon: 'billing',
+        id: 'billing',
+        label: 'Subskrypcja i płatności',
+        path: '/app/billing/subskrypcja',
+      },
+    ],
+  },
+  {
+    id: 'support',
+    label: 'Wsparcie',
+    items: [
+      {
+        disabled: true,
+        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym runtime.',
+        icon: 'decisions',
+        id: 'decisions',
+        label: 'Wsparcie w marketingu',
+        path: '/app/decisions/centrum-decyzji',
+      },
+      {
+        disabled: true,
+        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym runtime.',
+        icon: 'help',
+        id: 'help',
+        label: 'Centrum Pomocy',
+        path: '/app/help/strona-glowna-pomocy',
+      },
+    ],
+  },
+] satisfies readonly ShellNavigationGroup[];
+
+export const defaultShellCommands = [
+  {
+    description: 'Otwiera główny runtime proof po zalogowaniu.',
+    id: 'open-command-center',
+    keywords: [
+      'dashboard',
+      'kpi',
+      'centrum',
+    ],
+    label: 'Przejdź do Centrum Dowodzenia',
+    path: '/app/command-center',
+    section: 'Nawigacja',
+  },
+  {
+    description: 'Sprawdza stan połączeń i ostatnie synchronizacje.',
+    id: 'open-integrations',
+    keywords: [
+      'integracje',
+      'sync',
+      'provider',
+    ],
+    label: 'Otwórz katalog integracji',
+    path: '/app/integrations/katalog-integracji',
+    section: 'Dane',
+  },
+  {
+    description: 'Pokazuje ustawienia organizacji i workspace.',
+    id: 'open-settings',
+    keywords: [
+      'role',
+      'workspace',
+      'zespół',
+    ],
+    label: 'Otwórz ustawienia organizacji',
+    path: '/app/settings/organizacja',
+    section: 'Administracja',
+  },
+] satisfies readonly ShellCommandResult[];
+
+export const defaultShellNotifications = [
+  {
+    actionLabel: 'Sprawdź',
+    id: 'readiness',
+    message: 'Readiness danych dla Commerce PL jest częściowy: brakuje świeżego kosztu reklam.',
+    time: '2 min temu',
+    title: 'Dane wymagają uwagi',
+    tone: 'warning',
+    unread: true,
+  },
+  {
+    id: 'sync-done',
+    message: 'Synchronizacja WooCommerce zakończyła się bez nowych konfliktów.',
+    time: '18 min temu',
+    title: 'Synchronizacja zakończona',
+    tone: 'success',
+  },
+] satisfies readonly ShellNotification[];
+
+export const defaultShellOperations = [
+  {
+    actionLabel: 'Anuluj',
+    description: 'Pobieranie zamówień i refundów z ostatnich 30 dni.',
+    errorCode: null,
+    id: 'sync-woo-20260812',
+    progress: 64,
+    startedAt: '12:18',
+    status: 'running',
+    statusText: 'W toku',
+    title: 'Synchronizacja WooCommerce',
+  },
+  {
+    actionLabel: 'Ponów',
+    description: 'Google Ads zwrócił limit rate limit. Retry jest bezpieczny.',
+    errorCode: 'ADS-429',
+    id: 'ads-cost-refresh',
+    progress: null,
+    startedAt: '12:05',
+    status: 'failed',
+    statusText: 'Wymaga retry',
+    title: 'Odświeżenie kosztów Google Ads',
+  },
+] satisfies readonly ShellOperation[];

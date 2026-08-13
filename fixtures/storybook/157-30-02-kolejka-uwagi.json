@@ -1,21 +1,35 @@
 {
   "fixtureId": "SB-157",
-  "storyTitle": "30 Centrum Dowodzenia/Kolejka uwagi",
+  "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/Kolejka uwagi",
   "sourceDocument": "07-centrum-dowodzenia/30-02-kolejka-uwagi.md",
   "screenId": "30.02",
   "components": [
-    "ApprovalPanel",
-    "DecisionCard",
+    "BusinessScreen",
     "PageHeader",
-    "InlineNotice",
-    "Button",
+    "DataStatusBanner",
     "FilterBar",
-    "DataTable",
-    "Pagination",
-    "DetailPanel",
+    "SearchField",
+    "Combobox",
+    "DateRangePicker",
     "MetricCard",
     "ChartFrame",
-    "TrendChart"
+    "TrendChart",
+    "ComparisonChart",
+    "ShareChart",
+    "DataTable",
+    "DecisionQueue",
+    "DetailPanel",
+    "EvidencePanel",
+    "RecommendationCard",
+    "MorningBrief",
+    "AssistantComposer",
+    "ResultDrivers",
+    "SalesSources",
+    "FunnelChart",
+    "FunnelStep",
+    "WaterfallChart",
+    "InlineNotice",
+    "Panel"
   ],
   "states": [
     "ready",
@@ -63,5 +77,8 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract",
+  "runtimeRoute": "/app/command-center/kolejka-uwagi",
+  "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+  "storyExport": "CommandCenterAttentionQueueStory"
 }

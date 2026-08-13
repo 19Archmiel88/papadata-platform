@@ -1,9 +1,15 @@
 {
   "fixtureId": "SB-119",
-  "storyTitle": "20 Powłoka/Powiadomienia",
+  "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/Powiadomienia",
   "sourceDocument": "06-powloka-produktu-i-nawigacja/20-08-powiadomienia.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "NotificationCenter",
+    "Drawer",
+    "StatusBadge",
+    "EmptyState",
+    "ErrorState"
+  ],
   "states": [
     "ready",
     "loading",
@@ -46,5 +52,5 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

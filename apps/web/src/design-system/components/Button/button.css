@@ -259,3 +259,80 @@ button.pd-button {
   transform-origin: center;
   transition: var(--pd-brand-flow-line-transition);
 }
+
+/* Enterprise BI redesign: primary actions must read as real decisions, not links. */
+.pd-button,
+button.pd-button {
+  border-radius: calc(var(--pd-radius-control) + 3px);
+  transition:
+    background var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    border-color var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    box-shadow var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    color var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    transform var(--pd-motion-duration-fast) var(--pd-motion-easing-standard);
+}
+
+.pd-button--primary,
+.pd-button[data-variant='primary'] {
+  --pd-button-color: var(--pd-brand-action-on);
+  --pd-button-hover-color: var(--pd-brand-action-on);
+  --pd-button-line: color-mix(in srgb, var(--pd-brand-action-on) 72%, transparent);
+
+  border-color: color-mix(in srgb, var(--pd-brand-action) 86%, var(--pd-separator));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-brand-action-hover) 78%, var(--pd-brand-highlight) 22%),
+      var(--pd-brand-action)
+    );
+  box-shadow:
+    0 14px 30px -22px color-mix(in srgb, var(--pd-brand-action) 72%, black),
+    inset 0 1px 0 color-mix(in srgb, var(--pd-brand-action-on) 22%, transparent);
+}
+
+.pd-button--primary:hover,
+button.pd-button--primary:hover,
+.pd-button[data-variant='primary']:hover,
+button.pd-button[data-variant='primary']:hover {
+  border-color: var(--pd-brand-highlight);
+  background:
+    linear-gradient(
+      180deg,
+      var(--pd-brand-highlight),
+      var(--pd-brand-action-hover)
+    );
+  box-shadow:
+    0 18px 36px -22px color-mix(in srgb, var(--pd-brand-action) 86%, black),
+    inset 0 1px 0 color-mix(in srgb, var(--pd-brand-action-on) 28%, transparent);
+  transform: translateY(-1px);
+}
+
+.pd-button--secondary,
+.pd-button[data-variant='secondary'] {
+  border-color: var(--pd-separator);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-raised) 88%, var(--pd-brand-ambient)),
+      var(--pd-surface-panel)
+    );
+  box-shadow: var(--pd-shadow-control);
+}
+
+.pd-button--secondary:hover,
+button.pd-button--secondary:hover,
+.pd-button[data-variant='secondary']:hover,
+button.pd-button[data-variant='secondary']:hover {
+  border-color: color-mix(in srgb, var(--pd-brand-line) 56%, var(--pd-separator));
+  background: color-mix(in srgb, var(--pd-surface-raised) 82%, var(--pd-brand-ambient));
+}
+
+.pd-button--ghost,
+.pd-button[data-variant='ghost'] {
+  color: var(--pd-text-secondary);
+}
+
+.pd-button--full-width,
+.pd-button[data-full-width='true'] {
+  justify-content: center;
+}

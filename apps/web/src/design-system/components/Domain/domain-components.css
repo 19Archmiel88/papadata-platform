@@ -1,0 +1,949 @@
+.pd-page-header,
+.pd-panel,
+.pd-detail-panel,
+.pd-data-status-banner,
+.pd-evidence-panel,
+.pd-recommendation-card,
+.pd-decision-card,
+.pd-decision-queue,
+.pd-morning-brief,
+.pd-assistant-composer,
+.pd-result-drivers,
+.pd-sales-sources,
+.pd-funnel-step,
+.pd-funnel-chart,
+.pd-waterfall-chart,
+.pd-budget-pacing,
+.pd-attribution-comparison,
+.pd-plan-performance {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  color: var(--pd-text);
+}
+
+.pd-page-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--pd-space-5);
+  align-items: end;
+  padding-block: var(--pd-space-5);
+  border-bottom: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+}
+
+.pd-page-header__main,
+.pd-page-header__heading,
+.pd-panel__header,
+.pd-data-status-banner__main,
+.pd-evidence-panel__header,
+.pd-recommendation-card__header,
+.pd-decision-card__header,
+.pd-decision-queue__header,
+.pd-morning-brief__header,
+.pd-result-drivers__header,
+.pd-sales-sources__header,
+.pd-budget-pacing__header,
+.pd-plan-performance__header {
+  min-inline-size: 0;
+}
+
+.pd-page-header__breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2);
+  align-items: center;
+  margin: 0 0 var(--pd-space-3);
+  padding: 0;
+  list-style: none;
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-page-header__breadcrumbs li:not(:last-child)::after {
+  content: '/';
+  margin-inline-start: var(--pd-space-2);
+  color: color-mix(in srgb, var(--pd-text-muted) 62%, transparent);
+}
+
+.pd-page-header__breadcrumbs a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.pd-page-header__breadcrumbs a:focus-visible,
+.pd-page-header__breadcrumbs a:hover {
+  color: var(--pd-text);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.pd-page-header__heading h1 {
+  margin: 0;
+  font-size: var(--pd-type-size-heading-1);
+  line-height: var(--pd-line-height-compact);
+  overflow-wrap: anywhere;
+}
+
+.pd-page-header__heading p,
+.pd-panel__header p,
+.pd-data-status-banner p,
+.pd-evidence-panel p,
+.pd-morning-brief__footer {
+  margin: var(--pd-space-2) 0 0;
+  color: color-mix(in srgb, var(--pd-text) 74%, var(--pd-text-secondary));
+  line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-page-header__meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(7rem, auto));
+  gap: var(--pd-space-3);
+  margin: 0;
+}
+
+.pd-page-header__meta div,
+.pd-data-status-banner__sources div,
+.pd-evidence-panel__sources div,
+.pd-recommendation-card__meta div,
+.pd-decision-card__meta div,
+.pd-funnel-step dl div,
+.pd-plan-performance__meta div {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.pd-page-header__meta dt,
+.pd-data-status-banner__sources dt,
+.pd-evidence-panel__sources dt,
+.pd-recommendation-card__meta dt,
+.pd-decision-card__meta dt,
+.pd-funnel-step dt,
+.pd-plan-performance__meta dt {
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-page-header__meta dd,
+.pd-data-status-banner__sources dd,
+.pd-evidence-panel__sources dd,
+.pd-recommendation-card__meta dd,
+.pd-decision-card__meta dd,
+.pd-funnel-step dd,
+.pd-plan-performance__meta dd {
+  margin: 0;
+  font-weight: var(--pd-font-weight-medium);
+}
+
+.pd-page-header__actions,
+.pd-panel__actions,
+.pd-recommendation-card__actions,
+.pd-decision-queue__actions,
+.pd-budget-pacing__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2);
+  align-items: center;
+}
+
+.pd-panel,
+.pd-detail-panel,
+.pd-data-status-banner,
+.pd-evidence-panel,
+.pd-recommendation-card,
+.pd-decision-card,
+.pd-decision-queue,
+.pd-morning-brief,
+.pd-assistant-composer,
+.pd-result-drivers,
+.pd-sales-sources,
+.pd-funnel-step,
+.pd-funnel-chart,
+.pd-waterfall-chart,
+.pd-budget-pacing,
+.pd-attribution-comparison,
+.pd-plan-performance {
+  display: grid;
+  gap: var(--pd-space-4);
+  padding: var(--pd-space-5);
+  border: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-surface);
+  background: var(--pd-surface-panel);
+}
+
+.pd-panel[data-padding='none'] {
+  padding: 0;
+}
+
+.pd-panel[data-padding='sm'] {
+  padding: var(--pd-space-3);
+}
+
+.pd-panel[data-padding='lg'] {
+  padding: var(--pd-space-6);
+}
+
+.pd-panel[data-tone='data'],
+.pd-data-status-banner[data-readiness='ready'] {
+  border-color: color-mix(in srgb, var(--pd-data-accent) 38%, var(--pd-separator-subtle));
+}
+
+.pd-panel[data-tone='warning'],
+.pd-data-status-banner[data-readiness='partial'],
+.pd-data-status-banner[data-readiness='stale'] {
+  border-color: color-mix(in srgb, var(--pd-status-warning) 42%, var(--pd-separator-subtle));
+}
+
+.pd-panel[data-tone='critical'],
+.pd-data-status-banner[data-readiness='blocked'],
+.pd-data-status-banner[data-readiness='sourceError'] {
+  border-color: color-mix(in srgb, var(--pd-status-danger) 42%, var(--pd-separator-subtle));
+}
+
+.pd-panel__header,
+.pd-data-status-banner__main,
+.pd-evidence-panel__header,
+.pd-recommendation-card__header,
+.pd-decision-card__header,
+.pd-decision-queue__header,
+.pd-morning-brief__header,
+.pd-result-drivers__header,
+.pd-sales-sources__header,
+.pd-budget-pacing__header,
+.pd-plan-performance__header {
+  display: flex;
+  gap: var(--pd-space-3);
+  align-items: start;
+  justify-content: space-between;
+}
+
+.pd-panel__eyebrow,
+.pd-detail-panel__header p,
+.pd-evidence-panel__header p,
+.pd-recommendation-card__header p,
+.pd-decision-card__header p,
+.pd-decision-queue__header p,
+.pd-morning-brief__header p,
+.pd-result-drivers__header p,
+.pd-sales-sources__header p,
+.pd-budget-pacing__header p,
+.pd-plan-performance__header p {
+  margin: 0 0 var(--pd-space-1);
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+  font-weight: var(--pd-font-weight-medium);
+  text-transform: uppercase;
+}
+
+.pd-panel__header h2,
+.pd-detail-panel__header h2,
+.pd-data-status-banner h2,
+.pd-evidence-panel__header h2,
+.pd-decision-queue__header h2,
+.pd-morning-brief__header h2,
+.pd-result-drivers__header h2,
+.pd-sales-sources__header h2,
+.pd-funnel-chart h2,
+.pd-waterfall-chart h2,
+.pd-budget-pacing__header h2,
+.pd-plan-performance__header h2,
+.pd-recommendation-card h3,
+.pd-decision-card h3,
+.pd-funnel-step h3 {
+  margin: 0;
+  font-size: var(--pd-type-size-heading-3);
+  line-height: var(--pd-line-height-compact);
+  overflow-wrap: anywhere;
+}
+
+.pd-panel__body,
+.pd-detail-panel__sections,
+.pd-decision-queue__list {
+  display: grid;
+  gap: var(--pd-space-4);
+  min-inline-size: 0;
+}
+
+.pd-detail-panel {
+  align-self: start;
+}
+
+.pd-detail-panel[data-width='sm'] {
+  max-inline-size: 24rem;
+}
+
+.pd-detail-panel[data-width='md'] {
+  max-inline-size: 34rem;
+}
+
+.pd-detail-panel[data-width='lg'] {
+  max-inline-size: 44rem;
+}
+
+.pd-detail-panel__header {
+  display: flex;
+  gap: var(--pd-space-3);
+  align-items: start;
+  justify-content: space-between;
+}
+
+.pd-detail-panel__sections section {
+  display: grid;
+  gap: var(--pd-space-2);
+}
+
+.pd-detail-panel__sections h3 {
+  margin: 0;
+  font-size: var(--pd-type-size-body);
+}
+
+.pd-detail-panel__sections dl {
+  display: grid;
+  gap: var(--pd-space-2);
+  margin: 0;
+}
+
+.pd-detail-panel__sections dl div {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.42fr) minmax(0, 1fr);
+  gap: var(--pd-space-3);
+  padding-block: var(--pd-space-2);
+  border-top: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+}
+
+.pd-detail-panel__sections dt {
+  color: var(--pd-text-muted);
+}
+
+.pd-detail-panel__sections dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.pd-data-status-banner__sources,
+.pd-evidence-panel__sources,
+.pd-recommendation-card__meta,
+.pd-decision-card__meta,
+.pd-funnel-step dl,
+.pd-plan-performance__meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--pd-space-3);
+  margin: 0;
+}
+
+.pd-data-status-banner__issues,
+.pd-evidence-panel__list,
+.pd-morning-brief__list,
+.pd-result-drivers__list,
+.pd-sales-sources__list,
+.pd-funnel-chart__steps,
+.pd-waterfall-chart__items {
+  display: grid;
+  gap: var(--pd-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-data-status-banner__issues li,
+.pd-evidence-panel__list li,
+.pd-morning-brief__list li,
+.pd-result-drivers__list li,
+.pd-sales-sources__list li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--pd-space-3);
+  align-items: center;
+  padding-block: var(--pd-space-3);
+  border-top: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+}
+
+.pd-evidence-panel__list li > div,
+.pd-morning-brief__list li > div,
+.pd-result-drivers__list li > div,
+.pd-sales-sources__list li > div {
+  display: grid;
+  gap: 0.18rem;
+  min-inline-size: 0;
+}
+
+.pd-evidence-panel__list span,
+.pd-morning-brief__list span,
+.pd-result-drivers__list span,
+.pd-sales-sources__list span {
+  color: color-mix(in srgb, var(--pd-text) 72%, var(--pd-text-secondary));
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-recommendation-card,
+.pd-decision-card {
+  gap: var(--pd-space-3);
+}
+
+.pd-recommendation-card[data-risk='high'],
+.pd-decision-card[data-priority='high'] {
+  border-color: color-mix(in srgb, var(--pd-status-warning) 42%, var(--pd-separator-subtle));
+}
+
+.pd-recommendation-card__header,
+.pd-decision-card__header {
+  align-items: start;
+}
+
+.pd-recommendation-card__actions,
+.pd-decision-card__action {
+  padding-top: var(--pd-space-2);
+}
+
+.pd-decision-card__action {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.pd-assistant-composer form,
+.pd-assistant-composer__footer {
+  display: grid;
+  gap: var(--pd-space-3);
+}
+
+.pd-assistant-composer__footer {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-result-drivers__list li {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.pd-result-drivers__list li[data-direction='positive'] > span:first-of-type {
+  color: var(--pd-status-success);
+}
+
+.pd-result-drivers__list li[data-direction='negative'] > span:first-of-type {
+  color: var(--pd-status-warning);
+}
+
+.pd-sales-sources__list li {
+  grid-template-columns: minmax(0, 1fr) minmax(10rem, 0.72fr) auto auto;
+}
+
+.pd-sales-sources__bar {
+  display: grid;
+  gap: var(--pd-space-1);
+}
+
+.pd-sales-sources__bar > span {
+  display: block;
+  inline-size: 100%;
+  block-size: 0.42rem;
+  overflow: hidden;
+  border-radius: var(--pd-radius-pill);
+  background: color-mix(in srgb, var(--pd-separator-subtle) 72%, transparent);
+}
+
+.pd-sales-sources__bar > span > span {
+  display: block;
+  block-size: 100%;
+  border-radius: inherit;
+  background: var(--pd-data-accent);
+}
+
+.pd-sales-sources__bar b {
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-funnel-step {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.pd-funnel-chart__steps li,
+.pd-waterfall-chart__items li {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.34fr) minmax(0, 1fr) auto;
+  gap: var(--pd-space-3);
+  align-items: center;
+  padding-block: var(--pd-space-3);
+  border-top: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+}
+
+.pd-funnel-chart__steps li > div,
+.pd-waterfall-chart__items li > div {
+  display: grid;
+  gap: 0.16rem;
+}
+
+.pd-funnel-chart__bar,
+.pd-waterfall-chart__bar {
+  display: block;
+  inline-size: 100%;
+  block-size: 0.72rem;
+  overflow: hidden;
+  border-radius: var(--pd-radius-pill);
+  background: color-mix(in srgb, var(--pd-separator-subtle) 82%, transparent);
+}
+
+.pd-funnel-chart__bar > span,
+.pd-waterfall-chart__bar > span {
+  display: block;
+  block-size: 100%;
+  border-radius: inherit;
+  background: var(--pd-data-accent);
+}
+
+.pd-waterfall-chart__items li[data-kind='decrease'] .pd-waterfall-chart__bar > span {
+  background: var(--pd-status-warning);
+}
+
+.pd-waterfall-chart__items li[data-kind='total'] .pd-waterfall-chart__bar > span {
+  background: var(--pd-status-success);
+}
+
+.pd-budget-pacing {
+  gap: var(--pd-space-5);
+}
+
+.pd-budget-pacing__footer {
+  justify-content: space-between;
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-attribution-comparison {
+  margin: 0;
+}
+
+.pd-attribution-comparison legend {
+  padding: 0;
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+  font-weight: var(--pd-font-weight-medium);
+}
+
+.pd-attribution-comparison__models {
+  display: grid;
+  gap: var(--pd-space-3);
+}
+
+.pd-attribution-comparison__models label {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--pd-space-3);
+  align-items: start;
+  padding: var(--pd-space-3);
+  border: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-surface);
+  cursor: pointer;
+}
+
+.pd-attribution-comparison__models label:has(input:checked) {
+  border-color: color-mix(in srgb, var(--pd-data-accent) 54%, var(--pd-separator-subtle));
+  background: color-mix(in srgb, var(--pd-data-accent-subtle) 24%, transparent);
+}
+
+.pd-attribution-comparison__models input {
+  margin-block-start: 0.22rem;
+  accent-color: var(--pd-interactive);
+}
+
+.pd-attribution-comparison__models input:focus-visible {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: var(--pd-focus-offset);
+}
+
+.pd-attribution-comparison__models span {
+  display: grid;
+  gap: 0.12rem;
+  min-inline-size: 0;
+}
+
+@media (max-width: 760px) {
+  .pd-page-header,
+  .pd-panel__header,
+  .pd-data-status-banner__main,
+  .pd-evidence-panel__header,
+  .pd-recommendation-card__header,
+  .pd-decision-card__header,
+  .pd-decision-queue__header,
+  .pd-morning-brief__header,
+  .pd-result-drivers__header,
+  .pd-sales-sources__header,
+  .pd-budget-pacing__header,
+  .pd-plan-performance__header {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pd-page-header__meta,
+  .pd-data-status-banner__sources,
+  .pd-evidence-panel__sources,
+  .pd-recommendation-card__meta,
+  .pd-decision-card__meta,
+  .pd-funnel-step dl,
+  .pd-plan-performance__meta {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-page-header__actions,
+  .pd-panel__actions,
+  .pd-recommendation-card__actions,
+  .pd-budget-pacing__footer,
+  .pd-assistant-composer__footer {
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+  }
+
+  .pd-data-status-banner__issues li,
+  .pd-evidence-panel__list li,
+  .pd-morning-brief__list li,
+  .pd-result-drivers__list li,
+  .pd-sales-sources__list li,
+  .pd-funnel-chart__steps li,
+  .pd-waterfall-chart__items li {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .pd-detail-panel__sections dl div {
+    grid-template-columns: 1fr;
+    gap: var(--pd-space-1);
+  }
+}
+
+/* Enterprise BI redesign: mature analytical surfaces, denser hierarchy. */
+.pd-page-header {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.72fr) auto;
+  gap: clamp(18px, 2vw, 32px);
+  align-items: stretch;
+  padding: clamp(18px, 2vw, 26px);
+  border: 1px solid color-mix(in srgb, var(--pd-separator) 76%, transparent);
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--pd-surface-panel) 88%, var(--pd-brand-ambient)), color-mix(in srgb, var(--pd-surface-panel) 92%, var(--pd-data-accent-subtle)));
+  box-shadow: var(--pd-shadow-raised);
+}
+
+.pd-page-header__breadcrumbs ol {
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+  letter-spacing: 0.02em;
+}
+
+.pd-page-header__heading h1 {
+  max-width: 24ch;
+  font-size: clamp(26px, 2.5vw, 42px);
+  font-weight: var(--pd-font-weight-semibold);
+  letter-spacing: -0.04em;
+}
+
+.pd-page-header__heading p,
+.pd-panel__header p,
+.pd-data-status-banner p,
+.pd-evidence-panel p,
+.pd-morning-brief__footer {
+  color: var(--pd-text-secondary);
+}
+
+.pd-page-header__meta {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--pd-surface-raised) 72%, transparent);
+}
+
+.pd-page-header__meta div {
+  padding: var(--pd-space-3) var(--pd-space-4);
+}
+
+.pd-page-header__meta div + div {
+  border-left: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-page-header__meta dt,
+.pd-data-status-banner__sources dt,
+.pd-evidence-panel__sources dt,
+.pd-recommendation-card__meta dt,
+.pd-decision-card__meta dt,
+.pd-funnel-step dt,
+.pd-plan-performance__meta dt {
+  font-family: var(--pd-font-mono);
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.pd-panel,
+.pd-detail-panel,
+.pd-data-status-banner,
+.pd-evidence-panel,
+.pd-recommendation-card,
+.pd-decision-card,
+.pd-decision-queue,
+.pd-morning-brief,
+.pd-assistant-composer,
+.pd-result-drivers,
+.pd-sales-sources,
+.pd-funnel-step,
+.pd-funnel-chart,
+.pd-waterfall-chart,
+.pd-budget-pacing,
+.pd-attribution-comparison,
+.pd-plan-performance {
+  gap: var(--pd-space-4);
+  padding: clamp(18px, 2vw, 26px);
+  border-color: color-mix(in srgb, var(--pd-separator) 78%, transparent);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-panel) 88%, transparent), color-mix(in srgb, var(--pd-surface-raised) 62%, transparent));
+  box-shadow: var(--pd-shadow-control);
+}
+
+.pd-data-status-banner {
+  position: relative;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  align-items: start;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.pd-data-status-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--pd-data-accent);
+}
+
+.pd-data-status-banner[data-readiness='partial']::before,
+.pd-data-status-banner[data-readiness='stale']::before {
+  background: var(--pd-status-warning);
+}
+
+.pd-data-status-banner[data-readiness='blocked']::before,
+.pd-data-status-banner[data-readiness='sourceError']::before {
+  background: var(--pd-status-danger);
+}
+
+.pd-data-status-banner__sources,
+.pd-evidence-panel__sources,
+.pd-recommendation-card__meta,
+.pd-decision-card__meta,
+.pd-funnel-step dl,
+.pd-plan-performance__meta {
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}
+
+.pd-data-status-banner__issues li,
+.pd-evidence-panel__list li,
+.pd-morning-brief__list li,
+.pd-result-drivers__list li,
+.pd-sales-sources__list li {
+  border-top-color: color-mix(in srgb, var(--pd-separator-subtle) 82%, transparent);
+}
+
+.pd-evidence-panel,
+.pd-recommendation-card {
+  border-radius: 20px;
+}
+
+.pd-evidence-panel {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-panel) 80%, var(--pd-data-accent-subtle)), var(--pd-surface-panel));
+}
+
+.pd-recommendation-card {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--pd-brand-line) 48%, var(--pd-separator));
+  background:
+    radial-gradient(ellipse 80% 48% at 100% 0%, color-mix(in srgb, var(--pd-brand-ambient) 88%, transparent), transparent 64%),
+    linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-panel) 88%, var(--pd-brand-ambient)), var(--pd-surface-panel));
+  box-shadow: var(--pd-shadow-raised);
+}
+
+.pd-recommendation-card::before {
+  content: 'DECISION';
+  justify-self: start;
+  width: max-content;
+  padding: 2px 8px;
+  border: 1px solid color-mix(in srgb, var(--pd-brand-line) 44%, transparent);
+  border-radius: 999px;
+  color: var(--pd-brand-strong);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-micro);
+  letter-spacing: 0.08em;
+}
+
+.pd-recommendation-card h3,
+.pd-decision-card h3 {
+  font-size: clamp(18px, 1.4vw, 24px);
+  font-weight: var(--pd-font-weight-semibold);
+  letter-spacing: -0.025em;
+}
+
+.pd-decision-card {
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-raised) 82%, transparent), var(--pd-surface-panel));
+}
+
+.pd-plan-performance,
+.pd-budget-pacing,
+.pd-attribution-comparison,
+.pd-funnel-chart,
+.pd-waterfall-chart {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-panel) 82%, var(--pd-data-accent-subtle)), var(--pd-surface-panel));
+}
+
+.pd-sales-sources__bar > span,
+.pd-funnel-chart__bar,
+.pd-waterfall-chart__bar {
+  background: color-mix(in srgb, var(--pd-separator) 48%, transparent);
+}
+
+.pd-sales-sources__bar > span > span,
+.pd-funnel-chart__bar > span,
+.pd-waterfall-chart__bar > span {
+  background: linear-gradient(90deg, var(--pd-data-accent), var(--pd-brand-highlight));
+}
+
+@media (max-width: 980px) {
+  .pd-page-header,
+  .pd-data-status-banner {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-page-header__meta {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-page-header__meta div + div {
+    border-left: 0;
+    border-top: 1px solid var(--pd-separator-subtle);
+  }
+}
+
+/* Enterprise BI refinement pass: mature surfaces and clearer decision cards. */
+.pd-page-header {
+  padding-block: clamp(28px, 3vw, 48px);
+  border-bottom-color: color-mix(in srgb, var(--pd-separator) 72%, transparent);
+}
+
+.pd-page-header__heading h1 {
+  letter-spacing: -0.04em;
+}
+
+.pd-page-header__meta {
+  border: 1px solid color-mix(in srgb, var(--pd-separator) 68%, transparent);
+  border-radius: 18px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--pd-surface-panel) 62%, transparent);
+}
+
+.pd-page-header__meta div {
+  min-width: 9rem;
+  padding: var(--pd-space-4);
+  border-right: 1px solid color-mix(in srgb, var(--pd-separator) 64%, transparent);
+}
+
+.pd-page-header__meta div:last-child {
+  border-right: 0;
+}
+
+.pd-panel,
+.pd-detail-panel,
+.pd-data-status-banner,
+.pd-evidence-panel,
+.pd-recommendation-card,
+.pd-decision-card,
+.pd-decision-queue,
+.pd-morning-brief,
+.pd-assistant-composer,
+.pd-result-drivers,
+.pd-sales-sources,
+.pd-funnel-step,
+.pd-funnel-chart,
+.pd-waterfall-chart,
+.pd-budget-pacing,
+.pd-attribution-comparison,
+.pd-plan-performance {
+  border-radius: 18px;
+  border-color: color-mix(in srgb, var(--pd-separator) 72%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-panel) 92%, transparent), color-mix(in srgb, var(--pd-surface-raised) 76%, transparent));
+  box-shadow:
+    var(--pd-shadow-control),
+    inset 0 1px 0 color-mix(in srgb, white 30%, transparent);
+}
+
+[data-theme='dark'] .pd-panel,
+[data-theme='dark'] .pd-detail-panel,
+[data-theme='dark'] .pd-data-status-banner,
+[data-theme='dark'] .pd-evidence-panel,
+[data-theme='dark'] .pd-recommendation-card,
+[data-theme='dark'] .pd-decision-card,
+[data-theme='dark'] .pd-decision-queue,
+[data-theme='dark'] .pd-morning-brief,
+[data-theme='dark'] .pd-assistant-composer,
+[data-theme='dark'] .pd-result-drivers,
+[data-theme='dark'] .pd-sales-sources,
+[data-theme='dark'] .pd-funnel-step,
+[data-theme='dark'] .pd-funnel-chart,
+[data-theme='dark'] .pd-waterfall-chart,
+[data-theme='dark'] .pd-budget-pacing,
+[data-theme='dark'] .pd-attribution-comparison,
+[data-theme='dark'] .pd-plan-performance {
+  box-shadow:
+    var(--pd-shadow-control),
+    inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
+}
+
+.pd-data-status-banner {
+  border-color: color-mix(in srgb, var(--pd-status-warning) 42%, var(--pd-separator));
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--pd-status-warning-subtle) 48%, var(--pd-surface-panel)), var(--pd-surface-panel));
+}
+
+.pd-evidence-panel,
+.pd-recommendation-card {
+  border-color: color-mix(in srgb, var(--pd-data-accent) 38%, var(--pd-separator));
+}
+
+.pd-recommendation-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.pd-recommendation-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--pd-brand-line), var(--pd-data-accent));
+}
+
+.pd-panel__eyebrow,
+.pd-detail-panel__header p,
+.pd-evidence-panel__header p,
+.pd-recommendation-card__header p,
+.pd-decision-card__header p,
+.pd-decision-queue__header p,
+.pd-morning-brief__header p,
+.pd-result-drivers__header p,
+.pd-sales-sources__header p,
+.pd-budget-pacing__header p,
+.pd-plan-performance__header p {
+  letter-spacing: 0.04em;
+}
+
+.pd-page-header__meta dd,
+.pd-data-status-banner__sources dd,
+.pd-evidence-panel__sources dd,
+.pd-recommendation-card__meta dd,
+.pd-decision-card__meta dd,
+.pd-funnel-step dd,
+.pd-plan-performance__meta dd {
+  color: color-mix(in srgb, var(--pd-text) 92%, var(--pd-brand));
+}

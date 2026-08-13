@@ -1,22 +1,35 @@
 {
   "fixtureId": "SB-159",
-  "storyTitle": "30 Centrum Dowodzenia/Plan vs wynik",
+  "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/Plan vs wynik",
   "sourceDocument": "07-centrum-dowodzenia/30-04-plan-vs-wynik.md",
   "screenId": "30.04",
   "components": [
-    "ChartFrame",
-    "ComparisonChart",
-    "CorrelationChart",
-    "ForecastChart",
-    "FunnelChart",
-    "MetricCard",
-    "ShareChart",
-    "TrendChart",
-    "WaterfallChart",
+    "BusinessScreen",
     "PageHeader",
+    "DataStatusBanner",
+    "FilterBar",
+    "SearchField",
+    "Combobox",
+    "DateRangePicker",
+    "MetricCard",
+    "ChartFrame",
+    "TrendChart",
+    "ComparisonChart",
+    "ShareChart",
+    "DataTable",
+    "DecisionQueue",
+    "DetailPanel",
+    "EvidencePanel",
+    "RecommendationCard",
+    "MorningBrief",
+    "AssistantComposer",
+    "ResultDrivers",
+    "SalesSources",
+    "FunnelChart",
+    "FunnelStep",
+    "WaterfallChart",
     "InlineNotice",
-    "Button",
-    "PlanPerformance"
+    "Panel"
   ],
   "states": [
     "ready",
@@ -64,5 +77,8 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract",
+  "runtimeRoute": "/app/command-center/plan-vs-wynik",
+  "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+  "storyExport": "CommandCenterPlanPerformanceStory"
 }

@@ -8,7 +8,13 @@
       "nextCursor": null,
       "total": 0
     },
-    "summary": {},
+    "summary": {
+      "total": 0,
+      "ready": 0,
+      "warning": 0,
+      "critical": 0,
+      "updatedAt": "2026-07-30T12:00:00Z"
+    },
     "centerOverviewResult": {
       "operationId": "command-center.overview.read",
       "completedAt": "2026-07-30T12:00:00Z",

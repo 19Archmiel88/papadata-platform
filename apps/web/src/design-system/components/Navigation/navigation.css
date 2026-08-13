@@ -510,3 +510,16 @@
     transition-duration: 1ms;
   }
 }
+
+.pd-menu__item[data-checked='true'] {
+  color: var(--pd-text);
+  background: color-mix(in srgb, var(--pd-brand-ambient) 54%, transparent);
+  font-weight: var(--pd-font-weight-semibold);
+}
+
+.pd-menu__item[data-checked='true']::after {
+  content: '✓';
+  margin-left: auto;
+  color: var(--pd-brand-strong);
+  font-weight: var(--pd-font-weight-semibold);
+}

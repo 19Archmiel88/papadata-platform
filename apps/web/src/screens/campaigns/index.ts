@@ -1,7 +1,2 @@
-/**
- * Punkt eksportu modułu:
- * src/screens/campaigns
- *
- * Moduł nie zawiera kodu legacy.
- */
-export {};
+export { CampaignsScreen } from '../CampaignsScreen';
+export type { CampaignsScreenProps } from '../CampaignsScreen';

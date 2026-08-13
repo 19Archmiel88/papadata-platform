@@ -1,9 +1,12 @@
 {
   "fixtureId": "SB-120",
-  "storyTitle": "20 Powłoka/Sidebar",
+  "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/Sidebar",
   "sourceDocument": "06-powloka-produktu-i-nawigacja/20-04-sidebar.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "Sidebar",
+    "Icon"
+  ],
   "states": [
     "ready",
     "loading",
@@ -46,5 +49,5 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

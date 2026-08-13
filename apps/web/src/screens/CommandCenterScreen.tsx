@@ -1,139 +1,123 @@
-import { useState } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
-import { Button } from '../design-system';
-import { useSession } from '../app/providers';
-import { bffClient } from '../shared/api/bffClient';
+import {
+  InlineNotice,
+} from '../design-system';
+import {
+  bffClient,
+} from '../shared/api/bffClient';
+import {
+  BusinessScreen,
+} from './business/BusinessScreen';
+import {
+  createCommandCenterBusinessData,
+  findBusinessScreenDefinition,
+} from './business/businessData';
+import type {
+  BusinessScreenData,
+  CommandCenterApiData,
+} from './business/businessData';
 
-type ProbeState =
-  | { readonly status: 'idle' }
-  | { readonly status: 'checking' }
+type RuntimeState =
   | {
-      readonly status: 'done';
-      readonly ok: boolean;
-      readonly httpStatus: number;
-      readonly requestId: string | null;
-    }
-  | {
-      readonly status: 'error';
-      readonly message: string;
+      readonly data: BusinessScreenData | null;
+      readonly loading: boolean;
+      readonly problem: string | null;
     };
 
-export function CommandCenterScreen() {
-  const { session } = useSession();
-  const [probe, setProbe] = useState<ProbeState>({ status: 'idle' });
+export type CommandCenterScreenProps = {
+  readonly path?: string;
+};
 
-  async function runProbe() {
-    setProbe({ status: 'checking' });
-    try {
-      const result = await bffClient.probeProtectedApi();
-      setProbe({
-        status: 'done',
-        ok: result.ok,
-        httpStatus: result.status,
-        requestId: result.requestId,
+export function CommandCenterScreen({
+  path = '/app/command-center/widok-glowny',
+}: CommandCenterScreenProps) {
+  const definition = useMemo(
+    () => (
+      findBusinessScreenDefinition(
+        path === '/app/command-center'
+          ? '/app/command-center/widok-glowny'
+          : path,
+      )
+    ),
+    [path],
+  );
+  const [state, setState] = useState<RuntimeState>({
+    data: null,
+    loading: true,
+    problem: null,
+  });
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    if (!definition || definition.group !== 'command-center') {
+      setState({
+        data: null,
+        loading: false,
+        problem: 'Nie znaleziono kontraktu ekranu Centrum Dowodzenia.',
       });
-    } catch (cause) {
-      setProbe({
-        status: 'error',
-        message: cause instanceof Error ? cause.message : 'Nie udało się sprawdzić API.',
-      });
+      return;
     }
+
+    let active = true;
+
+    setState({
+      data: null,
+      loading: true,
+      problem: null,
+    });
+
+    bffClient
+      .readDomainScreen<CommandCenterApiData>(definition.apiPath)
+      .then((data) => {
+        if (!active) return;
+
+        setState({
+          data: createCommandCenterBusinessData(definition, data),
+          loading: false,
+          problem: null,
+        });
+      })
+      .catch((cause) => {
+        if (!active) return;
+
+        setState({
+          data: null,
+          loading: false,
+          problem: cause instanceof Error
+            ? cause.message
+            : 'Nie udało się pobrać danych Centrum Dowodzenia.',
+        });
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [definition, refreshKey]);
+
+  if (!definition || definition.group !== 'command-center') {
+    return (
+      <InlineNotice
+        message="Routing wskazuje ekran spoza zakresu P1 dla sekcji 30."
+        title="Nieobsługiwany ekran"
+        tone="critical"
+      />
+    );
   }
 
   return (
-    <section className="runtime-dashboard" aria-labelledby="command-center-title">
-      <div className="runtime-dashboard__heading">
-        <div>
-          <p className="runtime-dashboard__eyebrow">Pierwsza chroniona powierzchnia LP-4</p>
-          <h1 id="command-center-title">Centrum Dowodzenia</h1>
-          <p>
-            Ten ekran potwierdza realny frontend runtime, routing, sesję i granicę BFF.
-            Dane produktowe, KPI oraz seed należą do kolejnych etapów.
-          </p>
-        </div>
-      </div>
-
-      <div className="runtime-dashboard__grid">
-        <article className="runtime-panel">
-          <h2>Aktywny kontekst</h2>
-          <dl>
-            <div>
-              <dt>Tenant</dt>
-              <dd>{session?.activeTenantId ?? '—'}</dd>
-            </div>
-            <div>
-              <dt>Workspace</dt>
-              <dd>{session?.activeWorkspaceId ?? '—'}</dd>
-            </div>
-            <div>
-              <dt>Poziom sesji</dt>
-              <dd>{session?.authLevel ?? '—'}</dd>
-            </div>
-            <div>
-              <dt>Wygaśnięcie</dt>
-              <dd>{formatDate(session?.expiresAt)}</dd>
-            </div>
-          </dl>
-        </article>
-
-        <article className="runtime-panel">
-          <h2>Capabilities</h2>
-          {session?.capabilities.length ? (
-            <ul className="runtime-capabilities">
-              {session.capabilities.map((capability) => (
-                <li key={capability}>{capability}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>Sesja nie zwróciła capabilities.</p>
-          )}
-        </article>
-
-        <article className="runtime-panel runtime-panel--wide">
-          <h2>Przejście BFF → API</h2>
-          <p>
-            Kontrolny odczyt używa chronionej trasy integracji. Nie podmienia danych
-            i nie udaje gotowości modułu biznesowego.
-          </p>
-
-          <div className="runtime-probe">
-            <Button
-              loading={probe.status === 'checking'}
-              loadingLabel="Sprawdzanie…"
-              onClick={() => void runProbe()}
-              variant="secondary"
-            >
-              Sprawdź chronione API
-            </Button>
-
-            {probe.status === 'done' ? (
-              <span
-                className="runtime-probe__result"
-                data-ok={probe.ok ? true : undefined}
-              >
-                HTTP {probe.httpStatus}
-                {probe.requestId ? ` · request ${probe.requestId}` : ''}
-              </span>
-            ) : null}
-            {probe.status === 'error' ? (
-              <span className="runtime-probe__result" role="alert">
-                {probe.message}
-              </span>
-            ) : null}
-          </div>
-        </article>
-      </div>
-    </section>
+    <BusinessScreen
+      data={state.data}
+      definition={definition}
+      loading={state.loading}
+      problem={state.problem}
+      onReload={() => {
+        setRefreshKey((current) => current + 1);
+      }}
+    />
   );
-}
-
-function formatDate(value: string | undefined): string {
-  if (!value) return '—';
-  const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? value
-    : new Intl.DateTimeFormat('pl-PL', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      }).format(date);
 }

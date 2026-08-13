@@ -31,6 +31,7 @@ import '../Navigation/navigation.css';
 export type MenuItem =
   | {
       readonly id: string;
+      readonly checked?: boolean;
       readonly disabled?: boolean;
       readonly destructive?: boolean;
       readonly icon?: PapaDataIconName;
@@ -360,6 +361,11 @@ export function Menu({
                       ref={(node) => {
                         itemRefs.current[item.id] = node;
                       }}
+                      aria-checked={
+                        item.checked === undefined
+                          ? undefined
+                          : item.checked
+                      }
                       aria-disabled={
                         item.disabled
                           ? true
@@ -367,12 +373,19 @@ export function Menu({
                       }
                       className="pd-menu__item"
                       data-active={isActive}
+                      data-checked={
+                        item.checked ? true : undefined
+                      }
                       data-destructive={
                         item.destructive
                           ? true
                           : undefined
                       }
-                      role="menuitem"
+                      role={
+                        item.checked === undefined
+                          ? 'menuitem'
+                          : 'menuitemradio'
+                      }
                       tabIndex={
                         isActive
                           ? 0

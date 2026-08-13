@@ -1,17 +1,28 @@
 {
   "fixtureId": "SB-169",
-  "storyTitle": "31 Kampanie płatne/Budżet",
+  "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne/Budżet",
   "sourceDocument": "08-kampanie-platne/31-05-budzet.md",
   "screenId": "31.05",
   "components": [
+    "BusinessScreen",
     "PageHeader",
-    "InlineNotice",
-    "Button",
+    "DataStatusBanner",
+    "FilterBar",
+    "SearchField",
+    "Combobox",
+    "DateRangePicker",
     "MetricCard",
     "ChartFrame",
-    "TrendChart",
-    "DecisionCard",
-    "BudgetPacing"
+    "ComparisonChart",
+    "ShareChart",
+    "DataTable",
+    "DetailPanel",
+    "EvidencePanel",
+    "RecommendationCard",
+    "AttributionComparison",
+    "BudgetPacing",
+    "InlineNotice",
+    "Panel"
   ],
   "states": [
     "ready",
@@ -59,5 +70,8 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract",
+  "runtimeRoute": "/app/campaigns/budzet",
+  "storyFile": "apps/web/src/storybook-next/stories/31-paid-campaigns/Campaigns.stories.tsx",
+  "storyExport": "CampaignsBudgetStory"
 }

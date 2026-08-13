@@ -1,15 +1,28 @@
 {
   "fixtureId": "SB-168",
-  "storyTitle": "31 Kampanie płatne/Atrybucja i sprzedaż",
+  "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne/Atrybucja i sprzedaż",
   "sourceDocument": "08-kampanie-platne/31-04-atrybucja-i-sprzedaz.md",
   "screenId": "31.04",
   "components": [
+    "BusinessScreen",
     "PageHeader",
-    "InlineNotice",
-    "Button",
-    "ShareChart",
+    "DataStatusBanner",
+    "FilterBar",
+    "SearchField",
+    "Combobox",
+    "DateRangePicker",
+    "MetricCard",
+    "ChartFrame",
     "ComparisonChart",
-    "AttributionComparison"
+    "ShareChart",
+    "DataTable",
+    "DetailPanel",
+    "EvidencePanel",
+    "RecommendationCard",
+    "AttributionComparison",
+    "BudgetPacing",
+    "InlineNotice",
+    "Panel"
   ],
   "states": [
     "ready",
@@ -57,5 +70,8 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract",
+  "runtimeRoute": "/app/campaigns/atrybucja-i-sprzedaz",
+  "storyFile": "apps/web/src/storybook-next/stories/31-paid-campaigns/Campaigns.stories.tsx",
+  "storyExport": "CampaignsAttributionStory"
 }

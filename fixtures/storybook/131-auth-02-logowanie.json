@@ -1,9 +1,14 @@
 {
   "fixtureId": "SB-131",
-  "storyTitle": "25 Dostęp/Powierzchnie/Logowanie",
+  "storyTitle": "25 Dostęp i onboarding/Auth runtime/Logowanie",
   "sourceDocument": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-02-logowanie.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "AuthSurface",
+    "TextField",
+    "PasswordField",
+    "InlineNotice"
+  ],
   "states": [
     "ready",
     "loading",
@@ -49,5 +54,5 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

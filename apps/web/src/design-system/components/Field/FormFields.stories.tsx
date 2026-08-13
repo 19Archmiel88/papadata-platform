@@ -17,6 +17,15 @@ import {
 import {
   VerificationCodeInput,
 } from '../VerificationCodeInput';
+import {
+  Checkbox,
+} from '../Checkbox';
+import {
+  RadioGroup,
+} from '../RadioGroup';
+import {
+  Select,
+} from '../Select';
 import type {
   PapaDataRuntimeLocale,
 } from '../../foundations';
@@ -141,6 +150,9 @@ function StoryVariant({
 function FormFieldsShowcase() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [verificationCode, setVerificationCode] = useState('12');
+  const [summaryConsent, setSummaryConsent] = useState(true);
+  const [deliveryMode, setDeliveryMode] = useState('email');
+  const [workspaceRegion, setWorkspaceRegion] = useState('pl');
   const reportNameLabel = copy({ pl: 'Nazwa raportu', en: 'Report name' });
   const reportNameValue = copy({ pl: 'Raport dzienny', en: 'Daily report' });
   const sourceNameLabel = copy({ pl: 'Nazwa źródła', en: 'Source name' });
@@ -364,6 +376,90 @@ function FormFieldsShowcase() {
             />
           </StoryVariant>
         </StorySection>
+
+        <StorySection
+          description={<Localized pl="Checkbox i RadioGroup używają natywnej semantyki formularza, focusu i tych samych komunikatów pomocniczych." en="Checkbox and RadioGroup use native form semantics, focus and the same helper messages." />}
+          index="05"
+          title={<Localized pl="Wybory formularza" en="Form choices" />}
+        >
+          <StoryVariant
+            description={<Localized pl="Checkbox komunikuje zaznaczenie, wymaganie i komunikat walidacji bez własnych lokalnych styli." en="Checkbox communicates checked, required and validation messaging without local visual overrides." />}
+            title={<Localized pl="Zgoda i preferencja" en="Consent and preference" />}
+            token="Checkbox"
+          >
+            <Checkbox
+              checked={summaryConsent}
+              helperText={copy({ pl: 'Preferencję można zmienić w każdej chwili.', en: 'The preference can be changed at any time.' })}
+              label={copy({ pl: 'Wysyłaj podsumowania po zakończeniu synchronizacji', en: 'Send summaries after synchronization completes' })}
+              onChange={(event) => setSummaryConsent(event.currentTarget.checked)}
+              value="sync-summary"
+            />
+          </StoryVariant>
+
+          <StoryVariant
+            description={<Localized pl="Select zachowuje label, helper text, combobox i natywny select do formularza." en="Select keeps label, helper text, combobox and a native select for form submission." />}
+            title={<Localized pl="Wybór z listy" en="List selection" />}
+            token="Select"
+          >
+            <Select
+              helperText={copy({ pl: 'Lista używa tego samego focusu co pozostałe pola.', en: 'The list uses the same focus as the other fields.' })}
+              label={copy({ pl: 'Region workspace', en: 'Workspace region' })}
+              name="workspaceRegion"
+              onChange={(event) => setWorkspaceRegion(event.currentTarget.value)}
+              options={[
+                {
+                  label: 'Polska',
+                  value: 'pl',
+                },
+                {
+                  label: 'Europa',
+                  value: 'eu',
+                },
+                {
+                  disabled: true,
+                  label: 'USA',
+                  value: 'us',
+                },
+              ]}
+              placeholder={copy({ pl: 'Wybierz region', en: 'Choose region' })}
+              required
+              value={workspaceRegion}
+            />
+          </StoryVariant>
+
+          <StoryVariant
+            description={<Localized pl="RadioGroup ma fieldset, legend i natywne radio inputy dla jednego wyboru." en="RadioGroup has a fieldset, legend and native radio inputs for a single choice." />}
+            title={<Localized pl="Tryb dostarczenia" en="Delivery mode" />}
+            token="RadioGroup"
+          >
+            <RadioGroup
+              helperText={copy({ pl: 'Wybierz jeden kanał dla alertów krytycznych.', en: 'Choose one channel for critical alerts.' })}
+              label={copy({ pl: 'Kanał alertów', en: 'Alert channel' })}
+              name="alertDelivery"
+              onValueChange={setDeliveryMode}
+              options={[
+                {
+                  helperText: copy({ pl: 'Najlepsze dla podsumowań dziennych.', en: 'Best for daily summaries.' }),
+                  label: copy({ pl: 'E-mail', en: 'Email' }),
+                  value: 'email',
+                },
+                {
+                  helperText: copy({ pl: 'Dla alertów wymagających szybkiej reakcji.', en: 'For alerts that require a quick response.' }),
+                  label: copy({ pl: 'Powiadomienie w aplikacji', en: 'In-app notification' }),
+                  value: 'in-app',
+                },
+                {
+                  disabled: true,
+                  helperText: copy({ pl: 'Kanał SMS nie jest dostępny w tym workspace.', en: 'SMS is not available in this workspace.' }),
+                  label: 'SMS',
+                  value: 'sms',
+                },
+              ]}
+              required
+              value={deliveryMode}
+            />
+          </StoryVariant>
+        </StorySection>
     </StoryPresentationPage>
   );
 }
@@ -406,6 +502,24 @@ export const PolaFormularzy: Story = {
     const code = canvas.getByRole('textbox', {
       name: startsWithAccessibleName(copy({ pl: 'Kod MFA', en: 'MFA code' })),
     });
+    const checkbox = canvas.getByRole('checkbox', {
+      name: copy({
+        pl: 'Wysyłaj podsumowania po zakończeniu synchronizacji',
+        en: 'Send summaries after synchronization completes',
+      }),
+    });
+    const select = canvas.getByRole('combobox', {
+      name: copy({ pl: 'Region workspace', en: 'Workspace region' }),
+    });
+    const emailRadio = canvas.getByRole('radio', {
+      name: startsWithAccessibleName(copy({ pl: 'E-mail', en: 'Email' })),
+    });
+    const inAppRadio = canvas.getByRole('radio', {
+      name: startsWithAccessibleName(copy({
+        pl: 'Powiadomienie w aplikacji',
+        en: 'In-app notification',
+      })),
+    });
 
     await expect(reportName).toHaveValue(copy({ pl: 'Raport dzienny', en: 'Daily report' }));
     await expect(requiredField).toBeRequired();
@@ -431,6 +545,23 @@ export const PolaFormularzy: Story = {
     await userEvent.clear(code);
     await userEvent.type(code, '123456');
     await expect(code).toHaveValue('123456');
+    await expect(checkbox).toBeChecked();
+    const checkboxLabel = checkbox.closest('label');
+    if (!(checkboxLabel instanceof HTMLElement)) {
+      throw new Error('Checkbox is missing its clickable label.');
+    }
+
+    await userEvent.click(checkboxLabel);
+    await expect(checkbox).not.toBeChecked();
+    await expect(select).toHaveAttribute('aria-expanded', 'false');
+    await expect(emailRadio).toBeChecked();
+    const inAppRadioLabel = inAppRadio.closest('label');
+    if (!(inAppRadioLabel instanceof HTMLElement)) {
+      throw new Error('Radio option is missing its clickable label.');
+    }
+
+    await userEvent.click(inAppRadioLabel);
+    await expect(inAppRadio).toBeChecked();
 
     const assertCompositeFocus = async (
       control: HTMLElement,

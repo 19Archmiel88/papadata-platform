@@ -65,6 +65,7 @@ class BffClient {
   async login(input: {
     readonly email: string;
     readonly password: string;
+    readonly rememberDevice?: boolean;
   }): Promise<AuthenticationResult> {
     this.csrfToken = null;
     return this.authenticate('/api/v1/auth/login', input);
@@ -77,6 +78,48 @@ class BffClient {
   }): Promise<AuthenticationResult> {
     this.csrfToken = null;
     return this.authenticate('/api/v1/auth/register/email', input);
+  }
+
+  async confirmMfa(input: {
+    readonly code: string;
+  }): Promise<{
+    readonly session: BffSession;
+    readonly verified: boolean;
+  }> {
+    const csrfToken = await this.getCsrfToken();
+    const response = await this.fetch('/api/v1/auth/mfa/confirm', {
+      method: 'POST',
+      headers: {
+        'x-papadata-csrf': csrfToken,
+      },
+      body: JSON.stringify(input),
+    });
+    const payload = await readJson<{
+      readonly data: {
+        readonly session: BffSession;
+        readonly verified: boolean;
+      };
+    }>(response);
+    assertOk(response, payload);
+    return payload.data;
+  }
+
+  async requestPasswordRecovery(input: {
+    readonly email: string;
+  }): Promise<void> {
+    await this.publicCommand(
+      '/api/v1/auth/password/recovery/request',
+      input,
+    );
+  }
+
+  async resetPassword(input: {
+    readonly email: string;
+    readonly newPassword: string;
+    readonly otp: string;
+    readonly resetToken: string;
+  }): Promise<void> {
+    await this.publicCommand('/api/v1/auth/password/reset', input);
   }
 
   async logout(): Promise<void> {
@@ -107,9 +150,22 @@ class BffClient {
     };
   }
 
+  async readDomainScreen<TData>(
+    path: `/api/v1/${string}`,
+  ): Promise<TData> {
+    const response = await this.fetch(path, {
+      method: 'GET',
+    });
+    const payload = await readJson<{
+      readonly data: TData;
+    }>(response);
+    assertOk(response, payload);
+    return payload.data;
+  }
+
   private async authenticate(
     path: string,
-    body: Readonly<Record<string, string>>,
+    body: Readonly<Record<string, string | boolean>>,
   ): Promise<AuthenticationResult> {
     const response = await this.fetch(path, {
       method: 'POST',
@@ -120,6 +176,21 @@ class BffClient {
     }>(response);
     assertOk(response, payload);
     return payload.data;
+  }
+
+  private async publicCommand(
+    path: string,
+    body: Readonly<Record<string, string>>,
+  ): Promise<void> {
+    const response = await this.fetch(path, {
+      method: 'POST',
+      headers: {
+        'idempotency-key': createCorrelationId(),
+      },
+      body: JSON.stringify(body),
+    });
+    const payload = await readJson<unknown>(response);
+    assertOk(response, payload);
   }
 
   private async getCsrfToken(): Promise<string> {

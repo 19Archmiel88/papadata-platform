@@ -1,19 +1,28 @@
 {
   "fixtureId": "SB-174",
-  "storyTitle": "31 Kampanie płatne/Szczegóły kampanii",
+  "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne/Szczegóły kampanii",
   "sourceDocument": "08-kampanie-platne/31-03-szczegoly-kampanii.md",
   "screenId": "31.03",
   "components": [
+    "BusinessScreen",
     "PageHeader",
-    "InlineNotice",
-    "Button",
+    "DataStatusBanner",
+    "FilterBar",
+    "SearchField",
+    "Combobox",
+    "DateRangePicker",
     "MetricCard",
     "ChartFrame",
-    "TrendChart",
-    "ShareChart",
     "ComparisonChart",
+    "ShareChart",
+    "DataTable",
     "DetailPanel",
-    "Tabs"
+    "EvidencePanel",
+    "RecommendationCard",
+    "AttributionComparison",
+    "BudgetPacing",
+    "InlineNotice",
+    "Panel"
   ],
   "states": [
     "ready",
@@ -61,5 +70,8 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract",
+  "runtimeRoute": "/app/campaigns/szczegoly-kampanii",
+  "storyFile": "apps/web/src/storybook-next/stories/31-paid-campaigns/Campaigns.stories.tsx",
+  "storyExport": "CampaignsDetailStory"
 }

@@ -22,7 +22,10 @@
     "check-storybook-presentation": "node ../../scripts/check-storybook-presentation-contract.mjs",
     "check-design-system-ownership": "node ../../scripts/check-design-system-ownership.mjs",
     "check-analytics-system": "node ../../scripts/check-analytics-system-v1.mjs",
-    "check-cross-cutting-patterns": "node ../../scripts/check-cross-cutting-patterns-v1.mjs"
+    "check-cross-cutting-patterns": "node ../../scripts/check-cross-cutting-patterns-v1.mjs",
+    "audit-storybook-business-screens": "pnpm run build-storybook && node scripts/storybook-audit.mjs --business-screens --serve-static",
+    "storybook:bundle": "pnpm run build-storybook && node scripts/storybook-bundle-server.mjs --serve",
+    "storybook:manager-smoke": "pnpm run build-storybook && node scripts/storybook-bundle-server.mjs --smoke"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",

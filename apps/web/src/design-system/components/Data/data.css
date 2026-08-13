@@ -309,3 +309,27 @@
     padding-top: 0;
   }
 }
+
+/* Enterprise BI redesign: table/list density with premium surfaces. */
+.pd-data-table {
+  padding: var(--pd-space-4);
+  border: 1px solid color-mix(in srgb, var(--pd-separator) 72%, transparent);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--pd-surface-panel) 88%, transparent);
+  box-shadow: var(--pd-shadow-control);
+}
+
+.pd-data-table__summary {
+  color: var(--pd-text-secondary);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+  letter-spacing: 0.02em;
+}
+
+.pd-data-list {
+  border-top-color: color-mix(in srgb, var(--pd-separator-subtle) 88%, transparent);
+}
+
+.pd-data-list__item {
+  border-bottom-color: color-mix(in srgb, var(--pd-separator-subtle) 88%, transparent);
+}

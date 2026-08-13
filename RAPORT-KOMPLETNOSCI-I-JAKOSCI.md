@@ -2,13 +2,13 @@
 
 ## Wynik po poprawkach audytowych
 
-Dokumentacja, rejestry, fixtures i manifest zostały ponownie zsynchronizowane po audycie. Aktualny `scripts/validate_all.py .` zwraca **PASS / 0 błędów / 0 ostrzeżeń**.
+Dokumentacja, rejestry, fixtures i manifest zostały ponownie zsynchronizowane po rewalidacji P0/P1 oraz po dodaniu warstwy P2/P3. Aktualny `scripts/validate_all.py .` zwraca **PASS / 0 błędów / 0 ostrzeżeń**.
 
 | Obszar | Wynik |
 |---|---:|
 | Dokumenty specyfikacji | 470 |
-| Dokumenty Markdown łącznie | 513 |
-| Słowa w specyfikacji | 253237 |
+| Dokumenty Markdown łącznie | 710 |
+| Słowa w specyfikacji | 253270 |
 | Główne sekcje specyfikacji | 29 |
 | Ekrany | 129 |
 | Komponenty kanoniczne | 79 |
@@ -21,23 +21,23 @@ Dokumentacja, rejestry, fixtures i manifest zostały ponownie zsynchronizowane p
 | Integracje MVP | 7 |
 | Szablony prawno-organizacyjne | 26 |
 | Odwołania do materiałów wejściowych | 0 |
+| Manifest | 2278 plików |
 
 ## Zakres poprawek
 
-- Znormalizowano owner/version dla promowanego `ShareChart`.
-- Zsynchronizowano konsumenci komponentu `ShareChart` z macierzą ekran–komponent.
-- Zsynchronizowano stany `15.05` i `15.06` między rejestrem Storybooka a fixtures.
-- Zaktualizowano foundation baseline do aktualnego kontraktu Storybooka.
-- Poprawiono przenośność kontroli 18.* dla paczek ZIP bez katalogu `.git`.
-- Zmieniono statusy wdrożonych dokumentów 18.* z formalnego `approved-target` na `review`, z jawnym brakiem akceptacji właścicielskiej.
-- Dodano poprawki CSS ograniczające poziomy overflow na mobile dla DataTable, FilterBar, powierzchni danych i shelli Storybooka.
-- Zmieniono mobile Drawer na pełnoekranową warstwę z mocniejszym tłem.
-- Usunięto nieistniejący token `--pd-space-7` z CSS.
-- Dodano wymagany `work_prerequisite` do wszystkich dokumentów specyfikacji docelowej.
-- Usunięto archiwa, pliki `.txt`, backupi runtime i historyczne raporty niebędące aktualnym gate.
-- Zaktualizowano audyt `audy12082026.md` o nowe etapy P0-P3 po 20 pozycji.
-- Uporządkowano lokalizację i lokalne style w aktywnych story `18` oraz wspólnej warstwie `05`.
+- Dodano typy matcherów `storybook/test`, żeby stories z play assertions nie blokowały typecheck.
+- Dopisano jawny typ `manualChunks(id: string): string | undefined` w `apps/web/vite.config.ts`.
+- Przyspieszono `scripts/validate_all.py`, żeby iteracja plików nie przechodziła przez ignorowane katalogi.
+- Dodano guard placeholderów dokumentacyjnych.
+- Dodano guard lokalnych kolorów hex poza tokenami.
+- Dodano guard duplikacji klas CSS z jawną allowlistą.
+- Dodano guard martwych referencji do usuniętych artefaktów.
+- Dodano indeks browser audit dla ekranów `30/31` i komendę `audit-storybook-business-screens`.
+- Dodano dokumenty operacyjne P3: checklisty komponentu i ekranu, mapy ryzyk, indeks fixtures, zasady helperów, zasady katalogów generowanych, mapę zależności `20 -> 25 -> 30+`, release readiness i przykłady commitów po polsku.
+- Znormalizowano raport audytu, żeby nie mieszał technicznego PASS z właścicielską akceptacją UI.
+- Usunięto jawne markery składni generatora z dokumentów mobile.
+- Odświeżono `MANIFEST.json` po zmianach.
 
 ## Ograniczenie weryfikacji
 
-W bieżącym cyklu wykonano `python scripts/validate_all.py .`, dedykowane guardy Storybook/design-system, typecheck web i monorepo, build Storybooka, build web, root build, `pnpm test` oraz `git diff --check`.
+W odtworzonym środowisku ZIP wykonano walidator Python, guardy Storybook/design-system, nowe guardy P2/P3, bezpośredni typecheck web przez `tsc -b` i `git diff --check`. Pełne komendy `pnpm`, build Storybooka, build web, testy turbo oraz browser audit muszą zostać powtórzone po wdrożeniu paczki w lokalnym WSL.

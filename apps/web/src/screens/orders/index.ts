@@ -1,7 +1,2 @@
-/**
- * Punkt eksportu modułu:
- * src/screens/orders
- *
- * Moduł nie zawiera kodu legacy.
- */
-export {};
+export { OrdersScreen } from '../OrdersScreen';
+export type { OrdersScreenProps } from '../OrdersScreen';

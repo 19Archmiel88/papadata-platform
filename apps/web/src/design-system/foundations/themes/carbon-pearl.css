@@ -1,45 +1,6 @@
 :root {
   color-scheme: light;
 
-  --pd-canvas-gradient:
-    radial-gradient(
-      ellipse 72% 62% at -12% 22%,
-      color-mix(
-        in srgb,
-        var(--pd-brand-ambient) 54%,
-        transparent
-      ) 0%,
-      color-mix(
-        in srgb,
-        var(--pd-brand-ambient) 18%,
-        transparent
-      ) 48%,
-      transparent 82%
-    ),
-    radial-gradient(
-      ellipse 78% 68% at 108% 6%,
-      color-mix(
-        in srgb,
-        var(--pd-data-accent-subtle) 42%,
-        transparent
-      ) 0%,
-      color-mix(
-        in srgb,
-        var(--pd-data-accent-subtle) 14%,
-        transparent
-      ) 52%,
-      transparent 84%
-    ),
-    radial-gradient(
-      ellipse 58% 48% at 86% 104%,
-      color-mix(
-        in srgb,
-        var(--pd-data-accent-subtle) 12%,
-        transparent
-      ) 0%,
-      transparent 78%
-    );
-
   --pd-font-sans:
     "Inter",
     system-ui,
@@ -47,7 +8,6 @@
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-
   --pd-font-mono:
     "JetBrains Mono",
     ui-monospace,
@@ -110,11 +70,11 @@
   --pd-grid-min-column: 0;
 
   --pd-radius-none: 0;
-  --pd-radius-subtle: 2px;
-  --pd-radius-small: 4px;
-  --pd-radius-control: 6px;
-  --pd-radius-surface: 8px;
-  --pd-radius-overlay: 12px;
+  --pd-radius-subtle: 4px;
+  --pd-radius-small: 8px;
+  --pd-radius-control: 12px;
+  --pd-radius-surface: 20px;
+  --pd-radius-overlay: 28px;
   --pd-radius-pill: 999px;
 
   --pd-border-width-none: 0;
@@ -122,26 +82,10 @@
   --pd-border-width-strong: 2px;
 
   --pd-focus-width: 2px;
-  --pd-focus-offset: 2px;
-  --pd-focus-ring-size: 1px;
+  --pd-focus-offset: 3px;
+  --pd-focus-ring-size: 3px;
 
   --pd-shadow-none: none;
-  --pd-shadow-control:
-    0 1px 2px rgba(7, 27, 53, 0.08);
-  --pd-shadow-raised:
-    0 16px 32px -24px rgba(7, 27, 53, 0.44),
-    0 4px 12px -10px rgba(7, 27, 53, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.88);
-  --pd-shadow-overlay:
-    0 34px 78px -30px rgba(7, 27, 53, 0.5),
-    0 16px 34px -24px rgba(7, 27, 53, 0.26),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  --pd-shadow-floating:
-    0 24px 52px -28px rgba(7, 27, 53, 0.46),
-    0 10px 24px -18px rgba(7, 27, 53, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.88);
-
-
   --pd-motion-duration-instant: 70ms;
   --pd-motion-duration-fast: 110ms;
   --pd-motion-duration-standard: 180ms;
@@ -156,236 +100,421 @@
   --pd-layer-popover: 20;
   --pd-layer-modal: 30;
   --pd-layer-toast: 40;
+
+  --pd-brand-flow-line-height: 2px;
+  --pd-brand-flow-line-radius: var(--pd-radius-pill);
+  --pd-brand-flow-line-rest-scale: 0.36;
+  --pd-brand-flow-line-active-scale: 1;
+  --pd-brand-flow-line-transition:
+    transform var(--pd-motion-duration-standard) var(--pd-motion-easing-emphasized),
+    opacity var(--pd-motion-duration-standard) var(--pd-motion-easing-standard);
+
+  --pd-table-min-width: 720px;
+  --pd-drawer-width: 420px;
+  --pd-menu-offset: 8px;
+  --pd-overlay-z-index: var(--pd-layer-modal);
+  --pd-business-side-width: 360px;
 }
 
 :root,
 [data-theme="light"] {
   color-scheme: light;
 
-  --pd-canvas: #f5f7fa;
+  --pd-canvas: #f4efe5;
+  --pd-surface: #f9f4ea;
+  --pd-surface-subtle: #eee7da;
+  --pd-surface-raised: #fffbf2;
+  --pd-surface-soft: #f7f1e6;
+  --pd-surface-sunken: #e8dfcf;
+  --pd-surface-overlay: rgba(255, 251, 242, 0.96);
+  --pd-surface-active: #eadcc6;
+  --pd-surface-data: #fbf6ec;
+  --pd-surface-panel: #fff9ef;
+  --pd-glass-surface: rgba(255, 250, 240, 0.76);
 
-  --pd-surface: #fbfcfe;
-  --pd-surface-subtle: #eef3f7;
-  --pd-surface-raised: #ffffff;
-  --pd-surface-soft: color-mix(in srgb, var(--pd-surface) 78%, var(--pd-canvas));
-  --pd-surface-sunken: #eef2f6;
-  --pd-surface-overlay: rgba(252, 253, 255, 0.96);
-  --pd-surface-active: #e7eef9;
-  --pd-surface-data: #f8fbff;
-  --pd-surface-panel: #ffffff;
+  --pd-separator-subtle: rgba(66, 53, 34, 0.1);
+  --pd-separator: rgba(66, 53, 34, 0.16);
+  --pd-separator-strong: rgba(66, 53, 34, 0.32);
 
-  --pd-separator-subtle: #dfe7ef;
-  --pd-separator: #cbd8e6;
-  --pd-separator-strong: #a9b9cc;
+  --pd-text: #201b13;
+  --pd-text-secondary: #534936;
+  --pd-text-muted: #827560;
 
-  --pd-text: #071b35;
-  --pd-text-secondary: #3e5067;
-  --pd-text-muted: #5a6d83;
+  --pd-brand-deep: #2c1806;
+  --pd-brand: #9e6727;
+  --pd-brand-strong: #70430f;
+  --pd-brand-highlight: #d79a48;
+  --pd-brand-accent: #b7772d;
+  --pd-brand-line: #c98c41;
+  --pd-brand-ambient: rgba(183, 119, 45, 0.16);
+  --pd-brand-on: #fff9ed;
+  --pd-brand-action: #8f5a1f;
+  --pd-brand-action-hover: #744515;
+  --pd-brand-action-active: #58320e;
+  --pd-brand-action-on: #fff8ec;
+  --pd-brand-glow: rgba(183, 119, 45, 0.2);
 
-  --pd-interactive: #145bd7;
-  --pd-interactive-hover: #0d49b4;
-  --pd-interactive-active: #083b96;
-  --pd-interactive-subtle: #e3edff;
-  --pd-interactive-on: #ffffff;
+  --pd-interactive: #8f5a1f;
+  --pd-interactive-hover: #744515;
+  --pd-interactive-active: #58320e;
+  --pd-interactive-subtle: #f1e3cf;
+  --pd-interactive-on: #fff8ec;
 
-  --pd-brand-deep: #2a1604;
-  --pd-brand: #8a4f0d;
-  --pd-brand-strong: #5a3108;
-  --pd-brand-highlight: #c77a22;
-  --pd-brand-accent: #a96012;
-  --pd-brand-line: #b66d19;
-  --pd-brand-ambient: rgba(169, 96, 18, 0.11);
-  --pd-brand-on: #fff7e8;
-  --pd-brand-action: #8f510d;
-  --pd-brand-action-hover: #744009;
-  --pd-brand-action-active: #512b06;
-  --pd-brand-action-on: #fff7e8;
-  --pd-brand-glow: rgba(169, 96, 18, 0.13);
+  --pd-data-accent: #26765f;
+  --pd-data-accent-hover: #1c604d;
+  --pd-data-accent-subtle: #dfeee6;
+  --pd-data-series-1: #26765f;
+  --pd-data-series-2: #b7772d;
+  --pd-data-series-3: #77633b;
+  --pd-data-series-4: #6d5f8c;
+  --pd-data-series-5: #9c5353;
+  --pd-data-series-6: #5b7b64;
+  --pd-data-series-7: #a46b36;
+  --pd-data-series-8: #646947;
+  --pd-data-series-9: #655b4b;
+  --pd-data-series-10: #8f5a1f;
+  --pd-data-actual: var(--pd-data-series-1);
+  --pd-data-target: var(--pd-text);
+  --pd-data-forecast: var(--pd-data-series-2);
+  --pd-data-uncertainty: rgba(38, 118, 95, 0.16);
+  --pd-data-positive: #26765f;
+  --pd-data-negative: #a9434c;
+  --pd-data-no-data: #b5a895;
 
-  --pd-data-accent: #008aa3;
-  --pd-data-accent-hover: #04748a;
-  --pd-data-accent-subtle: #dff6fa;
-  --pd-data-series-1: #145bd7;
-  --pd-data-series-2: #008aa3;
-  --pd-data-series-3: #78611f;
-  --pd-data-series-4: #6b55b5;
-  --pd-data-series-5: #2f7d67;
-  --pd-data-series-6: #a34c18;
-  --pd-data-series-7: #b23a73;
-  --pd-data-series-8: #3f6f1f;
-  --pd-data-series-9: #4a6fc7;
-  --pd-data-series-10: #8a4f0d;
-  --pd-data-actual: #145bd7;
-  --pd-data-target: #071b35;
-  --pd-data-forecast: #008aa3;
-  --pd-data-uncertainty: rgba(0, 138, 163, 0.18);
-  --pd-data-positive: #147d5b;
-  --pd-data-negative: #c9344a;
-  --pd-data-no-data: #a9b9cc;
+  --pd-status-success: #26765f;
+  --pd-status-success-subtle: #e0eee6;
+  --pd-status-warning: #95611f;
+  --pd-status-warning-subtle: #f3e4cf;
+  --pd-status-danger: #a9434c;
+  --pd-status-danger-subtle: #f4dfdf;
+  --pd-status-danger-border: rgba(169, 67, 76, 0.36);
+  --pd-status-neutral: #756a58;
+  --pd-status-neutral-subtle: #eee7da;
+  --pd-status-info: #5c6040;
+  --pd-status-info-subtle: #ece7d5;
+  --pd-status-critical: var(--pd-status-danger);
 
-  --pd-status-success: #147d5b;
-  --pd-status-success-subtle: #e2f7ee;
-  --pd-status-warning: #a34c18;
-  --pd-status-warning-subtle: #fff0e3;
-  --pd-status-danger: #c9344a;
-  --pd-status-danger-subtle: #ffe9ed;
-  --pd-status-danger-border: #dd7382;
-  --pd-status-neutral: #596b80;
-  --pd-status-neutral-subtle: #edf2f7;
-  --pd-status-info: #145bd7;
-  --pd-status-info-subtle: #e3edff;
+  --pd-focus-visible: #9e6727;
+  --pd-focus-on-interactive: #fff8ec;
+  --pd-focus-ring: rgba(158, 103, 39, 0.18);
 
-  --pd-focus-visible: #1f63d2;
-  --pd-focus-on-interactive: #ffffff;
-  --pd-focus-ring: rgba(31, 99, 210, 0.16);
+  --pd-border-interactive: rgba(143, 90, 31, 0.38);
+  --pd-border-danger: rgba(169, 67, 76, 0.36);
+  --pd-overlay-scrim: rgba(24, 20, 14, 0.66);
+  --pd-overlay-scrim-text: #fff8ec;
+  --pd-overlay-scrim-text-muted: rgba(255, 248, 236, 0.76);
 
-  --pd-border-interactive: #6f9ee8;
-  --pd-border-danger: #dd7382;
-  --pd-overlay-scrim: rgba(7, 27, 53, 0.54);
-  --pd-overlay-scrim-text: #ffffff;
-  --pd-overlay-scrim-text-muted: rgba(255, 255, 255, 0.78);
-  --pd-glass-surface: rgba(252, 253, 255, 0.78);
   --pd-gradient-premium:
-    linear-gradient(
-      135deg,
-      rgba(169, 96, 18, 0.14),
-      rgba(20, 91, 215, 0.035)
-    );
+    linear-gradient(135deg, rgba(183, 119, 45, 0.18), rgba(38, 118, 95, 0.055));
   --pd-gradient-data:
-    linear-gradient(
-      180deg,
-      rgba(0, 138, 163, 0.16),
-      rgba(0, 138, 163, 0)
-    );
+    linear-gradient(180deg, rgba(38, 118, 95, 0.12), rgba(38, 118, 95, 0));
+  --pd-canvas-gradient:
+    radial-gradient(ellipse 72% 52% at -8% 2%, rgba(183, 119, 45, 0.16), transparent 68%),
+    radial-gradient(ellipse 52% 40% at 108% 10%, rgba(38, 118, 95, 0.1), transparent 66%),
+    linear-gradient(180deg, #fbf6ec 0%, #f4efe5 48%, #e9dfcf 100%);
+
+  --pd-shadow-control:
+    0 10px 24px -20px rgba(42, 30, 16, 0.42),
+    0 2px 7px -6px rgba(42, 30, 16, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  --pd-shadow-raised:
+    0 36px 76px -44px rgba(42, 30, 16, 0.48),
+    0 14px 28px -24px rgba(42, 30, 16, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+  --pd-shadow-floating:
+    0 48px 110px -52px rgba(42, 30, 16, 0.56),
+    0 22px 48px -34px rgba(42, 30, 16, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --pd-shadow-overlay:
+    0 64px 140px -56px rgba(42, 30, 16, 0.64),
+    0 30px 66px -40px rgba(42, 30, 16, 0.44),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+
+  --pd-enterprise-focus: var(--pd-focus-visible);
+  --pd-enterprise-copper: var(--pd-brand-accent);
+  --pd-enterprise-paper: var(--pd-surface-panel);
+  --pd-enterprise-ink: var(--pd-text);
+
+  --pd-form-surface: var(--pd-surface-raised);
+  --pd-form-border: transparent;
+  --pd-form-ring: var(--pd-focus-ring);
+  --pd-form-accent: var(--pd-interactive);
+  --pd-form-text: var(--pd-text);
+  --pd-form-muted: var(--pd-text-muted);
+  --pd-button-color: var(--pd-interactive);
+  --pd-button-hover-color: var(--pd-interactive-hover);
+  --pd-button-line: transparent;
+  --pd-icon-button-color: var(--pd-text-secondary);
+  --pd-icon-button-hover-color: var(--pd-text);
+  --pd-icon-button-line: transparent;
+  --pd-inline-action-color: var(--pd-interactive);
+  --pd-inline-action-hover-color: var(--pd-interactive-hover);
+  --pd-inline-action-line: transparent;
+  --pd-feedback-accent: var(--pd-brand-accent);
+  --pd-feedback-tint: var(--pd-surface-raised);
+  --pd-feedback-state-accent: var(--pd-status-info);
+  --pd-feedback-state-tint: var(--pd-status-info-subtle);
+  --pd-progress-accent: var(--pd-data-accent);
+  --pd-progress-tint: var(--pd-data-accent-subtle);
+  --pd-progress-track: var(--pd-surface-subtle);
+  --pd-progress-value: var(--pd-data-accent);
+  --pd-search-surface: var(--pd-surface-raised);
+  --pd-search-border: transparent;
+  --pd-search-ring: var(--pd-focus-ring);
+  --pd-search-accent: var(--pd-interactive);
+  --pd-operation-accent: var(--pd-data-accent);
+  --pd-operation-tint: var(--pd-data-accent-subtle);
+  --pd-overlay-accent: var(--pd-brand-accent);
+  --pd-badge-accent: var(--pd-brand-accent);
+  --pd-chart-frame-surface: var(--pd-surface-panel);
+  --pd-chart-frame-panel: var(--pd-surface-raised);
+  --pd-chart-frame-region: var(--pd-surface-data);
+  --pd-chart-frame-rule: transparent;
+  --pd-chart-frame-rule-soft: transparent;
+  --pd-chart-frame-accent: var(--pd-data-accent);
+  --pd-chart-frame-insight: var(--pd-brand-accent);
+  --pd-chart-interaction-panel-surface: var(--pd-surface-overlay);
+  --pd-chart-interaction-panel-line: transparent;
+  --pd-chart-interaction-plot-surface: var(--pd-surface-data);
+  --pd-forecast-axis-color: var(--pd-text-muted);
+  --pd-forecast-grid-color: var(--pd-separator);
+  --pd-forecast-grid-opacity: 0.38;
+  --pd-forecast-legend-strong: var(--pd-text);
+  --pd-forecast-legend-text: var(--pd-text-secondary);
+  --pd-forecast-reference-line-color: var(--pd-brand-accent);
+  --pd-forecast-reference-line-opacity: 0.46;
+  --pd-forecast-uncertainty-fill: var(--pd-data-accent);
+  --pd-forecast-uncertainty-fill-opacity: 0.16;
+  --pd-forecast-uncertainty-stroke: var(--pd-data-accent);
+  --pd-forecast-uncertainty-stroke-opacity: 0.38;
+  --pd-share-series-1: var(--pd-data-series-1);
+  --pd-share-series-2: var(--pd-data-series-2);
+  --pd-share-series-3: var(--pd-data-series-3);
+  --pd-share-series-4: var(--pd-data-series-4);
+  --pd-share-series-5: var(--pd-data-series-5);
+  --pd-share-series-6: var(--pd-data-series-6);
+  --pd-correlation-point: var(--pd-data-accent);
+  --pd-correlation-trendline: var(--pd-brand-accent);
+  --pd-correlation-cluster: var(--pd-data-series-4);
+  --pd-correlation-driver: var(--pd-data-series-2);
+  --pd-correlation-outlier: var(--pd-status-danger);
+  --pd-brand-flow-line-core: var(--pd-brand-accent);
+  --pd-brand-flow-line-edge: transparent;
+  --pd-brand-flow-line-background: rgba(183, 119, 45, 0.14);
+  --pd-brand-flow-line-shadow: 0 8px 22px rgba(183, 119, 45, 0.26);
+  --pd-select-scrollbar-track: var(--pd-surface-subtle);
+  --pd-select-scrollbar-thumb: rgba(66, 53, 34, 0.28);
+  --pd-select-scrollbar-thumb-hover: rgba(66, 53, 34, 0.42);
+  --pd-s52-scrollbar-track: var(--pd-surface-subtle);
+  --pd-s52-scrollbar-thumb: rgba(66, 53, 34, 0.28);
+  --pd-s52-scrollbar-thumb-hover: rgba(66, 53, 34, 0.42);
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --pd-canvas: #0d141b;
+  --pd-canvas: #090a08;
+  --pd-surface: #10110e;
+  --pd-surface-subtle: #171711;
+  --pd-surface-raised: #1d1c16;
+  --pd-surface-soft: #14140f;
+  --pd-surface-sunken: #070806;
+  --pd-surface-overlay: rgba(24, 24, 19, 0.97);
+  --pd-surface-active: #2a261b;
+  --pd-surface-data: #151811;
+  --pd-surface-panel: #181711;
+  --pd-glass-surface: rgba(17, 17, 13, 0.78);
 
-  --pd-surface: #0d141d;
-  --pd-surface-subtle: #121c28;
-  --pd-surface-raised: #1a2635;
-  --pd-surface-soft: color-mix(in srgb, var(--pd-surface) 70%, var(--pd-canvas));
-  --pd-surface-sunken: #0a1118;
-  --pd-surface-overlay: rgba(28, 41, 57, 0.97);
-  --pd-surface-active: #203854;
-  --pd-surface-data: #102637;
-  --pd-surface-panel: #1a2635;
+  --pd-separator-subtle: rgba(246, 236, 216, 0.075);
+  --pd-separator: rgba(246, 236, 216, 0.12);
+  --pd-separator-strong: rgba(246, 236, 216, 0.24);
 
-  --pd-separator-subtle: #253244;
-  --pd-separator: #334458;
-  --pd-separator-strong: #526579;
+  --pd-text: #f7efdf;
+  --pd-text-secondary: #c9bda7;
+  --pd-text-muted: #938775;
 
-  --pd-text: #f2f7fb;
-  --pd-text-secondary: #aab7c7;
-  --pd-text-muted: #79889c;
+  --pd-brand-deep: #201102;
+  --pd-brand: #d39a4c;
+  --pd-brand-strong: #ebb869;
+  --pd-brand-highlight: #f4cf8c;
+  --pd-brand-accent: #d79f54;
+  --pd-brand-line: #e2ad62;
+  --pd-brand-ambient: rgba(215, 159, 84, 0.2);
+  --pd-brand-on: #1d1205;
+  --pd-brand-action: #d39a4c;
+  --pd-brand-action-hover: #e8b461;
+  --pd-brand-action-active: #f3ca7f;
+  --pd-brand-action-on: #1d1205;
+  --pd-brand-glow: rgba(215, 159, 84, 0.28);
 
-  --pd-interactive: #4f94ff;
-  --pd-interactive-hover: #76adff;
-  --pd-interactive-active: #9cc5ff;
-  --pd-interactive-subtle: #152b4d;
-  --pd-interactive-on: #071b35;
+  --pd-interactive: #d39a4c;
+  --pd-interactive-hover: #e8b461;
+  --pd-interactive-active: #f3ca7f;
+  --pd-interactive-subtle: #332414;
+  --pd-interactive-on: #1d1205;
 
-  --pd-brand-deep: #1a0d03;
-  --pd-brand: #c9781d;
-  --pd-brand-strong: #e99835;
-  --pd-brand-highlight: #f4b15a;
-  --pd-brand-accent: #d18425;
-  --pd-brand-line: #efa13c;
-  --pd-brand-ambient: rgba(209, 132, 37, 0.24);
-  --pd-brand-on: #160b03;
-  --pd-brand-action: #c9781d;
-  --pd-brand-action-hover: #df8b2c;
-  --pd-brand-action-active: #f0a84d;
-  --pd-brand-action-on: #160b03;
-  --pd-brand-glow: rgba(209, 132, 37, 0.3);
+  --pd-data-accent: #6ec4a2;
+  --pd-data-accent-hover: #8bd6b8;
+  --pd-data-accent-subtle: #18342a;
+  --pd-data-series-1: #6ec4a2;
+  --pd-data-series-2: #d79f54;
+  --pd-data-series-3: #c7b56e;
+  --pd-data-series-4: #a99ad6;
+  --pd-data-series-5: #d68184;
+  --pd-data-series-6: #91ba99;
+  --pd-data-series-7: #deb373;
+  --pd-data-series-8: #aeb578;
+  --pd-data-series-9: #bcae99;
+  --pd-data-series-10: #ebb869;
+  --pd-data-actual: var(--pd-data-series-1);
+  --pd-data-target: var(--pd-text);
+  --pd-data-forecast: var(--pd-data-series-2);
+  --pd-data-uncertainty: rgba(110, 196, 162, 0.2);
+  --pd-data-positive: #6ec4a2;
+  --pd-data-negative: #df8088;
+  --pd-data-no-data: #5d5548;
 
-  --pd-data-accent: #23bfd3;
-  --pd-data-accent-hover: #55d7e5;
-  --pd-data-accent-subtle: #0f3540;
-  --pd-data-series-1: #76adff;
-  --pd-data-series-2: #55d7e5;
-  --pd-data-series-3: #d4b55d;
-  --pd-data-series-4: #a691ff;
-  --pd-data-series-5: #68d8b0;
-  --pd-data-series-6: #ffad67;
-  --pd-data-series-7: #ff91c3;
-  --pd-data-series-8: #a7d96a;
-  --pd-data-series-9: #9db7ff;
-  --pd-data-series-10: #f0a84d;
-  --pd-data-actual: #76adff;
-  --pd-data-target: #f2f7fb;
-  --pd-data-forecast: #55d7e5;
-  --pd-data-uncertainty: rgba(85, 215, 229, 0.2);
-  --pd-data-positive: #49c59b;
-  --pd-data-negative: #ff7b8b;
-  --pd-data-no-data: #46576a;
+  --pd-status-success: #6ec4a2;
+  --pd-status-success-subtle: #17362b;
+  --pd-status-warning: #d79f54;
+  --pd-status-warning-subtle: #352514;
+  --pd-status-danger: #df8088;
+  --pd-status-danger-subtle: #3a1c1f;
+  --pd-status-danger-border: rgba(223, 128, 136, 0.34);
+  --pd-status-neutral: #c9bda7;
+  --pd-status-neutral-subtle: #25231b;
+  --pd-status-info: #c7b56e;
+  --pd-status-info-subtle: #2c2919;
+  --pd-status-critical: var(--pd-status-danger);
 
-  --pd-status-success: #49c59b;
-  --pd-status-success-subtle: #12352d;
-  --pd-status-warning: #ffad67;
-  --pd-status-warning-subtle: #3f2514;
-  --pd-status-danger: #ff7b8b;
-  --pd-status-danger-subtle: #421c25;
-  --pd-status-danger-border: #8e4755;
-  --pd-status-neutral: #aab7c7;
-  --pd-status-neutral-subtle: #1e2a38;
-  --pd-status-info: #76adff;
-  --pd-status-info-subtle: #152b4d;
+  --pd-focus-visible: #e8b461;
+  --pd-focus-on-interactive: #1d1205;
+  --pd-focus-ring: rgba(232, 180, 97, 0.24);
 
-  --pd-focus-visible: #7fabf4;
-  --pd-focus-on-interactive: #071b35;
-  --pd-focus-ring: rgba(127, 171, 244, 0.22);
+  --pd-border-interactive: rgba(215, 159, 84, 0.34);
+  --pd-border-danger: rgba(223, 128, 136, 0.34);
+  --pd-overlay-scrim: rgba(0, 0, 0, 0.78);
+  --pd-overlay-scrim-text: #fff8ec;
+  --pd-overlay-scrim-text-muted: rgba(255, 248, 236, 0.72);
 
-  --pd-border-interactive: #4f77ab;
-  --pd-border-danger: #8e4755;
-  --pd-overlay-scrim: rgba(0, 0, 0, 0.74);
-  --pd-overlay-scrim-text: #ffffff;
-  --pd-overlay-scrim-text-muted: rgba(255, 255, 255, 0.76);
-  --pd-glass-surface: rgba(15, 22, 32, 0.76);
   --pd-gradient-premium:
-    linear-gradient(
-      135deg,
-      rgba(209, 132, 37, 0.17),
-      rgba(79, 148, 255, 0.055)
-    );
+    linear-gradient(135deg, rgba(215, 159, 84, 0.16), rgba(110, 196, 162, 0.055));
   --pd-gradient-data:
-    linear-gradient(
-      180deg,
-      rgba(35, 191, 211, 0.18),
-      rgba(35, 191, 211, 0)
-    );
+    linear-gradient(180deg, rgba(110, 196, 162, 0.16), rgba(110, 196, 162, 0));
+  --pd-canvas-gradient:
+    radial-gradient(ellipse 74% 50% at -8% 0%, rgba(215, 159, 84, 0.12), transparent 68%),
+    radial-gradient(ellipse 50% 38% at 108% 8%, rgba(110, 196, 162, 0.08), transparent 66%),
+    linear-gradient(180deg, #0d0e0b 0%, #090a08 54%, #060705 100%);
+
   --pd-shadow-control:
-    0 1px 2px rgba(0, 0, 0, 0.62),
+    0 12px 28px -20px rgba(0, 0, 0, 0.88),
+    0 2px 7px -5px rgba(0, 0, 0, 0.72),
     inset 0 1px 0 rgba(255, 255, 255, 0.055);
   --pd-shadow-raised:
-    0 18px 40px -26px rgba(0, 0, 0, 0.9),
-    0 8px 18px -16px rgba(0, 0, 0, 0.62),
+    0 40px 88px -42px rgba(0, 0, 0, 0.98),
+    0 16px 36px -26px rgba(0, 0, 0, 0.78),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --pd-shadow-floating:
-    0 28px 64px -30px rgba(0, 0, 0, 0.95),
-    0 14px 30px -22px rgba(0, 0, 0, 0.68),
+    0 58px 128px -48px rgba(0, 0, 0, 1),
+    0 24px 56px -32px rgba(0, 0, 0, 0.86),
     inset 0 1px 0 rgba(255, 255, 255, 0.07);
   --pd-shadow-overlay:
-    0 40px 92px -30px rgba(0, 0, 0, 0.97),
-    0 20px 46px -26px rgba(0, 0, 0, 0.72),
+    0 72px 158px -50px rgba(0, 0, 0, 1),
+    0 34px 76px -38px rgba(0, 0, 0, 0.92),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  --pd-enterprise-focus: var(--pd-focus-visible);
+  --pd-enterprise-copper: var(--pd-brand-accent);
+  --pd-enterprise-paper: var(--pd-surface-panel);
+  --pd-enterprise-ink: var(--pd-text);
+
+  --pd-form-surface: var(--pd-surface-raised);
+  --pd-form-border: transparent;
+  --pd-form-ring: var(--pd-focus-ring);
+  --pd-form-accent: var(--pd-interactive);
+  --pd-form-text: var(--pd-text);
+  --pd-form-muted: var(--pd-text-muted);
+  --pd-button-color: var(--pd-interactive);
+  --pd-button-hover-color: var(--pd-interactive-hover);
+  --pd-button-line: transparent;
+  --pd-icon-button-color: var(--pd-text-secondary);
+  --pd-icon-button-hover-color: var(--pd-text);
+  --pd-icon-button-line: transparent;
+  --pd-inline-action-color: var(--pd-interactive);
+  --pd-inline-action-hover-color: var(--pd-interactive-hover);
+  --pd-inline-action-line: transparent;
+  --pd-feedback-accent: var(--pd-brand-accent);
+  --pd-feedback-tint: var(--pd-surface-raised);
+  --pd-feedback-state-accent: var(--pd-status-info);
+  --pd-feedback-state-tint: var(--pd-status-info-subtle);
+  --pd-progress-accent: var(--pd-data-accent);
+  --pd-progress-tint: var(--pd-data-accent-subtle);
+  --pd-progress-track: var(--pd-surface-subtle);
+  --pd-progress-value: var(--pd-data-accent);
+  --pd-search-surface: var(--pd-surface-raised);
+  --pd-search-border: transparent;
+  --pd-search-ring: var(--pd-focus-ring);
+  --pd-search-accent: var(--pd-interactive);
+  --pd-operation-accent: var(--pd-data-accent);
+  --pd-operation-tint: var(--pd-data-accent-subtle);
+  --pd-overlay-accent: var(--pd-brand-accent);
+  --pd-badge-accent: var(--pd-brand-accent);
+  --pd-chart-frame-surface: var(--pd-surface-panel);
+  --pd-chart-frame-panel: var(--pd-surface-raised);
+  --pd-chart-frame-region: var(--pd-surface-data);
+  --pd-chart-frame-rule: transparent;
+  --pd-chart-frame-rule-soft: transparent;
+  --pd-chart-frame-accent: var(--pd-data-accent);
+  --pd-chart-frame-insight: var(--pd-brand-accent);
+  --pd-chart-interaction-panel-surface: var(--pd-surface-overlay);
+  --pd-chart-interaction-panel-line: transparent;
+  --pd-chart-interaction-plot-surface: var(--pd-surface-data);
+  --pd-forecast-axis-color: var(--pd-text-muted);
+  --pd-forecast-grid-color: var(--pd-separator);
+  --pd-forecast-grid-opacity: 0.34;
+  --pd-forecast-legend-strong: var(--pd-text);
+  --pd-forecast-legend-text: var(--pd-text-secondary);
+  --pd-forecast-reference-line-color: var(--pd-brand-accent);
+  --pd-forecast-reference-line-opacity: 0.5;
+  --pd-forecast-uncertainty-fill: var(--pd-data-accent);
+  --pd-forecast-uncertainty-fill-opacity: 0.2;
+  --pd-forecast-uncertainty-stroke: var(--pd-data-accent);
+  --pd-forecast-uncertainty-stroke-opacity: 0.42;
+  --pd-share-series-1: var(--pd-data-series-1);
+  --pd-share-series-2: var(--pd-data-series-2);
+  --pd-share-series-3: var(--pd-data-series-3);
+  --pd-share-series-4: var(--pd-data-series-4);
+  --pd-share-series-5: var(--pd-data-series-5);
+  --pd-share-series-6: var(--pd-data-series-6);
+  --pd-correlation-point: var(--pd-data-accent);
+  --pd-correlation-trendline: var(--pd-brand-accent);
+  --pd-correlation-cluster: var(--pd-data-series-4);
+  --pd-correlation-driver: var(--pd-data-series-2);
+  --pd-correlation-outlier: var(--pd-status-danger);
+  --pd-brand-flow-line-core: var(--pd-brand-accent);
+  --pd-brand-flow-line-edge: transparent;
+  --pd-brand-flow-line-background: rgba(215, 159, 84, 0.14);
+  --pd-brand-flow-line-shadow: 0 10px 28px rgba(215, 159, 84, 0.24);
+  --pd-select-scrollbar-track: var(--pd-surface-subtle);
+  --pd-select-scrollbar-thumb: rgba(246, 236, 216, 0.2);
+  --pd-select-scrollbar-thumb-hover: rgba(246, 236, 216, 0.32);
+  --pd-s52-scrollbar-track: var(--pd-surface-subtle);
+  --pd-s52-scrollbar-thumb: rgba(246, 236, 216, 0.2);
+  --pd-s52-scrollbar-thumb-hover: rgba(246, 236, 216, 0.32);
 }
 
 :root,
 [data-density="comfortable"] {
-  --pd-density-control-height: 40px;
-  --pd-density-row-height: 48px;
+  --pd-density-control-height: 42px;
+  --pd-density-row-height: 50px;
   --pd-density-surface-padding: var(--pd-space-6);
   --pd-density-section-gap: var(--pd-space-12);
   --pd-density-inline-gap: var(--pd-space-3);
 }
 
 [data-density="compact"] {
-  --pd-density-control-height: 32px;
-  --pd-density-row-height: 38px;
+  --pd-density-control-height: 34px;
+  --pd-density-row-height: 40px;
   --pd-density-surface-padding: var(--pd-space-4);
   --pd-density-section-gap: var(--pd-space-10);
   --pd-density-inline-gap: var(--pd-space-2);

@@ -1,0 +1,97 @@
+.pd-s20-page .pd-f0-page__inner {
+  width: min(100%, 1680px);
+}
+
+.pd-s20-stage {
+  min-width: 0;
+  overflow: hidden;
+  border: var(--pd-border-width-subtle) solid var(--pd-separator);
+  border-radius: 8px;
+  background: var(--pd-surface, Canvas);
+}
+
+.pd-s20-stage--compact {
+  max-width: 960px;
+}
+
+.pd-s20-stage--mobile {
+  max-width: 430px;
+  margin-inline: auto;
+}
+
+.pd-s20-stage--mobile .pd-product-shell {
+  min-height: 780px;
+}
+
+.pd-s20-stage--mobile .pd-product-shell__body {
+  display: block;
+}
+
+.pd-s20-stage--mobile .pd-product-shell__sidebar-column,
+.pd-s20-stage--mobile .pd-product-shell__side-rail {
+  display: none;
+}
+
+.pd-s20-topbar-only {
+  overflow: hidden;
+}
+
+.pd-s20-isolated {
+  display: grid;
+  gap: var(--pd-space-5);
+  padding: var(--pd-space-6);
+}
+
+.pd-s20-isolated__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pd-space-5);
+}
+
+.pd-s20-panel {
+  min-width: 0;
+  display: grid;
+  gap: var(--pd-space-4);
+  padding: var(--pd-space-5);
+  border: var(--pd-border-width-subtle) solid var(--pd-separator);
+  border-radius: 8px;
+  background: var(--pd-surface, Canvas);
+}
+
+.pd-s20-panel h3,
+.pd-s20-panel p {
+  margin: 0;
+}
+
+.pd-s20-panel p {
+  color: var(--pd-text-secondary);
+  line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-s20-command-preview,
+.pd-s20-drawer-preview {
+  min-height: 520px;
+}
+
+@media (max-width: 760px) {
+  .pd-s20-isolated__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Enterprise BI redesign: show shell as a product surface, not a wireframe. */
+.pd-s20-stage {
+  border-radius: 22px;
+  background: var(--pd-canvas-gradient, var(--pd-canvas));
+  box-shadow: var(--pd-shadow-floating);
+}
+
+.pd-s20-stage .pd-product-shell {
+  min-height: 760px;
+}
+
+.pd-s20-stage--compact,
+.pd-s20-panel {
+  border-radius: 18px;
+  box-shadow: var(--pd-shadow-raised);
+}

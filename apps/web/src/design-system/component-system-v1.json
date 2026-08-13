@@ -4,8 +4,8 @@
   "stage": "C2.2",
   "stageName": "Storybook Taxonomy Cleanup — Foundation-integrated Component Evidence",
   "foundationBaseline": {
-    "expectedActiveStoryCount": 46,
-    "expectedActiveStoryFileCount": 28,
+    "expectedActiveStoryCount": 81,
+    "expectedActiveStoryFileCount": 32,
     "activeStoryFiles": [
       "apps/web/src/design-system/components/Button/Button.stories.tsx",
       "apps/web/src/design-system/components/Field/FormFields.stories.tsx",
@@ -34,7 +34,11 @@
       "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/FeedbackStates.stories.tsx",
       "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/FilteredTableActions.stories.tsx",
       "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/LoadingOperations.stories.tsx",
-      "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/PageSectionLayout.stories.tsx"
+      "apps/web/src/storybook-next/stories/18-cross-cutting-patterns/PageSectionLayout.stories.tsx",
+      "apps/web/src/storybook-next/stories/20-product-shell/ProductShell.stories.tsx",
+      "apps/web/src/storybook-next/stories/25-access-registration-onboarding/AuthSurfaces.stories.tsx",
+      "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+      "apps/web/src/storybook-next/stories/31-paid-campaigns/Campaigns.stories.tsx"
     ],
     "frozenEntries": [
       "00.01",
@@ -120,7 +124,10 @@
     "PasswordField",
     "Textarea",
     "FileInput",
-    "VerificationCodeInput"
+    "VerificationCodeInput",
+    "Select",
+    "Checkbox",
+    "RadioGroup"
   ],
   "requiredComponentExports": [
     "Button",
@@ -151,7 +158,14 @@
     "FileInput",
     "FileInputProps",
     "VerificationCodeInput",
-    "VerificationCodeInputProps"
+    "VerificationCodeInputProps",
+    "Select",
+    "SelectProps",
+    "Checkbox",
+    "CheckboxProps",
+    "RadioGroup",
+    "RadioGroupOption",
+    "RadioGroupProps"
   ],
   "plannedComponents": [
     "PapaDataBrand",
@@ -165,7 +179,10 @@
     "PasswordField",
     "Textarea",
     "FileInput",
-    "VerificationCodeInput"
+    "VerificationCodeInput",
+    "Select",
+    "Checkbox",
+    "RadioGroup"
   ],
   "activeComponentEntries": [
     "00.12",

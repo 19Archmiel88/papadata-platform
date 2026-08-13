@@ -1,9 +1,13 @@
 {
   "fixtureId": "SB-133",
-  "storyTitle": "25 Dostęp/Powierzchnie/Prośba o odzyskanie hasła",
+  "storyTitle": "25 Dostęp i onboarding/Auth runtime/Odzyskiwanie dostępu",
   "sourceDocument": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-18-prosba-o-odzyskanie-hasla.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "AuthSurface",
+    "TextField",
+    "InlineNotice"
+  ],
   "states": [
     "ready",
     "loading",
@@ -49,5 +53,5 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

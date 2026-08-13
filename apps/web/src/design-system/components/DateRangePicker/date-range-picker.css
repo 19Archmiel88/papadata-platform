@@ -1,0 +1,69 @@
+.pd-date-range-picker {
+  display: grid;
+  grid-template-columns:
+    minmax(11rem, 0.9fr)
+    minmax(9rem, 0.55fr)
+    minmax(9rem, 0.55fr);
+  gap: var(--pd-space-3);
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.pd-date-range-picker legend {
+  grid-column: 1 / -1;
+  padding: 0;
+  color: var(--pd-text);
+  font-weight: var(--pd-font-weight-medium);
+}
+
+.pd-date-range-picker__preset,
+.pd-date-range-picker label {
+  min-inline-size: 0;
+}
+
+.pd-date-range-picker label {
+  display: grid;
+  gap: var(--pd-space-1);
+}
+
+.pd-date-range-picker label > span {
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-date-range-picker input {
+  min-block-size: 2.5rem;
+  min-inline-size: 0;
+  inline-size: 100%;
+  padding: 0 var(--pd-space-3);
+  border:
+    var(--pd-border-width-subtle)
+    solid
+    var(--pd-separator);
+  border-radius: var(--pd-radius-control);
+  outline: 0;
+  background: var(--pd-surface);
+  color: var(--pd-text);
+}
+
+.pd-date-range-picker[data-state='error'] input {
+  border-color: var(--pd-status-danger);
+}
+
+.pd-date-range-picker input:focus-visible {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: var(--pd-focus-offset);
+}
+
+.pd-date-range-picker .pd-form-control__meta {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 700px) {
+  .pd-date-range-picker {
+    grid-template-columns: 1fr;
+  }
+}

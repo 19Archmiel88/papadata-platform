@@ -1,9 +1,14 @@
 {
   "fixtureId": "SB-143",
-  "storyTitle": "25 Dostęp/Powierzchnie/Ustawienie nowego hasła",
+  "storyTitle": "25 Dostęp i onboarding/Auth runtime/Ustawienie nowego hasła",
   "sourceDocument": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-20-ustawienie-nowego-hasla.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "AuthSurface",
+    "TextField",
+    "VerificationCodeInput",
+    "PasswordField"
+  ],
   "states": [
     "ready",
     "loading",
@@ -49,5 +54,5 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

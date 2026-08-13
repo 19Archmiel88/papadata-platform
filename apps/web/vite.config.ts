@@ -19,6 +19,26 @@ export default defineConfig({
   },
 
   build: {
+    rolldownOptions: {
+      output: {
+        manualChunks(id: string): string | undefined {
+          if (id.includes('/node_modules/react') || id.includes('/node_modules/scheduler')) {
+            return 'vendor-react';
+          }
+
+          if (
+            id.includes('/node_modules/recharts')
+            || id.includes('/node_modules/d3-')
+            || id.includes('/node_modules/victory-vendor')
+            || id.includes('/node_modules/lodash')
+          ) {
+            return 'vendor-charts';
+          }
+
+          return undefined;
+        },
+      },
+    },
     sourcemap: true,
   },
 });

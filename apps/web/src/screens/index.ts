@@ -1,5 +1,6 @@
 export * from './access';
 export * from './billing';
+export * from './business';
 export * from './campaigns';
 export * from './command-center';
 export * from './customers';

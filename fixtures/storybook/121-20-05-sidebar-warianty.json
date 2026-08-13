@@ -1,9 +1,11 @@
 {
   "fixtureId": "SB-121",
-  "storyTitle": "20 Powłoka/Sidebar — warianty",
+  "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/Sidebar warianty",
   "sourceDocument": "06-powloka-produktu-i-nawigacja/20-05-sidebar-warianty.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "Sidebar"
+  ],
   "states": [
     "ready",
     "loading",
@@ -46,5 +48,5 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

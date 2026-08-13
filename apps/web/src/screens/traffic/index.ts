@@ -1,7 +1,2 @@
-/**
- * Punkt eksportu modułu:
- * src/screens/traffic
- *
- * Moduł nie zawiera kodu legacy.
- */
-export {};
+export { TrafficScreen } from '../TrafficScreen';
+export type { TrafficScreenProps } from '../TrafficScreen';

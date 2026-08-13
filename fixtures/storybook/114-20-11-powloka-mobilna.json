@@ -1,9 +1,14 @@
 {
   "fixtureId": "SB-114",
-  "storyTitle": "20 Powłoka produktu i nawigacja/Powłoka mobilna",
+  "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/Powłoka mobilna",
   "sourceDocument": "06-powloka-produktu-i-nawigacja/20-11-powloka-mobilna.md",
   "screenId": null,
-  "components": [],
+  "components": [
+    "ProductShellFrame",
+    "Drawer",
+    "Sidebar",
+    "WorkspaceSwitcher"
+  ],
   "states": [
     "ready",
     "loading",
@@ -46,5 +51,5 @@
     "live-region",
     "200-percent-zoom"
   ],
-  "implementationStatus": "backlog-target-not-implemented"
+  "implementationStatus": "implemented-passing-static-and-play-contract"
 }

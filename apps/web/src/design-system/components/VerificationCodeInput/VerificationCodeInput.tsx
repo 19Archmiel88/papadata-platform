@@ -106,7 +106,7 @@ export const VerificationCodeInput = forwardRef<
       </label>
 
       <div
-        className="pd-form-control"
+        className="pd-form-control pd-form-control--verification-code"
         data-invalid={state === 'error' ? true : undefined}
         data-state={state}
       >
@@ -116,7 +116,7 @@ export const VerificationCodeInput = forwardRef<
           aria-describedby={resolveDescribedBy(helperId, messageId)}
           aria-invalid={state === 'error' ? true : undefined}
           autoComplete="one-time-code"
-          className="pd-form-control__input"
+          className="pd-verification-code__input"
           data-slot="input"
           disabled={disabled}
           id={inputId}
@@ -129,29 +129,30 @@ export const VerificationCodeInput = forwardRef<
           type="text"
           value={normalizedValue}
         />
-      </div>
 
-      <div
-        className="pd-verification-code__slots"
-        style={{ ['--pd-code-length' as string]: length }}
-      >
-        {Array.from({ length }, (_, index) => {
-          const character = normalizedValue[index] ?? '';
-          const displayValue = masked && character
-            ? '•'
-            : character || '·';
+        <div
+          aria-hidden="true"
+          className="pd-verification-code__slots"
+          style={{ ['--pd-code-length' as string]: length }}
+        >
+          {Array.from({ length }, (_, index) => {
+            const character = normalizedValue[index] ?? '';
+            const displayValue = masked && character
+              ? '•'
+              : character || '·';
 
-          return (
-            <span
-              className="pd-verification-code__slot"
-              data-filled={character.length > 0 ? true : undefined}
-              data-state={state}
-              key={`${inputId}-${index}`}
-            >
-              {displayValue}
-            </span>
-          );
-        })}
+            return (
+              <span
+                className="pd-verification-code__slot"
+                data-filled={character.length > 0 ? true : undefined}
+                data-state={state}
+                key={`${inputId}-${index}`}
+              >
+                {displayValue}
+              </span>
+            );
+          })}
+        </div>
       </div>
 
       {helperText || message || resendAvailableAt ? (

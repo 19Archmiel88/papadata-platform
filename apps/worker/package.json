@@ -29,8 +29,8 @@
     "@papadata/database": "workspace:*",
     "@papadata/integrations": "workspace:*",
     "@papadata/storage": "workspace:*",
-    "bullmq": "^5.58.5",
-    "ioredis": "^5.11.1",
+    "bullmq": "^6.0.9",
+    "ioredis": "^6.0.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },

@@ -1,0 +1,1181 @@
+{
+  "baseUrl": "http://127.0.0.1:6024",
+  "storyCount": 44,
+  "screenshotCount": 88,
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 1100
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 1200
+    }
+  ],
+  "issueCount": 25,
+  "issues": [
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-01-story",
+      "viewport": "desktop",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nWysokie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-01-story",
+      "viewport": "mobile",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nWysokie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-02-story",
+      "viewport": "desktop",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nWysokie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-02-story",
+      "viewport": "mobile",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nWysokie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-03-story",
+      "viewport": "desktop",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nŚrednie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-03-story",
+      "viewport": "mobile",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nŚrednie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-04-story",
+      "viewport": "desktop",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nWysokie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-04-story",
+      "viewport": "mobile",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nWysokie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-05-story",
+      "viewport": "desktop",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nWysokie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-05-story",
+      "viewport": "mobile",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nWysokie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-06-story",
+      "viewport": "desktop",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nWysokie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-06-story",
+      "viewport": "mobile",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nWysokie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-07-story",
+      "viewport": "desktop",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nWysokie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-07-story",
+      "viewport": "mobile",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nWysokie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-08-story",
+      "viewport": "desktop",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nWysokie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-08-story",
+      "viewport": "mobile",
+      "kind": "blocked-copy",
+      "term": "fulfillment",
+      "excerpt": "\n3 decyzje\nPriorytet:\nWysokie\nPrzekaż otwarte zamówienia do fulfillmentu\n\nOpłacone i nowe zamówienia powinny przejść do kolejki fulfillmentu przed kole"
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-01-story",
+      "viewport": "mobile",
+      "kind": "horizontal-overflow",
+      "body": 0,
+      "doc": 0,
+      "root": 29
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-03-story",
+      "viewport": "mobile",
+      "kind": "horizontal-overflow",
+      "body": 0,
+      "doc": 0,
+      "root": 29
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-08-story",
+      "viewport": "desktop",
+      "kind": "runtime-errors",
+      "pageErrors": [],
+      "consoleErrors": [
+        "TestingLibraryElementError: Found multiple elements with the role \"heading\" and name \"Strony wejścia\"\n\nHere are the matching elements:\n\nIgnored nodes: comments, script, style\n<h1\n  id=\"_r_0_\"\n>\n  Strony wejścia\n</h1>\n\nIgnored nodes: comments, script, style\n<h3>\n  Strony wejścia\n</h3>\n\n(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).\n\nIgnored nodes: comments, script, style\n<section\n  aria-label=\"Ruch i lejek: Strony wejścia\"\n  class=\"pd-production-canvas pd-production-canvas--traffic\"\n  data-mode=\"storybook\"\n  data-production-canvas=\"true\"\n  data-screen-id=\"35.08\"\n  data-screen-variant=\"landing-pages\"\n>\n  <header\n    aria-describedby=\"_r_1_\"\n    aria-labelledby=\"_r_0_\"\n    class=\"pd-page-header pd-production-domain-header\"\n  >\n    <div\n      class=\"pd-page-header__main\"\n    >\n      <nav\n        aria-label=\"Ścieżka ekranu\"\n        class=\"pd-page-header__breadcrumbs\"\n      >\n        <ol>\n          <li>\n            <a\n              href=\"/app\"\n            >\n              Aplikacja\n            </a>\n          </li>\n          <li>\n            <a\n              href=\"/app/traffic/strony-wejscia\"\n            >\n              Ruch na stronie i lejek sprzedażowy\n            </a>\n          </li>\n          <li>\n            <span\n              aria-current=\"page\"\n            >\n              Strony wejścia\n            </span>\n          </li>\n        </ol>\n      </nav>\n      <div\n        class=\"pd-page-header__heading\"\n      >\n        <h1\n          id=\"_r_0_\"\n        >\n          Strony wejścia\n        </h1>\n        <p\n          id=\"_r_1_\"\n        >\n          Strony wejścia uszeregowane według ruchu, konwersji i przychodu.\n        </p>\n      </div>\n    </div>\n    <dl\n      aria-label=\"Metadane ekranu\"\n      class=\"pd-page-header__meta\"\n    >\n      <div>\n        <dt>\n          Rekordy\n        </dt>\n        <dd>\n          6\n        </dd>\n      </div>\n      <div>\n        <dt>\n          Gotowe\n        </dt>\n        <dd>\n          4/6\n        </dd>\n      </div>\n      <div>\n        <dt>\n          Odświeżono\n        </dt>\n        <dd>\n          12 sie, 09:30\n        </dd>\n      </div>\n    </dl>\n    <div\n      class=\"pd-page-header__actions\"\n    >\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"warning\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Stan: \n          </span>\n          Częściowy\n        </span>\n      </span>\n    </div>\n  </header>\n  <nav\n    aria-label=\"Widoki ruchu i lejka\"\n    class=\"pd-section-navigation pd-production-domain-nav\"\n    data-orientation=\"horizontal\"\n    data-size=\"compact\"\n  >\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/przeglad-ruchu\"\n    >\n      <span>\n        Przegląd\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/kanaly\"\n    >\n      <span>\n        Kanały\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/lejek-widok\"\n    >\n      <span>\n        Lejek\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/lejek-szczegoly-kroku\"\n    >\n      <span>\n        Krok\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/definicje-lejka\"\n    >\n      <span>\n        Definicje\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/ga4-vs-zamowienia\"\n    >\n      <span>\n        GA4 vs zamówienia\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/jakosc-zdarzen\"\n    >\n      <span>\n        Zdarzenia\n      </span>\n    </a>\n    <a\n      aria-current=\"page\"\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/strony-wejscia\"\n    >\n      <span>\n        Wejścia\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/warianty-ruchu\"\n    >\n      <span>\n        Warianty\n      </span>\n    </a>\n  </nav>\n  <dl\n    class=\"pd-domain-health-strip\"\n  >\n    <div>\n      <dt>\n        Sesje\n      </dt>\n      <dd>\n        145 600\n      </dd>\n      <span>\n        sesje w bieżącym zakresie\n      </span>\n    </div>\n    <div>\n      <dt>\n        Użytkownicy\n      </dt>\n      <dd>\n        127 600\n      </dd>\n      <span>\n        użytkownicy bez duplikacji źródła\n      </span>\n    </div>\n    <div>\n      <dt>\n        Konwersja\n      </dt>\n      <dd>\n        4%\n      </dd>\n      <span>\n        średni współczynnik konwersji\n      </span>\n    </div>\n    <div>\n      <dt>\n        Jakość zdarzeń\n      </dt>\n      <dd>\n        95%\n      </dd>\n      <span>\n        średnia kompletność zdarzeń\n      </span>\n    </div>\n  </dl>\n  <section\n    aria-label=\"Brief analityczny\"\n    class=\"pd-domain-command-brief\"\n  >\n    <header>\n      <p\n        class=\"pd-production-eyebrow\"\n      >\n        Brief analityczny\n      </p>\n      <h2>\n        Co sprawdzić w ruchu przed interpretacją sprzedaży\n      </h2>\n      <span>\n        Najpierw jakość zdarzeń i spójność lejka, potem kanały, strony wejścia i porównanie z zamówieniami.\n      </span>\n    </header>\n    <aside>\n      <span>\n        Przychód z ruchu\n      </span>\n      <strong>\n        882 800 zł\n      </strong>\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"warning\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Sygnał: \n          </span>\n          Do przeglądu\n        </span>\n      </span>\n    </aside>\n  </section>\n  <section\n    class=\"pd-production-section\"\n  >\n    <header>\n      <div>\n        <p\n          class=\"pd-production-eyebrow\"\n        >\n          Decyzje\n        </p>\n        <h2>\n          Kolejka analityki ruchu\n        </h2>\n      </div>\n      <span>\n        2 decyzje\n      </span>\n    </header>\n    <ol\n      class=\"pd-domain-decision-grid\"\n    >\n      <li\n        data-priority=\"high\"\n      >\n        <div>\n          <span\n            class=\"pd-status-badge\"\n            data-tone=\"warning\"\n          >\n            <span\n              aria-hidden=\"true\"\n              class=\"pd-status-badge__dot\"\n            />\n            <span\n              class=\"pd-status-badge__text\"\n            >\n              <span\n                class=\"pd-visually-hidden\"\n              >\n                Priorytet: \n              </span>\n              Wysokie\n            </span>\n          </span>\n          <strong>\n            Oceń jakość zdarzeń przed interpretacją\n          </strong>\n          <p>\n            Kanały z niższą jakością zdarzeń nie powinny sterować decyzją sprzedażową bez oznaczenia ograniczeń.\n          </p>\n        </div>\n        <dl>\n          <div>\n            <dt>\n              Metryka\n            </dt>\n            <dd>\n              jakość zdarzeń\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Wpływ\n            </dt>\n            <dd>\n              2 kanały\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Właściciel\n            </dt>\n            <dd>\n              Analityka danych\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Termin\n            </dt>\n            <dd>\n              dzisiaj 14:00\n            </dd>\n          </div>\n        </dl>\n        <span\n          class=\"pd-status-badge\"\n          data-tone=\"warning\"\n        >\n          <span\n            aria-hidden=\"true\"\n            class=\"pd-status-badge__dot\"\n          />\n          <span\n            class=\"pd-status-badge__text\"\n          >\n            <span\n              class=\"pd-visually-hidden\"\n            >\n              Status: \n            </span>\n            Do sprawdzenia\n          </span>\n        </span>\n      </li>\n      <li\n        data-priority=\"medium\"\n      >\n        <div>\n          <span\n            class=\"pd-status-badge\"\n            data-tone=\"info\"\n          >\n            <span\n              aria-hidden=\"true\"\n              class=\"pd-status-badge__dot\"\n            />\n            <span\n              class=\"pd-status-badge__text\"\n            >\n              <span\n                class=\"pd-visually-hidden\"\n              >\n                Priorytet: \n              </span>\n              Średnie\n            </span>\n          </span>\n          <strong>\n            Sprawdź odpływ w lejku\n          </strong>\n          <p>\n            Sesja → koszyk ma najniższą konwersję w bieżącym lejku.\n          </p>\n        </div>\n        <dl>\n          <div>\n            <dt>\n              Metryka\n            </dt>\n            <dd>\n              najsłabszy krok\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Wpływ\n            </dt>\n            <dd>\n              12%\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Właściciel\n            </dt>\n            <dd>\n              Growth\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Termin\n            </dt>\n            <dd>\n              jutro 10:00\n            </dd>\n          </div>\n        </dl>\n        <span\n          class=\"pd-status-badge\"\n          data-tone=\"info\"\n        >\n          <span\n            aria-hidden=\"true\"\n            class=\"pd-status-badge__dot\"\n          />\n          <span\n            class=\"pd-status-badge__text\"\n          >\n            <span\n              class=\"pd-visually-hidden\"\n            >\n              Status: \n            </span>\n            Do przeglądu\n          </span>\n        </span>\n      </li>\n    </ol>\n  </section>\n  <section\n    class=\"pd-production-section\"\n  >\n    <header>\n      <h3>\n        Strony wejścia\n      </h3>\n      <p>\n        Strony wejścia z przychodem i jakością zdarzeń.\n      </p>\n    </header>\n    <ol\n      class=\"pd-production-list\"\n    >\n      <li>\n        <strong>\n          /collections/bestsellery\n        </strong>\n        <span>\n          Organic Search\n           · \n          284 000 zł\n        </span>\n        <small>\n          Jakość zdarzeń \n          98%\n        </small>\n      </li>\n      <li>\n        <strong>\n          /products/papa-lamp-one\n        </strong>\n        <span>\n          Google Ads\n           · \n          241 000 zł\n        </span>\n        <small>\n          Jakość zdarzeń \n          97%\n        </small>\n      </li>\n      <li>\n        <strong>\n          /collections/nowosci\n        </strong>\n        <span>\n          Meta Ads\n           · \n          132 000 zł\n        </span>\n        <small>\n          Jakość zdarzeń \n          91%\n        </small>\n      </li>\n      <li>\n        <strong>\n          /\n        </strong>\n        <span>\n          Direct\n           · \n          108 000 zł\n        </span>\n        <small>\n          Jakość zdarzeń \n          99%\n        </small>\n      </li>\n    </ol>\n  </section>\n</section>\n    at Object.getElementError (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:754:284)\n    at rp (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:130:3412)\n    at ip (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:130:3457)\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:132:10\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:757:377\n    at play (http://127.0.0.1:6024/assets/Traffic.stories-DY13gHvA.js:1:1194)\n    at async bG.runPhase (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:915:607)\n    at async bG.render (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:915:3467)"
+      ]
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-08-story",
+      "viewport": "mobile",
+      "kind": "runtime-errors",
+      "pageErrors": [],
+      "consoleErrors": [
+        "TestingLibraryElementError: Found multiple elements with the role \"heading\" and name \"Strony wejścia\"\n\nHere are the matching elements:\n\nIgnored nodes: comments, script, style\n<h1\n  id=\"_r_0_\"\n>\n  Strony wejścia\n</h1>\n\nIgnored nodes: comments, script, style\n<h3>\n  Strony wejścia\n</h3>\n\n(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).\n\nIgnored nodes: comments, script, style\n<section\n  aria-label=\"Ruch i lejek: Strony wejścia\"\n  class=\"pd-production-canvas pd-production-canvas--traffic\"\n  data-mode=\"storybook\"\n  data-production-canvas=\"true\"\n  data-screen-id=\"35.08\"\n  data-screen-variant=\"landing-pages\"\n>\n  <header\n    aria-describedby=\"_r_1_\"\n    aria-labelledby=\"_r_0_\"\n    class=\"pd-page-header pd-production-domain-header\"\n  >\n    <div\n      class=\"pd-page-header__main\"\n    >\n      <nav\n        aria-label=\"Ścieżka ekranu\"\n        class=\"pd-page-header__breadcrumbs\"\n      >\n        <ol>\n          <li>\n            <a\n              href=\"/app\"\n            >\n              Aplikacja\n            </a>\n          </li>\n          <li>\n            <a\n              href=\"/app/traffic/strony-wejscia\"\n            >\n              Ruch na stronie i lejek sprzedażowy\n            </a>\n          </li>\n          <li>\n            <span\n              aria-current=\"page\"\n            >\n              Strony wejścia\n            </span>\n          </li>\n        </ol>\n      </nav>\n      <div\n        class=\"pd-page-header__heading\"\n      >\n        <h1\n          id=\"_r_0_\"\n        >\n          Strony wejścia\n        </h1>\n        <p\n          id=\"_r_1_\"\n        >\n          Strony wejścia uszeregowane według ruchu, konwersji i przychodu.\n        </p>\n      </div>\n    </div>\n    <dl\n      aria-label=\"Metadane ekranu\"\n      class=\"pd-page-header__meta\"\n    >\n      <div>\n        <dt>\n          Rekordy\n        </dt>\n        <dd>\n          6\n        </dd>\n      </div>\n      <div>\n        <dt>\n          Gotowe\n        </dt>\n        <dd>\n          4/6\n        </dd>\n      </div>\n      <div>\n        <dt>\n          Odświeżono\n        </dt>\n        <dd>\n          12 sie, 09:30\n        </dd>\n      </div>\n    </dl>\n    <div\n      class=\"pd-page-header__actions\"\n    >\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"warning\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Stan: \n          </span>\n          Częściowy\n        </span>\n      </span>\n    </div>\n  </header>\n  <nav\n    aria-label=\"Widoki ruchu i lejka\"\n    class=\"pd-section-navigation pd-production-domain-nav\"\n    data-orientation=\"horizontal\"\n    data-size=\"compact\"\n  >\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/przeglad-ruchu\"\n    >\n      <span>\n        Przegląd\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/kanaly\"\n    >\n      <span>\n        Kanały\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/lejek-widok\"\n    >\n      <span>\n        Lejek\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/lejek-szczegoly-kroku\"\n    >\n      <span>\n        Krok\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/definicje-lejka\"\n    >\n      <span>\n        Definicje\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/ga4-vs-zamowienia\"\n    >\n      <span>\n        GA4 vs zamówienia\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/jakosc-zdarzen\"\n    >\n      <span>\n        Zdarzenia\n      </span>\n    </a>\n    <a\n      aria-current=\"page\"\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/strony-wejscia\"\n    >\n      <span>\n        Wejścia\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/traffic/warianty-ruchu\"\n    >\n      <span>\n        Warianty\n      </span>\n    </a>\n  </nav>\n  <dl\n    class=\"pd-domain-health-strip\"\n  >\n    <div>\n      <dt>\n        Sesje\n      </dt>\n      <dd>\n        145 600\n      </dd>\n      <span>\n        sesje w bieżącym zakresie\n      </span>\n    </div>\n    <div>\n      <dt>\n        Użytkownicy\n      </dt>\n      <dd>\n        127 600\n      </dd>\n      <span>\n        użytkownicy bez duplikacji źródła\n      </span>\n    </div>\n    <div>\n      <dt>\n        Konwersja\n      </dt>\n      <dd>\n        4%\n      </dd>\n      <span>\n        średni współczynnik konwersji\n      </span>\n    </div>\n    <div>\n      <dt>\n        Jakość zdarzeń\n      </dt>\n      <dd>\n        95%\n      </dd>\n      <span>\n        średnia kompletność zdarzeń\n      </span>\n    </div>\n  </dl>\n  <section\n    aria-label=\"Brief analityczny\"\n    class=\"pd-domain-command-brief\"\n  >\n    <header>\n      <p\n        class=\"pd-production-eyebrow\"\n      >\n        Brief analityczny\n      </p>\n      <h2>\n        Co sprawdzić w ruchu przed interpretacją sprzedaży\n      </h2>\n      <span>\n        Najpierw jakość zdarzeń i spójność lejka, potem kanały, strony wejścia i porównanie z zamówieniami.\n      </span>\n    </header>\n    <aside>\n      <span>\n        Przychód z ruchu\n      </span>\n      <strong>\n        882 800 zł\n      </strong>\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"warning\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Sygnał: \n          </span>\n          Do przeglądu\n        </span>\n      </span>\n    </aside>\n  </section>\n  <section\n    class=\"pd-production-section\"\n  >\n    <header>\n      <div>\n        <p\n          class=\"pd-production-eyebrow\"\n        >\n          Decyzje\n        </p>\n        <h2>\n          Kolejka analityki ruchu\n        </h2>\n      </div>\n      <span>\n        2 decyzje\n      </span>\n    </header>\n    <ol\n      class=\"pd-domain-decision-grid\"\n    >\n      <li\n        data-priority=\"high\"\n      >\n        <div>\n          <span\n            class=\"pd-status-badge\"\n            data-tone=\"warning\"\n          >\n            <span\n              aria-hidden=\"true\"\n              class=\"pd-status-badge__dot\"\n            />\n            <span\n              class=\"pd-status-badge__text\"\n            >\n              <span\n                class=\"pd-visually-hidden\"\n              >\n                Priorytet: \n              </span>\n              Wysokie\n            </span>\n          </span>\n          <strong>\n            Oceń jakość zdarzeń przed interpretacją\n          </strong>\n          <p>\n            Kanały z niższą jakością zdarzeń nie powinny sterować decyzją sprzedażową bez oznaczenia ograniczeń.\n          </p>\n        </div>\n        <dl>\n          <div>\n            <dt>\n              Metryka\n            </dt>\n            <dd>\n              jakość zdarzeń\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Wpływ\n            </dt>\n            <dd>\n              2 kanały\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Właściciel\n            </dt>\n            <dd>\n              Analityka danych\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Termin\n            </dt>\n            <dd>\n              dzisiaj 14:00\n            </dd>\n          </div>\n        </dl>\n        <span\n          class=\"pd-status-badge\"\n          data-tone=\"warning\"\n        >\n          <span\n            aria-hidden=\"true\"\n            class=\"pd-status-badge__dot\"\n          />\n          <span\n            class=\"pd-status-badge__text\"\n          >\n            <span\n              class=\"pd-visually-hidden\"\n            >\n              Status: \n            </span>\n            Do sprawdzenia\n          </span>\n        </span>\n      </li>\n      <li\n        data-priority=\"medium\"\n      >\n        <div>\n          <span\n            class=\"pd-status-badge\"\n            data-tone=\"info\"\n          >\n            <span\n              aria-hidden=\"true\"\n              class=\"pd-status-badge__dot\"\n            />\n            <span\n              class=\"pd-status-badge__text\"\n            >\n              <span\n                class=\"pd-visually-hidden\"\n              >\n                Priorytet: \n              </span>\n              Średnie\n            </span>\n          </span>\n          <strong>\n            Sprawdź odpływ w lejku\n          </strong>\n          <p>\n            Sesja → koszyk ma najniższą konwersję w bieżącym lejku.\n          </p>\n        </div>\n        <dl>\n          <div>\n            <dt>\n              Metryka\n            </dt>\n            <dd>\n              najsłabszy krok\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Wpływ\n            </dt>\n            <dd>\n              12%\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Właściciel\n            </dt>\n            <dd>\n              Growth\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Termin\n            </dt>\n            <dd>\n              jutro 10:00\n            </dd>\n          </div>\n        </dl>\n        <span\n          class=\"pd-status-badge\"\n          data-tone=\"info\"\n        >\n          <span\n            aria-hidden=\"true\"\n            class=\"pd-status-badge__dot\"\n          />\n          <span\n            class=\"pd-status-badge__text\"\n          >\n            <span\n              class=\"pd-visually-hidden\"\n            >\n              Status: \n            </span>\n            Do przeglądu\n          </span>\n        </span>\n      </li>\n    </ol>\n  </section>\n  <section\n    class=\"pd-production-section\"\n  >\n    <header>\n      <h3>\n        Strony wejścia\n      </h3>\n      <p>\n        Strony wejścia z przychodem i jakością zdarzeń.\n      </p>\n    </header>\n    <ol\n      class=\"pd-production-list\"\n    >\n      <li>\n        <strong>\n          /collections/bestsellery\n        </strong>\n        <span>\n          Organic Search\n           · \n          284 000 zł\n        </span>\n        <small>\n          Jakość zdarzeń \n          98%\n        </small>\n      </li>\n      <li>\n        <strong>\n          /products/papa-lamp-one\n        </strong>\n        <span>\n          Google Ads\n           · \n          241 000 zł\n        </span>\n        <small>\n          Jakość zdarzeń \n          97%\n        </small>\n      </li>\n      <li>\n        <strong>\n          /collections/nowosci\n        </strong>\n        <span>\n          Meta Ads\n           · \n          132 000 zł\n        </span>\n        <small>\n          Jakość zdarzeń \n          91%\n        </small>\n      </li>\n      <li>\n        <strong>\n          /\n        </strong>\n        <span>\n          Direct\n           · \n          108 000 zł\n        </span>\n        <small>\n          Jakość zdarzeń \n          99%\n        </small>\n      </li>\n    </ol>\n  </section>\n</section>\n    at Object.getElementError (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:754:284)\n    at rp (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:130:3412)\n    at ip (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:130:3457)\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:132:10\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:757:377\n    at play (http://127.0.0.1:6024/assets/Traffic.stories-DY13gHvA.js:1:1194)\n    at async bG.runPhase (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:915:607)\n    at async bG.render (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:915:3467)"
+      ]
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-01-story",
+      "viewport": "mobile",
+      "kind": "runtime-errors",
+      "pageErrors": [],
+      "consoleErrors": [
+        "TestingLibraryElementError: Unable to find an accessible element with the role \"table\" and name `/Integracje i synchronizacja/u`\n\nHere are the accessible roles:\n\n  banner:\n\n  Name \"Katalog integracji\":\n  <header\n    aria-describedby=\"_r_1_\"\n    aria-labelledby=\"_r_0_\"\n    class=\"pd-page-header pd-production-domain-header\"\n  />\n\n  --------------------------------------------------\n  navigation:\n\n  Name \"Ścieżka ekranu\":\n  <nav\n    aria-label=\"Ścieżka ekranu\"\n    class=\"pd-page-header__breadcrumbs\"\n  />\n\n  --------------------------------------------------\n  list:\n\n  Name \"\":\n  <ol />\n\n  --------------------------------------------------\n  listitem:\n\n  Name \"\":\n  <li />\n\n  Name \"\":\n  <li />\n\n  Name \"\":\n  <li />\n\n  --------------------------------------------------\n  link:\n\n  Name \"Aplikacja\":\n  <a\n    href=\"/app\"\n  />\n\n  Name \"Integracje i synchronizacja\":\n  <a\n    href=\"/app/integrations/katalog\"\n  />\n\n  --------------------------------------------------\n  heading:\n\n  Name \"Katalog integracji\":\n  <h1\n    id=\"_r_0_\"\n  />\n\n  --------------------------------------------------\n  paragraph:\n\n  Name \"\":\n  <p\n    id=\"_r_1_\"\n  />\n\n  --------------------------------------------------\n  term:\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  --------------------------------------------------\n  definition:\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  --------------------------------------------------navigation:\n\n  Name \"Widoki integracji\":\n  <nav\n    aria-label=\"Widoki integracji\"\n    class=\"pd-section-navigation pd-production-domain-nav\"\n    data-orientation=\"horizontal\"\n    data-size=\"compact\"\n  />\n\n  --------------------------------------------------\n  link:\n\n  Name \"Katalog\":\n  <a\n    aria-current=\"page\"\n    class=\"pd-section-navigation__item\"\n    href=\"/app/integrations/katalog\"\n  />\n\n  Name \"Kreator\":\n  <a\n    class=\"pd-section-navigation__item\"\n    href=\"/app/integrations/kreator-polaczenia\"\n  />\n\n  Name \"Szczegół\":\n  <a\n    class=\"pd-section-navigation__item\"\n    href=\"/app/integrations/szczegoly\"\n  />\n\n  Name \"Historia\":\n  <a\n    class=\"pd-section-navigation__item\"\n    href=\"/app/integrations/historia-synchronizacji\"\n  />\n\n  Name \"Przebieg\":\n  <a\n    class=\"pd-section-navigation__item\"\n    href=\"/app/integrations/przebieg-synchronizacji\"\n  />\n\n  Name \"Zakres\":\n  <a\n    class=\"pd-section-navigation__item\"\n    href=\"/app/integrations/zakres-synchronizacji\"\n  />\n\n  Name \"Ponowne\":\n  <a\n    class=\"pd-section-navigation__item\"\n    href=\"/app/integrations/ponowne-polaczenie\"\n  />\n\n  Name \"Odłączenie\":\n  <a\n    class=\"pd-section-navigation__item\"\n    href=\"/app/integrations/odlaczenie\"\n  />\n\n  Name \"Awaria\":\n  <a\n    class=\"pd-section-navigation__item\"\n    href=\"/app/integrations/awaria-providera\"\n  />\n\n  Name \"Warianty\":\n  <a\n    class=\"pd-section-navigation__item\"\n    href=\"/app/integrations/warianty-integracji\"\n  />\n\n  --------------------------------------------------term:\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  --------------------------------------------------\n  definition:\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  --------------------------------------------------region:\n\n  Name \"Brief synchronizacji\":\n  <section\n    aria-label=\"Brief synchronizacji\"\n    class=\"pd-domain-command-brief\"\n  />\n\n  --------------------------------------------------\n  banner:\n\n  Name \"\":\n  <header />\n\n  --------------------------------------------------\n  paragraph:\n\n  Name \"\":\n  <p\n    class=\"pd-production-eyebrow\"\n  />\n\n  --------------------------------------------------\n  heading:\n\n  Name \"Co trzeba sprawdzić w integracjach teraz\":\n  <h2 />\n\n  --------------------------------------------------\n  complementary:\n\n  Name \"\":\n  <aside />\n\n  --------------------------------------------------\n  strong:\n\n  Name \"\":\n  <strong />\n\n  --------------------------------------------------banner:\n\n  Name \"\":\n  <header />\n\n  --------------------------------------------------\n  paragraph:\n\n  Name \"\":\n  <p\n    class=\"pd-production-eyebrow\"\n  />\n\n  Name \"\":\n  <p />\n\n  Name \"\":\n  <p />\n\n  Name \"\":\n  <p />\n\n  --------------------------------------------------\n  heading:\n\n  Name \"Kolejka integracji do obsługi\":\n  <h2 />\n\n  --------------------------------------------------\n  list:\n\n  Name \"\":\n  <ol\n    class=\"pd-domain-decision-grid\"\n  />\n\n  --------------------------------------------------\n  listitem:\n\n  Name \"\":\n  <li\n    data-priority=\"high\"\n  />\n\n  Name \"\":\n  <li\n    data-priority=\"critical\"\n  />\n\n  Name \"\":\n  <li\n    data-priority=\"medium\"\n  />\n\n  --------------------------------------------------\n  strong:\n\n  Name \"\":\n  <strong />\n\n  Name \"\":\n  <strong />\n\n  Name \"\":\n  <strong />\n\n  --------------------------------------------------\n  term:\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  Name \"\":\n  <dt />\n\n  --------------------------------------------------\n  definition:\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  Name \"\":\n  <dd />\n\n  --------------------------------------------------banner:\n\n  Name \"\":\n  <header />\n\n  --------------------------------------------------\n  paragraph:\n\n  Name \"\":\n  <p\n    class=\"pd-production-eyebrow\"\n  />\n\n  Name \"\":\n  <p />\n\n  Name \"\":\n  <p\n    class=\"pd-progress-indicator__label\"\n    id=\"_r_2_\"\n  />\n\n  Name \"\":\n  <p\n    class=\"pd-progress-indicator__description\"\n    id=\"_r_3_\"\n  />\n\n  Name \"\":\n  <p />\n\n  Name \"\":\n  <p\n    class=\"pd-progress-indicator__label\"\n    id=\"_r_4_\"\n  />\n\n  Name \"\":\n  <p\n    class=\"pd-progress-indicator__description\"\n    id=\"_r_5_\"\n  />\n\n  Name \"\":\n  <p />\n\n  Name \"\":\n  <p\n    class=\"pd-progress-indicator__label\"\n    id=\"_r_6_\"\n  />\n\n  Name \"\":\n  <p\n    class=\"pd-progress-indicator__description\"\n    id=\"_r_7_\"\n  />\n\n  Name \"\":\n  <p />\n\n  Name \"\":\n  <p\n    class=\"pd-progress-indicator__label\"\n    id=\"_r_8_\"\n  />\n\n  Name \"\":\n  <p\n    class=\"pd-progress-indicator__description\"\n    id=\"_r_9_\"\n  />\n\n  Name \"\":\n  <p />\n\n  Name \"\":\n  <p\n    class=\"pd-progress-indicator__label\"\n    id=\"_r_a_\"\n  />\n\n  Name \"\":\n  <p\n    class=\"pd-progress-indicator__description\"\n    id=\"_r_b_\"\n  />\n\n  Name \"\":\n  <p\n    class=\"pd-feedback-surface__title\"\n    id=\"_r_c_\"\n  />\n\n  Name \"\":\n  <p\n    class=\"pd-feedback-surface__message\"\n    id=\"_r_d_\"\n  />\n\n  --------------------------------------------------\n  heading:\n\n  Name \"Źródła danych według świeżości i błędów\":\n  <h2 />\n\n  Name \"Shopify Orders\":\n  <h3 />\n\n  Name \"Google Ads\":\n  <h3 />\n\n  Name \"GA4 Events\":\n  <h3 />\n\n  Name \"Meta Ads\":\n  <h3 />\n\n  Name \"Mailchimp Audiences\":\n  <h3 />\n\n  --------------------------------------------------\n  article:\n\n  Name \"\":\n  <article\n    data-priority=\"low\"\n  />\n\n  Name \"\":\n  <article\n    data-priority=\"high\"\n  />\n\n  Name \"\":\n  <article\n    data-priority=\"low\"\n  />\n\n  Name \"\":\n  <article\n    data-priority=\"low\"\n  />\n\n  Name \"\":\n  <article\n    data-priority=\"high\"\n  />\n\n  --------------------------------------------------\n  progressbar:\n\n  Name \"Świeżość Shopify Orders\":\n  <div\n    aria-describedby=\"_r_3_\"\n    aria-labelledby=\"_r_2_\"\n    aria-valuemax=\"100\"\n    aria-valuemin=\"0\"\n    aria-valuenow=\"96\"\n    aria-valuetext=\"Świeżość Shopify Orders: 96%\"\n    class=\"pd-progress-indicator__track\"\n    role=\"progressbar\"\n  />\n\n  Name \"Świeżość Google Ads\":\n  <div\n    aria-describedby=\"_r_5_\"\n    aria-labelledby=\"_r_4_\"\n    aria-valuemax=\"100\"\n    aria-valuemin=\"0\"\n    aria-valuenow=\"72\"\n    aria-valuetext=\"Świeżość Google Ads: 72%\"\n    class=\"pd-progress-indicator__track\"\n    role=\"progressbar\"\n  />\n\n  Name \"Świeżość GA4 Events\":\n  <div\n    aria-describedby=\"_r_7_\"\n    aria-labelledby=\"_r_6_\"\n    aria-valuemax=\"100\"\n    aria-valuemin=\"0\"\n    aria-valuetext=\"Świeżość GA4 Events: w toku\"\n    class=\"pd-progress-indicator__track\"\n    role=\"progressbar\"\n  />\n\n  Name \"Świeżość Meta Ads\":\n  <div\n    aria-describedby=\"_r_9_\"\n    aria-labelledby=\"_r_8_\"\n    aria-valuemax=\"100\"\n    aria-valuemin=\"0\"\n    aria-valuenow=\"96\"\n    aria-valuetext=\"Świeżość Meta Ads: 96%\"\n    class=\"pd-progress-indicator__track\"\n    role=\"progressbar\"\n  />\n\n  Name \"Świeżość Mailchimp Audiences\":\n  <div\n    aria-describedby=\"_r_b_\"\n    aria-labelledby=\"_r_a_\"\n    aria-valuemax=\"100\"\n    aria-valuemin=\"0\"\n    aria-valuenow=\"0\"\n    aria-valuetext=\"Świeżość Mailchimp Audiences: 0%\"\n    class=\"pd-progress-indicator__track\"\n    role=\"progressbar\"\n  />\n\n  --------------------------------------------------\n  alert:\n\n  Name \"Częściowa kompletność integracji\":\n  <section\n    aria-describedby=\"_r_d_\"\n    aria-labelledby=\"_r_c_\"\n    class=\"pd-feedback-surface\"\n    data-tone=\"warning\"\n    role=\"alert\"\n  />\n\n  --------------------------------------------------banner:\n\n  Name \"\":\n  <header />\n\n  --------------------------------------------------\n  paragraph:\n\n  Name \"\":\n  <p\n    class=\"pd-production-eyebrow\"\n  />\n\n  --------------------------------------------------\n  heading:\n\n  Name \"Rejestr integracji i świeżości danych\":\n  <h2 />\n\n  --------------------------------------------------\n\nIgnored nodes: comments, script, style\n<section\n  aria-label=\"Ekran integracji: Katalog integracji\"\n  class=\"pd-production-canvas pd-production-canvas--integrations\"\n  data-mode=\"storybook\"\n  data-production-canvas=\"true\"\n  data-screen-id=\"40.01\"\n  data-screen-variant=\"catalog\"\n>\n  <header\n    aria-describedby=\"_r_1_\"\n    aria-labelledby=\"_r_0_\"\n    class=\"pd-page-header pd-production-domain-header\"\n  >\n    <div\n      class=\"pd-page-header__main\"\n    >\n      <nav\n        aria-label=\"Ścieżka ekranu\"\n        class=\"pd-page-header__breadcrumbs\"\n      >\n        <ol>\n          <li>\n            <a\n              href=\"/app\"\n            >\n              Aplikacja\n            </a>\n          </li>\n          <li>\n            <a\n              href=\"/app/integrations/katalog\"\n            >\n              Integracje i synchronizacja\n            </a>\n          </li>\n          <li>\n            <span\n              aria-current=\"page\"\n            >\n              Katalog integracji\n            </span>\n          </li>\n        </ol>\n      </nav>\n      <div\n        class=\"pd-page-header__heading\"\n      >\n        <h1\n          id=\"_r_0_\"\n        >\n          Katalog integracji\n        </h1>\n        <p\n          id=\"_r_1_\"\n        >\n          Lista dostępnych i połączonych integracji ze stanem gotowości, właścicielem i ostatnią synchronizacją.\n        </p>\n      </div>\n    </div>\n    <dl\n      aria-label=\"Metadane ekranu\"\n      class=\"pd-page-header__meta\"\n    >\n      <div>\n        <dt>\n          Źródła\n        </dt>\n        <dd>\n          5\n        </dd>\n      </div>\n      <div>\n        <dt>\n          Błędy\n        </dt>\n        <dd>\n          3\n        </dd>\n      </div>\n      <div>\n        <dt>\n          Odświeżono\n        </dt>\n        <dd>\n          14.08, 09:20\n        </dd>\n      </div>\n    </dl>\n    <div\n      class=\"pd-page-header__actions\"\n    >\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"warning\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Stan: \n          </span>\n          Częściowe\n        </span>\n      </span>\n    </div>\n  </header>\n  <nav\n    aria-label=\"Widoki integracji\"\n    class=\"pd-section-navigation pd-production-domain-nav\"\n    data-orientation=\"horizontal\"\n    data-size=\"compact\"\n  >\n    <a\n      aria-current=\"page\"\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/katalog\"\n    >\n      <span>\n        Katalog\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/kreator-polaczenia\"\n    >\n      <span>\n        Kreator\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/szczegoly\"\n    >\n      <span>\n        Szczegół\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/historia-synchronizacji\"\n    >\n      <span>\n        Historia\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/przebieg-synchronizacji\"\n    >\n      <span>\n        Przebieg\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/zakres-synchronizacji\"\n    >\n      <span>\n        Zakres\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/ponowne-polaczenie\"\n    >\n      <span>\n        Ponowne\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/odlaczenie\"\n    >\n      <span>\n        Odłączenie\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/awaria-providera\"\n    >\n      <span>\n        Awaria\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/warianty-integracji\"\n    >\n      <span>\n        Warianty\n      </span>\n    </a>\n  </nav>\n  <dl\n    class=\"pd-domain-health-strip\"\n  >\n    <div>\n      <dt>\n        Integracje\n      </dt>\n      <dd>\n        5\n      </dd>\n      <span>\n        wszystkie źródła w przestrzeni pracy\n      </span>\n    </div>\n    <div>\n      <dt>\n        Połączone\n      </dt>\n      <dd>\n        2\n      </dd>\n      <span>\n        gotowe do analityki\n      </span>\n    </div>\n    <div>\n      <dt>\n        Częściowe\n      </dt>\n      <dd>\n        2\n      </dd>\n      <span>\n        częściowe lub w toku\n      </span>\n    </div>\n    <div>\n      <dt>\n        Błędy\n      </dt>\n      <dd>\n        3\n      </dd>\n      <span>\n        błędy w ostatnim przebiegu\n      </span>\n    </div>\n  </dl>\n  <section\n    aria-label=\"Brief synchronizacji\"\n    class=\"pd-domain-command-brief\"\n  >\n    <header>\n      <p\n        class=\"pd-production-eyebrow\"\n      >\n        Brief synchronizacji\n      </p>\n      <h2>\n        Co trzeba sprawdzić w integracjach teraz\n      </h2>\n      <span>\n        Najpierw źródła częściowe, odłączone i błędy ostatniego przebiegu. Mutacje pozostają poza Storybookiem.\n      </span>\n    </header>\n    <aside>\n      <span>\n        Shopify Orders\n      </span>\n      <strong>\n        Połączona\n      </strong>\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"warning\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Sygnał: \n          </span>\n          Do przeglądu\n        </span>\n      </span>\n    </aside>\n  </section>\n  <section\n    class=\"pd-production-section\"\n  >\n    <header>\n      <div>\n        <p\n          class=\"pd-production-eyebrow\"\n        >\n          Decyzje\n        </p>\n        <h2>\n          Kolejka integracji do obsługi\n        </h2>\n      </div>\n      <span>\n        3\n         decyzje\n      </span>\n    </header>\n    <ol\n      class=\"pd-domain-decision-grid\"\n    >\n      <li\n        data-priority=\"high\"\n      >\n        <div>\n          <span\n            class=\"pd-status-badge\"\n            data-tone=\"warning\"\n          >\n            <span\n              aria-hidden=\"true\"\n              class=\"pd-status-badge__dot\"\n            />\n            <span\n              class=\"pd-status-badge__text\"\n            >\n              <span\n                class=\"pd-visually-hidden\"\n              >\n                Priorytet: \n              </span>\n              Wysokie\n            </span>\n          </span>\n          <strong>\n            Oznacz częściową kompletność źródeł\n          </strong>\n          <p>\n            Źródła częściowe powinny oznaczać dane zależne jako ograniczone przed interpretacją raportów.\n          </p>\n        </div>\n        <dl>\n          <div>\n            <dt>\n              Metryka\n            </dt>\n            <dd>\n              1 częściowe\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Właściciel\n            </dt>\n   ...\n    at Object.getElementError (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:754:284)\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:138:112\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:130:4040\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:757:377\n    at play (http://127.0.0.1:6024/assets/Integrations.stories-fSE_okNL.js:58:1898)\n    at async bG.runPhase (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:915:607)\n    at async bG.render (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:915:3467)"
+      ]
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-03-story",
+      "viewport": "desktop",
+      "kind": "runtime-errors",
+      "pageErrors": [],
+      "consoleErrors": [
+        "TestingLibraryElementError: Found multiple elements with the text: Shopify Orders\n\nHere are the matching elements:\n\nIgnored nodes: comments, script, style\n<span>\n  Shopify Orders\n</span>\n\nIgnored nodes: comments, script, style\n<h3>\n  Shopify Orders\n</h3>\n\n(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).\n\nIgnored nodes: comments, script, style\n<section\n  aria-label=\"Ekran integracji: Szczegóły integracji\"\n  class=\"pd-production-canvas pd-production-canvas--integrations\"\n  data-mode=\"storybook\"\n  data-production-canvas=\"true\"\n  data-screen-id=\"40.03\"\n  data-screen-variant=\"detail\"\n>\n  <header\n    aria-describedby=\"_r_1_\"\n    aria-labelledby=\"_r_0_\"\n    class=\"pd-page-header pd-production-domain-header\"\n  >\n    <div\n      class=\"pd-page-header__main\"\n    >\n      <nav\n        aria-label=\"Ścieżka ekranu\"\n        class=\"pd-page-header__breadcrumbs\"\n      >\n        <ol>\n          <li>\n            <a\n              href=\"/app\"\n            >\n              Aplikacja\n            </a>\n          </li>\n          <li>\n            <a\n              href=\"/app/integrations/katalog\"\n            >\n              Integracje i synchronizacja\n            </a>\n          </li>\n          <li>\n            <span\n              aria-current=\"page\"\n            >\n              Szczegóły integracji\n            </span>\n          </li>\n        </ol>\n      </nav>\n      <div\n        class=\"pd-page-header__heading\"\n      >\n        <h1\n          id=\"_r_0_\"\n        >\n          Szczegóły integracji\n        </h1>\n        <p\n          id=\"_r_1_\"\n        >\n          Szczegół integracji z zakresem danych, statusem i historią ostatnich zdarzeń.\n        </p>\n      </div>\n    </div>\n    <dl\n      aria-label=\"Metadane ekranu\"\n      class=\"pd-page-header__meta\"\n    >\n      <div>\n        <dt>\n          Źródła\n        </dt>\n        <dd>\n          5\n        </dd>\n      </div>\n      <div>\n        <dt>\n          Błędy\n        </dt>\n        <dd>\n          3\n        </dd>\n      </div>\n      <div>\n        <dt>\n          Odświeżono\n        </dt>\n        <dd>\n          14.08, 09:20\n        </dd>\n      </div>\n    </dl>\n    <div\n      class=\"pd-page-header__actions\"\n    >\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"warning\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Stan: \n          </span>\n          Częściowe\n        </span>\n      </span>\n    </div>\n  </header>\n  <nav\n    aria-label=\"Widoki integracji\"\n    class=\"pd-section-navigation pd-production-domain-nav\"\n    data-orientation=\"horizontal\"\n    data-size=\"compact\"\n  >\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/katalog\"\n    >\n      <span>\n        Katalog\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/kreator-polaczenia\"\n    >\n      <span>\n        Kreator\n      </span>\n    </a>\n    <a\n      aria-current=\"page\"\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/szczegoly\"\n    >\n      <span>\n        Szczegół\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/historia-synchronizacji\"\n    >\n      <span>\n        Historia\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/przebieg-synchronizacji\"\n    >\n      <span>\n        Przebieg\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/zakres-synchronizacji\"\n    >\n      <span>\n        Zakres\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/ponowne-polaczenie\"\n    >\n      <span>\n        Ponowne\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/odlaczenie\"\n    >\n      <span>\n        Odłączenie\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/awaria-providera\"\n    >\n      <span>\n        Awaria\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/warianty-integracji\"\n    >\n      <span>\n        Warianty\n      </span>\n    </a>\n  </nav>\n  <dl\n    class=\"pd-domain-health-strip\"\n  >\n    <div>\n      <dt>\n        Integracje\n      </dt>\n      <dd>\n        5\n      </dd>\n      <span>\n        wszystkie źródła w przestrzeni pracy\n      </span>\n    </div>\n    <div>\n      <dt>\n        Połączone\n      </dt>\n      <dd>\n        2\n      </dd>\n      <span>\n        gotowe do analityki\n      </span>\n    </div>\n    <div>\n      <dt>\n        Częściowe\n      </dt>\n      <dd>\n        2\n      </dd>\n      <span>\n        częściowe lub w toku\n      </span>\n    </div>\n    <div>\n      <dt>\n        Błędy\n      </dt>\n      <dd>\n        3\n      </dd>\n      <span>\n        błędy w ostatnim przebiegu\n      </span>\n    </div>\n  </dl>\n  <section\n    aria-label=\"Brief synchronizacji\"\n    class=\"pd-domain-command-brief\"\n  >\n    <header>\n      <p\n        class=\"pd-production-eyebrow\"\n      >\n        Brief synchronizacji\n      </p>\n      <h2>\n        Co trzeba sprawdzić w integracjach teraz\n      </h2>\n      <span>\n        Najpierw źródła częściowe, odłączone i błędy ostatniego przebiegu. Mutacje pozostają poza Storybookiem.\n      </span>\n    </header>\n    <aside>\n      <span>\n        Shopify Orders\n      </span>\n      <strong>\n        Połączona\n      </strong>\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"warning\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Sygnał: \n          </span>\n          Do przeglądu\n        </span>\n      </span>\n    </aside>\n  </section>\n  <section\n    class=\"pd-production-section\"\n  >\n    <header>\n      <div>\n        <p\n          class=\"pd-production-eyebrow\"\n        >\n          Decyzje\n        </p>\n        <h2>\n          Kolejka integracji do obsługi\n        </h2>\n      </div>\n      <span>\n        3\n         decyzje\n      </span>\n    </header>\n    <ol\n      class=\"pd-domain-decision-grid\"\n    >\n      <li\n        data-priority=\"high\"\n      >\n        <div>\n          <span\n            class=\"pd-status-badge\"\n            data-tone=\"warning\"\n          >\n            <span\n              aria-hidden=\"true\"\n              class=\"pd-status-badge__dot\"\n            />\n            <span\n              class=\"pd-status-badge__text\"\n            >\n              <span\n                class=\"pd-visually-hidden\"\n              >\n                Priorytet: \n              </span>\n              Wysokie\n            </span>\n          </span>\n          <strong>\n            Oznacz częściową kompletność źródeł\n          </strong>\n          <p>\n            Źródła częściowe powinny oznaczać dane zależne jako ograniczone przed interpretacją raportów.\n          </p>\n        </div>\n        <dl>\n          <div>\n            <dt>\n              Metryka\n            </dt>\n            <dd>\n              1 częściowe\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Właściciel\n            </dt>\n            <dd>\n      ...\n    at Object.getElementError (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:754:284)\n    at rp (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:130:3412)\n    at ip (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:130:3457)\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:132:10\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:757:377\n    at play (http://127.0.0.1:6024/assets/Integrations.stories-fSE_okNL.js:58:1816)\n    at async bG.runPhase (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:915:607)\n    at async bG.render (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:915:3467)"
+      ]
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-03-story",
+      "viewport": "mobile",
+      "kind": "runtime-errors",
+      "pageErrors": [],
+      "consoleErrors": [
+        "TestingLibraryElementError: Found multiple elements with the text: Shopify Orders\n\nHere are the matching elements:\n\nIgnored nodes: comments, script, style\n<span>\n  Shopify Orders\n</span>\n\nIgnored nodes: comments, script, style\n<h3>\n  Shopify Orders\n</h3>\n\n(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).\n\nIgnored nodes: comments, script, style\n<section\n  aria-label=\"Ekran integracji: Szczegóły integracji\"\n  class=\"pd-production-canvas pd-production-canvas--integrations\"\n  data-mode=\"storybook\"\n  data-production-canvas=\"true\"\n  data-screen-id=\"40.03\"\n  data-screen-variant=\"detail\"\n>\n  <header\n    aria-describedby=\"_r_1_\"\n    aria-labelledby=\"_r_0_\"\n    class=\"pd-page-header pd-production-domain-header\"\n  >\n    <div\n      class=\"pd-page-header__main\"\n    >\n      <nav\n        aria-label=\"Ścieżka ekranu\"\n        class=\"pd-page-header__breadcrumbs\"\n      >\n        <ol>\n          <li>\n            <a\n              href=\"/app\"\n            >\n              Aplikacja\n            </a>\n          </li>\n          <li>\n            <a\n              href=\"/app/integrations/katalog\"\n            >\n              Integracje i synchronizacja\n            </a>\n          </li>\n          <li>\n            <span\n              aria-current=\"page\"\n            >\n              Szczegóły integracji\n            </span>\n          </li>\n        </ol>\n      </nav>\n      <div\n        class=\"pd-page-header__heading\"\n      >\n        <h1\n          id=\"_r_0_\"\n        >\n          Szczegóły integracji\n        </h1>\n        <p\n          id=\"_r_1_\"\n        >\n          Szczegół integracji z zakresem danych, statusem i historią ostatnich zdarzeń.\n        </p>\n      </div>\n    </div>\n    <dl\n      aria-label=\"Metadane ekranu\"\n      class=\"pd-page-header__meta\"\n    >\n      <div>\n        <dt>\n          Źródła\n        </dt>\n        <dd>\n          5\n        </dd>\n      </div>\n      <div>\n        <dt>\n          Błędy\n        </dt>\n        <dd>\n          3\n        </dd>\n      </div>\n      <div>\n        <dt>\n          Odświeżono\n        </dt>\n        <dd>\n          14.08, 09:20\n        </dd>\n      </div>\n    </dl>\n    <div\n      class=\"pd-page-header__actions\"\n    >\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"warning\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Stan: \n          </span>\n          Częściowe\n        </span>\n      </span>\n    </div>\n  </header>\n  <nav\n    aria-label=\"Widoki integracji\"\n    class=\"pd-section-navigation pd-production-domain-nav\"\n    data-orientation=\"horizontal\"\n    data-size=\"compact\"\n  >\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/katalog\"\n    >\n      <span>\n        Katalog\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/kreator-polaczenia\"\n    >\n      <span>\n        Kreator\n      </span>\n    </a>\n    <a\n      aria-current=\"page\"\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/szczegoly\"\n    >\n      <span>\n        Szczegół\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/historia-synchronizacji\"\n    >\n      <span>\n        Historia\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/przebieg-synchronizacji\"\n    >\n      <span>\n        Przebieg\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/zakres-synchronizacji\"\n    >\n      <span>\n        Zakres\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/ponowne-polaczenie\"\n    >\n      <span>\n        Ponowne\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/odlaczenie\"\n    >\n      <span>\n        Odłączenie\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/awaria-providera\"\n    >\n      <span>\n        Awaria\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/warianty-integracji\"\n    >\n      <span>\n        Warianty\n      </span>\n    </a>\n  </nav>\n  <dl\n    class=\"pd-domain-health-strip\"\n  >\n    <div>\n      <dt>\n        Integracje\n      </dt>\n      <dd>\n        5\n      </dd>\n      <span>\n        wszystkie źródła w przestrzeni pracy\n      </span>\n    </div>\n    <div>\n      <dt>\n        Połączone\n      </dt>\n      <dd>\n        2\n      </dd>\n      <span>\n        gotowe do analityki\n      </span>\n    </div>\n    <div>\n      <dt>\n        Częściowe\n      </dt>\n      <dd>\n        2\n      </dd>\n      <span>\n        częściowe lub w toku\n      </span>\n    </div>\n    <div>\n      <dt>\n        Błędy\n      </dt>\n      <dd>\n        3\n      </dd>\n      <span>\n        błędy w ostatnim przebiegu\n      </span>\n    </div>\n  </dl>\n  <section\n    aria-label=\"Brief synchronizacji\"\n    class=\"pd-domain-command-brief\"\n  >\n    <header>\n      <p\n        class=\"pd-production-eyebrow\"\n      >\n        Brief synchronizacji\n      </p>\n      <h2>\n        Co trzeba sprawdzić w integracjach teraz\n      </h2>\n      <span>\n        Najpierw źródła częściowe, odłączone i błędy ostatniego przebiegu. Mutacje pozostają poza Storybookiem.\n      </span>\n    </header>\n    <aside>\n      <span>\n        Shopify Orders\n      </span>\n      <strong>\n        Połączona\n      </strong>\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"warning\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Sygnał: \n          </span>\n          Do przeglądu\n        </span>\n      </span>\n    </aside>\n  </section>\n  <section\n    class=\"pd-production-section\"\n  >\n    <header>\n      <div>\n        <p\n          class=\"pd-production-eyebrow\"\n        >\n          Decyzje\n        </p>\n        <h2>\n          Kolejka integracji do obsługi\n        </h2>\n      </div>\n      <span>\n        3\n         decyzje\n      </span>\n    </header>\n    <ol\n      class=\"pd-domain-decision-grid\"\n    >\n      <li\n        data-priority=\"high\"\n      >\n        <div>\n          <span\n            class=\"pd-status-badge\"\n            data-tone=\"warning\"\n          >\n            <span\n              aria-hidden=\"true\"\n              class=\"pd-status-badge__dot\"\n            />\n            <span\n              class=\"pd-status-badge__text\"\n            >\n              <span\n                class=\"pd-visually-hidden\"\n              >\n                Priorytet: \n              </span>\n              Wysokie\n            </span>\n          </span>\n          <strong>\n            Oznacz częściową kompletność źródeł\n          </strong>\n          <p>\n            Źródła częściowe powinny oznaczać dane zależne jako ograniczone przed interpretacją raportów.\n          </p>\n        </div>\n        <dl>\n          <div>\n            <dt>\n              Metryka\n            </dt>\n            <dd>\n              1 częściowe\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Właściciel\n            </dt>\n            <dd>\n      ...\n    at Object.getElementError (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:754:284)\n    at rp (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:130:3412)\n    at ip (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:130:3457)\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:132:10\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:757:377\n    at play (http://127.0.0.1:6024/assets/Integrations.stories-fSE_okNL.js:58:1816)\n    at async bG.runPhase (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:915:607)\n    at async bG.render (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:915:3467)"
+      ]
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-04-story",
+      "viewport": "desktop",
+      "kind": "runtime-errors",
+      "pageErrors": [],
+      "consoleErrors": [
+        "TestingLibraryElementError: Found multiple elements with the role \"heading\" and name \"Historia synchronizacji\"\n\nHere are the matching elements:\n\nIgnored nodes: comments, script, style\n<h1\n  id=\"_r_0_\"\n>\n  Historia synchronizacji\n</h1>\n\nIgnored nodes: comments, script, style\n<h2>\n  Historia synchronizacji\n</h2>\n\n(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).\n\nIgnored nodes: comments, script, style\n<section\n  aria-label=\"Ekran integracji: Historia synchronizacji\"\n  class=\"pd-production-canvas pd-production-canvas--integrations\"\n  data-mode=\"storybook\"\n  data-production-canvas=\"true\"\n  data-screen-id=\"40.04\"\n  data-screen-variant=\"history\"\n>\n  <header\n    aria-describedby=\"_r_1_\"\n    aria-labelledby=\"_r_0_\"\n    class=\"pd-page-header pd-production-domain-header\"\n  >\n    <div\n      class=\"pd-page-header__main\"\n    >\n      <nav\n        aria-label=\"Ścieżka ekranu\"\n        class=\"pd-page-header__breadcrumbs\"\n      >\n        <ol>\n          <li>\n            <a\n              href=\"/app\"\n            >\n              Aplikacja\n            </a>\n          </li>\n          <li>\n            <a\n              href=\"/app/integrations/katalog\"\n            >\n              Integracje i synchronizacja\n            </a>\n          </li>\n          <li>\n            <span\n              aria-current=\"page\"\n            >\n              Historia synchronizacji\n            </span>\n          </li>\n        </ol>\n      </nav>\n      <div\n        class=\"pd-page-header__heading\"\n      >\n        <h1\n          id=\"_r_0_\"\n        >\n          Historia synchronizacji\n        </h1>\n        <p\n          id=\"_r_1_\"\n        >\n          Chronologiczny rejestr synchronizacji, błędów i ręcznych ponowień.\n        </p>\n      </div>\n    </div>\n    <dl\n      aria-label=\"Metadane ekranu\"\n      class=\"pd-page-header__meta\"\n    >\n      <div>\n        <dt>\n          Źródła\n        </dt>\n        <dd>\n          5\n        </dd>\n      </div>\n      <div>\n        <dt>\n          Błędy\n        </dt>\n        <dd>\n          3\n        </dd>\n      </div>\n      <div>\n        <dt>\n          Odświeżono\n        </dt>\n        <dd>\n          14.08, 09:20\n        </dd>\n      </div>\n    </dl>\n    <div\n      class=\"pd-page-header__actions\"\n    >\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"warning\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Stan: \n          </span>\n          Częściowe\n        </span>\n      </span>\n    </div>\n  </header>\n  <nav\n    aria-label=\"Widoki integracji\"\n    class=\"pd-section-navigation pd-production-domain-nav\"\n    data-orientation=\"horizontal\"\n    data-size=\"compact\"\n  >\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/katalog\"\n    >\n      <span>\n        Katalog\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/kreator-polaczenia\"\n    >\n      <span>\n        Kreator\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/szczegoly\"\n    >\n      <span>\n        Szczegół\n      </span>\n    </a>\n    <a\n      aria-current=\"page\"\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/historia-synchronizacji\"\n    >\n      <span>\n        Historia\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/przebieg-synchronizacji\"\n    >\n      <span>\n        Przebieg\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/zakres-synchronizacji\"\n    >\n      <span>\n        Zakres\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/ponowne-polaczenie\"\n    >\n      <span>\n        Ponowne\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/odlaczenie\"\n    >\n      <span>\n        Odłączenie\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/awaria-providera\"\n    >\n      <span>\n        Awaria\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/warianty-integracji\"\n    >\n      <span>\n        Warianty\n      </span>\n    </a>\n  </nav>\n  <dl\n    class=\"pd-domain-health-strip\"\n  >\n    <div>\n      <dt>\n        Integracje\n      </dt>\n      <dd>\n        5\n      </dd>\n      <span>\n        wszystkie źródła w przestrzeni pracy\n      </span>\n    </div>\n    <div>\n      <dt>\n        Połączone\n      </dt>\n      <dd>\n        2\n      </dd>\n      <span>\n        gotowe do analityki\n      </span>\n    </div>\n    <div>\n      <dt>\n        Częściowe\n      </dt>\n      <dd>\n        2\n      </dd>\n      <span>\n        częściowe lub w toku\n      </span>\n    </div>\n    <div>\n      <dt>\n        Błędy\n      </dt>\n      <dd>\n        3\n      </dd>\n      <span>\n        błędy w ostatnim przebiegu\n      </span>\n    </div>\n  </dl>\n  <section\n    aria-label=\"Brief synchronizacji\"\n    class=\"pd-domain-command-brief\"\n  >\n    <header>\n      <p\n        class=\"pd-production-eyebrow\"\n      >\n        Brief synchronizacji\n      </p>\n      <h2>\n        Co trzeba sprawdzić w integracjach teraz\n      </h2>\n      <span>\n        Najpierw źródła częściowe, odłączone i błędy ostatniego przebiegu. Mutacje pozostają poza Storybookiem.\n      </span>\n    </header>\n    <aside>\n      <span>\n        Shopify Orders\n      </span>\n      <strong>\n        Połączona\n      </strong>\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"warning\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Sygnał: \n          </span>\n          Do przeglądu\n        </span>\n      </span>\n    </aside>\n  </section>\n  <section\n    class=\"pd-production-section\"\n  >\n    <header>\n      <div>\n        <p\n          class=\"pd-production-eyebrow\"\n        >\n          Decyzje\n        </p>\n        <h2>\n          Kolejka integracji do obsługi\n        </h2>\n      </div>\n      <span>\n        3\n         decyzje\n      </span>\n    </header>\n    <ol\n      class=\"pd-domain-decision-grid\"\n    >\n      <li\n        data-priority=\"high\"\n      >\n        <div>\n          <span\n            class=\"pd-status-badge\"\n            data-tone=\"warning\"\n          >\n            <span\n              aria-hidden=\"true\"\n              class=\"pd-status-badge__dot\"\n            />\n            <span\n              class=\"pd-status-badge__text\"\n            >\n              <span\n                class=\"pd-visually-hidden\"\n              >\n                Priorytet: \n              </span>\n              Wysokie\n            </span>\n          </span>\n          <strong>\n            Oznacz częściową kompletność źródeł\n          </strong>\n          <p>\n            Źródła częściowe powinny oznaczać dane zależne jako ograniczone przed interpretacją raportów.\n          </p>\n        </div>\n        <dl>\n          <div>\n            <dt>\n              Metryka\n            </dt>\n            <dd>\n              1 częściowe\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Właściciel\n            </dt>\n            <dd>\n       ...\n    at Object.getElementError (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:754:284)\n    at rp (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:130:3412)\n    at ip (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:130:3457)\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:132:10\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:757:377\n    at play (http://127.0.0.1:6024/assets/Integrations.stories-fSE_okNL.js:58:1663)\n    at async bG.runPhase (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:915:607)\n    at async bG.render (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:915:3467)"
+      ]
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-04-story",
+      "viewport": "mobile",
+      "kind": "runtime-errors",
+      "pageErrors": [],
+      "consoleErrors": [
+        "TestingLibraryElementError: Found multiple elements with the role \"heading\" and name \"Historia synchronizacji\"\n\nHere are the matching elements:\n\nIgnored nodes: comments, script, style\n<h1\n  id=\"_r_0_\"\n>\n  Historia synchronizacji\n</h1>\n\nIgnored nodes: comments, script, style\n<h2>\n  Historia synchronizacji\n</h2>\n\n(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).\n\nIgnored nodes: comments, script, style\n<section\n  aria-label=\"Ekran integracji: Historia synchronizacji\"\n  class=\"pd-production-canvas pd-production-canvas--integrations\"\n  data-mode=\"storybook\"\n  data-production-canvas=\"true\"\n  data-screen-id=\"40.04\"\n  data-screen-variant=\"history\"\n>\n  <header\n    aria-describedby=\"_r_1_\"\n    aria-labelledby=\"_r_0_\"\n    class=\"pd-page-header pd-production-domain-header\"\n  >\n    <div\n      class=\"pd-page-header__main\"\n    >\n      <nav\n        aria-label=\"Ścieżka ekranu\"\n        class=\"pd-page-header__breadcrumbs\"\n      >\n        <ol>\n          <li>\n            <a\n              href=\"/app\"\n            >\n              Aplikacja\n            </a>\n          </li>\n          <li>\n            <a\n              href=\"/app/integrations/katalog\"\n            >\n              Integracje i synchronizacja\n            </a>\n          </li>\n          <li>\n            <span\n              aria-current=\"page\"\n            >\n              Historia synchronizacji\n            </span>\n          </li>\n        </ol>\n      </nav>\n      <div\n        class=\"pd-page-header__heading\"\n      >\n        <h1\n          id=\"_r_0_\"\n        >\n          Historia synchronizacji\n        </h1>\n        <p\n          id=\"_r_1_\"\n        >\n          Chronologiczny rejestr synchronizacji, błędów i ręcznych ponowień.\n        </p>\n      </div>\n    </div>\n    <dl\n      aria-label=\"Metadane ekranu\"\n      class=\"pd-page-header__meta\"\n    >\n      <div>\n        <dt>\n          Źródła\n        </dt>\n        <dd>\n          5\n        </dd>\n      </div>\n      <div>\n        <dt>\n          Błędy\n        </dt>\n        <dd>\n          3\n        </dd>\n      </div>\n      <div>\n        <dt>\n          Odświeżono\n        </dt>\n        <dd>\n          14.08, 09:20\n        </dd>\n      </div>\n    </dl>\n    <div\n      class=\"pd-page-header__actions\"\n    >\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"warning\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Stan: \n          </span>\n          Częściowe\n        </span>\n      </span>\n    </div>\n  </header>\n  <nav\n    aria-label=\"Widoki integracji\"\n    class=\"pd-section-navigation pd-production-domain-nav\"\n    data-orientation=\"horizontal\"\n    data-size=\"compact\"\n  >\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/katalog\"\n    >\n      <span>\n        Katalog\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/kreator-polaczenia\"\n    >\n      <span>\n        Kreator\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/szczegoly\"\n    >\n      <span>\n        Szczegół\n      </span>\n    </a>\n    <a\n      aria-current=\"page\"\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/historia-synchronizacji\"\n    >\n      <span>\n        Historia\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/przebieg-synchronizacji\"\n    >\n      <span>\n        Przebieg\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/zakres-synchronizacji\"\n    >\n      <span>\n        Zakres\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/ponowne-polaczenie\"\n    >\n      <span>\n        Ponowne\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/odlaczenie\"\n    >\n      <span>\n        Odłączenie\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/awaria-providera\"\n    >\n      <span>\n        Awaria\n      </span>\n    </a>\n    <a\n      class=\"pd-section-navigation__item\"\n      href=\"/app/integrations/warianty-integracji\"\n    >\n      <span>\n        Warianty\n      </span>\n    </a>\n  </nav>\n  <dl\n    class=\"pd-domain-health-strip\"\n  >\n    <div>\n      <dt>\n        Integracje\n      </dt>\n      <dd>\n        5\n      </dd>\n      <span>\n        wszystkie źródła w przestrzeni pracy\n      </span>\n    </div>\n    <div>\n      <dt>\n        Połączone\n      </dt>\n      <dd>\n        2\n      </dd>\n      <span>\n        gotowe do analityki\n      </span>\n    </div>\n    <div>\n      <dt>\n        Częściowe\n      </dt>\n      <dd>\n        2\n      </dd>\n      <span>\n        częściowe lub w toku\n      </span>\n    </div>\n    <div>\n      <dt>\n        Błędy\n      </dt>\n      <dd>\n        3\n      </dd>\n      <span>\n        błędy w ostatnim przebiegu\n      </span>\n    </div>\n  </dl>\n  <section\n    aria-label=\"Brief synchronizacji\"\n    class=\"pd-domain-command-brief\"\n  >\n    <header>\n      <p\n        class=\"pd-production-eyebrow\"\n      >\n        Brief synchronizacji\n      </p>\n      <h2>\n        Co trzeba sprawdzić w integracjach teraz\n      </h2>\n      <span>\n        Najpierw źródła częściowe, odłączone i błędy ostatniego przebiegu. Mutacje pozostają poza Storybookiem.\n      </span>\n    </header>\n    <aside>\n      <span>\n        Shopify Orders\n      </span>\n      <strong>\n        Połączona\n      </strong>\n      <span\n        class=\"pd-status-badge\"\n        data-tone=\"warning\"\n      >\n        <span\n          aria-hidden=\"true\"\n          class=\"pd-status-badge__dot\"\n        />\n        <span\n          class=\"pd-status-badge__text\"\n        >\n          <span\n            class=\"pd-visually-hidden\"\n          >\n            Sygnał: \n          </span>\n          Do przeglądu\n        </span>\n      </span>\n    </aside>\n  </section>\n  <section\n    class=\"pd-production-section\"\n  >\n    <header>\n      <div>\n        <p\n          class=\"pd-production-eyebrow\"\n        >\n          Decyzje\n        </p>\n        <h2>\n          Kolejka integracji do obsługi\n        </h2>\n      </div>\n      <span>\n        3\n         decyzje\n      </span>\n    </header>\n    <ol\n      class=\"pd-domain-decision-grid\"\n    >\n      <li\n        data-priority=\"high\"\n      >\n        <div>\n          <span\n            class=\"pd-status-badge\"\n            data-tone=\"warning\"\n          >\n            <span\n              aria-hidden=\"true\"\n              class=\"pd-status-badge__dot\"\n            />\n            <span\n              class=\"pd-status-badge__text\"\n            >\n              <span\n                class=\"pd-visually-hidden\"\n              >\n                Priorytet: \n              </span>\n              Wysokie\n            </span>\n          </span>\n          <strong>\n            Oznacz częściową kompletność źródeł\n          </strong>\n          <p>\n            Źródła częściowe powinny oznaczać dane zależne jako ograniczone przed interpretacją raportów.\n          </p>\n        </div>\n        <dl>\n          <div>\n            <dt>\n              Metryka\n            </dt>\n            <dd>\n              1 częściowe\n            </dd>\n          </div>\n          <div>\n            <dt>\n              Właściciel\n            </dt>\n            <dd>\n       ...\n    at Object.getElementError (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:754:284)\n    at rp (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:130:3412)\n    at ip (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:130:3457)\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:132:10\n    at http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:757:377\n    at play (http://127.0.0.1:6024/assets/Integrations.stories-fSE_okNL.js:58:1663)\n    at async bG.runPhase (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:915:607)\n    at async bG.render (http://127.0.0.1:6024/assets/iframe-vpXRgsfx.js:915:3467)"
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-01-story",
+      "screenId": "32.01",
+      "title": "32.01 Przegląd",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.01-przeglad-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 2282.4375
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-01-story",
+      "screenId": "32.01",
+      "title": "32.01 Przegląd",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.01-przeglad-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 5185.015625
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-02-story",
+      "screenId": "32.02",
+      "title": "32.02 Lista",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.02-lista-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1900.46875
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-02-story",
+      "screenId": "32.02",
+      "title": "32.02 Lista",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.02-lista-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 4635.859375
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-03-story",
+      "screenId": "32.03",
+      "title": "32.03 Szczegóły",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.03-szczego-y-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1851.90625
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-03-story",
+      "screenId": "32.03",
+      "title": "32.03 Szczegóły",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.03-szczego-y-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3785.828125
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-04-story",
+      "screenId": "32.04",
+      "title": "32.04 Oś zdarzeń",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.04-os-zdarzen-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1917.96875
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-04-story",
+      "screenId": "32.04",
+      "title": "32.04 Oś zdarzeń",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.04-os-zdarzen-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3818.234375
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-05-story",
+      "screenId": "32.05",
+      "title": "32.05 Porównanie źródeł",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.05-porownanie-zrode-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1674.78125
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-05-story",
+      "screenId": "32.05",
+      "title": "32.05 Porównanie źródeł",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.05-porownanie-zrode-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3593.203125
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-06-story",
+      "screenId": "32.06",
+      "title": "32.06 Rekoncyliacja - skrót",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.06-rekoncyliacja-skrot-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1894.84375
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-06-story",
+      "screenId": "32.06",
+      "title": "32.06 Rekoncyliacja - skrót",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.06-rekoncyliacja-skrot-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3938.828125
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-07-story",
+      "screenId": "32.07",
+      "title": "32.07 Eksport",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.07-eksport-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1850.21875
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-07-story",
+      "screenId": "32.07",
+      "title": "32.07 Eksport",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.07-eksport-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3798.796875
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-08-story",
+      "screenId": "32.08",
+      "title": "32.08 Warianty zamówień",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.08-warianty-zamowien-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 2000.90625
+      }
+    },
+    {
+      "id": "32-zamówienia-ekrany-produkcyjne--screen-32-08-story",
+      "screenId": "32.08",
+      "title": "32.08 Warianty zamówień",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/32.08-warianty-zamowien-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 4316.109375
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-01-story",
+      "screenId": "33.01",
+      "title": "33.01 Przegląd",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.01-przeglad-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 2067.5625
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-01-story",
+      "screenId": "33.01",
+      "title": "33.01 Przegląd",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.01-przeglad-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 5325.203125
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-02-story",
+      "screenId": "33.02",
+      "title": "33.02 Katalog",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.02-katalog-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1516.5625
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-02-story",
+      "screenId": "33.02",
+      "title": "33.02 Katalog",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.02-katalog-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3932.609375
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-03-story",
+      "screenId": "33.03",
+      "title": "33.03 Szczegóły",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.03-szczego-y-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1516.09375
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-03-story",
+      "screenId": "33.03",
+      "title": "33.03 Szczegóły",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.03-szczego-y-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3343.296875
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-04-story",
+      "screenId": "33.04",
+      "title": "33.04 Mapowanie",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.04-mapowanie-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1201.28125
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-04-story",
+      "screenId": "33.04",
+      "title": "33.04 Mapowanie",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.04-mapowanie-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 2810.296875
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-05-story",
+      "screenId": "33.05",
+      "title": "33.05 Oferty",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.05-oferty-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1908.09375
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-05-story",
+      "screenId": "33.05",
+      "title": "33.05 Oferty",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.05-oferty-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 4222.796875
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-06-story",
+      "screenId": "33.06",
+      "title": "33.06 Wydajność",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.06-wydajnosc-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1498.34375
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-06-story",
+      "screenId": "33.06",
+      "title": "33.06 Wydajność",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.06-wydajnosc-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3450.421875
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-07-story",
+      "screenId": "33.07",
+      "title": "33.07 Kolejka braków",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.07-kolejka-brakow-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1168.1875
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-07-story",
+      "screenId": "33.07",
+      "title": "33.07 Kolejka braków",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.07-kolejka-brakow-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 2680.421875
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-08-story",
+      "screenId": "33.08",
+      "title": "33.08 Analiza wpływu",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.08-analiza-wp-ywu-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1276.28125
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-08-story",
+      "screenId": "33.08",
+      "title": "33.08 Analiza wpływu",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.08-analiza-wp-ywu-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3007.796875
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-09-story",
+      "screenId": "33.09",
+      "title": "33.09 Warianty produktów",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.09-warianty-produktow-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 2337.09375
+      }
+    },
+    {
+      "id": "33-produkty-ekrany-produkcyjne--screen-33-09-story",
+      "screenId": "33.09",
+      "title": "33.09 Warianty produktów",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/33.09-warianty-produktow-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 5898.921875
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-01-story",
+      "screenId": "34.01",
+      "title": "34.01 Przegląd",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.01-przeglad-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1929.875
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-01-story",
+      "screenId": "34.01",
+      "title": "34.01 Przegląd",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.01-przeglad-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 4369.296875
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-02-story",
+      "screenId": "34.02",
+      "title": "34.02 Segmenty",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.02-segmenty-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1440.34375
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-02-story",
+      "screenId": "34.02",
+      "title": "34.02 Segmenty",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.02-segmenty-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3277.328125
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-03-story",
+      "screenId": "34.03",
+      "title": "34.03 Kohorty",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.03-kohorty-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1495.34375
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-03-story",
+      "screenId": "34.03",
+      "title": "34.03 Kohorty",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.03-kohorty-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3517.234375
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-04-story",
+      "screenId": "34.04",
+      "title": "34.04 Szczegóły pseudonimizowane",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.04-szczego-y-pseudonimizowane-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1480.40625
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-04-story",
+      "screenId": "34.04",
+      "title": "34.04 Szczegóły pseudonimizowane",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.04-szczego-y-pseudonimizowane-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3337
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-05-story",
+      "screenId": "34.05",
+      "title": "34.05 Konflikty tożsamości",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.05-konflikty-tozsamosci-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1360.65625
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-05-story",
+      "screenId": "34.05",
+      "title": "34.05 Konflikty tożsamości",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.05-konflikty-tozsamosci-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3133.046875
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-06-story",
+      "screenId": "34.06",
+      "title": "34.06 Prywatność",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.06-prywatnosc-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1491.34375
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-06-story",
+      "screenId": "34.06",
+      "title": "34.06 Prywatność",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.06-prywatnosc-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3219.953125
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-07-story",
+      "screenId": "34.07",
+      "title": "34.07 Analiza wpływu",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.07-analiza-wp-ywu-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1440.34375
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-07-story",
+      "screenId": "34.07",
+      "title": "34.07 Analiza wpływu",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.07-analiza-wp-ywu-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3277.328125
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-08-story",
+      "screenId": "34.08",
+      "title": "34.08 Warianty klientów",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.08-warianty-klientow-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1709.875
+      }
+    },
+    {
+      "id": "34-klienci-ekrany-produkcyjne--screen-34-08-story",
+      "screenId": "34.08",
+      "title": "34.08 Warianty klientów",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/34.08-warianty-klientow-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3807.671875
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-01-story",
+      "screenId": "35.01",
+      "title": "35.01 Przegląd ruchu",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.01-przeglad-ruchu-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 2581.03125
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-01-story",
+      "screenId": "35.01",
+      "title": "35.01 Przegląd ruchu",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.01-przeglad-ruchu-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 5621.015625
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-02-story",
+      "screenId": "35.02",
+      "title": "35.02 Kanały",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.02-kana-y-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1599.71875
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-02-story",
+      "screenId": "35.02",
+      "title": "35.02 Kanały",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.02-kana-y-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3691.265625
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-03-story",
+      "screenId": "35.03",
+      "title": "35.03 Lejek - widok",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.03-lejek-widok-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1987.125
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-03-story",
+      "screenId": "35.03",
+      "title": "35.03 Lejek - widok",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.03-lejek-widok-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 4450.296875
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-04-story",
+      "screenId": "35.04",
+      "title": "35.04 Lejek - szczegóły kroku",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.04-lejek-szczego-y-kroku-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1404.03125
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-04-story",
+      "screenId": "35.04",
+      "title": "35.04 Lejek - szczegóły kroku",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.04-lejek-szczego-y-kroku-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3373.640625
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-05-story",
+      "screenId": "35.05",
+      "title": "35.05 Definicje lejka",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.05-definicje-lejka-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1384.40625
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-05-story",
+      "screenId": "35.05",
+      "title": "35.05 Definicje lejka",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.05-definicje-lejka-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3091.515625
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-06-story",
+      "screenId": "35.06",
+      "title": "35.06 GA4 vs zamówienia",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.06-ga4-vs-zamowienia-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1397.34375
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-06-story",
+      "screenId": "35.06",
+      "title": "35.06 GA4 vs zamówienia",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.06-ga4-vs-zamowienia-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3140.453125
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-07-story",
+      "screenId": "35.07",
+      "title": "35.07 Jakość zdarzeń",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.07-jakosc-zdarzen-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1822.9375
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-07-story",
+      "screenId": "35.07",
+      "title": "35.07 Jakość zdarzeń",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.07-jakosc-zdarzen-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3666.359375
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-08-story",
+      "screenId": "35.08",
+      "title": "35.08 Strony wejścia",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.08-strony-wejscia-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1547.3125
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-08-story",
+      "screenId": "35.08",
+      "title": "35.08 Strony wejścia",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.08-strony-wejscia-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3091.734375
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-09-story",
+      "screenId": "35.09",
+      "title": "35.09 Warianty ruchu",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.09-warianty-ruchu-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1686.78125
+      }
+    },
+    {
+      "id": "35-ruch-na-stronie-i-lejek-sprzedażowy-ekrany-produkcyjne--screen-35-09-story",
+      "screenId": "35.09",
+      "title": "35.09 Warianty ruchu",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/35.09-warianty-ruchu-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3856.765625
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-01-story",
+      "screenId": "40.01",
+      "title": "40.01 Katalog integracji",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.01-katalog-integracji-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 2579.734375
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-01-story",
+      "screenId": "40.01",
+      "title": "40.01 Katalog integracji",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.01-katalog-integracji-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 4444
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-02-story",
+      "screenId": "40.02",
+      "title": "40.02 Kreator połączenia",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.02-kreator-po-aczenia-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 2040.125
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-02-story",
+      "screenId": "40.02",
+      "title": "40.02 Kreator połączenia",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.02-kreator-po-aczenia-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3657.546875
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-03-story",
+      "screenId": "40.03",
+      "title": "40.03 Szczegóły integracji",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.03-szczego-y-integracji-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1932.53125
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-03-story",
+      "screenId": "40.03",
+      "title": "40.03 Szczegóły integracji",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.03-szczego-y-integracji-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3936.578125
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-04-story",
+      "screenId": "40.04",
+      "title": "40.04 Historia synchronizacji",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.04-historia-synchronizacji-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1795.78125
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-04-story",
+      "screenId": "40.04",
+      "title": "40.04 Historia synchronizacji",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.04-historia-synchronizacji-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3492.453125
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-05-story",
+      "screenId": "40.05",
+      "title": "40.05 Przebieg synchronizacji",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.05-przebieg-synchronizacji-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 2233.0625
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-05-story",
+      "screenId": "40.05",
+      "title": "40.05 Przebieg synchronizacji",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.05-przebieg-synchronizacji-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 4179.421875
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-06-story",
+      "screenId": "40.06",
+      "title": "40.06 Zakres synchronizacji",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.06-zakres-synchronizacji-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1602.84375
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-06-story",
+      "screenId": "40.06",
+      "title": "40.06 Zakres synchronizacji",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.06-zakres-synchronizacji-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 2970.578125
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-07-story",
+      "screenId": "40.07",
+      "title": "40.07 Ponowne połączenie",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.07-ponowne-po-aczenie-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 2620.859375
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-07-story",
+      "screenId": "40.07",
+      "title": "40.07 Ponowne połączenie",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.07-ponowne-po-aczenie-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 4979.40625
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-08-story",
+      "screenId": "40.08",
+      "title": "40.08 Odłączenie",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.08-od-aczenie-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 1790.78125
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-08-story",
+      "screenId": "40.08",
+      "title": "40.08 Odłączenie",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.08-od-aczenie-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 3881.765625
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-09-story",
+      "screenId": "40.09",
+      "title": "40.09 Awaria providera",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.09-awaria-providera-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 2198.3125
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-09-story",
+      "screenId": "40.09",
+      "title": "40.09 Awaria providera",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.09-awaria-providera-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 4308.109375
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-10-story",
+      "screenId": "40.10",
+      "title": "40.10 Warianty integracji",
+      "viewport": "desktop",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.10-warianty-integracji-desktop.png",
+      "root": {
+        "width": 1324.8125,
+        "height": 3058.609375
+      }
+    },
+    {
+      "id": "40-integracje-i-synchronizacja-ekrany-produkcyjne--screen-40-10-story",
+      "screenId": "40.10",
+      "title": "40.10 Warianty integracji",
+      "viewport": "mobile",
+      "screenshot": "/home/papadata/papadata-platform/artifacts/domain-32-35-40-2026-08-14/40.10-warianty-integracji-mobile.png",
+      "root": {
+        "width": 342,
+        "height": 5889.1875
+      }
+    }
+  ]
+}

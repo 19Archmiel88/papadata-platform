@@ -33,6 +33,7 @@ export type BusinessScreenId =
   | '30.11'
   | '30.12'
   | '30.13'
+  | '30.14'
   | '31.01'
   | '31.02'
   | '31.03'
@@ -58,6 +59,7 @@ export type BusinessScreenVariant =
   | 'recommendations'
   | 'sales-signals'
   | 'waterfall'
+  | 'command-variants'
   | 'campaign-overview'
   | 'campaign-list'
   | 'campaign-detail'
@@ -186,7 +188,7 @@ export const businessScreenDefinitions: readonly BusinessScreenDefinition[] = [
     storyExport: 'CommandCenterOverviewStory',
     storyName: '30.01 Widok główny',
     storyTitle: '30 Centrum Dowodzenia/Widok główny',
-    summary: 'Poranny przegląd KPI, readiness, driverów i decyzji wymagających uwagi.',
+    summary: 'Poranny przegląd KPI, stanu danych, czynników wyniku i decyzji wymagających uwagi.',
     variant: 'overview',
   },
   {
@@ -216,7 +218,7 @@ export const businessScreenDefinitions: readonly BusinessScreenDefinition[] = [
     storyExport: 'CommandCenterKpiStory',
     storyName: '30.03 KPI',
     storyTitle: '30 Centrum Dowodzenia/KPI',
-    summary: 'Analiza KPI z trendem, forecastem, targetem i alternatywą tabelaryczną.',
+    summary: 'Analiza KPI z trendem, prognozą, celem i alternatywą tabelaryczną.',
     variant: 'kpi',
   },
   {
@@ -321,7 +323,7 @@ export const businessScreenDefinitions: readonly BusinessScreenDefinition[] = [
     storyExport: 'CommandCenterFunnelStory',
     storyName: '30.10 Lejek',
     storyTitle: '30 Centrum Dowodzenia/Lejek',
-    summary: 'Ujawnia drop-off i konwersję kroków z alternatywą tekstową.',
+    summary: 'Ujawnia odpływ i konwersję kroków z alternatywą tekstową.',
     variant: 'funnel',
   },
   {
@@ -336,7 +338,7 @@ export const businessScreenDefinitions: readonly BusinessScreenDefinition[] = [
     storyExport: 'CommandCenterRecommendationsStory',
     storyName: '30.11 Rekomendacje AI',
     storyTitle: '30 Centrum Dowodzenia/Rekomendacje AI — skrót',
-    summary: 'Łączy confidence, dowody i human approval przed działaniem.',
+    summary: 'Łączy pewność, dowody i akceptację człowieka przed działaniem.',
     variant: 'recommendations',
   },
   {
@@ -351,7 +353,7 @@ export const businessScreenDefinitions: readonly BusinessScreenDefinition[] = [
     storyExport: 'CommandCenterSalesSignalsStory',
     storyName: '30.12 Sygnały sprzedażowe',
     storyTitle: '30 Centrum Dowodzenia/Sygnały sprzedażowe',
-    summary: 'Porządkuje sygnały według statusu, priorytetu i ownership.',
+    summary: 'Porządkuje sygnały według statusu, priorytetu i właściciela.',
     variant: 'sales-signals',
   },
   {
@@ -368,6 +370,21 @@ export const businessScreenDefinitions: readonly BusinessScreenDefinition[] = [
     storyTitle: '30 Centrum Dowodzenia/Waterfall',
     summary: 'Rozbija zmianę wyniku na wkłady dodatnie, ujemne i sumę.',
     variant: 'waterfall',
+  },
+  {
+    apiPath: '/api/v1/command-center/warianty',
+    displayTitle: 'Warianty Centrum Dowodzenia',
+    documentPath: '07-centrum-dowodzenia/30-14-warianty-centrum-dowodzenia.md',
+    fixturePath: 'fixtures/storybook/164-30-14-warianty-centrum-dowodzenia.json',
+    group: 'command-center',
+    id: '30.14',
+    operationId: 'command-center.variants.read',
+    route: '/app/command-center/warianty',
+    storyExport: 'CommandCenterVariantsStory',
+    storyName: '30.14 Warianty Centrum Dowodzenia',
+    storyTitle: '30 Centrum Dowodzenia/Warianty Centrum Dowodzenia',
+    summary: 'Zbiorczy ekran stanów i wariantów Centrum Dowodzenia bez duplikowania metryk poza kontraktem.',
+    variant: 'command-variants',
   },
   {
     apiPath: '/api/v1/campaigns/przeglad',
@@ -912,7 +929,7 @@ const commandCenterStoryRecordsById: Readonly<
     ),
     commandStoryMetric(
       '11111111-1111-4111-8111-111111111102',
-      'Średni confidence',
+      'Średnia pewność',
       0.83,
       'percent',
       0.04,
@@ -1003,6 +1020,44 @@ const commandCenterStoryRecordsById: Readonly<
       0.086,
       840000,
       'ready',
+    ),
+  ],
+  '30.14': [
+    commandStoryMetric(
+      '11111111-1111-4111-8111-111111111401',
+      'Wariant gotowy',
+      6,
+      'number',
+      0,
+      6,
+      'ready',
+    ),
+    commandStoryMetric(
+      '11111111-1111-4111-8111-111111111402',
+      'Wariant częściowy',
+      2,
+      'number',
+      0,
+      0,
+      'partial',
+    ),
+    commandStoryMetric(
+      '11111111-1111-4111-8111-111111111403',
+      'Wariant offline',
+      1,
+      'number',
+      0,
+      0,
+      'stale',
+    ),
+    commandStoryMetric(
+      '11111111-1111-4111-8111-111111111404',
+      'Wariant bez dostępu',
+      1,
+      'number',
+      0,
+      0,
+      'unavailable',
     ),
   ],
 };

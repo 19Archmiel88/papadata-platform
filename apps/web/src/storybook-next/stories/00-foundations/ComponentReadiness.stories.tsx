@@ -201,6 +201,45 @@ const p0BaseBacklogItems = [
   },
 ] satisfies readonly P0BacklogRow[];
 
+const p0BaseBacklogBatch2Items = [
+  ['P0.SB01', '10 Komponenty/BottomSheet', '04-komponenty-bazowe/komponenty/bottomsheet.md', 'fixtures/storybook/035-bottomsheet.json'],
+  ['P0.SB02', '10 Komponenty/BrandLockup', '04-komponenty-bazowe/komponenty/brandlockup.md', 'fixtures/storybook/036-brandlockup.json'],
+  ['P0.SB03', '10 Komponenty/BrandMark', '04-komponenty-bazowe/komponenty/brandmark.md', 'fixtures/storybook/037-brandmark.json'],
+  ['P0.SB04', '10 Komponenty/Breadcrumbs', '04-komponenty-bazowe/komponenty/breadcrumbs.md', 'fixtures/storybook/038-breadcrumbs.json'],
+  ['P0.SB05', '10 Komponenty/BulkActionBar', '04-komponenty-bazowe/komponenty/bulkactionbar.md', 'fixtures/storybook/039-bulkactionbar.json'],
+  ['P0.SB06', '10 Komponenty/Button', '04-komponenty-bazowe/komponenty/button.md', 'fixtures/storybook/040-button.json'],
+  ['P0.SB07', '10 Komponenty/Checkbox', '04-komponenty-bazowe/komponenty/checkbox.md', 'fixtures/storybook/042-checkbox.json'],
+  ['P0.SB08', '10 Komponenty/ColumnPicker', '04-komponenty-bazowe/komponenty/columnpicker.md', 'fixtures/storybook/043-columnpicker.json'],
+  ['P0.SB09', '10 Komponenty/Combobox', '04-komponenty-bazowe/komponenty/combobox.md', 'fixtures/storybook/044-combobox.json'],
+  ['P0.SB10', '10 Komponenty/DataStatusBanner', '04-komponenty-bazowe/komponenty/datastatusbanner.md', 'fixtures/storybook/047-datastatusbanner.json'],
+  ['P0.SB11', '10 Komponenty/DataTable', '04-komponenty-bazowe/komponenty/datatable.md', 'fixtures/storybook/048-datatable.json'],
+  ['P0.SB12', '10 Komponenty/DateRangePicker', '04-komponenty-bazowe/komponenty/daterangepicker.md', 'fixtures/storybook/049-daterangepicker.json'],
+  ['P0.SB13', '10 Komponenty/DecisionCard', '04-komponenty-bazowe/komponenty/decisioncard.md', 'fixtures/storybook/050-decisioncard.json'],
+  ['P0.SB14', '10 Komponenty/DetailPanel', '04-komponenty-bazowe/komponenty/detailpanel.md', 'fixtures/storybook/051-detailpanel.json'],
+  ['P0.SB15', '10 Komponenty/Dialog', '04-komponenty-bazowe/komponenty/dialog.md', 'fixtures/storybook/052-dialog.json'],
+  ['P0.SB16', '10 Komponenty/Drawer', '04-komponenty-bazowe/komponenty/drawer.md', 'fixtures/storybook/053-drawer.json'],
+  ['P0.SB17', '10 Komponenty/EmptyState', '04-komponenty-bazowe/komponenty/emptystate.md', 'fixtures/storybook/054-emptystate.json'],
+  ['P0.SB18', '10 Komponenty/ErrorState', '04-komponenty-bazowe/komponenty/errorstate.md', 'fixtures/storybook/055-errorstate.json'],
+  ['P0.SB19', '10 Komponenty/EvidencePanel', '04-komponenty-bazowe/komponenty/evidencepanel.md', 'fixtures/storybook/056-evidencepanel.json'],
+  ['P0.SB20', '10 Komponenty/FileInput', '04-komponenty-bazowe/komponenty/fileinput.md', 'fixtures/storybook/057-fileinput.json'],
+  ['P0.SB21', '10 Komponenty/FilterBar', '04-komponenty-bazowe/komponenty/filterbar.md', 'fixtures/storybook/058-filterbar.json'],
+  ['P0.SB22', '10 Komponenty/FunnelChart', '05-wykresy-i-wizualizacje/komponenty/funnelchart.md', 'fixtures/storybook/060-funnelchart.json'],
+  ['P0.SB23', '10 Komponenty/IconButton', '04-komponenty-bazowe/komponenty/iconbutton.md', 'fixtures/storybook/061-iconbutton.json'],
+  ['P0.SB24', '10 Komponenty/InlineNotice', '04-komponenty-bazowe/komponenty/inlinenotice.md', 'fixtures/storybook/062-inlinenotice.json'],
+  ['P0.SB25', '10 Komponenty/Menu', '04-komponenty-bazowe/komponenty/menu.md', 'fixtures/storybook/063-menu.json'],
+  ['P0.SB26', '10 Komponenty/NipField', '04-komponenty-bazowe/komponenty/nipfield.md', 'fixtures/storybook/065-nipfield.json'],
+  ['P0.SB27', '10 Komponenty/NumberField', '04-komponenty-bazowe/komponenty/numberfield.md', 'fixtures/storybook/066-numberfield.json'],
+  ['P0.SB28', '10 Komponenty/PageHeader', '04-komponenty-bazowe/komponenty/pageheader.md', 'fixtures/storybook/067-pageheader.json'],
+  ['P0.SB29', '10 Komponenty/Pagination', '04-komponenty-bazowe/komponenty/pagination.md', 'fixtures/storybook/068-pagination.json'],
+  ['P0.SB30', '10 Komponenty/PaginationNav', '04-komponenty-bazowe/komponenty/paginationnav.md', 'fixtures/storybook/069-paginationnav.json'],
+].map(([id, story, document, fixture]) => ({
+  document,
+  fixture,
+  id,
+  status: 'implemented' as const,
+  story,
+})) satisfies readonly P0BacklogRow[];
+
 const coverage = [
   'PL/EN',
   'light/dark',
@@ -537,6 +576,69 @@ function BaseP0BacklogReadiness() {
   );
 }
 
+function BaseP0BacklogBatch2Readiness() {
+  return (
+    <StoryPresentationPage
+      className="pd-component-readiness"
+      headerAside={(
+        <StoryPresentationMeta
+          ariaLabel={copy({ pl: 'Status pakietu P0 komponentów bazowych', en: 'P0 base component batch status' })}
+          items={[
+            { label: 'Owner', value: '00 Fundamenty' },
+            { label: 'Status', value: 'implemented + play' },
+            { label: 'Fixture', value: 'fixtures/storybook/291-p0-backlog-components-base-batch-2.json' },
+          ]}
+        />
+      )}
+      sectionCode="00.23"
+      sectionLabel={copy({ pl: 'Fundamenty', en: 'Foundations' })}
+      storyId="00.23"
+      summary={copy({
+        pl: 'Drugi pakiet P0 zamyka kolejne komponenty bazowe wymagane przed dalszymi ekranami Auth, Command Center, zamówień i produktów.',
+        en: 'The second P0 batch closes the next base components required before further Auth, Command Center, orders and products screens.',
+      })}
+      title={copy({ pl: 'Backlog P0 komponentów bazowych - pakiet 2', en: 'P0 base component backlog - batch 2' })}
+    >
+      <StoryPresentationSection
+        index="01"
+        layout="wide"
+        summary={copy({
+          pl: 'Zakres odpowiada bieżącym pozycjom P0.SB01-P0.SB30 z audyt14082026.md.',
+          en: 'The scope matches the current P0.SB01-P0.SB30 items from audyt14082026.md.',
+        })}
+        title={copy({ pl: 'Zakres zamknięcia', en: 'Closure scope' })}
+      >
+        <dl className="pd-component-readiness__summary">
+          <div>
+            <dt>{copy({ pl: 'Pozycje P0', en: 'P0 items' })}</dt>
+            <dd>{p0BaseBacklogBatch2Items.length}</dd>
+          </div>
+          <div>
+            <dt>{copy({ pl: 'Fixture', en: 'Fixtures' })}</dt>
+            <dd>{new Set(p0BaseBacklogBatch2Items.map((row) => row.fixture)).size}</dd>
+          </div>
+          <div>
+            <dt>{copy({ pl: 'Kryteria na pozycję', en: 'Criteria per item' })}</dt>
+            <dd>{coverage.length}</dd>
+          </div>
+        </dl>
+      </StoryPresentationSection>
+
+      <StoryPresentationSection
+        index="02"
+        layout="wide"
+        summary={copy({
+          pl: 'Każdy komponent ma przypisany dokument, fixture, checklistę dostępności, status i kontrolkę weryfikowaną w play teście.',
+          en: 'Each component has a document, fixture, accessibility checklist, status and a control verified in the play test.',
+        })}
+        title={copy({ pl: 'Rejestr P0 - pakiet 2', en: 'P0 registry - batch 2' })}
+      >
+        <P0BacklogTable rows={p0BaseBacklogBatch2Items} />
+      </StoryPresentationSection>
+    </StoryPresentationPage>
+  );
+}
+
 export const KomponentyBazoweStory: Story = {
   name: 'Komponenty bazowe',
   render: () => <BaseComponentReadiness />,
@@ -567,6 +669,27 @@ export const BacklogP0KomponentowBazowychStory: Story = {
     await expect(canvas.getByText('P0.SB01')).toBeInTheDocument();
     await expect(canvas.getByText('10 Komponenty/BackgroundOperationItem')).toBeInTheDocument();
     await expect(canvas.getAllByRole('row')).toHaveLength(p0BaseBacklogItems.length + 1);
+
+    const verifyButton = canvas.getByRole('button', {
+      name: /Sprawdź P0\.SB01|Verify P0\.SB01/,
+    });
+    await userEvent.click(verifyButton);
+    await expect(canvas.getByRole('status')).toHaveTextContent('P0.SB01');
+
+    await userEvent.tab();
+    await expect(document.activeElement).toBeInstanceOf(HTMLElement);
+  },
+};
+
+export const BacklogP0KomponentowBazowychPakiet2Story: Story = {
+  name: 'Backlog P0 komponentów bazowych - pakiet 2',
+  render: () => <BaseP0BacklogBatch2Readiness />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.getByText('P0.SB01')).toBeInTheDocument();
+    await expect(canvas.getByText('10 Komponenty/PaginationNav')).toBeInTheDocument();
+    await expect(canvas.getAllByRole('row')).toHaveLength(p0BaseBacklogBatch2Items.length + 1);
 
     const verifyButton = canvas.getByRole('button', {
       name: /Sprawdź P0\.SB01|Verify P0\.SB01/,

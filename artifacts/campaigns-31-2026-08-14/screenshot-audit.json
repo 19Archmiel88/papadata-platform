@@ -1,0 +1,537 @@
+{
+  "generatedAt": "2026-08-14T09:26:37.267Z",
+  "baseUrl": "http://127.0.0.1:6024",
+  "results": [
+    {
+      "storyLabel": "31.01-overview",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-01-story",
+      "viewportLabel": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-01-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.01-overview-desktop.png",
+      "rootBox": {
+        "x": 57.59375,
+        "y": 579.484375,
+        "width": 1324.8125,
+        "height": 2796.75
+      },
+      "dimensions": {
+        "bodyClientWidth": 1440,
+        "bodyScrollWidth": 1440,
+        "docClientWidth": 1440,
+        "docScrollWidth": 1440,
+        "rootClientWidth": 1325,
+        "rootScrollWidth": 1325,
+        "rootRectWidth": 1324.8125
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.01-overview",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-01-story",
+      "viewportLabel": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 920
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-01-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.01-overview-mobile.png",
+      "rootBox": {
+        "x": 24,
+        "y": 715.046875,
+        "width": 342,
+        "height": 6649.796875
+      },
+      "dimensions": {
+        "bodyClientWidth": 390,
+        "bodyScrollWidth": 390,
+        "docClientWidth": 390,
+        "docScrollWidth": 390,
+        "rootClientWidth": 342,
+        "rootScrollWidth": 342,
+        "rootRectWidth": 342
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.02-list",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-02-story",
+      "viewportLabel": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-02-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.02-list-desktop.png",
+      "rootBox": {
+        "x": 57.59375,
+        "y": 598.375,
+        "width": 1324.8125,
+        "height": 1858.90625
+      },
+      "dimensions": {
+        "bodyClientWidth": 1440,
+        "bodyScrollWidth": 1440,
+        "docClientWidth": 1440,
+        "docScrollWidth": 1440,
+        "rootClientWidth": 1325,
+        "rootScrollWidth": 1325,
+        "rootRectWidth": 1324.8125
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.02-list",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-02-story",
+      "viewportLabel": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 920
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-02-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.02-list-mobile.png",
+      "rootBox": {
+        "x": 24,
+        "y": 733.9375,
+        "width": 342,
+        "height": 5418.234375
+      },
+      "dimensions": {
+        "bodyClientWidth": 390,
+        "bodyScrollWidth": 390,
+        "docClientWidth": 390,
+        "docScrollWidth": 390,
+        "rootClientWidth": 342,
+        "rootScrollWidth": 342,
+        "rootRectWidth": 342
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.03-detail",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-03-story",
+      "viewportLabel": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-03-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.03-detail-desktop.png",
+      "rootBox": {
+        "x": 57.59375,
+        "y": 598.375,
+        "width": 1324.8125,
+        "height": 1688.84375
+      },
+      "dimensions": {
+        "bodyClientWidth": 1440,
+        "bodyScrollWidth": 1440,
+        "docClientWidth": 1440,
+        "docScrollWidth": 1440,
+        "rootClientWidth": 1325,
+        "rootScrollWidth": 1325,
+        "rootRectWidth": 1324.8125
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.03-detail",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-03-story",
+      "viewportLabel": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 920
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-03-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.03-detail-mobile.png",
+      "rootBox": {
+        "x": 24,
+        "y": 733.9375,
+        "width": 342,
+        "height": 3677.078125
+      },
+      "dimensions": {
+        "bodyClientWidth": 390,
+        "bodyScrollWidth": 390,
+        "docClientWidth": 390,
+        "docScrollWidth": 390,
+        "rootClientWidth": 342,
+        "rootScrollWidth": 342,
+        "rootRectWidth": 342
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.04-attribution",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-04-story",
+      "viewportLabel": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-04-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.04-attribution-desktop.png",
+      "rootBox": {
+        "x": 57.59375,
+        "y": 598.375,
+        "width": 1324.8125,
+        "height": 1952.96875
+      },
+      "dimensions": {
+        "bodyClientWidth": 1440,
+        "bodyScrollWidth": 1440,
+        "docClientWidth": 1440,
+        "docScrollWidth": 1440,
+        "rootClientWidth": 1325,
+        "rootScrollWidth": 1325,
+        "rootRectWidth": 1324.8125
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.04-attribution",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-04-story",
+      "viewportLabel": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 920
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-04-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.04-attribution-mobile.png",
+      "rootBox": {
+        "x": 24,
+        "y": 733.9375,
+        "width": 342,
+        "height": 4932.171875
+      },
+      "dimensions": {
+        "bodyClientWidth": 390,
+        "bodyScrollWidth": 390,
+        "docClientWidth": 390,
+        "docScrollWidth": 390,
+        "rootClientWidth": 342,
+        "rootScrollWidth": 342,
+        "rootRectWidth": 342
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.05-budget",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-05-story",
+      "viewportLabel": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-05-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.05-budget-desktop.png",
+      "rootBox": {
+        "x": 57.59375,
+        "y": 579.484375,
+        "width": 1324.8125,
+        "height": 2334.84375
+      },
+      "dimensions": {
+        "bodyClientWidth": 1440,
+        "bodyScrollWidth": 1440,
+        "docClientWidth": 1440,
+        "docScrollWidth": 1440,
+        "rootClientWidth": 1325,
+        "rootScrollWidth": 1325,
+        "rootRectWidth": 1324.8125
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.05-budget",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-05-story",
+      "viewportLabel": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 920
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-05-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.05-budget-mobile.png",
+      "rootBox": {
+        "x": 24,
+        "y": 715.046875,
+        "width": 342,
+        "height": 5040.328125
+      },
+      "dimensions": {
+        "bodyClientWidth": 390,
+        "bodyScrollWidth": 390,
+        "docClientWidth": 390,
+        "docScrollWidth": 390,
+        "rootClientWidth": 342,
+        "rootScrollWidth": 342,
+        "rootRectWidth": 342
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.06-diagnostics",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-06-story",
+      "viewportLabel": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-06-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.06-diagnostics-desktop.png",
+      "rootBox": {
+        "x": 57.59375,
+        "y": 579.484375,
+        "width": 1324.8125,
+        "height": 1730.78125
+      },
+      "dimensions": {
+        "bodyClientWidth": 1440,
+        "bodyScrollWidth": 1440,
+        "docClientWidth": 1440,
+        "docScrollWidth": 1440,
+        "rootClientWidth": 1325,
+        "rootScrollWidth": 1325,
+        "rootRectWidth": 1324.8125
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.06-diagnostics",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-06-story",
+      "viewportLabel": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 920
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-06-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.06-diagnostics-mobile.png",
+      "rootBox": {
+        "x": 24,
+        "y": 733.9375,
+        "width": 342,
+        "height": 4394.953125
+      },
+      "dimensions": {
+        "bodyClientWidth": 390,
+        "bodyScrollWidth": 390,
+        "docClientWidth": 390,
+        "docScrollWidth": 390,
+        "rootClientWidth": 342,
+        "rootScrollWidth": 342,
+        "rootRectWidth": 342
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.07-recommendations",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-07-story",
+      "viewportLabel": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-07-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.07-recommendations-desktop.png",
+      "rootBox": {
+        "x": 57.59375,
+        "y": 636.15625,
+        "width": 1324.8125,
+        "height": 1741.28125
+      },
+      "dimensions": {
+        "bodyClientWidth": 1440,
+        "bodyScrollWidth": 1440,
+        "docClientWidth": 1440,
+        "docScrollWidth": 1440,
+        "rootClientWidth": 1325,
+        "rootScrollWidth": 1325,
+        "rootRectWidth": 1324.8125
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.07-recommendations",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-07-story",
+      "viewportLabel": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 920
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-07-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.07-recommendations-mobile.png",
+      "rootBox": {
+        "x": 24,
+        "y": 782.21875,
+        "width": 342,
+        "height": 4487.71875
+      },
+      "dimensions": {
+        "bodyClientWidth": 390,
+        "bodyScrollWidth": 390,
+        "docClientWidth": 390,
+        "docScrollWidth": 390,
+        "rootClientWidth": 342,
+        "rootScrollWidth": 342,
+        "rootRectWidth": 342
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.08-variants",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-08-story",
+      "viewportLabel": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-08-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.08-variants-desktop.png",
+      "rootBox": {
+        "x": 57.59375,
+        "y": 598.375,
+        "width": 1324.8125,
+        "height": 3669.609375
+      },
+      "dimensions": {
+        "bodyClientWidth": 1440,
+        "bodyScrollWidth": 1440,
+        "docClientWidth": 1440,
+        "docScrollWidth": 1440,
+        "rootClientWidth": 1325,
+        "rootScrollWidth": 1325,
+        "rootRectWidth": 1324.8125
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    },
+    {
+      "storyLabel": "31.08-variants",
+      "id": "31-kampanie-płatne-ekrany-produkcyjne--screen-31-08-story",
+      "viewportLabel": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 920
+      },
+      "url": "http://127.0.0.1:6024/iframe.html?id=31-kampanie-płatne-ekrany-produkcyjne--screen-31-08-story&viewMode=story&globals=theme:dark;locale:pl",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/campaigns-31-2026-08-14/31.08-variants-mobile.png",
+      "rootBox": {
+        "x": 24,
+        "y": 757.03125,
+        "width": 342,
+        "height": 8330.625
+      },
+      "dimensions": {
+        "bodyClientWidth": 390,
+        "bodyScrollWidth": 390,
+        "docClientWidth": 390,
+        "docScrollWidth": 390,
+        "rootClientWidth": 342,
+        "rootScrollWidth": 342,
+        "rootRectWidth": 342
+      },
+      "bodyOverflowX": 0,
+      "docOverflowX": 0,
+      "rootOverflowX": 0,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "blockedMatches": []
+    }
+  ],
+  "failures": [],
+  "blockedEnglish": [
+    "readiness",
+    "workspace",
+    "confidence",
+    "owner",
+    "effort",
+    "morning brief",
+    "budget pacing",
+    "revenue",
+    "spend",
+    "pacing",
+    "impact",
+    "approval",
+    "read-only",
+    "availability",
+    "landing pages",
+    "event quality"
+  ]
+}

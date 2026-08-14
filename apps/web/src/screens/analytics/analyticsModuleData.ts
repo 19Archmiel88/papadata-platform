@@ -32,6 +32,7 @@ export type AnalyticsScreenId =
   | '31.05'
   | '31.06'
   | '31.07'
+  | '31.08'
   | '32.01'
   | '32.02'
   | '32.03'
@@ -39,6 +40,7 @@ export type AnalyticsScreenId =
   | '32.05'
   | '32.06'
   | '32.07'
+  | '32.08'
   | '33.01'
   | '33.02'
   | '33.03'
@@ -47,6 +49,7 @@ export type AnalyticsScreenId =
   | '33.06'
   | '33.07'
   | '33.08'
+  | '33.09'
   | '34.01'
   | '34.02'
   | '34.03'
@@ -54,6 +57,7 @@ export type AnalyticsScreenId =
   | '34.05'
   | '34.06'
   | '34.07'
+  | '34.08'
   | '35.01'
   | '35.02'
   | '35.03'
@@ -61,7 +65,8 @@ export type AnalyticsScreenId =
   | '35.05'
   | '35.06'
   | '35.07'
-  | '35.08';
+  | '35.08'
+  | '35.09';
 
 export type AnalyticsScreenVariant =
   | 'attribution'
@@ -91,7 +96,8 @@ export type AnalyticsScreenVariant =
   | 'reconciliation'
   | 'segments'
   | 'source-comparison'
-  | 'timeline';
+  | 'timeline'
+  | 'variants';
 
 export type AnalyticsScreenDefinition = {
   readonly apiPath: `/api/v1/${string}`;
@@ -310,6 +316,20 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   variant: "recommendations",
 },
 {
+  apiPath: "/api/v1/campaigns/warianty-kampanii",
+  displayTitle: "Warianty kampanii",
+  documentPath: "08-kampanie-platne/31-08-warianty-kampanii.md",
+  group: "campaigns",
+  id: "31.08",
+  navigation: true,
+  operationId: "campaigns.variants.read",
+  requiresResourceId: false,
+  route: "/app/campaigns/warianty-kampanii",
+  routeBase: "/app/campaigns/warianty-kampanii",
+  summary: "Zbiorczy widok wariantów kampanii: ready, partial, empty, error, stale i ograniczenia dostępu.",
+  variant: "variants",
+},
+{
   apiPath: "/api/v1/orders/przeglad",
   displayTitle: "Przegląd",
   documentPath: "09-zamowienia/32-01-przeglad.md",
@@ -406,6 +426,20 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   routeBase: "/app/orders/eksport",
   summary: "Stan danych przygotowanych do eksportu; pobranie wymaga osobnej operacji write/export.",
   variant: "export",
+},
+{
+  apiPath: "/api/v1/orders/warianty-zamowien",
+  displayTitle: "Warianty zamówień",
+  documentPath: "09-zamowienia/32-08-warianty-zamowien.md",
+  group: "orders",
+  id: "32.08",
+  navigation: true,
+  operationId: "orders.variants.read",
+  requiresResourceId: false,
+  route: "/app/orders/warianty-zamowien",
+  routeBase: "/app/orders/warianty-zamowien",
+  summary: "Zbiorczy widok stanów zamówień, źródeł i ograniczeń danych w jednym kontrakcie odczytu.",
+  variant: "variants",
 },
 {
   apiPath: "/api/v1/products/przeglad",
@@ -520,6 +554,20 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   variant: "impact",
 },
 {
+  apiPath: "/api/v1/products/warianty-produktow",
+  displayTitle: "Warianty produktów",
+  documentPath: "10-produkty/33-09-warianty-produktow.md",
+  group: "products",
+  id: "33.09",
+  navigation: true,
+  operationId: "products.variants.read",
+  requiresResourceId: false,
+  route: "/app/products/warianty-produktow",
+  routeBase: "/app/products/warianty-produktow",
+  summary: "Zbiorczy widok stanów katalogu produktu: gotowe, braki, mapowanie, pusty zestaw i ograniczenia źródeł.",
+  variant: "variants",
+},
+{
   apiPath: "/api/v1/customers/przeglad",
   displayTitle: "Przegląd",
   documentPath: "11-klienci/34-01-przeglad.md",
@@ -616,6 +664,20 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   routeBase: "/app/customers/analiza-wplywu",
   summary: "Wpływ segmentów klientów na sprzedaż i LTV.",
   variant: "impact",
+},
+{
+  apiPath: "/api/v1/customers/warianty-klientow",
+  displayTitle: "Warianty klientów",
+  documentPath: "11-klienci/34-08-warianty-klientow.md",
+  group: "customers",
+  id: "34.08",
+  navigation: true,
+  operationId: "customers.variants.read",
+  requiresResourceId: false,
+  route: "/app/customers/warianty-klientow",
+  routeBase: "/app/customers/warianty-klientow",
+  summary: "Zbiorczy widok stanów klientów, zgód, pseudonimizacji, segmentów, kohort i konfliktów tożsamości.",
+  variant: "variants",
 },
 {
   apiPath: "/api/v1/traffic/przeglad-ruchu",
@@ -728,6 +790,20 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   routeBase: "/app/traffic/strony-wejscia",
   summary: "Strony wejścia uszeregowane według ruchu, konwersji i przychodu.",
   variant: "landing-pages",
+},
+{
+  apiPath: "/api/v1/traffic/warianty-ruchu",
+  displayTitle: "Warianty ruchu",
+  documentPath: "12-ruch-i-lejek/35-09-warianty-ruchu.md",
+  group: "traffic",
+  id: "35.09",
+  navigation: true,
+  operationId: "traffic.variants.read",
+  requiresResourceId: false,
+  route: "/app/traffic/warianty-ruchu",
+  routeBase: "/app/traffic/warianty-ruchu",
+  summary: "Zbiorczy widok stanów ruchu, lejka, jakości eventów, GA4 vs zamówienia i stron wejścia.",
+  variant: "variants",
 },
 ];
 

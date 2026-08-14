@@ -8,16 +8,18 @@ import {
 } from 'storybook/test';
 
 import {
-  AnalyticsModuleWorkspace,
   analyticsScreenDefinitions,
   createAnalyticsStorybookData,
 } from '../../../screens/analytics';
-import '../../../storybook-next/presentation/story-presentation.css';
+import type {
+  ProductsModuleData,
+} from '../../../screens/analytics';
 import {
-  StoryPresentationMeta,
-  StoryPresentationPage,
-  StoryPresentationSection,
-} from '../../../storybook-next/presentation/StoryPresentation';
+  ProductsWorkspace,
+} from '../../production/AnalyticsDomainWorkspaces';
+import {
+  ProductionStoryShell,
+} from '../../production/ProductionStoryShell';
 
 const meta = {
   title: '33 Produkty/Ekrany produkcyjne',
@@ -38,7 +40,8 @@ type ScreenId =
   | '33.05'
   | '33.06'
   | '33.07'
-  | '33.08';
+  | '33.08'
+  | '33.09';
 
 const definitions = analyticsScreenDefinitions.filter(
   (definition) => definition.id.startsWith('33.'),
@@ -53,37 +56,21 @@ function getDefinition(id: ScreenId) {
 function ModuleStoryPage({ id }: { readonly id: ScreenId }) {
   const definition = getDefinition(id);
   return (
-    <StoryPresentationPage
-      headerAside={(
-        <StoryPresentationMeta
-          ariaLabel='Status ekranu Produkty'
-          items={[
-            { label: 'Owner', value: 'Products' },
-            { label: 'Status', value: 'runtime + target states' },
-            { label: 'Dokument', value: `docs/specyfikacja-docelowa/${definition.documentPath}` },
-          ]}
-        />
-      )}
-      sectionCode='33'
-      sectionLabel='Produkty'
-      storyId={definition.id}
-      summary={definition.summary}
-      title={definition.displayTitle}
+    <ProductionStoryShell
+      contract={{
+        ...definition,
+        owner: 'Products',
+        sectionId: '33',
+        sectionLabel: 'Produkty',
+        status: 'runtime + target states',
+      }}
     >
-      <StoryPresentationSection
-        index={definition.id.split('.')[1] ?? '01'}
-        layout="full"
-        summary="Widok używa lokalnych danych kontraktowych Storybooka; runtime pobiera ten sam kształt przez BFF."
-        title="Ekran produkcyjny"
-      >
-        <AnalyticsModuleWorkspace
-          data={createAnalyticsStorybookData(definition)}
-          definition={definition}
-          mode="storybook"
-          path={definition.requiresResourceId ? `${definition.routeBase}/storybook-resource` : definition.routeBase}
-        />
-      </StoryPresentationSection>
-    </StoryPresentationPage>
+      <ProductsWorkspace
+        data={createAnalyticsStorybookData(definition) as ProductsModuleData}
+        definition={definition}
+        mode="storybook"
+      />
+    </ProductionStoryShell>
   );
 }
 
@@ -96,20 +83,71 @@ function createStory(id: ScreenId): Story {
       const element = canvasElement.querySelector(`[data-screen-id="${id}"]`);
       if (!(element instanceof HTMLElement)) throw new Error(`Screen ${id} is not rendered.`);
       const screen = within(element);
-      await expect(screen.getByRole('heading', { name: definition.displayTitle })).toBeInTheDocument();
-      await expect(screen.getByRole('navigation', { name: `Widoki: Produkty` })).toBeInTheDocument();
+      await expect(screen.getByRole('heading', { level: 1, name: definition.displayTitle })).toBeInTheDocument();
+      await expect(screen.getByRole('navigation', { name: 'Widoki produktów' })).toBeInTheDocument();
+      await expect(screen.getByRole('heading', { name: 'Co naprawić w katalogu przed kolejną decyzją' })).toBeInTheDocument();
+      await expect(screen.getByRole('heading', { name: 'Kolejka merchandisingowa' })).toBeInTheDocument();
+      await expect(screen.getByRole('heading', { name: productVariantHeading[definition.variant as keyof typeof productVariantHeading] })).toBeInTheDocument();
       await expect(screen.queryByRole('button', { name: 'Eksportuj widok' })).not.toBeInTheDocument();
       await expect(screen.queryByText('Enterprise BI')).not.toBeInTheDocument();
-      await expect(element).toHaveAttribute('data-analytics-variant', definition.variant);
+      await expect(element).toHaveAttribute('data-screen-variant', definition.variant);
     },
   };
 }
 
-export const Screen33_01Story = createStory('33.01');
-export const Screen33_02Story = createStory('33.02');
-export const Screen33_03Story = createStory('33.03');
-export const Screen33_04Story = createStory('33.04');
-export const Screen33_05Story = createStory('33.05');
-export const Screen33_06Story = createStory('33.06');
-export const Screen33_07Story = createStory('33.07');
-export const Screen33_08Story = createStory('33.08');
+const productVariantHeading = {
+  catalog: 'Katalog produktów i szybkie filtrowanie',
+  detail: 'Produkt w kontekście sprzedaży i mapowania',
+  gaps: 'Kolejka braków katalogowych',
+  impact: 'Wpływ braków produktowych na sprzedaż',
+  mapping: 'Jakość mapowania SKU',
+  offers: 'Oferty i gotowość ekspozycji produktu',
+  overview: 'Produkty według wyniku i ryzyka katalogowego',
+  performance: 'Ranking produktów według wyniku i marży',
+  variants: 'Stany produkcyjne katalogu',
+} as const;
+
+export const Screen33_01Story = {
+  ...createStory('33.01'),
+  name: '33.01 Przegląd',
+} satisfies Story;
+
+export const Screen33_02Story = {
+  ...createStory('33.02'),
+  name: '33.02 Katalog',
+} satisfies Story;
+
+export const Screen33_03Story = {
+  ...createStory('33.03'),
+  name: '33.03 Szczegóły',
+} satisfies Story;
+
+export const Screen33_04Story = {
+  ...createStory('33.04'),
+  name: '33.04 Mapowanie',
+} satisfies Story;
+
+export const Screen33_05Story = {
+  ...createStory('33.05'),
+  name: '33.05 Oferty',
+} satisfies Story;
+
+export const Screen33_06Story = {
+  ...createStory('33.06'),
+  name: '33.06 Wydajność',
+} satisfies Story;
+
+export const Screen33_07Story = {
+  ...createStory('33.07'),
+  name: '33.07 Kolejka braków',
+} satisfies Story;
+
+export const Screen33_08Story = {
+  ...createStory('33.08'),
+  name: '33.08 Analiza wpływu',
+} satisfies Story;
+
+export const Screen33_09Story = {
+  ...createStory('33.09'),
+  name: '33.09 Warianty produktów',
+} satisfies Story;

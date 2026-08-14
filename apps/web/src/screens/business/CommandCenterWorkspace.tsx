@@ -17,7 +17,6 @@ import {
   FunnelChart,
   InlineNotice,
   MetricCard,
-  MorningBrief,
   PageHeader,
   SectionNavigation,
   StatusBadge,
@@ -53,9 +52,8 @@ export type CommandCenterWorkspaceProps = {
 const commandColumns: readonly DataColumn[] = [
   {
     id: 'label',
-    label: 'Metryka',
+    label: 'Obszar',
     sortable: true,
-    width: 240,
   },
   {
     align: 'right',
@@ -76,8 +74,22 @@ const commandColumns: readonly DataColumn[] = [
     sortable: true,
   },
   {
+    id: 'impact',
+    label: 'Wpływ',
+    sortable: true,
+  },
+  {
+    id: 'nextAction',
+    label: 'Następny krok',
+  },
+  {
+    id: 'owner',
+    label: 'Właściciel',
+    sortable: true,
+  },
+  {
     id: 'readinessLabel',
-    label: 'Readiness',
+    label: 'Stan danych',
     sortable: true,
   },
 ];
@@ -94,8 +106,32 @@ const commandCenterNavigation = businessScreenDefinitions
   .map((item) => ({
     href: item.route,
     id: item.id,
-    label: item.displayTitle,
+    label: item.id === '30.14' ? 'Warianty' : item.displayTitle,
   }));
+
+type OperationalPriority =
+  | 'critical'
+  | 'high'
+  | 'medium'
+  | 'low';
+
+type CommandRecordContext = {
+  readonly businessImpact: string;
+  readonly diagnosis: string;
+  readonly evidenceLabel: string;
+  readonly nextAction: string;
+  readonly owner: string;
+  readonly priority: OperationalPriority;
+  readonly timebox: string;
+};
+
+type CommandDecision = CommandRecordContext & {
+  readonly deltaLabel: string;
+  readonly id: string;
+  readonly metricLabel: string;
+  readonly readiness: ReadinessStatus;
+  readonly valueLabel: string;
+};
 
 export function CommandCenterWorkspace({
   data,
@@ -143,6 +179,20 @@ export function CommandCenterWorkspace({
           {
             href: null,
             label: definition.displayTitle,
+          },
+        ]}
+        meta={[
+          {
+            label: 'Zakres',
+            value: formatDateRange(defaultWorkspaceContext.range?.from, defaultWorkspaceContext.range?.to),
+          },
+          {
+            label: 'Segment',
+            value: 'Commerce PL',
+          },
+          {
+            label: 'Odświeżono',
+            value: data ? formatShortTime(data.generatedAt) : '—',
           },
         ]}
         subtitle={definition.summary}
@@ -216,17 +266,15 @@ function CommandCenterContent({
     readonly severity: 'critical' | 'warning';
   }[];
 }) {
-  const rows = buildCommandRows(data.records);
+  const rows = buildCommandRows(data.records, definition.variant);
+  const decisions = buildOperationalDecisions(data.records, definition.variant);
 
   if (definition.variant === 'overview') {
     return (
       <>
-        <MorningBrief
-          className="pd-command-center-workspace__morning-brief"
-          context={defaultWorkspaceContext}
-          dataReadiness={resolveSummaryReadiness(data)}
-          decisionsDue={countAttentionRecords(data.records)}
-          highlights={buildHighlights(data.records)}
+        <CommandExecutiveBrief
+          data={data}
+          decisions={decisions}
         />
 
         <CommandSummaryStrip
@@ -240,11 +288,23 @@ function CommandCenterContent({
           issues={issues}
         />
 
+        <CommandDecisionBoard
+          decisions={decisions}
+          title="Decyzje do obsłużenia"
+        />
+
+        <CommandMetricSection
+          dataState={dataState}
+          eyebrow="Stan biznesu"
+          records={data.records}
+          title="Wynik, ryzyko i tempo"
+        />
+
         <CommandRecordsSection
           data={data}
-          description="Pełny rejestr KPI zwróconych przez endpoint widoku głównego."
+          description="Rejestr pozostaje alternatywą tabelaryczną dla briefu: wynik, cel, wpływ, właściciel i następny krok."
           rows={rows}
-          title="Najważniejsze wyniki"
+          title="Rejestr operacyjny"
         />
       </>
     );
@@ -263,9 +323,16 @@ function CommandCenterContent({
         issues={issues}
       />
 
+      <CommandDecisionBoard
+        compact
+        decisions={decisions}
+        title="Kontekst operacyjny"
+      />
+
       {renderVariant({
         data,
         dataState,
+        decisions,
         definition,
         rows,
       })}
@@ -288,10 +355,10 @@ function CommandSummaryStrip({
       className="pd-command-center-workspace__summary"
     >
       <div>
-        <dt>Readiness</dt>
+        <dt>Stan danych</dt>
         <dd>
           <StatusBadge
-            status="Readiness"
+            status="Stan danych"
             text={resolveDataStateLabel(dataState)}
             tone={resolveDataStateTone(dataState)}
           />
@@ -306,7 +373,7 @@ function CommandSummaryStrip({
         <dd>{attentionCount}</dd>
       </div>
       <div>
-        <dt>Aktualizacja</dt>
+        <dt>Odświeżono</dt>
         <dd>{formatShortTime(data.generatedAt)}</dd>
       </div>
     </dl>
@@ -344,11 +411,13 @@ function CommandDataStatus({
 function renderVariant({
   data,
   dataState,
+  decisions,
   definition,
   rows,
 }: {
   readonly data: CommandCenterData;
   readonly dataState: AnalyticsDataState;
+  readonly decisions: readonly CommandDecision[];
   readonly definition: BusinessScreenDefinition;
   readonly rows: readonly DataRow[];
 }) {
@@ -357,12 +426,13 @@ function renderVariant({
       return (
         <>
           <CommandAttentionSection
+            decisions={decisions}
             records={data.records}
-            title="Priorytety wymagające reakcji"
+            title="Kolejka reakcji według wpływu"
           />
           <CommandRecordsSection
             data={data}
-            description="Rejestr metryk i sygnałów będących podstawą kolejki uwagi."
+            description="Każda pozycja ma jawny wpływ, właściciela i kolejny krok, żeby kolejka nie była tylko listą odchyleń."
             rows={rows}
             title="Pełny rejestr"
           />
@@ -374,11 +444,13 @@ function renderVariant({
         <>
           <CommandMetricSection
             dataState={dataState}
+            eyebrow="KPI"
             records={data.records}
+            title="Najważniejsze odchylenia"
           />
           <CommandRecordsSection
             data={data}
-            description="Wynik, cel, zmiana i readiness bez syntetycznych serii trendu."
+            description="Wynik, cel, zmiana, wpływ i właściciel bez syntetycznych serii trendu."
             rows={rows}
             title="Rejestr KPI"
           />
@@ -407,7 +479,7 @@ function renderVariant({
           <CommandDriversSection records={data.records} />
           <CommandRecordsSection
             data={data}
-            description="Ranking opiera się wyłącznie na względnej zmianie dostarczonej przez kontrakt."
+            description="Ranking rozróżnia dobre i złe zmiany: wzrost przychodu pomaga, ale wzrost CPA albo zwrotów wymaga reakcji."
             rows={rows}
             title="Metryki źródłowe"
           />
@@ -416,32 +488,48 @@ function renderVariant({
 
     case 'sales-sources':
       return (
-        <CommandRecordsSection
-          data={data}
-          description="Widok nie tworzy syntetycznych udziałów kanałów, jeśli endpoint nie dostarcza osobnego modelu źródeł."
-          rows={rows}
-          title="Wyniki według źródeł"
-        />
+        <>
+          <CommandSalesSourcesSection records={data.records} />
+          <CommandRecordsSection
+            data={data}
+            description="Tabela pod spodem pokazuje dokładne wartości kanałów razem z odpowiedzialnością za następny krok."
+            rows={rows}
+            title="Wyniki według źródeł"
+          />
+        </>
       );
 
     case 'traffic':
       return (
-        <CommandRecordsSection
-          data={data}
-          description="Ruch, konwersja i jakość eventów w jednym rejestrze z jawnie widocznym readiness."
-          rows={rows}
-          title="Ruch i jakość danych"
-        />
+        <>
+          <CommandTrafficSection
+            funnelSteps={data.funnelSteps}
+            records={data.records}
+          />
+          <CommandRecordsSection
+            data={data}
+            description="Ruch, konwersja i jakość eventów w jednym rejestrze z jawnie widocznym stanem danych."
+            rows={rows}
+            title="Ruch i jakość danych"
+          />
+        </>
       );
 
     case 'products':
       return (
-        <CommandRecordsSection
-          data={data}
-          description="Przegląd metryk produktowych bez lokalnego duplikowania katalogu produktów."
-          rows={rows}
-          title="Kondycja produktów"
-        />
+        <>
+          <CommandEntityHealthSection
+            eyebrow="Produkty"
+            records={data.records}
+            title="Kondycja katalogu i bestsellerów"
+          />
+          <CommandRecordsSection
+            data={data}
+            description="Przegląd metryk produktowych bez lokalnego duplikowania katalogu produktów."
+            rows={rows}
+            title="Kondycja produktów"
+          />
+        </>
       );
 
     case 'customers':
@@ -451,6 +539,11 @@ function renderVariant({
             message="Widok prezentuje wyłącznie agregaty i pseudonimizowane informacje dopuszczone przez kontrakt."
             title="Prywatność klientów"
             tone="info"
+          />
+          <CommandEntityHealthSection
+            eyebrow="Klienci"
+            records={data.records}
+            title="Segmenty i retencja"
           />
           <CommandRecordsSection
             data={data}
@@ -466,11 +559,12 @@ function renderVariant({
         <>
           <CommandSectionHeader
             eyebrow="Lejek"
-            title="Lejek sprzedażowy"
+            title="Lejek sprzedażowy i największy odpływ"
             trailing={`${data.funnelSteps.length} kroków`}
           />
           {data.funnelSteps.length > 0 ? (
             <>
+              <CommandFunnelSummary steps={data.funnelSteps} />
               <FunnelChart
                 className="pd-command-center-workspace__chart-surface"
                 orientation="horizontal"
@@ -483,12 +577,15 @@ function renderVariant({
                 }))}
               />
               <ol className="pd-command-center-workspace__funnel-steps">
-                {data.funnelSteps.map((step) => (
+                {data.funnelSteps.map((step, index) => (
                   <li key={step.stepId}>
                     <span>{step.label}</span>
                     <strong>{formatInteger(step.completions)}</strong>
                     <small>
                       CR {formatPercent(step.conversionRate)}
+                      {index > 0
+                        ? ` · odpływ ${formatPercent(resolveStepDropoff(data.funnelSteps, index))}`
+                        : ''}
                     </small>
                   </li>
                 ))}
@@ -506,19 +603,23 @@ function renderVariant({
 
     case 'recommendations':
       return (
-        <CommandRecommendationsSection data={data} />
+        <CommandRecommendationsSection
+          data={data}
+          decisions={decisions}
+        />
       );
 
     case 'sales-signals':
       return (
         <>
           <CommandAttentionSection
+            decisions={decisions}
             records={data.records}
-            title="Sygnały wymagające interpretacji"
+            title="Sygnały do oceny"
           />
           <CommandRecordsSection
             data={data}
-            description="Pełny rejestr sygnałów sprzedażowych zwróconych przez endpoint."
+            description="Pełny rejestr sygnałów sprzedażowych zwróconych przez endpoint z przypisaniem odpowiedzialności."
             rows={rows}
             title="Rejestr sygnałów"
           />
@@ -530,25 +631,28 @@ function renderVariant({
         <>
           <CommandSectionHeader
             eyebrow="Zmiana wyniku"
-            title="Składniki zmiany"
+            title="Składniki zmiany i narracja planu"
             trailing={`${data.waterfall.length} pozycji`}
           />
           {data.waterfall.length > 0 ? (
-            <WaterfallChart
-              className="pd-command-center-workspace__chart-surface"
-              items={data.waterfall.map((item) => ({
-                id: item.key,
-                kind: item.value < 0
-                  ? 'decrease'
-                  : item.key === 'actual'
-                    ? 'total'
-                    : 'increase',
-                label: item.label,
-                value: item.value,
-              }))}
-              showCumulative
-              unit="currency"
-            />
+            <>
+              <CommandWaterfallNarrative items={data.waterfall} />
+              <WaterfallChart
+                className="pd-command-center-workspace__chart-surface"
+                items={data.waterfall.map((item) => ({
+                  id: item.key,
+                  kind: item.value < 0
+                    ? 'decrease'
+                    : item.key === 'actual'
+                      ? 'total'
+                      : 'increase',
+                  label: item.label,
+                  value: item.value,
+                }))}
+                showCumulative
+                unit="currency"
+              />
+            </>
           ) : (
             <InlineNotice
               message="Endpoint nie zwrócił składników waterfall dla bieżącego zakresu."
@@ -565,6 +669,24 @@ function renderVariant({
         </>
       );
 
+    case 'command-variants':
+      return (
+        <>
+          <InlineNotice
+            message="Ten ekran zbiera warianty gotowości, częściowych danych, braku danych, błędu, stanu offline i braku dostępu bez tworzenia osobnych, pozornych endpointów."
+            title="Warianty w jednym kontrakcie"
+            tone="info"
+          />
+          <CommandVariantsSection records={data.records} />
+          <CommandRecordsSection
+            data={data}
+            description="Tabela pokazuje warianty jako jawne rekordy stanu danych i pozostawia dokładne stany w alternatywie tabelarycznej."
+            rows={rows}
+            title="Warianty Centrum Dowodzenia"
+          />
+        </>
+      );
+
     default:
       return (
         <CommandRecordsSection
@@ -577,17 +699,152 @@ function renderVariant({
   }
 }
 
+function CommandExecutiveBrief({
+  data,
+  decisions,
+}: {
+  readonly data: CommandCenterData;
+  readonly decisions: readonly CommandDecision[];
+}) {
+  const hero = decisions[0];
+  const revenue = data.records.find((record) => (
+    normalizeLabel(record.label).includes('przychod')
+  ));
+  const conversion = data.records.find((record) => (
+    normalizeLabel(record.label).includes('konwersja')
+  ));
+
+  return (
+    <section
+      aria-labelledby="command-center-executive-brief-title"
+      className="pd-command-center-workspace__executive-brief"
+    >
+      <div className="pd-command-center-workspace__executive-main">
+        <p>Brief operacyjny</p>
+        <h2 id="command-center-executive-brief-title">
+          Co wymaga decyzji teraz
+        </h2>
+        <strong>
+          {hero
+            ? hero.nextAction
+            : 'Nie ma pilnych decyzji w bieżącym zestawie danych.'}
+        </strong>
+        <span>
+          {hero
+            ? `${hero.businessImpact} · ${hero.owner} · ${hero.timebox}`
+            : 'Zespół może pracować w trybie monitoringu.'}
+        </span>
+      </div>
+
+      <dl className="pd-command-center-workspace__executive-stats">
+        <div>
+          <dt>Przychód</dt>
+          <dd>{revenue ? formatMetricValue(revenue.value, revenue.unit) : '—'}</dd>
+          <dd className="pd-command-center-workspace__stat-hint">{revenue?.delta === null || !revenue ? '—' : formatSignedPercent(revenue.delta)}</dd>
+        </div>
+        <div>
+          <dt>Konwersja</dt>
+          <dd>{conversion ? formatMetricValue(conversion.value, conversion.unit) : '—'}</dd>
+          <dd className="pd-command-center-workspace__stat-hint">{conversion?.target === null || !conversion ? 'bez celu' : `cel ${formatMetricValue(conversion.target, conversion.unit)}`}</dd>
+        </div>
+        <div>
+          <dt>Do reakcji</dt>
+          <dd>{decisions.length}</dd>
+          <dd className="pd-command-center-workspace__stat-hint">{data.summary.warning + data.summary.critical} ograniczenia danych</dd>
+        </div>
+      </dl>
+    </section>
+  );
+}
+
+function CommandDecisionBoard({
+  compact = false,
+  decisions,
+  title,
+}: {
+  readonly compact?: boolean;
+  readonly decisions: readonly CommandDecision[];
+  readonly title: string;
+}) {
+  const visibleDecisions = compact
+    ? decisions.slice(0, 2)
+    : decisions.slice(0, 4);
+
+  return (
+    <section
+      aria-labelledby={`command-center-decisions-${slugify(title)}`}
+      className="pd-command-center-workspace__section"
+      data-compact={compact ? true : undefined}
+    >
+      <CommandSectionHeader
+        eyebrow="Decyzje"
+        title={title}
+        titleId={`command-center-decisions-${slugify(title)}`}
+        trailing={`${decisions.length} pozycji`}
+      />
+
+      {visibleDecisions.length > 0 ? (
+        <ol className="pd-command-center-workspace__decision-board">
+          {visibleDecisions.map((decision) => (
+            <li
+              key={decision.id}
+              data-priority={decision.priority}
+            >
+              <div className="pd-command-center-workspace__decision-main">
+                <span>{resolvePriorityLabel(decision.priority)}</span>
+                <strong>{decision.nextAction}</strong>
+                <p>{decision.diagnosis}</p>
+              </div>
+              <dl>
+                <div>
+                  <dt>Metryka</dt>
+                  <dd>{decision.metricLabel}</dd>
+                </div>
+                <div>
+                  <dt>Wpływ</dt>
+                  <dd>{decision.businessImpact}</dd>
+                </div>
+                <div>
+                  <dt>Właściciel</dt>
+                  <dd>{decision.owner}</dd>
+                </div>
+                <div>
+                  <dt>Termin</dt>
+                  <dd>{decision.timebox}</dd>
+                </div>
+              </dl>
+              <StatusBadge
+                status="Stan danych"
+                text={resolveReadinessLabel(decision.readiness)}
+                tone={resolveReadinessTone(decision.readiness)}
+              />
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <InlineNotice
+          message="Wszystkie bieżące metryki są stabilne albo mają niski wpływ operacyjny."
+          title="Brak pilnych decyzji"
+          tone="success"
+        />
+      )}
+    </section>
+  );
+}
+
 function CommandAttentionSection({
+  decisions,
   records,
   title,
 }: {
+  readonly decisions: readonly CommandDecision[];
   readonly records: readonly CommandCenterRecord[];
   readonly title: string;
 }) {
   const attention = [...records]
     .filter((record) => (
       record.readiness !== 'ready'
-      || (record.delta ?? 0) < 0
+      || isMetricWorse(record)
     ))
     .sort((left, right) => (
       attentionWeight(right) - attentionWeight(left)
@@ -605,28 +862,23 @@ function CommandAttentionSection({
         titleId="command-center-attention-title"
       />
 
-      {attention.length > 0 ? (
+      {decisions.length > 0 ? (
         <ul className="pd-command-center-workspace__attention-list">
-          {attention.map((record) => (
-            <li key={record.metricId}>
+          {decisions.map((decision) => (
+            <li
+              key={decision.id}
+              data-priority={decision.priority}
+            >
               <div>
-                <strong>{record.label}</strong>
-                <span>
-                  {formatMetricValue(record.value, record.unit)}
-                  {record.target === null
-                    ? ''
-                    : ` · cel ${formatMetricValue(record.target, record.unit)}`}
-                </span>
+                <strong>{decision.nextAction}</strong>
+                <span>{decision.metricLabel} · {decision.valueLabel} · {decision.businessImpact}</span>
+                <small>{decision.owner} · {decision.timebox}</small>
               </div>
-              <span>
-                {record.delta === null
-                  ? '—'
-                  : formatSignedPercent(record.delta)}
-              </span>
+              <span>{decision.deltaLabel}</span>
               <StatusBadge
-                status="Readiness"
-                text={resolveReadinessLabel(record.readiness)}
-                tone={resolveReadinessTone(record.readiness)}
+                status="Stan danych"
+                text={resolveReadinessLabel(decision.readiness)}
+                tone={resolveReadinessTone(decision.readiness)}
               />
             </li>
           ))}
@@ -644,14 +896,18 @@ function CommandAttentionSection({
 
 function CommandMetricSection({
   dataState,
+  eyebrow,
   records,
+  title,
 }: {
   readonly dataState: AnalyticsDataState;
+  readonly eyebrow: string;
   readonly records: readonly CommandCenterRecord[];
+  readonly title: string;
 }) {
   const metrics = [...records]
     .sort((left, right) => (
-      Math.abs(right.delta ?? 0) - Math.abs(left.delta ?? 0)
+      attentionWeight(right) - attentionWeight(left)
     ))
     .slice(0, 4);
 
@@ -661,8 +917,8 @@ function CommandMetricSection({
       className="pd-command-center-workspace__section"
     >
       <CommandSectionHeader
-        eyebrow="KPI"
-        title="Najważniejsze odchylenia"
+        eyebrow={eyebrow}
+        title={title}
         trailing={`${metrics.length} metryk`}
         titleId="command-center-kpi-title"
       />
@@ -842,10 +1098,235 @@ function CommandDriversSection({
   );
 }
 
+function CommandSalesSourcesSection({
+  records,
+}: {
+  readonly records: readonly CommandCenterRecord[];
+}) {
+  const revenueRecords = records.filter((record) => (
+    record.unit === 'currency'
+  ));
+  const total = revenueRecords.reduce((sum, record) => sum + record.value, 0);
+
+  return (
+    <section
+      aria-labelledby="command-center-sales-sources-title"
+      className="pd-command-center-workspace__section"
+    >
+      <CommandSectionHeader
+        eyebrow="Kanały"
+        title="Udział w przychodzie i decyzje kanałowe"
+        trailing={`${revenueRecords.length} źródła`}
+        titleId="command-center-sales-sources-title"
+      />
+
+      <ul className="pd-command-center-workspace__source-mix">
+        {revenueRecords.map((record) => {
+          const share = total > 0
+            ? record.value / total
+            : 0;
+          const context = getRecordContext(record, 'sales-sources');
+
+          return (
+            <li key={record.metricId}>
+              <div>
+                <strong>{record.label}</strong>
+                <span>{context.nextAction}</span>
+              </div>
+              <span
+                aria-hidden="true"
+                className="pd-command-center-workspace__source-track"
+              >
+                <span style={{ inlineSize: `${Math.max(share * 100, 4)}%` }} />
+              </span>
+              <dl>
+                <div>
+                  <dt>Przychód</dt>
+                  <dd>{formatMetricValue(record.value, record.unit)}</dd>
+                </div>
+                <div>
+                  <dt>Udział</dt>
+                  <dd>{formatPercent(share)}</dd>
+                </div>
+                <div>
+                  <dt>Właściciel</dt>
+                  <dd>{context.owner}</dd>
+                </div>
+              </dl>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+function CommandTrafficSection({
+  funnelSteps,
+  records,
+}: {
+  readonly funnelSteps: CommandCenterData['funnelSteps'];
+  readonly records: readonly CommandCenterRecord[];
+}) {
+  const eventQuality = records.find((record) => (
+    normalizeLabel(record.label).includes('event')
+    || normalizeLabel(record.label).includes('ga4')
+  ));
+
+  return (
+    <section
+      aria-labelledby="command-center-traffic-title"
+      className="pd-command-center-workspace__section"
+    >
+      <CommandSectionHeader
+        eyebrow="Ruch"
+        title="Ścieżka od sesji do zakupu"
+        trailing={`${funnelSteps.length} kroki`}
+        titleId="command-center-traffic-title"
+      />
+
+      <div className="pd-command-center-workspace__journey-grid">
+        {funnelSteps.map((step, index) => (
+          <article key={step.stepId}>
+            <span>{index + 1}</span>
+            <strong>{step.label}</strong>
+            <dl>
+              <div>
+                <dt>Wejścia</dt>
+                <dd>{formatInteger(step.entrants)}</dd>
+              </div>
+              <div>
+                <dt>Konwersje</dt>
+                <dd>{formatInteger(step.completions)}</dd>
+              </div>
+              <div>
+                <dt>CR</dt>
+                <dd>{formatPercent(step.conversionRate)}</dd>
+              </div>
+              <div>
+                <dt>Odpływ</dt>
+                <dd>{index === 0 ? '—' : formatPercent(resolveStepDropoff(funnelSteps, index))}</dd>
+              </div>
+            </dl>
+          </article>
+        ))}
+      </div>
+
+      {eventQuality ? (
+        <InlineNotice
+          message={`${getRecordContext(eventQuality, 'traffic').nextAction} Stan: ${formatMetricValue(eventQuality.value, eventQuality.unit)} przy celu ${eventQuality.target === null ? '—' : formatMetricValue(eventQuality.target, eventQuality.unit)}.`}
+          title="Jakość pomiaru wpływa na interpretację lejka"
+          tone={eventQuality.readiness === 'ready' ? 'success' : 'warning'}
+        />
+      ) : null}
+    </section>
+  );
+}
+
+function CommandEntityHealthSection({
+  eyebrow,
+  records,
+  title,
+}: {
+  readonly eyebrow: string;
+  readonly records: readonly CommandCenterRecord[];
+  readonly title: string;
+}) {
+  return (
+    <section
+      aria-labelledby={`command-center-entity-${slugify(title)}`}
+      className="pd-command-center-workspace__section"
+    >
+      <CommandSectionHeader
+        eyebrow={eyebrow}
+        title={title}
+        trailing={`${records.length} obszary`}
+        titleId={`command-center-entity-${slugify(title)}`}
+      />
+
+      <div className="pd-command-center-workspace__entity-grid">
+        {records.map((record) => {
+          const context = getRecordContext(record, 'products');
+
+          return (
+            <article
+              key={record.metricId}
+              data-priority={context.priority}
+            >
+              <header>
+                <span>{context.businessImpact}</span>
+                <StatusBadge
+                  status="Stan danych"
+                  text={resolveReadinessLabel(record.readiness)}
+                  tone={resolveReadinessTone(record.readiness)}
+                />
+              </header>
+              <strong>{record.label}</strong>
+              <dl>
+                <div>
+                  <dt>Wynik</dt>
+                  <dd>{formatMetricValue(record.value, record.unit)}</dd>
+                </div>
+                <div>
+                  <dt>Cel</dt>
+                  <dd>{record.target === null ? '—' : formatMetricValue(record.target, record.unit)}</dd>
+                </div>
+                <div>
+                  <dt>Zmiana</dt>
+                  <dd>{record.delta === null ? '—' : formatSignedPercent(record.delta)}</dd>
+                </div>
+              </dl>
+              <p>{context.nextAction}</p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function CommandFunnelSummary({
+  steps,
+}: {
+  readonly steps: CommandCenterData['funnelSteps'];
+}) {
+  const worstIndex = steps.reduce((currentWorst, _step, index) => {
+    if (index === 0) {
+      return currentWorst;
+    }
+
+    return resolveStepDropoff(steps, index) > resolveStepDropoff(steps, currentWorst)
+      ? index
+      : currentWorst;
+  }, steps.length > 1 ? 1 : 0);
+  const worstStep = steps[worstIndex];
+  const previousStep = steps[worstIndex - 1];
+  const lost = previousStep
+    ? Math.max(previousStep.completions - worstStep.completions, 0)
+    : 0;
+
+  return (
+    <div className="pd-command-center-workspace__funnel-summary">
+      <div>
+        <span>Największa strata</span>
+        <strong>{previousStep ? `${previousStep.label} → ${worstStep.label}` : '—'}</strong>
+        <p>{formatInteger(lost)} utraconych przejść · odpływ {formatPercent(resolveStepDropoff(steps, worstIndex))}</p>
+      </div>
+      <div>
+        <span>Następny krok</span>
+        <strong>Sprawdź checkout mobile i błędy płatności</strong>
+        <p>Priorytet dla Growth, UX checkout i Payments.</p>
+      </div>
+    </div>
+  );
+}
+
 function CommandRecommendationsSection({
   data,
+  decisions,
 }: {
   readonly data: CommandCenterData;
+  readonly decisions: readonly CommandDecision[];
 }) {
   return (
     <section
@@ -866,6 +1347,9 @@ function CommandRecommendationsSection({
               <div>
                 <strong>{recommendation.title}</strong>
                 <p>{recommendation.rationale}</p>
+                <span>
+                  Decyzja powiązana: {decisions[0]?.metricLabel ?? 'brak pilnej decyzji'}
+                </span>
               </div>
               <dl>
                 <div>
@@ -873,8 +1357,12 @@ function CommandRecommendationsSection({
                   <dd>{resolveImpactLabel(recommendation.impact)}</dd>
                 </div>
                 <div>
-                  <dt>Confidence</dt>
+                  <dt>Pewność</dt>
                   <dd>{formatPercent(recommendation.confidence)}</dd>
+                </div>
+                <div>
+                  <dt>Tryb</dt>
+                  <dd>Do zatwierdzenia przez człowieka</dd>
                 </div>
               </dl>
             </article>
@@ -887,6 +1375,81 @@ function CommandRecommendationsSection({
           tone="info"
         />
       )}
+    </section>
+  );
+}
+
+function CommandWaterfallNarrative({
+  items,
+}: {
+  readonly items: CommandCenterData['waterfall'];
+}) {
+  const plan = items.find((item) => item.key === 'plan');
+  const actual = items.find((item) => item.key === 'actual');
+  const positive = items
+    .filter((item) => item.value > 0 && item.key !== 'plan' && item.key !== 'actual')
+    .reduce((sum, item) => sum + item.value, 0);
+  const negative = items
+    .filter((item) => item.value < 0)
+    .reduce((sum, item) => sum + item.value, 0);
+
+  return (
+    <dl className="pd-command-center-workspace__waterfall-narrative">
+      <div>
+        <dt>Plan</dt>
+        <dd>{plan ? formatMetricValue(plan.value, 'currency') : '—'}</dd>
+      </div>
+      <div>
+        <dt>Wkład dodatni</dt>
+        <dd>{formatMetricValue(positive, 'currency')}</dd>
+      </div>
+      <div>
+        <dt>Ryzyka</dt>
+        <dd>{formatMetricValue(negative, 'currency')}</dd>
+      </div>
+      <div>
+        <dt>Wynik</dt>
+        <dd>{actual ? formatMetricValue(actual.value, 'currency') : '—'}</dd>
+      </div>
+    </dl>
+  );
+}
+
+function CommandVariantsSection({
+  records,
+}: {
+  readonly records: readonly CommandCenterRecord[];
+}) {
+  return (
+    <section
+      aria-labelledby="command-center-variants-title"
+      className="pd-command-center-workspace__section"
+    >
+      <CommandSectionHeader
+        eyebrow="Warianty"
+        title="Jak ekran zachowuje się w stanach produkcyjnych"
+        trailing={`${records.length} stany`}
+        titleId="command-center-variants-title"
+      />
+
+      <div className="pd-command-center-workspace__variant-matrix">
+        {records.map((record) => {
+          const context = getRecordContext(record, 'command-variants');
+
+          return (
+            <article key={record.metricId}>
+              <StatusBadge
+                status="Stan danych"
+                text={resolveReadinessLabel(record.readiness)}
+                tone={resolveReadinessTone(record.readiness)}
+              />
+              <strong>{record.label}</strong>
+              <p>{context.nextAction}</p>
+              <span>{context.evidenceLabel}</span>
+            </article>
+          );
+        })}
+      </div>
     </section>
   );
 }
@@ -923,6 +1486,36 @@ function CommandRecordsSection({
         {description}
       </p>
 
+      <ol
+        aria-label={`${title} — lista mobilna`}
+        className="pd-command-center-workspace__mobile-records"
+      >
+        {rows.map((row) => (
+          <li key={row.id}>
+            <div>
+              <strong>{formatDataRowCell(row.label)}</strong>
+              <span>{formatDataRowCell(row.value)} · {formatDataRowCell(row.delta)}</span>
+            </div>
+            <p>{formatDataRowCell(row.nextAction)}</p>
+            <dl>
+              <div>
+                <dt>Właściciel</dt>
+                <dd>{formatDataRowCell(row.owner)}</dd>
+              </div>
+              <div>
+                <dt>Wpływ</dt>
+                <dd>{formatDataRowCell(row.impact)}</dd>
+              </div>
+            </dl>
+            <StatusBadge
+              status="Stan danych"
+              text={formatDataRowCell(row.readinessLabel)}
+              tone={resolveReadinessLabelTone(formatDataRowCell(row.readinessLabel))}
+            />
+          </li>
+        ))}
+      </ol>
+
       <DataTable
         ariaLabel={`${title} — Centrum Dowodzenia`}
         className="pd-command-center-workspace__table"
@@ -930,7 +1523,7 @@ function CommandRecordsSection({
         density="compact"
         emptyMessage="Brak metryk dla bieżącego widoku."
         loading={false}
-        minWidth={720}
+        minWidth={1120}
         pagination={
           showPagination
             ? {
@@ -952,10 +1545,10 @@ function CommandRecordsSection({
         }}
         statusColumn={{
           columnId: 'readinessLabel',
-          label: 'Readiness',
+          label: 'Stan danych',
           mapTone: readinessToneMap,
         }}
-        summary={`${rows.length} metryk w bieżącym widoku.`}
+        summary={`${rows.length} pozycji w bieżącym widoku.`}
       />
     </section>
   );
@@ -983,49 +1576,255 @@ function CommandSectionHeader({
   );
 }
 
-function buildCommandRows(
-  records: readonly CommandCenterRecord[],
-): readonly DataRow[] {
-  return records.map((record) => ({
-    delta: record.delta === null
-      ? '—'
-      : formatSignedPercent(record.delta),
-    id: record.metricId,
-    label: record.label,
-    readinessLabel: resolveReadinessLabel(record.readiness),
-    target: record.target === null
-      ? '—'
-      : formatMetricValue(record.target, record.unit),
-    value: formatMetricValue(record.value, record.unit),
-  }));
+function formatDataRowCell(
+  value: DataRow[string],
+): string {
+  if (value === null || value === undefined) {
+    return '—';
+  }
+
+  return String(value);
 }
 
-function buildHighlights(
+function resolveReadinessLabelTone(
+  value: string,
+): 'critical' | 'neutral' | 'success' | 'warning' {
+  switch (value) {
+    case 'Gotowe':
+      return 'success';
+    case 'Częściowe':
+    case 'Nieświeże':
+      return 'warning';
+    case 'Niedostępne':
+      return 'critical';
+    default:
+      return 'neutral';
+  }
+}
+
+function buildCommandRows(
   records: readonly CommandCenterRecord[],
-) {
-  return [...records]
+  variant: BusinessScreenDefinition['variant'],
+): readonly DataRow[] {
+  return records.map((record) => {
+    const context = getRecordContext(record, variant);
+
+    return {
+      delta: record.delta === null
+        ? '—'
+        : formatSignedPercent(record.delta),
+      id: record.metricId,
+      impact: context.businessImpact,
+      label: record.label,
+      nextAction: context.nextAction,
+      owner: context.owner,
+      readinessLabel: resolveReadinessLabel(record.readiness),
+      target: record.target === null
+        ? '—'
+        : formatMetricValue(record.target, record.unit),
+      value: formatMetricValue(record.value, record.unit),
+    };
+  });
+}
+
+function buildOperationalDecisions(
+  records: readonly CommandCenterRecord[],
+  variant: BusinessScreenDefinition['variant'],
+): readonly CommandDecision[] {
+  const decisions = [...records]
+    .filter((record) => {
+      const context = getRecordContext(record, variant);
+
+      return record.readiness !== 'ready'
+        || isMetricWorse(record)
+        || context.priority === 'critical'
+        || context.priority === 'high';
+    })
     .sort((left, right) => (
       attentionWeight(right) - attentionWeight(left)
     ))
-    .slice(0, 3)
-    .map((record) => ({
-      id: record.metricId,
-      metric: `${formatMetricValue(record.value, record.unit)} · ${resolveReadinessLabel(record.readiness)}`,
-      severity: record.readiness === 'ready'
-        && (record.delta ?? 0) >= 0
-        ? 'info' as const
-        : 'warning' as const,
-      title: record.label,
-    }));
+    .map((record) => {
+      const context = getRecordContext(record, variant);
+
+      return {
+        ...context,
+        deltaLabel: record.delta === null
+          ? '—'
+          : formatSignedPercent(record.delta),
+        id: record.metricId,
+        metricLabel: record.label,
+        readiness: record.readiness,
+        valueLabel: formatMetricValue(record.value, record.unit),
+      };
+    });
+
+  const seenActions = new Set<string>();
+
+  return decisions.filter((decision) => {
+    const actionKey = normalizeLabel(`${decision.nextAction}-${decision.owner}`);
+
+    if (seenActions.has(actionKey)) {
+      return false;
+    }
+
+    seenActions.add(actionKey);
+    return true;
+  });
 }
 
-function countAttentionRecords(
-  records: readonly CommandCenterRecord[],
-): number {
-  return records.filter((record) => (
-    record.readiness !== 'ready'
-    || (record.delta ?? 0) < 0
-  )).length;
+function getRecordContext(
+  record: CommandCenterRecord,
+  variant: BusinessScreenDefinition['variant'],
+): CommandRecordContext {
+  const label = normalizeLabel(record.label);
+  const worse = isMetricWorse(record);
+
+  if (
+    label.includes('platnosci')
+    || label.includes('odrzucone')
+  ) {
+    return {
+      businessImpact: 'Ryzyko utraty zakupów',
+      diagnosis: 'Wzrost odrzuceń płatności może zaniżać zakup mimo zdrowego ruchu.',
+      evidenceLabel: 'Bramka płatności, 3DS i błędy checkoutu',
+      nextAction: 'Sprawdź płatności i błędy 3DS',
+      owner: 'Payments / Ops',
+      priority: 'critical',
+      timebox: 'natychmiast',
+    };
+  }
+
+  if (
+    label.includes('konwersja')
+    || label.includes('checkout')
+    || label.includes('koszyk')
+    || variant === 'funnel'
+  ) {
+    return {
+      businessImpact: worse ? 'Ryzyko utraty zamówień' : 'Szansa poprawy zamówień',
+      diagnosis: 'Odchylenie w ścieżce zakupowej bezpośrednio wpływa na wynik okresu.',
+      evidenceLabel: 'GA4 checkout, koszyk, zakup i segment mobile',
+      nextAction: 'Przejrzyj koszyk, checkout i mobile',
+      owner: 'Growth / UX checkout',
+      priority: worse || record.readiness !== 'ready' ? 'high' : 'medium',
+      timebox: 'dzisiaj 12:00',
+    };
+  }
+
+  if (
+    label.includes('ga4')
+    || label.includes('event')
+    || label.includes('swiezosc')
+    || label.includes('kompletnosc')
+  ) {
+    return {
+      businessImpact: 'Ryzyko błędnej interpretacji',
+      diagnosis: 'Niepełne lub opóźnione eventy obniżają zaufanie do decyzji w lejku i kampaniach.',
+      evidenceLabel: 'Kolejka eventów, kompletność i ostatnia synchronizacja',
+      nextAction: 'Zweryfikuj kolejkę eventów GA4',
+      owner: 'Analityka danych',
+      priority: record.readiness === 'stale' ? 'high' : 'medium',
+      timebox: 'dzisiaj 11:00',
+    };
+  }
+
+  if (
+    label.includes('cpa')
+    || label.includes('meta')
+    || label.includes('ads')
+  ) {
+    return {
+      businessImpact: worse ? 'Ryzyko przepalania budżetu' : 'Szansa przesunięcia budżetu',
+      diagnosis: 'Kanał płatny wymaga kontroli kosztu i jakości konwersji przed skalowaniem.',
+      evidenceLabel: 'Koszt, przychód, ROAS i kreacje kampanii',
+      nextAction: 'Sprawdź budżet, CPA i kreacje kampanii',
+      owner: 'Performance marketing',
+      priority: worse || record.readiness !== 'ready' ? 'high' : 'medium',
+      timebox: 'dzisiaj 14:00',
+    };
+  }
+
+  if (
+    label.includes('produkty')
+    || label.includes('bestseller')
+    || label.includes('mapowania')
+    || label.includes('dostepnosc')
+  ) {
+    return {
+      businessImpact: worse ? 'Ryzyko utraty popytu' : 'Szansa zwiększenia marży',
+      diagnosis: 'Problemy katalogu i dostępności ograniczają sprzedaż mimo dobrego ruchu.',
+      evidenceLabel: 'Katalog, feed, marża i dostępność bestsellerów',
+      nextAction: 'Napraw mapowanie i dostępność bestsellerów',
+      owner: 'Katalog produktów',
+      priority: worse || record.readiness !== 'ready' ? 'high' : 'medium',
+      timebox: 'dzisiaj 15:00',
+    };
+  }
+
+  if (
+    label.includes('klien')
+    || label.includes('repeat')
+    || label.includes('powracaj')
+  ) {
+    return {
+      businessImpact: worse ? 'Ryzyko spadku retencji' : 'Szansa retencji',
+      diagnosis: 'Zmiana segmentów klientów wpływa na powtarzalność przychodu i koszt pozyskania.',
+      evidenceLabel: 'Segmenty, kohorty i pseudonimizowane agregaty',
+      nextAction: 'Sprawdź segment powracających klientów',
+      owner: 'CRM / Retencja',
+      priority: worse ? 'high' : 'medium',
+      timebox: 'jutro 10:00',
+    };
+  }
+
+  if (
+    label.includes('marza')
+    || label.includes('mix')
+  ) {
+    return {
+      businessImpact: worse ? 'Ryzyko spadku rentowności' : 'Szansa rentowności',
+      diagnosis: 'Mix produktów i marża pokazują, czy wynik jest zdrowy, a nie tylko większy.',
+      evidenceLabel: 'Marża brutto, mix produktów i przychód',
+      nextAction: 'Utrzymaj ekspozycję produktów wysokomarżowych',
+      owner: 'Merchandising',
+      priority: worse ? 'high' : 'low',
+      timebox: 'w tym tygodniu',
+    };
+  }
+
+  if (
+    label.includes('google')
+    || label.includes('search')
+    || label.includes('roas')
+    || label.includes('przychod')
+    || label.includes('liczba zamowien')
+  ) {
+    return {
+      businessImpact: worse ? 'Ryzyko spadku wyniku' : 'Stabilny wkład do wyniku',
+      diagnosis: 'Obszar wspiera bieżący wynik, ale nadal wymaga kontroli celu i źródeł.',
+      evidenceLabel: 'Przychód, zamówienia, koszt i cel okresu',
+      nextAction: worse
+        ? 'Sprawdź źródło spadku wyniku'
+        : 'Utrzymaj obecne tempo i monitoruj cel',
+      owner: 'Growth',
+      priority: worse ? 'high' : 'low',
+      timebox: worse ? 'dzisiaj 13:00' : 'monitoring',
+    };
+  }
+
+  return {
+    businessImpact: worse ? 'Ryzyko operacyjne' : 'Monitoring',
+    diagnosis: 'Metryka wymaga oceny w kontekście celu, zakresu i jakości źródeł.',
+    evidenceLabel: 'Rekord kontraktowy i źródła danych widoku',
+    nextAction: worse
+      ? 'Sprawdź odchylenie i przypisz właściciela'
+      : 'Monitoruj bez eskalacji',
+    owner: variant === 'command-variants'
+      ? 'Product / QA'
+      : 'Właściciel obszaru',
+    priority: worse || record.readiness !== 'ready' ? 'medium' : 'low',
+    timebox: worse ? 'dzisiaj' : 'monitoring',
+  };
 }
 
 function attentionWeight(
@@ -1038,12 +1837,77 @@ function attentionWeight(
       : record.readiness === 'partial'
         ? 2
         : 0;
-  const deltaWeight = Math.max(
-    -(record.delta ?? 0),
-    0,
-  );
+  const deltaWeight = isMetricWorse(record)
+    ? Math.abs(record.delta ?? 0) * 10
+    : Math.max(record.delta ?? 0, 0);
 
   return readinessWeight + deltaWeight;
+}
+
+function isMetricWorse(
+  record: CommandCenterRecord,
+): boolean {
+  if (record.delta === null) {
+    return record.readiness === 'unavailable';
+  }
+
+  const label = normalizeLabel(record.label);
+  const lowerIsBetter = [
+    'cpa',
+    'koszt',
+    'odrzucone',
+    'platnosci',
+    'zwroty',
+    'bez mapowania',
+    'odpływ',
+  ].some((keyword) => label.includes(keyword));
+
+  if (lowerIsBetter) {
+    return record.delta > 0;
+  }
+
+  return record.delta < 0;
+}
+
+function normalizeLabel(
+  value: string,
+): string {
+  return value
+    .toLocaleLowerCase('pl-PL')
+    .normalize('NFD')
+    .replace(/ł/gu, 'l')
+    .replace(/[\u0300-\u036f]/gu, '');
+}
+
+function resolvePriorityLabel(
+  priority: OperationalPriority,
+): string {
+  switch (priority) {
+    case 'critical':
+      return 'Krytyczne';
+    case 'high':
+      return 'Wysokie';
+    case 'medium':
+      return 'Średnie';
+    case 'low':
+      return 'Niskie';
+    default:
+      return priority;
+  }
+}
+
+function resolveStepDropoff(
+  steps: CommandCenterData['funnelSteps'],
+  index: number,
+): number {
+  const step = steps[index];
+  const previous = steps[index - 1];
+
+  if (!step || !previous) {
+    return 0;
+  }
+
+  return 1 - (step.completions / Math.max(previous.completions, 1));
 }
 
 function chooseComparableRecords(
@@ -1198,20 +2062,6 @@ function resolveReadinessState(
     default:
       return 'partial';
   }
-}
-
-function resolveSummaryReadiness(
-  data: CommandCenterData,
-): ReadinessState {
-  if (data.summary.critical > 0) {
-    return 'partial';
-  }
-
-  if (data.summary.warning > 0) {
-    return 'stale';
-  }
-
-  return 'ready';
 }
 
 function mapReadinessToAnalyticsState(
@@ -1369,6 +2219,32 @@ function formatShortTime(
     minute: '2-digit',
     timeZone: defaultWorkspaceContext.range?.timezone ?? 'UTC',
   }).format(date);
+}
+
+function formatDateRange(
+  from: string | undefined,
+  to: string | undefined,
+): string {
+  if (!from || !to) {
+    return 'bieżący zakres';
+  }
+
+  const formatter = new Intl.DateTimeFormat('pl-PL', {
+    day: '2-digit',
+    month: 'short',
+    timeZone: defaultWorkspaceContext.range?.timezone ?? 'UTC',
+  });
+  const fromDate = new Date(`${from}T00:00:00.000Z`);
+  const toDate = new Date(`${to}T00:00:00.000Z`);
+
+  if (
+    Number.isNaN(fromDate.getTime())
+    || Number.isNaN(toDate.getTime())
+  ) {
+    return `${from} - ${to}`;
+  }
+
+  return `${formatter.format(fromDate)} - ${formatter.format(toDate)}`;
 }
 
 function slugify(

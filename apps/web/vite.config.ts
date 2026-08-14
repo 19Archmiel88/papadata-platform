@@ -10,6 +10,16 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     strictPort: true,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:53001',
+        changeOrigin: false,
+        headers: {
+          host: 'papadata.localhost:53001',
+          origin: 'https://papadata.localhost',
+        },
+      },
+    },
   },
 
   preview: {

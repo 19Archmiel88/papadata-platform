@@ -12,15 +12,22 @@ import {
 import type {
   AttributionComparisonProps as ContractAttributionComparisonProps,
   BudgetPacingProps as ContractBudgetPacingProps,
+  CohortMatrixProps as ContractCohortMatrixProps,
+  CustomerSegmentsProps as ContractCustomerSegmentsProps,
   DataStatusBannerProps as ContractDataStatusBannerProps,
   DecisionQueueProps as ContractDecisionQueueProps,
   EvidencePanelProps as ContractEvidencePanelProps,
   FunnelStepProps as ContractFunnelStepProps,
+  LineageGraphProps as ContractLineageGraphProps,
   MorningBriefProps as ContractMorningBriefProps,
+  PairingFlowProps as ContractPairingFlowProps,
   PlanPerformanceProps as ContractPlanPerformanceProps,
+  ReconciliationPanelProps as ContractReconciliationPanelProps,
   RecommendationCardProps as ContractRecommendationCardProps,
   ResultDriversProps as ContractResultDriversProps,
+  SalesFunnelProps as ContractSalesFunnelProps,
   SalesSourcesProps as ContractSalesSourcesProps,
+  SyncTimelineProps as ContractSyncTimelineProps,
 } from '../../../../../../contracts/domain-component-contracts';
 import type {
   DecisionCardProps as ContractDecisionCardProps,
@@ -1406,6 +1413,536 @@ export const PlanPerformance = forwardRef<HTMLElement, PlanPerformanceProps>(
   },
 );
 
+export type ReconciliationPanelProps =
+  ContractReconciliationPanelProps & HTMLAttributes<HTMLElement>;
+
+export const ReconciliationPanel = forwardRef<
+  HTMLElement,
+  ReconciliationPanelProps
+>(function ReconciliationPanel(
+  {
+    className,
+    conflicts,
+    onResolveConflict,
+    ...props
+  },
+  ref,
+) {
+  const titleId = useId();
+
+  return (
+    <section
+      {...props}
+      ref={ref}
+      aria-labelledby={titleId}
+      className={joinClassNames('pd-reconciliation-panel', className)}
+    >
+      <header className="pd-reconciliation-panel__header">
+        <div>
+          <p>Rekoncyliacja</p>
+          <h2 id={titleId}>Konflikty źródeł</h2>
+        </div>
+        <StatusBadge
+          status="Konflikty"
+          text={`${conflicts.length}`}
+          tone={conflicts.length > 0 ? 'warning' : 'success'}
+        />
+      </header>
+      <ul className="pd-reconciliation-panel__list">
+        {conflicts.map((conflict) => (
+          <li key={conflict.id}>
+            <div>
+              <strong>{conflict.entityType}</strong>
+              <span>{conflict.sourceA} ↔ {conflict.sourceB}</span>
+              {conflict.proposedResolution ? (
+                <span>{conflict.proposedResolution}</span>
+              ) : null}
+            </div>
+            {onResolveConflict ? (
+              <TextAction
+                size="small"
+                onClick={() => {
+                  onResolveConflict({
+                    action: 'resolve-conflict',
+                    componentId: 'ReconciliationPanel',
+                    conflictId: conflict.id,
+                    resolution: conflict.proposedResolution ?? 'manual-review',
+                  });
+                }}
+              >
+                Rozwiąż
+              </TextAction>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+});
+
+export type SyncTimelineProps =
+  ContractSyncTimelineProps & HTMLAttributes<HTMLElement>;
+
+export const SyncTimeline = forwardRef<HTMLElement, SyncTimelineProps>(
+  function SyncTimeline(
+    {
+      className,
+      onOpenRun,
+      runs,
+      ...props
+    },
+    ref,
+  ) {
+    const titleId = useId();
+
+    return (
+      <section
+        {...props}
+        ref={ref}
+        aria-labelledby={titleId}
+        className={joinClassNames('pd-sync-timeline', className)}
+      >
+        <header className="pd-sync-timeline__header">
+          <div>
+            <p>Synchronizacja</p>
+            <h2 id={titleId}>Ostatnie przebiegi</h2>
+          </div>
+          <StatusBadge
+            status="Przebiegi"
+            text={`${runs.length}`}
+            tone="info"
+          />
+        </header>
+        <ol className="pd-sync-timeline__list">
+          {runs.map((run) => (
+            <li key={run.id} data-status={run.status}>
+              <div>
+                <strong>{run.provider}</strong>
+                <span>
+                  {resolveSyncStatusLabel(run.status)} · {formatDateTime(run.startedAt)}
+                </span>
+                {typeof run.recordsProcessed === 'number' ? (
+                  <span>{formatInteger(run.recordsProcessed)} rekordów</span>
+                ) : null}
+              </div>
+              <StatusBadge
+                status="Sync"
+                text={resolveSyncStatusLabel(run.status)}
+                tone={resolveSyncStatusTone(run.status)}
+              />
+              {onOpenRun ? (
+                <TextAction
+                  size="small"
+                  onClick={() => {
+                    onOpenRun({
+                      action: 'open-run',
+                      componentId: 'SyncTimeline',
+                      runId: run.id,
+                    });
+                  }}
+                >
+                  Log
+                </TextAction>
+              ) : null}
+            </li>
+          ))}
+        </ol>
+      </section>
+    );
+  },
+);
+
+export type LineageGraphProps =
+  ContractLineageGraphProps & HTMLAttributes<HTMLElement>;
+
+export const LineageGraph = forwardRef<HTMLElement, LineageGraphProps>(
+  function LineageGraph(
+    {
+      className,
+      edges,
+      nodes,
+      onOpenNode,
+      rootRecordId,
+      ...props
+    },
+    ref,
+  ) {
+    const titleId = useId();
+
+    return (
+      <section
+        {...props}
+        ref={ref}
+        aria-labelledby={titleId}
+        className={joinClassNames('pd-lineage-graph', className)}
+      >
+        <header className="pd-lineage-graph__header">
+          <div>
+            <p>{rootRecordId}</p>
+            <h2 id={titleId}>Pochodzenie danych</h2>
+          </div>
+          <StatusBadge
+            status="Węzły"
+            text={`${nodes.length}`}
+            tone="info"
+          />
+        </header>
+        <ol className="pd-lineage-graph__nodes">
+          {nodes.map((node) => (
+            <li key={node.id}>
+              <div>
+                <strong>{node.label}</strong>
+                <span>{node.type}</span>
+              </div>
+              <StatusBadge
+                status="Readiness"
+                text={resolveReadinessLabel(node.status)}
+                tone={resolveReadinessTone(node.status)}
+              />
+              {onOpenNode ? (
+                <TextAction
+                  size="small"
+                  onClick={() => {
+                    onOpenNode({
+                      action: 'open-node',
+                      componentId: 'LineageGraph',
+                      nodeId: node.id,
+                    });
+                  }}
+                >
+                  Otwórz
+                </TextAction>
+              ) : null}
+            </li>
+          ))}
+        </ol>
+        <p className="pd-lineage-graph__edges" role="status">
+          Relacje pochodzenia: {edges.length}
+        </p>
+      </section>
+    );
+  },
+);
+
+export type CohortMatrixProps =
+  ContractCohortMatrixProps & HTMLAttributes<HTMLElement>;
+
+export const CohortMatrix = forwardRef<HTMLElement, CohortMatrixProps>(
+  function CohortMatrix(
+    {
+      className,
+      cohortMetric,
+      columns,
+      onSelectCohort,
+      rows,
+      selectedCohortId = null,
+      ...props
+    },
+    ref,
+  ) {
+    const titleId = useId();
+
+    return (
+      <section
+        {...props}
+        ref={ref}
+        aria-labelledby={titleId}
+        className={joinClassNames('pd-cohort-matrix', className)}
+      >
+        <header className="pd-cohort-matrix__header">
+          <div>
+            <p>{cohortMetric}</p>
+            <h2 id={titleId}>Macierz kohort</h2>
+          </div>
+        </header>
+        <div className="pd-cohort-matrix__scroll">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Kohorta</th>
+                {columns.map((column) => (
+                  <th key={column} scope="col">{column}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.cohortId} data-selected={row.cohortId === selectedCohortId ? true : undefined}>
+                  <th scope="row">
+                    {onSelectCohort ? (
+                      <TextAction
+                        size="small"
+                        onClick={() => {
+                          onSelectCohort({
+                            action: 'select-cohort',
+                            cohortId: row.cohortId,
+                            componentId: 'CohortMatrix',
+                          });
+                        }}
+                      >
+                        {row.label}
+                      </TextAction>
+                    ) : row.label}
+                  </th>
+                  {row.values.map((value, index) => (
+                    <td key={`${row.cohortId}-${columns[index]}`}>
+                      {value === null ? 'Brak danych' : formatPercent(value)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    );
+  },
+);
+
+export type CustomerSegmentsProps =
+  ContractCustomerSegmentsProps & HTMLAttributes<HTMLElement>;
+
+export const CustomerSegments = forwardRef<HTMLElement, CustomerSegmentsProps>(
+  function CustomerSegments(
+    {
+      className,
+      onSelectSegment,
+      segments,
+      selectedSegmentId = null,
+      ...props
+    },
+    ref,
+  ) {
+    const titleId = useId();
+
+    return (
+      <section
+        {...props}
+        ref={ref}
+        aria-labelledby={titleId}
+        className={joinClassNames('pd-customer-segments', className)}
+      >
+        <header className="pd-customer-segments__header">
+          <div>
+            <p>Segmenty</p>
+            <h2 id={titleId}>Klienci i wartość</h2>
+          </div>
+          <StatusBadge status="Segmenty" text={`${segments.length}`} tone="info" />
+        </header>
+        <ul className="pd-customer-segments__list">
+          {segments.map((segment) => (
+            <li key={segment.id} data-selected={segment.id === selectedSegmentId ? true : undefined}>
+              <div>
+                <strong>{segment.label}</strong>
+                <span>{formatInteger(segment.customers)} klientów</span>
+              </div>
+              <span>{formatCurrency(segment.revenue)}</span>
+              {typeof segment.churnRisk === 'number' ? (
+                <StatusBadge
+                  status="Churn"
+                  text={formatPercent(segment.churnRisk)}
+                  tone={segment.churnRisk > 0.18 ? 'warning' : 'success'}
+                />
+              ) : null}
+              {onSelectSegment ? (
+                <TextAction
+                  size="small"
+                  onClick={() => {
+                    onSelectSegment({
+                      action: 'select-segment',
+                      componentId: 'CustomerSegments',
+                      segmentId: segment.id,
+                    });
+                  }}
+                >
+                  Wybierz
+                </TextAction>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  },
+);
+
+export type SalesFunnelProps =
+  ContractSalesFunnelProps & HTMLAttributes<HTMLElement>;
+
+export const SalesFunnel = forwardRef<HTMLElement, SalesFunnelProps>(
+  function SalesFunnel(
+    {
+      className,
+      onOpenStep,
+      steps,
+      ...props
+    },
+    ref,
+  ) {
+    const titleId = useId();
+    const maxVisitors = Math.max(...steps.map((step) => step.visitors), 1);
+
+    return (
+      <section
+        {...props}
+        ref={ref}
+        aria-labelledby={titleId}
+        className={joinClassNames('pd-sales-funnel', className)}
+      >
+        <header className="pd-sales-funnel__header">
+          <div>
+            <p>Lejek</p>
+            <h2 id={titleId}>Sprzedaż krok po kroku</h2>
+          </div>
+        </header>
+        <ol className="pd-sales-funnel__steps">
+          {steps.map((step) => (
+            <li key={step.id}>
+              <div>
+                <strong>{step.label}</strong>
+                <span>{formatInteger(step.visitors)} wejść · CR {formatPercent(step.conversionRate)}</span>
+              </div>
+              <span className="pd-sales-funnel__bar" aria-hidden="true">
+                <span style={{ inlineSize: `${Math.max((step.visitors / maxVisitors) * 100, 8)}%` }} />
+              </span>
+              <StatusBadge
+                status="Dropoff"
+                text={formatPercent(step.dropoffRate)}
+                tone={step.dropoffRate > 0.35 ? 'warning' : 'info'}
+              />
+              {onOpenStep ? (
+                <TextAction
+                  size="small"
+                  onClick={() => {
+                    onOpenStep({
+                      action: 'open-step',
+                      componentId: 'SalesFunnel',
+                      stepId: step.id,
+                    });
+                  }}
+                >
+                  Otwórz
+                </TextAction>
+              ) : null}
+            </li>
+          ))}
+        </ol>
+      </section>
+    );
+  },
+);
+
+export type PairingFlowProps =
+  ContractPairingFlowProps & HTMLAttributes<HTMLElement>;
+
+export const PairingFlow = forwardRef<HTMLElement, PairingFlowProps>(
+  function PairingFlow(
+    {
+      className,
+      deviceStatus = undefined,
+      onCancel,
+      onConfirm,
+      onStart,
+      provider,
+      sessionId = undefined,
+      steps,
+      ...props
+    },
+    ref,
+  ) {
+    const titleId = useId();
+    const activeChallenge = steps.find((step) => step.challengeCode);
+
+    return (
+      <section
+        {...props}
+        ref={ref}
+        aria-labelledby={titleId}
+        className={joinClassNames('pd-pairing-flow', className)}
+      >
+        <header className="pd-pairing-flow__header">
+          <div>
+            <p>{provider}</p>
+            <h2 id={titleId}>Parowanie integracji</h2>
+          </div>
+          {deviceStatus ? (
+            <StatusBadge
+              status="Urządzenie"
+              text={resolveDevicePairingLabel(deviceStatus)}
+              tone={deviceStatus === 'paired' ? 'success' : 'warning'}
+            />
+          ) : null}
+        </header>
+        <ol className="pd-pairing-flow__steps">
+          {steps.map((step) => (
+            <li key={step.id}>
+              <div>
+                <strong>{step.label}</strong>
+                {step.challengeCode ? (
+                  <span>Kod: {step.challengeCode}</span>
+                ) : null}
+              </div>
+              <StatusBadge
+                status="Krok"
+                text={resolvePairingStepLabel(step.status)}
+                tone={resolvePairingStepTone(step.status)}
+              />
+            </li>
+          ))}
+        </ol>
+        <div className="pd-pairing-flow__actions">
+          <Button
+            size="small"
+            onClick={() => {
+              onStart({
+                action: 'start-pairing',
+                componentId: 'PairingFlow',
+                provider,
+              });
+            }}
+          >
+            Rozpocznij
+          </Button>
+          <Button
+            disabled={!activeChallenge}
+            size="small"
+            variant="secondary"
+            onClick={() => {
+              if (!activeChallenge?.challengeCode) {
+                return;
+              }
+
+              onConfirm({
+                action: 'confirm-pairing',
+                challengeCode: activeChallenge.challengeCode,
+                componentId: 'PairingFlow',
+                itemId: sessionId,
+              });
+            }}
+          >
+            Potwierdź kod
+          </Button>
+          {onCancel ? (
+            <Button
+              size="small"
+              variant="ghost"
+              onClick={() => {
+                onCancel({
+                  action: 'cancel-pairing',
+                  componentId: 'PairingFlow',
+                  itemId: sessionId,
+                });
+              }}
+            >
+              Anuluj
+            </Button>
+          ) : null}
+        </div>
+      </section>
+    );
+  },
+);
+
 function resolveReadinessLabel(value: string): string {
   switch (value) {
     case 'ready':
@@ -1569,6 +2106,87 @@ function resolveBudgetPacingTone(value: string): StatusBadgeTone {
     case 'overPace':
     default:
       return 'warning';
+  }
+}
+
+function resolveSyncStatusLabel(value: string): string {
+  switch (value) {
+    case 'queued':
+      return 'W kolejce';
+    case 'running':
+      return 'W toku';
+    case 'partial':
+      return 'Częściowo';
+    case 'completed':
+      return 'Zakończone';
+    case 'failed':
+      return 'Błąd';
+    default:
+      return value;
+  }
+}
+
+function resolveSyncStatusTone(value: string): StatusBadgeTone {
+  switch (value) {
+    case 'completed':
+      return 'success';
+    case 'failed':
+      return 'critical';
+    case 'partial':
+    case 'running':
+    case 'queued':
+    default:
+      return 'warning';
+  }
+}
+
+function resolvePairingStepLabel(value: string): string {
+  switch (value) {
+    case 'notStarted':
+      return 'Nie rozpoczęto';
+    case 'active':
+      return 'Aktywny';
+    case 'waitingForProvider':
+      return 'Czeka na providera';
+    case 'verified':
+      return 'Zweryfikowany';
+    case 'failed':
+      return 'Błąd';
+    case 'expired':
+      return 'Wygasł';
+    default:
+      return value;
+  }
+}
+
+function resolvePairingStepTone(value: string): StatusBadgeTone {
+  switch (value) {
+    case 'verified':
+      return 'success';
+    case 'failed':
+    case 'expired':
+      return 'critical';
+    case 'active':
+    case 'waitingForProvider':
+      return 'warning';
+    case 'notStarted':
+    default:
+      return 'neutral';
+  }
+}
+
+function resolveDevicePairingLabel(value: string): string {
+  switch (value) {
+    case 'unpaired':
+      return 'Niepołączone';
+    case 'pending':
+      return 'Oczekuje';
+    case 'paired':
+      return 'Połączone';
+    case 'revoked':
+      return 'Odwołane';
+    default:
+      return value;
   }
 }
 

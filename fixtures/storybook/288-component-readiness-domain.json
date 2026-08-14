@@ -1,0 +1,81 @@
+{
+  "fixtureId": "SB-288",
+  "storyTitle": "15 Wykresy i dane/05 Katalog komponentów/Analityczne i domenowe",
+  "sourceDocument": "22-mapy-i-indeksy/storybook-backlog-scenariusze.md",
+  "screenId": null,
+  "components": [
+    "ChartFrame",
+    "MetricCard",
+    "TrendChart",
+    "ComparisonChart",
+    "CorrelationChart",
+    "ForecastChart",
+    "ShareChart",
+    "ChartDataState",
+    "ChartInteractionLayer",
+    "DataStatusBanner",
+    "EvidencePanel",
+    "RecommendationCard",
+    "DecisionQueue",
+    "BudgetPacing",
+    "AttributionComparison",
+    "ReconciliationPanel",
+    "SyncTimeline",
+    "LineageGraph",
+    "CohortMatrix",
+    "CustomerSegments",
+    "SalesFunnel",
+    "FunnelStep",
+    "MorningBrief",
+    "AssistantComposer",
+    "PairingFlow"
+  ],
+  "states": [
+    "ready",
+    "partial",
+    "stale",
+    "noData",
+    "blocked",
+    "error",
+    "review",
+    "accepted"
+  ],
+  "viewports": [
+    1440,
+    768,
+    390
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "localeCases": [
+    "pl",
+    "en-long-copy"
+  ],
+  "playSteps": [
+    "verify-all-components-visible",
+    "verify-status-visible",
+    "verify-fixture-visible",
+    "exercise-readiness-control",
+    "verify-keyboard-only"
+  ],
+  "visualAssertions": [
+    "1440-light",
+    "1440-dark",
+    "768-reflow",
+    "390-mobile",
+    "200-percent-zoom",
+    "no-horizontal-page-scroll",
+    "status-table-readable"
+  ],
+  "a11y": [
+    "contrast",
+    "keyboard-only",
+    "focus-visible",
+    "table-semantics",
+    "accessible-name",
+    "aria-status"
+  ],
+  "implementationStatus": "implemented-passing-readiness-contract"
+}

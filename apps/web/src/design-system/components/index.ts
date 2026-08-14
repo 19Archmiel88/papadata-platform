@@ -16,8 +16,16 @@ export {
 } from './BackgroundOperationItem';
 
 export {
+  BottomSheet,
+} from './BottomSheet';
+
+export {
   Breadcrumbs,
 } from './Breadcrumbs';
+
+export {
+  BulkActionBar,
+} from './BulkActionBar';
 
 export {
   Button,
@@ -40,6 +48,10 @@ export {
 } from './ChartInteractionLayer';
 
 export {
+  ColumnPicker,
+} from './ColumnPicker';
+
+export {
   ComparisonChart,
 } from './ComparisonChart';
 
@@ -55,6 +67,8 @@ export {
   AssistantComposer,
   AttributionComparison,
   BudgetPacing,
+  CohortMatrix,
+  CustomerSegments,
   DataStatusBanner,
   DecisionCard,
   DecisionQueue,
@@ -62,13 +76,18 @@ export {
   EvidencePanel,
   FunnelChart,
   FunnelStep,
+  LineageGraph,
   MorningBrief,
   PageHeader,
   Panel,
+  PairingFlow,
   PlanPerformance,
+  ReconciliationPanel,
   RecommendationCard,
   ResultDrivers,
+  SalesFunnel,
   SalesSources,
+  SyncTimeline,
   WaterfallChart,
 } from './Domain';
 
@@ -257,9 +276,17 @@ export type {
 } from './BackgroundOperationItem';
 
 export type {
+  BottomSheetProps,
+} from './BottomSheet';
+
+export type {
   BreadcrumbsItem,
   BreadcrumbsProps,
 } from './Breadcrumbs';
+
+export type {
+  BulkActionBarProps,
+} from './BulkActionBar';
 
 export type {
   ButtonGroupOrientation,
@@ -297,6 +324,8 @@ export type {
   AssistantComposerProps,
   AttributionComparisonProps,
   BudgetPacingProps,
+  CohortMatrixProps,
+  CustomerSegmentsProps,
   DataStatusBannerProps,
   DecisionCardProps,
   DecisionQueueProps,
@@ -305,13 +334,18 @@ export type {
   EvidencePanelProps,
   FunnelChartProps,
   FunnelStepProps,
+  LineageGraphProps,
   MorningBriefProps,
   PageHeaderProps,
   PanelProps,
+  PairingFlowProps,
   PlanPerformanceProps,
+  ReconciliationPanelProps,
   RecommendationCardProps,
   ResultDriversProps,
+  SalesFunnelProps,
   SalesSourcesProps,
+  SyncTimelineProps,
   WaterfallChartProps,
 } from './Domain';
 
@@ -321,6 +355,10 @@ export type {
   ChartInteractionLayerProps,
   ChartInteractionPoint,
 } from './ChartInteractionLayer';
+
+export type {
+  ColumnPickerProps,
+} from './ColumnPicker';
 
 export type {
   ComparisonChartBenchmark,

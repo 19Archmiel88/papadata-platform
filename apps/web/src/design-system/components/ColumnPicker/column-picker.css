@@ -1,0 +1,28 @@
+.pd-column-picker {
+  display: grid;
+  gap: var(--pd-space-3);
+  min-inline-size: 0;
+  margin: 0;
+  padding: var(--pd-space-4);
+  border: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-surface);
+  background: var(--pd-surface-panel);
+  color: var(--pd-text);
+}
+
+.pd-column-picker legend {
+  padding: 0;
+  font-weight: var(--pd-font-weight-semibold);
+}
+
+.pd-column-picker p,
+.pd-column-picker__limit {
+  margin: 0;
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-column-picker__list {
+  display: grid;
+  gap: var(--pd-space-2);
+}

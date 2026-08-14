@@ -1,0 +1,90 @@
+.pd-component-readiness {
+  color: var(--pd-text);
+}
+
+.pd-component-readiness__summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--pd-space-3);
+}
+
+.pd-component-readiness__summary div {
+  display: grid;
+  gap: var(--pd-space-1);
+  padding: var(--pd-space-4);
+  border: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-surface);
+  background: var(--pd-surface-panel);
+}
+
+.pd-component-readiness__summary dt {
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-component-readiness__summary dd {
+  margin: 0;
+  font-size: var(--pd-type-size-heading-3);
+  font-weight: var(--pd-font-weight-semibold);
+}
+
+.pd-component-readiness__table {
+  overflow-x: auto;
+}
+
+.pd-component-readiness__table table {
+  inline-size: 100%;
+  min-inline-size: 66rem;
+  border-collapse: collapse;
+}
+
+.pd-component-readiness__caption {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.pd-component-readiness__table th,
+.pd-component-readiness__table td {
+  padding: var(--pd-space-3);
+  border-block-start: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  text-align: start;
+  vertical-align: top;
+}
+
+.pd-component-readiness__table th {
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+  font-weight: var(--pd-font-weight-semibold);
+}
+
+.pd-component-readiness__table code {
+  white-space: nowrap;
+}
+
+.pd-component-readiness__criteria {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-component-readiness__criteria li {
+  padding: 0.18rem var(--pd-space-2);
+  border: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-pill);
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-component-readiness__status {
+  display: grid;
+  gap: var(--pd-space-1);
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+}

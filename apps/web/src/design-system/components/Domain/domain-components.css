@@ -947,3 +947,191 @@
 .pd-plan-performance__meta dd {
   color: color-mix(in srgb, var(--pd-text) 92%, var(--pd-brand));
 }
+
+.pd-reconciliation-panel,
+.pd-sync-timeline,
+.pd-lineage-graph,
+.pd-cohort-matrix,
+.pd-customer-segments,
+.pd-sales-funnel,
+.pd-pairing-flow {
+  display: grid;
+  gap: var(--pd-space-4);
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  padding: var(--pd-space-5);
+  border: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-surface);
+  background: var(--pd-surface-panel);
+  color: var(--pd-text);
+}
+
+.pd-reconciliation-panel__header,
+.pd-sync-timeline__header,
+.pd-lineage-graph__header,
+.pd-cohort-matrix__header,
+.pd-customer-segments__header,
+.pd-sales-funnel__header,
+.pd-pairing-flow__header {
+  display: flex;
+  gap: var(--pd-space-3);
+  align-items: start;
+  justify-content: space-between;
+  min-inline-size: 0;
+}
+
+.pd-reconciliation-panel__header p,
+.pd-sync-timeline__header p,
+.pd-lineage-graph__header p,
+.pd-cohort-matrix__header p,
+.pd-customer-segments__header p,
+.pd-sales-funnel__header p,
+.pd-pairing-flow__header p {
+  margin: 0 0 var(--pd-space-1);
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+  font-weight: var(--pd-font-weight-medium);
+  text-transform: uppercase;
+}
+
+.pd-reconciliation-panel__header h2,
+.pd-sync-timeline__header h2,
+.pd-lineage-graph__header h2,
+.pd-cohort-matrix__header h2,
+.pd-customer-segments__header h2,
+.pd-sales-funnel__header h2,
+.pd-pairing-flow__header h2 {
+  margin: 0;
+  font-size: var(--pd-type-size-heading-3);
+  line-height: var(--pd-line-height-compact);
+  overflow-wrap: anywhere;
+}
+
+.pd-reconciliation-panel__list,
+.pd-sync-timeline__list,
+.pd-lineage-graph__nodes,
+.pd-customer-segments__list,
+.pd-sales-funnel__steps,
+.pd-pairing-flow__steps {
+  display: grid;
+  gap: var(--pd-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-reconciliation-panel__list li,
+.pd-sync-timeline__list li,
+.pd-lineage-graph__nodes li,
+.pd-customer-segments__list li,
+.pd-sales-funnel__steps li,
+.pd-pairing-flow__steps li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: var(--pd-space-3);
+  align-items: center;
+  padding-block: var(--pd-space-3);
+  border-top: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+}
+
+.pd-reconciliation-panel__list li > div,
+.pd-sync-timeline__list li > div,
+.pd-lineage-graph__nodes li > div,
+.pd-customer-segments__list li > div,
+.pd-sales-funnel__steps li > div,
+.pd-pairing-flow__steps li > div {
+  display: grid;
+  gap: 0.18rem;
+  min-inline-size: 0;
+}
+
+.pd-reconciliation-panel__list span,
+.pd-sync-timeline__list span,
+.pd-lineage-graph__nodes span,
+.pd-customer-segments__list span,
+.pd-sales-funnel__steps span,
+.pd-pairing-flow__steps span {
+  color: color-mix(in srgb, var(--pd-text) 72%, var(--pd-text-secondary));
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-cohort-matrix__scroll {
+  overflow-x: auto;
+}
+
+.pd-cohort-matrix table {
+  inline-size: 100%;
+  min-inline-size: 42rem;
+  border-collapse: collapse;
+}
+
+.pd-cohort-matrix th,
+.pd-cohort-matrix td {
+  padding: var(--pd-space-2) var(--pd-space-3);
+  border-block-start: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  text-align: end;
+  white-space: nowrap;
+}
+
+.pd-cohort-matrix th:first-child,
+.pd-cohort-matrix td:first-child {
+  text-align: start;
+}
+
+.pd-cohort-matrix tr[data-selected='true'],
+.pd-customer-segments__list li[data-selected='true'] {
+  background: color-mix(in srgb, var(--pd-data-accent-subtle) 34%, transparent);
+}
+
+.pd-lineage-graph__edges {
+  margin: 0;
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-customer-segments__list li,
+.pd-sales-funnel__steps li {
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+}
+
+.pd-sales-funnel__bar {
+  display: block;
+  inline-size: 100%;
+  block-size: 0.72rem;
+  overflow: hidden;
+  border-radius: var(--pd-radius-pill);
+  background: color-mix(in srgb, var(--pd-separator-subtle) 82%, transparent);
+}
+
+.pd-sales-funnel__bar > span {
+  display: block;
+  block-size: 100%;
+  border-radius: inherit;
+  background: var(--pd-data-accent);
+}
+
+.pd-pairing-flow__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2);
+}
+
+@media (max-width: 760px) {
+  .pd-reconciliation-panel__header,
+  .pd-sync-timeline__header,
+  .pd-lineage-graph__header,
+  .pd-cohort-matrix__header,
+  .pd-customer-segments__header,
+  .pd-sales-funnel__header,
+  .pd-pairing-flow__header,
+  .pd-reconciliation-panel__list li,
+  .pd-sync-timeline__list li,
+  .pd-lineage-graph__nodes li,
+  .pd-customer-segments__list li,
+  .pd-sales-funnel__steps li,
+  .pd-pairing-flow__steps li {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

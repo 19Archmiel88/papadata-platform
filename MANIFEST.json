@@ -4,7 +4,7 @@
   "creator": "Artur Wiśniewski",
   "owner": "Artur Wiśniewski",
   "status": "PASS",
-  "file_count": 2299,
+  "file_count": 2314,
   "files": [
     {
       "path": ".dockerignore",
@@ -793,8 +793,8 @@
     },
     {
       "path": "apps/web/src/design-system/component-system-v1.json",
-      "bytes": 7038,
-      "sha256": "ecd78ee21cc907399889214859b2dcfe484038840a4bb7e616e48c444fa0fc64"
+      "bytes": 12119,
+      "sha256": "58427040d11d45c123f86018b0efc4b5bc57f568635e3967f1ef6855ca9c28d7"
     },
     {
       "path": "apps/web/src/design-system/components/AlertDialog/AlertDialog.tsx",
@@ -847,6 +847,21 @@
       "sha256": "38eadbf061ff2f92372ec1bb4b432c71a848ba02241b9dd20a64db72da2b0e8a"
     },
     {
+      "path": "apps/web/src/design-system/components/BottomSheet/BottomSheet.tsx",
+      "bytes": 4089,
+      "sha256": "600b6422cec7ff5794da988d52e1e51a81abb2f29ab0c2a48579dc6fa1bd90c1"
+    },
+    {
+      "path": "apps/web/src/design-system/components/BottomSheet/bottom-sheet.css",
+      "bytes": 581,
+      "sha256": "b5df186684a249624338955d3e02a6b6260c4d6ed58f90dfa3acda9c261da815"
+    },
+    {
+      "path": "apps/web/src/design-system/components/BottomSheet/index.ts",
+      "bytes": 107,
+      "sha256": "30f7f7837cdaf71c3ede210326692477c9188ad4a7abc1583b85c991d774bd82"
+    },
+    {
       "path": "apps/web/src/design-system/components/Breadcrumbs/Breadcrumbs.tsx",
       "bytes": 3671,
       "sha256": "8e8720a82b1977ddd23a92aa75fa4b692035c3ef0e9f596c7faf0ea14014eeea"
@@ -855,6 +870,21 @@
       "path": "apps/web/src/design-system/components/Breadcrumbs/index.ts",
       "bytes": 125,
       "sha256": "fa70b47995cc9902a904e999d90c1bbba6066f97bd17125586a501de7a0db67c"
+    },
+    {
+      "path": "apps/web/src/design-system/components/BulkActionBar/BulkActionBar.tsx",
+      "bytes": 2267,
+      "sha256": "d44dc76ef8325bbf55781a37a1c7ba64ac964011daaed4e2d89d36c6346b70a6"
+    },
+    {
+      "path": "apps/web/src/design-system/components/BulkActionBar/bulk-action-bar.css",
+      "bytes": 809,
+      "sha256": "d928303f92cf05f7db80cfcdd26c3cdf8de941c3063e09a4ee8ddb4d3cd10afd"
+    },
+    {
+      "path": "apps/web/src/design-system/components/BulkActionBar/index.ts",
+      "bytes": 115,
+      "sha256": "976973e1eb6e21b264235752ebaa464fc23aaf95f14e3c64ae6f9d9bf74b89f7"
     },
     {
       "path": "apps/web/src/design-system/components/Button/Button.stories.tsx",
@@ -972,6 +1002,21 @@
       "sha256": "4a84beae11aa00a6e5f086ae33cea2b91688a0244c04472d5614c7d998497aa4"
     },
     {
+      "path": "apps/web/src/design-system/components/ColumnPicker/ColumnPicker.tsx",
+      "bytes": 2560,
+      "sha256": "315be9b97e0fc5f5ddef4c0f6bcfeaff91b6dabde471459201bad0cd9ba1007a"
+    },
+    {
+      "path": "apps/web/src/design-system/components/ColumnPicker/column-picker.css",
+      "bytes": 614,
+      "sha256": "1272b570b41907bafde8d7b58ef346118b27c759b58b7df3ef3023b263dc35fb"
+    },
+    {
+      "path": "apps/web/src/design-system/components/ColumnPicker/index.ts",
+      "bytes": 111,
+      "sha256": "ae43dd77c6f7b7f64ecfe2545bf82ee85842bd18146de43516aad3857c85b349"
+    },
+    {
       "path": "apps/web/src/design-system/components/Combobox/Combobox.tsx",
       "bytes": 7868,
       "sha256": "66d4ef13109233e0cf5eef774d89804a7ce334681e918e6f15ac846445580e40"
@@ -1078,18 +1123,18 @@
     },
     {
       "path": "apps/web/src/design-system/components/Domain/DomainComponents.tsx",
-      "bytes": 42911,
-      "sha256": "d1060027b48ba6279a50da76d57bcc6627d4c71c0d856311508d9a3fee235f60"
+      "bytes": 59966,
+      "sha256": "b4109bf4ccf5b45d790a79bd42381d054a1ad0cd16964c3b0dfeff473c3646bf"
     },
     {
       "path": "apps/web/src/design-system/components/Domain/domain-components.css",
-      "bytes": 23909,
-      "sha256": "f5d3f398fb2e0bb10e319576283d21fbea8b495fc2c3f094bcd23970e3748f2e"
+      "bytes": 28570,
+      "sha256": "d72cab849803bb2ebfdab9f59d0aeb77de6a94e7d0ab7c7db1533591e7d85e60"
     },
     {
       "path": "apps/web/src/design-system/components/Domain/index.ts",
-      "bytes": 804,
-      "sha256": "1bc9cf137803c1728321eecdba4540cf386e9784eb9277874da8a28daffcd9e7"
+      "bytes": 1081,
+      "sha256": "3df52a6079c94b9c0456f05bc1c402c343a7a0c56282b8b09b1185da6cc63f0e"
     },
     {
       "path": "apps/web/src/design-system/components/Drawer/Drawer.tsx",
@@ -1568,8 +1613,8 @@
     },
     {
       "path": "apps/web/src/design-system/components/index.ts",
-      "bytes": 8252,
-      "sha256": "7f64d0a5727324194464545c844b830956f32a78c43d9aa0fd7273f830552b20"
+      "bytes": 8865,
+      "sha256": "6e492abeafb69e509c534bb5704155f643daff506d95bb9d001f9ac5e7964ff9"
     },
     {
       "path": "apps/web/src/design-system/foundations/brand-flow-line.css",
@@ -2073,8 +2118,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/catalog/catalog.generated.ts",
-      "bytes": 205077,
-      "sha256": "08d39e88f188d1a24ed3b95b2e140d3f8ab837cf65e3ca311dbcfa8da69c89c9"
+      "bytes": 209421,
+      "sha256": "166373fd48ab8b46f9ea3625e93c64d984e28e9c015c4a346f2a97d7763fb009"
     },
     {
       "path": "apps/web/src/storybook-next/catalog/catalog.ts",
@@ -2135,6 +2180,16 @@
       "path": "apps/web/src/storybook-next/stories/.gitkeep",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/web/src/storybook-next/stories/00-foundations/ComponentReadiness.stories.tsx",
+      "bytes": 12464,
+      "sha256": "3d5994aed34fb7b4abb1b232369dcaf35b90da8049688e80e9ac54ddc3abc568"
+    },
+    {
+      "path": "apps/web/src/storybook-next/stories/00-foundations/component-readiness.css",
+      "bytes": 2097,
+      "sha256": "328388efc757d58daeab50ca0983294fa97319721fd5a175e148146a3f7f40cb"
     },
     {
       "path": "apps/web/src/storybook-next/stories/00-foundations/foundation-accessibility.css",
@@ -2270,6 +2325,11 @@
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/DataStates.stories.tsx",
       "bytes": 14942,
       "sha256": "08b98443f3b0a3b298c4f2cb4d5180e06ed15dfb2af22734b3709c53cdcd45d2"
+    },
+    {
+      "path": "apps/web/src/storybook-next/stories/15-data-visualizations/DomainComponentReadiness.stories.tsx",
+      "bytes": 9165,
+      "sha256": "3d3dd3b7dcadb71363dfd4252394da40c525bb591fdb6196b6a73418a005f141"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/ForecastChart.stories.tsx",
@@ -2458,8 +2518,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/storybook-contract.json",
-      "bytes": 228838,
-      "sha256": "2d47e2e5475e04b8a5b2a217f8776bc36500ade9913f68b3c2b3d310f7bba87c"
+      "bytes": 233482,
+      "sha256": "84fcd6cb168c449bb5b815ec5aa976ff66aaa297ee2397cc4796bb63c478f813"
     },
     {
       "path": "apps/web/src/storybook-next/storybook-react-vite-types.d.ts",
@@ -2468,8 +2528,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/storybook-taxonomy-map.json",
-      "bytes": 14485,
-      "sha256": "208a7d4e23296de44f2c6e1913bece084eb221e68908759ac9c742eab3718050"
+      "bytes": 14486,
+      "sha256": "4b73bc4339622b1899932a622bc60280a8ed15af014de4f36e0affc6eac69392"
     },
     {
       "path": "apps/web/src/storybook-next/storybook-test-matchers.d.ts",
@@ -2600,6 +2660,11 @@
       "path": "audy12082026.md",
       "bytes": 15788,
       "sha256": "925fe2287cbaf3bb53518ddaeec20987f7259c84574ebb297c9039c99353c1ae"
+    },
+    {
+      "path": "audyt14082026.md",
+      "bytes": 12131,
+      "sha256": "b0b197614859cb8c0fd35bd1354396fb6b84cf00ddcfe8793b7eb1655047289d"
     },
     {
       "path": "compose.production-parity.yml",
@@ -10537,6 +10602,16 @@
       "sha256": "3e9fe98b19c2cc1166fe84eb372fc0d527f709d1aeee0d3b5d06643200a7cf74"
     },
     {
+      "path": "fixtures/storybook/287-component-readiness-base.json",
+      "bytes": 1804,
+      "sha256": "fdd72e3c5fa8efe8bf086eb3b537d936378208de5fd6cc4e21636bb8f8a300ae"
+    },
+    {
+      "path": "fixtures/storybook/288-component-readiness-domain.json",
+      "bytes": 1619,
+      "sha256": "7d37a5bb3d1c6da8699839af5cc57e73cca9b31cd15ddceda0d50e8dcebfb95b"
+    },
+    {
       "path": "foundation-evidence/manifest.json",
       "bytes": 16762,
       "sha256": "1a346d66dbed82332a57540abb98c520c65cd50491dae9f131e089b71592429e"
@@ -11238,13 +11313,13 @@
     },
     {
       "path": "rejestry/runtime-component-api.csv",
-      "bytes": 9676,
-      "sha256": "747f38f797e7807fb1cf44e16c2c9f7c89197e08e09fe4ad7f13dfce16b38a38"
+      "bytes": 10988,
+      "sha256": "dc46a126ebf93670d58e53f4c9d1a8aec2e91204f6681d957539568dc8384c3c"
     },
     {
       "path": "rejestry/storybook.csv",
-      "bytes": 186002,
-      "sha256": "327c93e4116e85fcd2ca2476dc59c19484300f9ca252c7bb0afa5c49dabd36fb"
+      "bytes": 187505,
+      "sha256": "e3e9aaade4b8219f320955af6a05233ec0e893c457b55b2b6c8c1eb0e974bf2b"
     },
     {
       "path": "rejestry/ui-actions.csv",

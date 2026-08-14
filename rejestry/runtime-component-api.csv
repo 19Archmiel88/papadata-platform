@@ -76,3 +76,13 @@ WaterfallChart,apps/web/src/design-system/components/Domain/DomainComponents.tsx
 AttributionComparison,apps/web/src/design-system/components/Domain/DomainComponents.tsx,AttributionComparisonProps,31.04,accepted,Paid Campaigns
 BudgetPacing,apps/web/src/design-system/components/Domain/DomainComponents.tsx,BudgetPacingProps,31.05,accepted,Paid Campaigns
 PlanPerformance,apps/web/src/design-system/components/Domain/DomainComponents.tsx,PlanPerformanceProps,30.04,accepted,Command Center
+ColumnPicker,apps/web/src/design-system/components/ColumnPicker/ColumnPicker.tsx,ColumnPickerProps,00.21,accepted,Design System
+BulkActionBar,apps/web/src/design-system/components/BulkActionBar/BulkActionBar.tsx,BulkActionBarProps,00.21,accepted,Design System
+BottomSheet,apps/web/src/design-system/components/BottomSheet/BottomSheet.tsx,BottomSheetProps,00.21,accepted,Design System
+ReconciliationPanel,apps/web/src/design-system/components/Domain/DomainComponents.tsx,ReconciliationPanelProps,15.11,accepted,Domain Components
+SyncTimeline,apps/web/src/design-system/components/Domain/DomainComponents.tsx,SyncTimelineProps,15.11,accepted,Domain Components
+LineageGraph,apps/web/src/design-system/components/Domain/DomainComponents.tsx,LineageGraphProps,15.11,accepted,Domain Components
+CohortMatrix,apps/web/src/design-system/components/Domain/DomainComponents.tsx,CohortMatrixProps,15.11,accepted,Domain Components
+CustomerSegments,apps/web/src/design-system/components/Domain/DomainComponents.tsx,CustomerSegmentsProps,15.11,accepted,Domain Components
+SalesFunnel,apps/web/src/design-system/components/Domain/DomainComponents.tsx,SalesFunnelProps,15.11,accepted,Domain Components
+PairingFlow,apps/web/src/design-system/components/Domain/DomainComponents.tsx,PairingFlowProps,15.11,accepted,Domain Components

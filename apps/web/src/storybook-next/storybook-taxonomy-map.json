@@ -5,10 +5,10 @@
   "title": "Kanoniczna mapa taksonomii Storybooka w Component System V1",
   "sourceContract": "apps/web/src/storybook-next/storybook-contract.json",
   "decisionDocument": "docs/storybook/STORYBOOK-TAXONOMY-DECISIONS.md",
-  "baselineContractIdentitySha256": "f810635ec5ceccb7b8686a6a27b0758c9771ee552b18b5c1ccabbd1cd25c1374",
+  "baselineContractIdentitySha256": "84fcd6cb168c449bb5b815ec5aa976ff66aaa297ee2397cc4796bb63c478f813",
   "expectedSectionCount": 21,
-  "expectedEntryCount": 221,
-  "purpose": "Logiczne przypisanie 221 wymagań z aktywnego kontraktu Storybooka do kanonicznych rootów po aktywacji P0 powłoki produktu i Auth.",
+  "expectedEntryCount": 223,
+  "purpose": "Logiczne przypisanie 223 wymagania z aktywnego kontraktu Storybooka do kanonicznych rootów po aktywacji P0 powłoki produktu i Auth.",
   "policies": {
     "preserveEntryIds": true,
     "requirementsRemainInContract": true,

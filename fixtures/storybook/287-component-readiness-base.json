@@ -1,0 +1,97 @@
+{
+  "fixtureId": "SB-287",
+  "storyTitle": "00 Fundamenty/06 Katalog komponentów/Komponenty bazowe",
+  "sourceDocument": "00-zarzadzanie-dokumentacja/10-mapa-komponentow.md",
+  "screenId": null,
+  "components": [
+    "Button",
+    "IconButton",
+    "TextAction",
+    "LinkAction",
+    "TextField",
+    "PasswordField",
+    "Textarea",
+    "Select",
+    "Combobox",
+    "Checkbox",
+    "RadioGroup",
+    "Switch",
+    "DateRangePicker",
+    "SearchField",
+    "FilterBar",
+    "SortControl",
+    "DataTable",
+    "ColumnPicker",
+    "BulkActionBar",
+    "Pagination",
+    "Tabs",
+    "Menu",
+    "Popover",
+    "Tooltip",
+    "Dialog",
+    "AlertDialog",
+    "Drawer",
+    "OverlayRoot",
+    "BottomSheet",
+    "InlineNotice",
+    "Toast",
+    "StatusBadge",
+    "EmptyState",
+    "ErrorState",
+    "Skeleton",
+    "Spinner",
+    "ProgressIndicator",
+    "BackgroundOperationItem",
+    "PageHeader",
+    "SectionNavigation",
+    "Breadcrumbs"
+  ],
+  "states": [
+    "ready",
+    "loading",
+    "empty",
+    "error",
+    "disabled",
+    "focus-visible",
+    "review",
+    "accepted"
+  ],
+  "viewports": [
+    1440,
+    768,
+    390
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "localeCases": [
+    "pl",
+    "en-long-copy"
+  ],
+  "playSteps": [
+    "verify-all-components-visible",
+    "verify-status-visible",
+    "verify-fixture-visible",
+    "exercise-readiness-control",
+    "verify-keyboard-only"
+  ],
+  "visualAssertions": [
+    "1440-light",
+    "1440-dark",
+    "768-reflow",
+    "390-mobile",
+    "200-percent-zoom",
+    "no-horizontal-page-scroll",
+    "status-table-readable"
+  ],
+  "a11y": [
+    "contrast",
+    "keyboard-only",
+    "focus-visible",
+    "table-semantics",
+    "accessible-name",
+    "aria-status"
+  ],
+  "implementationStatus": "implemented-passing-readiness-contract"
+}

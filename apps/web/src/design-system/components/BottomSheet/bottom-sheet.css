@@ -1,0 +1,20 @@
+.pd-bottom-sheet {
+  position: fixed;
+  inset: auto var(--pd-space-3) var(--pd-space-3);
+  inline-size: min(48rem, calc(100vw - (2 * var(--pd-space-3))));
+  max-block-size: calc(100dvh - (2 * var(--pd-space-3)));
+  margin-inline: auto;
+  border-radius: var(--pd-radius-surface) var(--pd-radius-surface) var(--pd-radius-control) var(--pd-radius-control);
+}
+
+.pd-bottom-sheet[data-snap-point='half'] {
+  block-size: min(42rem, 50dvh);
+}
+
+.pd-bottom-sheet[data-snap-point='full'] {
+  block-size: calc(100dvh - (2 * var(--pd-space-3)));
+}
+
+.pd-bottom-sheet__body {
+  overflow: auto;
+}

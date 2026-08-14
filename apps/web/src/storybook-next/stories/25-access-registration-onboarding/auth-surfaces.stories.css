@@ -7,8 +7,6 @@
   min-width: 0;
   min-height: auto;
   overflow: visible;
-  border-radius: var(--pd-radius-surface);
-  background: var(--pd-canvas-gradient, var(--pd-canvas));
   box-shadow: none;
 }
 
@@ -33,11 +31,110 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 620px), 1fr));
 }
 
+.pd-s25-flow-panel {
+  display: grid;
+  gap: var(--pd-space-5);
+  width: 100%;
+  min-width: 0;
+}
+
+.pd-s25-flow-panel__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr);
+  gap: var(--pd-space-5);
+  align-items: start;
+  min-width: 0;
+  padding-block-end: var(--pd-space-4);
+  border-bottom: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-s25-flow-panel__header > div {
+  display: grid;
+  gap: var(--pd-space-2);
+  min-width: 0;
+}
+
+.pd-s25-flow-panel__header h3,
+.pd-s25-flow-panel__header p {
+  margin: 0;
+}
+
+.pd-s25-flow-panel__header h3 {
+  color: var(--pd-text-strong);
+  font-size: var(--pd-font-size-5);
+  line-height: var(--pd-line-height-tight);
+}
+
+.pd-s25-flow-panel__header p {
+  color: var(--pd-text-muted);
+}
+
+.pd-s25-flow-steps {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  list-style: none;
+  border-block: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-s25-flow-step {
+  display: grid;
+  gap: var(--pd-space-4);
+  min-width: 0;
+  padding: var(--pd-space-5);
+}
+
+.pd-s25-flow-step + .pd-s25-flow-step {
+  border-top: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-s25-flow-step[data-current="true"] {
+  border-left: 3px solid var(--pd-accent);
+  padding-left: calc(var(--pd-space-5) - 3px);
+}
+
+.pd-s25-flow-step header {
+  display: grid;
+  gap: var(--pd-space-3);
+  min-width: 0;
+}
+
+.pd-s25-flow-step h3,
+.pd-s25-flow-step p {
+  margin: 0;
+}
+
+.pd-s25-flow-step h3 {
+  color: var(--pd-text-strong);
+  font-size: var(--pd-font-size-5);
+  line-height: var(--pd-line-height-tight);
+}
+
+.pd-s25-flow-step p {
+  color: var(--pd-text-muted);
+  line-height: var(--pd-line-height-body);
+}
+
+.pd-s25-flow-step ul {
+  display: grid;
+  gap: var(--pd-space-2);
+  margin: 0;
+  padding-inline-start: var(--pd-space-5);
+  color: var(--pd-text-muted);
+}
+
 @media (max-width: 1180px) {
   .pd-s25-grid,
   .pd-s25-grid--three,
   .pd-s25-grid--compact,
   .pd-s25-grid--three.pd-s25-grid--compact {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-s25-flow-panel__header {
     grid-template-columns: 1fr;
   }
 }

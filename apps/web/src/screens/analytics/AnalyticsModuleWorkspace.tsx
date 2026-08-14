@@ -315,6 +315,29 @@ function CampaignsContent({
       );
     case 'recommendations':
       return <RecommendationsReadOnly recommendations={data.recommendations} />;
+    case 'variants':
+      return (
+        <>
+          <InlineNotice
+            message="Widok agreguje warianty ready, partial, empty, error, stale, forbidden i offline w jednym kontrakcie odczytu."
+            title="Warianty kampanii"
+            tone="info"
+          />
+          <ModuleSection
+            description="Tabela pozostaje kanoniczną alternatywą danych dla wariantów kampanii."
+            title="Zakres kampanii"
+          >
+            <ModuleTable
+              columns={campaignColumns}
+              detailDefinition={detail}
+              loading={false}
+              primaryColumnId="name"
+              rows={campaignRows(data.records)}
+              summary={`${data.records.length} kampanii`}
+            />
+          </ModuleSection>
+        </>
+      );
     default:
       return <UnsupportedVariant definition={definition} />;
   }
@@ -402,6 +425,29 @@ function OrdersContent({
           </ModuleSection>
         </>
       );
+    case 'variants':
+      return (
+        <>
+          <InlineNotice
+            message="Widok pokazuje warianty stanu zamówień, rekoncyliacji i eksportu bez uruchamiania operacji mutujących."
+            title="Warianty zamówień"
+            tone="info"
+          />
+          <ModuleSection
+            description="Ten sam zestaw rekordów obsługuje gotowe dane, częściową gotowość, pusty zbiór i ograniczenia źródeł."
+            title="Zakres zamówień"
+          >
+            <ModuleTable
+              columns={orderColumns}
+              detailDefinition={detail}
+              loading={false}
+              primaryColumnId="externalOrderId"
+              rows={orderRows(data.records)}
+              summary={`${data.records.length} zamówień`}
+            />
+          </ModuleSection>
+        </>
+      );
     default:
       return <UnsupportedVariant definition={definition} />;
   }
@@ -468,6 +514,29 @@ function ProductsContent({
       return <ProductGaps records={data.records} />;
     case 'impact':
       return <ProductImpact records={data.records} />;
+    case 'variants':
+      return (
+        <>
+          <InlineNotice
+            message="Widok zbiera warianty katalogu, mapowania, ofert, wydajności, braków i wpływu w jednym ekranie odczytu."
+            title="Warianty produktów"
+            tone="info"
+          />
+          <ModuleSection
+            description="Lista produktów zachowuje alternatywę tabelaryczną i nie dopisuje danych spoza kontraktu."
+            title="Zakres produktów"
+          >
+            <ModuleTable
+              columns={productColumns}
+              detailDefinition={detail}
+              loading={false}
+              primaryColumnId="name"
+              rows={productRows(data.records)}
+              summary={`${data.records.length} produktów`}
+            />
+          </ModuleSection>
+        </>
+      );
     default:
       return <UnsupportedVariant definition={definition} />;
   }
@@ -512,6 +581,29 @@ function CustomersContent({
       return <PrivacyView records={data.records} />;
     case 'impact':
       return <CustomerImpact records={data.records} />;
+    case 'variants':
+      return (
+        <>
+          <InlineNotice
+            message="Widok zbiera warianty pseudonimizacji, segmentów, kohort, konfliktów tożsamości, prywatności i wpływu bez ujawniania PII."
+            title="Warianty klientów"
+            tone="info"
+          />
+          <ModuleSection
+            description="Tabela zachowuje alternatywę tekstową dla wszystkich stanów klienta i pokazuje tylko pseudonimizowane identyfikatory."
+            title="Zakres klientów"
+          >
+            <ModuleTable
+              columns={customerColumns}
+              detailDefinition={detail}
+              loading={false}
+              primaryColumnId="customerPseudonym"
+              rows={customerRows(data.records)}
+              summary={`${data.records.length} pseudonimów`}
+            />
+          </ModuleSection>
+        </>
+      );
     default:
       return <UnsupportedVariant definition={definition} />;
   }
@@ -570,6 +662,28 @@ function TrafficContent({
       );
     case 'landing-pages':
       return <LandingPagesView records={data.records} />;
+    case 'variants':
+      return (
+        <>
+          <InlineNotice
+            message="Widok zbiera warianty przeglądu ruchu, kanałów, lejka, jakości eventów, porównania GA4 z zamówieniami i stron wejścia."
+            title="Warianty ruchu"
+            tone="info"
+          />
+          <ModuleSection
+            description="Tabela ruchu pozostaje kanoniczną alternatywą danych dla stanów ready, partial, empty, error, stale i offline."
+            title="Zakres ruchu"
+          >
+            <ModuleTable
+              columns={trafficColumns}
+              loading={false}
+              primaryColumnId="channel"
+              rows={trafficRows(data.records)}
+              summary={`${data.records.length} wymiarów`}
+            />
+          </ModuleSection>
+        </>
+      );
     default:
       return <UnsupportedVariant definition={definition} />;
   }

@@ -122,6 +122,11 @@
   font-size: var(--pd-type-size-body-small);
 }
 
+.pd-data-status-banner__sources dt {
+  color: var(--pd-text);
+  letter-spacing: 0;
+}
+
 .pd-page-header__meta dd,
 .pd-data-status-banner__sources dd,
 .pd-evidence-panel__sources dd,

@@ -1,0 +1,86 @@
+{
+  "fixtureId": "SB-291",
+  "storyTitle": "00 Fundamenty/06 Katalog komponentów/Backlog P0 komponentów bazowych - pakiet 2",
+  "sourceDocument": "22-mapy-i-indeksy/storybook-backlog-scenariusze.md",
+  "screenId": null,
+  "components": [
+    "BottomSheet",
+    "BrandLockup",
+    "BrandMark",
+    "Breadcrumbs",
+    "BulkActionBar",
+    "Button",
+    "Checkbox",
+    "ColumnPicker",
+    "Combobox",
+    "DataStatusBanner",
+    "DataTable",
+    "DateRangePicker",
+    "DecisionCard",
+    "DetailPanel",
+    "Dialog",
+    "Drawer",
+    "EmptyState",
+    "ErrorState",
+    "EvidencePanel",
+    "FileInput",
+    "FilterBar",
+    "FunnelChart",
+    "IconButton",
+    "InlineNotice",
+    "Menu",
+    "NipField",
+    "NumberField",
+    "PageHeader",
+    "Pagination",
+    "PaginationNav"
+  ],
+  "states": [
+    "ready",
+    "loading",
+    "empty",
+    "error",
+    "disabled",
+    "focus-visible",
+    "review",
+    "accepted"
+  ],
+  "viewports": [
+    1440,
+    768,
+    390
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "localeCases": [
+    "pl",
+    "en-long-copy"
+  ],
+  "playSteps": [
+    "verify-all-p0-items-visible",
+    "verify-source-documents-visible",
+    "verify-fixtures-visible",
+    "exercise-readiness-control",
+    "verify-keyboard-only"
+  ],
+  "visualAssertions": [
+    "1440-light",
+    "1440-dark",
+    "768-reflow",
+    "390-mobile",
+    "200-percent-zoom",
+    "no-horizontal-page-scroll",
+    "status-table-readable"
+  ],
+  "a11y": [
+    "contrast",
+    "keyboard-only",
+    "focus-visible",
+    "table-semantics",
+    "accessible-name",
+    "aria-status"
+  ],
+  "implementationStatus": "implemented-passing-readiness-contract"
+}

@@ -4,13 +4,14 @@
   "stage": "C2.2",
   "stageName": "Storybook Taxonomy Cleanup — Foundation-integrated Component Evidence",
   "foundationBaseline": {
-    "expectedActiveStoryCount": 85,
-    "expectedActiveStoryFileCount": 34,
+    "expectedActiveStoryCount": 175,
+    "expectedActiveStoryFileCount": 42,
     "activeStoryFiles": [
       "apps/web/src/design-system/components/Button/Button.stories.tsx",
       "apps/web/src/design-system/components/Field/FormFields.stories.tsx",
       "apps/web/src/design-system/icons/Icon.stories.tsx",
       "apps/web/src/design-system/icons/PapaDataBrand.stories.tsx",
+      "apps/web/src/storybook-next/stories/00-foundations/ComponentReadiness.stories.tsx",
       "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
       "apps/web/src/storybook-next/stories/00-foundations/surface-messaging.stories.tsx",
       "apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx",
@@ -20,6 +21,7 @@
       "apps/web/src/storybook-next/stories/15-data-visualizations/ComparisonChart.stories.tsx",
       "apps/web/src/storybook-next/stories/15-data-visualizations/CorrelationChart.stories.tsx",
       "apps/web/src/storybook-next/stories/15-data-visualizations/DataStates.stories.tsx",
+      "apps/web/src/storybook-next/stories/15-data-visualizations/DomainComponentReadiness.stories.tsx",
       "apps/web/src/storybook-next/stories/15-data-visualizations/ForecastChart.stories.tsx",
       "apps/web/src/storybook-next/stories/15-data-visualizations/MetricCard.stories.tsx",
       "apps/web/src/storybook-next/stories/15-data-visualizations/ShareChart.stories.tsx",
@@ -39,8 +41,14 @@
       "apps/web/src/storybook-next/stories/25-access-registration-onboarding/AuthSurfaces.stories.tsx",
       "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
       "apps/web/src/storybook-next/stories/31-paid-campaigns/Campaigns.stories.tsx",
-      "apps/web/src/storybook-next/stories/00-foundations/ComponentReadiness.stories.tsx",
-      "apps/web/src/storybook-next/stories/15-data-visualizations/DomainComponentReadiness.stories.tsx"
+      "apps/web/src/storybook-next/stories/32-orders/Orders.stories.tsx",
+      "apps/web/src/storybook-next/stories/33-products/Products.stories.tsx",
+      "apps/web/src/storybook-next/stories/34-customers/Customers.stories.tsx",
+      "apps/web/src/storybook-next/stories/35-traffic-funnel/Traffic.stories.tsx",
+      "apps/web/src/storybook-next/stories/40-integrations/Integrations.stories.tsx",
+      "apps/web/src/storybook-next/stories/41-data-quality/DataQuality.stories.tsx",
+      "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+      "apps/web/src/storybook-next/stories/60-settings-security/Settings.stories.tsx"
     ],
     "frozenEntries": [
       "00.01",

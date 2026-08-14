@@ -98,79 +98,79 @@ const crossCuttingPatternTargets = [
 const businessScreenTargets = [
   {
     title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
-    name: 'Command Center Overview Story',
+    name: '30.01 Widok główny',
   },
   {
     title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
-    name: 'Command Center Attention Queue Story',
+    name: '30.02 Kolejka uwagi',
   },
   {
     title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
-    name: 'Command Center Kpi Story',
+    name: '30.03 KPI',
   },
   {
     title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
-    name: 'Command Center Plan Performance Story',
+    name: '30.04 Plan vs wynik',
   },
   {
     title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
-    name: 'Command Center Drivers Story',
+    name: '30.05 Drivery wyniku',
   },
   {
     title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
-    name: 'Command Center Sales Sources Story',
+    name: '30.06 Źródła sprzedaży',
   },
   {
     title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
-    name: 'Command Center Traffic Story',
+    name: '30.07 Ruch',
   },
   {
     title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
-    name: 'Command Center Products Story',
+    name: '30.08 Produkty',
   },
   {
     title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
-    name: 'Command Center Customers Story',
+    name: '30.09 Klienci',
   },
   {
     title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
-    name: 'Command Center Funnel Story',
+    name: '30.10 Lejek',
   },
   {
     title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
-    name: 'Command Center Recommendations Story',
+    name: '30.11 Rekomendacje AI',
   },
   {
     title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
-    name: 'Command Center Sales Signals Story',
+    name: '30.12 Sygnały sprzedażowe',
   },
   {
     title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
-    name: 'Command Center Waterfall Story',
+    name: '30.13 Waterfall',
   },
   {
     title: '31 Kampanie płatne/Ekrany produkcyjne',
-    name: 'Campaigns Overview Story',
+    name: '31.01 Przegląd',
   },
   {
     title: '31 Kampanie płatne/Ekrany produkcyjne',
-    name: 'Campaigns List Story',
+    name: '31.02 Lista kampanii',
   },
   {
     title: '31 Kampanie płatne/Ekrany produkcyjne',
-    name: 'Campaigns Detail Story',
+    name: '31.03 Szczegóły kampanii',
   },
   {
     title: '31 Kampanie płatne/Ekrany produkcyjne',
-    name: 'Campaigns Attribution Story',
+    name: '31.04 Atrybucja i sprzedaż',
   },
   {
     title: '31 Kampanie płatne/Ekrany produkcyjne',
-    name: 'Campaigns Budget Story',
+    name: '31.05 Budżet',
   },
   {
     title: '31 Kampanie płatne/Ekrany produkcyjne',
-    name: 'Campaigns Diagnostics Story',
+    name: '31.06 Diagnostyka',
   },
 ];
 

@@ -50,7 +50,7 @@
 
 .pd-chart-frame__eyebrow {
   display: block;
-  color: var(--pd-text-muted);
+  color: var(--pd-text);
   font-size: var(--pd-type-size-caption);
   line-height: var(--pd-line-height-normal);
 }
@@ -109,10 +109,10 @@
 
 .pd-chart-frame__metadata dt {
   flex: 0 0 auto;
-  color: var(--pd-text-muted);
+  color: var(--pd-text);
   font-family: var(--pd-font-mono);
   font-size: var(--pd-type-size-caption);
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
 }
 
 .pd-chart-frame__metadata dd {
@@ -580,7 +580,7 @@
 }
 
 .pd-chart-frame-stage .pd-chart-frame__eyebrow {
-  color: var(--pd-text-muted);
+  color: var(--pd-text);
   font-size: var(--pd-type-size-label);
 }
 
@@ -686,6 +686,11 @@
 .pd-chart-frame-canvas__support > .pd-chart-frame-canvas__assistant {
   block-size: 100%;
   min-block-size: 0;
+}
+
+.pd-chart-frame-canvas__support > .pd-f0-depth-stage__raised > span {
+  color: var(--pd-text);
+  letter-spacing: 0;
 }
 
 .pd-chart-frame-canvas__recommendation {
@@ -816,8 +821,8 @@
 .pd-chart-frame__eyebrow,
 .pd-chart-frame__metadata dt {
   font-family: var(--pd-font-mono);
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .pd-chart-frame__heading h3 {

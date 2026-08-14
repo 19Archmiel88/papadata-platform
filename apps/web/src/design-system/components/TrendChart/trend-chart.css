@@ -9,11 +9,11 @@
   align-items: center;
   min-block-size: 1.25rem;
   margin-block-end: var(--pd-space-2);
-  color: var(--pd-text-muted);
+  color: var(--pd-text);
   font-family: var(--pd-font-mono);
   font-size: 0.68rem;
   line-height: 1;
-  letter-spacing: 0.035em;
+  letter-spacing: 0;
 }
 
 .pd-trend-chart__axis-caption span {

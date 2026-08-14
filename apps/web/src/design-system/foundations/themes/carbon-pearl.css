@@ -138,7 +138,7 @@
 
   --pd-text: #201b13;
   --pd-text-secondary: #534936;
-  --pd-text-muted: #827560;
+  --pd-text-muted: #705f4b;
 
   --pd-brand-deep: #2c1806;
   --pd-brand: #9e6727;
@@ -181,9 +181,9 @@
   --pd-data-negative: #a9434c;
   --pd-data-no-data: #b5a895;
 
-  --pd-status-success: #26765f;
+  --pd-status-success: #237058;
   --pd-status-success-subtle: #e0eee6;
-  --pd-status-warning: #95611f;
+  --pd-status-warning: #8f5a1f;
   --pd-status-warning-subtle: #f3e4cf;
   --pd-status-danger: #a9434c;
   --pd-status-danger-subtle: #f4dfdf;

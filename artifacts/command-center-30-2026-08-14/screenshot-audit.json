@@ -1,0 +1,417 @@
+{
+  "baseUrl": "http://127.0.0.1:6024",
+  "generatedAt": "2026-08-14T09:01:03.205Z",
+  "blockedEnglish": [
+    "readiness",
+    "workspace",
+    "confidence",
+    "owner",
+    "effort",
+    "morning brief",
+    "forecast",
+    "drop-off",
+    "ownership"
+  ],
+  "results": [
+    {
+      "screenId": "30.01",
+      "slug": "overview",
+      "profile": "desktop",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.01-overview-desktop.png",
+      "box": {
+        "x": 57.59375,
+        "y": 617.265625,
+        "width": 1324.8125,
+        "height": 2135.609375
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 6,
+        "textLength": 3266
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.01",
+      "slug": "overview",
+      "profile": "mobile",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.01-overview-mobile.png",
+      "box": {
+        "x": 24,
+        "y": 757.03125,
+        "width": 342,
+        "height": 5426.609375
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 6,
+        "textLength": 3266
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.02",
+      "slug": "attention",
+      "profile": "desktop",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.02-attention-desktop.png",
+      "box": {
+        "x": 57.59375,
+        "y": 617.265625,
+        "width": 1324.8125,
+        "height": 1861.546875
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 5,
+        "textLength": 3121
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.02",
+      "slug": "attention",
+      "profile": "mobile",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.02-attention-mobile.png",
+      "box": {
+        "x": 24,
+        "y": 733.9375,
+        "width": 342,
+        "height": 4327.71875
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 5,
+        "textLength": 3121
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.03",
+      "slug": "kpi",
+      "profile": "desktop",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.03-kpi-desktop.png",
+      "box": {
+        "x": 57.59375,
+        "y": 579.484375,
+        "width": 1324.8125,
+        "height": 1725.828125
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 5,
+        "textLength": 2721
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.04",
+      "slug": "plan",
+      "profile": "desktop",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.04-plan-desktop.png",
+      "box": {
+        "x": 57.59375,
+        "y": 636.15625,
+        "width": 1324.8125,
+        "height": 1929.53125
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 5,
+        "textLength": 2418
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.05",
+      "slug": "drivers",
+      "profile": "desktop",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.05-drivers-desktop.png",
+      "box": {
+        "x": 57.59375,
+        "y": 617.265625,
+        "width": 1324.8125,
+        "height": 1742.546875
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 5,
+        "textLength": 2563
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.06",
+      "slug": "sources",
+      "profile": "desktop",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.06-sources-desktop.png",
+      "box": {
+        "x": 57.59375,
+        "y": 617.265625,
+        "width": 1324.8125,
+        "height": 1833.609375
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 5,
+        "textLength": 2674
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.07",
+      "slug": "traffic",
+      "profile": "desktop",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.07-traffic-desktop.png",
+      "box": {
+        "x": 57.59375,
+        "y": 598.375,
+        "width": 1324.8125,
+        "height": 1795
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 5,
+        "textLength": 3061
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.08",
+      "slug": "products",
+      "profile": "desktop",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.08-products-desktop.png",
+      "box": {
+        "x": 57.59375,
+        "y": 598.375,
+        "width": 1324.8125,
+        "height": 1786.796875
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 5,
+        "textLength": 2901
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.09",
+      "slug": "customers",
+      "profile": "desktop",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.09-customers-desktop.png",
+      "box": {
+        "x": 57.59375,
+        "y": 598.375,
+        "width": 1324.8125,
+        "height": 1885.9375
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 5,
+        "textLength": 2862
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.10",
+      "slug": "funnel",
+      "profile": "desktop",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.10-funnel-desktop.png",
+      "box": {
+        "x": 57.59375,
+        "y": 598.375,
+        "width": 1324.8125,
+        "height": 1653.125
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 5,
+        "textLength": 1498
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.10",
+      "slug": "funnel",
+      "profile": "mobile",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.10-funnel-mobile.png",
+      "box": {
+        "x": 24,
+        "y": 715.046875,
+        "width": 342,
+        "height": 3144.234375
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 5,
+        "textLength": 1498
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.11",
+      "slug": "recommendations",
+      "profile": "desktop",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.11-recommendations-desktop.png",
+      "box": {
+        "x": 57.59375,
+        "y": 655.046875,
+        "width": 1324.8125,
+        "height": 988.09375
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 4,
+        "textLength": 1287
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.12",
+      "slug": "signals",
+      "profile": "desktop",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.12-signals-desktop.png",
+      "box": {
+        "x": 57.59375,
+        "y": 636.15625,
+        "width": 1324.8125,
+        "height": 1760.125
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 5,
+        "textLength": 3017
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.13",
+      "slug": "waterfall",
+      "profile": "desktop",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.13-waterfall-desktop.png",
+      "box": {
+        "x": 57.59375,
+        "y": 598.375,
+        "width": 1324.8125,
+        "height": 2093.703125
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 6,
+        "textLength": 2895
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.13",
+      "slug": "waterfall",
+      "profile": "mobile",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.13-waterfall-mobile.png",
+      "box": {
+        "x": 24,
+        "y": 733.9375,
+        "width": 342,
+        "height": 4524.34375
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 6,
+        "textLength": 2895
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.14",
+      "slug": "variants",
+      "profile": "desktop",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.14-variants-desktop.png",
+      "box": {
+        "x": 57.59375,
+        "y": 636.15625,
+        "width": 1324.8125,
+        "height": 1692.65625
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 5,
+        "textLength": 2711
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "screenId": "30.14",
+      "slug": "variants",
+      "profile": "mobile",
+      "screenshotPath": "/home/papadata/papadata-platform/artifacts/command-center-30-2026-08-14/30.14-variants-mobile.png",
+      "box": {
+        "x": 24,
+        "y": 786.421875,
+        "width": 342,
+        "height": 4227.578125
+      },
+      "audit": {
+        "bodyOverflowX": 0,
+        "rootOverflowX": 0,
+        "visibleTerms": [],
+        "headingCount": 5,
+        "textLength": 2711
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    }
+  ],
+  "failures": []
+}

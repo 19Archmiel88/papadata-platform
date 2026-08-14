@@ -8,16 +8,18 @@ import {
 } from 'storybook/test';
 
 import {
-  AnalyticsModuleWorkspace,
   analyticsScreenDefinitions,
   createAnalyticsStorybookData,
 } from '../../../screens/analytics';
-import '../../../storybook-next/presentation/story-presentation.css';
+import type {
+  OrdersModuleData,
+} from '../../../screens/analytics';
 import {
-  StoryPresentationMeta,
-  StoryPresentationPage,
-  StoryPresentationSection,
-} from '../../../storybook-next/presentation/StoryPresentation';
+  OrdersWorkspace,
+} from '../../production/AnalyticsDomainWorkspaces';
+import {
+  ProductionStoryShell,
+} from '../../production/ProductionStoryShell';
 
 const meta = {
   title: '32 Zamówienia/Ekrany produkcyjne',
@@ -37,7 +39,8 @@ type ScreenId =
   | '32.04'
   | '32.05'
   | '32.06'
-  | '32.07';
+  | '32.07'
+  | '32.08';
 
 const definitions = analyticsScreenDefinitions.filter(
   (definition) => definition.id.startsWith('32.'),
@@ -52,37 +55,21 @@ function getDefinition(id: ScreenId) {
 function ModuleStoryPage({ id }: { readonly id: ScreenId }) {
   const definition = getDefinition(id);
   return (
-    <StoryPresentationPage
-      headerAside={(
-        <StoryPresentationMeta
-          ariaLabel='Status ekranu Zamówienia'
-          items={[
-            { label: 'Owner', value: 'Orders' },
-            { label: 'Status', value: 'runtime + target states' },
-            { label: 'Dokument', value: `docs/specyfikacja-docelowa/${definition.documentPath}` },
-          ]}
-        />
-      )}
-      sectionCode='32'
-      sectionLabel='Zamówienia'
-      storyId={definition.id}
-      summary={definition.summary}
-      title={definition.displayTitle}
+    <ProductionStoryShell
+      contract={{
+        ...definition,
+        owner: 'Orders',
+        sectionId: '32',
+        sectionLabel: 'Zamówienia',
+        status: 'runtime + target states',
+      }}
     >
-      <StoryPresentationSection
-        index={definition.id.split('.')[1] ?? '01'}
-        layout="full"
-        summary="Widok używa lokalnych danych kontraktowych Storybooka; runtime pobiera ten sam kształt przez BFF."
-        title="Ekran produkcyjny"
-      >
-        <AnalyticsModuleWorkspace
-          data={createAnalyticsStorybookData(definition)}
-          definition={definition}
-          mode="storybook"
-          path={definition.requiresResourceId ? `${definition.routeBase}/storybook-resource` : definition.routeBase}
-        />
-      </StoryPresentationSection>
-    </StoryPresentationPage>
+      <OrdersWorkspace
+        data={createAnalyticsStorybookData(definition) as OrdersModuleData}
+        definition={definition}
+        mode="storybook"
+      />
+    </ProductionStoryShell>
   );
 }
 
@@ -95,19 +82,65 @@ function createStory(id: ScreenId): Story {
       const element = canvasElement.querySelector(`[data-screen-id="${id}"]`);
       if (!(element instanceof HTMLElement)) throw new Error(`Screen ${id} is not rendered.`);
       const screen = within(element);
-      await expect(screen.getByRole('heading', { name: definition.displayTitle })).toBeInTheDocument();
-      await expect(screen.getByRole('navigation', { name: `Widoki: Zamówienia` })).toBeInTheDocument();
+      await expect(screen.getByRole('heading', { level: 1, name: definition.displayTitle })).toBeInTheDocument();
+      await expect(screen.getByRole('navigation', { name: 'Widoki zamówień' })).toBeInTheDocument();
+      await expect(screen.getByRole('heading', { name: 'Co trzeba obsłużyć w zamówieniach teraz' })).toBeInTheDocument();
+      await expect(screen.getByRole('heading', { name: 'Kolejka obsługi zamówień' })).toBeInTheDocument();
+      await expect(screen.getByRole('heading', { name: orderVariantHeading[definition.variant as keyof typeof orderVariantHeading] })).toBeInTheDocument();
       await expect(screen.queryByRole('button', { name: 'Eksportuj widok' })).not.toBeInTheDocument();
       await expect(screen.queryByText('Enterprise BI')).not.toBeInTheDocument();
-      await expect(element).toHaveAttribute('data-analytics-variant', definition.variant);
+      await expect(element).toHaveAttribute('data-screen-variant', definition.variant);
     },
   };
 }
 
-export const Screen32_01Story = createStory('32.01');
-export const Screen32_02Story = createStory('32.02');
-export const Screen32_03Story = createStory('32.03');
-export const Screen32_04Story = createStory('32.04');
-export const Screen32_05Story = createStory('32.05');
-export const Screen32_06Story = createStory('32.06');
-export const Screen32_07Story = createStory('32.07');
+const orderVariantHeading = {
+  detail: 'Zamówienie bez ujawniania danych poza kontraktem',
+  export: 'Pakiet eksportu bez uruchamiania operacji pobrania',
+  list: 'Rejestr operacyjny zamówień',
+  overview: 'Obsługa zamówień według ryzyka',
+  reconciliation: 'Skrót zgodności zamówień i źródeł',
+  'source-comparison': 'Wartość i ryzyko według źródła zamówień',
+  timeline: 'Chronologia zamówień i statusów',
+  variants: 'Stany produkcyjne zamówień',
+} as const;
+
+export const Screen32_01Story = {
+  ...createStory('32.01'),
+  name: '32.01 Przegląd',
+} satisfies Story;
+
+export const Screen32_02Story = {
+  ...createStory('32.02'),
+  name: '32.02 Lista',
+} satisfies Story;
+
+export const Screen32_03Story = {
+  ...createStory('32.03'),
+  name: '32.03 Szczegóły',
+} satisfies Story;
+
+export const Screen32_04Story = {
+  ...createStory('32.04'),
+  name: '32.04 Oś zdarzeń',
+} satisfies Story;
+
+export const Screen32_05Story = {
+  ...createStory('32.05'),
+  name: '32.05 Porównanie źródeł',
+} satisfies Story;
+
+export const Screen32_06Story = {
+  ...createStory('32.06'),
+  name: '32.06 Rekoncyliacja - skrót',
+} satisfies Story;
+
+export const Screen32_07Story = {
+  ...createStory('32.07'),
+  name: '32.07 Eksport',
+} satisfies Story;
+
+export const Screen32_08Story = {
+  ...createStory('32.08'),
+  name: '32.08 Warianty zamówień',
+} satisfies Story;

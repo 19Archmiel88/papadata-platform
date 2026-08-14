@@ -23,6 +23,11 @@
     transparent;
 }
 
+.pd-table__scroll:focus-visible {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: var(--pd-focus-offset);
+}
+
 .pd-table__scroll::-webkit-scrollbar {
   height: 10px;
 }

@@ -12,12 +12,9 @@ import {
   businessScreenDefinitions,
   createStorybookBusinessData,
 } from '../../../screens/business';
-import '../../../storybook-next/presentation/story-presentation.css';
 import {
-  StoryPresentationMeta,
-  StoryPresentationPage,
-  StoryPresentationSection,
-} from '../../../storybook-next/presentation/StoryPresentation';
+  ProductionStoryShell,
+} from '../../production/ProductionStoryShell';
 
 const meta = {
   title: '30 Centrum Dowodzenia/Ekrany produkcyjne',
@@ -46,7 +43,8 @@ type CommandCenterStoryId =
   | '30.10'
   | '30.11'
   | '30.12'
-  | '30.13';
+  | '30.13'
+  | '30.14';
 
 const definitions = businessScreenDefinitions.filter(
   (definition) => definition.group === 'command-center',
@@ -70,45 +68,22 @@ function CommandCenterStoryPage({
   const definition = getDefinition(id);
 
   return (
-    <StoryPresentationPage
-      headerAside={(
-        <StoryPresentationMeta
-          ariaLabel="Status ekranu Command Center"
-          items={[
-            {
-              label: 'Owner',
-              value: 'Command Center',
-            },
-            {
-              label: 'Status',
-              value: 'production-screen',
-            },
-            {
-              label: 'Dokument',
-              value: `docs/specyfikacja-docelowa/${definition.documentPath}`,
-            },
-          ]}
-        />
-      )}
-      sectionCode="30"
-      sectionLabel="Centrum Dowodzenia"
-      storyId={definition.id}
-      summary={definition.summary}
-      title={definition.displayTitle}
+    <ProductionStoryShell
+      canvasSummary="Storybook pokazuje ekran produkcyjny z danymi kontraktowymi fixture; runtime pobiera dane przez BFF."
+      contract={{
+        ...definition,
+        owner: 'Command Center',
+        sectionId: '30',
+        sectionLabel: 'Centrum Dowodzenia',
+        status: 'production-screen',
+      }}
     >
-      <StoryPresentationSection
-        index={definition.id.split('.')[1] ?? '01'}
-        layout="full"
-        summary="Storybook pokazuje ekran produkcyjny z danymi kontraktowymi fixture; runtime pobiera dane przez BFF."
-        title="Ekran produkcyjny"
-      >
-        <BusinessScreen
-          data={createStorybookBusinessData(definition)}
-          definition={definition}
-          mode="storybook"
-        />
-      </StoryPresentationSection>
-    </StoryPresentationPage>
+      <BusinessScreen
+        data={createStorybookBusinessData(definition)}
+        definition={definition}
+        mode="storybook"
+      />
+    </ProductionStoryShell>
   );
 }
 
@@ -132,7 +107,7 @@ function createStory(id: CommandCenterStoryId): Story {
       const screen = within(screenElement);
 
       await expect(
-        screen.getByRole('heading', { name: definition.displayTitle }),
+        screen.getByRole('heading', { level: 1, name: definition.displayTitle }),
       ).toBeInTheDocument();
       await expect(
         screen.getByRole('navigation', { name: 'Widoki Centrum Dowodzenia' }),
@@ -152,16 +127,34 @@ function createStory(id: CommandCenterStoryId): Story {
 
       if (id === '30.01') {
         await expect(
-          screen.getByRole('heading', { name: 'Najważniejsze sygnały' }),
+          screen.getByRole('heading', { name: 'Co wymaga decyzji teraz' }),
         ).toBeInTheDocument();
         await expect(
-          screen.getByRole('heading', { name: 'Najważniejsze wyniki' }),
+          screen.getByRole('heading', { name: 'Decyzje do obsłużenia' }),
+        ).toBeInTheDocument();
+        await expect(
+          screen.getByRole('heading', { name: 'Rejestr operacyjny' }),
+        ).toBeInTheDocument();
+      }
+
+      if (id === '30.02') {
+        await expect(
+          screen.getByRole('heading', { name: 'Kolejka reakcji według wpływu' }),
+        ).toBeInTheDocument();
+      }
+
+      if (id === '30.12') {
+        await expect(
+          screen.getByRole('heading', { name: 'Sygnały do oceny' }),
         ).toBeInTheDocument();
       }
 
       if (id === '30.10') {
         await expect(
-          screen.getByRole('heading', { name: 'Lejek sprzedażowy' }),
+          screen.getByRole('heading', { name: 'Lejek sprzedażowy i największy odpływ' }),
+        ).toBeInTheDocument();
+        await expect(
+          screen.getByText('Największa strata'),
         ).toBeInTheDocument();
       }
 
@@ -173,23 +166,85 @@ function createStory(id: CommandCenterStoryId): Story {
 
       if (id === '30.13') {
         await expect(
-          screen.getByRole('heading', { name: 'Składniki zmiany' }),
+          screen.getByRole('heading', { name: 'Składniki zmiany i narracja planu' }),
+        ).toBeInTheDocument();
+      }
+
+      if (id === '30.14') {
+        await expect(
+          screen.getByRole('heading', { name: 'Jak ekran zachowuje się w stanach produkcyjnych' }),
         ).toBeInTheDocument();
       }
     },
   };
 }
 
-export const CommandCenterOverviewStory = createStory('30.01');
-export const CommandCenterAttentionQueueStory = createStory('30.02');
-export const CommandCenterKpiStory = createStory('30.03');
-export const CommandCenterPlanPerformanceStory = createStory('30.04');
-export const CommandCenterDriversStory = createStory('30.05');
-export const CommandCenterSalesSourcesStory = createStory('30.06');
-export const CommandCenterTrafficStory = createStory('30.07');
-export const CommandCenterProductsStory = createStory('30.08');
-export const CommandCenterCustomersStory = createStory('30.09');
-export const CommandCenterFunnelStory = createStory('30.10');
-export const CommandCenterRecommendationsStory = createStory('30.11');
-export const CommandCenterSalesSignalsStory = createStory('30.12');
-export const CommandCenterWaterfallStory = createStory('30.13');
+export const CommandCenterOverviewStory = {
+  ...createStory('30.01'),
+  name: '30.01 Widok główny',
+} satisfies Story;
+
+export const CommandCenterAttentionQueueStory = {
+  ...createStory('30.02'),
+  name: '30.02 Kolejka uwagi',
+} satisfies Story;
+
+export const CommandCenterKpiStory = {
+  ...createStory('30.03'),
+  name: '30.03 KPI',
+} satisfies Story;
+
+export const CommandCenterPlanPerformanceStory = {
+  ...createStory('30.04'),
+  name: '30.04 Plan vs wynik',
+} satisfies Story;
+
+export const CommandCenterDriversStory = {
+  ...createStory('30.05'),
+  name: '30.05 Drivery wyniku',
+} satisfies Story;
+
+export const CommandCenterSalesSourcesStory = {
+  ...createStory('30.06'),
+  name: '30.06 Źródła sprzedaży',
+} satisfies Story;
+
+export const CommandCenterTrafficStory = {
+  ...createStory('30.07'),
+  name: '30.07 Ruch',
+} satisfies Story;
+
+export const CommandCenterProductsStory = {
+  ...createStory('30.08'),
+  name: '30.08 Produkty',
+} satisfies Story;
+
+export const CommandCenterCustomersStory = {
+  ...createStory('30.09'),
+  name: '30.09 Klienci',
+} satisfies Story;
+
+export const CommandCenterFunnelStory = {
+  ...createStory('30.10'),
+  name: '30.10 Lejek',
+} satisfies Story;
+
+export const CommandCenterRecommendationsStory = {
+  ...createStory('30.11'),
+  name: '30.11 Rekomendacje AI',
+} satisfies Story;
+
+export const CommandCenterSalesSignalsStory = {
+  ...createStory('30.12'),
+  name: '30.12 Sygnały sprzedażowe',
+} satisfies Story;
+
+export const CommandCenterWaterfallStory = {
+  ...createStory('30.13'),
+  name: '30.13 Waterfall',
+} satisfies Story;
+
+export const CommandCenterVariantsStory = {
+  ...createStory('30.14'),
+  name: '30.14 Warianty Centrum Dowodzenia',
+} satisfies Story;

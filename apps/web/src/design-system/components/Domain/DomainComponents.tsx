@@ -356,15 +356,15 @@ export const DataStatusBanner = forwardRef<
     >
       <div className="pd-data-status-banner__main">
         <StatusBadge
-          status="Readiness"
+          status="Stan danych"
           text={resolveReadinessLabel(readiness)}
           tone={tone}
         />
         <div>
           <h2 id={titleId}>Status danych</h2>
           <p>
-            Workspace {context.workspaceId}; źródła: {sources.length}; aktywne
-            ograniczenia: {issueCount}.
+            Obszar roboczy {formatWorkspaceLabel(context.workspaceId)};
+            źródła: {sources.length}; aktywne ograniczenia: {issueCount}.
           </p>
         </div>
       </div>
@@ -441,10 +441,10 @@ export const EvidencePanel = forwardRef<HTMLElement, EvidencePanelProps>(
         <header className="pd-evidence-panel__header">
           <div>
             <p>Dowody</p>
-            <h2 id={titleId}>Źródła i confidence</h2>
+            <h2 id={titleId}>Źródła i pewność</h2>
           </div>
           <StatusBadge
-            status="Confidence"
+            status="Pewność"
             text={formatPercent(confidence)}
             tone={confidence >= 0.8 ? 'success' : 'warning'}
           />
@@ -533,7 +533,7 @@ export const RecommendationCard = forwardRef<
 
       <dl className="pd-recommendation-card__meta">
         <div>
-          <dt>Effort</dt>
+          <dt>Nakład</dt>
           <dd>{resolveImpactLabel(effort)}</dd>
         </div>
         <div>
@@ -633,7 +633,7 @@ export const DecisionCard = forwardRef<HTMLElement, DecisionCardProps>(
             <dd>{resolveImpactLabel(impact)}</dd>
           </div>
           <div>
-            <dt>Owner</dt>
+            <dt>Właściciel</dt>
             <dd>{owner ?? 'Nieprzypisane'}</dd>
           </div>
           <div>
@@ -760,11 +760,11 @@ export const MorningBrief = forwardRef<HTMLElement, MorningBriefProps>(
       >
         <header className="pd-morning-brief__header">
           <div>
-            <p>Morning brief</p>
+            <p>Brief poranny</p>
             <h2 id={titleId}>Najważniejsze sygnały</h2>
           </div>
           <StatusBadge
-            status="Readiness"
+            status="Stan danych"
             text={resolveReadinessLabel(dataReadiness)}
             tone={resolveReadinessTone(dataReadiness)}
           />
@@ -1008,7 +1008,7 @@ export const SalesSources = forwardRef<HTMLElement, SalesSourcesProps>(
                   <b>{formatCurrency(source.revenue)}</b>
                 </div>
                 <StatusBadge
-                  status="Readiness"
+                  status="Stan danych"
                   text={resolveReadinessLabel(source.readiness)}
                   tone={resolveReadinessTone(source.readiness)}
                 />
@@ -1353,7 +1353,7 @@ export const AttributionComparison = forwardRef<
             <span>
               <strong>{model.label}</strong>
               <span>{formatCurrency(model.revenue)} · ROAS {formatNumber(model.roas)}</span>
-              <span>Confidence {formatPercent(model.confidence)}</span>
+              <span>Pewność {formatPercent(model.confidence)}</span>
             </span>
           </label>
         ))}
@@ -1595,7 +1595,7 @@ export const LineageGraph = forwardRef<HTMLElement, LineageGraphProps>(
                 <span>{node.type}</span>
               </div>
               <StatusBadge
-                status="Readiness"
+                status="Stan danych"
                 text={resolveReadinessLabel(node.status)}
                 tone={resolveReadinessTone(node.status)}
               />
@@ -1942,6 +1942,12 @@ export const PairingFlow = forwardRef<HTMLElement, PairingFlowProps>(
     );
   },
 );
+
+function formatWorkspaceLabel(value: string): string {
+  return value
+    .replace(/^workspace[_-]?/u, '')
+    .replace(/[_-]+/gu, ' ');
+}
 
 function resolveReadinessLabel(value: string): string {
   switch (value) {

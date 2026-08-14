@@ -1,7 +1,21 @@
-/**
- * Punkt eksportu modułu:
- * src/screens/papa
- *
- * Moduł nie zawiera kodu legacy.
- */
-export {};
+export {
+  PapaWorkspace,
+} from './PapaWorkspace';
+export type {
+  PapaWorkspaceProps,
+} from './PapaWorkspace';
+export {
+  createPapaStorybookData,
+  findPapaScreenDefinition,
+  getPapaNavigation,
+  papaScreenDefinitions,
+} from './papaData';
+export type {
+  PapaContextItem,
+  PapaDecision,
+  PapaEvidenceItem,
+  PapaScreenDefinition,
+  PapaScreenId,
+  PapaScreenVariant,
+  PapaWorkspaceData,
+} from './papaData';

@@ -264,7 +264,16 @@ export function Table({
       }
       style={resolvedStyle}
     >
-      <div className="pd-table__scroll">
+      <div
+        aria-label={
+          ariaLabel
+            ? `Przewijany obszar tabeli: ${ariaLabel}`
+            : 'Przewijany obszar tabeli'
+        }
+        className="pd-table__scroll"
+        role="region"
+        tabIndex={0}
+      >
         <table
           aria-label={
             ariaLabel

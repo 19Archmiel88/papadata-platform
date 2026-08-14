@@ -1,0 +1,74 @@
+{
+  "fixtureId": "SB-290",
+  "storyTitle": "15 Wykresy i dane/05 Katalog komponentów/Backlog P0 komponentów domenowych",
+  "sourceDocument": "22-mapy-i-indeksy/storybook-backlog-scenariusze.md",
+  "screenId": null,
+  "components": [
+    "AttributionComparison",
+    "BudgetPacing",
+    "CohortMatrix",
+    "CustomerSegments",
+    "DataStatusBanner",
+    "DecisionQueue",
+    "EvidencePanel",
+    "FunnelStep",
+    "LineageGraph",
+    "MorningBrief",
+    "PairingFlow",
+    "PlanPerformance",
+    "RecommendationCard",
+    "ReconciliationPanel",
+    "ResultDrivers",
+    "SalesFunnel",
+    "SalesSources",
+    "SyncTimeline"
+  ],
+  "states": [
+    "ready",
+    "partial",
+    "stale",
+    "noData",
+    "blocked",
+    "error",
+    "review",
+    "accepted"
+  ],
+  "viewports": [
+    1440,
+    768,
+    390
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "localeCases": [
+    "pl",
+    "en-long-copy"
+  ],
+  "playSteps": [
+    "verify-all-p0-items-visible",
+    "verify-source-documents-visible",
+    "verify-fixtures-visible",
+    "exercise-readiness-control",
+    "verify-keyboard-only"
+  ],
+  "visualAssertions": [
+    "1440-light",
+    "1440-dark",
+    "768-reflow",
+    "390-mobile",
+    "200-percent-zoom",
+    "no-horizontal-page-scroll",
+    "status-table-readable"
+  ],
+  "a11y": [
+    "contrast",
+    "keyboard-only",
+    "focus-visible",
+    "table-semantics",
+    "accessible-name",
+    "aria-status"
+  ],
+  "implementationStatus": "implemented-passing-readiness-contract"
+}

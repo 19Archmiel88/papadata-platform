@@ -62,6 +62,14 @@ type ComponentReadinessRow = {
   readonly coverage: readonly string[];
 };
 
+type P0BacklogRow = {
+  readonly id: string;
+  readonly story: string;
+  readonly document: string;
+  readonly fixture: string;
+  readonly status: ComponentReadinessRow['status'];
+};
+
 const baseComponents = [
   ['Button', '00.14', 'fixtures/storybook/005-00-14-przyciski-i-akcje.json', 'accepted'],
   ['IconButton', '00.14', 'fixtures/storybook/005-00-14-przyciski-i-akcje.json', 'accepted'],
@@ -105,6 +113,93 @@ const baseComponents = [
   ['SectionNavigation', '18.01', 'fixtures/storybook/112-18-01-uklad-strony-i-sekcji.json', 'accepted'],
   ['Breadcrumbs', '00.21', 'fixtures/storybook/287-component-readiness-base.json', 'review'],
 ] satisfies readonly (readonly [string, string, string, ComponentReadinessRow['status']])[];
+
+const p0BaseBacklogItems = [
+  {
+    id: 'P0.SB01',
+    story: '10 Komponenty bazowe/Data i zakres czasu',
+    document: '04-komponenty-bazowe/10-12-data-i-zakres-czasu.md',
+    fixture: 'fixtures/storybook/001-10-12-data-i-zakres-czasu.json',
+    status: 'implemented',
+  },
+  {
+    id: 'P0.SB02',
+    story: '10 Komponenty bazowe/Dialogi i warstwy',
+    document: '04-komponenty-bazowe/10-10-dialogi-i-warstwy.md',
+    fixture: 'fixtures/storybook/002-10-10-dialogi-i-warstwy.json',
+    status: 'implemented',
+  },
+  {
+    id: 'P0.SB03',
+    story: '10 Komponenty bazowe/Komunikaty i statusy',
+    document: '04-komponenty-bazowe/10-05-komunikaty-i-statusy.md',
+    fixture: 'fixtures/storybook/004-10-05-komunikaty-i-statusy.json',
+    status: 'implemented',
+  },
+  {
+    id: 'P0.SB04',
+    story: '10 Komponenty bazowe/Kontrolki wyboru',
+    document: '04-komponenty-bazowe/10-04-kontrolki-wyboru.md',
+    fixture: 'fixtures/storybook/005-10-04-kontrolki-wyboru.json',
+    status: 'implemented',
+  },
+  {
+    id: 'P0.SB05',
+    story: '10 Komponenty bazowe/Menu, popovery i tooltipy',
+    document: '04-komponenty-bazowe/10-09-menu-popovery-i-tooltipy.md',
+    fixture: 'fixtures/storybook/007-10-09-menu-popovery-i-tooltipy.json',
+    status: 'implemented',
+  },
+  {
+    id: 'P0.SB06',
+    story: '10 Komponenty bazowe/Nawigacja lokalna',
+    document: '04-komponenty-bazowe/10-08-nawigacja-lokalna.md',
+    fixture: 'fixtures/storybook/008-10-08-nawigacja-lokalna.json',
+    status: 'implemented',
+  },
+  {
+    id: 'P0.SB07',
+    story: '10 Komponenty bazowe/Tabela bazowa',
+    document: '04-komponenty-bazowe/10-07-tabela-bazowa.md',
+    fixture: 'fixtures/storybook/011-10-07-tabela-bazowa.json',
+    status: 'implemented',
+  },
+  {
+    id: 'P0.SB08',
+    story: '10 Komponenty bazowe/Ladowanie i postep',
+    document: '04-komponenty-bazowe/10-06-ladowanie-i-postep.md',
+    fixture: 'fixtures/storybook/012-10-06-ladowanie-i-postep.json',
+    status: 'implemented',
+  },
+  {
+    id: 'P0.SB27',
+    story: '10 Komponenty/AlertDialog',
+    document: '04-komponenty-bazowe/komponenty/alertdialog.md',
+    fixture: 'fixtures/storybook/031-alertdialog.json',
+    status: 'implemented',
+  },
+  {
+    id: 'P0.SB28',
+    story: '10 Komponenty/ApprovalPanel',
+    document: '04-komponenty-bazowe/komponenty/approvalpanel.md',
+    fixture: 'fixtures/storybook/032-approvalpanel.json',
+    status: 'implemented',
+  },
+  {
+    id: 'P0.SB29',
+    story: '10 Komponenty/AssistantComposer',
+    document: '04-komponenty-bazowe/komponenty/assistantcomposer.md',
+    fixture: 'fixtures/storybook/033-assistantcomposer.json',
+    status: 'implemented',
+  },
+  {
+    id: 'P0.SB30',
+    story: '10 Komponenty/BackgroundOperationItem',
+    document: '04-komponenty-bazowe/komponenty/backgroundoperationitem.md',
+    fixture: 'fixtures/storybook/034-backgroundoperationitem.json',
+    status: 'implemented',
+  },
+] satisfies readonly P0BacklogRow[];
 
 const coverage = [
   'PL/EN',
@@ -167,12 +262,12 @@ function ComponentReadinessTable({
           </caption>
           <thead>
             <tr>
-              <th scope="col">Component</th>
-              <th scope="col">Owner</th>
+              <th scope="col">{copy({ pl: 'Komponent', en: 'Component' })}</th>
+              <th scope="col">{copy({ pl: 'Właściciel', en: 'Owner' })}</th>
               <th scope="col">Status</th>
-              <th scope="col">Fixture</th>
-              <th scope="col">Checks</th>
-              <th scope="col">Play</th>
+              <th scope="col">{copy({ pl: 'Fixture', en: 'Fixture' })}</th>
+              <th scope="col">{copy({ pl: 'Kontrole', en: 'Checks' })}</th>
+              <th scope="col">{copy({ pl: 'Play test', en: 'Play test' })}</th>
             </tr>
           </thead>
           <tbody>
@@ -218,6 +313,78 @@ function ComponentReadinessTable({
   );
 }
 
+function P0BacklogTable({
+  rows,
+}: {
+  readonly rows: readonly P0BacklogRow[];
+}) {
+  const [selected, setSelected] = useState(rows[0]?.id ?? '');
+
+  return (
+    <>
+      <div className="pd-component-readiness__table pd-component-readiness__table--p0">
+        <table>
+          <caption className="pd-component-readiness__caption">
+            {copy({
+              pl: 'Zamknięcie P0 komponentów bazowych',
+              en: 'Base component P0 closure',
+            })}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">{copy({ pl: 'Story', en: 'Story' })}</th>
+              <th scope="col">{copy({ pl: 'Dokument', en: 'Document' })}</th>
+              <th scope="col">{copy({ pl: 'Fixture', en: 'Fixture' })}</th>
+              <th scope="col">Status</th>
+              <th scope="col">{copy({ pl: 'Kontrole', en: 'Checks' })}</th>
+              <th scope="col">{copy({ pl: 'Play test', en: 'Play test' })}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.id}>
+                <th scope="row"><code>{row.id}</code></th>
+                <td>{row.story}</td>
+                <td><code>{row.document}</code></td>
+                <td><code>{row.fixture}</code></td>
+                <td>
+                  <StatusBadge
+                    status="P0"
+                    text={row.status}
+                    tone={statusTone(row.status)}
+                  />
+                </td>
+                <td>
+                  <ul className="pd-component-readiness__criteria">
+                    {coverage.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </td>
+                <td>
+                  <Button
+                    size="small"
+                    variant={selected === row.id ? 'primary' : 'secondary'}
+                    onClick={() => {
+                      setSelected(row.id);
+                    }}
+                  >
+                    {copy({ pl: 'Sprawdź', en: 'Verify' })} {row.id}
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="pd-component-readiness__status" role="status">
+        {copy({ pl: 'Zweryfikowana pozycja', en: 'Verified item' })}: {selected}
+      </p>
+    </>
+  );
+}
+
 function BaseComponentReadiness() {
   const rows = useMemo(
     () => baseComponents.map(([name, owner, fixture, status]) => ({
@@ -243,8 +410,8 @@ function BaseComponentReadiness() {
           items={[
             { label: 'Story', value: '00.21' },
             { label: 'Status', value: 'implemented' },
-            { label: 'Theme', value: readTheme() },
-            { label: 'Locale', value: readLocale().toUpperCase() },
+            { label: copy({ pl: 'Motyw', en: 'Theme' }), value: readTheme() },
+            { label: copy({ pl: 'Język', en: 'Locale' }), value: readLocale().toUpperCase() },
           ]}
         />
       )}
@@ -275,7 +442,7 @@ function BaseComponentReadiness() {
             <dd>{rows.length}</dd>
           </div>
           <div>
-            <dt>{copy({ pl: 'Fixtures', en: 'Fixtures' })}</dt>
+            <dt>{copy({ pl: 'Fixture', en: 'Fixtures' })}</dt>
             <dd>{new Set(rows.map((row) => row.fixture)).size}</dd>
           </div>
           <div>
@@ -300,7 +467,77 @@ function BaseComponentReadiness() {
   );
 }
 
-export const BaseComponentReadinessStory: Story = {
+function BaseP0BacklogReadiness() {
+  return (
+    <StoryPresentationPage
+      className="pd-component-readiness"
+      headerAside={(
+        <StoryPresentationMeta
+          ariaLabel={copy({
+            pl: 'Metadane zamknięcia P0 komponentów bazowych',
+            en: 'Base component P0 closure metadata',
+          })}
+          items={[
+            { label: 'Story', value: '00.22' },
+            { label: 'Status', value: 'implemented' },
+            { label: copy({ pl: 'Motyw', en: 'Theme' }), value: readTheme() },
+            { label: copy({ pl: 'Język', en: 'Locale' }), value: readLocale().toUpperCase() },
+          ]}
+        />
+      )}
+      sectionCode="00"
+      sectionLabel={copy({ pl: 'Fundamenty', en: 'Foundations' })}
+      storyId="00.22"
+      summary={copy({
+        pl: 'Koordynacyjny katalog zamyka bazowe pozycje P0 z audytu 2026-08-14 bez reaktywowania legacy rootu 10 jako aktywnego ownera.',
+        en: 'The coordination catalog closes base P0 items from the 2026-08-14 audit without reactivating legacy root 10 as an active owner.',
+      })}
+      title={copy({
+        pl: 'Backlog P0 komponentów bazowych.',
+        en: 'Base component P0 backlog.',
+      })}
+    >
+      <StoryPresentationSection
+        index="01"
+        layout="wide"
+        summary={copy({
+          pl: 'Lista obejmuje bazowe oraz przekrojowe pozycje P0 z dokumentu audyt14082026.md przeniesione do jawnego statusu rejestrowego.',
+          en: 'The list covers base and cross-cutting P0 items from audyt14082026.md moved into explicit registry status.',
+        })}
+        title={copy({ pl: 'Zakres zamknięcia', en: 'Closure scope' })}
+      >
+        <dl className="pd-component-readiness__summary">
+          <div>
+            <dt>{copy({ pl: 'Pozycje P0', en: 'P0 items' })}</dt>
+            <dd>{p0BaseBacklogItems.length}</dd>
+          </div>
+          <div>
+            <dt>{copy({ pl: 'Fixture', en: 'Fixtures' })}</dt>
+            <dd>{new Set(p0BaseBacklogItems.map((row) => row.fixture)).size}</dd>
+          </div>
+          <div>
+            <dt>{copy({ pl: 'Kryteria na pozycję', en: 'Criteria per item' })}</dt>
+            <dd>{coverage.length}</dd>
+          </div>
+        </dl>
+      </StoryPresentationSection>
+
+      <StoryPresentationSection
+        index="02"
+        layout="wide"
+        summary={copy({
+          pl: 'Każdy wiersz ma dokument źródłowy, fixture, status, checklistę dostępności i kontrolkę używaną przez play test.',
+          en: 'Each row has a source document, fixture, status, accessibility checklist and a control used by the play test.',
+        })}
+        title={copy({ pl: 'Rejestr P0', en: 'P0 registry' })}
+      >
+        <P0BacklogTable rows={p0BaseBacklogItems} />
+      </StoryPresentationSection>
+    </StoryPresentationPage>
+  );
+}
+
+export const KomponentyBazoweStory: Story = {
   name: 'Komponenty bazowe',
   render: () => <BaseComponentReadiness />,
   play: async ({ canvasElement }) => {
@@ -315,6 +552,27 @@ export const BaseComponentReadinessStory: Story = {
     });
     await userEvent.click(verifyButton);
     await expect(canvas.getByRole('status')).toHaveTextContent('Button');
+
+    await userEvent.tab();
+    await expect(document.activeElement).toBeInstanceOf(HTMLElement);
+  },
+};
+
+export const BacklogP0KomponentowBazowychStory: Story = {
+  name: 'Backlog P0 komponentów bazowych',
+  render: () => <BaseP0BacklogReadiness />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvas.getByText('P0.SB01')).toBeInTheDocument();
+    await expect(canvas.getByText('10 Komponenty/BackgroundOperationItem')).toBeInTheDocument();
+    await expect(canvas.getAllByRole('row')).toHaveLength(p0BaseBacklogItems.length + 1);
+
+    const verifyButton = canvas.getByRole('button', {
+      name: /Sprawdź P0\.SB01|Verify P0\.SB01/,
+    });
+    await userEvent.click(verifyButton);
+    await expect(canvas.getByRole('status')).toHaveTextContent('P0.SB01');
 
     await userEvent.tab();
     await expect(document.activeElement).toBeInstanceOf(HTMLElement);

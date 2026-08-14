@@ -4,7 +4,7 @@
   "creator": "Artur Wiśniewski",
   "owner": "Artur Wiśniewski",
   "status": "PASS",
-  "file_count": 2314,
+  "file_count": 2316,
   "files": [
     {
       "path": ".dockerignore",
@@ -793,8 +793,8 @@
     },
     {
       "path": "apps/web/src/design-system/component-system-v1.json",
-      "bytes": 12119,
-      "sha256": "58427040d11d45c123f86018b0efc4b5bc57f568635e3967f1ef6855ca9c28d7"
+      "bytes": 12175,
+      "sha256": "e65f50545a8563713ddcf85082ec11cc891f91a1340445debe294ea041d65291"
     },
     {
       "path": "apps/web/src/design-system/components/AlertDialog/AlertDialog.tsx",
@@ -2118,8 +2118,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/catalog/catalog.generated.ts",
-      "bytes": 209421,
-      "sha256": "166373fd48ab8b46f9ea3625e93c64d984e28e9c015c4a346f2a97d7763fb009"
+      "bytes": 213027,
+      "sha256": "56d4eea553c24f898bd336e99e6e5881789c010354ba6b6ed072ff15e2522b0f"
     },
     {
       "path": "apps/web/src/storybook-next/catalog/catalog.ts",
@@ -2183,13 +2183,13 @@
     },
     {
       "path": "apps/web/src/storybook-next/stories/00-foundations/ComponentReadiness.stories.tsx",
-      "bytes": 12464,
-      "sha256": "3d5994aed34fb7b4abb1b232369dcaf35b90da8049688e80e9ac54ddc3abc568"
+      "bytes": 21901,
+      "sha256": "e561d436711dafa369360c15d410dd4442b62b4e63ca0a229097303422e866a2"
     },
     {
       "path": "apps/web/src/storybook-next/stories/00-foundations/component-readiness.css",
-      "bytes": 2097,
-      "sha256": "328388efc757d58daeab50ca0983294fa97319721fd5a175e148146a3f7f40cb"
+      "bytes": 2393,
+      "sha256": "c0036f9c9f6295e8fa717037517489e57913557309a7b09608a344cf66598531"
     },
     {
       "path": "apps/web/src/storybook-next/stories/00-foundations/foundation-accessibility.css",
@@ -2328,8 +2328,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/DomainComponentReadiness.stories.tsx",
-      "bytes": 9165,
-      "sha256": "3d3dd3b7dcadb71363dfd4252394da40c525bb591fdb6196b6a73418a005f141"
+      "bytes": 18755,
+      "sha256": "6636e53c0442c901a247469fa0252298cdb8c90b62956317237650dc15e0a4a8"
     },
     {
       "path": "apps/web/src/storybook-next/stories/15-data-visualizations/ForecastChart.stories.tsx",
@@ -2518,8 +2518,8 @@
     },
     {
       "path": "apps/web/src/storybook-next/storybook-contract.json",
-      "bytes": 233482,
-      "sha256": "84fcd6cb168c449bb5b815ec5aa976ff66aaa297ee2397cc4796bb63c478f813"
+      "bytes": 237316,
+      "sha256": "af7a97122a18d2dd8e2ce55d8fbdec8729a13a077eb6f1cb18a38d7ba1f0f333"
     },
     {
       "path": "apps/web/src/storybook-next/storybook-react-vite-types.d.ts",
@@ -2529,7 +2529,7 @@
     {
       "path": "apps/web/src/storybook-next/storybook-taxonomy-map.json",
       "bytes": 14486,
-      "sha256": "4b73bc4339622b1899932a622bc60280a8ed15af014de4f36e0affc6eac69392"
+      "sha256": "7a8c4916e868a6ed84255db56e9e627e99cc4f343aa7f53f74aa128c5a2c65fa"
     },
     {
       "path": "apps/web/src/storybook-next/storybook-test-matchers.d.ts",
@@ -2663,8 +2663,8 @@
     },
     {
       "path": "audyt14082026.md",
-      "bytes": 12131,
-      "sha256": "b0b197614859cb8c0fd35bd1354396fb6b84cf00ddcfe8793b7eb1655047289d"
+      "bytes": 40604,
+      "sha256": "380d733337c952fab1a699d506ceffa8c19cc84dc16f633119381efd1e6fcb08"
     },
     {
       "path": "compose.production-parity.yml",
@@ -10612,6 +10612,16 @@
       "sha256": "7d37a5bb3d1c6da8699839af5cc57e73cca9b31cd15ddceda0d50e8dcebfb95b"
     },
     {
+      "path": "fixtures/storybook/289-p0-backlog-components-base.json",
+      "bytes": 1403,
+      "sha256": "a46277698a77ca8df168186284f88f41a43778ca4851067a688a1343a0f55d71"
+    },
+    {
+      "path": "fixtures/storybook/290-p0-backlog-components-domain.json",
+      "bytes": 1488,
+      "sha256": "772b275709a1e60c9f0acfa05c4eab983ab73ebac095685e91c65c1a98d75af6"
+    },
+    {
       "path": "foundation-evidence/manifest.json",
       "bytes": 16762,
       "sha256": "1a346d66dbed82332a57540abb98c520c65cd50491dae9f131e089b71592429e"
@@ -11318,8 +11328,8 @@
     },
     {
       "path": "rejestry/storybook.csv",
-      "bytes": 187505,
-      "sha256": "e3e9aaade4b8219f320955af6a05233ec0e893c457b55b2b6c8c1eb0e974bf2b"
+      "bytes": 189079,
+      "sha256": "ce74f9ba7deb60df6e810b9830dc391ee8f0145076a89a3b6faed5691f6d8ab6"
     },
     {
       "path": "rejestry/ui-actions.csv",

@@ -38,6 +38,11 @@
   border-collapse: collapse;
 }
 
+.pd-component-readiness__table--p0 table {
+  table-layout: fixed;
+  min-inline-size: 0;
+}
+
 .pd-component-readiness__caption {
   position: absolute;
   inline-size: 1px;
@@ -63,6 +68,16 @@
 
 .pd-component-readiness__table code {
   white-space: nowrap;
+}
+
+.pd-component-readiness__table--p0 code,
+.pd-component-readiness__table--p0 td {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.pd-component-readiness__table--p0 code {
+  white-space: normal;
 }
 
 .pd-component-readiness__criteria {

@@ -69,6 +69,8 @@ export const InlineNotice = forwardRef<
     icon === undefined
       ? resolveFeedbackIconName(tone)
       : icon;
+  const hasAction = Boolean(actionLabel && onAction);
+  const canDismiss = Boolean(dismissible && onDismiss);
 
   return (
     <section
@@ -80,6 +82,8 @@ export const InlineNotice = forwardRef<
         'pd-feedback-surface',
         className,
       )}
+      data-dismissible={canDismiss ? 'true' : undefined}
+      data-has-action={hasAction ? 'true' : undefined}
       data-tone={tone}
       role={resolvedRole}
     >
@@ -111,7 +115,7 @@ export const InlineNotice = forwardRef<
           </p>
         </div>
 
-        {dismissible ? (
+        {canDismiss ? (
           <TextAction
             aria-label={dismissLabel}
             className="pd-feedback-surface__close"
@@ -124,7 +128,7 @@ export const InlineNotice = forwardRef<
         ) : null}
       </div>
 
-      {actionLabel ? (
+      {hasAction ? (
         <div className="pd-feedback-surface__actions">
           <TextAction
             onClick={onAction}

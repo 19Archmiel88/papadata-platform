@@ -81,6 +81,9 @@ export const EmptyState = forwardRef<
     icon === undefined
       ? resolveEmptyStateIcon(variant)
       : icon;
+  const hasPrimaryAction = Boolean(primaryActionLabel && onPrimaryAction);
+  const hasSecondaryAction = Boolean(secondaryActionLabel && onSecondaryAction);
+  const hasActions = hasPrimaryAction || hasSecondaryAction;
 
   return (
     <section
@@ -92,6 +95,7 @@ export const EmptyState = forwardRef<
         'pd-feedback-state',
         className,
       )}
+      data-has-actions={hasActions ? 'true' : undefined}
       data-variant={variant}
     >
       {resolvedIcon ? (
@@ -118,18 +122,18 @@ export const EmptyState = forwardRef<
         </p>
       </div>
 
-      {primaryActionLabel || secondaryActionLabel ? (
+      {hasActions ? (
         <div className="pd-feedback-state__actions">
-          {primaryActionLabel ? (
+          {hasPrimaryAction ? (
             <Button
               onClick={onPrimaryAction}
-              variant="secondary"
+              variant="primary"
             >
               {primaryActionLabel}
             </Button>
           ) : null}
 
-          {secondaryActionLabel ? (
+          {hasSecondaryAction ? (
             <Button
               onClick={onSecondaryAction}
               variant="ghost"

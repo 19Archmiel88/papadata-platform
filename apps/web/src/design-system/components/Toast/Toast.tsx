@@ -72,6 +72,8 @@ export const Toast = forwardRef<
     icon === undefined
       ? resolveFeedbackIconName(tone)
       : icon;
+  const hasAction = Boolean(actionLabel && onAction);
+  const canDismiss = Boolean(dismissible && onDismiss);
 
   return (
     <section
@@ -84,6 +86,9 @@ export const Toast = forwardRef<
         'pd-toast',
         className,
       )}
+      data-dismissible={canDismiss ? 'true' : undefined}
+      data-duration-ms={durationMs ?? undefined}
+      data-has-action={hasAction ? 'true' : undefined}
       data-tone={tone}
       data-toast-id={toastId}
       role={resolveFeedbackRole(tone)}
@@ -116,7 +121,7 @@ export const Toast = forwardRef<
           </p>
         </div>
 
-        {dismissible ? (
+        {canDismiss ? (
           <TextAction
             aria-label={dismissLabel}
             className="pd-feedback-surface__close"
@@ -129,15 +134,7 @@ export const Toast = forwardRef<
         ) : null}
       </div>
 
-      <div className="pd-feedback-surface__meta">
-        {durationMs ? (
-          <span>Wygasa po {Math.round(durationMs / 1000)} s.</span>
-        ) : (
-          <span>Wariant prezentacyjny bez automatycznego wygaszania.</span>
-        )}
-      </div>
-
-      {actionLabel ? (
+      {hasAction ? (
         <div className="pd-feedback-surface__actions">
           <TextAction
             onClick={onAction}

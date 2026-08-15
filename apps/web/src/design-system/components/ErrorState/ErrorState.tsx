@@ -87,6 +87,9 @@ export const ErrorState = forwardRef<
     icon === undefined
       ? resolveErrorIcon(variant)
       : icon;
+  const hasRetryAction = Boolean(recoverable && retryLabel && onRetry);
+  const hasSupportAction = Boolean(supportLabel && onSupport);
+  const hasActions = hasRetryAction || hasSupportAction;
 
   return (
     <section
@@ -98,6 +101,7 @@ export const ErrorState = forwardRef<
         'pd-feedback-state',
         className,
       )}
+      data-has-actions={hasActions ? 'true' : undefined}
       data-variant={variant}
       role="alert"
     >
@@ -131,9 +135,9 @@ export const ErrorState = forwardRef<
         </div>
       </div>
 
-      {(recoverable && retryLabel) || supportLabel ? (
+      {hasActions ? (
         <div className="pd-feedback-state__actions">
-          {recoverable && retryLabel ? (
+          {hasRetryAction ? (
             <Button
               onClick={onRetry}
               variant="secondary"
@@ -142,7 +146,7 @@ export const ErrorState = forwardRef<
             </Button>
           ) : null}
 
-          {supportLabel ? (
+          {hasSupportAction ? (
             <Button
               onClick={onSupport}
               variant="ghost"

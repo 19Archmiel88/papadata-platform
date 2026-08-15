@@ -3,7 +3,9 @@
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1rem;
+  gap: var(--pd-space-2);
+  min-width: 0;
+  max-width: 100%;
   padding: 0;
   margin: 0;
   border: 0;
@@ -19,7 +21,7 @@
   align-items: flex-start;
 }
 
-.pd-button-group > * ,
+.pd-button-group > *,
 .pd-action-group > * {
   flex: 0 0 auto;
   max-width: 100%;

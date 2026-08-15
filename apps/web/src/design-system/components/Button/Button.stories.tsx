@@ -501,73 +501,60 @@ function ActionsShowcase() {
           eyebrow="04"
           title={<Localized pl="Akcje w kontekście danych" en="Actions in data context" />}
         >
-          <div className="pd-action-context-ledger">
-            <article className="pd-action-context-row">
-              <div>
+          <div className="pd-action-context-grid">
+            <article className="pd-action-context-item">
+              <header className="pd-action-context-item__header">
                 <h3>ChartFrame</h3>
-                <p className="pd-action-row__meta">owner: 15.01</p>
-              </div>
-              <ButtonGroup
-                className="pd-action-review__inline-actions"
-                label={copy({ pl: 'Akcje w ChartFrame', en: 'ChartFrame actions' })}
-              >
+                <p>owner: 15.01</p>
+              </header>
+              <div className="pd-action-context-item__actions">
                 <Button startIcon={icon('success')}>
                   <Localized pl="Zapisz wniosek" en="Save insight" />
                 </Button>
-                <TextAction endIcon={icon('data')}>
-                  <Localized pl="Pokaż rekordy źródłowe" en="Show source rows" />
-                </TextAction>
-              </ButtonGroup>
+                <LinkAction href="#" endIcon={icon('data')}>
+                  <Localized pl="Pokaż rekordy źródłowe" en="Show source records" />
+                </LinkAction>
+              </div>
               <p>
                 <Localized
                   pl="Główna decyzja zostaje przy wykresie, a dostęp do rekordów jest lekką komendą w kontekście danych."
-                  en="The primary decision stays with the chart, while access to rows is a lightweight command in the data context."
+                  en="The main decision stays with the chart, while source access remains a light data-context command."
                 />
               </p>
             </article>
 
-            <article className="pd-action-context-row">
-              <div>
+            <article className="pd-action-context-item">
+              <header className="pd-action-context-item__header">
                 <h3>DataTable</h3>
-                <p className="pd-action-row__meta">owner: DataTable runtime / 18.04</p>
-              </div>
-              <ButtonGroup
-                className="pd-action-review__inline-actions"
-                label={copy({ pl: 'Akcje w tabeli', en: 'Table actions' })}
-              >
-                <IconButton
-                  icon="search"
-                  label={copy({ pl: 'Otwórz szczegóły wiersza', en: 'Open row details' })}
-                  variant="secondary"
-                />
+                <p>owner: DataTable runtime / 18.04</p>
+              </header>
+              <div className="pd-action-context-item__actions">
+                <IconButton icon="search" label={copy({ pl: 'Szukaj w tabeli', en: 'Search table' })} />
                 <TextAction tone="danger">
                   <Localized pl="oznacz jako ryzyko" en="mark as risk" />
                 </TextAction>
-              </ButtonGroup>
+              </div>
               <p>
                 <Localized
                   pl="Wiersz tabeli używa małych komend i jasnych etykiet. Destrukcja pozostaje tonem akcji, nie statusem danych."
-                  en="A table row uses small commands and explicit labels. Destruction remains an action tone, not a data status."
+                  en="A table row uses small commands and clear labels. Destruction remains an action tone, not a data status."
                 />
               </p>
             </article>
 
-            <article className="pd-action-context-row">
-              <div>
+            <article className="pd-action-context-item">
+              <header className="pd-action-context-item__header">
                 <h3><Localized pl="Formularz" en="Form" /></h3>
-                <p className="pd-action-row__meta">owner: 00.15</p>
-              </div>
-              <ButtonGroup
-                className="pd-action-review__inline-actions"
-                label={copy({ pl: 'Akcje formularza', en: 'Form actions' })}
-              >
+                <p>owner: 00.15</p>
+              </header>
+              <div className="pd-action-context-item__actions">
                 <Button>
                   <Localized pl="Zapisz konfigurację" en="Save configuration" />
                 </Button>
                 <Button variant="secondary">
-                  <Localized pl="Sprawdź poprawność" en="Validate" />
+                  <Localized pl="Sprawdź poprawność" en="Check validity" />
                 </Button>
-              </ButtonGroup>
+              </div>
               <p>
                 <Localized
                   pl="Formularz zachowuje jedną decyzję główną i jedną kontrolę wspierającą bez dodatkowej lokalnej geometrii."
@@ -576,94 +563,117 @@ function ActionsShowcase() {
               </p>
             </article>
 
-            <article className="pd-action-context-row">
-              <div>
+            <article className="pd-action-context-item">
+              <header className="pd-action-context-item__header">
                 <h3><Localized pl="Panel boczny" en="Side panel" /></h3>
-                <p className="pd-action-row__meta">owner: 18</p>
-              </div>
-              <ButtonGroup
-                className="pd-action-review__inline-actions"
-                label={copy({ pl: 'Akcje panelu bocznego', en: 'Side panel actions' })}
-              >
-                <TextAction>
+                <p>owner: 18</p>
+              </header>
+              <div className="pd-action-context-item__actions">
+                <LinkAction href="#">
                   <Localized pl="zapytaj asystenta" en="ask assistant" />
-                </TextAction>
-                <LinkAction href="#lista-kampanii">
+                </LinkAction>
+                <LinkAction href="#">
                   <Localized pl="Otwórz listę kampanii" en="Open campaign list" />
                 </LinkAction>
-              </ButtonGroup>
+              </div>
               <p>
                 <Localized
                   pl="Panel boczny korzysta z lekkiej komendy i nawigacji. Nie tworzy własnego CTA, jeśli decyzja należy do głównego widoku."
-                  en="A side panel uses a lightweight command and navigation. It does not create its own CTA when the decision belongs to the main view."
+                  en="A side panel uses light commands and navigation. It does not create its own CTA when the decision belongs to the main view."
                 />
               </p>
             </article>
           </div>
         </StorySection>
-
         <StorySection
           description={
             <Localized
               pl="Ikony zachowują się jak kontrolki, nie jak ozdobne kafelki. Reagują zmianą koloru i subtelnym znacznikiem aktywności."
-              en="Icons behave like controls, not decorative tiles. They respond with color and a subtle activity marker."
+              en="Icons behave like controls, not decorative tiles. They react with color and a subtle activity marker."
             />
           }
           eyebrow="05"
           title={<Localized pl="Ikony i pasek operacyjny" en="Icons and operation bar" />}
         >
-          <div className="pd-action-toolbar">
-            <div className="pd-action-toolbar__line">
-              <span className="pd-action-toolbar__label">
-                <Localized pl="Narzędzia danych" en="Data tools" />
-              </span>
-              <IconButton
-                icon="data"
-                label={copy({ pl: 'Odśwież dane', en: 'Refresh data' })}
-                variant="primary"
-              />
-              <IconButton
-                icon="search"
-                label={copy({ pl: 'Szukaj w źródłach', en: 'Search sources' })}
-                variant="secondary"
-              />
-              <IconButton
-                icon="assistant"
-                label={copy({ pl: 'Otwórz asystenta', en: 'Open assistant' })}
-                variant="ghost"
-              />
-              <IconButton
-                icon="warning"
-                label={copy({ pl: 'Oznacz ryzyko', en: 'Mark risk' })}
-                variant="danger"
-              />
-              <IconButton
-                icon="integration"
-                label={copy({ pl: 'Synchronizuj integracje', en: 'Sync integrations' })}
-                loading
-                loadingLabel={syncIntegrationsBusyLabel}
-                variant="secondary"
-              />
-            </div>
+          <div className="pd-action-toolbar-demo">
+            <article className="pd-action-toolbar-demo__row">
+              <header className="pd-action-toolbar-demo__label">
+                <h3><Localized pl="Narzędzia danych" en="Data tools" /></h3>
+                <p>owner: table / chart controls</p>
+              </header>
 
-            <ButtonGroup
-              className="pd-action-review__inline-actions"
-              label={copy({ pl: 'Pasek operacyjny', en: 'Operation bar' })}
-            >
-              <IconButton
-                icon="data"
-                label={copy({ pl: 'Odśwież widok', en: 'Refresh view' })}
-                variant="secondary"
-              />
-              <IconButton
-                icon="security"
-                label={copy({ pl: 'Sprawdź zgodność', en: 'Check compliance' })}
-                variant="secondary"
-              />
-              <Button startIcon={icon('success')}>
-                <Localized pl="Zatwierdź widok" en="Approve view" />
-              </Button>
-            </ButtonGroup>
+              <ButtonGroup
+                className="pd-action-toolbar-demo__controls"
+                label={copy({ pl: 'Narzędzia danych', en: 'Data tools' })}
+              >
+                <IconButton
+                  icon="data"
+                  label={copy({ pl: 'Widok danych aktywny', en: 'Data view active' })}
+                  pressed
+                  variant="primary"
+                />
+                <IconButton
+                  icon="search"
+                  label={copy({ pl: 'Szukaj', en: 'Search' })}
+                />
+                <IconButton
+                  icon="success"
+                  label={copy({ pl: 'Zweryfikowane', en: 'Verified' })}
+                  variant="ghost"
+                />
+                <IconButton
+                  icon="warning"
+                  label={copy({ pl: 'Ryzyko', en: 'Risk' })}
+                  variant="danger"
+                />
+                <IconButton
+                  icon="data"
+                  label={copy({ pl: 'Synchronizacja', en: 'Sync' })}
+                  loading
+                  loadingLabel={copy({ pl: 'Synchronizacja danych', en: 'Syncing data' })}
+                />
+              </ButtonGroup>
+
+              <p>
+                <Localized
+                  pl="Pasek grupuje kontrole jednego właściciela. Aktywny stan jest czytelny, ale nie konkuruje z głównym CTA."
+                  en="The toolbar groups controls owned by one surface. The active state is readable without competing with the primary CTA."
+                />
+              </p>
+            </article>
+
+            <article className="pd-action-toolbar-demo__row">
+              <header className="pd-action-toolbar-demo__label">
+                <h3><Localized pl="Potwierdzenie widoku" en="View confirmation" /></h3>
+                <p>owner: workspace toolbar</p>
+              </header>
+
+              <ButtonGroup
+                className="pd-action-toolbar-demo__controls"
+                label={copy({ pl: 'Potwierdzenie widoku', en: 'View confirmation' })}
+              >
+                <IconButton
+                  icon="data"
+                  label={copy({ pl: 'Źródła danych', en: 'Data sources' })}
+                  variant="secondary"
+                />
+                <IconButton
+                  icon="success"
+                  label={copy({ pl: 'Kontrola poprawności', en: 'Validation check' })}
+                  variant="secondary"
+                />
+                <Button startIcon={icon('success')}>
+                  <Localized pl="Zatwierdź widok" en="Confirm view" />
+                </Button>
+              </ButtonGroup>
+
+              <p>
+                <Localized
+                  pl="Ikony przygotowują decyzję, a przycisk ją domyka. Pasek nie tworzy dodatkowej ramki ani lokalnego systemu odstępów."
+                  en="Icons prepare the decision, while the button confirms it. The bar does not create an extra frame or local spacing system."
+                />
+              </p>
+            </article>
           </div>
         </StorySection>
 
@@ -718,62 +728,60 @@ function ActionsShowcase() {
           description={
             <Localized
               pl="Ten przykład pokazuje kolejność i układ grupy działań w realnym widoku roboczym. Mobile jest wariantem tej samej kolejności, nie osobnym wzorcem."
-              en="This example shows the order and layout of an action group in a real workspace view. Mobile is a variant of the same order, not a separate pattern."
+              en="This example shows the order and layout of an action group in a real workspace. Mobile is a variant of the same order, not a separate pattern."
             />
           }
           eyebrow="07"
-          title={<Localized pl="Grupa decyzji w widoku roboczym" en="Decision group in a workspace view" />}
+          title={<Localized pl="Grupa decyzji w widoku roboczym" en="Decision group in a workspace" />}
         >
-          <div className="pd-action-review">
-            <article className="pd-action-review__summary">
+          <article className="pd-action-decision-panel">
+            <header className="pd-action-decision-panel__header">
               <div>
                 <h3><Localized pl="Rewizja kampanii sprzedażowej" en="Sales campaign review" /></h3>
                 <p>
                   <Localized
                     pl="System wykrył wzrost kosztu pozyskania i rekomenduje ręczną akceptację zmian przed publikacją."
-                    en="The system detected an acquisition cost increase and recommends manual approval before publishing."
+                    en="The system detected acquisition cost growth and recommends manual approval before publishing."
                   />
                 </p>
               </div>
+              <p className="pd-action-decision-panel__meta">
+                <Localized pl="Ostatnia synchronizacja: 2 min temu" en="Last sync: 2 min ago" />
+              </p>
+            </header>
 
-              <div className="pd-action-review__footer">
-                <span className="pd-action-note">
-                  <Localized pl="Ostatnia synchronizacja: 2 min temu" en="Last sync: 2 min ago" />
-                </span>
+            <div className="pd-action-decision-panel__body">
+              <ButtonGroup
+                className="pd-action-decision-panel__primary"
+                label={copy({ pl: 'Główne decyzje kampanii', en: 'Primary campaign decisions' })}
+              >
+                <Button startIcon={icon('success')}>
+                  <Localized pl="Zapisz decyzję" en="Save decision" />
+                </Button>
+                <Button variant="secondary">
+                  <Localized pl="Przekaż do sprawdzenia" en="Send for review" />
+                </Button>
+                <TextAction>
+                  <Localized pl="Poproś o zmiany" en="Request changes" />
+                </TextAction>
+              </ButtonGroup>
 
-                <ButtonGroup
-                  className="pd-action-review__inline-actions"
-                  label={copy({ pl: 'Akcje rewizji', en: 'Review actions' })}
-                >
-                  <Button startIcon={icon('success')}>
-                    <Localized pl="Zapisz decyzję" en="Save decision" />
-                  </Button>
-                  <Button variant="secondary">
-                    <Localized pl="Przekaż do sprawdzenia" en="Send for review" />
-                  </Button>
-                  <Button variant="ghost">
-                    <Localized pl="Poproś o zmiany" en="Request changes" />
-                  </Button>
-                </ButtonGroup>
-              </div>
-            </article>
-
-            <ButtonGroup
-              className="pd-action-review__stacked-actions"
-              label={copy({ pl: 'Akcje pionowe w wąskim układzie', en: 'Vertical actions in a narrow layout' })}
-              orientation="vertical"
-            >
-              <Button fullWidth>
-                <Localized pl="Kontynuuj konfigurację" en="Continue setup" />
-              </Button>
-              <Button fullWidth variant="secondary">
-                <Localized pl="Zapisz jako wersję roboczą" en="Save as draft" />
-              </Button>
-              <Button fullWidth variant="ghost">
-                <Localized pl="Wróć do podsumowania" en="Back to summary" />
-              </Button>
-            </ButtonGroup>
-          </div>
+              <ButtonGroup
+                className="pd-action-decision-panel__secondary"
+                label={copy({ pl: 'Działania pomocnicze', en: 'Supporting actions' })}
+              >
+                <Button variant="secondary">
+                  <Localized pl="Kontynuuj konfigurację" en="Continue configuration" />
+                </Button>
+                <Button variant="ghost">
+                  <Localized pl="Zapisz jako wersję roboczą" en="Save draft" />
+                </Button>
+                <LinkAction href="#">
+                  <Localized pl="Wróć do podsumowania" en="Back to summary" />
+                </LinkAction>
+              </ButtonGroup>
+            </div>
+          </article>
         </StorySection>
     </StoryPresentationPage>
   );

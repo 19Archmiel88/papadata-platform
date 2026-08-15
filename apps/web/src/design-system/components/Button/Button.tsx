@@ -55,6 +55,9 @@ export const Button = forwardRef<
   ref,
 ) {
   const isDisabled = disabled || loading;
+  const content = loading && loadingLabel
+    ? loadingLabel
+    : children;
   const rootClassName = [
     'pd-button',
     `pd-button--${variant}`,
@@ -64,9 +67,6 @@ export const Button = forwardRef<
   ]
     .filter(Boolean)
     .join(' ');
-  const content = loading && loadingLabel
-    ? loadingLabel
-    : children;
 
   return (
     <button
@@ -87,7 +87,10 @@ export const Button = forwardRef<
       disabled={isDisabled}
       type={type}
     >
-      <span className="pd-button__content" data-slot="activity-line-owner">
+      <span
+        className="pd-button__content"
+        data-slot="activity-line-owner"
+      >
         {loading ? (
           <span
             aria-hidden="true"

@@ -1,46 +1,82 @@
-@import '../../foundations/brand-flow-line.css';
-
 .pd-inline-action,
 button.pd-inline-action,
 a.pd-inline-action {
   --pd-inline-action-color: var(--pd-interactive);
   --pd-inline-action-hover-color: var(--pd-interactive-hover);
-  --pd-inline-action-line: var(--pd-brand-line);
 
   appearance: none;
   position: relative;
   display: inline-flex;
-  align-items: center;
+  max-width: 100%;
   min-width: 0;
   min-height: 0;
+  align-items: center;
   padding: 0;
   border: 0;
   border-radius: var(--pd-radius-subtle);
-  outline: var(--pd-focus-width) solid transparent;
-  outline-offset: var(--pd-focus-offset);
+  outline: 0;
   background: transparent;
   color: var(--pd-inline-action-color);
   box-shadow: none;
   cursor: pointer;
   font: inherit;
   font-weight: var(--pd-font-weight-medium);
-  line-height: inherit;
+  line-height: 1.35;
+  text-align: inherit;
   text-decoration: none;
   transition:
-    color var(--pd-motion-duration-fast)
-      var(--pd-motion-easing-standard),
-    opacity var(--pd-motion-duration-fast)
-      var(--pd-motion-easing-standard);
+    color var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    opacity var(--pd-motion-duration-fast) var(--pd-motion-easing-standard);
 }
 
 .pd-inline-action__content {
   position: relative;
   display: inline-flex;
+  max-width: 100%;
+  min-width: 0;
   align-items: center;
   gap: var(--pd-space-1);
   width: fit-content;
-  max-width: 100%;
+}
+
+.pd-inline-action__label {
+  position: relative;
+  display: inline;
   min-width: 0;
+  color: currentColor;
+  overflow-wrap: anywhere;
+}
+
+.pd-inline-action__icon {
+  display: inline-flex;
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+  line-height: 0;
+}
+
+.pd-inline-action__icon > svg,
+.pd-inline-action svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+
+.pd-inline-action__activity-line {
+  position: absolute;
+  right: 0;
+  bottom: -0.1em;
+  left: 0;
+  height: 1px;
+  border-radius: var(--pd-radius-pill);
+  background: currentColor;
+  box-shadow: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: none;
 }
 
 .pd-inline-action:hover,
@@ -50,49 +86,15 @@ a.pd-inline-action:hover,
 button.pd-inline-action:focus-visible,
 a.pd-inline-action:focus-visible {
   color: var(--pd-inline-action-hover-color);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
 }
 
 .pd-inline-action:focus-visible,
 button.pd-inline-action:focus-visible,
 a.pd-inline-action:focus-visible {
-  box-shadow: 0 0 0 var(--pd-focus-ring-size) var(--pd-focus-visible);
-}
-
-.pd-inline-action__label {
-  position: relative;
-  display: inline-block;
-  color: currentColor;
-}
-
-.pd-inline-action__activity-line {
-  position: absolute;
-  right: 0;
-  bottom: -0.22em;
-  left: 0;
-  height: 1.5px;
-  border-radius: var(--pd-radius-pill);
-  background: var(--pd-inline-action-line);
-  opacity: 0;
-  transform: scaleX(0.1);
-  transform-origin: center;
-  transition:
-    opacity var(--pd-motion-duration-standard)
-      var(--pd-motion-easing-emphasized),
-    transform var(--pd-motion-duration-deliberate)
-      var(--pd-motion-easing-emphasized);
-}
-
-.pd-inline-action:hover .pd-inline-action__activity-line,
-.pd-inline-action:focus-visible .pd-inline-action__activity-line {
-  opacity: 1;
-  transform: scaleX(1);
-}
-
-.pd-inline-action__icon {
-  display: inline-flex;
-  color: currentColor;
-  transition: color var(--pd-motion-duration-fast)
-    var(--pd-motion-easing-emphasized);
+  box-shadow: var(--pd-refractive-focus);
 }
 
 .pd-inline-action--muted,
@@ -105,7 +107,6 @@ a.pd-inline-action:focus-visible {
 .pd-inline-action[data-tone='danger'] {
   --pd-inline-action-color: var(--pd-status-danger);
   --pd-inline-action-hover-color: var(--pd-status-danger);
-  --pd-inline-action-line: var(--pd-status-danger);
 }
 
 .pd-inline-action--small,
@@ -114,22 +115,21 @@ a.pd-inline-action:focus-visible {
 }
 
 .pd-inline-action[disabled],
+button.pd-inline-action[disabled],
 .pd-inline-action[aria-disabled='true'] {
   color: var(--pd-text-muted);
   cursor: not-allowed;
   opacity: 0.56;
+  text-decoration: none;
 }
 
-.pd-inline-action[disabled] .pd-inline-action__activity-line,
-.pd-inline-action[aria-disabled='true'] .pd-inline-action__activity-line {
-  opacity: 0;
-  transform: scaleX(0);
+.pd-inline-action[aria-disabled='true'] {
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .pd-inline-action,
-  .pd-inline-action__icon,
-  .pd-inline-action__activity-line {
+  .pd-inline-action__icon {
     transition-duration: 1ms;
   }
 }
@@ -141,35 +141,8 @@ a.pd-inline-action:focus-visible {
     color: LinkText;
   }
 
-  .pd-inline-action__activity-line {
-    background: LinkText;
-  }
-
   .pd-inline-action[disabled],
   .pd-inline-action[aria-disabled='true'] {
     color: GrayText;
   }
-}
-
-
-/* -------------------------------------------------------------------------- */
-/* PapaData BrandFlowLine primitive — inline actions                            */
-/* -------------------------------------------------------------------------- */
-
-.pd-inline-action,
-button.pd-inline-action,
-a.pd-inline-action {
-  --pd-brand-flow-line-edge:
-    color-mix(in srgb, currentColor 38%, transparent);
-  --pd-brand-flow-line-core: currentColor;
-}
-
-.pd-inline-action__activity-line {
-  height: var(--pd-brand-flow-line-height);
-  border-radius: var(--pd-brand-flow-line-radius);
-  background: var(--pd-brand-flow-line-background);
-  box-shadow: var(--pd-brand-flow-line-shadow);
-  transform: scaleX(var(--pd-brand-flow-line-rest-scale));
-  transform-origin: center;
-  transition: var(--pd-brand-flow-line-transition);
 }

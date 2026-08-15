@@ -1,104 +1,149 @@
-@import '../../foundations/brand-flow-line.css';
-
 .pd-icon-button,
 button.pd-icon-button {
   --pd-icon-button-color: var(--pd-text-secondary);
-  --pd-icon-button-hover-color: var(--pd-brand-highlight);
-  --pd-icon-button-line: var(--pd-brand-line);
+  --pd-icon-button-hover-color: var(--pd-text);
+  --pd-icon-button-surface: transparent;
+  --pd-icon-button-surface-hover: color-mix(in srgb, var(--pd-surface-raised) 42%, transparent);
+  --pd-icon-button-border: transparent;
+  --pd-icon-button-border-hover: color-mix(in srgb, var(--pd-refractive-border-hover) 58%, transparent);
+  --pd-icon-button-shadow: none;
+  --pd-icon-button-shadow-hover:
+    inset 0 0 0 var(--pd-border-width-subtle) var(--pd-icon-button-border-hover);
 
   appearance: none;
   position: relative;
+  isolation: isolate;
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: auto;
-  height: auto;
   min-width: var(--pd-density-control-height);
   min-height: var(--pd-density-control-height);
+  align-items: center;
+  justify-content: center;
   padding: var(--pd-space-2);
+  overflow: hidden;
   border: var(--pd-border-width-subtle) solid transparent;
   border-radius: var(--pd-radius-control);
-  outline: var(--pd-focus-width) solid transparent;
-  outline-offset: var(--pd-focus-offset);
-  background: transparent;
+  outline: 0;
+  background: var(--pd-icon-button-surface);
   color: var(--pd-icon-button-color);
-  box-shadow: none;
+  box-shadow: var(--pd-icon-button-shadow);
   cursor: pointer;
   text-decoration: none;
+  transform: translateY(0);
   transition:
-    color var(--pd-motion-duration-fast)
-      var(--pd-motion-easing-standard),
-    opacity var(--pd-motion-duration-fast)
-      var(--pd-motion-easing-standard);
+    background var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    box-shadow var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    color var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    opacity var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    transform var(--pd-motion-duration-fast) var(--pd-motion-easing-standard);
+}
+
+.pd-icon-button::before,
+button.pd-icon-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      120deg,
+      transparent 0%,
+      transparent 38%,
+      color-mix(in srgb, var(--pd-refractive-sheen) 20%, transparent) 50%,
+      transparent 62%,
+      transparent 100%
+    );
+  opacity: 0;
+  transition: opacity var(--pd-motion-duration-standard) var(--pd-motion-easing-standard);
 }
 
 .pd-icon-button__content {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
+  z-index: 1;
+  display: inline-grid;
+  width: 1.125rem;
+  height: 1.125rem;
   min-width: 0;
+  place-items: center;
+  color: currentColor;
+  line-height: 0;
+}
+
+.pd-icon-button svg {
+  display: block;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: currentColor;
 }
 
 .pd-icon-button__activity-line {
   position: absolute;
   right: 0;
-  bottom: -0.2rem;
+  bottom: 0;
   left: 0;
-  height: 2px;
+  height: 1px;
   border-radius: var(--pd-radius-pill);
-  background: var(--pd-icon-button-line);
+  background: currentColor;
+  box-shadow: none;
   opacity: 0;
-  transform: scaleX(0.12);
-  transform-origin: center;
-  transition:
-    opacity var(--pd-motion-duration-standard)
-      var(--pd-motion-easing-emphasized),
-    transform var(--pd-motion-duration-deliberate)
-      var(--pd-motion-easing-emphasized);
+  pointer-events: none;
+  transform: none;
 }
 
 .pd-icon-button:hover,
-button.pd-icon-button:hover,
+button.pd-icon-button:hover {
+  background: var(--pd-icon-button-surface-hover);
+  color: var(--pd-icon-button-hover-color);
+  box-shadow: var(--pd-icon-button-shadow-hover);
+}
+
+.pd-icon-button:hover::before,
+button.pd-icon-button:hover::before {
+  opacity: 0.28;
+}
+
 .pd-icon-button:focus-visible,
 button.pd-icon-button:focus-visible {
   color: var(--pd-icon-button-hover-color);
+  box-shadow:
+    var(--pd-refractive-focus),
+    var(--pd-icon-button-shadow-hover);
 }
 
-.pd-icon-button:hover .pd-icon-button__activity-line,
-button.pd-icon-button:hover .pd-icon-button__activity-line,
-.pd-icon-button:focus-visible .pd-icon-button__activity-line,
-button.pd-icon-button:focus-visible .pd-icon-button__activity-line {
-  opacity: 1;
-  transform: scaleX(1);
-}
-
-.pd-icon-button:focus-visible,
-button.pd-icon-button:focus-visible {
-  box-shadow: 0 0 0 var(--pd-focus-ring-size) var(--pd-focus-visible);
-}
-
-.pd-icon-button svg,
-.pd-icon-button__icon {
-  color: currentColor;
-  transition:
-    color var(--pd-motion-duration-fast)
-      var(--pd-motion-easing-standard),
-    opacity var(--pd-motion-duration-fast)
-      var(--pd-motion-easing-standard);
+.pd-icon-button:active,
+button.pd-icon-button:active {
+  transform: translateY(1px);
 }
 
 .pd-icon-button--primary,
 .pd-icon-button[data-variant='primary'] {
-  --pd-icon-button-color: var(--pd-brand);
-  --pd-icon-button-hover-color: var(--pd-brand-highlight);
+  --pd-icon-button-color: var(--pd-brand-action-on);
+  --pd-icon-button-hover-color: var(--pd-brand-action-on);
+  --pd-icon-button-surface: var(--pd-refractive-primary);
+  --pd-icon-button-surface-hover: var(--pd-refractive-primary-hover);
+  --pd-icon-button-border: color-mix(in srgb, var(--pd-brand-highlight) 38%, transparent);
+  --pd-icon-button-border-hover: color-mix(in srgb, var(--pd-brand-highlight) 52%, transparent);
+  --pd-icon-button-shadow:
+    inset 0 0 0 var(--pd-border-width-subtle) var(--pd-icon-button-border),
+    0 16px 30px -24px color-mix(in srgb, var(--pd-brand-action) 68%, transparent);
+  --pd-icon-button-shadow-hover:
+    inset 0 0 0 var(--pd-border-width-subtle) var(--pd-icon-button-border-hover),
+    0 18px 34px -25px color-mix(in srgb, var(--pd-brand-action) 74%, transparent);
 }
 
 .pd-icon-button--secondary,
 .pd-icon-button[data-variant='secondary'] {
   --pd-icon-button-color: var(--pd-text-secondary);
   --pd-icon-button-hover-color: var(--pd-text);
+  --pd-icon-button-surface: var(--pd-refractive-control);
+  --pd-icon-button-surface-hover: var(--pd-refractive-control-hover);
+  --pd-icon-button-border: var(--pd-refractive-border);
+  --pd-icon-button-border-hover: var(--pd-refractive-border-hover);
+  --pd-icon-button-shadow:
+    inset 0 0 0 var(--pd-border-width-subtle) var(--pd-icon-button-border);
+  --pd-icon-button-shadow-hover:
+    inset 0 0 0 var(--pd-border-width-subtle) var(--pd-icon-button-border-hover);
 }
 
 .pd-icon-button--ghost,
@@ -111,7 +156,8 @@ button.pd-icon-button:focus-visible {
 .pd-icon-button[data-variant='danger'] {
   --pd-icon-button-color: var(--pd-status-danger);
   --pd-icon-button-hover-color: var(--pd-status-danger);
-  --pd-icon-button-line: var(--pd-status-danger);
+  --pd-icon-button-surface-hover: color-mix(in srgb, var(--pd-status-danger-subtle) 42%, transparent);
+  --pd-icon-button-border-hover: color-mix(in srgb, var(--pd-status-danger) 36%, transparent);
 }
 
 .pd-icon-button--small,
@@ -121,6 +167,14 @@ button.pd-icon-button:focus-visible {
   padding: var(--pd-space-1);
 }
 
+.pd-icon-button--small .pd-icon-button__content,
+.pd-icon-button[data-size='small'] .pd-icon-button__content,
+.pd-icon-button--small svg,
+.pd-icon-button[data-size='small'] svg {
+  width: 1rem;
+  height: 1rem;
+}
+
 .pd-icon-button--large,
 .pd-icon-button[data-size='large'] {
   min-width: 2.75rem;
@@ -128,30 +182,39 @@ button.pd-icon-button:focus-visible {
   padding: var(--pd-space-3);
 }
 
+.pd-icon-button--large .pd-icon-button__content,
+.pd-icon-button[data-size='large'] .pd-icon-button__content,
+.pd-icon-button--large svg,
+.pd-icon-button[data-size='large'] svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
 .pd-icon-button[disabled],
+button.pd-icon-button[disabled],
 .pd-icon-button[aria-disabled='true'],
 .pd-icon-button[data-disabled='true'] {
   color: var(--pd-text-muted);
   cursor: not-allowed;
   opacity: 0.56;
+  transform: none;
 }
 
-.pd-icon-button[disabled] .pd-icon-button__activity-line,
-.pd-icon-button[aria-disabled='true'] .pd-icon-button__activity-line,
-.pd-icon-button[data-disabled='true'] .pd-icon-button__activity-line {
+.pd-icon-button[disabled]::before,
+button.pd-icon-button[disabled]::before,
+.pd-icon-button[aria-disabled='true']::before,
+.pd-icon-button[data-disabled='true']::before {
   opacity: 0;
-  transform: scaleX(0);
 }
 
 .pd-icon-button__spinner {
-  width: 1em;
-  height: 1em;
+  width: 1rem;
+  height: 1rem;
   color: currentColor;
   border: var(--pd-border-width-strong) solid currentColor;
   border-right-color: transparent;
   border-radius: var(--pd-radius-pill);
-  animation: pd-icon-button-spin var(--pd-motion-duration-deliberate) linear
-    infinite;
+  animation: pd-icon-button-spin var(--pd-motion-duration-deliberate) linear infinite;
 }
 
 @keyframes pd-icon-button-spin {
@@ -162,9 +225,14 @@ button.pd-icon-button:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   .pd-icon-button,
-  .pd-icon-button__activity-line,
+  .pd-icon-button::before,
   .pd-icon-button svg {
     transition-duration: 1ms;
+  }
+
+  .pd-icon-button:active,
+  button.pd-icon-button:active {
+    transform: none;
   }
 
   .pd-icon-button__spinner {
@@ -177,36 +245,12 @@ button.pd-icon-button:focus-visible {
   button.pd-icon-button {
     border-color: ButtonText;
     color: ButtonText;
-  }
-
-  .pd-icon-button__activity-line {
-    background: ButtonText;
+    background: ButtonFace;
+    box-shadow: none;
   }
 
   .pd-icon-button[disabled],
   button.pd-icon-button[disabled] {
     color: GrayText;
   }
-}
-
-
-/* -------------------------------------------------------------------------- */
-/* PapaData BrandFlowLine primitive — icon actions                              */
-/* -------------------------------------------------------------------------- */
-
-.pd-icon-button,
-button.pd-icon-button {
-  --pd-brand-flow-line-edge:
-    color-mix(in srgb, currentColor 38%, transparent);
-  --pd-brand-flow-line-core: currentColor;
-}
-
-.pd-icon-button__activity-line {
-  height: var(--pd-brand-flow-line-height);
-  border-radius: var(--pd-brand-flow-line-radius);
-  background: var(--pd-brand-flow-line-background);
-  box-shadow: var(--pd-brand-flow-line-shadow);
-  transform: scaleX(var(--pd-brand-flow-line-rest-scale));
-  transform-origin: center;
-  transition: var(--pd-brand-flow-line-transition);
 }

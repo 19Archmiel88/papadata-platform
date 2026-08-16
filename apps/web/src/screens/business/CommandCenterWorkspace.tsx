@@ -1,3 +1,7 @@
+import {
+  useMemo,
+  useState,
+} from 'react';
 import type {
   CommandCenterRecord,
   ReadinessStatus,
@@ -7,10 +11,13 @@ import type {
   DataRow,
 } from '../../../../../contracts/component-shared';
 import type {
+  DateRange,
   ReadinessState,
 } from '../../../../../contracts/ui-contract-types';
 import {
   Button,
+  ChartFrame,
+  ChartInteractionLayer,
   ComparisonChart,
   DataStatusBanner,
   DataTable,
@@ -20,11 +27,28 @@ import {
   PageHeader,
   SectionNavigation,
   StatusBadge,
+  TrendChart,
   WaterfallChart,
 } from '../../design-system';
 import type {
   AnalyticsDataState,
 } from '../../design-system';
+import type {
+  ChartInteractionPoint,
+} from '../../design-system/components/ChartInteractionLayer';
+import type {
+  TrendChartDatum,
+} from '../../design-system/components/TrendChart';
+import {
+  formatShellDateRangeLabel,
+  useShellDateRange,
+} from '../../shell/app-shell';
+import type {
+  PapaScreenContextElement,
+} from '../../shell/papa-assistant';
+import {
+  useRegisterScreenContext,
+} from '../../shell/papa-assistant';
 import {
   businessScreenDefinitions,
   defaultWorkspaceContext,
@@ -54,43 +78,120 @@ const commandColumns: readonly DataColumn[] = [
     id: 'label',
     label: 'Obszar',
     sortable: true,
+    width: 260,
   },
   {
     align: 'right',
     id: 'value',
     label: 'Wynik',
     sortable: true,
+    width: 150,
   },
   {
     align: 'right',
     id: 'target',
     label: 'Cel',
     sortable: true,
+    width: 150,
   },
   {
     align: 'right',
     id: 'delta',
     label: 'Zmiana',
     sortable: true,
+    width: 120,
   },
   {
     id: 'impact',
     label: 'Wpływ',
     sortable: true,
+    width: 240,
   },
   {
     id: 'nextAction',
     label: 'Następny krok',
+    width: 300,
   },
   {
     id: 'owner',
     label: 'Właściciel',
     sortable: true,
+    width: 220,
   },
   {
     id: 'readinessLabel',
     label: 'Stan danych',
     sortable: true,
+    width: 160,
+  },
+];
+
+const trendColumns: readonly DataColumn[] = [
+  {
+    id: 'label',
+    label: 'Punkt',
+    sortable: true,
+    width: 140,
+  },
+  {
+    align: 'right',
+    id: 'actual',
+    label: 'Wynik',
+    sortable: true,
+    width: 150,
+  },
+  {
+    align: 'right',
+    id: 'plan',
+    label: 'Plan',
+    sortable: true,
+    width: 150,
+  },
+  {
+    align: 'right',
+    id: 'previousPeriod',
+    label: 'Poprzedni okres',
+    sortable: true,
+    width: 170,
+  },
+  {
+    align: 'right',
+    id: 'movingAverage',
+    label: 'Średnia',
+    sortable: true,
+    width: 150,
+  },
+  {
+    id: 'analysis',
+    label: 'Status AI',
+    width: 230,
+  },
+];
+
+const impactColumns: readonly DataColumn[] = [
+  {
+    id: 'label',
+    label: 'KPI',
+    sortable: true,
+    width: 240,
+  },
+  {
+    align: 'right',
+    id: 'impact',
+    label: 'Odchylenie',
+    sortable: true,
+    width: 140,
+  },
+  {
+    id: 'status',
+    label: 'Status AI',
+    sortable: true,
+    width: 180,
+  },
+  {
+    id: 'recommendation',
+    label: 'Rekomendacja',
+    width: 340,
   },
 ];
 
@@ -108,6 +209,13 @@ const commandCenterNavigation = businessScreenDefinitions
     id: item.id,
     label: item.id === '30.14' ? 'Warianty' : item.displayTitle,
   }));
+
+const commandFallbackDateRange = {
+  from: '2026-08-01',
+  preset: 'monthToDate',
+  timezone: 'Europe/Warsaw',
+  to: '2026-08-12',
+} as const satisfies DateRange;
 
 type OperationalPriority =
   | 'critical'
@@ -133,6 +241,15 @@ type CommandDecision = CommandRecordContext & {
   readonly valueLabel: string;
 };
 
+type CommandAiSignal = {
+  readonly description: string;
+  readonly evidence: string;
+  readonly id: string;
+  readonly label: string;
+  readonly severity: 'critical' | 'info' | 'success' | 'warning';
+  readonly status: string;
+};
+
 export function CommandCenterWorkspace({
   data,
   definition,
@@ -141,6 +258,13 @@ export function CommandCenterWorkspace({
   onReload,
   problem = null,
 }: CommandCenterWorkspaceProps) {
+  const {
+    dateRange,
+  } = useShellDateRange();
+  const workspaceContext = {
+    ...defaultWorkspaceContext,
+    range: dateRange,
+  };
   const dataState = resolveDataState({
     data,
     loading,
@@ -155,6 +279,71 @@ export function CommandCenterWorkspace({
         },
       ]
     : buildIssues(data);
+  const screenContext = useMemo(() => ({
+    activeSection: definition.displayTitle,
+    breadcrumbs: [
+      'Aplikacja',
+      'Centrum Dowodzenia',
+      definition.displayTitle,
+    ],
+    charts: buildCommandScreenCharts(data, definition),
+    elements: buildCommandScreenElements(data),
+    evidence: data ? data.evidence.map<PapaScreenContextElement>((item) => ({
+      description: item.source,
+      id: item.id,
+      kind: 'evidence',
+      label: item.label,
+      source: item.source,
+      status: `${Math.round((item.confidence ?? 0) * 100)}% confidence`,
+    })) : [],
+    filters: [
+      {
+        id: 'command-center-date-range',
+        kind: 'filter' as const,
+        label: 'Zakres dat',
+        value: formatShellDateRangeLabel(dateRange),
+      },
+    ],
+    metrics: buildCommandScreenMetrics(data),
+    operationId: definition.operationId,
+    readiness: data
+      ? resolveDataStateLabel(dataState)
+      : loading
+        ? 'Ładowanie'
+        : problem
+          ? 'Błąd'
+          : 'Brak danych',
+    recommendations: data ? data.recommendations.slice(0, 4).map<PapaScreenContextElement>((item) => ({
+      description: item.rationale,
+      id: item.recommendationId,
+      kind: 'recommendation',
+      label: item.title,
+      status: `${Math.round((item.confidence ?? 0) * 100)}% confidence`,
+      value: item.impact,
+    })) : [],
+    route: definition.route,
+    screenId: definition.id,
+    summary: definition.summary,
+    tables: data ? [
+      {
+        description: 'Tabela alternatywna dla metryk i decyzji widoku.',
+        id: `${definition.id}-records-table`,
+        kind: 'table' as const,
+        label: 'Rejestr operacyjny',
+        value: `${data.records.length} pozycji`,
+      },
+    ] : [],
+    title: definition.displayTitle,
+  }), [
+    data,
+    dataState,
+    dateRange,
+    definition,
+    loading,
+    problem,
+  ]);
+
+  useRegisterScreenContext(screenContext);
 
   return (
     <section
@@ -162,6 +351,7 @@ export function CommandCenterWorkspace({
       aria-label={`Centrum Dowodzenia: ${definition.displayTitle}`}
       className="pd-command-center-workspace"
       data-command-center-variant={definition.variant}
+      data-data-state={dataState}
       data-mode={mode}
       data-screen-id={definition.id}
     >
@@ -184,7 +374,7 @@ export function CommandCenterWorkspace({
         meta={[
           {
             label: 'Zakres',
-            value: formatDateRange(defaultWorkspaceContext.range?.from, defaultWorkspaceContext.range?.to),
+            value: formatShellDateRangeLabel(dateRange),
           },
           {
             label: 'Segment',
@@ -197,8 +387,19 @@ export function CommandCenterWorkspace({
         ]}
         subtitle={definition.summary}
         title={definition.displayTitle}
-        actions={
-          onReload ? (
+        actions={(
+          <div className="pd-command-center-workspace__header-actions">
+            <Button
+              size="small"
+              variant="secondary"
+              onClick={() => openPapaAssistant({
+                action: 'report',
+                mode: 'report',
+              })}
+            >
+              Raport Papa
+            </Button>
+            {onReload ? (
             <Button
               loading={loading}
               loadingLabel="Odświeżanie"
@@ -208,8 +409,9 @@ export function CommandCenterWorkspace({
             >
               Odśwież dane
             </Button>
-          ) : null
-        }
+            ) : null}
+          </div>
+        )}
       />
 
       <SectionNavigation
@@ -219,6 +421,7 @@ export function CommandCenterWorkspace({
         items={commandCenterNavigation}
         orientation="horizontal"
         size="compact"
+        sticky
       />
 
       {problem ? (
@@ -235,6 +438,7 @@ export function CommandCenterWorkspace({
           dataState={dataState}
           definition={definition}
           issues={issues}
+          workspaceContext={workspaceContext}
         />
       ) : (
         <InlineNotice
@@ -256,6 +460,7 @@ function CommandCenterContent({
   dataState,
   definition,
   issues,
+  workspaceContext,
 }: {
   readonly data: CommandCenterData;
   readonly dataState: AnalyticsDataState;
@@ -265,6 +470,7 @@ function CommandCenterContent({
     readonly label: string;
     readonly severity: 'critical' | 'warning';
   }[];
+  readonly workspaceContext: typeof defaultWorkspaceContext;
 }) {
   const rows = buildCommandRows(data.records, definition.variant);
   const decisions = buildOperationalDecisions(data.records, definition.variant);
@@ -286,6 +492,14 @@ function CommandCenterContent({
           data={data}
           dataState={dataState}
           issues={issues}
+          workspaceContext={workspaceContext}
+        />
+
+        <CommandAnalyticsSection
+          data={data}
+          dataState={dataState}
+          definition={definition}
+          workspaceContext={workspaceContext}
         />
 
         <CommandDecisionBoard
@@ -321,6 +535,21 @@ function CommandCenterContent({
         data={data}
         dataState={dataState}
         issues={issues}
+        workspaceContext={workspaceContext}
+      />
+
+      <CommandMetricSection
+        dataState={dataState}
+        eyebrow="KPI widoku"
+        records={data.records}
+        title="Karty KPI z mini trendem"
+      />
+
+      <CommandAnalyticsSection
+        data={data}
+        dataState={dataState}
+        definition={definition}
+        workspaceContext={workspaceContext}
       />
 
       <CommandDecisionBoard
@@ -384,6 +613,7 @@ function CommandDataStatus({
   data,
   dataState,
   issues,
+  workspaceContext,
 }: {
   readonly data: CommandCenterData;
   readonly dataState: AnalyticsDataState;
@@ -392,6 +622,7 @@ function CommandDataStatus({
     readonly label: string;
     readonly severity: 'critical' | 'warning';
   }[];
+  readonly workspaceContext: typeof defaultWorkspaceContext;
 }) {
   if (data.sources.length === 0 && issues.length === 0) {
     return null;
@@ -401,10 +632,401 @@ function CommandDataStatus({
     <DataStatusBanner
       blockingIssues={[...issues]}
       className="pd-command-center-workspace__data-status"
-      context={defaultWorkspaceContext}
+      context={workspaceContext}
       readiness={resolveReadinessState(dataState)}
       sources={[...data.sources]}
     />
+  );
+}
+
+function CommandAnalyticsSection({
+  data,
+  dataState,
+  definition,
+  workspaceContext,
+}: {
+  readonly data: CommandCenterData;
+  readonly dataState: AnalyticsDataState;
+  readonly definition: BusinessScreenDefinition;
+  readonly workspaceContext: typeof defaultWorkspaceContext;
+}) {
+  const focusRecords = chooseAnalyticRecords(
+    data.records,
+    definition.variant,
+  );
+
+  if (focusRecords.length === 0) {
+    return null;
+  }
+
+  const primaryRecord = focusRecords[0];
+
+  if (!primaryRecord) {
+    return null;
+  }
+
+  return (
+    <section
+      aria-labelledby="command-center-analytics-title"
+      className="pd-command-center-workspace__section pd-command-center-workspace__analytics-section"
+    >
+      <CommandSectionHeader
+        eyebrow="Analiza"
+        title="Trend, zoom i statusy AI"
+        trailing={`${focusRecords.length} KPI w analizie`}
+        titleId="command-center-analytics-title"
+      />
+
+      <div className="pd-command-center-workspace__analytics-grid">
+        <CommandTrendAnalysisFrame
+          data={data}
+          dataState={dataState}
+          definition={definition}
+          record={primaryRecord}
+          workspaceContext={workspaceContext}
+        />
+
+        <CommandImpactAnalysisFrame
+          dataState={dataState}
+          definition={definition}
+          records={focusRecords}
+          workspaceContext={workspaceContext}
+        />
+      </div>
+
+      <CommandAiSignalBoard
+        definition={definition}
+        records={focusRecords}
+      />
+    </section>
+  );
+}
+
+function CommandTrendAnalysisFrame({
+  data,
+  dataState,
+  definition,
+  record,
+  workspaceContext,
+}: {
+  readonly data: CommandCenterData;
+  readonly dataState: AnalyticsDataState;
+  readonly definition: BusinessScreenDefinition;
+  readonly record: CommandCenterRecord;
+  readonly workspaceContext: typeof defaultWorkspaceContext;
+}) {
+  const range = resolveWorkspaceDateRange(workspaceContext.range);
+  const rangeLabel = formatShellDateRangeLabel(range);
+  const trendData = buildRecordTrendData(
+    record,
+    range,
+    definition.variant,
+  );
+  const trendRows = buildTrendRows(
+    trendData,
+    record.unit,
+  );
+  const chartStatus = record.readiness === 'ready'
+    ? dataState
+    : mapReadinessToAnalyticsState(record.readiness);
+
+  return (
+    <ChartFrame
+      alternativeTable={(
+        <DataTable
+          ariaLabel={`Tabela trendu: ${record.label}`}
+          columns={trendColumns}
+          density="compact"
+          emptyMessage="Brak punktów trendu."
+          loading={false}
+          minWidth={760}
+          rowCount={trendRows.length}
+          rows={trendRows}
+          selectedRowIds={[]}
+          sort={null}
+        />
+      )}
+      alternativeTableLabel="Dane trendu"
+      businessQuestion="Co zmieniło się w zakresie"
+      className="pd-command-center-workspace__analysis-frame"
+      description="Trend reaguje na szybki zakres dat i wskazuje plan, poprzedni okres oraz średnią kroczącą."
+      freshnessLabel={formatShortTime(data.generatedAt)}
+      papaAction={{
+        label: 'Analizuj ekran',
+        onAction: openPapaAssistantWithScreenAnalysis,
+      }}
+      rangeLabel={rangeLabel}
+      sourceLabel={resolveMetricSourceLabel(record)}
+      status={chartStatus}
+      statusLabel={resolveReadinessLabel(record.readiness)}
+      summary={(
+        <CommandPapaTrendSummary
+          record={record}
+          trendData={trendData}
+        />
+      )}
+      title={`Trend: ${record.label}`}
+      visualization={(
+        <CommandInteractiveTrend
+          data={trendData}
+          definition={definition}
+          record={record}
+          rangeLabel={rangeLabel}
+        />
+      )}
+      visualizationLabel={`Interaktywny trend KPI ${record.label}`}
+    />
+  );
+}
+
+function CommandImpactAnalysisFrame({
+  dataState,
+  definition,
+  records,
+  workspaceContext,
+}: {
+  readonly dataState: AnalyticsDataState;
+  readonly definition: BusinessScreenDefinition;
+  readonly records: readonly CommandCenterRecord[];
+  readonly workspaceContext: typeof defaultWorkspaceContext;
+}) {
+  const range = resolveWorkspaceDateRange(workspaceContext.range);
+  const comparable = records
+    .filter((record) => record.delta !== null)
+    .slice(0, 8);
+  const rankingRows = buildImpactRows(comparable);
+
+  return (
+    <ChartFrame
+      alternativeTable={(
+        <DataTable
+          ariaLabel="Tabela wpływu i ryzyka KPI"
+          columns={impactColumns}
+          density="compact"
+          emptyMessage="Brak metryk z policzoną zmianą."
+          loading={false}
+          minWidth={860}
+          rowCount={rankingRows.length}
+          rows={rankingRows}
+          selectedRowIds={[]}
+          sort={null}
+        />
+      )}
+      alternativeTableLabel="Dane wpływu"
+      businessQuestion="Które KPI wymagają uwagi"
+      className="pd-command-center-workspace__analysis-frame"
+      description="Ranking słupkowy pokazuje skalę odchylenia, a status AI rozróżnia anomalię, spadek i ryzyko danych."
+      freshnessLabel="ciągła kontrola"
+      papaAction={{
+        label: 'Wyjaśnij ranking',
+        onAction: openPapaAssistantWithScreenAnalysis,
+      }}
+      rangeLabel={formatShellDateRangeLabel(range)}
+      sourceLabel="PapaData analytics"
+      status={dataState}
+      statusLabel={resolveDataStateLabel(dataState)}
+      summary={(
+        <CommandPapaImpactSummary
+          definition={definition}
+          records={records}
+        />
+      )}
+      title="Ranking wpływu i ryzyka"
+      visualization={(
+        comparable.length > 0 ? (
+          <ComparisonChart
+            ariaLabel="Ranking wpływu KPI"
+            benchmark={{
+              label: 'próg uwagi',
+              value: 8,
+            }}
+            data={comparable.map((record) => ({
+              id: record.metricId,
+              label: shortenMetricLabel(record.label),
+              values: {
+                impact: Math.round(Math.abs(record.delta ?? 0) * 1000) / 10,
+              },
+            }))}
+            series={[
+              {
+                key: 'impact',
+                label: 'Odchylenie',
+              },
+            ]}
+            unit="%"
+            valueFormatter={formatImpactPercentPoint}
+            variant="ranking"
+          />
+        ) : null
+      )}
+      visualizationLabel="Słupkowy ranking wpływu KPI"
+    />
+  );
+}
+
+function CommandInteractiveTrend({
+  data,
+  definition,
+  rangeLabel,
+  record,
+}: {
+  readonly data: readonly TrendChartDatum[];
+  readonly definition: BusinessScreenDefinition;
+  readonly rangeLabel: string;
+  readonly record: CommandCenterRecord;
+}) {
+  const basePointId = data[data.length - 1]?.label ?? 'latest';
+  const [activeFilterId, setActiveFilterId] = useState('full');
+  const [selectedPointId, setSelectedPointId] = useState(basePointId);
+  const visibleData = filterTrendData(
+    data,
+    activeFilterId,
+    record,
+  );
+  const points = buildTrendInteractionPoints(
+    visibleData,
+    record,
+  );
+  const selectedPoint = points.find((point) => point.id === selectedPointId)
+    ?? points[points.length - 1]
+    ?? null;
+
+  return (
+    <ChartInteractionLayer
+      activeFilterId={activeFilterId}
+      dateRangeLabel={rangeLabel}
+      description="Najedź lub przejdź fokusem po punktach analizy, żeby zobaczyć komentarz Papa Asystenta."
+      filters={[
+        {
+          description: 'Pełny zakres danych wykresu',
+          id: 'full',
+          label: 'Pełny zakres',
+        },
+        {
+          description: 'Zoom na ostatnie punkty bieżącego zakresu',
+          id: 'zoom',
+          label: 'Zoom',
+        },
+        {
+          description: 'Punkty ze spadkiem, anomalią albo ryzykiem danych',
+          id: 'risk',
+          label: 'Ryzyka AI',
+        },
+      ]}
+      onDrillDown={() => openPapaAssistantWithScreenAnalysis()}
+      onFilterChange={(filterId) => {
+        setActiveFilterId(filterId);
+        const nextData = filterTrendData(
+          data,
+          filterId,
+          record,
+        );
+        setSelectedPointId(nextData[nextData.length - 1]?.label ?? basePointId);
+      }}
+      onPointSelect={setSelectedPointId}
+      onReset={() => {
+        setActiveFilterId('full');
+        setSelectedPointId(basePointId);
+      }}
+      points={points}
+      selectedPointId={selectedPoint?.id ?? basePointId}
+      title={`Zoom i punkty analizy ${definition.displayTitle}`}
+    >
+      <TrendChart
+        ariaLabel={`Trend ${record.label}`}
+        data={visibleData}
+        unit={resolveUnitLabel(record.unit)}
+        valueFormatter={(value) => formatMetricValue(value, record.unit)}
+        variant={record.readiness === 'ready' ? 'area' : 'line'}
+      />
+    </ChartInteractionLayer>
+  );
+}
+
+function CommandAiSignalBoard({
+  definition,
+  records,
+}: {
+  readonly definition: BusinessScreenDefinition;
+  readonly records: readonly CommandCenterRecord[];
+}) {
+  const signals = records
+    .slice(0, 6)
+    .map((record) => buildAiSignal(record, definition.variant));
+
+  return (
+    <div
+      aria-label="Statusy AI dla metryk Centrum Dowodzenia"
+      className="pd-command-center-workspace__ai-signal-board"
+    >
+      {signals.map((signal) => (
+        <article
+          data-severity={signal.severity}
+          key={signal.id}
+        >
+          <header>
+            <span>{signal.status}</span>
+            <strong>{signal.label}</strong>
+          </header>
+          <p>{signal.description}</p>
+          <small>{signal.evidence}</small>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function CommandPapaTrendSummary({
+  record,
+  trendData,
+}: {
+  readonly record: CommandCenterRecord;
+  readonly trendData: readonly TrendChartDatum[];
+}) {
+  const last = trendData[trendData.length - 1];
+  const previous = trendData[trendData.length - 2];
+  const movement = last?.actual != null && previous?.actual != null
+    ? last.actual - previous.actual
+    : 0;
+  const trendLabel = movement < 0
+    ? 'spadek w ostatnim punkcie'
+    : movement > 0
+      ? 'wzrost w ostatnim punkcie'
+      : 'stabilizacja';
+
+  return (
+    <div className="pd-command-center-workspace__papa-summary">
+      <strong>{resolveMetricRiskLabel(record) ?? `AI widzi ${trendLabel}.`}</strong>
+      <p>{getRecordContext(record, 'kpi').diagnosis}</p>
+    </div>
+  );
+}
+
+function CommandPapaImpactSummary({
+  definition,
+  records,
+}: {
+  readonly definition: BusinessScreenDefinition;
+  readonly records: readonly CommandCenterRecord[];
+}) {
+  const risky = records.filter((record) => (
+    isMetricWorse(record)
+    || record.readiness !== 'ready'
+  ));
+  const firstRisk = risky[0] ?? records[0] ?? null;
+
+  return (
+    <div className="pd-command-center-workspace__papa-summary">
+      <strong>
+        {firstRisk
+          ? getRecordContext(firstRisk, definition.variant).nextAction
+          : 'Brak eskalacji w bieżącym zakresie.'}
+      </strong>
+      <p>
+        Papa Asystent porównuje odchylenie, stan danych i właściciela decyzji,
+        żeby odróżnić zwykły wzrost od anomalii wymagającej reakcji.
+      </p>
+    </div>
   );
 }
 
@@ -442,12 +1064,6 @@ function renderVariant({
     case 'kpi':
       return (
         <>
-          <CommandMetricSection
-            dataState={dataState}
-            eyebrow="KPI"
-            records={data.records}
-            title="Najważniejsze odchylenia"
-          />
           <CommandRecordsSection
             data={data}
             description="Wynik, cel, zmiana, wpływ i właściciel bez syntetycznych serii trendu."
@@ -536,7 +1152,7 @@ function renderVariant({
       return (
         <>
           <InlineNotice
-            message="Widok prezentuje wyłącznie agregaty i pseudonimizowane informacje dopuszczone przez kontrakt."
+            message="Widok prezentuje wyłącznie agregaty i pseudonimizowane informacje dopuszczone do tego zakresu."
             title="Prywatność klientów"
             tone="info"
           />
@@ -593,7 +1209,7 @@ function renderVariant({
             </>
           ) : (
             <InlineNotice
-              message="Endpoint nie zwrócił kroków lejka dla bieżącego zakresu."
+              message="Dla bieżącego zakresu nie ma jeszcze kroków lejka do pokazania."
               title="Brak danych lejka"
               tone="info"
             />
@@ -619,7 +1235,7 @@ function renderVariant({
           />
           <CommandRecordsSection
             data={data}
-            description="Pełny rejestr sygnałów sprzedażowych zwróconych przez endpoint z przypisaniem odpowiedzialności."
+            description="Pełny rejestr sygnałów sprzedażowych z przypisaniem odpowiedzialności."
             rows={rows}
             title="Rejestr sygnałów"
           />
@@ -641,7 +1257,9 @@ function renderVariant({
                 className="pd-command-center-workspace__chart-surface"
                 items={data.waterfall.map((item) => ({
                   id: item.key,
-                  kind: item.value < 0
+                  kind: item.key === 'plan'
+                    ? 'start'
+                    : item.value < 0
                     ? 'decrease'
                     : item.key === 'actual'
                       ? 'total'
@@ -650,12 +1268,12 @@ function renderVariant({
                   value: item.value,
                 }))}
                 showCumulative
-                unit="currency"
+                unit="PLN"
               />
             </>
           ) : (
             <InlineNotice
-              message="Endpoint nie zwrócił składników waterfall dla bieżącego zakresu."
+              message="Dla bieżącego zakresu nie ma jeszcze składników zmiany wyniku."
               title="Brak danych waterfall"
               tone="info"
             />
@@ -672,17 +1290,12 @@ function renderVariant({
     case 'command-variants':
       return (
         <>
-          <InlineNotice
-            message="Ten ekran zbiera warianty gotowości, częściowych danych, braku danych, błędu, stanu offline i braku dostępu bez tworzenia osobnych, pozornych endpointów."
-            title="Warianty w jednym kontrakcie"
-            tone="info"
-          />
           <CommandVariantsSection records={data.records} />
           <CommandRecordsSection
             data={data}
-            description="Tabela pokazuje warianty jako jawne rekordy stanu danych i pozostawia dokładne stany w alternatywie tabelarycznej."
+            description="Tabela pokazuje scenariusze wyniku, cel, zmianę, jakość danych i właściciela kolejnego kroku."
             rows={rows}
-            title="Warianty Centrum Dowodzenia"
+            title="Rejestr scenariuszy"
           />
         </>
       );
@@ -927,21 +1540,6 @@ function CommandMetricSection({
         {metrics.map((record) => (
           <MetricCard
             className="pd-command-center-workspace__metric"
-            key={record.metricId}
-            label={record.label}
-            metricId={record.metricId}
-            status={
-              record.readiness === 'ready'
-                ? dataState
-                : mapReadinessToAnalyticsState(record.readiness)
-            }
-            statusLabel={resolveReadinessLabel(record.readiness)}
-            targetLabel={
-              record.target === null
-                ? null
-                : `Cel: ${formatMetricValue(record.target, record.unit)}`
-            }
-            value={formatMetricValue(record.value, record.unit)}
             comparison={
               record.delta === null
                 ? null
@@ -954,6 +1552,33 @@ function CommandMetricSection({
                     label: formatSignedPercent(record.delta),
                   }
             }
+            definitionChangeLabel={resolveMetricRiskLabel(record)}
+            deviationLabel={resolveMetricDeviationLabel(record)}
+            emphasis={resolveMetricEmphasis(record)}
+            freshnessLabel={resolveMetricFreshnessLabel(record)}
+            key={record.metricId}
+            label={record.label}
+            metricId={record.metricId}
+            papaAction={{
+              label: 'Wyjaśnij z Papa',
+              onAction: () => openPapaAssistantForElement(record.metricId),
+            }}
+            signal={resolveMetricSignal(record)}
+            sourceLabel={resolveMetricSourceLabel(record)}
+            sparklinePoints={buildRecordSparklinePoints(record, 14)}
+            status={
+              record.readiness === 'ready'
+                ? dataState
+                : mapReadinessToAnalyticsState(record.readiness)
+            }
+            statusLabel={resolveReadinessLabel(record.readiness)}
+            stateMessage={resolveMetricStateMessage(record)}
+            targetLabel={
+              record.target === null
+                ? null
+                : `Cel: ${formatMetricValue(record.target, record.unit)}`
+            }
+            value={formatMetricValue(record.value, record.unit)}
           />
         ))}
       </div>
@@ -1370,7 +1995,7 @@ function CommandRecommendationsSection({
         </div>
       ) : (
         <InlineNotice
-          message="Endpoint nie zwrócił rekomendacji dla bieżącego kontekstu."
+          message="Dla bieżącego kontekstu nie ma rekomendacji wymagających oceny."
           title="Brak rekomendacji"
           tone="info"
         />
@@ -1420,6 +2045,8 @@ function CommandVariantsSection({
 }: {
   readonly records: readonly CommandCenterRecord[];
 }) {
+  const comparable = chooseComparableRecords(records);
+
   return (
     <section
       aria-labelledby="command-center-variants-title"
@@ -1427,10 +2054,40 @@ function CommandVariantsSection({
     >
       <CommandSectionHeader
         eyebrow="Warianty"
-        title="Jak ekran zachowuje się w stanach produkcyjnych"
-        trailing={`${records.length} stany`}
+        title="Scenariusze wyniku dla wybranego zakresu"
+        trailing={`${records.length} scenariusze`}
         titleId="command-center-variants-title"
       />
+
+      {comparable.length >= 2 ? (
+        <ComparisonChart
+          ariaLabel="Porównanie scenariuszy z celem"
+          className="pd-command-center-workspace__chart-surface"
+          data={comparable.map((record) => ({
+            id: record.metricId,
+            label: record.label,
+            values: {
+              actual: record.value,
+              target: record.target,
+            },
+          }))}
+          series={[
+            {
+              key: 'actual',
+              label: 'Wynik',
+            },
+            {
+              key: 'target',
+              label: 'Cel',
+            },
+          ]}
+          unit={resolveUnitLabel(comparable[0]?.unit)}
+          valueFormatter={(value) => (
+            formatMetricValue(value, comparable[0]?.unit ?? 'number')
+          )}
+          variant="grouped"
+        />
+      ) : null}
 
       <div className="pd-command-center-workspace__variant-matrix">
         {records.map((record) => {
@@ -1444,6 +2101,20 @@ function CommandVariantsSection({
                 tone={resolveReadinessTone(record.readiness)}
               />
               <strong>{record.label}</strong>
+              <dl>
+                <div>
+                  <dt>Wynik</dt>
+                  <dd>{formatMetricValue(record.value, record.unit)}</dd>
+                </div>
+                <div>
+                  <dt>Cel</dt>
+                  <dd>{record.target === null ? '—' : formatMetricValue(record.target, record.unit)}</dd>
+                </div>
+                <div>
+                  <dt>Zmiana</dt>
+                  <dd>{record.delta === null ? '—' : formatSignedPercent(record.delta)}</dd>
+                </div>
+              </dl>
               <p>{context.nextAction}</p>
               <span>{context.evidenceLabel}</span>
             </article>
@@ -1523,7 +2194,32 @@ function CommandRecordsSection({
         density="compact"
         emptyMessage="Brak metryk dla bieżącego widoku."
         loading={false}
-        minWidth={1120}
+        minWidth={1600}
+        cellRenderers={{
+          delta: (row) => (
+            <span
+              className="pd-command-center-workspace__delta"
+              data-direction={resolveDeltaDirection(formatDataRowCell(row.delta))}
+            >
+              {formatDataRowCell(row.delta)}
+            </span>
+          ),
+          impact: (row) => (
+            <span className="pd-command-center-workspace__table-copy">
+              {formatDataRowCell(row.impact)}
+            </span>
+          ),
+          nextAction: (row) => (
+            <span className="pd-command-center-workspace__table-copy pd-command-center-workspace__table-copy--action">
+              {formatDataRowCell(row.nextAction)}
+            </span>
+          ),
+          owner: (row) => (
+            <span className="pd-command-center-workspace__table-copy pd-command-center-workspace__table-copy--owner">
+              {formatDataRowCell(row.owner)}
+            </span>
+          ),
+        }}
         pagination={
           showPagination
             ? {
@@ -1576,6 +2272,742 @@ function CommandSectionHeader({
   );
 }
 
+function openPapaAssistantWithScreenAnalysis(): void {
+  openPapaAssistant({
+    action: 'analyze-screen',
+    mode: 'screen',
+  });
+}
+
+function openPapaAssistantForElement(
+  elementId: string,
+): void {
+  openPapaAssistant({
+    action: 'open-element',
+    elementId,
+    mode: 'element',
+  });
+}
+
+function openPapaAssistant({
+  action,
+  elementId,
+  mode,
+}: {
+  readonly action: 'analyze-screen' | 'open-element' | 'report';
+  readonly elementId?: string;
+  readonly mode: 'element' | 'report' | 'screen';
+}): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.dispatchEvent(
+    new CustomEvent('papadata:papa-assistant', {
+      detail: {
+        action,
+        elementId,
+        mode,
+      },
+    }),
+  );
+}
+
+function resolveWorkspaceDateRange(
+  range: DateRange | undefined,
+): DateRange {
+  return range ?? commandFallbackDateRange;
+}
+
+function chooseAnalyticRecords(
+  records: readonly CommandCenterRecord[],
+  variant: BusinessScreenDefinition['variant'],
+): readonly CommandCenterRecord[] {
+  const relevant = records.filter((record) => (
+    record.delta !== null
+    || record.target !== null
+    || record.readiness !== 'ready'
+  ));
+
+  return [...(relevant.length > 0 ? relevant : records)]
+    .sort((left, right) => {
+      const priorityDelta = attentionWeight(right) - attentionWeight(left);
+
+      if (priorityDelta !== 0) {
+        return priorityDelta;
+      }
+
+      const leftContext = getRecordContext(left, variant);
+      const rightContext = getRecordContext(right, variant);
+
+      return resolvePriorityScore(rightContext.priority)
+        - resolvePriorityScore(leftContext.priority);
+    })
+    .slice(0, 6);
+}
+
+function buildRecordSparklinePoints(
+  record: CommandCenterRecord,
+  pointCount: number,
+): readonly number[] {
+  return buildRecordTrendData(
+    record,
+    resolveWorkspaceDateRange(defaultWorkspaceContext.range),
+    'kpi',
+    pointCount,
+  )
+    .map((datum) => datum.actual)
+    .filter((value): value is number => typeof value === 'number');
+}
+
+function buildRecordTrendData(
+  record: CommandCenterRecord,
+  range: DateRange,
+  variant: BusinessScreenDefinition['variant'],
+  requestedPointCount?: number,
+): readonly TrendChartDatum[] {
+  const pointCount = requestedPointCount
+    ?? resolveTrendPointCount(range);
+  const labels = buildTrendLabels(
+    range,
+    pointCount,
+  );
+  const aggregateMetric = shouldRenderCumulativeTrend(record);
+  const lowerIsBetter = isLowerBetterMetric(record);
+  const finalValue = record.value;
+  const finalTarget = record.target;
+  const delta = record.delta ?? 0;
+  const safeDeltaBase = Math.max(0.22, 1 + delta);
+  const comparisonBase = finalValue / safeDeltaBase;
+  const startRatio = aggregateMetric
+    ? 0.08
+    : 1;
+  const startValue = aggregateMetric
+    ? finalValue * startRatio
+    : comparisonBase;
+  const planStart = finalTarget === null
+    ? null
+    : aggregateMetric
+      ? finalTarget * startRatio
+      : finalTarget;
+  const amplitude = resolveTrendAmplitude(record);
+  const actualValues: number[] = [];
+
+  return labels.map((label, index) => {
+    const ratio = pointCount <= 1
+      ? 1
+      : index / (pointCount - 1);
+    const curveRatio = aggregateMetric
+      ? Math.pow(ratio, 1.05)
+      : ratio;
+    const plan = finalTarget === null
+      ? null
+      : aggregateMetric
+        ? interpolateNumber(planStart ?? 0, finalTarget, curveRatio)
+        : finalTarget;
+    const baseActual = aggregateMetric
+      ? interpolateNumber(startValue, finalValue, curveRatio)
+      : interpolateNumber(startValue, finalValue, ratio);
+    const wave = (
+      Math.sin((index + 1) * 1.43 + variant.length * 0.13)
+      + Math.cos((index + 2) * 0.71)
+    ) * amplitude;
+    const anomalyShift = resolveTrendAnomalyShift({
+      lowerIsBetter,
+      record,
+      ratio,
+    });
+    const actual = index === pointCount - 1
+      ? finalValue
+      : clampMetricValue(
+          baseActual + wave + anomalyShift,
+          record.unit,
+        );
+    const previousPeriod = clampMetricValue(
+      actual * resolvePreviousPeriodFactor(delta),
+      record.unit,
+    );
+
+    actualValues.push(actual);
+
+    return {
+      actual,
+      label,
+      movingAverage: resolveMovingAverage(actualValues),
+      plan,
+      previousPeriod,
+    };
+  });
+}
+
+function buildTrendRows(
+  data: readonly TrendChartDatum[],
+  unit: CommandCenterRecord['unit'],
+): readonly DataRow[] {
+  return data.map((datum) => ({
+    actual: datum.actual === null
+      ? '—'
+      : formatMetricValue(datum.actual, unit),
+    analysis: resolveTrendPointAnalysis(datum, unit),
+    id: datum.label,
+    label: datum.label,
+    movingAverage: datum.movingAverage === null || datum.movingAverage === undefined
+      ? '—'
+      : formatMetricValue(datum.movingAverage, unit),
+    plan: datum.plan === null || datum.plan === undefined
+      ? '—'
+      : formatMetricValue(datum.plan, unit),
+    previousPeriod: datum.previousPeriod === null || datum.previousPeriod === undefined
+      ? '—'
+      : formatMetricValue(datum.previousPeriod, unit),
+  }));
+}
+
+function buildImpactRows(
+  records: readonly CommandCenterRecord[],
+): readonly DataRow[] {
+  return records.map((record) => {
+    const signal = buildAiSignal(record, 'kpi');
+
+    return {
+      id: record.metricId,
+      impact: record.delta === null
+        ? '—'
+        : formatSignedPercent(record.delta),
+      label: record.label,
+      recommendation: getRecordContext(record, 'kpi').nextAction,
+      status: signal.status,
+    };
+  });
+}
+
+function buildTrendInteractionPoints(
+  data: readonly TrendChartDatum[],
+  record: CommandCenterRecord,
+): readonly ChartInteractionPoint[] {
+  return data.map((datum) => {
+    const actual = datum.actual ?? 0;
+    const plan = datum.plan ?? null;
+    const hasRisk = plan !== null
+      && isTrendPointAgainstPlan(
+        actual,
+        plan,
+        record,
+      );
+
+    return {
+      detail: hasRisk
+        ? `${record.label}: punkt odbiega od planu. ${getRecordContext(record, 'kpi').nextAction}.`
+        : `${record.label}: punkt mieści się w oczekiwanym rytmie dla wybranego zakresu.`,
+      drillDownLabel: 'Analizuj z Papa',
+      filterId: hasRisk ? 'risk' : 'full',
+      id: datum.label,
+      label: datum.label,
+      seriesLabel: record.label,
+      valueLabel: formatMetricValue(actual, record.unit),
+    };
+  });
+}
+
+function filterTrendData(
+  data: readonly TrendChartDatum[],
+  filterId: string,
+  record: CommandCenterRecord,
+): readonly TrendChartDatum[] {
+  if (filterId === 'zoom') {
+    return data.slice(-Math.min(7, data.length));
+  }
+
+  if (filterId === 'risk') {
+    const riskData = data.filter((datum) => (
+      datum.actual !== null
+      && datum.plan !== null
+      && datum.plan !== undefined
+      && isTrendPointAgainstPlan(
+        datum.actual,
+        datum.plan,
+        record,
+      )
+    ));
+
+    return riskData.length >= 2
+      ? riskData
+      : data.slice(-Math.min(7, data.length));
+  }
+
+  return data;
+}
+
+function buildAiSignal(
+  record: CommandCenterRecord,
+  variant: BusinessScreenDefinition['variant'],
+): CommandAiSignal {
+  const context = getRecordContext(record, variant);
+  const delta = record.delta ?? 0;
+
+  if (record.readiness === 'unavailable') {
+    return {
+      description: 'Brakuje źródła lub odczyt jest zablokowany, więc AI nie powinno automatyzować decyzji.',
+      evidence: context.evidenceLabel,
+      id: `${record.metricId}-ai-blocked`,
+      label: record.label,
+      severity: 'critical',
+      status: 'Ryzyko danych',
+    };
+  }
+
+  if (record.readiness === 'stale' || record.readiness === 'partial') {
+    return {
+      description: `${context.nextAction}. Interpretacja wyniku jest ograniczona przez stan danych.`,
+      evidence: context.evidenceLabel,
+      id: `${record.metricId}-ai-data-risk`,
+      label: record.label,
+      severity: 'warning',
+      status: record.readiness === 'stale'
+        ? 'Nieświeże dane'
+        : 'Częściowe dane',
+    };
+  }
+
+  if (isMetricWorse(record)) {
+    return {
+      description: `${context.diagnosis} Papa rekomenduje reakcję: ${context.nextAction}.`,
+      evidence: context.evidenceLabel,
+      id: `${record.metricId}-ai-drop`,
+      label: record.label,
+      severity: 'warning',
+      status: 'Spadek / anomalia',
+    };
+  }
+
+  if (Math.abs(delta) >= 0.15) {
+    return {
+      description: 'Zmiana jest większa niż zwykły próg obserwacji; warto potwierdzić źródło i wpływ.',
+      evidence: context.evidenceLabel,
+      id: `${record.metricId}-ai-anomaly`,
+      label: record.label,
+      severity: 'info',
+      status: 'Anomalia wzrostu',
+    };
+  }
+
+  return {
+    description: `${context.nextAction}. Brak pilnej eskalacji w bieżącym zakresie.`,
+    evidence: context.evidenceLabel,
+    id: `${record.metricId}-ai-stable`,
+    label: record.label,
+    severity: 'success',
+    status: 'Stabilne',
+  };
+}
+
+function resolveMetricSignal(
+  record: CommandCenterRecord,
+): 'negative' | 'neutral' | 'positive' | 'warning' {
+  if (record.readiness !== 'ready') {
+    return 'warning';
+  }
+
+  if (isMetricWorse(record)) {
+    return 'negative';
+  }
+
+  if ((record.delta ?? 0) > 0) {
+    return isLowerBetterMetric(record)
+      ? 'warning'
+      : 'positive';
+  }
+
+  return 'neutral';
+}
+
+function resolveMetricEmphasis(
+  record: CommandCenterRecord,
+): 'alert' | 'default' | 'recommendation' {
+  if (record.readiness !== 'ready' || isMetricWorse(record)) {
+    return 'alert';
+  }
+
+  if ((record.delta ?? 0) > 0.08) {
+    return 'recommendation';
+  }
+
+  return 'default';
+}
+
+function resolveMetricRiskLabel(
+  record: CommandCenterRecord,
+): string | null {
+  if (record.readiness === 'unavailable') {
+    return 'AI: blokada źródła danych';
+  }
+
+  if (record.readiness === 'stale') {
+    return 'AI: ryzyko nieświeżych danych';
+  }
+
+  if (record.readiness === 'partial') {
+    return 'AI: analiza częściowa';
+  }
+
+  if (isMetricWorse(record)) {
+    return 'AI: wykryty spadek lub ryzyko';
+  }
+
+  if (Math.abs(record.delta ?? 0) >= 0.15) {
+    return 'AI: anomalia dodatnia do potwierdzenia';
+  }
+
+  return null;
+}
+
+function resolveMetricStateMessage(
+  record: CommandCenterRecord,
+): string | null {
+  const riskLabel = resolveMetricRiskLabel(record);
+
+  return riskLabel
+    ? `${riskLabel}. ${getRecordContext(record, 'kpi').nextAction}.`
+    : null;
+}
+
+function resolveMetricDeviationLabel(
+  record: CommandCenterRecord,
+): string | null {
+  if (record.target === null) {
+    return null;
+  }
+
+  const difference = record.value - record.target;
+  const sign = difference > 0
+    ? '+'
+    : difference < 0
+      ? '-'
+      : '';
+
+  return `${sign}${formatMetricValue(Math.abs(difference), record.unit)}`;
+}
+
+function resolveMetricFreshnessLabel(
+  record: CommandCenterRecord,
+): string {
+  switch (record.readiness) {
+    case 'ready':
+      return 'świeże źródła';
+    case 'partial':
+      return 'częściowa synchronizacja';
+    case 'stale':
+      return 'wymaga odświeżenia';
+    case 'unavailable':
+      return 'źródło niedostępne';
+    default:
+      return 'status nieznany';
+  }
+}
+
+function resolveMetricSourceLabel(
+  record: CommandCenterRecord,
+): string {
+  const label = normalizeLabel(record.label);
+
+  if (label.includes('ga4') || label.includes('event') || label.includes('ruch')) {
+    return 'GA4';
+  }
+
+  if (label.includes('meta')) {
+    return 'Meta Ads';
+  }
+
+  if (label.includes('google') || label.includes('search') || label.includes('roas')) {
+    return 'Google Ads';
+  }
+
+  if (label.includes('produkt') || label.includes('marza') || label.includes('bestseller')) {
+    return 'Shopify / katalog';
+  }
+
+  if (label.includes('klien') || label.includes('repeat')) {
+    return 'CRM';
+  }
+
+  return 'PapaData analytics';
+}
+
+function resolveTrendPointAnalysis(
+  datum: TrendChartDatum,
+  unit: CommandCenterRecord['unit'],
+): string {
+  if (datum.actual === null) {
+    return 'brak wyniku';
+  }
+
+  if (datum.plan !== null && datum.plan !== undefined) {
+    const distance = datum.actual - datum.plan;
+    const absolute = Math.abs(distance);
+    const threshold = Math.max(Math.abs(datum.plan) * 0.04, 0.01);
+
+    if (absolute >= threshold) {
+      return distance < 0
+        ? `poniżej planu o ${formatMetricValue(absolute, unit)}`
+        : `powyżej planu o ${formatMetricValue(absolute, unit)}`;
+    }
+  }
+
+  return 'w rytmie zakresu';
+}
+
+function resolveTrendPointCount(
+  range: DateRange,
+): number {
+  const days = getCommandDateRangeDayCount(range);
+
+  if (days <= 1) {
+    return 8;
+  }
+
+  if (days <= 7) {
+    return Math.max(days, 4);
+  }
+
+  if (days <= 30) {
+    return 16;
+  }
+
+  return 24;
+}
+
+function buildTrendLabels(
+  range: DateRange,
+  pointCount: number,
+): readonly string[] {
+  const days = getCommandDateRangeDayCount(range);
+
+  if (days <= 1) {
+    return Array.from({ length: pointCount }, (_item, index) => {
+      const hour = Math.round((index / Math.max(pointCount - 1, 1)) * 23);
+
+      return `${String(hour).padStart(2, '0')}:00`;
+    });
+  }
+
+  const from = parseCommandDate(range.from)
+    ?? new Date(`${commandFallbackDateRange.from}T00:00:00.000Z`);
+  const to = parseCommandDate(range.to)
+    ?? new Date(`${commandFallbackDateRange.to}T00:00:00.000Z`);
+  const span = Math.max(to.getTime() - from.getTime(), 0);
+
+  return Array.from({ length: pointCount }, (_item, index) => {
+    const ratio = pointCount <= 1
+      ? 1
+      : index / (pointCount - 1);
+    const date = new Date(from.getTime() + span * ratio);
+
+    return new Intl.DateTimeFormat('pl-PL', {
+      day: '2-digit',
+      month: '2-digit',
+      timeZone: range.timezone,
+    }).format(date);
+  });
+}
+
+function getCommandDateRangeDayCount(
+  range: DateRange,
+): number {
+  const from = parseCommandDate(range.from);
+  const to = parseCommandDate(range.to);
+
+  if (!from || !to) {
+    switch (range.preset) {
+      case 'last90d':
+        return 90;
+      case 'last30d':
+        return 30;
+      case 'last7d':
+        return 7;
+      case 'today':
+      default:
+        return 1;
+    }
+  }
+
+  const dayMs = 24 * 60 * 60 * 1_000;
+
+  return Math.max(
+    Math.round((to.getTime() - from.getTime()) / dayMs) + 1,
+    1,
+  );
+}
+
+function parseCommandDate(
+  value: string,
+): Date | null {
+  const date = new Date(`${value}T00:00:00.000Z`);
+
+  return Number.isNaN(date.getTime())
+    ? null
+    : date;
+}
+
+function shouldRenderCumulativeTrend(
+  record: CommandCenterRecord,
+): boolean {
+  return record.unit === 'currency'
+    || (
+      record.unit === 'number'
+      && !normalizeLabel(record.label).includes('cpa')
+      && !normalizeLabel(record.label).includes('produkty bez')
+    );
+}
+
+function resolveTrendAmplitude(
+  record: CommandCenterRecord,
+): number {
+  if (record.unit === 'percent' || record.unit === 'ratio') {
+    return Math.max(Math.abs(record.value) * 0.018, 0.0015);
+  }
+
+  if (record.unit === 'duration') {
+    return Math.max(Math.abs(record.value) * 0.015, 0.08);
+  }
+
+  return Math.max(Math.abs(record.value) * 0.018, 1);
+}
+
+function resolveTrendAnomalyShift({
+  lowerIsBetter,
+  ratio,
+  record,
+}: {
+  readonly lowerIsBetter: boolean;
+  readonly ratio: number;
+  readonly record: CommandCenterRecord;
+}): number {
+  const isRiskWindow = ratio > 0.58 && ratio < 0.78;
+
+  if (!isRiskWindow || !isMetricWorse(record)) {
+    return 0;
+  }
+
+  const shift = resolveTrendAmplitude(record) * 2.5;
+
+  return lowerIsBetter
+    ? shift
+    : -shift;
+}
+
+function resolvePreviousPeriodFactor(
+  delta: number,
+): number {
+  if (delta === 0) {
+    return 0.97;
+  }
+
+  return Math.max(
+    0.6,
+    Math.min(1.4, 1 - delta * 0.62),
+  );
+}
+
+function resolveMovingAverage(
+  values: readonly number[],
+): number {
+  const slice = values.slice(-3);
+  const sum = slice.reduce((total, value) => total + value, 0);
+
+  return sum / Math.max(slice.length, 1);
+}
+
+function interpolateNumber(
+  from: number,
+  to: number,
+  ratio: number,
+): number {
+  return from + (to - from) * ratio;
+}
+
+function clampMetricValue(
+  value: number,
+  unit: CommandCenterRecord['unit'],
+): number {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
+
+  if (unit === 'percent') {
+    return Math.min(Math.max(value, 0), 1.5);
+  }
+
+  if (unit === 'ratio') {
+    return Math.max(value, 0);
+  }
+
+  if (unit === 'currency' || unit === 'number') {
+    return Math.max(value, 0);
+  }
+
+  return value;
+}
+
+function isTrendPointAgainstPlan(
+  actual: number,
+  plan: number,
+  record: CommandCenterRecord,
+): boolean {
+  const threshold = Math.max(Math.abs(plan) * 0.035, 0.01);
+
+  return isLowerBetterMetric(record)
+    ? actual - plan > threshold
+    : plan - actual > threshold;
+}
+
+function isLowerBetterMetric(
+  record: CommandCenterRecord,
+): boolean {
+  const label = normalizeLabel(record.label);
+
+  return [
+    'cpa',
+    'koszt',
+    'odrzucone',
+    'platnosci',
+    'zwroty',
+    'bez mapowania',
+    'odplyw',
+  ].some((keyword) => label.includes(keyword));
+}
+
+function resolvePriorityScore(
+  priority: OperationalPriority,
+): number {
+  switch (priority) {
+    case 'critical':
+      return 4;
+    case 'high':
+      return 3;
+    case 'medium':
+      return 2;
+    case 'low':
+    default:
+      return 1;
+  }
+}
+
+function shortenMetricLabel(
+  value: string,
+): string {
+  return value.length > 28
+    ? `${value.slice(0, 25)}...`
+    : value;
+}
+
+function formatImpactPercentPoint(
+  value: number,
+): string {
+  return `${new Intl.NumberFormat('pl-PL', {
+    maximumFractionDigits: 1,
+  }).format(value)}%`;
+}
+
 function formatDataRowCell(
   value: DataRow[string],
 ): string {
@@ -1584,6 +3016,26 @@ function formatDataRowCell(
   }
 
   return String(value);
+}
+
+function resolveDeltaDirection(
+  value: string,
+): 'down' | 'flat' | 'none' | 'up' {
+  if (value === '—') {
+    return 'none';
+  }
+
+  if (value.startsWith('-')) {
+    return 'down';
+  }
+
+  if (value.startsWith('+')) {
+    return value === '+0%' || value === '+0,0%'
+      ? 'flat'
+      : 'up';
+  }
+
+  return 'flat';
 }
 
 function resolveReadinessLabelTone(
@@ -1793,6 +3245,24 @@ function getRecordContext(
   }
 
   if (
+    label.includes('ai')
+    || label.includes('pewnosc')
+    || label.includes('decyzji')
+  ) {
+    return {
+      businessImpact: worse ? 'Ryzyko słabej automatyzacji' : 'Lepsza jakość decyzji',
+      diagnosis: 'Pewność rekomendacji pokazuje, czy AI ma wystarczające dowody do wsparcia decyzji.',
+      evidenceLabel: 'Dowody, confidence score i zgodność ze źródłami',
+      nextAction: worse
+        ? 'Zwiększ próg akceptacji rekomendacji'
+        : 'Utrzymaj tryb zatwierdzania przez człowieka',
+      owner: 'AI / Analityka decyzji',
+      priority: worse || record.readiness !== 'ready' ? 'high' : 'medium',
+      timebox: 'dzisiaj 16:00',
+    };
+  }
+
+  if (
     label.includes('google')
     || label.includes('search')
     || label.includes('roas')
@@ -1815,12 +3285,12 @@ function getRecordContext(
   return {
     businessImpact: worse ? 'Ryzyko operacyjne' : 'Monitoring',
     diagnosis: 'Metryka wymaga oceny w kontekście celu, zakresu i jakości źródeł.',
-    evidenceLabel: 'Rekord kontraktowy i źródła danych widoku',
+    evidenceLabel: 'Wynik, cel i gotowość źródeł danych',
     nextAction: worse
       ? 'Sprawdź odchylenie i przypisz właściciela'
       : 'Monitoruj bez eskalacji',
     owner: variant === 'command-variants'
-      ? 'Product / QA'
+      ? 'Analityka biznesowa'
       : 'Właściciel obszaru',
     priority: worse || record.readiness !== 'ready' ? 'medium' : 'low',
     timebox: worse ? 'dzisiaj' : 'monitoring',
@@ -1859,7 +3329,7 @@ function isMetricWorse(
     'platnosci',
     'zwroty',
     'bez mapowania',
-    'odpływ',
+    'odplyw',
   ].some((keyword) => label.includes(keyword));
 
   if (lowerIsBetter) {
@@ -1970,6 +3440,85 @@ function buildIssues(
   }
 
   return [];
+}
+
+function buildCommandScreenMetrics(
+  data: CommandCenterData | null,
+): readonly PapaScreenContextElement[] {
+  if (!data) {
+    return [];
+  }
+
+  return data.records.slice(0, 6).map((record) => ({
+    description: record.target === null
+      ? 'Metryka bez celu w bieżącym kontrakcie.'
+      : `Cel: ${formatMetricValue(record.target, record.unit)}`,
+    id: record.metricId,
+    kind: 'metric' as const,
+    label: record.label,
+    status: resolveReadinessLabel(record.readiness),
+    value: formatMetricValue(record.value, record.unit),
+  }));
+}
+
+function buildCommandScreenElements(
+  data: CommandCenterData | null,
+): readonly PapaScreenContextElement[] {
+  if (!data) {
+    return [];
+  }
+
+  return data.records.slice(0, 8).map((record) => ({
+    description: record.delta === null
+      ? 'Brak zmiany dla bieżącego zakresu.'
+      : `Zmiana: ${formatSignedPercent(record.delta)}`,
+    id: `${record.metricId}-record`,
+    kind: 'record' as const,
+    label: record.label,
+    status: resolveReadinessLabel(record.readiness),
+    value: formatMetricValue(record.value, record.unit),
+  }));
+}
+
+function buildCommandScreenCharts(
+  data: CommandCenterData | null,
+  definition: BusinessScreenDefinition,
+): readonly PapaScreenContextElement[] {
+  if (!data) {
+    return [];
+  }
+
+  const charts: PapaScreenContextElement[] = [
+    {
+      description: 'Sekcja metryk i porównań widoczna na ekranie.',
+      id: `${definition.id}-metric-chart`,
+      kind: 'chart',
+      label: `${definition.displayTitle}: wizualizacja metryk`,
+      value: `${data.records.length} metryk`,
+    },
+  ];
+
+  if (data.funnelSteps.length > 0) {
+    charts.push({
+      description: 'Lejek sprzedażowy z konwersją i odpływem.',
+      id: `${definition.id}-funnel-chart`,
+      kind: 'chart',
+      label: 'Lejek sprzedażowy',
+      value: `${data.funnelSteps.length} kroków`,
+    });
+  }
+
+  if (data.waterfall.length > 0) {
+    charts.push({
+      description: 'Waterfall wyniku dla bieżącego zakresu.',
+      id: `${definition.id}-waterfall-chart`,
+      kind: 'chart',
+      label: 'Waterfall wyniku',
+      value: `${data.waterfall.length} pozycji`,
+    });
+  }
+
+  return charts;
 }
 
 function resolveDataState({
@@ -2219,32 +3768,6 @@ function formatShortTime(
     minute: '2-digit',
     timeZone: defaultWorkspaceContext.range?.timezone ?? 'UTC',
   }).format(date);
-}
-
-function formatDateRange(
-  from: string | undefined,
-  to: string | undefined,
-): string {
-  if (!from || !to) {
-    return 'bieżący zakres';
-  }
-
-  const formatter = new Intl.DateTimeFormat('pl-PL', {
-    day: '2-digit',
-    month: 'short',
-    timeZone: defaultWorkspaceContext.range?.timezone ?? 'UTC',
-  });
-  const fromDate = new Date(`${from}T00:00:00.000Z`);
-  const toDate = new Date(`${to}T00:00:00.000Z`);
-
-  if (
-    Number.isNaN(fromDate.getTime())
-    || Number.isNaN(toDate.getTime())
-  ) {
-    return `${from} - ${to}`;
-  }
-
-  return `${formatter.format(fromDate)} - ${formatter.format(toDate)}`;
 }
 
 function slugify(

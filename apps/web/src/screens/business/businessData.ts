@@ -154,7 +154,7 @@ export const defaultDateRange: DateRange = {
 
 export const dateRangePresets = [
   {
-    label: 'Dzisiaj',
+    label: '1 dzień',
     value: 'today',
   },
   {
@@ -164,6 +164,10 @@ export const dateRangePresets = [
   {
     label: 'Ostatnie 30 dni',
     value: 'last30d',
+  },
+  {
+    label: 'Ostatnie 90 dni',
+    value: 'last90d',
   },
   {
     label: 'Miesiąc do dziś',
@@ -373,7 +377,7 @@ export const businessScreenDefinitions: readonly BusinessScreenDefinition[] = [
   },
   {
     apiPath: '/api/v1/command-center/warianty',
-    displayTitle: 'Warianty Centrum Dowodzenia',
+    displayTitle: 'Analiza wariantów',
     documentPath: '07-centrum-dowodzenia/30-14-warianty-centrum-dowodzenia.md',
     fixturePath: 'fixtures/storybook/164-30-14-warianty-centrum-dowodzenia.json',
     group: 'command-center',
@@ -381,9 +385,9 @@ export const businessScreenDefinitions: readonly BusinessScreenDefinition[] = [
     operationId: 'command-center.variants.read',
     route: '/app/command-center/warianty',
     storyExport: 'CommandCenterVariantsStory',
-    storyName: '30.14 Warianty Centrum Dowodzenia',
-    storyTitle: '30 Centrum Dowodzenia/Warianty Centrum Dowodzenia',
-    summary: 'Zbiorczy ekran stanów i wariantów Centrum Dowodzenia bez duplikowania metryk poza kontraktem.',
+    storyName: '30.14 Analiza wariantów',
+    storyTitle: '30 Centrum Dowodzenia/Analiza wariantów',
+    summary: 'Porównuje scenariusze wyniku, ryzyka i gotowości danych dla wybranego zakresu.',
     variant: 'command-variants',
   },
   {
@@ -1025,38 +1029,38 @@ const commandCenterStoryRecordsById: Readonly<
   '30.14': [
     commandStoryMetric(
       '11111111-1111-4111-8111-111111111401',
-      'Wariant gotowy',
-      6,
-      'number',
-      0,
-      6,
+      'Scenariusz bazowy przychodu',
+      912400,
+      'currency',
+      0.12,
+      840000,
       'ready',
     ),
     commandStoryMetric(
       '11111111-1111-4111-8111-111111111402',
-      'Wariant częściowy',
-      2,
-      'number',
-      0,
-      0,
+      'Scenariusz wzrostowy Search',
+      969400,
+      'currency',
+      0.18,
+      840000,
       'partial',
     ),
     commandStoryMetric(
       '11111111-1111-4111-8111-111111111403',
-      'Wariant offline',
-      1,
-      'number',
-      0,
-      0,
+      'Scenariusz ostrożny Meta CPA',
+      888800,
+      'currency',
+      -0.03,
+      840000,
       'stale',
     ),
     commandStoryMetric(
       '11111111-1111-4111-8111-111111111404',
-      'Wariant bez dostępu',
-      1,
-      'number',
-      0,
-      0,
+      'Pewność decyzji AI',
+      0.79,
+      'percent',
+      0.04,
+      0.86,
       'unavailable',
     ),
   ],
@@ -1123,19 +1127,19 @@ const campaignRecords: readonly CampaignsRecord[] = [
 const dataSources: readonly DataSourceRef[] = [
   {
     completeness: 0.98,
-    dataset: 'orders.daily_fact',
+    dataset: 'Zamówienia i przychód',
     lastSyncAt: '2026-08-12T07:44:00.000Z',
     provider: 'Shopify',
   },
   {
     completeness: 0.93,
-    dataset: 'ga4.events_compacted',
+    dataset: 'Eventy GA4',
     lastSyncAt: '2026-08-12T06:58:00.000Z',
     provider: 'GA4',
   },
   {
     completeness: 0.96,
-    dataset: 'ads.spend_normalized',
+    dataset: 'Koszty kampanii',
     lastSyncAt: '2026-08-12T07:12:00.000Z',
     provider: 'Google Ads / Meta',
   },
@@ -1146,19 +1150,19 @@ const evidence: readonly EvidenceRef[] = [
     confidence: 0.92,
     id: 'ev-orders-revenue',
     label: 'Zamówienia opłacone, bez anulacji',
-    source: 'orders.daily_fact',
+    source: 'Zamówienia i przychód',
   },
   {
     confidence: 0.86,
     id: 'ev-ga4-events',
     label: 'Eventy koszyka i checkoutu',
-    source: 'ga4.events_compacted',
+    source: 'Eventy GA4',
   },
   {
     confidence: 0.89,
     id: 'ev-ad-spend',
     label: 'Koszt kampanii po normalizacji waluty',
-    source: 'ads.spend_normalized',
+    source: 'Koszty kampanii',
   },
 ];
 
@@ -1280,21 +1284,21 @@ const diagnostics: readonly DiagnosticFinding[] = [
     findingId: '44444444-4444-4444-8444-444444444401',
     message: 'Eventy add_to_cart mają opóźnienie większe niż 90 minut.',
     severity: 'warning',
-    sourceRef: 'ga4.events_compacted',
+    sourceRef: 'Eventy GA4',
   },
   {
     code: 'ADS_COST_RECONCILIATION',
     findingId: '44444444-4444-4444-8444-444444444402',
     message: 'Koszt TikTok przekroczył budżet dzienny i wymaga potwierdzenia źródła.',
     severity: 'error',
-    sourceRef: 'ads.spend_normalized',
+    sourceRef: 'Koszty kampanii',
   },
   {
     code: 'SHOPIFY_READY',
     findingId: '44444444-4444-4444-8444-444444444403',
     message: 'Źródło zamówień jest kompletne i gotowe do odczytu.',
     severity: 'info',
-    sourceRef: 'orders.daily_fact',
+    sourceRef: 'Zamówienia i przychód',
   },
 ];
 
@@ -1399,6 +1403,140 @@ export function createCommandCenterBusinessData(
     warnings: [],
     waterfall: data.waterfall ?? [],
   };
+}
+
+export function applyCommandCenterDateRange(
+  data: Extract<BusinessScreenData, { readonly group: 'command-center' }>,
+  range: DateRange,
+): Extract<BusinessScreenData, { readonly group: 'command-center' }> {
+  const scale = resolveDateRangeScale(range);
+  const generatedAt = new Date().toISOString();
+
+  return {
+    ...data,
+    funnelSteps: data.funnelSteps.map((step) => ({
+      ...step,
+      completions: scaleWholeNumber(step.completions, scale),
+      entrants: scaleWholeNumber(step.entrants, scale),
+    })),
+    generatedAt,
+    records: data.records.map((record) => scaleCommandRecord(record, scale)),
+    summary: {
+      ...data.summary,
+      updatedAt: generatedAt,
+    },
+    waterfall: scaleWaterfall(data.waterfall, scale),
+  };
+}
+
+function resolveDateRangeScale(range: DateRange): number {
+  const baselineDays = 12;
+  const days = getDateRangeDayCount(range);
+
+  return Math.min(
+    Math.max(days / baselineDays, 1 / baselineDays),
+    90 / baselineDays,
+  );
+}
+
+function getDateRangeDayCount(range: DateRange): number {
+  const from = parseDateRangeInput(range.from);
+  const to = parseDateRangeInput(range.to);
+
+  if (!from || !to) {
+    switch (range.preset) {
+      case 'last90d':
+        return 90;
+      case 'last30d':
+        return 30;
+      case 'last7d':
+        return 7;
+      case 'today':
+      default:
+        return 1;
+    }
+  }
+
+  const dayMs = 24 * 60 * 60 * 1_000;
+  const diff = Math.round((to.getTime() - from.getTime()) / dayMs);
+
+  return Math.max(diff + 1, 1);
+}
+
+function parseDateRangeInput(value: string): Date | null {
+  const date = new Date(`${value}T00:00:00.000Z`);
+
+  return Number.isNaN(date.getTime())
+    ? null
+    : date;
+}
+
+function scaleCommandRecord(
+  record: CommandCenterRecord,
+  scale: number,
+): CommandCenterRecord {
+  if (!shouldScaleCommandRecord(record)) {
+    return record;
+  }
+
+  return {
+    ...record,
+    target: typeof record.target === 'number'
+      ? scaleMetric(record.target, record.unit, scale)
+      : record.target,
+    value: scaleMetric(record.value, record.unit, scale),
+  };
+}
+
+function shouldScaleCommandRecord(
+  record: CommandCenterRecord,
+): boolean {
+  if (
+    record.unit === 'percent'
+    || record.unit === 'ratio'
+    || record.unit === 'duration'
+  ) {
+    return false;
+  }
+
+  const label = record.label.toLocaleLowerCase('pl-PL');
+
+  return !(
+    label.includes('strumienie')
+    || label.includes('domeny')
+    || label.includes('gotowość')
+    || label.includes('pewność')
+  );
+}
+
+function scaleMetric(
+  value: number,
+  unit: CommandCenterRecord['unit'],
+  scale: number,
+): number {
+  const nextValue = value * scale;
+
+  return unit === 'currency' || unit === 'number'
+    ? Math.round(nextValue)
+    : Number(nextValue.toFixed(4));
+}
+
+function scaleWholeNumber(
+  value: number,
+  scale: number,
+): number {
+  return Math.max(Math.round(value * scale), 0);
+}
+
+function scaleWaterfall(
+  waterfall: readonly WaterfallItem[],
+  scale: number,
+): readonly WaterfallItem[] {
+  return waterfall.map((item) => ({
+    ...item,
+    cumulativeValue: Math.round(item.cumulativeValue * scale),
+    value: Math.round(item.value * scale),
+  }));
 }
 
 export function createCampaignsBusinessData(

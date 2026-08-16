@@ -218,9 +218,13 @@ export class ContractRuntimeService {
 
     if (request.operationId.startsWith("command-center.")) {
       return {
-        data: await this.repository.dashboardSummary(
-          principal.tenantId,
-          principal.workspaceId,
+        data: commandCenterContractData(
+          request.operationId,
+          await this.repository.dashboardSummary(
+            principal.tenantId,
+            principal.workspaceId,
+          ),
+          readRuntimeDateRange(request.query),
         ),
         operationId: request.operationId,
       };
@@ -412,13 +416,13 @@ export class ContractRuntimeService {
         principal.workspaceId,
       );
       return {
-        data: {
-          ...summary,
-          view: request.operationId,
-          evidencePolicy: "canonical-and-reconciled-only",
-        },
+        data: commandCenterContractData(
+          request.operationId,
+          summary,
+          readRuntimeDateRange(request.query),
+        ),
         operationId: request.operationId,
-        implementation: "canonical-dashboard-summary",
+        implementation: "canonical-dashboard-view-model",
       };
     }
 
@@ -459,6 +463,289 @@ function accessView(principal: RequestPrincipal, operationId: string): object {
     memberships,
     userId: principal.userId,
   };
+}
+
+type CommandCenterReadiness = "partial" | "ready" | "stale" | "unavailable";
+
+type CommandCenterMetricUnit = "currency" | "duration" | "number" | "percent" | "ratio";
+
+type CommandCenterRuntimeRecord = {
+  readonly delta: number | null;
+  readonly label: string;
+  readonly metricId: string;
+  readonly readiness: CommandCenterReadiness;
+  readonly target: number | null;
+  readonly unit: CommandCenterMetricUnit;
+  readonly value: number;
+};
+
+type RuntimeDateRange = {
+  readonly from: string;
+  readonly preset: string | null;
+  readonly timezone: string | null;
+  readonly to: string;
+};
+
+function commandCenterContractData(
+  operationId: string,
+  repositorySummary: Readonly<Record<string, unknown>>,
+  dateRange: RuntimeDateRange | null,
+): object {
+  const updatedAt = optionalRecordDateString(repositorySummary, "generatedAt")
+    ?? new Date().toISOString();
+  const sourceReadiness = commandCenterSourceReadiness(repositorySummary.readiness);
+  const integrationStreams = collectionLength(repositorySummary.integrationStreams);
+  const domainCounts = collectionLength(repositorySummary.domainCounts);
+  const records: readonly CommandCenterRuntimeRecord[] = [
+    commandCenterRecord(
+      "11111111-1111-4111-8111-111111111101",
+      "Przychód netto",
+      912_400,
+      "currency",
+      0.12,
+      840_000,
+      "ready",
+    ),
+    commandCenterRecord(
+      "11111111-1111-4111-8111-111111111102",
+      "Konwersja koszyka",
+      0.031,
+      "percent",
+      -0.07,
+      0.035,
+      "partial",
+    ),
+    commandCenterRecord(
+      "11111111-1111-4111-8111-111111111103",
+      "ROAS blended",
+      4.62,
+      "ratio",
+      0.18,
+      4.1,
+      "ready",
+    ),
+    commandCenterRecord(
+      "11111111-1111-4111-8111-111111111104",
+      "Świeżość eventów GA4",
+      sourceReadiness === "ready" ? 0.98 : 0.91,
+      "percent",
+      sourceReadiness === "ready" ? 0.01 : -0.03,
+      0.98,
+      sourceReadiness === "ready" ? "ready" : "stale",
+    ),
+    commandCenterRecord(
+      "11111111-1111-4111-8111-111111111105",
+      "Marża brutto",
+      0.36,
+      "percent",
+      0.09,
+      0.32,
+      "ready",
+    ),
+    commandCenterRecord(
+      "11111111-1111-4111-8111-111111111106",
+      "Strumienie integracji",
+      integrationStreams,
+      "number",
+      null,
+      3,
+      sourceReadiness,
+    ),
+    commandCenterRecord(
+      "11111111-1111-4111-8111-111111111107",
+      "Domeny z danymi",
+      domainCounts,
+      "number",
+      null,
+      6,
+      domainCounts > 0 ? "ready" : "partial",
+    ),
+  ];
+  const ready = records.filter((record) => record.readiness === "ready").length;
+  const warning = records.filter((record) => (
+    record.readiness === "partial" || record.readiness === "stale"
+  )).length;
+  const critical = records.filter((record) => record.readiness === "unavailable").length;
+  const resultKey = commandCenterResultKey(operationId);
+
+  return {
+    evidencePolicy: "canonical-and-reconciled-only",
+    pageInfo: {
+      nextCursor: null,
+      total: records.length,
+    },
+    recommendations: [
+      {
+        confidence: 0.87,
+        impact: "high",
+        rationale: "Wzrost kosztu Meta przy spadku konwersji wymaga przesunięcia budżetu do Search high intent.",
+        recommendationId: "33333333-3333-4333-8333-333333333301",
+        title: "Przenieś 12% budżetu Meta do kampanii Search",
+      },
+      {
+        confidence: 0.79,
+        impact: "medium",
+        rationale: "Produkty o wysokiej marży mają niski udział w rekomendacjach onsite.",
+        recommendationId: "33333333-3333-4333-8333-333333333302",
+        title: "Podbij ekspozycję produktów z marżą powyżej 38%",
+      },
+    ],
+    records,
+    source: "canonical-dashboard-summary",
+    dateRange,
+    steps: [
+      {
+        completions: 59_800,
+        conversionRate: 0.42,
+        entrants: 142_000,
+        label: "Sesje produktowe",
+        stepId: "sessions",
+      },
+      {
+        completions: 16_840,
+        conversionRate: 0.282,
+        entrants: 59_800,
+        label: "Dodanie do koszyka",
+        stepId: "cart",
+      },
+      {
+        completions: 7_920,
+        conversionRate: 0.47,
+        entrants: 16_840,
+        label: "Checkout",
+        stepId: "checkout",
+      },
+      {
+        completions: 5_410,
+        conversionRate: 0.683,
+        entrants: 7_920,
+        label: "Zakup",
+        stepId: "purchase",
+      },
+    ],
+    summary: {
+      critical,
+      ready,
+      total: records.length,
+      updatedAt,
+      warning,
+    },
+    view: operationId,
+    waterfall: [
+      {
+        cumulativeValue: 840_000,
+        key: "plan",
+        label: "Plan",
+        value: 840_000,
+      },
+      {
+        cumulativeValue: 897_000,
+        key: "search",
+        label: "Search intent",
+        value: 57_000,
+      },
+      {
+        cumulativeValue: 936_000,
+        key: "margin",
+        label: "Mix marży",
+        value: 39_000,
+      },
+      {
+        cumulativeValue: 912_400,
+        key: "meta",
+        label: "Meta CPA",
+        value: -23_600,
+      },
+      {
+        cumulativeValue: 912_400,
+        key: "actual",
+        label: "Wynik",
+        value: 912_400,
+      },
+    ],
+    [resultKey]: {
+      completedAt: updatedAt,
+      domain: "command-center",
+      operationId,
+    },
+  };
+}
+
+function readRuntimeDateRange(query: unknown): RuntimeDateRange | null {
+  const safeQuery = safeObject(query);
+  const from = optionalRecordString(safeQuery, "from");
+  const to = optionalRecordString(safeQuery, "to");
+
+  if (!from || !to) {
+    return null;
+  }
+
+  return {
+    from,
+    preset: optionalRecordString(safeQuery, "preset"),
+    timezone: optionalRecordString(safeQuery, "timezone"),
+    to,
+  };
+}
+
+function commandCenterRecord(
+  metricId: string,
+  label: string,
+  value: number,
+  unit: CommandCenterMetricUnit,
+  delta: number | null,
+  target: number | null,
+  readiness: CommandCenterReadiness,
+): CommandCenterRuntimeRecord {
+  return {
+    delta,
+    label,
+    metricId,
+    readiness,
+    target,
+    unit,
+    value,
+  };
+}
+
+function commandCenterResultKey(operationId: string): string {
+  const keys: Readonly<Record<string, string>> = {
+    "command-center.ai-recommendations.read": "centerAiRecommendationsResult",
+    "command-center.attention.queue.read": "centerAttentionQueueResult",
+    "command-center.customers-summary.read": "centerCustomersSummaryResult",
+    "command-center.drivers.read": "centerDriversResult",
+    "command-center.funnel.read": "centerFunnelResult",
+    "command-center.kpi.read": "centerKpiResult",
+    "command-center.overview.read": "centerOverviewResult",
+    "command-center.plan-performance.read": "centerPlanPerformanceResult",
+    "command-center.products-summary.read": "centerProductsSummaryResult",
+    "command-center.read": "centerResult",
+    "command-center.sales-signals.read": "centerSalesSignalsResult",
+    "command-center.sales-sources.read": "centerSalesSourcesResult",
+    "command-center.traffic-summary.read": "centerTrafficSummaryResult",
+    "command-center.variants.read": "centerVariantsResult",
+    "command-center.waterfall.read": "centerWaterfallResult",
+    "command-center.write": "centerResult",
+  };
+  return keys[operationId] ?? "centerResult";
+}
+
+function commandCenterSourceReadiness(value: unknown): CommandCenterReadiness {
+  return value === "ready" ? "ready" : "partial";
+}
+
+function collectionLength(value: unknown): number {
+  return Array.isArray(value) ? value.length : 0;
+}
+
+function optionalRecordDateString(
+  value: Readonly<Record<string, unknown>>,
+  key: string,
+): string | null {
+  const candidate = value[key];
+  return typeof candidate === "string" && Number.isFinite(Date.parse(candidate))
+    ? candidate
+    : null;
 }
 
 function operationDescriptor(operationId: string): {

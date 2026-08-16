@@ -103,6 +103,7 @@
 .pd-overlay-surface__body {
   display: grid;
   gap: var(--pd-space-4);
+  min-width: 0;
   padding: 0 var(--pd-space-5);
 }
 
@@ -221,7 +222,9 @@
 .pd-drawer .pd-overlay-surface__body {
   align-content: start;
   overflow: auto;
+  overscroll-behavior: contain;
   padding-block: var(--pd-space-3) var(--pd-space-4);
+  scrollbar-gutter: stable;
   scrollbar-width: thin;
 }
 
@@ -272,10 +275,21 @@
 .pd-popover__panel {
   position: absolute;
   z-index: var(--pd-layer-popover);
-  inline-size: min(22rem, calc(100vw - 2rem));
+  inline-size: var(--pd-popover-width, min(22rem, calc(100vw - 2rem)));
   min-inline-size: min(16rem, calc(100vw - 2rem));
   max-inline-size: calc(100vw - 2rem);
+  max-block-size: var(--pd-popover-max-height, min(34rem, calc(100dvh - 2rem)));
+  overflow: auto;
   overflow-wrap: anywhere;
+  overscroll-behavior: contain;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-overlay) 94%, transparent),
+      color-mix(in srgb, var(--pd-surface-panel) 96%, transparent)
+    ),
+    var(--pd-surface-panel);
+  scrollbar-gutter: stable;
 }
 
 .pd-popover__panel::before {
@@ -300,6 +314,14 @@
 .pd-popover__panel[data-placement='right'] {
   top: 0;
   left: calc(100% + var(--pd-space-3));
+}
+
+.pd-popover__panel .pd-overlay-surface__header {
+  padding: var(--pd-space-4) var(--pd-space-4) 0;
+}
+
+.pd-popover__panel .pd-overlay-surface__body {
+  padding: 0 var(--pd-space-4) var(--pd-space-4);
 }
 
 .pd-tooltip {

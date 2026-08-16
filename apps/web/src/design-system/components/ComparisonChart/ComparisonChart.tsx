@@ -485,6 +485,8 @@ export function ComparisonChart({
 
             {runtimeSeries.map((item) => (
               <Bar
+                animationDuration={520}
+                animationEasing="ease-out"
                 dataKey={item.dataKey}
                 fill={resolveSeriesToken(item.index)}
                 fillOpacity={
@@ -494,7 +496,7 @@ export function ComparisonChart({
                       ? 0.88
                       : 0.82
                 }
-                isAnimationActive={false}
+                isAnimationActive
                 key={item.key}
                 maxBarSize={
                   isRanking

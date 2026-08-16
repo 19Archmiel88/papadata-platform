@@ -2,6 +2,10 @@ import type {
   AnchorHTMLAttributes,
   HTMLAttributes,
 } from 'react';
+import {
+  useEffect,
+  useRef,
+} from 'react';
 
 import type {
   PapaDataIconName,
@@ -39,6 +43,7 @@ export type SectionNavigationProps = Omit<
     | 'horizontal'
     | 'vertical';
   readonly size?: 'compact' | 'default';
+  readonly sticky?: boolean;
 };
 
 export function SectionNavigation({
@@ -49,11 +54,53 @@ export function SectionNavigation({
   items,
   orientation,
   size = 'default',
+  sticky = false,
   ...props
 }: SectionNavigationProps) {
+  const navigationRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!sticky || orientation !== 'horizontal') {
+      return;
+    }
+
+    const navigation = navigationRef.current;
+    const activeItem = navigation?.querySelector<HTMLElement>(
+      '[aria-current="page"]',
+    );
+
+    if (!navigation || !activeItem) {
+      return;
+    }
+
+    const navigationRect = navigation.getBoundingClientRect();
+    const activeRect = activeItem.getBoundingClientRect();
+    const activeOverflow =
+      activeRect.left < navigationRect.left
+      || activeRect.right > navigationRect.right;
+
+    if (!activeOverflow) {
+      return;
+    }
+
+    navigation.scrollTo({
+      behavior: 'auto',
+      left:
+        navigation.scrollLeft
+        + activeRect.left
+        - navigationRect.left
+        - (navigationRect.width - activeRect.width) / 2,
+    });
+  }, [
+    activeId,
+    orientation,
+    sticky,
+  ]);
+
   return (
     <nav
       {...props}
+      ref={navigationRef}
       aria-label={ariaLabel}
       className={joinClassNames(
         'pd-section-navigation',
@@ -61,6 +108,7 @@ export function SectionNavigation({
       )}
       data-orientation={orientation}
       data-size={size}
+      data-sticky={sticky ? true : undefined}
     >
       {items.map((item) => {
         const extraProps =

@@ -98,7 +98,7 @@ export const integrationScreenDefinitions: readonly IntegrationScreenDefinition[
     requiresResourceId: false,
     route: '/app/integrations/kreator-polaczenia',
     routeBase: '/app/integrations/kreator-polaczenia',
-    summary: 'Kroki połączenia providera bez wykonywania mutacji OAuth w Storybooku.',
+    summary: 'Kroki połączenia providera z zakresem uprawnień, autoryzacją i testem połączenia.',
     variant: 'connect',
   },
   {
@@ -163,7 +163,7 @@ export const integrationScreenDefinitions: readonly IntegrationScreenDefinition[
     requiresResourceId: false,
     route: '/app/integrations/ponowne-polaczenie',
     routeBase: '/app/integrations/ponowne-polaczenie',
-    summary: 'Kontekst ponownego połączenia bez aktywowania OAuth ani mutacji tokenu.',
+    summary: 'Kontekst ponownego połączenia z wpływem na dane i potrzebą odnowienia autoryzacji.',
     variant: 'reconnect',
   },
   {

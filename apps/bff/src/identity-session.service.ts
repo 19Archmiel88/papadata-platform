@@ -127,15 +127,35 @@ export class BffIdentitySessionService {
 
 export function normalizeIdentityBody(value: unknown): Readonly<Record<string, unknown>> {
   if (!isRecord(value)) return {};
-  if (typeof value.input !== "string") return value;
+  if (typeof value.input !== "string") return normalizeIdentityFields(value);
   const input = value.input.trim();
-  if (!input.startsWith("{") || !input.endsWith("}")) return value;
+  if (!input.startsWith("{") || !input.endsWith("}")) {
+    return normalizeIdentityFields(value);
+  }
   try {
     const parsed = JSON.parse(input) as unknown;
-    return isRecord(parsed) ? { ...value, ...parsed } : value;
+    return normalizeIdentityFields(isRecord(parsed) ? { ...value, ...parsed } : value);
   } catch {
-    return value;
+    return normalizeIdentityFields(value);
   }
+}
+
+function normalizeIdentityFields(
+  value: Readonly<Record<string, unknown>>,
+): Readonly<Record<string, unknown>> {
+  const displayName = optionalString(value.displayName)
+    ?? optionalString(value.fullName);
+  const {
+    fullName,
+    input,
+    ...body
+  } = value;
+  void fullName;
+  void input;
+
+  return displayName && !optionalString(body.displayName)
+    ? { ...body, displayName }
+    : body;
 }
 
 function readMemberships(value: unknown): readonly BffSessionMembership[] {

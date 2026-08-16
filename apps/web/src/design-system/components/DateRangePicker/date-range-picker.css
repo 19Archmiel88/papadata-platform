@@ -19,6 +19,66 @@
   font-weight: var(--pd-font-weight-medium);
 }
 
+.pd-date-range-picker__quick-options {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2);
+  min-width: 0;
+  padding: var(--pd-space-1);
+  border:
+    var(--pd-border-width-subtle)
+    solid
+    color-mix(in srgb, var(--pd-refractive-border) 86%, transparent);
+  border-radius: var(--pd-radius-control);
+  background:
+    color-mix(in srgb, var(--pd-refractive-control) 84%, var(--pd-surface-subtle));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 16%, transparent);
+}
+
+.pd-date-range-picker__quick-options button {
+  min-height: 2rem;
+  flex: 1 1 4.25rem;
+  padding: 0 var(--pd-space-2);
+  border: 0;
+  border-radius: calc(var(--pd-radius-control) * 0.75);
+  color: var(--pd-text-secondary);
+  background: transparent;
+  font: inherit;
+  font-size: var(--pd-type-size-caption);
+  font-weight: var(--pd-font-weight-semibold);
+  cursor: pointer;
+  transition:
+    background-color var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    color var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    box-shadow var(--pd-motion-duration-fast) var(--pd-motion-easing-standard);
+}
+
+.pd-date-range-picker__quick-options button:hover,
+.pd-date-range-picker__quick-options button:focus-visible {
+  color: var(--pd-text);
+  background: var(--pd-refractive-control-hover);
+}
+
+.pd-date-range-picker__quick-options button:focus-visible {
+  outline: 0;
+  box-shadow: var(--pd-refractive-focus);
+}
+
+.pd-date-range-picker__quick-options button[aria-pressed='true'] {
+  color: var(--pd-brand-action-on);
+  background: var(--pd-refractive-primary);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 18%, transparent),
+    0 8px 18px -14px color-mix(in srgb, var(--pd-interactive) 70%, transparent);
+}
+
+.pd-date-range-picker__quick-options button:disabled {
+  color: var(--pd-text-muted);
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
 .pd-date-range-picker__preset,
 .pd-date-range-picker label {
   min-inline-size: 0;
@@ -45,8 +105,19 @@
     var(--pd-separator);
   border-radius: var(--pd-radius-control);
   outline: 0;
-  background: var(--pd-surface);
+  background: var(--pd-form-surface, var(--pd-surface-raised));
   color: var(--pd-text);
+  color-scheme: inherit;
+  font: inherit;
+  font-weight: var(--pd-font-weight-medium);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 16%, transparent),
+    0 10px 22px -18px color-mix(in srgb, var(--pd-text) 28%, transparent);
+}
+
+.pd-date-range-picker input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.82;
 }
 
 .pd-date-range-picker[data-state='error'] input {

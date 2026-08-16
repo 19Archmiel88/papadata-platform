@@ -1,6 +1,9 @@
 import {
   useState,
 } from 'react';
+import type {
+  DateRange,
+} from '../../../../../contracts/ui-contract-types';
 
 import {
   DateRangePicker,
@@ -9,11 +12,19 @@ import {
   PapaDataBrand,
   Popover,
 } from '../../design-system';
+import {
+  applyPapaDataRuntimeGlobals,
+  getInitialPapaDataRuntimeGlobals,
+  writeStoredPapaDataRuntimeGlobals,
+} from '../../design-system/foundations/runtime';
 import type {
   DateRangePickerPreset,
-  DateRangePickerProps,
   MenuItem,
 } from '../../design-system';
+import type {
+  PapaDataRuntimeLocale,
+  PapaDataRuntimeTheme,
+} from '../../design-system/foundations/runtime';
 import {
   NotificationCenter,
 } from '../notifications';
@@ -26,8 +37,8 @@ import type {
 } from '../app-shell/shellTypes';
 import './topbar.css';
 
-type RuntimeLocale = 'pl' | 'en';
-type RuntimeTheme = 'light' | 'dark';
+type RuntimeLocale = PapaDataRuntimeLocale;
+type RuntimeTheme = PapaDataRuntimeTheme;
 
 function readRuntimeLocale(): RuntimeLocale {
   if (typeof document === 'undefined') {
@@ -57,6 +68,22 @@ function applyRuntimePreference(
     return;
   }
 
+  const nextInput = attribute === 'data-locale'
+    ? { locale: value }
+    : { theme: value };
+
+  writeStoredPapaDataRuntimeGlobals(nextInput);
+
+  const globals = getInitialPapaDataRuntimeGlobals({
+    density: document.documentElement.dataset.density,
+    locale: document.documentElement.dataset.locale,
+    motion:
+      document.documentElement.dataset.motionRequested
+      ?? document.documentElement.dataset.motion,
+    theme: document.documentElement.dataset.theme,
+    ...nextInput,
+  });
+
   const targets = new Set<HTMLElement>([
     document.documentElement,
     ...Array.from(
@@ -67,38 +94,11 @@ function applyRuntimePreference(
   ]);
 
   targets.forEach((target) => {
-    target.setAttribute(attribute, value);
+    applyPapaDataRuntimeGlobals(
+      target,
+      globals,
+    );
   });
-
-  if (attribute === 'data-locale') {
-    document.documentElement.lang = value;
-  }
-}
-
-function formatDateInput(date: Date) {
-  const year = String(date.getFullYear());
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
-}
-
-function createInitialDateRange(): DateRangePickerProps['value'] {
-  const today = new Date();
-  const monthStart = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    1,
-  );
-
-  return {
-    from: formatDateInput(monthStart),
-    preset: 'monthToDate',
-    timezone:
-      Intl.DateTimeFormat().resolvedOptions().timeZone
-      || 'Europe/Warsaw',
-    to: formatDateInput(today),
-  };
 }
 
 function resolveSectionLabel(
@@ -142,7 +142,8 @@ function preferenceCopy(locale: RuntimeLocale) {
         calendarDescription:
           'Set the global analysis date range.',
         calendarHelper:
-          'The range stays in the shell while you navigate.',
+          'Quick ranges update the dashboard data immediately.',
+        calendarQuickOptions: 'Quick ranges',
         dateFrom: 'From',
         datePreset: 'Range',
         dateRange: 'Analysis date range',
@@ -151,6 +152,7 @@ function preferenceCopy(locale: RuntimeLocale) {
         menu: 'Open navigation',
         notifications: 'Notifications',
         operations: 'Background operations',
+        papaAssistant: 'Open Papa Assistant',
         profile: 'User profile',
         search: 'Search',
         searchFull: 'Search or run a command',
@@ -166,7 +168,8 @@ function preferenceCopy(locale: RuntimeLocale) {
         calendarDescription:
           'Ustaw globalny zakres dat analiz.',
         calendarHelper:
-          'Zakres pozostaje w powłoce podczas zmiany sekcji.',
+          'Szybkie zakresy od razu aktualizują dane dashboardu.',
+        calendarQuickOptions: 'Szybkie zakresy',
         dateFrom: 'Od',
         datePreset: 'Zakres',
         dateRange: 'Zakres dat analiz',
@@ -175,6 +178,7 @@ function preferenceCopy(locale: RuntimeLocale) {
         menu: 'Otwórz nawigację',
         notifications: 'Powiadomienia',
         operations: 'Operacje w tle',
+        papaAssistant: 'Otwórz Papa Asystenta',
         profile: 'Profil użytkownika',
         search: 'Szukaj',
         searchFull: 'Szukaj lub uruchom komendę',
@@ -192,18 +196,38 @@ function calendarPresets(
 ): readonly DateRangePickerPreset[] {
   return locale === 'en'
     ? [
-        { label: 'Today', value: 'today' },
+        { label: '1 day', value: 'today' },
         { label: 'Last 7 days', value: 'last7d' },
         { label: 'Last 30 days', value: 'last30d' },
+        { label: 'Last 90 days', value: 'last90d' },
         { label: 'Month to date', value: 'monthToDate' },
         { label: 'Custom', value: 'custom' },
       ]
     : [
-        { label: 'Dzisiaj', value: 'today' },
+        { label: '1 dzień', value: 'today' },
         { label: 'Ostatnie 7 dni', value: 'last7d' },
         { label: 'Ostatnie 30 dni', value: 'last30d' },
+        { label: 'Ostatnie 90 dni', value: 'last90d' },
         { label: 'Bieżący miesiąc', value: 'monthToDate' },
         { label: 'Niestandardowy', value: 'custom' },
+      ];
+}
+
+function calendarQuickOptions(
+  locale: RuntimeLocale,
+): readonly DateRangePickerPreset[] {
+  return locale === 'en'
+    ? [
+        { label: '1 day', value: 'today' },
+        { label: '7 days', value: 'last7d' },
+        { label: '30 days', value: 'last30d' },
+        { label: '90 days', value: 'last90d' },
+      ]
+    : [
+        { label: '1 dzień', value: 'today' },
+        { label: '7 dni', value: 'last7d' },
+        { label: '30 dni', value: 'last30d' },
+        { label: '90 dni', value: 'last90d' },
       ];
 }
 
@@ -317,32 +341,34 @@ export function PublicTopbar({
 
 export function AuthenticatedTopbar({
   activePath,
+  dateRange,
   loggingOut = false,
   navigationGroups,
   notificationOpen,
   notifications,
+  onDateRangeChange,
   onLogout,
   onNavigate,
   onOpenOverlay,
   operationCount,
+  papaAssistantOpen,
   user,
 }: {
   readonly activePath: string;
+  readonly dateRange: DateRange;
   readonly loggingOut?: boolean;
   readonly navigationGroups: readonly ShellNavigationGroup[];
   readonly notificationOpen: boolean;
   readonly notifications: readonly ShellNotification[];
+  readonly onDateRangeChange: (range: DateRange) => void;
   readonly onLogout: () => void;
   readonly onNavigate: ShellNavigate;
   readonly onOpenOverlay: (overlay: ShellOverlay) => void;
   readonly operationCount: number;
+  readonly papaAssistantOpen: boolean;
   readonly user: ShellUser;
 }) {
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [dateRange, setDateRange] =
-    useState<DateRangePickerProps['value']>(
-      createInitialDateRange,
-    );
   const [locale, setLocale] =
     useState<RuntimeLocale>(readRuntimeLocale);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -405,6 +431,19 @@ export function AuthenticatedTopbar({
     setCalendarOpen(false);
     setProfileOpen(false);
     onOpenOverlay(overlay);
+  }
+
+  function handleNotificationAction(
+    notification: ShellNotification,
+  ) {
+    if (!notification.actionPath) {
+      return;
+    }
+
+    setCalendarOpen(false);
+    setProfileOpen(false);
+    onOpenOverlay(null);
+    onNavigate(notification.actionPath);
   }
 
   return (
@@ -485,9 +524,11 @@ export function AuthenticatedTopbar({
             helperText={copy.calendarHelper}
             label={copy.dateRange}
             locale={locale}
-            onChange={setDateRange}
+            onChange={onDateRangeChange}
             presetLabel={copy.datePreset}
             presets={calendarPresets(locale)}
+            quickOptions={calendarQuickOptions(locale)}
+            quickOptionsLabel={copy.calendarQuickOptions}
             timezone={dateRange.timezone}
             toLabel={copy.dateTo}
             value={dateRange}
@@ -502,9 +543,20 @@ export function AuthenticatedTopbar({
           theme={theme}
         />
 
+        <button
+          aria-label={copy.papaAssistant}
+          aria-pressed={papaAssistantOpen}
+          className="pd-shell-topbar__control pd-shell-topbar__icon-control pd-shell-topbar__papa-control"
+          type="button"
+          onClick={() => openGlobalOverlay('papa-assistant')}
+        >
+          <Icon decorative name="assistant" size={20} />
+        </button>
+
         <NotificationCenter
           locale={locale}
           notifications={notifications}
+          onNotificationAction={handleNotificationAction}
           onOpenChange={(open) => {
             if (open) {
               setCalendarOpen(false);

@@ -3,6 +3,17 @@ export {
 } from './ProductShellFrame';
 
 export {
+  useShellDateRange,
+} from './ShellDateRangeContext';
+
+export {
+  createShellDateRangeForPreset,
+  formatShellDateRangeLabel,
+  getShellDateRangeDayCount,
+  getShellDateRangeKey,
+} from './shellDateRange';
+
+export {
   defaultShellCommands,
   defaultShellNavigation,
   defaultShellNotifications,
@@ -16,6 +27,7 @@ export type {
 } from './ProductShellFrame';
 
 export type {
+  ShellCommandAction,
   ShellCommandResult,
   ShellNavigate,
   ShellNavigationGroup,

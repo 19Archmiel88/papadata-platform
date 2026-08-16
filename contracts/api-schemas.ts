@@ -39,7 +39,7 @@ export interface ApiActor { userId: UUID; tenantId: UUID; workspaceId: UUID; rol
 export interface ApiContext { correlationId: string; locale: Locale; timezone: string; actor: ApiActor; asOf?: ISODateTime; }
 export interface ApiProblem { type: string; title: string; status: number; code: string; detail: string; correlationId: string; recoverable: boolean; fieldErrors?: Array<{field:string; code:string; message:string}>; retryAfterSeconds?: number; }
 export interface PageRequest { cursor?: string; limit?: number; sort?: string; direction?: 'asc' | 'desc'; }
-export interface DateRangeRequest { from?: string; to?: string; preset?: 'today' | 'last7d' | 'last30d' | 'monthToDate' | 'custom'; }
+export interface DateRangeRequest { from?: string; to?: string; preset?: 'today' | 'last7d' | 'last30d' | 'last90d' | 'monthToDate' | 'custom'; }
 export interface MutationMetadata { idempotencyKey: string; reason?: string; expectedVersion?: number; }
 export interface PageInfo { nextCursor: string | null; total: number | null; }
 

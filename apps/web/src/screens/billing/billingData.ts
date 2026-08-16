@@ -99,7 +99,7 @@ export const billingScreenDefinitions: readonly BillingScreenDefinition[] = [
     operationId: 'billing.plans.read',
     route: '/app/billing/plany',
     routeBase: '/app/billing/plany',
-    summary: 'Porównanie planów, limitów i rekomendacji zmiany bez natychmiastowej mutacji.',
+    summary: 'Porównanie planów, limitów i rekomendacji zmiany przed zatwierdzeniem.',
     variant: 'plans',
   },
   {
@@ -176,7 +176,7 @@ export const billingScreenDefinitions: readonly BillingScreenDefinition[] = [
     operationId: null,
     route: null,
     routeBase: null,
-    summary: 'Storybookowy zestaw stanów billingowych: aktywny, trial, zaległy, anulowanie i limity.',
+    summary: 'Zestaw stanów billingowych: aktywny, trial, zaległy, anulowanie i limity.',
     variant: 'billing-variants',
   },
 ] as const;
@@ -311,9 +311,9 @@ export function createBillingStorybookData(): BillingWorkspaceData {
       { id: 'adj-3', amount: '-89 PLN', case: 'Korekta NIP', reason: 'Dane faktury', status: 'W toku' },
     ],
     variantRows: [
-      { id: 'var-1', guardrail: 'Bez natychmiastowej mutacji', risk: 'Zmiana planu bez zrozumienia skutków', surface: 'Plan comparison', variant: 'Aktywny plan' },
+      { id: 'var-1', guardrail: 'Wymaga potwierdzenia', risk: 'Zmiana planu bez zrozumienia skutków', surface: 'Porównanie planów', variant: 'Aktywny plan' },
       { id: 'var-2', guardrail: 'Wyraźna ścieżka odzyskania', risk: 'Blokada dostępu po zaległości', surface: 'Overdue banner', variant: 'Zaległa płatność' },
-      { id: 'var-3', guardrail: 'Brak fikcyjnego success state', risk: 'Provider płatności niedostępny', surface: 'Payment method', variant: 'Błąd aktualizacji' },
+      { id: 'var-3', guardrail: 'Czytelny stan błędu', risk: 'Provider płatności niedostępny', surface: 'Metoda płatności', variant: 'Błąd aktualizacji' },
     ],
   };
 }

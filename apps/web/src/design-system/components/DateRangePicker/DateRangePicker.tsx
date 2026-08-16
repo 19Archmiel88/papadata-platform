@@ -33,6 +33,11 @@ export type DateRangePickerPreset = {
   readonly value: DatePreset;
 };
 
+export type DateRangePickerQuickOption = {
+  readonly label: string;
+  readonly value: DatePreset;
+};
+
 export type DateRangePickerProps = Omit<
   FieldsetHTMLAttributes<HTMLFieldSetElement>,
   'children' | 'onChange'
@@ -50,6 +55,8 @@ export type DateRangePickerProps = Omit<
     | undefined;
   readonly presetLabel?: string;
   readonly presets: readonly DateRangePickerPreset[];
+  readonly quickOptions?: readonly DateRangePickerQuickOption[];
+  readonly quickOptionsLabel?: string;
   readonly readOnly?: boolean;
   readonly status?: FormControlStatus;
   readonly timezone: string;
@@ -75,6 +82,8 @@ export const DateRangePicker = forwardRef<
     onChange,
     presetLabel = 'Zakres',
     presets,
+    quickOptions,
+    quickOptionsLabel = 'Szybki zakres',
     readOnly = false,
     status = 'default',
     timezone,
@@ -108,9 +117,7 @@ export const DateRangePicker = forwardRef<
   }
 
   function handlePresetChange(event: ChangeEvent<HTMLSelectElement>) {
-    updateRange({
-      preset: event.currentTarget.value as DatePreset,
-    });
+    applyPreset(event.currentTarget.value as DatePreset);
   }
 
   function handleFromChange(event: ChangeEvent<HTMLInputElement>) {
@@ -127,6 +134,22 @@ export const DateRangePicker = forwardRef<
     });
   }
 
+  function applyPreset(preset: DatePreset) {
+    if (preset === 'custom') {
+      updateRange({ preset });
+      return;
+    }
+
+    updateRange(resolveDatePresetRange(preset));
+  }
+
+  const resolvedQuickOptions = quickOptions ?? presets.filter((preset) => (
+    preset.value === 'today'
+    || preset.value === 'last7d'
+    || preset.value === 'last30d'
+    || preset.value === 'last90d'
+  ));
+
   return (
     <fieldset
       {...props}
@@ -139,6 +162,26 @@ export const DateRangePicker = forwardRef<
       id={fieldsetId}
     >
       <legend id={legendId}>{label}</legend>
+
+      {resolvedQuickOptions.length > 0 ? (
+        <div
+          aria-label={quickOptionsLabel}
+          className="pd-date-range-picker__quick-options"
+          role="group"
+        >
+          {resolvedQuickOptions.map((option) => (
+            <button
+              aria-pressed={value.preset === option.value}
+              disabled={disabled || readOnly}
+              key={option.value}
+              onClick={() => applyPreset(option.value)}
+              type="button"
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       <div className="pd-date-range-picker__preset">
         <Select
@@ -199,3 +242,62 @@ export const DateRangePicker = forwardRef<
     </fieldset>
   );
 });
+
+function resolveDatePresetRange(
+  preset: DatePreset,
+): Pick<DateRange, 'from' | 'preset' | 'to'> {
+  const today = new Date();
+
+  if (preset === 'monthToDate') {
+    return {
+      from: formatDateInput(
+        new Date(today.getFullYear(), today.getMonth(), 1),
+      ),
+      preset,
+      to: formatDateInput(today),
+    };
+  }
+
+  if (preset === 'yesterday') {
+    const yesterday = shiftDate(today, -1);
+
+    return {
+      from: formatDateInput(yesterday),
+      preset,
+      to: formatDateInput(yesterday),
+    };
+  }
+
+  const days = preset === 'last90d'
+    ? 90
+    : preset === 'last30d'
+      ? 30
+      : preset === 'last7d'
+        ? 7
+        : 1;
+
+  return {
+    from: formatDateInput(shiftDate(today, -(days - 1))),
+    preset,
+    to: formatDateInput(today),
+  };
+}
+
+function shiftDate(
+  value: Date,
+  days: number,
+): Date {
+  return new Date(
+    value.getFullYear(),
+    value.getMonth(),
+    value.getDate() + days,
+  );
+}
+
+function formatDateInput(date: Date): string {
+  const year = String(date.getFullYear());
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}

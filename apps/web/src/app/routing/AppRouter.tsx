@@ -5,7 +5,11 @@ import {
   useEffect,
 } from 'react';
 
-import { Button } from '../../design-system/components/Button';
+import {
+  Button,
+  Skeleton,
+  Spinner,
+} from '../../design-system/components';
 import {
   PublicTopbar,
 } from '../../shell/topbar';
@@ -87,6 +91,14 @@ const DecisionsScreen = lazy(async () => {
   };
 });
 
+const PapaScreen = lazy(async () => {
+  const module = await import('../../screens/papa');
+
+  return {
+    default: module.PapaScreen,
+  };
+});
+
 const CommandCenterScreen = lazy(async () => {
   const module = await import('../../screens/CommandCenterScreen');
 
@@ -102,17 +114,16 @@ export function AppRouter() {
 
   if (status === 'loading') {
     return (
-      <main className="runtime-status">
-        <p className="runtime-status__brand">PapaData</p>
-        <h1>Sprawdzanie sesji…</h1>
-        <p>Frontend odczytuje aktywną sesję z BFF.</p>
-      </main>
+      <RuntimeLoadingScreen
+        description="Weryfikujemy lokalną sesję klienta i konfigurację workspace."
+        title="Sprawdzanie sesji"
+      />
     );
   }
 
   if (status === 'error') {
     return (
-      <main className="runtime-status">
+      <main className="runtime-status runtime-status--message">
         <p className="runtime-status__brand">PapaData</p>
         <h1>Nie można uruchomić aplikacji</h1>
         <p>
@@ -277,6 +288,16 @@ export function AppRouter() {
       );
     }
 
+    if (pathname === '/app/papa' || pathname.startsWith('/app/papa/')) {
+      return (
+        <RouteSuspense>
+          <AppShell>
+            <PapaScreen path={pathname} />
+          </AppShell>
+        </RouteSuspense>
+      );
+    }
+
     return (
       <RouteSuspense>
         <AppShell>
@@ -310,11 +331,10 @@ function RouteSuspense({
   return (
     <Suspense
       fallback={(
-        <main className="runtime-status">
-          <p className="runtime-status__brand">PapaData</p>
-          <h1>Ładowanie widoku…</h1>
-          <p>Frontend przygotowuje ekran runtime.</p>
-        </main>
+        <RuntimeLoadingScreen
+          description="Przygotowujemy komponenty dashboardu i dane widoku."
+          title="Ładowanie widoku"
+        />
       )}
     >
       {children}
@@ -332,15 +352,96 @@ function Redirect({
   }, [to]);
 
   return (
-    <main className="runtime-status">
-      <p>Przekierowanie…</p>
+    <RuntimeLoadingScreen
+      description="Przenosimy do właściwego widoku aplikacji."
+      title="Przekierowanie"
+    />
+  );
+}
+
+function RuntimeLoadingScreen({
+  description,
+  title,
+}: {
+  readonly description: string;
+  readonly title: string;
+}) {
+  return (
+    <main
+      aria-busy="true"
+      className="runtime-status runtime-status--loading"
+    >
+      <section
+        aria-label={title}
+        className="runtime-status__stage"
+      >
+        <div className="runtime-status__brand-row">
+          <p className="runtime-status__brand">PapaData</p>
+          <Spinner
+            delayMs={0}
+            label={title}
+            showLabel={false}
+            size={18}
+          />
+        </div>
+
+        <div className="runtime-status__copy">
+          <h1>{title}</h1>
+          <p>{description}</p>
+        </div>
+
+        <div
+          aria-hidden="true"
+          className="runtime-status__progress"
+        >
+          <span />
+        </div>
+
+        <div
+          aria-hidden="true"
+          className="runtime-status__blueprint"
+        >
+          <Skeleton
+            height={16}
+            lines={1}
+            shape="rect"
+            width="100%"
+          />
+          <div className="runtime-status__blueprint-grid">
+            <Skeleton
+              height={86}
+              lines={1}
+              shape="rect"
+              width="100%"
+            />
+            <Skeleton
+              height={86}
+              lines={1}
+              shape="rect"
+              width="100%"
+            />
+            <Skeleton
+              height={86}
+              lines={1}
+              shape="rect"
+              width="100%"
+            />
+          </div>
+          <Skeleton
+            height={148}
+            lines={1}
+            shape="rect"
+            width="100%"
+          />
+        </div>
+      </section>
     </main>
   );
 }
 
 function NotFound() {
   return (
-    <main className="runtime-status">
+    <main className="runtime-status runtime-status--message">
       <p className="runtime-status__brand">PapaData</p>
       <h1>Nie znaleziono strony</h1>
       <p>Ta trasa nie istnieje w aktualnym runtime produktu.</p>

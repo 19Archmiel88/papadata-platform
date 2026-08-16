@@ -17,9 +17,10 @@
   max-inline-size: 100%;
   overflow-x: auto;
   overscroll-behavior-x: contain;
+  scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color:
-    color-mix(in srgb, var(--pd-text-muted) 38%, transparent)
+    color-mix(in srgb, var(--pd-text-muted) 54%, transparent)
     transparent;
 }
 
@@ -37,8 +38,14 @@
 }
 
 .pd-table__scroll::-webkit-scrollbar-thumb {
-  border-radius: var(--pd-radius-pill);
-  background: color-mix(in srgb, var(--pd-text-muted) 34%, transparent);
+  border: 3px solid transparent;
+  border-radius: var(--pd-scrollbar-radius);
+  background:
+    linear-gradient(
+      color-mix(in srgb, var(--pd-text-muted) 58%, transparent),
+      color-mix(in srgb, var(--pd-text-muted) 58%, transparent)
+    )
+    padding-box;
 }
 
 .pd-table__scroll::-webkit-scrollbar-thumb:hover {
@@ -46,10 +53,11 @@
 }
 
 .pd-table__element {
-  min-width: min(var(--pd-table-min-width, 44rem), 100%);
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
+  width: max(100%, var(--pd-table-min-width, 44rem));
+  min-width: var(--pd-table-min-width, 44rem);
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: auto;
 }
 
 .pd-table__caption {
@@ -61,14 +69,32 @@
 }
 
 .pd-table__head th {
-  padding: 0 0 var(--pd-space-3);
-  border-bottom: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
-  color: color-mix(in srgb, var(--pd-text) 72%, var(--pd-text-secondary));
+  padding: var(--pd-space-3);
+  border-bottom: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-separator) 86%, transparent);
+  color: color-mix(in srgb, var(--pd-text) 84%, var(--pd-text-secondary));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-raised) 72%, transparent),
+      color-mix(in srgb, var(--pd-surface-panel) 88%, transparent)
+    );
   font-size: var(--pd-type-size-body-small);
-  font-weight: var(--pd-font-weight-medium);
+  font-weight: var(--pd-font-weight-semibold);
   line-height: var(--pd-line-height-compact);
   text-align: left;
   vertical-align: bottom;
+  white-space: nowrap;
+}
+
+.pd-table[data-sticky-header='true'] .pd-table__head th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  backdrop-filter: blur(16px) saturate(1.08);
+}
+
+.pd-table__head th + th {
+  border-inline-start: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-separator) 54%, transparent);
 }
 
 .pd-table__head th[data-align='center'] {
@@ -81,11 +107,15 @@
 
 .pd-table__sort-button {
   appearance: none;
+  width: 100%;
+  min-width: 0;
   display: inline-flex;
   gap: var(--pd-space-2);
   align-items: center;
+  justify-content: space-between;
   padding: 0;
   border: 0;
+  border-radius: var(--pd-radius-control);
   outline: none;
   background: transparent;
   color: inherit;
@@ -93,48 +123,86 @@
   font: inherit;
 }
 
+.pd-table__head th[data-align='right'] .pd-table__sort-button {
+  justify-content: flex-end;
+}
+
+.pd-table__sort-button > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pd-table__sort-button:hover {
+  color: var(--pd-text);
+}
+
 .pd-table__sort-button:focus-visible {
   box-shadow: 0 0 0 var(--pd-focus-ring-size) var(--pd-focus-visible);
-  border-radius: 0.3rem;
 }
 
 .pd-table__sort-indicator {
-  color: var(--pd-text-muted);
-  font-size: 0.78rem;
+  flex: 0 0 auto;
+  width: 1.1rem;
+  display: inline-grid;
+  place-items: center;
+  color: color-mix(in srgb, var(--pd-text) 62%, var(--pd-text-muted));
+  font-size: 0.82rem;
+  line-height: 1;
 }
 
 .pd-table__body tr {
-  border-bottom: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  background: transparent;
 }
 
+.pd-table__body tr:nth-child(even) {
+  background: color-mix(in srgb, var(--pd-surface-raised) 24%, transparent);
+}
+
+.pd-table__body tr:hover,
 .pd-table__body tr[data-interactive='true']:hover {
-  background: color-mix(in srgb, var(--pd-surface-panel) 54%, transparent);
+  background: color-mix(in srgb, var(--pd-surface-raised) 48%, transparent);
 }
 
 .pd-table__body tr[data-selected='true'] {
-  background: color-mix(in srgb, var(--pd-surface-panel) 72%, transparent);
+  background: color-mix(in srgb, var(--pd-data-accent-subtle) 42%, transparent);
 }
 
-.pd-table__body td {
-  padding: var(--pd-space-3) var(--pd-space-3) var(--pd-space-3) 0;
+.pd-table__body td,
+.pd-table__body th {
+  padding: var(--pd-space-3);
+  border-bottom: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-separator) 72%, transparent);
   color: var(--pd-text);
   line-height: var(--pd-line-height-relaxed);
-  vertical-align: top;
+  vertical-align: middle;
 }
 
-.pd-table__body td[data-align='center'] {
+.pd-table__body th {
+  font-weight: var(--pd-font-weight-semibold);
+}
+
+.pd-table__body td + td,
+.pd-table__body th + td {
+  border-inline-start: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-separator) 34%, transparent);
+}
+
+.pd-table__body td[data-align='center'],
+.pd-table__body th[data-align='center'] {
   text-align: center;
 }
 
-.pd-table__body td[data-align='right'] {
+.pd-table__body td[data-align='right'],
+.pd-table__body th[data-align='right'] {
   text-align: right;
 }
 
 .pd-table[data-density='compact'] .pd-table__head th {
-  padding-bottom: var(--pd-space-2);
+  padding: var(--pd-space-2) var(--pd-space-3);
 }
 
-.pd-table[data-density='compact'] .pd-table__body td {
+.pd-table[data-density='compact'] .pd-table__body td,
+.pd-table[data-density='compact'] .pd-table__body th {
   padding-top: var(--pd-space-2);
   padding-bottom: var(--pd-space-2);
   font-size: var(--pd-type-size-body-small);
@@ -155,7 +223,18 @@
 }
 
 .pd-table__cell-wrap {
+  min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.pd-table__body [data-align='right'] .pd-table__cell-wrap {
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: normal;
+  white-space: nowrap;
+}
+
+.pd-key-value-list__status {
+  white-space: nowrap;
 }
 
 .pd-table__skeleton {
@@ -337,4 +416,120 @@
 
 .pd-data-list__item {
   border-bottom-color: color-mix(in srgb, var(--pd-separator-subtle) 88%, transparent);
+}
+
+/* Global table UX pass: readable analytical grids in light and dark themes. */
+.pd-data-table {
+  border-color: color-mix(in srgb, var(--pd-separator) 82%, transparent);
+  border-radius: var(--pd-radius-small);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-panel) 94%, transparent),
+      color-mix(in srgb, var(--pd-surface-raised) 74%, transparent)
+    );
+  box-shadow: 0 16px 34px -28px color-mix(in srgb, var(--pd-overlay-scrim) 48%, transparent);
+}
+
+.pd-data-table__summary {
+  color: color-mix(in srgb, var(--pd-text) 72%, var(--pd-text-secondary));
+  letter-spacing: 0;
+}
+
+.pd-table__scroll {
+  border: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-separator) 70%, transparent);
+  border-radius: var(--pd-radius-small);
+  background: color-mix(in srgb, var(--pd-surface-panel) 82%, transparent);
+}
+
+.pd-table__element {
+  table-layout: fixed;
+}
+
+.pd-table__head th {
+  min-inline-size: 7.5rem;
+  border-bottom-color: color-mix(in srgb, var(--pd-separator) 92%, transparent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-raised) 86%, var(--pd-surface-panel)),
+      color-mix(in srgb, var(--pd-surface-panel) 92%, transparent)
+    );
+  color: color-mix(in srgb, var(--pd-text) 90%, var(--pd-text-secondary));
+  letter-spacing: 0;
+}
+
+.pd-table__head th:first-child,
+.pd-table__body th[scope='row'] {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-raised) 90%, var(--pd-surface-panel)),
+      color-mix(in srgb, var(--pd-surface-panel) 94%, transparent)
+    );
+  box-shadow: 1px 0 0 color-mix(in srgb, var(--pd-separator) 72%, transparent);
+}
+
+.pd-table__body th[scope='row'] {
+  z-index: 2;
+}
+
+.pd-table__body tr:nth-child(even) th[scope='row'] {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-raised) 78%, var(--pd-surface-panel)),
+      color-mix(in srgb, var(--pd-surface-panel) 88%, transparent)
+    );
+}
+
+.pd-table__body tr:hover th[scope='row'],
+.pd-table__body tr:hover td {
+  background-color: color-mix(in srgb, var(--pd-data-accent-subtle) 24%, transparent);
+}
+
+.pd-table__body td,
+.pd-table__body th {
+  border-bottom-color: color-mix(in srgb, var(--pd-separator) 64%, transparent);
+}
+
+.pd-table__body td + td,
+.pd-table__body th + td {
+  border-inline-start-color: color-mix(in srgb, var(--pd-separator) 30%, transparent);
+}
+
+.pd-table__cell-wrap {
+  line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-table__body [data-align='right'] .pd-table__cell-wrap {
+  display: inline-block;
+  max-inline-size: 100%;
+}
+
+.pd-table__sort-button {
+  gap: var(--pd-space-1);
+  letter-spacing: 0;
+}
+
+.pd-table__sort-indicator {
+  color: color-mix(in srgb, var(--pd-text) 64%, var(--pd-text-muted));
+}
+
+[data-theme='dark'] .pd-table__scroll {
+  background: color-mix(in srgb, var(--pd-surface-panel) 88%, var(--pd-canvas));
+}
+
+[data-theme='dark'] .pd-table__head th,
+[data-theme='dark'] .pd-table__head th:first-child,
+[data-theme='dark'] .pd-table__body th[scope='row'] {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-raised) 74%, var(--pd-canvas)),
+      color-mix(in srgb, var(--pd-surface-panel) 86%, var(--pd-canvas))
+    );
 }

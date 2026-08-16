@@ -91,7 +91,7 @@ export function DecisionsWorkspace({
           { label: 'Źródła', value: 'Kampanie, klienci, ruch' },
           { label: 'Owner', value: 'Growth' },
         ]}
-        subtitle="Warstwa decyzji nie wykonuje mutacji bez approval, evidence i warunków pomiaru."
+        subtitle="Warstwa decyzji wymaga zatwierdzenia, dowodów i warunków pomiaru przed wykonaniem działań."
         title={definition.displayTitle}
       />
 
@@ -101,6 +101,7 @@ export function DecisionsWorkspace({
         items={decisionsNavigationItems}
         orientation="horizontal"
         size="compact"
+        sticky
       />
 
       <section className="pd-decisions-workspace__grid" aria-label="Status decyzji">
@@ -261,7 +262,7 @@ function tablePanel(
           ariaLabel={ariaLabel}
           columns={columns}
           density="compact"
-          emptyMessage="Brak danych decyzji w fixture Storybooka."
+          emptyMessage="Brak danych decyzji dla bieżącego zakresu."
           loading={false}
           minWidth={760}
           rowCount={rows.length}

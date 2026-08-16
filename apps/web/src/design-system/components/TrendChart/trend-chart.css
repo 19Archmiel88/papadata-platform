@@ -51,6 +51,19 @@
   shape-rendering: crispEdges;
 }
 
+.pd-trend-chart .recharts-line-curve,
+.pd-trend-chart .recharts-area-area,
+.pd-trend-chart .recharts-reference-dot {
+  transition:
+    opacity 180ms ease,
+    stroke-width 180ms ease,
+    filter 180ms ease;
+}
+
+.pd-trend-chart:hover .recharts-line-curve {
+  filter: drop-shadow(0 4px 10px color-mix(in srgb, var(--pd-data-actual) 20%, transparent));
+}
+
 .pd-trend-chart .recharts-surface:focus {
   outline: none;
 }

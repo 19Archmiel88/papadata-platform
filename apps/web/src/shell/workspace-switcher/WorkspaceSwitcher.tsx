@@ -132,16 +132,18 @@ export function WorkspaceSwitcher({
 
             <span className="pd-product-shell__workspace-copy">
               <strong>{activeWorkspace.name}</strong>
-              <small>
-                {activeWorkspace.role}
-              </small>
-            </span>
+              <span className="pd-product-shell__workspace-meta">
+                <small>
+                  {activeWorkspace.role}
+                </small>
 
-            <StatusBadge
-              status="Stan workspace"
-              text={activeWorkspace.statusText}
-              tone={activeWorkspace.tone}
-            />
+                <StatusBadge
+                  status="Stan workspace"
+                  text={activeWorkspace.statusText}
+                  tone={activeWorkspace.tone}
+                />
+              </span>
+            </span>
 
             <span
               aria-hidden="true"

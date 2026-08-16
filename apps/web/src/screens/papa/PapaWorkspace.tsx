@@ -1,8 +1,10 @@
+import {
+  useMemo,
+} from 'react';
 import type {
   DataRow,
 } from '../../../../../contracts/component-shared';
 import {
-  AssistantComposer,
   Button,
   DataStatusBanner,
   DataTable,
@@ -32,6 +34,15 @@ import type {
   PapaScreenDefinition,
   PapaWorkspaceData,
 } from './papaData';
+import {
+  PapaAssistantRuntime,
+} from './PapaAssistantPanels';
+import type {
+  PapaScreenContextElement,
+} from '../../shell/papa-assistant';
+import {
+  useRegisterScreenContext,
+} from '../../shell/papa-assistant';
 import './papa-workspace.css';
 
 export type PapaWorkspaceProps = {
@@ -45,6 +56,113 @@ export function PapaWorkspace({
   definition,
   mode = 'runtime',
 }: PapaWorkspaceProps) {
+  const screenContext = useMemo(() => ({
+    activeSection: definition.displayTitle,
+    breadcrumbs: [
+      'Aplikacja',
+      'Papa',
+      definition.displayTitle,
+    ],
+    charts: [
+      {
+        description: 'Trend pewności odpowiedzi Papa w bieżącym zakresie.',
+        id: `${definition.id}-assistant-confidence-chart`,
+        kind: 'chart' as const,
+        label: 'Trend pewności Papa',
+        value: `${data.assistantTrend.length} punktów`,
+      },
+    ],
+    elements: [
+      ...data.contextItems.map<PapaScreenContextElement>((item) => ({
+        description: `${item.source}; retencja ${item.retention}`,
+        id: item.id,
+        kind: item.kind === 'metric'
+          ? 'metric'
+          : item.kind === 'decision'
+            ? 'decision'
+            : 'record',
+        label: item.label,
+        source: item.source,
+        status: `${Math.round(item.confidence * 100)}% confidence`,
+      })),
+      ...data.actions.map<PapaScreenContextElement>((action) => ({
+        description: action.operationId ?? 'Akcja bez operacji transportowej.',
+        id: action.id,
+        kind: 'decision',
+        label: action.label,
+        owner: action.owner,
+        status: action.status,
+        value: action.risk,
+      })),
+    ],
+    evidence: data.evidence.map<PapaScreenContextElement>((item) => ({
+      description: item.source,
+      id: item.id,
+      kind: 'evidence',
+      label: item.claim,
+      source: item.source,
+      status: `${Math.round(item.confidence * 100)}% confidence`,
+    })),
+    filters: [
+      {
+        id: 'papa-date-range',
+        kind: 'filter' as const,
+        label: 'Zakres danych',
+        value: formatPapaContextRange(data),
+      },
+    ],
+    metrics: [
+      {
+        id: 'papa-context-items',
+        kind: 'metric' as const,
+        label: 'Elementy kontekstu',
+        value: String(data.summary.contextItems),
+      },
+      {
+        id: 'papa-evidence-count',
+        kind: 'metric' as const,
+        label: 'Dowody',
+        value: String(data.summary.evidenceCount),
+      },
+      {
+        id: 'papa-confidence',
+        kind: 'metric' as const,
+        label: 'Pewność',
+        value: formatPercent(data.summary.confidence),
+      },
+    ],
+    operationId: definition.operationId,
+    readiness: resolvePapaReadinessLabel(data.summary.readiness),
+    recommendations: data.recommendations.map<PapaScreenContextElement>((item) => ({
+      description: item.summary,
+      evidenceIds: item.evidenceIds,
+      id: item.id,
+      kind: 'recommendation',
+      label: item.title,
+      owner: item.owner,
+      status: item.status,
+      value: item.nextStep,
+    })),
+    route: definition.route ?? '/app/papa/laboratorium-ai',
+    screenId: definition.id,
+    summary: definition.summary,
+    tables: [
+      {
+        description: 'Tabelaryczna alternatywa danych Papa dla bieżącego widoku.',
+        id: `${definition.id}-papa-table`,
+        kind: 'table' as const,
+        label: 'Rejestr Papa',
+        value: `${data.contextItems.length + data.evidence.length + data.actions.length} pozycji`,
+      },
+    ],
+    title: definition.displayTitle,
+  }), [
+    data,
+    definition,
+  ]);
+
+  useRegisterScreenContext(screenContext);
+
   return (
     <section
       aria-label={`Papa: ${definition.displayTitle}`}
@@ -77,6 +195,7 @@ export function PapaWorkspace({
         items={getPapaNavigation()}
         orientation="horizontal"
         size="compact"
+        sticky
       />
 
       <DataStatusBanner
@@ -89,6 +208,11 @@ export function PapaWorkspace({
       />
 
       <PapaSummary data={data} />
+
+      <PapaAssistantRuntime
+        data={data}
+        variant={definition.variant}
+      />
 
       <PapaContent
         data={data}
@@ -134,18 +258,13 @@ function PapaContent({
 }) {
   switch (definition.variant) {
     case 'assistant-shell':
-      return (
-        <>
-          <AssistantSurface data={data} />
-          <ContextTable rows={papaContextRows(data.contextItems)} />
-        </>
-      );
+      return <ContextTable rows={papaContextRows(data.contextItems)} />;
     case 'work-modes':
       return (
         <>
           <InlineNotice
-            message="To polityka Storybook. Tryby pracy nie mają osobnej ścieżki aplikacyjnej i nie wykonują akcji AI."
-            title="Tryby bez endpointu"
+            message="Tryby pracy określają, kiedy asystent może odpowiadać, proponować działania albo wymagać zatwierdzenia."
+            title="Tryby pracy Papa"
             tone="info"
           />
           <ModeTable rows={papaModeRows(data.modeRecords)} />
@@ -187,8 +306,8 @@ function PapaContent({
       return (
         <>
           <InlineNotice
-            message="To polityka Storybook. Poziom pewności nie ma osobnej ścieżki aplikacyjnej i nie może udawać pełnej pewności przy danych częściowych."
-            title="Poziom pewności bez endpointu"
+            message="Poziom pewności pokazuje jakość dowodów i ogranicza automatyzację przy danych częściowych."
+            title="Poziom pewności"
             tone="info"
           />
           <ContextMetrics data={data} />
@@ -198,7 +317,6 @@ function PapaContent({
     case 'lab':
       return (
         <>
-          <AssistantSurface data={data} />
           <ActionTable rows={papaActionRows(data.actions)} />
           <EvidenceTable rows={papaEvidenceRows(data.evidence)} />
         </>
@@ -214,7 +332,7 @@ function PapaContent({
       return (
         <>
           <InlineNotice
-            message="To storybookowa macierz wariantów rekomendacji. Nie rejestruje ścieżki aplikacyjnej ani fikcyjnej operacji zapisu."
+            message="Macierz wariantów rekomendacji pokazuje stany gotowości, ryzyka i zatwierdzania działań AI."
             title="Warianty rekomendacji"
             tone="info"
           />
@@ -233,8 +351,8 @@ function PapaContent({
       return (
         <>
           <InlineNotice
-            message="Akceptacja jest pokazana jako stan odczytu. Storybook nie zatwierdza działania i nie wywołuje mutacji."
-            title="Akceptacja bez mutacji"
+            message="Akceptacja pokazuje działania wymagające decyzji użytkownika przed wykonaniem."
+            title="Akceptacja działań AI"
             tone="warning"
           />
           <ActionTable rows={papaActionRows(data.actions.filter((action) => action.status === 'approval'))} />
@@ -247,7 +365,7 @@ function PapaContent({
       return (
         <>
           <InlineNotice
-            message="Zablokowane działania nie mają kontraktu wykonania. Pokazujemy powód i zespół odpowiedzialny."
+            message="Zablokowane działania pokazują powód blokady i zespół odpowiedzialny za dalszą weryfikację."
             title="Działania zablokowane"
             tone="critical"
           />
@@ -272,7 +390,7 @@ function PapaContent({
       return (
         <>
           <InlineNotice
-            message="Warianty Papa pozostają polityką Storybook: bez ścieżki aplikacyjnej, bez fikcyjnego endpointu i bez pozornych działań AI."
+            message="Warianty Papa porządkują tryby pracy, poziom pewności i ograniczenia działań AI."
             title="Warianty Papa"
             tone="info"
           />
@@ -385,31 +503,6 @@ function ContextMetrics({
           value={String(Math.round(data.summary.confidence * 100))}
         />
       </div>
-    </section>
-  );
-}
-
-function AssistantSurface({
-  data,
-}: {
-  readonly data: PapaWorkspaceData;
-}) {
-  return (
-    <section className="pd-papa-workspace__section">
-      <header>
-        <h2>Kompozytor</h2>
-        <p>Formularz przyjmuje pytanie, ale Storybook nie wysyła go do modelu ani backendu.</p>
-      </header>
-      <AssistantComposer
-        attachments={[
-          { id: 'papa-attachment-brief', name: 'morning-brief.json', size: 24800 },
-        ]}
-        contextItemIds={data.contextItems.map((item) => item.id)}
-        label="Pytanie do Papa"
-        placeholder="Zapytaj o wpływ kosztów kampanii na marżę..."
-        submitting={false}
-        value="Wyjaśnij, które źródła ograniczają pewność rekomendacji."
-      />
     </section>
   );
 }
@@ -530,7 +623,7 @@ function DecisionList({
     <section className="pd-papa-workspace__section">
       <header>
         <h2>Decyzje do akceptacji</h2>
-        <p>Propozycje Papa pozostają w trybie przeglądu, bez wykonania mutacji.</p>
+        <p>Propozycje Papa pozostają w trybie przeglądu przed wykonaniem działania.</p>
       </header>
       <div className="pd-papa-workspace__decision-list">
         {decisions.map((decision) => (
@@ -564,6 +657,38 @@ function resolveDecisionCardStatus(
     default:
       return 'proposed';
   }
+}
+
+function resolvePapaReadinessLabel(
+  value: PapaWorkspaceData['summary']['readiness'],
+): string {
+  switch (value) {
+    case 'ready':
+      return 'Gotowe';
+    case 'partial':
+      return 'Częściowe';
+    case 'stale':
+      return 'Nieświeże';
+    case 'processing':
+      return 'Przetwarzanie';
+    case 'noData':
+      return 'Brak danych';
+    case 'sourceError':
+      return 'Błąd źródła';
+    case 'blocked':
+      return 'Zablokowane';
+    default:
+      return 'Wymaga uwagi';
+  }
+}
+
+function formatPapaContextRange(
+  data: PapaWorkspaceData,
+): string {
+  const from = data.context.range?.from ?? 'brak początku';
+  const to = data.context.range?.to ?? 'brak końca';
+
+  return `${from} - ${to}`;
 }
 
 function formatPercent(value: number): string {

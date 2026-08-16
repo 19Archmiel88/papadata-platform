@@ -163,6 +163,7 @@ export function AnalyticsModuleWorkspace({
         items={navigation}
         orientation="horizontal"
         size="compact"
+        sticky
       />
 
       {problem ? (
@@ -243,7 +244,7 @@ function CampaignsContent({
             label="Sygnały kampanii"
           />
           <ModuleSection
-            description="Najważniejsze kampanie uporządkowane według danych zwróconych przez endpoint przeglądu."
+            description="Najważniejsze kampanie uporządkowane według aktualnych danych z bieżącego widoku."
             title="Wynik kampanii"
           >
             <ModuleTable
@@ -280,7 +281,7 @@ function CampaignsContent({
         <>
           <AttributionView data={data.attribution} />
           <ModuleSection
-            description="Kampanie pozostają widoczne jako kontekst, ale model atrybucji pochodzi wyłącznie z kontraktowej kolekcji attribution."
+            description="Kampanie pozostają widoczne jako kontekst, a model atrybucji korzysta z dostępnych danych sprzedaży i źródeł ruchu."
             title="Kontekst kampanii"
           >
             <ModuleTable
@@ -300,7 +301,7 @@ function CampaignsContent({
         <>
           <DiagnosticsList diagnostics={data.diagnostics} />
           <ModuleSection
-            description="Rejestr kampanii pozwala odnieść finding do bieżącego wyniku bez wykonywania mutacji."
+            description="Rejestr kampanii pozwala odnieść sygnał diagnostyczny do bieżącego wyniku."
             title="Kampanie w kontekście diagnostyki"
           >
             <ModuleTable
@@ -391,8 +392,8 @@ function OrdersContent({
       return (
         <>
           <InlineNotice
-            message="Aktualny kontrakt read nie zwraca kolekcji konfliktów ani propozycji rozstrzygnięć. Widok pokazuje wyłącznie rekordy możliwe do uzgodnienia, bez pozornych akcji naprawczych."
-            title="Rekoncyliacja w trybie odczytu"
+            message="W bieżącym zakresie nie ma otwartych konfliktów ani gotowych propozycji rozstrzygnięć. Widok pokazuje rekordy możliwe do porównania."
+            title="Rekoncyliacja danych"
             tone="info"
           />
           <ModuleSection title="Rejestr do porównania">
@@ -410,8 +411,8 @@ function OrdersContent({
       return (
         <>
           <InlineNotice
-            message="Ekran ma tylko operację odczytu orders.eksport.read. Pobranie pliku nie jest aktywowane bez osobnego operationId eksportu."
-            title="Eksport bez pozornej akcji"
+            message="Eksport nie jest jeszcze dostępny dla tego widoku. Możesz ocenić zakres danych przed uruchomieniem pobrania."
+            title="Eksport w przygotowaniu"
             tone="info"
           />
           <ModuleSection description="Zakres danych dostępny do oceny przed uruchomieniem przyszłej operacji eksportu." title="Dane objęte zakresem">
@@ -498,7 +499,7 @@ function ProductsContent({
       );
     case 'offers':
       return (
-        <ModuleSection description="Aktualny model API nie rozdziela osobnej encji oferty; widok używa tylko danych produktu dostępnych w kontrakcie." title="Oferty w bieżącym kontrakcie">
+        <ModuleSection description="Oferty są prezentowane na podstawie aktualnych danych produktowych dostępnych w tym widoku." title="Oferty w bieżącym zakresie">
           <ModuleTable
             columns={productColumns}
             loading={false}
@@ -523,7 +524,7 @@ function ProductsContent({
             tone="info"
           />
           <ModuleSection
-            description="Lista produktów zachowuje alternatywę tabelaryczną i nie dopisuje danych spoza kontraktu."
+            description="Lista produktów pozostaje tabelaryczną alternatywą dla wariantów i pokazuje tylko dostępne dane katalogu."
             title="Zakres produktów"
           >
             <ModuleTable
@@ -638,8 +639,8 @@ function TrafficContent({
       return (
         <>
           <InlineNotice
-            message="Aktualny endpoint zwraca metryki ruchu, ale nie zawiera osobnej kolekcji zamówień do pełnego porównania. Widok nie tworzy sztucznej warstwy order data."
-            title="Porównanie ograniczone kontraktem"
+            message="W bieżącym zakresie dostępne są metryki ruchu. Dane zamówień nie są jeszcze spięte do pełnego porównania w tym widoku."
+            title="Porównanie ograniczone zakresem danych"
             tone="info"
           />
           <ChannelBreakdown records={data.records} />
@@ -855,7 +856,7 @@ function ModuleTable({
             : undefined
         }
         columns={columns}
-        emptyMessage="Endpoint nie zwrócił rekordów dla bieżącego zakresu."
+        emptyMessage="Brak rekordów dla bieżącego zakresu."
         emptyTitle="Brak danych"
         loading={loading}
         minWidth={820}
@@ -916,7 +917,7 @@ function AttributionView({
 
   return (
     <ModuleSection
-      description="Źródła i udział pochodzą bezpośrednio z kolekcji attribution bieżącego endpointu."
+      description="Źródła i udział wynikają z aktualnych danych atrybucji dla bieżącego zakresu."
       title="Atrybucja sprzedaży"
     >
       {data.length > 0 ? (
@@ -936,7 +937,7 @@ function AttributionView({
         </ol>
       ) : (
         <InlineNotice
-          message="Endpoint nie zwrócił danych atrybucji. Nie tworzymy udziałów na podstawie samych kampanii."
+          message="Brak danych atrybucji dla bieżącego zakresu. Udziały pojawią się po dostępnej synchronizacji źródeł sprzedaży."
           title="Brak danych atrybucji"
           tone="info"
         />
@@ -985,15 +986,18 @@ function DiagnosticsList({ diagnostics }: { readonly diagnostics: readonly Diagn
       {diagnostics.length > 0 ? (
         <ul className="pd-analytics-module__diagnostics">
           {diagnostics.map((finding) => (
-            <li key={finding.findingId} data-severity={finding.severity}>
+            <li
+              data-finding-code={finding.code}
+              data-severity={finding.severity}
+              key={finding.findingId}
+            >
               <StatusBadge
                 status="Waga"
                 text={diagnosticSeverityLabel(finding.severity)}
                 tone={finding.severity === 'error' ? 'critical' : finding.severity === 'warning' ? 'warning' : 'info'}
               />
               <div>
-                <strong>{finding.code}</strong>
-                <p>{finding.message}</p>
+                <strong>{finding.message}</strong>
                 {finding.sourceRef ? <span>{finding.sourceRef}</span> : null}
               </div>
             </li>
@@ -1001,8 +1005,8 @@ function DiagnosticsList({ diagnostics }: { readonly diagnostics: readonly Diagn
         </ul>
       ) : (
         <InlineNotice
-          message="Endpoint nie zwrócił findingów diagnostycznych."
-          title="Brak findingów"
+          message="Brak sygnałów diagnostycznych dla bieżącego zakresu."
+          title="Brak diagnostyki"
           tone="info"
         />
       )}
@@ -1033,7 +1037,7 @@ function RecommendationsReadOnly({ recommendations }: { readonly recommendations
         </div>
       ) : (
         <InlineNotice
-          message="Endpoint nie zwrócił rekomendacji dla bieżącego kontekstu."
+          message="Brak rekomendacji dla bieżącego kontekstu."
           title="Brak rekomendacji"
           tone="info"
         />
@@ -1046,7 +1050,7 @@ function OrdersTimeline({ records }: { readonly records: readonly OrdersRecord[]
   const ordered = [...records].sort((a, b) => b.orderedAt.localeCompare(a.orderedAt));
   return (
     <ModuleSection
-      description="Aktualny kontrakt nie zawiera osobnej kolekcji zdarzeń zamówienia. Chronologia pokazuje rekordy według orderedAt, bez dopisywania nieistniejących eventów."
+      description="Chronologia pokazuje zamówienia według czasu złożenia, bez dopisywania zdarzeń niedostępnych w bieżącym widoku."
       title="Chronologia rekordów"
     >
       {ordered.length > 0 ? (
@@ -1072,8 +1076,8 @@ function MappingView({ records }: { readonly records: readonly ProductsRecord[] 
   return (
     <>
       <InlineNotice
-        message="Ekran ma operację products.mapping.read. Zmiana mapowania pozostaje niedostępna bez jawnej operacji mutującej."
-        title="Mapowanie w trybie odczytu"
+        message="Zmiana mapowania nie jest jeszcze dostępna w tym widoku. Lista wskazuje pozycje wymagające pracy katalogowej."
+        title="Mapowanie produktów"
         tone="info"
       />
       <ModuleSection title="Pozycje wymagające mapowania">
@@ -1114,7 +1118,7 @@ function ProductGaps({ records }: { readonly records: readonly ProductsRecord[] 
     || record.margin === null
   ));
   return (
-    <ModuleSection description="Kolejka wynika wyłącznie z braków widocznych w polach kontraktowych." title="Kolejka braków">
+    <ModuleSection description="Kolejka wynika z braków widocznych w danych katalogu." title="Kolejka braków">
       <ModuleTable
         columns={productColumns}
         loading={false}
@@ -1171,7 +1175,7 @@ function CustomerSegmentsView({ records }: { readonly records: readonly Customer
 function CohortMatrixView({ cohorts }: { readonly cohorts: CustomersModuleData['cohorts'] }) {
   return (
     <ModuleSection
-      description="Kohorty pochodzą bezpośrednio z kolekcji cohorts kontraktu."
+      description="Kohorty pokazują retencję, liczbę użytkowników i przychód dla dostępnych grup klientów."
       title="Kohorty"
     >
       {cohorts.length > 0 ? (
@@ -1192,7 +1196,7 @@ function CohortMatrixView({ cohorts }: { readonly cohorts: CustomersModuleData['
           ))}
         </div>
       ) : (
-        <InlineNotice message="Endpoint nie zwrócił danych kohortowych." title="Brak kohort" tone="info" />
+        <InlineNotice message="Brak danych kohortowych dla bieżącego zakresu." title="Brak kohort" tone="info" />
       )}
     </ModuleSection>
   );
@@ -1203,7 +1207,7 @@ function IdentityConflictsView({ records }: { readonly records: readonly Custome
   return (
     <>
       <InlineNotice
-        message="Kontrakt ekranu nie udostępnia osobnego modelu konfliktu ani operacji resolve. Lista wskazuje wyłącznie rekordy z brakującym kontekstem, bez oznaczania ich jako potwierdzonych konfliktów."
+        message="Lista wskazuje rekordy z brakującym kontekstem, bez oznaczania ich jako potwierdzonych konfliktów tożsamości."
         title="Sygnały do przeglądu"
         tone="info"
       />
@@ -1277,7 +1281,7 @@ function ChannelBreakdown({ records }: { readonly records: readonly TrafficRecor
 function SalesFunnelView({ steps }: { readonly steps: readonly FunnelStepView[] }) {
   return (
     <ModuleSection
-      description="Lejek wykorzystuje wyłącznie kroki zwrócone przez endpoint."
+      description="Lejek wykorzystuje dostępne kroki ścieżki zakupowej dla bieżącego zakresu."
       title="Lejek sprzedażowy"
     >
       {steps.length > 0 ? (
@@ -1294,7 +1298,7 @@ function SalesFunnelView({ steps }: { readonly steps: readonly FunnelStepView[] 
           />
         </div>
       ) : (
-        <InlineNotice message="Endpoint nie zwrócił kroków lejka." title="Brak danych lejka" tone="info" />
+        <InlineNotice message="Brak kroków lejka dla bieżącego zakresu." title="Brak danych lejka" tone="info" />
       )}
     </ModuleSection>
   );
@@ -1305,7 +1309,7 @@ function FunnelStepDetail({ path, steps }: { readonly path: string; readonly ste
   const step = steps.find((item) => item.stepId === resourceId) ?? steps[0] ?? null;
 
   if (!step) {
-    return <InlineNotice message="Endpoint nie zwrócił kroku lejka." title="Brak szczegółu kroku" tone="info" />;
+    return <InlineNotice message="Brak szczegółu kroku lejka dla bieżącego zakresu." title="Brak szczegółu kroku" tone="info" />;
   }
 
   return (
@@ -1491,7 +1495,7 @@ function UnsupportedVariant({ definition }: { readonly definition: AnalyticsScre
 function EmptyDomainMessage() {
   return (
     <InlineNotice
-      message="Bieżący endpoint nie zwrócił rekordów potrzebnych do zbudowania tej części widoku."
+      message="Brak rekordów potrzebnych do zbudowania tej części widoku."
       title="Brak danych"
       tone="info"
     />

@@ -90,7 +90,7 @@ export function BillingWorkspace({
           { label: 'Cykl', value: data.subscription.cycle },
           { label: 'Odnowienie', value: data.subscription.renewalAt },
         ]}
-        subtitle="Kontrola komercyjna bez ukrytych mutacji i bez martwych CTA."
+        subtitle="Kontrola komercyjna z jasnymi konsekwencjami zmian i płatności."
         title={definition.displayTitle}
       />
 
@@ -100,6 +100,7 @@ export function BillingWorkspace({
         items={billingNavigationItems}
         orientation="horizontal"
         size="compact"
+        sticky
       />
 
       <section className="pd-billing-workspace__grid" aria-label="Status subskrypcji">
@@ -222,7 +223,7 @@ function renderBillingVariant(
 
   if (definition.variant === 'change-cancel') {
     return (
-      <BillingPanel title="Zmiana lub anulowanie" summary="Ekran pokazuje konsekwencje przed wykonaniem mutacji komercyjnej.">
+      <BillingPanel title="Zmiana lub anulowanie" summary="Ekran pokazuje konsekwencje przed zatwierdzeniem zmiany komercyjnej.">
         <ul className="pd-billing-workspace__checklist">
           <li>Utrata historii forecastów po downgrade wymaga jawnego potwierdzenia.</li>
           <li>Anulowanie zachowuje dostęp do danych do końca opłaconego okresu.</li>
@@ -244,7 +245,7 @@ function renderBillingVariant(
     );
   }
 
-  return tablePanel('Warianty billingowe', 'Warianty stanu służą do kontroli UI bez fikcyjnego backendowego success state.', billingVariantColumns, data.variantRows, 'Warianty subskrypcji');
+  return tablePanel('Warianty billingowe', 'Warianty stanu pokazują aktywny plan, zaległości, limity i błędy płatności.', billingVariantColumns, data.variantRows, 'Warianty subskrypcji');
 }
 
 function BillingPanel({
@@ -284,7 +285,7 @@ function tablePanel(
           ariaLabel={ariaLabel}
           columns={columns}
           density="compact"
-          emptyMessage="Brak danych billingowych w fixture Storybooka."
+          emptyMessage="Brak danych billingowych dla bieżącego zakresu."
           loading={false}
           minWidth={720}
           rowCount={rows.length}

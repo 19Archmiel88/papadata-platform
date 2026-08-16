@@ -124,6 +124,8 @@
   --pd-menu-offset: 8px;
   --pd-overlay-z-index: var(--pd-layer-modal);
   --pd-business-side-width: 360px;
+  --pd-scrollbar-size: 10px;
+  --pd-scrollbar-radius: var(--pd-radius-pill);
 }
 
 :root,
@@ -148,18 +150,21 @@
   --pd-workspace-surface-panel: #ffffff;
   --pd-workspace-surface-raised: #ffffff;
   --pd-workspace-surface-data: #f8fafc;
+  --pd-workspace-text: #0f172a;
+  --pd-workspace-text-secondary: #334155;
+  --pd-workspace-text-muted: #64748b;
 
   --pd-shell-canvas: #090d16;
   --pd-shell-surface: #0f172a;
   --pd-shell-surface-subtle: #111827;
   --pd-shell-surface-raised: #1e293b;
-  --pd-shell-surface-overlay: rgba(15, 23, 42, 0.86);
+  --pd-shell-surface-overlay: rgba(15, 23, 42, 0.92);
   --pd-shell-surface-active: #312e81;
   --pd-shell-text: #f8fafc;
   --pd-shell-text-secondary: #cbd5e1;
-  --pd-shell-text-muted: #94a3b8;
-  --pd-shell-separator: rgba(255, 255, 255, 0.10);
-  --pd-shell-separator-strong: rgba(255, 255, 255, 0.18);
+  --pd-shell-text-muted: #a8b4c7;
+  --pd-shell-separator: rgba(226, 232, 240, 0.18);
+  --pd-shell-separator-strong: rgba(226, 232, 240, 0.26);
   --pd-shell-brand: #6366f1;
   --pd-shell-brand-strong: #c7d2fe;
   --pd-shell-brand-ambient: rgba(99, 102, 241, 0.18);
@@ -328,6 +333,9 @@
   --pd-brand-flow-line-edge: transparent;
   --pd-brand-flow-line-background: rgba(99, 102, 241, 0.14);
   --pd-brand-flow-line-shadow: 0 8px 22px rgba(99, 102, 241, 0.26);
+  --pd-scrollbar-track: rgba(226, 232, 240, 0.62);
+  --pd-scrollbar-thumb: rgba(100, 116, 139, 0.42);
+  --pd-scrollbar-thumb-hover: rgba(99, 102, 241, 0.58);
   --pd-select-scrollbar-track: var(--pd-surface-subtle);
   --pd-select-scrollbar-thumb: rgba(99, 102, 241, 0.28);
   --pd-select-scrollbar-thumb-hover: rgba(99, 102, 241, 0.42);
@@ -372,6 +380,9 @@
   --pd-workspace-surface-panel: #111827;
   --pd-workspace-surface-raised: #1e293b;
   --pd-workspace-surface-data: #0b1220;
+  --pd-workspace-text: #f1f5f9;
+  --pd-workspace-text-secondary: #cbd5e1;
+  --pd-workspace-text-muted: #94a3b8;
 
   --pd-shell-canvas: #090d16;
   --pd-shell-surface: #0f172a;
@@ -552,6 +563,9 @@
   --pd-brand-flow-line-edge: transparent;
   --pd-brand-flow-line-background: rgba(99, 102, 241, 0.16);
   --pd-brand-flow-line-shadow: 0 10px 28px rgba(99, 102, 241, 0.28);
+  --pd-scrollbar-track: rgba(255, 255, 255, 0.055);
+  --pd-scrollbar-thumb: rgba(203, 213, 225, 0.34);
+  --pd-scrollbar-thumb-hover: rgba(129, 140, 248, 0.58);
   --pd-select-scrollbar-track: var(--pd-surface-subtle);
   --pd-select-scrollbar-thumb: rgba(129, 140, 248, 0.24);
   --pd-select-scrollbar-thumb-hover: rgba(129, 140, 248, 0.36);

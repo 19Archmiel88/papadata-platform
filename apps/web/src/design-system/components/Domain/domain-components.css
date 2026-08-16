@@ -814,6 +814,82 @@
   background: linear-gradient(90deg, var(--pd-data-accent), var(--pd-brand-highlight));
 }
 
+.pd-waterfall-chart__items li {
+  border-top-color: color-mix(in srgb, var(--pd-separator) 82%, transparent);
+}
+
+.pd-waterfall-chart__items li > div span,
+.pd-waterfall-chart__items li > span:last-child {
+  color: color-mix(in srgb, var(--pd-text) 82%, var(--pd-text-secondary));
+}
+
+.pd-waterfall-chart__items li > div strong {
+  color: var(--pd-text);
+}
+
+.pd-waterfall-chart__bar {
+  block-size: 0.95rem;
+  border: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-separator) 82%, var(--pd-text-muted));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-raised) 76%, var(--pd-separator)),
+      color-mix(in srgb, var(--pd-surface-panel) 50%, var(--pd-separator))
+    );
+  box-shadow:
+    inset 0 1px 2px color-mix(in srgb, var(--pd-overlay-scrim) 18%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--pd-surface-raised) 34%, transparent);
+}
+
+.pd-waterfall-chart__bar > span {
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--pd-data-accent) 92%, var(--pd-brand-highlight)),
+      color-mix(in srgb, var(--pd-brand-highlight) 72%, var(--pd-data-accent))
+    );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, white 22%, transparent),
+    0 0 18px -10px color-mix(in srgb, var(--pd-data-accent) 82%, transparent);
+}
+
+.pd-waterfall-chart__items li[data-kind='decrease'] .pd-waterfall-chart__bar > span {
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--pd-status-warning) 94%, #7c2d12),
+      color-mix(in srgb, var(--pd-status-warning) 70%, var(--pd-brand-highlight))
+    );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, white 20%, transparent),
+    0 0 18px -10px color-mix(in srgb, var(--pd-status-warning) 86%, transparent);
+}
+
+.pd-waterfall-chart__items li[data-kind='total'] .pd-waterfall-chart__bar > span {
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--pd-status-success) 94%, #064e3b),
+      color-mix(in srgb, var(--pd-status-success) 72%, var(--pd-brand-highlight))
+    );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, white 20%, transparent),
+    0 0 18px -10px color-mix(in srgb, var(--pd-status-success) 86%, transparent);
+}
+
+[data-theme='dark'] .pd-waterfall-chart__bar {
+  border-color: color-mix(in srgb, var(--pd-text-muted) 46%, var(--pd-separator));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-raised) 72%, var(--pd-separator)),
+      color-mix(in srgb, var(--pd-surface) 60%, var(--pd-separator))
+    );
+  box-shadow:
+    inset 0 1px 2px color-mix(in srgb, black 36%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, white 5%, transparent);
+}
+
 @media (max-width: 980px) {
   .pd-page-header,
   .pd-data-status-banner {
@@ -1081,6 +1157,179 @@
 .pd-cohort-matrix th:first-child,
 .pd-cohort-matrix td:first-child {
   text-align: start;
+}
+
+/* Global domain component refinement: contract surfaces without heavy nesting. */
+.pd-page-header {
+  border-radius: var(--pd-radius-control);
+  letter-spacing: 0;
+}
+
+.pd-panel,
+.pd-detail-panel,
+.pd-data-status-banner,
+.pd-evidence-panel,
+.pd-recommendation-card,
+.pd-decision-card,
+.pd-decision-queue,
+.pd-morning-brief,
+.pd-assistant-composer,
+.pd-result-drivers,
+.pd-sales-sources,
+.pd-funnel-step,
+.pd-funnel-chart,
+.pd-waterfall-chart,
+.pd-budget-pacing,
+.pd-attribution-comparison,
+.pd-plan-performance,
+.pd-reconciliation-panel,
+.pd-sync-timeline,
+.pd-lineage-graph,
+.pd-cohort-matrix,
+.pd-customer-segments,
+.pd-sales-funnel,
+.pd-pairing-flow {
+  border-radius: var(--pd-radius-control);
+  border-color: color-mix(in srgb, var(--pd-separator) 78%, transparent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-panel) 94%, transparent),
+      color-mix(in srgb, var(--pd-surface-raised) 70%, transparent)
+    );
+  box-shadow: 0 16px 34px -28px color-mix(in srgb, var(--pd-overlay-scrim) 48%, transparent);
+}
+
+.pd-recommendation-card,
+.pd-decision-card,
+.pd-funnel-step {
+  border-radius: var(--pd-radius-small);
+}
+
+.pd-data-status-banner {
+  border-color: color-mix(in srgb, var(--pd-separator) 78%, transparent);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--pd-surface-panel) 92%, var(--pd-data-accent-subtle)),
+      color-mix(in srgb, var(--pd-surface-panel) 94%, transparent)
+    );
+}
+
+.pd-data-status-banner[data-readiness='ready'] {
+  border-color: color-mix(in srgb, var(--pd-status-success) 38%, var(--pd-separator));
+}
+
+.pd-data-status-banner[data-readiness='partial'],
+.pd-data-status-banner[data-readiness='stale'] {
+  border-color: color-mix(in srgb, var(--pd-status-warning) 46%, var(--pd-separator));
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--pd-status-warning-subtle) 36%, var(--pd-surface-panel)),
+      color-mix(in srgb, var(--pd-surface-panel) 94%, transparent)
+    );
+}
+
+.pd-data-status-banner[data-readiness='blocked'],
+.pd-data-status-banner[data-readiness='sourceError'],
+.pd-data-status-banner[data-readiness='unavailable'] {
+  border-color: color-mix(in srgb, var(--pd-status-danger) 48%, var(--pd-separator));
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--pd-status-danger-subtle) 34%, var(--pd-surface-panel)),
+      color-mix(in srgb, var(--pd-surface-panel) 94%, transparent)
+    );
+}
+
+.pd-data-status-banner__main {
+  align-items: start;
+}
+
+.pd-data-status-banner__sources dd,
+.pd-evidence-panel__sources dd,
+.pd-recommendation-card__meta dd,
+.pd-decision-card__meta dd,
+.pd-plan-performance__meta dd {
+  line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-morning-brief__list li,
+.pd-result-drivers__list li,
+.pd-sales-sources__list li,
+.pd-funnel-chart__steps li,
+.pd-waterfall-chart__items li,
+.pd-reconciliation-panel__list li,
+.pd-sync-timeline__list li,
+.pd-sales-funnel__steps li {
+  border-top-color: color-mix(in srgb, var(--pd-separator) 66%, transparent);
+}
+
+.pd-waterfall-chart__items li {
+  grid-template-columns: minmax(10rem, 0.34fr) minmax(14rem, 1fr) minmax(10rem, 0.32fr);
+}
+
+.pd-waterfall-chart__items li > span:last-child {
+  justify-self: end;
+  color: var(--pd-text-secondary);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.pd-waterfall-chart__bar {
+  min-block-size: 0.9rem;
+}
+
+.pd-result-drivers__list li > span:first-of-type,
+.pd-sales-sources__bar b,
+.pd-waterfall-chart__items strong {
+  font-variant-numeric: tabular-nums;
+}
+
+[data-theme='dark'] .pd-panel,
+[data-theme='dark'] .pd-detail-panel,
+[data-theme='dark'] .pd-data-status-banner,
+[data-theme='dark'] .pd-evidence-panel,
+[data-theme='dark'] .pd-recommendation-card,
+[data-theme='dark'] .pd-decision-card,
+[data-theme='dark'] .pd-decision-queue,
+[data-theme='dark'] .pd-morning-brief,
+[data-theme='dark'] .pd-assistant-composer,
+[data-theme='dark'] .pd-result-drivers,
+[data-theme='dark'] .pd-sales-sources,
+[data-theme='dark'] .pd-funnel-step,
+[data-theme='dark'] .pd-funnel-chart,
+[data-theme='dark'] .pd-waterfall-chart,
+[data-theme='dark'] .pd-budget-pacing,
+[data-theme='dark'] .pd-attribution-comparison,
+[data-theme='dark'] .pd-plan-performance,
+[data-theme='dark'] .pd-reconciliation-panel,
+[data-theme='dark'] .pd-sync-timeline,
+[data-theme='dark'] .pd-lineage-graph,
+[data-theme='dark'] .pd-cohort-matrix,
+[data-theme='dark'] .pd-customer-segments,
+[data-theme='dark'] .pd-sales-funnel,
+[data-theme='dark'] .pd-pairing-flow {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-panel) 92%, var(--pd-canvas)),
+      color-mix(in srgb, var(--pd-surface-raised) 74%, var(--pd-canvas))
+    );
+}
+
+@media (max-width: 760px) {
+  .pd-waterfall-chart__items li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-waterfall-chart__items li > span:last-child {
+    justify-self: start;
+    white-space: normal;
+  }
 }
 
 .pd-cohort-matrix tr[data-selected='true'],

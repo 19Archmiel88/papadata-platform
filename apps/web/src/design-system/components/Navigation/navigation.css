@@ -316,8 +316,16 @@
 .pd-pagination__page[aria-current='page'],
 .pd-section-navigation__item[aria-current='page'] {
   color: var(--pd-text);
-  border-color: color-mix(in srgb, var(--pd-brand-line) 46%, transparent);
-  background: color-mix(in srgb, var(--pd-surface-panel) 90%, transparent);
+  border-color: color-mix(in srgb, var(--pd-brand-line) 72%, var(--pd-brand-highlight));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-brand-highlight) 18%, var(--pd-surface-panel)),
+      color-mix(in srgb, var(--pd-surface-panel) 82%, var(--pd-data-accent-subtle))
+    );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--pd-brand-highlight) 22%, transparent),
+    0 12px 28px -24px color-mix(in srgb, var(--pd-brand-line) 80%, transparent);
   font-weight: var(--pd-font-weight-semibold);
 }
 
@@ -353,6 +361,66 @@
   flex-wrap: wrap;
   gap: var(--pd-space-2);
   align-items: center;
+}
+
+.pd-section-navigation[data-sticky='true'] {
+  position: sticky;
+  top: var(--pd-space-2);
+  z-index: calc(var(--pd-layer-sticky) - 1);
+  flex-wrap: nowrap;
+  max-width: 100%;
+  padding: var(--pd-space-2);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  border: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-separator) 86%, var(--pd-text-muted));
+  border-radius: var(--pd-radius-overlay);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-overlay) 98%, var(--pd-surface-raised)),
+      color-mix(in srgb, var(--pd-surface-panel) 96%, var(--pd-surface))
+    ),
+    var(--pd-surface-panel);
+  box-shadow:
+    0 18px 46px -34px color-mix(in srgb, var(--pd-overlay-scrim) 68%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--pd-surface-raised) 78%, transparent);
+  scrollbar-color: color-mix(in srgb, var(--pd-text-muted) 54%, transparent) transparent;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+.pd-section-navigation[data-sticky='true']
+.pd-section-navigation__item[aria-current='page'] {
+  border-color: color-mix(in srgb, var(--pd-brand-line) 78%, var(--pd-brand-highlight));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--pd-brand-highlight) 28%, transparent),
+    0 10px 24px -20px color-mix(in srgb, var(--pd-brand-line) 86%, transparent);
+}
+
+.pd-section-navigation[data-sticky='true']::-webkit-scrollbar {
+  height: 10px;
+}
+
+.pd-section-navigation[data-sticky='true']::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pd-section-navigation[data-sticky='true']::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: var(--pd-scrollbar-radius);
+  background:
+    linear-gradient(
+      color-mix(in srgb, var(--pd-text-muted) 58%, transparent),
+      color-mix(in srgb, var(--pd-text-muted) 58%, transparent)
+    )
+    padding-box;
+}
+
+.pd-section-navigation[data-sticky='true'][data-orientation='horizontal']
+.pd-section-navigation__item {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .pd-section-navigation[data-orientation='vertical'] {
@@ -392,14 +460,24 @@
   --pd-menu-offset: 0.38rem;
 
   position: absolute;
-  z-index: 6;
+  z-index: var(--pd-layer-popover);
   width: min(18rem, calc(100vw - 2rem));
   min-width: 14rem;
+  max-height: min(28rem, calc(100dvh - 2rem));
   padding: var(--pd-space-2);
+  overflow: auto;
+  overscroll-behavior: contain;
   border: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
   border-radius: var(--pd-radius-overlay);
-  background: var(--pd-surface-overlay);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-overlay) 94%, transparent),
+      color-mix(in srgb, var(--pd-surface-panel) 96%, transparent)
+    ),
+    var(--pd-surface-panel);
   box-shadow: var(--pd-shadow-overlay);
+  scrollbar-gutter: stable;
 }
 
 .pd-menu__panel[data-placement='bottom-start'] {
@@ -449,6 +527,9 @@
 .pd-menu__item-label {
   min-width: 0;
   flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pd-menu__item-shortcut {
@@ -522,4 +603,56 @@
   margin-left: auto;
   color: var(--pd-brand-strong);
   font-weight: var(--pd-font-weight-semibold);
+}
+
+/* Global section navigation refinement for sticky analytical surfaces. */
+.pd-section-navigation[data-sticky='true'] {
+  border-radius: var(--pd-radius-control);
+  border-color: color-mix(in srgb, var(--pd-separator) 92%, var(--pd-text-muted));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-overlay) 98%, var(--pd-surface-raised)),
+      color-mix(in srgb, var(--pd-surface-panel) 98%, var(--pd-surface))
+    );
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+.pd-section-navigation[data-sticky='true'] .pd-section-navigation__item {
+  min-block-size: 2.4rem;
+  border-radius: calc(var(--pd-radius-small) * 0.9);
+  color: color-mix(in srgb, var(--pd-text) 78%, var(--pd-text-secondary));
+  letter-spacing: 0;
+}
+
+.pd-section-navigation[data-sticky='true'] .pd-section-navigation__item::after {
+  content: '';
+  position: absolute;
+  inset: auto var(--pd-space-2) 0.22rem;
+  block-size: 2px;
+  border-radius: var(--pd-radius-pill);
+  background: transparent;
+}
+
+.pd-section-navigation[data-sticky='true'] .pd-section-navigation__item[aria-current='page'] {
+  border-color: color-mix(in srgb, var(--pd-brand-line) 86%, var(--pd-brand-highlight));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-brand-ambient) 76%, var(--pd-surface-panel)),
+      color-mix(in srgb, var(--pd-surface-raised) 82%, var(--pd-data-accent-subtle))
+    );
+}
+
+.pd-section-navigation[data-sticky='true'] .pd-section-navigation__item[aria-current='page']::after {
+  background: linear-gradient(90deg, var(--pd-brand-line), var(--pd-data-accent));
+}
+
+[data-theme='dark'] .pd-section-navigation[data-sticky='true'] {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-overlay) 96%, var(--pd-canvas)),
+      color-mix(in srgb, var(--pd-surface-panel) 98%, var(--pd-canvas))
+    );
 }

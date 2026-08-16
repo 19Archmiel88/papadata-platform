@@ -51,8 +51,10 @@ export type AuthLoginInput = {
 export type AuthRegisterInput = {
   readonly email: string;
   readonly fullName: string;
+  readonly organizationName: string;
   readonly password: string;
   readonly passwordConfirmation: string;
+  readonly workspaceName: string;
 };
 
 export type AuthMfaInput = {
@@ -95,10 +97,12 @@ type FieldProblems = {
   readonly email?: string;
   readonly fullName?: string;
   readonly newPasswordConfirmation?: string;
+  readonly organizationName?: string;
   readonly otp?: string;
   readonly password?: string;
   readonly passwordConfirmation?: string;
   readonly resetToken?: string;
+  readonly workspaceName?: string;
 };
 
 type RegistrationStage = 'choice' | 'email';
@@ -119,8 +123,10 @@ export function AuthSurface({
 }: AuthSurfaceProps) {
   const [email, setEmail] = useState(initialEmail);
   const [fullName, setFullName] = useState('');
+  const [organizationName, setOrganizationName] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
+  const [workspaceName, setWorkspaceName] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirmation, setNewPasswordConfirmation] = useState('');
   const [code, setCode] = useState('');
@@ -169,7 +175,22 @@ export function AuthSurface({
       label: 'Co najmniej 12 znaków',
       met: password.length >= 12,
     },
-  ], [password.length]);
+    {
+      id: 'lowercase',
+      label: 'Mała litera',
+      met: /[a-z]/u.test(password),
+    },
+    {
+      id: 'uppercase',
+      label: 'Wielka litera',
+      met: /[A-Z]/u.test(password),
+    },
+    {
+      id: 'digit',
+      label: 'Cyfra',
+      met: /[0-9]/u.test(password),
+    },
+  ], [password]);
 
   const newPasswordRequirements = useMemo(() => [
     {
@@ -177,7 +198,22 @@ export function AuthSurface({
       label: 'Co najmniej 12 znaków',
       met: newPassword.length >= 12,
     },
-  ], [newPassword.length]);
+    {
+      id: 'lowercase',
+      label: 'Mała litera',
+      met: /[a-z]/u.test(newPassword),
+    },
+    {
+      id: 'uppercase',
+      label: 'Wielka litera',
+      met: /[A-Z]/u.test(newPassword),
+    },
+    {
+      id: 'digit',
+      label: 'Cyfra',
+      met: /[0-9]/u.test(newPassword),
+    },
+  ], [newPassword]);
 
   async function submitLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -202,6 +238,8 @@ export function AuthSurface({
     const problems = validateRegistration(
       email,
       fullName,
+      organizationName,
+      workspaceName,
       password,
       passwordConfirmation,
     );
@@ -211,8 +249,10 @@ export function AuthSurface({
       await onRegister?.({
         email: email.trim(),
         fullName: fullName.trim(),
+        organizationName: organizationName.trim(),
         password,
         passwordConfirmation,
+        workspaceName: workspaceName.trim(),
       });
       setSuccess('Rejestracja została przyjęta do dalszego procesu dostępu.');
     });
@@ -468,6 +508,25 @@ export function AuthSurface({
                   onChange={(event) => setFullName(event.currentTarget.value)}
                   required
                   value={fullName}
+                />
+
+                <TextField
+                  autocomplete="organization"
+                  invalid={Boolean(fieldProblems.organizationName)}
+                  label="Organizacja"
+                  message={fieldProblems.organizationName}
+                  onChange={(event) => setOrganizationName(event.currentTarget.value)}
+                  required
+                  value={organizationName}
+                />
+
+                <TextField
+                  invalid={Boolean(fieldProblems.workspaceName)}
+                  label="Workspace"
+                  message={fieldProblems.workspaceName}
+                  onChange={(event) => setWorkspaceName(event.currentTarget.value)}
+                  required
+                  value={workspaceName}
                 />
 
                 <TextField
@@ -860,6 +919,8 @@ function validateLogin(
 function validateRegistration(
   email: string,
   fullName: string,
+  organizationName: string,
+  workspaceName: string,
   password: string,
   passwordConfirmation: string,
 ): FieldProblems {
@@ -868,12 +929,16 @@ function validateRegistration(
     fullName: fullName.trim().length >= 2
       ? undefined
       : 'Podaj imię i nazwisko.',
-    password: password.length >= 12
+    organizationName: organizationName.trim().length >= 2
       ? undefined
-      : 'Hasło musi mieć co najmniej 12 znaków.',
+      : 'Podaj nazwę organizacji.',
+    password: validateStrongPassword(password, 'Hasło'),
     passwordConfirmation: passwordConfirmation === password
       ? undefined
       : 'Hasła muszą być identyczne.',
+    workspaceName: workspaceName.trim().length >= 2
+      ? undefined
+      : 'Podaj nazwę workspace.',
   };
 }
 
@@ -906,9 +971,7 @@ function validatePasswordReset(
     otp: /^\d{6}$/u.test(otp.trim())
       ? undefined
       : 'Kod potwierdzający musi mieć 6 cyfr.',
-    password: newPassword.length >= 12
-      ? undefined
-      : 'Nowe hasło musi mieć co najmniej 12 znaków.',
+    password: validateStrongPassword(newPassword, 'Nowe hasło'),
     resetToken: resetToken.trim()
       ? undefined
       : 'Link odzyskiwania jest nieprawidłowy lub wygasł.',
@@ -919,4 +982,15 @@ function validateEmail(email: string): string | undefined {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(email.trim())
     ? undefined
     : 'Podaj poprawny adres e-mail.';
+}
+
+function validateStrongPassword(
+  password: string,
+  label: 'Hasło' | 'Nowe hasło',
+): string | undefined {
+  if (password.length < 12) return `${label} musi mieć co najmniej 12 znaków.`;
+  if (!/[a-z]/u.test(password)) return `${label} musi zawierać małą literę.`;
+  if (!/[A-Z]/u.test(password)) return `${label} musi zawierać wielką literę.`;
+  if (!/[0-9]/u.test(password)) return `${label} musi zawierać cyfrę.`;
+  return undefined;
 }

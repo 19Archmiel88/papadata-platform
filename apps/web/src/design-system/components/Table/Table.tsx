@@ -329,6 +329,7 @@ export function Table({
                         ?? 'left'
                       }
                       scope="col"
+                      data-column-id={column.id}
                       style={{
                         width:
                           resolveWidth(
@@ -425,6 +426,7 @@ export function Table({
                               column.align
                               ?? 'left'
                             }
+                            data-column-id={column.id}
                             scope="row"
                           >
                             <div className="pd-table__cell-wrap">
@@ -443,6 +445,7 @@ export function Table({
                             column.align
                             ?? 'left'
                           }
+                          data-column-id={column.id}
                         >
                           <div className="pd-table__cell-wrap">
                             {

@@ -95,8 +95,6 @@ export const defaultShellNavigation = [
     label: 'AI',
     items: [
       {
-        disabled: true,
-        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym runtime.',
         icon: 'assistant',
         id: 'papa',
         label: 'Laboratorium Papa Asystenta',
@@ -110,7 +108,7 @@ export const defaultShellNavigation = [
     items: [
       {
         disabled: true,
-        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym runtime.',
+        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym środowisku.',
         icon: 'integration',
         id: 'integrations',
         label: 'Integracje',
@@ -124,7 +122,7 @@ export const defaultShellNavigation = [
     items: [
       {
         disabled: true,
-        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym runtime.',
+        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym środowisku.',
         icon: 'security',
         id: 'settings',
         label: 'Ustawienia',
@@ -154,7 +152,7 @@ export const defaultShellNavigation = [
       },
       {
         disabled: true,
-        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym runtime.',
+        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym środowisku.',
         icon: 'help',
         id: 'help',
         label: 'Centrum Pomocy',
@@ -166,7 +164,35 @@ export const defaultShellNavigation = [
 
 export const defaultShellCommands = [
   {
-    description: 'Otwiera główny runtime proof po zalogowaniu.',
+    action: 'open-papa',
+    description: 'Otwiera globalny czat Papa z kontekstem bieżącego ekranu.',
+    id: 'open-papa-assistant',
+    keywords: [
+      'papa',
+      'asystent',
+      'czat',
+      'ai',
+    ],
+    label: 'Otwórz Papa Asystenta',
+    path: '/app/papa/laboratorium-ai',
+    section: 'Papa',
+  },
+  {
+    action: 'analyze-screen',
+    description: 'Tworzy snapshot bieżącego dashboardu i prosi Papa o analizę.',
+    id: 'analyze-current-screen',
+    keywords: [
+      'analiza',
+      'ekran',
+      'kontekst',
+      'snapshot',
+    ],
+    label: 'Analizuj bieżący ekran',
+    path: '/app/papa/panel-kontekstowy-papa',
+    section: 'Papa',
+  },
+  {
+    description: 'Otwiera główny widok po zalogowaniu.',
     id: 'open-command-center',
     keywords: [
       'dashboard',
@@ -230,6 +256,7 @@ export const defaultShellCommands = [
 export const defaultShellNotifications = [
   {
     actionLabel: 'Sprawdź',
+    actionPath: '/app/command-center/kolejka-uwagi',
     id: 'readiness',
     message: 'Readiness danych dla Commerce PL jest częściowy: brakuje świeżego kosztu reklam.',
     time: '2 min temu',
@@ -238,6 +265,8 @@ export const defaultShellNotifications = [
     unread: true,
   },
   {
+    actionLabel: 'Otwórz integracje',
+    actionPath: '/app/integrations',
     id: 'sync-done',
     message: 'Synchronizacja WooCommerce zakończyła się bez nowych konfliktów.',
     time: '18 min temu',

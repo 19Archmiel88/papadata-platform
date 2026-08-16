@@ -88,6 +88,20 @@
   min-inline-size: 0;
 }
 
+.pd-chart-interaction-layer__filter-button,
+.pd-chart-interaction-layer__point-button {
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.pd-chart-interaction-layer__filter-button:hover,
+.pd-chart-interaction-layer__point-button:hover {
+  transform: translateY(-1px);
+}
+
 .pd-chart-interaction-layer__reset-action {
   margin-inline-start: auto;
   font-weight: var(--pd-font-weight-regular);
@@ -183,6 +197,10 @@
 .pd-chart-interaction-layer__point-button[data-active='true'] {
   background: color-mix(in srgb, var(--pd-brand-accent) 10%, transparent);
   color: var(--pd-text);
+}
+
+.pd-chart-interaction-layer__point-button[data-active='true'] {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pd-brand-line) 45%, transparent);
 }
 
 .pd-chart-interaction-layer__empty {

@@ -69,6 +69,7 @@ export function IntegrationsWorkspace({
         items={getIntegrationNavigation()}
         orientation="horizontal"
         size="compact"
+        sticky
       />
 
       <IntegrationSummary data={data} />
@@ -126,8 +127,8 @@ function IntegrationContent({
       return (
         <>
           <InlineNotice
-            message="Storybook pokazuje kroki i wymagane zakresy. Operacja OAuth lub zapis tokenu nie jest wykonywana bez osobnego operationId mutacji."
-            title="Kreator w trybie odczytu"
+            message="Kreator pokazuje kroki i wymagane zakresy. Połączenie wymaga autoryzacji użytkownika przed zapisem dostępu."
+            title="Kreator połączenia"
             tone="info"
           />
           <IntegrationSteps
@@ -162,7 +163,7 @@ function IntegrationContent({
         <>
           <InlineNotice
             message="Zakres synchronizacji opisuje obiekty i uprawnienia możliwe do odczytu; zmiana zakresu pozostaje poza tym ekranem."
-            title="Zakres bez mutacji"
+            title="Zakres synchronizacji"
             tone="info"
           />
           <IntegrationTable rows={rows} />
@@ -172,7 +173,7 @@ function IntegrationContent({
       return (
         <>
           <InlineNotice
-            message="Ponowne połączenie zachowuje informację o wpływie na dane i prowadzi operatora do autoryzacji bez zapisu tokenu w Storybooku."
+            message="Ponowne połączenie zachowuje informację o wpływie na dane i prowadzi operatora do odnowienia autoryzacji."
             title="Wymaga odnowienia autoryzacji"
             tone="warning"
           />
@@ -265,7 +266,7 @@ function IntegrationDetail({
   if (!integration) {
     return (
       <InlineNotice
-        message="Endpoint nie zwrócił szczegółu integracji."
+        message="Brak szczegółu integracji dla bieżącego wyboru."
         title="Brak szczegółu"
         tone="info"
       />

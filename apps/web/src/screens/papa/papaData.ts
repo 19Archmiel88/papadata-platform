@@ -110,16 +110,96 @@ export type PapaMemoryRecord = {
   readonly timestamp: string;
 };
 
+export type PapaAssistantStatus = {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly state: 'ready' | 'attention' | 'blocked' | 'learning' | 'offline';
+  readonly metric: string;
+  readonly value: string;
+  readonly owner: string;
+  readonly updatedAt: string;
+  readonly evidenceIds: readonly string[];
+};
+
+export type PapaRecommendationRecord = {
+  readonly id: string;
+  readonly title: string;
+  readonly summary: string;
+  readonly impact: 'low' | 'medium' | 'high';
+  readonly effort: 'low' | 'medium' | 'high';
+  readonly risk: 'low' | 'medium' | 'high';
+  readonly owner: string;
+  readonly nextStep: string;
+  readonly status: 'draft' | 'recommended' | 'needs-approval' | 'blocked';
+  readonly evidenceIds: readonly string[];
+};
+
+export type PapaChatMessage = {
+  readonly id: string;
+  readonly author: 'user' | 'assistant' | 'system';
+  readonly body: string;
+  readonly createdAt: string;
+  readonly contextItemId?: string;
+  readonly evidenceIds: readonly string[];
+};
+
+export type PapaElementThread = {
+  readonly elementId: string;
+  readonly elementLabel: string;
+  readonly elementKind: 'metric' | 'record' | 'segment' | 'decision' | 'action';
+  readonly status: 'ready' | 'partial' | 'blocked';
+  readonly messages: readonly PapaChatMessage[];
+};
+
+export type PapaLabExperiment = {
+  readonly id: string;
+  readonly name: string;
+  readonly hypothesis: string;
+  readonly status: 'draft' | 'running' | 'ready' | 'blocked';
+  readonly owner: string;
+  readonly confidence: number;
+  readonly baseline: number;
+  readonly variant: number;
+  readonly nextStep: string;
+  readonly reportId: string;
+};
+
+export type PapaReportArtifact = {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly status: 'ready' | 'building' | 'stale';
+  readonly formats: readonly ('pdf' | 'csv')[];
+  readonly generatedAt: string;
+  readonly owner: string;
+  readonly datasets: readonly string[];
+};
+
+export type PapaAssistantTrendDatum = {
+  readonly label: string;
+  readonly actual: number;
+  readonly plan: number;
+  readonly movingAverage: number;
+};
+
 export type PapaWorkspaceData = {
   readonly generatedAt: string;
   readonly context: WorkspaceContext;
   readonly contextItems: readonly PapaContextItem[];
   readonly actions: readonly PapaActionRecord[];
+  readonly assistantTrend: readonly PapaAssistantTrendDatum[];
+  readonly chatMessages: readonly PapaChatMessage[];
   readonly decisions: readonly PapaDecision[];
+  readonly elementThreads: readonly PapaElementThread[];
   readonly evidence: readonly PapaEvidenceItem[];
+  readonly labExperiments: readonly PapaLabExperiment[];
   readonly memory: readonly PapaMemoryRecord[];
   readonly modeRecords: readonly PapaModeRecord[];
+  readonly recommendations: readonly PapaRecommendationRecord[];
+  readonly reports: readonly PapaReportArtifact[];
   readonly sources: readonly DataSourceRef[];
+  readonly statuses: readonly PapaAssistantStatus[];
   readonly summary: {
     readonly readiness: ReadinessState;
     readonly contextItems: number;
@@ -204,7 +284,7 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
     operationId: null,
     route: null,
     routeBase: null,
-    summary: 'Polityka poziomu pewności dla Papa bez ścieżki aplikacyjnej i bez fikcyjnego endpointu.',
+    summary: 'Polityka poziomu pewności dla Papa przy danych pełnych, częściowych i wymagających zatwierdzenia.',
     variant: 'confidence',
   },
   {
@@ -215,7 +295,7 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
     operationId: 'papa.lab.read',
     route: '/app/papa/laboratorium-ai',
     routeBase: '/app/papa/laboratorium-ai',
-    summary: 'Eksperymenty AI w trybie odczytu z kontekstem, dowodami i ochroną przed mutacjami.',
+    summary: 'Eksperymenty AI z kontekstem, dowodami i kontrolą działań wymagających zgody.',
     variant: 'lab',
   },
   {
@@ -237,7 +317,7 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
     operationId: null,
     route: null,
     routeBase: null,
-    summary: 'Storybookowa macierz rekomendacji i wariantów bez fikcyjnej operacji zapisu.',
+    summary: 'Macierz rekomendacji i wariantów pokazująca gotowość, ryzyko i wymagane zatwierdzenia.',
     variant: 'recommendation-variants',
   },
   {
@@ -259,7 +339,7 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
     operationId: 'papa.action-approval.read',
     route: '/app/papa/ai-action-approval',
     routeBase: '/app/papa/ai-action-approval',
-    summary: 'Powierzchnia akceptacji działań AI z ryzykiem, dowodami i blokadą pozornych mutacji.',
+    summary: 'Powierzchnia akceptacji działań AI z ryzykiem, dowodami i wymaganym zatwierdzeniem.',
     variant: 'action-approval',
   },
   {
@@ -270,7 +350,7 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
     operationId: 'papa.actions.read',
     route: '/app/papa/ai-actions',
     routeBase: '/app/papa/ai-actions',
-    summary: 'Rejestr działań AI z kontraktem operacji, statusem i zespołem odpowiedzialnym.',
+    summary: 'Rejestr działań AI ze statusem, ryzykiem i zespołem odpowiedzialnym.',
     variant: 'actions',
   },
   {
@@ -281,7 +361,7 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
     operationId: null,
     route: null,
     routeBase: null,
-    summary: 'Polityka zablokowanych działań AI bez ścieżki aplikacyjnej i bez fikcyjnego endpointu.',
+    summary: 'Polityka zablokowanych działań AI z powodem blokady i wymaganym właścicielem.',
     variant: 'blocked-actions',
   },
   {
@@ -314,7 +394,7 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
     operationId: null,
     route: null,
     routeBase: null,
-    summary: 'Storybookowa macierz wariantów Papa bez ścieżki aplikacyjnej i bez fikcyjnej operacji zapisu.',
+    summary: 'Macierz wariantów Papa dla trybów pracy, pewności i ograniczeń działań AI.',
     variant: 'variants',
   },
 ] as const;
@@ -346,7 +426,7 @@ export const papaActionColumns: readonly DataColumn[] = [
   { id: 'owner', label: 'Zespół', sortable: true },
   { id: 'statusLabel', label: 'Status', sortable: true },
   { id: 'riskLabel', label: 'Ryzyko', sortable: true },
-  { id: 'operationId', label: 'Operacja', sortable: true },
+  { id: 'operationId', label: 'Wykonanie', sortable: true },
 ];
 
 export const papaMemoryColumns: readonly DataColumn[] = [
@@ -354,6 +434,23 @@ export const papaMemoryColumns: readonly DataColumn[] = [
   { id: 'source', label: 'Źródło', sortable: true },
   { id: 'retention', label: 'Retencja', sortable: true },
   { id: 'timestamp', label: 'Czas', sortable: true },
+];
+
+export const papaLabExperimentColumns: readonly DataColumn[] = [
+  { id: 'name', label: 'Eksperyment', sortable: true, width: 280 },
+  { id: 'statusLabel', label: 'Status', sortable: true },
+  { id: 'owner', label: 'Właściciel', sortable: true },
+  { align: 'right', id: 'confidence', label: 'Pewność', sortable: true },
+  { align: 'right', id: 'uplift', label: 'Różnica', sortable: true },
+  { id: 'nextStep', label: 'Następny krok', sortable: false },
+];
+
+export const papaReportColumns: readonly DataColumn[] = [
+  { id: 'title', label: 'Raport', sortable: true, width: 280 },
+  { id: 'statusLabel', label: 'Status', sortable: true },
+  { id: 'formats', label: 'Formaty', sortable: false },
+  { id: 'owner', label: 'Właściciel', sortable: true },
+  { id: 'generatedAt', label: 'Wygenerowano', sortable: true },
 ];
 
 const generatedAt = '2026-08-14T10:40:00+02:00';
@@ -386,7 +483,7 @@ const actions: readonly PapaActionRecord[] = [
 const modeRecords: readonly PapaModeRecord[] = [
   { allowedUse: 'Wyjaśnienie metryki i wskazanie źródeł', blockedUse: 'Automatyczna zmiana budżetu', id: 'papa-mode-read', mode: 'Czytaj', requiresApproval: 'Nie' },
   { allowedUse: 'Przygotowanie rekomendacji do kolejki', blockedUse: 'Samodzielne zatwierdzenie decyzji', id: 'papa-mode-recommend', mode: 'Rekomenduj', requiresApproval: 'Tak' },
-  { allowedUse: 'Projekt akcji z wpływem i ryzykiem', blockedUse: 'Wykonanie mutacji bez kontraktu operacji', id: 'papa-mode-draft', mode: 'Przygotuj akcję', requiresApproval: 'Tak' },
+  { allowedUse: 'Projekt akcji z wpływem i ryzykiem', blockedUse: 'Samodzielne wykonanie bez zgody', id: 'papa-mode-draft', mode: 'Przygotuj akcję', requiresApproval: 'Tak' },
   { allowedUse: 'Analiza offline na danych z pamięci podręcznej', blockedUse: 'Mutacje i eksport danych osobowych', id: 'papa-mode-offline', mode: 'Offline', requiresApproval: 'Nie dotyczy' },
 ];
 
@@ -400,6 +497,247 @@ const sources: readonly DataSourceRef[] = [
   { completeness: 0.992, dataset: 'orders', lastSyncAt: '2026-08-14T09:42:00+02:00', provider: 'Shopify' },
   { completeness: 0.947, dataset: 'campaign_costs', lastSyncAt: '2026-08-14T08:36:00+02:00', provider: 'Google Ads' },
   { completeness: 0.884, dataset: 'customers', lastSyncAt: '2026-08-13T21:18:00+02:00', provider: 'CRM' },
+];
+
+const statuses: readonly PapaAssistantStatus[] = [
+  {
+    description: 'Kontekst jest spójny, ale niepełne koszty kampanii obniżają poziom automatyzacji.',
+    evidenceIds: ['papa-evidence-gap'],
+    id: 'papa-status-readiness',
+    metric: 'Gotowość',
+    owner: 'Papa Asystent',
+    state: 'attention',
+    title: 'Gotowość odpowiedzi',
+    updatedAt: '2026-08-14T10:40:00+02:00',
+    value: 'Częściowa',
+  },
+  {
+    description: 'Dowody sprzedażowe i marżowe są świeże oraz połączone ze źródłami danych.',
+    evidenceIds: ['papa-evidence-repeat', 'papa-evidence-roas'],
+    id: 'papa-status-evidence',
+    metric: 'Dowody',
+    owner: 'Analityka danych',
+    state: 'ready',
+    title: 'Dowody i pochodzenie',
+    updatedAt: '2026-08-14T09:42:00+02:00',
+    value: '3 źródła',
+  },
+  {
+    description: 'Rekomendacje budżetowe wymagają zatwierdzenia, zanim trafią do systemów kampanii.',
+    evidenceIds: ['papa-evidence-roas'],
+    id: 'papa-status-approval',
+    metric: 'Akcje',
+    owner: 'Media płatne',
+    state: 'learning',
+    title: 'Akceptacja działań',
+    updatedAt: '2026-08-14T10:22:00+02:00',
+    value: '2 do decyzji',
+  },
+  {
+    description: 'Eksport danych klientów do modelu pozostaje zablokowany do zgody bezpieczeństwa.',
+    evidenceIds: ['papa-evidence-gap'],
+    id: 'papa-status-governance',
+    metric: 'Ryzyko',
+    owner: 'Bezpieczeństwo',
+    state: 'blocked',
+    title: 'Granice prywatności',
+    updatedAt: '2026-08-14T10:12:00+02:00',
+    value: '1 blokada',
+  },
+];
+
+const recommendations: readonly PapaRecommendationRecord[] = [
+  {
+    effort: 'medium',
+    evidenceIds: ['papa-evidence-roas', 'papa-evidence-gap'],
+    id: 'papa-rec-brand-search',
+    impact: 'high',
+    nextStep: 'Przekaż do akceptacji budżetu i zachowaj dowody ROAS.',
+    owner: 'Media płatne',
+    risk: 'medium',
+    status: 'needs-approval',
+    summary: 'Przesuń część budżetu do kampanii brand search, ale wykonanie zostaw w kolejce akceptacji.',
+    title: 'Przesuń budżet do kampanii o wyższej intencji',
+  },
+  {
+    effort: 'low',
+    evidenceIds: ['papa-evidence-repeat'],
+    id: 'papa-rec-retention',
+    impact: 'medium',
+    nextStep: 'Wygeneruj brief CRM i dołącz segment klientów powracających.',
+    owner: 'CRM',
+    risk: 'low',
+    status: 'recommended',
+    summary: 'Uruchom wariant oferty dla klientów powracających, bo segment utrzymuje marżę przy niższym wolumenie.',
+    title: 'Test retencyjny dla klientów powracających',
+  },
+  {
+    effort: 'medium',
+    evidenceIds: ['papa-evidence-gap'],
+    id: 'papa-rec-cost-quality',
+    impact: 'medium',
+    nextStep: 'Sprawdź mapowanie kosztów kampanii przed automatyzacją kolejnych wniosków.',
+    owner: 'Analityka danych',
+    risk: 'high',
+    status: 'blocked',
+    summary: 'Najpierw domknij brakujące koszty reklamowe, ponieważ obniżają pewność każdej rekomendacji budżetowej.',
+    title: 'Domknij jakość danych kampanii',
+  },
+];
+
+const chatMessages: readonly PapaChatMessage[] = [
+  {
+    author: 'user',
+    body: 'Co wymaga decyzji człowieka przed zmianą budżetu?',
+    createdAt: '2026-08-14T10:01:00+02:00',
+    evidenceIds: [],
+    id: 'papa-chat-user-budget',
+  },
+  {
+    author: 'assistant',
+    body: 'Zmiana budżetu kampanii wymaga akceptacji, bo koszty kampanii są częściowe. Papa może przygotować rekomendację i dowody, ale nie wykona mutacji samodzielnie.',
+    createdAt: '2026-08-14T10:01:14+02:00',
+    evidenceIds: ['papa-evidence-roas', 'papa-evidence-gap'],
+    id: 'papa-chat-assistant-budget',
+  },
+  {
+    author: 'system',
+    body: 'Wątek zachowuje conversationId między panelem Papa i Laboratorium AI.',
+    createdAt: '2026-08-14T10:02:00+02:00',
+    evidenceIds: [],
+    id: 'papa-chat-system-conversation',
+  },
+];
+
+const elementThreads: readonly PapaElementThread[] = [
+  {
+    elementId: 'papa-context-margin',
+    elementKind: 'metric',
+    elementLabel: 'Marża brutto MTD',
+    messages: [
+      {
+        author: 'assistant',
+        body: 'Marża rośnie dzięki klientom powracającym. Wniosek jest mocny, bo łączy zamówienia z CRM.',
+        contextItemId: 'papa-context-margin',
+        createdAt: '2026-08-14T10:03:20+02:00',
+        evidenceIds: ['papa-evidence-repeat'],
+        id: 'papa-element-margin-answer',
+      },
+    ],
+    status: 'ready',
+  },
+  {
+    elementId: 'papa-context-campaigns',
+    elementKind: 'record',
+    elementLabel: 'Koszty kampanii częściowe',
+    messages: [
+      {
+        author: 'assistant',
+        body: 'Ten element ogranicza pewność rekomendacji. Najpierw trzeba potwierdzić kompletność kosztów Google Ads.',
+        contextItemId: 'papa-context-campaigns',
+        createdAt: '2026-08-14T10:04:10+02:00',
+        evidenceIds: ['papa-evidence-gap'],
+        id: 'papa-element-campaigns-answer',
+      },
+    ],
+    status: 'partial',
+  },
+  {
+    elementId: 'papa-action-export',
+    elementKind: 'action',
+    elementLabel: 'Eksport danych klientów do modelu',
+    messages: [
+      {
+        author: 'assistant',
+        body: 'Eksport jest zablokowany bez osobnej zgody bezpieczeństwa i maskowania danych.',
+        contextItemId: 'papa-action-export',
+        createdAt: '2026-08-14T10:05:05+02:00',
+        evidenceIds: ['papa-evidence-gap'],
+        id: 'papa-element-export-answer',
+      },
+    ],
+    status: 'blocked',
+  },
+];
+
+const labExperiments: readonly PapaLabExperiment[] = [
+  {
+    baseline: 3.1,
+    confidence: 0.84,
+    hypothesis: 'Brand search poprawi konwersję bez podnoszenia ryzyka utraty marży.',
+    id: 'papa-lab-brand-search',
+    name: 'Budżet brand search',
+    nextStep: 'Zatwierdź test budżetu w kolejce decyzji.',
+    owner: 'Media płatne',
+    reportId: 'papa-report-weekly',
+    status: 'ready',
+    variant: 3.6,
+  },
+  {
+    baseline: 36,
+    confidence: 0.82,
+    hypothesis: 'Oferta retencyjna utrzyma marżę klientów powracających.',
+    id: 'papa-lab-retention',
+    name: 'Oferta retencyjna CRM',
+    nextStep: 'Wygeneruj brief i listę segmentów bez eksportu PII.',
+    owner: 'CRM',
+    reportId: 'papa-report-retention',
+    status: 'running',
+    variant: 39,
+  },
+  {
+    baseline: 94,
+    confidence: 0.68,
+    hypothesis: 'Kompletność kosztów reklamowych podniesie pewność rekomendacji powyżej progu akceptacji.',
+    id: 'papa-lab-cost-quality',
+    name: 'Jakość kosztów kampanii',
+    nextStep: 'Uzupełnij mapowanie kosztów przed generacją działań.',
+    owner: 'Analityka danych',
+    reportId: 'papa-report-data-quality',
+    status: 'blocked',
+    variant: 98,
+  },
+];
+
+const reports: readonly PapaReportArtifact[] = [
+  {
+    datasets: ['orders.daily_fact', 'campaign_costs', 'recommendations'],
+    description: 'Podsumowanie rekomendacji, dowodów, ryzyka i decyzji do zatwierdzenia.',
+    formats: ['pdf', 'csv'],
+    generatedAt: '2026-08-14T10:40:00+02:00',
+    id: 'papa-report-weekly',
+    owner: 'Papa Asystent',
+    status: 'ready',
+    title: 'Raport decyzji Papa',
+  },
+  {
+    datasets: ['crm_segments', 'orders.daily_fact'],
+    description: 'Wyniki wariantu CRM, segmenty, dowody i następne kroki dla zespołu retencji.',
+    formats: ['pdf', 'csv'],
+    generatedAt: '2026-08-14T10:18:00+02:00',
+    id: 'papa-report-retention',
+    owner: 'CRM',
+    status: 'ready',
+    title: 'Raport eksperymentu retencyjnego',
+  },
+  {
+    datasets: ['campaign_costs', 'data_quality_rules'],
+    description: 'Lista braków danych, wpływ na poziom pewności i zalecane naprawy integracji.',
+    formats: ['csv'],
+    generatedAt: '2026-08-14T08:36:00+02:00',
+    id: 'papa-report-data-quality',
+    owner: 'Analityka danych',
+    status: 'stale',
+    title: 'Raport jakości danych AI',
+  },
+];
+
+const assistantTrend: readonly PapaAssistantTrendDatum[] = [
+  { actual: 72, label: '01 sie', movingAverage: 71, plan: 70 },
+  { actual: 76, label: '04 sie', movingAverage: 73, plan: 72 },
+  { actual: 81, label: '07 sie', movingAverage: 77, plan: 75 },
+  { actual: 84, label: '10 sie', movingAverage: 80, plan: 78 },
+  { actual: 86, label: '14 sie', movingAverage: 83, plan: 82 },
 ];
 
 export function findPapaScreenDefinition(
@@ -432,13 +770,20 @@ export function createPapaStorybookData(): PapaWorkspaceData {
       workspaceId: 'workspace-commerce-pl',
     },
     actions,
+    assistantTrend,
+    chatMessages,
     contextItems,
     decisions,
+    elementThreads,
     evidence,
     generatedAt,
+    labExperiments,
     memory,
     modeRecords,
+    recommendations,
+    reports,
     sources,
+    statuses,
     summary: {
       confidence: 0.84,
       contextItems: contextItems.length,
@@ -455,7 +800,7 @@ export function papaActionRows(
   return records.map((record) => ({
     id: record.id,
     label: record.label,
-    operationId: record.operationId ? 'osobny kontrakt' : 'brak - zablokowane',
+    operationId: record.operationId ? 'Wymaga zatwierdzenia' : 'Zablokowane',
     owner: record.owner,
     risk: record.risk,
     riskLabel: resolveRiskLabel(record.risk),
@@ -511,6 +856,35 @@ export function papaModeRows(
     id: record.id,
     mode: record.mode,
     requiresApproval: record.requiresApproval,
+  }));
+}
+
+export function papaLabExperimentRows(
+  records: readonly PapaLabExperiment[],
+): readonly DataRow[] {
+  return records.map((record) => ({
+    confidence: formatPercent(record.confidence),
+    id: record.id,
+    name: record.name,
+    nextStep: record.nextStep,
+    owner: record.owner,
+    status: record.status,
+    statusLabel: resolveLabStatusLabel(record.status),
+    uplift: formatSignedNumber(record.variant - record.baseline),
+  }));
+}
+
+export function papaReportRows(
+  records: readonly PapaReportArtifact[],
+): readonly DataRow[] {
+  return records.map((record) => ({
+    formats: record.formats.map((format) => format.toUpperCase()).join(', '),
+    generatedAt: formatDateTime(record.generatedAt),
+    id: record.id,
+    owner: record.owner,
+    status: record.status,
+    statusLabel: resolveReportStatusLabel(record.status),
+    title: record.title,
   }));
 }
 
@@ -571,6 +945,36 @@ function resolveRiskLabel(
   }
 }
 
+function resolveLabStatusLabel(
+  status: PapaLabExperiment['status'],
+): string {
+  switch (status) {
+    case 'blocked':
+      return 'Zablokowany';
+    case 'draft':
+      return 'Szkic';
+    case 'ready':
+      return 'Gotowy';
+    case 'running':
+    default:
+      return 'W toku';
+  }
+}
+
+function resolveReportStatusLabel(
+  status: PapaReportArtifact['status'],
+): string {
+  switch (status) {
+    case 'building':
+      return 'Budowany';
+    case 'stale':
+      return 'Nieświeży';
+    case 'ready':
+    default:
+      return 'Gotowy';
+  }
+}
+
 function formatDateTime(value: string): string {
   return new Intl.DateTimeFormat('pl-PL', {
     day: '2-digit',
@@ -584,5 +988,12 @@ function formatPercent(value: number): string {
   return new Intl.NumberFormat('pl-PL', {
     maximumFractionDigits: 1,
     style: 'percent',
+  }).format(value);
+}
+
+function formatSignedNumber(value: number): string {
+  return new Intl.NumberFormat('pl-PL', {
+    maximumFractionDigits: 1,
+    signDisplay: 'always',
   }).format(value);
 }

@@ -64,7 +64,7 @@ export function AnalyticsModuleScreen({
       setState({
         data: null,
         loading: false,
-        problem: 'Nie znaleziono kontraktu bieżącego ekranu.',
+        problem: 'Nie znaleziono widoku dla bieżącej sekcji.',
       });
       return;
     }
@@ -107,7 +107,7 @@ export function AnalyticsModuleScreen({
   if (!definition || definition.group !== group) {
     return (
       <InlineNotice
-        message="Trasa nie odpowiada żadnemu ekranowi runtime w tym module."
+        message="Ten adres nie odpowiada żadnemu widokowi w bieżącym module."
         title="Nieobsługiwany ekran"
         tone="critical"
       />

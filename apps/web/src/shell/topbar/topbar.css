@@ -1,5 +1,5 @@
 header.pd-shell-topbar[data-variant] {
-  --pd-shell-topbar-height: 72px;
+  --pd-shell-topbar-height: 60px;
   --pd-text: var(--pd-shell-text);
   --pd-text-secondary: var(--pd-shell-text-secondary);
   --pd-text-muted: var(--pd-shell-text-muted);
@@ -12,6 +12,40 @@ header.pd-shell-topbar[data-variant] {
   --pd-brand-strong: var(--pd-shell-brand-strong);
   --pd-brand-accent: var(--pd-shell-brand);
   --pd-brand-ambient: var(--pd-shell-brand-ambient);
+  --pd-refractive-border: var(--pd-shell-separator);
+  --pd-refractive-border-strong: var(--pd-shell-separator-strong);
+  --pd-refractive-border-hover:
+    color-mix(
+      in srgb,
+      var(--pd-shell-brand) 56%,
+      var(--pd-shell-separator-strong)
+    );
+  --pd-refractive-depth:
+    0 18px 36px -22px rgb(0 0 0 / 0.76),
+    0 7px 18px -14px rgb(0 0 0 / 0.62),
+    inset 0 1px 0
+      color-mix(in srgb, var(--pd-shell-text) 10%, transparent);
+  --pd-refractive-focus:
+    0 0 0 4px
+      color-mix(in srgb, var(--pd-shell-brand) 20%, transparent),
+    0 0 0 1px
+      color-mix(in srgb, var(--pd-shell-brand) 62%, transparent);
+  --pd-shadow-control:
+    0 12px 24px -18px rgb(0 0 0 / 0.72),
+    0 3px 8px -7px rgb(0 0 0 / 0.58),
+    inset 0 1px 0
+      color-mix(in srgb, var(--pd-shell-text) 8%, transparent);
+  --pd-shadow-overlay:
+    0 42px 96px -40px rgb(0 0 0 / 0.84),
+    0 18px 42px -30px rgb(0 0 0 / 0.68),
+    inset 0 1px 0
+      color-mix(in srgb, var(--pd-shell-text) 10%, transparent);
+  --pd-scrollbar-track:
+    color-mix(in srgb, var(--pd-shell-text) 6%, transparent);
+  --pd-scrollbar-thumb:
+    color-mix(in srgb, var(--pd-shell-text-muted) 38%, transparent);
+  --pd-scrollbar-thumb-hover:
+    color-mix(in srgb, var(--pd-shell-brand) 58%, transparent);
 
   position: sticky;
   top: 0;
@@ -19,14 +53,15 @@ header.pd-shell-topbar[data-variant] {
   min-height: var(--pd-shell-topbar-height);
   display: grid;
   align-items: center;
-  gap: var(--pd-space-4);
-  padding: var(--pd-space-3) clamp(16px, 2.2vw, 32px);
+  gap: var(--pd-space-3);
+  padding: var(--pd-space-2) clamp(12px, 1.8vw, 24px);
   border-block-end: var(--pd-border-width-subtle) solid var(--pd-refractive-border);
-  background: color-mix(in srgb, var(--pd-shell-surface-overlay) 78%, transparent);
+  background: color-mix(in srgb, var(--pd-shell-surface-overlay) 96%, var(--pd-shell-canvas));
   box-shadow:
-    0 34px 90px -62px rgba(0, 0, 0, 0.82),
-    inset 0 1px 0 color-mix(in srgb, white 8%, transparent);
+    0 24px 70px -56px rgba(0, 0, 0, 0.72),
+    inset 0 1px 0 color-mix(in srgb, white 10%, transparent);
   backdrop-filter: blur(24px) saturate(1.08);
+  color-scheme: dark;
   isolation: isolate;
 }
 
@@ -39,7 +74,7 @@ header.pd-shell-topbar[data-variant]::before {
   background:
     radial-gradient(
       ellipse 70% 160% at 0% 0%,
-      color-mix(in srgb, var(--pd-shell-glow) 24%, transparent),
+      color-mix(in srgb, var(--pd-shell-glow) 16%, transparent),
       transparent 68%
     );
 }
@@ -49,7 +84,7 @@ header.pd-shell-topbar[data-variant='public'] {
 }
 
 header.pd-shell-topbar[data-variant='authenticated'] {
-  grid-template-columns: auto minmax(220px, 1fr) auto;
+  grid-template-columns: auto minmax(180px, 1fr) auto;
 }
 
 header.pd-shell-topbar[data-variant]
@@ -65,6 +100,7 @@ header.pd-shell-topbar[data-variant]
 header.pd-shell-topbar[data-variant]
 .pd-shell-topbar__start {
   gap: var(--pd-space-4);
+  overflow: hidden;
 }
 
 header.pd-shell-topbar[data-variant]
@@ -74,7 +110,8 @@ header.pd-shell-topbar[data-variant]
 
 header.pd-shell-topbar[data-variant]
 .pd-shell-topbar__brand {
-  min-height: 44px;
+  flex: 0 0 auto;
+  min-height: 38px;
   display: inline-flex;
   align-items: center;
   padding: 0;
@@ -87,8 +124,8 @@ header.pd-shell-topbar[data-variant]
 header.pd-shell-topbar[data-variant]
 .pd-shell-topbar__brand > span {
   --brand-lockup-gap: var(--pd-space-2);
-  --brand-lockup-mark-size: 32px;
-  --brand-lockup-wordmark-size: 20px;
+  --brand-lockup-mark-size: 28px;
+  --brand-lockup-wordmark-size: 18px;
   padding-bottom: 0;
   opacity: 1;
 }
@@ -117,7 +154,18 @@ header.pd-shell-topbar[data-variant]
   box-shadow: var(--pd-refractive-focus), var(--pd-shadow-control);
 }
 
+header.pd-shell-topbar[data-variant]
+.pd-shell-topbar__papa-control[aria-pressed='true'] {
+  border-color: color-mix(in srgb, var(--pd-brand-accent) 54%, var(--pd-refractive-border));
+  color: var(--pd-text);
+  background: color-mix(in srgb, var(--pd-surface-active) 64%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--pd-brand-accent) 24%, transparent),
+    var(--pd-shadow-control);
+}
+
 .pd-shell-topbar__section-context {
+  flex: 1 1 auto;
   min-width: 0;
   max-width: 18rem;
   overflow: hidden;
@@ -130,8 +178,8 @@ header.pd-shell-topbar[data-variant]
 
 header.pd-shell-topbar[data-variant]
 .pd-shell-topbar__command-trigger {
-  min-width: min(24rem, 100%);
-  min-height: 42px;
+  min-width: min(22rem, 100%);
+  min-height: 36px;
   display: grid;
   grid-template-columns: 20px minmax(0, 1fr) auto;
   gap: var(--pd-space-2);
@@ -140,7 +188,7 @@ header.pd-shell-topbar[data-variant]
   border: var(--pd-border-width-subtle) solid var(--pd-refractive-border);
   border-radius: var(--pd-radius-control);
   color: var(--pd-text-secondary);
-  background: var(--pd-refractive-control);
+  background: color-mix(in srgb, var(--pd-shell-surface-raised) 70%, transparent);
   box-shadow: var(--pd-shadow-control);
   text-align: left;
   cursor: pointer;
@@ -155,7 +203,7 @@ header.pd-shell-topbar[data-variant]
 .pd-shell-topbar__command-trigger:hover {
   border-color: var(--pd-refractive-border-hover);
   color: var(--pd-text);
-  background: var(--pd-refractive-control-hover);
+  background: color-mix(in srgb, var(--pd-shell-surface-raised) 90%, transparent);
   transform: translateY(-1px);
 }
 
@@ -184,7 +232,7 @@ header.pd-shell-topbar[data-variant]
 .pd-shell-topbar__profile-trigger,
 header.pd-shell-topbar[data-variant]
 .pd-shell-topbar__mobile-menu {
-  min-height: 40px;
+  min-height: 36px;
   display: inline-flex;
   align-items: center;
   gap: var(--pd-space-2);
@@ -193,7 +241,7 @@ header.pd-shell-topbar[data-variant]
   border: var(--pd-border-width-subtle) solid var(--pd-refractive-border);
   border-radius: var(--pd-radius-control);
   color: var(--pd-text-secondary);
-  background: var(--pd-refractive-control);
+  background: color-mix(in srgb, var(--pd-shell-surface-raised) 64%, transparent);
   box-shadow: var(--pd-shadow-control);
   cursor: pointer;
   transition:
@@ -205,7 +253,7 @@ header.pd-shell-topbar[data-variant]
 
 header.pd-shell-topbar[data-variant]
 .pd-shell-topbar__icon-control {
-  width: 40px;
+  width: 36px;
   padding: 0;
 }
 
@@ -217,7 +265,7 @@ header.pd-shell-topbar[data-variant]
 .pd-shell-topbar__mobile-menu:hover {
   border-color: var(--pd-refractive-border-hover);
   color: var(--pd-text);
-  background: var(--pd-refractive-control-hover);
+  background: color-mix(in srgb, var(--pd-shell-surface-raised) 88%, transparent);
   transform: translateY(-1px);
 }
 
@@ -233,19 +281,19 @@ header.pd-shell-topbar[data-variant]
 }
 
 .pd-shell-topbar__language-switch {
-  min-height: 40px;
+  min-height: 36px;
   display: inline-flex;
   align-items: center;
   padding: var(--pd-space-1);
   border: var(--pd-border-width-subtle) solid var(--pd-refractive-border);
   border-radius: var(--pd-radius-control);
-  background: var(--pd-refractive-control);
+  background: color-mix(in srgb, var(--pd-shell-surface-raised) 64%, transparent);
   box-shadow: var(--pd-shadow-control);
 }
 
 .pd-shell-topbar__language-switch button {
-  min-width: 36px;
-  min-height: 32px;
+  min-width: 32px;
+  min-height: 28px;
   padding: 0 var(--pd-space-2);
   border: 0;
   border-radius: calc(var(--pd-radius-control) * 0.8);
@@ -289,9 +337,9 @@ header.pd-shell-topbar[data-variant]
 }
 
 .pd-shell-topbar__profile-avatar {
-  width: 32px;
-  height: 32px;
-  flex: 0 0 32px;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
   display: inline-grid;
   place-items: center;
   border: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-brand-highlight) 34%, transparent);
@@ -318,11 +366,110 @@ header.pd-shell-topbar[data-variant]
 
 .pd-shell-topbar__profile-menu > div[data-placement],
 .pd-shell-topbar__calendar-popover > div[data-placement='bottom'] {
+  max-block-size: min(34rem, calc(100dvh - 5rem));
+  overflow: auto;
+  overscroll-behavior: contain;
   border: var(--pd-border-width-subtle) solid var(--pd-refractive-border);
   border-radius: var(--pd-radius-overlay);
-  background: var(--pd-surface-overlay);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-overlay) 94%, transparent),
+      color-mix(in srgb, var(--pd-surface-panel) 96%, transparent)
+    ),
+    var(--pd-surface-panel);
   box-shadow: var(--pd-shadow-overlay);
   backdrop-filter: blur(22px) saturate(1.08);
+  scrollbar-gutter: stable;
+}
+
+.pd-shell-topbar__calendar-popover > div[data-placement='bottom'] {
+  --pd-text: var(--pd-workspace-text, #0f172a);
+  --pd-text-secondary: var(--pd-workspace-text-secondary, #334155);
+  --pd-text-muted: var(--pd-workspace-text-muted, #64748b);
+  --pd-surface: var(--pd-workspace-surface, #ffffff);
+  --pd-surface-subtle: color-mix(in srgb, var(--pd-workspace-surface-data, #f8fafc) 86%, var(--pd-workspace-surface-panel, #ffffff));
+  --pd-surface-raised: var(--pd-workspace-surface-raised, #ffffff);
+  --pd-surface-panel: var(--pd-workspace-surface-panel, #ffffff);
+  --pd-surface-overlay: color-mix(in srgb, var(--pd-workspace-surface-panel, #ffffff) 96%, transparent);
+  --pd-surface-active: var(--pd-interactive-subtle);
+  --pd-separator-subtle: color-mix(in srgb, var(--pd-text-muted) 18%, transparent);
+  --pd-separator: color-mix(in srgb, var(--pd-text-muted) 28%, transparent);
+  --pd-refractive-border: color-mix(in srgb, var(--pd-text-muted) 34%, transparent);
+  --pd-refractive-border-hover: color-mix(in srgb, var(--pd-interactive) 48%, var(--pd-text-muted));
+  --pd-refractive-control: color-mix(in srgb, var(--pd-surface-raised) 90%, var(--pd-surface-subtle));
+  --pd-refractive-control-hover: color-mix(in srgb, var(--pd-surface-raised) 96%, var(--pd-interactive-subtle));
+  --pd-form-surface: var(--pd-refractive-control);
+  --pd-form-border: var(--pd-refractive-border);
+  --pd-form-text: var(--pd-text);
+  --pd-form-muted: var(--pd-text-muted);
+
+  right: 0;
+  left: auto;
+  inline-size: min(38rem, calc(100vw - 1.5rem));
+  max-block-size: none;
+  overflow: visible;
+  color: var(--pd-text);
+  scrollbar-gutter: auto;
+}
+
+:root:not([data-theme='dark']) .pd-shell-topbar__calendar-popover > div[data-placement='bottom'],
+[data-theme='light'] .pd-shell-topbar__calendar-popover > div[data-placement='bottom'] {
+  color-scheme: light;
+}
+
+[data-theme='dark'] .pd-shell-topbar__calendar-popover > div[data-placement='bottom'] {
+  color-scheme: dark;
+}
+
+.pd-shell-topbar__profile-menu > div[data-placement] {
+  width: min(20rem, calc(100vw - 1.5rem));
+}
+
+.pd-shell-topbar__profile-menu .pd-menu__item[aria-disabled='true']
+.pd-menu__item-label {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.pd-shell-topbar__calendar-popover .pd-date-range-picker {
+  grid-template-columns:
+    minmax(11rem, 1fr)
+    minmax(9rem, 0.68fr)
+    minmax(9rem, 0.68fr);
+  align-items: end;
+  gap: var(--pd-space-3);
+}
+
+.pd-shell-topbar__calendar-popover .pd-date-range-picker__quick-options {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: grid;
+}
+
+.pd-shell-topbar__calendar-popover .pd-date-range-picker__quick-options button {
+  flex-basis: auto;
+}
+
+@media (max-width: 1280px) {
+  .pd-shell-topbar__section-context {
+    display: none;
+  }
+
+  header.pd-shell-topbar[data-variant]
+  .pd-shell-topbar__command-trigger {
+    min-width: min(18rem, 100%);
+  }
+}
+
+@media (max-width: 1180px) {
+  .pd-shell-topbar__profile-copy {
+    display: none;
+  }
+
+  header.pd-shell-topbar[data-variant]
+  .pd-shell-topbar__command-trigger {
+    min-width: min(14rem, 100%);
+  }
 }
 
 @media (max-width: 1100px) {
@@ -374,6 +521,36 @@ header.pd-shell-topbar[data-variant]
 
   .pd-shell-topbar__language-switch {
     display: none;
+  }
+
+  header.pd-shell-topbar[data-variant='authenticated']
+  .pd-shell-topbar__brand > span {
+    --brand-lockup-gap: 0;
+  }
+
+  header.pd-shell-topbar[data-variant='authenticated']
+  .pd-shell-topbar__brand .pd-brand-lockup__wordmark {
+    display: none;
+  }
+
+  .pd-shell-topbar__calendar-popover > div[data-placement='bottom'],
+  .pd-shell-topbar__profile-menu > div[data-placement] {
+    position: fixed;
+    top: calc(var(--pd-shell-topbar-height) + var(--pd-space-2));
+    right: var(--pd-space-3);
+    left: var(--pd-space-3);
+    inline-size: auto;
+    width: auto;
+    min-inline-size: 0;
+    max-inline-size: none;
+  }
+
+  .pd-shell-topbar__calendar-popover .pd-date-range-picker {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-shell-topbar__calendar-popover .pd-date-range-picker__quick-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

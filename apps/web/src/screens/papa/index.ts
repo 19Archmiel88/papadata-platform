@@ -1,4 +1,10 @@
 export {
+  PapaScreen,
+} from './PapaScreen';
+export type {
+  PapaScreenProps,
+} from './PapaScreen';
+export {
   PapaWorkspace,
 } from './PapaWorkspace';
 export type {
@@ -11,9 +17,16 @@ export {
   papaScreenDefinitions,
 } from './papaData';
 export type {
+  PapaAssistantStatus,
+  PapaAssistantTrendDatum,
+  PapaChatMessage,
   PapaContextItem,
   PapaDecision,
   PapaEvidenceItem,
+  PapaElementThread,
+  PapaLabExperiment,
+  PapaRecommendationRecord,
+  PapaReportArtifact,
   PapaScreenDefinition,
   PapaScreenId,
   PapaScreenVariant,

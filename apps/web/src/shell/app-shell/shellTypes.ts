@@ -51,6 +51,7 @@ export type ShellNavigationGroup = {
 };
 
 export type ShellCommandResult = {
+  readonly action?: ShellCommandAction | null;
   readonly description: string;
   readonly id: string;
   readonly keywords: readonly string[];
@@ -59,8 +60,13 @@ export type ShellCommandResult = {
   readonly section: string;
 };
 
+export type ShellCommandAction =
+  | 'analyze-screen'
+  | 'open-papa';
+
 export type ShellNotification = {
   readonly actionLabel?: string | null;
+  readonly actionPath?: string | null;
   readonly id: string;
   readonly message: string;
   readonly time: string;
@@ -86,6 +92,7 @@ export type ShellOverlay =
   | 'mobile-navigation'
   | 'notifications'
   | 'operations'
+  | 'papa-assistant'
   | null;
 
 export type ShellNavigate = (path: string) => void;

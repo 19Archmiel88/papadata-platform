@@ -28,6 +28,19 @@ export const WaterfallChart = forwardRef<HTMLElement, WaterfallChartProps>(
   ) {
     const titleId = useId();
     const maxValue = Math.max(...items.map((item) => Math.abs(item.value)), 1);
+    let runningTotal = 0;
+    const rows = items.map((item) => {
+      if (item.kind === 'start' || item.kind === 'total') {
+        runningTotal = item.value;
+      } else {
+        runningTotal += item.value;
+      }
+
+      return {
+        ...item,
+        cumulativeValue: runningTotal,
+      };
+    });
 
     return (
       <section
@@ -38,7 +51,7 @@ export const WaterfallChart = forwardRef<HTMLElement, WaterfallChartProps>(
       >
         <h2 id={titleId}>Waterfall</h2>
         <ol className="pd-waterfall-chart__items">
-          {items.map((item) => (
+          {rows.map((item) => (
             <li key={item.id} data-kind={item.kind}>
               <div>
                 <span>{item.label}</span>
@@ -55,7 +68,7 @@ export const WaterfallChart = forwardRef<HTMLElement, WaterfallChartProps>(
                 />
               </span>
               {showCumulative ? (
-                <span>Kumulacja widoczna w tabeli alternatywnej</span>
+                <span>Kumulacja {formatUnitValue(item.cumulativeValue, unit)}</span>
               ) : null}
             </li>
           ))}

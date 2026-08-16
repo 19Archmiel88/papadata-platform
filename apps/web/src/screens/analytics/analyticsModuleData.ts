@@ -368,7 +368,7 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   requiresResourceId: true,
   route: "/app/orders/szczegoly/:resourceId",
   routeBase: "/app/orders/szczegoly",
-  summary: "Szczegół zamówienia bez ujawniania danych spoza pseudonimizowanego kontraktu.",
+  summary: "Szczegół zamówienia z zachowaniem pseudonimizacji i ograniczeń prywatności.",
   variant: "detail",
 },
 {
@@ -410,7 +410,7 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   requiresResourceId: false,
   route: "/app/orders/rekoncyliacja-skrot",
   routeBase: "/app/orders/rekoncyliacja-skrot",
-  summary: "Skrót jakości uzgodnienia danych bez udawania konfliktów, których API nie zwraca.",
+  summary: "Skrót jakości uzgodnienia danych bez oznaczania konfliktów, których nie ma w bieżącym zakresie.",
   variant: "reconciliation",
 },
 {
@@ -480,7 +480,7 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   requiresResourceId: true,
   route: "/app/products/szczegoly/:resourceId",
   routeBase: "/app/products/szczegoly",
-  summary: "Szczegół produktu oparty wyłącznie na polach kontraktowych.",
+  summary: "Szczegół produktu oparty na aktualnych danych katalogu.",
   variant: "detail",
 },
 {
@@ -494,7 +494,7 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   requiresResourceId: false,
   route: "/app/products/mapowanie",
   routeBase: "/app/products/mapowanie",
-  summary: "Widok jakości mapowania; zmiany pozostają zablokowane bez operationId mutacji ekranu.",
+  summary: "Widok jakości mapowania z listą pozycji wymagających pracy katalogowej.",
   variant: "mapping",
 },
 {
@@ -550,7 +550,7 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   requiresResourceId: false,
   route: "/app/products/analiza-wplywu",
   routeBase: "/app/products/analiza-wplywu",
-  summary: "Analiza potencjalnego wpływu problemów produktowych bez pozornych mutacji.",
+  summary: "Analiza potencjalnego wpływu problemów produktowych na wynik.",
   variant: "impact",
 },
 {
@@ -718,7 +718,7 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   requiresResourceId: false,
   route: "/app/traffic/lejek-widok",
   routeBase: "/app/traffic/lejek-widok",
-  summary: "Lejek sprzedażowy oparty na kontraktowych krokach i konwersjach.",
+  summary: "Lejek sprzedażowy oparty na krokach ścieżki i konwersjach.",
   variant: "funnel",
 },
 {
@@ -1041,8 +1041,8 @@ const storyAttribution: readonly AttributionView[] = [
 ];
 
 const storyDiagnostics: readonly DiagnosticFinding[] = [
-  { code: 'GA4_EVENT_FRESHNESS', findingId: '35555555-5555-4555-8555-555555555501', message: 'Świeżość części eventów spadła poniżej docelowego progu.', severity: 'warning', sourceRef: 'ga4.events_compacted' },
-  { code: 'MAPPING_GAP', findingId: '35555555-5555-4555-8555-555555555502', message: 'Część rekordów wymaga uzupełnienia mapowania przed pełnym porównaniem.', severity: 'info', sourceRef: 'products.mapping' },
+  { code: 'GA4_EVENT_FRESHNESS', findingId: '35555555-5555-4555-8555-555555555501', message: 'Świeżość części eventów spadła poniżej docelowego progu.', severity: 'warning', sourceRef: 'Eventy GA4' },
+  { code: 'MAPPING_GAP', findingId: '35555555-5555-4555-8555-555555555502', message: 'Część rekordów wymaga uzupełnienia mapowania przed pełnym porównaniem.', severity: 'info', sourceRef: 'Mapowanie produktów' },
 ];
 
 const storyRecommendations: readonly RecommendationView[] = [

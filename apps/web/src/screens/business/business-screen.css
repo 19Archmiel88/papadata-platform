@@ -97,7 +97,7 @@
 
 /* Enterprise BI redesign: dense but composed decision workspace. */
 .pd-business-screen {
-  gap: clamp(18px, 2vw, 28px);
+  gap: clamp(14px, 1.6vw, 22px);
 }
 
 .pd-business-screen[data-mode='storybook'] {
@@ -107,7 +107,7 @@
 .pd-business-screen__filters {
   grid-template-columns: minmax(16rem, 0.8fr) minmax(24rem, 1.6fr);
   gap: var(--pd-space-3);
-  padding: var(--pd-space-4);
+  padding: var(--pd-space-3);
   border: 1px solid color-mix(in srgb, var(--pd-separator) 76%, transparent);
   border-radius: 18px;
   background:
@@ -117,7 +117,7 @@
 
 .pd-business-screen__layout {
   grid-template-columns: minmax(0, 1fr) minmax(19rem, 25rem);
-  gap: clamp(22px, 2.4vw, 34px);
+  gap: clamp(16px, 2vw, 26px);
 }
 
 .pd-business-screen__metrics {
@@ -178,11 +178,11 @@
 
 /* Enterprise BI refinement: clearer density, stronger decision hierarchy, no blue/navy dominance. */
 .pd-business-screen {
-  --pd-business-side-width: clamp(21rem, 24vw, 27rem);
+  --pd-business-side-width: clamp(19rem, 21vw, 24rem);
 }
 
 .pd-business-screen__filters {
-  border-radius: 20px;
+  border-radius: var(--pd-radius-surface);
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-panel) 88%, transparent), color-mix(in srgb, var(--pd-surface-raised) 62%, transparent));
   box-shadow:
@@ -228,7 +228,7 @@
 
 /* 30.01 Command Center overview: decision-first specialization. */
 .pd-business-screen--overview {
-  gap: clamp(20px, 2.2vw, 32px);
+  gap: clamp(14px, 1.8vw, 24px);
 }
 
 .pd-business-screen--overview[data-mode='storybook'] {

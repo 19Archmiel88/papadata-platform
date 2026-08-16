@@ -9,17 +9,20 @@ import {
   TextField,
 } from '../../design-system';
 import type {
+  ShellCommandAction,
   ShellCommandResult,
   ShellNavigate,
 } from '../app-shell/shellTypes';
 
 export function CommandPalette({
   commands,
+  onCommandAction,
   onNavigate,
   onOpenChange,
   open,
 }: {
   readonly commands: readonly ShellCommandResult[];
+  readonly onCommandAction?: ((action: ShellCommandAction) => void) | undefined;
   readonly onNavigate: ShellNavigate;
   readonly onOpenChange: (open: boolean) => void;
   readonly open: boolean;
@@ -43,6 +46,7 @@ export function CommandPalette({
 
   return (
     <Dialog
+      className="pd-product-shell__command-dialog"
       closeOnBackdrop
       closeOnEscape
       description="Global search i Command Palette obsługiwane klawiaturą."
@@ -76,6 +80,12 @@ export function CommandPalette({
                 className="pd-product-shell__command-result"
                 key={result.id}
                 onClick={() => {
+                  if (result.action) {
+                    onOpenChange(false);
+                    onCommandAction?.(result.action);
+                    return;
+                  }
+
                   onNavigate(result.path);
                   onOpenChange(false);
                 }}

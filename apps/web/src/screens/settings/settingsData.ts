@@ -222,7 +222,7 @@ export const settingsScreenDefinitions: readonly SettingsScreenDefinition[] = [
     operationId: null,
     route: null,
     routeBase: null,
-    summary: 'Storybookowy zestaw wariantów polityk dla ustawień bez ścieżki aplikacyjnej i bez fikcyjnej operacji zapisu.',
+    summary: 'Zestaw wariantów polityk dla ustawień, uprawnień i ograniczeń administracyjnych.',
     variant: 'settings-variants',
   },
 ] as const;
@@ -329,7 +329,7 @@ const variants: readonly SettingsVariantRecord[] = [
   {
     composition: 'Nagłówek + status danych + tabela',
     condition: 'Pełne dane i uprawnienie odczytu',
-    constraint: 'Mutacje tylko przez osobny kontrakt operacji',
+    constraint: 'Zmiany wymagają potwierdzenia administratora',
     id: 'set-variant-ready',
     variant: 'Gotowe',
   },
@@ -350,7 +350,7 @@ const variants: readonly SettingsVariantRecord[] = [
   {
     composition: 'Status danych offline + zablokowane akcje',
     condition: 'Pamięć podręczna historyczna lub brak sieci',
-    constraint: 'Żadna mutacja nie może zostać wykonana',
+    constraint: 'Zmiany są zablokowane',
     id: 'set-variant-offline',
     variant: 'Offline',
   },

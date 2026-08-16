@@ -88,6 +88,7 @@ export function DataQualityWorkspace({
         items={getDataQualityNavigation()}
         orientation="horizontal"
         size="compact"
+        sticky
       />
 
       <DataStatusBanner
@@ -153,7 +154,7 @@ function DataQualityContent({
       return (
         <>
           <InlineNotice
-            message="Filtry i sortowanie są traktowane jako stan adresowalny; Storybook pokazuje dane gotowe do odtworzenia po odświeżeniu."
+            message="Filtry i sortowanie zachowują kontekst widoku, dzięki czemu dane można odtworzyć po odświeżeniu."
             title="Zbiór z odtwarzalnym kontekstem"
             tone="info"
           />
@@ -220,8 +221,8 @@ function DataQualityContent({
       return (
         <>
           <InlineNotice
-            message="Konflikty są tylko odczytem kolejki. Rozstrzygnięcie wymaga osobnego kontraktu operacji, potwierdzenia i zdarzenia audytowego poza tym story."
-            title="Kolejka konfliktów bez mutacji"
+            message="Konflikty są kolejką do przeglądu. Rozstrzygnięcie wymaga potwierdzenia i śladu audytowego."
+            title="Kolejka konfliktów"
             tone="warning"
           />
           <ConflictTable rows={conflictRows(data.conflicts)} />
@@ -245,8 +246,8 @@ function DataQualityContent({
       return (
         <>
           <InlineNotice
-            message="Storybook pokazuje zakres i skutki ponownego przetwarzania. Nie uruchamia zadania, nie zapisuje formularza i nie generuje klucza idempotencji."
-            title="Ponowne przetwarzanie w trybie odczytu"
+            message="Widok pokazuje zakres i skutki ponownego przetwarzania przed uruchomieniem zadania."
+            title="Ponowne przetwarzanie"
             tone="info"
           />
           <ReprocessingSteps />
@@ -278,8 +279,8 @@ function DataQualityContent({
       return (
         <>
           <InlineNotice
-            message="To storybookowa powierzchnia wariantów. Dokument 41.10 nie ma ścieżki aplikacyjnej ani fikcyjnej operacji zapisu."
-            title="Warianty bez ścieżki aplikacyjnej"
+            message="Warianty jakości danych porządkują stany gotowości, konfliktów, przetwarzania i ograniczeń źródeł."
+            title="Warianty jakości danych"
             tone="info"
           />
           <VariantTable rows={variantRows(data.variants)} />
@@ -501,7 +502,7 @@ function ReprocessingSteps() {
     <section className="pd-data-quality-workspace__section">
       <header>
         <h2>Zakres przetwarzania</h2>
-        <p>Kroki przygotowania zadania bez uruchamiania operacji w Storybooku.</p>
+        <p>Kroki przygotowania zadania przed ponownym przetwarzaniem.</p>
       </header>
       <ol className="pd-data-quality-workspace__diagnostics">
         {steps.map((step, index) => (
@@ -513,7 +514,7 @@ function ReprocessingSteps() {
             />
             <div>
               <strong>{step}</strong>
-              <span>Stan odczytu, bez mutacji i bez zapisania operacji.</span>
+              <span>Wymaga zatwierdzenia przed uruchomieniem.</span>
             </div>
           </li>
         ))}

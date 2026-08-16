@@ -384,12 +384,14 @@ export function TrendChart({
             {variant === 'area' && hasActual ? (
               <Area
                 activeDot={false}
+                animationDuration={520}
+                animationEasing="ease-out"
                 baseValue={domain[0]}
                 connectNulls={false}
                 dataKey="actual"
                 fill={`url(#${gradientId})`}
                 fillOpacity={1}
-                isAnimationActive={false}
+                isAnimationActive
                 legendType="none"
                 stroke="none"
                 type="monotone"
@@ -402,7 +404,9 @@ export function TrendChart({
                 connectNulls={false}
                 dataKey="previousPeriod"
                 dot={false}
-                isAnimationActive={false}
+                animationDuration={520}
+                animationEasing="ease-out"
+                isAnimationActive
                 name={resolvedLabels.previousPeriod}
                 stroke="var(--pd-data-series-7)"
                 strokeLinecap="round"
@@ -419,7 +423,9 @@ export function TrendChart({
                 connectNulls={false}
                 dataKey="plan"
                 dot={false}
-                isAnimationActive={false}
+                animationDuration={520}
+                animationEasing="ease-out"
+                isAnimationActive
                 name={resolvedLabels.plan}
                 stroke="var(--pd-data-series-8)"
                 strokeLinecap="round"
@@ -436,7 +442,9 @@ export function TrendChart({
                 connectNulls={false}
                 dataKey="movingAverage"
                 dot={false}
-                isAnimationActive={false}
+                animationDuration={520}
+                animationEasing="ease-out"
+                isAnimationActive
                 name={resolvedLabels.movingAverage}
                 stroke="var(--pd-data-series-2)"
                 strokeLinecap="round"
@@ -453,7 +461,9 @@ export function TrendChart({
                 connectNulls={false}
                 dataKey="actual"
                 dot={false}
-                isAnimationActive={false}
+                animationDuration={520}
+                animationEasing="ease-out"
+                isAnimationActive
                 name={resolvedLabels.actual}
                 stroke="var(--pd-data-actual)"
                 strokeLinecap="round"

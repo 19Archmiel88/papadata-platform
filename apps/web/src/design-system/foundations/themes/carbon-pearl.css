@@ -147,6 +147,9 @@
   --pd-workspace-surface-panel: #fffdf8;
   --pd-workspace-surface-raised: #ffffff;
   --pd-workspace-surface-data: #fffaf0;
+  --pd-workspace-text: #181a16;
+  --pd-workspace-text-secondary: #4f5549;
+  --pd-workspace-text-muted: #7a7568;
 
   --pd-shell-canvas: #080906;
   --pd-shell-surface: #0d0f0b;
@@ -368,6 +371,9 @@
   --pd-workspace-surface-panel: #10120d;
   --pd-workspace-surface-raised: #1d2117;
   --pd-workspace-surface-data: #14170f;
+  --pd-workspace-text: #f8f0df;
+  --pd-workspace-text-secondary: #d6c8ac;
+  --pd-workspace-text-muted: #9f927b;
 
   --pd-shell-canvas: #050605;
   --pd-shell-surface: #090a07;

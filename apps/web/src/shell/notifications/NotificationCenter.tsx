@@ -1,4 +1,5 @@
 import type {
+  KeyboardEvent,
   ReactElement,
 } from 'react';
 import {
@@ -14,6 +15,7 @@ import {
 import type {
   ShellNotification,
 } from '../app-shell/shellTypes';
+import './notification-center.css';
 
 type NotificationFilter =
   | 'all'
@@ -82,6 +84,30 @@ export function NotificationCenter({
       return true;
     },
   );
+
+  function activateNotification(notification: ShellNotification) {
+    if (!notification.actionPath || !onNotificationAction) {
+      return;
+    }
+
+    onNotificationAction?.(notification);
+    onOpenChange(false);
+  }
+
+  function handleNotificationKeyDown(
+    event: KeyboardEvent<HTMLElement>,
+    notification: ShellNotification,
+  ) {
+    if (
+      event.key !== 'Enter'
+      && event.key !== ' '
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    activateNotification(notification);
+  }
 
   const resolvedTrigger = trigger ?? (
     <button
@@ -159,16 +185,32 @@ export function NotificationCenter({
                   : notification.unread
                     ? copy.unread
                     : copy.read;
+              const isActionable =
+                Boolean(notification.actionPath && onNotificationAction);
 
               return (
                 <article
                   aria-labelledby={`${notification.id}-title`}
                   className="pd-shell-notification"
                   data-tone={notification.tone}
+                  data-actionable={
+                    isActionable
+                      ? true
+                      : undefined
+                  }
                   data-unread={
                     notification.unread ? true : undefined
                   }
                   key={notification.id}
+                  onClick={() => activateNotification(notification)}
+                  onKeyDown={(event) => {
+                    handleNotificationKeyDown(event, notification);
+                  }}
+                  tabIndex={
+                    isActionable
+                      ? 0
+                      : undefined
+                  }
                   role="listitem"
                 >
                   <header>
@@ -190,10 +232,11 @@ export function NotificationCenter({
                   <p>{notification.message}</p>
 
                   {notification.actionLabel
-                  && onNotificationAction ? (
+                  && isActionable ? (
                     <TextAction
-                      onClick={() => {
-                        onNotificationAction(notification);
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        activateNotification(notification);
                       }}
                       size="small"
                     >

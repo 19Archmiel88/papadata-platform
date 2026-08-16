@@ -456,7 +456,7 @@ export function DataTable({
   selection = null,
   sort,
   statusColumn = null,
-  stickyHeader = false,
+  stickyHeader = true,
   summary = null,
   ...props
 }: DataTableProps) {

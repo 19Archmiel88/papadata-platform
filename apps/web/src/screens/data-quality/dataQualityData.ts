@@ -212,7 +212,7 @@ export const dataQualityScreenDefinitions: readonly DataQualityScreenDefinition[
     operationId: 'data-quality.reprocessing.read',
     route: '/app/data-quality/ponowne-przetwarzanie',
     routeBase: '/app/data-quality/ponowne-przetwarzanie',
-    summary: 'Bezpieczny przegląd zakresu ponownego przetwarzania bez wykonywania mutacji.',
+    summary: 'Bezpieczny przegląd zakresu ponownego przetwarzania przed uruchomieniem zadania.',
     variant: 'reprocessing',
   },
   {
@@ -234,7 +234,7 @@ export const dataQualityScreenDefinitions: readonly DataQualityScreenDefinition[
     operationId: null,
     route: null,
     routeBase: null,
-    summary: 'Storybookowa macierz wariantów jakości danych bez ścieżki aplikacyjnej i bez fikcyjnej operacji zapisu.',
+    summary: 'Macierz wariantów jakości danych dla gotowości, konfliktów, przetwarzania i ograniczeń źródeł.',
     variant: 'variants',
   },
 ] as const;
@@ -306,7 +306,7 @@ const sources: readonly DataSourceRef[] = [
 
 const evidence: readonly EvidenceRef[] = [
   { confidence: 0.91, id: 'ev-sync-window', label: 'Okno synchronizacji 08:30-09:45', source: 'Audyt synchronizacji' },
-  { confidence: 0.86, id: 'ev-cost-gap', label: 'Rozbieżność kosztów kampanii', source: 'Google Ads API' },
+  { confidence: 0.86, id: 'ev-cost-gap', label: 'Rozbieżność kosztów kampanii', source: 'Google Ads' },
   { confidence: 0.79, id: 'ev-identity-map', label: 'Mapowanie tożsamości klientów', source: 'CRM + Shopify' },
 ];
 

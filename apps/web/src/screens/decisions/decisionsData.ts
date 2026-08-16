@@ -172,7 +172,7 @@ export const decisionsScreenDefinitions: readonly DecisionsScreenDefinition[] = 
     operationId: null,
     route: null,
     routeBase: null,
-    summary: 'Storybookowy zestaw stanów decyzji: draft, approval, blocked, measured i archived.',
+    summary: 'Zestaw stanów decyzji: szkic, do zatwierdzenia, zablokowana, zmierzona i zarchiwizowana.',
     variant: 'decision-variants',
   },
 ] as const;

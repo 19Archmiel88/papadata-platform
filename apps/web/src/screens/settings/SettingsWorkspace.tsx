@@ -75,6 +75,7 @@ export function SettingsWorkspace({
         items={getSettingsNavigation()}
         orientation="horizontal"
         size="compact"
+        sticky
       />
 
       <DataStatusBanner
@@ -136,8 +137,8 @@ function SettingsContent({
         <>
           <SettingsMetrics data={data} />
           <InlineNotice
-            message="Zmiany regionu, retencji i domyślnych ról wymagają osobnej mutacji i potwierdzenia. Storybook pokazuje tylko stan odczytu."
-            title="Przestrzeń pracy bez mutacji"
+            message="Zmiany regionu, retencji i domyślnych ról wymagają potwierdzenia administratora."
+            title="Przestrzeń pracy"
             tone="info"
           />
           <RoleTable rows={settingsRoleRows(data.roles)} />
@@ -162,7 +163,7 @@ function SettingsContent({
       return (
         <>
           <InlineNotice
-            message="Prywatność pokazuje retencję, maskowanie i ograniczenia eksportu. Żaden eksport danych osobowych nie jest wykonywany w Storybooku."
+            message="Prywatność pokazuje retencję, maskowanie i ograniczenia eksportu. Eksport danych osobowych wymaga osobnego potwierdzenia."
             title="Prywatność w trybie odczytu"
             tone="warning"
           />
@@ -173,7 +174,7 @@ function SettingsContent({
       return (
         <>
           <InlineNotice
-            message="Dostęp wsparcia jest czasowy, audytowany i ograniczony uprawnieniami. Storybook nie wykonuje włączenia ani odwołania dostępu."
+            message="Dostęp wsparcia jest czasowy, audytowany i ograniczony uprawnieniami. Włączenie lub odwołanie wymaga potwierdzenia."
             title="Dostęp wsparcia wymaga zgody"
             tone="warning"
           />
@@ -185,8 +186,8 @@ function SettingsContent({
       return (
         <>
           <InlineNotice
-            message="Ten widok jest dokumentem wariantów Storybooka: nie ma ścieżki aplikacyjnej, endpointu ani fikcyjnego kontraktu operacji."
-            title="Warianty bez transportu runtime"
+            message="Ten widok porządkuje warianty ustawień, stany uprawnień i ograniczenia administracyjne."
+            title="Warianty ustawień"
             tone="info"
           />
           <VariantTable rows={settingsVariantRows(data.variants)} />

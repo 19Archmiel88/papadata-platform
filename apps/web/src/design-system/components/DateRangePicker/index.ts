@@ -5,4 +5,5 @@ export {
 export type {
   DateRangePickerPreset,
   DateRangePickerProps,
+  DateRangePickerQuickOption,
 } from './DateRangePicker';

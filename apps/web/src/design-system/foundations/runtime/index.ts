@@ -49,6 +49,9 @@ export const defaultPapaDataRuntimeGlobals =
     motion: 'full',
   } as const satisfies PapaDataRuntimeGlobals;
 
+const papaDataRuntimeStorageKey =
+  'papadata.runtime-preferences.v1';
+
 function includesValue<const Value extends string>(
   values: readonly Value[],
   value: unknown,
@@ -111,8 +114,56 @@ export function getInitialPapaDataRuntimeGlobals(
 ): PapaDataRuntimeGlobals {
   return normalizePapaDataRuntimeGlobals({
     motion: readPapaDataSystemMotionPreference(),
+    ...readStoredPapaDataRuntimeGlobals(),
     ...input,
   });
+}
+
+export function readStoredPapaDataRuntimeGlobals():
+  PapaDataRuntimeGlobalsInput {
+  if (typeof window === 'undefined') {
+    return {};
+  }
+
+  try {
+    const raw = window.localStorage.getItem(
+      papaDataRuntimeStorageKey,
+    );
+
+    if (!raw) {
+      return {};
+    }
+
+    const parsed = JSON.parse(raw);
+
+    return parsed && typeof parsed === 'object'
+      ? parsed as PapaDataRuntimeGlobalsInput
+      : {};
+  } catch {
+    return {};
+  }
+}
+
+export function writeStoredPapaDataRuntimeGlobals(
+  input: PapaDataRuntimeGlobalsInput,
+): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    const nextGlobals = normalizePapaDataRuntimeGlobals({
+      ...readStoredPapaDataRuntimeGlobals(),
+      ...input,
+    });
+
+    window.localStorage.setItem(
+      papaDataRuntimeStorageKey,
+      JSON.stringify(nextGlobals),
+    );
+  } catch {
+    // Runtime preferences are progressive enhancement only.
+  }
 }
 
 function getEffectivePapaDataMotion(

@@ -182,6 +182,7 @@ export const BackgroundOperationItem = forwardRef<
         'pd-background-operation',
         className,
       )}
+      data-operation-id={operationId}
       data-status={status}
     >
       <header className="pd-background-operation__header">
@@ -194,15 +195,10 @@ export const BackgroundOperationItem = forwardRef<
               {title}
             </h3>
             <div className="pd-background-operation__meta">
-              <span className="pd-background-operation__meta-code">
-                {operationId}
-              </span>
               {startedAt ? (
                 <span>{startedAt}</span>
               ) : null}
-              {errorCode ? (
-                <span>Kod: {errorCode}</span>
-              ) : null}
+              {errorCode ? <span>Wymaga sprawdzenia</span> : null}
             </div>
           </div>
 

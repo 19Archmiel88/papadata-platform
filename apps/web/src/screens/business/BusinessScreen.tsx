@@ -62,6 +62,9 @@ import type {
 import {
   CommandCenterWorkspace,
 } from './CommandCenterWorkspace';
+import {
+  useShellDateRange,
+} from '../../shell/app-shell';
 import './business-screen.css';
 
 export type BusinessScreenMode =
@@ -169,7 +172,10 @@ export function BusinessScreen({
   problem = null,
 }: BusinessScreenProps) {
   const [query, setQuery] = useState('');
-  const [range, setRange] = useState<DateRange>(defaultDateRange);
+  const {
+    dateRange: range,
+    setDateRange: setRange,
+  } = useShellDateRange();
   const [source, setSource] = useState<string | null>('all');
   const dataState = resolveDataState({
     data,
@@ -213,9 +219,9 @@ export function BusinessScreen({
     : selectedSources;
   const issueList = problem
     ? [
-        {
+      {
           id: `${definition.id}-api-problem`,
-          label: 'Odczyt API niedostępny',
+          label: 'Odczyt danych niedostępny',
           severity: 'critical' as const,
         },
       ]
@@ -254,7 +260,7 @@ export function BusinessScreen({
     >
       <div className="pd-business-screen__system-strip" aria-label="Warstwa decyzyjna">
         <span>Enterprise BI</span>
-        <span>Dane kontraktowe</span>
+        <span>Źródła danych</span>
         <span>Gotowe do decyzji</span>
       </div>
 
@@ -275,16 +281,16 @@ export function BusinessScreen({
         ]}
         meta={[
           {
-            label: 'Screen ID',
-            value: definition.id,
+            label: 'Zakres',
+            value: formatDateRange(range),
           },
           {
-            label: 'Operacja',
-            value: definition.operationId,
+            label: 'Segment',
+            value: 'Commerce PL',
           },
           {
-            label: 'Tryb',
-            value: mode === 'runtime' ? 'Runtime' : 'Storybook',
+            label: 'Odświeżono',
+            value: data ? formatShortTime(data.generatedAt) : '—',
           },
         ]}
         subtitle={definition.summary}
@@ -425,7 +431,7 @@ export function BusinessScreen({
             <MetricCard
               label="Ostatnia aktualizacja"
               metricId={`${definition.id}-freshness`}
-              sourceLabel={data.operationId}
+              sourceLabel="Dane commerce"
               status={dataState}
               statusLabel={formatDateTime(data.generatedAt)}
               value={formatShortTime(data.generatedAt)}
@@ -440,6 +446,7 @@ export function BusinessScreen({
               dataState,
               definition,
               query,
+              range,
             })}
           </section>
 
@@ -462,8 +469,8 @@ export function BusinessScreen({
           <InlineNotice
             message={
               loading
-                ? 'Frontend czeka na odpowiedź z BFF dla wskazanego operationId.'
-                : 'Runtime nie używa danych demo. Ekran zostanie wypełniony dopiero po poprawnej odpowiedzi API.'
+                ? 'Czekamy na aktualny odczyt danych dla bieżącego workspace.'
+                : 'Ekran zostanie wypełniony po poprawnym odczycie danych dla bieżącego workspace.'
             }
             title={loading ? 'Odczyt w toku' : 'Dane wymagane'}
             tone={problem ? 'critical' : 'info'}
@@ -675,6 +682,7 @@ function renderPrimaryContent({
   data,
   dataState,
   definition,
+  range,
 }: {
   readonly campaignRows: readonly DataRow[];
   readonly commandRows: readonly DataRow[];
@@ -682,6 +690,7 @@ function renderPrimaryContent({
   readonly dataState: AnalyticsDataState;
   readonly definition: BusinessScreenDefinition;
   readonly query: string;
+  readonly range: DateRange;
 }) {
   if (data.group === 'campaigns') {
     return (
@@ -689,8 +698,8 @@ function renderPrimaryContent({
         <ChartFrame
           businessQuestion="Jak płatne kanały wpływają na sprzedaż?"
           freshnessLabel={formatDateTime(data.generatedAt)}
-          rangeLabel={formatDateRange(defaultDateRange)}
-          sourceLabel="ads.spend_normalized"
+          rangeLabel={formatDateRange(range)}
+          sourceLabel="Koszty kampanii"
           status={dataState}
           statusLabel={resolveDataStateLabel(dataState)}
           title="Wynik kampanii"
@@ -733,8 +742,8 @@ function renderPrimaryContent({
       <ChartFrame
         businessQuestion="Czy wynik bieżącego okresu realizuje plan?"
         freshnessLabel={formatDateTime(data.generatedAt)}
-        rangeLabel={formatDateRange(defaultDateRange)}
-        sourceLabel="orders.daily_fact"
+        rangeLabel={formatDateRange(range)}
+        sourceLabel="Zamówienia i przychód"
         status={dataState}
         statusLabel={resolveDataStateLabel(dataState)}
         title="Trend wyniku i planu"
@@ -1009,9 +1018,12 @@ function renderCampaignVariant(
         >
           <ul className="pd-business-screen__diagnostics">
             {data.diagnostics.map((finding) => (
-              <li key={finding.findingId} data-severity={finding.severity}>
-                <strong>{finding.code}</strong>
-                <span>{finding.message}</span>
+              <li
+                data-finding-code={finding.code}
+                data-severity={finding.severity}
+                key={finding.findingId}
+              >
+                <strong>{finding.message}</strong>
                 <small>{finding.sourceRef ?? 'brak źródła'}</small>
               </li>
             ))}

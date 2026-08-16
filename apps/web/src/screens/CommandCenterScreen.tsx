@@ -3,18 +3,27 @@ import {
   useMemo,
   useState,
 } from 'react';
+import type {
+  DateRange,
+} from '../../../../contracts/ui-contract-types';
 
 import {
   InlineNotice,
 } from '../design-system';
 import {
   bffClient,
+  isLocalClientRuntimeAvailable,
 } from '../shared/api/bffClient';
+import {
+  useShellDateRange,
+} from '../shell/app-shell';
 import {
   BusinessScreen,
 } from './business/BusinessScreen';
 import {
+  applyCommandCenterDateRange,
   createCommandCenterBusinessData,
+  createStorybookBusinessData,
   findBusinessScreenDefinition,
 } from './business/businessData';
 import type {
@@ -36,10 +45,14 @@ export type CommandCenterScreenProps = {
 export function CommandCenterScreen({
   path = '/app/command-center/widok-glowny',
 }: CommandCenterScreenProps) {
+  const {
+    dateRange,
+    dateRangeKey,
+  } = useShellDateRange();
   const definition = useMemo(
     () => (
       findBusinessScreenDefinition(
-        path === '/app/command-center'
+        path === '/app' || path === '/app/command-center'
           ? '/app/command-center/widok-glowny'
           : path,
       )
@@ -58,7 +71,7 @@ export function CommandCenterScreen({
       setState({
         data: null,
         loading: false,
-        problem: 'Nie znaleziono kontraktu ekranu Centrum Dowodzenia.',
+        problem: 'Nie znaleziono widoku Centrum Dowodzenia.',
       });
       return;
     }
@@ -72,18 +85,52 @@ export function CommandCenterScreen({
     });
 
     bffClient
-      .readDomainScreen<CommandCenterApiData>(definition.apiPath)
+      .readDomainScreen<CommandCenterApiData>(
+        definition.apiPath,
+        { dateRange },
+      )
       .then((data) => {
         if (!active) return;
 
+        if (!isCommandCenterApiData(data)) {
+          if (!isLocalClientRuntimeAvailable()) {
+            setState({
+              data: null,
+              loading: false,
+              problem: 'Centrum Dowodzenia zwróciło dane w nieobsługiwanym formacie.',
+            });
+            return;
+          }
+
+          setState({
+            data: localCommandCenterFallback(definition, dateRange),
+            loading: false,
+            problem: null,
+          });
+          return;
+        }
+
+        const commandData = createCommandCenterBusinessData(definition, data);
+
         setState({
-          data: createCommandCenterBusinessData(definition, data),
+          data: commandData.group === 'command-center'
+            ? applyCommandCenterDateRange(commandData, dateRange)
+            : commandData,
           loading: false,
           problem: null,
         });
       })
       .catch((cause) => {
         if (!active) return;
+
+        if (isLocalClientRuntimeAvailable()) {
+          setState({
+            data: localCommandCenterFallback(definition, dateRange),
+            loading: false,
+            problem: null,
+          });
+          return;
+        }
 
         setState({
           data: null,
@@ -97,7 +144,7 @@ export function CommandCenterScreen({
     return () => {
       active = false;
     };
-  }, [definition, refreshKey]);
+  }, [definition, refreshKey, dateRange, dateRangeKey]);
 
   if (!definition || definition.group !== 'command-center') {
     return (
@@ -120,4 +167,27 @@ export function CommandCenterScreen({
       }}
     />
   );
+}
+
+function localCommandCenterFallback(
+  definition: NonNullable<ReturnType<typeof findBusinessScreenDefinition>>,
+  dateRange: DateRange,
+): BusinessScreenData {
+  const data = createStorybookBusinessData(definition);
+
+  return data.group === 'command-center'
+    ? applyCommandCenterDateRange(data, dateRange)
+    : data;
+}
+
+function isCommandCenterApiData(value: unknown): value is CommandCenterApiData {
+  if (!isRecord(value)) return false;
+  return Array.isArray(value.records)
+    && isRecord(value.pageInfo)
+    && isRecord(value.summary)
+    && typeof value.summary.updatedAt === 'string';
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }

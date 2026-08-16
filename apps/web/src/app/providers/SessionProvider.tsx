@@ -33,7 +33,9 @@ type SessionContextValue = {
   readonly register: (input: {
     readonly email: string;
     readonly fullName: string;
+    readonly organizationName: string;
     readonly password: string;
+    readonly workspaceName: string;
   }) => Promise<void>;
   readonly logout: () => Promise<void>;
   readonly refresh: () => Promise<void>;
@@ -57,7 +59,7 @@ export function SessionProvider({
     try {
       const nextSession = await bffClient.readSession();
       setSession(nextSession);
-      setUser(null);
+      setUser(nextSession?.user ?? null);
       setStatus(nextSession ? 'authenticated' : 'anonymous');
     } catch (cause) {
       setSession(null);
@@ -86,7 +88,9 @@ export function SessionProvider({
   const register = useCallback(async (input: {
     readonly email: string;
     readonly fullName: string;
+    readonly organizationName: string;
     readonly password: string;
+    readonly workspaceName: string;
   }) => {
     const result = await bffClient.register(input);
     setSession(result.session);

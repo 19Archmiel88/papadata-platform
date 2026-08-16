@@ -9,9 +9,6 @@ import {
 import {
   joinClassNames,
 } from '../Field/fieldUtils';
-import {
-  PapaDataBrand,
-} from '../../icons';
 import '../Loading/loading.css';
 
 export type SpinnerProps = Omit<
@@ -41,9 +38,10 @@ export const Spinner = forwardRef<
   },
   ref,
 ) {
+  const normalizedSize = Math.max(size, 12);
   const spinnerStyle = {
     ...style,
-    '--pd-spinner-size': `${size}px`,
+    '--pd-spinner-size': `${normalizedSize}px`,
     '--pd-spinner-delay': `${Math.max(delayMs, 0)}ms`,
   } as CSSProperties;
 
@@ -58,6 +56,7 @@ export const Spinner = forwardRef<
         className,
       )}
       data-inline={inline}
+      data-show-label={showLabel ? 'true' : undefined}
       role="status"
       style={spinnerStyle}
     >
@@ -65,10 +64,7 @@ export const Spinner = forwardRef<
         aria-hidden="true"
         className="pd-spinner__glyph"
       >
-        <PapaDataBrand
-          decorative
-          variant="mark"
-        />
+        <span className="pd-spinner__ring" />
       </span>
       <span
         className={joinClassNames(

@@ -37,7 +37,7 @@ function LoadingExamples() {
     useState('Operacje w tle są widoczne, ale nie blokują całej strony.');
 
   return (
-    <div className="pd-x18-stack">
+    <div className="pd-x18-stack pd-x18-loading-operations">
       <div className="pd-x18-loading-grid">
         <section
           aria-label="Ładowanie regionu danych"
@@ -106,20 +106,20 @@ function LoadingExamples() {
       </div>
 
       <section
-        aria-label="Kolejka operacji w tle"
-        className="pd-x18-region"
+        aria-label="Kolejka i status operacji w tle"
+        className="pd-x18-loading-workflow"
       >
-        <div className="pd-x18-region__header">
-          <h3 className="pd-x18-region__title">
+        <div className="pd-x18-loading-workflow__header">
+          <h3 className="pd-x18-loading-workflow__title">
             Kolejka, przebieg, część, anulowanie i ponowienie
           </h3>
-          <p className="pd-x18-region__text">
+          <p className="pd-x18-loading-workflow__text">
             BackgroundOperationItem opisuje stan pracy w tle, a ProgressIndicator
             pozostaje realnym wskaźnikiem postępu.
           </p>
         </div>
 
-        <div className="pd-x18-stack pd-x18-stack--tight">
+        <div className="pd-x18-loading-operation-list">
           <BackgroundOperationItem
             description="Eksport czeka na wolny slot w kolejce workerów."
             errorCode={null}
@@ -182,35 +182,36 @@ function LoadingExamples() {
             }}
           />
         </div>
-      </section>
 
-      <section
-        aria-label="Status operacji"
-        className="pd-x18-region"
-      >
-        <div className="pd-x18-region__header">
-          <h3 className="pd-x18-region__title">
-            Bezpieczny status asynchroniczny
-          </h3>
-          <p className="pd-x18-region__text">
-            Wzorzec pokazuje postęp i decyzję naprawy bez zasłaniania całej
-            strony.
-          </p>
+        <div
+          aria-label="Bezpieczny status asynchroniczny"
+          className="pd-x18-loading-status-strip"
+          role="group"
+        >
+          <div className="pd-x18-loading-status-copy">
+            <h3 className="pd-x18-loading-status-title">
+              Bezpieczny status asynchroniczny
+            </h3>
+            <p className="pd-x18-loading-status-text">
+              Wzorzec pokazuje postęp i decyzję naprawy bez zasłaniania całej
+              strony.
+            </p>
+          </div>
+          <ProgressIndicator
+            description="Wskaźnik raportuje realny pasek postępu dla operacji częściowej."
+            indeterminate={false}
+            label="Postęp zbiorczy operacji"
+            max={100}
+            showValue
+            tone="warning"
+            value={72}
+          />
+          <InlineNotice
+            message={operationMessage}
+            title="Status operacji w tle"
+            tone="info"
+          />
         </div>
-        <ProgressIndicator
-          description="Wskaźnik raportuje realny pasek postępu dla operacji częściowej."
-          indeterminate={false}
-          label="Postęp zbiorczy operacji"
-          max={100}
-          showValue
-          tone="warning"
-          value={72}
-        />
-        <InlineNotice
-          message={operationMessage}
-          title="Status operacji w tle"
-          tone="info"
-        />
       </section>
     </div>
   );

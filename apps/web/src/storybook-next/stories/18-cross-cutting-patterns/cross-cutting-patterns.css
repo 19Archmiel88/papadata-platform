@@ -321,6 +321,73 @@
     var(--pd-separator-subtle);
 }
 
+.pd-x18-loading-operations {
+  gap: clamp(var(--pd-space-5), 4vw, var(--pd-space-8));
+}
+
+.pd-x18-loading-workflow {
+  display: grid;
+  gap: var(--pd-space-4);
+  min-inline-size: 0;
+  padding-block-start: var(--pd-space-5);
+  border-block-start:
+    var(--pd-border-width-subtle)
+    solid
+    var(--pd-separator-subtle);
+  overflow: visible;
+}
+
+.pd-x18-loading-workflow__header,
+.pd-x18-loading-status-copy {
+  display: grid;
+  gap: var(--pd-space-2);
+  max-inline-size: 72ch;
+  min-inline-size: 0;
+}
+
+.pd-x18-loading-workflow__title,
+.pd-x18-loading-status-title {
+  margin: 0;
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-heading-small);
+  font-weight: var(--pd-font-weight-medium);
+  line-height: var(--pd-line-height-heading);
+}
+
+.pd-x18-loading-status-title {
+  font-size: var(--pd-type-size-body);
+}
+
+.pd-x18-loading-workflow__text,
+.pd-x18-loading-status-text {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-x18-loading-operation-list {
+  display: grid;
+  gap: var(--pd-space-3);
+  min-inline-size: 0;
+  padding-block-start: var(--pd-space-3);
+}
+
+.pd-x18-loading-status-strip {
+  display: grid;
+  gap: var(--pd-space-3);
+  min-inline-size: 0;
+  padding-block-start: var(--pd-space-4);
+  border-block-start:
+    var(--pd-border-width-subtle)
+    solid
+    var(--pd-separator-subtle);
+  overflow: visible;
+}
+
+.pd-x18-loading-status-strip > * {
+  min-inline-size: 0;
+}
+
 .pd-x18-confirmation-layout,
 .pd-x18-approval-layout {
   align-items: stretch;
@@ -1522,4 +1589,25 @@
     align-items: stretch;
     justify-content: flex-start;
   }
+}
+
+/* Prism Refractive pass for 18 Wzorce interfejsu. */
+[data-pd-story-section="18"] .pd-x18-region,
+[data-pd-story-section="18"] .pd-x18-flow-region,
+[data-pd-story-section="18"] .pd-x18-card,
+[data-pd-story-section="18"] .pd-x18-flow-list {
+  overflow: hidden;
+  border: 1px solid var(--pd-refractive-border);
+  border-radius: var(--pd-radius-overlay);
+  background: var(--pd-refractive-surface);
+  box-shadow: var(--pd-refractive-depth);
+}
+
+[data-pd-story-section="18"] .pd-x18-region + .pd-x18-region,
+[data-pd-story-section="18"] .pd-x18-flow-region + .pd-x18-flow-region {
+  border-block-start-color: var(--pd-refractive-border);
+}
+
+[data-pd-story-section="18"] .pd-x18-region__eyebrow {
+  color: color-mix(in srgb, var(--pd-brand-accent) 72%, var(--pd-text-muted));
 }

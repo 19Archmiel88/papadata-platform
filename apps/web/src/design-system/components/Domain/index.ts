@@ -54,3 +54,16 @@ export type {
   SyncTimelineProps,
   WaterfallChartProps,
 } from './DomainComponents';
+
+export {
+  domainComponentCatalogItems,
+  domainP0BacklogItems,
+  domainComponentProductionRegistry,
+  domainComponentRegistrySummary,
+} from './domainComponentRegistry';
+
+export type {
+  DomainComponentCatalogItem,
+  DomainComponentReadinessStatus,
+  DomainP0BacklogItem,
+} from './domainComponentRegistry';

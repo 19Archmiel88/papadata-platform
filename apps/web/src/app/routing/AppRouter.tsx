@@ -71,6 +71,22 @@ const TrafficScreen = lazy(async () => {
   };
 });
 
+const BillingScreen = lazy(async () => {
+  const module = await import('../../screens/billing');
+
+  return {
+    default: module.BillingScreen,
+  };
+});
+
+const DecisionsScreen = lazy(async () => {
+  const module = await import('../../screens/decisions');
+
+  return {
+    default: module.DecisionsScreen,
+  };
+});
+
 const CommandCenterScreen = lazy(async () => {
   const module = await import('../../screens/CommandCenterScreen');
 
@@ -235,6 +251,27 @@ export function AppRouter() {
         <RouteSuspense>
           <AppShell>
             <TrafficScreen path={pathname} />
+          </AppShell>
+        </RouteSuspense>
+      );
+    }
+
+
+    if (pathname === '/app/billing' || pathname.startsWith('/app/billing/')) {
+      return (
+        <RouteSuspense>
+          <AppShell>
+            <BillingScreen path={pathname} />
+          </AppShell>
+        </RouteSuspense>
+      );
+    }
+
+    if (pathname === '/app/decisions' || pathname.startsWith('/app/decisions/')) {
+      return (
+        <RouteSuspense>
+          <AppShell>
+            <DecisionsScreen path={pathname} />
           </AppShell>
         </RouteSuspense>
       );

@@ -95,3 +95,10 @@
 .pd-s5-page :where(article, section, div) {
   min-inline-size: 0;
 }
+
+/* Prism Refractive pass for shared decision badges. */
+[data-pd-story-section="05"] .pd-s5-decision-badge {
+  border-color: var(--pd-refractive-border);
+  background: var(--pd-refractive-control);
+  color: var(--pd-brand-accent);
+}

@@ -43,8 +43,11 @@
 }
 
 .pd-f0-tone-register .pd-status-badge {
-  width: fit-content;
-  max-width: 100%;
+  inline-size: max-content;
+  max-inline-size: none;
+  width: auto;
+  max-width: none;
+  justify-self: start;
 }
 
 .pd-f0-tone-register p {
@@ -96,29 +99,4 @@
   .pd-f0-tone-register article + article {
     border-top: 1px solid var(--pd-separator-subtle);
   }
-}
-
-/* Premium foundation direction: semantic tone catalogue lives on one elevated surface. */
-.pd-f0-status-rule {
-  border-left: 0;
-  padding: var(--pd-space-4) var(--pd-space-5);
-  border-radius: var(--pd-radius-surface);
-  background: color-mix(in srgb, var(--pd-surface-panel) 76%, transparent);
-  box-shadow: var(--pd-shadow-raised);
-}
-
-.pd-f0-tone-register {
-  border-block: 0;
-  border-radius: var(--pd-radius-overlay);
-  background: color-mix(in srgb, var(--pd-surface-panel) 76%, transparent);
-  box-shadow: var(--pd-shadow-raised);
-  overflow: hidden;
-}
-
-.pd-f0-tone-register article:nth-child(3n + 2),
-.pd-f0-tone-register article:nth-child(3n + 3),
-.pd-f0-tone-register article:nth-child(n + 4),
-.pd-f0-tone-register article:nth-child(even),
-.pd-f0-tone-register article + article {
-  border-color: color-mix(in srgb, var(--pd-text) 7%, transparent);
 }

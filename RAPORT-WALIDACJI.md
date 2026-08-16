@@ -12,29 +12,31 @@
 - Komponenty kanoniczne: **79**
 - Powierzchnie Auth: **29**
 - Kroki E2E: **124**
-- Targety Storybook: **287**
+- Targety Storybook: **292**
+- Aktywne ekrany Storybook: **195**
+- Aktywne pliki stories: **44**
 - Priorytety P0 / metryki / integracje MVP / szablony prawne: **12 / 58 / 7 / 26**
-- Manifest: **2278 plików, brak `MANIFEST_MISSING`, brak driftu hashy**
+- Manifest: **2346 plików, brak `MANIFEST_MISSING`, brak driftu hashy po regeneracji**
 
-## Kontrole
+## Kontrole wykonane w paczce
 
-Walidator sprawdza metadane, linki lokalne, czystość paczki, dokumenty wskazane w rejestrach, OpenAPI, DTO, fixture, kontrakty komponentów, TypeScript, Auth FSM, E2E, Storybook, priorytety P0 oraz instalator.
-
-## Kontrole dodatkowe P2/P3
-
-- `node scripts/check-doc-placeholders.mjs` — PASS.
-- `node scripts/check-css-local-hex.mjs` — PASS.
-- `node scripts/check-css-duplicate-classes.mjs` — PASS.
-- `node scripts/check-dead-artifact-references.mjs` — PASS.
+- `python3 scripts/validate_all.py .` — PASS po odświeżeniu manifestu.
+- `node scripts/check-storybook-catalog.mjs` — PASS, 226 wpisów i 195 zaimplementowanych stories.
 - `node scripts/check-foundation-system-v1.mjs` — PASS.
 - `node scripts/check-component-system-v1.mjs` — PASS.
-- `node scripts/check-storybook-catalog.mjs` — PASS.
-- `node scripts/check-analytics-system-v1.mjs` — PASS.
-- `node scripts/check-cross-cutting-patterns-v1.mjs` — PASS.
+- `node scripts/check-css-local-hex.mjs` — PASS.
+- `node scripts/check-css-duplicate-classes.mjs` — PASS.
 - `node scripts/check-storybook-presentation-contract.mjs` — PASS.
-- `node scripts/check-design-system-ownership.mjs` — PASS.
-- Bezpośredni `tsc -b --pretty false` dla `@papadata/web` — PASS w odtworzonym środowisku ZIP.
+- `node scripts/check-doc-placeholders.mjs` — PASS.
+- `node scripts/check-dead-artifact-references.mjs` — PASS.
+- `node tools/verify-backend-release-scope.mjs` — PASS.
+- `node tools/verify-backend-security-controls.mjs` — PASS, 22 kontrole nadal wymagają acceptance środowiskowego.
+- `node tools/generate-backend-contract-runtime.mjs --check` — PASS.
+- `node tools/generate-backend-capability-docs.mjs --check` — PASS.
+- `bash tools/verify-migration-parity.sh` — PASS, `live_database_test=0`.
 
-## Uwagi po audycie
+## Ograniczenie weryfikacji
 
-Raport został zaktualizowany po rewalidacji P0/P1 oraz po dodaniu guardów i dokumentów P2/P3. Browser audit ekranów `30/31` ma teraz jawny indeks oraz dedykowaną komendę, ale świeży artefakt przeglądarkowy musi zostać wygenerowany na lokalnym WSL po wdrożeniu paczki. Wynik techniczny nie zastępuje właścicielskiej akceptacji UI.
+Paczka audytowa nie zawierała `node_modules`, więc bezpośredni `apps/web/node_modules/.bin/tsc -b --pretty false`, build web i build Storybooka trzeba uruchomić po wdrożeniu w lokalnym WSL z zainstalowanymi zależnościami. Wyniki statyczne backendu nie zastępują live DB/RLS/provider acceptance.
+
+Manifest nie obejmuje lokalnych sekretów, `.runtime` ani lokalnych certyfikatów.

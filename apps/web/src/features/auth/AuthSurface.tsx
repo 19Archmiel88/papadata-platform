@@ -12,6 +12,7 @@ import {
   Button,
   Checkbox,
   InlineNotice,
+  PapaDataBrand,
   PasswordField,
   TextAction,
   TextField,
@@ -326,18 +327,21 @@ export function AuthSurface({
         aria-labelledby="auth-title"
         className="pd-auth-surface__canvas"
       >
-        <div className="pd-auth-surface__hero">
-          <div className="pd-auth-surface__copy">
+        <div className="pd-auth-surface__workspace">
+          <div className="pd-auth-surface__card-header">
+            <div className="pd-auth-surface__brand-mark" aria-hidden="true">
+              <PapaDataBrand
+                decorative
+                size="small"
+                variant="mark"
+              />
+            </div>
             <p className="pd-auth-surface__eyebrow">{copy.eyebrow}</p>
             <h1 id="auth-title">{copy.title}</h1>
             <p className="pd-auth-surface__description" id="auth-description">
               {copy.description}
             </p>
           </div>
-
-        </div>
-
-        <div className="pd-auth-surface__workspace">
           {statePanel ? (
             <AuthStatePanelView
               action={(

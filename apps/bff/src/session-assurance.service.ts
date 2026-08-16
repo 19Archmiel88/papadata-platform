@@ -44,6 +44,7 @@ export class BffSessionAssuranceService {
     reply: FastifyReply,
     body: unknown,
   ): Promise<void> {
+    this.security.applyCorsHeaders(request, reply);
     const session = await this.requireMutableSession(request);
     const response = await this.callApi({
       body: normalizeBody(body),
@@ -91,6 +92,7 @@ export class BffSessionAssuranceService {
     reply: FastifyReply,
     body: unknown,
   ): Promise<void> {
+    this.security.applyCorsHeaders(request, reply);
     const session = await this.requireMutableSession(request);
 
     if (!hasMfaAssurance(session)) {

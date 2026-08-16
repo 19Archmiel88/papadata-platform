@@ -40,6 +40,7 @@ export class BffIdentitySessionService {
     body: unknown,
   ): Promise<void> {
     this.security.validateHost(request);
+    this.security.applyCorsHeaders(request, reply);
     this.security.validateOrigin(request);
     await this.rateLimit.consumePublic({ ipAddress: request.ip, route });
     const upstreamAuthorization = await this.cloudRunIdentity.authorizationHeader();
@@ -105,6 +106,7 @@ export class BffIdentitySessionService {
 
   async logout(request: FastifyRequest, reply: FastifyReply): Promise<void> {
     this.security.validateHost(request);
+    this.security.applyCorsHeaders(request, reply);
     this.security.validateOrigin(request);
     const session = await this.security.requireSession(request);
     this.security.validateCsrf(request, session);
@@ -117,6 +119,7 @@ export class BffIdentitySessionService {
 
   async readSession(request: FastifyRequest, reply: FastifyReply): Promise<void> {
     this.security.validateHost(request);
+    this.security.applyCorsHeaders(request, reply);
     const session = await this.security.requireSession(request);
     reply.send({ data: publicSession(session) });
   }

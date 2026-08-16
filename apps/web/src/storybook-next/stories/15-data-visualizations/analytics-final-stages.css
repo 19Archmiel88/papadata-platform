@@ -95,16 +95,9 @@
 .pd-a15-stage__note {
   max-inline-size: 62rem;
   margin-block-end: var(--pd-space-4);
-}
-
-.pd-a15-stage__compact-chart {
+}.pd-a15-stage__compact-chart {
   min-inline-size: 0;
-  overflow: hidden;
-  border: var(--pd-border-width-subtle) solid var(--pd-a15-depth-rule);
   border-top-color: var(--pd-a15-depth-revenue);
-  border-radius: var(--pd-radius-surface);
-  background: var(--pd-a15-depth-panel-surface);
-  box-shadow: none;
 }
 
 .pd-a15-stage__table {

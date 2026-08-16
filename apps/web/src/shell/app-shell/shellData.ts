@@ -131,12 +131,12 @@ export const defaultShellNavigation = [
         path: '/app/settings/organizacja',
       },
       {
-        disabled: true,
-        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym runtime.',
+        badge: 'Nowe',
         icon: 'billing',
         id: 'billing',
         label: 'Subskrypcja i płatności',
         path: '/app/billing/subskrypcja',
+        status: 'Sekcja 70',
       },
     ],
   },
@@ -145,12 +145,12 @@ export const defaultShellNavigation = [
     label: 'Wsparcie',
     items: [
       {
-        disabled: true,
-        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym runtime.',
+        badge: 'Nowe',
         icon: 'decisions',
         id: 'decisions',
         label: 'Wsparcie w marketingu',
         path: '/app/decisions/centrum-decyzji',
+        status: 'Sekcja 80',
       },
       {
         disabled: true,
@@ -200,6 +200,30 @@ export const defaultShellCommands = [
     label: 'Otwórz ustawienia organizacji',
     path: '/app/settings/organizacja',
     section: 'Administracja',
+  },
+  {
+    description: 'Pokazuje aktualną subskrypcję, limity, faktury i ryzyka rozliczeniowe.',
+    id: 'open-billing',
+    keywords: [
+      'billing',
+      'faktury',
+      'subskrypcja',
+    ],
+    label: 'Otwórz subskrypcję i płatności',
+    path: '/app/billing/subskrypcja',
+    section: 'Administracja',
+  },
+  {
+    description: 'Pokazuje centrum decyzji marketingowych, rekomendacje i pomiar działań.',
+    id: 'open-decisions',
+    keywords: [
+      'decyzje',
+      'rekomendacje',
+      'marketing',
+    ],
+    label: 'Otwórz decyzje i działania',
+    path: '/app/decisions/centrum-decyzji',
+    section: 'Wsparcie',
   },
 ] satisfies readonly ShellCommandResult[];
 

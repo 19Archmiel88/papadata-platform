@@ -1,7 +1,3 @@
-/**
- * Punkt eksportu modułu:
- * src/screens/billing
- *
- * Moduł nie zawiera kodu legacy.
- */
-export {};
+export { BillingScreen, BillingWorkspace } from './BillingScreen';
+export { billingScreenDefinitions, createBillingStorybookData, findBillingScreenDefinition } from './billingData';
+export type { BillingScreenDefinition, BillingWorkspaceData } from './billingData';

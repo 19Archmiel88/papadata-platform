@@ -272,8 +272,10 @@
 .pd-popover__panel {
   position: absolute;
   z-index: var(--pd-layer-popover);
-  width: min(22rem, calc(100vw - 2rem));
-  min-width: 16rem;
+  inline-size: min(22rem, calc(100vw - 2rem));
+  min-inline-size: min(16rem, calc(100vw - 2rem));
+  max-inline-size: calc(100vw - 2rem);
+  overflow-wrap: anywhere;
 }
 
 .pd-popover__panel::before {
@@ -309,7 +311,9 @@
 .pd-tooltip__bubble {
   position: absolute;
   z-index: var(--pd-layer-popover);
-  max-width: min(18rem, calc(100vw - 2rem));
+  inline-size: max-content;
+  min-inline-size: min(12rem, calc(100vw - 2rem));
+  max-inline-size: min(22rem, calc(100vw - 2rem));
   padding: 0.7rem 0.85rem;
   color: var(--pd-text);
   border: 0;
@@ -318,6 +322,8 @@
   box-shadow: var(--pd-shadow-floating);
   font-size: var(--pd-type-size-body-small);
   line-height: var(--pd-line-height-relaxed);
+  overflow-wrap: normal;
+  white-space: normal;
 }
 
 .pd-tooltip__bubble[data-placement='top'] {
@@ -396,11 +402,21 @@
     width: 100%;
   }
 
+  .pd-popover__panel {
+    inline-size: min(20rem, calc(100vw - 2rem));
+    min-inline-size: min(14rem, calc(100vw - 2rem));
+  }
+
   .pd-popover__panel[data-placement='left'],
   .pd-popover__panel[data-placement='right'] {
     top: calc(100% + var(--pd-space-3));
     right: auto;
     left: 0;
+  }
+
+  .pd-tooltip__bubble {
+    inline-size: min(18rem, calc(100vw - 2rem));
+    min-inline-size: min(12rem, calc(100vw - 2rem));
   }
 
   .pd-tooltip__bubble[data-placement='left'],

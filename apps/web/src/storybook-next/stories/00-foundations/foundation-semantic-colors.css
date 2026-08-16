@@ -1,0 +1,329 @@
+/*
+ * PapaData Storybook: 00 Fundamenty / Kolory semantyczne.
+ *
+ * Ten plik jest właścicielem finalnego układu tej story.
+ * Nie redefiniuje globalnego shellu prezentacji ani tokenów kolorystycznych.
+ */
+
+.pd-f0-semantic-colors .pd-f0-color-role-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(18px, 2.6vw, 32px);
+}
+
+.pd-f0-semantic-colors .pd-f0-color-role {
+  display: grid;
+  grid-template-columns: clamp(64px, 7vw, 96px) minmax(0, 1fr);
+  gap: clamp(16px, 2vw, 24px);
+  align-items: start;
+  min-width: 0;
+  padding-block: clamp(18px, 2.4vw, 28px);
+  border-top: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-f0-semantic-colors .pd-f0-color-role:nth-child(-n + 2) {
+  border-top-color: var(--pd-separator);
+}
+
+.pd-f0-semantic-colors .pd-f0-color-role__swatch {
+  display: block;
+  inline-size: clamp(56px, 6vw, 84px);
+  block-size: clamp(56px, 6vw, 84px);
+  border: 1px solid var(--pd-refractive-border);
+  border-radius: var(--pd-radius-surface);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--pd-refractive-sheen) 42%, transparent),
+    0 22px 42px -30px color-mix(in srgb, var(--pd-text) 38%, transparent);
+}
+
+.pd-f0-semantic-colors .pd-f0-color-role[data-color='canvas'] .pd-f0-color-role__swatch {
+  background: var(--pd-canvas);
+}
+
+.pd-f0-semantic-colors .pd-f0-color-role[data-color='surface'] .pd-f0-color-role__swatch {
+  background: var(--pd-surface);
+}
+
+.pd-f0-semantic-colors .pd-f0-color-role[data-color='text'] .pd-f0-color-role__swatch {
+  background: var(--pd-text);
+}
+
+.pd-f0-semantic-colors .pd-f0-color-role[data-color='interaction'] .pd-f0-color-role__swatch {
+  background: var(--pd-interactive);
+}
+
+.pd-f0-semantic-colors .pd-f0-color-role[data-color='data'] .pd-f0-color-role__swatch {
+  background: var(--pd-data-accent);
+}
+
+.pd-f0-semantic-colors .pd-f0-color-role[data-color='focus'] .pd-f0-color-role__swatch {
+  background: var(--pd-focus-visible);
+}
+
+.pd-f0-semantic-colors .pd-f0-color-role__copy {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pd-f0-semantic-colors .pd-f0-color-role h3,
+.pd-f0-semantic-colors .pd-f0-action-color h3,
+.pd-f0-semantic-colors .pd-f0-data-swatch h3 {
+  margin: 0;
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-body-large);
+  font-weight: var(--pd-font-weight-medium);
+  line-height: 1.28;
+  letter-spacing: -0.018em;
+}
+
+.pd-f0-semantic-colors .pd-f0-color-role p,
+.pd-f0-semantic-colors .pd-f0-action-color p,
+.pd-f0-semantic-colors .pd-f0-semantic-status p {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+  line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-f0-semantic-colors .pd-f0-color-role .pd-f0-token {
+  grid-column: 2;
+}
+
+.pd-f0-semantic-colors .pd-f0-action-color-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-block: 1px solid var(--pd-separator);
+}
+
+.pd-f0-semantic-colors .pd-f0-action-color {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: var(--pd-space-4);
+  padding: clamp(18px, 2.4vw, 28px);
+  border-left: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-f0-semantic-colors .pd-f0-action-color:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+
+.pd-f0-semantic-colors .pd-f0-action-color:last-child {
+  padding-right: 0;
+}
+
+.pd-f0-semantic-colors .pd-f0-action-color__line {
+  display: block;
+  inline-size: 100%;
+  max-inline-size: 7.5rem;
+  block-size: 8px;
+  border-radius: var(--pd-radius-pill);
+}
+
+.pd-f0-semantic-colors .pd-f0-action-color[data-color='main'] .pd-f0-action-color__line {
+  background: var(--pd-brand-action);
+}
+
+.pd-f0-semantic-colors .pd-f0-action-color[data-color='navigation'] .pd-f0-action-color__line {
+  background: var(--pd-interactive);
+}
+
+.pd-f0-semantic-colors .pd-f0-action-color[data-color='data'] .pd-f0-action-color__line {
+  background: var(--pd-data-accent);
+}
+
+.pd-f0-semantic-colors .pd-f0-action-color[data-color='danger'] .pd-f0-action-color__line {
+  background: var(--pd-status-danger);
+}
+
+.pd-f0-semantic-colors .pd-f0-action-color > div {
+  display: grid;
+  gap: 8px;
+}
+
+.pd-f0-semantic-colors .pd-f0-data-palette {
+  display: grid;
+  gap: clamp(20px, 2.8vw, 34px);
+  min-width: 0;
+}.pd-f0-semantic-colors .pd-f0-data-palette__band {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  min-height: clamp(56px, 6vw, 82px);
+}
+
+.pd-f0-semantic-colors .pd-f0-data-palette__band [data-series='1'],
+.pd-f0-semantic-colors .pd-f0-data-swatch[data-series='1'] .pd-f0-data-swatch__sample {
+  background: var(--pd-data-series-1);
+}
+
+.pd-f0-semantic-colors .pd-f0-data-palette__band [data-series='2'],
+.pd-f0-semantic-colors .pd-f0-data-swatch[data-series='2'] .pd-f0-data-swatch__sample {
+  background: var(--pd-data-series-2);
+}
+
+.pd-f0-semantic-colors .pd-f0-data-palette__band [data-series='3'],
+.pd-f0-semantic-colors .pd-f0-data-swatch[data-series='3'] .pd-f0-data-swatch__sample {
+  background: var(--pd-data-series-3);
+}
+
+.pd-f0-semantic-colors .pd-f0-data-palette__band [data-series='4'],
+.pd-f0-semantic-colors .pd-f0-data-swatch[data-series='4'] .pd-f0-data-swatch__sample {
+  background: var(--pd-data-series-4);
+}
+
+.pd-f0-semantic-colors .pd-f0-data-palette__band [data-series='5'],
+.pd-f0-semantic-colors .pd-f0-data-swatch[data-series='5'] .pd-f0-data-swatch__sample {
+  background: var(--pd-data-series-5);
+}
+
+.pd-f0-semantic-colors .pd-f0-data-palette__band [data-series='6'],
+.pd-f0-semantic-colors .pd-f0-data-swatch[data-series='6'] .pd-f0-data-swatch__sample {
+  background: var(--pd-data-series-6);
+}
+
+.pd-f0-semantic-colors .pd-f0-data-palette__band [data-series='7'],
+.pd-f0-semantic-colors .pd-f0-data-swatch[data-series='7'] .pd-f0-data-swatch__sample {
+  background: var(--pd-data-series-7);
+}
+
+.pd-f0-semantic-colors .pd-f0-data-palette__band [data-series='8'],
+.pd-f0-semantic-colors .pd-f0-data-swatch[data-series='8'] .pd-f0-data-swatch__sample {
+  background: var(--pd-data-series-8);
+}
+
+.pd-f0-semantic-colors .pd-f0-data-palette__band [data-series='9'],
+.pd-f0-semantic-colors .pd-f0-data-swatch[data-series='9'] .pd-f0-data-swatch__sample {
+  background: var(--pd-data-series-9);
+}
+
+.pd-f0-semantic-colors .pd-f0-data-palette__band [data-series='10'],
+.pd-f0-semantic-colors .pd-f0-data-swatch[data-series='10'] .pd-f0-data-swatch__sample {
+  background: var(--pd-data-series-10);
+}
+
+.pd-f0-semantic-colors .pd-f0-data-palette__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  border-block: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-f0-semantic-colors .pd-f0-data-swatch {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: var(--pd-space-3);
+  align-items: start;
+  min-width: 0;
+  padding: var(--pd-space-4);
+  border-left: 1px solid var(--pd-separator-subtle);
+  border-top: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-f0-semantic-colors .pd-f0-data-swatch:nth-child(-n + 5) {
+  border-top: 0;
+}
+
+.pd-f0-semantic-colors .pd-f0-data-swatch:nth-child(5n + 1) {
+  border-left: 0;
+}
+
+.pd-f0-semantic-colors .pd-f0-data-swatch__sample {
+  display: block;
+  inline-size: 36px;
+  block-size: 14px;
+  margin-top: 4px;
+  border-radius: var(--pd-radius-pill);
+}
+
+.pd-f0-semantic-colors .pd-f0-data-swatch > div {
+  display: grid;
+  gap: 6px;
+}
+
+.pd-f0-semantic-colors .pd-f0-semantic-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-block: 1px solid var(--pd-separator);
+}
+
+.pd-f0-semantic-colors .pd-f0-semantic-status {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: var(--pd-space-3);
+  padding: clamp(18px, 2.2vw, 26px);
+  border-left: 1px solid var(--pd-separator-subtle);
+  border-top: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-f0-semantic-colors .pd-f0-semantic-status:nth-child(-n + 3) {
+  border-top: 0;
+}
+
+.pd-f0-semantic-colors .pd-f0-semantic-status:nth-child(3n + 1) {
+  border-left: 0;
+}
+
+.pd-f0-semantic-colors .pd-f0-semantic-status .pd-status-badge {
+  inline-size: max-content;
+  max-inline-size: none;
+  width: auto;
+  max-width: none;
+  justify-self: start;
+}
+
+.pd-f0-semantic-colors .pd-f0-semantic-status .pd-f0-token {
+  margin-top: var(--pd-space-1);
+}
+
+@media (max-width: 1040px) {
+  .pd-f0-semantic-colors .pd-f0-action-color-grid,
+  .pd-f0-semantic-colors .pd-f0-data-palette__grid,
+  .pd-f0-semantic-colors .pd-f0-semantic-status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pd-f0-semantic-colors .pd-f0-action-color:nth-child(odd),
+  .pd-f0-semantic-colors .pd-f0-data-swatch:nth-child(odd),
+  .pd-f0-semantic-colors .pd-f0-semantic-status:nth-child(odd) {
+    border-left: 0;
+  }
+
+  .pd-f0-semantic-colors .pd-f0-action-color:nth-child(n + 3),
+  .pd-f0-semantic-colors .pd-f0-data-swatch:nth-child(n + 3),
+  .pd-f0-semantic-colors .pd-f0-semantic-status:nth-child(n + 3) {
+    border-top: 1px solid var(--pd-separator-subtle);
+  }
+}
+
+@media (max-width: 760px) {
+  .pd-f0-semantic-colors .pd-f0-color-role-grid,
+  .pd-f0-semantic-colors .pd-f0-action-color-grid,
+  .pd-f0-semantic-colors .pd-f0-data-palette__grid,
+  .pd-f0-semantic-colors .pd-f0-semantic-status-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-f0-semantic-colors .pd-f0-color-role,
+  .pd-f0-semantic-colors .pd-f0-action-color,
+  .pd-f0-semantic-colors .pd-f0-data-swatch,
+  .pd-f0-semantic-colors .pd-f0-semantic-status {
+    border-left: 0;
+  }
+
+  .pd-f0-semantic-colors .pd-f0-color-role {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-f0-semantic-colors .pd-f0-color-role .pd-f0-token {
+    grid-column: auto;
+  }.pd-f0-semantic-colors .pd-f0-data-palette__band {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+  .pd-f0-semantic-colors .pd-f0-data-palette__band span {
+    min-height: 34px;
+  }
+}

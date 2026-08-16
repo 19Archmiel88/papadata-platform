@@ -1,7 +1,3 @@
-/**
- * Punkt eksportu modułu:
- * src/screens/decisions
- *
- * Moduł nie zawiera kodu legacy.
- */
-export {};
+export { DecisionsScreen, DecisionsWorkspace } from './DecisionsScreen';
+export { createDecisionsStorybookData, decisionsScreenDefinitions, findDecisionsScreenDefinition } from './decisionsData';
+export type { DecisionsScreenDefinition, DecisionsWorkspaceData } from './decisionsData';

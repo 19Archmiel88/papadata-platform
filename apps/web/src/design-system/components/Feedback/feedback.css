@@ -206,8 +206,11 @@
   --pd-badge-tint: var(--pd-surface-subtle);
 
   display: inline-flex;
-  max-width: 100%;
+  inline-size: max-content;
+  max-inline-size: none;
+  max-width: none;
   min-width: 0;
+  flex: 0 0 auto;
   align-items: center;
   gap: var(--pd-space-2);
   padding: 0.32rem 0.58rem;
@@ -219,6 +222,7 @@
   font-size: var(--pd-type-size-caption);
   font-weight: var(--pd-font-weight-medium);
   line-height: 1;
+  white-space: nowrap;
   vertical-align: middle;
 }
 
@@ -278,10 +282,11 @@
 }
 
 .pd-status-badge__text {
-  min-width: 0;
-  overflow: hidden;
+  min-width: max-content;
+  max-inline-size: none;
+  overflow: visible;
   color: currentColor;
-  text-overflow: ellipsis;
+  text-overflow: clip;
   white-space: nowrap;
 }
 

@@ -25,9 +25,7 @@
   margin: 0;
   color: var(--pd-text-secondary);
   line-height: var(--pd-line-height-relaxed);
-}
-
-.pd-x18-decision-workspace .pd-f0-depth-stage__assistant-header span,
+}.pd-x18-decision-workspace .pd-f0-depth-stage__assistant-header span,
 .pd-x18-decision-workspace .pd-f0-depth-stage__assistant-context span,
 .pd-x18-decision-workspace .pd-f0-depth-stage__assistant-thread span {
   color: var(--pd-text-secondary);
@@ -47,4 +45,6 @@
     inline-size: 100%;
     margin-block-start: var(--pd-space-4);
   }
+}[data-pd-story-section="18"] .pd-x18-decision-workspace__recommendation {
+  padding: var(--pd-space-4);
 }

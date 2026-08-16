@@ -197,4 +197,8 @@
 
 .pd-viz-story__variant-list {
   min-inline-size: 0;
+}[data-pd-story-section="15"] svg text {
+  fill: var(--pd-text-muted);
+}[data-pd-story-section="15"] svg line {
+  stroke: var(--pd-separator-subtle);
 }

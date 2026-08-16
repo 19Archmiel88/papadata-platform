@@ -1,0 +1,2722 @@
+[
+  {
+    "operationId": "access.bootstrap",
+    "method": "POST",
+    "servicePath": "/v1/access/bootstrap",
+    "bffPath": "/api/v1/access/bootstrap",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "access.resolve",
+    "method": "POST",
+    "servicePath": "/v1/access/resolve",
+    "bffPath": "/api/v1/access/resolve",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-access-policy"
+  },
+  {
+    "operationId": "access.tenant.select",
+    "method": "POST",
+    "servicePath": "/v1/access/tenant/select",
+    "bffPath": "/api/v1/access/tenant/select",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "access.tenants.list",
+    "method": "GET",
+    "servicePath": "/v1/access/tenants/list",
+    "bffPath": "/api/v1/access/tenants/list",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "access.workspace.select",
+    "method": "POST",
+    "servicePath": "/v1/access/workspace/select",
+    "bffPath": "/api/v1/access/workspace/select",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "access.workspaces.list",
+    "method": "GET",
+    "servicePath": "/v1/access/workspaces/list",
+    "bffPath": "/api/v1/access/workspaces/list",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "actions.read",
+    "method": "GET",
+    "servicePath": "/v1/actions/read",
+    "bffPath": "/api/v1/actions/read",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "actions.write",
+    "method": "POST",
+    "servicePath": "/v1/actions/write",
+    "bffPath": "/api/v1/actions/write",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "ai.actions.approve",
+    "method": "POST",
+    "servicePath": "/v1/ai/actions/{key}/approve",
+    "bffPath": "/api/v1/ai/actions/{key}/approve",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "ai.actions.create",
+    "method": "POST",
+    "servicePath": "/v1/ai/actions",
+    "bffPath": "/api/v1/ai/actions",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "ai.history.list",
+    "method": "GET",
+    "servicePath": "/v1/ai/history",
+    "bffPath": "/api/v1/ai/history",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "ai.runs.create",
+    "method": "POST",
+    "servicePath": "/v1/ai/runs",
+    "bffPath": "/api/v1/ai/runs",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "analytics.metrics.compare",
+    "method": "POST",
+    "servicePath": "/v1/metrics/compare",
+    "bffPath": "/api/v1/metrics/compare",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "analytics.metrics.list",
+    "method": "GET",
+    "servicePath": "/v1/metrics",
+    "bffPath": "/api/v1/metrics",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "annotations.create",
+    "method": "POST",
+    "servicePath": "/v1/annotations",
+    "bffPath": "/api/v1/annotations",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "annotations.delete",
+    "method": "DELETE",
+    "servicePath": "/v1/annotations/{key}",
+    "bffPath": "/api/v1/annotations/{key}",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "annotations.list",
+    "method": "GET",
+    "servicePath": "/v1/annotations",
+    "bffPath": "/api/v1/annotations",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "audit.chain.verify",
+    "method": "POST",
+    "servicePath": "/v1/audit/verify",
+    "bffPath": "/api/v1/audit/verify",
+    "controllerFile": "apps/api/src/production/audit/audit.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "auth.access.blocked.read",
+    "method": "GET",
+    "servicePath": "/v1/auth/access/blocked",
+    "bffPath": "/api/v1/auth/access/blocked",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "auth.access.resolve",
+    "method": "POST",
+    "servicePath": "/v1/auth/access/resolve",
+    "bffPath": "/api/v1/auth/access/resolve",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-access-policy"
+  },
+  {
+    "operationId": "auth.account.link",
+    "method": "POST",
+    "servicePath": "/v1/auth/account/link",
+    "bffPath": "/api/v1/auth/account/link",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "explicit-limited-handler"
+  },
+  {
+    "operationId": "auth.consents.accept",
+    "method": "POST",
+    "servicePath": "/v1/auth/consents",
+    "bffPath": "/api/v1/auth/consents",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "auth.email.resend",
+    "method": "POST",
+    "servicePath": "/v1/auth/email/resend",
+    "bffPath": "/api/v1/auth/email/resend",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "explicit-limited-handler"
+  },
+  {
+    "operationId": "auth.email.verify",
+    "method": "POST",
+    "servicePath": "/v1/auth/email/verify",
+    "bffPath": "/api/v1/auth/email/verify",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "auth.login",
+    "method": "POST",
+    "servicePath": "/v1/auth/login",
+    "bffPath": "/api/v1/auth/login",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "native-identity-service"
+  },
+  {
+    "operationId": "auth.logout",
+    "method": "POST",
+    "servicePath": "/v1/auth/logout",
+    "bffPath": "/api/v1/auth/logout",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "auth.mfa.confirm",
+    "method": "POST",
+    "servicePath": "/v1/auth/mfa/confirm",
+    "bffPath": "/api/v1/auth/mfa/confirm",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "auth.mfa.enroll",
+    "method": "POST",
+    "servicePath": "/v1/auth/mfa/enroll",
+    "bffPath": "/api/v1/auth/mfa/enroll",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "auth.mfa.verify",
+    "method": "POST",
+    "servicePath": "/v1/auth/mfa/verify",
+    "bffPath": "/api/v1/auth/mfa/verify",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "auth.oauth.callback",
+    "method": "POST",
+    "servicePath": "/v1/auth/oauth/callback",
+    "bffPath": "/api/v1/auth/oauth/callback",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "explicit-limited-handler"
+  },
+  {
+    "operationId": "auth.oauth.start",
+    "method": "POST",
+    "servicePath": "/v1/auth/oauth/start",
+    "bffPath": "/api/v1/auth/oauth/start",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "explicit-limited-handler"
+  },
+  {
+    "operationId": "auth.password.recovery.request",
+    "method": "POST",
+    "servicePath": "/v1/auth/password/recovery/request",
+    "bffPath": "/api/v1/auth/password/recovery/request",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "explicit-limited-handler"
+  },
+  {
+    "operationId": "auth.password.recovery.token.validate",
+    "method": "POST",
+    "servicePath": "/v1/auth/password/recovery/token/validate",
+    "bffPath": "/api/v1/auth/password/recovery/token/validate",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "explicit-limited-handler"
+  },
+  {
+    "operationId": "auth.password.reset",
+    "method": "POST",
+    "servicePath": "/v1/auth/password/reset",
+    "bffPath": "/api/v1/auth/password/reset",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "auth.reauthenticate",
+    "method": "POST",
+    "servicePath": "/v1/auth/reauthenticate",
+    "bffPath": "/api/v1/auth/reauthenticate",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "auth.register.email",
+    "method": "POST",
+    "servicePath": "/v1/auth/register/email",
+    "bffPath": "/api/v1/auth/register/email",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "native-identity-service"
+  },
+  {
+    "operationId": "auth.registration.finalize",
+    "method": "POST",
+    "servicePath": "/v1/auth/registration/finalize",
+    "bffPath": "/api/v1/auth/registration/finalize",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "auth.session.read",
+    "method": "GET",
+    "servicePath": "/v1/auth/session",
+    "bffPath": "/api/v1/auth/session",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "auth.status.read",
+    "method": "GET",
+    "servicePath": "/v1/auth/status",
+    "bffPath": "/api/v1/auth/status",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "billing.adjustments.read",
+    "method": "GET",
+    "servicePath": "/v1/billing/korekty",
+    "bffPath": "/api/v1/billing/korekty",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.change-cancel.read",
+    "method": "GET",
+    "servicePath": "/v1/billing/zmiana-i-anulowanie",
+    "bffPath": "/api/v1/billing/zmiana-i-anulowanie",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.entitlements.read",
+    "method": "GET",
+    "servicePath": "/v1/billing/entitlements",
+    "bffPath": "/api/v1/billing/entitlements",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.invoices.read",
+    "method": "GET",
+    "servicePath": "/v1/billing/faktury",
+    "bffPath": "/api/v1/billing/faktury",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.overdue-payment.read",
+    "method": "GET",
+    "servicePath": "/v1/billing/zalegla-platnosc",
+    "bffPath": "/api/v1/billing/zalegla-platnosc",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.overdue.resolve",
+    "method": "POST",
+    "servicePath": "/v1/billing/overdue/resolve",
+    "bffPath": "/api/v1/billing/overdue/resolve",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.payment.method.update",
+    "method": "PUT",
+    "servicePath": "/v1/billing/payment-method",
+    "bffPath": "/api/v1/billing/payment-method",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.payments.read",
+    "method": "GET",
+    "servicePath": "/v1/billing/platnosci",
+    "bffPath": "/api/v1/billing/platnosci",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.pilot-to-subscription.read",
+    "method": "GET",
+    "servicePath": "/v1/billing/pilot-do-abonamentu",
+    "bffPath": "/api/v1/billing/pilot-do-abonamentu",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.pilot.read",
+    "method": "GET",
+    "servicePath": "/v1/billing/pilot",
+    "bffPath": "/api/v1/billing/pilot",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.plan.select",
+    "method": "POST",
+    "servicePath": "/v1/billing/plan/select",
+    "bffPath": "/api/v1/billing/plan/select",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.plans.read",
+    "method": "GET",
+    "servicePath": "/v1/billing/plany",
+    "bffPath": "/api/v1/billing/plany",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.read",
+    "method": "GET",
+    "servicePath": "/v1/billing/read",
+    "bffPath": "/api/v1/billing/read",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.subscription.activate",
+    "method": "POST",
+    "servicePath": "/v1/billing/subscription/activate",
+    "bffPath": "/api/v1/billing/subscription/activate",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.subscription.change-plan",
+    "method": "POST",
+    "servicePath": "/v1/billing/subscription/change-plan",
+    "bffPath": "/api/v1/billing/subscription/change-plan",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "billing.subscription.current.read",
+    "method": "GET",
+    "servicePath": "/v1/billing/subscription",
+    "bffPath": "/api/v1/billing/subscription",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "billing.subscription.read",
+    "method": "GET",
+    "servicePath": "/v1/billing/subskrypcja",
+    "bffPath": "/api/v1/billing/subskrypcja",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.usage-limits.read",
+    "method": "GET",
+    "servicePath": "/v1/billing/uzycie-i-limity",
+    "bffPath": "/api/v1/billing/uzycie-i-limity",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "billing.write",
+    "method": "POST",
+    "servicePath": "/v1/billing/write",
+    "bffPath": "/api/v1/billing/write",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-billing-policy"
+  },
+  {
+    "operationId": "campaigns.attribution-sales.read",
+    "method": "GET",
+    "servicePath": "/v1/campaigns/atrybucja-i-sprzedaz",
+    "bffPath": "/api/v1/campaigns/atrybucja-i-sprzedaz",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "campaigns.budget.change.propose",
+    "method": "POST",
+    "servicePath": "/v1/campaigns/budget/proposals",
+    "bffPath": "/api/v1/campaigns/budget/proposals",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "campaigns.budget.read",
+    "method": "GET",
+    "servicePath": "/v1/campaigns/budzet",
+    "bffPath": "/api/v1/campaigns/budzet",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "campaigns.budget.recommendation.read",
+    "method": "GET",
+    "servicePath": "/v1/campaigns/budget/recommendation",
+    "bffPath": "/api/v1/campaigns/budget/recommendation",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "campaigns.detail.read",
+    "method": "GET",
+    "servicePath": "/v1/campaigns/szczegoly-kampanii",
+    "bffPath": "/api/v1/campaigns/szczegoly-kampanii",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "campaigns.diagnostics.read",
+    "method": "GET",
+    "servicePath": "/v1/campaigns/diagnostyka",
+    "bffPath": "/api/v1/campaigns/diagnostyka",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "campaigns.list",
+    "method": "GET",
+    "servicePath": "/v1/campaigns",
+    "bffPath": "/api/v1/campaigns",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "campaigns.list.read",
+    "method": "GET",
+    "servicePath": "/v1/campaigns/lista-kampanii",
+    "bffPath": "/api/v1/campaigns/lista-kampanii",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "campaigns.overview.read",
+    "method": "GET",
+    "servicePath": "/v1/campaigns/przeglad",
+    "bffPath": "/api/v1/campaigns/przeglad",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "campaigns.read",
+    "method": "GET",
+    "servicePath": "/v1/campaigns/read",
+    "bffPath": "/api/v1/campaigns/read",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "campaigns.recommendations.read",
+    "method": "GET",
+    "servicePath": "/v1/campaigns/rekomendacje-kontekst-domenowy",
+    "bffPath": "/api/v1/campaigns/rekomendacje-kontekst-domenowy",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "campaigns.write",
+    "method": "POST",
+    "servicePath": "/v1/campaigns/write",
+    "bffPath": "/api/v1/campaigns/write",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "command-center.ai-recommendations.read",
+    "method": "GET",
+    "servicePath": "/v1/command-center/rekomendacje-ai-skrot",
+    "bffPath": "/api/v1/command-center/rekomendacje-ai-skrot",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "command-center.attention.queue.read",
+    "method": "GET",
+    "servicePath": "/v1/command-center/kolejka-uwagi",
+    "bffPath": "/api/v1/command-center/kolejka-uwagi",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "command-center.customers-summary.read",
+    "method": "GET",
+    "servicePath": "/v1/command-center/klienci",
+    "bffPath": "/api/v1/command-center/klienci",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "command-center.drivers.read",
+    "method": "GET",
+    "servicePath": "/v1/command-center/drivery-wyniku",
+    "bffPath": "/api/v1/command-center/drivery-wyniku",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "command-center.funnel.read",
+    "method": "GET",
+    "servicePath": "/v1/command-center/lejek",
+    "bffPath": "/api/v1/command-center/lejek",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "command-center.kpi.read",
+    "method": "GET",
+    "servicePath": "/v1/command-center/kpi",
+    "bffPath": "/api/v1/command-center/kpi",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "command-center.overview.read",
+    "method": "GET",
+    "servicePath": "/v1/command-center/widok-glowny",
+    "bffPath": "/api/v1/command-center/widok-glowny",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "command-center.plan-performance.read",
+    "method": "GET",
+    "servicePath": "/v1/command-center/plan-vs-wynik",
+    "bffPath": "/api/v1/command-center/plan-vs-wynik",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "command-center.products-summary.read",
+    "method": "GET",
+    "servicePath": "/v1/command-center/produkty",
+    "bffPath": "/api/v1/command-center/produkty",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "command-center.read",
+    "method": "GET",
+    "servicePath": "/v1/command-center/read",
+    "bffPath": "/api/v1/command-center/read",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "command-center.sales-signals.read",
+    "method": "GET",
+    "servicePath": "/v1/command-center/sygnaly-sprzedazowe",
+    "bffPath": "/api/v1/command-center/sygnaly-sprzedazowe",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "command-center.sales-sources.read",
+    "method": "GET",
+    "servicePath": "/v1/command-center/zrodla-sprzedazy",
+    "bffPath": "/api/v1/command-center/zrodla-sprzedazy",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "command-center.traffic-summary.read",
+    "method": "GET",
+    "servicePath": "/v1/command-center/ruch",
+    "bffPath": "/api/v1/command-center/ruch",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "command-center.waterfall.read",
+    "method": "GET",
+    "servicePath": "/v1/command-center/waterfall",
+    "bffPath": "/api/v1/command-center/waterfall",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "command-center.write",
+    "method": "POST",
+    "servicePath": "/v1/command-center/write",
+    "bffPath": "/api/v1/command-center/write",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "canonical-command-center-runtime"
+  },
+  {
+    "operationId": "company.draft.update",
+    "method": "PUT",
+    "servicePath": "/v1/company/draft",
+    "bffPath": "/api/v1/company/draft",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "company.lookup",
+    "method": "GET",
+    "servicePath": "/v1/company/lookup",
+    "bffPath": "/api/v1/company/lookup",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "customers.cohorts.read",
+    "method": "GET",
+    "servicePath": "/v1/customers/kohorty",
+    "bffPath": "/api/v1/customers/kohorty",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "customers.identity-conflicts.read",
+    "method": "GET",
+    "servicePath": "/v1/customers/konflikty-tozsamosci",
+    "bffPath": "/api/v1/customers/konflikty-tozsamosci",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "customers.impact.read",
+    "method": "GET",
+    "servicePath": "/v1/customers/analiza-wplywu",
+    "bffPath": "/api/v1/customers/analiza-wplywu",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "customers.list",
+    "method": "GET",
+    "servicePath": "/v1/customers",
+    "bffPath": "/api/v1/customers",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "customers.overview.read",
+    "method": "GET",
+    "servicePath": "/v1/customers/przeglad",
+    "bffPath": "/api/v1/customers/przeglad",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "customers.privacy.read",
+    "method": "GET",
+    "servicePath": "/v1/customers/prywatnosc",
+    "bffPath": "/api/v1/customers/prywatnosc",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "customers.pseudonymized-detail.read",
+    "method": "GET",
+    "servicePath": "/v1/customers/szczegoly-pseudonimizowane",
+    "bffPath": "/api/v1/customers/szczegoly-pseudonimizowane",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "customers.read",
+    "method": "GET",
+    "servicePath": "/v1/customers/read",
+    "bffPath": "/api/v1/customers/read",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "customers.segment.analyze",
+    "method": "GET",
+    "servicePath": "/v1/customers/segment/analyze",
+    "bffPath": "/api/v1/customers/segment/analyze",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "customers.segments.read",
+    "method": "GET",
+    "servicePath": "/v1/customers/segmenty",
+    "bffPath": "/api/v1/customers/segmenty",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "customers.write",
+    "method": "POST",
+    "servicePath": "/v1/customers/write",
+    "bffPath": "/api/v1/customers/write",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "dashboard.command-center.read",
+    "method": "GET",
+    "servicePath": "/v1/dashboard/command-center",
+    "bffPath": "/api/v1/dashboard/command-center",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "data-quality.center.read",
+    "method": "GET",
+    "servicePath": "/v1/data-quality/centrum-jakosci",
+    "bffPath": "/api/v1/data-quality/centrum-jakosci",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-data-quality-policy"
+  },
+  {
+    "operationId": "data-quality.conflicts.read",
+    "method": "GET",
+    "servicePath": "/v1/data-quality/konflikty",
+    "bffPath": "/api/v1/data-quality/konflikty",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "data-quality.dataset.read",
+    "method": "GET",
+    "servicePath": "/v1/data-quality/zbior-danych",
+    "bffPath": "/api/v1/data-quality/zbior-danych",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "data-quality.issues.create",
+    "method": "POST",
+    "servicePath": "/v1/data-quality/issues",
+    "bffPath": "/api/v1/data-quality/issues",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "data-quality.issues.list",
+    "method": "GET",
+    "servicePath": "/v1/data-quality/issues",
+    "bffPath": "/api/v1/data-quality/issues",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "data-quality.lineage.read",
+    "method": "GET",
+    "servicePath": "/v1/data-quality/pochodzenie-danych",
+    "bffPath": "/api/v1/data-quality/pochodzenie-danych",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "data-quality.manual-review.read",
+    "method": "GET",
+    "servicePath": "/v1/data-quality/przeglad-reczny",
+    "bffPath": "/api/v1/data-quality/przeglad-reczny",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "data-quality.manual-review.submit",
+    "method": "POST",
+    "servicePath": "/v1/data-quality/manual-review",
+    "bffPath": "/api/v1/data-quality/manual-review",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "data-quality.read",
+    "method": "GET",
+    "servicePath": "/v1/data-quality/read",
+    "bffPath": "/api/v1/data-quality/read",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "data-quality.readiness.read",
+    "method": "GET",
+    "servicePath": "/v1/data-quality/readiness",
+    "bffPath": "/api/v1/data-quality/readiness",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-data-quality-policy"
+  },
+  {
+    "operationId": "data-quality.reconciliation.confirm",
+    "method": "POST",
+    "servicePath": "/v1/data-quality/reconciliation/confirm",
+    "bffPath": "/api/v1/data-quality/reconciliation/confirm",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "data-quality.reconciliation.read",
+    "method": "GET",
+    "servicePath": "/v1/data-quality/rekoncyliacja",
+    "bffPath": "/api/v1/data-quality/rekoncyliacja",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-data-quality-policy"
+  },
+  {
+    "operationId": "data-quality.reprocess.start",
+    "method": "POST",
+    "servicePath": "/v1/data-quality/reprocess",
+    "bffPath": "/api/v1/data-quality/reprocess",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "data-quality.reprocessing.read",
+    "method": "GET",
+    "servicePath": "/v1/data-quality/ponowne-przetwarzanie",
+    "bffPath": "/api/v1/data-quality/ponowne-przetwarzanie",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "data-quality.source-overlap.read",
+    "method": "GET",
+    "servicePath": "/v1/data-quality/nakladanie-zrodel",
+    "bffPath": "/api/v1/data-quality/nakladanie-zrodel",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "data-quality.source-priority.read",
+    "method": "GET",
+    "servicePath": "/v1/data-quality/nadrzednosc-zrodla",
+    "bffPath": "/api/v1/data-quality/nadrzednosc-zrodla",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "migrated-data-quality-policy"
+  },
+  {
+    "operationId": "data-quality.write",
+    "method": "POST",
+    "servicePath": "/v1/data-quality/write",
+    "bffPath": "/api/v1/data-quality/write",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "decisions.action-brief.read",
+    "method": "GET",
+    "servicePath": "/v1/decisions/brief-dzialania",
+    "bffPath": "/api/v1/decisions/brief-dzialania",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "decisions.action-detail.read",
+    "method": "GET",
+    "servicePath": "/v1/decisions/szczegoly-dzialania",
+    "bffPath": "/api/v1/decisions/szczegoly-dzialania",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "decisions.action-library.read",
+    "method": "GET",
+    "servicePath": "/v1/decisions/biblioteka-dzialan",
+    "bffPath": "/api/v1/decisions/biblioteka-dzialan",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "decisions.action.brief.create",
+    "method": "POST",
+    "servicePath": "/v1/decisions/action-brief",
+    "bffPath": "/api/v1/decisions/action-brief",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "decisions.center.read",
+    "method": "GET",
+    "servicePath": "/v1/decisions/centrum-decyzji",
+    "bffPath": "/api/v1/decisions/centrum-decyzji",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "decisions.decision.record",
+    "method": "POST",
+    "servicePath": "/v1/decisions/registry",
+    "bffPath": "/api/v1/decisions/registry",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "decisions.measurement.read",
+    "method": "GET",
+    "servicePath": "/v1/decisions/pomiar",
+    "bffPath": "/api/v1/decisions/pomiar",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "decisions.observation.create",
+    "method": "POST",
+    "servicePath": "/v1/decisions/observations",
+    "bffPath": "/api/v1/decisions/observations",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "decisions.observations.read",
+    "method": "GET",
+    "servicePath": "/v1/decisions/obserwacje",
+    "bffPath": "/api/v1/decisions/obserwacje",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "decisions.recommendation.read",
+    "method": "GET",
+    "servicePath": "/v1/decisions/recommendation",
+    "bffPath": "/api/v1/decisions/recommendation",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "decisions.registry.read",
+    "method": "GET",
+    "servicePath": "/v1/decisions/rejestr-decyzji",
+    "bffPath": "/api/v1/decisions/rejestr-decyzji",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "decisions.rekomendacje.read",
+    "method": "GET",
+    "servicePath": "/v1/decisions/rekomendacje",
+    "bffPath": "/api/v1/decisions/rekomendacje",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "decisions.relations.read",
+    "method": "GET",
+    "servicePath": "/v1/decisions/powiazania-z-modulami-i-sprawami",
+    "bffPath": "/api/v1/decisions/powiazania-z-modulami-i-sprawami",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "help.home.read",
+    "method": "GET",
+    "servicePath": "/v1/help/strona-glowna-pomocy",
+    "bffPath": "/api/v1/help/strona-glowna-pomocy",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "help.procedure-detail.read",
+    "method": "GET",
+    "servicePath": "/v1/help/szczegoly-procedury",
+    "bffPath": "/api/v1/help/szczegoly-procedury",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "help.procedures.read",
+    "method": "GET",
+    "servicePath": "/v1/help/procedury",
+    "bffPath": "/api/v1/help/procedury",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "help.read",
+    "method": "GET",
+    "servicePath": "/v1/help/read",
+    "bffPath": "/api/v1/help/read",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "help.results.read",
+    "method": "GET",
+    "servicePath": "/v1/help/lista-wynikow",
+    "bffPath": "/api/v1/help/lista-wynikow",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "help.support-request.read",
+    "method": "GET",
+    "servicePath": "/v1/help/zgloszenie-wsparcia",
+    "bffPath": "/api/v1/help/zgloszenie-wsparcia",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "help.write",
+    "method": "POST",
+    "servicePath": "/v1/help/write",
+    "bffPath": "/api/v1/help/write",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "identity.login",
+    "method": "POST",
+    "servicePath": "/v1/identity/login",
+    "bffPath": "/api/v1/identity/login",
+    "controllerFile": "apps/api/src/production/identity/identity.controller.ts",
+    "auth": "public",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "identity.register",
+    "method": "POST",
+    "servicePath": "/v1/identity/register",
+    "bffPath": "/api/v1/identity/register",
+    "controllerFile": "apps/api/src/production/identity/identity.controller.ts",
+    "auth": "public",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "infrastructure.health.live",
+    "method": "GET",
+    "servicePath": "/health",
+    "bffPath": "/api/health",
+    "controllerFile": "apps/api/src/production/health.controller.ts",
+    "auth": "public",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "infrastructure.health.ready",
+    "method": "GET",
+    "servicePath": "/readyz",
+    "bffPath": "/api/readyz",
+    "controllerFile": "apps/api/src/production/readiness.controller.ts",
+    "auth": "public",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "infrastructure.health.startup",
+    "method": "GET",
+    "servicePath": "/startupz",
+    "bffPath": "/api/startupz",
+    "controllerFile": "apps/api/src/production/readiness.controller.ts",
+    "auth": "public",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "infrastructure.metrics.read",
+    "method": "GET",
+    "servicePath": "/metrics",
+    "bffPath": "/api/metrics",
+    "controllerFile": "apps/api/src/production/observability/metrics.controller.ts",
+    "auth": "infrastructure",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "integrations.backfill.start",
+    "method": "POST",
+    "servicePath": "/v1/integrations/connections/{id}/backfill",
+    "bffPath": "/api/v1/integrations/connections/{id}/backfill",
+    "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "integrations.catalog.read",
+    "method": "GET",
+    "servicePath": "/v1/integrations/katalog-integracji",
+    "bffPath": "/api/v1/integrations/katalog-integracji",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "native-integration-service"
+  },
+  {
+    "operationId": "integrations.connection-wizard.read",
+    "method": "GET",
+    "servicePath": "/v1/integrations/kreator-polaczenia",
+    "bffPath": "/api/v1/integrations/kreator-polaczenia",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "integrations.connection.create",
+    "method": "POST",
+    "servicePath": "/v1/integrations/connections",
+    "bffPath": "/api/v1/integrations/connections",
+    "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "integrations.connections.disconnect",
+    "method": "DELETE",
+    "servicePath": "/v1/integrations/connections/{id}",
+    "bffPath": "/api/v1/integrations/connections/{id}",
+    "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "integrations.connections.list",
+    "method": "GET",
+    "servicePath": "/v1/integrations/connections",
+    "bffPath": "/api/v1/integrations/connections",
+    "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "integrations.detail.read",
+    "method": "GET",
+    "servicePath": "/v1/integrations/szczegoly-integracji",
+    "bffPath": "/api/v1/integrations/szczegoly-integracji",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "integrations.disconnect.read",
+    "method": "GET",
+    "servicePath": "/v1/integrations/odlaczenie",
+    "bffPath": "/api/v1/integrations/odlaczenie",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "integrations.jobs.cancel",
+    "method": "POST",
+    "servicePath": "/v1/integrations/jobs/{id}/cancel",
+    "bffPath": "/api/v1/integrations/jobs/{id}/cancel",
+    "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "integrations.jobs.get",
+    "method": "GET",
+    "servicePath": "/v1/integrations/jobs/{id}",
+    "bffPath": "/api/v1/integrations/jobs/{id}",
+    "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "integrations.jobs.list",
+    "method": "GET",
+    "servicePath": "/v1/integrations/jobs",
+    "bffPath": "/api/v1/integrations/jobs",
+    "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "integrations.jobs.retry",
+    "method": "POST",
+    "servicePath": "/v1/integrations/jobs/{id}/retry",
+    "bffPath": "/api/v1/integrations/jobs/{id}/retry",
+    "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "integrations.oauth.callback",
+    "method": "POST",
+    "servicePath": "/v1/integrations/oauth/callback",
+    "bffPath": "/api/v1/integrations/oauth/callback",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "integrations.provider-outage.read",
+    "method": "GET",
+    "servicePath": "/v1/integrations/awaria-providera",
+    "bffPath": "/api/v1/integrations/awaria-providera",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "integrations.providers.list",
+    "method": "GET",
+    "servicePath": "/v1/integrations/providers",
+    "bffPath": "/api/v1/integrations/providers",
+    "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "integrations.read",
+    "method": "GET",
+    "servicePath": "/v1/integrations/read",
+    "bffPath": "/api/v1/integrations/read",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "native-integration-service"
+  },
+  {
+    "operationId": "integrations.reconnect.read",
+    "method": "GET",
+    "servicePath": "/v1/integrations/ponowne-polaczenie",
+    "bffPath": "/api/v1/integrations/ponowne-polaczenie",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "integrations.reconnect.start",
+    "method": "POST",
+    "servicePath": "/v1/integrations/reconnect/start",
+    "bffPath": "/api/v1/integrations/reconnect/start",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "integrations.sync-history.read",
+    "method": "GET",
+    "servicePath": "/v1/integrations/historia-synchronizacji",
+    "bffPath": "/api/v1/integrations/historia-synchronizacji",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "native-integration-service"
+  },
+  {
+    "operationId": "integrations.sync-run.read",
+    "method": "GET",
+    "servicePath": "/v1/integrations/przebieg-synchronizacji",
+    "bffPath": "/api/v1/integrations/przebieg-synchronizacji",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "native-integration-service"
+  },
+  {
+    "operationId": "integrations.sync-scope.read",
+    "method": "GET",
+    "servicePath": "/v1/integrations/zakres-synchronizacji",
+    "bffPath": "/api/v1/integrations/zakres-synchronizacji",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "integrations.sync.connection.start",
+    "method": "POST",
+    "servicePath": "/v1/integrations/connections/{id}/sync",
+    "bffPath": "/api/v1/integrations/connections/{id}/sync",
+    "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "integrations.sync.resume",
+    "method": "POST",
+    "servicePath": "/v1/integrations/sync/resume",
+    "bffPath": "/api/v1/integrations/sync/resume",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "integrations.sync.start",
+    "method": "POST",
+    "servicePath": "/v1/integrations/sync/start",
+    "bffPath": "/api/v1/integrations/sync/start",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "integrations.webhooks.receive",
+    "method": "POST",
+    "servicePath": "/v1/integrations/webhooks/{provider}/{connectionId}",
+    "bffPath": "/api/v1/integrations/webhooks/{provider}/{connectionId}",
+    "controllerFile": "apps/api/src/production/integrations/webhook.controller.ts",
+    "auth": "external_provider",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "integrations.write",
+    "method": "POST",
+    "servicePath": "/v1/integrations/write",
+    "bffPath": "/api/v1/integrations/write",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "invitation.accept",
+    "method": "POST",
+    "servicePath": "/v1/auth/invitations/accept",
+    "bffPath": "/api/v1/auth/invitations/accept",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "explicit-limited-handler"
+  },
+  {
+    "operationId": "invitation.read",
+    "method": "GET",
+    "servicePath": "/v1/invitation/read",
+    "bffPath": "/api/v1/invitation/read",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "invitation.reject",
+    "method": "POST",
+    "servicePath": "/v1/invitation/reject",
+    "bffPath": "/api/v1/invitation/reject",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "invitation.request",
+    "method": "POST",
+    "servicePath": "/v1/auth/invitations/request",
+    "bffPath": "/api/v1/auth/invitations/request",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "invitation.validate",
+    "method": "POST",
+    "servicePath": "/v1/auth/invitations/validate",
+    "bffPath": "/api/v1/auth/invitations/validate",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "public",
+    "releaseStatus": "compatibility",
+    "implementation": "explicit-limited-handler"
+  },
+  {
+    "operationId": "mobile.device.manage",
+    "method": "POST",
+    "servicePath": "/v1/mobile/device/manage",
+    "bffPath": "/api/v1/mobile/device/manage",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "mobile.invite",
+    "method": "POST",
+    "servicePath": "/v1/mobile/invite",
+    "bffPath": "/api/v1/mobile/invite",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "mobile.use",
+    "method": "GET",
+    "servicePath": "/v1/mobile/use",
+    "bffPath": "/api/v1/mobile/use",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "notifications.list",
+    "method": "GET",
+    "servicePath": "/v1/notifications",
+    "bffPath": "/api/v1/notifications",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "notifications.update",
+    "method": "PATCH",
+    "servicePath": "/v1/notifications/{key}",
+    "bffPath": "/api/v1/notifications/{key}",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "onboarding.profile.update",
+    "method": "PUT",
+    "servicePath": "/v1/onboarding/profile",
+    "bffPath": "/api/v1/onboarding/profile",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "onboarding.progress.read",
+    "method": "GET",
+    "servicePath": "/v1/onboarding/progress",
+    "bffPath": "/api/v1/onboarding/progress",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "onboarding.read",
+    "method": "GET",
+    "servicePath": "/v1/onboarding",
+    "bffPath": "/api/v1/onboarding",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "onboarding.update",
+    "method": "PUT",
+    "servicePath": "/v1/onboarding",
+    "bffPath": "/api/v1/onboarding",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "orders.detail.read",
+    "method": "GET",
+    "servicePath": "/v1/orders/szczegoly",
+    "bffPath": "/api/v1/orders/szczegoly",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "orders.eksport.read",
+    "method": "GET",
+    "servicePath": "/v1/orders/eksport",
+    "bffPath": "/api/v1/orders/eksport",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "orders.list",
+    "method": "GET",
+    "servicePath": "/v1/orders",
+    "bffPath": "/api/v1/orders",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "orders.list.read",
+    "method": "GET",
+    "servicePath": "/v1/orders/lista",
+    "bffPath": "/api/v1/orders/lista",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "orders.os-zdarzen.read",
+    "method": "GET",
+    "servicePath": "/v1/orders/os-zdarzen",
+    "bffPath": "/api/v1/orders/os-zdarzen",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "orders.overview.read",
+    "method": "GET",
+    "servicePath": "/v1/orders/przeglad",
+    "bffPath": "/api/v1/orders/przeglad",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "orders.porownanie-zrodel.read",
+    "method": "GET",
+    "servicePath": "/v1/orders/porownanie-zrodel",
+    "bffPath": "/api/v1/orders/porownanie-zrodel",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "orders.read",
+    "method": "GET",
+    "servicePath": "/v1/orders/read",
+    "bffPath": "/api/v1/orders/read",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "orders.rekoncyliacja-skrot.read",
+    "method": "GET",
+    "servicePath": "/v1/orders/rekoncyliacja-skrot",
+    "bffPath": "/api/v1/orders/rekoncyliacja-skrot",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "orders.write",
+    "method": "POST",
+    "servicePath": "/v1/orders/write",
+    "bffPath": "/api/v1/orders/write",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.action-approval.read",
+    "method": "GET",
+    "servicePath": "/v1/papa/ai-action-approval",
+    "bffPath": "/api/v1/papa/ai-action-approval",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.actions.read",
+    "method": "GET",
+    "servicePath": "/v1/papa/ai-actions",
+    "bffPath": "/api/v1/papa/ai-actions",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.ai.action.approve",
+    "method": "POST",
+    "servicePath": "/v1/papa/ai-actions/approve",
+    "bffPath": "/api/v1/papa/ai-actions/approve",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.ai.action.execute",
+    "method": "POST",
+    "servicePath": "/v1/papa/ai-actions/execute",
+    "bffPath": "/api/v1/papa/ai-actions/execute",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "blocked-until-live-approval",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.ai.action.reject",
+    "method": "POST",
+    "servicePath": "/v1/papa/ai-actions/reject",
+    "bffPath": "/api/v1/papa/ai-actions/reject",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.ai.action.rollback",
+    "method": "POST",
+    "servicePath": "/v1/papa/ai-actions/rollback",
+    "bffPath": "/api/v1/papa/ai-actions/rollback",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "blocked-until-live-approval",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.ai.action.validate",
+    "method": "POST",
+    "servicePath": "/v1/papa/ai-actions/validate",
+    "bffPath": "/api/v1/papa/ai-actions/validate",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.answer.generate",
+    "method": "POST",
+    "servicePath": "/v1/papa/answer",
+    "bffPath": "/api/v1/papa/answer",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.answer.read",
+    "method": "GET",
+    "servicePath": "/v1/papa/odpowiedz-papa",
+    "bffPath": "/api/v1/papa/odpowiedz-papa",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.assistant-shell.read",
+    "method": "GET",
+    "servicePath": "/v1/papa/assistantshell",
+    "bffPath": "/api/v1/papa/assistantshell",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.context-basket.read",
+    "method": "GET",
+    "servicePath": "/v1/papa/context-basket",
+    "bffPath": "/api/v1/papa/context-basket",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.context-panel.read",
+    "method": "GET",
+    "servicePath": "/v1/papa/panel-kontekstowy-papa",
+    "bffPath": "/api/v1/papa/panel-kontekstowy-papa",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.context.capture",
+    "method": "POST",
+    "servicePath": "/v1/papa/context/capture",
+    "bffPath": "/api/v1/papa/context/capture",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.evidence.read",
+    "method": "GET",
+    "servicePath": "/v1/papa/dowody",
+    "bffPath": "/api/v1/papa/dowody",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.governance.read",
+    "method": "GET",
+    "servicePath": "/v1/papa/ustawienia-ai-i-governance",
+    "bffPath": "/api/v1/papa/ustawienia-ai-i-governance",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.history-memory.read",
+    "method": "GET",
+    "servicePath": "/v1/papa/historia-i-pamiec-papa",
+    "bffPath": "/api/v1/papa/historia-i-pamiec-papa",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.lab.read",
+    "method": "GET",
+    "servicePath": "/v1/papa/laboratorium-ai",
+    "bffPath": "/api/v1/papa/laboratorium-ai",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.observation.save",
+    "method": "POST",
+    "servicePath": "/v1/papa/observations",
+    "bffPath": "/api/v1/papa/observations",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.observations.read",
+    "method": "GET",
+    "servicePath": "/v1/papa/obserwacje",
+    "bffPath": "/api/v1/papa/obserwacje",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.proposals.read",
+    "method": "GET",
+    "servicePath": "/v1/papa/propozycje-ai",
+    "bffPath": "/api/v1/papa/propozycje-ai",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.read",
+    "method": "GET",
+    "servicePath": "/v1/papa/read",
+    "bffPath": "/api/v1/papa/read",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "papa.write",
+    "method": "POST",
+    "servicePath": "/v1/papa/write",
+    "bffPath": "/api/v1/papa/write",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "privacy.identity-verifications.create",
+    "method": "POST",
+    "servicePath": "/v1/privacy/identity-verifications",
+    "bffPath": "/api/v1/privacy/identity-verifications",
+    "controllerFile": "apps/api/src/production/privacy/privacy.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "limited",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "privacy.requests.approve",
+    "method": "POST",
+    "servicePath": "/v1/privacy/requests/{id}/approve",
+    "bffPath": "/api/v1/privacy/requests/{id}/approve",
+    "controllerFile": "apps/api/src/production/privacy/privacy.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "limited",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "privacy.requests.create",
+    "method": "POST",
+    "servicePath": "/v1/privacy/requests",
+    "bffPath": "/api/v1/privacy/requests",
+    "controllerFile": "apps/api/src/production/privacy/privacy.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "limited",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "products.catalog.read",
+    "method": "GET",
+    "servicePath": "/v1/products/katalog",
+    "bffPath": "/api/v1/products/katalog",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "products.detail.read",
+    "method": "GET",
+    "servicePath": "/v1/products/szczegoly",
+    "bffPath": "/api/v1/products/szczegoly",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "products.gaps.queue.read",
+    "method": "GET",
+    "servicePath": "/v1/products/kolejka-brakow",
+    "bffPath": "/api/v1/products/kolejka-brakow",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "products.impact.read",
+    "method": "GET",
+    "servicePath": "/v1/products/analiza-wplywu",
+    "bffPath": "/api/v1/products/analiza-wplywu",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "products.list",
+    "method": "GET",
+    "servicePath": "/v1/products",
+    "bffPath": "/api/v1/products",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "products.mapping.read",
+    "method": "GET",
+    "servicePath": "/v1/products/mapowanie",
+    "bffPath": "/api/v1/products/mapowanie",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "products.mapping.update",
+    "method": "PUT",
+    "servicePath": "/v1/products/mapping",
+    "bffPath": "/api/v1/products/mapping",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "products.offers.read",
+    "method": "GET",
+    "servicePath": "/v1/products/oferty",
+    "bffPath": "/api/v1/products/oferty",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "products.overview.read",
+    "method": "GET",
+    "servicePath": "/v1/products/przeglad",
+    "bffPath": "/api/v1/products/przeglad",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "products.performance.read",
+    "method": "GET",
+    "servicePath": "/v1/products/wydajnosc",
+    "bffPath": "/api/v1/products/wydajnosc",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "products.read",
+    "method": "GET",
+    "servicePath": "/v1/products/read",
+    "bffPath": "/api/v1/products/read",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "products.write",
+    "method": "POST",
+    "servicePath": "/v1/products/write",
+    "bffPath": "/api/v1/products/write",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "reports.create",
+    "method": "POST",
+    "servicePath": "/v1/reports",
+    "bffPath": "/api/v1/reports",
+    "controllerFile": "apps/api/src/production/reports/report.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "reports.download",
+    "method": "GET",
+    "servicePath": "/v1/reports/{id}/download",
+    "bffPath": "/api/v1/reports/{id}/download",
+    "controllerFile": "apps/api/src/production/reports/report.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "reports.get",
+    "method": "GET",
+    "servicePath": "/v1/reports/{id}",
+    "bffPath": "/api/v1/reports/{id}",
+    "controllerFile": "apps/api/src/production/reports/report.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "search.query",
+    "method": "GET",
+    "servicePath": "/v1/search",
+    "bffPath": "/api/v1/search",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "security.invitations.token.issue",
+    "method": "POST",
+    "servicePath": "/v1/security/invitations/token",
+    "bffPath": "/api/v1/security/invitations/token",
+    "controllerFile": "apps/api/src/production/security/security.controller.ts",
+    "auth": "step_up+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "security.mfa.confirm",
+    "method": "POST",
+    "servicePath": "/v1/security/mfa/confirm",
+    "bffPath": "/api/v1/security/mfa/confirm",
+    "controllerFile": "apps/api/src/production/security/security.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "security.mfa.enroll",
+    "method": "POST",
+    "servicePath": "/v1/security/mfa/enroll",
+    "bffPath": "/api/v1/security/mfa/enroll",
+    "controllerFile": "apps/api/src/production/security/security.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "security.step-up.issue",
+    "method": "POST",
+    "servicePath": "/v1/security/step-up",
+    "bffPath": "/api/v1/security/step-up",
+    "controllerFile": "apps/api/src/production/security/security.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "settings.account-security.read",
+    "method": "GET",
+    "servicePath": "/v1/settings/bezpieczenstwo-konta",
+    "bffPath": "/api/v1/settings/bezpieczenstwo-konta",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "settings.audit.read",
+    "method": "GET",
+    "servicePath": "/v1/settings/audyt",
+    "bffPath": "/api/v1/settings/audyt",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "settings.current.read",
+    "method": "GET",
+    "servicePath": "/v1/settings",
+    "bffPath": "/api/v1/settings",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "settings.memberships.read",
+    "method": "GET",
+    "servicePath": "/v1/settings/czlonkostwa",
+    "bffPath": "/api/v1/settings/czlonkostwa",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "settings.organization.read",
+    "method": "GET",
+    "servicePath": "/v1/settings/organizacja",
+    "bffPath": "/api/v1/settings/organizacja",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "settings.privacy.read",
+    "method": "GET",
+    "servicePath": "/v1/settings/prywatnosc",
+    "bffPath": "/api/v1/settings/prywatnosc",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "settings.read",
+    "method": "GET",
+    "servicePath": "/v1/settings/read",
+    "bffPath": "/api/v1/settings/read",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "settings.roles.read",
+    "method": "GET",
+    "servicePath": "/v1/settings/role-i-uprawnienia",
+    "bffPath": "/api/v1/settings/role-i-uprawnienia",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "settings.sessions.read",
+    "method": "GET",
+    "servicePath": "/v1/settings/sesje",
+    "bffPath": "/api/v1/settings/sesje",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "settings.support-access.read",
+    "method": "GET",
+    "servicePath": "/v1/settings/dostep-wsparcia",
+    "bffPath": "/api/v1/settings/dostep-wsparcia",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "settings.update",
+    "method": "PUT",
+    "servicePath": "/v1/settings",
+    "bffPath": "/api/v1/settings",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "settings.workspace.profile.update",
+    "method": "PATCH",
+    "servicePath": "/v1/settings/workspace/profile/update",
+    "bffPath": "/api/v1/settings/workspace/profile/update",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "settings.workspace.read",
+    "method": "GET",
+    "servicePath": "/v1/settings/workspace",
+    "bffPath": "/api/v1/settings/workspace",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "settings.write",
+    "method": "POST",
+    "servicePath": "/v1/settings/write",
+    "bffPath": "/api/v1/settings/write",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "support.threads.create",
+    "method": "POST",
+    "servicePath": "/v1/support/threads",
+    "bffPath": "/api/v1/support/threads",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "support.threads.list",
+    "method": "GET",
+    "servicePath": "/v1/support/threads",
+    "bffPath": "/api/v1/support/threads",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "targets.create",
+    "method": "POST",
+    "servicePath": "/v1/targets",
+    "bffPath": "/api/v1/targets",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "targets.list",
+    "method": "GET",
+    "servicePath": "/v1/targets",
+    "bffPath": "/api/v1/targets",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "targets.update",
+    "method": "PATCH",
+    "servicePath": "/v1/targets/{key}",
+    "bffPath": "/api/v1/targets/{key}",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "traffic.channels.read",
+    "method": "GET",
+    "servicePath": "/v1/traffic/kanaly",
+    "bffPath": "/api/v1/traffic/kanaly",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "traffic.drop.diagnose",
+    "method": "GET",
+    "servicePath": "/v1/traffic/drop/diagnose",
+    "bffPath": "/api/v1/traffic/drop/diagnose",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "traffic.event-quality.read",
+    "method": "GET",
+    "servicePath": "/v1/traffic/jakosc-zdarzen",
+    "bffPath": "/api/v1/traffic/jakosc-zdarzen",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "traffic.funnel-definitions.read",
+    "method": "GET",
+    "servicePath": "/v1/traffic/definicje-lejka",
+    "bffPath": "/api/v1/traffic/definicje-lejka",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "traffic.funnel-step.read",
+    "method": "GET",
+    "servicePath": "/v1/traffic/lejek-szczegoly-kroku",
+    "bffPath": "/api/v1/traffic/lejek-szczegoly-kroku",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "traffic.funnel.read",
+    "method": "GET",
+    "servicePath": "/v1/traffic/lejek-widok",
+    "bffPath": "/api/v1/traffic/lejek-widok",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "traffic.ga4-orders.read",
+    "method": "GET",
+    "servicePath": "/v1/traffic/ga4-vs-zamowienia",
+    "bffPath": "/api/v1/traffic/ga4-vs-zamowienia",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "traffic.landing-pages.read",
+    "method": "GET",
+    "servicePath": "/v1/traffic/strony-wejscia",
+    "bffPath": "/api/v1/traffic/strony-wejscia",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "traffic.list",
+    "method": "GET",
+    "servicePath": "/v1/traffic",
+    "bffPath": "/api/v1/traffic",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "traffic.overview.read",
+    "method": "GET",
+    "servicePath": "/v1/traffic/przeglad-ruchu",
+    "bffPath": "/api/v1/traffic/przeglad-ruchu",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "traffic.read",
+    "method": "GET",
+    "servicePath": "/v1/traffic/read",
+    "bffPath": "/api/v1/traffic/read",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "traffic.write",
+    "method": "POST",
+    "servicePath": "/v1/traffic/write",
+    "bffPath": "/api/v1/traffic/write",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "workspace.onboarding.update",
+    "method": "POST",
+    "servicePath": "/v1/workspace/onboarding/update",
+    "bffPath": "/api/v1/workspace/onboarding/update",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "workspace.resolve",
+    "method": "GET",
+    "servicePath": "/v1/workspace/resolve",
+    "bffPath": "/api/v1/workspace/resolve",
+    "controllerFile": "apps/api/src/production/contract-runtime/generated/identity-access.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "compatibility",
+    "implementation": "contract-compatibility-runtime"
+  },
+  {
+    "operationId": "workspaces.list",
+    "method": "GET",
+    "servicePath": "/v1/workspaces",
+    "bffPath": "/api/v1/workspaces",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "workspaces.update",
+    "method": "PATCH",
+    "servicePath": "/v1/workspaces/{key}",
+    "bffPath": "/api/v1/workspaces/{key}",
+    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  }
+]

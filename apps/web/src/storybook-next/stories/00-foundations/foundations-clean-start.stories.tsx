@@ -3,7 +3,6 @@ import type {
   StoryObj,
 } from '@storybook/react-vite';
 import type {
-  CSSProperties,
   ReactNode,
 } from 'react';
 import {
@@ -44,6 +43,7 @@ import './foundation-iconography.css';
 import './foundation-geometry.css';
 import './foundation-accessibility.css';
 import './foundation-status-catalog.css';
+import './foundation-semantic-colors.css';
 import {
   StoryPresentationMeta,
   StoryPresentationPage,
@@ -101,13 +101,16 @@ function FoundationPage({
   title,
   summary,
   children,
+  className,
 }: {
   readonly title: ReactNode;
   readonly summary: ReactNode;
   readonly children: ReactNode;
+  readonly className?: string;
 }) {
   return (
     <StoryPresentationPage
+      className={className}
       headerAside={
         <StoryPresentationMeta
           ariaLabel={copy({
@@ -392,6 +395,7 @@ export const KierunekWizualny: Story = {
   name: 'Kierunek wizualny',
   render: () => (
     <FoundationPage
+      className="pd-f0-foundations-start"
       title={<Localized pl="Start fundamentów wizualnych" en="Visual foundations start" />}
       summary={
         <Localized
@@ -410,17 +414,18 @@ export const KierunekWizualny: Story = {
           />
         }
       >
-        <FoundationLedger label={copy({ pl: 'Chronologia fundamentów', en: 'Foundations chronology' })}>
+        <div className="pd-f0-start-reading" data-reference="demo-only" role="list" aria-label={copy({ pl: 'Chronologia fundamentów', en: 'Foundations chronology' })}>
           {foundationSequence.map((item) => (
-            <LedgerRow
-              detail={copy(item.detail)}
-              key={item.step}
-              label={copy(item.title)}
-              preview={<span className="pd-f0-status-tone">{item.step}</span>}
-              value={<code>{item.owner}</code>}
-            />
+            <article className="pd-f0-start-reading__item" key={item.step} role="listitem">
+              <span className="pd-f0-start-reading__step">{item.step}</span>
+              <div className="pd-f0-start-reading__copy">
+                <h3>{copy(item.title)}</h3>
+                <p>{copy(item.detail)}</p>
+              </div>
+              <code>{item.owner}</code>
+            </article>
           ))}
-        </FoundationLedger>
+        </div>
       </FoundationSection>
 
       <FoundationSection
@@ -493,16 +498,18 @@ export const KierunekWizualny: Story = {
           ))}
         </div>
 
-        <FoundationVariant
-          title={<Localized pl="Kierunek akceptowany i odrzucony" en="Accepted and rejected direction" />}
-          description={
-            <Localized
-              pl="Porównanie nie jest kartą demonstracyjną. To prosta lista decyzji."
-              en="The comparison is not a demo card. It is a direct decision list."
-            />
-          }
-        >
-          <div className="pd-f0-decision-list">
+        <div className="pd-f0-start-direction" data-reference="demo-only">
+          <header>
+            <h3><Localized pl="Kierunek akceptowany i odrzucony" en="Accepted and rejected direction" /></h3>
+            <p>
+              <Localized
+                pl="To nie jest kolejna karta demonstracyjna. To krótka decyzja projektowa dla całego widoku."
+                en="This is not another demo card. It is a short design decision for the whole view."
+              />
+            </p>
+          </header>
+
+          <div className="pd-f0-start-direction__items">
             <div data-result="accepted">
               <StatusBadge status={copy({ pl: 'Status', en: 'Status' })} text={copy({ pl: 'Stosujemy', en: 'Use' })} tone="success" />
               <p><Localized pl="Neutralne powierzchnie, separatory, lokalne akcenty i czytelny rytm danych." en="Neutral surfaces, separators, local accents and a readable data rhythm." /></p>
@@ -512,7 +519,7 @@ export const KierunekWizualny: Story = {
               <p><Localized pl="Glow, ciężkie cienie, przypadkowe gradienty i osobną kartę dla każdego przykładu." en="Glow, heavy shadows, arbitrary gradients and a separate card for every example." /></p>
             </div>
           </div>
-        </FoundationVariant>
+        </div>
       </FoundationSection>
     </FoundationPage>
   ),
@@ -825,108 +832,350 @@ const statusContractExamples = [
 
 export const KolorySemantyczne: Story = {
   name: 'Kolory semantyczne',
-  render: () => (
-    <FoundationPage
-      title={<Localized pl="Kolory semantyczne" en="Semantic colors" />}
-      summary={<Localized pl="Paleta nie służy do dekoracji. Każdy token odpowiada za konkretną informację lub warstwę." en="The palette is not decorative. Each token owns a specific information or surface role." />}
-    >
-      <FoundationSection
-        index="01"
-        title={<Localized pl="Role interfejsu" en="Interface roles" />}
-        summary={<Localized pl="Kolory są prezentowane jako rejestr, nie zbiór osobnych kart." en="Colors are shown as a ledger, not a collection of separate cards." />}
-      >
-        <FoundationLedger label={copy({ pl: 'Kolory interfejsu', en: 'Interface colors' })}>
-          {semanticColors.map((item) => (
-            <LedgerRow
-              key={item.token}
-              label={copy(item.role)}
-              preview={<span className="pd-f0-color-chip" data-color={item.color} />}
-              value={<TokenCode>{item.token}</TokenCode>}
-              detail={<span className="pd-f0-color-value">var({item.token})</span>}
-            />
-          ))}
-        </FoundationLedger>
-      </FoundationSection>
-
-      <FoundationSection
-        index="02"
-        title={<Localized pl="Kolor akcji" en="Action color" />}
-        summary={<Localized pl="Kolor akcji komunikuje rodzaj decyzji. Nie służy do ozdabiania przycisku ani wyróżniania lokalnego fragmentu UI." en="Action color communicates the type of decision. It is not for decorating a button or highlighting a local UI fragment." />}
-      >
-        <FoundationLedger label={copy({ pl: 'Kolory akcji', en: 'Action colors' })}>
-          {actionColorRows.map((item) => (
-            <LedgerRow
-              detail={copy(item.detail)}
-              key={item.token}
-              label={copy(item.label)}
-              preview={<span className="pd-f0-color-chip" data-color={item.color} />}
-              value={<TokenCode>{item.token}</TokenCode>}
-            />
-          ))}
-        </FoundationLedger>
-      </FoundationSection>
-
-      <FoundationSection
-        index="03"
-        title={<Localized pl="Paleta danych" en="Data palette" />}
-        summary={<Localized pl="Serie są rozróżnialne, pozostają spokojne na powierzchni danych i używają dodatkowych kolorów zamiast kreskowania przy większej liczbie kategorii." en="Series remain distinguishable on data surfaces and use additional colors rather than dashed substitutes when category count grows." />}
-      >
-        <div className="pd-f0-series">
-          {dataSeries.map((series) => (
-            <div key={series}>
-              <span data-series={series} />
-              <div>
-                <strong><Localized pl={`Seria ${series}`} en={`Series ${series}`} /></strong>
-                <TokenCode>{`--pd-data-series-${series}`}</TokenCode>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div
-          className="pd-f0-mini-chart"
-          role="img"
-          aria-label={copy({
-            pl: 'Przykład palety danych',
-            en: 'Data palette example',
-          })}
-        >
-          <span data-series="1" style={{ '--value': '68%' } as CSSProperties} />
-          <span data-series="2" style={{ '--value': '44%' } as CSSProperties} />
-          <span data-series="3" style={{ '--value': '57%' } as CSSProperties} />
-          <span data-series="4" style={{ '--value': '32%' } as CSSProperties} />
-          <span data-series="5" style={{ '--value': '76%' } as CSSProperties} />
-          <span data-series="6" style={{ '--value': '49%' } as CSSProperties} />
-          <span data-series="7" style={{ '--value': '62%' } as CSSProperties} />
-          <span data-series="8" style={{ '--value': '38%' } as CSSProperties} />
-          <span data-series="9" style={{ '--value': '54%' } as CSSProperties} />
-          <span data-series="10" style={{ '--value': '71%' } as CSSProperties} />
-        </div>
-      </FoundationSection>
-
-      <FoundationSection
-        index="04"
-        title={<Localized pl="Role tonów semantycznych" en="Semantic tone roles" />}
-        summary={<Localized pl="Ta story opisuje znaczenie tonów. UI komunikatu, badge'a i toasta jest kanonicznie w 00 / 02 Powierzchnie i komunikaty." en="This story describes tone meaning. Notice, badge and toast UI is canonical in 00 / 02 Surfaces and messaging." />}
-      >
-        <p className="pd-f0-status-rule">
+  render: () => {
+    const interfaceRoles = [
+      {
+        key: 'canvas',
+        name: <Localized pl="Canvas" en="Canvas" />,
+        token: '--pd-canvas',
+        swatch: 'var(--pd-canvas)',
+        description: (
           <Localized
-            pl="Środek komunikatu pozostaje neutralny. Ton semantyczny pojawia się jako lokalny akcent i zawsze towarzyszy mu czytelna etykieta."
-            en="The message interior stays neutral. Semantic tone appears as a local accent and is always paired with a readable label."
+            pl="Tło robocze. Ma wyciszać ekran, nie udawać powierzchni danych."
+            en="The workspace background. It calms the screen and does not pretend to be a data surface."
           />
-        </p>
-        <div className="pd-f0-tone-register">
-          {semanticTones.map((item) => (
-            <article key={item.tone}>
-              <span className="pd-f0-status-tone">{copy(item.label)}</span>
-              <TokenCode>{item.token}</TokenCode>
-              <p><Localized {...item.usage} /></p>
-            </article>
-          ))}
-        </div>
-      </FoundationSection>
-    </FoundationPage>
-  ),
+        ),
+      },
+      {
+        key: 'surface',
+        name: <Localized pl="Powierzchnia" en="Surface" />,
+        token: '--pd-surface',
+        swatch: 'var(--pd-surface)',
+        description: (
+          <Localized
+            pl="Miejsce dla treści. Używane wtedy, gdy grupa naprawdę potrzebuje własnego obszaru."
+            en="A place for content. Used only when a group truly needs its own area."
+          />
+        ),
+      },
+      {
+        key: 'text',
+        name: <Localized pl="Tekst" en="Text" />,
+        token: '--pd-text',
+        swatch: 'var(--pd-text)',
+        description: (
+          <Localized
+            pl="Najważniejsza warstwa informacyjna. Musi wygrywać z dekoracją."
+            en="The primary information layer. It must win over decoration."
+          />
+        ),
+      },
+      {
+        key: 'interaction',
+        name: <Localized pl="Interakcja" en="Interaction" />,
+        token: '--pd-interactive',
+        swatch: 'var(--pd-interactive)',
+        description: (
+          <Localized
+            pl="Kolor decyzji i przejścia do działania. Nie służy do ozdabiania fragmentów."
+            en="The color of decisions and actions. It is not used for local decoration."
+          />
+        ),
+      },
+      {
+        key: 'data',
+        name: <Localized pl="Dane" en="Data" />,
+        token: '--pd-data-accent',
+        swatch: 'var(--pd-data-accent)',
+        description: (
+          <Localized
+            pl="Akcent wykresów, serii i punktów danych. Nie konkuruje z CTA."
+            en="The accent for charts, series and data points. It does not compete with CTAs."
+          />
+        ),
+      },
+      {
+        key: 'focus',
+        name: <Localized pl="Fokus" en="Focus" />,
+        token: '--pd-focus-visible',
+        swatch: 'var(--pd-focus-visible)',
+        description: (
+          <Localized
+            pl="Widoczność klawiatury i aktywnej kontroli. Zawsze ponad efektem wizualnym."
+            en="Keyboard and active-control visibility. Always above visual effects."
+          />
+        ),
+      },
+    ];
+
+    const actionRoles = [
+      {
+        key: 'main',
+        name: <Localized pl="Komenda główna" en="Primary command" />,
+        token: '--pd-brand-action',
+        swatch: 'var(--pd-brand-action)',
+        description: (
+          <Localized
+            pl="Zapis, publikacja, potwierdzenie lub uruchomienie procesu."
+            en="Save, publish, confirm or start a flow."
+          />
+        ),
+      },
+      {
+        key: 'navigation',
+        name: <Localized pl="Nawigacja" en="Navigation" />,
+        token: '--pd-interactive',
+        swatch: 'var(--pd-interactive)',
+        description: (
+          <Localized
+            pl="Przejście do raportu, rekordu, integracji albo szczegółu."
+            en="Move to a report, record, integration or detail."
+          />
+        ),
+      },
+      {
+        key: 'data',
+        name: <Localized pl="Akcja w danych" en="Data action" />,
+        token: '--pd-data-accent',
+        swatch: 'var(--pd-data-accent)',
+        description: (
+          <Localized
+            pl="Eksploracja zakresu danych, serii, rekordu albo źródła."
+            en="Explore a data range, series, record or source."
+          />
+        ),
+      },
+      {
+        key: 'danger',
+        name: <Localized pl="Akcja destrukcyjna" en="Destructive action" />,
+        token: '--pd-status-danger',
+        swatch: 'var(--pd-status-danger)',
+        description: (
+          <Localized
+            pl="Usunięcie, odłączenie albo operacja z nieodwracalnym skutkiem."
+            en="Delete, disconnect or perform an irreversible operation."
+          />
+        ),
+      },
+    ];
+
+    const statusRoles: ReadonlyArray<{
+      readonly key: string;
+      readonly tone: SemanticStatusTone;
+      readonly name: string;
+      readonly token: string;
+      readonly description: ReactNode;
+    }> = [
+      {
+        key: 'neutral',
+        tone: 'neutral',
+        name: copy({ pl: 'Neutralny', en: 'Neutral' }),
+        token: '--pd-status-neutral',
+        description: (
+          <Localized
+            pl="Brak oceny. Stan nieaktywny lub informacja pomocnicza."
+            en="No judgement. Inactive state or supporting information."
+          />
+        ),
+      },
+      {
+        key: 'info',
+        tone: 'info',
+        name: copy({ pl: 'Informacyjny', en: 'Informational' }),
+        token: '--pd-status-info',
+        description: (
+          <Localized
+            pl="Informacja, która nie wymaga natychmiastowej reakcji."
+            en="Information that does not require immediate action."
+          />
+        ),
+      },
+      {
+        key: 'success',
+        tone: 'success',
+        name: copy({ pl: 'Sukces', en: 'Success' }),
+        token: '--pd-status-success',
+        description: (
+          <Localized
+            pl="Potwierdzone zakończenie lub poprawny wynik."
+            en="Confirmed completion or a correct result."
+          />
+        ),
+      },
+      {
+        key: 'warning',
+        tone: 'warning',
+        name: copy({ pl: 'Ostrzeżenie', en: 'Warning' }),
+        token: '--pd-status-warning',
+        description: (
+          <Localized
+            pl="Ryzyko, opóźnienie lub stan wymagający uwagi."
+            en="Risk, delay or a state that needs attention."
+          />
+        ),
+      },
+      {
+        key: 'critical',
+        tone: 'critical',
+        name: copy({ pl: 'Błąd', en: 'Error' }),
+        token: '--pd-status-danger',
+        description: (
+          <Localized
+            pl="Błąd, blokada albo nieodwracalny skutek."
+            en="Error, block or irreversible consequence."
+          />
+        ),
+      },
+      {
+        key: 'processing',
+        tone: 'info',
+        name: copy({ pl: 'Przetwarzanie', en: 'Processing' }),
+        token: '--pd-status-info',
+        description: (
+          <Localized
+            pl="Operacja trwa. System oczekuje na wynik."
+            en="An operation is running. The system is waiting for a result."
+          />
+        ),
+      },
+    ];
+
+    return (
+      <FoundationPage
+        className="pd-f0-semantic-colors"
+        title={<Localized pl="Kolory semantyczne" en="Semantic colors" />}
+        summary={
+          <Localized
+            pl="Paleta nie służy do dekoracji. Każdy token odpowiada za konkretną informację lub warstwę."
+            en="The palette is not decorative. Every token owns a specific information type or layer."
+          />
+        }
+      >
+        <FoundationSection
+          index="01"
+          title={<Localized pl="Role interfejsu" en="Interface roles" />}
+          summary={
+            <Localized
+              pl="Kolory są pokazane jako decyzje projektowe, nie jako rejestr technicznych tokenów."
+              en="Colors are shown as design decisions, not as a technical token register."
+            />
+          }
+        >
+          <div className="pd-f0-color-role-grid" data-reference="demo-only">
+            {interfaceRoles.map((role) => (
+              <article className="pd-f0-color-role" data-color={role.key} key={role.key}>
+                <span
+                  aria-hidden="true"
+                  className="pd-f0-color-role__swatch"
+                />
+                <div className="pd-f0-color-role__copy">
+                  <h3>{role.name}</h3>
+                  <p>{role.description}</p>
+                </div>
+                <TokenCode>{role.token}</TokenCode>
+              </article>
+            ))}
+          </div>
+        </FoundationSection>
+
+        <FoundationSection
+          index="02"
+          title={<Localized pl="Kolor akcji" en="Action color" />}
+          summary={
+            <Localized
+              pl="Kolor akcji komunikuje rodzaj decyzji. Nie służy do ozdabiania przycisku ani wyróżniania lokalnego fragmentu UI."
+              en="Action color communicates the type of decision. It is not for decorating a button or highlighting a local UI fragment."
+            />
+          }
+        >
+          <div className="pd-f0-action-color-grid" data-reference="demo-only">
+            {actionRoles.map((role) => (
+              <article className="pd-f0-action-color" data-color={role.key} key={role.key}>
+                <span
+                  aria-hidden="true"
+                  className="pd-f0-action-color__line"
+                />
+                <div>
+                  <h3>{role.name}</h3>
+                  <p>{role.description}</p>
+                </div>
+                <TokenCode>{role.token}</TokenCode>
+              </article>
+            ))}
+          </div>
+        </FoundationSection>
+
+        <FoundationSection
+          index="03"
+          title={<Localized pl="Paleta danych" en="Data palette" />}
+          summary={
+            <Localized
+              pl="Serie są rozróżnialne, pozostają spokojne na powierzchni danych i nie używają dodatkowych kolorów zamiast jasnej legendy."
+              en="Series stay distinguishable, calm on data surfaces and do not use extra colors instead of a clear legend."
+            />
+          }
+        >
+          <div className="pd-f0-data-palette" data-reference="demo-only">
+            <div className="pd-f0-data-palette__band" aria-hidden="true">
+              {Array.from({ length: 10 }, (_, index) => (
+                <span
+                  data-series={index + 1}
+                  key={index}
+                />
+              ))}
+            </div>
+
+            <div className="pd-f0-data-palette__grid">
+              {Array.from({ length: 10 }, (_, index) => {
+                const series = index + 1;
+                return (
+                  <article className="pd-f0-data-swatch" data-series={series} key={series}>
+                    <span
+                      aria-hidden="true"
+                      className="pd-f0-data-swatch__sample"
+                    />
+                    <div>
+                      <h3>
+                        <Localized pl={`Seria ${series}`} en={`Series ${series}`} />
+                      </h3>
+                      <TokenCode>{`--pd-data-series-${series}`}</TokenCode>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </FoundationSection>
+
+        <FoundationSection
+          index="04"
+          title={<Localized pl="Role tonów semantycznych" en="Semantic tone roles" />}
+          summary={
+            <Localized
+              pl="Środek komunikatu pozostaje neutralny. Ton semantyczny pojawia się jako lokalny akcent i zawsze towarzyszy mu czytelna etykieta."
+              en="Message content stays neutral. The semantic tone appears as a local accent and always has a readable label."
+            />
+          }
+        >
+          <div className="pd-f0-semantic-status-grid" data-reference="demo-only">
+            {statusRoles.map((role) => (
+              <article className="pd-f0-semantic-status" key={role.key}>
+                <StatusBadge
+                  status={copy({ pl: 'Status', en: 'Status' })}
+                  text={role.name}
+                  tone={role.tone}
+                />
+                <p>{role.description}</p>
+                <TokenCode>{role.token}</TokenCode>
+              </article>
+            ))}
+          </div>
+        </FoundationSection>
+      </FoundationPage>
+    );
+  },
 };
+
 
 export const Typografia = TypografiaStory;
 

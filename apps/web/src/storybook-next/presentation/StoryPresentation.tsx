@@ -42,6 +42,14 @@ export function StoryPresentationMeta({
   );
 }
 
+function normalizeStorySectionCode(value: ReactNode) {
+  if (typeof value === 'string' || typeof value === 'number') {
+    return String(value);
+  }
+
+  return undefined;
+}
+
 export function StoryPresentationPage({
   children,
   className,
@@ -67,9 +75,13 @@ export function StoryPresentationPage({
   ]
     .filter(Boolean)
     .join(' ');
-
+  const normalizedSectionCode = normalizeStorySectionCode(sectionCode);
   return (
-    <main className={rootClassName} data-story-id={storyId}>
+    <main
+      className={rootClassName}
+      data-pd-story-section={normalizedSectionCode}
+      data-story-id={storyId}
+    >
       <div className="pd-f0-page__inner">
         <header className="pd-f0-page__header">
           <div className="pd-f0-page__label">

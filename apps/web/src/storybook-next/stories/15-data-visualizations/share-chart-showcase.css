@@ -85,4 +85,7 @@
     grid-template-columns: minmax(0, 1fr);
     gap: var(--pd-space-2);
   }
+}/* Prism Refractive pass for share chart stories. */
+[data-pd-story-section="15"] .pd-share-story {
+  padding: var(--pd-space-6);
 }

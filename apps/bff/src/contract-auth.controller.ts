@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Inject, Post, Req, Res } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Options, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { BffIdentitySessionService } from "./identity-session.service.js";
 import { BffSessionAssuranceService } from "./session-assurance.service.js";
+import { BffSecurityService } from "./security.service.js";
 
 @Controller("api/v1/auth")
 export class ContractAuthController {
@@ -11,7 +12,21 @@ export class ContractAuthController {
 
     @Inject(BffSessionAssuranceService)
     private readonly sessionAssurance: BffSessionAssuranceService,
+
+    @Inject(BffSecurityService)
+    private readonly security: BffSecurityService,
   ) {}
+
+
+  @Options("*")
+  preflight(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ): void {
+    this.security.validateHost(request);
+    this.security.applyCorsHeaders(request, reply);
+    reply.status(204).send();
+  }
 
   @Post("register/email")
   registerEmail(

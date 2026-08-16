@@ -608,19 +608,12 @@
 .pd-x18-analytics-search {
   inline-size: min(100%, 19rem);
   min-width: 0;
-}
-
-.pd-x18-analytics-search > :nth-child(2),
+}.pd-x18-analytics-search > :nth-child(2),
 .pd-x18-analytics-filter-select > :nth-child(3) {
   padding-inline: 0;
-  border: 0;
-  border-block-end:
-    var(--pd-border-width-subtle)
+  border-block-end: var(--pd-border-width-subtle)
     solid
     var(--pd-separator-subtle);
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
 }
 
 .pd-x18-analytics-search > :nth-child(2):focus-within,
@@ -691,9 +684,7 @@
   justify-content: flex-end;
   min-inline-size: 0;
   max-inline-size: 100%;
-}
-
-.pd-x18-analytics-settings {
+}.pd-x18-analytics-settings {
   position: absolute;
   z-index: 8;
   inset-block-start: clamp(11rem, 18vw, 14rem);
@@ -702,15 +693,7 @@
   gap: var(--pd-space-4);
   inline-size: min(28rem, calc(100% - var(--pd-space-4)));
   max-block-size: min(32rem, calc(100vh - 8rem));
-  overflow-y: auto;
   padding: var(--pd-space-5);
-  border:
-    var(--pd-border-width-subtle)
-    solid
-    var(--pd-separator-subtle);
-  border-radius: var(--pd-radius-surface);
-  background: var(--pd-surface-raised);
-  box-shadow: var(--pd-shadow-raised);
 }
 
 .pd-x18-analytics-settings__header {
@@ -1491,13 +1474,11 @@
 
   .pd-x18-analytics-filters > * {
     inline-size: min(100%, 16rem);
-  }
-
-  .pd-x18-analytics-settings {
-    position: static;
-    inline-size: 100%;
-    max-block-size: none;
-  }
+  }.pd-x18-analytics-settings {
+  position: static;
+  inline-size: 100%;
+  max-block-size: none;
+}
 
   .pd-x18-analytics-detail {
     inline-size: min(28rem, 92%);
@@ -1589,25 +1570,9 @@
     align-items: stretch;
     justify-content: flex-start;
   }
-}
-
-/* Prism Refractive pass for 18 Wzorce interfejsu. */
-[data-pd-story-section="18"] .pd-x18-region,
-[data-pd-story-section="18"] .pd-x18-flow-region,
-[data-pd-story-section="18"] .pd-x18-card,
-[data-pd-story-section="18"] .pd-x18-flow-list {
-  overflow: hidden;
-  border: 1px solid var(--pd-refractive-border);
-  border-radius: var(--pd-radius-overlay);
-  background: var(--pd-refractive-surface);
-  box-shadow: var(--pd-refractive-depth);
-}
-
-[data-pd-story-section="18"] .pd-x18-region + .pd-x18-region,
+}[data-pd-story-section="18"] .pd-x18-region + .pd-x18-region,
 [data-pd-story-section="18"] .pd-x18-flow-region + .pd-x18-flow-region {
   border-block-start-color: var(--pd-refractive-border);
-}
-
-[data-pd-story-section="18"] .pd-x18-region__eyebrow {
+}[data-pd-story-section="18"] .pd-x18-region__eyebrow {
   color: color-mix(in srgb, var(--pd-brand-accent) 72%, var(--pd-text-muted));
 }

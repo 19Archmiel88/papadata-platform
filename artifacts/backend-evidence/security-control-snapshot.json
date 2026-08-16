@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 1,
+  "generatedFrom": "PapaData-Backend-Audit-2026-08-06",
+  "states": [
+    "implemented",
+    "release_scope_control",
+    "implemented_requires_database_test",
+    "implemented_requires_live_test",
+    "implemented_external_acceptance",
+    "implemented_requires_ci",
+    "implemented_limited",
+    "limited_and_blocked",
+    "procedure_requires_external_acceptance",
+    "excluded_storybook_context"
+  ],
+  "policy": "A repository change is not production verification. States requiring database, CI, live or external acceptance remain non-GO until their evidence is attached to the release.",
+  "controls": [
+    {
+      "findingId": "AUD-001",
+      "status": "release_scope_control",
+      "evidencePaths": [
+        "config/backend-release-scope.json",
+        "tools/verify-backend-release-scope.mjs"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "static verifier",
+      "riskExpiry": null
+    },
+    {
+      "findingId": "AUD-002",
+      "status": "implemented_external_acceptance",
+      "evidencePaths": [
+        "infra/terraform/main.tf",
+        "infra/terraform/README.md",
+        "tests/backend-production-parity/smoke.mjs"
+      ],
+      "owner": "platform-security",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-003",
+      "status": "implemented_requires_database_test",
+      "evidencePaths": [
+        "packages/database/migrations/0016_backend_release_hardening.sql",
+        "packages/database/migrations/0018_classify_product_convergence_tables.sql",
+        "packages/database/tests/rls-isolation.sql",
+        "packages/database/scripts/migrate.sh"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-004",
+      "status": "implemented_requires_database_test",
+      "evidencePaths": [
+        "compose.yaml",
+        "compose.production-parity.yml",
+        "tools/prepare-production-parity.sh",
+        "packages/database/scripts/migrate.sh",
+        "infra/postgres/apply-migrations.sh"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-005",
+      "status": "release_scope_control",
+      "evidencePaths": [
+        "config/backend-release-scope.json",
+        "docs/backend-remediation/RELEASE-SCOPE.md"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "static verifier",
+      "riskExpiry": null
+    },
+    {
+      "findingId": "AUD-006",
+      "status": "implemented_requires_live_test",
+      "evidencePaths": [
+        "packages/integrations/src/provider-registry.ts",
+        "packages/integrations/src/provider-factory.ts",
+        "packages/integrations/src/provider-conformance.test.ts",
+        "packages/integrations/src/provider-webhook.test.ts",
+        "apps/api/src/production/integrations/webhook.service.ts",
+        "packages/database/migrations/0017_backend_product_convergence.sql",
+        "docs/backend-remediation/INTEGRATION-RUNTIME.md"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus provider-specific live evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-007",
+      "status": "implemented",
+      "evidencePaths": [
+        "apps/api/src/production/main.ts",
+        "apps/api/src/production/validation/dtos.ts"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "static verifier",
+      "riskExpiry": null
+    },
+    {
+      "findingId": "AUD-008",
+      "status": "implemented_requires_database_test",
+      "evidencePaths": [
+        "apps/api/src/production/commands/command-execution.interceptor.ts",
+        "packages/database/migrations/0016_backend_release_hardening.sql"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-009",
+      "status": "implemented_requires_live_test",
+      "evidencePaths": [
+        "apps/bff/src/session-store.ts",
+        "apps/bff/src/rate-limit.service.ts",
+        "apps/bff/src/config.ts",
+        "apps/bff/src/config-hardening.test.ts",
+        "tools/prepare-production-parity.sh"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-010",
+      "status": "limited_and_blocked",
+      "evidencePaths": [
+        "apps/api/src/production/privacy/privacy.service.ts",
+        "apps/worker/src/production/platform-worker.service.ts",
+        "config/backend-release-scope.json"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-011",
+      "status": "implemented_limited",
+      "evidencePaths": [
+        "apps/worker/src/production/platform-worker.service.ts",
+        "config/backend-release-scope.json"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-012",
+      "status": "implemented_limited",
+      "evidencePaths": [
+        "packages/ai-runtime/src/index.ts",
+        "config/backend-release-scope.json"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-013",
+      "status": "implemented_requires_database_test",
+      "evidencePaths": [
+        "apps/worker/src/production/scheduler.service.ts",
+        "apps/worker/src/production/platform-worker.service.ts"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-014",
+      "status": "implemented_requires_live_test",
+      "evidencePaths": [
+        "apps/api/src/production/readiness.controller.ts",
+        "apps/api/src/production/observability/metrics.controller.ts",
+        "tests/backend-production-parity/smoke.mjs"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-015",
+      "status": "implemented_requires_ci",
+      "evidencePaths": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/platform-production-foundation.yml",
+        "tools/verify-backend-security-controls.mjs"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-016",
+      "status": "implemented_requires_live_test",
+      "evidencePaths": [
+        "tests/backend-production-parity/smoke.mjs",
+        "docs/backend-remediation/PRODUCTION-ACCEPTANCE.md"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-017",
+      "status": "implemented",
+      "evidencePaths": [
+        "apps/api/src/production/observability/api-problem.filter.ts",
+        "apps/api/src/production/observability/request-context.interceptor.ts"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "static verifier",
+      "riskExpiry": null
+    },
+    {
+      "findingId": "AUD-018",
+      "status": "implemented",
+      "evidencePaths": [
+        "apps/worker/src/production/config.ts"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "static verifier",
+      "riskExpiry": null
+    },
+    {
+      "findingId": "AUD-019",
+      "status": "implemented_requires_database_test",
+      "evidencePaths": [
+        "apps/worker/src/production/ingestion-pipeline.ts",
+        "packages/database/src/production.ts",
+        "apps/api/src/production/queue/queue.service.ts"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-020",
+      "status": "implemented_requires_ci",
+      "evidencePaths": [
+        ".github/workflows/platform-production-foundation.yml",
+        "config/backend-license-policy.json",
+        "tools/check-license-report.mjs"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-021",
+      "status": "implemented_external_acceptance",
+      "evidencePaths": [
+        "apps/api/src/production/telemetry.ts",
+        "infra/otel/otel-collector-production.yaml",
+        "docs/backend-remediation/OBSERVABILITY.md"
+      ],
+      "owner": "platform-security",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-022",
+      "status": "implemented_external_acceptance",
+      "evidencePaths": [
+        "apps/bff/src/rate-limit.service.ts",
+        "infra/terraform/main.tf",
+        "tests/backend-production-parity/smoke.mjs"
+      ],
+      "owner": "platform-security",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-023",
+      "status": "implemented_requires_database_test",
+      "evidencePaths": [
+        "packages/storage/src/index.ts",
+        "apps/worker/src/production/platform-worker.service.ts",
+        "packages/database/migrations/0016_backend_release_hardening.sql"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-024",
+      "status": "implemented_external_acceptance",
+      "evidencePaths": [
+        "infra/terraform/main.tf",
+        "infra/terraform/backend.tf.example",
+        "infra/terraform/README.md"
+      ],
+      "owner": "platform-security",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-025",
+      "status": "implemented",
+      "evidencePaths": [
+        "apps/api/src/production/config.ts",
+        "apps/api/src/production/config-hardening.test.ts",
+        "apps/api/src/production/database.module.ts",
+        "apps/api/src/production/main.ts"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "static verifier",
+      "riskExpiry": null
+    },
+    {
+      "findingId": "AUD-026",
+      "status": "procedure_requires_external_acceptance",
+      "evidencePaths": [
+        "docs/backend-remediation/MIGRATION-AND-DR.md",
+        "tools/restore-drill.sh"
+      ],
+      "owner": "platform-security",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-027",
+      "status": "implemented",
+      "evidencePaths": [
+        "config/backend-security-controls.json",
+        "docs/backend-remediation/SECURITY-CONTROL-MATRIX.md"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "static verifier",
+      "riskExpiry": null
+    },
+    {
+      "findingId": "AUD-028",
+      "status": "excluded_storybook_context",
+      "evidencePaths": [
+        "docs/backend-remediation/RELEASE-SCOPE.md"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "static verifier",
+      "riskExpiry": null
+    },
+    {
+      "findingId": "AUD-029",
+      "status": "implemented_requires_live_test",
+      "evidencePaths": [
+        "apps/bff/src/proxy.controller.ts",
+        "apps/bff/src/app.factory.ts",
+        "tests/backend-production-parity/smoke.mjs"
+      ],
+      "owner": "backend-platform",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    },
+    {
+      "findingId": "AUD-030",
+      "status": "implemented_requires_ci",
+      "evidencePaths": [
+        "infra/production/api.Dockerfile",
+        "infra/production/bff.Dockerfile",
+        "infra/production/worker.Dockerfile",
+        ".github/workflows/platform-production-foundation.yml"
+      ],
+      "owner": "platform-security",
+      "acceptance": "repository verifier plus environment-specific evidence",
+      "riskExpiry": "2026-09-30"
+    }
+  ]
+}

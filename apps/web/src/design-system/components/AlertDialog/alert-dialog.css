@@ -1,7 +1,27 @@
 .pd-alert-dialog {
-  inline-size: min(100% - var(--pd-space-6), 34rem);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  inline-size: min(calc(100vw - 2rem), 34rem);
+  max-block-size: calc(100dvh - 2rem);
+  transform: translate(-50%, -50%);
+}
+
+.pd-alert-dialog::before {
+  display: none;
+}
+
+.pd-alert-dialog[data-state='closed'] {
+  display: none;
 }
 
 .pd-alert-dialog__actions {
   justify-content: flex-end;
+}
+
+@media (max-width: 48rem) {
+  .pd-alert-dialog {
+    inline-size: calc(100vw - 1rem);
+    max-block-size: calc(100dvh - 1rem);
+  }
 }

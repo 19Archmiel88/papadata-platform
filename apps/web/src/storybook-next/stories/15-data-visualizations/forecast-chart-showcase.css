@@ -244,4 +244,7 @@
   inline-size: 100%;
   min-inline-size: 0;
   max-inline-size: 100%;
+}/* Prism Refractive pass for forecast chart stories. */
+[data-pd-story-section="15"] .pd-forecast-story {
+  padding: var(--pd-space-6);
 }

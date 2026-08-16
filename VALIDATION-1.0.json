@@ -5,8 +5,9 @@
   "errors": [],
   "warnings": [],
   "checks": {
-    "spec_documents": 465,
+    "spec_documents": 470,
     "broken_links": 0,
+    "runtime_routes": 27,
     "provenance_references": 0,
     "registry_document_references": 0,
     "api_operations": 212,
@@ -14,12 +15,17 @@
     "components": 79,
     "auth_surfaces": 29,
     "e2e_steps": 124,
-    "storybook_targets": 281,
+    "storybook_targets": 292,
     "priority_p0": {
       "documents": 12,
       "metrics": 58,
       "legal_templates": 26,
       "mvp_integrations": 7
     }
-  }
+  },
+  "package_scope": "storybook-70-80-ui-backend-audit-fixes",
+  "limitations": [
+    "Typecheck/build wymagają lokalnego środowiska z node_modules, które było celowo wykluczone z paczki audytowej.",
+    "Live DB/RLS i provider acceptance pozostają odbiorem środowiskowym."
+  ]
 }

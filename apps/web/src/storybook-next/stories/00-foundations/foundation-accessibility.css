@@ -133,29 +133,3 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
-
-/* Premium foundation direction: accessibility samples keep contrast without contour-heavy cards. */
-.pd-f0-accessibility-behavior-card,
-.pd-f0-accessibility-select-demo,
-.pd-f0-accessibility-feedback {
-  border: 0;
-}
-
-.pd-f0-accessibility-behavior-card {
-  padding: var(--pd-space-5);
-  border-radius: var(--pd-radius-surface);
-  background: color-mix(in srgb, var(--pd-surface-panel) 78%, transparent);
-  box-shadow: var(--pd-shadow-raised);
-}
-
-.pd-f0-accessibility-select-demo,
-.pd-f0-accessibility-feedback {
-  padding: var(--pd-space-5);
-  border-radius: var(--pd-radius-overlay);
-  background: color-mix(in srgb, var(--pd-surface-panel) 76%, transparent);
-  box-shadow: var(--pd-shadow-raised);
-}
-
-.pd-f0-accessibility-feedback p + p {
-  border-left-color: color-mix(in srgb, var(--pd-text) 7%, transparent);
-}

@@ -1,13 +1,13 @@
 {
   "version": "1.0",
-  "generated_at": "2026-08-09T18:05:00+01:00",
+  "generated_at": "2026-08-14T13:42:00+01:00",
   "author": "Artur Wiśniewski",
-  "markdown_documents_specification": 465,
-  "markdown_documents_total": 503,
-  "words_specification": 227438,
+  "markdown_documents_specification": 470,
+  "markdown_documents_total": 533,
+  "words_specification": 253270,
   "sections": 29,
   "screens_catalog": 129,
-  "runtime_screens": 112,
+  "runtime_screens": 114,
   "non_runtime_documents": 17,
   "auth_surfaces": 29,
   "canonical_components": 79,
@@ -19,8 +19,9 @@
   "openapi_component_schemas": 642,
   "unique_operation_data_shapes": 176,
   "api_fixtures": 424,
-  "storybook_targets": 281,
-  "storybook_specification_fixtures": 281,
+  "storybook_targets": 292,
+  "storybook_implemented_entries": 195,
+  "storybook_active_story_files": 44,
   "provenance_references": 0,
   "exact_normalized_duplicates": 0,
   "validation_status": "PASS",
@@ -34,5 +35,6 @@
   "legal_organizational_templates": 26,
   "billing_cycles": 2,
   "required_payment_method_families": 3,
-  "implementation_package_note": "Metrics regenerated after audit fixes; full pnpm verify requires repository toolchain Node 24.18.0 and pnpm 10.29.3."
+  "manifest_files": 2346,
+  "implementation_package_note": "Dodano 20 kolejnych ekranów Storybook sekcji 70 i 80 oraz poprawki UI/backend/evidence. Manifest nie obejmuje lokalnych sekretów, .runtime ani certyfikatów. Pełny typecheck i build wymagają lokalnego WSL z node_modules."
 }

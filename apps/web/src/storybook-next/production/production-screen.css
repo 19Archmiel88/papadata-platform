@@ -421,18 +421,12 @@
 
 .pd-campaign-board__queue li + li {
   border-top: 1px solid var(--pd-separator-subtle);
-}
-
-.pd-production-campaign-header {
+}.pd-production-campaign-header {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
   gap: var(--pd-space-5);
   padding: 0 0 var(--pd-space-5);
-  border: 0;
   border-bottom: 1px solid var(--pd-separator-subtle);
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
 }
 
 .pd-production-campaign-nav {
@@ -445,18 +439,12 @@
   padding: 0 0 var(--pd-space-3);
   border-bottom: 1px solid var(--pd-separator-subtle);
   scrollbar-width: thin;
-}
-
-.pd-production-domain-header {
+}.pd-production-domain-header {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
   gap: var(--pd-space-5);
   padding: 0 0 var(--pd-space-5);
-  border: 0;
   border-bottom: 1px solid var(--pd-separator-subtle);
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
 }
 
 .pd-production-domain-nav {
@@ -556,14 +544,8 @@
   font-size: var(--pd-font-size-6);
   font-weight: var(--pd-font-weight-semibold);
   line-height: 1.15;
-}
-
-.pd-domain-command-brief > aside {
+}.pd-domain-command-brief > aside {
   padding: var(--pd-space-4);
-  border: 1px solid var(--pd-separator-subtle);
-  border-radius: var(--pd-radius-control);
-  background: var(--pd-surface-raised);
-  box-shadow: var(--pd-shadow-control);
 }
 
 .pd-domain-command-brief strong {
@@ -594,9 +576,7 @@
 .pd-domain-decision-grid,
 .pd-domain-state-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.pd-domain-card,
+}.pd-domain-card,
 .pd-domain-card-grid > article,
 .pd-domain-decision-grid > li,
 .pd-domain-state-grid > article {
@@ -604,11 +584,7 @@
   gap: var(--pd-space-4);
   min-width: 0;
   padding: var(--pd-space-4);
-  border: 1px solid var(--pd-separator-subtle);
   border-left-width: 3px;
-  border-radius: var(--pd-radius-control);
-  background: var(--pd-surface-raised);
-  box-shadow: var(--pd-shadow-control);
 }
 
 .pd-domain-card-grid > article[data-priority="critical"],
@@ -690,18 +666,12 @@
 
 .pd-domain-mobile-records {
   display: none;
-}
-
-.pd-domain-mobile-records > li {
+}.pd-domain-mobile-records > li {
   display: grid;
   gap: var(--pd-space-3);
   min-width: 0;
   padding: var(--pd-space-4);
-  border: 1px solid var(--pd-separator-subtle);
   border-left-width: 3px;
-  border-radius: var(--pd-radius-control);
-  background: var(--pd-surface-raised);
-  box-shadow: var(--pd-shadow-control);
 }
 
 .pd-domain-mobile-records > li > header {
@@ -774,17 +744,11 @@
   max-width: 64rem;
   color: var(--pd-text-muted);
   line-height: 1.5;
-}
-
-.pd-campaign-budget-card {
+}.pd-campaign-budget-card {
   display: grid;
   gap: var(--pd-space-4);
   min-width: 0;
   padding: var(--pd-space-4);
-  border: 1px solid var(--pd-separator-subtle);
-  border-radius: var(--pd-radius-control);
-  background: var(--pd-surface-raised);
-  box-shadow: var(--pd-shadow-control);
 }
 
 .pd-campaign-budget-card > header {
@@ -819,9 +783,7 @@
 .pd-campaign-recommendation-grid,
 .pd-campaign-state-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.pd-campaign-decision-grid > li,
+}.pd-campaign-decision-grid > li,
 .pd-campaign-portfolio > article,
 .pd-campaign-recommendation-grid > article,
 .pd-campaign-state-grid > article {
@@ -829,11 +791,7 @@
   gap: var(--pd-space-4);
   min-width: 0;
   padding: var(--pd-space-4);
-  border: 1px solid var(--pd-separator-subtle);
   border-left-width: 3px;
-  border-radius: var(--pd-radius-control);
-  background: var(--pd-surface-raised);
-  box-shadow: var(--pd-shadow-control);
 }
 
 .pd-campaign-decision-grid > li[data-priority="critical"],
@@ -976,9 +934,7 @@
   grid-template-columns: minmax(0, 1fr) minmax(280px, 0.72fr);
   gap: var(--pd-space-5);
   min-width: 0;
-}
-
-.pd-campaign-detail-grid > article,
+}.pd-campaign-detail-grid > article,
 .pd-campaign-detail-grid > dl,
 .pd-campaign-attribution-grid > aside,
 .pd-campaign-diagnostics-grid > aside {
@@ -986,9 +942,6 @@
   gap: var(--pd-space-4);
   min-width: 0;
   padding: var(--pd-space-4);
-  border: 1px solid var(--pd-separator-subtle);
-  border-radius: var(--pd-radius-control);
-  background: var(--pd-surface-raised);
 }
 
 .pd-campaign-peer-list {

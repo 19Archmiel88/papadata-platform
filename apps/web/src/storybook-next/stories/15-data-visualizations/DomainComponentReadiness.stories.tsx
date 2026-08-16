@@ -44,6 +44,12 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+function assertActiveElementIsHtmlElement() {
+  if (!(document.activeElement instanceof HTMLElement)) {
+    throw new Error('Aktywny element nie jest kontrolką HTML po przejściu fokusu.');
+  }
+}
+
 type ReadinessRow = {
   readonly name: string;
   readonly owner: string;
@@ -500,7 +506,7 @@ export const AnalityczneIDomenoweStory: Story = {
     });
     await userEvent.click(button);
     await userEvent.tab();
-    await expect(document.activeElement).toBeInstanceOf(HTMLElement);
+    assertActiveElementIsHtmlElement();
   },
 };
 
@@ -519,6 +525,6 @@ export const BacklogP0KomponentowDomenowychStory: Story = {
     });
     await userEvent.click(button);
     await userEvent.tab();
-    await expect(document.activeElement).toBeInstanceOf(HTMLElement);
+    assertActiveElementIsHtmlElement();
   },
 };

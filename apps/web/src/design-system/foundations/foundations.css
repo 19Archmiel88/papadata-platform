@@ -3,7 +3,7 @@
 @import "@fontsource/inter/600.css";
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
-@import "./themes/carbon-pearl.css";
+@import "./themes/refractive-prism.css";
 
 :root {
   font-family: var(--pd-font-sans);
@@ -30,7 +30,7 @@ body,
   min-height: 100vh;
   background-color: var(--pd-canvas);
   background-image: var(--pd-canvas-gradient);
-  background-attachment: fixed;
+  background-attachment: scroll;
   background-repeat: no-repeat;
   background-size: cover;
   color: var(--pd-text);
@@ -88,13 +88,7 @@ body,
 .pd-storybook-canvas {
   isolation: isolate;
   background-color: var(--pd-canvas);
-  background-image:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--pd-surface) 38%, transparent),
-      transparent 28rem
-    ),
-    var(--pd-canvas-gradient);
+  background-image: var(--pd-canvas-gradient);
 }
 
 :root[data-density="compact"] .pd-storybook-canvas,
@@ -125,4 +119,89 @@ body,
   .pd-storybook-canvas {
     overflow-x: hidden;
   }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* PapaData Refractive primitives                                              */
+/* -------------------------------------------------------------------------- */
+
+.pd-refractive-canvas {
+  position: relative;
+  isolation: isolate;
+  background: var(--pd-canvas-gradient);
+}
+
+.pd-refractive-canvas::before,
+.pd-refractive-canvas::after {
+  content: '';
+  position: fixed;
+  z-index: var(--pd-layer-underlay);
+  pointer-events: none;
+  border-radius: var(--pd-radius-pill);
+  filter: blur(7.5rem);
+}
+
+.pd-refractive-canvas::before {
+  inset-block-start: -10rem;
+  inset-inline-start: -10rem;
+  inline-size: 25rem;
+  block-size: 25rem;
+  background: color-mix(in srgb, var(--pd-brand-accent) 18%, transparent);
+}
+
+.pd-refractive-canvas::after {
+  inset-block-start: 42%;
+  inset-inline-end: -8rem;
+  inline-size: 22rem;
+  block-size: 22rem;
+  background: color-mix(in srgb, var(--pd-surface-raised) 18%, transparent);
+}
+
+.pd-refractive-surface {
+  position: relative;
+  overflow: hidden;
+  border: var(--pd-border-width-subtle) solid var(--pd-refractive-border);
+  background: var(--pd-refractive-surface);
+  box-shadow: var(--pd-refractive-depth);
+  backdrop-filter: blur(20px) saturate(1.08);
+}
+
+.pd-refractive-surface::after {
+  content: '';
+  position: absolute;
+  inset: -150%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 40%,
+      color-mix(in srgb, var(--pd-refractive-sheen) 10%, transparent) 46%,
+      var(--pd-refractive-sheen) 50%,
+      color-mix(in srgb, var(--pd-refractive-sheen) 10%, transparent) 54%,
+      transparent 60%
+    );
+  transform: rotate(25deg);
+}
+
+.pd-refractive-surface::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      120deg,
+      transparent 30%,
+      var(--pd-refractive-spectrum-a) 45%,
+      var(--pd-refractive-spectrum-b) 55%,
+      transparent 70%
+    );
+}
+
+.pd-refractive-surface > * {
+  position: relative;
+  z-index: 1;
 }

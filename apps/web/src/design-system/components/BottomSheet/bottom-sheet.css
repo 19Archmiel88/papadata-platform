@@ -1,9 +1,11 @@
 .pd-bottom-sheet {
   position: fixed;
-  inset: auto var(--pd-space-3) var(--pd-space-3);
+  inset-block: auto var(--pd-space-3);
+  inset-inline-start: 50%;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   inline-size: min(48rem, calc(100vw - (2 * var(--pd-space-3))));
   max-block-size: calc(100dvh - (2 * var(--pd-space-3)));
-  margin-inline: auto;
+  transform: translateX(-50%);
   border-radius: var(--pd-radius-surface) var(--pd-radius-surface) var(--pd-radius-control) var(--pd-radius-control);
 }
 
@@ -16,5 +18,24 @@
 }
 
 .pd-bottom-sheet__body {
+  display: grid;
+  min-block-size: 0;
+  gap: var(--pd-space-4);
+  padding: 0 var(--pd-space-5) var(--pd-space-5);
   overflow: auto;
+}
+
+@media (max-width: 48rem) {
+  .pd-bottom-sheet {
+    inset-inline: 0;
+    inline-size: 100vw;
+    max-block-size: calc(100dvh - var(--pd-space-2));
+    transform: none;
+    border-radius: var(--pd-radius-surface) var(--pd-radius-surface) 0 0;
+  }
+
+  .pd-bottom-sheet__body {
+    padding-inline: var(--pd-space-4);
+    padding-block-end: var(--pd-space-4);
+  }
 }

@@ -24,13 +24,6 @@
 .pd-s54-line[data-role="active"] i { background: var(--pd-interactive); }
 .pd-s54-line[data-role="danger"] i { background: var(--pd-status-danger); }
 
-.pd-s54-map {
-  overflow: clip;
-  border: 1px solid var(--pd-separator);
-  border-radius: var(--pd-radius-surface);
-  background: var(--pd-canvas);
-}
-
 .pd-s54-map > header {
   display: flex;
   justify-content: space-between;

@@ -1,4 +1,31 @@
-/*
-  Story 00.15 uses the accepted 00 Foundations presentation shell.
-  This file owns only responsive arrangement inside component examples.
-*/
+/* Story 00.15: refractive field family arrangement. */
+.pd-field-family-story .pd-f0-section__content {
+  display: grid;
+  gap: clamp(16px, 2.2vw, 24px);
+}
+
+.pd-field-family-section .pd-f0-variant {
+  grid-template-columns: minmax(16rem, 0.44fr) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.pd-field-family-section .pd-f0-variant__body {
+  display: grid;
+  align-content: center;
+  min-block-size: 100%;
+  padding-block: clamp(16px, 2vw, 22px);
+  padding-inline: 0;
+  border-block-start: 1px solid var(--pd-separator-subtle);
+  background: transparent;
+  box-shadow: none;
+}
+
+.pd-field-family-section .pd-f0-variant__body > * {
+  max-inline-size: 36rem;
+}
+
+@media (max-width: 860px) {
+  .pd-field-family-section .pd-f0-variant {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

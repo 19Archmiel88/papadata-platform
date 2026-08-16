@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { randomBytes, timingSafeEqual, createHmac } from "node:crypto";
-import type { FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 import { BFF_CONFIG } from "./tokens.js";
 import type { BffConfig } from "./config.js";
 import { verifySignedCookieValue } from "./cookie-signing.js";
@@ -120,6 +120,14 @@ export class BffSecurityService {
     }
   }
 
+  applyCorsHeaders(request: FastifyRequest, reply: FastifyReply): void {
+    const origin = readHeader(request.headers, "origin");
+
+    for (const [header, value] of Object.entries(this.corsHeaders(origin))) {
+      reply.header(header, value);
+    }
+  }
+
   corsHeaders(origin: string | null): Readonly<Record<string, string>> {
     if (!origin || !this.config.allowedOrigins.includes(origin)) {
       return {};
@@ -127,9 +135,15 @@ export class BffSecurityService {
 
     return {
       "access-control-allow-credentials": "true",
-      "access-control-allow-headers":
-        "accept, accept-language, content-type, x-correlation-id, x-papadata-csrf",
-      "access-control-allow-methods": "GET, HEAD, POST, PUT, PATCH, DELETE",
+      "access-control-allow-headers": [
+        "accept",
+        "accept-language",
+        "content-type",
+        "idempotency-key",
+        "x-correlation-id",
+        this.config.csrfHeaderName,
+      ].join(", "),
+      "access-control-allow-methods": "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS",
       "access-control-allow-origin": origin,
       vary: "Origin",
     };

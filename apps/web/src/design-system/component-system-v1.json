@@ -4,8 +4,8 @@
   "stage": "C2.2",
   "stageName": "Storybook Taxonomy Cleanup — Foundation-integrated Component Evidence",
   "foundationBaseline": {
-    "expectedActiveStoryCount": 175,
-    "expectedActiveStoryFileCount": 42,
+    "expectedActiveStoryCount": 195,
+    "expectedActiveStoryFileCount": 44,
     "activeStoryFiles": [
       "apps/web/src/design-system/components/Button/Button.stories.tsx",
       "apps/web/src/design-system/components/Field/FormFields.stories.tsx",
@@ -48,7 +48,9 @@
       "apps/web/src/storybook-next/stories/40-integrations/Integrations.stories.tsx",
       "apps/web/src/storybook-next/stories/41-data-quality/DataQuality.stories.tsx",
       "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
-      "apps/web/src/storybook-next/stories/60-settings-security/Settings.stories.tsx"
+      "apps/web/src/storybook-next/stories/60-settings-security/Settings.stories.tsx",
+      "apps/web/src/storybook-next/stories/70-subscription-billing/Billing.stories.tsx",
+      "apps/web/src/storybook-next/stories/80-decisions-actions-measurement/Decisions.stories.tsx"
     ],
     "frozenEntries": [
       "00.01",

@@ -1,0 +1,107 @@
+.pd-settings-runtime {
+  display: grid;
+  gap: var(--pd-space-5);
+}
+
+.pd-settings-runtime__loading,
+.pd-settings-runtime__records,
+.pd-settings-runtime__record-grid {
+  display: grid;
+  gap: var(--pd-space-3);
+}
+
+.pd-settings-runtime__session-card,
+.pd-settings-runtime__records {
+  padding-block: var(--pd-space-4);
+  border-block: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-settings-runtime__session-card {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 1.3fr);
+  gap: var(--pd-space-5);
+}
+
+.pd-settings-runtime__session-card h2,
+.pd-settings-runtime__records h2,
+.pd-settings-runtime__record h3 {
+  margin: 0;
+}
+
+.pd-settings-runtime__eyebrow,
+.pd-settings-runtime__source {
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-settings-runtime__session-card dl,
+.pd-settings-runtime__data-list {
+  display: grid;
+  gap: var(--pd-space-2);
+  margin: 0;
+}
+
+.pd-settings-runtime__session-card dl > div,
+.pd-settings-runtime__data-list > div {
+  display: grid;
+  grid-template-columns: minmax(9rem, 0.7fr) minmax(0, 1.3fr);
+  gap: var(--pd-space-3);
+  padding-block: var(--pd-space-2);
+  border-bottom: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-settings-runtime dt {
+  color: var(--pd-text-muted);
+}
+
+.pd-settings-runtime dd {
+  min-width: 0;
+  margin: 0;
+  color: var(--pd-text);
+  overflow-wrap: anywhere;
+}
+
+.pd-settings-runtime__records > header,
+.pd-settings-runtime__record > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pd-space-3);
+}
+
+.pd-settings-runtime__record-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+}
+
+.pd-settings-runtime__record {
+  display: grid;
+  gap: var(--pd-space-3);
+  padding: var(--pd-space-4) 0;
+  border-bottom: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-settings-runtime__record > header span {
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-settings-runtime__record small {
+  color: var(--pd-text-muted);
+}
+
+.pd-settings-runtime__json {
+  max-height: 20rem;
+  margin: 0;
+  overflow: auto;
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+  white-space: pre-wrap;
+}
+
+@media (max-width: 760px) {
+  .pd-settings-runtime__session-card,
+  .pd-settings-runtime__session-card dl > div,
+  .pd-settings-runtime__data-list > div {
+    grid-template-columns: 1fr;
+  }
+}

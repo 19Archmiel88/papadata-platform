@@ -257,8 +257,14 @@ export const defaultShellNotifications = [
   {
     actionLabel: 'Sprawdź',
     actionPath: '/app/command-center/kolejka-uwagi',
+    canSnooze: true,
+    category: 'data',
+    createdAt: '2026-08-17T12:18:00+02:00',
     id: 'readiness',
     message: 'Readiness danych dla Commerce PL jest częściowy: brakuje świeżego kosztu reklam.',
+    priority: 'high',
+    readAt: null,
+    snoozedUntil: null,
     time: '2 min temu',
     title: 'Dane wymagają uwagi',
     tone: 'warning',
@@ -267,16 +273,24 @@ export const defaultShellNotifications = [
   {
     actionLabel: 'Otwórz integracje',
     actionPath: '/app/integrations',
+    canSnooze: true,
+    category: 'integrations',
+    createdAt: '2026-08-17T12:02:00+02:00',
     id: 'sync-done',
     message: 'Synchronizacja WooCommerce zakończyła się bez nowych konfliktów.',
+    priority: 'medium',
+    readAt: '2026-08-17T12:10:00+02:00',
+    snoozedUntil: null,
     time: '18 min temu',
     title: 'Synchronizacja zakończona',
     tone: 'success',
+    unread: false,
   },
 ] satisfies readonly ShellNotification[];
 
 export const defaultShellOperations = [
   {
+    action: 'cancel',
     actionLabel: 'Anuluj',
     description: 'Pobieranie zamówień i refundów z ostatnich 30 dni.',
     errorCode: null,
@@ -288,6 +302,7 @@ export const defaultShellOperations = [
     title: 'Synchronizacja WooCommerce',
   },
   {
+    action: 'retry',
     actionLabel: 'Ponów',
     description: 'Google Ads zwrócił limit rate limit. Retry jest bezpieczny.',
     errorCode: 'ADS-429',

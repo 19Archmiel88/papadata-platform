@@ -5,7 +5,7 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-15DCD8C788C7
 status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+updated_at: 2026-08-17T11:15:00+02:00
 work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
@@ -88,7 +88,7 @@ Title: `20 Powłoka/Sidebar`. Stories: wszystkie wymagania, desktop/tablet/mobil
 ## Kryteria akceptacji
 
 1. Istnieje jedna kanoniczna implementacja używana przez moduły.
-2. Nie ma blur/glow ani lokalnych tokenów geometrii.
+2. Elementy należące do powłoki stosują aktualny Dark Crystal contract: kontrolowany blur/refrakcję i wspólne tokeny; przypadkowy neonowy glow oraz lokalne efekty bez właściciela są niedopuszczalne.
 3. Wszystkie overlaye korzystają z OverlayRoot.
 4. Capabilities są egzekwowane na backendzie i prezentowane bezpiecznie w UI.
 5. Mobile, keyboard, focus restore i session expiry mają testy.
@@ -119,3 +119,23 @@ Powierzchnia nie może wymagać od użytkownika zgadywania, czy problem jest bł
 3. Focus po błędzie wraca do właściwego regionu lub pola.
 4. Storybook obejmuje wariant ready, loading, error, mobile, dark mode i keyboard.
 5. Implementacja nie tworzy lokalnych komponentów poza katalogiem współdzielonym.
+
+
+## Aktualizacja normatywna 2026-08-17 — Sidebar bez scrolla
+
+Desktopowy Sidebar nie posiada własnego pionowego scrolla. `overflow-y: auto` nie jest dopuszczalnym sposobem ratowania układu na małej wysokości.
+
+Kolejność adaptacji wysokości:
+
+1. expanded / comfortable,
+2. expanded / compact density,
+3. collapsed rail dla niskiego viewportu,
+4. mobile Drawer zgodnie z kontraktem mobile.
+
+Zmiana density lub rail nie zmienia IA, kolejności ani dostępności funkcji. Aktywny route pozostaje jednoznaczny, a collapsed rail zachowuje dostępne nazwy elementów.
+
+## Dolna strefa sidebara
+
+W desktopowym AppShell nawigacja zajmuje przewijalny obszar główny, a kontekst runtime jest przypięty do dołu kolumny. Dolna strefa utrzymuje kolejno status danych z bieżącą lokalną datą i godziną, aktywny workspace oraz kontrolkę `Zwiń` / `Rozwiń`. Kontrolka zwijania nie należy do listy nawigacyjnej `Sidebar`; jej właścicielem jest powłoka produktu.
+
+W wariancie collapsed dolna strefa redukuje copy, ale zachowuje dostępne nazwy i stan przez semantykę kontrolek. Układ nie może wymuszać poziomego scrolla.

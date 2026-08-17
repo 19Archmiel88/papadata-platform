@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { signCookieValue } from "./cookie-signing.js";
@@ -63,6 +63,8 @@ export class BffIdentitySessionService {
       return;
     }
     const userId = readRequiredString(payload.data.userId);
+    const email = readRequiredString(payload.data.email);
+    const displayName = readRequiredString(payload.data.displayName);
     const memberships = readMemberships(payload.data.memberships);
     const active = memberships[0];
     if (!active) throw new UnauthorizedException("No active membership.");
@@ -77,6 +79,7 @@ export class BffIdentitySessionService {
       revokedAt: null,
       sessionId: randomUUID(),
       stepUpExpiresAt: null,
+      user: { displayName, email },
       userId,
     };
     await this.sessions.saveSession(session);
@@ -97,8 +100,8 @@ export class BffIdentitySessionService {
           session: publicSession(session),
           user: {
             userId,
-            email: readRequiredString(payload.data.email),
-            displayName: readRequiredString(payload.data.displayName),
+            email,
+            displayName,
           },
         },
       });
@@ -122,6 +125,38 @@ export class BffIdentitySessionService {
     this.security.applyCorsHeaders(request, reply);
     const session = await this.security.requireSession(request);
     reply.send({ data: publicSession(session) });
+  }
+
+  async selectWorkspace(
+    request: FastifyRequest,
+    reply: FastifyReply,
+    body: unknown,
+  ): Promise<void> {
+    this.security.validateHost(request);
+    this.security.applyCorsHeaders(request, reply);
+    this.security.validateOrigin(request);
+    const session = await this.security.requireSession(request);
+    this.security.validateCsrf(request, session);
+    const workspaceId = isRecord(body) ? optionalString(body.workspaceId) : null;
+    if (!workspaceId) {
+      throw new BadRequestException("Workspace selection is invalid.");
+    }
+    const membership = session.memberships.find((candidate) => (
+      candidate.workspaceId === workspaceId
+    ));
+    if (!membership) {
+      throw new ForbiddenException("Workspace is not available for this session.");
+    }
+    const nextSession: BffSessionRecord = {
+      ...session,
+      activeTenantId: membership.tenantId,
+      activeWorkspaceId: membership.workspaceId,
+      capabilities: membership.capabilities,
+      stepUpExpiresAt: null,
+      authLevel: session.authLevel === "step_up" ? "mfa" : session.authLevel,
+    };
+    await this.sessions.saveSession(nextSession);
+    reply.send({ data: publicSession(nextSession) });
   }
 }
 
@@ -163,11 +198,20 @@ function readMemberships(value: unknown): readonly BffSessionMembership[] {
   return value.flatMap((item) => {
     if (!isRecord(item)) return [];
     const tenantId = optionalString(item.tenantId);
+    const tenantName = optionalString(item.tenantName);
     const workspaceId = optionalString(item.workspaceId);
+    const workspaceName = optionalString(item.workspaceName);
     const capabilities = stringArray(item.capabilities);
     const roles = stringArray(item.roles);
     return tenantId && workspaceId && capabilities.length > 0
-      ? [{ tenantId, workspaceId, capabilities, roles }]
+      ? [{
+          tenantId,
+          ...(tenantName ? { tenantName } : {}),
+          workspaceId,
+          ...(workspaceName ? { workspaceName } : {}),
+          capabilities,
+          roles,
+        }]
       : [];
   });
 }
@@ -181,6 +225,7 @@ function publicSession(session: BffSessionRecord): object {
     expiresAt: session.expiresAt,
     memberships: session.memberships,
     sessionId: session.sessionId,
+    ...(session.user ? { user: { ...session.user, userId: session.userId } } : {}),
     userId: session.userId,
   };
 }

@@ -2,6 +2,7 @@ import { Module, type DynamicModule } from "@nestjs/common";
 import { CsrfGuard } from "./csrf.guard.js";
 import { CsrfController } from "./csrf.controller.js";
 import { AuthController } from "./auth.controller.js";
+import { ContractAccessController } from "./contract-access.controller.js";
 import { ContractAuthController } from "./contract-auth.controller.js";
 import { ContractPublicController } from "./contract-public.controller.js";
 import { HealthController } from "./health.controller.js";
@@ -22,6 +23,7 @@ export class BffAppModule {
     return {
       controllers: [
         AuthController,
+        ContractAccessController,
         ContractAuthController,
         ContractPublicController,
         CsrfController,

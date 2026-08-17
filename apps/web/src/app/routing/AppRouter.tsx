@@ -107,6 +107,22 @@ const CommandCenterScreen = lazy(async () => {
   };
 });
 
+const SettingsRuntimeScreen = lazy(async () => {
+  const module = await import('../../screens/settings');
+
+  return {
+    default: module.SettingsRuntimeScreen,
+  };
+});
+
+const HelpScreen = lazy(async () => {
+  const module = await import('../../screens/help');
+
+  return {
+    default: module.HelpScreen,
+  };
+});
+
 export function AppRouter() {
   const location = useLocationPath();
   const pathname = location.split('?')[0] || '/';
@@ -267,6 +283,34 @@ export function AppRouter() {
       );
     }
 
+
+    if (pathname === '/app/settings') {
+      return <Redirect to="/app/settings/organizacja" />;
+    }
+
+    if (pathname.startsWith('/app/settings/')) {
+      return (
+        <RouteSuspense>
+          <AppShell>
+            <SettingsRuntimeScreen path={pathname} />
+          </AppShell>
+        </RouteSuspense>
+      );
+    }
+
+    if (pathname === '/app/help') {
+      return <Redirect to="/app/help/strona-glowna-pomocy" />;
+    }
+
+    if (pathname.startsWith('/app/help/')) {
+      return (
+        <RouteSuspense>
+          <AppShell>
+            <HelpScreen path={pathname} />
+          </AppShell>
+        </RouteSuspense>
+      );
+    }
 
     if (pathname === '/app/billing' || pathname.startsWith('/app/billing/')) {
       return (

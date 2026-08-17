@@ -5,7 +5,7 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-8D2D94B32129
 status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+updated_at: 2026-08-17T10:30:00+02:00
 work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
@@ -84,7 +84,7 @@ Title: `20 Powłoka/Powiadomienia`. Stories: wszystkie wymagania, desktop/tablet
 ## Kryteria akceptacji
 
 1. Istnieje jedna kanoniczna implementacja używana przez moduły.
-2. Nie ma blur/glow ani lokalnych tokenów geometrii.
+2. Elementy należące do powłoki stosują aktualny Dark Crystal contract: kontrolowany blur/refrakcję i wspólne tokeny; przypadkowy neonowy glow oraz lokalne efekty bez właściciela są niedopuszczalne.
 3. Wszystkie overlaye korzystają z OverlayRoot.
 4. Capabilities są egzekwowane na backendzie i prezentowane bezpiecznie w UI.
 5. Mobile, keyboard, focus restore i session expiry mają testy.
@@ -115,3 +115,22 @@ Powierzchnia nie może wymagać od użytkownika zgadywania, czy problem jest bł
 3. Focus po błędzie wraca do właściwego regionu lub pola.
 4. Storybook obejmuje wariant ready, loading, error, mobile, dark mode i keyboard.
 5. Implementacja nie tworzy lokalnych komponentów poza katalogiem współdzielonym.
+
+
+## Aktualizacja normatywna 2026-08-17 — durable Notification Center
+
+Notification Center korzysta z trwałego modelu `app.notifications` scopingowanego przez recipient + tenant + workspace. Stan odczytu i stan odłożenia są niezależne.
+
+Wymagane zachowania:
+
+- filtry: Wszystkie, Nieprzeczytane, Krytyczne, Odłożone;
+- rzeczywisty unread count nie obejmuje powiadomień odłożonych do przyszłości;
+- oznacz jako przeczytane / nieprzeczytane;
+- oznacz wszystkie aktywne jako przeczytane;
+- `Przypomnij później`: 1h, 3h, jutro 09:00, najbliższy dzień roboczy 09:00, własna data/godzina;
+- `unsnooze` przywraca powiadomienie natychmiast;
+- odłożone powiadomienie nie jest usuwane i zachowuje read/unread;
+- krytyczne powiadomienia nie mogą być snoozowane; polityka jest egzekwowana także na backendzie;
+- brak API/provider response jest jawnie prezentowany jako error/empty, nigdy fixtures.
+
+Snooze nie wymaga joba do samego in-app inboxa: rekord wraca do aktywnego widoku, gdy `snoozed_until <= now()`.

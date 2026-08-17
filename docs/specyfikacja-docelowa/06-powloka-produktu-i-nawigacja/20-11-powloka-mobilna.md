@@ -5,7 +5,7 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-AF9CAA6272B3
 status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+updated_at: 2026-08-17T10:30:00+02:00
 work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
@@ -123,3 +123,8 @@ Powierzchnia nie może wymagać od użytkownika zgadywania, czy problem jest bł
 3. Focus po błędzie wraca do właściwego regionu lub pola.
 4. Storybook obejmuje wariant ready, loading, error, mobile, dark mode i keyboard.
 5. Implementacja nie tworzy lokalnych komponentów poza katalogiem współdzielonym.
+
+
+## Aktualizacja normatywna 2026-08-17 — preferencje i Dark Crystal na mobile
+
+Authenticated mobile nie musi utrzymywać osobnych przycisków języka i motywu w Topbarze; obie funkcje pozostają dostępne przez Account Panel. Public/Auth Topbar nadal zapewnia bezpośredni dostęp do preferencji. Shell-owned overlays zachowują Dark Crystal na mobile i nie przejmują motywu jasnego workspace.

@@ -9,10 +9,13 @@ export type BffSessionMembership = {
   readonly capabilities: readonly string[];
   readonly roles: readonly string[];
   readonly tenantId: string;
+  readonly tenantName?: string;
   readonly workspaceId: string;
+  readonly workspaceName?: string;
 };
 
 export type BffSessionRecord = {
+  readonly user?: { readonly displayName: string; readonly email: string };
   readonly activeTenantId: string;
   readonly activeWorkspaceId: string;
   readonly authLevel: "mfa" | "session" | "step_up";
@@ -194,6 +197,10 @@ function readSessionRecord(value: JsonRecord): BffSessionRecord | null {
   const authLevel = readAuthLevel(value.authLevel)
     ?? (value.mfaVerified === true ? "mfa" : "session");
 
+  const user = isRecord(value.user)
+    ? readSessionUser(value.user)
+    : null;
+
   return {
     activeTenantId,
     activeWorkspaceId,
@@ -204,6 +211,7 @@ function readSessionRecord(value: JsonRecord): BffSessionRecord | null {
     revokedAt: readNullableString(value.revokedAt),
     sessionId,
     stepUpExpiresAt: readNullableString(value.stepUpExpiresAt),
+    ...(user ? { user } : {}),
     userId,
   };
 }
@@ -214,13 +222,28 @@ function readMemberships(value: unknown): readonly BffSessionMembership[] | null
   for (const item of value) {
     if (!isRecord(item)) return null;
     const tenantId = readString(item, "tenantId");
+    const tenantName = readNullableString(item.tenantName);
     const workspaceId = readString(item, "workspaceId");
+    const workspaceName = readNullableString(item.workspaceName);
     const capabilities = readStringArray(item.capabilities);
     const roles = readStringArray(item.roles) ?? [];
     if (!tenantId || !workspaceId || !capabilities) return null;
-    memberships.push({ capabilities, roles, tenantId, workspaceId });
+    memberships.push({
+      capabilities,
+      roles,
+      tenantId,
+      ...(tenantName ? { tenantName } : {}),
+      workspaceId,
+      ...(workspaceName ? { workspaceName } : {}),
+    });
   }
   return memberships;
+}
+
+function readSessionUser(value: JsonRecord): { readonly displayName: string; readonly email: string } | null {
+  const displayName = readString(value, "displayName");
+  const email = readString(value, "email");
+  return displayName && email ? { displayName, email } : null;
 }
 
 function readAuthLevel(value: unknown): BffSessionRecord["authLevel"] | null {

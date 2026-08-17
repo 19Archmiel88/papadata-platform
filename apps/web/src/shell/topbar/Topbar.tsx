@@ -8,9 +8,10 @@ import type {
 import {
   DateRangePicker,
   Icon,
-  Menu,
   PapaDataBrand,
-  Popover,
+} from '../../design-system';
+import type {
+  DateRangePickerPreset,
 } from '../../design-system';
 import {
   applyPapaDataRuntimeGlobals,
@@ -18,16 +19,12 @@ import {
   writeStoredPapaDataRuntimeGlobals,
 } from '../../design-system/foundations/runtime';
 import type {
-  DateRangePickerPreset,
-  MenuItem,
-} from '../../design-system';
-import type {
   PapaDataRuntimeLocale,
   PapaDataRuntimeTheme,
 } from '../../design-system/foundations/runtime';
 import {
-  NotificationCenter,
-} from '../notifications';
+  AccountPanel,
+} from '../account-panel';
 import type {
   ShellNavigate,
   ShellNavigationGroup,
@@ -35,42 +32,40 @@ import type {
   ShellOverlay,
   ShellUser,
 } from '../app-shell/shellTypes';
+import {
+  NotificationCenter,
+} from '../notifications';
+import {
+  AnchoredShellOverlay,
+} from '../overlays';
 import './topbar.css';
 
 type RuntimeLocale = PapaDataRuntimeLocale;
 type RuntimeTheme = PapaDataRuntimeTheme;
 
-function readRuntimeLocale(): RuntimeLocale {
-  if (typeof document === 'undefined') {
-    return 'pl';
-  }
+type NotificationMutation = (
+  notification: ShellNotification,
+) => void | Promise<void>;
 
-  return document.documentElement.dataset.locale === 'en'
-    ? 'en'
-    : 'pl';
+function readRuntimeLocale(): RuntimeLocale {
+  if (typeof document === 'undefined') return 'pl';
+  return document.documentElement.dataset.locale === 'en' ? 'en' : 'pl';
 }
 
 function readRuntimeTheme(): RuntimeTheme {
-  if (typeof document === 'undefined') {
-    return 'light';
-  }
-
-  return document.documentElement.dataset.theme === 'dark'
-    ? 'dark'
-    : 'light';
+  if (typeof document === 'undefined') return 'light';
+  return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
 }
 
 function applyRuntimePreference(
   attribute: 'data-locale' | 'data-theme',
   value: RuntimeLocale | RuntimeTheme,
 ) {
-  if (typeof document === 'undefined') {
-    return;
-  }
+  if (typeof document === 'undefined') return;
 
   const nextInput = attribute === 'data-locale'
-    ? { locale: value }
-    : { theme: value };
+    ? { locale: value as RuntimeLocale }
+    : { theme: value as RuntimeTheme };
 
   writeStoredPapaDataRuntimeGlobals(nextInput);
 
@@ -87,17 +82,12 @@ function applyRuntimePreference(
   const targets = new Set<HTMLElement>([
     document.documentElement,
     ...Array.from(
-      document.querySelectorAll<HTMLElement>(
-        '.pd-storybook-canvas',
-      ),
+      document.querySelectorAll<HTMLElement>('.pd-storybook-canvas'),
     ),
   ]);
 
   targets.forEach((target) => {
-    applyPapaDataRuntimeGlobals(
-      target,
-      globals,
-    );
+    applyPapaDataRuntimeGlobals(target, globals);
   });
 }
 
@@ -105,24 +95,15 @@ function resolveSectionLabel(
   activePath: string,
   navigationGroups: readonly ShellNavigationGroup[],
 ) {
-  const navigationItems = navigationGroups.flatMap(
-    (group) => group.items,
-  );
-
+  const navigationItems = navigationGroups.flatMap((group) => group.items);
   const matches = navigationItems
     .filter((item) => (
       activePath === item.path
       || activePath.startsWith(`${item.path}/`)
     ))
-    .sort((left, right) => (
-      right.path.length - left.path.length
-    ));
+    .sort((left, right) => right.path.length - left.path.length);
 
-  return (
-    matches[0]?.label
-    ?? navigationItems[0]?.label
-    ?? 'PapaData'
-  );
+  return matches[0]?.label ?? navigationItems[0]?.label ?? 'PapaData';
 }
 
 function getInitials(displayName: string) {
@@ -139,10 +120,8 @@ function preferenceCopy(locale: RuntimeLocale) {
   return locale === 'en'
     ? {
         calendar: 'Calendar',
-        calendarDescription:
-          'Set the global analysis date range.',
-        calendarHelper:
-          'Quick ranges update the dashboard data immediately.',
+        calendarDescription: 'Set the global analysis date range.',
+        calendarHelper: 'Quick ranges update dashboard data immediately.',
         calendarQuickOptions: 'Quick ranges',
         dateFrom: 'From',
         datePreset: 'Range',
@@ -151,24 +130,19 @@ function preferenceCopy(locale: RuntimeLocale) {
         language: 'Interface language',
         menu: 'Open navigation',
         notifications: 'Notifications',
-        operations: 'Background operations',
         papaAssistant: 'Open Papa Assistant',
-        profile: 'User profile',
+        profile: 'User account',
         search: 'Search',
         searchFull: 'Search or run a command',
         themeDark: 'Dark',
         themeLight: 'Light',
         themeToDark: 'Switch to dark theme',
         themeToLight: 'Switch to light theme',
-        logout: 'Sign out',
-        loggingOut: 'Signing out…',
       }
     : {
         calendar: 'Kalendarz',
-        calendarDescription:
-          'Ustaw globalny zakres dat analiz.',
-        calendarHelper:
-          'Szybkie zakresy od razu aktualizują dane dashboardu.',
+        calendarDescription: 'Ustaw globalny zakres dat analiz.',
+        calendarHelper: 'Szybkie zakresy od razu aktualizują dane dashboardu.',
         calendarQuickOptions: 'Szybkie zakresy',
         dateFrom: 'Od',
         datePreset: 'Zakres',
@@ -177,17 +151,14 @@ function preferenceCopy(locale: RuntimeLocale) {
         language: 'Język interfejsu',
         menu: 'Otwórz nawigację',
         notifications: 'Powiadomienia',
-        operations: 'Operacje w tle',
         papaAssistant: 'Otwórz Papa Asystenta',
-        profile: 'Profil użytkownika',
+        profile: 'Konto użytkownika',
         search: 'Szukaj',
         searchFull: 'Szukaj lub uruchom komendę',
         themeDark: 'Ciemny',
         themeLight: 'Jasny',
         themeToDark: 'Zmień motyw na ciemny',
         themeToLight: 'Zmień motyw na jasny',
-        logout: 'Wyloguj',
-        loggingOut: 'Wylogowanie…',
       };
 }
 
@@ -232,24 +203,19 @@ function calendarQuickOptions(
 }
 
 function RuntimePreferenceControls({
-  compact = false,
   locale,
   onLocaleChange,
   onThemeChange,
   theme,
 }: {
-  readonly compact?: boolean;
   readonly locale: RuntimeLocale;
   readonly onLocaleChange: (locale: RuntimeLocale) => void;
   readonly onThemeChange: (theme: RuntimeTheme) => void;
   readonly theme: RuntimeTheme;
 }) {
   const copy = preferenceCopy(locale);
-  const nextTheme: RuntimeTheme =
-    theme === 'dark' ? 'light' : 'dark';
-  const themeLabel = theme === 'dark'
-    ? copy.themeDark
-    : copy.themeLight;
+  const nextTheme: RuntimeTheme = theme === 'dark' ? 'light' : 'dark';
+  const themeLabel = theme === 'dark' ? copy.themeDark : copy.themeLight;
 
   return (
     <>
@@ -271,19 +237,13 @@ function RuntimePreferenceControls({
       </div>
 
       <button
-        aria-label={
-          nextTheme === 'dark'
-            ? copy.themeToDark
-            : copy.themeToLight
-        }
+        aria-label={nextTheme === 'dark' ? copy.themeToDark : copy.themeToLight}
         className="pd-shell-topbar__control pd-shell-topbar__theme-control"
         onClick={() => onThemeChange(nextTheme)}
         type="button"
       >
         <Icon decorative name="theme" size={20} />
-        {compact ? null : (
-          <strong>{themeLabel}</strong>
-        )}
+        <strong>{themeLabel}</strong>
       </button>
     </>
   );
@@ -294,10 +254,8 @@ export function PublicTopbar({
 }: {
   readonly onNavigate: ShellNavigate;
 }) {
-  const [locale, setLocale] =
-    useState<RuntimeLocale>(readRuntimeLocale);
-  const [theme, setTheme] =
-    useState<RuntimeTheme>(readRuntimeTheme);
+  const [locale, setLocale] = useState<RuntimeLocale>(readRuntimeLocale);
+  const [theme, setTheme] = useState<RuntimeTheme>(readRuntimeTheme);
 
   function changeLocale(nextLocale: RuntimeLocale) {
     setLocale(nextLocale);
@@ -310,21 +268,14 @@ export function PublicTopbar({
   }
 
   return (
-    <header
-      className="pd-shell-topbar"
-      data-variant="public"
-    >
+    <header className="pd-shell-topbar" data-variant="public">
       <button
         aria-label="PapaData — strona główna"
         className="pd-shell-topbar__brand"
         onClick={() => onNavigate('/auth')}
         type="button"
       >
-        <PapaDataBrand
-          decorative
-          size="small"
-          variant="lockup"
-        />
+        <PapaDataBrand decorative size="small" variant="lockup" />
       </button>
 
       <div className="pd-shell-topbar__actions">
@@ -339,83 +290,61 @@ export function PublicTopbar({
   );
 }
 
-export function AuthenticatedTopbar({
-  activePath,
-  dateRange,
-  loggingOut = false,
-  navigationGroups,
-  notificationOpen,
-  notifications,
-  onDateRangeChange,
-  onLogout,
-  onNavigate,
-  onOpenOverlay,
-  operationCount,
-  papaAssistantOpen,
-  user,
-}: {
+export type AuthenticatedTopbarProps = {
+  readonly activeOverlay: ShellOverlay;
   readonly activePath: string;
   readonly dateRange: DateRange;
   readonly loggingOut?: boolean;
   readonly navigationGroups: readonly ShellNavigationGroup[];
-  readonly notificationOpen: boolean;
+  readonly notificationError?: string | null;
+  readonly notificationUnreadCount: number;
   readonly notifications: readonly ShellNotification[];
   readonly onDateRangeChange: (range: DateRange) => void;
   readonly onLogout: () => void;
+  readonly onMarkAllNotificationsRead?: (() => void | Promise<void>) | undefined;
+  readonly onMarkNotificationRead?: NotificationMutation | undefined;
+  readonly onMarkNotificationUnread?: NotificationMutation | undefined;
   readonly onNavigate: ShellNavigate;
   readonly onOpenOverlay: (overlay: ShellOverlay) => void;
+  readonly onSnoozeNotification?: ((notification: ShellNotification, until: string) => void | Promise<void>) | undefined;
+  readonly onUnsnoozeNotification?: NotificationMutation | undefined;
   readonly operationCount: number;
   readonly papaAssistantOpen: boolean;
   readonly user: ShellUser;
-}) {
-  const [calendarOpen, setCalendarOpen] = useState(false);
-  const [locale, setLocale] =
-    useState<RuntimeLocale>(readRuntimeLocale);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [theme, setTheme] =
-    useState<RuntimeTheme>(readRuntimeTheme);
+};
 
+export function AuthenticatedTopbar({
+  activeOverlay,
+  activePath,
+  dateRange,
+  loggingOut = false,
+  navigationGroups,
+  notificationError = null,
+  notificationUnreadCount,
+  notifications,
+  onDateRangeChange,
+  onLogout,
+  onMarkAllNotificationsRead,
+  onMarkNotificationRead,
+  onMarkNotificationUnread,
+  onNavigate,
+  onOpenOverlay,
+  onSnoozeNotification,
+  onUnsnoozeNotification,
+  operationCount,
+  papaAssistantOpen,
+  user,
+}: AuthenticatedTopbarProps) {
+  const [locale, setLocale] = useState<RuntimeLocale>(readRuntimeLocale);
+  const [theme, setTheme] = useState<RuntimeTheme>(readRuntimeTheme);
   const copy = preferenceCopy(locale);
-
-  const notificationCount = notifications.filter(
-    (item) => item.unread,
-  ).length;
-
-  const notificationCountLabel =
-    notificationCount > 99
-      ? '99+'
-      : String(notificationCount);
-
-  const sectionLabel = resolveSectionLabel(
-    activePath,
-    navigationGroups,
-  );
-
-  const profileItems: readonly MenuItem[] = [
-    {
-      disabled: true,
-      id: 'identity',
-      label: `${user.displayName} · ${user.email}`,
-    },
-    {
-      id: 'operations',
-      label: operationCount > 0
-        ? `${copy.operations} (${operationCount})`
-        : copy.operations,
-    },
-    {
-      id: 'profile-separator',
-      kind: 'separator',
-    },
-    {
-      destructive: true,
-      disabled: loggingOut,
-      id: 'logout',
-      label: loggingOut
-        ? copy.loggingOut
-        : copy.logout,
-    },
-  ];
+  const notificationCountLabel = notificationUnreadCount > 99
+    ? '99+'
+    : String(notificationUnreadCount);
+  const sectionLabel = resolveSectionLabel(activePath, navigationGroups);
+  const papaAvailable = navigationGroups.some((group) => (
+    group.items.some((item) => item.id === 'papa' && !item.disabled)
+  ));
 
   function changeLocale(nextLocale: RuntimeLocale) {
     setLocale(nextLocale);
@@ -427,35 +356,17 @@ export function AuthenticatedTopbar({
     applyRuntimePreference('data-theme', nextTheme);
   }
 
-  function openGlobalOverlay(overlay: ShellOverlay) {
-    setCalendarOpen(false);
-    setProfileOpen(false);
-    onOpenOverlay(overlay);
-  }
-
-  function handleNotificationAction(
-    notification: ShellNotification,
-  ) {
-    if (!notification.actionPath) {
-      return;
-    }
-
-    setCalendarOpen(false);
-    setProfileOpen(false);
-    onOpenOverlay(null);
-    onNavigate(notification.actionPath);
+  function setShellOverlay(overlay: Exclude<ShellOverlay, null>, open: boolean) {
+    onOpenOverlay(open ? overlay : null);
   }
 
   return (
-    <header
-      className="pd-shell-topbar"
-      data-variant="authenticated"
-    >
+    <header className="pd-shell-topbar" data-variant="authenticated">
       <div className="pd-shell-topbar__start">
         <button
           aria-label={copy.menu}
           className="pd-shell-topbar__mobile-menu"
-          onClick={() => openGlobalOverlay('mobile-navigation')}
+          onClick={() => onOpenOverlay('mobile-navigation')}
           type="button"
         >
           <Icon decorative name="menu" size={20} />
@@ -467,17 +378,10 @@ export function AuthenticatedTopbar({
           onClick={() => onNavigate('/app')}
           type="button"
         >
-          <PapaDataBrand
-            decorative
-            size="small"
-            variant="lockup"
-          />
+          <PapaDataBrand decorative size="small" variant="lockup" />
         </button>
 
-        <span
-          aria-current="page"
-          className="pd-shell-topbar__section-context"
-        >
+        <span aria-current="page" className="pd-shell-topbar__section-context">
           {sectionLabel}
         </span>
       </div>
@@ -485,7 +389,7 @@ export function AuthenticatedTopbar({
       <button
         aria-label={copy.searchFull}
         className="pd-shell-topbar__command-trigger"
-        onClick={() => openGlobalOverlay('command')}
+        onClick={() => onOpenOverlay('command')}
         type="button"
       >
         <Icon decorative name="search" size={20} />
@@ -494,20 +398,11 @@ export function AuthenticatedTopbar({
       </button>
 
       <div className="pd-shell-topbar__actions">
-        <Popover
-          anchorId="pd-shell-calendar"
-          className="pd-shell-topbar__calendar-popover"
+        <AnchoredShellOverlay
+          className="pd-shell-topbar__calendar-overlay"
           description={copy.calendarDescription}
-          modal={false}
-          onOpenChange={(open) => {
-            setCalendarOpen(open);
-            if (open) {
-              setProfileOpen(false);
-              onOpenOverlay(null);
-            }
-          }}
-          open={calendarOpen}
-          placement="bottom"
+          onOpenChange={(open) => setShellOverlay('calendar', open)}
+          open={activeOverlay === 'calendar'}
           title={copy.calendar}
           trigger={(
             <button
@@ -518,6 +413,7 @@ export function AuthenticatedTopbar({
               <Icon decorative name="calendar" size={20} />
             </button>
           )}
+          width="wide"
         >
           <DateRangePicker
             fromLabel={copy.dateFrom}
@@ -533,41 +429,37 @@ export function AuthenticatedTopbar({
             toLabel={copy.dateTo}
             value={dateRange}
           />
-        </Popover>
+        </AnchoredShellOverlay>
 
-        <RuntimePreferenceControls
-          compact
-          locale={locale}
-          onLocaleChange={changeLocale}
-          onThemeChange={changeTheme}
-          theme={theme}
-        />
-
-        <button
-          aria-label={copy.papaAssistant}
-          aria-pressed={papaAssistantOpen}
-          className="pd-shell-topbar__control pd-shell-topbar__icon-control pd-shell-topbar__papa-control"
-          type="button"
-          onClick={() => openGlobalOverlay('papa-assistant')}
-        >
-          <Icon decorative name="assistant" size={20} />
-        </button>
+        {papaAvailable ? (
+          <button
+            aria-label={copy.papaAssistant}
+            aria-pressed={papaAssistantOpen}
+            className="pd-shell-topbar__control pd-shell-topbar__icon-control pd-shell-topbar__papa-control"
+            onClick={() => onOpenOverlay('papa-assistant')}
+            type="button"
+          >
+            <Icon decorative name="assistant" size={20} />
+          </button>
+        ) : null}
 
         <NotificationCenter
+          error={notificationError}
           locale={locale}
           notifications={notifications}
-          onNotificationAction={handleNotificationAction}
-          onOpenChange={(open) => {
-            if (open) {
-              setCalendarOpen(false);
-              setProfileOpen(false);
-            }
-
-            onOpenOverlay(
-              open ? 'notifications' : null,
-            );
+          onMarkAllRead={onMarkAllNotificationsRead}
+          onMarkRead={onMarkNotificationRead}
+          onMarkUnread={onMarkNotificationUnread}
+          onNotificationAction={(notification) => {
+            if (!notification.actionPath) return;
+            onOpenOverlay(null);
+            onNavigate(notification.actionPath);
           }}
-          open={notificationOpen}
+          onOpenChange={(open) => setShellOverlay('notifications', open)}
+          onSnooze={onSnoozeNotification}
+          onUnsnooze={onUnsnoozeNotification}
+          open={activeOverlay === 'notifications'}
+          unreadCount={notificationUnreadCount}
           trigger={(
             <button
               aria-label={`${copy.notifications}: ${notificationCountLabel}`}
@@ -575,11 +467,8 @@ export function AuthenticatedTopbar({
               type="button"
             >
               <Icon decorative name="notifications" size={20} />
-              {notificationCount > 0 ? (
-                <span
-                  aria-hidden="true"
-                  className="pd-shell-topbar__notification-count"
-                >
+              {notificationUnreadCount > 0 ? (
+                <span aria-hidden="true" className="pd-shell-topbar__notification-count">
                   {notificationCountLabel}
                 </span>
               ) : null}
@@ -587,40 +476,25 @@ export function AuthenticatedTopbar({
           )}
         />
 
-        <Menu
-          activeItemId="operations"
-          className="pd-shell-topbar__profile-menu"
-          items={profileItems}
-          onAction={(itemId) => {
-            if (itemId === 'operations') {
-              onOpenOverlay('operations');
-              return;
-            }
-
-            if (itemId === 'logout') {
-              onLogout();
-            }
-          }}
-          onOpenChange={(open) => {
-            setProfileOpen(open);
-
-            if (open) {
-              setCalendarOpen(false);
-              onOpenOverlay(null);
-            }
-          }}
-          open={profileOpen}
-          placement="bottom-end"
+        <AccountPanel
+          locale={locale}
+          loggingOut={loggingOut}
+          onLocaleChange={changeLocale}
+          onLogout={onLogout}
+          onNavigate={onNavigate}
+          onOpenChange={(open) => setShellOverlay('account', open)}
+          onOpenOperations={() => onOpenOverlay('operations')}
+          onThemeChange={changeTheme}
+          open={activeOverlay === 'account'}
+          operationCount={operationCount}
+          theme={theme}
           trigger={(
             <button
               aria-label={`${copy.profile}: ${user.displayName}`}
               className="pd-shell-topbar__profile-trigger"
               type="button"
             >
-              <span
-                aria-hidden="true"
-                className="pd-shell-topbar__profile-avatar"
-              >
+              <span aria-hidden="true" className="pd-shell-topbar__profile-avatar">
                 {getInitials(user.displayName)}
               </span>
               <span className="pd-shell-topbar__profile-copy">
@@ -629,6 +503,7 @@ export function AuthenticatedTopbar({
               <span aria-hidden="true">▾</span>
             </button>
           )}
+          user={user}
         />
       </div>
     </header>

@@ -5,52 +5,28 @@ import type {
   ShellNavigationGroup,
   ShellNavigate,
 } from '../app-shell/shellTypes';
+import './sidebar.css';
 
 export function Sidebar({
   activePath,
   collapsed = false,
-  collapsible = true,
   dense = false,
   groups,
-  onCollapsedChange,
   onNavigate,
 }: {
   readonly activePath: string;
   readonly collapsed?: boolean;
-  readonly collapsible?: boolean;
   readonly dense?: boolean;
   readonly groups: readonly ShellNavigationGroup[];
-  readonly onCollapsedChange?: (collapsed: boolean) => void;
   readonly onNavigate: ShellNavigate;
 }) {
   return (
     <aside
       aria-label="Nawigacja główna"
-      className="pd-product-shell__sidebar"
+      className="pd-product-shell__sidebar pd-sidebar-navigation"
       data-collapsed={collapsed ? true : undefined}
       data-density={dense ? 'dense' : 'comfortable'}
     >
-      {collapsible ? (
-        <div className="pd-product-shell__sidebar-controls">
-          <button
-            aria-label={
-              collapsed
-                ? 'Rozwiń nawigację'
-                : 'Zwiń nawigację'
-            }
-            aria-pressed={!collapsed}
-            className="pd-product-shell__sidebar-toggle"
-            onClick={() => onCollapsedChange?.(!collapsed)}
-            type="button"
-          >
-            <Icon decorative name="menu" size={20} />
-            <span>
-              {collapsed ? 'Rozwiń' : 'Zwiń'}
-            </span>
-          </button>
-        </div>
-      ) : null}
-
       {groups.map((group) => (
         <section className="pd-product-shell__nav-group" key={group.id}>
           <h2>{group.label}</h2>

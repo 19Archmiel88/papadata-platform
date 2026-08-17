@@ -128,25 +128,6 @@ export class ProductController {
     return { data: await this.service.create(principal, "onboarding", "flow", input, "onboarding.update", ctx(correlationId, idempotencyKey)) };
   }
 
-  @Get("notifications")
-  @OperationId("notifications.list")
-  @RequireCapabilities("workspace.read")
-  async notifications(@Principal() principal: RequestPrincipal): Promise<object> {
-    return { data: await this.service.list(principal, "communication", "notification", 200) };
-  }
-
-  @Patch("notifications/:key")
-  @OperationId("notifications.update")
-  @RequireCapabilities("workspace.read")
-  async updateNotification(
-    @Principal() principal: RequestPrincipal,
-    @Param("key") key: string,
-    @Body() input: ProductRecordPatchDto,
-    @Headers("x-correlation-id") correlationId?: string,
-  ): Promise<object> {
-    return { data: await this.service.patch(principal, "communication", "notification", key, input, "notifications.update", ctx(correlationId)) };
-  }
-
   @Get("data-quality/issues")
   @OperationId("data-quality.issues.list")
   @RequireCapabilities("analytics.metrics.read")

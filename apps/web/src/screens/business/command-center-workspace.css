@@ -830,7 +830,7 @@
   background:
     linear-gradient(
       90deg,
-      color-mix(in srgb, var(--pd-status-warning) 90%, #92400e),
+      var(--pd-status-warning),
       color-mix(in srgb, var(--pd-status-warning) 72%, var(--pd-brand-highlight))
     );
 }
@@ -1157,7 +1157,7 @@
     linear-gradient(
       180deg,
       color-mix(in srgb, var(--pd-surface-panel) 92%, var(--pd-surface-raised)),
-      color-mix(in srgb, var(--pd-surface) 94%, #020617)
+      var(--pd-surface)
     );
 }
 

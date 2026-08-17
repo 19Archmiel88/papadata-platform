@@ -857,7 +857,7 @@
   background:
     linear-gradient(
       90deg,
-      color-mix(in srgb, var(--pd-status-warning) 94%, #7c2d12),
+      var(--pd-status-warning),
       color-mix(in srgb, var(--pd-status-warning) 70%, var(--pd-brand-highlight))
     );
   box-shadow:
@@ -869,7 +869,7 @@
   background:
     linear-gradient(
       90deg,
-      color-mix(in srgb, var(--pd-status-success) 94%, #064e3b),
+      var(--pd-status-success),
       color-mix(in srgb, var(--pd-status-success) 72%, var(--pd-brand-highlight))
     );
   box-shadow:

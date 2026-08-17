@@ -42,6 +42,8 @@ const navigateAction = fn();
 const logoutAction = fn();
 const overlayAction = fn();
 const openChangeAction = fn();
+const notificationMutationAction = fn();
+const operationItemAction = fn();
 
 const meta = {
   title: '20 Powłoka produktu/Powłoka i nawigacja',
@@ -143,9 +145,21 @@ function ShellFrameDemo({
     <div className="pd-s20-stage">
       <ProductShellFrame
         activePath={activePath}
+        commands={defaultShellCommands}
         initialOverlay={initialOverlay}
+        navigationGroups={defaultShellNavigation}
+        notificationUnreadCount={defaultShellNotifications.filter((item) => item.unread).length}
+        notifications={defaultShellNotifications}
         onLogout={logoutAction}
+        onMarkAllNotificationsRead={notificationMutationAction}
+        onMarkNotificationRead={notificationMutationAction}
+        onMarkNotificationUnread={notificationMutationAction}
         onNavigate={navigateAction}
+        onOperationAction={operationItemAction}
+        onSelectWorkspace={navigateAction}
+        onSnoozeNotification={notificationMutationAction}
+        onUnsnoozeNotification={notificationMutationAction}
+        operations={defaultShellOperations}
         problem={problem}
         sidebarCollapsed={sidebarCollapsed}
         sidebarDense={sidebarDense}
@@ -181,6 +195,8 @@ export const AppShellStory: Story = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('heading', { name: 'AppShell' })).toBeInTheDocument();
     await expect(canvas.getByRole('button', { name: /Szukaj lub uruchom komendę/u })).toBeInTheDocument();
+    await expect(canvas.getByText('Status danych')).toBeInTheDocument();
+    await expect(canvas.getByRole('button', { name: 'Zwiń nawigację' })).toBeInTheDocument();
   },
 };
 
@@ -218,7 +234,7 @@ export const AuthenticatedTopbarStory: Story = {
   render: () => (
     <ShellPage
       storyId="20.03"
-      summary="Topbar zalogowany pokazuje markę, aktualną sekcję, search, kalendarz, język, motyw, powiadomienia i profil."
+      summary="Topbar zalogowany skupia globalne akcje robocze; język i motyw są dostępne w panelu konta."
       title="Topbar zalogowany"
     >
       <StoryPresentationSection index="01" layout="full" title="Globalne akcje">
@@ -238,7 +254,16 @@ export const AuthenticatedTopbarStory: Story = {
     }
 
     await userEvent.click(notificationButton);
-    await expect(await page.findByRole('dialog', { name: 'Powiadomienia' })).toBeInTheDocument();
+    const notificationDialog = await page.findByRole('dialog', { name: 'Powiadomienia' });
+    await expect(notificationDialog).toBeInTheDocument();
+    await userEvent.click(within(notificationDialog).getByRole('button', { name: 'Zamknij' }));
+
+    const accountButton = canvas.getByRole('button', { name: /Konto użytkownika/u });
+    await userEvent.click(accountButton);
+    const accountDialog = await page.findByRole('dialog', { name: 'Konto' });
+    await expect(accountDialog).toBeInTheDocument();
+    await expect(within(accountDialog).getByRole('group', { name: 'Język' })).toBeInTheDocument();
+    await expect(within(accountDialog).getByRole('group', { name: 'Motyw' })).toBeInTheDocument();
   },
 };
 
@@ -313,6 +338,7 @@ export const WorkspaceSwitcherStory: Story = {
           <div className="pd-s20-panel">
             <WorkspaceSwitcher
               activeWorkspaceId="commerce"
+              onCreateWorkspace={navigateAction}
               onSelectWorkspace={navigateAction}
               workspaces={defaultShellWorkspaces}
             />
@@ -334,6 +360,13 @@ export const WorkspaceSwitcherStory: Story = {
       </StoryPresentationSection>
     </ShellPage>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const page = within(canvasElement.ownerDocument.body);
+    await userEvent.click(canvas.getByRole('button', { name: /Zmień workspace/u }));
+    const dialog = await page.findByRole('dialog', { name: 'Zmień workspace' });
+    await expect(within(dialog).getByRole('button', { name: 'Dodaj workspace' })).toBeInTheDocument();
+  },
 };
 
 export const GlobalSearchCommandPaletteStory: Story = {
@@ -377,15 +410,21 @@ export const NotificationsStory: Story = {
         <div className="pd-s20-stage pd-s20-drawer-preview">
           <NotificationCenter
             notifications={defaultShellNotifications}
+            onMarkAllRead={notificationMutationAction}
+            onMarkRead={notificationMutationAction}
+            onMarkUnread={notificationMutationAction}
             onOpenChange={openChangeAction}
+            onSnooze={notificationMutationAction}
+            onUnsnooze={notificationMutationAction}
             open
+            unreadCount={defaultShellNotifications.filter((item) => item.unread).length}
           />
         </div>
       </StoryPresentationSection>
       <StoryPresentationSection index="02" layout="showcase" title="Empty i error">
         <div className="pd-s20-isolated__row">
           <div className="pd-s20-stage pd-s20-drawer-preview">
-            <NotificationCenter notifications={[]} onOpenChange={openChangeAction} open />
+            <NotificationCenter notifications={[]} onOpenChange={openChangeAction} open unreadCount={0} />
           </div>
           <div className="pd-s20-stage pd-s20-drawer-preview">
             <NotificationCenter
@@ -393,14 +432,28 @@ export const NotificationsStory: Story = {
               notifications={[]}
               onOpenChange={openChangeAction}
               open
+              unreadCount={0}
             />
           </div>
         </div>
       </StoryPresentationSection>
     </ShellPage>
   ),
+  play: async ({ canvasElement }) => {
+    notificationMutationAction.mockClear();
+    const page = within(canvasElement.ownerDocument.body);
+    const dialogs = await page.findAllByRole('dialog', { name: 'Powiadomienia' });
+    const dialog = dialogs[0];
+    if (!dialog) throw new Error('Notification dialog is not rendered.');
+    const actions = within(dialog).getAllByText('Akcje');
+    await userEvent.click(actions[0]);
+    const markRead = within(dialog).queryByRole('button', { name: 'Oznacz jako przeczytane' });
+    if (markRead) {
+      await userEvent.click(markRead);
+      await expect(notificationMutationAction).toHaveBeenCalled();
+    }
+  },
 };
-
 export const BackgroundOperationsStory: Story = {
   name: '20.09 Operacje w tle',
   render: () => (
@@ -412,6 +465,7 @@ export const BackgroundOperationsStory: Story = {
       <StoryPresentationSection index="01" layout="wide" title="Drawer operacji">
         <div className="pd-s20-stage pd-s20-drawer-preview">
           <OperationCenter
+            onAction={operationItemAction}
             onOpenChange={openChangeAction}
             open
             operations={defaultShellOperations}
@@ -420,6 +474,13 @@ export const BackgroundOperationsStory: Story = {
       </StoryPresentationSection>
     </ShellPage>
   ),
+  play: async ({ canvasElement }) => {
+    operationItemAction.mockClear();
+    const page = within(canvasElement.ownerDocument.body);
+    const retry = await page.findByRole('button', { name: 'Ponów' });
+    await userEvent.click(retry);
+    await expect(operationItemAction).toHaveBeenCalled();
+  },
 };
 
 export const OverlayRootStory: Story = {
@@ -463,10 +524,17 @@ export const MobileShellStory: Story = {
         <div className="pd-s20-stage pd-s20-stage--mobile">
           <ProductShellFrame
             activePath="/app/command-center"
+            commands={defaultShellCommands}
             initialOverlay="mobile-navigation"
+            navigationGroups={defaultShellNavigation}
+            notificationUnreadCount={defaultShellNotifications.filter((item) => item.unread).length}
+            notifications={defaultShellNotifications}
             onLogout={logoutAction}
             onNavigate={navigateAction}
+            onSelectWorkspace={navigateAction}
+            operations={defaultShellOperations}
             user={defaultShellUser}
+            workspaces={defaultShellWorkspaces}
           >
             <CommandCenterPreview />
           </ProductShellFrame>

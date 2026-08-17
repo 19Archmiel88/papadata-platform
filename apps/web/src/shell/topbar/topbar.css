@@ -1,4 +1,50 @@
 header.pd-shell-topbar[data-variant] {
+  /*
+   * Topbar pozostaje ciemny również wtedy,
+   * gdy użytkownik przełącza treść aplikacji na motyw jasny.
+   */
+  --pd-shell-canvas: #090d16;
+  --pd-shell-surface: #0f172a;
+  --pd-shell-surface-subtle: #111827;
+  --pd-shell-surface-raised: #1e293b;
+  --pd-shell-surface-overlay: rgba(9, 13, 22, 0.92);
+  --pd-shell-surface-active: #312e81;
+
+  --pd-shell-text: #f1f5f9;
+  --pd-shell-text-secondary: #cbd5e1;
+  --pd-shell-text-muted: #94a3b8;
+
+  --pd-shell-separator: rgba(255, 255, 255, 0.10);
+  --pd-shell-separator-strong: rgba(255, 255, 255, 0.18);
+
+  --pd-shell-brand: #818cf8;
+  --pd-shell-brand-strong: #c7d2fe;
+  --pd-shell-brand-ambient: rgba(99, 102, 241, 0.18);
+  --pd-shell-glow: rgba(99, 102, 241, 0.28);
+
+  --pd-brand-highlight: #e0e7ff;
+  --pd-brand-action: #4f46e5;
+  --pd-brand-action-hover: #6366f1;
+  --pd-brand-action-active: #818cf8;
+  --pd-brand-action-on: #ffffff;
+  --pd-surface-active: #312e81;
+
+  --pd-refractive-primary:
+    linear-gradient(
+      135deg,
+      #4338ca 0%,
+      #6d28d9 52%,
+      #4338ca 100%
+    );
+
+  --pd-refractive-primary-hover:
+    linear-gradient(
+      135deg,
+      #4f46e5 0%,
+      #7c3aed 52%,
+      #4f46e5 100%
+    );
+
   --pd-shell-topbar-height: 60px;
   --pd-text: var(--pd-shell-text);
   --pd-text-secondary: var(--pd-shell-text-secondary);
@@ -155,13 +201,29 @@ header.pd-shell-topbar[data-variant]
 }
 
 header.pd-shell-topbar[data-variant]
-.pd-shell-topbar__papa-control[aria-pressed='true'] {
-  border-color: color-mix(in srgb, var(--pd-brand-accent) 54%, var(--pd-refractive-border));
-  color: var(--pd-text);
-  background: color-mix(in srgb, var(--pd-surface-active) 64%, transparent);
+.pd-shell-topbar__papa-control[aria-pressed='true'],
+header.pd-shell-topbar[data-variant]
+.pd-shell-topbar__control[aria-expanded='true'],
+header.pd-shell-topbar[data-variant]
+.pd-shell-topbar__profile-trigger[aria-expanded='true'] {
+  border-color:
+    color-mix(
+      in srgb,
+      var(--pd-shell-brand-strong) 70%,
+      transparent
+    );
+  color: #ffffff;
+  background: var(--pd-refractive-primary);
   box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--pd-brand-accent) 24%, transparent),
-    var(--pd-shadow-control);
+    inset 0 1px 0 rgb(255 255 255 / 0.16),
+    0 0 0 1px
+      color-mix(
+        in srgb,
+        var(--pd-shell-brand) 28%,
+        transparent
+      ),
+    0 14px 30px -22px rgb(79 70 229 / 0.92);
+  transform: none;
 }
 
 .pd-shell-topbar__section-context {
@@ -169,7 +231,7 @@ header.pd-shell-topbar[data-variant]
   min-width: 0;
   max-width: 18rem;
   overflow: hidden;
-  color: var(--pd-text-secondary);
+  color: var(--pd-shell-brand-strong);
   font-size: var(--pd-type-size-body-small);
   font-weight: var(--pd-font-weight-semibold);
   text-overflow: ellipsis;
@@ -364,75 +426,7 @@ header.pd-shell-topbar[data-variant]
   white-space: nowrap;
 }
 
-.pd-shell-topbar__profile-menu > div[data-placement],
-.pd-shell-topbar__calendar-popover > div[data-placement='bottom'] {
-  max-block-size: min(34rem, calc(100dvh - 5rem));
-  overflow: auto;
-  overscroll-behavior: contain;
-  border: var(--pd-border-width-subtle) solid var(--pd-refractive-border);
-  border-radius: var(--pd-radius-overlay);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--pd-surface-overlay) 94%, transparent),
-      color-mix(in srgb, var(--pd-surface-panel) 96%, transparent)
-    ),
-    var(--pd-surface-panel);
-  box-shadow: var(--pd-shadow-overlay);
-  backdrop-filter: blur(22px) saturate(1.08);
-  scrollbar-gutter: stable;
-}
-
-.pd-shell-topbar__calendar-popover > div[data-placement='bottom'] {
-  --pd-text: var(--pd-workspace-text, #0f172a);
-  --pd-text-secondary: var(--pd-workspace-text-secondary, #334155);
-  --pd-text-muted: var(--pd-workspace-text-muted, #64748b);
-  --pd-surface: var(--pd-workspace-surface, #ffffff);
-  --pd-surface-subtle: color-mix(in srgb, var(--pd-workspace-surface-data, #f8fafc) 86%, var(--pd-workspace-surface-panel, #ffffff));
-  --pd-surface-raised: var(--pd-workspace-surface-raised, #ffffff);
-  --pd-surface-panel: var(--pd-workspace-surface-panel, #ffffff);
-  --pd-surface-overlay: color-mix(in srgb, var(--pd-workspace-surface-panel, #ffffff) 96%, transparent);
-  --pd-surface-active: var(--pd-interactive-subtle);
-  --pd-separator-subtle: color-mix(in srgb, var(--pd-text-muted) 18%, transparent);
-  --pd-separator: color-mix(in srgb, var(--pd-text-muted) 28%, transparent);
-  --pd-refractive-border: color-mix(in srgb, var(--pd-text-muted) 34%, transparent);
-  --pd-refractive-border-hover: color-mix(in srgb, var(--pd-interactive) 48%, var(--pd-text-muted));
-  --pd-refractive-control: color-mix(in srgb, var(--pd-surface-raised) 90%, var(--pd-surface-subtle));
-  --pd-refractive-control-hover: color-mix(in srgb, var(--pd-surface-raised) 96%, var(--pd-interactive-subtle));
-  --pd-form-surface: var(--pd-refractive-control);
-  --pd-form-border: var(--pd-refractive-border);
-  --pd-form-text: var(--pd-text);
-  --pd-form-muted: var(--pd-text-muted);
-
-  right: 0;
-  left: auto;
-  inline-size: min(38rem, calc(100vw - 1.5rem));
-  max-block-size: none;
-  overflow: visible;
-  color: var(--pd-text);
-  scrollbar-gutter: auto;
-}
-
-:root:not([data-theme='dark']) .pd-shell-topbar__calendar-popover > div[data-placement='bottom'],
-[data-theme='light'] .pd-shell-topbar__calendar-popover > div[data-placement='bottom'] {
-  color-scheme: light;
-}
-
-[data-theme='dark'] .pd-shell-topbar__calendar-popover > div[data-placement='bottom'] {
-  color-scheme: dark;
-}
-
-.pd-shell-topbar__profile-menu > div[data-placement] {
-  width: min(20rem, calc(100vw - 1.5rem));
-}
-
-.pd-shell-topbar__profile-menu .pd-menu__item[aria-disabled='true']
-.pd-menu__item-label {
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-
-.pd-shell-topbar__calendar-popover .pd-date-range-picker {
+.pd-shell-topbar__calendar-overlay .pd-date-range-picker {
   grid-template-columns:
     minmax(11rem, 1fr)
     minmax(9rem, 0.68fr)
@@ -441,12 +435,12 @@ header.pd-shell-topbar[data-variant]
   gap: var(--pd-space-3);
 }
 
-.pd-shell-topbar__calendar-popover .pd-date-range-picker__quick-options {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+.pd-shell-topbar__calendar-overlay .pd-date-range-picker__quick-options {
   display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.pd-shell-topbar__calendar-popover .pd-date-range-picker__quick-options button {
+.pd-shell-topbar__calendar-overlay .pd-date-range-picker__quick-options button {
   flex-basis: auto;
 }
 
@@ -519,9 +513,6 @@ header.pd-shell-topbar[data-variant]
     justify-content: flex-start;
   }
 
-  .pd-shell-topbar__language-switch {
-    display: none;
-  }
 
   header.pd-shell-topbar[data-variant='authenticated']
   .pd-shell-topbar__brand > span {
@@ -533,23 +524,11 @@ header.pd-shell-topbar[data-variant]
     display: none;
   }
 
-  .pd-shell-topbar__calendar-popover > div[data-placement='bottom'],
-  .pd-shell-topbar__profile-menu > div[data-placement] {
-    position: fixed;
-    top: calc(var(--pd-shell-topbar-height) + var(--pd-space-2));
-    right: var(--pd-space-3);
-    left: var(--pd-space-3);
-    inline-size: auto;
-    width: auto;
-    min-inline-size: 0;
-    max-inline-size: none;
-  }
-
-  .pd-shell-topbar__calendar-popover .pd-date-range-picker {
+  .pd-shell-topbar__calendar-overlay .pd-date-range-picker {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .pd-shell-topbar__calendar-popover .pd-date-range-picker__quick-options {
+  .pd-shell-topbar__calendar-overlay .pd-date-range-picker__quick-options {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -576,4 +555,113 @@ header.pd-shell-topbar[data-variant]
   .pd-shell-topbar__mobile-menu:hover {
     transform: none;
   }
+}
+
+/* PapaData quick crystal correction - topbar chrome is always dark crystal. */
+header.pd-shell-topbar[data-variant] {
+  --pd-shell-canvas: #050816;
+  --pd-shell-surface: #090d16;
+  --pd-shell-surface-subtle: #0d1628;
+  --pd-shell-surface-raised: #111b2d;
+  --pd-shell-surface-overlay: #070c18;
+  --pd-shell-surface-active: rgb(129 140 248 / 0.12);
+  --pd-shell-text: #f1f5f9;
+  --pd-shell-text-secondary: #cbd5e1;
+  --pd-shell-text-muted: #94a3b8;
+  --pd-shell-separator: rgb(255 255 255 / 0.10);
+  --pd-shell-separator-strong: rgb(255 255 255 / 0.18);
+  --pd-shell-brand: #818cf8;
+  --pd-shell-brand-strong: #c7d2fe;
+  --pd-shell-brand-ambient: rgb(99 102 241 / 0.18);
+  --pd-shell-glow: rgb(99 102 241 / 0.28);
+  background:
+    radial-gradient(
+      ellipse 72% 160% at 0% 0%,
+      rgb(99 102 241 / 0.08),
+      transparent 68%
+    ),
+    linear-gradient(180deg, #101827 0%, #080d19 100%);
+}
+
+header.pd-shell-topbar[data-variant]::before {
+  opacity: 0.32;
+}
+
+header.pd-shell-topbar[data-variant]
+.pd-shell-topbar__papa-control[aria-pressed='true'],
+header.pd-shell-topbar[data-variant]
+.pd-shell-topbar__control[aria-expanded='true'],
+header.pd-shell-topbar[data-variant]
+.pd-shell-topbar__profile-trigger[aria-expanded='true'] {
+  border-color: rgb(129 140 248 / 0.54);
+  color: var(--pd-shell-brand-strong);
+  background:
+    linear-gradient(180deg, rgb(129 140 248 / 0.14), rgb(129 140 248 / 0.07)),
+    rgb(17 27 45 / 0.76);
+  box-shadow:
+    inset 0 0 0 1px rgb(129 140 248 / 0.10),
+    0 12px 28px -24px rgb(79 70 229 / 0.72);
+  transform: none;
+}
+
+header.pd-shell-topbar[data-variant]
+.pd-shell-topbar__control[aria-expanded='true'] svg,
+header.pd-shell-topbar[data-variant]
+.pd-shell-topbar__profile-trigger[aria-expanded='true'] .pd-shell-topbar__profile-copy strong,
+header.pd-shell-topbar[data-variant]
+.pd-shell-topbar__papa-control[aria-pressed='true'] svg {
+  color: var(--pd-shell-brand-strong);
+}
+
+.pd-shell-topbar__profile-trigger[aria-expanded='true'] .pd-shell-topbar__profile-avatar {
+  border-color: rgb(199 210 254 / 0.56);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.14),
+    0 0 0 4px rgb(99 102 241 / 0.12);
+}
+
+.pd-shell-topbar__language-switch button[aria-pressed='true'] {
+  color: var(--pd-shell-brand-strong);
+  background: rgb(129 140 248 / 0.14);
+  box-shadow: inset 0 -2px 0 var(--pd-shell-brand);
+}
+
+.pd-shell-topbar__calendar-overlay {
+  --pd-select-panel-max-block-size: none;
+  --pd-select-panel-overflow: visible;
+  --pd-select-listbox-max-block-size: none;
+  --pd-select-listbox-overflow: visible;
+  --pd-select-listbox-scrollbar-gutter: auto;
+}
+
+.pd-shell-topbar__calendar-overlay[data-width='wide'][role='dialog'] {
+  width: min(36rem, calc(100vw - 1.5rem));
+  max-height: none;
+  overflow: visible;
+}
+
+.pd-shell-topbar__calendar-overlay > div {
+  overflow: visible;
+}
+
+/* PapaData shell crystal visual fix v2 - opened topbar controls use violet as accent, not a solid slab. */
+header.pd-shell-topbar[data-variant]
+.pd-shell-topbar__papa-control[aria-pressed='true'],
+header.pd-shell-topbar[data-variant]
+.pd-shell-topbar__control[aria-expanded='true'],
+header.pd-shell-topbar[data-variant]
+.pd-shell-topbar__profile-trigger[aria-expanded='true'] {
+  color: var(--pd-shell-brand-strong) !important;
+  border-color: rgb(129 140 248 / 0.46) !important;
+  background:
+    linear-gradient(180deg, rgb(129 140 248 / 0.10), rgb(129 140 248 / 0.04)),
+    rgb(17 27 45 / 0.76) !important;
+  box-shadow:
+    inset 0 -2px 0 var(--pd-shell-brand),
+    inset 0 0 0 1px rgb(129 140 248 / 0.08),
+    0 12px 28px -24px rgb(79 70 229 / 0.72) !important;
+}
+
+.pd-shell-topbar__profile-trigger[aria-expanded='true'] .pd-shell-topbar__profile-avatar {
+  background: rgb(129 140 248 / 0.18) !important;
 }

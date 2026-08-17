@@ -5,9 +5,9 @@
   "generatedAtPolicy": "deterministic-no-timestamp",
   "contractPosition": {
     "targetContract": "contracts/openapi-1.0.json",
-    "targetOperations": 212,
-    "exactTargetOperations": 212,
-    "extraHardeningOperations": 60,
+    "targetOperations": 218,
+    "exactTargetOperations": 218,
+    "extraHardeningOperations": 58,
     "routeMethodOperationIdParity": true,
     "targetReleaseClaimed": false,
     "semanticConformanceClaimed": false,
@@ -1780,17 +1780,57 @@
       "method": "GET",
       "servicePath": "/v1/notifications",
       "bffPath": "/api/v1/notifications",
-      "controllerFile": "apps/api/src/production/product/product.controller.ts",
+      "controllerFile": "apps/api/src/production/notifications/notification.controller.ts",
       "auth": "capability",
       "releaseStatus": "enabled",
       "implementation": "native-hardened-runtime"
     },
     {
-      "operationId": "notifications.update",
-      "method": "PATCH",
-      "servicePath": "/v1/notifications/{key}",
-      "bffPath": "/api/v1/notifications/{key}",
-      "controllerFile": "apps/api/src/production/product/product.controller.ts",
+      "operationId": "notifications.mark-all-read",
+      "method": "POST",
+      "servicePath": "/v1/notifications/read-all",
+      "bffPath": "/api/v1/notifications/read-all",
+      "controllerFile": "apps/api/src/production/notifications/notification.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "notifications.mark-read",
+      "method": "POST",
+      "servicePath": "/v1/notifications/{id}/read",
+      "bffPath": "/api/v1/notifications/{id}/read",
+      "controllerFile": "apps/api/src/production/notifications/notification.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "notifications.mark-unread",
+      "method": "POST",
+      "servicePath": "/v1/notifications/{id}/unread",
+      "bffPath": "/api/v1/notifications/{id}/unread",
+      "controllerFile": "apps/api/src/production/notifications/notification.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "notifications.snooze",
+      "method": "POST",
+      "servicePath": "/v1/notifications/{id}/snooze",
+      "bffPath": "/api/v1/notifications/{id}/snooze",
+      "controllerFile": "apps/api/src/production/notifications/notification.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "notifications.unsnooze",
+      "method": "POST",
+      "servicePath": "/v1/notifications/{id}/unsnooze",
+      "bffPath": "/api/v1/notifications/{id}/unsnooze",
+      "controllerFile": "apps/api/src/production/notifications/notification.controller.ts",
       "auth": "capability",
       "releaseStatus": "enabled",
       "implementation": "native-hardened-runtime"
@@ -3882,6 +3922,54 @@
       "implementation": "contract-compatibility-runtime"
     },
     {
+      "operationId": "notifications.list",
+      "method": "GET",
+      "servicePath": "/v1/notifications",
+      "runtimeOperationId": "notifications.list",
+      "exact": true,
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "notifications.mark-all-read",
+      "method": "POST",
+      "servicePath": "/v1/notifications/read-all",
+      "runtimeOperationId": "notifications.mark-all-read",
+      "exact": true,
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "notifications.mark-read",
+      "method": "POST",
+      "servicePath": "/v1/notifications/{id}/read",
+      "runtimeOperationId": "notifications.mark-read",
+      "exact": true,
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "notifications.mark-unread",
+      "method": "POST",
+      "servicePath": "/v1/notifications/{id}/unread",
+      "runtimeOperationId": "notifications.mark-unread",
+      "exact": true,
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "notifications.snooze",
+      "method": "POST",
+      "servicePath": "/v1/notifications/{id}/snooze",
+      "runtimeOperationId": "notifications.snooze",
+      "exact": true,
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "notifications.unsnooze",
+      "method": "POST",
+      "servicePath": "/v1/notifications/{id}/unsnooze",
+      "runtimeOperationId": "notifications.unsnooze",
+      "exact": true,
+      "implementation": "native-hardened-runtime"
+    },
+    {
       "operationId": "onboarding.profile.update",
       "method": "PUT",
       "servicePath": "/v1/onboarding/profile",
@@ -4441,7 +4529,7 @@
     "migrated-access-policy": 2,
     "migrated-billing-policy": 17,
     "migrated-data-quality-policy": 4,
-    "native-hardened-runtime": 61,
+    "native-hardened-runtime": 65,
     "native-identity-service": 2,
     "native-integration-service": 4
   },

@@ -5,7 +5,7 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-89B266D16BC6
 status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+updated_at: 2026-08-17T10:30:00+02:00
 work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
@@ -35,9 +35,11 @@ Topbar zalogowany pokazuje globalny kontekst i kontrolki, nie akcje lokalnego mo
 
 ## Wymagania normatywne
 
-- kolejność: workspace, search, date, language, theme, notifications, profile
+- kolejność: brand/section context, global search, date, Papa, notifications, account
+- workspace pozostaje globalnym kontekstem shella i jest zmieniany przez WorkspaceSwitcher poza Topbarem
+- język i motyw należą do Account Panelu, nie do stałej anatomii authenticated Topbara
 - brak stałego generatora raportu
-- sticky, opaque, hairline; bez blur/glow
+- sticky Dark Crystal surface: ciemna, czytelna, z kontrolowaną przezroczystością, refrakcją i backdrop blur
 - każdy overlay przywraca fokus
 - aktualny workspace
 - zakres dat
@@ -71,7 +73,7 @@ Komponent powłoki nie podejmuje decyzji autoryzacyjnej. Otrzymuje backendowo ro
 
 ## Mobile i reflow
 
-Na compact topbar zachowuje markę i kontrolki priorytetowe, sidebar staje się drawerem, a kontrolki drugorzędne trafiają do menu. Język, motyw, wyszukiwanie i profil pozostają osiągalne. Zoom 200% nie tworzy poziomego scrolla strony dla treści krytycznych.
+Na compact topbar zachowuje markę i kontrolki priorytetowe, sidebar staje się drawerem, a kontrolki drugorzędne trafiają do paneli shella. Język i motyw pozostają osiągalne przez Account Panel; wyszukiwanie i profil zachowują stałe punkty wejścia. Zoom 200% nie tworzy poziomego scrolla strony dla treści krytycznych.
 
 ## Bezpieczeństwo
 
@@ -84,7 +86,7 @@ Title: `20 Powłoka/Topbar zalogowany`. Stories: wszystkie wymagania, desktop/ta
 ## Kryteria akceptacji
 
 1. Istnieje jedna kanoniczna implementacja używana przez moduły.
-2. Nie ma blur/glow ani lokalnych tokenów geometrii.
+2. Topbar i shell-owned overlays stosują jeden Dark Crystal contract; blur/refrakcja są kontrolowane, a przypadkowy neonowy glow i lokalne efekty bez właściciela są niedopuszczalne.
 3. Wszystkie overlaye korzystają z OverlayRoot.
 4. Capabilities są egzekwowane na backendzie i prezentowane bezpiecznie w UI.
 5. Mobile, keyboard, focus restore i session expiry mają testy.
@@ -115,3 +117,22 @@ Powierzchnia nie może wymagać od użytkownika zgadywania, czy problem jest bł
 3. Focus po błędzie wraca do właściwego regionu lub pola.
 4. Storybook obejmuje wariant ready, loading, error, mobile, dark mode i keyboard.
 5. Implementacja nie tworzy lokalnych komponentów poza katalogiem współdzielonym.
+
+
+## Aktualizacja normatywna 2026-08-17 — authenticated Topbar i Account Panel
+
+Ta decyzja **zastępuje** starszy zapis wymagający stałych kontrolek `language` i `theme` w authenticated Topbarze oraz starszy zakaz blur/glow dla powłoki.
+
+Docelowa anatomia authenticated Topbara:
+
+`brand + section context → global search → date range → Papa → notifications → account`.
+
+- język i motyw należą do Account Panelu;
+- Account Panel jest centrum preferencji i konta użytkownika, ale nie jest drugim Sidebarem;
+- Account Panel zawiera: tożsamość/rolę, Konto i bezpieczeństwo, Sesje i urządzenia, Język, Motyw, Operacje w tle, Centrum Pomocy i Wyloguj;
+- shell-owned Calendar, Notification Center i Account Panel zawsze używają Dark Crystal Shell również przy jasnym workspace;
+- kontrolowana przezroczystość, blur, refrakcyjne obramowania i światło są dozwolone, jeśli zachowują czytelność i wspólny kontrakt tokenów;
+- nie używamy przypadkowego neonowego glow ani lokalnych efektów nieposiadających właściciela w shellu;
+- wszystkie warstwy zachowują minimum keyboard/focus/Escape/focus restore.
+
+Kryterium akceptacji: authenticated Topbar nie pokazuje osobnych kontrolek języka i motywu, a obie funkcje są dostępne w Account Panelu bez utraty stanu aplikacji.

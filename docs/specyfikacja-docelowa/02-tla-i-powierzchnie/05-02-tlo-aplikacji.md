@@ -5,7 +5,7 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-57FE6FF39170
 status: approved-target
-updated_at: 2026-08-06T00:00:00+02:00
+updated_at: 2026-08-17T00:00:00+02:00
 work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
@@ -36,11 +36,13 @@ work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumente
 
 Canvas i region treści rozdzielają nawigację od zadania. Shell nie tworzy dekoracyjnych kart, a panel Papa jest warstwą nakładaną i nie ściska głównego regionu treści.
 
+**Aktualizacja 2026-08-17:** historyczny zapis tego decision record o obowiązkowo nieprzezroczystym topbarze bez blur/glass nie jest już wymaganiem produkcyjnym. Docelowy owner `20 — Powłoka produktu` definiuje Topbar, Sidebar i shell-owned overlays jako zawsze ciemny **Dark Crystal Shell** z kontrolowaną przezroczystością, refrakcją i backdrop blur. `05.02` pozostaje właścicielem decyzji o canvasie i scroll ownership, a nie o finalnym materiale shella.
+
 ## Stan prototypu Storybook 05.02
 
 Prototyp pokazuje jeden reprezentatywny canvas z przełączanymi wariantami: sidebar, brak sidebara, panel Papa i compact rail. Nie mnoży czterech równorzędnych miniaturek. Panel Papa używa scrim, granicy regionu i technicznego cienia overlay; otwiera się nad canvasem i zachowuje szerokość zadania.
 
-Sekcja właściciela scrolla używa skupionego dowodu zamiast powtarzać drugi kompletny AppShell. Pokazuje jeden przewijany region treści przy stabilnym topbarze i nawigacji pozostających poza odpowiedzialnością scrolla. Region jest dostępny w sekwencji klawiaturowej przez `tabIndex=0`, ma jednoznaczną nazwę i widoczny focus oparty na `--pd-focus-visible`. Lokalny scrollbar tego regionu używa neutralnego tracka i akcentowego thumba opartego wyłącznie na istniejących tokenach PapaData; hover i active wzmacniają akcent bez glow, blur ani ciężkiego cienia. Sticky topbar jest nieprzezroczysty i nie używa blur, glow ani glass. Sekcja szerokości treści rozróżnia szeroki region analityczny i kontrolowaną długość formularza. Decyzja i antyprzykład wyjaśniają, dlaczego karty wewnątrz kart i mechaniczne ściskanie przez panel są odrzucane.
+Sekcja właściciela scrolla używa skupionego dowodu zamiast powtarzać drugi kompletny AppShell. Pokazuje jeden przewijany region treści przy stabilnym topbarze i nawigacji pozostających poza odpowiedzialnością scrolla. Region jest dostępny w sekwencji klawiaturowej przez `tabIndex=0`, ma jednoznaczną nazwę i widoczny focus oparty na `--pd-focus-visible`. Lokalny scrollbar tego regionu używa neutralnego tracka i akcentowego thumba opartego wyłącznie na istniejących tokenach PapaData; hover i active wzmacniają akcent bez dekoracyjnego neonowego halo. Sticky topbar korzysta z aktualnego materiału Dark Crystal zdefiniowanego przez produkcyjny kontrakt AppShell. Sekcja szerokości treści rozróżnia szeroki region analityczny i kontrolowaną długość formularza. Decyzja i antyprzykład wyjaśniają, dlaczego karty wewnątrz kart i mechaniczne ściskanie przez panel są odrzucane.
 
 Mobile i tablet pozostają wymaganiami katalogu, ale są odroczone poza bieżącym desktopowym decision record. Story nie pokazuje makiety mobile udającej zaakceptowany produkt.
 
@@ -49,7 +51,7 @@ Mobile i tablet pozostają wymaganiami katalogu, ale są odroczone poza bieżąc
 - jeden canvas i jawne granice regionów
 - wariant z sidebarem, bez sidebara, z panelem Papa i compact rail
 - panel Papa jako warstwa overlay zgodna z „Głębia i warstwy”
-- sticky topbar na nieprzezroczystej powierzchni
+- sticky topbar w kanonicznym materiale Dark Crystal należącym do AppShell
 - jeden jawny właściciel scrolla: content region, dostępny z klawiatury i z widocznym fokusem
 - lokalny firmowy scrollbar: neutralny track, akcentowy thumb, czytelne hover/active, bez zmiany globalnego scrollbara
 - pełna szerokość dla analiz, ograniczona dla formularzy

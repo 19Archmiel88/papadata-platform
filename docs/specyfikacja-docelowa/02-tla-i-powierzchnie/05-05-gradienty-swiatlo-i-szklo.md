@@ -1,79 +1,73 @@
 ---
-version: 1.0
+version: 1.1
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
-id: DOC-10-C87562F9E702
+id: DOC-SURFACE-05-05
 status: approved-target
-updated_at: 2026-08-07T00:00:00+02:00
+updated_at: 2026-08-17T05:00:00+02:00
 work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
-# Gradienty, światło i szkło
+# Gradienty, światło i szkło — Dark Crystal Shell
 
-## Rola Laboratorium i handoff
-`05.05` jest miejscem oceny efektów, nie ich drugim standardem. Zaakceptowane reguły głębi i warstw są promowane do `00.08 — Głębia i warstwy`; ograniczenia AppShell pozostają własnością powłoki produktu.
+## Decyzja nadrzędna 2026-08-17
 
-## Metadane
+Starszy zakaz glass / blur / glow / halo na AppShell jest **historyczny i nie obowiązuje**. Aktualnym kontraktem jest **Dark Crystal Shell**.
 
-| Pole | Wartość |
-| --- | --- |
-| Identyfikator | 05.05 |
-| Nazwa polska | Gradienty, światło i szkło |
-| Nazwa techniczna | gradienty-swiatlo-i-szklo |
-| Typ dokumentu | kontrakt powierzchni |
-| Wersja | 1.0 |
-| Status implementacji | PROTOTYP STORYBOOK — ACCEPTED DECISION RECORD |
-| Status Storybooka | accepted decision record; docelowy owner produkcyjny: 00.08 Głębia i warstwy |
-| Status testów | walidacje statyczne i kontraktowe: passing; dokument nie deklaruje lokalnego glass/glow runtime |
+Dark Crystal obejmuje zawsze:
 
-## Decyzja docelowa
+- Topbar authenticated,
+- Sidebar / rail,
+- WorkspaceSwitcher overlay,
+- Calendar należący do shella,
+- Account Panel,
+- Notification Center,
+- pozostałe shell-owned menu/popover/anchored overlays.
 
-AppShell używa jednego kanonicznego ambient canvasu opartego na `--pd-canvas-gradient`. Lokalne powierzchnie AppShell nie tworzą własnych dekoracyjnych gradientów, glow, halo ani glassmorphismu. Pozostały efekt wizualny jest dopuszczony tylko wtedy, gdy ma konkretną rolę.
+Obszary te pozostają ciemne niezależnie od motywu workspace. Jasny motyw dashboardu nie zmienia shella ani jego overlayów na jasne powierzchnie.
 
-## Stan prototypu Storybook 05.05
+## Dozwolone środki
 
-Historia rozdziela:
+Dozwolone są kontrolowane:
 
-- kanoniczny ambient canvas aplikacji oparty na `--pd-canvas-gradient`;
-- kontrolowany gradient zasobu marki;
-- gradient wizualizacji kodujący dane;
-- scrim warstwy;
-- techniczny cień rzeczywistego overlayu;
-- neutralną powierzchnię wynikającą z proporcji, typografii, rytmu i jakości danych;
-- odrzucony dekoracyjny chaos.
+- częściowa przezroczystość powierzchni,
+- `backdrop-filter` / blur,
+- refrakcyjne hairline borders,
+- subtelne wewnętrzne refleksy,
+- gradienty wynikające ze wspólnego kontraktu shella,
+- techniczny cień i warstwowanie,
+- lokalny ambient/glow o niskiej intensywności, jeżeli wzmacnia hierarchię i nie imituje neonowego efektu.
 
-Light i dark zachowują tę samą geometrię i nie używają neonowego halo. Globalny canvas korzysta z `--pd-canvas` oraz `--pd-canvas-gradient`, a lokalne powierzchnie nadal używają semantycznych tokenów `--pd-surface`, `--pd-text`, `--pd-separator` i `--pd-surface-subtle`. Atrybut `data-theme` zmienia wartości tokenów zamiast wprowadzać lokalne kolory HEX. Cień występuje wyłącznie w przykładzie rzeczywistej warstwy. Powierzchnie AppShell pozostają nieprzezroczyste, bez blur i glass.
+## Ograniczenia
 
-## Decyzja dotycząca glass
+- efekt nie może obniżać kontrastu tekstu, focus ring ani czytelności danych;
+- nie tworzymy osobnych prywatnych palet crystal dla każdego komponentu;
+- wszystkie shell-owned powierzchnie korzystają ze wspólnych tokenów `--pd-shell-*` i semantycznych aliasów;
+- glow/gradient nie może kodować stanu, który nie posiada tekstowego lub strukturalnego odpowiednika;
+- nie używamy intensywnego „gamingowego” neon glow;
+- workspace pozostaje niezależną warstwą light/dark i nie dziedziczy na siłę tokenów Dark Crystal;
+- Calendar, Account Panel i Notifications nie mogą przełączać `color-scheme` na light wewnątrz Dark Crystal.
 
-Na powierzchniach i kontrolkach AppShell glass, blur i glow są jednoznacznie zabronione. Kanoniczny ambient canvas nie jest glassmorphismem i nie używa blur ani halo. Dokumentacja nie ustanawia globalnej zgody na glassmorphism poza AppShell. Story oznacza ten obszar jako `BRAK DECYZJI W DOKUMENTACJI` i nie rozszerza efektu na inne komponenty.
+## Geometria i głębia
 
-## Reguły
+Krystaliczność nie zmienia semantyki warstw. Sticky shell, popover, modal, toast i sidecar nadal mają jawny layer owner i działają przez system OverlayRoot. Cień i blur nie zastępują z-index/focus management.
 
-- `--pd-canvas-gradient` jest jednym kanonicznym ambientowym tłem całej aplikacji
-- lokalne powierzchnie AppShell nie definiują własnych dekoracyjnych gradientów
-- gradient zasobu marki jest dopuszczony wyłącznie w kontrolowanym kontekście marki
-- gradient wizualizacji używa semantyki danych i koduje konkretną informację
-- overlay używa scrim i technicznego cienia
-- cień nie zastępuje semantycznej warstwy
-- tło nie obniża czytelności treści ani widoczności focus ring
-- jakość neutralnej powierzchni wynika z proporcji, danych, typografii i rytmu
-- brak dekoracyjnego glass, glow i halo na powierzchniach AppShell
+## Responsive
 
-## Warianty wymagane przez katalog
-
-- ambient canvas aplikacji
-- gradient marki
-- gradient danych
-- scrim
-- techniczna głębia overlay
-- neutralna powierzchnia
-- zakaz dekoracyjnego chaosu
-- light/dark
+Dark Crystal zachowuje tę samą rodzinę wizualną na desktop/tablet/mobile. Przy małej szerokości zmienia się geometria i szerokość warstwy, nie jej semantyczny motyw.
 
 ## Storybook i odbiór
 
-Dla utrzymania statusu accepted decision record wymagane są: typecheck, Storybook build, checki katalogu/architektury/taksonomii, Foundation verification, `git diff --check`, desktop light/dark, kontrola kontrastu i focusu, potwierdzenie braku blur/glass/glow w dozwolonych przykładach oraz brak poziomego overflow. Historia ma status `accepted`.
+Wymagane są co najmniej:
 
-BRAK DECYZJI W DOKUMENTACJI: zastosowanie glassmorphism poza AppShell wymaga osobnego kontraktu i świadomej akceptacji. 05.05 nie ustanawia takiej reguły.
+- authenticated Topbar light-workspace + dark-workspace,
+- Account Panel,
+- Notification Center z read/unread/snoozed,
+- Calendar w jasnym workspace pozostający Dark Crystal,
+- Sidebar expanded i rail,
+- mobile,
+- podstawowy keyboard/focus,
+- brak poziomego overflow.
+
+Historyczne stories i copy opisujące bezwzględny zakaz glass/blur/glow należy traktować jako nieaktualne i zsynchronizować z niniejszą decyzją.

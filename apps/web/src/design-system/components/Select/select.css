@@ -356,3 +356,21 @@
     color: GrayText;
   }
 }
+
+/* PapaData quick crystal correction - allow dense shell contexts to avoid nested scroll. */
+.pd-select__panel {
+  max-block-size: var(--pd-select-panel-max-block-size, min(22rem, calc(100dvh - 8rem)));
+  overflow: var(--pd-select-panel-overflow, hidden);
+}
+
+.pd-select__listbox {
+  max-block-size: var(--pd-select-listbox-max-block-size, min(16rem, calc(100dvh - 12rem)));
+  overflow: var(--pd-select-listbox-overflow, hidden auto);
+  scrollbar-gutter: var(--pd-select-listbox-scrollbar-gutter, stable);
+}
+
+.pd-select__option[data-selected='true'] {
+  color: var(--pd-brand-strong, var(--pd-interactive));
+  background: color-mix(in srgb, var(--pd-interactive) 10%, var(--pd-surface-overlay));
+  box-shadow: inset 3px 0 0 var(--pd-interactive);
+}

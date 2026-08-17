@@ -51,6 +51,8 @@ import { SecurityController } from "./security/security.controller.js";
 import { StepUpService } from "./security/step-up.service.js";
 import { TotpService } from "./security/totp.service.js";
 import { ObjectStorageService } from "./storage/object-storage.service.js";
+import { NotificationController } from "./notifications/notification.controller.js";
+import { NotificationService } from "./notifications/notification.service.js";
 import { ContractRuntimeService } from "./contract-runtime/contract-runtime.service.js";
 import { contractRuntimeControllers } from "./contract-runtime/generated/index.js";
 
@@ -66,6 +68,7 @@ export const productionControllers = [
   ReportController,
   IdentityController,
   ProductController,
+  NotificationController,
   ...contractRuntimeControllers,
 ] as const;
 
@@ -91,6 +94,7 @@ export const productionControllers = [
     ReportService,
     IdentityService,
     ProductService,
+    NotificationService,
     ContractRuntimeService,
     ObjectStorageService,
     {

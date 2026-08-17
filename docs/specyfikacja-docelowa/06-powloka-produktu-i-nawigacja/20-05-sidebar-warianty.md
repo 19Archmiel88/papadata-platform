@@ -5,7 +5,7 @@ creator: Artur Wiśniewski
 owner: Artur Wiśniewski
 id: DOC-10-CAA82E9C0727
 status: approved-target
-updated_at: 2026-07-30T10:30:00+02:00
+updated_at: 2026-08-17T11:15:00+02:00
 work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
 ---
 
@@ -84,7 +84,7 @@ Title: `20 Powłoka/Sidebar — warianty`. Stories: wszystkie wymagania, desktop
 ## Kryteria akceptacji
 
 1. Istnieje jedna kanoniczna implementacja używana przez moduły.
-2. Nie ma blur/glow ani lokalnych tokenów geometrii.
+2. Elementy należące do powłoki stosują aktualny Dark Crystal contract: kontrolowany blur/refrakcję i wspólne tokeny; przypadkowy neonowy glow oraz lokalne efekty bez właściciela są niedopuszczalne.
 3. Wszystkie overlaye korzystają z OverlayRoot.
 4. Capabilities są egzekwowane na backendzie i prezentowane bezpiecznie w UI.
 5. Mobile, keyboard, focus restore i session expiry mają testy.
@@ -115,3 +115,12 @@ Powierzchnia nie może wymagać od użytkownika zgadywania, czy problem jest bł
 3. Focus po błędzie wraca do właściwego regionu lub pola.
 4. Storybook obejmuje wariant ready, loading, error, mobile, dark mode i keyboard.
 5. Implementacja nie tworzy lokalnych komponentów poza katalogiem współdzielonym.
+
+
+## Aktualizacja normatywna 2026-08-17 — adaptacja szerokości i wysokości
+
+Wariant Sidebara jest dobierany nie tylko według szerokości, ale również wysokości viewportu. Dla niskiego desktopowego viewportu shell może automatycznie przejść do rail, zamiast tworzyć scrollbar Sidebara. Preferencja użytkownika dotycząca collapse jest zachowana; automatyczny rail jest tymczasowym wymogiem geometrii i nie nadpisuje zapisanej preferencji.
+
+## Wariant dolnej strefy
+
+Wariant expanded pokazuje status danych, lokalną datę i godzinę, workspace oraz `Zwiń`. Wariant collapsed pozostawia kompaktowe sygnały statusu, trigger workspace i `Rozwiń`; pełne znaczenie pozostaje dostępne dla technologii asystujących. Przy małej wysokości viewportu powłoka może wymusić rail i ukryć manualną kontrolkę zwijania, aby zachować dostęp do nawigacji.

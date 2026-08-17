@@ -64,18 +64,41 @@ export type ShellCommandAction =
   | 'analyze-screen'
   | 'open-papa';
 
+export type ShellNotificationCategory =
+  | 'ai'
+  | 'billing'
+  | 'data'
+  | 'integrations'
+  | 'reports'
+  | 'support'
+  | 'system';
+
+export type ShellNotificationPriority =
+  | 'critical'
+  | 'high'
+  | 'medium';
+
 export type ShellNotification = {
   readonly actionLabel?: string | null;
   readonly actionPath?: string | null;
+  readonly canSnooze?: boolean;
+  readonly category: ShellNotificationCategory;
+  readonly createdAt: string;
   readonly id: string;
   readonly message: string;
+  readonly priority: ShellNotificationPriority;
+  readonly readAt: string | null;
+  readonly snoozedUntil: string | null;
   readonly time: string;
   readonly title: string;
   readonly tone: ShellTone;
-  readonly unread?: boolean;
+  readonly unread: boolean;
 };
 
+export type ShellOperationAction = 'cancel' | 'retry';
+
 export type ShellOperation = {
+  readonly action?: ShellOperationAction | null;
   readonly actionLabel?: string | null;
   readonly description: string;
   readonly errorCode: string | null;
@@ -88,6 +111,8 @@ export type ShellOperation = {
 };
 
 export type ShellOverlay =
+  | 'account'
+  | 'calendar'
   | 'command'
   | 'mobile-navigation'
   | 'notifications'

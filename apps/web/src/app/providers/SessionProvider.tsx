@@ -39,6 +39,7 @@ type SessionContextValue = {
   }) => Promise<void>;
   readonly logout: () => Promise<void>;
   readonly refresh: () => Promise<void>;
+  readonly selectWorkspace: (workspaceId: string) => Promise<BffSession>;
 };
 
 const SessionContext = createContext<SessionContextValue | null>(null);
@@ -107,16 +108,25 @@ export function SessionProvider({
     setStatus('anonymous');
   }, []);
 
+  const selectWorkspace = useCallback(async (workspaceId: string) => {
+    setError(null);
+    const nextSession = await bffClient.selectWorkspace(workspaceId);
+    setSession(nextSession);
+    setStatus('authenticated');
+    return nextSession;
+  }, []);
+
   const value = useMemo<SessionContextValue>(() => ({
     error,
     login,
     logout,
     refresh,
     register,
+    selectWorkspace,
     session,
     status,
     user,
-  }), [error, login, logout, refresh, register, session, status, user]);
+  }), [error, login, logout, refresh, register, selectWorkspace, session, status, user]);
 
   return (
     <SessionContext.Provider value={value}>

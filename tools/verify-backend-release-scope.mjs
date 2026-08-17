@@ -42,7 +42,7 @@ assert(
   JSON.stringify([...runtimeIds].sort()) === JSON.stringify([...manifestIds].sort()),
   "Runtime operationId set differs from generated release scope.",
 );
-assert(targetOperations.length === 212, `Target contract operation count changed: ${targetOperations.length}.`);
+assert(targetOperations.length === 218, `Target contract operation count changed: ${targetOperations.length}.`);
 
 const runtimeByRoute = new Map(
   runtimeOperations.map((item) => [`${item.method} ${item.servicePath}`, item]),
@@ -56,10 +56,10 @@ for (const target of targetOperations) {
   );
 }
 assert(
-  manifest.contractPosition.targetOperations === 212
-    && manifest.contractPosition.exactTargetOperations === 212
+  manifest.contractPosition.targetOperations === 218
+    && manifest.contractPosition.exactTargetOperations === 218
     && manifest.contractPosition.routeMethodOperationIdParity === true,
-  "Manifest must report exact 212/212 route, method and operationId parity.",
+  "Manifest must report exact 218/218 route, method and operationId parity.",
 );
 assert(manifest.contractPosition.targetReleaseClaimed === false, "Repository evidence must not claim live production acceptance.");
 assert(manifest.contractPosition.semanticConformanceClaimed === false, "Compatibility routes must not be described as complete semantic conformance.");
@@ -169,7 +169,7 @@ if (failures.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `BACKEND_RELEASE_SCOPE=PASS operations=${manifest.operations.length} target=212 providers=7 release=${manifest.releaseName}`,
+    `BACKEND_RELEASE_SCOPE=PASS operations=${manifest.operations.length} target=218 providers=7 release=${manifest.releaseName}`,
   );
 }
 

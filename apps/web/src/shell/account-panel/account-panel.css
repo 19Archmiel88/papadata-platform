@@ -1,0 +1,263 @@
+.pd-shell-account-panel {
+  display: grid;
+  gap: var(--pd-space-4);
+  min-width: 0;
+}
+
+.pd-shell-account-panel__identity {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--pd-space-3);
+  align-items: center;
+  padding: 0 0 var(--pd-space-3);
+  border-bottom: 1px solid var(--pd-shell-separator);
+}
+
+.pd-shell-account-panel__avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--pd-shell-text) 18%, transparent);
+  border-radius: 50%;
+  color: var(--pd-shell-text);
+  background:
+    radial-gradient(circle at 32% 18%, color-mix(in srgb, white 18%, transparent), transparent 44%),
+    color-mix(in srgb, var(--pd-shell-brand) 24%, var(--pd-shell-surface-raised));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 12%, transparent);
+  font-size: var(--pd-type-size-body-small);
+  font-weight: var(--pd-font-weight-semibold);
+}
+
+.pd-shell-account-panel__identity > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.15rem;
+}
+
+.pd-shell-account-panel__identity strong,
+.pd-shell-account-panel__identity span,
+.pd-shell-account-panel__identity small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pd-shell-account-panel__identity strong {
+  color: var(--pd-shell-text);
+  font-size: var(--pd-type-size-body);
+}
+
+.pd-shell-account-panel__identity span,
+.pd-shell-account-panel__identity small {
+  color: var(--pd-shell-text-muted);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-shell-account-panel__group {
+  display: grid;
+  gap: var(--pd-space-2);
+}
+
+.pd-shell-account-panel__group h3 {
+  margin: 0;
+  color: var(--pd-shell-text-muted);
+  font-size: var(--pd-type-size-caption);
+  font-weight: var(--pd-font-weight-medium);
+}
+
+.pd-shell-account-panel__group-content {
+  display: grid;
+  gap: var(--pd-space-1);
+}
+
+.pd-shell-account-panel__action,
+.pd-shell-account-panel__logout {
+  min-height: 2.75rem;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: var(--pd-radius-control);
+  color: var(--pd-shell-text-secondary);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    border-color var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    background var(--pd-motion-duration-fast) var(--pd-motion-easing-standard);
+}
+
+.pd-shell-account-panel__action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pd-space-3);
+  padding: 0 var(--pd-space-3);
+}
+
+.pd-shell-account-panel__action:hover,
+.pd-shell-account-panel__logout:hover {
+  color: var(--pd-shell-text);
+  border-color: color-mix(in srgb, var(--pd-shell-text) 12%, transparent);
+  background: color-mix(in srgb, var(--pd-shell-surface-raised) 62%, transparent);
+}
+
+.pd-shell-account-panel__action:active,
+.pd-shell-account-panel__logout:active {
+  transform: translateY(1px);
+}
+
+.pd-shell-account-panel__action:focus-visible,
+.pd-shell-account-panel__logout:focus-visible,
+.pd-shell-account-panel__segmented button:focus-visible {
+  outline: 2px solid var(--pd-shell-brand);
+  outline-offset: 2px;
+}
+
+.pd-shell-account-panel__action-end {
+  display: inline-flex;
+  gap: var(--pd-space-2);
+  align-items: center;
+  color: var(--pd-shell-text-muted);
+}
+
+.pd-shell-account-panel__badge {
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  display: inline-grid;
+  place-items: center;
+  padding-inline: 0.4rem;
+  border-radius: var(--pd-radius-pill);
+  color: var(--pd-shell-text);
+  background: color-mix(in srgb, var(--pd-shell-brand) 30%, transparent);
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-shell-account-panel__preference {
+  min-height: 2.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pd-space-3);
+  padding: 0 var(--pd-space-3);
+  color: var(--pd-shell-text-secondary);
+}
+
+.pd-shell-account-panel__segmented {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid color-mix(in srgb, var(--pd-shell-text) 12%, transparent);
+  border-radius: var(--pd-radius-control);
+  background: color-mix(in srgb, var(--pd-shell-surface) 70%, transparent);
+}
+
+.pd-shell-account-panel__segmented button {
+  min-height: 2rem;
+  min-width: 2.7rem;
+  padding: 0 var(--pd-space-2);
+  border: 0;
+  border-radius: calc(var(--pd-radius-control) * 0.76);
+  color: var(--pd-shell-text-muted);
+  background: transparent;
+  font: inherit;
+  font-size: var(--pd-type-size-body-small);
+  cursor: pointer;
+}
+
+.pd-shell-account-panel__segmented button[aria-pressed='true'] {
+  color: var(--pd-shell-text);
+  background: color-mix(in srgb, var(--pd-shell-brand) 26%, var(--pd-shell-surface-raised));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 10%, transparent);
+}
+
+.pd-shell-account-panel__footer {
+  padding-top: var(--pd-space-3);
+  border-top: 1px solid var(--pd-shell-separator);
+}
+
+.pd-shell-account-panel__logout {
+  padding: 0 var(--pd-space-3);
+  color: color-mix(in srgb, var(--pd-status-danger) 78%, white);
+}
+
+.pd-shell-account-panel__logout:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+/* PapaData quick crystal correction - profile dropdown compact, no heavy purple block. */
+.pd-shell-account-overlay[role='dialog'] {
+  width: min(28rem, calc(100vw - 1.5rem));
+  max-height: none;
+  overflow: visible;
+}
+
+.pd-shell-account-overlay > div {
+  overflow: visible;
+}
+
+.pd-shell-account-panel {
+  gap: var(--pd-space-3);
+}
+
+.pd-shell-account-panel__identity {
+  gap: var(--pd-space-2);
+  padding-bottom: var(--pd-space-2);
+}
+
+.pd-shell-account-panel__avatar {
+  width: 2.35rem;
+  height: 2.35rem;
+  color: var(--pd-shell-brand-strong);
+  background: rgb(129 140 248 / 0.14);
+}
+
+.pd-shell-account-panel__group {
+  gap: var(--pd-space-1);
+}
+
+.pd-shell-account-panel__action,
+.pd-shell-account-panel__logout {
+  min-height: 2.35rem;
+}
+
+.pd-shell-account-panel__preference {
+  min-height: 2.35rem;
+  padding-inline: var(--pd-space-2);
+}
+
+.pd-shell-account-panel__action:hover,
+.pd-shell-account-panel__logout:hover {
+  color: var(--pd-shell-brand-strong);
+  border-color: rgb(129 140 248 / 0.28);
+  background: rgb(129 140 248 / 0.08);
+}
+
+.pd-shell-account-panel__segmented button[aria-pressed='true'] {
+  color: var(--pd-shell-brand-strong);
+  background: rgb(129 140 248 / 0.12);
+  box-shadow: inset 0 -2px 0 var(--pd-shell-brand);
+}
+
+@media (max-height: 760px) {
+  .pd-shell-account-overlay[role='dialog'] {
+    max-height: calc(100dvh - var(--pd-shell-overlay-top) - 0.75rem);
+    overflow: hidden;
+  }
+
+  .pd-shell-account-overlay > div {
+    overflow: auto;
+  }
+}
+
+/* PapaData shell crystal visual fix v2 - account segmented controls use underline accent. */
+.pd-shell-account-panel__segmented button[aria-pressed='true'] {
+  color: var(--pd-shell-brand-strong);
+  background: rgb(129 140 248 / 0.10);
+  box-shadow:
+    inset 0 -2px 0 var(--pd-shell-brand),
+    inset 0 0 0 1px rgb(129 140 248 / 0.08);
+}

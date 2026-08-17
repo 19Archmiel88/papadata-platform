@@ -3,9 +3,9 @@
 > Plik generowany przez `tools/generate-backend-capability-docs.mjs`. Nie edytować ręcznie.
 
 **Wydanie:** backend-migration-implementation-2026-08<br>
-**Operacje runtime:** 272<br>
-**Kontrakt docelowy:** 212/212 dokładnych metod, ścieżek i operationId<br>
-**Dodatkowe operacje hardeningowe:** 60<br>
+**Operacje runtime:** 276<br>
+**Kontrakt docelowy:** 218/218 dokładnych metod, ścieżek i operationId<br>
+**Dodatkowe operacje hardeningowe:** 58<br>
 **Integracje runtime:** 7/7<br>
 **Pełna zgodność semantyczna i odbiór live:** jeszcze nie zadeklarowane
 
@@ -188,7 +188,11 @@
 | mobile.invite | POST | `/v1/mobile/invite` | mfa+capability | contract-compatibility-runtime | compatibility |
 | mobile.use | GET | `/v1/mobile/use` | capability | contract-compatibility-runtime | compatibility |
 | notifications.list | GET | `/v1/notifications` | capability | native-hardened-runtime | enabled |
-| notifications.update | PATCH | `/v1/notifications/{key}` | capability | native-hardened-runtime | enabled |
+| notifications.mark-all-read | POST | `/v1/notifications/read-all` | capability | native-hardened-runtime | enabled |
+| notifications.mark-read | POST | `/v1/notifications/{id}/read` | capability | native-hardened-runtime | enabled |
+| notifications.mark-unread | POST | `/v1/notifications/{id}/unread` | capability | native-hardened-runtime | enabled |
+| notifications.snooze | POST | `/v1/notifications/{id}/snooze` | capability | native-hardened-runtime | enabled |
+| notifications.unsnooze | POST | `/v1/notifications/{id}/unsnooze` | capability | native-hardened-runtime | enabled |
 | onboarding.profile.update | PUT | `/v1/onboarding/profile` | mfa+capability | contract-compatibility-runtime | compatibility |
 | onboarding.progress.read | GET | `/v1/onboarding/progress` | capability | contract-compatibility-runtime | compatibility |
 | onboarding.read | GET | `/v1/onboarding` | capability | native-hardened-runtime | enabled |

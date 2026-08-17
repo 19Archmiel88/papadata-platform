@@ -1,0 +1,51 @@
+.pd-help-runtime,
+.pd-help-runtime__loading,
+.pd-help-runtime__list {
+  display: grid;
+  gap: var(--pd-space-5);
+}
+
+.pd-help-runtime__list {
+  gap: 0;
+  border-top: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-help-runtime__item {
+  display: grid;
+  gap: var(--pd-space-2);
+  padding-block: var(--pd-space-5);
+  border-bottom: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-help-runtime__item header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pd-space-3);
+}
+
+.pd-help-runtime__item h2,
+.pd-help-runtime__item p {
+  margin: 0;
+}
+
+.pd-help-runtime__item h2 {
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-heading-4);
+}
+
+.pd-help-runtime__item header span,
+.pd-help-runtime__item p,
+.pd-help-runtime__body {
+  color: var(--pd-text-secondary);
+}
+
+.pd-help-runtime__item header span {
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-help-runtime__body {
+  max-width: 72ch;
+  line-height: var(--pd-line-height-relaxed);
+  white-space: pre-wrap;
+}

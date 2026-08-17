@@ -138,3 +138,12 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* PapaData quick crystal correction - selected quick range is an accent, not a slab. */
+.pd-date-range-picker__quick-options button[aria-pressed='true'] {
+  color: var(--pd-brand-strong, var(--pd-interactive));
+  background: color-mix(in srgb, var(--pd-interactive) 12%, transparent);
+  box-shadow:
+    inset 0 -2px 0 var(--pd-interactive),
+    0 0 0 1px color-mix(in srgb, var(--pd-interactive) 22%, transparent);
+}

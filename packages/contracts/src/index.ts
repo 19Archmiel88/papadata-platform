@@ -281,6 +281,9 @@ export const complianceApiPaths = {
   legalAcceptancesMe: `${API_BASE_PATH}/legal/acceptances/me`,
   notifications: `${API_BASE_PATH}/notifications`,
   notificationRead: `${API_BASE_PATH}/notifications/:id/read`,
+  notificationUnread: `${API_BASE_PATH}/notifications/:id/unread`,
+  notificationSnooze: `${API_BASE_PATH}/notifications/:id/snooze`,
+  notificationUnsnooze: `${API_BASE_PATH}/notifications/:id/unsnooze`,
   notificationsReadAll: `${API_BASE_PATH}/notifications/read-all`,
 } as const satisfies Record<string, VersionedApiPath>;
 

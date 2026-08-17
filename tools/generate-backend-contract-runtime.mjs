@@ -20,7 +20,9 @@ for (const file of existingFiles) {
     const method = match[1].toUpperCase();
     const route = match[2] ?? "";
     const operationId = match[3].match(/@OperationId\("([^"]+)"\)/u)?.[1] ?? null;
-    occupied.set(`${method} ${normalizePath(`/${prefix}/${route}`)}`, {
+    const occupiedPath = normalizePath(`/${prefix}/${route}`)
+      .replace(/:([A-Za-z0-9_]+)/gu, "{$1}");
+    occupied.set(`${method} ${occupiedPath}`, {
       operationId,
       file: relative(root, file),
     });

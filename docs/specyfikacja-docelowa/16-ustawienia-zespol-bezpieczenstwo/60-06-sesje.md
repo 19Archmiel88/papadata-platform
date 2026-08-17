@@ -91,3 +91,8 @@ Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stan
 2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
 3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
 4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+
+
+## Aktualizacja normatywna 2026-08-17 — Sesje i urządzenia
+
+`/app/settings/sesje` jest aktywnym destination route Account Panelu. Widok pokazuje aktualny kontekst sesji z BFF oraz dane zwrócone przez `settings.sessions.read`. Sama obecność pozycji w Account Panelu nie może prowadzić do `NotFound`.

@@ -14,6 +14,11 @@ export {
 } from './shellDateRange';
 
 export {
+  createRuntimeShellCommands,
+  createRuntimeShellNavigation,
+} from './shellRuntime';
+
+export {
   defaultShellCommands,
   defaultShellNavigation,
   defaultShellNotifications,
@@ -32,8 +37,12 @@ export type {
   ShellNavigate,
   ShellNavigationGroup,
   ShellNotification,
+  ShellNotificationCategory,
+  ShellNotificationPriority,
   ShellOperation,
+  ShellOperationAction,
   ShellOverlay,
+  ShellTone,
   ShellUser,
   ShellWorkspace,
 } from './shellTypes';

@@ -34,6 +34,31 @@ export type AuthenticationResult = {
   readonly user: AuthenticatedUser;
 };
 
+export type BffNotification = {
+  readonly createdAt: string;
+  readonly id: string;
+  readonly message: string;
+  readonly priority: string;
+  readonly readAt: string | null;
+  readonly resource: {
+    readonly id: string | null;
+    readonly type: string;
+  };
+  readonly snoozedUntil: string | null;
+  readonly status: 'read' | 'unread';
+  readonly title: string;
+  readonly type: string;
+  readonly updatedAt: string;
+};
+
+export type BffNotificationList = {
+  readonly notifications: readonly BffNotification[];
+  readonly unreadCount: number;
+  readonly view: 'active' | 'all' | 'snoozed';
+};
+
+export type BffIntegrationJob = Readonly<Record<string, unknown>>;
+
 export type RegisterInput = {
   readonly displayName?: string;
   readonly email: string;
@@ -212,6 +237,103 @@ class BffClient {
     const payload = await readJson<{
       readonly data: TData;
     }>(response);
+    assertOk(response, payload);
+    return payload.data;
+  }
+
+  async selectWorkspace(workspaceId: string): Promise<BffSession> {
+    try {
+      const session = await this.authenticatedCommand<BffSession>(
+        '/api/v1/access/workspace/select',
+        { workspaceId },
+      );
+      return session;
+    } catch (cause) {
+      const localSession = readLocalClientSession();
+      if (!localSession || !canUseLocalAuthFallback(cause)) {
+        throw cause;
+      }
+      const membership = localSession.memberships.find((item) => (
+        item.workspaceId === workspaceId
+      ));
+      if (!membership) {
+        throw new BffProblem(403, 'WORKSPACE_NOT_AVAILABLE', 'Workspace nie jest dostępny dla tej sesji.');
+      }
+      const nextSession: BffSession = {
+        ...localSession,
+        activeTenantId: membership.tenantId,
+        activeWorkspaceId: membership.workspaceId,
+        capabilities: membership.capabilities,
+      };
+      const state = readLocalClientState();
+      writeLocalClientState({ accounts: state.accounts, session: nextSession });
+      return nextSession;
+    }
+  }
+
+  async readNotifications(
+    view: 'active' | 'all' | 'snoozed' = 'active',
+  ): Promise<BffNotificationList> {
+    const response = await this.fetch(`/api/v1/notifications?view=${encodeURIComponent(view)}`, {
+      method: 'GET',
+    });
+    const payload = await readJson<{ readonly data: BffNotificationList }>(response);
+    assertOk(response, payload);
+    return payload.data;
+  }
+
+  async markNotificationRead(notificationId: string): Promise<void> {
+    await this.authenticatedCommand(`/api/v1/notifications/${encodeURIComponent(notificationId)}/read`);
+  }
+
+  async markNotificationUnread(notificationId: string): Promise<void> {
+    await this.authenticatedCommand(`/api/v1/notifications/${encodeURIComponent(notificationId)}/unread`);
+  }
+
+  async markAllNotificationsRead(): Promise<void> {
+    await this.authenticatedCommand('/api/v1/notifications/read-all');
+  }
+
+  async snoozeNotification(notificationId: string, until: string): Promise<void> {
+    await this.authenticatedCommand(
+      `/api/v1/notifications/${encodeURIComponent(notificationId)}/snooze`,
+      { until },
+    );
+  }
+
+  async unsnoozeNotification(notificationId: string): Promise<void> {
+    await this.authenticatedCommand(`/api/v1/notifications/${encodeURIComponent(notificationId)}/unsnooze`);
+  }
+
+  async readIntegrationJobs(): Promise<readonly BffIntegrationJob[]> {
+    const response = await this.fetch('/api/v1/integrations/jobs', { method: 'GET' });
+    const payload = await readJson<{ readonly data: readonly BffIntegrationJob[] }>(response);
+    assertOk(response, payload);
+    return payload.data;
+  }
+
+  async retryIntegrationJob(jobId: string): Promise<void> {
+    await this.authenticatedCommand(`/api/v1/integrations/jobs/${encodeURIComponent(jobId)}/retry`);
+  }
+
+  async cancelIntegrationJob(jobId: string): Promise<void> {
+    await this.authenticatedCommand(`/api/v1/integrations/jobs/${encodeURIComponent(jobId)}/cancel`);
+  }
+
+  private async authenticatedCommand<TData = unknown>(
+    path: string,
+    body?: Readonly<Record<string, unknown>>,
+  ): Promise<TData> {
+    const csrfToken = await this.getCsrfToken();
+    const response = await this.fetch(path, {
+      method: 'POST',
+      headers: {
+        'idempotency-key': createCorrelationId(),
+        'x-papadata-csrf': csrfToken,
+      },
+      ...(body ? { body: JSON.stringify(body) } : {}),
+    });
+    const payload = await readJson<{ readonly data: TData }>(response);
     assertOk(response, payload);
     return payload.data;
   }

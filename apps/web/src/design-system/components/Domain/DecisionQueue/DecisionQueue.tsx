@@ -19,6 +19,7 @@ export const DecisionQueue = forwardRef<HTMLElement, DecisionQueueProps>(
   function DecisionQueue(
     {
       className,
+      context: _context,
       decisions,
       onChangeStatus,
       onOpenDecision,

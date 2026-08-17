@@ -43,7 +43,7 @@ export type CommandCenterScreenProps = {
 };
 
 export function CommandCenterScreen({
-  path = '/app/command-center/widok-glowny',
+  path = '/app/command-center',
 }: CommandCenterScreenProps) {
   const {
     dateRange,
@@ -51,11 +51,9 @@ export function CommandCenterScreen({
   } = useShellDateRange();
   const definition = useMemo(
     () => (
-      findBusinessScreenDefinition(
-        path === '/app' || path === '/app/command-center'
-          ? '/app/command-center/widok-glowny'
-          : path,
-      )
+      path === '/app' || path.startsWith('/app/command-center')
+        ? findBusinessScreenDefinition('30.01')
+        : findBusinessScreenDefinition(path)
     ),
     [path],
   );
@@ -78,11 +76,14 @@ export function CommandCenterScreen({
 
     let active = true;
 
-    setState({
-      data: null,
+    // Keep the previous payload on screen while refetching, so a date-range
+    // change animates from the old values to the new ones instead of dropping
+    // every chart to a skeleton. Only the first load has nothing to show.
+    setState((previous) => ({
+      data: previous.data,
       loading: true,
       problem: null,
-    });
+    }));
 
     bffClient
       .readDomainScreen<CommandCenterApiData>(

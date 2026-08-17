@@ -1,16 +1,47 @@
 .pd-metric-card {
   min-inline-size: 0;
-  padding-block: var(--pd-space-5);
-  border-block-end: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  padding: var(--pd-space-5);
+  border: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-separator) 68%, transparent);
+  border-radius: 18px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-panel) 84%, transparent),
+      color-mix(in srgb, var(--pd-surface-raised) 66%, transparent)
+    );
   color: var(--pd-text);
+  box-shadow: 0 18px 42px -36px color-mix(in srgb, var(--pd-text) 34%, transparent);
+}
+
+.pd-metric-card[data-depth='flat'] {
+  padding: var(--pd-space-3) 0;
+  border: 0;
+  border-block-start: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.pd-metric-card[data-depth='flat'][data-density='compact'] {
+  padding-block: var(--pd-space-3);
 }
 
 .pd-metric-card[data-emphasis='alert'] {
-  border-block-end-color: var(--pd-status-warning);
+  border-color: color-mix(in srgb, var(--pd-status-warning) 54%, var(--pd-separator));
 }
 
 .pd-metric-card[data-emphasis='recommendation'] {
-  border-block-end-color: var(--pd-data-accent);
+  border-color: color-mix(in srgb, var(--pd-data-accent) 48%, var(--pd-separator));
+}
+
+.pd-metric-card[data-depth='flat'][data-emphasis='alert'] {
+  border-color: transparent;
+  border-block-start-color: color-mix(in srgb, var(--pd-status-warning) 42%, var(--pd-separator-subtle));
+}
+
+.pd-metric-card[data-depth='flat'][data-emphasis='recommendation'] {
+  border-color: transparent;
+  border-block-start-color: color-mix(in srgb, var(--pd-data-accent) 38%, var(--pd-separator-subtle));
 }
 
 .pd-metric-card__header {
@@ -27,9 +58,34 @@
   line-height: var(--pd-line-height-normal);
 }
 
+.pd-metric-card[data-depth='hero'] .pd-metric-card__label {
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-metric-card[data-density='compact'] .pd-metric-card__label {
+  font-size: var(--pd-type-size-caption);
+}
+
 .pd-metric-card__value-region {
   min-block-size: 5.4rem;
   margin-block-start: var(--pd-space-3);
+}
+
+.pd-metric-card[data-depth='hero'] .pd-metric-card__value-region {
+  display: grid;
+  gap: var(--pd-space-2);
+  min-block-size: 0;
+  margin-block-start: var(--pd-space-4);
+}
+
+.pd-metric-card[data-density='compact'] .pd-metric-card__value-region {
+  display: grid;
+  grid-template-columns: minmax(7rem, auto) minmax(0, 1fr);
+  gap: var(--pd-space-2) var(--pd-space-4);
+  align-items: baseline;
+  min-block-size: 0;
+  margin-block-start: var(--pd-space-2);
 }
 
 .pd-metric-card__value {
@@ -40,6 +96,11 @@
   margin: 0;
 }
 
+.pd-metric-card[data-depth='hero'] .pd-metric-card__value {
+  justify-content: center;
+  margin-block-start: var(--pd-space-1);
+}
+
 .pd-metric-card__value > span {
   font-size: clamp(
     1.75rem,
@@ -48,7 +109,17 @@
   );
   font-weight: var(--pd-font-weight-medium);
   line-height: var(--pd-line-height-tight);
-  letter-spacing: var(--pd-letter-spacing);
+  letter-spacing: -0.04em;
+}
+
+.pd-metric-card[data-depth='hero'] .pd-metric-card__value > span {
+  font-size: clamp(2.2rem, 3.2vw, 3.65rem);
+  letter-spacing: -0.055em;
+}
+
+.pd-metric-card[data-density='compact'] .pd-metric-card__value > span {
+  font-size: clamp(1.18rem, 1.4vw, 1.55rem);
+  letter-spacing: -0.025em;
 }
 
 .pd-metric-card__value small {
@@ -66,6 +137,16 @@
   color: var(--pd-text-secondary);
   font-size: var(--pd-type-size-body-small);
   line-height: var(--pd-line-height-normal);
+}
+
+.pd-metric-card[data-depth='hero'] .pd-metric-card__comparison {
+  justify-content: flex-end;
+  margin-block-start: 0;
+}
+
+.pd-metric-card[data-density='compact'] .pd-metric-card__comparison {
+  margin: 0;
+  font-size: var(--pd-type-size-caption);
 }
 
 .pd-metric-card__comparison > span:first-child {
@@ -108,9 +189,26 @@
   line-height: var(--pd-line-height-relaxed);
 }
 
+.pd-metric-card[data-density='compact'] .pd-metric-card__state-message {
+  grid-column: 1 / -1;
+  font-size: var(--pd-type-size-caption);
+}
+
 .pd-metric-card__sparkline {
   inline-size: min(100%, 12rem);
   block-size: 4rem;
+  margin-block-start: var(--pd-space-2);
+}
+
+.pd-metric-card[data-depth='hero'] .pd-metric-card__sparkline {
+  inline-size: min(100%, 18rem);
+  block-size: 4.15rem;
+  margin-block-start: var(--pd-space-4);
+}
+
+.pd-metric-card[data-density='compact'] .pd-metric-card__sparkline {
+  inline-size: min(100%, 8.5rem);
+  block-size: 2.3rem;
   margin-block-start: var(--pd-space-2);
 }
 
@@ -123,8 +221,12 @@
 
 .pd-metric-card__sparkline-area {
   fill: currentColor;
-  opacity: 0.12;
+  opacity: 0.1;
   stroke: none;
+}
+
+.pd-metric-card[data-depth='hero'] .pd-metric-card__sparkline-area {
+  opacity: 0.16;
 }
 
 .pd-metric-card__sparkline-line {
@@ -136,11 +238,36 @@
   vector-effect: non-scaling-stroke;
 }
 
+.pd-metric-card[data-depth='hero'] .pd-metric-card__sparkline-line {
+  stroke-width: 2.6;
+}
+
+.pd-metric-card[data-density='compact'] .pd-metric-card__sparkline-line {
+  stroke-width: 2;
+}
+
 .pd-metric-card__benchmarks {
   display: grid;
   gap: 0;
   margin: var(--pd-space-3) 0 0;
   border-block: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+}
+
+.pd-metric-card[data-depth='hero'] .pd-metric-card__benchmarks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-3) var(--pd-space-6);
+  margin-block-start: var(--pd-space-4);
+  padding-block-start: var(--pd-space-3);
+  border-block-start: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-separator-subtle) 70%, transparent);
+  border-block-end: 0;
+}
+
+.pd-metric-card[data-density='compact'] .pd-metric-card__benchmarks {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pd-space-3);
+  margin-block-start: var(--pd-space-2);
+  border-block-end: 0;
 }
 
 .pd-metric-card__benchmarks > div {
@@ -150,8 +277,25 @@
   padding-block: var(--pd-space-2);
 }
 
+.pd-metric-card[data-depth='hero'] .pd-metric-card__benchmarks > div {
+  grid-template-columns: auto auto;
+  gap: var(--pd-space-3);
+  padding-block: 0;
+}
+
+.pd-metric-card[data-density='compact'] .pd-metric-card__benchmarks > div {
+  grid-template-columns: minmax(3.5rem, auto) minmax(0, 1fr);
+  gap: var(--pd-space-2);
+  padding-block: var(--pd-space-2);
+}
+
 .pd-metric-card__benchmarks > div + div {
   border-block-start: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+}
+
+.pd-metric-card[data-depth='hero'] .pd-metric-card__benchmarks > div + div,
+.pd-metric-card[data-density='compact'] .pd-metric-card__benchmarks > div + div {
+  border-block-start: 0;
 }
 
 .pd-metric-card__benchmarks dt {
@@ -169,6 +313,10 @@
   overflow-wrap: anywhere;
 }
 
+.pd-metric-card[data-density='compact'] .pd-metric-card__benchmarks dd {
+  font-size: var(--pd-type-size-caption);
+}
+
 .pd-metric-card__metadata {
   display: flex;
   flex-wrap: wrap;
@@ -177,6 +325,14 @@
   color: var(--pd-text-muted);
   font-size: var(--pd-type-size-caption);
   line-height: var(--pd-line-height-normal);
+}
+
+.pd-metric-card[data-depth='hero'] .pd-metric-card__metadata {
+  margin-block-start: var(--pd-space-4);
+}
+
+.pd-metric-card[data-density='compact'] .pd-metric-card__metadata {
+  margin-block-start: var(--pd-space-2);
 }
 
 .pd-metric-card__metadata span {
@@ -203,13 +359,54 @@
   border-block-start: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
 }
 
+.pd-metric-card[data-depth='flat'] .pd-metric-card__actions,
+.pd-metric-card[data-density='compact'] .pd-metric-card__actions {
+  justify-content: flex-start;
+  margin-block-start: var(--pd-space-2);
+  padding-block-start: 0;
+  border-block-start: 0;
+}
+
+.pd-metric-card[data-depth='hero'] .pd-metric-card__actions {
+  justify-content: flex-start;
+  margin-block-start: var(--pd-space-4);
+  padding-block-start: 0;
+  border-block-start: 0;
+}
+
+@media (max-width: 640px) {
+  .pd-metric-card[data-depth='hero'] .pd-metric-card__value {
+    justify-content: flex-start;
+  }
+
+  .pd-metric-card[data-depth='hero'] .pd-metric-card__comparison {
+    justify-content: flex-start;
+  }
+
+  .pd-metric-card[data-depth='hero'] .pd-metric-card__sparkline {
+    inline-size: min(100%, 14rem);
+  }
+
+  .pd-metric-card[data-density='compact'] .pd-metric-card__value-region {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-metric-card[data-density='compact'] .pd-metric-card__comparison {
+    margin-block-start: var(--pd-space-1);
+  }
+
+  .pd-metric-card[data-density='compact'] .pd-metric-card__benchmarks {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 540px) {
   .pd-metric-card__header {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .pd-metric-card__header .pd-status-badge {
-    justify-self: end;
+    justify-self: start;
   }
 
   .pd-metric-card__benchmarks > div {
@@ -231,36 +428,65 @@
   }
 }
 
-/* Enterprise BI redesign: metrics become decision tiles. */
-.pd-metric-card {
-  padding: var(--pd-space-5);
-  border: 1px solid color-mix(in srgb, var(--pd-separator) 76%, transparent);
-  border-radius: 18px;
+/* MetricCard premium surface parity with 00.03. */
+.pd-metric-card[data-depth='default'] {
+  padding-block: var(--pd-space-5);
+  border: 0;
+  border-block-end: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.pd-metric-card[data-depth='default'][data-emphasis='alert'] {
+  border-block-end-color: var(--pd-status-warning);
+}
+
+.pd-metric-card[data-depth='default'][data-emphasis='recommendation'] {
+  border-block-end-color: var(--pd-data-accent);
+}
+
+.pd-metric-card[data-depth='hero'] {
+  display: grid;
+  gap: var(--pd-space-5);
+  min-inline-size: 0;
+  padding: clamp(22px, 3vw, 34px);
+  border: 0;
+  border-radius: var(--pd-radius-overlay);
+  color: var(--pd-text);
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-panel) 88%, transparent), color-mix(in srgb, var(--pd-surface-raised) 68%, transparent));
-  box-shadow: var(--pd-shadow-control);
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--pd-surface-panel) 90%, transparent),
+      color-mix(in srgb, var(--pd-surface-raised) 68%, transparent)
+    ),
+    var(--pd-canvas-gradient);
+  box-shadow: var(--pd-shadow-raised);
 }
 
-.pd-metric-card[data-emphasis='alert'] {
-  border-color: color-mix(in srgb, var(--pd-status-warning) 54%, var(--pd-separator));
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--pd-status-warning) 18%, transparent),
-    var(--pd-shadow-control);
+.pd-metric-card__shadow-bars {
+  display: grid;
+  gap: var(--pd-space-3);
 }
 
-.pd-metric-card__label {
-  color: var(--pd-text-muted);
-  font-family: var(--pd-font-mono);
-  font-size: var(--pd-type-size-caption);
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
+.pd-metric-card__shadow-bars span {
+  display: block;
+  block-size: 12px;
+  inline-size: 100%;
+  border-radius: var(--pd-radius-pill);
+  background: color-mix(in srgb, var(--pd-brand-accent) 72%, transparent);
+  box-shadow: 0 12px 26px color-mix(in srgb, var(--pd-brand-accent) 28%, transparent);
 }
 
-.pd-metric-card__value > span {
-  font-weight: var(--pd-font-weight-semibold);
-  letter-spacing: -0.045em;
+.pd-metric-card__shadow-bars span:nth-child(2) {
+  inline-size: 76%;
+  background: color-mix(in srgb, var(--pd-data-accent) 72%, transparent);
+  box-shadow: 0 12px 26px color-mix(in srgb, var(--pd-data-accent) 22%, transparent);
 }
 
-.pd-metric-card__sparkline {
-  width: min(100%, 11rem);
+.pd-metric-card__shadow-bars span:nth-child(3) {
+  inline-size: 52%;
+  background: color-mix(in srgb, var(--pd-text-muted) 52%, transparent);
+  box-shadow: 0 12px 26px color-mix(in srgb, var(--pd-text-muted) 16%, transparent);
 }
+

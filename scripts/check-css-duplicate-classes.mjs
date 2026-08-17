@@ -68,6 +68,13 @@ const allowedDuplicateClasses = new Set([
   'pd-chart-interaction-layer__selection',
   'pd-chart-interaction-layer__tooltip',
   'pd-metric-card__sparkline',
+  // Intentional contextual overrides: scoped under .pd-command-center-one-page__metric--primary
+  // and .pd-command-center-one-page__priority-surface / __supporting-strip selectors.
+  'pd-metric-card__shadow-bars',
+  'pd-metric-card__header',
+  'pd-metric-card__value-region',
+  'pd-metric-card__value',
+  'pd-metric-card__comparison',
   'pd-spinner',
   'pd-skeleton',
   'pd-skeleton__line',

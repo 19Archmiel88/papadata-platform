@@ -1,6 +1,10 @@
 import type {
   HTMLAttributes,
 } from 'react';
+
+import {
+  useChartMotion,
+} from '../../foundations/motion';
 import {
   Bar,
   BarChart,
@@ -315,6 +319,7 @@ export function ShareChart({
   valueFormatter = null,
   ...props
 }: ShareChartProps) {
+  const chartMotion = useChartMotion();
   const resolvedLabels: ShareChartLabels = {
     ...defaultLabels,
     ...labels,
@@ -392,7 +397,8 @@ export function ShareChart({
                       data={runtimeSegments}
                       dataKey="percent"
                       innerRadius="58%"
-                      isAnimationActive={false}
+                      animationDuration={chartMotion.animationDuration}
+                      isAnimationActive={chartMotion.isAnimationActive}
                       nameKey="label"
                       outerRadius="78%"
                       paddingAngle={1.4}
@@ -470,7 +476,8 @@ export function ShareChart({
                       />
                       <Bar
                         dataKey="percent"
-                        isAnimationActive={false}
+                        animationDuration={chartMotion.animationDuration}
+                        isAnimationActive={chartMotion.isAnimationActive}
                         maxBarSize={22}
                         radius={[0, 7, 7, 0]}
                         stroke="none"
@@ -567,7 +574,8 @@ export function ShareChart({
                           barSize={7}
                           dataKey={segment.dataKey}
                           fill={segment.color}
-                          isAnimationActive={false}
+                          animationDuration={chartMotion.animationDuration}
+                          isAnimationActive={chartMotion.isAnimationActive}
                           key={segment.id}
                           radius={radius}
                           stackId="share"

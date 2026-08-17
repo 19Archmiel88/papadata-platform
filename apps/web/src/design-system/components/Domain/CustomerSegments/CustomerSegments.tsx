@@ -20,6 +20,7 @@ export const CustomerSegments = forwardRef<HTMLElement, CustomerSegmentsProps>(
   function CustomerSegments(
     {
       className,
+      context: _context,
       onSelectSegment,
       segments,
       selectedSegmentId = null,

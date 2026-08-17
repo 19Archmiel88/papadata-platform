@@ -143,6 +143,68 @@ function createStory(id: CommandCenterStoryId): Story {
         ).toBeInTheDocument();
       }
 
+      if (id === '30.03') {
+        await expect(
+          screen.getByRole('heading', { name: 'Rejestr KPI' }),
+        ).toBeInTheDocument();
+        // Below 860px the spec swaps the table for a card list, so the register
+        // is asserted in whichever representation the viewport exposes.
+        const kpiTable = screen.queryByRole('table', {
+          name: 'Rejestr KPI — Centrum Dowodzenia',
+        });
+        const kpiMobileList = screen.queryByRole('list', {
+          name: 'Rejestr KPI — lista mobilna',
+        });
+
+        await expect(kpiTable ?? kpiMobileList).toBeInTheDocument();
+      }
+
+      if (id === '30.04') {
+        await expect(
+          screen.getByRole('heading', { name: 'Wartości planu i wykonania' }),
+        ).toBeInTheDocument();
+      }
+
+      if (id === '30.05') {
+        await expect(
+          screen.getByRole('heading', { name: 'Metryki źródłowe' }),
+        ).toBeInTheDocument();
+      }
+
+      if (id === '30.06') {
+        await expect(
+          screen.getByRole('heading', { name: 'Wyniki według źródeł' }),
+        ).toBeInTheDocument();
+      }
+
+      if (id === '30.07') {
+        await expect(
+          screen.getByRole('heading', { name: 'Ruch i jakość danych' }),
+        ).toBeInTheDocument();
+      }
+
+      if (id === '30.08') {
+        await expect(
+          screen.getByRole('heading', { name: 'Kondycja katalogu i bestsellerów' }),
+        ).toBeInTheDocument();
+        await expect(
+          screen.getByRole('heading', { name: 'Kondycja produktów' }),
+        ).toBeInTheDocument();
+      }
+
+      if (id === '30.09') {
+        await expect(
+          screen.getByRole('heading', { name: 'Segmenty i retencja' }),
+        ).toBeInTheDocument();
+        await expect(
+          screen.getByRole('heading', { name: 'Kondycja klientów' }),
+        ).toBeInTheDocument();
+        // Privacy notice required by spec (PII masking)
+        await expect(
+          screen.getByText('Prywatność klientów'),
+        ).toBeInTheDocument();
+      }
+
       if (id === '30.12') {
         await expect(
           screen.getByRole('heading', { name: 'Sygnały do oceny' }),

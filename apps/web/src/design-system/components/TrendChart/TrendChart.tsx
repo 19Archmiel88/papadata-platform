@@ -1,6 +1,10 @@
 import type {
   HTMLAttributes,
 } from 'react';
+
+import {
+  useChartMotion,
+} from '../../foundations/motion';
 import {
   useId,
 } from 'react';
@@ -222,6 +226,7 @@ export function TrendChart({
   ...props
 }: TrendChartProps) {
   const reactId = useId();
+  const chartMotion = useChartMotion();
 
   const gradientId = `pd-trend-area-${reactId.replaceAll(':', '')}`;
 
@@ -384,14 +389,14 @@ export function TrendChart({
             {variant === 'area' && hasActual ? (
               <Area
                 activeDot={false}
-                animationDuration={520}
+                animationDuration={chartMotion.animationDuration}
                 animationEasing="ease-out"
                 baseValue={domain[0]}
                 connectNulls={false}
                 dataKey="actual"
                 fill={`url(#${gradientId})`}
                 fillOpacity={1}
-                isAnimationActive
+                isAnimationActive={chartMotion.isAnimationActive}
                 legendType="none"
                 stroke="none"
                 type="monotone"
@@ -404,9 +409,9 @@ export function TrendChart({
                 connectNulls={false}
                 dataKey="previousPeriod"
                 dot={false}
-                animationDuration={520}
+                animationDuration={chartMotion.animationDuration}
                 animationEasing="ease-out"
-                isAnimationActive
+                isAnimationActive={chartMotion.isAnimationActive}
                 name={resolvedLabels.previousPeriod}
                 stroke="var(--pd-data-series-7)"
                 strokeLinecap="round"
@@ -423,9 +428,9 @@ export function TrendChart({
                 connectNulls={false}
                 dataKey="plan"
                 dot={false}
-                animationDuration={520}
+                animationDuration={chartMotion.animationDuration}
                 animationEasing="ease-out"
-                isAnimationActive
+                isAnimationActive={chartMotion.isAnimationActive}
                 name={resolvedLabels.plan}
                 stroke="var(--pd-data-series-8)"
                 strokeLinecap="round"
@@ -442,9 +447,9 @@ export function TrendChart({
                 connectNulls={false}
                 dataKey="movingAverage"
                 dot={false}
-                animationDuration={520}
+                animationDuration={chartMotion.animationDuration}
                 animationEasing="ease-out"
-                isAnimationActive
+                isAnimationActive={chartMotion.isAnimationActive}
                 name={resolvedLabels.movingAverage}
                 stroke="var(--pd-data-series-2)"
                 strokeLinecap="round"
@@ -461,9 +466,9 @@ export function TrendChart({
                 connectNulls={false}
                 dataKey="actual"
                 dot={false}
-                animationDuration={520}
+                animationDuration={chartMotion.animationDuration}
                 animationEasing="ease-out"
-                isAnimationActive
+                isAnimationActive={chartMotion.isAnimationActive}
                 name={resolvedLabels.actual}
                 stroke="var(--pd-data-actual)"
                 strokeLinecap="round"

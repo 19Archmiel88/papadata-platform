@@ -57,6 +57,7 @@ Główne grupy API:
 | status | `status`, `statusLabel`, `stateMessage` |
 | metadane | `sourceLabel`, `freshnessLabel`, `definitionChangeLabel` |
 | wyróżnienie | `emphasis` |
+| prezentacja | `depth`, `density` |
 | akcje | `detailAction`, `papaAction` |
 
 `contracts/components/metriccard.ts` pozostaje kontraktem orkiestracyjnym/specyfikacyjnym dla view modelu ekranów i zdarzeń. Nie jest kopią React Props.
@@ -73,6 +74,10 @@ Warianty są kompozycją pól, nie zestawem sześciu wzajemnie wykluczających s
 - alarmowy lub rekomendacyjny.
 
 `emphasis="alert"` i `emphasis="recommendation"` zmieniają jedynie wagę powierzchni. Znaczenie danych nadal wynika z tekstowego statusu, porównania i sygnału.
+
+## Głębia i kompaktowość
+
+`depth="hero"` zmienia wyłącznie skalę i powierzchnię karty — nie zawęża zakresu prezentowanych informacji. Hero renderuje ten sam układ podbloków co pozostałe warianty (mikrotrend, benchmarki, metadane, akcje), rozłożony inaczej przez siatkę. Jest zarezerwowane dla jednego najważniejszego KPI w danym układzie, np. przychodu w Centrum Dowodzenia. `depth="flat"` oraz `density="compact"` służą do list wspierających KPI rozdzielanych separatorami. Ten wariant nie tworzy osobnych ciężkich kontenerów i nie konkuruje z metryką główną. W kompaktowej liście status `ready` może zostać wizualnie wyciszony lub pominięty, a stany ograniczające interpretację, np. `partial` i `stale`, pozostają widoczne.
 
 ## Mikrotrend
 
@@ -103,7 +108,7 @@ Podstawowy gate dostępności dla tej story obejmuje tylko: Contrast, Keyboard, 
 ## Storybook i testy
 
 - Story: `apps/web/src/storybook-next/stories/15-data-visualizations/MetricCard.stories.tsx`.
-- Story pokazuje pełny katalog wariantów, stany, light/dark i długi copy.
+- Story pokazuje pełny katalog wariantów, stany, light/dark, długi copy oraz układ hero + compact flat na separatorach.
 - `dataState` (`ready`, `partial`, `stale`, `processing`, `noData`) i `emphasis` (`default`, `alert`, `recommendation`) są odrębnymi osiami kontraktu.
 - Wartości KPI, procenty i freshness w fixture są formatowane przez Foundation runtime.
 - `Szczegóły KPI` konsumują ikonę `data`, a `Wyjaśnij z Papa` ikonę `assistant` z `00.13`; widoczna etykieta pozostaje nazwą akcji.

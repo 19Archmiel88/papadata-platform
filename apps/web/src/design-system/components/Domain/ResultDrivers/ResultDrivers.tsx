@@ -19,6 +19,7 @@ export const ResultDrivers = forwardRef<HTMLElement, ResultDriversProps>(
     {
       baselineValue,
       className,
+      context: _context,
       currentValue,
       drivers,
       onInspectDriver,

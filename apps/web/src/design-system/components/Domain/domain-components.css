@@ -111,6 +111,11 @@
   gap: 0.18rem;
 }
 
+.pd-plan-performance__chart {
+  min-width: 0;
+  margin-block-start: var(--pd-space-3);
+}
+
 .pd-page-header__meta dt,
 .pd-data-status-banner__sources dt,
 .pd-evidence-panel__sources dt,

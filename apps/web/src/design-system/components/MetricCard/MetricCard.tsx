@@ -30,6 +30,15 @@ const defaultMetricCardLabels: MetricCardLabels = {
   target: 'Cel',
 };
 
+export type MetricCardDepth =
+  | 'default'
+  | 'flat'
+  | 'hero';
+
+export type MetricCardDensity =
+  | 'regular'
+  | 'compact';
+
 export type MetricCardEmphasis =
   | 'default'
   | 'alert'
@@ -46,6 +55,8 @@ export type MetricCardProps = Omit<
 > & {
   readonly comparison?: MetricCardComparison | null;
   readonly definitionChangeLabel?: string | null;
+  readonly density?: MetricCardDensity;
+  readonly depth?: MetricCardDepth;
   readonly detailAction?: AnalyticsAction | null;
   readonly deviationLabel?: string | null;
   readonly emphasis?: MetricCardEmphasis;
@@ -172,12 +183,27 @@ function MetricSparkline({
   );
 }
 
+function MetricShadowBars() {
+  return (
+    <div
+      aria-hidden="true"
+      className="pd-metric-card__shadow-bars"
+    >
+      <span />
+      <span />
+      <span />
+    </div>
+  );
+}
+
 export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
   function MetricCard(
     {
       className,
       comparison = null,
       definitionChangeLabel = null,
+      density = 'regular',
+      depth = 'default',
       detailAction = null,
       deviationLabel = null,
       emphasis = 'default',
@@ -226,6 +252,8 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
       ? stateMessageId
       : undefined;
 
+    const isHero = depth === 'hero';
+
     return (
       <article
         {...props}
@@ -238,6 +266,8 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
           className,
         )}
         data-data-state={status}
+        data-density={density}
+        data-depth={depth}
         data-emphasis={emphasis}
         data-metric-id={metricId}
         data-signal={signal}
@@ -263,10 +293,10 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
           {isProcessing ? (
             <Skeleton
               animated
-              height="2.4rem"
+              height={isHero ? '3rem' : '2.4rem'}
               lines={1}
               shape="text"
-              width="72%"
+              width={isHero ? '68%' : '72%'}
             />
           ) : (
             <p className="pd-metric-card__value">
@@ -376,6 +406,10 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
               </TextAction>
             ) : null}
           </footer>
+        ) : null}
+
+        {isHero ? (
+          <MetricShadowBars />
         ) : null}
       </article>
     );

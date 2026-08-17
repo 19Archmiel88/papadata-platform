@@ -21,6 +21,7 @@ export const MorningBrief = forwardRef<HTMLElement, MorningBriefProps>(
   function MorningBrief(
     {
       className,
+      context: _context,
       dataReadiness,
       decisionsDue,
       highlights,

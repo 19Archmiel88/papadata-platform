@@ -1,6 +1,10 @@
 import type {
   HTMLAttributes,
 } from 'react';
+
+import {
+  useChartMotion,
+} from '../../foundations/motion';
 import {
   useState,
 } from 'react';
@@ -193,6 +197,7 @@ export function ComparisonChart({
   variant = 'bar',
   ...props
 }: ComparisonChartProps) {
+  const chartMotion = useChartMotion();
   const [isCompactPlot, setIsCompactPlot] =
     useState(false);
 
@@ -485,7 +490,7 @@ export function ComparisonChart({
 
             {runtimeSeries.map((item) => (
               <Bar
-                animationDuration={520}
+                animationDuration={chartMotion.animationDuration}
                 animationEasing="ease-out"
                 dataKey={item.dataKey}
                 fill={resolveSeriesToken(item.index)}
@@ -496,7 +501,7 @@ export function ComparisonChart({
                       ? 0.88
                       : 0.82
                 }
-                isAnimationActive
+                isAnimationActive={chartMotion.isAnimationActive}
                 key={item.key}
                 maxBarSize={
                   isRanking

@@ -55,101 +55,148 @@ type Story = StoryObj<typeof meta>;
 
 function MetricVariants() {
   const locale = readLocale();
-  const sharedMetadata = {
-    freshnessLabel: formatPapaDataRelativeTime(-8, 'minute', locale),
-    sourceLabel: locale === 'en' ? 'Store + ads' : 'Sklep + reklamy',
+  const sharedStatus = {
     status: 'ready' as const,
-    statusLabel: locale === 'en' ? 'Current data' : 'Dane aktualne',
+    statusLabel: '',
   };
 
   return (
-    <div className="pd-viz-story__metric-grid">
-      <MetricCard
-        {...sharedMetadata}
-        detailAction={{
-          label: locale === 'en' ? 'KPI details' : 'Szczegóły KPI',
-          onAction: showMetricDetail,
-        }}
-        label={locale === 'en' ? 'Revenue' : 'Przychód'}
-        metricId="revenue"
-        value={formatPapaDataCurrency(248420, locale)}
-      />
-      <MetricCard
-        {...sharedMetadata}
-        comparison={{
-          direction: 'up',
-          label: locale === 'en'
-            ? '+12.4% period over period'
-            : '+12,4% okres do okresu',
-        }}
-        label={locale === 'en' ? 'Orders' : 'Zamówienia'}
-        metricId="orders"
-        signal="positive"
-        value={formatPapaDataNumber(1284, locale)}
-      />
-      <MetricCard
-        {...sharedMetadata}
-        comparison={{
-          direction: 'flat',
-          label: locale === 'en'
-            ? 'Stable versus the previous period'
-            : 'Stabilnie względem poprzedniego okresu',
-        }}
-        label="ROAS"
-        metricId="roas"
-        signal="positive"
-        sparklinePoints={[4.82, 4.82, 4.82, 4.82, 4.82]}
-        targetLabel={formatPapaDataNumber(4.4, locale)}
-        value={formatPapaDataNumber(4.82, locale)}
-      />
-      <MetricCard
-        {...sharedMetadata}
-        comparison={{
-          direction: 'down',
-          label: locale === 'en'
-            ? '-2.4 pp period over period'
-            : '-2,4 p.p. okres do okresu',
-        }}
-        deviationLabel={locale === 'en' ? '-1.1 pp to plan' : '-1,1 p.p. do planu'}
-        label={locale === 'en' ? 'Gross margin' : 'Marża brutto'}
-        metricId="gross-margin"
-        signal="negative"
-        value={formatPapaDataPercent(0.317, locale)}
-      />
-      <MetricCard
-        {...sharedMetadata}
-        comparison={{
-          direction: 'down',
-          label: locale === 'en'
-            ? 'Cost down 7.8% - favorable direction'
-            : 'Koszt spadł o 7,8% — kierunek korzystny',
-        }}
-        label={locale === 'en' ? 'Ad cost' : 'Koszt reklamy'}
-        metricId="ad-cost"
-        signal="positive"
-        sparklinePoints={[61, 59, 60, 55, 53, 54, 49, 47, 45]}
-        value={formatPapaDataCurrency(38200, locale)}
-      />
-      <MetricCard
-        definitionChangeLabel={locale === 'en'
-          ? 'Metric definition changed on Aug 1'
-          : 'Definicja metryki zmieniona 1 sie'}
-        emphasis="recommendation"
-        freshnessLabel={formatPapaDataRelativeTime(-8, 'minute', locale)}
-        label={locale === 'en' ? 'Conversion' : 'Konwersja'}
-        metricId="conversion"
-        papaAction={{
-          label: locale === 'en' ? 'Explain with Papa' : 'Wyjaśnij z Papa',
-          onAction: explainMetric,
-        }}
-        signal="warning"
-        sourceLabel={locale === 'en' ? 'GA4 + orders' : 'GA4 + zamówienia'}
-        sparklinePoints={[48, 50, 49, 46, 44, 45, 42, 41, 40]}
-        status="partial"
-        statusLabel={locale === 'en' ? 'Partial data' : 'Dane częściowe'}
-        value={formatPapaDataPercent(0.038, locale)}
-      />
-    </div>
+    <>
+      {/* Hero + priority 2×2 — dokładny układ centrum dowodzenia */}
+      <div className="pd-viz-story__metric-composition">
+        {/* Przychód hero */}
+        <MetricCard
+          {...sharedStatus}
+          comparison={{
+            direction: 'up',
+            label: locale === 'en'
+              ? '+12.4% period over period'
+              : '+12,4% okres do okresu',
+          }}
+          definitionChangeLabel={null}
+          density="regular"
+          depth="hero"
+          detailAction={{
+            label: locale === 'en' ? 'KPI details' : 'Szczegóły KPI',
+            onAction: showMetricDetail,
+          }}
+          deviationLabel={locale === 'en' ? '+4.1% vs plan' : '+4,1% wobec planu'}
+          freshnessLabel={locale === 'en' ? 'fresh sources' : 'świeże źródła'}
+          label={locale === 'en' ? 'Revenue' : 'Przychód'}
+          metricId="revenue"
+          signal="positive"
+          sourceLabel={locale === 'en' ? 'Store + ads' : 'Sklep + reklamy'}
+          /* Hero must carry the full information set — micro-trend, benchmarks,
+             metadata and actions — not just the value and its delta. */
+          sparklinePoints={[
+            182, 191, 188, 204, 212, 208, 221,
+            234, 229, 241, 238, 246, 244, 248,
+          ]}
+          targetLabel={locale === 'en' ? 'Target 238 600 PLN' : 'Cel 238 600 zł'}
+          value={formatPapaDataCurrency(248420, locale)}
+        />
+
+        {/* Priority 2×2: Marża, Zamówienia, ROAS, Konwersja */}
+        <div
+          aria-label={locale === 'en' ? 'Priority KPI' : 'Priorytetowe KPI'}
+          className="pd-viz-story__metric-priority-surface"
+          role="list"
+        >
+          <MetricCard
+            {...sharedStatus}
+            comparison={{ direction: 'down', label: locale === 'en' ? '-2.4 pp' : '-2,4 p.p.' }}
+            density="compact"
+            depth="flat"
+            emphasis="alert"
+            label={locale === 'en' ? 'Gross margin' : 'Marża brutto'}
+            metricId="gross-margin"
+            role="listitem"
+            signal="negative"
+            sparklinePoints={[34.1, 33.8, 33.2, 32.6, 32.0, 31.7]}
+            value={formatPapaDataPercent(0.317, locale)}
+          />
+          <MetricCard
+            {...sharedStatus}
+            comparison={{ direction: 'up', label: locale === 'en' ? '+8.1%' : '+8,1%' }}
+            density="compact"
+            depth="flat"
+            label={locale === 'en' ? 'Orders' : 'Zamówienia'}
+            metricId="orders"
+            role="listitem"
+            signal="positive"
+            sparklinePoints={[1120, 1180, 1200, 1240, 1270, 1284]}
+            value={formatPapaDataNumber(1284, locale)}
+          />
+          <MetricCard
+            {...sharedStatus}
+            comparison={{ direction: 'up', label: locale === 'en' ? '+18%' : '+18%' }}
+            density="compact"
+            depth="flat"
+            label="ROAS"
+            metricId="roas"
+            role="listitem"
+            signal="positive"
+            sparklinePoints={[3.6, 3.8, 4.0, 4.2, 4.6, 4.82]}
+            value={formatPapaDataNumber(4.82, locale)}
+          />
+          <MetricCard
+            definitionChangeLabel={locale === 'en'
+              ? 'Metric definition changed Aug 1'
+              : 'Definicja zmieniona 1 sie'}
+            density="compact"
+            depth="flat"
+            emphasis="recommendation"
+            freshnessLabel={formatPapaDataRelativeTime(-8, 'minute', locale)}
+            label={locale === 'en' ? 'Conversion' : 'Konwersja'}
+            metricId="conversion"
+            papaAction={{
+              label: locale === 'en' ? 'Explain with Papa' : 'Wyjaśnij z Papa',
+              onAction: explainMetric,
+            }}
+            role="listitem"
+            signal="warning"
+            sourceLabel="GA4"
+            sparklinePoints={[4.8, 4.6, 4.4, 4.2, 4.0, 3.8]}
+            status="partial"
+            statusLabel={locale === 'en' ? 'Partial data' : 'Dane częściowe'}
+            value={formatPapaDataPercent(0.038, locale)}
+          />
+        </div>
+      </div>
+
+      {/* Supporting strip — pozostałe KPI */}
+      <div
+        aria-label={locale === 'en' ? 'Remaining KPI' : 'Pozostałe KPI'}
+        className="pd-viz-story__metric-supporting-strip"
+        role="list"
+      >
+        {[
+          { id: 'aov', label: locale === 'en' ? 'AOV' : 'AOV', value: formatPapaDataCurrency(193.5, locale), delta: 0.037, signal: 'positive' as const },
+          { id: 'ad-cost', label: locale === 'en' ? 'Ad cost' : 'Koszt reklamy', value: formatPapaDataCurrency(51400, locale), delta: -0.07, signal: 'positive' as const },
+          { id: 'cpa', label: 'CPA', value: formatPapaDataCurrency(40.1, locale), delta: -0.04, signal: 'positive' as const },
+          { id: 'impressions', label: locale === 'en' ? 'Impressions' : 'Wyświetlenia', value: formatPapaDataNumber(1240000, locale), delta: -0.12, signal: 'negative' as const },
+          { id: 'clicks', label: locale === 'en' ? 'Clicks' : 'Kliknięcia', value: formatPapaDataNumber(20088, locale), delta: -0.14, signal: 'negative' as const },
+          { id: 'ctr', label: 'CTR', value: formatPapaDataPercent(0.0162, locale), delta: -0.03, signal: 'warning' as const },
+        ].map((metric) => (
+          <MetricCard
+            comparison={{
+              direction: metric.delta > 0 ? 'up' : metric.delta < 0 ? 'down' : 'flat',
+              label: `${metric.delta > 0 ? '+' : ''}${(metric.delta * 100).toFixed(1)}%`,
+            }}
+            density="compact"
+            depth="flat"
+            key={metric.id}
+            label={metric.label}
+            metricId={metric.id}
+            role="listitem"
+            signal={metric.signal}
+            status="ready"
+            statusLabel=""
+            value={metric.value}
+          />
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -232,21 +279,21 @@ export const MetricCardStory: Story = {
       storyId="15.02"
       summary={(
         <Localized
-          pl="MetricCard odpowiada za KPI, jego porównanie i mikrotrend. Nie jest małym ChartFrame i nie wprowadza własnych kontrolek."
-          en="MetricCard owns the KPI, comparison and microtrend. It is not a small ChartFrame and does not add private controls."
+          pl="MetricCard odpowiada za KPI, jego porównanie i mikrotrend. Wariant hero jest zarezerwowany dla najważniejszego KPI, a wariant compact flat dla listy metryk rozdzielanych separatorami."
+          en="MetricCard owns KPI, comparison and microtrend. Hero is reserved for the primary KPI, while compact flat is used for separator-based metric lists."
         />
       )}
       title={(
         <Localized
-          pl="Wskaźnik ma pokazywać sygnał, nie budować kolejnego panelu w karcie."
-          en="A metric should expose the signal, not build another panel inside a card."
+          pl="Wskaźnik ma pokazywać sygnał i hierarchię, nie budować kolejnego panelu w karcie."
+          en="A metric should expose signal and hierarchy, not build another panel inside a card."
         />
       )}
     >
       <StoryPresentationSection
         index="01"
-        summary="Wariant wynika z potrzebnych danych. Publiczne API nie wymusza sześciu wzajemnie wykluczających się typów karty."
-        title="Warianty kontraktowe"
+        summary="Przychód może mieć największą głębię. Pozostałe KPI schodzą do kompaktowej listy na separatorach."
+        title="Hierarchia KPI"
       >
         <MetricVariants />
       </StoryPresentationSection>

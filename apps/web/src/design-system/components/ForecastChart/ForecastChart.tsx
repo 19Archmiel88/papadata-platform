@@ -1,6 +1,10 @@
 import type {
   HTMLAttributes,
 } from 'react';
+
+import {
+  useChartMotion,
+} from '../../foundations/motion';
 import {
   useId,
 } from 'react';
@@ -368,6 +372,7 @@ export function ForecastChart({
   ...props
 }: ForecastChartProps) {
   const generatedId = useId();
+  const chartMotion = useChartMotion();
   const resolvedLabels: ForecastChartLabels = {
     ...defaultLabels,
     ...labels,
@@ -494,7 +499,8 @@ export function ForecastChart({
                     connectNulls={false}
                     dataKey="lowerBand"
                     fill="transparent"
-                    isAnimationActive={false}
+                    animationDuration={chartMotion.animationDuration}
+                    isAnimationActive={chartMotion.isAnimationActive}
                     legendType="none"
                     stackId="forecast-uncertainty"
                     stroke="none"
@@ -507,7 +513,8 @@ export function ForecastChart({
                     dataKey="uncertaintyRange"
                     fill="var(--pd-forecast-uncertainty-fill)"
                     fillOpacity="var(--pd-forecast-uncertainty-fill-opacity)"
-                    isAnimationActive={false}
+                    animationDuration={chartMotion.animationDuration}
+                    isAnimationActive={chartMotion.isAnimationActive}
                     legendType="none"
                     stackId="forecast-uncertainty"
                     stroke="none"
@@ -523,7 +530,8 @@ export function ForecastChart({
                     connectNulls={false}
                     dataKey="upperBound"
                     dot={false}
-                    isAnimationActive={false}
+                    animationDuration={chartMotion.animationDuration}
+                    isAnimationActive={chartMotion.isAnimationActive}
                     legendType="none"
                     stroke="var(--pd-forecast-uncertainty-stroke)"
                     strokeDasharray="3 5"
@@ -538,7 +546,8 @@ export function ForecastChart({
                     connectNulls={false}
                     dataKey="lowerBound"
                     dot={false}
-                    isAnimationActive={false}
+                    animationDuration={chartMotion.animationDuration}
+                    isAnimationActive={chartMotion.isAnimationActive}
                     legendType="none"
                     stroke="var(--pd-forecast-uncertainty-stroke)"
                     strokeDasharray="3 5"
@@ -566,7 +575,8 @@ export function ForecastChart({
                   connectNulls={false}
                   dataKey="actual"
                   dot={false}
-                  isAnimationActive={false}
+                  animationDuration={chartMotion.animationDuration}
+                  isAnimationActive={chartMotion.isAnimationActive}
                   name={resolvedLabels.actual}
                   stroke="var(--pd-data-actual)"
                   strokeLinecap="round"
@@ -583,7 +593,8 @@ export function ForecastChart({
                   connectNulls={false}
                   dataKey="forecast"
                   dot={false}
-                  isAnimationActive={false}
+                  animationDuration={chartMotion.animationDuration}
+                  isAnimationActive={chartMotion.isAnimationActive}
                   name={resolvedLabels.forecast}
                   stroke="var(--pd-data-forecast)"
                   strokeLinecap="round"

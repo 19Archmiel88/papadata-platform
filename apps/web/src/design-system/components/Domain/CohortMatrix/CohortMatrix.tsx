@@ -19,6 +19,7 @@ export const CohortMatrix = forwardRef<HTMLElement, CohortMatrixProps>(
       className,
       cohortMetric,
       columns,
+      context: _context,
       onSelectCohort,
       rows,
       selectedCohortId = null,

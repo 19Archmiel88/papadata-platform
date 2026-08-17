@@ -149,6 +149,10 @@ const businessScreenTargets = [
     name: '30.13 Waterfall',
   },
   {
+    title: '30 Centrum Dowodzenia/One-page runtime',
+    name: '30.00 Centrum Dowodzenia — one-page',
+  },
+  {
     title: '31 Kampanie płatne/Ekrany produkcyjne',
     name: '31.01 Przegląd',
   },

@@ -2,6 +2,10 @@ import type {
   HTMLAttributes,
   ReactElement,
 } from 'react';
+
+import {
+  useChartMotion,
+} from '../../foundations/motion';
 import {
   Cell,
   CartesianGrid,
@@ -534,6 +538,7 @@ export function CorrelationChart({
   yLabel,
   ...props
 }: CorrelationChartProps) {
+  const chartMotion = useChartMotion();
   const resolvedLabels: CorrelationChartLabels = {
     ...defaultLabels,
     ...labels,
@@ -712,7 +717,8 @@ export function CorrelationChart({
                 <Scatter
                   data={runtimePoints}
                   dataKey="y"
-                  isAnimationActive={false}
+                  animationDuration={chartMotion.animationDuration}
+                  isAnimationActive={chartMotion.isAnimationActive}
                   name={resolvedLabels.relationship}
                   shape={renderCorrelationPointShape}
                 >

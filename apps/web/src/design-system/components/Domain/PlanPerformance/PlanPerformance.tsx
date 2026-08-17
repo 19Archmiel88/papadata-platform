@@ -1,9 +1,11 @@
 import type {
+  ChartSeries,
   ContractPlanPerformanceProps,
   HTMLAttributes,
 } from '../domainShared';
 import {
   StatusBadge,
+  TrendChart,
   formatSignedNumber,
   forwardRef,
   joinClassNames,
@@ -15,19 +17,63 @@ import {
 export type PlanPerformanceProps =
   ContractPlanPerformanceProps & HTMLAttributes<HTMLElement>;
 
+type PlanPerformanceDatum = {
+  readonly actual: number | null;
+  readonly label: string;
+  readonly plan: number | null;
+};
+
+/**
+ * Aligns the plan and actual series on their shared x values so the chart shows
+ * one row per period even when a series is missing a point.
+ */
+function buildPlanPerformanceData(
+  actualSeries: ChartSeries | undefined,
+  planSeries: ChartSeries | undefined,
+): readonly PlanPerformanceDatum[] {
+  const actualPoints = actualSeries?.points ?? [];
+  const planPoints = planSeries?.points ?? [];
+
+  const orderedKeys: string[] = [];
+  const seenKeys = new Set<string>();
+
+  for (const point of [...actualPoints, ...planPoints]) {
+    if (!seenKeys.has(point.x)) {
+      seenKeys.add(point.x);
+      orderedKeys.push(point.x);
+    }
+  }
+
+  return orderedKeys.map((key) => {
+    const actualPoint = actualPoints.find((point) => point.x === key);
+    const planPoint = planPoints.find((point) => point.x === key);
+
+    return {
+      actual: actualPoint?.y ?? null,
+      label: actualPoint?.label ?? planPoint?.label ?? key,
+      plan: planPoint?.y ?? null,
+    };
+  });
+}
+
 export const PlanPerformance = forwardRef<HTMLElement, PlanPerformanceProps>(
   function PlanPerformance(
     {
-      actualSeries: _actualSeries,
+      actualSeries,
       className,
+      confidenceBand: _confidenceBand,
+      context: _context,
+      forecastSeries: _forecastSeries,
       gapToTarget,
+      onRangeChange: _onRangeChange,
       pace,
-      planSeries: _planSeries,
+      planSeries,
       ...props
     },
     ref,
   ) {
     const titleId = useId();
+    const data = buildPlanPerformanceData(actualSeries, planSeries);
 
     return (
       <section
@@ -58,6 +104,15 @@ export const PlanPerformance = forwardRef<HTMLElement, PlanPerformanceProps>(
             <dd>{resolvePaceLabel(pace)}</dd>
           </div>
         </dl>
+        {data.length > 0 ? (
+          <TrendChart
+            ariaLabel="Realizacja planu w czasie: wynik i plan"
+            className="pd-plan-performance__chart"
+            data={data}
+            unit={actualSeries?.unit ?? planSeries?.unit ?? null}
+            variant="line"
+          />
+        ) : null}
       </section>
     );
   },

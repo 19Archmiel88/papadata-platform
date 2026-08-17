@@ -3,7 +3,7 @@ version: 1.0
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
-status: review
+status: approved-target
 document_type: component-contract
 component_id: ShareChart
 work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumentem i jego powiązaniami."
@@ -20,6 +20,8 @@ Runtime source of truth:
 `apps/web/src/design-system/components/ShareChart/ShareChart.tsx`
 
 Kontrakt w `contracts/components/sharechart.ts` pozostaje kontraktem orkiestracyjnym dla fixture'ów, ekranów i przepływów. Nie zastępuje publicznego React API runtime.
+
+Odbiór wizualny 15.05 został domknięty; komponent jest używany w runtime Centrum Dowodzenia (`30-00-one-page.md`, sekcja źródeł ruchu) w wariancie `donut`.
 
 ## Kanoniczne warianty
 

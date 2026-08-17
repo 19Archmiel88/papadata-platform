@@ -21,6 +21,7 @@ export const SalesSources = forwardRef<HTMLElement, SalesSourcesProps>(
     {
       className,
       compareToPrevious = false,
+      context: _context,
       onOpenSource,
       sources,
       ...props

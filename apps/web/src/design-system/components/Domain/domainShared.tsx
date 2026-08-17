@@ -48,6 +48,9 @@ import type {
   WaterfallChartProps as ContractWaterfallChartProps,
 } from '../../../../../../contracts/components/waterfallchart';
 import type {
+  ChartSeries,
+} from '../../../../../../contracts/ui-contract-types';
+import type {
   PapaDataIconName,
 } from '../../icons';
 import {
@@ -63,6 +66,9 @@ import {
 import {
   StatusBadge,
 } from '../StatusBadge';
+import {
+  TrendChart,
+} from '../TrendChart';
 import type {
   StatusBadgeTone,
 } from '../Feedback/feedbackTone';
@@ -75,6 +81,7 @@ import {
 import './domain-components.css';
 
 export type {
+  ChartSeries,
   FormEvent,
   HTMLAttributes,
   ReactNode,
@@ -113,6 +120,7 @@ export {
   ProgressIndicator,
   StatusBadge,
   Textarea,
+  TrendChart,
   forwardRef,
   joinClassNames,
   useId,

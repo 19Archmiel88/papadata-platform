@@ -1,5 +1,11 @@
+import type {
+  MouseEvent,
+  ReactNode,
+} from 'react';
 import {
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import type {
@@ -53,6 +59,25 @@ import {
   businessScreenDefinitions,
   defaultWorkspaceContext,
 } from './businessData';
+import {
+  CommandCenterOnePage,
+} from './command-center';
+import {
+  formatInteger,
+  formatMetricValue,
+  formatPercent,
+  formatShortTime,
+  formatSignedPercent,
+  mapReadinessToAnalyticsState,
+  resolveDataStateLabel,
+  resolveDataStateTone,
+  resolveImpactLabel,
+  resolveReadinessLabel,
+  resolveReadinessState,
+  resolveReadinessTone,
+  resolveUnitLabel,
+  slugify,
+} from './commandCenterWorkspaceFormatters';
 import type {
   BusinessScreenData,
   BusinessScreenDefinition,
@@ -202,13 +227,107 @@ const readinessToneMap = {
   Nieświeże: 'warning',
 } satisfies Record<string, 'danger' | 'success' | 'warning'>;
 
-const commandCenterNavigation = businessScreenDefinitions
-  .filter((item) => item.group === 'command-center')
-  .map((item) => ({
-    href: item.route,
-    id: item.id,
-    label: item.id === '30.14' ? 'Warianty' : item.displayTitle,
-  }));
+type CommandNavigationItem = {
+  readonly href: string;
+  readonly id: string;
+  readonly label: string;
+};
+
+const commandCenterScreenNavigation: readonly CommandNavigationItem[] = (
+  businessScreenDefinitions
+    .filter((item) => (
+      item.group === 'command-center'
+      && item.id !== '30.14'
+    ))
+    .map((item) => ({
+      href: item.route,
+      id: item.id,
+      label: item.displayTitle,
+    }))
+);
+
+const commandCenterRuntimeNavigation = [
+  {
+    href: '#command-section-kpi',
+    id: 'command-section-kpi',
+    label: 'KPI',
+  },
+  {
+    href: '#command-section-plan',
+    id: 'command-section-plan',
+    label: 'Plan',
+  },
+  {
+    href: '#command-section-sales-costs',
+    id: 'command-section-sales-costs',
+    label: 'Sprzedaż',
+  },
+  {
+    href: '#command-section-traffic-sources',
+    id: 'command-section-traffic-sources',
+    label: 'Źródła',
+  },
+  {
+    href: '#command-section-customers',
+    id: 'command-section-customers',
+    label: 'Klienci',
+  },
+  {
+    href: '#command-section-products',
+    id: 'command-section-products',
+    label: 'Produkty',
+  },
+  {
+    href: '#command-section-funnel',
+    id: 'command-section-funnel',
+    label: 'Lejek',
+  },
+  {
+    href: '#command-section-recommendations',
+    id: 'command-section-recommendations',
+    label: 'AI',
+  },
+  {
+    href: '#command-section-records',
+    id: 'command-section-records',
+    label: 'Rejestr',
+  },
+] as const satisfies readonly CommandNavigationItem[];
+
+/** Scroll distance before the runtime section rail may appear at all. */
+const runtimeNavigationRevealOffset = 48;
+
+/** Ignore sub-pixel jitter; only a deliberate gesture toggles the rail. */
+const runtimeNavigationDirectionThreshold = 4;
+
+/**
+ * The product shell scrolls in an inner container, not the window, so the rail
+ * has to listen wherever the workspace actually scrolls.
+ */
+function resolveScrollContainer(
+  element: HTMLElement | null,
+): HTMLElement | Window {
+  if (!element || typeof window === 'undefined') {
+    return window;
+  }
+
+  let current = element.parentElement;
+
+  while (current) {
+    const { overflowY } = window.getComputedStyle(current);
+
+    if (
+      (overflowY === 'auto' || overflowY === 'scroll')
+      && current.scrollHeight > current.clientHeight
+    ) {
+      return current;
+    }
+
+    current = current.parentElement;
+  }
+
+  return window;
+}
 
 const commandFallbackDateRange = {
   from: '2026-08-01',
@@ -270,6 +389,154 @@ export function CommandCenterWorkspace({
     loading,
     problem,
   });
+  const [activeRuntimeSectionId, setActiveRuntimeSectionId] = useState<string>(
+    commandCenterRuntimeNavigation[0]?.id ?? 'command-section-kpi',
+  );
+  const [isRuntimeNavigationVisible, setRuntimeNavigationVisible] = useState(false);
+  const rootRef = useRef<HTMLElement | null>(null);
+  const isRuntimeOnePage = mode === 'runtime';
+  const navigationItems = isRuntimeOnePage
+    ? commandCenterRuntimeNavigation
+    : commandCenterScreenNavigation;
+  const pageHeadingTitle = isRuntimeOnePage
+    ? 'Centrum Dowodzenia'
+    : definition.displayTitle;
+  const pageHeadingSubtitle = isRuntimeOnePage
+    ? 'Jedna strona porannego briefu: świeżość danych, KPI, statusy AI, ryzyka, wynik, sprzedaż i rekomendacje z symulacją wpływu.'
+    : definition.summary;
+
+  useEffect(() => {
+    if (!isRuntimeOnePage || typeof window === 'undefined') {
+      return undefined;
+    }
+
+    const targets = commandCenterRuntimeNavigation.flatMap((item) => {
+      const target = item.href.startsWith('#')
+        ? document.getElementById(item.href.slice(1))
+        : null;
+
+      return target ? [{ id: item.id, target }] : [];
+    });
+
+    if (targets.length === 0) {
+      return undefined;
+    }
+
+    const hashTarget = commandCenterRuntimeNavigation.find((item) => (
+      item.href === window.location.hash
+    ));
+
+    if (hashTarget) {
+      setActiveRuntimeSectionId(hashTarget.id);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((left, right) => (
+            Math.abs(left.boundingClientRect.top)
+            - Math.abs(right.boundingClientRect.top)
+          ));
+        const firstVisible = visible[0];
+
+        if (!firstVisible) {
+          return;
+        }
+
+        const matched = targets.find(({ target }) => (
+          target === firstVisible.target
+        ));
+
+        if (matched) {
+          setActiveRuntimeSectionId(matched.id);
+        }
+      },
+      {
+        root: null,
+        rootMargin: '-18% 0px -62% 0px',
+        threshold: [0.08, 0.18, 0.32],
+      },
+    );
+
+    targets.forEach(({ target }) => observer.observe(target));
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isRuntimeOnePage]);
+
+  useEffect(() => {
+    if (!isRuntimeOnePage || typeof window === 'undefined') {
+      return undefined;
+    }
+
+    // The product shell is `height: 100dvh; overflow: hidden` and scrolls in an
+    // inner container, so window.scrollY never moves. Resolve the real scroller.
+    const scroller = resolveScrollContainer(rootRef.current);
+    const readOffset = () => (
+      scroller === window
+        ? window.scrollY
+        : (scroller as HTMLElement).scrollTop
+    );
+
+    let animationFrameId: number | null = null;
+    let previousOffset = readOffset();
+
+    const updateVisibility = () => {
+      animationFrameId = null;
+
+      const offset = readOffset();
+      const delta = offset - previousOffset;
+
+      previousOffset = offset;
+
+      if (window.location.hash.length > 1) {
+        setRuntimeNavigationVisible(true);
+
+        return;
+      }
+
+      if (offset <= runtimeNavigationRevealOffset) {
+        setRuntimeNavigationVisible(false);
+
+        return;
+      }
+
+      if (delta > runtimeNavigationDirectionThreshold) {
+        setRuntimeNavigationVisible(true);
+
+        return;
+      }
+
+      if (delta < -runtimeNavigationDirectionThreshold) {
+        setRuntimeNavigationVisible(false);
+      }
+    };
+
+    const requestVisibilityUpdate = () => {
+      if (animationFrameId !== null) {
+        return;
+      }
+
+      animationFrameId = window.requestAnimationFrame(updateVisibility);
+    };
+
+    scroller.addEventListener('scroll', requestVisibilityUpdate, {
+      passive: true,
+    });
+    window.addEventListener('hashchange', updateVisibility);
+
+    return () => {
+      if (animationFrameId !== null) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
+
+      scroller.removeEventListener('scroll', requestVisibilityUpdate);
+      window.removeEventListener('hashchange', updateVisibility);
+    };
+  }, [isRuntimeOnePage]);
+
   const issues = problem
     ? [
         {
@@ -280,11 +547,11 @@ export function CommandCenterWorkspace({
       ]
     : buildIssues(data);
   const screenContext = useMemo(() => ({
-    activeSection: definition.displayTitle,
+    activeSection: pageHeadingTitle,
     breadcrumbs: [
       'Aplikacja',
       'Centrum Dowodzenia',
-      definition.displayTitle,
+      pageHeadingTitle,
     ],
     charts: buildCommandScreenCharts(data, definition),
     elements: buildCommandScreenElements(data),
@@ -321,9 +588,9 @@ export function CommandCenterWorkspace({
       status: `${Math.round((item.confidence ?? 0) * 100)}% confidence`,
       value: item.impact,
     })) : [],
-    route: definition.route,
+    route: isRuntimeOnePage ? '/app/command-center' : definition.route,
     screenId: definition.id,
-    summary: definition.summary,
+    summary: pageHeadingSubtitle,
     tables: data ? [
       {
         description: 'Tabela alternatywna dla metryk i decyzji widoku.',
@@ -333,13 +600,16 @@ export function CommandCenterWorkspace({
         value: `${data.records.length} pozycji`,
       },
     ] : [],
-    title: definition.displayTitle,
+    title: pageHeadingTitle,
   }), [
     data,
     dataState,
     dateRange,
     definition,
+    isRuntimeOnePage,
     loading,
+    pageHeadingSubtitle,
+    pageHeadingTitle,
     problem,
   ]);
 
@@ -347,14 +617,17 @@ export function CommandCenterWorkspace({
 
   return (
     <section
+      ref={rootRef}
       aria-busy={loading || undefined}
-      aria-label={`Centrum Dowodzenia: ${definition.displayTitle}`}
-      className="pd-command-center-workspace"
+      aria-label={`Centrum Dowodzenia: ${pageHeadingTitle}`}
+      className="pd-command-center-workspace pd-command-center-one-page"
       data-command-center-variant={definition.variant}
       data-data-state={dataState}
+      data-refreshing={(loading && data) ? 'true' : undefined}
       data-mode={mode}
       data-screen-id={definition.id}
     >
+      {isRuntimeOnePage ? null : (
       <PageHeader
         className="pd-command-center-workspace__header"
         breadcrumbs={[
@@ -368,7 +641,7 @@ export function CommandCenterWorkspace({
           },
           {
             href: null,
-            label: definition.displayTitle,
+            label: pageHeadingTitle,
           },
         ]}
         meta={[
@@ -385,8 +658,8 @@ export function CommandCenterWorkspace({
             value: data ? formatShortTime(data.generatedAt) : '—',
           },
         ]}
-        subtitle={definition.summary}
-        title={definition.displayTitle}
+        subtitle={pageHeadingSubtitle}
+        title={pageHeadingTitle}
         actions={(
           <div className="pd-command-center-workspace__header-actions">
             <Button
@@ -413,16 +686,75 @@ export function CommandCenterWorkspace({
           </div>
         )}
       />
+      )}
 
-      <SectionNavigation
-        activeId={definition.id}
-        ariaLabel="Widoki Centrum Dowodzenia"
-        className="pd-command-center-workspace__navigation"
-        items={commandCenterNavigation}
-        orientation="horizontal"
-        size="compact"
-        sticky
-      />
+      {isRuntimeOnePage ? (
+        <header className="pd-command-center-one-page__command-bar">
+          <div className="pd-command-center-one-page__command-bar-identity">
+            <span>Centrum Dowodzenia</span>
+            <strong>{formatShellDateRangeLabel(dateRange)}</strong>
+          </div>
+
+          <dl className="pd-command-center-one-page__command-bar-meta">
+            <div>
+              <dt>Odświeżono</dt>
+              <dd>{data ? formatShortTime(data.generatedAt) : '—'}</dd>
+            </div>
+            <div data-state={dataState}>
+              <dt>Stan danych</dt>
+              <dd>{resolveDataStateLabel(dataState)}</dd>
+            </div>
+          </dl>
+
+          <div className="pd-command-center-one-page__command-bar-actions">
+            <Button
+              size="small"
+              variant="secondary"
+              onClick={() => openPapaAssistant({
+                action: 'report',
+                mode: 'report',
+              })}
+            >
+              Raport Papa
+            </Button>
+
+            {onReload ? (
+              <Button
+                loading={loading}
+                loadingLabel="Odświeżanie"
+                size="small"
+                variant="secondary"
+                onClick={onReload}
+              >
+                Odśwież dane
+              </Button>
+            ) : null}
+          </div>
+        </header>
+      ) : null}
+
+      {(!isRuntimeOnePage || isRuntimeNavigationVisible) ? (
+        <SectionNavigation
+          activeId={isRuntimeOnePage ? activeRuntimeSectionId : definition.id}
+          ariaLabel="Widoki Centrum Dowodzenia"
+          className="pd-command-center-workspace__navigation pd-command-center-one-page__navigation"
+          itemProps={isRuntimeOnePage
+            ? (item) => ({
+                onClick: (event) => {
+                  handleRuntimeNavigationClick(
+                    item,
+                    event,
+                    setActiveRuntimeSectionId,
+                  );
+                },
+              })
+            : undefined}
+          items={navigationItems}
+          orientation="horizontal"
+          size="compact"
+          sticky
+        />
+      ) : null}
 
       {problem ? (
         <InlineNotice
@@ -438,6 +770,7 @@ export function CommandCenterWorkspace({
           dataState={dataState}
           definition={definition}
           issues={issues}
+          mode={mode}
           workspaceContext={workspaceContext}
         />
       ) : (
@@ -460,6 +793,7 @@ function CommandCenterContent({
   dataState,
   definition,
   issues,
+  mode,
   workspaceContext,
 }: {
   readonly data: CommandCenterData;
@@ -470,10 +804,23 @@ function CommandCenterContent({
     readonly label: string;
     readonly severity: 'critical' | 'warning';
   }[];
+  readonly mode: NonNullable<CommandCenterWorkspaceProps['mode']>;
   readonly workspaceContext: typeof defaultWorkspaceContext;
 }) {
   const rows = buildCommandRows(data.records, definition.variant);
   const decisions = buildOperationalDecisions(data.records, definition.variant);
+
+  if (mode === 'runtime') {
+    return (
+      <CommandCenterOnePage
+        data={data}
+        dataState={dataState}
+        issues={issues}
+        rows={rows}
+        workspaceContext={workspaceContext}
+      />
+    );
+  }
 
   if (definition.variant === 'overview') {
     return (
@@ -568,6 +915,7 @@ function CommandCenterContent({
     </>
   );
 }
+
 
 function CommandSummaryStrip({
   data,
@@ -1176,7 +1524,6 @@ function renderVariant({
           <CommandSectionHeader
             eyebrow="Lejek"
             title="Lejek sprzedażowy i największy odpływ"
-            trailing={`${data.funnelSteps.length} kroków`}
           />
           {data.funnelSteps.length > 0 ? (
             <>
@@ -1340,7 +1687,7 @@ function CommandExecutiveBrief({
         <strong>
           {hero
             ? hero.nextAction
-            : 'Nie ma pilnych decyzji w bieżącym zestawie danych.'}
+            : 'Brak pilnych decyzji.'}
         </strong>
         <span>
           {hero
@@ -1498,7 +1845,7 @@ function CommandAttentionSection({
         </ul>
       ) : (
         <InlineNotice
-          message="W bieżącym zestawie nie ma metryk wymagających reakcji."
+          message="Brak metryk wymagających reakcji."
           title="Brak pozycji wymagających uwagi"
           tone="success"
         />
@@ -1586,6 +1933,21 @@ function CommandMetricSection({
   );
 }
 
+
+function resolveRuntimeForecastValue(record: CommandCenterRecord): number {
+  if (record.target === null) {
+    return record.value;
+  }
+
+  const confidence = record.delta === null
+    ? 0.72
+    : record.delta >= 0
+      ? 0.86
+      : 0.64;
+
+  return record.value + ((record.target - record.value) * confidence);
+}
+
 function CommandPlanSection({
   dataState,
   records,
@@ -1602,24 +1964,37 @@ function CommandPlanSection({
     >
       <CommandSectionHeader
         eyebrow="Plan vs wynik"
-        title="Porównanie z celem"
-        trailing={
-          comparable.length > 0
-            ? `${comparable.length} porównywalne KPI`
-            : 'brak porównania'
-        }
+        title="Plan vs wynik — prognoza dowiezienia"
         titleId="command-center-plan-title"
       />
 
+      {comparable.length > 0 ? (
+        <div
+          aria-label="Skrót planu, wyniku i prognozy"
+          className="pd-command-center-workspace__plan-summary"
+        >
+          {comparable.slice(0, 3).map((record) => (
+            <article key={record.metricId}>
+              <span>{record.label}</span>
+              <strong>{formatMetricValue(record.value, record.unit)}</strong>
+              <p>
+                Cel {record.target === null ? '—' : formatMetricValue(record.target, record.unit)} · Prognoza {formatMetricValue(resolveRuntimeForecastValue(record), record.unit)}
+              </p>
+            </article>
+          ))}
+        </div>
+      ) : null}
+
       {comparable.length >= 2 ? (
         <ComparisonChart
-          ariaLabel="Porównanie wyniku z celem"
-          className="pd-command-center-workspace__chart-surface"
+          ariaLabel="Porównanie wyniku, celu i prognozy"
+          className="pd-command-center-workspace__chart-surface pd-command-center-workspace__chart-surface--forecast"
           data={comparable.map((record) => ({
             id: record.metricId,
             label: record.label,
             values: {
               actual: record.value,
+              projected: resolveRuntimeForecastValue(record),
               target: record.target,
             },
           }))}
@@ -1631,6 +2006,10 @@ function CommandPlanSection({
             {
               key: 'target',
               label: 'Cel',
+            },
+            {
+              key: 'projected',
+              label: 'Prognoza',
             },
           ]}
           unit={resolveUnitLabel(comparable[0]?.unit)}
@@ -1674,7 +2053,6 @@ function CommandDriversSection({
       <CommandSectionHeader
         eyebrow="Drivery"
         title="Największe zmiany"
-        trailing={`${drivers.length} pozycji`}
         titleId="command-center-drivers-title"
       />
 
@@ -1741,7 +2119,6 @@ function CommandSalesSourcesSection({
       <CommandSectionHeader
         eyebrow="Kanały"
         title="Udział w przychodzie i decyzje kanałowe"
-        trailing={`${revenueRecords.length} źródła`}
         titleId="command-center-sales-sources-title"
       />
 
@@ -1806,7 +2183,6 @@ function CommandTrafficSection({
       <CommandSectionHeader
         eyebrow="Ruch"
         title="Ścieżka od sesji do zakupu"
-        trailing={`${funnelSteps.length} kroki`}
         titleId="command-center-traffic-title"
       />
 
@@ -1865,7 +2241,6 @@ function CommandEntityHealthSection({
       <CommandSectionHeader
         eyebrow={eyebrow}
         title={title}
-        trailing={`${records.length} obszary`}
         titleId={`command-center-entity-${slugify(title)}`}
       />
 
@@ -1961,47 +2336,136 @@ function CommandRecommendationsSection({
       <CommandSectionHeader
         eyebrow="AI"
         title="Rekomendacje do oceny"
-        trailing={`${data.recommendations.length} rekomendacji`}
         titleId="command-center-recommendations-title"
       />
 
       {data.recommendations.length > 0 ? (
         <div className="pd-command-center-workspace__recommendations">
-          {data.recommendations.map((recommendation) => (
-            <article key={recommendation.recommendationId}>
-              <div>
-                <strong>{recommendation.title}</strong>
-                <p>{recommendation.rationale}</p>
-                <span>
-                  Decyzja powiązana: {decisions[0]?.metricLabel ?? 'brak pilnej decyzji'}
-                </span>
-              </div>
-              <dl>
+          {data.recommendations.map((recommendation, index) => {
+            const projectedRecord = resolveRecommendationRecord(
+              data.records,
+              decisions,
+              index,
+            );
+            const projectedValue = projectedRecord
+              ? resolveRecommendationProjectedValue(projectedRecord, recommendation)
+              : null;
+
+            return (
+              <article key={recommendation.recommendationId}>
                 <div>
-                  <dt>Wpływ</dt>
-                  <dd>{resolveImpactLabel(recommendation.impact)}</dd>
+                  <strong>{recommendation.title}</strong>
+                  <p>{recommendation.rationale}</p>
+                  <span>
+                    Decyzja powiązana: {projectedRecord?.label ?? decisions[0]?.metricLabel ?? 'brak pilnej decyzji'}
+                  </span>
                 </div>
-                <div>
-                  <dt>Pewność</dt>
-                  <dd>{formatPercent(recommendation.confidence)}</dd>
+                <div className="pd-command-center-workspace__recommendation-impact">
+                  <dl>
+                    <div>
+                      <dt>Wpływ</dt>
+                      <dd>{resolveImpactLabel(recommendation.impact)}</dd>
+                    </div>
+                    <div>
+                      <dt>Pewność</dt>
+                      <dd>{formatPercent(recommendation.confidence)}</dd>
+                    </div>
+                    <div>
+                      <dt>Tryb</dt>
+                      <dd>Do zatwierdzenia przez człowieka</dd>
+                    </div>
+                  </dl>
+
+                  {projectedRecord && projectedValue !== null ? (
+                    <ComparisonChart
+                      ariaLabel={`Symulacja wpływu rekomendacji: ${recommendation.title}`}
+                      className="pd-command-center-workspace__recommendation-chart"
+                      data={[
+                        {
+                          id: projectedRecord.metricId,
+                          label: shortenMetricLabel(projectedRecord.label),
+                          values: {
+                            current: projectedRecord.value,
+                            projected: projectedValue,
+                          },
+                        },
+                      ]}
+                      series={[
+                        {
+                          key: 'current',
+                          label: 'Obecnie',
+                        },
+                        {
+                          key: 'projected',
+                          label: 'Po wdrożeniu',
+                        },
+                      ]}
+                      unit={resolveUnitLabel(projectedRecord.unit)}
+                      valueFormatter={(value) => (
+                        formatMetricValue(value, projectedRecord.unit)
+                      )}
+                      variant="grouped"
+                    />
+                  ) : null}
                 </div>
-                <div>
-                  <dt>Tryb</dt>
-                  <dd>Do zatwierdzenia przez człowieka</dd>
-                </div>
-              </dl>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       ) : (
         <InlineNotice
-          message="Dla bieżącego kontekstu nie ma rekomendacji wymagających oceny."
+          message="Brak rekomendacji wymagających oceny."
           title="Brak rekomendacji"
           tone="info"
         />
       )}
     </section>
   );
+}
+
+
+function resolveRecommendationRecord(
+  records: readonly CommandCenterRecord[],
+  decisions: readonly CommandDecision[],
+  index: number,
+): CommandCenterRecord | null {
+  const decision = decisions[index] ?? decisions[0] ?? null;
+
+  if (decision) {
+    const matchingRecord = records.find((record) => (
+      record.label === decision.metricLabel
+    ));
+
+    if (matchingRecord) {
+      return matchingRecord;
+    }
+  }
+
+  const comparable = chooseComparableRecords(records);
+
+  return comparable[index % Math.max(comparable.length, 1)]
+    ?? records[index % Math.max(records.length, 1)]
+    ?? null;
+}
+
+function resolveRecommendationProjectedValue(
+  record: CommandCenterRecord,
+  recommendation: CommandCenterData['recommendations'][number],
+): number {
+  const impactMultiplier = recommendation.impact === 'high'
+    ? 0.12
+    : recommendation.impact === 'medium'
+      ? 0.07
+      : 0.035;
+  const confidenceMultiplier = Math.max(
+    Math.min(recommendation.confidence, 1),
+    0.35,
+  );
+  const adjustment = impactMultiplier * confidenceMultiplier;
+
+  return isLowerBetterMetric(record)
+    ? record.value * (1 - adjustment)
+    : record.value * (1 + adjustment);
 }
 
 function CommandWaterfallNarrative({
@@ -2132,7 +2596,7 @@ function CommandRecordsSection({
   title,
 }: {
   readonly data: CommandCenterData;
-  readonly description: string;
+  readonly description?: string;
   readonly rows: readonly DataRow[];
   readonly title: string;
 }) {
@@ -2149,13 +2613,14 @@ function CommandRecordsSection({
       <CommandSectionHeader
         eyebrow="Dane"
         title={title}
-        trailing={`${rows.length} metryk`}
         titleId={`command-center-table-${slugify(title)}`}
       />
 
-      <p className="pd-command-center-workspace__section-description">
-        {description}
-      </p>
+      {description ? (
+        <p className="pd-command-center-workspace__section-description">
+          {description}
+        </p>
+      ) : null}
 
       <ol
         aria-label={`${title} — lista mobilna`}
@@ -2227,7 +2692,7 @@ function CommandRecordsSection({
                 loading: false,
                 nextCursor: data.pageInfo.nextCursor,
                 previousCursor: null,
-                summary: `${data.pageInfo.total} metryk`,
+                summary: 'Pełny zakres',
               }
             : null
         }
@@ -2244,7 +2709,7 @@ function CommandRecordsSection({
           label: 'Stan danych',
           mapTone: readinessToneMap,
         }}
-        summary={`${rows.length} pozycji w bieżącym widoku.`}
+        summary={title}
       />
     </section>
   );
@@ -2311,6 +2776,49 @@ function openPapaAssistant({
       },
     }),
   );
+}
+
+
+function handleRuntimeNavigationClick(
+  item: CommandNavigationItem,
+  event: MouseEvent<HTMLAnchorElement>,
+  setActiveRuntimeSectionId: (id: string) => void,
+): void {
+  if (!item.href.startsWith('#')) {
+    return;
+  }
+
+  event.preventDefault();
+  setActiveRuntimeSectionId(item.id);
+
+  const target = document.getElementById(item.href.slice(1));
+  const prefersReducedMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)',
+  ).matches;
+
+  if (target) {
+    target.scrollIntoView({
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      block: 'start',
+    });
+  }
+
+  window.history.replaceState(
+    window.history.state,
+    '',
+    `/app/command-center${item.href}`,
+  );
+}
+
+function getCommandCenterDefinition(
+  id: BusinessScreenDefinition['id'],
+): BusinessScreenDefinition | null {
+  const definition = businessScreenDefinitions.find((item) => (
+    item.group === 'command-center'
+    && item.id === id
+  ));
+
+  return definition ?? null;
 }
 
 function resolveWorkspaceDateRange(
@@ -3530,7 +4038,10 @@ function resolveDataState({
   readonly loading: boolean;
   readonly problem: string | null;
 }): AnalyticsDataState {
-  if (loading) {
+  // A refresh that still has the previous payload is not a "loading" screen:
+  // the sections keep the old values and animate into the new ones, so only a
+  // genuinely empty first load falls back to skeletons.
+  if (loading && !data) {
     return 'loading';
   }
 
@@ -3551,232 +4062,4 @@ function resolveDataState({
   }
 
   return 'ready';
-}
-
-function resolveDataStateLabel(
-  state: AnalyticsDataState,
-): string {
-  switch (state) {
-    case 'ready':
-      return 'Gotowe';
-    case 'loading':
-      return 'Ładowanie';
-    case 'partial':
-      return 'Częściowe';
-    case 'stale':
-      return 'Nieświeże';
-    case 'error':
-      return 'Błąd źródła';
-    case 'noData':
-      return 'Brak danych';
-    default:
-      return state;
-  }
-}
-
-function resolveDataStateTone(
-  state: AnalyticsDataState,
-): 'critical' | 'neutral' | 'success' | 'warning' {
-  switch (state) {
-    case 'ready':
-      return 'success';
-    case 'partial':
-    case 'stale':
-    case 'loading':
-      return 'warning';
-    case 'error':
-      return 'critical';
-    case 'noData':
-    default:
-      return 'neutral';
-  }
-}
-
-function resolveReadinessState(
-  state: AnalyticsDataState,
-): ReadinessState {
-  switch (state) {
-    case 'ready':
-      return 'ready';
-    case 'loading':
-      return 'processing';
-    case 'partial':
-      return 'partial';
-    case 'stale':
-      return 'stale';
-    case 'error':
-      return 'sourceError';
-    case 'noData':
-      return 'noData';
-    default:
-      return 'partial';
-  }
-}
-
-function mapReadinessToAnalyticsState(
-  readiness: ReadinessStatus,
-): AnalyticsDataState {
-  switch (readiness) {
-    case 'ready':
-      return 'ready';
-    case 'partial':
-      return 'partial';
-    case 'stale':
-      return 'stale';
-    case 'unavailable':
-      return 'error';
-    default:
-      return 'partial';
-  }
-}
-
-function resolveReadinessLabel(
-  readiness: ReadinessStatus,
-): string {
-  switch (readiness) {
-    case 'ready':
-      return 'Gotowe';
-    case 'partial':
-      return 'Częściowe';
-    case 'stale':
-      return 'Nieświeże';
-    case 'unavailable':
-      return 'Niedostępne';
-    default:
-      return readiness;
-  }
-}
-
-function resolveReadinessTone(
-  readiness: ReadinessStatus,
-): 'critical' | 'neutral' | 'success' | 'warning' {
-  switch (readiness) {
-    case 'ready':
-      return 'success';
-    case 'partial':
-    case 'stale':
-      return 'warning';
-    case 'unavailable':
-      return 'critical';
-    default:
-      return 'neutral';
-  }
-}
-
-function resolveImpactLabel(
-  impact: 'high' | 'low' | 'medium',
-): string {
-  switch (impact) {
-    case 'high':
-      return 'Wysoki';
-    case 'medium':
-      return 'Średni';
-    case 'low':
-      return 'Niski';
-    default:
-      return impact;
-  }
-}
-
-function resolveUnitLabel(
-  unit: CommandCenterRecord['unit'] | undefined,
-): string | null {
-  switch (unit) {
-    case 'currency':
-      return 'PLN';
-    case 'percent':
-      return '%';
-    case 'duration':
-      return 's';
-    case 'ratio':
-    case 'number':
-      return null;
-    default:
-      return null;
-  }
-}
-
-function formatMetricValue(
-  value: number,
-  unit: CommandCenterRecord['unit'],
-): string {
-  switch (unit) {
-    case 'currency':
-      return new Intl.NumberFormat('pl-PL', {
-        currency: 'PLN',
-        maximumFractionDigits: 0,
-        style: 'currency',
-      }).format(value);
-    case 'percent':
-      return new Intl.NumberFormat('pl-PL', {
-        maximumFractionDigits: 1,
-        style: 'percent',
-      }).format(value);
-    case 'duration':
-      return `${new Intl.NumberFormat('pl-PL', {
-        maximumFractionDigits: 1,
-      }).format(value)} s`;
-    case 'ratio':
-    case 'number':
-    default:
-      return new Intl.NumberFormat('pl-PL', {
-        maximumFractionDigits: 2,
-      }).format(value);
-  }
-}
-
-function formatSignedPercent(
-  value: number,
-): string {
-  const formatted = new Intl.NumberFormat('pl-PL', {
-    maximumFractionDigits: 1,
-    signDisplay: 'always',
-    style: 'percent',
-  }).format(value);
-
-  return formatted;
-}
-
-function formatPercent(
-  value: number,
-): string {
-  return new Intl.NumberFormat('pl-PL', {
-    maximumFractionDigits: 1,
-    style: 'percent',
-  }).format(value);
-}
-
-function formatInteger(
-  value: number,
-): string {
-  return new Intl.NumberFormat('pl-PL', {
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
-function formatShortTime(
-  value: string,
-): string {
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat('pl-PL', {
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: defaultWorkspaceContext.range?.timezone ?? 'UTC',
-  }).format(date);
-}
-
-function slugify(
-  value: string,
-): string {
-  return value
-    .toLocaleLowerCase('pl-PL')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/gu, '')
-    .replace(/[^a-z0-9]+/gu, '-')
-    .replace(/^-|-$/gu, '');
 }

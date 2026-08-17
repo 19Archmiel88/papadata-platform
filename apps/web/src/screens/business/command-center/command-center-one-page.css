@@ -1,0 +1,997 @@
+/* ============================================================
+   Command Center One-Page — layout, KPI surface, runtime mode
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   Anchor (scroll target wrapper)
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__anchor {
+  display: grid;
+  gap: clamp(14px, 1.8vw, 22px);
+  min-width: 0;
+  /* Rail height + breathing room, so an anchored section is never clipped by
+     the sticky section rail sitting at the top of the scroll container. */
+  scroll-margin-block-start: calc(var(--pd-command-bar-height, 3.25rem) + 3.5rem);
+}
+
+/* ------------------------------------------------------------
+   Section — base definition (position: relative is required
+   for the ::before gradient separator in runtime mode)
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__section {
+  position: relative;
+  display: grid;
+  gap: clamp(14px, 1.8vw, 24px);
+  min-width: 0;
+  padding-block: clamp(18px, 2.4vw, 36px);
+}
+
+.pd-command-center-one-page__section-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--pd-space-3);
+  align-items: start;
+}
+
+.pd-command-center-one-page__section-header > div {
+  display: grid;
+  gap: var(--pd-space-1);
+}
+
+.pd-command-center-one-page__section-header span {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+  font-weight: var(--pd-font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pd-command-center-one-page__section-header h2 {
+  margin: 0;
+  color: var(--pd-text);
+  font-size: clamp(18px, 1.8vw, 26px);
+  font-weight: var(--pd-font-weight-medium);
+  letter-spacing: -0.02em;
+  line-height: var(--pd-line-height-tight);
+}
+
+/* ------------------------------------------------------------
+   Freshness notices
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__freshness-notices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--pd-space-2);
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .pd-command-center-one-page__freshness-notices {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ------------------------------------------------------------
+   Runtime health strip (date range, refresh time, data state)
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__runtime-health {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  justify-content: flex-start;
+  margin-block-start: calc(var(--pd-space-2) * -1);
+}
+
+.pd-command-center-one-page__runtime-health li {
+  display: inline-grid;
+  grid-template-columns: auto auto;
+  gap: var(--pd-space-2);
+  align-items: center;
+  min-block-size: 2rem;
+  padding: var(--pd-space-1) var(--pd-space-3);
+  border: var(--pd-border-width-subtle) solid var(--pd-command-border);
+  border-radius: var(--pd-radius-pill);
+  background: color-mix(in srgb, var(--pd-command-surface) 54%, transparent);
+}
+
+.pd-command-center-one-page__runtime-health span {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+  font-weight: var(--pd-font-weight-semibold);
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.pd-command-center-one-page__runtime-health strong {
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-command-center-one-page__runtime-health li[data-severity='critical'],
+.pd-command-center-one-page__runtime-health li[data-severity='warning'] {
+  border-color: color-mix(in srgb, var(--pd-status-warning) 52%, var(--pd-command-border));
+}
+
+/* ------------------------------------------------------------
+   KPI composition — single-column wrapper
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__kpi-composition {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(18px, 2.4vw, 32px);
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------
+   KPI main grid: revenue hero (left) + priority 2×2 (right)
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__kpi-main-grid {
+  display: grid;
+  grid-template-columns: minmax(28rem, 0.72fr) minmax(34rem, 1.28fr);
+  gap: clamp(34px, 3.6vw, 64px);
+  align-items: stretch;
+  min-width: 0;
+}
+
+/* Hero metric card — revenue surface */
+.pd-command-center-one-page__metric--primary[data-depth='hero'] {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-block-size: clamp(27rem, 34vw, 35rem);
+  padding: clamp(34px, 4.4vw, 58px);
+  overflow: hidden;
+}
+
+/* Context selectors for MetricCard internals inside the hero surface.
+   These are intentional overrides scoped to __metric--primary only. */
+.pd-command-center-one-page__metric--primary
+  .pd-metric-card__value-region {
+  display: flex;
+  gap: clamp(18px, 2vw, 32px);
+  align-items: baseline;
+  min-width: 0;
+  margin-block-start: clamp(32px, 5vw, 78px);
+}
+
+.pd-command-center-one-page__metric--primary
+  .pd-metric-card__value {
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
+  gap: clamp(16px, 1.7vw, 26px);
+  justify-content: flex-start;
+  min-width: 0;
+  margin-block-start: 0;
+}
+
+.pd-command-center-one-page__metric--primary
+  .pd-metric-card__value > span {
+  flex: 0 1 auto;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  font-size: clamp(42px, 4.2vw, 68px);
+  letter-spacing: -0.055em;
+}
+
+.pd-command-center-one-page__metric--primary
+  .pd-metric-card__comparison {
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+  white-space: nowrap;
+}
+
+.pd-command-center-one-page__metric--primary
+  .pd-metric-card__shadow-bars {
+  width: 100%;
+  margin-block-start: clamp(44px, 7vw, 92px);
+  margin-block-end: clamp(6px, 1vw, 16px);
+}
+
+.pd-command-center-one-page__metric--primary
+  .pd-metric-card__shadow-bars span {
+  height: 13px;
+}
+
+/* Priority surface — 2×2 grid of compact metric cards */
+.pd-command-center-one-page__priority-surface {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 1.8vw, 26px);
+  min-width: 0;
+  min-block-size: clamp(27rem, 34vw, 35rem);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.pd-command-center-one-page__priority-surface
+  .pd-command-center-one-page__metric--priority {
+  display: grid;
+  align-content: center;
+  min-width: 0;
+  min-block-size: 0;
+  padding: clamp(20px, 2.2vw, 32px);
+  border: 0;
+  border-radius: var(--pd-radius-overlay);
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--pd-surface-panel) 90%, transparent),
+      color-mix(in srgb, var(--pd-surface-raised) 68%, transparent)
+    ),
+    var(--pd-canvas-gradient);
+  box-shadow:
+    0 24px 64px -50px color-mix(in srgb, var(--pd-text) 38%, transparent),
+    0 12px 30px -28px color-mix(in srgb, var(--pd-brand-accent) 20%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--pd-surface-raised) 48%, transparent);
+}
+
+/* Context selectors for MetricCard internals inside priority cards */
+.pd-command-center-one-page__priority-surface
+  .pd-metric-card__header {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.pd-command-center-one-page__priority-surface
+  .pd-metric-card__value-region {
+  grid-template-columns: minmax(6.25rem, auto) minmax(0, 1fr);
+  align-items: baseline;
+}
+
+.pd-command-center-one-page__priority-surface
+  .pd-metric-card__value > span {
+  font-size: clamp(1.85rem, 2.1vw, 2.45rem);
+}
+
+.pd-command-center-one-page__priority-surface
+  .pd-metric-card__sparkline {
+  width: min(100%, 8.5rem);
+  height: 2.4rem;
+}
+
+/* Supporting strip — single-row auto-fit metrics */
+.pd-command-center-one-page__supporting-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 0;
+  min-width: 0;
+  border-block: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-command-border) 78%, transparent);
+}
+
+.pd-command-center-one-page__supporting-strip
+  .pd-command-center-one-page__metric--supporting {
+  min-width: 0;
+  padding: var(--pd-space-4);
+  border: 0;
+  border-inline-start: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-command-border) 66%, transparent);
+  background: transparent;
+  box-shadow: none;
+}
+
+.pd-command-center-one-page__supporting-strip
+  .pd-command-center-one-page__metric--supporting:first-child {
+  border-inline-start: 0;
+}
+
+/* Context selectors for MetricCard internals inside supporting strip */
+.pd-command-center-one-page__supporting-strip
+  .pd-metric-card__value-region {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* ------------------------------------------------------------
+   Insight row / tiles
+   ------------------------------------------------------------ */
+
+/* ------------------------------------------------------------
+   Reading rhythm — three surface tiers so the page reads as a
+   screen with a top and a bottom, not as nine equal cards.
+   Result and decisions are raised; analysis sits flat on the
+   canvas; the register sits visually underneath everything.
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__runtime-kpi,
+.pd-command-center-one-page__recommendations {
+  padding: clamp(20px, 2.6vw, 38px) clamp(16px, 2vw, 28px);
+  border-radius: var(--pd-radius-surface);
+  background: color-mix(in srgb, var(--pd-surface-raised) 62%, transparent);
+  box-shadow: var(--pd-shadow-raised);
+}
+
+.pd-command-center-one-page__records {
+  padding: clamp(18px, 2.2vw, 32px) clamp(16px, 2vw, 28px);
+  border-radius: var(--pd-radius-surface);
+  background: color-mix(in srgb, var(--pd-surface-sunken) 72%, transparent);
+  box-shadow: none;
+}
+
+.pd-command-center-one-page__data-status {
+  min-width: 0;
+}
+
+/* Structural floor — paired sections instead of four full-width stacks. */
+.pd-command-center-one-page__mosaic {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(14px, 1.8vw, 28px);
+  align-items: start;
+  min-width: 0;
+}
+
+@media (max-width: 1180px) {
+  .pd-command-center-one-page__mosaic {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ------------------------------------------------------------
+   Refreshing — a range change keeps the previous values on screen
+   and mutes them while the new payload lands.
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page[data-refreshing='true']
+  .pd-command-center-one-page__section {
+  opacity: 0.78;
+  transition: opacity var(--pd-motion-duration-standard) var(--pd-motion-easing-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-command-center-one-page[data-refreshing='true']
+    .pd-command-center-one-page__section {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------
+   Lens switch — three business perspectives on revenue vs costs
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__lens-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2) clamp(12px, 1.6vw, 20px);
+  align-items: center;
+  min-width: 0;
+}
+
+.pd-command-center-one-page__lens-switch p {
+  margin: 0;
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+  line-height: var(--pd-line-height-normal);
+}
+
+/* Recommendations outside the active lens stay readable but step back. */
+.pd-command-center-one-page__recommendation-list
+  > article:not([data-in-lens]) {
+  opacity: 0.72;
+}
+
+.pd-command-center-one-page__insight-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--pd-space-3);
+}
+
+.pd-command-center-one-page__insight-tile {
+  display: grid;
+  gap: var(--pd-space-2);
+  padding-block: var(--pd-space-3);
+  border-block-start: var(--pd-border-width-subtle) solid var(--pd-command-border);
+}
+
+.pd-command-center-one-page__insight-tile strong {
+  margin: 0;
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-body);
+}
+
+.pd-command-center-one-page__insight-tile p {
+  margin: 0;
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+  font-weight: var(--pd-font-weight-semibold);
+  letter-spacing: 0.045em;
+  text-transform: none;
+}
+
+.pd-command-center-one-page__insight-tile span {
+  color: var(--pd-brand-highlight);
+  font-family: var(--pd-font-mono);
+  font-weight: var(--pd-font-weight-semibold);
+}
+
+/* ------------------------------------------------------------
+   Plan summary
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__plan-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--pd-space-3);
+}
+
+.pd-command-center-one-page__plan-summary article {
+  display: grid;
+  gap: var(--pd-space-1);
+  padding-block: var(--pd-space-3);
+  border-block-start: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-command-border) 82%, transparent);
+}
+
+.pd-command-center-one-page__plan-summary span,
+.pd-command-center-one-page__plan-summary p {
+  margin: 0;
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-command-center-one-page__plan-summary strong {
+  color: var(--pd-text);
+  font-family: var(--pd-font-mono);
+  font-size: clamp(18px, 1.7vw, 24px);
+  line-height: var(--pd-line-height-tight);
+}
+
+/* ------------------------------------------------------------
+   Runtime split layout (main + side panel)
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__runtime-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.36fr);
+  gap: var(--pd-space-4);
+  align-items: start;
+}
+
+.pd-command-center-one-page__runtime-side-panel {
+  display: grid;
+  gap: var(--pd-space-3);
+  padding: var(--pd-space-4);
+  border: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-command-border) 76%, transparent);
+  border-inline-start: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-command-border-strong) 52%, transparent);
+  border-radius: var(--pd-radius-surface);
+  background: color-mix(in srgb, var(--pd-command-surface) 58%, transparent);
+  box-shadow:
+    0 20px 52px -42px color-mix(in srgb, var(--pd-text) 42%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--pd-surface-raised) 44%, transparent);
+}
+
+.pd-command-center-one-page__runtime-side-panel header,
+.pd-command-center-one-page__runtime-side-panel article,
+.pd-command-center-one-page__customer-compare article,
+.pd-command-center-one-page__customer-orbit {
+  display: grid;
+  gap: var(--pd-space-2);
+}
+
+.pd-command-center-one-page__runtime-side-panel p,
+.pd-command-center-one-page__runtime-side-panel h3,
+.pd-command-center-one-page__runtime-side-panel dl,
+.pd-command-center-one-page__customer-compare h3,
+.pd-command-center-one-page__customer-compare dl {
+  margin: 0;
+}
+
+.pd-command-center-one-page__runtime-side-panel h3,
+.pd-command-center-one-page__customer-compare h3 {
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-body);
+}
+
+.pd-command-center-one-page__runtime-side-panel p {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+  font-weight: var(--pd-font-weight-semibold);
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.pd-command-center-one-page__runtime-side-panel article {
+  padding-block: var(--pd-space-3);
+  border-block-start: var(--pd-border-width-subtle) solid var(--pd-command-border);
+}
+
+.pd-command-center-one-page__runtime-side-panel article > div,
+.pd-command-center-one-page__runtime-side-panel dl,
+.pd-command-center-one-page__customer-compare dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pd-space-2);
+}
+
+/* ------------------------------------------------------------
+   Chart surface (shared shell for charts in sections)
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__chart-surface,
+.pd-command-center-one-page__recommendation-chart.pd-comparison-chart {
+  border-color: color-mix(in srgb, var(--pd-command-border) 76%, transparent);
+  background: color-mix(in srgb, var(--pd-command-surface) 58%, transparent);
+  box-shadow:
+    0 20px 52px -42px color-mix(in srgb, var(--pd-text) 42%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--pd-surface-raised) 44%, transparent);
+}
+
+.pd-command-center-one-page__recommendation-chart.pd-comparison-chart {
+  min-block-size: 13rem;
+  padding: var(--pd-space-3);
+  border: var(--pd-border-width-subtle) solid var(--pd-command-border);
+  border-radius: var(--pd-radius-control);
+  background: color-mix(in srgb, var(--pd-surface-raised) 72%, transparent);
+}
+
+/* ------------------------------------------------------------
+   Recommendation section
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__recommendation-impact {
+  display: grid;
+  gap: var(--pd-space-3);
+  min-width: 0;
+}
+
+.pd-command-center-one-page__recommendations article {
+  border-color: color-mix(in srgb, var(--pd-command-border) 72%, transparent);
+  background:
+    linear-gradient(
+      120deg,
+      color-mix(in srgb, var(--pd-command-surface-strong) 54%, transparent),
+      color-mix(in srgb, var(--pd-command-surface) 76%, transparent)
+    );
+}
+
+/* ------------------------------------------------------------
+   Customer compare / orbit
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__customer-compare {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.42fr) minmax(0, 1fr);
+  gap: var(--pd-space-4);
+  align-items: stretch;
+}
+
+.pd-command-center-one-page__customer-compare article,
+.pd-command-center-one-page__customer-orbit {
+  padding: var(--pd-space-4);
+  border: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-command-border) 70%, transparent);
+  border-radius: var(--pd-radius-surface);
+  background: color-mix(in srgb, var(--pd-command-surface) 56%, transparent);
+}
+
+.pd-command-center-one-page__customer-orbit {
+  justify-items: center;
+  text-align: center;
+}
+
+.pd-command-center-one-page__customer-orbit strong {
+  display: grid;
+  place-items: center;
+  inline-size: clamp(7rem, 10vw, 9rem);
+  block-size: clamp(7rem, 10vw, 9rem);
+  border: var(--pd-border-width-subtle) solid var(--pd-command-border-strong);
+  border-radius: 999px;
+  color: var(--pd-text);
+  font-size: clamp(22px, 2.4vw, 34px);
+}
+
+/* ------------------------------------------------------------
+   Table disclosure
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__funnel-summary,
+.pd-command-center-one-page__table-disclosure {
+  padding: var(--pd-space-4);
+  border: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-command-border) 76%, transparent);
+  border-radius: var(--pd-radius-surface);
+  background: color-mix(in srgb, var(--pd-command-surface) 58%, transparent);
+  box-shadow:
+    0 20px 52px -42px color-mix(in srgb, var(--pd-text) 42%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--pd-surface-raised) 44%, transparent);
+}
+
+.pd-command-center-one-page__table-disclosure {
+  display: grid;
+  gap: var(--pd-space-3);
+  min-width: 0;
+}
+
+.pd-command-center-one-page__table-disclosure summary {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-block-size: 2rem;
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-command-center-one-page__table-disclosure summary::after {
+  content: 'rozwiń / zwiń';
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-caption);
+}
+
+/* ============================================================
+   Runtime mode — visual refinements (data-mode='runtime')
+   ============================================================ */
+
+.pd-command-center-one-page[data-mode='runtime'] {
+  --pd-command-runtime-gap: clamp(12px, 2vw, 28px);
+  --pd-command-bar-height: 3.25rem;
+  gap: var(--pd-command-runtime-gap);
+}
+
+/* ------------------------------------------------------------
+   Runtime command bar — identity, freshness and the two actions
+   that the runtime one-page used to lose with PageHeader.
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__command-bar {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: calc(var(--pd-layer-sticky) + 1);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: clamp(12px, 1.6vw, 24px);
+  align-items: center;
+  min-block-size: var(--pd-command-bar-height);
+  padding: var(--pd-space-2) clamp(10px, 1.4vw, 18px);
+  border: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-command-border) 70%, transparent);
+  border-radius: var(--pd-radius-control);
+  background: color-mix(in srgb, var(--pd-command-surface-strong) 94%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.pd-command-center-one-page__command-bar-identity {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pd-command-center-one-page__command-bar-identity span {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+  font-weight: var(--pd-font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pd-command-center-one-page__command-bar-identity strong {
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-body-small);
+  font-weight: var(--pd-font-weight-medium);
+}
+
+.pd-command-center-one-page__command-bar-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2) clamp(12px, 1.4vw, 20px);
+  margin: 0;
+}
+
+.pd-command-center-one-page__command-bar-meta > div {
+  display: grid;
+  gap: 2px;
+}
+
+.pd-command-center-one-page__command-bar-meta dt {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-micro);
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.pd-command-center-one-page__command-bar-meta dd {
+  margin: 0;
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-command-center-one-page__command-bar-meta
+  > div[data-state='error'] dd,
+.pd-command-center-one-page__command-bar-meta
+  > div[data-state='blocked'] dd,
+.pd-command-center-one-page__command-bar-meta
+  > div[data-state='providerError'] dd {
+  color: var(--pd-status-danger);
+}
+
+.pd-command-center-one-page__command-bar-meta
+  > div[data-state='partial'] dd,
+.pd-command-center-one-page__command-bar-meta
+  > div[data-state='stale'] dd {
+  color: var(--pd-status-warning);
+}
+
+.pd-command-center-one-page__command-bar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2);
+  justify-content: flex-end;
+}
+
+@media (max-width: 860px) {
+  .pd-command-center-one-page__command-bar {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+  }
+
+  .pd-command-center-one-page__command-bar-actions {
+    justify-content: flex-start;
+  }
+}
+
+/* Scrollspy section rail — docked directly under the shell topbar.
+   The shell scrolls in an inner container, so `sticky` pins the rail to the
+   top of that container rather than to the viewport. */
+.pd-command-center-one-page[data-mode='runtime']
+  .pd-command-center-one-page__navigation.pd-section-navigation {
+  position: sticky;
+  inset-block-start: calc(var(--pd-command-bar-height) + var(--pd-space-2));
+  z-index: var(--pd-layer-sticky);
+  inline-size: 100%;
+  max-inline-size: none;
+  margin-inline: 0;
+  padding: 0.22rem clamp(8px, 1.4vw, 18px);
+  border-color: color-mix(in srgb, var(--pd-command-border) 70%, transparent);
+  border-radius: var(--pd-radius-control);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-command-surface-strong) 94%, transparent),
+      color-mix(in srgb, var(--pd-command-surface) 86%, transparent)
+    );
+  box-shadow:
+    0 20px 48px -34px color-mix(in srgb, var(--pd-brand-highlight) 42%, transparent),
+    0 10px 26px -24px color-mix(in srgb, var(--pd-text) 36%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--pd-surface-raised) 54%, transparent);
+  animation: pd-command-runtime-nav-enter 180ms ease-out;
+  backdrop-filter: blur(14px);
+}
+
+@keyframes pd-command-runtime-nav-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-command-center-one-page[data-mode='runtime']
+    .pd-command-center-one-page__navigation.pd-section-navigation {
+    animation: none;
+  }
+}
+
+.pd-command-center-one-page[data-mode='runtime']
+  .pd-command-center-one-page__navigation .pd-section-navigation__list {
+  justify-content: flex-start;
+}
+
+.pd-command-center-one-page[data-mode='runtime']
+  .pd-command-center-one-page__navigation .pd-section-navigation__item {
+  border-radius: var(--pd-radius-pill);
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.pd-command-center-one-page[data-mode='runtime']
+  .pd-command-center-one-page__navigation .pd-section-navigation__item:hover {
+  transform: translateY(-1px);
+}
+
+.pd-command-center-one-page[data-mode='runtime']
+  .pd-command-center-one-page__navigation .pd-section-navigation__item[aria-current='page'] {
+  background: color-mix(in srgb, var(--pd-brand-highlight) 15%, var(--pd-command-surface-strong));
+  box-shadow:
+    inset 0 0 0 var(--pd-border-width-subtle) color-mix(in srgb, var(--pd-brand-highlight) 46%, transparent),
+    0 12px 28px -24px color-mix(in srgb, var(--pd-brand-highlight) 68%, transparent);
+}
+
+/* Anchor scroll offset in runtime */
+.pd-command-center-one-page[data-mode='runtime']
+  .pd-command-center-one-page__anchor {
+  gap: clamp(12px, 1.8vw, 24px);
+  scroll-margin-block-start: clamp(74px, 10vh, 112px);
+}
+
+/* Section — runtime overrides */
+.pd-command-center-one-page[data-mode='runtime']
+  .pd-command-center-one-page__section {
+  gap: clamp(16px, 2vw, 28px);
+  padding-block: clamp(22px, 3vw, 44px);
+  border-block-start: 0;
+}
+
+/* Gradient separator line via ::before */
+.pd-command-center-one-page[data-mode='runtime']
+  .pd-command-center-one-page__section::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: var(--pd-border-width-subtle);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--pd-command-border) 78%, transparent),
+    transparent
+  );
+}
+
+/* First anchor: no top separator, reduced top padding */
+.pd-command-center-one-page[data-mode='runtime']
+  .pd-command-center-one-page__anchor:first-of-type
+  .pd-command-center-one-page__section::before {
+  display: none;
+}
+
+.pd-command-center-one-page[data-mode='runtime']
+  .pd-command-center-one-page__anchor:first-of-type
+  .pd-command-center-one-page__section {
+  padding-block-start: clamp(8px, 1.1vw, 18px);
+}
+
+/* Section header — runtime */
+.pd-command-center-one-page[data-mode='runtime']
+  .pd-command-center-one-page__section-header {
+  align-items: end;
+}
+
+.pd-command-center-one-page[data-mode='runtime']
+  .pd-command-center-one-page__section-header h2 {
+  font-size: clamp(20px, 2.1vw, 32px);
+  letter-spacing: -0.025em;
+}
+
+.pd-command-center-one-page[data-mode='runtime']
+  .pd-command-center-one-page__section-header > span {
+  display: none;
+}
+
+/* Hero metric — runtime min-height */
+.pd-command-center-one-page[data-mode='runtime']
+  .pd-command-center-one-page__metric--primary {
+  min-block-size: clamp(15rem, 20vw, 19rem);
+}
+
+/* Alert pulse animation for risky metrics */
+@media (prefers-reduced-motion: no-preference) {
+  .pd-command-center-one-page[data-mode='runtime']
+    .pd-command-center-one-page__metric--primary[data-emphasis='alert'] {
+    animation: pd-command-ai-risk-pulse 2.8s ease-in-out infinite;
+  }
+}
+
+@keyframes pd-command-ai-risk-pulse {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--pd-status-warning) 14%, transparent),
+      var(--pd-command-shadow);
+  }
+
+  50% {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--pd-status-warning) 34%, transparent),
+      0 18px 38px -26px color-mix(in srgb, var(--pd-status-warning) 42%, transparent);
+  }
+}
+
+/* ============================================================
+   Responsive — breakpoints
+   ============================================================ */
+
+@media (max-width: 1280px) {
+  .pd-command-center-one-page[data-mode='runtime']
+    .pd-command-center-one-page__kpi-composition {
+    grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.2fr);
+  }
+}
+
+@media (max-width: 1180px) {
+  .pd-command-center-one-page__kpi-main-grid {
+    grid-template-columns: minmax(24rem, 0.8fr) minmax(28rem, 1.2fr);
+  }
+}
+
+@media (max-width: 980px) {
+  .pd-command-center-one-page__insight-row,
+  .pd-command-center-one-page__runtime-split,
+  .pd-command-center-one-page__customer-compare {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-command-center-one-page__runtime-side-panel {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+}
+
+@media (max-width: 920px) {
+  .pd-command-center-one-page[data-mode='runtime']
+    .pd-command-center-one-page__navigation.pd-section-navigation {
+    inline-size: min(100%, 100%);
+    border-radius: var(--pd-radius-control);
+  }
+
+  .pd-command-center-one-page__kpi-composition,
+  .pd-command-center-one-page__plan-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-command-center-one-page__kpi-main-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-command-center-one-page__metric--primary[data-depth='hero'],
+  .pd-command-center-one-page__priority-surface {
+    min-block-size: 0;
+  }
+
+  .pd-command-center-one-page[data-mode='runtime']
+    .pd-command-center-one-page__metric--primary {
+    min-block-size: 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .pd-command-center-one-page__recommendation-impact {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .pd-command-center-one-page__metric--primary
+    .pd-metric-card__value-region,
+  .pd-command-center-one-page__metric--primary
+    .pd-metric-card__value {
+    flex-wrap: wrap;
+  }
+
+  .pd-command-center-one-page__metric--primary
+    .pd-metric-card__value > span {
+    white-space: normal;
+  }
+
+  .pd-command-center-one-page__priority-surface {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-command-center-one-page__supporting-strip
+    .pd-command-center-one-page__metric--supporting {
+    border-inline-start: 0;
+    border-block-start: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-command-border) 66%, transparent);
+  }
+
+  .pd-command-center-one-page__supporting-strip
+    .pd-command-center-one-page__metric--supporting:first-child {
+    border-block-start: 0;
+  }
+}

@@ -25,6 +25,7 @@ export const BudgetPacing = forwardRef<HTMLElement, BudgetPacingProps>(
       actualSpend,
       campaignId,
       className,
+      context: _context,
       evidence,
       forecastSpend,
       onCreateDecision,

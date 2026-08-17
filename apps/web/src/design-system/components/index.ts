@@ -478,6 +478,8 @@ export type {
 
 export type {
   MetricCardComparison,
+  MetricCardDensity,
+  MetricCardDepth,
   MetricCardEmphasis,
   MetricCardLabels,
   MetricCardProps,

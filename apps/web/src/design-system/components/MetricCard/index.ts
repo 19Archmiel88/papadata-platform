@@ -4,6 +4,8 @@ export {
 
 export type {
   MetricCardComparison,
+  MetricCardDensity,
+  MetricCardDepth,
   MetricCardEmphasis,
   MetricCardLabels,
   MetricCardProps,

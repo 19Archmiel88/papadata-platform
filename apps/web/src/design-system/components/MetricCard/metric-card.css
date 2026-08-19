@@ -526,7 +526,11 @@
   border-color: color-mix(in srgb, var(--pd-brand-accent) 64%, var(--pd-separator));
   color: var(--pd-text);
   background: color-mix(in srgb, var(--pd-brand-accent) 12%, var(--pd-surface-raised));
-  outline: none;
+}
+
+.pd-metric-card__help-trigger:focus-visible {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: var(--pd-focus-offset);
 }
 
 .pd-metric-card__help-trigger:active {
@@ -535,7 +539,7 @@
 
 .pd-metric-card__help-popover {
   position: absolute;
-  z-index: 20;
+  z-index: var(--pd-layer-popover);
   inset-block-start: calc(100% + var(--pd-space-2));
   inset-inline-start: 0;
   inline-size: min(18rem, calc(100vw - 3rem));

@@ -6,6 +6,7 @@ import {
   expect,
   fn,
   userEvent,
+  waitFor,
   within,
 } from 'storybook/test';
 
@@ -82,6 +83,9 @@ function MetricVariants() {
           }}
           deviationLabel={locale === 'en' ? '+4.1% vs plan' : '+4,1% wobec planu'}
           freshnessLabel={locale === 'en' ? 'fresh sources' : 'świeże źródła'}
+          helpText={locale === 'en'
+            ? 'Total store revenue for the selected period, before adjustments.'
+            : 'Łączny przychód sklepu w wybranym okresie, przed dodatkowymi korektami.'}
           label={locale === 'en' ? 'Revenue' : 'Przychód'}
           metricId="revenue"
           signal="positive"
@@ -340,6 +344,23 @@ export const MetricCardStory: Story = {
           />
         </div>
       </StoryPresentationSection>
+
+      <StoryPresentationSection
+        index="04"
+        summary="Przycisk „?” otwiera wyjaśnienie metryki — dostępny z klawiatury (Tab, Enter/Spacja) i z widocznym pierścieniem fokusu."
+        title="Wyjaśnienie metryki (helpText)"
+      >
+        <MetricCard
+          helpText={locale === 'en'
+            ? 'Share of sessions that completed a purchase in the selected period.'
+            : 'Odsetek sesji zakończonych zakupem w wybranym okresie.'}
+          label={locale === 'en' ? 'Conversion' : 'Konwersja'}
+          metricId="help-text-demo"
+          status="ready"
+          statusLabel={locale === 'en' ? 'Fresh data' : 'Dane aktualne'}
+          value={formatPapaDataPercent(0.038, locale)}
+        />
+      </StoryPresentationSection>
     </Story15Page>
     );
   },
@@ -358,6 +379,24 @@ export const MetricCardStory: Story = {
     });
     await userEvent.click(detailButton);
     await expect(showMetricDetail).toHaveBeenCalled();
+
+    // Keyboard users reach the help trigger the same way userEvent.tab()
+    // would land them here; focusing it directly keeps this assertion
+    // stable regardless of how many focusable elements precede it on the
+    // page, while still exercising the real :focus-within CSS that reveals
+    // the popover for keyboard/screen-reader users.
+    const helpTrigger = canvas.getByRole('button', {
+      name: 'Wyjaśnienie metryki: Konwersja',
+    });
+    helpTrigger.focus();
+    await expect(helpTrigger).toHaveFocus();
+    // The popover fades in via CSS transition on :focus-within — wait for
+    // it to finish rather than asserting mid-transition.
+    await waitFor(() => {
+      expect(
+        canvas.getByText('Odsetek sesji zakończonych zakupem w wybranym okresie.'),
+      ).toBeVisible();
+    });
 
     await expect(
       canvas.getByText(/248[\s\u00a0]420,00[\s\u00a0]zł/),

@@ -199,6 +199,13 @@
   opacity: 1;
 }
 
+.pd-forecast-chart__legend li[data-series="target"] .pd-forecast-chart__swatch {
+  border-block-start-color: var(--pd-data-target);
+  border-block-start-style: dashed;
+  border-block-start-width: 2.5px;
+  opacity: 1;
+}
+
 .pd-forecast-chart__legend li[data-series="uncertainty"] .pd-forecast-chart__swatch {
   block-size: 0.82rem;
   border: 1px solid var(--pd-forecast-uncertainty-stroke);

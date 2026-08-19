@@ -2,15 +2,21 @@ import type {
   DataRow,
 } from '../../../../../../contracts/component-shared';
 import {
+  Button,
   ComparisonChart,
   EmptyState,
 } from '../../../design-system';
 import {
+  CommandChartTableFallback,
   CommandSectionHeader,
 } from './CommandCenterSectionFrame';
 import {
   formatMetricValue,
+  openPapaAssistantForElement,
+  productColumns,
 } from './commandCenterOnePageModel';
+
+const productSalesElementId = 'command-product-sales';
 
 export function CommandCenterProductSalesSection({
   productRows,
@@ -23,8 +29,18 @@ export function CommandCenterProductSalesSection({
       className="pd-command-center-one-page__section"
     >
       <CommandSectionHeader
+        actions={(
+          <Button
+            onClick={() => openPapaAssistantForElement(productSalesElementId)}
+            size="small"
+            variant="secondary"
+          >
+            Analizuj z Papą
+          </Button>
+        )}
+        description="Ranking produktów według przychodu pozwala szybko znaleźć pozycje, które realnie przesuwają wynik okresu."
         eyebrow="Produkty"
-        title="Sprzedaż produktów"
+        title="Najlepiej sprzedające się produkty"
         titleId="command-center-products-title"
       />
       {productRows.length === 0 ? (
@@ -34,28 +50,38 @@ export function CommandCenterProductSalesSection({
           variant="configuration"
         />
       ) : (
-        // Products used to be the only floor without a chart, which made it read
-        // as a data dump between two analytical sections.
-        <ComparisonChart
-          ariaLabel="Przychód według produktów"
-          className="pd-command-center-one-page__chart-surface"
-          data={[...productRows]
-            .sort((left, right) => (
-              Number(right.rawRevenue ?? 0) - Number(left.rawRevenue ?? 0)
-            ))
-            .slice(0, 10)
-            .map((row) => ({
-              id: String(row.id),
-              label: String(row.product),
-              values: {
-                revenue: Number(row.rawRevenue ?? 0),
-              },
-            }))}
-          series={[{ key: 'revenue', label: 'Przychód' }]}
-          unit="PLN"
-          valueFormatter={(value) => formatMetricValue(value, 'currency')}
-          variant="ranking"
-        />
+        <>
+          <ComparisonChart
+            ariaLabel="Przychód według produktów"
+            className="pd-command-center-one-page__chart-surface"
+            data={[...productRows]
+              .sort((left, right) => (
+                Number(right.rawRevenue ?? 0) - Number(left.rawRevenue ?? 0)
+              ))
+              .slice(0, 8)
+              .map((row) => ({
+                id: String(row.id),
+                label: String(row.product),
+                values: {
+                  revenue: Number(row.rawRevenue ?? 0),
+                },
+              }))}
+            series={[{ key: 'revenue', label: 'Przychód' }]}
+            unit="PLN"
+            valueFormatter={(value) => formatMetricValue(value, 'currency')}
+            variant="ranking"
+            visualStyle="vivid"
+          />
+
+          <CommandChartTableFallback
+            ariaLabel="Produkty: przychód, przychód nowi/powracający, ilość i zmiana"
+            columns={productColumns}
+            emptyMessage="Brak danych produktowych."
+            minWidth={1180}
+            rows={productRows}
+            sortColumnId="revenue"
+          />
+        </>
       )}
     </section>
   );

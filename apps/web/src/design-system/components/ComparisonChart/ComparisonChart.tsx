@@ -6,6 +6,7 @@ import {
   useChartMotion,
 } from '../../foundations/motion';
 import {
+  useId,
   useState,
 } from 'react';
 import {
@@ -51,6 +52,8 @@ export type ComparisonChartLabels = {
   readonly legend: string;
 };
 
+export type ComparisonChartVisualStyle = 'flat' | 'vivid';
+
 export type ComparisonChartProps = Omit<
   HTMLAttributes<HTMLDivElement>,
   'children'
@@ -64,6 +67,13 @@ export type ComparisonChartProps = Omit<
   readonly unit?: string | null;
   readonly valueFormatter?: ((value: number) => string) | null;
   readonly variant?: ComparisonChartVariant;
+  /**
+   * 'vivid' renders each bar as a top-to-bottom gradient of its series color
+   * instead of a flat fill. Defaults to 'flat' so every existing consumer
+   * (Papa Assistant panels, Data Quality, the legacy per-screen Command
+   * Center report) keeps today's appearance unchanged.
+   */
+  readonly visualStyle?: ComparisonChartVisualStyle;
 };
 
 type FlattenedDatum = Record<
@@ -195,9 +205,12 @@ export function ComparisonChart({
   unit = null,
   valueFormatter = null,
   variant = 'bar',
+  visualStyle = 'flat',
   ...props
 }: ComparisonChartProps) {
   const chartMotion = useChartMotion();
+  const reactId = useId();
+  const gradientBaseId = `pd-comparison-gradient-${reactId.replaceAll(':', '')}`;
   const [isCompactPlot, setIsCompactPlot] =
     useState(false);
 
@@ -291,6 +304,7 @@ export function ComparisonChart({
       data-component="comparison-chart"
       data-series-count={runtimeSeries.length}
       data-variant={variant}
+      data-visual-style={visualStyle}
       role="group"
     >
       {unit ? (
@@ -362,6 +376,32 @@ export function ComparisonChart({
                   }
             }
           >
+            {visualStyle === 'vivid' ? (
+              <defs>
+                {runtimeSeries.map((item) => (
+                  <linearGradient
+                    id={`${gradientBaseId}-${item.index}`}
+                    key={item.key}
+                    x1="0"
+                    x2="0"
+                    y1="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="0%"
+                      stopColor={resolveSeriesToken(item.index)}
+                      stopOpacity={1}
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor={resolveSeriesToken(item.index)}
+                      stopOpacity={0.62}
+                    />
+                  </linearGradient>
+                ))}
+              </defs>
+            ) : null}
+
             <CartesianGrid
               horizontal={!isRanking}
               stroke="var(--pd-separator-subtle)"
@@ -493,7 +533,11 @@ export function ComparisonChart({
                 animationDuration={chartMotion.animationDuration}
                 animationEasing="ease-out"
                 dataKey={item.dataKey}
-                fill={resolveSeriesToken(item.index)}
+                fill={
+                  visualStyle === 'vivid'
+                    ? `url(#${gradientBaseId}-${item.index})`
+                    : resolveSeriesToken(item.index)
+                }
                 fillOpacity={
                   item.index === 0
                     ? 1

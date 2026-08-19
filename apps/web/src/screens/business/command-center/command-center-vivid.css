@@ -1,0 +1,319 @@
+/* ============================================================
+   Command Center — Vivid layer
+   Color, glass and glow on top of the structural one-page CSS.
+   Scoped entirely under .pd-command-center-one-page so nothing bleeds
+   into other screens that reuse the same design-system components
+   (Papa Assistant panels, Data Quality, the legacy per-screen report).
+   Kept in its own file so the whole layer can be reverted independently
+   of the structural layout rules in command-center-one-page.css.
+   ============================================================ */
+
+.pd-command-center-one-page {
+  /* Glass surface — color-mix() off theme tokens, so it is correct in both
+     light and dark automatically (no hardcoded hex here). */
+  --pd-command-glass-surface: color-mix(in srgb, var(--pd-glass-surface) 60%, var(--pd-command-surface-strong));
+  --pd-command-glass-border: color-mix(in srgb, var(--pd-command-border-strong) 70%, var(--pd-glass-surface));
+  --pd-command-glass-blur: blur(18px) saturate(1.08);
+
+  /* Glow shadows — status/brand-scoped, alpha-mixed off the existing muted
+     categorical palette (not neon hues), applied only to accents/edges. */
+  --pd-command-glow-brand: 0 18px 44px -26px color-mix(in srgb, var(--pd-brand-highlight) 46%, transparent);
+  --pd-command-glow-success: 0 18px 40px -26px color-mix(in srgb, var(--pd-status-success) 42%, transparent);
+  --pd-command-glow-warning: 0 18px 40px -26px color-mix(in srgb, var(--pd-status-warning) 42%, transparent);
+  --pd-command-glow-danger: 0 18px 40px -26px color-mix(in srgb, var(--pd-status-danger) 42%, transparent);
+
+  /* CSS-consumable gradient fills, ready to drop into `background:`. Used by
+     the plain-DOM Waterfall/Funnel bars and KPI accent edges. SVG charts
+     (ComparisonChart, ForecastChart) cannot consume these — they carry their
+     own <linearGradient> defs in JSX instead. */
+  --pd-command-fill-brand: linear-gradient(180deg, color-mix(in srgb, var(--pd-brand-highlight) 92%, transparent), color-mix(in srgb, var(--pd-brand-highlight) 38%, transparent));
+  --pd-command-fill-success: linear-gradient(180deg, color-mix(in srgb, var(--pd-status-success) 92%, transparent), color-mix(in srgb, var(--pd-status-success) 38%, transparent));
+  --pd-command-fill-warning: linear-gradient(180deg, color-mix(in srgb, var(--pd-status-warning) 92%, transparent), color-mix(in srgb, var(--pd-status-warning) 38%, transparent));
+  --pd-command-fill-danger: linear-gradient(180deg, color-mix(in srgb, var(--pd-status-danger) 92%, transparent), color-mix(in srgb, var(--pd-status-danger) 38%, transparent));
+}
+
+/* ------------------------------------------------------------
+   Visit digest
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__visit-digest {
+  padding-inline: var(--pd-space-3);
+  border-radius: var(--pd-radius-control);
+  background: color-mix(in srgb, var(--pd-brand-highlight) 6%, transparent);
+}
+
+/* ------------------------------------------------------------
+   Command bar — frosted sticky header
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__command-bar {
+  border-block-end-color: var(--pd-command-glass-border);
+  background: var(--pd-command-glass-surface);
+  backdrop-filter: var(--pd-command-glass-blur);
+}
+
+/* ------------------------------------------------------------
+   Status pill — small colored badge (Plan/Forecast header, reusable)
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pd-space-1);
+  padding: var(--pd-space-1) var(--pd-space-3);
+  border: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-status-success) 40%, transparent);
+  border-radius: var(--pd-radius-pill);
+  background: color-mix(in srgb, var(--pd-status-success) 14%, transparent);
+  color: var(--pd-status-success);
+  font-size: var(--pd-type-size-caption);
+  font-weight: var(--pd-font-weight-medium);
+  box-shadow: var(--pd-command-glow-success);
+  white-space: nowrap;
+}
+
+.pd-command-center-one-page__status-pill[data-tone='warning'] {
+  border-color: color-mix(in srgb, var(--pd-status-warning) 40%, transparent);
+  background: color-mix(in srgb, var(--pd-status-warning) 14%, transparent);
+  color: var(--pd-status-warning);
+  box-shadow: var(--pd-command-glow-warning);
+}
+
+.pd-command-center-one-page__status-pill[data-tone='critical'] {
+  border-color: color-mix(in srgb, var(--pd-status-danger) 40%, transparent);
+  background: color-mix(in srgb, var(--pd-status-danger) 14%, transparent);
+  color: var(--pd-status-danger);
+  box-shadow: var(--pd-command-glow-danger);
+}
+
+/* ------------------------------------------------------------
+   Plan / Forecast — colored stat cells + elevated chart panel
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__runway-stats {
+  border-color: var(--pd-command-glass-border) !important;
+  background: var(--pd-command-glass-surface);
+  backdrop-filter: var(--pd-command-glass-blur);
+}
+
+.pd-command-center-one-page__runway-stats > div[data-tone] {
+  background: color-mix(in srgb, var(--pd-status-success) 6%, transparent);
+}
+
+.pd-command-center-one-page__runway-stats [data-tone='critical'] dd {
+  color: var(--pd-status-danger);
+}
+
+.pd-command-center-one-page__runway-stats > div[data-tone='warning'],
+.pd-command-center-one-page__runway-stats > div[data-tone='critical'] {
+  background: color-mix(in srgb, var(--pd-status-warning) 6%, transparent);
+}
+
+.pd-command-center-one-page__runway-stats > div[data-tone='critical'] {
+  background: color-mix(in srgb, var(--pd-status-danger) 6%, transparent);
+}
+
+.pd-command-center-one-page__plan-chart {
+  padding: clamp(16px, 2vw, 24px) !important;
+  border: var(--pd-border-width-subtle) solid var(--pd-command-glass-border) !important;
+  border-radius: var(--pd-radius-surface);
+  background: var(--pd-command-glass-surface) !important;
+  backdrop-filter: var(--pd-command-glass-blur);
+  box-shadow: var(--pd-command-glow-brand) !important;
+}
+
+.pd-command-center-one-page__plan-chart[data-tone='success'] {
+  border-color: color-mix(in srgb, var(--pd-status-success) 46%, var(--pd-command-glass-border)) !important;
+  box-shadow: var(--pd-command-glow-success) !important;
+}
+
+.pd-command-center-one-page__plan-chart[data-tone='warning'] {
+  border-color: color-mix(in srgb, var(--pd-status-warning) 46%, var(--pd-command-glass-border)) !important;
+  box-shadow: var(--pd-command-glow-warning) !important;
+}
+
+.pd-command-center-one-page__plan-chart[data-tone='critical'] {
+  border-color: color-mix(in srgb, var(--pd-status-danger) 46%, var(--pd-command-glass-border)) !important;
+  box-shadow: var(--pd-command-glow-danger) !important;
+}
+
+/* ------------------------------------------------------------
+   Revenue/Costs — vivid driver meters + height-matched lenses
+   The three lenses stay independent visualizations on purpose (volume/
+   efficiency mix incompatible units — orders vs AOV, ad-cost vs ROAS vs CPA —
+   so they are deliberately NOT drawn as one shared-axis chart). This only
+   adds color and reserves a shared minimum height so switching lenses
+   doesn't jump.
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__runtime-main-analysis {
+  min-block-size: 20rem;
+}
+
+.pd-command-center-one-page__driver-meter > span {
+  background: var(--pd-command-fill-brand);
+}
+
+.pd-command-center-one-page__driver-metrics article[data-tone='success'] {
+  background: color-mix(in srgb, var(--pd-status-success) 6%, transparent);
+}
+
+.pd-command-center-one-page__driver-metrics article[data-tone='success'] .pd-command-center-one-page__driver-meter > span {
+  background: var(--pd-command-fill-success);
+}
+
+.pd-command-center-one-page__driver-metrics article[data-tone='warning'] {
+  background: color-mix(in srgb, var(--pd-status-warning) 6%, transparent);
+}
+
+.pd-command-center-one-page__driver-metrics article[data-tone='warning'] .pd-command-center-one-page__driver-meter > span {
+  background: var(--pd-command-fill-warning);
+}
+
+.pd-command-center-one-page__driver-metrics article[data-tone='critical'] {
+  background: color-mix(in srgb, var(--pd-status-danger) 6%, transparent);
+}
+
+.pd-command-center-one-page__driver-metrics article[data-tone='critical'] .pd-command-center-one-page__driver-meter > span {
+  background: var(--pd-command-fill-danger);
+}
+
+/* ------------------------------------------------------------
+   Decision workspace — elevated glass panel
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__decision-workspace {
+  border-color: var(--pd-command-glass-border) !important;
+  background: var(--pd-command-glass-surface) !important;
+  backdrop-filter: var(--pd-command-glass-blur);
+  box-shadow: var(--pd-command-glow-brand), var(--pd-shadow-raised);
+}
+
+.pd-command-center-one-page__decision-workspace-scenario {
+  display: grid;
+  gap: var(--pd-space-2);
+  padding-block-start: var(--pd-space-3);
+  border-block-start: var(--pd-border-width-subtle) solid var(--pd-command-line);
+}
+
+/* ------------------------------------------------------------
+   Attention queue — colored wash + consistent card height
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__attention-card {
+  min-block-size: 6.5rem;
+}
+
+.pd-command-center-one-page__attention-card[data-kind='risk'] {
+  background: color-mix(in srgb, var(--pd-status-danger) 5%, transparent);
+}
+
+.pd-command-center-one-page__attention-card[data-kind='opportunity'] {
+  background: color-mix(in srgb, var(--pd-status-success) 5%, transparent);
+}
+
+.pd-command-center-one-page__attention-card[data-kind='data'] {
+  background: color-mix(in srgb, var(--pd-status-warning) 5%, transparent);
+}
+
+.pd-command-center-one-page__attention-card-diagnosis {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* ------------------------------------------------------------
+   Committed actions — gradient progress fill
+   Scoped under .pd-command-center-one-page since ProgressIndicator is a
+   shared design-system component used outside Command Center too.
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page .pd-progress-indicator__fill {
+  background: var(--pd-command-fill-brand);
+}
+
+/* ------------------------------------------------------------
+   Mosaic + Drivery/Źródła split — matched-height cards
+   Two pieces of content sit side by side with independent, content-driven
+   heights (Products vs Funnel; driver analysis vs traffic-sources panel).
+   Without a visible card boundary, the shorter one leaves a bare gap next
+   to the taller one. Giving both a real card (border/background/stretch)
+   turns that gap into contained breathing room inside a panel instead of
+   an accidental-looking hole in the page.
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page__mosaic {
+  align-items: stretch;
+}
+
+.pd-command-center-one-page__mosaic .pd-command-center-one-page__section {
+  padding: clamp(16px, 2vw, 24px) !important;
+  border: var(--pd-border-width-subtle) solid var(--pd-command-glass-border);
+  border-block-start: var(--pd-border-width-subtle) solid var(--pd-command-glass-border) !important;
+  border-radius: var(--pd-radius-surface);
+  background: var(--pd-command-glass-surface);
+  backdrop-filter: var(--pd-command-glass-blur);
+  box-shadow: var(--pd-shadow-raised);
+}
+
+.pd-command-center-one-page__runtime-split {
+  align-items: stretch;
+}
+
+.pd-command-center-one-page__runtime-main-analysis,
+.pd-command-center-one-page__runtime-side-panel {
+  padding: clamp(16px, 2vw, 24px);
+  border: var(--pd-border-width-subtle) solid var(--pd-command-glass-border);
+  border-inline-start: var(--pd-border-width-subtle) solid var(--pd-command-glass-border) !important;
+  border-radius: var(--pd-radius-surface);
+  background: var(--pd-command-glass-surface);
+  backdrop-filter: var(--pd-command-glass-blur);
+  box-shadow: var(--pd-shadow-raised);
+  padding-inline-start: clamp(16px, 2vw, 24px) !important;
+}
+
+/* ------------------------------------------------------------
+   Waterfall / Funnel — gradient bars
+   Pure CSS override: both components color their bars via a plain
+   `background` keyed off `data-kind`, so no component code changes.
+   The extra `.pd-command-center-one-page` ancestor class gives these rules
+   higher specificity than the shared rules in domain-components.css, so
+   every other WaterfallChart/FunnelChart consumer keeps its flat fill.
+   ------------------------------------------------------------ */
+
+.pd-command-center-one-page .pd-waterfall-chart__items li[data-kind='start'] .pd-waterfall-chart__bar > span,
+.pd-command-center-one-page .pd-waterfall-chart__items li[data-kind='increase'] .pd-waterfall-chart__bar > span {
+  background: var(--pd-command-fill-brand);
+}
+
+.pd-command-center-one-page .pd-waterfall-chart__items li[data-kind='decrease'] .pd-waterfall-chart__bar > span {
+  background: var(--pd-command-fill-danger);
+}
+
+.pd-command-center-one-page .pd-waterfall-chart__items li[data-kind='total'] .pd-waterfall-chart__bar > span {
+  background: var(--pd-command-fill-success);
+}
+
+.pd-command-center-one-page .pd-funnel-chart__steps li:nth-child(6n + 1) .pd-funnel-chart__bar > span {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--pd-data-series-1) 92%, transparent), color-mix(in srgb, var(--pd-data-series-1) 44%, transparent));
+}
+
+.pd-command-center-one-page .pd-funnel-chart__steps li:nth-child(6n + 2) .pd-funnel-chart__bar > span {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--pd-data-series-2) 92%, transparent), color-mix(in srgb, var(--pd-data-series-2) 44%, transparent));
+}
+
+.pd-command-center-one-page .pd-funnel-chart__steps li:nth-child(6n + 3) .pd-funnel-chart__bar > span {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--pd-data-series-3) 92%, transparent), color-mix(in srgb, var(--pd-data-series-3) 44%, transparent));
+}
+
+.pd-command-center-one-page .pd-funnel-chart__steps li:nth-child(6n + 4) .pd-funnel-chart__bar > span {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--pd-data-series-6) 92%, transparent), color-mix(in srgb, var(--pd-data-series-6) 44%, transparent));
+}
+
+.pd-command-center-one-page .pd-funnel-chart__steps li:nth-child(6n + 5) .pd-funnel-chart__bar > span {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--pd-data-series-8) 92%, transparent), color-mix(in srgb, var(--pd-data-series-8) 44%, transparent));
+}
+
+.pd-command-center-one-page .pd-funnel-chart__steps li:nth-child(6n) .pd-funnel-chart__bar > span {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--pd-data-series-7) 92%, transparent), color-mix(in srgb, var(--pd-data-series-7) 44%, transparent));
+}

@@ -63,6 +63,18 @@ import {
   CommandCenterOnePage,
 } from './command-center';
 import {
+  attentionWeight,
+  buildOperationalDecisions,
+  getRecordContext,
+  openPapaAssistant,
+  openPapaAssistantForElement,
+  openPapaAssistantWithScreenAnalysis,
+} from './command-center/commandCenterOnePageModel';
+import type {
+  CommandDecision,
+  OperationalPriority,
+} from './command-center/commandCenterOnePageModel';
+import {
   formatInteger,
   formatMetricValue,
   formatPercent,
@@ -255,47 +267,12 @@ const commandCenterRuntimeNavigation = [
   {
     href: '#command-section-plan',
     id: 'command-section-plan',
-    label: 'Plan',
-  },
-  {
-    href: '#command-section-sales-costs',
-    id: 'command-section-sales-costs',
-    label: 'Sprzedaż',
-  },
-  {
-    href: '#command-section-traffic-sources',
-    id: 'command-section-traffic-sources',
-    label: 'Źródła',
-  },
-  {
-    href: '#command-section-customers',
-    id: 'command-section-customers',
-    label: 'Klienci',
-  },
-  {
-    href: '#command-section-products',
-    id: 'command-section-products',
-    label: 'Produkty',
-  },
-  {
-    href: '#command-section-funnel',
-    id: 'command-section-funnel',
-    label: 'Lejek',
-  },
-  {
-    href: '#command-section-recommendations',
-    id: 'command-section-recommendations',
-    label: 'AI',
-  },
-  {
-    href: '#command-section-records',
-    id: 'command-section-records',
-    label: 'Rejestr',
+    label: 'Plan vs Prognoza',
   },
 ] as const satisfies readonly CommandNavigationItem[];
 
 /** Scroll distance before the runtime section rail may appear at all. */
-const runtimeNavigationRevealOffset = 48;
+const runtimeNavigationRevealOffset = 116;
 
 /** Ignore sub-pixel jitter; only a deliberate gesture toggles the rail. */
 const runtimeNavigationDirectionThreshold = 4;
@@ -335,30 +312,6 @@ const commandFallbackDateRange = {
   timezone: 'Europe/Warsaw',
   to: '2026-08-12',
 } as const satisfies DateRange;
-
-type OperationalPriority =
-  | 'critical'
-  | 'high'
-  | 'medium'
-  | 'low';
-
-type CommandRecordContext = {
-  readonly businessImpact: string;
-  readonly diagnosis: string;
-  readonly evidenceLabel: string;
-  readonly nextAction: string;
-  readonly owner: string;
-  readonly priority: OperationalPriority;
-  readonly timebox: string;
-};
-
-type CommandDecision = CommandRecordContext & {
-  readonly deltaLabel: string;
-  readonly id: string;
-  readonly metricLabel: string;
-  readonly readiness: ReadinessStatus;
-  readonly valueLabel: string;
-};
 
 type CommandAiSignal = {
   readonly description: string;
@@ -402,7 +355,7 @@ export function CommandCenterWorkspace({
     ? 'Centrum Dowodzenia'
     : definition.displayTitle;
   const pageHeadingSubtitle = isRuntimeOnePage
-    ? 'Jedna strona porannego briefu: świeżość danych, KPI, statusy AI, ryzyka, wynik, sprzedaż i rekomendacje z symulacją wpływu.'
+    ? 'Landing page w przebudowie: aktywne sekcje to KPI oraz Plan vs Prognoza.'
     : definition.summary;
 
   useEffect(() => {
@@ -688,55 +641,10 @@ export function CommandCenterWorkspace({
       />
       )}
 
-      {isRuntimeOnePage ? (
-        <header className="pd-command-center-one-page__command-bar">
-          <div className="pd-command-center-one-page__command-bar-identity">
-            <span>Centrum Dowodzenia</span>
-            <strong>{formatShellDateRangeLabel(dateRange)}</strong>
-          </div>
-
-          <dl className="pd-command-center-one-page__command-bar-meta">
-            <div>
-              <dt>Odświeżono</dt>
-              <dd>{data ? formatShortTime(data.generatedAt) : '—'}</dd>
-            </div>
-            <div data-state={dataState}>
-              <dt>Stan danych</dt>
-              <dd>{resolveDataStateLabel(dataState)}</dd>
-            </div>
-          </dl>
-
-          <div className="pd-command-center-one-page__command-bar-actions">
-            <Button
-              size="small"
-              variant="secondary"
-              onClick={() => openPapaAssistant({
-                action: 'report',
-                mode: 'report',
-              })}
-            >
-              Raport Papa
-            </Button>
-
-            {onReload ? (
-              <Button
-                loading={loading}
-                loadingLabel="Odświeżanie"
-                size="small"
-                variant="secondary"
-                onClick={onReload}
-              >
-                Odśwież dane
-              </Button>
-            ) : null}
-          </div>
-        </header>
-      ) : null}
-
-      {(!isRuntimeOnePage || isRuntimeNavigationVisible) ? (
+      {(!isRuntimeOnePage || (isRuntimeNavigationVisible && navigationItems.length > 1)) ? (
         <SectionNavigation
           activeId={isRuntimeOnePage ? activeRuntimeSectionId : definition.id}
-          ariaLabel="Widoki Centrum Dowodzenia"
+          ariaLabel="Sekcje Centrum Dowodzenia"
           className="pd-command-center-workspace__navigation pd-command-center-one-page__navigation"
           itemProps={isRuntimeOnePage
             ? (item) => ({
@@ -815,9 +723,6 @@ function CommandCenterContent({
       <CommandCenterOnePage
         data={data}
         dataState={dataState}
-        issues={issues}
-        rows={rows}
-        workspaceContext={workspaceContext}
       />
     );
   }
@@ -2737,48 +2642,6 @@ function CommandSectionHeader({
   );
 }
 
-function openPapaAssistantWithScreenAnalysis(): void {
-  openPapaAssistant({
-    action: 'analyze-screen',
-    mode: 'screen',
-  });
-}
-
-function openPapaAssistantForElement(
-  elementId: string,
-): void {
-  openPapaAssistant({
-    action: 'open-element',
-    elementId,
-    mode: 'element',
-  });
-}
-
-function openPapaAssistant({
-  action,
-  elementId,
-  mode,
-}: {
-  readonly action: 'analyze-screen' | 'open-element' | 'report';
-  readonly elementId?: string;
-  readonly mode: 'element' | 'report' | 'screen';
-}): void {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  window.dispatchEvent(
-    new CustomEvent('papadata:papa-assistant', {
-      detail: {
-        action,
-        elementId,
-        mode,
-      },
-    }),
-  );
-}
-
-
 function handleRuntimeNavigationClick(
   item: CommandNavigationItem,
   event: MouseEvent<HTMLAnchorElement>,
@@ -3585,241 +3448,6 @@ function buildCommandRows(
       value: formatMetricValue(record.value, record.unit),
     };
   });
-}
-
-function buildOperationalDecisions(
-  records: readonly CommandCenterRecord[],
-  variant: BusinessScreenDefinition['variant'],
-): readonly CommandDecision[] {
-  const decisions = [...records]
-    .filter((record) => {
-      const context = getRecordContext(record, variant);
-
-      return record.readiness !== 'ready'
-        || isMetricWorse(record)
-        || context.priority === 'critical'
-        || context.priority === 'high';
-    })
-    .sort((left, right) => (
-      attentionWeight(right) - attentionWeight(left)
-    ))
-    .map((record) => {
-      const context = getRecordContext(record, variant);
-
-      return {
-        ...context,
-        deltaLabel: record.delta === null
-          ? '—'
-          : formatSignedPercent(record.delta),
-        id: record.metricId,
-        metricLabel: record.label,
-        readiness: record.readiness,
-        valueLabel: formatMetricValue(record.value, record.unit),
-      };
-    });
-
-  const seenActions = new Set<string>();
-
-  return decisions.filter((decision) => {
-    const actionKey = normalizeLabel(`${decision.nextAction}-${decision.owner}`);
-
-    if (seenActions.has(actionKey)) {
-      return false;
-    }
-
-    seenActions.add(actionKey);
-    return true;
-  });
-}
-
-function getRecordContext(
-  record: CommandCenterRecord,
-  variant: BusinessScreenDefinition['variant'],
-): CommandRecordContext {
-  const label = normalizeLabel(record.label);
-  const worse = isMetricWorse(record);
-
-  if (
-    label.includes('platnosci')
-    || label.includes('odrzucone')
-  ) {
-    return {
-      businessImpact: 'Ryzyko utraty zakupów',
-      diagnosis: 'Wzrost odrzuceń płatności może zaniżać zakup mimo zdrowego ruchu.',
-      evidenceLabel: 'Bramka płatności, 3DS i błędy checkoutu',
-      nextAction: 'Sprawdź płatności i błędy 3DS',
-      owner: 'Payments / Ops',
-      priority: 'critical',
-      timebox: 'natychmiast',
-    };
-  }
-
-  if (
-    label.includes('konwersja')
-    || label.includes('checkout')
-    || label.includes('koszyk')
-    || variant === 'funnel'
-  ) {
-    return {
-      businessImpact: worse ? 'Ryzyko utraty zamówień' : 'Szansa poprawy zamówień',
-      diagnosis: 'Odchylenie w ścieżce zakupowej bezpośrednio wpływa na wynik okresu.',
-      evidenceLabel: 'GA4 checkout, koszyk, zakup i segment mobile',
-      nextAction: 'Przejrzyj koszyk, checkout i mobile',
-      owner: 'Growth / UX checkout',
-      priority: worse || record.readiness !== 'ready' ? 'high' : 'medium',
-      timebox: 'dzisiaj 12:00',
-    };
-  }
-
-  if (
-    label.includes('ga4')
-    || label.includes('event')
-    || label.includes('swiezosc')
-    || label.includes('kompletnosc')
-  ) {
-    return {
-      businessImpact: 'Ryzyko błędnej interpretacji',
-      diagnosis: 'Niepełne lub opóźnione eventy obniżają zaufanie do decyzji w lejku i kampaniach.',
-      evidenceLabel: 'Kolejka eventów, kompletność i ostatnia synchronizacja',
-      nextAction: 'Zweryfikuj kolejkę eventów GA4',
-      owner: 'Analityka danych',
-      priority: record.readiness === 'stale' ? 'high' : 'medium',
-      timebox: 'dzisiaj 11:00',
-    };
-  }
-
-  if (
-    label.includes('cpa')
-    || label.includes('meta')
-    || label.includes('ads')
-  ) {
-    return {
-      businessImpact: worse ? 'Ryzyko przepalania budżetu' : 'Szansa przesunięcia budżetu',
-      diagnosis: 'Kanał płatny wymaga kontroli kosztu i jakości konwersji przed skalowaniem.',
-      evidenceLabel: 'Koszt, przychód, ROAS i kreacje kampanii',
-      nextAction: 'Sprawdź budżet, CPA i kreacje kampanii',
-      owner: 'Performance marketing',
-      priority: worse || record.readiness !== 'ready' ? 'high' : 'medium',
-      timebox: 'dzisiaj 14:00',
-    };
-  }
-
-  if (
-    label.includes('produkty')
-    || label.includes('bestseller')
-    || label.includes('mapowania')
-    || label.includes('dostepnosc')
-  ) {
-    return {
-      businessImpact: worse ? 'Ryzyko utraty popytu' : 'Szansa zwiększenia marży',
-      diagnosis: 'Problemy katalogu i dostępności ograniczają sprzedaż mimo dobrego ruchu.',
-      evidenceLabel: 'Katalog, feed, marża i dostępność bestsellerów',
-      nextAction: 'Napraw mapowanie i dostępność bestsellerów',
-      owner: 'Katalog produktów',
-      priority: worse || record.readiness !== 'ready' ? 'high' : 'medium',
-      timebox: 'dzisiaj 15:00',
-    };
-  }
-
-  if (
-    label.includes('klien')
-    || label.includes('repeat')
-    || label.includes('powracaj')
-  ) {
-    return {
-      businessImpact: worse ? 'Ryzyko spadku retencji' : 'Szansa retencji',
-      diagnosis: 'Zmiana segmentów klientów wpływa na powtarzalność przychodu i koszt pozyskania.',
-      evidenceLabel: 'Segmenty, kohorty i pseudonimizowane agregaty',
-      nextAction: 'Sprawdź segment powracających klientów',
-      owner: 'CRM / Retencja',
-      priority: worse ? 'high' : 'medium',
-      timebox: 'jutro 10:00',
-    };
-  }
-
-  if (
-    label.includes('marza')
-    || label.includes('mix')
-  ) {
-    return {
-      businessImpact: worse ? 'Ryzyko spadku rentowności' : 'Szansa rentowności',
-      diagnosis: 'Mix produktów i marża pokazują, czy wynik jest zdrowy, a nie tylko większy.',
-      evidenceLabel: 'Marża brutto, mix produktów i przychód',
-      nextAction: 'Utrzymaj ekspozycję produktów wysokomarżowych',
-      owner: 'Merchandising',
-      priority: worse ? 'high' : 'low',
-      timebox: 'w tym tygodniu',
-    };
-  }
-
-  if (
-    label.includes('ai')
-    || label.includes('pewnosc')
-    || label.includes('decyzji')
-  ) {
-    return {
-      businessImpact: worse ? 'Ryzyko słabej automatyzacji' : 'Lepsza jakość decyzji',
-      diagnosis: 'Pewność rekomendacji pokazuje, czy AI ma wystarczające dowody do wsparcia decyzji.',
-      evidenceLabel: 'Dowody, confidence score i zgodność ze źródłami',
-      nextAction: worse
-        ? 'Zwiększ próg akceptacji rekomendacji'
-        : 'Utrzymaj tryb zatwierdzania przez człowieka',
-      owner: 'AI / Analityka decyzji',
-      priority: worse || record.readiness !== 'ready' ? 'high' : 'medium',
-      timebox: 'dzisiaj 16:00',
-    };
-  }
-
-  if (
-    label.includes('google')
-    || label.includes('search')
-    || label.includes('roas')
-    || label.includes('przychod')
-    || label.includes('liczba zamowien')
-  ) {
-    return {
-      businessImpact: worse ? 'Ryzyko spadku wyniku' : 'Stabilny wkład do wyniku',
-      diagnosis: 'Obszar wspiera bieżący wynik, ale nadal wymaga kontroli celu i źródeł.',
-      evidenceLabel: 'Przychód, zamówienia, koszt i cel okresu',
-      nextAction: worse
-        ? 'Sprawdź źródło spadku wyniku'
-        : 'Utrzymaj obecne tempo i monitoruj cel',
-      owner: 'Growth',
-      priority: worse ? 'high' : 'low',
-      timebox: worse ? 'dzisiaj 13:00' : 'monitoring',
-    };
-  }
-
-  return {
-    businessImpact: worse ? 'Ryzyko operacyjne' : 'Monitoring',
-    diagnosis: 'Metryka wymaga oceny w kontekście celu, zakresu i jakości źródeł.',
-    evidenceLabel: 'Wynik, cel i gotowość źródeł danych',
-    nextAction: worse
-      ? 'Sprawdź odchylenie i przypisz właściciela'
-      : 'Monitoruj bez eskalacji',
-    owner: variant === 'command-variants'
-      ? 'Analityka biznesowa'
-      : 'Właściciel obszaru',
-    priority: worse || record.readiness !== 'ready' ? 'medium' : 'low',
-    timebox: worse ? 'dzisiaj' : 'monitoring',
-  };
-}
-
-function attentionWeight(
-  record: CommandCenterRecord,
-): number {
-  const readinessWeight = record.readiness === 'unavailable'
-    ? 4
-    : record.readiness === 'stale'
-      ? 3
-      : record.readiness === 'partial'
-        ? 2
-        : 0;
-  const deltaWeight = isMetricWorse(record)
-    ? Math.abs(record.delta ?? 0) * 10
-    : Math.max(record.delta ?? 0, 0);
-
-  return readinessWeight + deltaWeight;
 }
 
 function isMetricWorse(

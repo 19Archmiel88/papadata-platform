@@ -7,14 +7,20 @@ export type {
 } from './CommandCenterOnePage';
 
 export {
+  CommandCenterAttentionSection,
+} from './CommandCenterAttentionSection';
+export {
+  CommandCenterDecisionWorkspace,
+} from './CommandCenterDecisionWorkspace';
+export {
   CommandCenterKpiSection,
 } from './CommandCenterKpiSection';
 export {
   CommandCenterPlanForecastSection,
 } from './CommandCenterPlanForecastSection';
 export {
-  CommandCenterRevenueCostsSection,
-} from './CommandCenterRevenueCostsSection';
+  CommandCenterDriversSection,
+} from './CommandCenterDriversSection';
 export {
   CommandCenterTrafficSourcesSection,
 } from './CommandCenterTrafficSourcesSection';
@@ -28,8 +34,5 @@ export {
   CommandCenterFunnelSection,
 } from './CommandCenterFunnelSection';
 export {
-  CommandCenterAiRecommendationsSection,
-} from './CommandCenterAiRecommendationsSection';
-export {
-  CommandCenterRecordsSection,
-} from './CommandCenterRecordsSection';
+  CommandCenterCommittedActionsSection,
+} from './CommandCenterCommittedActionsSection';

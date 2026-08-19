@@ -60,6 +60,7 @@ export type ForecastChartLabels = {
   readonly legend: string;
   readonly quality: string;
   readonly scenarios: string;
+  readonly target: string;
   readonly uncertainty: string;
   readonly unavailable: string;
 };
@@ -77,6 +78,9 @@ export type ForecastChartProps = Omit<
   readonly lowerBound: readonly ForecastChartSeriesPoint[];
   readonly quality?: ForecastChartQuality | null;
   readonly scenarios?: readonly ForecastChartScenario[];
+  /** Flat dashed reference line for a single known target value — not a fabricated target curve. */
+  readonly targetLabel?: string | null;
+  readonly targetValue?: number | null;
   readonly unit?: string | null;
   readonly upperBound: readonly ForecastChartSeriesPoint[];
   readonly valueFormatter?: ((value: number) => string) | null;
@@ -107,6 +111,7 @@ const defaultLabels: ForecastChartLabels = {
   legend: 'Serie prognozy',
   quality: 'Jakość predykcji',
   scenarios: 'Scenariusze',
+  target: 'Cel',
   uncertainty: 'Zakres niepewności',
   unavailable: 'Brak danych do pokazania prognozy.',
 };
@@ -201,16 +206,20 @@ function resolveNiceStep(rawStep: number): number {
 
 function resolveYAxisScale(
   data: readonly RuntimeDatum[],
+  extraValues: readonly number[] = [],
 ): YAxisScale {
-  const values = data.flatMap((datum) => (
-    numericKeys.flatMap((key) => {
-      const value = datum[key];
+  const values = [
+    ...data.flatMap((datum) => (
+      numericKeys.flatMap((key) => {
+        const value = datum[key];
 
-      return isFiniteNumber(value)
-        ? [value]
-        : [];
-    })
-  ));
+        return isFiniteNumber(value)
+          ? [value]
+          : [];
+      })
+    )),
+    ...extraValues.filter(isFiniteNumber),
+  ];
 
   if (values.length === 0) {
     return {
@@ -366,6 +375,8 @@ export function ForecastChart({
   lowerBound,
   quality = null,
   scenarios = [],
+  targetLabel = null,
+  targetValue = null,
   unit = null,
   upperBound,
   valueFormatter = null,
@@ -387,9 +398,11 @@ export function ForecastChart({
   const hasActual = hasSeriesValue(chartData, 'actual');
   const hasForecast = hasSeriesValue(chartData, 'forecast');
   const hasUncertainty = hasSeriesValue(chartData, 'uncertaintyRange');
+  const resolvedTargetValue = isFiniteNumber(targetValue) ? targetValue : null;
+  const hasTarget = resolvedTargetValue !== null;
   const forecastStartLabel = resolveForecastStartLabel(chartData);
   const hasRenderableData = hasActual || hasForecast || hasUncertainty;
-  const hasLegend = hasActual || hasForecast || hasUncertainty;
+  const hasLegend = hasActual || hasForecast || hasUncertainty || hasTarget;
   const normalizedUnit = normalizeOptionalText(unit);
   const normalizedHorizonLabel = normalizeOptionalText(horizonLabel);
   const hasConfidence = isFiniteNumber(confidence);
@@ -408,7 +421,7 @@ export function ForecastChart({
   const {
     domain,
     ticks,
-  } = resolveYAxisScale(chartData);
+  } = resolveYAxisScale(chartData, resolvedTargetValue !== null ? [resolvedTargetValue] : []);
   const yAxisWidth = resolveYAxisWidth(ticks, formatValue);
 
   return (
@@ -569,6 +582,25 @@ export function ForecastChart({
                 />
               ) : null}
 
+              {resolvedTargetValue !== null ? (
+                <ReferenceLine
+                  ifOverflow="extendDomain"
+                  label={{
+                    fill: 'var(--pd-data-target)',
+                    fontSize: 11,
+                    position: 'insideTopRight',
+                    value: targetLabel
+                      ? `${targetLabel} · ${formatValue(resolvedTargetValue)}`
+                      : formatValue(resolvedTargetValue),
+                  }}
+                  stroke="var(--pd-data-target)"
+                  strokeDasharray="4 5"
+                  strokeOpacity={0.78}
+                  strokeWidth={1.55}
+                  y={resolvedTargetValue}
+                />
+              ) : null}
+
               {hasActual ? (
                 <Line
                   activeDot={false}
@@ -697,6 +729,16 @@ export function ForecastChart({
                 className="pd-forecast-chart__swatch"
               />
               <span>{resolvedLabels.forecast}</span>
+            </li>
+          ) : null}
+
+          {hasTarget ? (
+            <li data-series="target">
+              <span
+                aria-hidden="true"
+                className="pd-forecast-chart__swatch"
+              />
+              <span>{targetLabel ?? resolvedLabels.target}</span>
             </li>
           ) : null}
 

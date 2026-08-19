@@ -61,6 +61,7 @@ export type MetricCardProps = Omit<
   readonly deviationLabel?: string | null;
   readonly emphasis?: MetricCardEmphasis;
   readonly freshnessLabel?: string | null;
+  readonly helpText?: string | null;
   readonly label: string;
   readonly labels?: Partial<MetricCardLabels>;
   readonly metricId: string;
@@ -208,6 +209,7 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
       deviationLabel = null,
       emphasis = 'default',
       freshnessLabel = null,
+      helpText = null,
       label,
       labels,
       metricId,
@@ -226,6 +228,7 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
     ref,
   ) {
     const labelId = useId();
+    const helpTextId = useId();
     const stateMessageId = useId();
 
     const resolvedLabels: MetricCardLabels = {
@@ -273,11 +276,34 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
         data-signal={signal}
       >
         <header className="pd-metric-card__header">
-          <span
-            className="pd-metric-card__label"
-            id={labelId}
-          >
-            {label}
+          <span className="pd-metric-card__label-group">
+            <span
+              className="pd-metric-card__label"
+              id={labelId}
+            >
+              {label}
+            </span>
+
+            {helpText ? (
+              <span className="pd-metric-card__help">
+                <button
+                  aria-describedby={helpTextId}
+                  aria-label={`Wyjaśnienie metryki: ${label}`}
+                  className="pd-metric-card__help-trigger"
+                  type="button"
+                >
+                  ?
+                </button>
+
+                <span
+                  className="pd-metric-card__help-popover"
+                  id={helpTextId}
+                  role="tooltip"
+                >
+                  {helpText}
+                </span>
+              </span>
+            ) : null}
           </span>
 
           {showStatusBadge ? (

@@ -1,5 +1,6 @@
 import type {
   CommandCenterRecord,
+  DecisionStatus,
   ReadinessStatus,
 } from '../../../../../../contracts/api-schemas';
 import type {
@@ -7,10 +8,15 @@ import type {
   DataRow,
 } from '../../../../../../contracts/component-shared';
 import type {
+  DataSourceRef,
+  DateRange,
+} from '../../../../../../contracts/ui-contract-types';
+import type {
   AnalyticsDataState,
 } from '../../../design-system';
 import type {
   BusinessScreenData,
+  BusinessScreenDefinition,
 } from '../businessData';
 import {
   formatInteger,
@@ -31,8 +37,66 @@ export type CommandOnePageIssue = {
   readonly severity: 'critical' | 'warning';
 };
 
-export type CommandOnePageDecision = {
+export type OperationalPriority =
+  | 'critical'
+  | 'high'
+  | 'medium'
+  | 'low';
+
+export type CommandRecordContext = {
+  readonly businessImpact: string;
+  readonly diagnosis: string;
+  readonly evidenceLabel: string;
+  readonly nextAction: string;
+  readonly owner: string;
+  readonly priority: OperationalPriority;
+  readonly timebox: string;
+};
+
+export type CommandDecision = CommandRecordContext & {
+  readonly deltaLabel: string;
+  readonly id: string;
   readonly metricLabel: string;
+  readonly readiness: ReadinessStatus;
+  readonly valueLabel: string;
+};
+
+export type CommandSignalKind = 'data' | 'opportunity' | 'risk';
+
+export type RecommendationExecutionMode = 'advisory' | 'executable' | 'guided';
+
+export type RecommendationExecutionAvailability =
+  | 'available'
+  | 'needsUserAction'
+  | 'prohibited'
+  | 'unavailable';
+
+export type RecommendationExecutionState = {
+  readonly availability: RecommendationExecutionAvailability;
+  readonly mode: RecommendationExecutionMode;
+};
+
+export type CommandNoActionProjection = {
+  readonly deltaValue: number;
+  readonly projectedValue: number;
+};
+
+export type CommandCenterVisitSnapshot = {
+  readonly issueCount: number;
+  readonly metrics: Readonly<Record<string, number>>;
+  readonly recommendationCount: number;
+  readonly savedAt: string;
+};
+
+export type CommandCenterVisitDigest = {
+  readonly newIssueCount: number;
+  readonly newRecommendationCount: number;
+  readonly resolvedIssueCount: number;
+  readonly shifts: readonly {
+    readonly deltaRatio: number;
+    readonly label: string;
+    readonly metricId: string;
+  }[];
 };
 
 export const sourceColumns: readonly DataColumn[] = [
@@ -265,6 +329,39 @@ export function resolveDerivedReadiness(
   return 'ready';
 }
 
+const trustAttentionCompletenessThreshold = 0.9;
+
+export type CommandCenterTrustSummary = {
+  readonly attentionSourceCount: number;
+  readonly completenessLabel: string;
+};
+
+/**
+ * Aggregate for the Trust line in the command bar — "Dane aktualne · 96%
+ * kompletności · 1 źródło wymaga uwagi". This is an aggregate, not the
+ * source of truth: individual KPIs and analysis surfaces keep their own
+ * local readiness independent of this summary.
+ */
+export function resolveTrustSummary(
+  sources: readonly DataSourceRef[],
+): CommandCenterTrustSummary | null {
+  if (sources.length === 0) {
+    return null;
+  }
+
+  const averageCompleteness = sources.reduce(
+    (sum, source) => sum + source.completeness,
+    0,
+  ) / sources.length;
+
+  return {
+    attentionSourceCount: sources.filter(
+      (source) => source.completeness < trustAttentionCompletenessThreshold,
+    ).length,
+    completenessLabel: formatPercent(averageCompleteness),
+  };
+}
+
 export function buildDemoCommandSourceRows(records: readonly CommandCenterRecord[]): readonly DataRow[] {
   const revenue = findRecordById(records, 'command-kpi-revenue')?.value ?? 0;
   const model = [
@@ -357,65 +454,105 @@ export function buildDemoCommandProductRows(records: readonly CommandCenterRecor
   });
 }
 
+export type CommandCommittedAction = {
+  readonly dueLabel: string;
+  readonly expectedImpactLabel: string;
+  readonly goal: string;
+  readonly id: string;
+  readonly measurement: {
+    readonly baselineLabel: string;
+    readonly resultLabel: string;
+  } | null;
+  readonly owner: string;
+  readonly progress: number;
+  readonly registryHref: `/app/decisions/${string}`;
+  readonly status: DecisionStatus;
+  readonly title: string;
+};
+
 /**
- * `RecommendationView` carries no metric reference, so the link to a KPI has to
- * be inferred from the recommendation text. Matching on the lens metrics is
- * still far better than the previous positional binding, which paired a
- * recommendation with whatever record happened to share its index.
+ * Command Center has no real "accepted decision" data source yet — the
+ * `/app/decisions/*` module it would come from is itself Storybook-fixture
+ * data today (see `decisionsData.ts`). Demo rows follow the same
+ * `isLocalClientRuntimeAvailable()` gate as the other demo breakdowns in this
+ * module; in a deployed runtime with no such data, the section renders
+ * nothing rather than a fabricated list.
  */
-export function resolveRecommendationRecordForLens(
-  records: readonly CommandCenterRecord[],
-  recommendation: CommandCenterData['recommendations'][number],
-  lensMetricIds: readonly string[],
-): CommandCenterRecord | null {
-  const lensRecords = lensMetricIds
-    .map((metricId) => findRecordById(records, metricId))
-    .filter((record): record is CommandCenterRecord => record !== null);
-
-  const haystack = normalizeLabel(`${recommendation.title} ${recommendation.rationale}`);
-
-  const mentioned = lensRecords.find((record) => (
-    haystack.includes(normalizeLabel(record.label))
-  ));
-
-  return mentioned ?? lensRecords[0] ?? null;
+export function buildDemoCommittedActions(): readonly CommandCommittedAction[] {
+  return [
+    {
+      dueLabel: '18 sie 2026',
+      expectedImpactLabel: '+6–8 tys. zł / mies.',
+      goal: 'Poprawa ROAS o min. +0,8',
+      id: 'committed-meta-budget',
+      measurement: null,
+      owner: 'Anna Kowalska',
+      progress: 1,
+      registryHref: '/app/decisions/rejestr-decyzji',
+      status: 'approved',
+      title: 'Plan działania — Meta Prospecting',
+    },
+    {
+      dueLabel: '24 sie 2026',
+      expectedImpactLabel: '+2–3 tys. zł / mies.',
+      goal: 'Wzrost CTR o +15%',
+      id: 'committed-creative-test',
+      measurement: null,
+      owner: 'Kamil Zieliński',
+      progress: 0.6,
+      registryHref: '/app/decisions/rejestr-decyzji',
+      status: 'executing',
+      title: 'Test kreatywów — Nowi klienci',
+    },
+    {
+      dueLabel: '31 sie 2026',
+      expectedImpactLabel: '+1–2 tys. zł / mies.',
+      goal: 'Wzrost konwersji o +0,3 pp',
+      id: 'committed-pdp-optimization',
+      measurement: null,
+      owner: 'Michał Nowak',
+      progress: 0.2,
+      registryHref: '/app/decisions/rejestr-decyzji',
+      status: 'proposed',
+      title: 'Optymalizacja stron produktowych',
+    },
+  ];
 }
 
-/** True when the recommendation text names any metric owned by the lens. */
-export function isRecommendationInLens(
-  records: readonly CommandCenterRecord[],
-  recommendation: CommandCenterData['recommendations'][number],
-  lensMetricIds: readonly string[],
-): boolean {
-  const haystack = normalizeLabel(`${recommendation.title} ${recommendation.rationale}`);
-
-  return lensMetricIds.some((metricId) => {
-    const record = findRecordById(records, metricId);
-
-    return record !== null && haystack.includes(normalizeLabel(record.label));
-  });
-}
-
-export function resolveRecommendationRecord(
-  records: readonly CommandCenterRecord[],
-  decisions: readonly CommandOnePageDecision[],
-  index: number,
-): CommandCenterRecord | null {
-  const decision = decisions[index] ?? decisions[0] ?? null;
-
-  if (decision) {
-    const matchingRecord = records.find((record) => record.label === decision.metricLabel);
-
-    if (matchingRecord) {
-      return matchingRecord;
-    }
+export function resolveCommittedActionStatusLabel(status: DecisionStatus): string {
+  switch (status) {
+    case 'proposed':
+      return 'W przygotowaniu';
+    case 'approved':
+      return 'Gotowe do wdrożenia';
+    case 'executing':
+      return 'Weryfikacja po wdrożeniu';
+    case 'measured':
+      return 'Zmierzone';
+    case 'rejected':
+      return 'Odrzucone';
+    default:
+      return status;
   }
+}
 
-  const comparable = chooseComparableRecords(records);
-
-  return comparable[index % Math.max(comparable.length, 1)]
-    ?? records[index % Math.max(records.length, 1)]
-    ?? null;
+export function resolveCommittedActionStatusTone(
+  status: DecisionStatus,
+): 'critical' | 'info' | 'neutral' | 'success' | 'warning' {
+  switch (status) {
+    case 'proposed':
+      return 'neutral';
+    case 'approved':
+      return 'success';
+    case 'executing':
+      return 'info';
+    case 'measured':
+      return 'success';
+    case 'rejected':
+      return 'critical';
+    default:
+      return 'neutral';
+  }
 }
 
 export function resolveRecommendationProjectedValue(
@@ -454,6 +591,65 @@ export function buildRecordSparklinePoints(
   });
 }
 
+export type MetricRelationshipPoint = {
+  readonly id: string;
+  readonly label: string;
+  readonly x: number;
+  readonly y: number;
+};
+
+/**
+ * Zips two records' synthesized histories (same technique as
+ * {@link buildRecordSparklinePoints}) into paired (x, y) observations, so a
+ * two-metric relationship chart can be built without the contract carrying
+ * real day-by-day history.
+ */
+export function buildMetricRelationshipPoints(
+  xRecord: CommandCenterRecord,
+  yRecord: CommandCenterRecord,
+  pointCount: number,
+): readonly MetricRelationshipPoint[] {
+  const xValues = buildRecordSparklinePoints(xRecord, pointCount);
+  const yValues = buildRecordSparklinePoints(yRecord, pointCount);
+  const lastIndex = xValues.length - 1;
+
+  return xValues.map((x, index) => ({
+    id: `point-${index}`,
+    label: index === lastIndex ? 'Dziś' : `T-${lastIndex - index}`,
+    x,
+    y: yValues[index] ?? yRecord.value,
+  }));
+}
+
+/** Pearson correlation coefficient; null when it is not defined (<2 points or a constant series). */
+export function resolveCorrelationCoefficient(
+  points: readonly MetricRelationshipPoint[],
+): number | null {
+  if (points.length < 2) {
+    return null;
+  }
+
+  const meanX = points.reduce((sum, point) => sum + point.x, 0) / points.length;
+  const meanY = points.reduce((sum, point) => sum + point.y, 0) / points.length;
+
+  let covariance = 0;
+  let varianceX = 0;
+  let varianceY = 0;
+
+  points.forEach((point) => {
+    const dx = point.x - meanX;
+    const dy = point.y - meanY;
+
+    covariance += dx * dy;
+    varianceX += dx * dx;
+    varianceY += dy * dy;
+  });
+
+  const denominator = Math.sqrt(varianceX * varianceY);
+
+  return denominator === 0 ? null : covariance / denominator;
+}
+
 export function resolveRuntimeForecastValue(record: CommandCenterRecord): number {
   const delta = record.delta ?? 0;
   const targetPressure = record.target === null
@@ -464,6 +660,68 @@ export function resolveRuntimeForecastValue(record: CommandCenterRecord): number
     record.value * (1 + Math.max(Math.min(delta, 0.16), -0.16) * 0.42) + targetPressure,
     record.unit,
   );
+}
+
+export type CommandTrajectoryPoint = {
+  readonly label: string;
+  readonly value: number;
+};
+
+export type CommandTrajectory = {
+  readonly actual: readonly CommandTrajectoryPoint[];
+  readonly forecast: readonly CommandTrajectoryPoint[];
+  readonly lowerBound: readonly CommandTrajectoryPoint[];
+  readonly upperBound: readonly CommandTrajectoryPoint[];
+};
+
+/**
+ * Trajectory for the Plan/Forecast chart: a stylized "so far" line (reusing
+ * {@link buildRecordSparklinePoints}'s interpolation, the same technique
+ * already shipped for MetricCard sparklines — the contract carries no real
+ * day-by-day history) that hands off at "Dziś" to a two-point forecast
+ * segment ending at {@link resolveRuntimeForecastValue}. The forecast's
+ * first point repeats the last actual value so the two lines visually
+ * connect at the handoff label. The uncertainty band pinches to zero at
+ * "Dziś" and widens toward "Koniec okresu" as the unelapsed share of the
+ * date range grows, so an early-period forecast reads as less certain than
+ * one made near the period's end.
+ */
+export function buildRecordTrajectoryPoints(
+  record: CommandCenterRecord,
+  historyPointCount: number,
+  paceRatio: number | null,
+): CommandTrajectory {
+  const historyValues = buildRecordSparklinePoints(record, historyPointCount);
+  const lastIndex = historyValues.length - 1;
+
+  const actual = historyValues.map((value, index) => ({
+    label: index === lastIndex ? 'Dziś' : `T-${lastIndex - index}`,
+    value,
+  }));
+
+  const lastActualValue = historyValues[lastIndex] ?? record.value;
+  const forecastValue = resolveRuntimeForecastValue(record);
+  const remainingRatio = paceRatio === null ? 0.5 : Math.max(Math.min(1 - paceRatio, 1), 0);
+  const spread = Math.max(
+    Math.abs(forecastValue - lastActualValue),
+    Math.abs(forecastValue) * 0.04,
+  ) * (0.5 + remainingRatio);
+
+  return {
+    actual,
+    forecast: [
+      { label: 'Dziś', value: lastActualValue },
+      { label: 'Koniec okresu', value: forecastValue },
+    ],
+    lowerBound: [
+      { label: 'Dziś', value: lastActualValue },
+      { label: 'Koniec okresu', value: clampMetricValue(forecastValue - spread, record.unit) },
+    ],
+    upperBound: [
+      { label: 'Dziś', value: lastActualValue },
+      { label: 'Koniec okresu', value: clampMetricValue(forecastValue + spread, record.unit) },
+    ],
+  };
 }
 
 export function chooseComparableRecords(records: readonly CommandCenterRecord[]): readonly CommandCenterRecord[] {
@@ -506,10 +764,7 @@ export function resolveMetricStateMessage(record: CommandCenterRecord): string |
 export function resolveMetricDeviationLabel(record: CommandCenterRecord): string | null {
   if (record.target === null) return null;
 
-  const difference = record.value - record.target;
-  const sign = difference > 0 ? '+' : difference < 0 ? '-' : '';
-
-  return `${sign}${formatMetricValue(Math.abs(difference), record.unit)}`;
+  return formatSignedMetricValue(record.value - record.target, record.unit);
 }
 
 export function resolveMetricFreshnessLabel(record: CommandCenterRecord): string {
@@ -547,7 +802,11 @@ export function isLowerBetterMetric(record: CommandCenterRecord): boolean {
     || label.includes('odplyw')
     || label.includes('porzuc')
     || label.includes('brak')
-    || label.includes('ryzyko');
+    || label.includes('ryzyko')
+    || label.includes('odrzucone')
+    || label.includes('platnosci')
+    || label.includes('zwroty')
+    || label.includes('bez mapowania');
 }
 
 export function isMetricWorse(record: CommandCenterRecord): boolean {
@@ -558,21 +817,557 @@ export function isMetricWorse(record: CommandCenterRecord): boolean {
     : record.delta < 0;
 }
 
-export function openPapaAssistantForElement(elementId: string): void {
-  openPapaAssistant({ elementId });
+/**
+ * Ranks a record by how much it deserves a human's attention: unresolved
+ * readiness problems first, then the size of an adverse move. Shared by the
+ * Attention section and the legacy (Storybook-only) `CommandCenterWorkspace`
+ * variant screens so both surfaces agree on what counts as urgent.
+ */
+export function attentionWeight(record: CommandCenterRecord): number {
+  const readinessWeight = record.readiness === 'unavailable'
+    ? 4
+    : record.readiness === 'stale'
+      ? 3
+      : record.readiness === 'partial'
+        ? 2
+        : 0;
+  const deltaWeight = isMetricWorse(record)
+    ? Math.abs(record.delta ?? 0) * 10
+    : Math.max(record.delta ?? 0, 0);
+
+  return readinessWeight + deltaWeight;
 }
 
+/**
+ * Classifies a metric into a diagnosis, owner, evidence and next action by
+ * matching its label against known operational areas. This is the same
+ * keyword-driven reasoning already reviewed and shipped for the legacy
+ * per-screen Command Center views (moved here rather than duplicated so the
+ * Attention section and those views share one derivation instead of two
+ * diverging ones). `variant` narrows a couple of legacy, screen-specific
+ * branches; the Attention section omits it and gets the generic fallback.
+ */
+export function getRecordContext(
+  record: CommandCenterRecord,
+  variant?: BusinessScreenDefinition['variant'],
+): CommandRecordContext {
+  const label = normalizeLabel(record.label);
+  const worse = isMetricWorse(record);
+
+  if (
+    label.includes('platnosci')
+    || label.includes('odrzucone')
+  ) {
+    return {
+      businessImpact: 'Ryzyko utraty zakupów',
+      diagnosis: 'Wzrost odrzuceń płatności może zaniżać zakup mimo zdrowego ruchu.',
+      evidenceLabel: 'Bramka płatności, 3DS i błędy checkoutu',
+      nextAction: 'Sprawdź płatności i błędy 3DS',
+      owner: 'Payments / Ops',
+      priority: 'critical',
+      timebox: 'natychmiast',
+    };
+  }
+
+  if (
+    label.includes('konwersja')
+    || label.includes('checkout')
+    || label.includes('koszyk')
+    || variant === 'funnel'
+  ) {
+    return {
+      businessImpact: worse ? 'Ryzyko utraty zamówień' : 'Szansa poprawy zamówień',
+      diagnosis: 'Odchylenie w ścieżce zakupowej bezpośrednio wpływa na wynik okresu.',
+      evidenceLabel: 'GA4 checkout, koszyk, zakup i segment mobile',
+      nextAction: 'Przejrzyj koszyk, checkout i mobile',
+      owner: 'Growth / UX checkout',
+      priority: worse || record.readiness !== 'ready' ? 'high' : 'medium',
+      timebox: 'dzisiaj 12:00',
+    };
+  }
+
+  if (
+    label.includes('ga4')
+    || label.includes('event')
+    || label.includes('swiezosc')
+    || label.includes('kompletnosc')
+  ) {
+    return {
+      businessImpact: 'Ryzyko błędnej interpretacji',
+      diagnosis: 'Niepełne lub opóźnione eventy obniżają zaufanie do decyzji w lejku i kampaniach.',
+      evidenceLabel: 'Kolejka eventów, kompletność i ostatnia synchronizacja',
+      nextAction: 'Zweryfikuj kolejkę eventów GA4',
+      owner: 'Analityka danych',
+      priority: record.readiness === 'stale' ? 'high' : 'medium',
+      timebox: 'dzisiaj 11:00',
+    };
+  }
+
+  if (
+    label.includes('cpa')
+    || label.includes('meta')
+    || label.includes('ads')
+  ) {
+    return {
+      businessImpact: worse ? 'Ryzyko przepalania budżetu' : 'Szansa przesunięcia budżetu',
+      diagnosis: 'Kanał płatny wymaga kontroli kosztu i jakości konwersji przed skalowaniem.',
+      evidenceLabel: 'Koszt, przychód, ROAS i kreacje kampanii',
+      nextAction: 'Sprawdź budżet, CPA i kreacje kampanii',
+      owner: 'Performance marketing',
+      priority: worse || record.readiness !== 'ready' ? 'high' : 'medium',
+      timebox: 'dzisiaj 14:00',
+    };
+  }
+
+  if (
+    label.includes('produkty')
+    || label.includes('bestseller')
+    || label.includes('mapowania')
+    || label.includes('dostepnosc')
+  ) {
+    return {
+      businessImpact: worse ? 'Ryzyko utraty popytu' : 'Szansa zwiększenia marży',
+      diagnosis: 'Problemy katalogu i dostępności ograniczają sprzedaż mimo dobrego ruchu.',
+      evidenceLabel: 'Katalog, feed, marża i dostępność bestsellerów',
+      nextAction: 'Napraw mapowanie i dostępność bestsellerów',
+      owner: 'Katalog produktów',
+      priority: worse || record.readiness !== 'ready' ? 'high' : 'medium',
+      timebox: 'dzisiaj 15:00',
+    };
+  }
+
+  if (
+    label.includes('klien')
+    || label.includes('repeat')
+    || label.includes('powracaj')
+  ) {
+    return {
+      businessImpact: worse ? 'Ryzyko spadku retencji' : 'Szansa retencji',
+      diagnosis: 'Zmiana segmentów klientów wpływa na powtarzalność przychodu i koszt pozyskania.',
+      evidenceLabel: 'Segmenty, kohorty i pseudonimizowane agregaty',
+      nextAction: 'Sprawdź segment powracających klientów',
+      owner: 'CRM / Retencja',
+      priority: worse ? 'high' : 'medium',
+      timebox: 'jutro 10:00',
+    };
+  }
+
+  if (
+    label.includes('marza')
+    || label.includes('mix')
+  ) {
+    return {
+      businessImpact: worse ? 'Ryzyko spadku rentowności' : 'Szansa rentowności',
+      diagnosis: 'Mix produktów i marża pokazują, czy wynik jest zdrowy, a nie tylko większy.',
+      evidenceLabel: 'Marża brutto, mix produktów i przychód',
+      nextAction: 'Utrzymaj ekspozycję produktów wysokomarżowych',
+      owner: 'Merchandising',
+      priority: worse ? 'high' : 'low',
+      timebox: 'w tym tygodniu',
+    };
+  }
+
+  if (
+    label.includes('ai')
+    || label.includes('pewnosc')
+    || label.includes('decyzji')
+  ) {
+    return {
+      businessImpact: worse ? 'Ryzyko słabej automatyzacji' : 'Lepsza jakość decyzji',
+      diagnosis: 'Pewność rekomendacji pokazuje, czy AI ma wystarczające dowody do wsparcia decyzji.',
+      evidenceLabel: 'Dowody, confidence score i zgodność ze źródłami',
+      nextAction: worse
+        ? 'Zwiększ próg akceptacji rekomendacji'
+        : 'Utrzymaj tryb zatwierdzania przez człowieka',
+      owner: 'AI / Analityka decyzji',
+      priority: worse || record.readiness !== 'ready' ? 'high' : 'medium',
+      timebox: 'dzisiaj 16:00',
+    };
+  }
+
+  if (
+    label.includes('google')
+    || label.includes('search')
+    || label.includes('roas')
+    || label.includes('przychod')
+    || label.includes('liczba zamowien')
+  ) {
+    return {
+      businessImpact: worse ? 'Ryzyko spadku wyniku' : 'Stabilny wkład do wyniku',
+      diagnosis: 'Obszar wspiera bieżący wynik, ale nadal wymaga kontroli celu i źródeł.',
+      evidenceLabel: 'Przychód, zamówienia, koszt i cel okresu',
+      nextAction: worse
+        ? 'Sprawdź źródło spadku wyniku'
+        : 'Utrzymaj obecne tempo i monitoruj cel',
+      owner: 'Growth',
+      priority: worse ? 'high' : 'low',
+      timebox: worse ? 'dzisiaj 13:00' : 'monitoring',
+    };
+  }
+
+  return {
+    businessImpact: worse ? 'Ryzyko operacyjne' : 'Monitoring',
+    diagnosis: 'Metryka wymaga oceny w kontekście celu, zakresu i jakości źródeł.',
+    evidenceLabel: 'Wynik, cel i gotowość źródeł danych',
+    nextAction: worse
+      ? 'Sprawdź odchylenie i przypisz właściciela'
+      : 'Monitoruj bez eskalacji',
+    owner: variant === 'command-variants'
+      ? 'Analityka biznesowa'
+      : 'Właściciel obszaru',
+    priority: worse || record.readiness !== 'ready' ? 'medium' : 'low',
+    timebox: worse ? 'dzisiaj' : 'monitoring',
+  };
+}
+
+/**
+ * Top operational decisions across all records: readiness problems and
+ * high/critical-priority moves, ranked by {@link attentionWeight} and
+ * de-duplicated by next-action + owner so near-identical records don't repeat
+ * the same card.
+ */
+export function buildOperationalDecisions(
+  records: readonly CommandCenterRecord[],
+  variant?: BusinessScreenDefinition['variant'],
+): readonly CommandDecision[] {
+  const decisions = [...records]
+    .filter((record) => {
+      const context = getRecordContext(record, variant);
+
+      return record.readiness !== 'ready'
+        || isMetricWorse(record)
+        || context.priority === 'critical'
+        || context.priority === 'high';
+    })
+    .sort((left, right) => (
+      attentionWeight(right) - attentionWeight(left)
+    ))
+    .map((record) => {
+      const context = getRecordContext(record, variant);
+
+      return {
+        ...context,
+        deltaLabel: record.delta === null
+          ? '—'
+          : formatSignedPercent(record.delta),
+        id: record.metricId,
+        metricLabel: record.label,
+        readiness: record.readiness,
+        valueLabel: formatMetricValue(record.value, record.unit),
+      };
+    });
+
+  const seenActions = new Set<string>();
+
+  return decisions.filter((decision) => {
+    const actionKey = normalizeLabel(`${decision.nextAction}-${decision.owner}`);
+
+    if (seenActions.has(actionKey)) {
+      return false;
+    }
+
+    seenActions.add(actionKey);
+    return true;
+  });
+}
+
+/** Ryzyko / Szansa / Dane badge for an Attention card, from its context. */
+export function resolveSignalKind(
+  record: CommandCenterRecord,
+  context: CommandRecordContext,
+): CommandSignalKind {
+  if (record.readiness !== 'ready') return 'data';
+
+  return context.businessImpact.toLocaleLowerCase('pl-PL').startsWith('szansa')
+    || context.businessImpact.toLocaleLowerCase('pl-PL').startsWith('lepsza')
+    ? 'opportunity'
+    : 'risk';
+}
+
+/**
+ * `RecommendationView` carries no integration/provider metadata, and no
+ * write capability exists anywhere in this codebase for ad budgets, catalog
+ * or pricing changes. Every real recommendation therefore resolves to
+ * advisory/available. `guided`/`executable` are modeled so the CTA resolver
+ * below is correct the day that capability exists, but nothing in this
+ * module may produce them from data alone — that would be execution copy for
+ * a runtime that can't execute it.
+ */
+export function resolveRecommendationExecutionState(): RecommendationExecutionState {
+  return {
+    availability: 'available',
+    mode: 'advisory',
+  };
+}
+
+export function resolveRecommendationCtaLabel(state: RecommendationExecutionState): string {
+  if (state.mode === 'guided') {
+    return state.availability === 'available'
+      ? 'Pokaż instrukcję'
+      : 'Wymaga połączenia providera';
+  }
+
+  if (state.mode === 'executable') {
+    return state.availability === 'available'
+      ? 'Sprawdź zmianę'
+      : 'Wymaga zatwierdzenia dostępu';
+  }
+
+  return 'Zobacz plan działania';
+}
+
+/**
+ * `RecommendationView` carries no metric reference (see
+ * {@link resolveRecommendationRecordForLens}), so matching a record to "its"
+ * recommendation is inferred from whether the recommendation text names the
+ * record's label. A signal without a match genuinely has no AI recommendation
+ * yet — the caller must render that honestly, not invent one.
+ */
+export function resolveRecommendationForRecord(
+  recommendations: readonly CommandCenterData['recommendations'][number][],
+  record: CommandCenterRecord,
+): CommandCenterData['recommendations'][number] | null {
+  const label = normalizeLabel(record.label);
+
+  return recommendations.find((recommendation) => (
+    normalizeLabel(`${recommendation.title} ${recommendation.rationale}`).includes(label)
+  )) ?? null;
+}
+
+/** Shared sign+unit formatting for a delta-like value (see {@link resolveMetricDeviationLabel}). */
+export function formatSignedMetricValue(
+  value: number,
+  unit: CommandCenterRecord['unit'],
+): string {
+  const sign = value > 0 ? '+' : value < 0 ? '-' : '';
+
+  return `${sign}${formatMetricValue(Math.abs(value), unit)}`;
+}
+
+/**
+ * The size of the current move in the metric's own unit (value × relative
+ * delta) — the same arithmetic already used to size recommendation
+ * simulations elsewhere in this module, framed here as "what this signal is
+ * worth" rather than fabricated against an unrelated currency.
+ */
+export function resolveSignalImpactValue(record: CommandCenterRecord): number | null {
+  return record.delta === null ? null : record.value * record.delta;
+}
+
+/**
+ * "Jeśli nic nie zrobisz": extrapolates the metric's current trend to the
+ * end of the active date range. Real arithmetic over real inputs (value,
+ * delta, elapsed vs. remaining days) — not a fabricated constant. Returns
+ * `null` when there isn't enough signal (no delta, or the range can't be
+ * parsed) rather than a plausible-looking number.
+ */
+/** Share of the active date range that has already elapsed, in [0, 1]. `null` when the range can't be parsed. */
+export function resolveRangeElapsedRatio(range: DateRange | undefined): number | null {
+  if (!range) {
+    return null;
+  }
+
+  const start = Date.parse(range.from);
+  const end = Date.parse(range.to);
+  const now = Date.now();
+
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) {
+    return null;
+  }
+
+  return Math.max(Math.min((now - start) / (end - start), 1), 0);
+}
+
+export function resolveNoActionProjection(
+  record: CommandCenterRecord,
+  range: DateRange | undefined,
+): CommandNoActionProjection | null {
+  const elapsedRatio = resolveRangeElapsedRatio(range);
+
+  if (record.delta === null || elapsedRatio === null) {
+    return null;
+  }
+
+  const remainingRatio = 1 - elapsedRatio;
+
+  if (remainingRatio <= 0) {
+    return null;
+  }
+
+  // Trend so far, projected forward at the same rate for the rest of the
+  // period, capped so a very early reading can't extrapolate to nonsense.
+  const paceMultiplier = Math.min(remainingRatio / Math.max(elapsedRatio, 0.15), 3);
+  const deltaValue = record.value * record.delta * paceMultiplier;
+
+  return {
+    deltaValue,
+    projectedValue: clampMetricValue(record.value + deltaValue, record.unit),
+  };
+}
+
+const visitSnapshotStorageKeyPrefix = 'papadata.command-center.last-visit.v1';
+
+function resolveVisitSnapshotStorageKey(workspaceId: string): string {
+  return `${visitSnapshotStorageKeyPrefix}.${workspaceId}`;
+}
+
+/** Reads the previous visit's snapshot from `localStorage`, if any. */
+export function readCommandCenterVisitSnapshot(
+  workspaceId: string,
+): CommandCenterVisitSnapshot | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(resolveVisitSnapshotStorageKey(workspaceId));
+
+    if (!raw) {
+      return null;
+    }
+
+    return JSON.parse(raw) as CommandCenterVisitSnapshot;
+  } catch {
+    return null;
+  }
+}
+
+/** Persists the current visit's snapshot for the next visit's diff. */
+export function writeCommandCenterVisitSnapshot(
+  workspaceId: string,
+  snapshot: CommandCenterVisitSnapshot,
+): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(
+      resolveVisitSnapshotStorageKey(workspaceId),
+      JSON.stringify(snapshot),
+    );
+  } catch {
+    // Storage can be unavailable (private mode, quota) — the digest is
+    // optional decoration, never a source of truth.
+  }
+}
+
+export function buildCommandCenterVisitSnapshot(
+  records: readonly CommandCenterRecord[],
+  recommendationCount: number,
+  issueCount: number,
+): CommandCenterVisitSnapshot {
+  const metrics: Record<string, number> = {};
+
+  records.forEach((record) => {
+    metrics[record.metricId] = record.value;
+  });
+
+  return {
+    issueCount,
+    metrics,
+    recommendationCount,
+    savedAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Compares the current visit against the last one seen in this browser and
+ * returns a digest only when there's something worth surfacing — no prior
+ * visit, or no meaningful change, both resolve to `null` so the digest strip
+ * disappears rather than showing an empty or repetitive line.
+ */
+export function resolveCommandCenterVisitDigest(
+  previous: CommandCenterVisitSnapshot | null,
+  current: CommandCenterVisitSnapshot,
+  records: readonly CommandCenterRecord[],
+): CommandCenterVisitDigest | null {
+  if (!previous) {
+    return null;
+  }
+
+  const newRecommendationCount = Math.max(
+    current.recommendationCount - previous.recommendationCount,
+    0,
+  );
+  const newIssueCount = Math.max(current.issueCount - previous.issueCount, 0);
+  const resolvedIssueCount = Math.max(previous.issueCount - current.issueCount, 0);
+
+  const shifts = records
+    .flatMap((record) => {
+      const previousValue = previous.metrics[record.metricId];
+
+      if (previousValue === undefined || previousValue === 0) {
+        return [];
+      }
+
+      const deltaRatio = (record.value - previousValue) / Math.abs(previousValue);
+
+      return Math.abs(deltaRatio) >= 0.03
+        ? [{ deltaRatio, label: record.label, metricId: record.metricId }]
+        : [];
+    })
+    .sort((left, right) => Math.abs(right.deltaRatio) - Math.abs(left.deltaRatio));
+
+  if (
+    newRecommendationCount === 0
+    && newIssueCount === 0
+    && resolvedIssueCount === 0
+    && shifts.length === 0
+  ) {
+    return null;
+  }
+
+  return {
+    newIssueCount,
+    newRecommendationCount,
+    resolvedIssueCount,
+    shifts,
+  };
+}
+
+/**
+ * Canonical Papa Assistant opener. `ProductShellFrame` listens for the
+ * `papadata:papa-assistant` event with this exact detail shape; a previous
+ * version of this module dispatched a differently-named/-shaped event that no
+ * listener consumed, which made every "Zbadaj z Papą" affordance in the
+ * one-page a dead button. Do not diverge the two again.
+ */
 export function openPapaAssistant({
+  action,
   elementId,
+  mode,
 }: {
-  readonly elementId: string;
+  readonly action: 'analyze-screen' | 'open-element' | 'report';
+  readonly elementId?: string;
+  readonly mode: 'element' | 'report' | 'screen';
 }): void {
-  window.dispatchEvent(new CustomEvent('papadata:papa-assistant-open', {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.dispatchEvent(new CustomEvent('papadata:papa-assistant', {
     detail: {
+      action,
       elementId,
-      source: 'command-center',
+      mode,
     },
   }));
+}
+
+export function openPapaAssistantForElement(elementId: string): void {
+  openPapaAssistant({
+    action: 'open-element',
+    elementId,
+    mode: 'element',
+  });
+}
+
+export function openPapaAssistantWithScreenAnalysis(): void {
+  openPapaAssistant({
+    action: 'analyze-screen',
+    mode: 'screen',
+  });
 }
 
 /*

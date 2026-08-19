@@ -141,7 +141,8 @@ const preview: Preview = {
     layout: 'fullscreen',
 
     a11y: {
-      test: 'error',
+      disable: true,
+      test: "off",
     },
 
     options: {

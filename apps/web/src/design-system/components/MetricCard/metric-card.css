@@ -490,3 +490,74 @@
   box-shadow: 0 12px 26px color-mix(in srgb, var(--pd-text-muted) 16%, transparent);
 }
 
+/* papa-kpi-help-start */
+.pd-metric-card__label-group {
+  display: inline-flex;
+  align-items: center;
+  min-inline-size: 0;
+  gap: var(--pd-space-2);
+}
+
+.pd-metric-card__help {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+.pd-metric-card__help-trigger {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  padding: 0;
+  border: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-separator) 82%, transparent);
+  border-radius: var(--pd-radius-pill);
+  background: color-mix(in srgb, var(--pd-surface-raised) 72%, transparent);
+  color: var(--pd-text-muted);
+  font: inherit;
+  font-size: var(--pd-type-size-caption);
+  line-height: 1;
+  cursor: help;
+}
+
+.pd-metric-card__help-trigger:hover,
+.pd-metric-card__help-trigger:focus-visible {
+  border-color: color-mix(in srgb, var(--pd-brand-accent) 64%, var(--pd-separator));
+  color: var(--pd-text);
+  background: color-mix(in srgb, var(--pd-brand-accent) 12%, var(--pd-surface-raised));
+  outline: none;
+}
+
+.pd-metric-card__help-trigger:active {
+  transform: translateY(1px);
+}
+
+.pd-metric-card__help-popover {
+  position: absolute;
+  z-index: 20;
+  inset-block-start: calc(100% + var(--pd-space-2));
+  inset-inline-start: 0;
+  inline-size: min(18rem, calc(100vw - 3rem));
+  padding: var(--pd-space-3);
+  border: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-separator) 86%, transparent);
+  border-radius: var(--pd-radius-control);
+  background: var(--pd-surface-overlay);
+  color: var(--pd-text-secondary);
+  box-shadow: var(--pd-shadow-overlay);
+  font-size: var(--pd-type-size-caption);
+  line-height: var(--pd-line-height-relaxed);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-2px);
+  transition:
+    opacity var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    transform var(--pd-motion-duration-fast) var(--pd-motion-easing-standard);
+}
+
+.pd-metric-card__help:hover .pd-metric-card__help-popover,
+.pd-metric-card__help:focus-within .pd-metric-card__help-popover {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* papa-kpi-help-end */

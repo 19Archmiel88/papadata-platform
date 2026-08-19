@@ -10,10 +10,13 @@ VERSION = "1.0"
 IGNORED_DIRS = {
     '.git', '.hg', '.svn', '.idea', '.vscode', '__pycache__',
     'node_modules', 'dist', 'build', 'coverage', '.next', '.turbo',
-    'storybook-static',
+    'storybook-static', '.runtime',
 }
-IGNORED_SUFFIXES = {'.png', '.jpg', '.jpeg', '.webp', '.pdf', '.zip', '.pyc'}
-IGNORED_FILES = {'MANIFEST.json', 'SHA256SUMS.txt'}
+IGNORED_SUFFIXES = {
+    '.png', '.jpg', '.jpeg', '.webp', '.pdf', '.zip', '.pyc',
+    '.key', '.pem', '.crt', '.csr', '.srl',
+}
+IGNORED_FILES = {'MANIFEST.json', 'SHA256SUMS.txt', '.env.production-parity'}
 
 
 def sha_file(path: Path) -> str:

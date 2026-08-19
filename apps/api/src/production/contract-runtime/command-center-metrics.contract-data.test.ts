@@ -70,40 +70,54 @@ test("plan performance trajectory: table rows are exactly what the chart would p
   assert.ok(plan.forecastTotal > 0);
 });
 
-test("drivers: falls back to contribution-share when a candidate series never varies", () => {
-  const drivers = buildCommandCenterDriversData(tenantId, workspaceId, generatedAt);
+test("drivers: each relationship is exactly correlation or contribution-share, never a fabricated coefficient", () => {
+  const { driverRelationships } = buildCommandCenterDriversData(tenantId, workspaceId, generatedAt);
+  const relationships = [driverRelationships.volume, driverRelationships.efficiency];
 
-  assert.ok(drivers.drivers.length > 0);
+  assert.equal(relationships.length, 2);
 
-  for (const driver of drivers.drivers) {
-    assert.ok(driver.sampleSize > 0);
+  for (const relationship of relationships) {
+    assert.ok(relationship.sampleSize > 0);
+    assert.ok(relationship.points.length > 0, "chart points must be present");
 
-    if (driver.basis === "correlation") {
-      assert.notEqual(driver.coefficient, null);
-      assert.ok(driver.coefficient! >= -1 && driver.coefficient! <= 1, "Pearson r must be within [-1, 1]");
-      assert.equal(driver.contributionShare, null);
+    if (relationship.basis === "correlation") {
+      assert.notEqual(relationship.coefficient, null);
+      assert.ok(relationship.coefficient! >= -1 && relationship.coefficient! <= 1, "Pearson r must be within [-1, 1]");
+      assert.equal(relationship.contributionShare, null);
     } else {
-      assert.equal(driver.basis, "contribution-share");
-      assert.equal(driver.coefficient, null);
-      assert.notEqual(driver.contributionShare, null);
+      assert.equal(relationship.basis, "contribution-share");
+      assert.equal(relationship.coefficient, null);
+      assert.notEqual(relationship.contributionShare, null);
     }
-  }
 
-  // Never both null, never both set — the UI must always be able to tell
-  // which kind of number it's showing.
-  for (const driver of drivers.drivers) {
-    const hasCoefficient = driver.coefficient !== null;
-    const hasShare = driver.contributionShare !== null;
+    // Never both null, never both set — the UI must always be able to tell
+    // which kind of number it's showing.
+    const hasCoefficient = relationship.coefficient !== null;
+    const hasShare = relationship.contributionShare !== null;
     assert.notEqual(hasCoefficient, hasShare);
   }
 });
 
-test("drivers: correlation is computed over genuinely paired series, not independently fabricated ones", () => {
-  const drivers = buildCommandCenterDriversData(tenantId, workspaceId, generatedAt);
-  const correlated = drivers.drivers.filter((driver) => driver.basis === "correlation");
+test("drivers: correlation is computed over genuinely paired series, and chart points match what the coefficient was computed from", () => {
+  const { driverRelationships } = buildCommandCenterDriversData(tenantId, workspaceId, generatedAt);
 
-  // With the 30-day default window every candidate in this fixture has
-  // enough real daily history to correlate — if this regresses to 0, the
-  // deterministic series generator likely stopped producing real variance.
-  assert.ok(correlated.length > 0, "expected at least one real correlation with the default window");
+  // ad_spend and roas both have real day-to-day variation in this fixture,
+  // so efficiency should correlate — if this regresses to contribution-share,
+  // the deterministic series generator likely stopped producing real
+  // variance for one of the two metrics.
+  assert.equal(driverRelationships.efficiency.basis, "correlation");
+
+  // orders count is constant per day in the sandbox fixture template (only
+  // order value varies), so volume honestly has no real variance to
+  // correlate against and must fall back rather than fabricate a
+  // coefficient — this is the fallback path working as intended, not a bug.
+  assert.equal(driverRelationships.volume.basis, "contribution-share");
+
+  // Points are the real daily (x, y) pairs the coefficient was computed
+  // from — not independently resampled, so the chart and the coefficient
+  // can never disagree.
+  for (const point of driverRelationships.efficiency.points) {
+    assert.ok(Number.isFinite(point.x));
+    assert.ok(Number.isFinite(point.y));
+  }
 });

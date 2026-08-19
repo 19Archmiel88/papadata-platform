@@ -1,5 +1,8 @@
 import type {
   CommandCenterRecord,
+  DriverRelationshipPointView,
+  DriverRelationshipView,
+  DriverRelationships,
 } from '../../../../../../contracts/api-schemas';
 import type {
   DataColumn,
@@ -26,16 +29,10 @@ import {
   CommandRuntimeSourceSummary,
   CommandSectionHeader,
 } from './CommandCenterSectionFrame';
-import type {
-  MetricRelationshipPoint,
-} from './commandCenterOnePageModel';
 import {
-  buildMetricRelationshipPoints,
   findRecordById,
   formatMetricValue,
   openPapaAssistantForElement,
-  resolveCorrelationCoefficient,
-  resolveUnitLabel,
 } from './commandCenterOnePageModel';
 
 const driversElementId = 'command-sales-costs';
@@ -117,13 +114,30 @@ type RelationshipCopy = {
 /** |r| below this reads as "no meaningful pattern in this range", not a forced direction. */
 const weakCorrelationThreshold = 0.15;
 
+const contributionSharePercentFormatter = new Intl.NumberFormat('pl-PL', {
+  maximumFractionDigits: 0,
+  style: 'percent',
+});
+
+/**
+ * When the backend had enough real paired history to correlate, this reads
+ * the real coefficient's direction. When it didn't (basis ===
+ * 'contribution-share'), it never guesses a direction — it says so
+ * explicitly and reports the simpler, honestly-labeled deterministic
+ * indicator instead (see command-center-metrics.contract-data.ts on the
+ * backend for how that fallback is computed).
+ */
 function resolveRelationshipInsight(
-  correlation: number | null,
+  relationship: DriverRelationshipView,
   copy: RelationshipCopy,
-): string | null {
-  if (correlation === null) {
-    return null;
+): string {
+  if (relationship.basis === 'contribution-share') {
+    const share = contributionSharePercentFormatter.format(relationship.contributionShare ?? 0);
+
+    return `Za mało realnego zróżnicowania w tym oknie (n=${relationship.sampleSize}), żeby policzyć korelację. Prostszy wskaźnik: ${relationship.yLabel} odpowiada za ${share} łącznej zmiany obu metryk.`;
   }
+
+  const correlation = relationship.coefficient ?? 0;
 
   if (correlation >= weakCorrelationThreshold) {
     return copy.positive;
@@ -139,45 +153,32 @@ function resolveRelationshipInsight(
 function buildRelationshipChart({
   ariaLabel,
   copy,
-  points,
-  xLabel,
-  yLabel,
+  relationship,
 }: {
   readonly ariaLabel: string;
   readonly copy: RelationshipCopy;
-  readonly points: readonly MetricRelationshipPoint[];
-  readonly xLabel: string;
-  readonly yLabel: string;
+  readonly relationship: DriverRelationshipView;
 }) {
-  const correlation = resolveCorrelationCoefficient(points);
+  const isCorrelation = relationship.basis === 'correlation';
 
   return (
     <CorrelationChart
       ariaLabel={ariaLabel}
       className="pd-command-center-one-page__chart-surface"
-      correlation={correlation}
-      driverHypothesis={resolveRelationshipInsight(correlation, copy)}
-      points={points}
-      trendline
+      correlation={isCorrelation ? relationship.coefficient : null}
+      driverHypothesis={resolveRelationshipInsight(relationship, copy)}
+      points={relationship.points}
+      trendline={isCorrelation}
       valueFormatter={formatRelationshipValue}
       variant="relationship"
-      xLabel={xLabel}
-      yLabel={yLabel}
+      xLabel={relationship.xLabel}
+      yLabel={relationship.yLabel}
     />
   );
 }
 
-function resolveAxisLabel(label: string, unit: CommandCenterRecord['unit']): string {
-  const unitLabel = resolveUnitLabel(unit);
-
-  return unitLabel ? `${label} (${unitLabel})` : label;
-}
-
-function buildVolumeCorrelation(records: readonly CommandCenterRecord[]) {
-  const orders = findRecordById(records, 'command-kpi-orders');
-  const aov = findRecordById(records, 'command-kpi-aov');
-
-  if (!orders || !aov) {
+function buildVolumeCorrelation(driverRelationships: DriverRelationships | null) {
+  if (!driverRelationships) {
     return null;
   }
 
@@ -188,17 +189,12 @@ function buildVolumeCorrelation(records: readonly CommandCenterRecord[]) {
       neutral: 'Wolumen zamówień i wartość koszyka zmieniają się w tym zakresie niezależnie od siebie.',
       positive: 'Więcej zamówień idzie w parze z wyższym koszykiem — wzrost napędzają razem wolumen i wartość koszyka.',
     },
-    points: buildMetricRelationshipPoints(orders, aov, relationshipPointCount),
-    xLabel: resolveAxisLabel('Zamówienia', orders.unit),
-    yLabel: resolveAxisLabel('AOV', aov.unit),
+    relationship: driverRelationships.volume,
   });
 }
 
-function buildEfficiencyCorrelation(records: readonly CommandCenterRecord[]) {
-  const adCost = findRecordById(records, 'command-kpi-ad-cost');
-  const roas = findRecordById(records, 'command-kpi-roas');
-
-  if (!adCost || !roas) {
+function buildEfficiencyCorrelation(driverRelationships: DriverRelationships | null) {
+  if (!driverRelationships) {
     return null;
   }
 
@@ -209,25 +205,24 @@ function buildEfficiencyCorrelation(records: readonly CommandCenterRecord[]) {
       neutral: 'ROAS pozostaje stabilny niezależnie od zmian kosztu mediów w tym zakresie.',
       positive: 'Koszt mediów i ROAS rosną razem — skalowanie wydatków nie psuje jeszcze efektywności.',
     },
-    points: buildMetricRelationshipPoints(adCost, roas, relationshipPointCount),
-    xLabel: resolveAxisLabel('Koszt mediów', adCost.unit),
-    yLabel: resolveAxisLabel('ROAS', roas.unit),
+    relationship: driverRelationships.efficiency,
   });
 }
 
 function buildLensVisualization(
   lens: CommandLens,
   records: readonly CommandCenterRecord[],
+  driverRelationships: DriverRelationships | null,
 ) {
   if (lens === 'cost') {
     return buildCostWaterfall(records);
   }
 
   if (lens === 'volume') {
-    return buildVolumeCorrelation(records);
+    return buildVolumeCorrelation(driverRelationships);
   }
 
-  return buildEfficiencyCorrelation(records);
+  return buildEfficiencyCorrelation(driverRelationships);
 }
 
 const metricLensTableColumns: readonly DataColumn[] = [
@@ -257,16 +252,15 @@ function buildRelationshipTableColumns(
   ];
 }
 
+/** Rows built from the exact same `points` the chart plots — a real tabular alternative, never resampled separately. */
 function buildRelationshipTableRows(
-  points: readonly MetricRelationshipPoint[],
-  xRecord: CommandCenterRecord,
-  yRecord: CommandCenterRecord,
+  points: readonly DriverRelationshipPointView[],
 ): readonly DataRow[] {
   return points.map((point) => ({
     id: point.id,
     label: point.label,
-    x: formatMetricValue(point.x, xRecord.unit),
-    y: formatMetricValue(point.y, yRecord.unit),
+    x: formatRelationshipValue(point.x),
+    y: formatRelationshipValue(point.y),
   }));
 }
 
@@ -281,6 +275,7 @@ type LensTable = {
 function buildLensTable(
   lens: CommandLens,
   records: readonly CommandCenterRecord[],
+  driverRelationships: DriverRelationships | null,
 ): LensTable | null {
   if (lens === 'cost') {
     return {
@@ -292,26 +287,18 @@ function buildLensTable(
     };
   }
 
-  const isVolume = lens === 'volume';
-  const xRecord = findRecordById(records, isVolume ? 'command-kpi-orders' : 'command-kpi-ad-cost');
-  const yRecord = findRecordById(records, isVolume ? 'command-kpi-aov' : 'command-kpi-roas');
-
-  if (!xRecord || !yRecord) {
+  if (!driverRelationships) {
     return null;
   }
 
+  const isVolume = lens === 'volume';
+  const relationship = isVolume ? driverRelationships.volume : driverRelationships.efficiency;
+
   return {
     ariaLabel: `Dane liczbowe dla perspektywy: ${isVolume ? 'Zamówienia vs AOV' : 'Koszt vs ROAS'}`,
-    columns: buildRelationshipTableColumns(
-      isVolume ? 'Zamówienia' : 'Koszt mediów',
-      isVolume ? 'AOV' : 'ROAS',
-    ),
+    columns: buildRelationshipTableColumns(relationship.xLabel, relationship.yLabel),
     minWidth: 560,
-    rows: buildRelationshipTableRows(
-      buildMetricRelationshipPoints(xRecord, yRecord, relationshipPointCount),
-      xRecord,
-      yRecord,
-    ),
+    rows: buildRelationshipTableRows(relationship.points),
     sortColumnId: 'x',
   };
 }
@@ -332,18 +319,20 @@ function buildLensItems(
 
 export function CommandCenterDriversSection({
   activeLens,
+  driverRelationships,
   onLensChange,
   records,
   sourceRows,
 }: {
   readonly activeLens: CommandLens;
+  readonly driverRelationships: DriverRelationships | null;
   readonly onLensChange: (lens: CommandLens) => void;
   readonly records: readonly CommandCenterRecord[];
   readonly sourceRows: readonly DataRow[];
 }) {
   const lens = findCommandLens(activeLens);
-  const visualization = buildLensVisualization(activeLens, records);
-  const table = buildLensTable(activeLens, records);
+  const visualization = buildLensVisualization(activeLens, records, driverRelationships);
+  const table = buildLensTable(activeLens, records, driverRelationships);
 
   return (
     <section

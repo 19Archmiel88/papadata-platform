@@ -51,7 +51,9 @@ export interface CohortView { cohortKey: string; users: number; revenue: Money; 
 export interface AttributionView { source: string; model: string; orders: number; revenue: Money; contribution: number; }
 export interface WaterfallItem { key: string; label: string; value: number; cumulativeValue: number; }
 export interface PlanTrajectoryPointView { date: ISODateTime; actual: number | null; plan: number; forecast: number | null; }
-export interface DriverMetricView { metricId: UUID; label: string; basis: 'correlation' | 'contribution-share'; coefficient: number | null; contributionShare: number | null; sampleSize: number; }
+export interface DriverRelationshipPointView { id: string; label: string; x: number; y: number; }
+export interface DriverRelationshipView { xLabel: string; xMetricId: string; yLabel: string; yMetricId: string; basis: 'correlation' | 'contribution-share'; coefficient: number | null; contributionShare: number | null; sampleSize: number; points: DriverRelationshipPointView[]; }
+export interface DriverRelationships { volume: DriverRelationshipView; efficiency: DriverRelationshipView; }
 export interface AccessRecord { tenantId: UUID; workspaceId: UUID; role: AccessRole; capabilities: string[]; resolutionStatus: AccessResolutionStatus; }
 export interface AccessSummary { total: number; ready: number; warning: number; critical: number; updatedAt: ISODateTime; }
 export interface AccessForecast { horizonEnd: ISODateTime; expected: number; lowerBound: number; upperBound: number; confidence: number; }
@@ -561,7 +563,7 @@ export interface CommandCenterDriversReadInput { requestedBy: UUID; effectiveAt:
 export interface CommandCenterDriversReadNextAction { type: 'centerDrivers'; label: string; route: string | null; }
 export interface CommandCenterDriversReadResult { operationId: 'command-center.drivers.read'; completedAt: ISODateTime; domain: 'command-center'; }
 export interface CommandCenterDriversReadRequest { context: ApiContext; dateRange: DateRangeRequest | null; page: PageRequest | null; filters: CommandCenterDriversReadFilters | null; }
-export interface CommandCenterDriversReadData { records: CommandCenterRecord[]; pageInfo: PageInfo; summary: CommandCenterSummary; drivers: DriverMetricView[]; centerDriversResult: CommandCenterDriversReadResult; }
+export interface CommandCenterDriversReadData { records: CommandCenterRecord[]; pageInfo: PageInfo; summary: CommandCenterSummary; driverRelationships: DriverRelationships; centerDriversResult: CommandCenterDriversReadResult; }
 export interface CommandCenterDriversReadResponse { operationId: 'command-center.drivers.read'; correlationId: string; generatedAt: ISODateTime; data: CommandCenterDriversReadData; warnings: ApiProblem[]; }
 export interface CommandCenterFunnelReadFilters { search: string | null; status: string[] | null; source: string[] | null; centerFunnelFilter: string | number | boolean | null; }
 export interface CommandCenterFunnelReadInput { requestedBy: UUID; effectiveAt: ISODateTime | null; centerFunnelValue: string | number | boolean | null; }

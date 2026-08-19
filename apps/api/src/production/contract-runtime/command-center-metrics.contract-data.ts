@@ -175,41 +175,71 @@ export function buildCommandCenterPlanPerformanceData(
   };
 }
 
-const DRIVER_CANDIDATES: readonly {
-  readonly code: DashboardMetricCode;
-  readonly label: string;
-  readonly metricId: string;
-}[] = [
-  { code: "ad_spend", label: "Wydatki na reklamę", metricId: "22222222-2222-4222-8222-222222222201" },
-  { code: "platform_attributed_conversions", label: "Konwersje reklamowe", metricId: "22222222-2222-4222-8222-222222222202" },
-  { code: "aov", label: "Średnia wartość zamówienia", metricId: "22222222-2222-4222-8222-222222222203" },
+const DRIVER_RELATIONSHIP_POINT_DAYS = 14;
+
+type DriverRelationshipDefinition = {
+  readonly key: "efficiency" | "volume";
+  readonly xCode: DashboardMetricCode;
+  readonly xLabel: string;
+  readonly xMetricId: string;
+  readonly yCode: DashboardMetricCode;
+  readonly yLabel: string;
+  readonly yMetricId: string;
+};
+
+const DRIVER_RELATIONSHIPS: readonly DriverRelationshipDefinition[] = [
+  {
+    key: "volume",
+    xCode: "orders",
+    xLabel: "Zamówienia",
+    xMetricId: "22222222-2222-4222-8222-222222222210",
+    yCode: "aov",
+    yLabel: "AOV",
+    yMetricId: "22222222-2222-4222-8222-222222222211",
+  },
+  {
+    key: "efficiency",
+    xCode: "ad_spend",
+    xLabel: "Koszt mediów",
+    xMetricId: "22222222-2222-4222-8222-222222222212",
+    yCode: "roas",
+    yLabel: "ROAS",
+    yMetricId: "22222222-2222-4222-8222-222222222213",
+  },
 ];
 
+export type DriverRelationshipData = {
+  readonly basis: "correlation" | "contribution-share";
+  readonly coefficient: number | null;
+  readonly contributionShare: number | null;
+  readonly points: readonly { readonly id: string; readonly label: string; readonly x: number; readonly y: number }[];
+  readonly sampleSize: number;
+  readonly xLabel: string;
+  readonly xMetricId: string;
+  readonly yLabel: string;
+  readonly yMetricId: string;
+};
+
 /**
- * Result drivers: a real Pearson correlation between each candidate metric's
- * daily series and revenue, both computed by the canonical engine over the
- * same window — never two independently-fabricated series. When there
- * isn't enough real paired history (or a series is flat), falls back to a
- * deterministic contribution-share indicator instead of a fabricated
+ * Result drivers: a real Pearson correlation between two metrics' daily
+ * series, both computed by the canonical engine over the same window and
+ * genuinely paired by date — never two independently-fabricated series (the
+ * old buildMetricRelationshipPoints zipped two unrelated sine waves). When
+ * there isn't enough real paired history or a series is flat, falls back to
+ * a deterministic contribution-share indicator instead of a fabricated
  * coefficient; `basis` tells the UI honestly which one it's looking at.
+ * `points` are the same real daily pairs the chart plots — never resampled
+ * separately from what the coefficient was computed over.
  */
 export function buildCommandCenterDriversData(
   tenantId: string,
   workspaceId: string,
   generatedAt: string,
 ): {
-  readonly drivers: readonly {
-    readonly metricId: string;
-    readonly label: string;
-    readonly basis: "correlation" | "contribution-share";
-    readonly coefficient: number | null;
-    readonly contributionShare: number | null;
-    readonly sampleSize: number;
-  }[];
+  readonly driverRelationships: Record<DriverRelationshipDefinition["key"], DriverRelationshipData>;
 } {
   const codes: readonly DashboardMetricCode[] = [
-    "revenue_after_refunds",
-    ...DRIVER_CANDIDATES.map((candidate) => candidate.code),
+    ...new Set(DRIVER_RELATIONSHIPS.flatMap((relationship) => [relationship.xCode, relationship.yCode])),
   ];
   const input = createMetricEngineSeriesInput({
     days: KPI_WINDOW_DAYS,
@@ -218,50 +248,60 @@ export function buildCommandCenterDriversData(
     workspaceId,
   });
   const { daily } = computeMetricEngineSeries(input, codes);
-  const outcomeSeries = daily.map((day) => numberOrZero(day.values.revenue_after_refunds));
   const sampleSize = daily.length;
 
-  const drivers = DRIVER_CANDIDATES.map((candidate) => {
-    const driverSeries = daily.map((day) => numberOrZero(day.values[candidate.code]));
+  const entries = DRIVER_RELATIONSHIPS.map((relationship) => {
+    const xSeries = daily.map((day) => numberOrZero(day.values[relationship.xCode]));
+    const ySeries = daily.map((day) => numberOrZero(day.values[relationship.yCode]));
     const canCorrelate = sampleSize >= MIN_CORRELATION_SAMPLE_SIZE
-      && hasVariance(driverSeries)
-      && hasVariance(outcomeSeries);
+      && hasVariance(xSeries)
+      && hasVariance(ySeries);
+    const points = daily.slice(-DRIVER_RELATIONSHIP_POINT_DAYS).map((day) => ({
+      id: day.date,
+      label: day.date,
+      x: numberOrZero(day.values[relationship.xCode]),
+      y: numberOrZero(day.values[relationship.yCode]),
+    }));
 
-    if (canCorrelate) {
-      return {
-        basis: "correlation" as const,
-        coefficient: round4(pearsonCorrelation(driverSeries, outcomeSeries)),
-        contributionShare: null,
-        label: candidate.label,
-        metricId: candidate.metricId,
-        sampleSize,
-      };
-    }
+    const data: DriverRelationshipData = canCorrelate
+      ? {
+          basis: "correlation",
+          coefficient: round4(pearsonCorrelation(xSeries, ySeries)),
+          contributionShare: null,
+          points,
+          sampleSize,
+          xLabel: relationship.xLabel,
+          xMetricId: relationship.xMetricId,
+          yLabel: relationship.yLabel,
+          yMetricId: relationship.yMetricId,
+        }
+      : {
+          basis: "contribution-share",
+          coefficient: null,
+          contributionShare: round4(pairContributionShare(xSeries, ySeries)),
+          points,
+          sampleSize,
+          xLabel: relationship.xLabel,
+          xMetricId: relationship.xMetricId,
+          yLabel: relationship.yLabel,
+          yMetricId: relationship.yMetricId,
+        };
 
-    return {
-      basis: "contribution-share" as const,
-      coefficient: null,
-      contributionShare: round4(contributionShare(candidate.code, daily)),
-      label: candidate.label,
-      metricId: candidate.metricId,
-      sampleSize,
-    };
+    return [relationship.key, data] as const;
   });
 
-  return { drivers };
+  return {
+    driverRelationships: Object.fromEntries(entries) as Record<DriverRelationshipDefinition["key"], DriverRelationshipData>,
+  };
 }
 
-function contributionShare(code: DashboardMetricCode, daily: readonly DailyMetricRow[]): number {
-  const deltas = DRIVER_CANDIDATES.map((candidate) =>
-    Math.abs(halfWindowDelta(daily.map((day) => numberOrZero(day.values[candidate.code])))));
-  const totalAbsDelta = deltas.reduce((sum, value) => sum + value, 0);
+/** Deterministic fallback when there isn't enough real variance to correlate: which side of the pair moved more, as a share of their combined movement. */
+function pairContributionShare(xSeries: readonly number[], ySeries: readonly number[]): number {
+  const dx = Math.abs(halfWindowDelta(xSeries));
+  const dy = Math.abs(halfWindowDelta(ySeries));
+  const total = dx + dy;
 
-  if (totalAbsDelta === 0) {
-    return 0;
-  }
-
-  const index = DRIVER_CANDIDATES.findIndex((candidate) => candidate.code === code);
-  return deltas[index] / totalAbsDelta;
+  return total === 0 ? 0 : dy / total;
 }
 
 function halfWindowDelta(series: readonly number[]): number {

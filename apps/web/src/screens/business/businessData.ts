@@ -6,7 +6,7 @@ import type {
   CommandCenterRecord,
   CommandCenterSummary,
   DiagnosticFinding,
-  DriverMetricView,
+  DriverRelationships,
   FunnelStepView,
   PageInfo,
   PlanTrajectoryPointView,
@@ -86,7 +86,7 @@ export type BusinessScreenDefinition = {
 };
 
 export type CommandCenterApiData = {
-  readonly drivers?: readonly DriverMetricView[];
+  readonly driverRelationships?: DriverRelationships;
   readonly forecastMethod?: 'linear-run-rate';
   readonly forecastTotal?: number;
   readonly pageInfo: PageInfo;
@@ -125,7 +125,7 @@ export type BusinessScreenData =
       readonly warnings: readonly ApiProblem[];
     }
   | {
-      readonly drivers: readonly DriverMetricView[] | null;
+      readonly driverRelationships: DriverRelationships | null;
       readonly evidence: readonly EvidenceRef[];
       readonly forecastMethod: 'linear-run-rate' | null;
       readonly forecastTotal: number | null;
@@ -1385,7 +1385,7 @@ export function createStorybookBusinessData(
     ?? commandCenterRecords;
 
   return {
-    drivers: null,
+    driverRelationships: null,
     evidence,
     forecastMethod: null,
     forecastTotal: null,
@@ -1413,7 +1413,7 @@ export function createCommandCenterBusinessData(
   data: CommandCenterApiData,
 ): BusinessScreenData {
   return {
-    drivers: data.drivers ?? null,
+    driverRelationships: data.driverRelationships ?? null,
     evidence: [],
     forecastMethod: data.forecastMethod ?? null,
     forecastTotal: data.forecastTotal ?? null,

@@ -1,3 +1,6 @@
+import {
+  useState,
+} from 'react';
 import type {
   ReactNode,
 } from 'react';
@@ -7,6 +10,7 @@ import type {
 } from '@storybook/react-vite';
 
 import type {
+  DriverRelationships,
   PlanTrajectoryPointView,
 } from '../../../../../../contracts/api-schemas';
 import type {
@@ -17,8 +21,17 @@ import {
   createStorybookBusinessData,
 } from '../../../screens/business';
 import {
+  CommandCenterDriversSection,
+} from '../../../screens/business/command-center/CommandCenterDriversSection';
+import {
   CommandCenterKpiSection,
 } from '../../../screens/business/command-center/CommandCenterKpiSection';
+import {
+  defaultCommandLens,
+} from '../../../screens/business/command-center/commandCenterLens';
+import type {
+  CommandLens,
+} from '../../../screens/business/command-center/commandCenterLens';
 import {
   CommandCenterPlanExecutionSection,
 } from '../../../screens/business/command-center/CommandCenterPlanExecutionSection';
@@ -113,6 +126,69 @@ export const PlanVsForecastSectionStory: Story = {
         planTotal={demoTrajectory.reduce((sum, point) => sum + point.plan, 0)}
         trajectory={demoTrajectory}
       />
+    </SectionCanvas>
+  ),
+};
+
+// Two relationships, deliberately on opposite sides of the basis fork: volume
+// has enough real paired history to correlate; efficiency demonstrates the
+// deterministic contribution-share fallback (sampleSize below the real
+// backend's MIN_CORRELATION_SAMPLE_SIZE) so both honest-labeling paths are
+// visible in this demo, not just the happy path.
+const demoDriverRelationships: DriverRelationships = {
+  efficiency: {
+    basis: 'contribution-share',
+    coefficient: null,
+    contributionShare: 0.63,
+    points: Array.from({ length: 8 }, (_unused, index) => ({
+      id: `efficiency-${index}`,
+      label: `T-${7 - index}`,
+      x: 1_800 + index * 60,
+      y: 3.6 + (index % 3) * 0.15,
+    })),
+    sampleSize: 8,
+    xLabel: 'Koszt mediów',
+    xMetricId: 'demo-ad-spend',
+    yLabel: 'ROAS',
+    yMetricId: 'demo-roas',
+  },
+  volume: {
+    basis: 'correlation',
+    coefficient: 0.42,
+    contributionShare: null,
+    points: Array.from({ length: 14 }, (_unused, index) => ({
+      id: `volume-${index}`,
+      label: `T-${13 - index}`,
+      x: 30 + index * 2 + (index % 4),
+      y: 150 + index * 3 - (index % 3) * 4,
+    })),
+    sampleSize: 14,
+    xLabel: 'Zamówienia',
+    xMetricId: 'demo-orders',
+    yLabel: 'AOV',
+    yMetricId: 'demo-aov',
+  },
+};
+
+function DriversSectionDemo() {
+  const [activeLens, setActiveLens] = useState<CommandLens>(defaultCommandLens);
+
+  return (
+    <CommandCenterDriversSection
+      activeLens={activeLens}
+      driverRelationships={demoDriverRelationships}
+      onLensChange={setActiveLens}
+      records={executiveKpis}
+      sourceRows={[]}
+    />
+  );
+}
+
+export const DriversSectionStory: Story = {
+  name: 'Drivery wyniku',
+  render: () => (
+    <SectionCanvas>
+      <DriversSectionDemo />
     </SectionCanvas>
   ),
 };

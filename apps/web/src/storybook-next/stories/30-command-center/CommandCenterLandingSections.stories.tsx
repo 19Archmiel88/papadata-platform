@@ -35,10 +35,6 @@ const meta = {
     docs: {
       disable: true,
     },
-    a11y: {
-      disable: true,
-      test: 'off',
-    },
     test: {
       disable: true,
     },

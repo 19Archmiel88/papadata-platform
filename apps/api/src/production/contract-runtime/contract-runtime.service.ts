@@ -26,6 +26,16 @@ import type {
 } from "../auth/request-principal.js";
 import { IdentityService } from "../identity/identity.service.js";
 import { IntegrationService } from "../integrations/integration.service.js";
+import {
+  buildCommandCenterDriversData,
+  buildCommandCenterKpiOverrides,
+  buildCommandCenterPlanPerformanceData,
+} from "./command-center-metrics.contract-data.js";
+import {
+  commandCenterRecord,
+  type CommandCenterReadiness,
+  type CommandCenterRuntimeRecord,
+} from "./command-center-record.js";
 
 export type ContractRuntimeRequest = {
   readonly operationId: string;
@@ -225,6 +235,8 @@ export class ContractRuntimeService {
             principal.workspaceId,
           ),
           readRuntimeDateRange(request.query),
+          principal.tenantId,
+          principal.workspaceId,
         ),
         operationId: request.operationId,
       };
@@ -420,6 +432,8 @@ export class ContractRuntimeService {
           request.operationId,
           summary,
           readRuntimeDateRange(request.query),
+          principal.tenantId,
+          principal.workspaceId,
         ),
         operationId: request.operationId,
         implementation: "canonical-dashboard-view-model",
@@ -465,20 +479,6 @@ function accessView(principal: RequestPrincipal, operationId: string): object {
   };
 }
 
-type CommandCenterReadiness = "partial" | "ready" | "stale" | "unavailable";
-
-type CommandCenterMetricUnit = "currency" | "duration" | "number" | "percent" | "ratio";
-
-type CommandCenterRuntimeRecord = {
-  readonly delta: number | null;
-  readonly label: string;
-  readonly metricId: string;
-  readonly readiness: CommandCenterReadiness;
-  readonly target: number | null;
-  readonly unit: CommandCenterMetricUnit;
-  readonly value: number;
-};
-
 type RuntimeDateRange = {
   readonly from: string;
   readonly preset: string | null;
@@ -490,22 +490,17 @@ function commandCenterContractData(
   operationId: string,
   repositorySummary: Readonly<Record<string, unknown>>,
   dateRange: RuntimeDateRange | null,
+  tenantId: string,
+  workspaceId: string,
 ): object {
   const updatedAt = optionalRecordDateString(repositorySummary, "generatedAt")
     ?? new Date().toISOString();
   const sourceReadiness = commandCenterSourceReadiness(repositorySummary.readiness);
   const integrationStreams = collectionLength(repositorySummary.integrationStreams);
   const domainCounts = collectionLength(repositorySummary.domainCounts);
+  const kpi = buildCommandCenterKpiOverrides(tenantId, workspaceId, updatedAt);
   const records: readonly CommandCenterRuntimeRecord[] = [
-    commandCenterRecord(
-      "11111111-1111-4111-8111-111111111101",
-      "Przychód netto",
-      912_400,
-      "currency",
-      0.12,
-      840_000,
-      "ready",
-    ),
+    kpi.revenue,
     commandCenterRecord(
       "11111111-1111-4111-8111-111111111102",
       "Konwersja koszyka",
@@ -515,15 +510,10 @@ function commandCenterContractData(
       0.035,
       "partial",
     ),
-    commandCenterRecord(
-      "11111111-1111-4111-8111-111111111103",
-      "ROAS blended",
-      4.62,
-      "ratio",
-      0.18,
-      4.1,
-      "ready",
-    ),
+    kpi.roas,
+    kpi.orders,
+    kpi.aov,
+    kpi.adSpend,
     commandCenterRecord(
       "11111111-1111-4111-8111-111111111104",
       "Świeżość eventów GA4",
@@ -567,8 +557,16 @@ function commandCenterContractData(
   )).length;
   const critical = records.filter((record) => record.readiness === "unavailable").length;
   const resultKey = commandCenterResultKey(operationId);
+  const planPerformanceExtras = operationId === "command-center.plan-performance.read"
+    ? buildCommandCenterPlanPerformanceData(tenantId, workspaceId, updatedAt)
+    : null;
+  const driversExtras = operationId === "command-center.drivers.read"
+    ? buildCommandCenterDriversData(tenantId, workspaceId, updatedAt)
+    : null;
 
   return {
+    ...(planPerformanceExtras ?? {}),
+    ...(driversExtras ?? {}),
     evidencePolicy: "canonical-and-reconciled-only",
     pageInfo: {
       nextCursor: null,
@@ -685,26 +683,6 @@ function readRuntimeDateRange(query: unknown): RuntimeDateRange | null {
     preset: optionalRecordString(safeQuery, "preset"),
     timezone: optionalRecordString(safeQuery, "timezone"),
     to,
-  };
-}
-
-function commandCenterRecord(
-  metricId: string,
-  label: string,
-  value: number,
-  unit: CommandCenterMetricUnit,
-  delta: number | null,
-  target: number | null,
-  readiness: CommandCenterReadiness,
-): CommandCenterRuntimeRecord {
-  return {
-    delta,
-    label,
-    metricId,
-    readiness,
-    target,
-    unit,
-    value,
   };
 }
 

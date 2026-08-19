@@ -708,6 +708,239 @@ export function createMetricEngineInput(options: {
   };
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Builds a multi-day MetricEngineInput by cloning the sandbox's canonical
+ * fact template once per day, shifting dates into the window and scaling
+ * amounts with a deterministic (non-random) day-of-week + trend curve. This
+ * lets command-center features compute real daily series — via
+ * computeMetricEngineSeries below — over the same formulas/facts the rest of
+ * the metric engine already uses, instead of inventing numbers client-side.
+ */
+export function createMetricEngineSeriesInput(options: {
+  readonly days?: number;
+  readonly generatedAt?: IsoDateTime;
+  readonly tenantId?: string;
+  readonly workspaceId?: string;
+} = {}): MetricEngineInput {
+  const tenantId = options.tenantId ?? "tenant_metrics";
+  const workspaceId = options.workspaceId ?? "workspace_metrics";
+  const days = Math.max(1, options.days ?? 30);
+  const generatedAt = options.generatedAt ?? ("2026-07-20T00:00:00.000Z" as IsoDateTime);
+  const windowEndMs = Date.parse(generatedAt);
+  const windowStartMs = windowEndMs - days * DAY_MS;
+
+  const template = createReadyIntegrationSnapshot(tenantId, workspaceId);
+  const templateAnchorMs = Date.parse("2026-07-19T00:00:00.000Z");
+
+  const canonicalOrders: CanonicalOrderRecord[] = [];
+  const canonicalOrderLines: CanonicalOrderLineRecord[] = [];
+  const canonicalRefunds: CanonicalRefundRecord[] = [];
+  const canonicalCustomerReturns: CanonicalCustomerReturnRecord[] = [];
+  const canonicalAdSpend: CanonicalAdSpendRecord[] = [];
+  const canonicalAttributedConversions: CanonicalAttributedConversionRecord[] = [];
+
+  for (let dayIndex = 0; dayIndex < days; dayIndex += 1) {
+    const dayStartMs = windowStartMs + dayIndex * DAY_MS;
+    const suffix = `d${dayIndex}`;
+    const orderWeight = seriesWeight(dayIndex, days, workspaceId, "orders");
+    const adSpendWeight = seriesWeight(dayIndex, days, workspaceId, "ad_spend");
+    const conversionWeight = seriesWeight(dayIndex, days, workspaceId, "conversions");
+
+    for (const order of template.canonicalOrders) {
+      const newOrderId = `${order.canonicalOrderId}_${suffix}`;
+      canonicalOrders.push({
+        ...order,
+        canonicalOrderId: newOrderId,
+        grossAmount: scaleMoney(order.grossAmount, orderWeight),
+        orderedAt: shiftIso(order.orderedAt, templateAnchorMs, dayStartMs),
+      });
+
+      for (const line of template.canonicalOrderLines) {
+        if (line.canonicalOrderId !== order.canonicalOrderId) {
+          continue;
+        }
+
+        canonicalOrderLines.push({
+          ...line,
+          canonicalLineId: `${line.canonicalLineId}_${suffix}`,
+          canonicalOrderId: newOrderId,
+          grossAmount: scaleMoney(line.grossAmount, orderWeight),
+        });
+      }
+    }
+
+    for (const refund of template.canonicalRefunds) {
+      const newExternalRefundId = `${refund.externalRefundId}_${suffix}`;
+      canonicalRefunds.push({
+        ...refund,
+        canonicalOrderId: refund.canonicalOrderId ? `${refund.canonicalOrderId}_${suffix}` : null,
+        canonicalRefundId: `${refund.canonicalRefundId}_${suffix}`,
+        amount: scaleMoney(refund.amount, orderWeight),
+        externalRefundId: newExternalRefundId,
+        refundedAt: shiftIso(refund.refundedAt, templateAnchorMs, dayStartMs),
+      });
+
+      for (const returned of template.canonicalCustomerReturns) {
+        if (returned.externalRefundId !== refund.externalRefundId) {
+          continue;
+        }
+
+        canonicalCustomerReturns.push({
+          ...returned,
+          canonicalReturnId: `${returned.canonicalReturnId}_${suffix}`,
+          externalRefundId: newExternalRefundId,
+        });
+      }
+    }
+
+    for (const spend of template.canonicalAdSpend) {
+      canonicalAdSpend.push({
+        ...spend,
+        canonicalAdSpendId: `${spend.canonicalAdSpendId}_${suffix}`,
+        clicks: scaleCount(spend.clicks, adSpendWeight),
+        costAmount: scaleMoney(spend.costAmount, adSpendWeight),
+        date: toDateOnly(dayStartMs),
+        impressions: scaleCount(spend.impressions, adSpendWeight),
+      });
+    }
+
+    for (const conversion of template.canonicalAttributedConversions) {
+      canonicalAttributedConversions.push({
+        ...conversion,
+        attributedConversionId: `${conversion.attributedConversionId}_${suffix}`,
+        attributedValueAmount: scaleMoney(conversion.attributedValueAmount, conversionWeight),
+        conversionTime: shiftIso(conversion.conversionTime, templateAnchorMs, dayStartMs),
+        externalConversionId: `${conversion.externalConversionId}_${suffix}`,
+      });
+    }
+  }
+
+  return {
+    canonicalAdSpend,
+    canonicalAttributedConversions,
+    canonicalCustomerReturns,
+    canonicalInventorySnapshots: template.canonicalInventorySnapshots,
+    canonicalOrderLines,
+    canonicalOrders,
+    canonicalProducts: template.canonicalProducts,
+    canonicalRefunds,
+    currency: "PLN",
+    dataIssues: template.dataIssues,
+    generatedAt,
+    periodEnd: toIsoDateTime(windowEndMs),
+    periodStart: toIsoDateTime(windowStartMs),
+    primaryInventorySource: primaryInventorySource(tenantId, workspaceId, "woocommerce", generatedAt),
+    productCosts: readyProductCosts,
+    reconciliationReports: [],
+    syncCheckpoints: template.syncCheckpoints,
+    tenantId,
+    timezone: "Europe/Warsaw",
+    workspaceId,
+  };
+}
+
+/**
+ * Computes both a full-window aggregate and a per-day breakdown for the
+ * given metric codes, over a MetricEngineInput (typically produced by
+ * createMetricEngineSeriesInput). Reuses the same createMetricFacts/
+ * calculateMetric formulas as the rest of the engine — a day is just a
+ * narrower period window over the same canonical facts.
+ */
+export function computeMetricEngineSeries(
+  input: MetricEngineInput,
+  metricCodes: readonly DashboardMetricCode[],
+): {
+  readonly aggregate: Partial<Record<DashboardMetricCode, string | null>>;
+  readonly daily: readonly {
+    readonly date: string;
+    readonly values: Partial<Record<DashboardMetricCode, string | null>>;
+  }[];
+} {
+  const aggregateFacts = createMetricFacts(input);
+  const aggregate: Partial<Record<DashboardMetricCode, string | null>> = {};
+
+  for (const code of metricCodes) {
+    aggregate[code] = calculateMetric(code, input, aggregateFacts).value;
+  }
+
+  const windowStartMs = Date.parse(input.periodStart);
+  const windowEndMs = Date.parse(input.periodEnd);
+  const days = Math.max(1, Math.round((windowEndMs - windowStartMs) / DAY_MS));
+  const daily: {
+    readonly date: string;
+    readonly values: Partial<Record<DashboardMetricCode, string | null>>;
+  }[] = [];
+
+  for (let dayIndex = 0; dayIndex < days; dayIndex += 1) {
+    const dayStartMs = windowStartMs + dayIndex * DAY_MS;
+    const dayInput: MetricEngineInput = {
+      ...input,
+      periodEnd: toIsoDateTime(dayStartMs + DAY_MS),
+      periodStart: toIsoDateTime(dayStartMs),
+    };
+    const dayFacts = createMetricFacts(dayInput);
+    const values: Partial<Record<DashboardMetricCode, string | null>> = {};
+
+    for (const code of metricCodes) {
+      values[code] = calculateMetric(code, dayInput, dayFacts).value;
+    }
+
+    daily.push({ date: toDateOnly(dayStartMs), values });
+  }
+
+  return { aggregate, daily };
+}
+
+function seriesWeight(
+  dayIndex: number,
+  totalDays: number,
+  workspaceId: string,
+  channel: "ad_spend" | "conversions" | "orders",
+): number {
+  const dayOfWeekCurve = [0.84, 0.9, 0.97, 1, 1.08, 1.2, 1.14] as const;
+  const weekday = dayIndex % 7;
+  const seed = (hashSeed(`${workspaceId}:${channel}`) % 1000) / 1000;
+  const trendProgress = totalDays > 1 ? dayIndex / (totalDays - 1) : 0;
+  const trend = 0.9 + trendProgress * 0.25 + seed * 0.1;
+  return dayOfWeekCurve[weekday] * trend;
+}
+
+function hashSeed(value: string): number {
+  let hash = 2166136261;
+
+  for (const char of value) {
+    hash ^= char.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function scaleMoney(amount: string, weight: number): string {
+  const cents = decimalToCents(amount);
+  const scaledCents = BigInt(Math.round(Number(cents) * weight));
+  return centsToDecimal(scaledCents);
+}
+
+function scaleCount(value: number, weight: number): number {
+  return Math.max(0, Math.round(value * weight));
+}
+
+function shiftIso(value: IsoDateTime, anchorMs: number, dayStartMs: number): IsoDateTime {
+  const offsetMs = Date.parse(value) - anchorMs;
+  return toIsoDateTime(dayStartMs + offsetMs);
+}
+
+function toIsoDateTime(ms: number): IsoDateTime {
+  return new Date(ms).toISOString() as IsoDateTime;
+}
+
+function toDateOnly(ms: number): string {
+  return toIsoDateTime(ms).slice(0, 10);
+}
+
 function calculateMetric(
   metricCode: DashboardMetricCode,
   input: MetricEngineInput,

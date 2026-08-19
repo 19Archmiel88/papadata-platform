@@ -11,6 +11,7 @@ import {
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const KPI_WINDOW_DAYS = 30;
+const SPARKLINE_DAYS = 10;
 const MIN_CORRELATION_SAMPLE_SIZE = 14;
 const PLAN_GROWTH_FACTOR = 1.08;
 const PLAN_ACTUAL_DAYS = 21;
@@ -53,6 +54,7 @@ export function buildCommandCenterKpiOverrides(
     workspaceId,
   });
   const { aggregate, daily } = computeMetricEngineSeries(input, codes);
+  const sparkline = (code: DashboardMetricCode) => dailySparkline(daily, code, SPARKLINE_DAYS);
 
   return {
     adSpend: commandCenterRecord(
@@ -63,6 +65,7 @@ export function buildCommandCenterKpiOverrides(
       weekOverWeekDelta(daily, "ad_spend"),
       null,
       "ready",
+      sparkline("ad_spend"),
     ),
     aov: commandCenterRecord(
       "11111111-1111-4111-8111-111111111109",
@@ -72,6 +75,7 @@ export function buildCommandCenterKpiOverrides(
       null,
       null,
       "ready",
+      sparkline("aov"),
     ),
     orders: commandCenterRecord(
       "11111111-1111-4111-8111-111111111108",
@@ -81,6 +85,7 @@ export function buildCommandCenterKpiOverrides(
       weekOverWeekDelta(daily, "orders"),
       null,
       "ready",
+      sparkline("orders"),
     ),
     revenue: commandCenterRecord(
       "11111111-1111-4111-8111-111111111101",
@@ -90,6 +95,7 @@ export function buildCommandCenterKpiOverrides(
       weekOverWeekDelta(daily, "revenue_after_refunds"),
       null,
       "ready",
+      sparkline("revenue_after_refunds"),
     ),
     roas: commandCenterRecord(
       "11111111-1111-4111-8111-111111111103",
@@ -99,8 +105,17 @@ export function buildCommandCenterKpiOverrides(
       null,
       null,
       "ready",
+      sparkline("roas"),
     ),
   };
+}
+
+function dailySparkline(
+  daily: readonly DailyMetricRow[],
+  code: DashboardMetricCode,
+  days: number,
+): readonly number[] {
+  return daily.slice(-days).map((day) => numberOrZero(day.values[code]));
 }
 
 /**

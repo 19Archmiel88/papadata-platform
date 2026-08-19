@@ -72,7 +72,7 @@ export interface CampaignsRecord { campaignId: UUID; name: string; channel: Camp
 export interface CampaignsSummary { total: number; ready: number; warning: number; critical: number; updatedAt: ISODateTime; }
 export interface CampaignsForecast { horizonEnd: ISODateTime; expected: number; lowerBound: number; upperBound: number; confidence: number; }
 export interface CampaignsTimelineEvent { eventId: UUID; occurredAt: ISODateTime; type: string; actorId: UUID | null; description: string; }
-export interface CommandCenterRecord { metricId: UUID; label: string; value: number; unit: MetricUnit; delta: number | null; target: number | null; readiness: ReadinessStatus; }
+export interface CommandCenterRecord { metricId: UUID; label: string; value: number; unit: MetricUnit; delta: number | null; target: number | null; readiness: ReadinessStatus; sparkline?: number[]; }
 export interface CommandCenterSummary { total: number; ready: number; warning: number; critical: number; updatedAt: ISODateTime; }
 export interface CommandCenterForecast { horizonEnd: ISODateTime; expected: number; lowerBound: number; upperBound: number; confidence: number; }
 export interface CommandCenterTimelineEvent { eventId: UUID; occurredAt: ISODateTime; type: string; actorId: UUID | null; description: string; }

@@ -11,7 +11,6 @@ import {
   CommandSectionHeader,
 } from './CommandCenterSectionFrame';
 import {
-  buildRecordSparklinePoints,
   formatMetricValue,
   formatSignedPercent,
   mapReadinessToAnalyticsState,
@@ -170,7 +169,7 @@ function renderKpiCard(
       role="listitem"
       signal={resolveMetricSignal(record)}
       sourceLabel={resolveMetricSourceLabel(record)}
-      sparklinePoints={buildRecordSparklinePoints(record, 10)}
+      sparklinePoints={record.sparkline ?? []}
       status={resolveCommandMetricState(record, dataState)}
       statusLabel={resolveReadinessLabel(record.readiness)}
       targetLabel={formatCommandTargetLabel(record)}

@@ -29,6 +29,12 @@ test("KPI overrides read AOV and ad spend directly, never derive spend from reve
   // two are allowed to differ slightly since revenue here is net-of-refunds
   // while aov's numerator is gross.
   assert.ok(Number.isFinite(kpi.aov.value));
+
+  // Sparklines must be real daily history from the engine, not a
+  // client-side sine-wave stand-in — 10 points, and not all identical
+  // (a flat line would be a red flag that this fell back to a constant).
+  assert.equal(kpi.revenue.sparkline?.length, 10);
+  assert.ok(new Set(kpi.revenue.sparkline).size > 1, "sparkline must show real day-to-day variation");
 });
 
 test("KPI overrides are deterministic for the same inputs", () => {

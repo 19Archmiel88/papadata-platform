@@ -7,6 +7,7 @@ export type CommandCenterRuntimeRecord = {
   readonly label: string;
   readonly metricId: string;
   readonly readiness: CommandCenterReadiness;
+  readonly sparkline?: readonly number[];
   readonly target: number | null;
   readonly unit: CommandCenterMetricUnit;
   readonly value: number;
@@ -20,12 +21,14 @@ export function commandCenterRecord(
   delta: number | null,
   target: number | null,
   readiness: CommandCenterReadiness,
+  sparkline?: readonly number[],
 ): CommandCenterRuntimeRecord {
   return {
     delta,
     label,
     metricId,
     readiness,
+    ...(sparkline ? { sparkline } : {}),
     target,
     unit,
     value,

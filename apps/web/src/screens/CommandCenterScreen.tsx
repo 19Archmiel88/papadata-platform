@@ -51,7 +51,7 @@ export function CommandCenterScreen({
   } = useShellDateRange();
   const definition = useMemo(
     () => (
-      path === '/app' || path.startsWith('/app/command-center')
+      path === '/app' || path === '/app/command-center' || path === '/app/command-center/'
         ? findBusinessScreenDefinition('30.01')
         : findBusinessScreenDefinition(path)
     ),

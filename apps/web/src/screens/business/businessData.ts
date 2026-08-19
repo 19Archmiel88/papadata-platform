@@ -1355,6 +1355,12 @@ export function findBusinessScreenDefinition(
   )) ?? null;
 }
 
+/**
+ * Storybook/demo fixture builder only — the real runtime path
+ * (CommandCenterScreen) uses createCommandCenterBusinessData over the real
+ * API response and shows an error/empty state rather than falling back to
+ * this. Import only from `*.stories.tsx` files.
+ */
 export function createStorybookBusinessData(
   definition: BusinessScreenDefinition,
 ): BusinessScreenData {

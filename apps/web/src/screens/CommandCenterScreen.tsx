@@ -3,16 +3,11 @@ import {
   useMemo,
   useState,
 } from 'react';
-import type {
-  DateRange,
-} from '../../../../contracts/ui-contract-types';
-
 import {
   InlineNotice,
 } from '../design-system';
 import {
   bffClient,
-  isLocalClientRuntimeAvailable,
 } from '../shared/api/bffClient';
 import {
   useShellDateRange,
@@ -23,7 +18,6 @@ import {
 import {
   applyCommandCenterDateRange,
   createCommandCenterBusinessData,
-  createStorybookBusinessData,
   findBusinessScreenDefinition,
 } from './business/businessData';
 import type {
@@ -94,19 +88,10 @@ export function CommandCenterScreen({
         if (!active) return;
 
         if (!isCommandCenterApiData(data)) {
-          if (!isLocalClientRuntimeAvailable()) {
-            setState({
-              data: null,
-              loading: false,
-              problem: 'Centrum Dowodzenia zwróciło dane w nieobsługiwanym formacie.',
-            });
-            return;
-          }
-
           setState({
-            data: localCommandCenterFallback(definition, dateRange),
+            data: null,
             loading: false,
-            problem: null,
+            problem: 'Centrum Dowodzenia zwróciło dane w nieobsługiwanym formacie.',
           });
           return;
         }
@@ -123,15 +108,6 @@ export function CommandCenterScreen({
       })
       .catch((cause) => {
         if (!active) return;
-
-        if (isLocalClientRuntimeAvailable()) {
-          setState({
-            data: localCommandCenterFallback(definition, dateRange),
-            loading: false,
-            problem: null,
-          });
-          return;
-        }
 
         setState({
           data: null,
@@ -168,17 +144,6 @@ export function CommandCenterScreen({
       }}
     />
   );
-}
-
-function localCommandCenterFallback(
-  definition: NonNullable<ReturnType<typeof findBusinessScreenDefinition>>,
-  dateRange: DateRange,
-): BusinessScreenData {
-  const data = createStorybookBusinessData(definition);
-
-  return data.group === 'command-center'
-    ? applyCommandCenterDateRange(data, dateRange)
-    : data;
 }
 
 function isCommandCenterApiData(value: unknown): value is CommandCenterApiData {

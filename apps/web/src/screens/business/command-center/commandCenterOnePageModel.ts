@@ -158,6 +158,8 @@ export function buildExecutiveKpiRecords(
   const orders = findRecordByLabel(records, ['zakup', 'zamowien', 'orders']) ?? null;
   const conversion = findRecordByLabel(records, ['konwersja', 'cvr', 'koszyk']) ?? null;
   const margin = findRecordByLabel(records, ['marza', 'margin']) ?? null;
+  const canonicalAov = findRecordByLabel(records, ['aov']) ?? null;
+  const canonicalAdSpend = findRecordByLabel(records, ['koszt reklam', 'wydatki na reklam', 'ad spend']) ?? null;
 
   const derived: CommandCenterRecord[] = [];
 
@@ -183,8 +185,12 @@ export function buildExecutiveKpiRecords(
   pushMapped(conversion, 'command-kpi-conversion', 'Konwersja');
   pushMapped(roas, 'command-kpi-roas', 'ROAS');
 
-  // AOV, ad cost and CPA are identities, not estimates — safe to derive.
-  if (revenue && orders && orders.value > 0) {
+  // AOV: prefer the canonical `aov` metric read directly from the contract;
+  // revenue / orders is only a fallback, and it's a true identity when both
+  // come from the same response — never an estimate.
+  if (canonicalAov) {
+    pushMapped(canonicalAov, 'command-kpi-aov', 'AOV');
+  } else if (revenue && orders && orders.value > 0) {
     derived.push(makeCommandRecord(
       'command-kpi-aov',
       'AOV',
@@ -196,37 +202,31 @@ export function buildExecutiveKpiRecords(
     ));
   }
 
-  const adCostValue = revenue && roas && roas.value > 0
-    ? revenue.value / roas.value
-    : null;
-
-  if (adCostValue !== null) {
-    derived.push(makeCommandRecord(
-      'command-kpi-ad-cost',
-      'Koszt reklamy',
-      adCostValue,
-      'currency',
-      null,
-      null,
-      resolveDerivedReadiness(revenue?.readiness, roas?.readiness),
-    ));
+  // Ad spend must come from the canonical `ad_spend` metric. It is
+  // deliberately never derived as revenue / ROAS: that would assume ROAS was
+  // computed against the same revenue figure shown here, which the contract
+  // does not guarantee (platform-attributed revenue is a distinct metric
+  // from store revenue). Without a canonical ad_spend record, the KPI simply
+  // does not appear — no invented number stands in for it.
+  if (canonicalAdSpend) {
+    pushMapped(canonicalAdSpend, 'command-kpi-ad-cost', 'Koszt reklamy');
 
     if (orders && orders.value > 0) {
       derived.push(makeCommandRecord(
         'command-kpi-cpa',
         'Koszt zakupu',
-        adCostValue / orders.value,
+        canonicalAdSpend.value / orders.value,
         'currency',
         null,
         null,
-        resolveDerivedReadiness(revenue?.readiness, roas?.readiness, orders.readiness),
+        resolveDerivedReadiness(canonicalAdSpend.readiness, orders.readiness),
       ));
     }
   }
 
   // Anything the contract carries but the mapping above did not claim stays
   // visible in the supporting strip rather than being silently dropped.
-  const claimed = new Set([revenue, orders, margin, conversion, roas]
+  const claimed = new Set([revenue, orders, margin, conversion, roas, canonicalAov, canonicalAdSpend]
     .filter(isCommandCenterRecord)
     .map((record) => record.metricId));
 

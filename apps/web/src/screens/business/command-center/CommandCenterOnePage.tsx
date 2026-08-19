@@ -47,7 +47,12 @@ export function CommandCenterOnePage({
       </CommandSectionAnchor>
 
       <CommandSectionAnchor id="command-section-plan">
-        <CommandCenterPlanExecutionSection />
+        <CommandCenterPlanExecutionSection
+          forecastMethod={data.forecastMethod}
+          forecastTotal={data.forecastTotal}
+          planTotal={data.planTotal}
+          trajectory={data.trajectory ?? []}
+        />
       </CommandSectionAnchor>
     </div>
   );

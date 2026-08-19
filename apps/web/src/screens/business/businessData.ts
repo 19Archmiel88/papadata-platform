@@ -6,8 +6,10 @@ import type {
   CommandCenterRecord,
   CommandCenterSummary,
   DiagnosticFinding,
+  DriverMetricView,
   FunnelStepView,
   PageInfo,
+  PlanTrajectoryPointView,
   RecommendationView,
   WaterfallItem,
 } from '../../../../../contracts/api-schemas';
@@ -84,11 +86,16 @@ export type BusinessScreenDefinition = {
 };
 
 export type CommandCenterApiData = {
+  readonly drivers?: readonly DriverMetricView[];
+  readonly forecastMethod?: 'linear-run-rate';
+  readonly forecastTotal?: number;
   readonly pageInfo: PageInfo;
+  readonly planTotal?: number;
   readonly records: readonly CommandCenterRecord[];
   readonly recommendations?: readonly RecommendationView[];
   readonly steps?: readonly FunnelStepView[];
   readonly summary: CommandCenterSummary;
+  readonly trajectory?: readonly PlanTrajectoryPointView[];
   readonly waterfall?: readonly WaterfallItem[];
 };
 
@@ -118,16 +125,21 @@ export type BusinessScreenData =
       readonly warnings: readonly ApiProblem[];
     }
   | {
+      readonly drivers: readonly DriverMetricView[] | null;
       readonly evidence: readonly EvidenceRef[];
+      readonly forecastMethod: 'linear-run-rate' | null;
+      readonly forecastTotal: number | null;
       readonly funnelSteps: readonly FunnelStepView[];
       readonly generatedAt: string;
       readonly group: 'command-center';
       readonly operationId: string;
       readonly pageInfo: PageInfo;
+      readonly planTotal: number | null;
       readonly records: readonly CommandCenterRecord[];
       readonly recommendations: readonly RecommendationView[];
       readonly sources: readonly DataSourceRef[];
       readonly summary: CommandCenterSummary;
+      readonly trajectory: readonly PlanTrajectoryPointView[] | null;
       readonly waterfall: readonly WaterfallItem[];
       readonly warnings: readonly ApiProblem[];
     };
@@ -1367,7 +1379,10 @@ export function createStorybookBusinessData(
     ?? commandCenterRecords;
 
   return {
+    drivers: null,
     evidence,
+    forecastMethod: null,
+    forecastTotal: null,
     funnelSteps,
     generatedAt,
     group: 'command-center',
@@ -1376,10 +1391,12 @@ export function createStorybookBusinessData(
       ...pageInfo,
       total: records.length,
     },
+    planTotal: null,
     records,
     recommendations,
     sources: dataSources,
     summary: buildStoryCommandSummary(records),
+    trajectory: null,
     warnings: [],
     waterfall,
   };
@@ -1390,16 +1407,21 @@ export function createCommandCenterBusinessData(
   data: CommandCenterApiData,
 ): BusinessScreenData {
   return {
+    drivers: data.drivers ?? null,
     evidence: [],
+    forecastMethod: data.forecastMethod ?? null,
+    forecastTotal: data.forecastTotal ?? null,
     funnelSteps: data.steps ?? [],
     generatedAt: data.summary.updatedAt,
     group: 'command-center',
     operationId: definition.operationId,
     pageInfo: data.pageInfo,
+    planTotal: data.planTotal ?? null,
     records: data.records,
     recommendations: data.recommendations ?? [],
     sources: [],
     summary: data.summary,
+    trajectory: data.trajectory ?? null,
     warnings: [],
     waterfall: data.waterfall ?? [],
   };

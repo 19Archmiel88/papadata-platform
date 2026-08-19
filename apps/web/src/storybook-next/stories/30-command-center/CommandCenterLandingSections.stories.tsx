@@ -7,6 +7,9 @@ import type {
 } from '@storybook/react-vite';
 
 import type {
+  PlanTrajectoryPointView,
+} from '../../../../../../contracts/api-schemas';
+import type {
   AnalyticsDataState,
 } from '../../../design-system';
 import {
@@ -80,8 +83,20 @@ function SectionCanvas({
   );
 }
 
+const demoTrajectory: readonly PlanTrajectoryPointView[] = Array.from({ length: 30 }, (_unused, index) => {
+  const isForecast = index >= 21;
+  const dayValue = 5_200 + index * 145 + (index % 7 === 5 || index % 7 === 6 ? 900 : 0);
+
+  return {
+    actual: isForecast ? null : dayValue,
+    date: new Date(Date.UTC(2026, 6, 20 + index)).toISOString(),
+    forecast: isForecast ? dayValue : null,
+    plan: 5_600 + index * 140,
+  };
+});
+
 export const KpiSectionStory: Story = {
-  name: '30.01 KPI',
+  name: 'KPI',
   render: () => (
     <SectionCanvas>
       <CommandCenterKpiSection
@@ -93,10 +108,15 @@ export const KpiSectionStory: Story = {
 };
 
 export const PlanVsForecastSectionStory: Story = {
-  name: '30.02 Plan vs Prognoza',
+  name: 'Plan vs Prognoza',
   render: () => (
     <SectionCanvas>
-      <CommandCenterPlanExecutionSection />
+      <CommandCenterPlanExecutionSection
+        forecastMethod="linear-run-rate"
+        forecastTotal={demoTrajectory.reduce((sum, point) => sum + (point.actual ?? point.forecast ?? 0), 0)}
+        planTotal={demoTrajectory.reduce((sum, point) => sum + point.plan, 0)}
+        trajectory={demoTrajectory}
+      />
     </SectionCanvas>
   ),
 };

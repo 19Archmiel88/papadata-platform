@@ -2,60 +2,102 @@ import {
   useId,
   useState,
 } from 'react';
+import type {
+  PlanTrajectoryPointView,
+} from '../../../../../../contracts/api-schemas';
 import {
   CommandCenterPlanTrajectoryChart,
 } from './CommandCenterPlanTrajectoryChart';
 import './command-center-plan-execution.css';
 
-const summaryCards = [
-  {
-    helper: '108,6% planu',
-    id: 'result',
-    label: 'Wykonanie',
-    meta: 'Aktualny stan',
-    tone: 'positive',
-    value: '76 033 zł',
-  },
-  {
-    helper: '100% planu',
-    id: 'target',
-    label: 'Cel okresu',
-    meta: 'Cel bazowy',
-    tone: 'neutral',
-    value: '70 000 zł',
-  },
-  {
-    helper: '111,2% celu',
-    id: 'forecast',
-    label: 'Prognoza końcowa',
-    meta: 'Szacunek na koniec',
-    tone: 'accent',
-    value: '77 814 zł',
-  },
-  {
-    helper: 'Bufor ponad plan',
-    id: 'gap',
-    label: 'Gap do celu',
-    meta: '+7 814 zł zapasu',
-    tone: 'positive',
-    value: '+7 814 zł',
-  },
-] as const;
+export type CommandCenterPlanExecutionSectionProps = {
+  readonly forecastMethod: 'linear-run-rate' | null;
+  readonly forecastTotal: number | null;
+  readonly planTotal: number | null;
+  readonly trajectory: readonly PlanTrajectoryPointView[];
+};
 
-const tableRows = [
-  {
-    forecast: '77 814 zł',
-    gap: '+7 814 zł',
-    id: 'revenue',
-    metric: 'Przychód całkowity',
-    result: '76 033 zł',
-    target: '70 000 zł',
-  },
-] as const;
+const currencyFormatter = new Intl.NumberFormat('pl-PL', {
+  currency: 'PLN',
+  maximumFractionDigits: 0,
+  style: 'currency',
+});
 
-export function CommandCenterPlanExecutionSection() {
+const percentFormatter = new Intl.NumberFormat('pl-PL', {
+  maximumFractionDigits: 1,
+  style: 'percent',
+});
+
+const dateFormatter = new Intl.DateTimeFormat('pl-PL', {
+  day: 'numeric',
+  month: 'short',
+});
+
+function formatPercentOfPlan(value: number | null, planTotal: number | null): string | null {
+  if (value === null || planTotal === null || planTotal === 0) {
+    return null;
+  }
+
+  return `${percentFormatter.format(value / planTotal)} planu`;
+}
+
+export function CommandCenterPlanExecutionSection({
+  forecastMethod,
+  forecastTotal,
+  planTotal,
+  trajectory,
+}: CommandCenterPlanExecutionSectionProps) {
   const [isTableVisible, setIsTableVisible] = useState(false);
   const tableId = useId();
+
+  const actualTotal = trajectory.some((point) => point.actual !== null)
+    ? trajectory.reduce((sum, point) => sum + (point.actual ?? 0), 0)
+    : null;
+  const gap = forecastTotal !== null && planTotal !== null
+    ? forecastTotal - planTotal
+    : null;
+  const resultLabel = formatPercentOfPlan(actualTotal, planTotal);
+  const forecastLabel = formatPercentOfPlan(forecastTotal, planTotal);
+  const statusAbovePlan = gap !== null && gap >= 0;
+
+  const summaryCards = [
+    {
+      helper: resultLabel,
+      id: 'result',
+      label: 'Wykonanie',
+      meta: 'Suma zamówień do dziś',
+      tone: 'neutral' as const,
+      value: actualTotal,
+    },
+    {
+      helper: null,
+      id: 'target',
+      label: 'Cel okresu',
+      meta: 'Plan',
+      tone: 'neutral' as const,
+      value: planTotal,
+    },
+    {
+      helper: forecastLabel,
+      id: 'forecast',
+      label: 'Prognoza końcowa',
+      meta: forecastMethod === 'linear-run-rate'
+        ? 'Ekstrapolacja liniowa bieżącego tempa'
+        : 'Szacunek na koniec okresu',
+      tone: 'accent' as const,
+      value: forecastTotal,
+    },
+    {
+      helper: null,
+      id: 'gap',
+      label: 'Gap do celu',
+      meta: gap === null
+        ? 'Brak danych'
+        : gap >= 0 ? 'Bufor ponad plan' : 'Poniżej planu',
+      tone: gap === null ? 'neutral' as const : gap >= 0 ? 'positive' as const : 'negative' as const,
+      value: gap,
+    },
+  ];
 
   return (
     <section
@@ -70,11 +112,16 @@ export function CommandCenterPlanExecutionSection() {
           Plan vs Prognoza
         </h2>
 
-        <div className="pd-command-plan-section__status">
-          <span className="pd-command-plan-section__status-dot" />
-          <span>Status: powyżej celu</span>
-          <strong>111,2%</strong>
-        </div>
+        {gap !== null ? (
+          <div className="pd-command-plan-section__status">
+            <span
+              className="pd-command-plan-section__status-dot"
+              data-tone={statusAbovePlan ? 'positive' : 'negative'}
+            />
+            <span>{statusAbovePlan ? 'Status: powyżej celu' : 'Status: poniżej celu'}</span>
+            {forecastLabel ? <strong>{forecastLabel}</strong> : null}
+          </div>
+        ) : null}
       </div>
 
       <div className="pd-command-plan-section__summary">
@@ -89,11 +136,11 @@ export function CommandCenterPlanExecutionSection() {
             </p>
 
             <p className="pd-command-plan-summary-card__value">
-              {card.value}
+              {card.value === null ? '—' : currencyFormatter.format(card.value)}
             </p>
 
             <div className="pd-command-plan-summary-card__meta">
-              <span>{card.helper}</span>
+              {card.helper ? <span>{card.helper}</span> : null}
               <span>{card.meta}</span>
             </div>
           </article>
@@ -108,7 +155,7 @@ export function CommandCenterPlanExecutionSection() {
             </h3>
 
             <p className="pd-command-plan-trajectory__description">
-              Kumulacja przychodu, plan okresu i projekcja końca miesiąca.
+              Kumulacja przychodu, plan okresu i projekcja końca okresu.
             </p>
           </div>
 
@@ -123,7 +170,7 @@ export function CommandCenterPlanExecutionSection() {
           </button>
         </div>
 
-        <CommandCenterPlanTrajectoryChart />
+        <CommandCenterPlanTrajectoryChart trajectory={trajectory} />
 
         {isTableVisible ? (
           <div
@@ -131,7 +178,7 @@ export function CommandCenterPlanExecutionSection() {
             id={tableId}
           >
             <div className="pd-command-plan-table__header">
-              <span>Szczegółowa tabela trajektorii planu</span>
+              <span>Szczegółowa tabela trajektorii planu — dokładnie te dane, które renderuje wykres powyżej</span>
               <span>Jednostka: PLN</span>
             </div>
 
@@ -139,24 +186,29 @@ export function CommandCenterPlanExecutionSection() {
               <table>
                 <thead>
                   <tr>
-                    <th>Metryka</th>
-                    <th>Wynik</th>
-                    <th>Cel</th>
+                    <th>Data</th>
+                    <th>Wykonanie</th>
+                    <th>Plan</th>
                     <th>Prognoza</th>
-                    <th>Gap do celu</th>
+                    <th>Gap do planu</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {tableRows.map((row) => (
-                    <tr key={row.id}>
-                      <th scope="row">{row.metric}</th>
-                      <td>{row.result}</td>
-                      <td>{row.target}</td>
-                      <td>{row.forecast}</td>
-                      <td>{row.gap}</td>
-                    </tr>
-                  ))}
+                  {trajectory.map((point) => {
+                    const observed = point.actual ?? point.forecast;
+                    const rowGap = observed === null ? null : observed - point.plan;
+
+                    return (
+                      <tr key={point.date}>
+                        <th scope="row">{dateFormatter.format(new Date(point.date))}</th>
+                        <td>{point.actual === null ? '—' : currencyFormatter.format(point.actual)}</td>
+                        <td>{currencyFormatter.format(point.plan)}</td>
+                        <td>{point.forecast === null ? '—' : currencyFormatter.format(point.forecast)}</td>
+                        <td>{rowGap === null ? '—' : currencyFormatter.format(rowGap)}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

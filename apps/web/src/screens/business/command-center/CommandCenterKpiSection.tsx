@@ -142,15 +142,26 @@ function resolveCommandMetricState(
     : mapReadinessToAnalyticsState(record.readiness);
 }
 
+// Revenue is the one KPI the whole grid is oriented around — every other
+// number here explains or feeds into it — so it alone carries the
+// "recommendation" emphasis border. The rest stay density="compact" and
+// visually equal-weight, per MetricCard's own API rather than a bespoke
+// per-card CSS override.
+const primaryKpiMetricId = 'command-kpi-revenue';
+
 function renderKpiCard(
   record: CommandCenterRecord,
   dataState: AnalyticsDataState,
 ) {
+  const isPrimary = record.metricId === primaryKpiMetricId;
+
   return (
     <MetricCard
       className="pd-command-center-one-page__kpi-card"
       comparison={buildMetricComparison(record)}
+      density="compact"
       deviationLabel={resolveMetricDeviationLabel(record)}
+      emphasis={isPrimary ? 'recommendation' : 'default'}
       freshnessLabel={resolveMetricFreshnessLabel(record)}
       helpText={resolveCommandMetricHelpText(record)}
       key={record.metricId}

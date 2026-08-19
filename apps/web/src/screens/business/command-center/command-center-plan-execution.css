@@ -87,9 +87,7 @@
   background:
     radial-gradient(circle at 92% 92%, color-mix(in srgb, var(--pd-plan-card-accent) 12%, transparent), transparent 42%),
     color-mix(in srgb, var(--pd-surface-raised) 92%, transparent);
-  box-shadow:
-    0 18px 48px color-mix(in srgb, var(--pd-shadow-color) 14%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--pd-surface-raised) 12%, transparent);
+  box-shadow: var(--pd-shadow-raised);
 }
 
 .pd-command-plan-summary-card[data-tone='positive'] {
@@ -143,9 +141,7 @@
   background:
     radial-gradient(circle at 78% 12%, color-mix(in srgb, var(--pd-brand-accent) 12%, transparent), transparent 34%),
     color-mix(in srgb, var(--pd-surface-raised) 94%, transparent);
-  box-shadow:
-    0 24px 80px color-mix(in srgb, var(--pd-shadow-color) 18%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--pd-surface-raised) 12%, transparent);
+  box-shadow: var(--pd-shadow-overlay);
 }
 
 .pd-command-plan-trajectory__header {
@@ -234,7 +230,7 @@
   border-radius: 18px;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-panel) 78%, transparent), transparent),
-    color-mix(in srgb, var(--pd-surface-base) 74%, transparent);
+    color-mix(in srgb, var(--pd-surface) 74%, transparent);
 }
 
 .pd-command-plan-trajectory__svg {
@@ -364,34 +360,6 @@
 }
 
 /* papa-plan-chart-stabilized-start */
-.pd-command-plan-section {
-  gap: 0.95rem !important;
-}
-
-.pd-command-plan-section__heading {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  align-items: center !important;
-  gap: 1rem !important;
-  margin: 0 0 0.85rem !important;
-}
-
-.pd-command-plan-section__title {
-  margin: 0 !important;
-  padding: 0 !important;
-  color: var(--pd-text-muted) !important;
-  font-size: 0.78rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.08em !important;
-  line-height: 1 !important;
-  text-transform: uppercase !important;
-}
-
-.pd-command-plan-section__eyebrow,
-.pd-command-plan-section__description {
-  display: none !important;
-}
-
 .pd-command-plan-trajectory__legend {
   display: flex;
   flex-wrap: wrap;

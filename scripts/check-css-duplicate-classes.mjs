@@ -75,9 +75,46 @@ const allowedDuplicateClasses = new Set([
   'pd-metric-card__value-region',
   'pd-metric-card__value',
   'pd-metric-card__comparison',
+  // Command Center KPI grid needs a 2-column value|sparkline layout compact
+  // density doesn't offer — grid-area placement plus label color/metadata
+  // separator are set from command-center-one-page.css; everything else
+  // (sizing/spacing) is left to MetricCard's own density='compact' CSS.
+  'pd-metric-card__label',
+  'pd-metric-card__benchmarks',
+  'pd-metric-card__metadata',
   'pd-spinner',
   'pd-skeleton',
   'pd-skeleton__line',
+  // command-center-vivid.css is a deliberately separate "visual layer" file
+  // (color/glass/glow) kept apart from command-center-one-page.css's
+  // structural layout so it can be reverted independently — see its own
+  // file header. It intentionally re-opens the same selectors to layer
+  // additional declarations, not to fight the structural ones.
+  'pd-command-center-workspace',
+  'pd-command-center-one-page',
+  'pd-command-center-one-page__section',
+  'pd-command-center-one-page__runtime-side-panel',
+  'pd-command-center-one-page__runway-stats',
+  'pd-command-center-one-page__visit-digest',
+  'pd-command-center-one-page__attention-card',
+  'pd-command-center-one-page__attention-card-diagnosis',
+  'pd-command-center-one-page__decision-workspace',
+  'pd-command-center-one-page__runtime-split',
+  'pd-command-center-one-page__runtime-main-analysis',
+  'pd-command-center-one-page__driver-metrics',
+  'pd-command-center-one-page__driver-meter',
+  'pd-command-center-one-page__mosaic',
+  'pd-command-center-one-page__command-bar',
+  'pd-progress-indicator__fill',
+  'pd-waterfall-chart__items',
+  'pd-waterfall-chart__bar',
+  'pd-funnel-chart__steps',
+  'pd-funnel-chart__bar',
+  // #command-section-plan scopes a couple of spacing tweaks onto the Plan
+  // section specifically when reached via in-page anchor navigation; the
+  // base rules stay owned by command-center-plan-execution.css.
+  'pd-command-plan-section',
+  'pd-command-plan-section__heading',
 ]);
 const classPattern = /(?<![\w-])\.([a-zA-Z_][\w-]*)/g;
 

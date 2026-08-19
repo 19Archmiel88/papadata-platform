@@ -355,41 +355,6 @@
   min-width: 0;
 }
 
-.pd-command-center-one-page__kpi-card {
-  min-width: 0;
-  padding: var(--pd-space-4) !important;
-  border: var(--pd-border-width-subtle) solid var(--pd-separator-subtle) !important;
-  border-radius: var(--pd-radius-surface) !important;
-  background: var(--pd-surface-panel) !important;
-  box-shadow: none !important;
-}
-
-/* Tighter internal rhythm than the shared MetricCard default — this grid
-   packs 8 cards above the fold, so every row of "air" is multiplied by 8. */
-.pd-command-center-one-page__kpi-card .pd-metric-card__value-region {
-  margin-block-start: var(--pd-space-2) !important;
-}
-
-.pd-command-center-one-page__kpi-card .pd-metric-card__sparkline {
-  justify-self: end !important;
-  inline-size: min(58%, 8.75rem) !important;
-  block-size: 2.05rem !important;
-  margin-block-start: 0.45rem !important;
-  margin-inline-start: auto !important;
-}
-
-.pd-command-center-one-page__kpi-card .pd-metric-card__benchmarks {
-  margin-block-start: var(--pd-space-2) !important;
-}
-
-.pd-command-center-one-page__kpi-card .pd-metric-card__benchmarks > div {
-  padding-block: var(--pd-space-1) !important;
-}
-
-.pd-command-center-one-page__kpi-card .pd-metric-card__metadata {
-  margin-block-start: var(--pd-space-2) !important;
-}
-
 /* ------------------------------------------------------------
    Plan runway
    ------------------------------------------------------------ */
@@ -1145,8 +1110,7 @@
   border: 0 !important;
 }
 
-.pd-command-center-one-page__section-header span,
-.pd-command-plan-section__title {
+.pd-command-center-one-page__section-header span {
   display: inline-flex !important;
   align-items: center !important;
   margin: 0 !important;
@@ -1169,28 +1133,54 @@
   gap: clamp(12px, 1.35vw, 18px) !important;
 }
 
-.pd-command-center-one-page__kpi-card {
+/*
+ * This grid needs a denser 2-column "value | sparkline" layout that
+ * MetricCard's own depth/density system doesn't offer (its compact mode is
+ * still single-column) — that's the one thing genuinely worth overriding
+ * from outside. Everything density='compact' already handles itself
+ * (value/comparison/sparkline/benchmarks/metadata sizing and spacing, see
+ * MetricCard/metric-card.css) is deliberately NOT duplicated here anymore;
+ * only grid placement plus the handful of properties compact mode doesn't
+ * cover (label color, badge visibility, signal accent, metadata separator)
+ * are set. Compound selectors (.pd-metric-card.…) give this enough
+ * specificity to win over the base/compact rules without !important.
+ */
+/* [data-depth] (attribute presence — always set by MetricCard) bumps this
+   above .pd-metric-card[data-depth='default']'s own (border:0 + a bottom-
+   only rule) so this grid's full bordered/shadowed card wins regardless of
+   CSS bundle order, without !important. Border COLOR is deliberately left
+   to the lower-specificity rule below, so emphasis="recommendation" (which
+   sets border-block-end-color at the same [data-depth='default'][data-
+   emphasis] specificity) still wins for that one property. */
+.pd-metric-card.pd-command-center-one-page__kpi-card[data-depth] {
   --pd-command-kpi-accent: var(--pd-text-muted);
-  display: grid !important;
+  display: grid;
   grid-template-areas:
     "header header"
     "value sparkline"
     "bench bench"
-    "meta meta" !important;
-  grid-template-columns: minmax(0, 1fr) minmax(5rem, 6.2rem) !important;
-  align-content: start !important;
-  gap: 0 !important;
-  min-block-size: 9.5rem !important;
-  padding: clamp(14px, 1.25vw, 18px) !important;
-  overflow: visible !important;
-  border: var(--pd-border-width-subtle, 1px) solid color-mix(in srgb, var(--pd-separator) 46%, transparent) !important;
-  border-radius: 18px !important;
+    "meta meta";
+  grid-template-columns: minmax(0, 1fr) minmax(5rem, 6.2rem);
+  align-content: start;
+  gap: 0;
+  min-block-size: 9.5rem;
+  padding: clamp(14px, 1.25vw, 18px);
+  overflow: visible;
+  border-width: var(--pd-border-width-subtle, 1px);
+  border-style: solid;
+  border-radius: 18px;
   background:
     radial-gradient(circle at 92% 92%, color-mix(in srgb, var(--pd-command-kpi-accent) 12%, transparent), transparent 42%),
-    color-mix(in srgb, var(--pd-surface-raised) 92%, transparent) !important;
-  box-shadow:
-    0 18px 48px color-mix(in srgb, var(--pd-shadow-color) 14%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--pd-surface-base) 12%, transparent) !important;
+    color-mix(in srgb, var(--pd-surface-raised) 92%, transparent);
+  box-shadow: var(--pd-shadow-raised);
+}
+
+/* Lower specificity than metric-card.css's own
+   [data-depth='default'][data-emphasis='recommendation'] rule, so that one
+   still wins its accent border-color; this only supplies the neutral
+   default. */
+.pd-metric-card.pd-command-center-one-page__kpi-card {
+  border-color: color-mix(in srgb, var(--pd-separator) 46%, transparent);
 }
 
 .pd-command-center-one-page__kpi-card[data-signal='positive'] {
@@ -1209,106 +1199,47 @@
   --pd-command-kpi-accent: var(--pd-text-muted);
 }
 
-.pd-command-center-one-page__kpi-card .pd-metric-card__header {
-  grid-area: header !important;
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) !important;
-  align-items: center !important;
-  margin: 0 !important;
+.pd-metric-card.pd-command-center-one-page__kpi-card .pd-metric-card__header {
+  grid-area: header;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  margin: 0;
 }
 
-.pd-command-center-one-page__kpi-card .pd-status-badge,
-.pd-command-center-one-page__kpi-card .pd-metric-card__definition-change {
-  display: none !important;
+.pd-command-center-one-page__kpi-card .pd-status-badge {
+  display: none;
 }
 
-.pd-command-center-one-page__kpi-card .pd-metric-card__label-group {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: var(--pd-space-2, 0.5rem) !important;
+.pd-metric-card.pd-command-center-one-page__kpi-card .pd-metric-card__label {
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-caption, 0.75rem);
 }
 
-.pd-command-center-one-page__kpi-card .pd-metric-card__label {
-  color: var(--pd-text-muted) !important;
-  font-size: var(--pd-type-size-caption, 0.75rem) !important;
+.pd-metric-card.pd-command-center-one-page__kpi-card .pd-metric-card__value-region {
+  grid-area: value;
 }
 
-.pd-command-center-one-page__kpi-card .pd-metric-card__value-region {
-  grid-area: value !important;
-  display: grid !important;
-  gap: 0.16rem !important;
-  align-content: start !important;
-  min-block-size: 0 !important;
-  margin-block-start: 0.66rem !important;
+.pd-metric-card.pd-command-center-one-page__kpi-card .pd-metric-card__sparkline {
+  grid-area: sparkline;
+  justify-self: end;
+  align-self: end;
+  inline-size: min(100%, 5.75rem);
 }
 
-.pd-command-center-one-page__kpi-card .pd-metric-card__value > span {
-  font-size: clamp(1.42rem, 1.7vw, 2rem) !important;
-  font-weight: var(--pd-font-weight-semibold, 600) !important;
-  letter-spacing: -0.045em !important;
+.pd-metric-card.pd-command-center-one-page__kpi-card .pd-metric-card__benchmarks {
+  grid-area: bench;
+  border: 0;
 }
 
-.pd-command-center-one-page__kpi-card .pd-metric-card__comparison {
-  margin: 0 !important;
-  color: var(--pd-text-secondary) !important;
-  font-size: var(--pd-type-size-caption, 0.75rem) !important;
-}
-
-.pd-command-center-one-page__kpi-card .pd-metric-card__sparkline {
-  grid-area: sparkline !important;
-  justify-self: end !important;
-  align-self: end !important;
-  inline-size: min(100%, 5.75rem) !important;
-  block-size: 1.25rem !important;
-  margin: 0 0 0.18rem !important;
-  opacity: 0.72 !important;
-}
-
-.pd-command-center-one-page__kpi-card .pd-metric-card__sparkline-area {
-  opacity: 0.11 !important;
-}
-
-.pd-command-center-one-page__kpi-card .pd-metric-card__sparkline-line {
-  stroke-width: 1.8 !important;
-}
-
-.pd-command-center-one-page__kpi-card .pd-metric-card__benchmarks {
-  grid-area: bench !important;
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: clamp(10px, 1vw, 14px) !important;
-  margin-block-start: 0.68rem !important;
-  border: 0 !important;
-}
-
-.pd-command-center-one-page__kpi-card .pd-metric-card__benchmarks > div,
-.pd-command-center-one-page__kpi-card .pd-metric-card__benchmarks > div + div {
-  display: grid !important;
-  gap: 0.12rem !important;
-  padding: 0 !important;
-  border: 0 !important;
-}
-
-.pd-command-center-one-page__kpi-card .pd-metric-card__benchmarks dt,
-.pd-command-center-one-page__kpi-card .pd-metric-card__benchmarks dd,
-.pd-command-center-one-page__kpi-card .pd-metric-card__metadata {
-  font-size: var(--pd-type-size-caption, 0.75rem) !important;
-  line-height: var(--pd-line-height-normal, 1.4) !important;
-}
-
-.pd-command-center-one-page__kpi-card .pd-metric-card__metadata {
-  grid-area: meta !important;
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  gap: var(--pd-space-2, 0.5rem) !important;
-  margin-block-start: 0.58rem !important;
-  padding-block-start: 0.52rem !important;
-  border-block-start: var(--pd-border-width-subtle, 1px) solid color-mix(in srgb, var(--pd-separator) 28%, transparent) !important;
-  color: var(--pd-text-muted) !important;
+.pd-metric-card.pd-command-center-one-page__kpi-card .pd-metric-card__metadata {
+  grid-area: meta;
+  border-block-start: var(--pd-border-width-subtle, 1px) solid color-mix(in srgb, var(--pd-separator) 28%, transparent);
+  color: var(--pd-text-muted);
 }
 
 .pd-command-center-one-page__kpi-card .pd-metric-card__metadata span + span::before {
-  content: none !important;
+  content: none;
 }
 
 .pd-command-center-one-page__navigation.pd-section-navigation {

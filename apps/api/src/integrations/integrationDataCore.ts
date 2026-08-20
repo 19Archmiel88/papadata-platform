@@ -214,7 +214,7 @@ export type CanonicalOrderRecord = {
   readonly grossAmount: string;
   readonly orderNumber: string;
   readonly orderedAt: IsoDateTime;
-  readonly providerId: "allegro" | "woocommerce";
+  readonly providerId: "allegro" | "baselinker" | "shopify" | "woocommerce";
   readonly sourceAuthorityVersion: typeof SALES_AUTHORITY_VERSION;
   readonly tenantId: string;
   readonly workspaceId: string;
@@ -246,7 +246,7 @@ export type CanonicalRefundRecord = {
   readonly canonicalRefundId: string;
   readonly currency: string;
   readonly externalRefundId: string;
-  readonly providerId: "allegro" | "woocommerce";
+  readonly providerId: "allegro" | "baselinker" | "shopify" | "woocommerce";
   readonly refundedAt: IsoDateTime;
   readonly tenantId: string;
   readonly workspaceId: string;
@@ -265,7 +265,7 @@ export type CanonicalInventorySnapshotRecord = {
   readonly canonicalInventorySnapshotId: string;
   readonly canonicalProductId: string | null;
   readonly externalProductId: string;
-  readonly providerId: "allegro" | "woocommerce";
+  readonly providerId: "allegro" | "baselinker" | "shopify" | "woocommerce";
   readonly quantityAvailable: number;
   readonly snapshotAt: IsoDateTime;
   readonly tenantId: string;
@@ -439,7 +439,7 @@ export type IntegrationDataSnapshot = {
 };
 
 export type PrimaryInventorySourceRecord = {
-  readonly providerId: "allegro" | "woocommerce";
+  readonly providerId: "allegro" | "baselinker" | "shopify" | "woocommerce";
   readonly selectedAt: IsoDateTime;
   readonly tenantId: string;
   readonly workspaceId: string;
@@ -1970,7 +1970,7 @@ function productMappingKey(
 function orderKey(
   tenantId: string,
   workspaceId: string,
-  providerId: "allegro" | "woocommerce",
+  providerId: "allegro" | "baselinker" | "shopify" | "woocommerce",
   orderNumber: string,
 ): string {
   return `${tenantId}:${workspaceId}:${providerId}:${orderNumber}`;
@@ -1979,7 +1979,7 @@ function orderKey(
 function refundKey(
   tenantId: string,
   workspaceId: string,
-  providerId: "allegro" | "woocommerce",
+  providerId: "allegro" | "baselinker" | "shopify" | "woocommerce",
   externalRefundId: string,
 ): string {
   return `${tenantId}:${workspaceId}:${providerId}:${externalRefundId}`;

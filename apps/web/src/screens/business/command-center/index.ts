@@ -16,9 +16,6 @@ export {
   CommandCenterKpiSection,
 } from './CommandCenterKpiSection';
 export {
-  CommandCenterPlanForecastSection,
-} from './CommandCenterPlanForecastSection';
-export {
   CommandCenterDriversSection,
 } from './CommandCenterDriversSection';
 export {

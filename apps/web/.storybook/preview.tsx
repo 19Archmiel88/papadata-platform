@@ -140,9 +140,15 @@ const preview: Preview = {
   parameters: {
     layout: 'fullscreen',
 
+    // Project-wide default: the audit runs and is visible in the a11y panel
+    // for every story, but doesn't hard-fail the build — most of the
+    // catalog hasn't been individually verified against it yet. Areas that
+    // have (e.g. Command Center, see CommandCenter.stories.tsx) opt into
+    // `test: 'error'` themselves. New stories should not opt back out to
+    // 'off'/disable — see docs/specyfikacja-docelowa for the accessibility
+    // bar new work is expected to meet.
     a11y: {
-      disable: true,
-      test: "off",
+      test: 'todo',
     },
 
     options: {

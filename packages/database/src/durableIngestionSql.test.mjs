@@ -20,3 +20,22 @@ test("A04 SQL repository requires reconciliation before succeeded finalization",
   );
   assert.match(productionSource, /status\s*=\s*'passed'/iu);
 });
+
+test("canonical business_time is persisted from canonical occurredAt, not sync observation time", () => {
+  assert.match(
+    productionSource,
+    /nullif\(normalized\.payload\s*->>\s*'occurredAt',\s*''\)::timestamptz/iu,
+  );
+  assert.match(
+    productionSource,
+    /business_time\s*=\s*excluded\.business_time/iu,
+  );
+});
+
+test("canonical reads use occurredAt as the effective business timestamp for historical rows", () => {
+  assert.match(
+    productionSource,
+    /nullif\(canonical_payload\s*->>\s*'occurredAt',\s*''\)::timestamptz[\s\S]{0,120}business_time[\s\S]{0,120}ingested_at/iu,
+  );
+  assert.match(productionSource, /\)\s+as\s+effective_time/iu);
+});

@@ -110,7 +110,7 @@ function createStory(id: CommandCenterStoryId): Story {
         screen.getByRole('heading', { level: 1, name: definition.displayTitle }),
       ).toBeInTheDocument();
       await expect(
-        screen.getByRole('navigation', { name: 'Widoki Centrum Dowodzenia' }),
+        screen.getByRole('navigation', { name: 'Sekcje Centrum Dowodzenia' }),
       ).toBeInTheDocument();
       await expect(
         screen.queryByRole('button', { name: 'Eksportuj widok' }),
@@ -234,7 +234,7 @@ function createStory(id: CommandCenterStoryId): Story {
 
       if (id === '30.14') {
         await expect(
-          screen.getByRole('heading', { name: 'Jak ekran zachowuje się w stanach produkcyjnych' }),
+          screen.getByRole('heading', { name: 'Analiza wariantów' }),
         ).toBeInTheDocument();
       }
     },

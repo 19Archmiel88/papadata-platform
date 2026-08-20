@@ -3,16 +3,11 @@ import {
   useMemo,
   useState,
 } from 'react';
-import type {
-  DateRange,
-} from '../../../../contracts/ui-contract-types';
-
 import {
   InlineNotice,
 } from '../design-system';
 import {
   bffClient,
-  isLocalClientRuntimeAvailable,
 } from '../shared/api/bffClient';
 import {
   useShellDateRange,
@@ -21,10 +16,10 @@ import {
   BusinessScreen,
 } from './business/BusinessScreen';
 import {
-  applyCommandCenterDateRange,
+  commandCenterOnePageDataScreenIds,
   createCommandCenterBusinessData,
-  createStorybookBusinessData,
   findBusinessScreenDefinition,
+  mergeCommandCenterOnePageApiData,
 } from './business/businessData';
 import type {
   BusinessScreenData,
@@ -51,7 +46,7 @@ export function CommandCenterScreen({
   } = useShellDateRange();
   const definition = useMemo(
     () => (
-      path === '/app' || path.startsWith('/app/command-center')
+      path === '/app' || path === '/app/command-center' || path === '/app/command-center/'
         ? findBusinessScreenDefinition('30.01')
         : findBusinessScreenDefinition(path)
     ),
@@ -85,53 +80,60 @@ export function CommandCenterScreen({
       problem: null,
     }));
 
-    bffClient
-      .readDomainScreen<CommandCenterApiData>(
-        definition.apiPath,
-        { dateRange },
-      )
-      .then((data) => {
+    const [kpiScreenId, planScreenId, driversScreenId] = commandCenterOnePageDataScreenIds;
+    const kpiDefinition = findBusinessScreenDefinition(kpiScreenId);
+    const planDefinition = findBusinessScreenDefinition(planScreenId);
+    const driversDefinition = findBusinessScreenDefinition(driversScreenId);
+
+    if (
+      !kpiDefinition
+      || !planDefinition
+      || !driversDefinition
+      || kpiDefinition.group !== 'command-center'
+      || planDefinition.group !== 'command-center'
+      || driversDefinition.group !== 'command-center'
+    ) {
+      setState({
+        data: null,
+        loading: false,
+        problem: 'Brakuje kontraktów danych wymaganych przez landing Centrum Dowodzenia.',
+      });
+      return () => {
+        active = false;
+      };
+    }
+
+    Promise.all([
+      bffClient.readDomainScreen<CommandCenterApiData>(kpiDefinition.apiPath, { dateRange }),
+      bffClient.readDomainScreen<CommandCenterApiData>(planDefinition.apiPath, { dateRange }),
+      bffClient.readDomainScreen<CommandCenterApiData>(driversDefinition.apiPath, { dateRange }),
+    ])
+      .then(([kpiData, planData, driversData]) => {
         if (!active) return;
 
-        if (!isCommandCenterApiData(data)) {
-          if (!isLocalClientRuntimeAvailable()) {
-            setState({
-              data: null,
-              loading: false,
-              problem: 'Centrum Dowodzenia zwróciło dane w nieobsługiwanym formacie.',
-            });
-            return;
-          }
-
+        if (
+          !isCommandCenterApiData(kpiData)
+          || !isCommandCenterApiData(planData)
+          || !isCommandCenterApiData(driversData)
+        ) {
           setState({
-            data: localCommandCenterFallback(definition, dateRange),
+            data: null,
             loading: false,
-            problem: null,
+            problem: 'Centrum Dowodzenia zwróciło dane w nieobsługiwanym formacie.',
           });
           return;
         }
 
-        const commandData = createCommandCenterBusinessData(definition, data);
+        const data = mergeCommandCenterOnePageApiData(kpiData, planData, driversData);
 
         setState({
-          data: commandData.group === 'command-center'
-            ? applyCommandCenterDateRange(commandData, dateRange)
-            : commandData,
+          data: createCommandCenterBusinessData(definition, data),
           loading: false,
           problem: null,
         });
       })
       .catch((cause) => {
         if (!active) return;
-
-        if (isLocalClientRuntimeAvailable()) {
-          setState({
-            data: localCommandCenterFallback(definition, dateRange),
-            loading: false,
-            problem: null,
-          });
-          return;
-        }
 
         setState({
           data: null,
@@ -168,17 +170,6 @@ export function CommandCenterScreen({
       }}
     />
   );
-}
-
-function localCommandCenterFallback(
-  definition: NonNullable<ReturnType<typeof findBusinessScreenDefinition>>,
-  dateRange: DateRange,
-): BusinessScreenData {
-  const data = createStorybookBusinessData(definition);
-
-  return data.group === 'command-center'
-    ? applyCommandCenterDateRange(data, dateRange)
-    : data;
 }
 
 function isCommandCenterApiData(value: unknown): value is CommandCenterApiData {

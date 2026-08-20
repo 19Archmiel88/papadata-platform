@@ -397,7 +397,8 @@ export class ProductDomainRepository {
   async dashboardSummary(tenantId: string, workspaceId: string): Promise<Record<string, unknown>> {
     return this.database.withTenantWorkspace(tenantId, workspaceId, async (client) => {
       const streams = await client.query<{ readonly stream: string; readonly records: number; readonly latest: string | null }>(
-        `select stream, count(*)::int as records, max(observed_at)::text as latest
+        `select stream, count(*)::int as records,
+                coalesce(max(business_time), max(ingested_at))::text as latest
            from app.integration_canonical_records
           where tenant_id = $1::uuid and workspace_id = $2::uuid
           group by stream order by stream`,

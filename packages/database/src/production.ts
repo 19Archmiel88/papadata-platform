@@ -482,6 +482,132 @@ export class IntegrationRepository {
       },
     );
   }
+
+  async listCanonicalRecords(
+    tenantId: string,
+    workspaceId: string,
+    input: {
+      readonly streams: readonly string[];
+      readonly businessTimeFrom: string;
+      readonly businessTimeTo: string;
+    },
+  ): Promise<readonly Record<string, unknown>[]> {
+    return this.database.withTenantWorkspace(
+      tenantId,
+      workspaceId,
+      async (client) => {
+        const result = await client.query<Record<string, unknown>>(
+          `select
+             canonical_record_id as id,
+             provider_id,
+             stream,
+             external_id,
+             canonical_payload,
+             coalesce(
+               nullif(canonical_payload ->> 'occurredAt', '')::timestamptz,
+               business_time,
+               ingested_at
+             ) as effective_time
+           from app.integration_canonical_records
+           where tenant_id = $1
+             and workspace_id = $2
+             and stream = any($3::text[])
+             and coalesce(
+               nullif(canonical_payload ->> 'occurredAt', '')::timestamptz,
+               business_time,
+               ingested_at
+             ) >= $4
+             and coalesce(
+               nullif(canonical_payload ->> 'occurredAt', '')::timestamptz,
+               business_time,
+               ingested_at
+             ) < $5
+           order by coalesce(
+             nullif(canonical_payload ->> 'occurredAt', '')::timestamptz,
+             business_time,
+             ingested_at
+           ) asc`,
+          [tenantId, workspaceId, [...input.streams], input.businessTimeFrom, input.businessTimeTo],
+        );
+
+        return result.rows;
+      },
+    );
+  }
+
+  async listSyncCheckpoints(
+    tenantId: string,
+    workspaceId: string,
+  ): Promise<readonly Record<string, unknown>[]> {
+    return this.database.withTenantWorkspace(
+      tenantId,
+      workspaceId,
+      async (client) => {
+        const result = await client.query<Record<string, unknown>>(
+          `select
+             sync_checkpoint_id as id,
+             checkpoint.*
+           from app.sync_checkpoints as checkpoint
+           where tenant_id = $1
+             and workspace_id = $2
+           order by updated_at desc`,
+          [tenantId, workspaceId],
+        );
+
+        return result.rows;
+      },
+    );
+  }
+
+  async latestReconciliationRun(
+    tenantId: string,
+    workspaceId: string,
+  ): Promise<Record<string, unknown> | null> {
+    return this.database.withTenantWorkspace(
+      tenantId,
+      workspaceId,
+      async (client) => {
+        const result = await client.query<Record<string, unknown>>(
+          `select
+             reconciliation_run_id as id,
+             run.*
+           from app.integration_reconciliation_runs as run
+           where tenant_id = $1
+             and workspace_id = $2
+           order by created_at desc
+           limit 1`,
+          [tenantId, workspaceId],
+        );
+
+        return result.rows[0] ?? null;
+      },
+    );
+  }
+
+  async listOpenDataIssues(
+    tenantId: string,
+    workspaceId: string,
+  ): Promise<readonly Record<string, unknown>[]> {
+    return this.database.withTenantWorkspace(
+      tenantId,
+      workspaceId,
+      async (client) => {
+        const result = await client.query<Record<string, unknown>>(
+          `select
+             data_issue_id as id,
+             issue.*
+           from app.data_issues as issue
+           where tenant_id = $1
+             and workspace_id = $2
+             and status = 'open'
+           order by created_at desc`,
+          [tenantId, workspaceId],
+        );
+
+        return result.rows;
+      },
+    );
+  }
 }
 
 export type IntegrationCredentialMetadata = {
@@ -1031,14 +1157,20 @@ export class DurableIntegrationIngestionRepository {
              source.stream,
              source.external_id,
              normalized.payload,
-             'integration.canonical.v1',
+             coalesce(
+               nullif(normalized.payload ->> 'version', ''),
+               'integration.canonical.v1'
+             ),
              jsonb_build_object(
                'sourceRecordId', source.source_record_id,
                'sourceBatchId', source.source_batch_id,
                'syncJobId', $6::uuid,
                'providerId', source.provider_id
              ),
-             source.provider_updated_at,
+             coalesce(
+               nullif(normalized.payload ->> 'occurredAt', '')::timestamptz,
+               source.provider_updated_at
+             ),
              now(),
              now()
            from app.source_records as source

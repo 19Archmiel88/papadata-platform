@@ -5,21 +5,15 @@ import type {
 } from '../../../../../../contracts/api-schemas';
 import type {
   DataColumn,
-  DataRow,
 } from '../../../../../../contracts/component-shared';
 import type {
-  DataSourceRef,
   DateRange,
 } from '../../../../../../contracts/ui-contract-types';
-import type {
-  AnalyticsDataState,
-} from '../../../design-system';
 import type {
   BusinessScreenData,
   BusinessScreenDefinition,
 } from '../businessData';
 import {
-  formatInteger,
   formatMetricValue,
   formatPercent as formatWorkspacePercent,
   formatSignedPercent,
@@ -36,6 +30,26 @@ export type CommandOnePageIssue = {
   readonly label: string;
   readonly severity: 'critical' | 'warning';
 };
+
+/**
+ * The section anchors the runtime one-page (`CommandCenterOnePage`) actually
+ * renders, in order. Both `CommandCenterOnePage`'s `CommandSectionAnchor` ids
+ * and `CommandCenterWorkspace`'s section-rail navigation are built from this
+ * single list — a section can no longer be wired into the nav rail without
+ * being wired into the page (or vice versa), which is exactly how "Drivery
+ * wyniku" ended up reachable by URL/nav-less-obviously while the one-page
+ * itself rendered only KPI + Plan. Lives here, not in CommandCenterWorkspace
+ * or CommandCenterOnePage, because this module has no CSS/JSX imports and can
+ * be covered by a plain node:test — those two files can't be, in this repo's
+ * current test setup.
+ */
+export const commandCenterOnePageSectionIds = [
+  'command-section-kpi',
+  'command-section-plan',
+  'command-section-drivers',
+] as const;
+
+export type CommandCenterOnePageSectionId = (typeof commandCenterOnePageSectionIds)[number];
 
 export type OperationalPriority =
   | 'critical'
@@ -81,24 +95,6 @@ export type CommandNoActionProjection = {
   readonly projectedValue: number;
 };
 
-export type CommandCenterVisitSnapshot = {
-  readonly issueCount: number;
-  readonly metrics: Readonly<Record<string, number>>;
-  readonly recommendationCount: number;
-  readonly savedAt: string;
-};
-
-export type CommandCenterVisitDigest = {
-  readonly newIssueCount: number;
-  readonly newRecommendationCount: number;
-  readonly resolvedIssueCount: number;
-  readonly shifts: readonly {
-    readonly deltaRatio: number;
-    readonly label: string;
-    readonly metricId: string;
-  }[];
-};
-
 export const sourceColumns: readonly DataColumn[] = [
   { id: 'source', label: 'Nazwa źródła ruchu', sortable: true, width: 240 },
   { align: 'right', id: 'sessions', label: 'Ilość sesji', sortable: true, width: 150 },
@@ -126,27 +122,17 @@ export const productColumns: readonly DataColumn[] = [
   { align: 'right', id: 'change', label: 'Zmiana', sortable: true, width: 120 },
 ];
 
-export const commandColumns: readonly DataColumn[] = [
-  { id: 'label', label: 'Obszar', sortable: true, width: 260 },
-  { align: 'right', id: 'value', label: 'Wynik', sortable: true, width: 150 },
-  { align: 'right', id: 'target', label: 'Cel', sortable: true, width: 150 },
-  { align: 'right', id: 'delta', label: 'Zmiana', sortable: true, width: 120 },
-  { id: 'impact', label: 'Wpływ', sortable: true, width: 240 },
-  { id: 'nextAction', label: 'Następny krok', width: 300 },
-  { id: 'owner', label: 'Właściciel', sortable: true, width: 220 },
-  { id: 'readinessLabel', label: 'Stan danych', sortable: true, width: 160 },
-];
-
 /**
  * Executive KPI set for the one-page.
  *
  * Only metrics that are present in the contract, or that follow from present
- * metrics by real arithmetic (AOV = revenue / orders, ad cost = revenue / ROAS,
- * CPA = ad cost / orders), are emitted. Nothing is invented: a metric without
- * backing simply does not appear, and the sections fall back to their empty
- * states instead of showing a plausible-looking constant.
+ * metrics by a semantically valid identity, are emitted. AOV, ad spend and CPA
+ * come only from their canonical contract records; they are never reconstructed
+ * from neighboring store-wide metrics with different attribution semantics.
+ * Nothing is invented: unavailable metrics stay explicitly unavailable.
  *
- * The demo variant used by fixtures lives in {@link buildDemoExecutiveKpiRecords}.
+ * The demo variant used only by Storybook fixtures lives in
+ * {@link buildDemoExecutiveKpiRecords}.
  */
 export function buildExecutiveKpiRecords(
   records: readonly CommandCenterRecord[],
@@ -158,6 +144,9 @@ export function buildExecutiveKpiRecords(
   const orders = findRecordByLabel(records, ['zakup', 'zamowien', 'orders']) ?? null;
   const conversion = findRecordByLabel(records, ['konwersja', 'cvr', 'koszyk']) ?? null;
   const margin = findRecordByLabel(records, ['marza', 'margin']) ?? null;
+  const canonicalAov = findRecordByLabel(records, ['aov']) ?? null;
+  const canonicalAdSpend = findRecordByLabel(records, ['koszt reklam', 'wydatki na reklam', 'ad spend']) ?? null;
+  const canonicalCpa = findRecordByLabel(records, ['cpa', 'koszt pozyskania', 'koszt zakupu']) ?? null;
 
   const derived: CommandCenterRecord[] = [];
 
@@ -183,50 +172,33 @@ export function buildExecutiveKpiRecords(
   pushMapped(conversion, 'command-kpi-conversion', 'Konwersja');
   pushMapped(roas, 'command-kpi-roas', 'ROAS');
 
-  // AOV, ad cost and CPA are identities, not estimates — safe to derive.
-  if (revenue && orders && orders.value > 0) {
-    derived.push(makeCommandRecord(
-      'command-kpi-aov',
-      'AOV',
-      revenue.value / orders.value,
-      'currency',
-      null,
-      null,
-      resolveDerivedReadiness(revenue.readiness, orders.readiness),
-    ));
+  // AOV's canonical numerator is gross order value. Store revenue shown in
+  // this view is net of refunds, so revenue / orders is not the same metric
+  // and must never be used as a fallback.
+  if (canonicalAov) {
+    pushMapped(canonicalAov, 'command-kpi-aov', 'AOV');
   }
 
-  const adCostValue = revenue && roas && roas.value > 0
-    ? revenue.value / roas.value
-    : null;
+  // Ad spend must come from the canonical `ad_spend` metric. It is
+  // deliberately never derived as revenue / ROAS: that would assume ROAS was
+  // computed against the same revenue figure shown here, which the contract
+  // does not guarantee (platform-attributed revenue is a distinct metric
+  // from store revenue). Without a canonical ad_spend record, the KPI simply
+  // does not appear — no invented number stands in for it.
+  if (canonicalAdSpend) {
+    pushMapped(canonicalAdSpend, 'command-kpi-ad-cost', 'Koszt reklamy');
+  }
 
-  if (adCostValue !== null) {
-    derived.push(makeCommandRecord(
-      'command-kpi-ad-cost',
-      'Koszt reklamy',
-      adCostValue,
-      'currency',
-      null,
-      null,
-      resolveDerivedReadiness(revenue?.readiness, roas?.readiness),
-    ));
-
-    if (orders && orders.value > 0) {
-      derived.push(makeCommandRecord(
-        'command-kpi-cpa',
-        'Koszt zakupu',
-        adCostValue / orders.value,
-        'currency',
-        null,
-        null,
-        resolveDerivedReadiness(revenue?.readiness, roas?.readiness, orders.readiness),
-      ));
-    }
+  // CPA requires ad-attributed acquisitions, not all store orders. The
+  // backend exposes an explicit unavailable CPA record until that source is
+  // ingested; never divide ad spend by every order and call it acquisition.
+  if (canonicalCpa) {
+    pushMapped(canonicalCpa, 'command-kpi-cpa', 'CPA');
   }
 
   // Anything the contract carries but the mapping above did not claim stays
   // visible in the supporting strip rather than being silently dropped.
-  const claimed = new Set([revenue, orders, margin, conversion, roas]
+  const claimed = new Set([revenue, orders, margin, conversion, roas, canonicalAov, canonicalAdSpend, canonicalCpa]
     .filter(isCommandCenterRecord)
     .map((record) => record.metricId));
 
@@ -242,8 +214,8 @@ function isCommandCenterRecord(
 }
 
 /**
- * Demo KPI set — plausible constants for Storybook fixtures and the localhost
- * dev fallback. Never reachable from a deployed runtime.
+ * Demo KPI set — plausible constants for isolated Storybook fixtures only.
+ * Runtime code must always render the BFF-backed records.
  */
 export function buildDemoExecutiveKpiRecords(
   records: readonly CommandCenterRecord[],
@@ -329,131 +301,6 @@ export function resolveDerivedReadiness(
   return 'ready';
 }
 
-const trustAttentionCompletenessThreshold = 0.9;
-
-export type CommandCenterTrustSummary = {
-  readonly attentionSourceCount: number;
-  readonly completenessLabel: string;
-};
-
-/**
- * Aggregate for the Trust line in the command bar — "Dane aktualne · 96%
- * kompletności · 1 źródło wymaga uwagi". This is an aggregate, not the
- * source of truth: individual KPIs and analysis surfaces keep their own
- * local readiness independent of this summary.
- */
-export function resolveTrustSummary(
-  sources: readonly DataSourceRef[],
-): CommandCenterTrustSummary | null {
-  if (sources.length === 0) {
-    return null;
-  }
-
-  const averageCompleteness = sources.reduce(
-    (sum, source) => sum + source.completeness,
-    0,
-  ) / sources.length;
-
-  return {
-    attentionSourceCount: sources.filter(
-      (source) => source.completeness < trustAttentionCompletenessThreshold,
-    ).length,
-    completenessLabel: formatPercent(averageCompleteness),
-  };
-}
-
-export function buildDemoCommandSourceRows(records: readonly CommandCenterRecord[]): readonly DataRow[] {
-  const revenue = findRecordById(records, 'command-kpi-revenue')?.value ?? 0;
-  const model = [
-    ['google', 'Google Ads / Search', 0.34, 0.041, 0.062],
-    ['meta', 'Meta Ads', 0.28, 0.034, 0.038],
-    ['organic', 'Organic Search', 0.24, 0.028, 0.047],
-    ['newsletter', 'Newsletter', 0.08, 0.056, 0.091],
-    ['tiktok', 'TikTok Ads', 0.06, 0.024, 0.029],
-  ] as const;
-
-  return model.map(([id, source, share, cr, ctr], index) => {
-    const rawRevenue = revenue * share;
-    const sessions = Math.max(Math.round(rawRevenue / Math.max(5.8 * (1 + index * 0.12), 1)), 0);
-
-    return {
-      cr: formatPercent(cr),
-      ctr: formatPercent(ctr),
-      id,
-      rawRevenue,
-      revenue: formatMetricValue(rawRevenue, 'currency'),
-      sessions: formatInteger(sessions),
-      share,
-      source,
-      users: formatInteger(Math.round(sessions * 0.79)),
-    };
-  });
-}
-
-export function buildDemoCommandCustomerRows(records: readonly CommandCenterRecord[]): readonly DataRow[] {
-  const revenue = findRecordById(records, 'command-kpi-revenue')?.value ?? 0;
-  const orders = findRecordById(records, 'command-kpi-orders')?.value ?? 0;
-  const returningRevenue = revenue * 0.47;
-  const newRevenue = revenue - returningRevenue;
-  const returningCustomers = Math.max(Math.round(orders * 0.38), 1);
-  const newCustomers = Math.max(Math.round(orders * 0.62), 1);
-
-  return [
-    {
-      arpu: formatMetricValue(returningRevenue / returningCustomers, 'currency'),
-      customers: formatInteger(returningCustomers),
-      frequency: '1,86',
-      id: 'returning',
-      productsPerOrder: '2,6',
-      rawRevenue: returningRevenue,
-      revenue: formatMetricValue(returningRevenue, 'currency'),
-      segment: 'Powracający klienci',
-    },
-    {
-      arpu: formatMetricValue(newRevenue / newCustomers, 'currency'),
-      customers: formatInteger(newCustomers),
-      frequency: '1,08',
-      id: 'new',
-      productsPerOrder: '1,9',
-      rawRevenue: newRevenue,
-      revenue: formatMetricValue(newRevenue, 'currency'),
-      segment: 'Nowi klienci',
-    },
-  ];
-}
-
-export function buildDemoCommandProductRows(records: readonly CommandCenterRecord[]): readonly DataRow[] {
-  const revenue = findRecordById(records, 'command-kpi-revenue')?.value ?? 0;
-  const products = [
-    ['smartfon-x12', 'Smartfon X12', 0.18, 250, 0.15],
-    ['laptop-pro', 'Laptop Pro', 0.24, 105, 0.08],
-    ['sluchawki', 'Słuchawki bezprzewodowe', 0.09, 500, 0.23],
-    ['tablet-air', 'Tablet Air', 0.11, 175, -0.05],
-    ['smartwatch', 'Smartwatch Sport', 0.08, 280, 0.18],
-    ['kamera', 'Kamera bezpieczeństwa', 0.06, 140, 0.02],
-    ['glosnik', 'Głośnik Bluetooth', 0.05, 190, -0.03],
-    ['powerbank', 'Powerbank 20000mAh', 0.04, 360, 0.12],
-    ['drukarka', 'Drukarka laserowa', 0.07, 85, -0.07],
-    ['monitor', 'Monitor 4K', 0.08, 125, 0.1],
-  ] as const;
-
-  return products.map(([id, product, share, quantity, change], index) => {
-    const rawRevenue = revenue * share;
-    const returningShare = 0.52 + (index % 3) * 0.04;
-
-    return {
-      change: formatSignedPercent(change),
-      id,
-      newRevenue: formatMetricValue(rawRevenue * (1 - returningShare), 'currency'),
-      product,
-      quantity: formatInteger(quantity),
-      rawRevenue,
-      returningRevenue: formatMetricValue(rawRevenue * returningShare, 'currency'),
-      revenue: formatMetricValue(rawRevenue, 'currency'),
-    };
-  });
-}
-
 export type CommandCommittedAction = {
   readonly dueLabel: string;
   readonly expectedImpactLabel: string;
@@ -469,55 +316,6 @@ export type CommandCommittedAction = {
   readonly status: DecisionStatus;
   readonly title: string;
 };
-
-/**
- * Command Center has no real "accepted decision" data source yet — the
- * `/app/decisions/*` module it would come from is itself Storybook-fixture
- * data today (see `decisionsData.ts`). Demo rows follow the same
- * `isLocalClientRuntimeAvailable()` gate as the other demo breakdowns in this
- * module; in a deployed runtime with no such data, the section renders
- * nothing rather than a fabricated list.
- */
-export function buildDemoCommittedActions(): readonly CommandCommittedAction[] {
-  return [
-    {
-      dueLabel: '18 sie 2026',
-      expectedImpactLabel: '+6–8 tys. zł / mies.',
-      goal: 'Poprawa ROAS o min. +0,8',
-      id: 'committed-meta-budget',
-      measurement: null,
-      owner: 'Anna Kowalska',
-      progress: 1,
-      registryHref: '/app/decisions/rejestr-decyzji',
-      status: 'approved',
-      title: 'Plan działania — Meta Prospecting',
-    },
-    {
-      dueLabel: '24 sie 2026',
-      expectedImpactLabel: '+2–3 tys. zł / mies.',
-      goal: 'Wzrost CTR o +15%',
-      id: 'committed-creative-test',
-      measurement: null,
-      owner: 'Kamil Zieliński',
-      progress: 0.6,
-      registryHref: '/app/decisions/rejestr-decyzji',
-      status: 'executing',
-      title: 'Test kreatywów — Nowi klienci',
-    },
-    {
-      dueLabel: '31 sie 2026',
-      expectedImpactLabel: '+1–2 tys. zł / mies.',
-      goal: 'Wzrost konwersji o +0,3 pp',
-      id: 'committed-pdp-optimization',
-      measurement: null,
-      owner: 'Michał Nowak',
-      progress: 0.2,
-      registryHref: '/app/decisions/rejestr-decyzji',
-      status: 'proposed',
-      title: 'Optymalizacja stron produktowych',
-    },
-  ];
-}
 
 export function resolveCommittedActionStatusLabel(status: DecisionStatus): string {
   switch (status) {
@@ -572,84 +370,6 @@ export function resolveRecommendationProjectedValue(
     : record.value * (1 + adjustment);
 }
 
-export function buildRecordSparklinePoints(
-  record: CommandCenterRecord,
-  pointCount: number,
-): readonly number[] {
-  const delta = record.delta ?? 0;
-  const start = record.value / Math.max(0.22, 1 + delta);
-  const amplitude = Math.max(Math.abs(record.value) * 0.035, 0.01);
-
-  return Array.from({ length: pointCount }, (_, index) => {
-    const ratio = pointCount <= 1 ? 1 : index / (pointCount - 1);
-    const baseline = interpolateNumber(start, record.value, ratio);
-    const wave = Math.sin((index + 1) * 1.41) * amplitude;
-
-    return index === pointCount - 1
-      ? record.value
-      : clampMetricValue(baseline + wave, record.unit);
-  });
-}
-
-export type MetricRelationshipPoint = {
-  readonly id: string;
-  readonly label: string;
-  readonly x: number;
-  readonly y: number;
-};
-
-/**
- * Zips two records' synthesized histories (same technique as
- * {@link buildRecordSparklinePoints}) into paired (x, y) observations, so a
- * two-metric relationship chart can be built without the contract carrying
- * real day-by-day history.
- */
-export function buildMetricRelationshipPoints(
-  xRecord: CommandCenterRecord,
-  yRecord: CommandCenterRecord,
-  pointCount: number,
-): readonly MetricRelationshipPoint[] {
-  const xValues = buildRecordSparklinePoints(xRecord, pointCount);
-  const yValues = buildRecordSparklinePoints(yRecord, pointCount);
-  const lastIndex = xValues.length - 1;
-
-  return xValues.map((x, index) => ({
-    id: `point-${index}`,
-    label: index === lastIndex ? 'Dziś' : `T-${lastIndex - index}`,
-    x,
-    y: yValues[index] ?? yRecord.value,
-  }));
-}
-
-/** Pearson correlation coefficient; null when it is not defined (<2 points or a constant series). */
-export function resolveCorrelationCoefficient(
-  points: readonly MetricRelationshipPoint[],
-): number | null {
-  if (points.length < 2) {
-    return null;
-  }
-
-  const meanX = points.reduce((sum, point) => sum + point.x, 0) / points.length;
-  const meanY = points.reduce((sum, point) => sum + point.y, 0) / points.length;
-
-  let covariance = 0;
-  let varianceX = 0;
-  let varianceY = 0;
-
-  points.forEach((point) => {
-    const dx = point.x - meanX;
-    const dy = point.y - meanY;
-
-    covariance += dx * dy;
-    varianceX += dx * dx;
-    varianceY += dy * dy;
-  });
-
-  const denominator = Math.sqrt(varianceX * varianceY);
-
-  return denominator === 0 ? null : covariance / denominator;
-}
-
 export function resolveRuntimeForecastValue(record: CommandCenterRecord): number {
   const delta = record.delta ?? 0;
   const targetPressure = record.target === null
@@ -660,68 +380,6 @@ export function resolveRuntimeForecastValue(record: CommandCenterRecord): number
     record.value * (1 + Math.max(Math.min(delta, 0.16), -0.16) * 0.42) + targetPressure,
     record.unit,
   );
-}
-
-export type CommandTrajectoryPoint = {
-  readonly label: string;
-  readonly value: number;
-};
-
-export type CommandTrajectory = {
-  readonly actual: readonly CommandTrajectoryPoint[];
-  readonly forecast: readonly CommandTrajectoryPoint[];
-  readonly lowerBound: readonly CommandTrajectoryPoint[];
-  readonly upperBound: readonly CommandTrajectoryPoint[];
-};
-
-/**
- * Trajectory for the Plan/Forecast chart: a stylized "so far" line (reusing
- * {@link buildRecordSparklinePoints}'s interpolation, the same technique
- * already shipped for MetricCard sparklines — the contract carries no real
- * day-by-day history) that hands off at "Dziś" to a two-point forecast
- * segment ending at {@link resolveRuntimeForecastValue}. The forecast's
- * first point repeats the last actual value so the two lines visually
- * connect at the handoff label. The uncertainty band pinches to zero at
- * "Dziś" and widens toward "Koniec okresu" as the unelapsed share of the
- * date range grows, so an early-period forecast reads as less certain than
- * one made near the period's end.
- */
-export function buildRecordTrajectoryPoints(
-  record: CommandCenterRecord,
-  historyPointCount: number,
-  paceRatio: number | null,
-): CommandTrajectory {
-  const historyValues = buildRecordSparklinePoints(record, historyPointCount);
-  const lastIndex = historyValues.length - 1;
-
-  const actual = historyValues.map((value, index) => ({
-    label: index === lastIndex ? 'Dziś' : `T-${lastIndex - index}`,
-    value,
-  }));
-
-  const lastActualValue = historyValues[lastIndex] ?? record.value;
-  const forecastValue = resolveRuntimeForecastValue(record);
-  const remainingRatio = paceRatio === null ? 0.5 : Math.max(Math.min(1 - paceRatio, 1), 0);
-  const spread = Math.max(
-    Math.abs(forecastValue - lastActualValue),
-    Math.abs(forecastValue) * 0.04,
-  ) * (0.5 + remainingRatio);
-
-  return {
-    actual,
-    forecast: [
-      { label: 'Dziś', value: lastActualValue },
-      { label: 'Koniec okresu', value: forecastValue },
-    ],
-    lowerBound: [
-      { label: 'Dziś', value: lastActualValue },
-      { label: 'Koniec okresu', value: clampMetricValue(forecastValue - spread, record.unit) },
-    ],
-    upperBound: [
-      { label: 'Dziś', value: lastActualValue },
-      { label: 'Koniec okresu', value: clampMetricValue(forecastValue + spread, record.unit) },
-    ],
-  };
 }
 
 export function chooseComparableRecords(records: readonly CommandCenterRecord[]): readonly CommandCenterRecord[] {
@@ -1202,127 +860,6 @@ export function resolveNoActionProjection(
   return {
     deltaValue,
     projectedValue: clampMetricValue(record.value + deltaValue, record.unit),
-  };
-}
-
-const visitSnapshotStorageKeyPrefix = 'papadata.command-center.last-visit.v1';
-
-function resolveVisitSnapshotStorageKey(workspaceId: string): string {
-  return `${visitSnapshotStorageKeyPrefix}.${workspaceId}`;
-}
-
-/** Reads the previous visit's snapshot from `localStorage`, if any. */
-export function readCommandCenterVisitSnapshot(
-  workspaceId: string,
-): CommandCenterVisitSnapshot | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  try {
-    const raw = window.localStorage.getItem(resolveVisitSnapshotStorageKey(workspaceId));
-
-    if (!raw) {
-      return null;
-    }
-
-    return JSON.parse(raw) as CommandCenterVisitSnapshot;
-  } catch {
-    return null;
-  }
-}
-
-/** Persists the current visit's snapshot for the next visit's diff. */
-export function writeCommandCenterVisitSnapshot(
-  workspaceId: string,
-  snapshot: CommandCenterVisitSnapshot,
-): void {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  try {
-    window.localStorage.setItem(
-      resolveVisitSnapshotStorageKey(workspaceId),
-      JSON.stringify(snapshot),
-    );
-  } catch {
-    // Storage can be unavailable (private mode, quota) — the digest is
-    // optional decoration, never a source of truth.
-  }
-}
-
-export function buildCommandCenterVisitSnapshot(
-  records: readonly CommandCenterRecord[],
-  recommendationCount: number,
-  issueCount: number,
-): CommandCenterVisitSnapshot {
-  const metrics: Record<string, number> = {};
-
-  records.forEach((record) => {
-    metrics[record.metricId] = record.value;
-  });
-
-  return {
-    issueCount,
-    metrics,
-    recommendationCount,
-    savedAt: new Date().toISOString(),
-  };
-}
-
-/**
- * Compares the current visit against the last one seen in this browser and
- * returns a digest only when there's something worth surfacing — no prior
- * visit, or no meaningful change, both resolve to `null` so the digest strip
- * disappears rather than showing an empty or repetitive line.
- */
-export function resolveCommandCenterVisitDigest(
-  previous: CommandCenterVisitSnapshot | null,
-  current: CommandCenterVisitSnapshot,
-  records: readonly CommandCenterRecord[],
-): CommandCenterVisitDigest | null {
-  if (!previous) {
-    return null;
-  }
-
-  const newRecommendationCount = Math.max(
-    current.recommendationCount - previous.recommendationCount,
-    0,
-  );
-  const newIssueCount = Math.max(current.issueCount - previous.issueCount, 0);
-  const resolvedIssueCount = Math.max(previous.issueCount - current.issueCount, 0);
-
-  const shifts = records
-    .flatMap((record) => {
-      const previousValue = previous.metrics[record.metricId];
-
-      if (previousValue === undefined || previousValue === 0) {
-        return [];
-      }
-
-      const deltaRatio = (record.value - previousValue) / Math.abs(previousValue);
-
-      return Math.abs(deltaRatio) >= 0.03
-        ? [{ deltaRatio, label: record.label, metricId: record.metricId }]
-        : [];
-    })
-    .sort((left, right) => Math.abs(right.deltaRatio) - Math.abs(left.deltaRatio));
-
-  if (
-    newRecommendationCount === 0
-    && newIssueCount === 0
-    && resolvedIssueCount === 0
-    && shifts.length === 0
-  ) {
-    return null;
-  }
-
-  return {
-    newIssueCount,
-    newRecommendationCount,
-    resolvedIssueCount,
-    shifts,
   };
 }
 

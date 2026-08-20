@@ -44,6 +44,10 @@ export type MetricCardEmphasis =
   | 'alert'
   | 'recommendation';
 
+export type MetricCardLayout =
+  | 'default'
+  | 'sparkline-aside';
+
 export type MetricCardComparison = {
   readonly direction: AnalyticsTrendDirection;
   readonly label: string;
@@ -64,6 +68,7 @@ export type MetricCardProps = Omit<
   readonly helpText?: string | null;
   readonly label: string;
   readonly labels?: Partial<MetricCardLabels>;
+  readonly layout?: MetricCardLayout;
   readonly metricId: string;
   readonly papaAction?: AnalyticsAction | null;
   readonly signal?: AnalyticsSignalTone;
@@ -212,6 +217,7 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
       helpText = null,
       label,
       labels,
+      layout = 'default',
       metricId,
       papaAction = null,
       signal = 'neutral',
@@ -272,6 +278,7 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
         data-density={density}
         data-depth={depth}
         data-emphasis={emphasis}
+        data-layout={layout}
         data-metric-id={metricId}
         data-signal={signal}
       >

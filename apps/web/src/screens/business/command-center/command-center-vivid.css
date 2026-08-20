@@ -90,7 +90,7 @@
    ------------------------------------------------------------ */
 
 .pd-command-center-one-page__runway-stats {
-  border-color: var(--pd-command-glass-border) !important;
+  border-color: var(--pd-command-glass-border);
   background: var(--pd-command-glass-surface);
   backdrop-filter: var(--pd-command-glass-blur);
 }
@@ -113,27 +113,27 @@
 }
 
 .pd-command-center-one-page__plan-chart {
-  padding: clamp(16px, 2vw, 24px) !important;
-  border: var(--pd-border-width-subtle) solid var(--pd-command-glass-border) !important;
+  padding: clamp(16px, 2vw, 24px);
+  border: var(--pd-border-width-subtle) solid var(--pd-command-glass-border);
   border-radius: var(--pd-radius-surface);
-  background: var(--pd-command-glass-surface) !important;
+  background: var(--pd-command-glass-surface);
   backdrop-filter: var(--pd-command-glass-blur);
-  box-shadow: var(--pd-command-glow-brand) !important;
+  box-shadow: var(--pd-command-glow-brand);
 }
 
 .pd-command-center-one-page__plan-chart[data-tone='success'] {
-  border-color: color-mix(in srgb, var(--pd-status-success) 46%, var(--pd-command-glass-border)) !important;
-  box-shadow: var(--pd-command-glow-success) !important;
+  border-color: color-mix(in srgb, var(--pd-status-success) 46%, var(--pd-command-glass-border));
+  box-shadow: var(--pd-command-glow-success);
 }
 
 .pd-command-center-one-page__plan-chart[data-tone='warning'] {
-  border-color: color-mix(in srgb, var(--pd-status-warning) 46%, var(--pd-command-glass-border)) !important;
-  box-shadow: var(--pd-command-glow-warning) !important;
+  border-color: color-mix(in srgb, var(--pd-status-warning) 46%, var(--pd-command-glass-border));
+  box-shadow: var(--pd-command-glow-warning);
 }
 
 .pd-command-center-one-page__plan-chart[data-tone='critical'] {
-  border-color: color-mix(in srgb, var(--pd-status-danger) 46%, var(--pd-command-glass-border)) !important;
-  box-shadow: var(--pd-command-glow-danger) !important;
+  border-color: color-mix(in srgb, var(--pd-status-danger) 46%, var(--pd-command-glass-border));
+  box-shadow: var(--pd-command-glow-danger);
 }
 
 /* ------------------------------------------------------------
@@ -182,8 +182,8 @@
    ------------------------------------------------------------ */
 
 .pd-command-center-one-page__decision-workspace {
-  border-color: var(--pd-command-glass-border) !important;
-  background: var(--pd-command-glass-surface) !important;
+  border-color: var(--pd-command-glass-border);
+  background: var(--pd-command-glass-surface);
   backdrop-filter: var(--pd-command-glass-blur);
   box-shadow: var(--pd-command-glow-brand), var(--pd-shadow-raised);
 }
@@ -247,9 +247,9 @@
 }
 
 .pd-command-center-one-page__mosaic .pd-command-center-one-page__section {
-  padding: clamp(16px, 2vw, 24px) !important;
+  padding: clamp(16px, 2vw, 24px);
   border: var(--pd-border-width-subtle) solid var(--pd-command-glass-border);
-  border-block-start: var(--pd-border-width-subtle) solid var(--pd-command-glass-border) !important;
+  border-block-start: var(--pd-border-width-subtle) solid var(--pd-command-glass-border);
   border-radius: var(--pd-radius-surface);
   background: var(--pd-command-glass-surface);
   backdrop-filter: var(--pd-command-glass-blur);
@@ -264,12 +264,12 @@
 .pd-command-center-one-page__runtime-side-panel {
   padding: clamp(16px, 2vw, 24px);
   border: var(--pd-border-width-subtle) solid var(--pd-command-glass-border);
-  border-inline-start: var(--pd-border-width-subtle) solid var(--pd-command-glass-border) !important;
+  border-inline-start: var(--pd-border-width-subtle) solid var(--pd-command-glass-border);
   border-radius: var(--pd-radius-surface);
   background: var(--pd-command-glass-surface);
   backdrop-filter: var(--pd-command-glass-blur);
   box-shadow: var(--pd-shadow-raised);
-  padding-inline-start: clamp(16px, 2vw, 24px) !important;
+  padding-inline-start: clamp(16px, 2vw, 24px);
 }
 
 /* ------------------------------------------------------------

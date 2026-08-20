@@ -1,9 +1,12 @@
+import {
+  useState,
+} from 'react';
 import type {
   AnalyticsDataState,
 } from '../../../design-system';
 import {
-  isLocalClientRuntimeAvailable,
-} from '../../../shared/api/bffClient';
+  CommandCenterDriversSection,
+} from './CommandCenterDriversSection';
 import {
   CommandCenterKpiSection,
 } from './CommandCenterKpiSection';
@@ -13,12 +16,15 @@ import {
 import {
   CommandSectionAnchor,
 } from './CommandCenterSectionFrame';
+import {
+  defaultCommandLens,
+} from './commandCenterLens';
 import type {
   CommandCenterData,
 } from './commandCenterOnePageModel';
 import {
-  buildDemoExecutiveKpiRecords,
   buildExecutiveKpiRecords,
+  commandCenterOnePageSectionIds,
 } from './commandCenterOnePageModel';
 import './command-center-one-page.css';
 import './command-center-vivid.css';
@@ -32,22 +38,35 @@ export function CommandCenterOnePage({
   data,
   dataState,
 }: CommandCenterOnePageProps) {
-  const useDemoBreakdowns = isLocalClientRuntimeAvailable();
-  const executiveKpis = useDemoBreakdowns
-    ? buildDemoExecutiveKpiRecords(data.records)
-    : buildExecutiveKpiRecords(data.records);
+  const executiveKpis = buildExecutiveKpiRecords(data.records);
+  const [driversLens, setDriversLens] = useState(defaultCommandLens);
 
   return (
     <div className="pd-command-center-one-page">
-      <CommandSectionAnchor id="command-section-kpi">
+      <CommandSectionAnchor id={commandCenterOnePageSectionIds[0]}>
         <CommandCenterKpiSection
           dataState={dataState}
           records={executiveKpis}
         />
       </CommandSectionAnchor>
 
-      <CommandSectionAnchor id="command-section-plan">
-        <CommandCenterPlanExecutionSection />
+      <CommandSectionAnchor id={commandCenterOnePageSectionIds[1]}>
+        <CommandCenterPlanExecutionSection
+          forecastMethod={data.forecastMethod}
+          forecastTotal={data.forecastTotal}
+          planTotal={data.planTotal}
+          trajectory={data.trajectory ?? []}
+        />
+      </CommandSectionAnchor>
+
+      <CommandSectionAnchor id={commandCenterOnePageSectionIds[2]}>
+        <CommandCenterDriversSection
+          activeLens={driversLens}
+          driverRelationships={data.driverRelationships}
+          onLensChange={setDriversLens}
+          records={executiveKpis}
+          sourceRows={[]}
+        />
       </CommandSectionAnchor>
     </div>
   );

@@ -6,8 +6,10 @@ import type {
   CommandCenterRecord,
   CommandCenterSummary,
   DiagnosticFinding,
+  DriverRelationships,
   FunnelStepView,
   PageInfo,
+  PlanTrajectoryPointView,
   RecommendationView,
   WaterfallItem,
 } from '../../../../../contracts/api-schemas';
@@ -83,12 +85,24 @@ export type BusinessScreenDefinition = {
   readonly variant: BusinessScreenVariant;
 };
 
+/** Canonical read contracts required to assemble the Command Center one-page. */
+export const commandCenterOnePageDataScreenIds = [
+  '30.03',
+  '30.04',
+  '30.05',
+] as const satisfies readonly BusinessScreenId[];
+
 export type CommandCenterApiData = {
+  readonly driverRelationships?: DriverRelationships;
+  readonly forecastMethod?: 'linear-run-rate';
+  readonly forecastTotal?: number;
   readonly pageInfo: PageInfo;
+  readonly planTotal?: number;
   readonly records: readonly CommandCenterRecord[];
   readonly recommendations?: readonly RecommendationView[];
   readonly steps?: readonly FunnelStepView[];
   readonly summary: CommandCenterSummary;
+  readonly trajectory?: readonly PlanTrajectoryPointView[];
   readonly waterfall?: readonly WaterfallItem[];
 };
 
@@ -118,16 +132,21 @@ export type BusinessScreenData =
       readonly warnings: readonly ApiProblem[];
     }
   | {
+      readonly driverRelationships: DriverRelationships | null;
       readonly evidence: readonly EvidenceRef[];
+      readonly forecastMethod: 'linear-run-rate' | null;
+      readonly forecastTotal: number | null;
       readonly funnelSteps: readonly FunnelStepView[];
       readonly generatedAt: string;
       readonly group: 'command-center';
       readonly operationId: string;
       readonly pageInfo: PageInfo;
+      readonly planTotal: number | null;
       readonly records: readonly CommandCenterRecord[];
       readonly recommendations: readonly RecommendationView[];
       readonly sources: readonly DataSourceRef[];
       readonly summary: CommandCenterSummary;
+      readonly trajectory: readonly PlanTrajectoryPointView[] | null;
       readonly waterfall: readonly WaterfallItem[];
       readonly warnings: readonly ApiProblem[];
     };
@@ -1343,6 +1362,12 @@ export function findBusinessScreenDefinition(
   )) ?? null;
 }
 
+/**
+ * Storybook/demo fixture builder only — the real runtime path
+ * (CommandCenterScreen) uses createCommandCenterBusinessData over the real
+ * API response and shows an error/empty state rather than falling back to
+ * this. Import only from `*.stories.tsx` files.
+ */
 export function createStorybookBusinessData(
   definition: BusinessScreenDefinition,
 ): BusinessScreenData {
@@ -1367,7 +1392,10 @@ export function createStorybookBusinessData(
     ?? commandCenterRecords;
 
   return {
+    driverRelationships: null,
     evidence,
+    forecastMethod: null,
+    forecastTotal: null,
     funnelSteps,
     generatedAt,
     group: 'command-center',
@@ -1376,12 +1404,39 @@ export function createStorybookBusinessData(
       ...pageInfo,
       total: records.length,
     },
+    planTotal: null,
     records,
     recommendations,
     sources: dataSources,
     summary: buildStoryCommandSummary(records),
+    trajectory: null,
     warnings: [],
     waterfall,
+  };
+}
+
+/**
+ * Composes the three canonical one-page read contracts into the single view
+ * model consumed by the runtime landing page. Each source keeps its own
+ * generated contract; the merge happens only at the UI orchestration layer,
+ * so no endpoint pretends to return fields that are not part of its schema.
+ */
+export function mergeCommandCenterOnePageApiData(
+  kpiData: CommandCenterApiData,
+  planData: CommandCenterApiData,
+  driversData: CommandCenterApiData,
+): CommandCenterApiData {
+  return {
+    ...kpiData,
+    driverRelationships: driversData.driverRelationships,
+    forecastMethod: planData.forecastMethod,
+    forecastTotal: planData.forecastTotal,
+    planTotal: planData.planTotal,
+    // Funnel and waterfall endpoints are outside the active one-page scope.
+    // Never carry their old demo-shaped data into the executive landing.
+    steps: [],
+    trajectory: planData.trajectory,
+    waterfall: [],
   };
 }
 
@@ -1390,153 +1445,24 @@ export function createCommandCenterBusinessData(
   data: CommandCenterApiData,
 ): BusinessScreenData {
   return {
+    driverRelationships: data.driverRelationships ?? null,
     evidence: [],
+    forecastMethod: data.forecastMethod ?? null,
+    forecastTotal: data.forecastTotal ?? null,
     funnelSteps: data.steps ?? [],
     generatedAt: data.summary.updatedAt,
     group: 'command-center',
     operationId: definition.operationId,
     pageInfo: data.pageInfo,
+    planTotal: data.planTotal ?? null,
     records: data.records,
     recommendations: data.recommendations ?? [],
     sources: [],
     summary: data.summary,
+    trajectory: data.trajectory ?? null,
     warnings: [],
     waterfall: data.waterfall ?? [],
   };
-}
-
-export function applyCommandCenterDateRange(
-  data: Extract<BusinessScreenData, { readonly group: 'command-center' }>,
-  range: DateRange,
-): Extract<BusinessScreenData, { readonly group: 'command-center' }> {
-  const scale = resolveDateRangeScale(range);
-  const generatedAt = new Date().toISOString();
-
-  return {
-    ...data,
-    funnelSteps: data.funnelSteps.map((step) => ({
-      ...step,
-      completions: scaleWholeNumber(step.completions, scale),
-      entrants: scaleWholeNumber(step.entrants, scale),
-    })),
-    generatedAt,
-    records: data.records.map((record) => scaleCommandRecord(record, scale)),
-    summary: {
-      ...data.summary,
-      updatedAt: generatedAt,
-    },
-    waterfall: scaleWaterfall(data.waterfall, scale),
-  };
-}
-
-function resolveDateRangeScale(range: DateRange): number {
-  const baselineDays = 12;
-  const days = getDateRangeDayCount(range);
-
-  return Math.min(
-    Math.max(days / baselineDays, 1 / baselineDays),
-    90 / baselineDays,
-  );
-}
-
-function getDateRangeDayCount(range: DateRange): number {
-  const from = parseDateRangeInput(range.from);
-  const to = parseDateRangeInput(range.to);
-
-  if (!from || !to) {
-    switch (range.preset) {
-      case 'last90d':
-        return 90;
-      case 'last30d':
-        return 30;
-      case 'last7d':
-        return 7;
-      case 'today':
-      default:
-        return 1;
-    }
-  }
-
-  const dayMs = 24 * 60 * 60 * 1_000;
-  const diff = Math.round((to.getTime() - from.getTime()) / dayMs);
-
-  return Math.max(diff + 1, 1);
-}
-
-function parseDateRangeInput(value: string): Date | null {
-  const date = new Date(`${value}T00:00:00.000Z`);
-
-  return Number.isNaN(date.getTime())
-    ? null
-    : date;
-}
-
-function scaleCommandRecord(
-  record: CommandCenterRecord,
-  scale: number,
-): CommandCenterRecord {
-  if (!shouldScaleCommandRecord(record)) {
-    return record;
-  }
-
-  return {
-    ...record,
-    target: typeof record.target === 'number'
-      ? scaleMetric(record.target, record.unit, scale)
-      : record.target,
-    value: scaleMetric(record.value, record.unit, scale),
-  };
-}
-
-function shouldScaleCommandRecord(
-  record: CommandCenterRecord,
-): boolean {
-  if (
-    record.unit === 'percent'
-    || record.unit === 'ratio'
-    || record.unit === 'duration'
-  ) {
-    return false;
-  }
-
-  const label = record.label.toLocaleLowerCase('pl-PL');
-
-  return !(
-    label.includes('strumienie')
-    || label.includes('domeny')
-    || label.includes('gotowość')
-    || label.includes('pewność')
-  );
-}
-
-function scaleMetric(
-  value: number,
-  unit: CommandCenterRecord['unit'],
-  scale: number,
-): number {
-  const nextValue = value * scale;
-
-  return unit === 'currency' || unit === 'number'
-    ? Math.round(nextValue)
-    : Number(nextValue.toFixed(4));
-}
-
-function scaleWholeNumber(
-  value: number,
-  scale: number,
-): number {
-  return Math.max(Math.round(value * scale), 0);
-}
-
-function scaleWaterfall(
-  waterfall: readonly WaterfallItem[],
-  scale: number,
-): readonly WaterfallItem[] {
-  return waterfall.map((item) => ({
-    ...item,
-    cumulativeValue: Math.round(item.cumulativeValue * scale),
-    value: Math.round(item.value * scale),
-  }));
 }
 
 export function createCampaignsBusinessData(

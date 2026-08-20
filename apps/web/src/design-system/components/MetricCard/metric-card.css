@@ -526,7 +526,11 @@
   border-color: color-mix(in srgb, var(--pd-brand-accent) 64%, var(--pd-separator));
   color: var(--pd-text);
   background: color-mix(in srgb, var(--pd-brand-accent) 12%, var(--pd-surface-raised));
-  outline: none;
+}
+
+.pd-metric-card__help-trigger:focus-visible {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: var(--pd-focus-offset);
 }
 
 .pd-metric-card__help-trigger:active {
@@ -535,7 +539,7 @@
 
 .pd-metric-card__help-popover {
   position: absolute;
-  z-index: 20;
+  z-index: var(--pd-layer-popover);
   inset-block-start: calc(100% + var(--pd-space-2));
   inset-inline-start: 0;
   inline-size: min(18rem, calc(100vw - 3rem));
@@ -561,3 +565,96 @@
   transform: translateY(0);
 }
 /* papa-kpi-help-end */
+
+/* Public dense executive layout: consumers opt in via MetricCard layout prop. */
+.pd-metric-card[data-layout='sparkline-aside'] {
+  --pd-metric-card-layout-accent: var(--pd-text-muted);
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "value sparkline"
+    "bench bench"
+    "meta meta"
+    "actions actions";
+  grid-template-columns: minmax(0, 1fr) minmax(5rem, 6.2rem);
+  align-content: start;
+  gap: 0;
+  min-block-size: 9.5rem;
+  padding: clamp(14px, 1.25vw, 18px);
+  overflow: visible;
+  border: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-separator) 46%, transparent);
+  border-radius: var(--pd-radius-overlay);
+  background:
+    radial-gradient(circle at 92% 92%, color-mix(in srgb, var(--pd-metric-card-layout-accent) 12%, transparent), transparent 42%),
+    color-mix(in srgb, var(--pd-surface-raised) 92%, transparent);
+  box-shadow: var(--pd-shadow-raised);
+}
+
+.pd-metric-card[data-layout='sparkline-aside'][data-emphasis='recommendation'] {
+  border-color: color-mix(in srgb, var(--pd-data-accent) 48%, var(--pd-separator));
+}
+
+.pd-metric-card[data-layout='sparkline-aside'][data-emphasis='alert'] {
+  border-color: color-mix(in srgb, var(--pd-status-warning) 54%, var(--pd-separator));
+}
+
+.pd-metric-card[data-layout='sparkline-aside'][data-signal='positive'] {
+  --pd-metric-card-layout-accent: var(--pd-success);
+}
+
+.pd-metric-card[data-layout='sparkline-aside'][data-signal='negative'] {
+  --pd-metric-card-layout-accent: var(--pd-data-negative);
+}
+
+.pd-metric-card[data-layout='sparkline-aside'][data-signal='warning'] {
+  --pd-metric-card-layout-accent: var(--pd-status-warning);
+}
+
+.pd-metric-card[data-layout='sparkline-aside'] .pd-metric-card__header {
+  grid-area: header;
+  margin: 0;
+}
+
+.pd-metric-card[data-layout='sparkline-aside'] .pd-metric-card__label {
+  color: var(--pd-text-muted);
+}
+
+.pd-metric-card[data-layout='sparkline-aside'] .pd-metric-card__value-region {
+  grid-area: value;
+}
+
+.pd-metric-card[data-layout='sparkline-aside'] .pd-metric-card__sparkline {
+  grid-area: sparkline;
+  justify-self: end;
+  align-self: end;
+  inline-size: min(100%, 5.75rem);
+}
+
+.pd-metric-card[data-layout='sparkline-aside'] .pd-metric-card__benchmarks {
+  grid-area: bench;
+  border: 0;
+}
+
+.pd-metric-card[data-layout='sparkline-aside'] .pd-metric-card__metadata {
+  grid-area: meta;
+  border-block-start: var(--pd-border-width-subtle) solid color-mix(in srgb, var(--pd-separator) 28%, transparent);
+  color: var(--pd-text-muted);
+}
+
+.pd-metric-card[data-layout='sparkline-aside'] .pd-metric-card__metadata span + span::before {
+  content: none;
+}
+
+.pd-metric-card[data-layout='sparkline-aside'] .pd-metric-card__actions {
+  grid-area: actions;
+}
+
+@media (max-width: 640px) {
+  .pd-metric-card[data-layout='sparkline-aside'] {
+    grid-template-columns: minmax(0, 1fr) minmax(4.5rem, 5.2rem);
+  }
+
+  .pd-metric-card[data-layout='sparkline-aside'] .pd-metric-card__metadata {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -87,9 +87,7 @@
   background:
     radial-gradient(circle at 92% 92%, color-mix(in srgb, var(--pd-plan-card-accent) 12%, transparent), transparent 42%),
     color-mix(in srgb, var(--pd-surface-raised) 92%, transparent);
-  box-shadow:
-    0 18px 48px color-mix(in srgb, var(--pd-shadow-color) 14%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--pd-surface-raised) 12%, transparent);
+  box-shadow: var(--pd-shadow-raised);
 }
 
 .pd-command-plan-summary-card[data-tone='positive'] {
@@ -143,9 +141,7 @@
   background:
     radial-gradient(circle at 78% 12%, color-mix(in srgb, var(--pd-brand-accent) 12%, transparent), transparent 34%),
     color-mix(in srgb, var(--pd-surface-raised) 94%, transparent);
-  box-shadow:
-    0 24px 80px color-mix(in srgb, var(--pd-shadow-color) 18%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--pd-surface-raised) 12%, transparent);
+  box-shadow: var(--pd-shadow-overlay);
 }
 
 .pd-command-plan-trajectory__header {
@@ -234,7 +230,7 @@
   border-radius: 18px;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-panel) 78%, transparent), transparent),
-    color-mix(in srgb, var(--pd-surface-base) 74%, transparent);
+    color-mix(in srgb, var(--pd-surface) 74%, transparent);
 }
 
 .pd-command-plan-trajectory__svg {
@@ -364,34 +360,6 @@
 }
 
 /* papa-plan-chart-stabilized-start */
-.pd-command-plan-section {
-  gap: 0.95rem !important;
-}
-
-.pd-command-plan-section__heading {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  align-items: center !important;
-  gap: 1rem !important;
-  margin: 0 0 0.85rem !important;
-}
-
-.pd-command-plan-section__title {
-  margin: 0 !important;
-  padding: 0 !important;
-  color: var(--pd-text-muted) !important;
-  font-size: 0.78rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.08em !important;
-  line-height: 1 !important;
-  text-transform: uppercase !important;
-}
-
-.pd-command-plan-section__eyebrow,
-.pd-command-plan-section__description {
-  display: none !important;
-}
-
 .pd-command-plan-trajectory__legend {
   display: flex;
   flex-wrap: wrap;
@@ -499,32 +467,32 @@ html.dark .pd-command-plan-trajectory__chart,
 }
 
 .pd-command-plan-trajectory__hit-area {
-  fill: transparent !important;
-  stroke: transparent !important;
-  opacity: 0 !important;
-  pointer-events: all !important;
+  fill: transparent;
+  stroke: transparent;
+  opacity: 0;
+  pointer-events: all;
 }
 
 .pd-command-plan-trajectory__visible-point {
-  fill: var(--pd-surface-raised) !important;
-  stroke-width: 3 !important;
+  fill: var(--pd-surface-raised);
+  stroke-width: 3;
   filter: none;
   transition: r 220ms ease, filter 220ms ease, stroke-width 220ms ease;
 }
 
 .pd-command-plan-trajectory__point[data-series='actual'] .pd-command-plan-trajectory__visible-point {
-  stroke: var(--pd-success) !important;
+  stroke: var(--pd-success);
 }
 
 .pd-command-plan-trajectory__point[data-series='forecast'] .pd-command-plan-trajectory__visible-point {
-  stroke: var(--pd-brand-accent) !important;
+  stroke: var(--pd-brand-accent);
 }
 
 .pd-command-plan-trajectory__point:hover .pd-command-plan-trajectory__visible-point,
 .pd-command-plan-trajectory__point:focus-visible .pd-command-plan-trajectory__visible-point,
 .pd-command-plan-trajectory__point[data-active='true'] .pd-command-plan-trajectory__visible-point {
   r: 7px;
-  stroke-width: 4 !important;
+  stroke-width: 4;
 }
 
 .pd-command-plan-trajectory__point[data-series='actual']:hover .pd-command-plan-trajectory__visible-point,
@@ -540,7 +508,7 @@ html.dark .pd-command-plan-trajectory__chart,
 }
 
 .pd-command-plan-trajectory__tooltip {
-  animation: pd-command-plan-tooltip-opacity-in 180ms ease both !important;
+  animation: pd-command-plan-tooltip-opacity-in 180ms ease both;
   pointer-events: none;
 }
 
@@ -583,8 +551,8 @@ html.dark .pd-command-plan-trajectory__chart,
   .pd-command-plan-trajectory__point,
   .pd-command-plan-trajectory__visible-point,
   .pd-command-plan-trajectory__tooltip {
-    animation: none !important;
-    transition: none !important;
+    animation: none;
+    transition: none;
   }
 }
 /* papa-plan-chart-stabilized-end */

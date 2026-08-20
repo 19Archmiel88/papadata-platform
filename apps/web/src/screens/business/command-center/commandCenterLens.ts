@@ -44,17 +44,17 @@ export const commandLensDefinitions: readonly CommandLensDefinition[] = [
       'command-kpi-aov',
       'command-kpi-conversion',
     ],
-    question: 'Wolumen transakcji i jakość koszyka.',
+    question: 'Ile wzrostu przychodu pochodzi z liczby zamówień, a ile z wartości koszyka.',
     value: 'volume',
   },
   {
-    label: 'Koszt vs ROAS',
+    label: 'Koszt vs przychód z reklam',
     metricIds: [
       'command-kpi-ad-cost',
       'command-kpi-roas',
       'command-kpi-cpa',
     ],
-    question: 'Kontrola rentowności ruchu płatnego.',
+    question: 'Czy dodatkowy wydatek na reklamę realnie przekłada się na przychód z reklam.',
     value: 'efficiency',
   },
 ];

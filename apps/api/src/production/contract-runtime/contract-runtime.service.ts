@@ -6,6 +6,7 @@ import {
 } from "@nestjs/common";
 import { createHash, randomUUID } from "node:crypto";
 import {
+  IntegrationRepository,
   ProductDomainRepository,
   ProductionDatabase,
   type ProductDomainRecord,
@@ -26,6 +27,16 @@ import type {
 } from "../auth/request-principal.js";
 import { IdentityService } from "../identity/identity.service.js";
 import { IntegrationService } from "../integrations/integration.service.js";
+import {
+  buildCommandCenterDriversData,
+  buildCommandCenterKpiOverrides,
+  buildCommandCenterPlanPerformanceData,
+} from "./command-center-metrics.contract-data.js";
+import {
+  commandCenterRecord,
+  type CommandCenterReadiness,
+  type CommandCenterRuntimeRecord,
+} from "./command-center-record.js";
 
 export type ContractRuntimeRequest = {
   readonly operationId: string;
@@ -47,12 +58,15 @@ type AuthContext = {
 export class ContractRuntimeService {
   private readonly repository: ProductDomainRepository;
 
+  private readonly integrationRepository: IntegrationRepository;
+
   constructor(
     @Inject(ProductionDatabase) database: ProductionDatabase,
     @Inject(IdentityService) private readonly identity: IdentityService,
     @Inject(IntegrationService) private readonly integrations: IntegrationService,
   ) {
     this.repository = new ProductDomainRepository(database);
+    this.integrationRepository = new IntegrationRepository(database);
   }
 
   async executePublic(
@@ -218,13 +232,16 @@ export class ContractRuntimeService {
 
     if (request.operationId.startsWith("command-center.")) {
       return {
-        data: commandCenterContractData(
+        data: await commandCenterContractData(
           request.operationId,
           await this.repository.dashboardSummary(
             principal.tenantId,
             principal.workspaceId,
           ),
           readRuntimeDateRange(request.query),
+          principal.tenantId,
+          principal.workspaceId,
+          this.integrationRepository,
         ),
         operationId: request.operationId,
       };
@@ -416,10 +433,13 @@ export class ContractRuntimeService {
         principal.workspaceId,
       );
       return {
-        data: commandCenterContractData(
+        data: await commandCenterContractData(
           request.operationId,
           summary,
           readRuntimeDateRange(request.query),
+          principal.tenantId,
+          principal.workspaceId,
+          this.integrationRepository,
         ),
         operationId: request.operationId,
         implementation: "canonical-dashboard-view-model",
@@ -465,20 +485,6 @@ function accessView(principal: RequestPrincipal, operationId: string): object {
   };
 }
 
-type CommandCenterReadiness = "partial" | "ready" | "stale" | "unavailable";
-
-type CommandCenterMetricUnit = "currency" | "duration" | "number" | "percent" | "ratio";
-
-type CommandCenterRuntimeRecord = {
-  readonly delta: number | null;
-  readonly label: string;
-  readonly metricId: string;
-  readonly readiness: CommandCenterReadiness;
-  readonly target: number | null;
-  readonly unit: CommandCenterMetricUnit;
-  readonly value: number;
-};
-
 type RuntimeDateRange = {
   readonly from: string;
   readonly preset: string | null;
@@ -486,61 +492,88 @@ type RuntimeDateRange = {
   readonly to: string;
 };
 
-function commandCenterContractData(
+async function commandCenterContractData(
   operationId: string,
   repositorySummary: Readonly<Record<string, unknown>>,
   dateRange: RuntimeDateRange | null,
-): object {
+  tenantId: string,
+  workspaceId: string,
+  integrationRepository: IntegrationRepository,
+): Promise<object> {
   const updatedAt = optionalRecordDateString(repositorySummary, "generatedAt")
     ?? new Date().toISOString();
   const sourceReadiness = commandCenterSourceReadiness(repositorySummary.readiness);
   const integrationStreams = collectionLength(repositorySummary.integrationStreams);
   const domainCounts = collectionLength(repositorySummary.domainCounts);
+  const metricDateRange = dateRange
+    ? { from: dateRange.from, timezone: dateRange.timezone, to: dateRange.to }
+    : null;
+  const kpi = await buildCommandCenterKpiOverrides(
+    tenantId,
+    workspaceId,
+    updatedAt,
+    integrationRepository,
+    metricDateRange,
+  );
   const records: readonly CommandCenterRuntimeRecord[] = [
-    commandCenterRecord(
-      "11111111-1111-4111-8111-111111111101",
-      "Przychód netto",
-      912_400,
-      "currency",
-      0.12,
-      840_000,
-      "ready",
-    ),
+    kpi.revenue,
+    // No cart-level funnel tracking (GA4 add-to-cart/checkout events) is
+    // ingested anywhere in this system today — only orders, refunds,
+    // products, inventory, ad spend and attributed conversions. A cart
+    // conversion rate has no real source to compute from, so this must read
+    // unavailable rather than a plausible-looking literal.
     commandCenterRecord(
       "11111111-1111-4111-8111-111111111102",
       "Konwersja koszyka",
-      0.031,
+      0,
       "percent",
-      -0.07,
-      0.035,
-      "partial",
+      null,
+      null,
+      "unavailable",
     ),
+    kpi.roas,
+    kpi.orders,
+    kpi.aov,
+    kpi.adSpend,
+    // CPA needs the number of acquisitions attributable to paid media. The
+    // current canonical streams carry ad spend and attributed revenue, but
+    // not an attributed purchase count, so ad spend / all store orders would
+    // be a misleading metric. Keep the slot explicit and unavailable until
+    // that source exists.
     commandCenterRecord(
-      "11111111-1111-4111-8111-111111111103",
-      "ROAS blended",
-      4.62,
-      "ratio",
-      0.18,
-      4.1,
-      "ready",
+      "11111111-1111-4111-8111-111111111111",
+      "CPA",
+      0,
+      "currency",
+      null,
+      null,
+      "unavailable",
     ),
+    // Same story: no GA4 (or any web-analytics) integration stream is
+    // ingested today, so "freshness of GA4 events" has nothing real behind
+    // it. Showing 0.98/0.91 based on the tenant's unrelated overall
+    // readiness flag was fake precision, not a measurement.
     commandCenterRecord(
       "11111111-1111-4111-8111-111111111104",
       "Świeżość eventów GA4",
-      sourceReadiness === "ready" ? 0.98 : 0.91,
+      0,
       "percent",
-      sourceReadiness === "ready" ? 0.01 : -0.03,
-      0.98,
-      sourceReadiness === "ready" ? "ready" : "stale",
+      null,
+      null,
+      "unavailable",
     ),
+    // gross margin needs product cost and order-line data; neither is
+    // ingested yet (see command-center-metrics.real-source.ts, which leaves
+    // productCosts/canonicalOrderLines empty on purpose). No real source,
+    // so unavailable rather than a hardcoded percentage.
     commandCenterRecord(
       "11111111-1111-4111-8111-111111111105",
       "Marża brutto",
-      0.36,
+      0,
       "percent",
-      0.09,
-      0.32,
-      "ready",
+      null,
+      null,
+      "unavailable",
     ),
     commandCenterRecord(
       "11111111-1111-4111-8111-111111111106",
@@ -567,62 +600,31 @@ function commandCenterContractData(
   )).length;
   const critical = records.filter((record) => record.readiness === "unavailable").length;
   const resultKey = commandCenterResultKey(operationId);
+  const planPerformanceExtras = operationId === "command-center.plan-performance.read"
+    ? await buildCommandCenterPlanPerformanceData(tenantId, workspaceId, updatedAt, integrationRepository, metricDateRange)
+    : null;
+  const driversExtras = operationId === "command-center.drivers.read"
+    ? await buildCommandCenterDriversData(tenantId, workspaceId, updatedAt, integrationRepository, metricDateRange)
+    : null;
 
   return {
+    ...(planPerformanceExtras ?? {}),
+    ...(driversExtras ?? {}),
     evidencePolicy: "canonical-and-reconciled-only",
     pageInfo: {
       nextCursor: null,
       total: records.length,
     },
-    recommendations: [
-      {
-        confidence: 0.87,
-        impact: "high",
-        rationale: "Wzrost kosztu Meta przy spadku konwersji wymaga przesunięcia budżetu do Search high intent.",
-        recommendationId: "33333333-3333-4333-8333-333333333301",
-        title: "Przenieś 12% budżetu Meta do kampanii Search",
-      },
-      {
-        confidence: 0.79,
-        impact: "medium",
-        rationale: "Produkty o wysokiej marży mają niski udział w rekomendacjach onsite.",
-        recommendationId: "33333333-3333-4333-8333-333333333302",
-        title: "Podbij ekspozycję produktów z marżą powyżej 38%",
-      },
-    ],
+    // No recommendation-generation engine exists in this system yet — the
+    // two entries this used to return unconditionally were the same two
+    // fabricated recommendations regardless of what the actual data showed.
+    // An empty list is the honest state until a real recommender is wired
+    // in; the UI already has an empty state for this.
+    recommendations: [],
     records,
     source: "canonical-dashboard-summary",
     dateRange,
-    steps: [
-      {
-        completions: 59_800,
-        conversionRate: 0.42,
-        entrants: 142_000,
-        label: "Sesje produktowe",
-        stepId: "sessions",
-      },
-      {
-        completions: 16_840,
-        conversionRate: 0.282,
-        entrants: 59_800,
-        label: "Dodanie do koszyka",
-        stepId: "cart",
-      },
-      {
-        completions: 7_920,
-        conversionRate: 0.47,
-        entrants: 16_840,
-        label: "Checkout",
-        stepId: "checkout",
-      },
-      {
-        completions: 5_410,
-        conversionRate: 0.683,
-        entrants: 7_920,
-        label: "Zakup",
-        stepId: "purchase",
-      },
-    ],
+    steps: [],
     summary: {
       critical,
       ready,
@@ -631,38 +633,7 @@ function commandCenterContractData(
       warning,
     },
     view: operationId,
-    waterfall: [
-      {
-        cumulativeValue: 840_000,
-        key: "plan",
-        label: "Plan",
-        value: 840_000,
-      },
-      {
-        cumulativeValue: 897_000,
-        key: "search",
-        label: "Search intent",
-        value: 57_000,
-      },
-      {
-        cumulativeValue: 936_000,
-        key: "margin",
-        label: "Mix marży",
-        value: 39_000,
-      },
-      {
-        cumulativeValue: 912_400,
-        key: "meta",
-        label: "Meta CPA",
-        value: -23_600,
-      },
-      {
-        cumulativeValue: 912_400,
-        key: "actual",
-        label: "Wynik",
-        value: 912_400,
-      },
-    ],
+    waterfall: [],
     [resultKey]: {
       completedAt: updatedAt,
       domain: "command-center",
@@ -685,26 +656,6 @@ function readRuntimeDateRange(query: unknown): RuntimeDateRange | null {
     preset: optionalRecordString(safeQuery, "preset"),
     timezone: optionalRecordString(safeQuery, "timezone"),
     to,
-  };
-}
-
-function commandCenterRecord(
-  metricId: string,
-  label: string,
-  value: number,
-  unit: CommandCenterMetricUnit,
-  delta: number | null,
-  target: number | null,
-  readiness: CommandCenterReadiness,
-): CommandCenterRuntimeRecord {
-  return {
-    delta,
-    label,
-    metricId,
-    readiness,
-    target,
-    unit,
-    value,
   };
 }
 

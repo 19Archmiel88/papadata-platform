@@ -148,6 +148,11 @@ if (csrfToken) {
       "x-papadata-csrf": csrfToken,
     },
   });
+
+  // 8. A revoked session must not be reusable after logout.
+  await request("auth-session-after-logout", "/api/v1/auth/session", {
+    headers: { origin: baseUrl.origin },
+  }, [401]);
 }
 
 console.log(JSON.stringify({

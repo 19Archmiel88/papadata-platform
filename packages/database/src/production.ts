@@ -29,19 +29,10 @@ export class ProductionDatabase {
     workspaceId: string | null,
     operation: (client: PoolClient) => Promise<T>,
   ): Promise<T> {
-    if (!tenantId.trim()) {
-      throw new Error("Tenant scope is required for application database access.");
-    }
+    assertTenantScope(tenantId);
 
     return withTransaction(this.pool, async (client) => {
-      await client.query(
-        "select set_config('app.tenant_id', $1, true)",
-        [tenantId],
-      );
-      await client.query(
-        "select set_config('app.workspace_id', $1, true)",
-        [workspaceId ?? ""],
-      );
+      await setTenantWorkspaceScope(client, tenantId, workspaceId);
       return operation(client);
     });
   }
@@ -51,19 +42,27 @@ export class ProductionDatabase {
     userId: string | null,
     operation: (client: PoolClient) => Promise<T>,
   ): Promise<T> {
-    if (!/^[a-f0-9]{64}$/u.test(identityKey)) {
-      throw new Error("Identity key is invalid.");
-    }
+    assertIdentityKey(identityKey);
 
     return withTransaction(this.pool, async (client) => {
-      await client.query(
-        "select set_config('app.identity_key', $1, true)",
-        [identityKey],
-      );
-      await client.query(
-        "select set_config('app.identity_user_id', $1, true)",
-        [userId ?? ""],
-      );
+      await setIdentityScope(client, identityKey, userId);
+      return operation(client);
+    });
+  }
+
+  async withIdentityTenantWorkspace<T>(
+    identityKey: string,
+    userId: string | null,
+    tenantId: string,
+    workspaceId: string | null,
+    operation: (client: PoolClient) => Promise<T>,
+  ): Promise<T> {
+    assertIdentityKey(identityKey);
+    assertTenantScope(tenantId);
+
+    return withTransaction(this.pool, async (client) => {
+      await setIdentityScope(client, identityKey, userId);
+      await setTenantWorkspaceScope(client, tenantId, workspaceId);
       return operation(client);
     });
   }
@@ -114,6 +113,48 @@ export class PlatformDatabase {
   ): Promise<T> {
     return withTransaction(this.pool, operation);
   }
+}
+
+function assertIdentityKey(identityKey: string): void {
+  if (!/^[a-f0-9]{64}$/u.test(identityKey)) {
+    throw new Error("Identity key is invalid.");
+  }
+}
+
+function assertTenantScope(tenantId: string): void {
+  if (!tenantId.trim()) {
+    throw new Error("Tenant scope is required for application database access.");
+  }
+}
+
+async function setIdentityScope(
+  client: PoolClient,
+  identityKey: string,
+  userId: string | null,
+): Promise<void> {
+  await client.query(
+    "select set_config('app.identity_key', $1, true)",
+    [identityKey],
+  );
+  await client.query(
+    "select set_config('app.identity_user_id', $1, true)",
+    [userId ?? ""],
+  );
+}
+
+async function setTenantWorkspaceScope(
+  client: PoolClient,
+  tenantId: string,
+  workspaceId: string | null,
+): Promise<void> {
+  await client.query(
+    "select set_config('app.tenant_id', $1, true)",
+    [tenantId],
+  );
+  await client.query(
+    "select set_config('app.workspace_id', $1, true)",
+    [workspaceId ?? ""],
+  );
 }
 
 function createPool(config: DatabaseConfig, applicationName: string): Pool {

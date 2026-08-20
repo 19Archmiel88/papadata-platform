@@ -26,7 +26,6 @@ import type {
   BusinessScreenDefinition,
 } from '../businessData';
 import {
-  CommandAnalyticsSection,
   buildLegacyDemoSparklinePoints,
   truncateChartLabel,
 } from './commandCenterLegacyAnalytics';

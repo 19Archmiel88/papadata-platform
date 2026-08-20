@@ -37,9 +37,17 @@ await checkCanonicalHostname(localContract.canonicalLocalEndpoint.hostname);
 const totalGiB = os.totalmem() / (1024 ** 3);
 record("system-memory", totalGiB >= 8, `${totalGiB.toFixed(1)} GiB`, "8 GiB minimum recommended; 16 GiB preferred for full parity.", false);
 
-const ports = [4173, 5173, 53001, 54000, 54317, 54318, 55432, 56379, 59000, 59001, 6010];
-const futureEdgePortFree = await portIsFree(443);
-record("port:443 (LP-6)", futureEdgePortFree, futureEdgePortFree ? "free" : "busy", "Port 443 is reserved for the later canonical HTTPS edge.", false);
+const ports = [4173, 5173, 53001, 54000, 14317, 14318, 55432, 56379, 59000, 59001, 6010];
+const edgePortFree = await portIsFree(443);
+record(
+  "port:443 (LP-6)",
+  edgePortFree,
+  edgePortFree ? "free" : "unavailable to unprivileged probe",
+  edgePortFree
+    ? "Canonical HTTPS edge host port is available."
+    : "An unprivileged WSL process may receive EACCES for port 443; Docker startup is the authoritative availability check.",
+  false,
+);
 for (const port of ports) {
   const free = await portIsFree(port);
   record(`port:${port}`, free || allowRunning, free ? "free" : "busy", allowRunning ? "Busy port accepted by --allow-running." : "Port must be free before a clean stack start.", !allowRunning);

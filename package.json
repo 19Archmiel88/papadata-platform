@@ -60,7 +60,9 @@
     "generate:production-parity-env-example": "node tools/generate-production-parity-env-example.mjs",
     "verify:production-parity-env": "node tools/verify-production-parity-env-contract.mjs",
     "verify:local-parity": "pnpm verify:local-parity-contract && pnpm verify:production-parity-env && pnpm --filter @papadata/web typecheck",
-    "test:backend-production-parity:restart": "node tests/backend-production-parity/restart-failure.mjs"
+    "test:backend-production-parity:restart": "node tests/backend-production-parity/restart-failure.mjs",
+    "test:web-production-parity": "node tests/web-production-parity/smoke.mjs",
+    "test:web-production-parity:csp": "pnpm --filter @papadata/web exec playwright test --config playwright.production-parity.config.ts"
   },
   "devDependencies": {
     "turbo": "2.10.9",

@@ -1,0 +1,48 @@
+server {
+  listen 8443 ssl;
+  server_name papadata.localhost;
+
+  ssl_certificate /run/papadata-edge-tls/server.crt;
+  ssl_certificate_key /run/papadata-edge-tls/server.key;
+  ssl_protocols TLSv1.2 TLSv1.3;
+
+  client_max_body_size ${BFF_MAX_BODY_BYTES};
+
+  # /api/* -> BFF only. No security-header add_header directives in this
+  # block: the BFF (apps/bff/src/app.factory.ts, @fastify/helmet) already
+  # originates its own headers for its JSON responses, and this location
+  # must pass them through unmodified rather than layering a second,
+  # web-app-shaped CSP on top of them.
+  location /api/ {
+    proxy_pass http://bff-production:3001;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 15s;
+    proxy_send_timeout 15s;
+  }
+
+  # Everything else -> the static web build. This location is the SSOT for
+  # browser-facing security headers (the web-production container itself
+  # sets none, see infra/production/web/nginx.conf).
+  location / {
+    proxy_pass http://web-production:8080;
+    proxy_set_header Host $host;
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 15s;
+    proxy_send_timeout 15s;
+
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+    # style-src allows 'unsafe-inline' (React inline styles / recharts SVG
+    # output have no practical nonce/hash story) and font-src allows data:
+    # (the build embeds @fontsource files as data: URIs). Both were found
+    # empirically, not assumed -- verified against real console output by
+    # apps/web/tests/production-parity/csp.spec.ts.
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'" always;
+  }
+}

@@ -114,6 +114,27 @@ describe("BFF A02 security boundary", { concurrency: false }, () => {
     );
   });
 
+  test("logout returns 200, revokes the session and blocks reuse", async () => {
+    const csrf = await issueCsrf();
+
+    const response = await inject(
+      "POST",
+      "/api/v1/auth/logout",
+      sessionHeaders("session-real", csrf),
+    );
+    const revoked = await store.findSession("session-real");
+    const afterLogout = await inject(
+      "GET",
+      "/api/v1/auth/session",
+      sessionHeaders(),
+    );
+
+    assert.equal(response.statusCode, 200);
+    assert.deepEqual(JSON.parse(response.body), { data: { loggedOut: true } });
+    assert.ok(revoked?.revokedAt);
+    assert.equal(afterLogout.statusCode, 401);
+  });
+
   test("state-changing requests require session-bound CSRF and allowed Origin", async () => {
     const csrf = await issueCsrf();
 

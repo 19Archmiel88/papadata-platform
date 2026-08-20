@@ -28,8 +28,14 @@ export class BffIdentitySessionService {
   constructor(
     @Inject(BFF_CONFIG) private readonly config: BffConfig,
     @Inject(BFF_SESSION_STORE) private readonly sessions: BffSessionStore,
+
+    @Inject(BffSecurityService)
     private readonly security: BffSecurityService,
+
+    @Inject(BffRateLimitService)
     private readonly rateLimit: BffRateLimitService,
+
+    @Inject(CloudRunIdentityService)
     private readonly cloudRunIdentity: CloudRunIdentityService,
   ) {}
 
@@ -115,6 +121,7 @@ export class BffIdentitySessionService {
     this.security.validateCsrf(request, session);
     await this.sessions.revokeSession(session.sessionId, new Date().toISOString());
     reply
+      .status(200)
       .clearCookie(this.config.sessionCookieName, { path: this.config.cookiePath })
       .clearCookie(this.config.csrfCookieName, { path: this.config.cookiePath })
       .send({ data: { loggedOut: true } });

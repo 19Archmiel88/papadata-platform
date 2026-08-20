@@ -48,9 +48,6 @@ const meta = {
     docs: {
       disable: true,
     },
-    test: {
-      disable: true,
-    },
   },
 } satisfies Meta;
 
@@ -117,7 +114,7 @@ export const KpiSectionStory: Story = {
 };
 
 export const PlanVsForecastSectionStory: Story = {
-  name: 'Plan vs Prognoza',
+  name: 'Plan vs Benchmark',
   render: () => (
     <SectionCanvas>
       <CommandCenterPlanExecutionSection
@@ -130,43 +127,38 @@ export const PlanVsForecastSectionStory: Story = {
   ),
 };
 
-// Two relationships, deliberately on opposite sides of the basis fork: volume
-// has enough real paired history to correlate; efficiency demonstrates the
-// deterministic contribution-share fallback (sampleSize below the real
-// backend's MIN_CORRELATION_SAMPLE_SIZE) so both honest-labeling paths are
-// visible in this demo, not just the happy path.
+// Efficiency demonstrates the honest insufficient-data state
+// (sampleSize below the backend's MIN_CORRELATION_SAMPLE_SIZE), so the UI
+// never invents a replacement statistic when Pearson r is not defensible.
+// Volume is always a decomposition (exact algebra, never a correlation) —
+// see command-center-metrics.contract-data.ts for why orders-vs-AOV
+// correlation would be statistically spurious.
 const demoDriverRelationships: DriverRelationships = {
   efficiency: {
-    basis: 'contribution-share',
+    basis: 'insufficient-data',
     coefficient: null,
-    contributionShare: 0.63,
     points: Array.from({ length: 8 }, (_unused, index) => ({
       id: `efficiency-${index}`,
       label: `T-${7 - index}`,
       x: 1_800 + index * 60,
-      y: 3.6 + (index % 3) * 0.15,
+      y: 6_500 + index * 220,
     })),
     sampleSize: 8,
     xLabel: 'Koszt mediów',
     xMetricId: 'demo-ad-spend',
-    yLabel: 'ROAS',
-    yMetricId: 'demo-roas',
+    yLabel: 'Przychód z reklam (attributed)',
+    yMetricId: 'demo-attributed-revenue',
   },
   volume: {
-    basis: 'correlation',
-    coefficient: 0.42,
-    contributionShare: null,
-    points: Array.from({ length: 14 }, (_unused, index) => ({
-      id: `volume-${index}`,
-      label: `T-${13 - index}`,
-      x: 30 + index * 2 + (index % 4),
-      y: 150 + index * 3 - (index % 3) * 4,
-    })),
+    basis: 'decomposition',
+    endValue: 92_400,
+    priceEffect: 4_100,
+    priceLabel: 'Wartość koszyka (AOV)',
     sampleSize: 14,
-    xLabel: 'Zamówienia',
-    xMetricId: 'demo-orders',
-    yLabel: 'AOV',
-    yMetricId: 'demo-aov',
+    startValue: 84_900,
+    unit: 'currency',
+    volumeEffect: 3_400,
+    volumeLabel: 'Liczba zamówień',
   },
 };
 

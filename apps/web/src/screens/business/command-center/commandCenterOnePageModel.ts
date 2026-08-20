@@ -5,21 +5,15 @@ import type {
 } from '../../../../../../contracts/api-schemas';
 import type {
   DataColumn,
-  DataRow,
 } from '../../../../../../contracts/component-shared';
 import type {
-  DataSourceRef,
   DateRange,
 } from '../../../../../../contracts/ui-contract-types';
-import type {
-  AnalyticsDataState,
-} from '../../../design-system';
 import type {
   BusinessScreenData,
   BusinessScreenDefinition,
 } from '../businessData';
 import {
-  formatInteger,
   formatMetricValue,
   formatPercent as formatWorkspacePercent,
   formatSignedPercent,
@@ -36,6 +30,26 @@ export type CommandOnePageIssue = {
   readonly label: string;
   readonly severity: 'critical' | 'warning';
 };
+
+/**
+ * The section anchors the runtime one-page (`CommandCenterOnePage`) actually
+ * renders, in order. Both `CommandCenterOnePage`'s `CommandSectionAnchor` ids
+ * and `CommandCenterWorkspace`'s section-rail navigation are built from this
+ * single list — a section can no longer be wired into the nav rail without
+ * being wired into the page (or vice versa), which is exactly how "Drivery
+ * wyniku" ended up reachable by URL/nav-less-obviously while the one-page
+ * itself rendered only KPI + Plan. Lives here, not in CommandCenterWorkspace
+ * or CommandCenterOnePage, because this module has no CSS/JSX imports and can
+ * be covered by a plain node:test — those two files can't be, in this repo's
+ * current test setup.
+ */
+export const commandCenterOnePageSectionIds = [
+  'command-section-kpi',
+  'command-section-plan',
+  'command-section-drivers',
+] as const;
+
+export type CommandCenterOnePageSectionId = (typeof commandCenterOnePageSectionIds)[number];
 
 export type OperationalPriority =
   | 'critical'
@@ -112,12 +126,13 @@ export const productColumns: readonly DataColumn[] = [
  * Executive KPI set for the one-page.
  *
  * Only metrics that are present in the contract, or that follow from present
- * metrics by real arithmetic (AOV = revenue / orders, ad cost = revenue / ROAS,
- * CPA = ad cost / orders), are emitted. Nothing is invented: a metric without
- * backing simply does not appear, and the sections fall back to their empty
- * states instead of showing a plausible-looking constant.
+ * metrics by a semantically valid identity, are emitted. AOV, ad spend and CPA
+ * come only from their canonical contract records; they are never reconstructed
+ * from neighboring store-wide metrics with different attribution semantics.
+ * Nothing is invented: unavailable metrics stay explicitly unavailable.
  *
- * The demo variant used by fixtures lives in {@link buildDemoExecutiveKpiRecords}.
+ * The demo variant used only by Storybook fixtures lives in
+ * {@link buildDemoExecutiveKpiRecords}.
  */
 export function buildExecutiveKpiRecords(
   records: readonly CommandCenterRecord[],
@@ -131,6 +146,7 @@ export function buildExecutiveKpiRecords(
   const margin = findRecordByLabel(records, ['marza', 'margin']) ?? null;
   const canonicalAov = findRecordByLabel(records, ['aov']) ?? null;
   const canonicalAdSpend = findRecordByLabel(records, ['koszt reklam', 'wydatki na reklam', 'ad spend']) ?? null;
+  const canonicalCpa = findRecordByLabel(records, ['cpa', 'koszt pozyskania', 'koszt zakupu']) ?? null;
 
   const derived: CommandCenterRecord[] = [];
 
@@ -156,21 +172,11 @@ export function buildExecutiveKpiRecords(
   pushMapped(conversion, 'command-kpi-conversion', 'Konwersja');
   pushMapped(roas, 'command-kpi-roas', 'ROAS');
 
-  // AOV: prefer the canonical `aov` metric read directly from the contract;
-  // revenue / orders is only a fallback, and it's a true identity when both
-  // come from the same response — never an estimate.
+  // AOV's canonical numerator is gross order value. Store revenue shown in
+  // this view is net of refunds, so revenue / orders is not the same metric
+  // and must never be used as a fallback.
   if (canonicalAov) {
     pushMapped(canonicalAov, 'command-kpi-aov', 'AOV');
-  } else if (revenue && orders && orders.value > 0) {
-    derived.push(makeCommandRecord(
-      'command-kpi-aov',
-      'AOV',
-      revenue.value / orders.value,
-      'currency',
-      null,
-      null,
-      resolveDerivedReadiness(revenue.readiness, orders.readiness),
-    ));
   }
 
   // Ad spend must come from the canonical `ad_spend` metric. It is
@@ -181,23 +187,18 @@ export function buildExecutiveKpiRecords(
   // does not appear — no invented number stands in for it.
   if (canonicalAdSpend) {
     pushMapped(canonicalAdSpend, 'command-kpi-ad-cost', 'Koszt reklamy');
+  }
 
-    if (orders && orders.value > 0) {
-      derived.push(makeCommandRecord(
-        'command-kpi-cpa',
-        'Koszt zakupu',
-        canonicalAdSpend.value / orders.value,
-        'currency',
-        null,
-        null,
-        resolveDerivedReadiness(canonicalAdSpend.readiness, orders.readiness),
-      ));
-    }
+  // CPA requires ad-attributed acquisitions, not all store orders. The
+  // backend exposes an explicit unavailable CPA record until that source is
+  // ingested; never divide ad spend by every order and call it acquisition.
+  if (canonicalCpa) {
+    pushMapped(canonicalCpa, 'command-kpi-cpa', 'CPA');
   }
 
   // Anything the contract carries but the mapping above did not claim stays
   // visible in the supporting strip rather than being silently dropped.
-  const claimed = new Set([revenue, orders, margin, conversion, roas, canonicalAov, canonicalAdSpend]
+  const claimed = new Set([revenue, orders, margin, conversion, roas, canonicalAov, canonicalAdSpend, canonicalCpa]
     .filter(isCommandCenterRecord)
     .map((record) => record.metricId));
 
@@ -213,8 +214,8 @@ function isCommandCenterRecord(
 }
 
 /**
- * Demo KPI set — plausible constants for Storybook fixtures and the localhost
- * dev fallback. Never reachable from a deployed runtime.
+ * Demo KPI set — plausible constants for isolated Storybook fixtures only.
+ * Runtime code must always render the BFF-backed records.
  */
 export function buildDemoExecutiveKpiRecords(
   records: readonly CommandCenterRecord[],
@@ -367,84 +368,6 @@ export function resolveRecommendationProjectedValue(
   return isLowerBetterMetric(record)
     ? record.value * (1 - adjustment)
     : record.value * (1 + adjustment);
-}
-
-export function buildRecordSparklinePoints(
-  record: CommandCenterRecord,
-  pointCount: number,
-): readonly number[] {
-  const delta = record.delta ?? 0;
-  const start = record.value / Math.max(0.22, 1 + delta);
-  const amplitude = Math.max(Math.abs(record.value) * 0.035, 0.01);
-
-  return Array.from({ length: pointCount }, (_, index) => {
-    const ratio = pointCount <= 1 ? 1 : index / (pointCount - 1);
-    const baseline = interpolateNumber(start, record.value, ratio);
-    const wave = Math.sin((index + 1) * 1.41) * amplitude;
-
-    return index === pointCount - 1
-      ? record.value
-      : clampMetricValue(baseline + wave, record.unit);
-  });
-}
-
-export type MetricRelationshipPoint = {
-  readonly id: string;
-  readonly label: string;
-  readonly x: number;
-  readonly y: number;
-};
-
-/**
- * Zips two records' synthesized histories (same technique as
- * {@link buildRecordSparklinePoints}) into paired (x, y) observations, so a
- * two-metric relationship chart can be built without the contract carrying
- * real day-by-day history.
- */
-export function buildMetricRelationshipPoints(
-  xRecord: CommandCenterRecord,
-  yRecord: CommandCenterRecord,
-  pointCount: number,
-): readonly MetricRelationshipPoint[] {
-  const xValues = buildRecordSparklinePoints(xRecord, pointCount);
-  const yValues = buildRecordSparklinePoints(yRecord, pointCount);
-  const lastIndex = xValues.length - 1;
-
-  return xValues.map((x, index) => ({
-    id: `point-${index}`,
-    label: index === lastIndex ? 'Dziś' : `T-${lastIndex - index}`,
-    x,
-    y: yValues[index] ?? yRecord.value,
-  }));
-}
-
-/** Pearson correlation coefficient; null when it is not defined (<2 points or a constant series). */
-export function resolveCorrelationCoefficient(
-  points: readonly MetricRelationshipPoint[],
-): number | null {
-  if (points.length < 2) {
-    return null;
-  }
-
-  const meanX = points.reduce((sum, point) => sum + point.x, 0) / points.length;
-  const meanY = points.reduce((sum, point) => sum + point.y, 0) / points.length;
-
-  let covariance = 0;
-  let varianceX = 0;
-  let varianceY = 0;
-
-  points.forEach((point) => {
-    const dx = point.x - meanX;
-    const dy = point.y - meanY;
-
-    covariance += dx * dy;
-    varianceX += dx * dx;
-    varianceY += dy * dy;
-  });
-
-  const denominator = Math.sqrt(varianceX * varianceY);
-
-  return denominator === 0 ? null : covariance / denominator;
 }
 
 export function resolveRuntimeForecastValue(record: CommandCenterRecord): number {

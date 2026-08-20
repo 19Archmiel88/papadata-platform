@@ -7,7 +7,7 @@ import type {
 } from '../../../../../contracts/ui-contract-types';
 import type {
   AnalyticsDataState,
-} from '../../design-system';
+} from '../../design-system/components/Analytics/analyticsTypes';
 import {
   defaultWorkspaceContext,
 } from './businessData';

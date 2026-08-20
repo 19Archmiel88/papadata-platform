@@ -21,12 +21,10 @@ import {
   resolveReadinessLabel,
 } from './commandCenterOnePageModel';
 
-// The eight executive KPI — real contract metrics plus the arithmetic
-// identities `buildExecutiveKpiRecords`/`buildDemoExecutiveKpiRecords`
-// derive from them (AOV, ad cost, CPA). Fixed order and a fixed id list
-// (rather than label matching) so the grid always renders the same
-// business-critical set in the same 2×4 layout; a metric that can't be
-// derived (missing source data) simply drops out instead of being faked.
+// The eight executive KPI use canonical contract records. Metrics without a
+// trustworthy source (currently e.g. margin, cart conversion or CPA) remain
+// explicit unavailable cards instead of being reconstructed from unrelated
+// values. Fixed ids keep the 2×4 executive layout stable.
 const executiveKpiOrder = [
   'command-kpi-revenue',
   'command-kpi-orders',
@@ -103,9 +101,9 @@ function formatCommandTargetLabel(record: CommandCenterRecord): string | null {
 
 const commandMetricHelpTexts: Record<string, string> = {
   'command-kpi-ad-cost': 'Łączny koszt kampanii reklamowych w wybranym okresie. Pomaga ocenić presję kosztową marketingu.',
-  'command-kpi-aov': 'Średnia wartość zamówienia: przychód podzielony przez liczbę zakupów.',
+  'command-kpi-aov': 'Średnia wartość brutto zamówienia: wartość brutto zamówień podzielona przez liczbę zamówień.',
   'command-kpi-conversion': 'Odsetek ruchu, który zakończył się zakupem. Pokazuje skuteczność ścieżki od wejścia do transakcji.',
-  'command-kpi-cpa': 'Średni koszt pozyskania zakupu: koszt reklamy podzielony przez liczbę zakupów.',
+  'command-kpi-cpa': 'Koszt pozyskania przypisanego do płatnych działań. Wymaga liczby zakupów przypisanych reklamom; bez tego źródła metryka pozostaje niedostępna.',
   'command-kpi-gross-margin': 'Część przychodu pozostająca po odjęciu kosztu sprzedanych produktów. Im wyżej, tym zdrowsza sprzedaż.',
   'command-kpi-orders': 'Liczba sfinalizowanych zakupów w wybranym okresie.',
   'command-kpi-revenue': 'Łączny przychód ze sprzedaży w wybranym okresie przed dodatkowymi korektami finansowymi.',
@@ -153,11 +151,11 @@ function renderKpiCard(
   dataState: AnalyticsDataState,
 ) {
   const isPrimary = record.metricId === primaryKpiMetricId;
+  const isUnavailable = record.readiness === 'unavailable';
 
   return (
     <MetricCard
-      className="pd-command-center-one-page__kpi-card"
-      comparison={buildMetricComparison(record)}
+      comparison={isUnavailable ? null : buildMetricComparison(record)}
       density="compact"
       deviationLabel={resolveMetricDeviationLabel(record)}
       emphasis={isPrimary ? 'recommendation' : 'default'}
@@ -165,15 +163,17 @@ function renderKpiCard(
       helpText={resolveCommandMetricHelpText(record)}
       key={record.metricId}
       label={record.label}
+      layout="sparkline-aside"
       metricId={record.metricId}
       role="listitem"
       signal={resolveMetricSignal(record)}
       sourceLabel={resolveMetricSourceLabel(record)}
-      sparklinePoints={record.sparkline ?? []}
+      sparklinePoints={isUnavailable ? [] : (record.sparkline ?? [])}
+      stateMessage={isUnavailable ? 'Brak wiarygodnego źródła danych dla tej metryki.' : null}
       status={resolveCommandMetricState(record, dataState)}
       statusLabel={resolveReadinessLabel(record.readiness)}
-      targetLabel={formatCommandTargetLabel(record)}
-      value={formatCommandMetricValue(record)}
+      targetLabel={isUnavailable ? null : formatCommandTargetLabel(record)}
+      value={isUnavailable ? null : formatCommandMetricValue(record)}
     />
   );
 }

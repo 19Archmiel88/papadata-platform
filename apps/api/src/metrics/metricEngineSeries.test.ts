@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   computeMetricEngineSeries,
+  createMetricEngineInput,
   createMetricEngineSeriesInput,
 } from "./metricEngineCore.ts";
 
@@ -85,4 +86,122 @@ test("computeMetricEngineSeries: ratio metrics (roas, aov) stay within a sane ra
       assert.ok(aov > 0, `aov ${aov} on ${day.date} should be positive`);
     }
   }
+});
+
+test("computeMetricEngineSeries: surfaces real per-metric aggregate readiness, not just values", () => {
+  const readyInput = {
+    ...createMetricEngineSeriesInput({
+      days: 21,
+      generatedAt: "2026-08-19T00:00:00.000Z" as any,
+      tenantId: "tenant_readiness_check",
+      workspaceId: "workspace_readiness_check",
+    }),
+    // The sandbox's checkpoint fixture is anchored near its own template
+    // date, not this test's generatedAt — clear it so this test verifies
+    // readiness propagation, not sandbox freshness-fixture coincidence.
+    syncCheckpoints: [],
+  };
+  const ready = computeMetricEngineSeries(readyInput, ["orders", "ad_spend"]);
+  assert.equal(ready.readiness.orders, "ready");
+  assert.equal(ready.readiness.ad_spend, "ready");
+  assert.deepEqual(ready.reasonCodes.orders, []);
+
+  const emptyInput = {
+    ...readyInput,
+    canonicalAdSpend: [],
+    canonicalOrders: [],
+    canonicalOrderLines: [],
+  };
+  const empty = computeMetricEngineSeries(emptyInput, ["orders", "ad_spend"]);
+  assert.equal(empty.readiness.orders, "no_data");
+  assert.equal(empty.readiness.ad_spend, "no_data");
+  assert.deepEqual(empty.reasonCodes.orders, ["NO_DATA"]);
+});
+
+test("computeMetricEngineSeries aligns daily buckets to the input timezone across DST", () => {
+  const template = createMetricEngineSeriesInput({
+    days: 1,
+    generatedAt: "2026-08-19T00:00:00.000Z" as any,
+    tenantId: "tenant_dst_check",
+    workspaceId: "workspace_dst_check",
+  });
+  const input = {
+    ...template,
+    canonicalAdSpend: [],
+    canonicalAttributedConversions: [],
+    canonicalCustomerReturns: [],
+    canonicalOrderLines: [],
+    canonicalOrders: [],
+    canonicalRefunds: [],
+    periodStart: "2026-03-28T23:00:00.000Z" as any, // 2026-03-29 00:00 Europe/Warsaw
+    periodEnd: "2026-03-30T22:00:00.000Z" as any,   // 2026-03-31 00:00 Europe/Warsaw
+    timezone: "Europe/Warsaw",
+  };
+
+  const { daily } = computeMetricEngineSeries(input, ["orders"]);
+
+  assert.deepEqual(
+    daily.map((day) => day.date),
+    ["2026-03-29", "2026-03-30"],
+    "the spring DST transition must still produce exactly the two requested local calendar days",
+  );
+});
+
+test("days_of_inventory counts elapsed local-day equivalents instead of touched calendar dates", () => {
+  const input = createMetricEngineInput();
+
+  const fullWindow = computeMetricEngineSeries(
+    input,
+    ["days_of_inventory"],
+  );
+
+  assert.equal(
+    fullWindow.aggregate.days_of_inventory,
+    "12.0000",
+    "48 elapsed hours must equal two day equivalents even when Europe/Warsaw touches three calendar dates",
+  );
+
+  const partialWindow = computeMetricEngineSeries(
+    {
+      ...input,
+      periodEnd: "2026-07-19T12:00:00.000Z" as any,
+    },
+    ["days_of_inventory"],
+  );
+
+  assert.equal(
+    partialWindow.aggregate.days_of_inventory,
+    "3.0000",
+    "12 elapsed hours inside a normal 24-hour local day must contribute half of one day equivalent",
+  );
+});
+
+test("days_of_inventory treats two complete Warsaw calendar days across DST as two day equivalents", () => {
+  const input = createMetricEngineInput();
+
+  const dstInput = {
+    ...input,
+    canonicalOrders: input.canonicalOrders.map((order, index) => ({
+      ...order,
+      orderedAt: (
+        index % 2 === 0
+          ? "2026-03-29T08:00:00.000Z"
+          : "2026-03-30T08:00:00.000Z"
+      ) as any,
+    })),
+    periodStart: "2026-03-28T23:00:00.000Z" as any,
+    periodEnd: "2026-03-30T22:00:00.000Z" as any,
+    timezone: "Europe/Warsaw",
+  };
+
+  const result = computeMetricEngineSeries(
+    dstInput,
+    ["days_of_inventory"],
+  );
+
+  assert.equal(
+    result.aggregate.days_of_inventory,
+    "12.0000",
+    "two complete local calendar days must remain two day equivalents across the spring DST transition",
+  );
 });

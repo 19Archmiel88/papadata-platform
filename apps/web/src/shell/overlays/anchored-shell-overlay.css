@@ -8,48 +8,12 @@
    * Anchored overlaye należą do chrome produktu,
    * dlatego również nie zmieniają materiału wraz z motywem workspace.
    */
-  --pd-shell-canvas: #090d16;
-  --pd-shell-surface: #0f172a;
-  --pd-shell-surface-subtle: #111827;
-  --pd-shell-surface-raised: #1e293b;
-  --pd-shell-surface-overlay: rgba(9, 13, 22, 0.94);
-  --pd-shell-surface-active: #312e81;
-
-  --pd-shell-text: #f1f5f9;
-  --pd-shell-text-secondary: #cbd5e1;
-  --pd-shell-text-muted: #94a3b8;
-
-  --pd-shell-separator: rgba(255, 255, 255, 0.10);
-  --pd-shell-separator-strong: rgba(255, 255, 255, 0.18);
-
-  --pd-shell-brand: #818cf8;
-  --pd-shell-brand-strong: #c7d2fe;
-  --pd-shell-brand-ambient: rgba(99, 102, 241, 0.18);
-  --pd-shell-glow: rgba(99, 102, 241, 0.28);
-
-  --pd-brand-highlight: #e0e7ff;
-  --pd-brand-action: #4f46e5;
-  --pd-brand-action-hover: #6366f1;
-  --pd-brand-action-active: #818cf8;
-  --pd-brand-action-on: #ffffff;
-  --pd-surface-active: #312e81;
-
-  --pd-refractive-primary:
-    linear-gradient(
-      135deg,
-      #4338ca 0%,
-      #6d28d9 52%,
-      #4338ca 100%
-    );
-
-  --pd-refractive-primary-hover:
-    linear-gradient(
-      135deg,
-      #4f46e5 0%,
-      #7c3aed 52%,
-      #4f46e5 100%
-    );
-
+  --pd-brand-highlight: var(--pd-shell-brand-strong);
+  --pd-brand-action: var(--pd-shell-brand);
+  --pd-brand-action-hover: color-mix(in srgb, var(--pd-shell-brand) 82%, var(--pd-shell-brand-strong));
+  --pd-brand-action-active: var(--pd-shell-brand-strong);
+  --pd-brand-action-on: var(--pd-shell-text);
+  --pd-surface-active: var(--pd-shell-surface-active);
   --pd-text: var(--pd-shell-text);
   --pd-text-secondary: var(--pd-shell-text-secondary);
   --pd-text-muted: var(--pd-shell-text-muted);
@@ -189,21 +153,6 @@
 
 /* PapaData quick crystal correction - shell popovers use opaque dark crystal material. */
 .pd-shell-anchored-overlay-root {
-  --pd-shell-canvas: #050816;
-  --pd-shell-surface: #090d16;
-  --pd-shell-surface-subtle: #0d1628;
-  --pd-shell-surface-raised: #111b2d;
-  --pd-shell-surface-overlay: #070c18;
-  --pd-shell-surface-active: rgb(129 140 248 / 0.12);
-  --pd-shell-text: #f1f5f9;
-  --pd-shell-text-secondary: #cbd5e1;
-  --pd-shell-text-muted: #94a3b8;
-  --pd-shell-separator: rgb(255 255 255 / 0.10);
-  --pd-shell-separator-strong: rgb(255 255 255 / 0.18);
-  --pd-shell-brand: #818cf8;
-  --pd-shell-brand-strong: #c7d2fe;
-  --pd-shell-brand-ambient: rgb(99 102 241 / 0.18);
-  --pd-shell-glow: rgb(99 102 241 / 0.28);
 }
 
 .pd-shell-anchored-overlay {
@@ -213,7 +162,7 @@
       rgb(129 140 248 / 0.12),
       transparent 62%
     ),
-    linear-gradient(155deg, #111b2d 0%, #090d16 100%);
+    linear-gradient(155deg, var(--pd-shell-surface-raised) 0%, var(--pd-shell-canvas) 100%);
   border-color: rgb(255 255 255 / 0.12);
 }
 

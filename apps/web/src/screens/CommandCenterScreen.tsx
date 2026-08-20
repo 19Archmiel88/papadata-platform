@@ -16,9 +16,10 @@ import {
   BusinessScreen,
 } from './business/BusinessScreen';
 import {
-  applyCommandCenterDateRange,
+  commandCenterOnePageDataScreenIds,
   createCommandCenterBusinessData,
   findBusinessScreenDefinition,
+  mergeCommandCenterOnePageApiData,
 } from './business/businessData';
 import type {
   BusinessScreenData,
@@ -79,15 +80,42 @@ export function CommandCenterScreen({
       problem: null,
     }));
 
-    bffClient
-      .readDomainScreen<CommandCenterApiData>(
-        definition.apiPath,
-        { dateRange },
-      )
-      .then((data) => {
+    const [kpiScreenId, planScreenId, driversScreenId] = commandCenterOnePageDataScreenIds;
+    const kpiDefinition = findBusinessScreenDefinition(kpiScreenId);
+    const planDefinition = findBusinessScreenDefinition(planScreenId);
+    const driversDefinition = findBusinessScreenDefinition(driversScreenId);
+
+    if (
+      !kpiDefinition
+      || !planDefinition
+      || !driversDefinition
+      || kpiDefinition.group !== 'command-center'
+      || planDefinition.group !== 'command-center'
+      || driversDefinition.group !== 'command-center'
+    ) {
+      setState({
+        data: null,
+        loading: false,
+        problem: 'Brakuje kontraktów danych wymaganych przez landing Centrum Dowodzenia.',
+      });
+      return () => {
+        active = false;
+      };
+    }
+
+    Promise.all([
+      bffClient.readDomainScreen<CommandCenterApiData>(kpiDefinition.apiPath, { dateRange }),
+      bffClient.readDomainScreen<CommandCenterApiData>(planDefinition.apiPath, { dateRange }),
+      bffClient.readDomainScreen<CommandCenterApiData>(driversDefinition.apiPath, { dateRange }),
+    ])
+      .then(([kpiData, planData, driversData]) => {
         if (!active) return;
 
-        if (!isCommandCenterApiData(data)) {
+        if (
+          !isCommandCenterApiData(kpiData)
+          || !isCommandCenterApiData(planData)
+          || !isCommandCenterApiData(driversData)
+        ) {
           setState({
             data: null,
             loading: false,
@@ -96,12 +124,10 @@ export function CommandCenterScreen({
           return;
         }
 
-        const commandData = createCommandCenterBusinessData(definition, data);
+        const data = mergeCommandCenterOnePageApiData(kpiData, planData, driversData);
 
         setState({
-          data: commandData.group === 'command-center'
-            ? applyCommandCenterDateRange(commandData, dateRange)
-            : commandData,
+          data: createCommandCenterBusinessData(definition, data),
           loading: false,
           problem: null,
         });

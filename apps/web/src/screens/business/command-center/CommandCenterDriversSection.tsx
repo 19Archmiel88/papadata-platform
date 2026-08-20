@@ -1,5 +1,6 @@
 import type {
   CommandCenterRecord,
+  DriverDecompositionView,
   DriverRelationshipPointView,
   DriverRelationshipView,
   DriverRelationships,
@@ -114,40 +115,63 @@ type RelationshipCopy = {
 /** |r| below this reads as "no meaningful pattern in this range", not a forced direction. */
 const weakCorrelationThreshold = 0.15;
 
-const contributionSharePercentFormatter = new Intl.NumberFormat('pl-PL', {
+const currencyFormatter = new Intl.NumberFormat('pl-PL', {
+  currency: 'PLN',
   maximumFractionDigits: 0,
-  style: 'percent',
+  style: 'currency',
 });
 
 /**
- * When the backend had enough real paired history to correlate, this reads
- * the real coefficient's direction. When it didn't (basis ===
- * 'contribution-share'), it never guesses a direction — it says so
- * explicitly and reports the simpler, honestly-labeled deterministic
- * indicator instead (see command-center-metrics.contract-data.ts on the
- * backend for how that fallback is computed).
+ * Marginal response computed client-side from the same real (x, y) pairs the
+ * chart plots — first half of the window vs. second half, both real spend
+ * and real attributed-revenue observations. This is deliberately never sent
+ * as its own backend field: it is exactly derivable from `points`, so
+ * computing it here can never disagree with what's drawn.
+ */
+function resolveMarginalResponse(points: readonly DriverRelationshipPointView[]): number | null {
+  if (points.length < 4) {
+    return null;
+  }
+
+  const half = Math.floor(points.length / 2);
+  const firstHalf = points.slice(0, half);
+  const secondHalf = points.slice(half);
+  const average = (values: readonly number[]) => values.reduce((sum, value) => sum + value, 0) / values.length;
+  const deltaX = average(secondHalf.map((point) => point.x)) - average(firstHalf.map((point) => point.x));
+  const deltaY = average(secondHalf.map((point) => point.y)) - average(firstHalf.map((point) => point.y));
+
+  return deltaX === 0 ? null : deltaY / deltaX;
+}
+
+/**
+ * When the backend has enough real paired observations, this reads the
+ * Pearson coefficient's direction. Otherwise it reports insufficient data
+ * without inventing a replacement statistic. Never phrased as one metric
+ * "causing" the other — correlation is not a causal claim.
  */
 function resolveRelationshipInsight(
   relationship: DriverRelationshipView,
   copy: RelationshipCopy,
 ): string {
-  if (relationship.basis === 'contribution-share') {
-    const share = contributionSharePercentFormatter.format(relationship.contributionShare ?? 0);
-
-    return `Za mało realnego zróżnicowania w tym oknie (n=${relationship.sampleSize}), żeby policzyć korelację. Prostszy wskaźnik: ${relationship.yLabel} odpowiada za ${share} łącznej zmiany obu metryk.`;
+  if (relationship.basis === 'insufficient-data') {
+    return `Za mało realnych, sparowanych obserwacji lub zbyt małe zróżnicowanie danych (n=${relationship.sampleSize}), żeby wiarygodnie policzyć korelację. Pokazujemy wyłącznie realne punkty, bez zastępczego wskaźnika.`;
   }
 
   const correlation = relationship.coefficient ?? 0;
+  const marginal = resolveMarginalResponse(relationship.points);
+  const marginalNote = marginal === null
+    ? ''
+    : ` Krańcowo w tym oknie (druga połowa vs. pierwsza): +1 PLN wydatku ≈ ${currencyFormatter.format(marginal)} przychodu z reklam.`;
 
   if (correlation >= weakCorrelationThreshold) {
-    return copy.positive;
+    return `${copy.positive}${marginalNote}`;
   }
 
   if (correlation <= -weakCorrelationThreshold) {
-    return copy.negative;
+    return `${copy.negative}${marginalNote}`;
   }
 
-  return copy.neutral;
+  return `${copy.neutral}${marginalNote}`;
 }
 
 function buildRelationshipChart({
@@ -177,20 +201,58 @@ function buildRelationshipChart({
   );
 }
 
-function buildVolumeCorrelation(driverRelationships: DriverRelationships | null) {
+/**
+ * Orders x AOV decomposition, rendered the same way as the cost lens's
+ * revenue waterfall: start value, the two effects (each an increase or a
+ * decrease depending on sign), and the end value as a running total. This
+ * replaces a scatter/correlation view on purpose — see
+ * command-center-metrics.contract-data.ts for why correlating orders
+ * against AOV directly would have been statistically spurious.
+ */
+function buildVolumeWaterfall(driverRelationships: DriverRelationships | null) {
   if (!driverRelationships) {
     return null;
   }
 
-  return buildRelationshipChart({
-    ariaLabel: 'Zależność liczby zamówień i średniej wartości koszyka',
-    copy: {
-      negative: 'Wzrost liczby zamówień w tym zakresie obniża średni koszyk — wolumen rośnie kosztem jego wartości.',
-      neutral: 'Wolumen zamówień i wartość koszyka zmieniają się w tym zakresie niezależnie od siebie.',
-      positive: 'Więcej zamówień idzie w parze z wyższym koszykiem — wzrost napędzają razem wolumen i wartość koszyka.',
-    },
-    relationship: driverRelationships.volume,
-  });
+  const decomposition = driverRelationships.volume;
+
+  if (decomposition.sampleSize === 0) {
+    return null;
+  }
+
+  return (
+    <WaterfallChart
+      className="pd-command-center-one-page__chart-surface"
+      items={[
+        {
+          id: 'start',
+          kind: 'start' as const,
+          label: 'Przychód (I połowa okresu)',
+          value: decomposition.startValue,
+        },
+        {
+          id: 'volume',
+          kind: decomposition.volumeEffect >= 0 ? 'increase' as const : 'decrease' as const,
+          label: `Wpływ: ${decomposition.volumeLabel}`,
+          value: decomposition.volumeEffect,
+        },
+        {
+          id: 'price',
+          kind: decomposition.priceEffect >= 0 ? 'increase' as const : 'decrease' as const,
+          label: `Wpływ: ${decomposition.priceLabel}`,
+          value: decomposition.priceEffect,
+        },
+        {
+          id: 'end',
+          kind: 'total' as const,
+          label: 'Przychód (II połowa okresu)',
+          value: decomposition.endValue,
+        },
+      ]}
+      showCumulative
+      unit="PLN"
+    />
+  );
 }
 
 function buildEfficiencyCorrelation(driverRelationships: DriverRelationships | null) {
@@ -199,11 +261,11 @@ function buildEfficiencyCorrelation(driverRelationships: DriverRelationships | n
   }
 
   return buildRelationshipChart({
-    ariaLabel: 'Zależność kosztu mediów i zwrotu z reklam',
+    ariaLabel: 'Zależność kosztu mediów i przychodu przypisanego reklamom',
     copy: {
-      negative: 'Wzrost kosztu mediów obniża ROAS w tym zakresie — typowy efekt malejących zwrotów przy skalowaniu wydatków.',
-      neutral: 'ROAS pozostaje stabilny niezależnie od zmian kosztu mediów w tym zakresie.',
-      positive: 'Koszt mediów i ROAS rosną razem — skalowanie wydatków nie psuje jeszcze efektywności.',
+      negative: 'Wzrost kosztu mediów idzie w parze ze spadkiem przychodu przypisanego reklamom w tym zakresie.',
+      neutral: 'Przychód przypisany reklamom zmienia się w tym zakresie niezależnie od kosztu mediów.',
+      positive: 'Koszt mediów i przychód przypisany reklamom rosną razem w tym zakresie.',
     },
     relationship: driverRelationships.efficiency,
   });
@@ -219,7 +281,7 @@ function buildLensVisualization(
   }
 
   if (lens === 'volume') {
-    return buildVolumeCorrelation(driverRelationships);
+    return buildVolumeWaterfall(driverRelationships);
   }
 
   return buildEfficiencyCorrelation(driverRelationships);
@@ -264,6 +326,23 @@ function buildRelationshipTableRows(
   }));
 }
 
+const decompositionTableColumns: readonly DataColumn[] = [
+  { id: 'label', label: 'Krok', sortable: false, width: 220 },
+  { align: 'right', id: 'value', label: 'Wartość', sortable: false, width: 180 },
+];
+
+/** Rows built from the exact same four figures the waterfall plots. */
+function buildDecompositionTableRows(
+  decomposition: DriverDecompositionView,
+): readonly DataRow[] {
+  return [
+    { id: 'start', label: 'Przychód (I połowa okresu)', value: currencyFormatter.format(decomposition.startValue) },
+    { id: 'volume', label: `Wpływ: ${decomposition.volumeLabel}`, value: currencyFormatter.format(decomposition.volumeEffect) },
+    { id: 'price', label: `Wpływ: ${decomposition.priceLabel}`, value: currencyFormatter.format(decomposition.priceEffect) },
+    { id: 'end', label: 'Przychód (II połowa okresu)', value: currencyFormatter.format(decomposition.endValue) },
+  ];
+}
+
 type LensTable = {
   readonly ariaLabel: string;
   readonly columns: readonly DataColumn[];
@@ -291,11 +370,20 @@ function buildLensTable(
     return null;
   }
 
-  const isVolume = lens === 'volume';
-  const relationship = isVolume ? driverRelationships.volume : driverRelationships.efficiency;
+  if (lens === 'volume') {
+    return {
+      ariaLabel: 'Dane liczbowe dla perspektywy: Zamówienia vs AOV',
+      columns: decompositionTableColumns,
+      minWidth: 420,
+      rows: buildDecompositionTableRows(driverRelationships.volume),
+      sortColumnId: 'label',
+    };
+  }
+
+  const relationship = driverRelationships.efficiency;
 
   return {
-    ariaLabel: `Dane liczbowe dla perspektywy: ${isVolume ? 'Zamówienia vs AOV' : 'Koszt vs ROAS'}`,
+    ariaLabel: 'Dane liczbowe dla perspektywy: Koszt vs przychód z reklam',
     columns: buildRelationshipTableColumns(relationship.xLabel, relationship.yLabel),
     minWidth: 560,
     rows: buildRelationshipTableRows(relationship.points),

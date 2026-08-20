@@ -710,6 +710,135 @@ export function createMetricEngineInput(options: {
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+type CalendarDayWindow = {
+  readonly date: string;
+  readonly endMs: number;
+  readonly startMs: number;
+};
+
+function normalizeSeriesTimeZone(timezone: string): string {
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: timezone }).format(new Date(0));
+    return timezone;
+  } catch {
+    return "UTC";
+  }
+}
+
+function localDateOnlyForInstant(instantMs: number, timezone: string): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    day: "2-digit",
+    month: "2-digit",
+    timeZone: timezone,
+    year: "numeric",
+  }).formatToParts(new Date(instantMs));
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function parseCalendarDateOnly(dateOnly: string): { day: number; month: number; year: number } {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateOnly);
+  if (!match) {
+    throw new Error(`Invalid calendar date: ${dateOnly}`);
+  }
+
+  return {
+    day: Number(match[3]),
+    month: Number(match[2]),
+    year: Number(match[1]),
+  };
+}
+
+function addCalendarDays(dateOnly: string, days: number): string {
+  const { day, month, year } = parseCalendarDateOnly(dateOnly);
+  return new Date(Date.UTC(year, month - 1, day) + days * DAY_MS)
+    .toISOString()
+    .slice(0, 10);
+}
+
+function seriesTimeZoneOffsetMs(instantMs: number, timezone: string): number {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    hour: "2-digit",
+    hourCycle: "h23",
+    minute: "2-digit",
+    month: "2-digit",
+    second: "2-digit",
+    timeZone: timezone,
+    year: "numeric",
+  }).formatToParts(new Date(instantMs));
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  const representedAsUtc = Date.UTC(
+    Number(values.year),
+    Number(values.month) - 1,
+    Number(values.day),
+    Number(values.hour),
+    Number(values.minute),
+    Number(values.second),
+  );
+
+  return representedAsUtc - Math.floor(instantMs / 1000) * 1000;
+}
+
+function localMidnightMs(dateOnly: string, timezone: string): number {
+  const { day, month, year } = parseCalendarDateOnly(dateOnly);
+  const wallClockUtc = Date.UTC(year, month - 1, day);
+  let instantMs = wallClockUtc;
+
+  // Re-evaluate the offset because DST at the target date can differ from
+  // the provisional instant's offset. Three passes are deterministic and
+  // sufficient for IANA timezone transitions around local midnight.
+  for (let pass = 0; pass < 3; pass += 1) {
+    instantMs = wallClockUtc - seriesTimeZoneOffsetMs(instantMs, timezone);
+  }
+
+  return instantMs;
+}
+
+/**
+ * Splits the metric window into real local-calendar days in input.timezone.
+ * This avoids two subtle production bugs from the former fixed 24h slicing:
+ * dates were labelled in UTC (off by one in Europe/Warsaw) and DST days were
+ * forced to 24 hours even when the local day actually lasted 23 or 25.
+ */
+function buildCalendarDayWindows(input: MetricEngineInput): readonly CalendarDayWindow[] {
+  const periodStartMs = Date.parse(input.periodStart);
+  const periodEndMs = Date.parse(input.periodEnd);
+  if (
+    !Number.isFinite(periodStartMs)
+    || !Number.isFinite(periodEndMs)
+    || periodEndMs <= periodStartMs
+  ) {
+    return [];
+  }
+
+  const timezone = normalizeSeriesTimeZone(input.timezone);
+  let date = localDateOnlyForInstant(periodStartMs, timezone);
+  const lastDate = localDateOnlyForInstant(periodEndMs - 1, timezone);
+  const windows: CalendarDayWindow[] = [];
+
+  // The engine caps user-facing Command Center windows at 366 days, while
+  // this generic guard prevents malformed input from creating an unbounded
+  // loop in other callers.
+  for (let index = 0; index < 4_000; index += 1) {
+    const nextDate = addCalendarDays(date, 1);
+    const startMs = Math.max(periodStartMs, localMidnightMs(date, timezone));
+    const endMs = Math.min(periodEndMs, localMidnightMs(nextDate, timezone));
+
+    if (endMs > startMs) {
+      windows.push({ date, endMs, startMs });
+    }
+
+    if (date === lastDate) {
+      break;
+    }
+
+    date = nextDate;
+  }
+
+  return windows;
+}
+
 /**
  * Builds a multi-day MetricEngineInput by cloning the sandbox's canonical
  * fact template once per day, shifting dates into the window and scaling
@@ -836,7 +965,7 @@ export function createMetricEngineSeriesInput(options: {
     reconciliationReports: [],
     syncCheckpoints: template.syncCheckpoints,
     tenantId,
-    timezone: "Europe/Warsaw",
+    timezone: "UTC",
     workspaceId,
   };
 }
@@ -853,6 +982,8 @@ export function computeMetricEngineSeries(
   metricCodes: readonly DashboardMetricCode[],
 ): {
   readonly aggregate: Partial<Record<DashboardMetricCode, string | null>>;
+  readonly readiness: Partial<Record<DashboardMetricCode, MetricReadiness>>;
+  readonly reasonCodes: Partial<Record<DashboardMetricCode, readonly MetricReasonCode[]>>;
   readonly daily: readonly {
     readonly date: string;
     readonly values: Partial<Record<DashboardMetricCode, string | null>>;
@@ -860,25 +991,26 @@ export function computeMetricEngineSeries(
 } {
   const aggregateFacts = createMetricFacts(input);
   const aggregate: Partial<Record<DashboardMetricCode, string | null>> = {};
+  const readiness: Partial<Record<DashboardMetricCode, MetricReadiness>> = {};
+  const reasonCodes: Partial<Record<DashboardMetricCode, readonly MetricReasonCode[]>> = {};
 
   for (const code of metricCodes) {
-    aggregate[code] = calculateMetric(code, input, aggregateFacts).value;
+    const result = calculateMetric(code, input, aggregateFacts);
+    aggregate[code] = result.value;
+    readiness[code] = result.readiness;
+    reasonCodes[code] = result.reasonCodes;
   }
 
-  const windowStartMs = Date.parse(input.periodStart);
-  const windowEndMs = Date.parse(input.periodEnd);
-  const days = Math.max(1, Math.round((windowEndMs - windowStartMs) / DAY_MS));
   const daily: {
     readonly date: string;
     readonly values: Partial<Record<DashboardMetricCode, string | null>>;
   }[] = [];
 
-  for (let dayIndex = 0; dayIndex < days; dayIndex += 1) {
-    const dayStartMs = windowStartMs + dayIndex * DAY_MS;
+  for (const dayWindow of buildCalendarDayWindows(input)) {
     const dayInput: MetricEngineInput = {
       ...input,
-      periodEnd: toIsoDateTime(dayStartMs + DAY_MS),
-      periodStart: toIsoDateTime(dayStartMs),
+      periodEnd: toIsoDateTime(dayWindow.endMs),
+      periodStart: toIsoDateTime(dayWindow.startMs),
     };
     const dayFacts = createMetricFacts(dayInput);
     const values: Partial<Record<DashboardMetricCode, string | null>> = {};
@@ -887,10 +1019,10 @@ export function computeMetricEngineSeries(
       values[code] = calculateMetric(code, dayInput, dayFacts).value;
     }
 
-    daily.push({ date: toDateOnly(dayStartMs), values });
+    daily.push({ date: dayWindow.date, values });
   }
 
-  return { aggregate, daily };
+  return { aggregate, daily, readiness, reasonCodes };
 }
 
 function seriesWeight(
@@ -1016,7 +1148,7 @@ function valueForMetric(
   ).length;
   const clicks = sumIntegers(facts.adSpend.map((spend) => spend.clicks));
   const impressions = sumIntegers(facts.adSpend.map((spend) => spend.impressions));
-  const periodDays = periodDayCount(input.periodStart, input.periodEnd);
+  const periodDays = periodDayCount(input.periodStart, input.periodEnd, input.timezone);
 
   switch (metricCode) {
     case "ad_spend":
@@ -1168,7 +1300,7 @@ function createMetricFacts(input: MetricEngineInput): MetricFacts {
       )
     : input.canonicalInventorySnapshots;
   const adSpend = input.canonicalAdSpend.filter((spend) =>
-    isDateInPeriod(spend.date, input.periodStart, input.periodEnd),
+    isDateInPeriod(spend.date, input.periodStart, input.periodEnd, input.timezone),
   );
   const attributedConversions = input.canonicalAttributedConversions.filter((conversion) =>
     isInPeriod(conversion.conversionTime, input.periodStart, input.periodEnd),
@@ -1484,8 +1616,22 @@ function isInPeriod(value: IsoDateTime, periodStart: IsoDateTime, periodEnd: Iso
   return time >= Date.parse(periodStart) && time < Date.parse(periodEnd);
 }
 
-function isDateInPeriod(value: string, periodStart: IsoDateTime, periodEnd: IsoDateTime): boolean {
-  return isInPeriod(`${value}T00:00:00.000Z` as IsoDateTime, periodStart, periodEnd);
+function isDateInPeriod(
+  value: string,
+  periodStart: IsoDateTime,
+  periodEnd: IsoDateTime,
+  timezone: string,
+): boolean {
+  const startMs = Date.parse(periodStart);
+  const endMs = Date.parse(periodEnd);
+  if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) {
+    return false;
+  }
+
+  const normalizedTimeZone = normalizeSeriesTimeZone(timezone);
+  const firstDate = localDateOnlyForInstant(startMs, normalizedTimeZone);
+  const lastDate = localDateOnlyForInstant(endMs - 1, normalizedTimeZone);
+  return value >= firstDate && value <= lastDate;
 }
 
 function decimalToCents(value: string): bigint {
@@ -1552,9 +1698,56 @@ function ratioCents(numerator: bigint, denominator: bigint): string | null {
   return `${units}.${fractional}`;
 }
 
-function periodDayCount(periodStart: IsoDateTime, periodEnd: IsoDateTime): number {
-  const durationMs = Date.parse(periodEnd) - Date.parse(periodStart);
-  return Math.max(1, Math.round(durationMs / (24 * 60 * 60 * 1000)));
+function periodDayCount(
+  periodStart: IsoDateTime,
+  periodEnd: IsoDateTime,
+  timezone: string,
+): number {
+  const startMs = Date.parse(periodStart);
+  const endMs = Date.parse(periodEnd);
+
+  if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) {
+    return 1;
+  }
+
+  const normalizedTimeZone = normalizeSeriesTimeZone(timezone);
+  let date = localDateOnlyForInstant(startMs, normalizedTimeZone);
+  const lastDate = localDateOnlyForInstant(endMs - 1, normalizedTimeZone);
+  let dayEquivalents = 0;
+
+  /*
+   * Count elapsed local-calendar-day equivalents rather than the number of
+   * calendar labels touched by the interval.
+   *
+   * Examples:
+   * - 48 elapsed hours in a normal Warsaw week = 2 day equivalents, even
+   *   when the UTC interval touches three local calendar dates.
+   * - two complete local days across DST = 2 day equivalents although their
+   *   absolute duration can be 47 or 49 hours.
+   * - a partial local day contributes only its proportional fraction.
+   */
+  for (let index = 0; index < 4_000; index += 1) {
+    const nextDate = addCalendarDays(date, 1);
+    const localDayStartMs = localMidnightMs(date, normalizedTimeZone);
+    const localDayEndMs = localMidnightMs(nextDate, normalizedTimeZone);
+    const localDayDurationMs = localDayEndMs - localDayStartMs;
+
+    const overlapStartMs = Math.max(startMs, localDayStartMs);
+    const overlapEndMs = Math.min(endMs, localDayEndMs);
+    const overlapDurationMs = Math.max(0, overlapEndMs - overlapStartMs);
+
+    if (localDayDurationMs > 0 && overlapDurationMs > 0) {
+      dayEquivalents += overlapDurationMs / localDayDurationMs;
+    }
+
+    if (date === lastDate) {
+      break;
+    }
+
+    date = nextDate;
+  }
+
+  return dayEquivalents > 0 ? dayEquivalents : 1;
 }
 
 function stockoutRisk(

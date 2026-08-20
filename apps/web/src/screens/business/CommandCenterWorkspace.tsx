@@ -48,6 +48,7 @@ import {
 } from './command-center/commandCenterLegacyVariants';
 import {
   buildOperationalDecisions,
+  commandCenterOnePageSectionIds,
   openPapaAssistant,
 } from './command-center/commandCenterOnePageModel';
 import {
@@ -96,18 +97,30 @@ const commandCenterScreenNavigation: readonly CommandNavigationItem[] = (
     }))
 );
 
-const commandCenterRuntimeNavigation = [
-  {
-    href: '#command-section-kpi',
-    id: 'command-section-kpi',
-    label: 'KPI',
-  },
-  {
-    href: '#command-section-plan',
-    id: 'command-section-plan',
-    label: 'Plan vs Prognoza',
-  },
-] as const satisfies readonly CommandNavigationItem[];
+const commandCenterRuntimeSectionLabels: Readonly<Record<(typeof commandCenterOnePageSectionIds)[number], string>> = {
+  'command-section-drivers': 'Drivery wyniku',
+  'command-section-kpi': 'KPI',
+  'command-section-plan': 'Plan vs Benchmark',
+};
+
+/**
+ * Sections rendered on the single scrolling runtime one-page — every
+ * command-center route in `mode="runtime"` shares this same page rather than
+ * showing different content per URL, so a new section belongs here as soon
+ * as `CommandCenterOnePage` renders it. Built from the same
+ * `commandCenterOnePageSectionIds` list `CommandCenterOnePage` anchors its
+ * sections with, so the nav rail can't drift out of sync with what the page
+ * actually renders — that drift (a section rendered with no route/nav
+ * pointing at it, or vice versa) is exactly how Drivery wyniku ended up
+ * unreachable from the one-page despite its own route existing.
+ */
+export const commandCenterRuntimeNavigation: readonly CommandNavigationItem[] = (
+  commandCenterOnePageSectionIds.map((id) => ({
+    href: `#${id}`,
+    id,
+    label: commandCenterRuntimeSectionLabels[id],
+  }))
+);
 
 /** Scroll distance before the runtime section rail may appear at all. */
 const runtimeNavigationRevealOffset = 116;
@@ -177,7 +190,7 @@ export function CommandCenterWorkspace({
     ? 'Centrum Dowodzenia'
     : definition.displayTitle;
   const pageHeadingSubtitle = isRuntimeOnePage
-    ? 'Landing page w przebudowie: aktywne sekcje to KPI oraz Plan vs Prognoza.'
+    ? 'Landing page w przebudowie: aktywne sekcje to KPI, Plan vs Benchmark oraz Drivery wyniku.'
     : definition.summary;
 
   useEffect(() => {

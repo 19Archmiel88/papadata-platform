@@ -52,8 +52,9 @@ export interface AttributionView { source: string; model: string; orders: number
 export interface WaterfallItem { key: string; label: string; value: number; cumulativeValue: number; }
 export interface PlanTrajectoryPointView { date: ISODateTime; actual: number | null; plan: number; forecast: number | null; }
 export interface DriverRelationshipPointView { id: string; label: string; x: number; y: number; }
-export interface DriverRelationshipView { xLabel: string; xMetricId: string; yLabel: string; yMetricId: string; basis: 'correlation' | 'contribution-share'; coefficient: number | null; contributionShare: number | null; sampleSize: number; points: DriverRelationshipPointView[]; }
-export interface DriverRelationships { volume: DriverRelationshipView; efficiency: DriverRelationshipView; }
+export interface DriverRelationshipView { xLabel: string; xMetricId: string; yLabel: string; yMetricId: string; basis: 'correlation' | 'insufficient-data'; coefficient: number | null; sampleSize: number; points: DriverRelationshipPointView[]; }
+export interface DriverDecompositionView { basis: 'decomposition'; volumeLabel: string; priceLabel: string; startValue: number; endValue: number; volumeEffect: number; priceEffect: number; sampleSize: number; unit: 'currency'; }
+export interface DriverRelationships { volume: DriverDecompositionView; efficiency: DriverRelationshipView; }
 export interface AccessRecord { tenantId: UUID; workspaceId: UUID; role: AccessRole; capabilities: string[]; resolutionStatus: AccessResolutionStatus; }
 export interface AccessSummary { total: number; ready: number; warning: number; critical: number; updatedAt: ISODateTime; }
 export interface AccessForecast { horizonEnd: ISODateTime; expected: number; lowerBound: number; upperBound: number; confidence: number; }

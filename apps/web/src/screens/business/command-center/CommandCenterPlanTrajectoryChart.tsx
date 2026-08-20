@@ -33,7 +33,7 @@ const PLOT_BOTTOM = 216;
 const AXIS_LABEL_COUNT = 5;
 
 const seriesLegend = [
-  { id: 'target', label: 'Plan' },
+  { id: 'target', label: 'Benchmark' },
   { id: 'actual', label: 'Wykonanie' },
   { id: 'forecast', label: 'Prognoza' },
 ] as const;
@@ -99,21 +99,10 @@ export function CommandCenterPlanTrajectoryChart({
     setActivePointId(null);
   }
 
-  function handlePointKeyDown(event: React.KeyboardEvent<SVGGElement>, pointId: string) {
-    if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
-      event.preventDefault();
-      showPoint(pointId);
-    }
-
-    if (event.key === 'Escape') {
-      setActivePointId(null);
-    }
-  }
-
   if (trajectory.length === 0) {
     return (
       <EmptyState
-        message="Brak wystarczających danych o zamówieniach i planie w wybranym okresie, żeby narysować trajektorię."
+        message="Brak wystarczających danych o przychodzie i benchmarku w wybranym okresie, żeby narysować trajektorię."
         title="Brak danych trajektorii"
         variant="empty"
       />
@@ -218,11 +207,13 @@ export function CommandCenterPlanTrajectoryChart({
 
       <div className="pd-command-plan-trajectory__chart">
         <svg
-          aria-label="Interaktywny wykres trajektorii planu, wykonania i prognozy"
+          aria-label="Wykres dziennego przychodu, benchmarku i prognozy"
           className="pd-command-plan-trajectory__svg"
           role="img"
           viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
         >
+          <title>Dzienne tempo przychodu, benchmark i prognoza</title>
+          <desc>Pełne wartości wszystkich punktów są dostępne w tabeli otwieranej przyciskiem Pokaż dane benchmarku.</desc>
           <g className="pd-command-plan-trajectory__grid">
             <line x1={PLOT_LEFT} x2={PLOT_RIGHT} y1={PLOT_BOTTOM} y2={PLOT_BOTTOM} />
             <line x1={PLOT_LEFT} x2={PLOT_RIGHT} y1={(PLOT_TOP + PLOT_BOTTOM * 2) / 3} y2={(PLOT_TOP + PLOT_BOTTOM * 2) / 3} />
@@ -262,20 +253,14 @@ export function CommandCenterPlanTrajectoryChart({
           <g className="pd-command-plan-trajectory__points">
             {chartPoints.map((point) => (
               <g
-                aria-label={`${point.label}: ${valueFormatter.format(point.value)}`}
+                aria-hidden="true"
                 className="pd-command-plan-trajectory__point"
                 data-active={activePointId === point.id ? 'true' : 'false'}
                 data-series={point.series}
                 data-visible={visibleSeries[point.series] ? 'true' : 'false'}
                 key={point.id}
-                onBlur={scheduleHideActivePoint}
-                onClick={() => showPoint(point.id)}
-                onFocus={() => showPoint(point.id)}
-                onKeyDown={(event) => handlePointKeyDown(event, point.id)}
                 onMouseEnter={() => showPoint(point.id)}
                 onMouseLeave={scheduleHideActivePoint}
-                role="button"
-                tabIndex={visibleSeries[point.series] ? 0 : -1}
               >
                 <circle
                   className="pd-command-plan-trajectory__hit-area"

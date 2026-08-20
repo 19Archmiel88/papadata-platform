@@ -16,9 +16,6 @@ const meta = {
     docs: {
       disable: true,
     },
-    test: {
-      disable: true,
-    },
   },
 } satisfies Meta;
 

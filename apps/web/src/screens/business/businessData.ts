@@ -85,6 +85,13 @@ export type BusinessScreenDefinition = {
   readonly variant: BusinessScreenVariant;
 };
 
+/** Canonical read contracts required to assemble the Command Center one-page. */
+export const commandCenterOnePageDataScreenIds = [
+  '30.03',
+  '30.04',
+  '30.05',
+] as const satisfies readonly BusinessScreenId[];
+
 export type CommandCenterApiData = {
   readonly driverRelationships?: DriverRelationships;
   readonly forecastMethod?: 'linear-run-rate';
@@ -1408,6 +1415,31 @@ export function createStorybookBusinessData(
   };
 }
 
+/**
+ * Composes the three canonical one-page read contracts into the single view
+ * model consumed by the runtime landing page. Each source keeps its own
+ * generated contract; the merge happens only at the UI orchestration layer,
+ * so no endpoint pretends to return fields that are not part of its schema.
+ */
+export function mergeCommandCenterOnePageApiData(
+  kpiData: CommandCenterApiData,
+  planData: CommandCenterApiData,
+  driversData: CommandCenterApiData,
+): CommandCenterApiData {
+  return {
+    ...kpiData,
+    driverRelationships: driversData.driverRelationships,
+    forecastMethod: planData.forecastMethod,
+    forecastTotal: planData.forecastTotal,
+    planTotal: planData.planTotal,
+    // Funnel and waterfall endpoints are outside the active one-page scope.
+    // Never carry their old demo-shaped data into the executive landing.
+    steps: [],
+    trajectory: planData.trajectory,
+    waterfall: [],
+  };
+}
+
 export function createCommandCenterBusinessData(
   definition: BusinessScreenDefinition,
   data: CommandCenterApiData,
@@ -1431,140 +1463,6 @@ export function createCommandCenterBusinessData(
     warnings: [],
     waterfall: data.waterfall ?? [],
   };
-}
-
-export function applyCommandCenterDateRange(
-  data: Extract<BusinessScreenData, { readonly group: 'command-center' }>,
-  range: DateRange,
-): Extract<BusinessScreenData, { readonly group: 'command-center' }> {
-  const scale = resolveDateRangeScale(range);
-  const generatedAt = new Date().toISOString();
-
-  return {
-    ...data,
-    funnelSteps: data.funnelSteps.map((step) => ({
-      ...step,
-      completions: scaleWholeNumber(step.completions, scale),
-      entrants: scaleWholeNumber(step.entrants, scale),
-    })),
-    generatedAt,
-    records: data.records.map((record) => scaleCommandRecord(record, scale)),
-    summary: {
-      ...data.summary,
-      updatedAt: generatedAt,
-    },
-    waterfall: scaleWaterfall(data.waterfall, scale),
-  };
-}
-
-function resolveDateRangeScale(range: DateRange): number {
-  const baselineDays = 12;
-  const days = getDateRangeDayCount(range);
-
-  return Math.min(
-    Math.max(days / baselineDays, 1 / baselineDays),
-    90 / baselineDays,
-  );
-}
-
-function getDateRangeDayCount(range: DateRange): number {
-  const from = parseDateRangeInput(range.from);
-  const to = parseDateRangeInput(range.to);
-
-  if (!from || !to) {
-    switch (range.preset) {
-      case 'last90d':
-        return 90;
-      case 'last30d':
-        return 30;
-      case 'last7d':
-        return 7;
-      case 'today':
-      default:
-        return 1;
-    }
-  }
-
-  const dayMs = 24 * 60 * 60 * 1_000;
-  const diff = Math.round((to.getTime() - from.getTime()) / dayMs);
-
-  return Math.max(diff + 1, 1);
-}
-
-function parseDateRangeInput(value: string): Date | null {
-  const date = new Date(`${value}T00:00:00.000Z`);
-
-  return Number.isNaN(date.getTime())
-    ? null
-    : date;
-}
-
-function scaleCommandRecord(
-  record: CommandCenterRecord,
-  scale: number,
-): CommandCenterRecord {
-  if (!shouldScaleCommandRecord(record)) {
-    return record;
-  }
-
-  return {
-    ...record,
-    target: typeof record.target === 'number'
-      ? scaleMetric(record.target, record.unit, scale)
-      : record.target,
-    value: scaleMetric(record.value, record.unit, scale),
-  };
-}
-
-function shouldScaleCommandRecord(
-  record: CommandCenterRecord,
-): boolean {
-  if (
-    record.unit === 'percent'
-    || record.unit === 'ratio'
-    || record.unit === 'duration'
-  ) {
-    return false;
-  }
-
-  const label = record.label.toLocaleLowerCase('pl-PL');
-
-  return !(
-    label.includes('strumienie')
-    || label.includes('domeny')
-    || label.includes('gotowość')
-    || label.includes('pewność')
-  );
-}
-
-function scaleMetric(
-  value: number,
-  unit: CommandCenterRecord['unit'],
-  scale: number,
-): number {
-  const nextValue = value * scale;
-
-  return unit === 'currency' || unit === 'number'
-    ? Math.round(nextValue)
-    : Number(nextValue.toFixed(4));
-}
-
-function scaleWholeNumber(
-  value: number,
-  scale: number,
-): number {
-  return Math.max(Math.round(value * scale), 0);
-}
-
-function scaleWaterfall(
-  waterfall: readonly WaterfallItem[],
-  scale: number,
-): readonly WaterfallItem[] {
-  return waterfall.map((item) => ({
-    ...item,
-    cumulativeValue: Math.round(item.cumulativeValue * scale),
-    value: Math.round(item.value * scale),
-  }));
 }
 
 export function createCampaignsBusinessData(

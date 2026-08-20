@@ -38,7 +38,7 @@ function formatPercentOfPlan(value: number | null, planTotal: number | null): st
     return null;
   }
 
-  return `${percentFormatter.format(value / planTotal)} planu`;
+  return `${percentFormatter.format(value / planTotal)} benchmarku`;
 }
 
 export function CommandCenterPlanExecutionSection({
@@ -53,7 +53,8 @@ export function CommandCenterPlanExecutionSection({
   const actualTotal = trajectory.some((point) => point.actual !== null)
     ? trajectory.reduce((sum, point) => sum + (point.actual ?? 0), 0)
     : null;
-  const gap = forecastTotal !== null && planTotal !== null
+  const hasBenchmark = planTotal !== null && planTotal > 0;
+  const gap = forecastTotal !== null && hasBenchmark
     ? forecastTotal - planTotal
     : null;
   const resultLabel = formatPercentOfPlan(actualTotal, planTotal);
@@ -65,17 +66,19 @@ export function CommandCenterPlanExecutionSection({
       helper: resultLabel,
       id: 'result',
       label: 'Wykonanie',
-      meta: 'Suma zamówień do dziś',
+      meta: 'Przychód netto do dziś',
       tone: 'neutral' as const,
       value: actualTotal,
     },
     {
       helper: null,
       id: 'target',
-      label: 'Cel okresu',
-      meta: 'Plan',
+      label: 'Benchmark okresu',
+      meta: hasBenchmark
+        ? 'Poprzedni równoważny okres × 1,08'
+        : 'Brak danych poprzedniego okresu',
       tone: 'neutral' as const,
-      value: planTotal,
+      value: hasBenchmark ? planTotal : null,
     },
     {
       helper: forecastLabel,
@@ -90,10 +93,10 @@ export function CommandCenterPlanExecutionSection({
     {
       helper: null,
       id: 'gap',
-      label: 'Gap do celu',
+      label: 'Odchylenie od benchmarku',
       meta: gap === null
         ? 'Brak danych'
-        : gap >= 0 ? 'Bufor ponad plan' : 'Poniżej planu',
+        : gap >= 0 ? 'Bufor ponad benchmark' : 'Poniżej benchmarku',
       tone: gap === null ? 'neutral' as const : gap >= 0 ? 'positive' as const : 'negative' as const,
       value: gap,
     },
@@ -105,12 +108,18 @@ export function CommandCenterPlanExecutionSection({
       className="pd-command-plan-section"
     >
       <div className="pd-command-plan-section__heading">
-        <h2
-          className="pd-command-plan-section__title"
-          id="command-plan-title"
-        >
-          Plan vs Prognoza
-        </h2>
+        <div>
+          <h2
+            className="pd-command-plan-section__title"
+            id="command-plan-title"
+          >
+            Plan vs Benchmark
+          </h2>
+
+          <p className="pd-command-plan-section__description">
+            Benchmark to średni dzienny przychód z bezpośrednio poprzedniego, równoważnego okresu × 1,08. To punkt odniesienia, nie zatwierdzony budżet ani plan finansowy.
+          </p>
+        </div>
 
         {gap !== null ? (
           <div className="pd-command-plan-section__status">
@@ -118,7 +127,7 @@ export function CommandCenterPlanExecutionSection({
               className="pd-command-plan-section__status-dot"
               data-tone={statusAbovePlan ? 'positive' : 'negative'}
             />
-            <span>{statusAbovePlan ? 'Status: powyżej celu' : 'Status: poniżej celu'}</span>
+            <span>{statusAbovePlan ? 'Status: powyżej benchmarku' : 'Status: poniżej benchmarku'}</span>
             {forecastLabel ? <strong>{forecastLabel}</strong> : null}
           </div>
         ) : null}
@@ -151,11 +160,11 @@ export function CommandCenterPlanExecutionSection({
         <div className="pd-command-plan-trajectory__header">
           <div>
             <h3 className="pd-command-plan-trajectory__title">
-              Trajektoria tempa okresu vs cel i prognoza
+              Dzienne tempo przychodu vs benchmark i prognoza
             </h3>
 
             <p className="pd-command-plan-trajectory__description">
-              Kumulacja przychodu, plan okresu i projekcja końca okresu.
+              Dzienny przychód netto, dzienny benchmark poprzedniego okresu i liniowa projekcja pozostałych dni.
             </p>
           </div>
 
@@ -166,7 +175,7 @@ export function CommandCenterPlanExecutionSection({
             onClick={() => setIsTableVisible((current) => !current)}
             type="button"
           >
-            {isTableVisible ? 'Ukryj dane planu' : 'Pokaż dane planu'}
+            {isTableVisible ? 'Ukryj dane benchmarku' : 'Pokaż dane benchmarku'}
           </button>
         </div>
 
@@ -178,7 +187,7 @@ export function CommandCenterPlanExecutionSection({
             id={tableId}
           >
             <div className="pd-command-plan-table__header">
-              <span>Szczegółowa tabela trajektorii planu — dokładnie te dane, które renderuje wykres powyżej</span>
+              <span>Szczegółowa tabela trajektorii — dokładnie te dane, które renderuje wykres powyżej</span>
               <span>Jednostka: PLN</span>
             </div>
 
@@ -188,16 +197,18 @@ export function CommandCenterPlanExecutionSection({
                   <tr>
                     <th>Data</th>
                     <th>Wykonanie</th>
-                    <th>Plan</th>
+                    <th>Benchmark</th>
                     <th>Prognoza</th>
-                    <th>Gap do planu</th>
+                    <th>Odchylenie od benchmarku</th>
                   </tr>
                 </thead>
 
                 <tbody>
                   {trajectory.map((point) => {
                     const observed = point.actual ?? point.forecast;
-                    const rowGap = observed === null ? null : observed - point.plan;
+                    const rowGap = observed === null || point.plan <= 0
+                      ? null
+                      : observed - point.plan;
 
                     return (
                       <tr key={point.date}>

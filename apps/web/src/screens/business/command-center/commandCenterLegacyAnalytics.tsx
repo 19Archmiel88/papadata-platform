@@ -90,7 +90,7 @@ const impactColumns = [
  * `TrendChart`/mini-sparkline visuals have something to render in that
  * fixture-driven view. It must never be mistaken for real history: the
  * modern runtime path (CommandCenterOnePage) does not use this — its KPI
- * sparklines and Plan vs Prognoza trajectory come from the real backend
+ * sparklines and Plan vs Benchmark trajectory come from the real backend
  * daily series (see contract-runtime's computeMetricEngineSeries).
  */
 export function buildLegacyDemoTrendData(

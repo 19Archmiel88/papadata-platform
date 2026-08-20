@@ -73,17 +73,22 @@ export class IdentityRepository {
   }): Promise<{ readonly user: IdentityUserRow; readonly membership: IdentityMembershipRow }> {
     const normalizedEmail = normalizeEmail(input.email);
     const identityKey = identityKeyForEmail(normalizedEmail);
-    return this.database.withIdentity(identityKey, null, async (client) => {
-      const existing = await client.query<{ readonly user_id: string }>(
-        "select user_id::text from app.identity_users where identity_key = $1 limit 1",
-        [identityKey],
-      );
-      if (existing.rows[0]) throw new Error("IDENTITY_EMAIL_EXISTS");
+    const userId = randomUUID();
+    const tenantId = randomUUID();
+    const workspaceId = randomUUID();
+    const membershipId = randomUUID();
 
-      const userId = randomUUID();
-      const tenantId = randomUUID();
-      const workspaceId = randomUUID();
-      const membershipId = randomUUID();
+    return this.database.withIdentityTenantWorkspace(
+      identityKey,
+      null,
+      tenantId,
+      workspaceId,
+      async (client) => {
+        const existing = await client.query<{ readonly user_id: string }>(
+          "select user_id::text from app.identity_users where identity_key = $1 limit 1",
+          [identityKey],
+        );
+        if (existing.rows[0]) throw new Error("IDENTITY_EMAIL_EXISTS");
 
       await client.query(
         `insert into app.users (
@@ -149,8 +154,9 @@ export class IdentityRepository {
           JSON.stringify(input.capabilities),
         ],
       );
-      return { user, membership: readMembership(requiredRow(membershipResult.rows[0])) };
-    });
+        return { user, membership: readMembership(requiredRow(membershipResult.rows[0])) };
+      },
+    );
   }
 
   async listMemberships(user: IdentityUserRow): Promise<readonly IdentityMembershipRow[]> {

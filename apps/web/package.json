@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "tsc -b --pretty false",
-    "test": "tsx --test src/screens/business/businessData.test.ts src/screens/business/command-center/commandCenterOnePageModel.test.ts",
+    "test": "tsx --tsconfig tsconfig.app.json --import ./test-setup/register-css-stub.mjs --test src/app/ErrorBoundary.test.tsx src/screens/business/businessData.test.ts src/screens/business/command-center/commandCenterOnePageModel.test.ts",
     "storybook": "storybook dev -p 6010 --host 0.0.0.0 --exact-port --no-open --disable-telemetry --ci",
     "build-storybook": "storybook build --output-dir storybook-static --disable-telemetry",
     "generate-storybook-catalog": "node ../../scripts/generate-storybook-catalog.mjs",

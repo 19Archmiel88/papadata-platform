@@ -35,7 +35,6 @@ export type SettingsScreenVariant =
 export type SettingsScreenDefinition = {
   readonly apiPath: `/api/v1/${string}` | null;
   readonly displayTitle: string;
-  readonly documentPath: string;
   readonly id: SettingsScreenId;
   readonly operationId: string | null;
   readonly route: `/app/${string}` | null;
@@ -118,7 +117,6 @@ export const settingsScreenDefinitions: readonly SettingsScreenDefinition[] = [
   {
     apiPath: '/api/v1/settings/organizacja',
     displayTitle: 'Organizacja',
-    documentPath: '16-ustawienia-zespol-bezpieczenstwo/60-01-organizacja.md',
     id: '60.01',
     operationId: 'settings.organization.read',
     route: '/app/settings/organizacja',
@@ -129,7 +127,6 @@ export const settingsScreenDefinitions: readonly SettingsScreenDefinition[] = [
   {
     apiPath: '/api/v1/settings/workspace',
     displayTitle: 'Przestrzeń pracy',
-    documentPath: '16-ustawienia-zespol-bezpieczenstwo/60-02-workspace.md',
     id: '60.02',
     operationId: 'settings.workspace.read',
     route: '/app/settings/workspace',
@@ -140,7 +137,6 @@ export const settingsScreenDefinitions: readonly SettingsScreenDefinition[] = [
   {
     apiPath: '/api/v1/settings/czlonkostwa',
     displayTitle: 'Członkostwa',
-    documentPath: '16-ustawienia-zespol-bezpieczenstwo/60-03-czlonkostwa.md',
     id: '60.03',
     operationId: 'settings.memberships.read',
     route: '/app/settings/czlonkostwa',
@@ -151,7 +147,6 @@ export const settingsScreenDefinitions: readonly SettingsScreenDefinition[] = [
   {
     apiPath: '/api/v1/settings/role-i-uprawnienia',
     displayTitle: 'Role i uprawnienia',
-    documentPath: '16-ustawienia-zespol-bezpieczenstwo/60-04-role-i-uprawnienia.md',
     id: '60.04',
     operationId: 'settings.roles.read',
     route: '/app/settings/role-i-uprawnienia',
@@ -162,7 +157,6 @@ export const settingsScreenDefinitions: readonly SettingsScreenDefinition[] = [
   {
     apiPath: '/api/v1/settings/bezpieczenstwo-konta',
     displayTitle: 'Bezpieczeństwo konta',
-    documentPath: '16-ustawienia-zespol-bezpieczenstwo/60-05-bezpieczenstwo-konta.md',
     id: '60.05',
     operationId: 'settings.account-security.read',
     route: '/app/settings/bezpieczenstwo-konta',
@@ -173,7 +167,6 @@ export const settingsScreenDefinitions: readonly SettingsScreenDefinition[] = [
   {
     apiPath: '/api/v1/settings/sesje',
     displayTitle: 'Sesje',
-    documentPath: '16-ustawienia-zespol-bezpieczenstwo/60-06-sesje.md',
     id: '60.06',
     operationId: 'settings.sessions.read',
     route: '/app/settings/sesje',
@@ -184,7 +177,6 @@ export const settingsScreenDefinitions: readonly SettingsScreenDefinition[] = [
   {
     apiPath: '/api/v1/settings/audyt',
     displayTitle: 'Audyt',
-    documentPath: '16-ustawienia-zespol-bezpieczenstwo/60-07-audyt.md',
     id: '60.07',
     operationId: 'settings.audit.read',
     route: '/app/settings/audyt',
@@ -195,7 +187,6 @@ export const settingsScreenDefinitions: readonly SettingsScreenDefinition[] = [
   {
     apiPath: '/api/v1/settings/prywatnosc',
     displayTitle: 'Prywatność',
-    documentPath: '16-ustawienia-zespol-bezpieczenstwo/60-08-prywatnosc.md',
     id: '60.08',
     operationId: 'settings.privacy.read',
     route: '/app/settings/prywatnosc',
@@ -206,7 +197,6 @@ export const settingsScreenDefinitions: readonly SettingsScreenDefinition[] = [
   {
     apiPath: '/api/v1/settings/dostep-wsparcia',
     displayTitle: 'Dostęp wsparcia',
-    documentPath: '16-ustawienia-zespol-bezpieczenstwo/60-09-dostep-wsparcia.md',
     id: '60.09',
     operationId: 'settings.support-access.read',
     route: '/app/settings/dostep-wsparcia',
@@ -217,7 +207,6 @@ export const settingsScreenDefinitions: readonly SettingsScreenDefinition[] = [
   {
     apiPath: null,
     displayTitle: 'Warianty ustawień',
-    documentPath: '16-ustawienia-zespol-bezpieczenstwo/60-10-warianty-ustawien.md',
     id: '60.10',
     operationId: null,
     route: null,

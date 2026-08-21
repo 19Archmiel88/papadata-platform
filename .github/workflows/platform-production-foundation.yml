@@ -213,6 +213,9 @@ jobs:
       - name: Static web production build
         run: pnpm build:web
 
+      - name: Verify no Storybook/tooling leakage in built web artifact
+        run: pnpm verify:web-production-artifact:dist
+
       - name: Install Playwright Chromium
         run: pnpm --filter @papadata/web exec playwright install --with-deps chromium
 
@@ -227,11 +230,17 @@ jobs:
       - name: Start production-parity stack
         run: docker compose -f compose.production-parity.yml --env-file .env.production-parity up --build --wait --wait-timeout 300
 
+      - name: Verify no Storybook/tooling leakage or disallowed files in web-production image
+        run: pnpm verify:web-production-artifact:image
+
       - name: Web/edge smoke test
         run: NODE_EXTRA_CA_CERTS=.runtime/backend-production-parity/edge-tls/ca.crt pnpm test:web-production-parity
 
       - name: Edge CSP browser check
         run: pnpm test:web-production-parity:csp
+
+      - name: Backend restart/failure test
+        run: node tests/backend-production-parity/restart-failure.mjs --chaos
 
       - name: Dump compose logs
         if: always()

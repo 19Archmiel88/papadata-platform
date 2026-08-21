@@ -32,6 +32,32 @@ import {
   type SyncCheckpointRecord,
 } from "../integrations/integrationDataCore.ts";
 
+// Order statuses that must never contribute to revenue/order KPIs. An order
+// with a status outside this set (or with no status at all, e.g. providers
+// that don't report one) is still counted -- only known non-qualifying
+// statuses are excluded, so we never silently drop revenue we can't
+// classify. Verified against a live WooCommerce reconciliation on
+// 2026-08-20/21: a "pending" order and an order that became "refunded" after
+// a full refund both correctly dropped out of orders/revenue, while
+// "completed" orders matched the store's own count 1:1.
+const REVENUE_EXCLUDED_ORDER_STATUSES: ReadonlySet<string> = new Set([
+  "cancelled",
+  "canceled",
+  "checkout-draft",
+  "draft",
+  "failed",
+  "on-hold",
+  "pending",
+  "refunded",
+  "trash",
+  "voided",
+]);
+
+function isRevenueQualifyingOrder(order: CanonicalOrderRecord): boolean {
+  if (!order.status) return true;
+  return !REVENUE_EXCLUDED_ORDER_STATUSES.has(order.status.toLowerCase());
+}
+
 export const METRIC_ENGINE_POLICY_VERSION = "metric-engine.2026-07.prompt7";
 export const DASHBOARD_PROJECTION_VERSION = "dashboard-api.2026-07.prompt7";
 export const METRIC_DEFINITION_VERSION = "metric-definition.2026-07.prompt7";
@@ -242,6 +268,9 @@ type MetricFacts = {
   readonly productById: ReadonlyMap<string, CanonicalProductRecord>;
   readonly productCostBySku: ReadonlyMap<string, bigint>;
   readonly refunds: readonly CanonicalRefundRecord[];
+  // Narrower subset of `refunds`, used only by revenue_after_refunds -- see
+  // the comment on its derivation in createMetricFacts.
+  readonly revenueQualifyingRefunds: readonly CanonicalRefundRecord[];
   readonly returns: readonly CanonicalCustomerReturnRecord[];
 };
 
@@ -1130,6 +1159,9 @@ function valueForMetric(
 ): string | null {
   const grossOrderValue = sumMoney(facts.commerceOrders.map((order) => order.grossAmount));
   const returnValue = sumMoney(facts.refunds.map((refund) => refund.amount));
+  const revenueQualifyingReturnValue = sumMoney(
+    facts.revenueQualifyingRefunds.map((refund) => refund.amount),
+  );
   const unitsSold = sumQuantities(facts.orderLines.map((line) => line.quantity));
   const returnedUnits = sumQuantities(facts.returns.map((returnRecord) => returnRecord.returnedQuantity));
   const availableStock = sumQuantities(facts.inventorySnapshots.map((snapshot) => snapshot.quantityAvailable));
@@ -1194,7 +1226,7 @@ function valueForMetric(
     case "returned_units":
       return integerString(returnedUnits);
     case "revenue_after_refunds":
-      return centsToDecimal(grossOrderValue - returnValue);
+      return centsToDecimal(grossOrderValue - revenueQualifyingReturnValue);
     case "roas":
       return ratioCents(platformAttributedRevenue, adSpend);
     case "sell_through_rate":
@@ -1281,15 +1313,34 @@ function hasRequiredData(metricCode: DashboardMetricCode, facts: MetricFacts): b
 }
 
 function createMetricFacts(input: MetricEngineInput): MetricFacts {
-  const commerceOrders = input.canonicalOrders.filter((order) =>
-    isInPeriod(order.orderedAt, input.periodStart, input.periodEnd),
+  const commerceOrders = input.canonicalOrders.filter(
+    (order) =>
+      isInPeriod(order.orderedAt, input.periodStart, input.periodEnd)
+      && isRevenueQualifyingOrder(order),
   );
   const orderIds = new Set(commerceOrders.map((order) => order.canonicalOrderId));
   const orderLines = input.canonicalOrderLines.filter((line) =>
     orderIds.has(line.canonicalOrderId),
   );
+  // ALL refunds in the period, regardless of whether their order is still
+  // revenue-qualifying. return_value, return_rate_orders, returned_units and
+  // return_rate_units must reflect every real refund -- narrowing this to
+  // only revenue-qualifying orders would make those metrics blind to refunds
+  // against orders that got excluded by status (e.g. a full refund that
+  // flipped the order to "refunded").
   const refunds = input.canonicalRefunds.filter((refund) =>
     isInPeriod(refund.refundedAt, input.periodStart, input.periodEnd),
+  );
+  // Narrower subset used ONLY by revenue_after_refunds, to avoid
+  // double-counting a loss: a refund against an order that itself got
+  // excluded from `commerceOrders` (e.g. status flipped to "refunded") must
+  // NOT also be subtracted from revenue -- that order already contributes 0
+  // to gross_order_value, so subtracting its refund on top would decrement
+  // revenue twice for the same event. A refund against an order that is
+  // still revenue-qualifying (e.g. a partial refund that left the order
+  // "completed") correctly still reduces revenue.
+  const revenueQualifyingRefunds = refunds.filter(
+    (refund) => refund.canonicalOrderId !== null && orderIds.has(refund.canonicalOrderId),
   );
   const returns = input.canonicalCustomerReturns.filter((returnRecord) =>
     refunds.some((refund) => refund.externalRefundId === returnRecord.externalRefundId),
@@ -1315,6 +1366,7 @@ function createMetricFacts(input: MetricEngineInput): MetricFacts {
     productById: new Map(input.canonicalProducts.map((product) => [product.canonicalProductId, product])),
     productCostBySku: new Map(input.productCosts.map((cost) => [cost.sku, decimalToCents(cost.unitCostAmount)])),
     refunds,
+    revenueQualifyingRefunds,
     returns,
   };
 }
@@ -1510,13 +1562,21 @@ function definition(
     currencyPolicy: unit === "money" ? "PLN local/CI; no FX conversion in Prompt 7." : "not_applicable",
     datePolicy: "Facts are included when their business timestamp is inside [periodStart, periodEnd).",
     definitionVersion: METRIC_DEFINITION_VERSION,
-    excludedStatuses: ["cancelled", "draft", "deleted"],
+    // Mirrors `REVENUE_EXCLUDED_ORDER_STATUSES` exactly (single source of
+    // truth) -- this used to be a hardcoded, disconnected list that didn't
+    // match what `createMetricFacts` actually filtered.
+    excludedStatuses: [...REVENUE_EXCLUDED_ORDER_STATUSES],
     formula,
-    includedStatuses: ["paid", "completed", "shipped", "attributed", "available"],
+    // "completed" is the only WooCommerce order status empirically proven
+    // qualifying via live reconciliation (see `isRevenueQualifyingOrder`);
+    // this is a known-good example, not an exhaustive allow-list -- the
+    // real filter is exclude-based, so any status not in `excludedStatuses`
+    // still qualifies.
+    includedStatuses: ["completed"],
     metricCode,
     missingDataPolicy: "Missing required facts produce no_data; blocked prerequisites produce unavailable.",
     readinessRule: "ready only when canonical facts are fresh, valid and without open data issues.",
-    refundPolicy: "Refunds are subtracted only in refund-aware metrics; ad attributed revenue is not store revenue.",
+    refundPolicy: "return_value, return_rate_orders, return_rate_units and returned_units are computed over ALL refunds in the period, regardless of their order's revenue-qualifying status. revenue_after_refunds is the one exception: it subtracts only refunds whose order is still revenue-qualifying (present in commerceOrders); a refund against an order already excluded by status (e.g. fully refunded) is not subtracted again there, to avoid double-decrementing revenue. Ad attributed revenue is not store revenue.",
     requiredCanonicalFacts,
     taxPolicy: "gross values include tax when provider gross amount includes tax; no inferred tax in Prompt 7.",
     testVectors: [

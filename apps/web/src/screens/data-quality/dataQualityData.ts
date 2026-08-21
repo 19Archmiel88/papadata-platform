@@ -41,7 +41,6 @@ export type DataQualityScreenVariant =
 export type DataQualityScreenDefinition = {
   readonly apiPath: `/api/v1/${string}` | null;
   readonly displayTitle: string;
-  readonly documentPath: string;
   readonly id: DataQualityScreenId;
   readonly operationId: string | null;
   readonly route: `/app/${string}` | null;
@@ -130,7 +129,6 @@ export const dataQualityScreenDefinitions: readonly DataQualityScreenDefinition[
   {
     apiPath: '/api/v1/data-quality/centrum-jakosci',
     displayTitle: 'Centrum jakości',
-    documentPath: '14-jakosc-danych-i-integralnosc/41-01-centrum-jakosci.md',
     id: '41.01',
     operationId: 'data-quality.center.read',
     route: '/app/data-quality/centrum-jakosci',
@@ -141,7 +139,6 @@ export const dataQualityScreenDefinitions: readonly DataQualityScreenDefinition[
   {
     apiPath: '/api/v1/data-quality/zbior-danych',
     displayTitle: 'Zbiór danych',
-    documentPath: '14-jakosc-danych-i-integralnosc/41-02-zbior-danych.md',
     id: '41.02',
     operationId: 'data-quality.dataset.read',
     route: '/app/data-quality/zbior-danych',
@@ -152,7 +149,6 @@ export const dataQualityScreenDefinitions: readonly DataQualityScreenDefinition[
   {
     apiPath: '/api/v1/data-quality/pochodzenie-danych',
     displayTitle: 'Pochodzenie danych',
-    documentPath: '14-jakosc-danych-i-integralnosc/41-03-pochodzenie-danych.md',
     id: '41.03',
     operationId: 'data-quality.lineage.read',
     route: '/app/data-quality/pochodzenie-danych',
@@ -163,7 +159,6 @@ export const dataQualityScreenDefinitions: readonly DataQualityScreenDefinition[
   {
     apiPath: '/api/v1/data-quality/nakladanie-zrodel',
     displayTitle: 'Nakładanie źródeł',
-    documentPath: '14-jakosc-danych-i-integralnosc/41-04-nakladanie-zrodel.md',
     id: '41.04',
     operationId: 'data-quality.source-overlap.read',
     route: '/app/data-quality/nakladanie-zrodel',
@@ -174,7 +169,6 @@ export const dataQualityScreenDefinitions: readonly DataQualityScreenDefinition[
   {
     apiPath: '/api/v1/data-quality/nadrzednosc-zrodla',
     displayTitle: 'Nadrzędność źródła',
-    documentPath: '14-jakosc-danych-i-integralnosc/41-05-nadrzednosc-zrodla.md',
     id: '41.05',
     operationId: 'data-quality.source-priority.read',
     route: '/app/data-quality/nadrzednosc-zrodla',
@@ -185,7 +179,6 @@ export const dataQualityScreenDefinitions: readonly DataQualityScreenDefinition[
   {
     apiPath: '/api/v1/data-quality/konflikty',
     displayTitle: 'Konflikty',
-    documentPath: '14-jakosc-danych-i-integralnosc/41-06-konflikty.md',
     id: '41.06',
     operationId: 'data-quality.conflicts.read',
     route: '/app/data-quality/konflikty',
@@ -196,7 +189,6 @@ export const dataQualityScreenDefinitions: readonly DataQualityScreenDefinition[
   {
     apiPath: '/api/v1/data-quality/przeglad-reczny',
     displayTitle: 'Przegląd ręczny',
-    documentPath: '14-jakosc-danych-i-integralnosc/41-07-przeglad-reczny.md',
     id: '41.07',
     operationId: 'data-quality.manual-review.read',
     route: '/app/data-quality/przeglad-reczny',
@@ -207,7 +199,6 @@ export const dataQualityScreenDefinitions: readonly DataQualityScreenDefinition[
   {
     apiPath: '/api/v1/data-quality/ponowne-przetwarzanie',
     displayTitle: 'Ponowne przetwarzanie',
-    documentPath: '14-jakosc-danych-i-integralnosc/41-08-ponowne-przetwarzanie.md',
     id: '41.08',
     operationId: 'data-quality.reprocessing.read',
     route: '/app/data-quality/ponowne-przetwarzanie',
@@ -218,7 +209,6 @@ export const dataQualityScreenDefinitions: readonly DataQualityScreenDefinition[
   {
     apiPath: '/api/v1/data-quality/rekoncyliacja',
     displayTitle: 'Rekoncyliacja',
-    documentPath: '14-jakosc-danych-i-integralnosc/41-09-rekoncyliacja.md',
     id: '41.09',
     operationId: 'data-quality.reconciliation.read',
     route: '/app/data-quality/rekoncyliacja',
@@ -229,7 +219,6 @@ export const dataQualityScreenDefinitions: readonly DataQualityScreenDefinition[
   {
     apiPath: null,
     displayTitle: 'Warianty jakości danych',
-    documentPath: '14-jakosc-danych-i-integralnosc/41-10-warianty-jakosci-danych.md',
     id: '41.10',
     operationId: null,
     route: null,

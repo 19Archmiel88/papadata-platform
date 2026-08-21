@@ -8,6 +8,17 @@ import { CloudRunIdentityService } from "./cloud-run-identity.service.js";
 import type { BffConfig } from "./config.js";
 import { BFF_CONFIG } from "./tokens.js";
 
+// Liveness-only contract, deliberately kept in sync with
+// apps/api/src/production/health.controller.ts:
+//   /healthz  -- the canonical liveness probe (process is up, zero dependency checks).
+//   /health   -- a plain alias of /healthz, kept only because
+//                tests/backend-production-parity/smoke.mjs, config/backend-release-scope.json
+//                and artifacts/backend-evidence/route-map.json already depend on it; not a
+//                second, differently-scoped check.
+//   /startupz -- process has finished booting (no dependency checks either).
+//   /readyz   -- the only endpoint that checks dependencies: proxies the
+//                upstream API's own /readyz and only reports "ready" if the
+//                API does too (see below).
 @Controller()
 export class HealthController {
   constructor(

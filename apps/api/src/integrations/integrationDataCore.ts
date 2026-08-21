@@ -216,6 +216,7 @@ export type CanonicalOrderRecord = {
   readonly orderedAt: IsoDateTime;
   readonly providerId: "allegro" | "baselinker" | "shopify" | "woocommerce";
   readonly sourceAuthorityVersion: typeof SALES_AUTHORITY_VERSION;
+  readonly status: string | null;
   readonly tenantId: string;
   readonly workspaceId: string;
 };
@@ -367,6 +368,7 @@ export type OrderPayload = {
   readonly orderedAt: IsoDateTime;
   readonly paymentAmount: string;
   readonly paymentTime: IsoDateTime;
+  readonly status?: string | null;
 };
 
 export type OrderLinePayload = {
@@ -1448,6 +1450,7 @@ export class SandboxIntegrationDataService {
       orderedAt: payload.orderedAt,
       providerId,
       sourceAuthorityVersion: SALES_AUTHORITY_VERSION,
+      status: payload.status ?? "completed",
       tenantId: record.tenantId,
       workspaceId: record.workspaceId,
     });

@@ -12,6 +12,9 @@ import {
   integrationScreenDefinitions,
 } from '../../../screens/integrations';
 import {
+  integrationsScreenStorybookMeta,
+} from '../../data/integrationsScreenStorybookMeta';
+import {
   IntegrationsProductWorkspace,
 } from '../../production/OperationalDomainWorkspaces';
 import {
@@ -55,6 +58,7 @@ function ModuleStoryPage({ id }: { readonly id: ScreenId }) {
     <ProductionStoryShell
       contract={{
         ...definition,
+        documentPath: integrationsScreenStorybookMeta[id].documentPath,
         owner: 'Integrations',
         sectionId: '40',
         sectionLabel: 'Integracje i synchronizacja',

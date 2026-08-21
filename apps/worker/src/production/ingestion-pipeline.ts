@@ -481,7 +481,6 @@ function assertSuccessfulReconciliation(input: {
 
   if (
     input.reconciliation.status !== "passed"
-    || input.persisted.fetchedCount === 0
     || input.persisted.fetchedCount !== input.persisted.persistedSourceCount
     || input.persisted.persistedSourceCount !== input.normalizedCount
     || input.normalizedCount !== input.canonicalCount

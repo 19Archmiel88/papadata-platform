@@ -1,0 +1,67 @@
+# Not part of production-parity: this stands up a real, self-hosted
+# WooCommerce store used as the "real provider account" for the P0
+# reconciliation exercise (see .claude/CLAUDE.md, "P0 -- reconciliation").
+# WooCommerce has no hosted sandbox, so a self-hosted instance is the only
+# way to exercise packages/integrations/src/providers/woocommerce.ts against
+# a genuine wp-json/wc/v3 REST API instead of a stub. Bring up with:
+#   docker compose -f compose.woocommerce-sandbox.yml up -d --wait
+services:
+  woo-db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: woo-sandbox-root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: woo-sandbox-wp
+    volumes:
+      - woo-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pwoo-sandbox-root"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  woo-wordpress:
+    image: wordpress:latest
+    restart: unless-stopped
+    depends_on:
+      woo-db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: woo-db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: woo-sandbox-wp
+    ports:
+      - "127.0.0.1:8090:80"
+    volumes:
+      - woo-wp-data:/var/www/html
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost/wp-login.php"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+
+  # WooCommerce's REST API only performs Basic/query-string key auth over
+  # is_ssl() (see class-wc-rest-authentication.php) -- OAuth1.0a is the only
+  # non-SSL path, which the adapter doesn't implement (matches production,
+  # where the real store is always HTTPS). This terminates TLS in front of
+  # WordPress purely so the exact same real auth code path WooCommerce ships
+  # gets exercised, self-signed cert accepted by curl -k / NODE_TLS_REJECT.
+  woo-edge:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      woo-wordpress:
+        condition: service_healthy
+    volumes:
+      - ./.runtime/woo-sandbox-tls/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./.runtime/woo-sandbox-tls/server.crt:/etc/tls/server.crt:ro
+      - ./.runtime/woo-sandbox-tls/server.key:/etc/tls/server.key:ro
+    ports:
+      - "127.0.0.1:8543:8443"
+
+volumes:
+  woo-db-data:
+  woo-wp-data:

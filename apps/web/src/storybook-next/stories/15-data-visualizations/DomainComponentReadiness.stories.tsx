@@ -15,7 +15,7 @@ import {
 import {
   domainComponentCatalogItems,
   domainP0BacklogItems,
-} from '../../../design-system/components/Domain';
+} from '../../data/domainComponentRegistry';
 import type {
   PapaDataRuntimeLocale,
 } from '../../../design-system/foundations';

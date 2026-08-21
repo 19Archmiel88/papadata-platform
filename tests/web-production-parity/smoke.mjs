@@ -86,6 +86,40 @@ if (hashedAssetPath) {
   );
 }
 
+// 3a. A hashed-looking path that was never built (typo'd/rotated-out asset) is
+// a real 404, not the SPA shell -- nginx's /assets/ location must win over the
+// SPA fallback location for this prefix, and the 404 must not be cached as if
+// it were a valid immutable asset.
+const missingAsset = await request(
+  "web-asset-404",
+  "/assets/does-not-exist-should-404.js",
+  {},
+  [404],
+);
+if (missingAsset) {
+  assert(
+    missingAsset.response.headers.get("cache-control") !== "public, max-age=31536000, immutable",
+    "web-asset-404: a 404 response must not carry the immutable asset cache-control",
+  );
+}
+
+// 3b. A route the client router doesn't know about still resolves through the
+// SPA shell at the HTTP layer (client-side NotFound handling is exercised by
+// the Playwright CSP/DOM check, not this fetch-only smoke test), and must not
+// be cached like the immutable asset it is not.
+const bogusRoute = await request(
+  "web-bogus-route-spa-shell",
+  "/totally/bogus/route/that/was/never/registered",
+  { headers: { accept: "text/html" } },
+  [200],
+);
+if (bogusRoute) {
+  assert(
+    bogusRoute.response.headers.get("cache-control") === "no-cache",
+    "web-bogus-route-spa-shell: expected the same no-cache contract as index.html",
+  );
+}
+
 // 4. /api/* is proxied to the BFF, whose own CSP (defense-in-depth for its JSON
 // responses) must pass through untouched -- the edge must not layer its
 // web-app CSP on top of it.

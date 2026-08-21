@@ -15,6 +15,9 @@ import type {
   CampaignsModuleData,
 } from '../../../screens/analytics';
 import {
+  analyticsModuleStorybookMeta,
+} from '../../data/analyticsModuleStorybookMeta';
+import {
   CampaignsWorkspace,
 } from '../../production/AnalyticsDomainWorkspaces';
 import {
@@ -58,6 +61,7 @@ function ModuleStoryPage({ id }: { readonly id: ScreenId }) {
     <ProductionStoryShell
       contract={{
         ...definition,
+        documentPath: analyticsModuleStorybookMeta[id].documentPath,
         owner: 'Paid Campaigns',
         sectionId: '31',
         sectionLabel: 'Kampanie płatne',

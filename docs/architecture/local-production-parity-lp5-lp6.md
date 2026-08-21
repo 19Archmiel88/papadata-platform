@@ -105,23 +105,27 @@ Automated checks cover TLS trust chain, CSRF/cookie semantics and CSP violations
 acceptance is still a human, once: register → login → AppShell → logout at
 `https://papadata.localhost` with a trusted CA, DevTools console open, zero errors.
 
-### Known blocker (not part of LP-5/LP-6, tracked separately)
+### Former blocker — resolved
 
-Everything web/edge-owned was verified live against the full built stack (`docker compose ...
-up --build --wait`): TLS handshake and chain, `/api/*` → BFF and `/*` → web-production routing,
-BFF's own CSP passing through `location /api/` untouched, the edge's own security headers and CSP
-on `location /`, SPA fallback on a deep link, and `Cache-Control: immutable` on hashed assets —
-plus the full CSP browser check above, which passed with zero violations.
+The tenant-bootstrap RLS bug described below (previously blocking live execution of the
+register → CSRF → session → logout flow) was fixed in `971a10d` (`packages/database`:
+`product-domain.ts`, `production.ts`, plus a new `identityBootstrapScope.test.mjs`), with two
+follow-up fixes in the same session: `6056a1b` (BFF logout DI) and `84e70ed` (added an explicit
+session-invalid-after-logout assertion to the smoke test).
 
-`POST /api/v1/auth/register/email` currently fails with `500`/`502` regardless of client
-(verified with both `curl` and the smoke test's request shape): API logs show `new row violates
-row-level security policy for table "tenants"`. This is a pre-existing bug in `apps/api`'s tenant
-creation path, unrelated to the edge/web work here — most likely a missing first-tenant
-seed/bootstrap step, consistent with `local-production-parity-lp0-lp4.md`'s own deferred **LP-8
-deterministic product seed**. It blocks live execution of the register → CSRF → session → logout
-assertions in `tests/web-production-parity/smoke.mjs` (verified correct by code review and by
-replaying the same calls with `curl`, but not exercised end-to-end here), and blocks step 4 of
-the manual browser acceptance above. Fix it separately; do not weaken RLS to work around it.
+Re-verified live on 2026-08-20 against the full built stack (`docker compose ... up --build
+--wait`): `pnpm test:web-production-parity` now passes end-to-end with `"result": "pass"` and
+`"failures": []` — registration succeeds (real tenant/workspace IDs returned), the session cookie
+carries `HttpOnly; Secure; SameSite=Strict`, the CSRF cookie carries `Secure; SameSite=Strict`,
+logout returns `{"loggedOut":true}`, and a session check afterward correctly returns `401`.
+`pnpm test:web-production-parity:csp` passes 3/3 with zero CSP violations on `/`, `/login`,
+`/app`. Everything web/edge-owned — TLS handshake and chain, `/api/*` → BFF and `/*` →
+web-production routing, BFF's own CSP passing through `location /api/` untouched, the edge's own
+security headers and CSP on `location /`, SPA fallback on a deep link, and `Cache-Control:
+immutable` on hashed assets — is now verified live together with the auth flow, not separately.
+
+What remains is only the one step that can't be automated: a human, once, doing the manual
+browser acceptance pass below with DevTools open.
 
 ## Updating the contract
 

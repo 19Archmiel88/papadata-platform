@@ -15,6 +15,9 @@ import type {
   TrafficModuleData,
 } from '../../../screens/analytics';
 import {
+  analyticsModuleStorybookMeta,
+} from '../../data/analyticsModuleStorybookMeta';
+import {
   TrafficWorkspace,
 } from '../../production/AnalyticsDomainWorkspaces';
 import {
@@ -59,6 +62,7 @@ function ModuleStoryPage({ id }: { readonly id: ScreenId }) {
     <ProductionStoryShell
       contract={{
         ...definition,
+        documentPath: analyticsModuleStorybookMeta[id].documentPath,
         owner: 'Traffic',
         sectionId: '35',
         sectionLabel: 'Ruch na stronie i lejek sprzedażowy',

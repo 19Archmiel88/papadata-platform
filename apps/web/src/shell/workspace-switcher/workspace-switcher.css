@@ -1,142 +1,87 @@
 .pd-workspace-switcher {
-  gap: var(--pd-space-1);
-  padding: 0;
+  display: grid;
+  gap: 4px;
+  min-width: 0;
 }
 
 .pd-workspace-switcher__title {
-  padding-inline: var(--pd-space-1);
+  padding-inline: 8px;
   color: var(--pd-shell-text-muted);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.pd-workspace-switcher__trigger {
-  min-height: 54px;
-  border-color: color-mix(in srgb, var(--pd-shell-separator-strong) 72%, transparent);
-  background: color-mix(in srgb, var(--pd-shell-surface-raised) 58%, transparent);
-  box-shadow: none;
-}
-
-.pd-workspace-switcher__trigger:hover {
-  background: color-mix(in srgb, var(--pd-shell-surface-raised) 78%, transparent);
-  box-shadow: var(--pd-shadow-control);
-}
-
-.pd-product-shell__workspace-actions {
-  margin-block-start: var(--pd-space-2);
-  padding-block-start: var(--pd-space-2);
-  border-block-start: var(--pd-border-width-subtle) solid var(--pd-shell-separator);
-}
-
-.pd-product-shell__workspace-create {
+.pd-workspace-switcher__trigger,
+.pd-product-shell__workspace-trigger {
   width: 100%;
-  min-height: 2.75rem;
+  min-height: 40px;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: var(--pd-space-2);
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 8px;
   align-items: center;
-  padding: var(--pd-space-2) var(--pd-space-3);
-  border: var(--pd-border-width-subtle) solid transparent;
-  border-radius: var(--pd-radius-control);
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
   color: var(--pd-shell-text-secondary);
   background: transparent;
-  font: inherit;
-  font-size: var(--pd-type-size-body-small);
   text-align: left;
   cursor: pointer;
-  transition:
-    background var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
-    border-color var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
-    color var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
-    transform var(--pd-motion-duration-fast) var(--pd-motion-easing-standard);
-}
-
-.pd-product-shell__workspace-create:hover {
-  border-color: color-mix(in srgb, var(--pd-shell-brand) 34%, transparent);
-  color: var(--pd-shell-text);
-  background: color-mix(in srgb, var(--pd-shell-surface-raised) 56%, transparent);
-  transform: translateY(-1px);
-}
-
-.pd-product-shell__workspace-create:active {
-  transform: translateY(1px);
-}
-
-.pd-product-shell__workspace-create:focus-visible {
-  outline: 0;
-  box-shadow: var(--pd-refractive-focus), var(--pd-shadow-control);
-}
-
-.pd-product-shell__workspace-create-mark {
-  width: 1.5rem;
-  height: 1.5rem;
-  display: inline-grid;
-  place-items: center;
-  border-radius: var(--pd-radius-control);
-  color: var(--pd-shell-text);
-  background: color-mix(in srgb, var(--pd-shell-brand) 18%, transparent);
-  font-size: 1rem;
-  line-height: 1;
-}
-
-.pd-product-shell__sidebar-column[data-collapsed='true'] .pd-workspace-switcher {
-  width: var(--pd-shell-rail-item-size);
-  padding: 0;
-}
-
-.pd-product-shell__sidebar-column[data-collapsed='true'] .pd-workspace-switcher__trigger {
-  min-height: var(--pd-shell-rail-item-size);
-}
-
-.pd-product-shell__sidebar-column[data-height-rail='true'] .pd-workspace-switcher__trigger {
-  min-height: var(--pd-shell-rail-item-size);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pd-product-shell__workspace-create {
-    transition-duration: 1ms;
-  }
-
-  .pd-product-shell__workspace-create:hover,
-  .pd-product-shell__workspace-create:active {
-    transform: none;
-  }
-}
-
-/* PapaData quick crystal correction - workspace is a quiet footer control, not a primary card. */
-.pd-workspace-switcher__trigger {
-  border-color: rgb(148 163 184 / 0.18);
-  background: rgb(17 27 45 / 0.54);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05);
 }
 
 .pd-workspace-switcher__trigger:hover,
 .pd-workspace-switcher__trigger[aria-expanded='true'] {
-  --pd-shell-text: var(--pd-shell-brand-strong);
-  --pd-text-muted: var(--pd-shell-brand-strong);
-  border-color: rgb(129 140 248 / 0.36);
-  background: rgb(17 27 45 / 0.72);
-  box-shadow:
-    inset 0 0 0 1px rgb(129 140 248 / 0.08),
-    0 12px 28px -24px rgb(79 70 229 / 0.62);
+  border-color: var(--pd-shell-separator);
+  color: var(--pd-shell-text);
+  background: var(--pd-shell-surface-subtle);
 }
 
-.pd-product-shell__workspace-overlay {
-  width: min(19rem, calc(100vw - 1.5rem));
-  max-height: none;
-  overflow: visible;
+.pd-product-shell__workspace-mark,
+.pd-product-shell__workspace-create-mark {
+  width: 28px;
+  height: 28px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--pd-shell-separator);
+  border-radius: 7px;
+  color: var(--pd-shell-brand-strong);
+  background: var(--pd-shell-surface-raised);
+  font-size: 11px;
+  font-weight: 600;
 }
 
-.pd-product-shell__workspace-overlay > div {
-  overflow: visible;
+.pd-product-shell__workspace-copy,
+.pd-product-shell__workspace-option-copy {
+  min-width: 0;
+  display: grid;
+  gap: 1px;
 }
 
-/* PapaData shell crystal visual fix v2 - workspace overlay opens upward from sidebar footer. */
+.pd-product-shell__workspace-copy strong,
+.pd-product-shell__workspace-option-copy strong {
+  overflow: hidden;
+  color: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pd-product-shell__workspace-copy small,
+.pd-product-shell__workspace-option-copy small,
+.pd-product-shell__workspace-chevron {
+  color: var(--pd-shell-text-muted);
+  font-size: 10px;
+}
+
 .pd-product-shell__workspace-overlay[role='dialog'] {
   top: auto !important;
   right: auto !important;
-  bottom: clamp(4.5rem, 8dvh, 5.75rem) !important;
+  bottom: clamp(4.25rem, 8dvh, 5.5rem) !important;
   left: var(--pd-shell-overlay-left) !important;
-  width: min(18.75rem, calc(100vw - var(--pd-shell-overlay-left) - 1rem)) !important;
-  max-height: min(20rem, calc(100dvh - 8rem)) !important;
+  width: min(19rem, calc(100vw - var(--pd-shell-overlay-left) - 1rem)) !important;
+  max-height: min(22rem, calc(100dvh - 7rem)) !important;
   overflow: hidden !important;
 }
 
@@ -145,44 +90,78 @@
   overflow: auto !important;
 }
 
-.pd-workspace-switcher__trigger[aria-expanded='true'] {
-  color: var(--pd-shell-brand-strong);
-  border-color: rgb(129 140 248 / 0.42);
-  background:
-    linear-gradient(90deg, rgb(129 140 248 / 0.10), transparent 74%),
-    rgb(17 27 45 / 0.64);
-  box-shadow:
-    inset 3px 0 0 var(--pd-shell-brand),
-    inset 0 0 0 1px rgb(129 140 248 / 0.10);
+.pd-product-shell__workspace-options {
+  display: grid;
+  gap: 3px;
 }
 
-/* PapaData sidebar reduction - workspace is a lightweight switcher, not a card. */
-.pd-workspace-switcher {
-  gap: 0.2rem;
+.pd-product-shell__workspace-option,
+.pd-product-shell__workspace-create {
+  width: 100%;
+  min-height: 42px;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--pd-text-secondary);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pd-product-shell__workspace-option:hover,
+.pd-product-shell__workspace-create:hover {
+  border-color: var(--pd-separator);
+  color: var(--pd-text);
+  background: var(--pd-surface-subtle);
+}
+
+.pd-product-shell__workspace-option[aria-checked='true'] {
+  border-color: rgba(216, 146, 50, 0.24);
+  background: var(--pd-interactive-subtle);
+}
+
+.pd-product-shell__workspace-option-state {
+  color: var(--pd-text-muted);
+  font-size: 10px;
+}
+
+.pd-product-shell__workspace-actions {
+  margin-block-start: 6px;
+  padding-block-start: 6px;
+  border-block-start: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-product-shell__workspace-selection-error {
+  margin: 6px 0 0;
+  color: var(--pd-status-danger);
+  font-size: 11px;
+}
+
+.pd-product-shell__sidebar-column[data-collapsed='true'] .pd-workspace-switcher,
+.pd-product-shell__sidebar-column[data-collapsed='true'] .pd-workspace-switcher__trigger {
+  width: var(--pd-shell-rail-item-size);
+}
+
+.pd-product-shell__sidebar-column[data-collapsed='true'] .pd-workspace-switcher__title,
+.pd-product-shell__sidebar-column[data-collapsed='true'] .pd-product-shell__workspace-copy,
+.pd-product-shell__sidebar-column[data-collapsed='true'] .pd-product-shell__workspace-chevron {
+  display: none;
+}
+
+.pd-product-shell__sidebar-column[data-collapsed='true'] .pd-workspace-switcher__trigger {
+  min-height: var(--pd-shell-rail-item-size);
+  grid-template-columns: 1fr;
+  place-items: center;
   padding: 0;
 }
 
-.pd-workspace-switcher__title {
-  padding-inline: var(--pd-space-1);
-}
-
-.pd-workspace-switcher__trigger {
-  min-height: 44px !important;
-  border-color: transparent !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-.pd-workspace-switcher__trigger:hover,
-.pd-workspace-switcher__trigger[aria-expanded='true'] {
-  border-color: rgb(129 140 248 / 0.32) !important;
-  color: var(--pd-shell-brand-strong) !important;
-  background:
-    linear-gradient(90deg, rgb(129 140 248 / 0.08), transparent 72%),
-    rgb(17 27 45 / 0.32) !important;
-  box-shadow: inset 3px 0 0 var(--pd-shell-brand) !important;
-}
-
-.pd-workspace-switcher[data-collapsed='true'] {
-  padding: 0;
+.pd-workspace-switcher__trigger:focus-visible,
+.pd-product-shell__workspace-option:focus-visible,
+.pd-product-shell__workspace-create:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 3px var(--pd-focus-ring);
 }

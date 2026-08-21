@@ -2,34 +2,25 @@
 button.pd-button {
   --pd-button-color: var(--pd-text);
   --pd-button-hover-color: var(--pd-text);
-  --pd-button-surface: var(--pd-refractive-control);
-  --pd-button-surface-hover: var(--pd-refractive-control-hover);
-  --pd-button-border: var(--pd-refractive-border);
-  --pd-button-border-hover: var(--pd-refractive-border-hover);
-  --pd-button-shadow:
-    inset 0 0 0 var(--pd-border-width-subtle) var(--pd-button-border),
-    var(--pd-shadow-control);
-  --pd-button-shadow-hover:
-    inset 0 0 0 var(--pd-border-width-subtle) var(--pd-button-border-hover),
-    var(--pd-shadow-control);
+  --pd-button-surface: var(--pd-surface);
+  --pd-button-surface-hover: var(--pd-surface-soft);
+  --pd-button-border: var(--pd-separator);
+  --pd-button-border-hover: var(--pd-separator-strong);
 
   appearance: none;
   position: relative;
-  isolation: isolate;
   display: inline-flex;
   min-width: 0;
   min-height: var(--pd-density-control-height);
   align-items: center;
   justify-content: center;
   padding: 0 var(--pd-space-4);
-  overflow: hidden;
-  border: var(--pd-border-width-subtle) solid transparent;
+  border: 1px solid var(--pd-button-border);
   border-radius: var(--pd-radius-control);
   outline: 0;
   background: var(--pd-button-surface);
-  background-clip: border-box;
   color: var(--pd-button-color);
-  box-shadow: var(--pd-button-shadow);
+  box-shadow: none;
   cursor: pointer;
   font: inherit;
   font-size: var(--pd-type-size-body-small);
@@ -37,46 +28,27 @@ button.pd-button {
   letter-spacing: -0.01em;
   line-height: 1;
   text-decoration: none;
-  transform: translateY(0);
   transition:
-    background var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
-    box-shadow var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
-    color var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
-    opacity var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
-    transform var(--pd-motion-duration-fast) var(--pd-motion-easing-standard);
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease,
+    opacity 120ms ease,
+    transform 90ms ease;
 }
 
 .pd-button::before,
 button.pd-button::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      120deg,
-      transparent 0%,
-      transparent 34%,
-      color-mix(in srgb, var(--pd-refractive-sheen) 24%, transparent) 50%,
-      transparent 66%,
-      transparent 100%
-    );
-  opacity: 0;
-  transition: opacity var(--pd-motion-duration-standard) var(--pd-motion-easing-standard);
+  display: none;
+  content: none;
 }
 
 .pd-button__content {
-  position: relative;
-  z-index: 1;
   display: inline-flex;
   min-width: 0;
   max-width: 100%;
   align-items: center;
   justify-content: center;
   gap: var(--pd-space-2);
-  line-height: 1;
 }
 
 .pd-button__icon {
@@ -86,7 +58,6 @@ button.pd-button::before {
   flex: 0 0 1rem;
   align-items: center;
   justify-content: center;
-  color: currentColor;
   line-height: 0;
 }
 
@@ -95,107 +66,48 @@ button.pd-button::before {
   display: block;
   width: 1rem;
   height: 1rem;
-  flex: 0 0 auto;
 }
 
 .pd-button__label {
-  display: inline-flex;
   min-width: 0;
-  align-items: center;
-  color: currentColor;
-  line-height: 1;
-  white-space: normal;
   overflow-wrap: anywhere;
 }
 
 .pd-button__activity-line {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 1px;
-  border-radius: var(--pd-radius-pill);
-  background: currentColor;
-  box-shadow: none;
-  opacity: 0;
-  pointer-events: none;
-  transform: none;
+  display: none;
 }
 
 .pd-button:hover,
 button.pd-button:hover {
+  border-color: var(--pd-button-border-hover);
   background: var(--pd-button-surface-hover);
   color: var(--pd-button-hover-color);
-  box-shadow: var(--pd-button-shadow-hover);
-}
-
-.pd-button:hover::before,
-button.pd-button:hover::before {
-  opacity: 0.34;
 }
 
 .pd-button:focus-visible,
 button.pd-button:focus-visible {
-  color: var(--pd-button-hover-color);
-  box-shadow:
-    var(--pd-refractive-focus),
-    var(--pd-button-shadow-hover);
+  box-shadow: 0 0 0 3px var(--pd-focus-ring);
 }
 
 .pd-button:active,
 button.pd-button:active {
   transform: translateY(1px);
-  box-shadow: var(--pd-button-shadow);
-}
-
-.pd-button[disabled],
-button.pd-button[disabled],
-.pd-button[aria-disabled='true'],
-.pd-button[data-disabled='true'] {
-  color: var(--pd-text-muted);
-  cursor: not-allowed;
-  opacity: 0.54;
-  transform: none;
-}
-
-.pd-button[disabled]::before,
-button.pd-button[disabled]::before,
-.pd-button[aria-disabled='true']::before,
-.pd-button[data-disabled='true']::before {
-  opacity: 0;
-}
-
-.pd-button[aria-busy='true'],
-.pd-button[data-loading='true'] {
-  cursor: progress;
 }
 
 .pd-button--primary,
 .pd-button[data-variant='primary'] {
   --pd-button-color: var(--pd-brand-action-on);
   --pd-button-hover-color: var(--pd-brand-action-on);
-  --pd-button-surface: var(--pd-refractive-primary);
-  --pd-button-surface-hover: var(--pd-refractive-primary-hover);
-  --pd-button-border: color-mix(in srgb, var(--pd-brand-highlight) 38%, transparent);
-  --pd-button-border-hover: color-mix(in srgb, var(--pd-brand-highlight) 54%, transparent);
-  --pd-button-shadow:
-    inset 0 0 0 var(--pd-border-width-subtle) var(--pd-button-border),
-    0 18px 34px -24px color-mix(in srgb, var(--pd-brand-action) 64%, transparent),
-    inset 0 1px 0 color-mix(in srgb, white 20%, transparent);
-  --pd-button-shadow-hover:
-    inset 0 0 0 var(--pd-border-width-subtle) var(--pd-button-border-hover),
-    0 20px 36px -25px color-mix(in srgb, var(--pd-brand-action) 70%, transparent),
-    inset 0 1px 0 color-mix(in srgb, white 24%, transparent);
+  --pd-button-surface: var(--pd-brand-action);
+  --pd-button-surface-hover: var(--pd-brand-action-hover);
+  --pd-button-border: var(--pd-brand-action);
+  --pd-button-border-hover: var(--pd-brand-action-hover);
 }
 
 .pd-button--secondary,
 .pd-button[data-variant='secondary'] {
-  --pd-button-color: var(--pd-text);
-  --pd-button-hover-color: var(--pd-text);
-  --pd-button-surface: var(--pd-refractive-control);
-  --pd-button-surface-hover: var(--pd-refractive-control-hover);
-  --pd-button-border: var(--pd-refractive-border);
-  --pd-button-border-hover: var(--pd-refractive-border-hover);
+  --pd-button-surface: var(--pd-surface);
+  --pd-button-surface-hover: var(--pd-surface-soft);
 }
 
 .pd-button--ghost,
@@ -203,32 +115,19 @@ button.pd-button[disabled]::before,
   --pd-button-color: var(--pd-text-secondary);
   --pd-button-hover-color: var(--pd-text);
   --pd-button-surface: transparent;
-  --pd-button-surface-hover: color-mix(in srgb, var(--pd-surface-raised) 40%, transparent);
+  --pd-button-surface-hover: var(--pd-surface-subtle);
   --pd-button-border: transparent;
-  --pd-button-border-hover: color-mix(in srgb, var(--pd-refractive-border-hover) 62%, transparent);
-  --pd-button-shadow: none;
-  --pd-button-shadow-hover:
-    inset 0 0 0 var(--pd-border-width-subtle) var(--pd-button-border-hover);
+  --pd-button-border-hover: transparent;
 }
 
 .pd-button--danger,
 .pd-button[data-variant='danger'] {
-  --pd-button-color: var(--pd-brand-action-on);
-  --pd-button-hover-color: var(--pd-brand-action-on);
-  --pd-button-surface:
-    linear-gradient(
-      135deg,
-      var(--pd-status-danger),
-      color-mix(in srgb, var(--pd-status-danger) 78%, black)
-    );
-  --pd-button-surface-hover:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--pd-status-danger) 92%, white),
-      var(--pd-status-danger)
-    );
-  --pd-button-border: color-mix(in srgb, var(--pd-status-danger) 42%, transparent);
-  --pd-button-border-hover: color-mix(in srgb, var(--pd-status-danger) 58%, transparent);
+  --pd-button-color: #ffffff;
+  --pd-button-hover-color: #ffffff;
+  --pd-button-surface: var(--pd-status-danger);
+  --pd-button-surface-hover: color-mix(in srgb, var(--pd-status-danger) 88%, black);
+  --pd-button-border: var(--pd-status-danger);
+  --pd-button-border-hover: color-mix(in srgb, var(--pd-status-danger) 88%, black);
 }
 
 .pd-button--small,
@@ -238,17 +137,11 @@ button.pd-button[disabled]::before,
   font-size: var(--pd-type-size-caption);
 }
 
-.pd-button--medium,
-.pd-button[data-size='medium'] {
-  font-size: var(--pd-type-size-body-small);
-}
-
 .pd-button--large,
 .pd-button[data-size='large'] {
-  min-height: 2.85rem;
+  min-height: 2.75rem;
   padding-inline: var(--pd-space-5);
   font-size: var(--pd-type-size-body);
-  font-weight: var(--pd-font-weight-semibold);
 }
 
 .pd-button--full-width,
@@ -256,36 +149,46 @@ button.pd-button[disabled]::before,
   width: 100%;
 }
 
+.pd-button[disabled],
+button.pd-button[disabled],
+.pd-button[aria-disabled='true'],
+.pd-button[data-disabled='true'] {
+  color: var(--pd-text-muted);
+  background: var(--pd-surface-subtle);
+  border-color: var(--pd-separator-subtle);
+  cursor: not-allowed;
+  opacity: 0.62;
+  transform: none;
+}
+
+.pd-button[aria-busy='true'],
+.pd-button[data-loading='true'] {
+  cursor: progress;
+}
+
 .pd-button__spinner {
   width: 1rem;
   height: 1rem;
   flex: 0 0 1rem;
-  border: var(--pd-border-width-strong) solid currentColor;
+  border: 2px solid currentColor;
   border-right-color: transparent;
-  border-radius: var(--pd-radius-pill);
-  animation: pd-button-spin var(--pd-motion-duration-deliberate) linear infinite;
+  border-radius: 999px;
+  animation: pd-button-spin 700ms linear infinite;
 }
 
 @keyframes pd-button-spin {
-  to {
-    transform: rotate(1turn);
-  }
+  to { transform: rotate(1turn); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .pd-button,
-  button.pd-button,
-  .pd-button::before {
+  button.pd-button {
     transition-duration: 1ms;
   }
 
   .pd-button:active,
   button.pd-button:active {
     transform: none;
-  }
-
-  .pd-button__spinner {
-    animation-duration: 1ms;
   }
 }
 
@@ -295,11 +198,5 @@ button.pd-button[disabled]::before,
     border-color: ButtonText;
     color: ButtonText;
     background: ButtonFace;
-    box-shadow: none;
-  }
-
-  .pd-button[disabled],
-  button.pd-button[disabled] {
-    color: GrayText;
   }
 }

@@ -8,18 +8,95 @@
 :root {
   font-family: var(--pd-font-sans);
   color: var(--pd-text);
-  background-color: var(--pd-canvas);
+  background: var(--pd-canvas);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   scrollbar-color: var(--pd-scrollbar-thumb) var(--pd-scrollbar-track);
   scrollbar-width: thin;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--pd-canvas);
+}
+
+body,
+.pd-storybook-canvas {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--pd-canvas-gradient);
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-body);
+  line-height: var(--pd-line-height-normal);
+}
+
+body,
+.sb-show-main,
+.pd-storybook-canvas {
+  overflow-x: clip;
+}
+
+html,
+body,
+#storybook-root,
+.sb-show-main,
+.pd-storybook-canvas {
+  max-inline-size: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block-start: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--pd-text);
+  font-weight: var(--pd-font-weight-semibold);
+  letter-spacing: -0.025em;
+}
+
+p {
+  color: var(--pd-text-secondary);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a,
+summary,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--pd-data-accent-subtle);
+  color: var(--pd-text);
 }
 
 * {
@@ -33,7 +110,6 @@
 }
 
 *::-webkit-scrollbar-track {
-  border-radius: var(--pd-scrollbar-radius);
   background: var(--pd-scrollbar-track);
 }
 
@@ -53,28 +129,6 @@
   background: transparent;
 }
 
-/*
- * Wspólny canvas PapaData.
- * Jedna definicja jest używana przez wszystkie stories.
- */
-body,
-.pd-storybook-canvas {
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: var(--pd-canvas);
-  background-image: var(--pd-canvas-gradient);
-  background-attachment: scroll;
-  background-repeat: no-repeat;
-  background-size: cover;
-  color: var(--pd-text);
-  font-size: var(--pd-type-size-body);
-  line-height: var(--pd-line-height-normal);
-}
-
-body {
-  margin: 0;
-}
-
 .pd-visually-hidden {
   position: absolute;
   width: 1px;
@@ -87,41 +141,8 @@ body {
   border: 0;
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-::selection {
-  background: var(--pd-data-accent-subtle);
-  color: var(--pd-text);
-}
-
-
-/* -------------------------------------------------------------------------- */
-/* Storybook runtime canvas contract                                           */
-/* -------------------------------------------------------------------------- */
-
-html,
-body,
-#storybook-root,
-.sb-show-main,
-.pd-storybook-canvas {
-  max-inline-size: 100%;
-}
-
-body,
-.sb-show-main,
-.pd-storybook-canvas {
-  overflow-x: clip;
-}
-
 .pd-storybook-canvas {
   isolation: isolate;
-  background-color: var(--pd-canvas);
-  background-image: var(--pd-canvas-gradient);
 }
 
 :root[data-density="compact"] .pd-storybook-canvas,
@@ -146,19 +167,8 @@ body,
   transition-duration: 1ms !important;
 }
 
-@supports not (overflow: clip) {
-  body,
-  .sb-show-main,
-  .pd-storybook-canvas {
-    overflow-x: hidden;
-  }
-}
-
-
-/* -------------------------------------------------------------------------- */
-/* PapaData Refractive primitives                                              */
-/* -------------------------------------------------------------------------- */
-
+/* Compatibility primitives keep their public API but no longer render glass,
+   rainbow sheen or ambient blobs. They are ordinary product surfaces now. */
 .pd-refractive-canvas {
   position: relative;
   isolation: isolate;
@@ -166,29 +176,11 @@ body,
 }
 
 .pd-refractive-canvas::before,
-.pd-refractive-canvas::after {
-  content: '';
-  position: fixed;
-  z-index: var(--pd-layer-underlay);
-  pointer-events: none;
-  border-radius: var(--pd-radius-pill);
-  filter: blur(7.5rem);
-}
-
-.pd-refractive-canvas::before {
-  inset-block-start: -10rem;
-  inset-inline-start: -10rem;
-  inline-size: 25rem;
-  block-size: 25rem;
-  background: color-mix(in srgb, var(--pd-brand-accent) 18%, transparent);
-}
-
-.pd-refractive-canvas::after {
-  inset-block-start: 42%;
-  inset-inline-end: -8rem;
-  inline-size: 22rem;
-  block-size: 22rem;
-  background: color-mix(in srgb, var(--pd-surface-raised) 18%, transparent);
+.pd-refractive-canvas::after,
+.pd-refractive-surface::before,
+.pd-refractive-surface::after {
+  display: none;
+  content: none;
 }
 
 .pd-refractive-surface {
@@ -196,45 +188,19 @@ body,
   overflow: hidden;
   border: var(--pd-border-width-subtle) solid var(--pd-refractive-border);
   background: var(--pd-refractive-surface);
-  box-shadow: var(--pd-refractive-depth);
-  backdrop-filter: blur(20px) saturate(1.08);
-}
-
-.pd-refractive-surface::after {
-  content: '';
-  position: absolute;
-  inset: -150%;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      90deg,
-      transparent 40%,
-      color-mix(in srgb, var(--pd-refractive-sheen) 10%, transparent) 46%,
-      var(--pd-refractive-sheen) 50%,
-      color-mix(in srgb, var(--pd-refractive-sheen) 10%, transparent) 54%,
-      transparent 60%
-    );
-  transform: rotate(25deg);
-}
-
-.pd-refractive-surface::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      120deg,
-      transparent 30%,
-      var(--pd-refractive-spectrum-a) 45%,
-      var(--pd-refractive-spectrum-b) 55%,
-      transparent 70%
-    );
+  box-shadow: var(--pd-shadow-raised);
+  backdrop-filter: none;
 }
 
 .pd-refractive-surface > * {
   position: relative;
   z-index: 1;
+}
+
+@supports not (overflow: clip) {
+  body,
+  .sb-show-main,
+  .pd-storybook-canvas {
+    overflow-x: hidden;
+  }
 }

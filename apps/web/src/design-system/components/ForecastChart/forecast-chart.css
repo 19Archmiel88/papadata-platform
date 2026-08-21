@@ -1,289 +1,136 @@
 .pd-forecast-chart {
-  --pd-forecast-axis-color: var(--pd-text-secondary);
   --pd-forecast-grid-color: var(--pd-separator-subtle);
-  --pd-forecast-grid-opacity: 0.86;
+  --pd-forecast-grid-opacity: 0.88;
+  --pd-forecast-axis-color: var(--pd-text-secondary);
+  --pd-forecast-uncertainty-fill: var(--pd-data-series-4);
+  --pd-forecast-uncertainty-fill-opacity: 0.11;
+  --pd-forecast-uncertainty-stroke: var(--pd-data-series-4);
+  --pd-forecast-uncertainty-stroke-opacity: 0.48;
   --pd-forecast-reference-line-color: var(--pd-separator-strong);
-  --pd-forecast-reference-line-opacity: 0.72;
-  --pd-forecast-uncertainty-fill: var(--pd-data-forecast);
-  --pd-forecast-uncertainty-fill-opacity: 0.18;
-  --pd-forecast-uncertainty-stroke: var(--pd-data-forecast);
-  --pd-forecast-uncertainty-stroke-opacity: 0.44;
-  --pd-forecast-legend-text: var(--pd-text-secondary);
-  --pd-forecast-legend-strong: var(--pd-text);
+  --pd-forecast-reference-line-opacity: 0.86;
 
-  inline-size: 100%;
+  display: grid;
+  gap: var(--pd-space-4);
   min-inline-size: 0;
   color: var(--pd-text);
 }
 
-@supports (color: color-mix(in srgb, black 50%, white)) {
-  .pd-forecast-chart {
-    --pd-forecast-axis-color: color-mix(in srgb, var(--pd-text) 76%, var(--pd-text-secondary));
-    --pd-forecast-grid-color: color-mix(in srgb, var(--pd-separator) 76%, transparent);
-    --pd-forecast-reference-line-color: color-mix(in srgb, var(--pd-text-secondary) 72%, var(--pd-separator));
-    --pd-forecast-uncertainty-fill: color-mix(in srgb, var(--pd-data-forecast) 32%, transparent);
-    --pd-forecast-uncertainty-stroke: color-mix(in srgb, var(--pd-data-forecast) 72%, var(--pd-separator));
-    --pd-forecast-legend-text: color-mix(in srgb, var(--pd-text) 76%, var(--pd-text-secondary));
-  }
-}
-
-[data-theme="dark"] .pd-forecast-chart {
-  --pd-forecast-axis-color: var(--pd-text);
-  --pd-forecast-grid-color: var(--pd-separator);
-  --pd-forecast-grid-opacity: 0.78;
-  --pd-forecast-reference-line-opacity: 0.82;
-  --pd-forecast-uncertainty-fill-opacity: 0.24;
-  --pd-forecast-uncertainty-stroke-opacity: 0.58;
-  --pd-forecast-legend-text: var(--pd-text);
-}
-
-@supports (color: color-mix(in srgb, black 50%, white)) {
-  [data-theme="dark"] .pd-forecast-chart {
-    --pd-forecast-axis-color: color-mix(in srgb, var(--pd-text) 88%, var(--pd-text-secondary));
-    --pd-forecast-grid-color: color-mix(in srgb, var(--pd-separator) 88%, transparent);
-    --pd-forecast-reference-line-color: color-mix(in srgb, var(--pd-text-secondary) 82%, var(--pd-separator));
-    --pd-forecast-uncertainty-fill: color-mix(in srgb, var(--pd-data-forecast) 36%, transparent);
-    --pd-forecast-uncertainty-stroke: color-mix(in srgb, var(--pd-data-forecast) 82%, var(--pd-separator));
-    --pd-forecast-legend-text: color-mix(in srgb, var(--pd-text) 88%, var(--pd-text-secondary));
-  }
+.pd-forecast-chart__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-block-size: 1.75rem;
+  gap: var(--pd-space-4);
 }
 
 .pd-forecast-chart__axis-caption {
-  display: flex;
-  align-items: center;
-  min-block-size: 1.25rem;
-  min-inline-size: 0;
-  margin-block-end: var(--pd-space-2);
-  color: var(--pd-forecast-axis-color);
+  color: var(--pd-text-muted);
   font-family: var(--pd-font-mono);
-  font-size: 0.75rem;
-  line-height: 1.25;
-  letter-spacing: 0.025em;
-  overflow-wrap: anywhere;
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.pd-forecast-chart__interaction-hint {
+  display: inline-flex;
+  gap: var(--pd-space-3);
+  align-items: center;
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: 0.63rem;
+}
+
+.pd-forecast-chart__interaction-hint button {
+  min-block-size: 1.75rem;
+  padding-inline: 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--pd-action-primary) 34%, var(--pd-separator));
+  border-radius: var(--pd-radius-small);
+  background: color-mix(in srgb, var(--pd-action-primary) 10%, transparent);
+  color: var(--pd-action-primary);
+  font: inherit;
+  font-weight: var(--pd-font-weight-semibold);
+  cursor: pointer;
+}
+
+.pd-forecast-chart__interaction-hint button:focus-visible {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: 2px;
 }
 
 .pd-forecast-chart__plot {
   inline-size: 100%;
-  block-size: 23rem;
-  min-block-size: 19rem;
+  block-size: clamp(21rem, 38vw, 27rem);
   min-inline-size: 0;
-  overflow: visible;
-}
-
-.pd-forecast-chart .recharts-wrapper {
-  font-family: var(--pd-font-sans);
-  overflow: visible;
-}
-
-.pd-forecast-chart .recharts-surface {
-  overflow: visible;
+  cursor: crosshair;
+  touch-action: pan-y;
+  user-select: none;
 }
 
 .pd-forecast-chart .recharts-cartesian-axis-tick-value {
-  fill: var(--pd-forecast-axis-color);
-  font-size: 0.76rem;
-  font-weight: var(--pd-font-weight-medium);
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
 }
 
-.pd-forecast-chart .recharts-cartesian-axis line,
-.pd-forecast-chart .recharts-cartesian-axis-tick line {
-  stroke: var(--pd-forecast-grid-color);
-  stroke-opacity: var(--pd-forecast-grid-opacity);
+.pd-forecast-chart .recharts-line-curve,
+.pd-forecast-chart .recharts-area-area,
+.pd-forecast-chart .recharts-reference-line-line {
   vector-effect: non-scaling-stroke;
-}
-
-.pd-forecast-chart .recharts-cartesian-grid line {
-  stroke: var(--pd-forecast-grid-color);
-  stroke-opacity: var(--pd-forecast-grid-opacity);
-  shape-rendering: crispEdges;
-  vector-effect: non-scaling-stroke;
-}
-
-.pd-forecast-chart .recharts-line-curve {
-  stroke-width: 2.25px;
-  vector-effect: non-scaling-stroke;
-}
-
-.pd-forecast-chart .recharts-area-area {
-  fill: var(--pd-forecast-uncertainty-fill);
-  fill-opacity: var(--pd-forecast-uncertainty-fill-opacity);
-  vector-effect: non-scaling-stroke;
-}
-
-.pd-forecast-chart .recharts-area-curve {
-  stroke: var(--pd-forecast-uncertainty-stroke);
-  stroke-opacity: var(--pd-forecast-uncertainty-stroke-opacity);
-  stroke-width: 1.25px;
-  vector-effect: non-scaling-stroke;
-}
-
-.pd-forecast-chart .recharts-reference-line line {
-  stroke: var(--pd-forecast-reference-line-color);
-  stroke-opacity: var(--pd-forecast-reference-line-opacity);
-  stroke-width: 1px;
-  vector-effect: non-scaling-stroke;
-}
-
-.pd-forecast-chart .recharts-reference-line text {
-  fill: var(--pd-forecast-axis-color);
-  font-family: var(--pd-font-mono);
-  font-size: 0.74rem;
-  font-weight: var(--pd-font-weight-medium);
-}
-
-.pd-forecast-chart .recharts-surface:focus {
-  outline: none;
-}
-
-.pd-forecast-chart .recharts-surface:focus-visible {
-  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
-  outline-offset: calc(var(--pd-focus-width) * -1);
-  border-radius: var(--pd-radius-small);
-}
-
-.pd-forecast-chart__legend {
-  display: flex;
-  flex-wrap: wrap;
-  row-gap: var(--pd-space-4);
-  column-gap: var(--pd-space-8);
-  align-items: center;
-  justify-content: center;
-  margin: var(--pd-space-8) 0 0;
-  padding: 0;
-  color: var(--pd-forecast-legend-text);
-  font-size: 0.9rem;
-  line-height: 1.5;
-  list-style: none;
-}
-
-.pd-forecast-chart__legend li {
-  display: inline-flex;
-  gap: 0.7rem;
-  align-items: center;
-  min-inline-size: 0;
-  max-inline-size: 100%;
-}
-
-.pd-forecast-chart__legend li > span:last-child {
-  min-inline-size: 0;
-  overflow-wrap: anywhere;
-}
-
-.pd-forecast-chart__legend li[data-series="actual"] {
-  color: var(--pd-forecast-legend-strong);
-}
-
-.pd-forecast-chart__legend li[data-series="actual"] > span:last-child,
-.pd-forecast-chart__legend li[data-series="uncertainty"] > span:last-child {
-  font-weight: var(--pd-font-weight-medium);
-}
-
-.pd-forecast-chart__legend li[data-series="uncertainty"] {
-  color: var(--pd-forecast-legend-strong);
-}
-
-.pd-forecast-chart__swatch {
-  display: inline-block;
-  inline-size: 2.65rem;
-  flex: 0 0 2.65rem;
-  border-block-start: 3px solid var(--pd-data-actual);
-  border-radius: var(--pd-radius-pill);
-}
-
-.pd-forecast-chart__legend li[data-series="forecast"] .pd-forecast-chart__swatch {
-  border-block-start-color: var(--pd-data-forecast);
-  border-block-start-style: dashed;
-  border-block-start-width: 2.5px;
-  opacity: 1;
-}
-
-.pd-forecast-chart__legend li[data-series="target"] .pd-forecast-chart__swatch {
-  border-block-start-color: var(--pd-data-target);
-  border-block-start-style: dashed;
-  border-block-start-width: 2.5px;
-  opacity: 1;
-}
-
-.pd-forecast-chart__legend li[data-series="uncertainty"] .pd-forecast-chart__swatch {
-  block-size: 0.82rem;
-  border: 1px solid var(--pd-forecast-uncertainty-stroke);
-  background: var(--pd-forecast-uncertainty-fill);
-  opacity: 1;
 }
 
 .pd-forecast-chart__evidence {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--pd-space-4);
-  margin-block-start: var(--pd-space-6);
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  border-block: 1px solid var(--pd-separator-subtle);
 }
 
 .pd-forecast-chart__evidence dl {
-  min-inline-size: 0;
   margin: 0;
-  padding-block: var(--pd-space-4);
-  border-block-start: 1px solid var(--pd-separator-subtle);
+  padding: var(--pd-space-3) var(--pd-space-4) var(--pd-space-3) 0;
 }
 
-.pd-forecast-chart__evidence div {
+.pd-forecast-chart__evidence dl + dl {
+  padding-inline-start: var(--pd-space-4);
+  border-inline-start: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-forecast-chart__evidence dl div {
   display: grid;
-  gap: var(--pd-space-2);
+  gap: 0.3rem;
 }
 
 .pd-forecast-chart__evidence dt,
 .pd-forecast-chart__scenarios-heading {
-  margin: 0;
-  color: var(--pd-text-secondary);
-  font-family: var(--pd-font-sans);
-  font-size: 0.84rem;
-  font-weight: var(--pd-font-weight-medium);
-  line-height: 1.3;
-  text-transform: none;
-  letter-spacing: 0;
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.02em;
 }
 
 .pd-forecast-chart__evidence dd {
   display: grid;
-  gap: var(--pd-space-1);
-  min-inline-size: 0;
+  gap: 0.2rem;
   margin: 0;
+  color: var(--pd-text-secondary);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+.pd-forecast-chart__evidence dd strong {
   color: var(--pd-text);
   font-weight: var(--pd-font-weight-medium);
-  line-height: var(--pd-line-height-normal);
-  overflow-wrap: anywhere;
-}
-
-.pd-forecast-chart__evidence dd span {
-  color: var(--pd-text-secondary);
-  font-weight: var(--pd-font-weight-regular);
-}
-
-.pd-forecast-chart__evidence dl[data-quality="high"] dd strong {
-  color: var(--pd-status-success);
-}
-
-.pd-forecast-chart__evidence dl[data-quality="medium"] dd strong {
-  color: var(--pd-status-warning);
-}
-
-.pd-forecast-chart__evidence dl[data-quality="limited"] dd strong {
-  color: var(--pd-status-danger);
 }
 
 .pd-forecast-chart__scenarios {
   display: grid;
-  gap: var(--pd-space-4);
-  margin-block-start: var(--pd-space-6);
-  padding-block-start: var(--pd-space-5);
-  border-block-start: 1px solid var(--pd-separator-subtle);
+  gap: var(--pd-space-2);
+}
+
+.pd-forecast-chart__scenarios-heading {
+  margin: 0;
 }
 
 .pd-forecast-chart__scenarios ul {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--pd-space-4);
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--pd-space-2);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -291,131 +138,164 @@
 
 .pd-forecast-chart__scenarios li {
   display: grid;
-  gap: var(--pd-space-2);
-  min-inline-size: 0;
-  padding-inline-start: var(--pd-space-4);
-  border-inline-start: 3px solid var(--pd-separator-strong);
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.2rem var(--pd-space-3);
+  padding: 0.72rem 0.78rem;
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-small);
+  background: var(--pd-surface-subtle);
 }
 
-.pd-forecast-chart__scenarios li[data-scenario-tone="baseline"] {
-  border-inline-start-color: var(--pd-data-forecast);
-}
-
-.pd-forecast-chart__scenarios li[data-scenario-tone="optimistic"] {
-  border-inline-start-color: var(--pd-status-success);
-}
-
-.pd-forecast-chart__scenarios li[data-scenario-tone="conservative"] {
-  border-inline-start-color: var(--pd-status-warning);
-}
-
-.pd-forecast-chart__scenarios span {
-  color: var(--pd-text-muted);
-  font-size: var(--pd-type-size-caption);
-  line-height: 1.35;
-}
-
-.pd-forecast-chart__scenarios strong {
-  color: var(--pd-text);
-  font-size: var(--pd-type-size-body-large);
-  font-weight: var(--pd-font-weight-medium);
-  line-height: var(--pd-line-height-heading);
-}
-
-.pd-forecast-chart__scenarios p,
-.pd-forecast-chart__disclaimer,
-.pd-forecast-chart__unavailable {
-  margin: 0;
+.pd-forecast-chart__scenarios li > span {
   color: var(--pd-text-secondary);
-  line-height: var(--pd-line-height-normal);
-  overflow-wrap: anywhere;
+  font-size: 0.72rem;
 }
 
-.pd-forecast-chart__disclaimer,
-.pd-forecast-chart__unavailable {
-  margin-block-start: var(--pd-space-5);
+.pd-forecast-chart__scenarios li > strong {
+  color: var(--pd-text);
+  font-family: var(--pd-font-mono);
+  font-size: 0.72rem;
+  font-weight: var(--pd-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.pd-forecast-chart__scenarios li > p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--pd-text-muted);
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+
+.pd-forecast-chart__scenarios li[data-scenario-tone='optimistic'] {
+  border-inline-start: 2px solid var(--pd-status-success);
+}
+
+.pd-forecast-chart__scenarios li[data-scenario-tone='conservative'] {
+  border-inline-start: 2px solid var(--pd-status-warning);
 }
 
 .pd-forecast-chart__disclaimer {
-  max-inline-size: 72ch;
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border-inline-start: 2px solid var(--pd-data-series-4);
+  background: color-mix(in srgb, var(--pd-data-series-4) 5%, var(--pd-surface-subtle));
+  color: var(--pd-text-secondary);
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
+.pd-forecast-chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-forecast-chart__legend li {
+  display: contents;
+}
+
+.pd-forecast-chart__legend button {
+  display: inline-flex;
+  gap: 0.48rem;
+  align-items: center;
+  min-block-size: 2rem;
+  padding: 0.34rem 0.62rem;
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-pill);
+  background: var(--pd-surface-subtle);
+  color: var(--pd-text-secondary);
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition:
+    opacity 140ms ease,
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
+}
+
+.pd-forecast-chart__legend button:hover {
+  border-color: var(--pd-separator);
+  background: var(--pd-surface-raised);
   color: var(--pd-text);
-  font-weight: var(--pd-font-weight-medium);
 }
 
-@media (max-width: 860px) {
-  .pd-forecast-chart__evidence,
-  .pd-forecast-chart__scenarios ul {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.pd-forecast-chart__legend button:focus-visible {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: 2px;
 }
 
-@media (max-width: 760px) {
+.pd-forecast-chart__legend li[data-active='false'] button {
+  opacity: 0.44;
+  background: transparent;
+}
+
+.pd-forecast-chart__swatch {
+  display: inline-block;
+  inline-size: 1.3rem;
+  border-block-start: 2px solid var(--pd-data-actual);
+}
+
+.pd-forecast-chart__legend li[data-series='forecast'] .pd-forecast-chart__swatch {
+  border-block-start-color: var(--pd-data-forecast);
+  border-block-start-style: dashed;
+}
+
+.pd-forecast-chart__legend li[data-series='target'] .pd-forecast-chart__swatch {
+  border-block-start-color: var(--pd-data-target);
+  border-block-start-style: dashed;
+}
+
+.pd-forecast-chart__legend li[data-series='uncertainty'] .pd-forecast-chart__swatch {
+  inline-size: 0.72rem;
+  block-size: 0.72rem;
+  border: 1px solid color-mix(in srgb, var(--pd-data-series-4) 58%, transparent);
+  border-radius: 0.18rem;
+  background: color-mix(in srgb, var(--pd-data-series-4) 15%, transparent);
+}
+
+.pd-forecast-chart__unavailable {
+  margin: 0;
+  padding: var(--pd-space-8);
+  border: 1px dashed var(--pd-separator);
+  border-radius: var(--pd-radius-surface);
+  background: var(--pd-surface-subtle);
+  color: var(--pd-text-secondary);
+  text-align: center;
+}
+
+@media (max-width: 720px) {
   .pd-forecast-chart__plot {
     block-size: 20rem;
-    min-block-size: 17rem;
   }
 
-  .pd-forecast-chart__legend {
-    row-gap: var(--pd-space-3);
-    column-gap: var(--pd-space-6);
-    justify-content: center;
-    margin-block-start: var(--pd-space-5);
-    font-size: 0.88rem;
+  .pd-forecast-chart__evidence {
+    grid-template-columns: 1fr;
   }
 
-  .pd-forecast-chart .recharts-cartesian-axis-tick-value {
-    font-size: 0.74rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .pd-forecast-chart__plot {
-    block-size: 18rem;
-    min-block-size: 16rem;
+  .pd-forecast-chart__evidence dl,
+  .pd-forecast-chart__evidence dl + dl {
+    padding-inline: 0;
+    border-inline-start: 0;
   }
 
-  .pd-forecast-chart__legend {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--pd-space-3);
-    justify-items: center;
+  .pd-forecast-chart__evidence dl + dl {
+    border-block-start: 1px solid var(--pd-separator-subtle);
   }
 
-  .pd-forecast-chart__swatch {
-    inline-size: 2.2rem;
-    flex-basis: 2.2rem;
-  }
-
-  .pd-forecast-chart .recharts-cartesian-axis-tick-value {
-    font-size: 0.72rem;
-  }
-}
-
-@media (prefers-contrast: more) {
-  .pd-forecast-chart {
-    --pd-forecast-grid-opacity: 1;
-    --pd-forecast-reference-line-opacity: 1;
-    --pd-forecast-uncertainty-fill-opacity: 0.34;
-    --pd-forecast-uncertainty-stroke-opacity: 0.86;
-  }
-
-  .pd-forecast-chart .recharts-line-curve {
-    stroke-width: 2.5px;
-  }
-
-  .pd-forecast-chart__legend {
-    color: var(--pd-text);
-  }
-
-  .pd-forecast-chart__legend li[data-series="uncertainty"] .pd-forecast-chart__swatch {
-    border-width: 1.5px;
+  .pd-forecast-chart__interaction-hint > span {
+    display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pd-forecast-chart .recharts-wrapper *,
-  .pd-forecast-chart .recharts-wrapper *::before,
-  .pd-forecast-chart .recharts-wrapper *::after {
+  .pd-forecast-chart *,
+  .pd-forecast-chart *::before,
+  .pd-forecast-chart *::after {
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;

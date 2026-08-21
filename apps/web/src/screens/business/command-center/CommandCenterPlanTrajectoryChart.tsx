@@ -8,6 +8,9 @@ import type {
 import {
   EmptyState,
 } from '../../../design-system';
+import {
+  useChartZoom,
+} from '../../../design-system/components/Analytics/useChartZoom';
 
 export type CommandCenterPlanTrajectoryChartProps = {
   readonly trajectory: readonly PlanTrajectoryPointView[];
@@ -69,6 +72,15 @@ export function CommandCenterPlanTrajectoryChart({
   const [visibleSeries, setVisibleSeries] = useState(initialVisibleSeries);
   const [activePointId, setActivePointId] = useState<string | null>(null);
   const hoverCloseRef = useRef<number | null>(null);
+  const {
+    isZoomed,
+    onPointerCancel,
+    onPointerDown,
+    onPointerUp,
+    onWheel,
+    resetZoom,
+    visibleData: visibleTrajectory,
+  } = useChartZoom(trajectory, 6);
 
   function clearHoverClose() {
     if (hoverCloseRef.current !== null) {
@@ -88,7 +100,7 @@ export function CommandCenterPlanTrajectoryChart({
     hoverCloseRef.current = window.setTimeout(() => {
       setActivePointId(null);
       hoverCloseRef.current = null;
-    }, 320);
+    }, 220);
   }
 
   function toggleSeries(seriesKey: SeriesKey) {
@@ -96,6 +108,11 @@ export function CommandCenterPlanTrajectoryChart({
       ...current,
       [seriesKey]: !current[seriesKey],
     }));
+    setActivePointId(null);
+  }
+
+  function handleResetZoom() {
+    resetZoom();
     setActivePointId(null);
   }
 
@@ -109,18 +126,30 @@ export function CommandCenterPlanTrajectoryChart({
     );
   }
 
-  const values = trajectory.flatMap((point) => (
-    [point.plan, point.actual, point.forecast].filter(
-      (value): value is number => value !== null,
-    )
-  ));
+  const values = visibleTrajectory.flatMap((point) => {
+    const activeValues: Array<number | null> = [];
+
+    if (visibleSeries.target) {
+      activeValues.push(point.plan);
+    }
+
+    if (visibleSeries.actual) {
+      activeValues.push(point.actual);
+    }
+
+    if (visibleSeries.forecast) {
+      activeValues.push(point.forecast);
+    }
+
+    return activeValues.filter((value): value is number => value !== null);
+  });
   const minValue = Math.min(0, ...values);
   const maxValue = Math.max(1, ...values);
 
   function scaleX(index: number): number {
-    return trajectory.length <= 1
+    return visibleTrajectory.length <= 1
       ? PLOT_LEFT
-      : PLOT_LEFT + (index / (trajectory.length - 1)) * (PLOT_RIGHT - PLOT_LEFT);
+      : PLOT_LEFT + (index / (visibleTrajectory.length - 1)) * (PLOT_RIGHT - PLOT_LEFT);
   }
 
   function scaleY(value: number): number {
@@ -131,18 +160,18 @@ export function CommandCenterPlanTrajectoryChart({
     return PLOT_BOTTOM - ((value - minValue) / (maxValue - minValue)) * (PLOT_BOTTOM - PLOT_TOP);
   }
 
-  const planLinePoints = trajectory
+  const planLinePoints = visibleTrajectory
     .map((point, index) => `${scaleX(index)},${scaleY(point.plan)}`)
     .join(' ');
 
-  const actualEntries = trajectory
+  const actualEntries = visibleTrajectory
     .map((point, index) => ({ index, point }))
     .filter((entry) => entry.point.actual !== null);
   const actualLinePoints = actualEntries
     .map((entry) => `${scaleX(entry.index)},${scaleY(entry.point.actual as number)}`)
     .join(' ');
 
-  const forecastEntries = trajectory
+  const forecastEntries = visibleTrajectory
     .map((point, index) => ({ index, point }))
     .filter((entry) => entry.point.forecast !== null);
   const lastActual = actualEntries[actualEntries.length - 1] ?? null;
@@ -155,7 +184,7 @@ export function CommandCenterPlanTrajectoryChart({
 
   const chartPoints: readonly ChartPoint[] = [
     ...actualEntries.map((entry) => ({
-      id: `actual-${entry.index}`,
+      id: `actual-${entry.point.date}`,
       label: dateFormatter.format(new Date(entry.point.date)),
       series: 'actual' as const,
       value: entry.point.actual as number,
@@ -163,7 +192,7 @@ export function CommandCenterPlanTrajectoryChart({
       y: scaleY(entry.point.actual as number),
     })),
     ...forecastEntries.map((entry) => ({
-      id: `forecast-${entry.index}`,
+      id: `forecast-${entry.point.date}`,
       label: dateFormatter.format(new Date(entry.point.date)),
       series: 'forecast' as const,
       value: entry.point.forecast as number,
@@ -176,13 +205,16 @@ export function CommandCenterPlanTrajectoryChart({
     (point) => point.id === activePointId && visibleSeries[point.series],
   ) ?? null;
 
-  const axisLabelIndexes = Array.from({ length: Math.min(AXIS_LABEL_COUNT, trajectory.length) }, (_unused, step) => {
-    const ratio = AXIS_LABEL_COUNT <= 1 ? 0 : step / (AXIS_LABEL_COUNT - 1);
-    return Math.round(ratio * (trajectory.length - 1));
-  });
+  const axisLabelIndexes = Array.from(
+    { length: Math.min(AXIS_LABEL_COUNT, visibleTrajectory.length) },
+    (_unused, step) => {
+      const ratio = AXIS_LABEL_COUNT <= 1 ? 0 : step / (AXIS_LABEL_COUNT - 1);
+      return Math.round(ratio * (visibleTrajectory.length - 1));
+    },
+  );
   const axisLabels = [...new Set(axisLabelIndexes)].map((index) => ({
     index,
-    label: dateFormatter.format(new Date(trajectory[index].date)),
+    label: dateFormatter.format(new Date(visibleTrajectory[index].date)),
   }));
 
   return (
@@ -205,7 +237,26 @@ export function CommandCenterPlanTrajectoryChart({
         ))}
       </div>
 
-      <div className="pd-command-plan-trajectory__chart">
+      <div className="pd-command-plan-trajectory__zoom-controls">
+        <span>Przeciągnij po wykresie = zoom · scroll = skala</span>
+        {isZoomed ? (
+          <button
+            className="pd-command-plan-trajectory__reset"
+            onClick={handleResetZoom}
+            type="button"
+          >
+            Reset zoomu
+          </button>
+        ) : null}
+      </div>
+
+      <div
+        className="pd-command-plan-trajectory__chart"
+        onPointerCancel={onPointerCancel}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+        onWheel={onWheel}
+      >
         <svg
           aria-label="Wykres dziennego przychodu, benchmarku i prognozy"
           className="pd-command-plan-trajectory__svg"
@@ -213,7 +264,7 @@ export function CommandCenterPlanTrajectoryChart({
           viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
         >
           <title>Dzienne tempo przychodu, benchmark i prognoza</title>
-          <desc>Pełne wartości wszystkich punktów są dostępne w tabeli otwieranej przyciskiem Pokaż dane benchmarku.</desc>
+          <desc>Hover pokazuje wartości punktów. Przeciągnięcie i scroll zmieniają zakres; pełne wartości są dostępne także w tabeli.</desc>
           <g className="pd-command-plan-trajectory__grid">
             <line x1={PLOT_LEFT} x2={PLOT_RIGHT} y1={PLOT_BOTTOM} y2={PLOT_BOTTOM} />
             <line x1={PLOT_LEFT} x2={PLOT_RIGHT} y1={(PLOT_TOP + PLOT_BOTTOM * 2) / 3} y2={(PLOT_TOP + PLOT_BOTTOM * 2) / 3} />
@@ -266,7 +317,7 @@ export function CommandCenterPlanTrajectoryChart({
                   className="pd-command-plan-trajectory__hit-area"
                   cx={point.x}
                   cy={point.y}
-                  r="34"
+                  r="28"
                 />
                 <circle
                   className="pd-command-plan-trajectory__visible-point"
@@ -283,7 +334,7 @@ export function CommandCenterPlanTrajectoryChart({
               className="pd-command-plan-trajectory__tooltip"
               transform={`translate(${resolveTooltipX(activePoint.x)}, ${resolveTooltipY(activePoint.y)})`}
             >
-              <rect height="52" rx="12" width="182" />
+              <rect height="52" rx="9" width="182" />
               <text className="pd-command-plan-trajectory__tooltip-label" x="14" y="22">
                 {activePoint.label}
               </text>

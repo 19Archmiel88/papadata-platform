@@ -1,187 +1,166 @@
 .pd-chart-interaction-layer {
   display: grid;
-  gap: 0;
   min-inline-size: 0;
-  --pd-chart-interaction-panel-line: var(--pd-status-info);
-  --pd-chart-interaction-panel-surface: var(--pd-surface-panel);
-  --pd-chart-interaction-plot-surface: var(--pd-chart-frame-region, var(--pd-surface));
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-surface);
+  overflow: hidden;
+  background: var(--pd-surface);
   color: var(--pd-text);
-  font-weight: var(--pd-font-weight-regular);
-  text-transform: none;
 }
 
 .pd-chart-interaction-layer__header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--pd-space-3);
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--pd-space-5);
   align-items: start;
   padding: var(--pd-space-4) var(--pd-space-5);
-  border-block-end:
-    var(--pd-border-width-subtle)
-    solid
-    var(--pd-separator-subtle);
+  border-block-end: 1px solid var(--pd-separator-subtle);
 }
 
 .pd-chart-interaction-layer__header h3 {
   margin: 0;
-  font-size: var(--pd-type-size-body-large);
-  font-weight: var(--pd-font-weight-medium);
-  line-height: var(--pd-line-height-heading);
+  color: var(--pd-text);
+  font-size: 0.92rem;
+  font-weight: var(--pd-font-weight-semibold);
+  letter-spacing: -0.015em;
 }
 
 .pd-chart-interaction-layer__header p {
-  max-inline-size: 52rem;
-  margin: var(--pd-space-2) 0 0;
+  max-inline-size: 48rem;
+  margin: var(--pd-space-1) 0 0;
   color: var(--pd-text-secondary);
-  font-size: var(--pd-type-size-body-small);
-  line-height: var(--pd-line-height-relaxed);
+  font-size: 0.74rem;
+  line-height: 1.5;
 }
 
 .pd-chart-interaction-layer__meta {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--pd-space-3) var(--pd-space-5);
-  justify-content: stretch;
+  display: flex;
+  gap: var(--pd-space-5);
   margin: 0;
 }
 
 .pd-chart-interaction-layer__meta div {
   display: grid;
-  gap: var(--pd-space-1);
-  min-inline-size: 0;
-  text-align: start;
-}
-
-.pd-chart-interaction-layer__meta div:last-child {
+  gap: 0.18rem;
   justify-items: end;
-  text-align: end;
+  min-inline-size: 0;
 }
 
 .pd-chart-interaction-layer__meta dt {
   color: var(--pd-text-muted);
   font-family: var(--pd-font-mono);
-  font-size: var(--pd-type-size-caption);
-  letter-spacing: 0.02em;
+  font-size: 0.61rem;
 }
 
 .pd-chart-interaction-layer__meta dd {
   margin: 0;
-  color: var(--pd-chart-frame-insight, var(--pd-text-secondary));
+  color: var(--pd-text-secondary);
   font-family: var(--pd-font-mono);
-  font-size: var(--pd-type-size-body-small);
-  overflow-wrap: anywhere;
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .pd-chart-interaction-layer__filters {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--pd-space-2) var(--pd-space-3);
+  gap: var(--pd-space-2);
   align-items: center;
   padding: var(--pd-space-3) var(--pd-space-5);
-  border-block-end:
-    var(--pd-border-width-subtle)
-    solid
-    var(--pd-separator-subtle);
-}
-
-.pd-chart-interaction-layer__filter-button {
-  min-inline-size: 0;
+  border-block-end: 1px solid var(--pd-separator-subtle);
+  background: var(--pd-surface-subtle);
 }
 
 .pd-chart-interaction-layer__filter-button,
 .pd-chart-interaction-layer__point-button {
   transition:
-    background-color 150ms ease,
-    border-color 150ms ease,
-    color 150ms ease,
-    transform 150ms ease;
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
 }
 
-.pd-chart-interaction-layer__filter-button:hover,
-.pd-chart-interaction-layer__point-button:hover {
-  transform: translateY(-1px);
+.pd-chart-interaction-layer__filter-button[data-active='true'] {
+  border-color: color-mix(in srgb, var(--pd-action-primary) 35%, var(--pd-separator));
+  background: color-mix(in srgb, var(--pd-action-primary) 10%, var(--pd-surface));
+  color: var(--pd-text);
 }
 
 .pd-chart-interaction-layer__reset-action {
   margin-inline-start: auto;
-  font-weight: var(--pd-font-weight-regular);
 }
 
 .pd-chart-interaction-layer__body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(17rem, 0.32fr);
-  gap: 0;
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr) minmax(15.5rem, 0.3fr);
+  min-inline-size: 0;
 }
 
 .pd-chart-interaction-layer__visualization {
   min-inline-size: 0;
   padding: var(--pd-space-5);
-  border-inline-end:
-    var(--pd-border-width-subtle)
-    solid
-    var(--pd-separator-subtle);
-  background: var(--pd-chart-interaction-plot-surface);
+  background: var(--pd-surface);
 }
 
 .pd-chart-interaction-layer__panel {
   display: grid;
+  align-content: start;
   gap: var(--pd-space-4);
   min-inline-size: 0;
-  margin: var(--pd-space-5) var(--pd-space-5) var(--pd-space-5) var(--pd-space-4);
   padding: var(--pd-space-4);
-  border:
-    var(--pd-border-width-subtle)
-    solid
-    var(--pd-separator-subtle);
-  border-inline-start: 2px solid var(--pd-chart-interaction-panel-line);
-  border-radius: var(--pd-radius-overlay);
-  background: var(--pd-chart-interaction-panel-surface);
+  border-inline-start: 1px solid var(--pd-separator-subtle);
+  background: var(--pd-surface-subtle);
+}
+
+.pd-chart-interaction-layer__panel[data-status='ready'] {
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--pd-action-primary) 72%, transparent);
 }
 
 .pd-chart-interaction-layer__tooltip {
   display: grid;
   gap: var(--pd-space-2);
-  block-size: 12.25rem;
+  min-block-size: 8rem;
   align-content: start;
-  padding-block: var(--pd-space-3);
-  border-block: var(--pd-border-width-subtle) solid var(--pd-separator);
+  padding: var(--pd-space-3);
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-small);
+  background: var(--pd-surface);
 }
 
-.pd-chart-interaction-layer__tooltip span {
+.pd-chart-interaction-layer__tooltip > span:first-child {
   color: var(--pd-text-muted);
-  font-size: var(--pd-type-size-caption);
+  font-family: var(--pd-font-mono);
+  font-size: 0.62rem;
 }
 
 .pd-chart-interaction-layer__tooltip-value {
   color: var(--pd-text);
-  font-size: var(--pd-type-size-body-large);
-  font-weight: var(--pd-font-weight-regular);
+  font-family: var(--pd-font-mono);
+  font-size: 1rem;
+  font-weight: var(--pd-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
 }
 
 .pd-chart-interaction-layer__tooltip p {
   margin: 0;
   color: var(--pd-text-secondary);
-  line-height: var(--pd-line-height-relaxed);
+  font-size: 0.72rem;
+  line-height: 1.5;
 }
 
 .pd-chart-interaction-layer__selection {
   display: grid;
-  grid-auto-rows: 3.5rem;
   gap: var(--pd-space-2);
-  border-block-start: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
   padding-block-start: var(--pd-space-3);
+  border-block-start: 1px solid var(--pd-separator-subtle);
 }
 
 .pd-chart-interaction-layer__point-button {
-  block-size: 3.5rem;
-  min-block-size: 3.5rem;
   min-inline-size: 0;
+  min-block-size: 2.5rem;
+  justify-content: stretch;
 }
 
 .pd-chart-interaction-layer__point-button .pd-button__content,
 .pd-chart-interaction-layer__point-button .pd-button__label {
-  block-size: 100%;
   inline-size: 100%;
   min-inline-size: 0;
 }
@@ -189,34 +168,33 @@
 .pd-chart-interaction-layer__point-button .pd-button__label {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--pd-space-3);
   align-items: center;
-  column-gap: var(--pd-space-3);
   text-align: start;
 }
 
 .pd-chart-interaction-layer__point-button[data-active='true'] {
-  background: color-mix(in srgb, var(--pd-brand-accent) 10%, transparent);
+  border-color: color-mix(in srgb, var(--pd-action-primary) 34%, var(--pd-separator));
+  background: color-mix(in srgb, var(--pd-action-primary) 9%, var(--pd-surface));
   color: var(--pd-text);
 }
 
-.pd-chart-interaction-layer__point-button[data-active='true'] {
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pd-brand-line) 45%, transparent);
+.pd-chart-interaction-layer__point-value {
+  justify-self: end;
+  color: var(--pd-text);
+  font-family: var(--pd-font-mono);
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .pd-chart-interaction-layer__empty {
   margin: 0;
-  padding: var(--pd-space-3) 0;
-  border-block-end: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  padding: var(--pd-space-4);
+  border: 1px dashed var(--pd-separator);
+  border-radius: var(--pd-radius-small);
   color: var(--pd-text-secondary);
-  line-height: var(--pd-line-height-relaxed);
-}
-
-.pd-chart-interaction-layer__point-value {
-  color: var(--pd-text);
-  font-weight: var(--pd-font-weight-regular);
-  font-variant-numeric: tabular-nums;
-  justify-self: end;
-  white-space: nowrap;
+  font-size: 0.72rem;
 }
 
 @media (max-width: 920px) {
@@ -225,45 +203,29 @@
     grid-template-columns: 1fr;
   }
 
-  .pd-chart-interaction-layer__visualization {
-    border-inline-end: 0;
-    border-block-end:
-      var(--pd-border-width-subtle)
-      solid
-      var(--pd-separator-subtle);
+  .pd-chart-interaction-layer__meta,
+  .pd-chart-interaction-layer__meta div {
+    justify-items: start;
   }
 
   .pd-chart-interaction-layer__panel {
-    margin: var(--pd-space-4) var(--pd-space-5) var(--pd-space-5);
-  }
-
-  .pd-chart-interaction-layer__meta {
-    display: grid;
-    grid-template-columns: 1fr;
-    justify-content: stretch;
-  }
-
-  .pd-chart-interaction-layer__meta div,
-  .pd-chart-interaction-layer__meta div:last-child {
-    justify-items: start;
-    text-align: start;
+    border-inline-start: 0;
+    border-block-start: 1px solid var(--pd-separator-subtle);
   }
 }
 
 @media (max-width: 560px) {
   .pd-chart-interaction-layer__header,
   .pd-chart-interaction-layer__filters,
-  .pd-chart-interaction-layer__visualization {
+  .pd-chart-interaction-layer__visualization,
+  .pd-chart-interaction-layer__panel {
     padding-inline: var(--pd-space-4);
   }
 
-  .pd-chart-interaction-layer__panel {
-    margin-inline: var(--pd-space-4);
-  }
-
-  .pd-chart-interaction-layer__filters,
-  .pd-chart-interaction-layer__point-button .pd-button__label {
+  .pd-chart-interaction-layer__meta {
     display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--pd-space-2);
   }
 
   .pd-chart-interaction-layer__reset-action {

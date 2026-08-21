@@ -61,15 +61,8 @@
 .pd-viz-story__metric-priority-surface .pd-metric-card {
   padding: clamp(20px, 2.2vw, 32px);
   border-radius: var(--pd-radius-overlay);
-  background:
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--pd-surface-panel) 90%, transparent),
-      color-mix(in srgb, var(--pd-surface-raised) 68%, transparent)
-    );
-  box-shadow:
-    0 24px 64px -50px color-mix(in srgb, var(--pd-text) 38%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--pd-surface-raised) 48%, transparent);
+  background: var(--pd-surface-panel);
+  box-shadow: var(--pd-shadow-control);
 }
 
 /* Supporting strip — matches command-center-one-page__supporting-strip */

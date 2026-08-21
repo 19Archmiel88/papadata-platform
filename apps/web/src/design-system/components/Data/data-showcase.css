@@ -1,17 +1,7 @@
 .pd-data-story {
   min-height: 100vh;
   padding: clamp(var(--pd-space-5), 5vw, var(--pd-space-8));
-  background:
-    radial-gradient(
-      circle at top left,
-      color-mix(in srgb, var(--pd-brand-ambient) 14%, transparent),
-      transparent 36%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--pd-canvas) 96%, transparent),
-      var(--pd-canvas)
-    );
+  background: var(--pd-canvas);
   color: var(--pd-text);
 }
 

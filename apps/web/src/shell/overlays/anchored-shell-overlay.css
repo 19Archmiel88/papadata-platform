@@ -1,176 +1,75 @@
-.pd-shell-anchored-overlay__trigger {
-  display: inline-flex;
-  min-width: 0;
-}
-
 .pd-shell-anchored-overlay-root {
-  /*
-   * Anchored overlaye należą do chrome produktu,
-   * dlatego również nie zmieniają materiału wraz z motywem workspace.
-   */
-  --pd-brand-highlight: var(--pd-shell-brand-strong);
-  --pd-brand-action: var(--pd-shell-brand);
-  --pd-brand-action-hover: color-mix(in srgb, var(--pd-shell-brand) 82%, var(--pd-shell-brand-strong));
-  --pd-brand-action-active: var(--pd-shell-brand-strong);
-  --pd-brand-action-on: var(--pd-shell-text);
-  --pd-surface-active: var(--pd-shell-surface-active);
-  --pd-text: var(--pd-shell-text);
-  --pd-text-secondary: var(--pd-shell-text-secondary);
-  --pd-text-muted: var(--pd-shell-text-muted);
-  --pd-surface: var(--pd-shell-surface);
-  --pd-surface-subtle: var(--pd-shell-surface-subtle);
-  --pd-surface-raised: var(--pd-shell-surface-raised);
-  --pd-surface-panel: var(--pd-shell-surface);
-  --pd-surface-overlay: var(--pd-shell-surface-overlay);
-  --pd-separator: var(--pd-shell-separator);
-  --pd-separator-subtle: var(--pd-shell-separator);
-  --pd-brand-accent: var(--pd-shell-brand);
-  --pd-brand-strong: var(--pd-shell-brand-strong);
-  --pd-refractive-border: var(--pd-shell-separator);
-  --pd-refractive-border-hover: color-mix(in srgb, var(--pd-shell-brand) 54%, var(--pd-shell-separator));
-  --pd-refractive-control: color-mix(in srgb, var(--pd-shell-surface-raised) 76%, transparent);
-  --pd-refractive-control-hover: color-mix(in srgb, var(--pd-shell-surface-raised) 92%, transparent);
-  --pd-form-surface: color-mix(in srgb, var(--pd-shell-surface-raised) 76%, transparent);
-  --pd-form-border: color-mix(in srgb, var(--pd-shell-text) 16%, transparent);
-  --pd-form-text: var(--pd-shell-text);
-  --pd-form-muted: var(--pd-shell-text-muted);
-  color-scheme: dark;
+  position: fixed;
+  inset: 0;
+  z-index: var(--pd-layer-popover);
+  pointer-events: none;
 }
 
 .pd-shell-anchored-overlay {
-  --pd-shell-overlay-top: calc(var(--pd-shell-topbar-height) + var(--pd-space-2));
-  --pd-shell-overlay-right: var(--pd-space-3);
-  --pd-shell-overlay-left: var(--pd-space-3);
   position: fixed;
-  top: var(--pd-shell-overlay-top);
-  right: var(--pd-shell-overlay-right);
-  width: min(24rem, calc(100vw - 1.5rem));
-  max-height: min(42rem, calc(100dvh - var(--pd-shell-overlay-top) - 0.75rem));
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
+  width: min(390px, calc(100vw - 24px));
+  max-height: min(720px, calc(100dvh - 76px));
   overflow: hidden;
-  pointer-events: auto;
+  border: 1px solid var(--pd-shell-separator-strong);
+  border-radius: 14px;
+  background: var(--pd-shell-surface-overlay);
   color: var(--pd-shell-text);
-  border: 1px solid color-mix(in srgb, var(--pd-shell-text) 14%, transparent);
-  border-radius: var(--pd-radius-overlay);
-  background:
-    radial-gradient(
-      ellipse 100% 58% at 14% -8%,
-      color-mix(in srgb, var(--pd-shell-brand) 17%, transparent),
-      transparent 64%
-    ),
-    linear-gradient(
-      155deg,
-      color-mix(in srgb, var(--pd-shell-surface-raised) 86%, transparent),
-      color-mix(in srgb, var(--pd-shell-surface) 94%, transparent)
-    );
-  box-shadow:
-    0 44px 100px -44px rgb(0 0 0 / 0.9),
-    0 16px 36px -24px rgb(0 0 0 / 0.76),
-    inset 0 1px 0 color-mix(in srgb, white 10%, transparent);
-  backdrop-filter: blur(28px) saturate(1.14);
-}
-
-.pd-shell-anchored-overlay[data-align='start'] {
-  right: auto;
-  left: var(--pd-shell-overlay-left);
-}
-
-.pd-shell-anchored-overlay[data-width='wide'] {
-  width: min(38rem, calc(100vw - 1.5rem));
+  box-shadow: var(--pd-shadow-overlay);
+  pointer-events: auto;
 }
 
 .pd-shell-anchored-overlay__header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--pd-space-3);
-  padding: var(--pd-space-4);
-  border-bottom: 1px solid var(--pd-shell-separator);
-  background: color-mix(in srgb, var(--pd-shell-surface-raised) 58%, transparent);
-}
-
-.pd-shell-anchored-overlay__header > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   min-width: 0;
-  display: grid;
-  gap: var(--pd-space-1);
+  padding: 13px 14px;
+  border-block-end: 1px solid var(--pd-shell-separator);
+  background: var(--pd-shell-surface-raised);
 }
 
 .pd-shell-anchored-overlay__header h2,
+.pd-shell-anchored-overlay__header h3,
 .pd-shell-anchored-overlay__header p {
   margin: 0;
 }
 
-.pd-shell-anchored-overlay__header h2 {
-  color: var(--pd-shell-text);
-  font-size: var(--pd-type-size-heading-5);
-  font-weight: var(--pd-font-weight-semibold);
+.pd-shell-anchored-overlay__header h2,
+.pd-shell-anchored-overlay__header h3 {
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .pd-shell-anchored-overlay__header p {
   color: var(--pd-shell-text-muted);
-  font-size: var(--pd-type-size-caption);
-}
-
-.pd-shell-anchored-overlay__close {
-  width: 2.2rem;
-  height: 2.2rem;
-  display: inline-grid;
-  place-items: center;
-  border: 1px solid transparent;
-  border-radius: var(--pd-radius-control);
-  color: var(--pd-shell-text-muted);
-  background: transparent;
-  cursor: pointer;
-}
-
-.pd-shell-anchored-overlay__close:hover {
-  color: var(--pd-shell-text);
-  background: color-mix(in srgb, var(--pd-shell-surface-raised) 70%, transparent);
-}
-
-.pd-shell-anchored-overlay__close:focus-visible {
-  outline: 2px solid var(--pd-shell-brand);
-  outline-offset: 2px;
+  font-size: 11px;
 }
 
 .pd-shell-anchored-overlay__body {
-  min-width: 0;
+  min-height: 0;
   overflow: auto;
-  overscroll-behavior: contain;
-  padding: var(--pd-space-4);
+  background: var(--pd-shell-surface);
 }
 
-@media (max-width: 640px) {
-  .pd-shell-anchored-overlay,
-  .pd-shell-anchored-overlay[data-width='wide'] {
-    top: calc(var(--pd-shell-topbar-height) + var(--pd-space-2));
-    right: var(--pd-space-3);
-    left: var(--pd-space-3);
-    width: auto;
-    max-height: calc(100dvh - var(--pd-shell-topbar-height) - var(--pd-space-5));
-  }
+.pd-shell-anchored-overlay__close,
+.pd-shell-anchored-overlay__trigger {
+  display: inline-grid;
+  place-items: center;
+  min-width: 32px;
+  min-height: 32px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--pd-shell-text-muted);
+  cursor: pointer;
 }
 
-/* PapaData quick crystal correction - shell popovers use opaque dark crystal material. */
-.pd-shell-anchored-overlay-root {
+.pd-shell-anchored-overlay__close:hover,
+.pd-shell-anchored-overlay__trigger:hover {
+  border-color: var(--pd-shell-separator);
+  background: var(--pd-shell-surface-active);
+  color: var(--pd-shell-text);
 }
-
-.pd-shell-anchored-overlay {
-  background:
-    radial-gradient(
-      ellipse 90% 54% at 12% -10%,
-      rgb(129 140 248 / 0.12),
-      transparent 62%
-    ),
-    linear-gradient(155deg, var(--pd-shell-surface-raised) 0%, var(--pd-shell-canvas) 100%);
-  border-color: rgb(255 255 255 / 0.12);
-}
-
-.pd-shell-anchored-overlay__header {
-  background: rgb(17 27 45 / 0.72);
-}
-
-.pd-shell-anchored-overlay__close:focus-visible {
-  outline-color: var(--pd-shell-brand-strong);
-}
-

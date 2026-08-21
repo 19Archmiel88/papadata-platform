@@ -1,265 +1,171 @@
+.runtime-dashboard,
 .runtime-status {
   min-height: 100dvh;
+  background: var(--pd-canvas);
   color: var(--pd-text);
-  background: var(--pd-canvas-gradient);
 }
 
-.runtime-status__brand,
+.runtime-dashboard {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding: clamp(20px, 4vw, 48px);
+}
+
+.runtime-dashboard__heading {
+  display: grid;
+  gap: 6px;
+  max-width: 760px;
+}
+
+.runtime-dashboard__heading h1,
+.runtime-dashboard__heading p,
 .runtime-dashboard__eyebrow {
   margin: 0;
-  color: var(--pd-brand-strong);
-  font-size: var(--pd-type-size-body-small);
-  font-weight: var(--pd-font-weight-medium);
 }
 
-.runtime-status h1,
-.runtime-dashboard h1 {
-  margin: var(--pd-space-3) 0 0;
+.runtime-dashboard__eyebrow,
+.runtime-status__stage {
+  color: var(--pd-brand-action);
+  font-family: var(--pd-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.runtime-dashboard__heading h1 {
   color: var(--pd-text);
-  font-size: var(--pd-type-size-page);
-  line-height: var(--pd-line-height-compact);
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
 }
 
-.runtime-status p,
-.runtime-dashboard__heading p,
-.runtime-panel p {
-  margin: 0;
+.runtime-dashboard__heading p {
   color: var(--pd-text-secondary);
   line-height: var(--pd-line-height-relaxed);
 }
 
-.runtime-status--message {
+.runtime-dashboard__grid,
+.runtime-capabilities,
+.runtime-status__blueprint-grid {
   display: grid;
-  place-content: center;
-  justify-items: start;
-  gap: var(--pd-space-4);
-  padding: var(--pd-layout-page-padding);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
-.runtime-status--message > * {
-  width: min(100%, 760px);
-  justify-self: center;
+.runtime-panel,
+.runtime-probe,
+.runtime-status__blueprint,
+.runtime-status__copy {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: 12px;
+  background: var(--pd-surface-panel);
+  box-shadow: var(--pd-shadow-control);
 }
 
-.runtime-status--loading {
+.runtime-panel--wide {
+  grid-column: span 2;
+}
+
+.runtime-probe {
+  display: grid;
+  gap: 8px;
+}
+
+.runtime-probe__result {
+  padding: 9px 10px;
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: 8px;
+  background: var(--pd-surface-soft);
+  color: var(--pd-text-secondary);
+  font-family: var(--pd-font-mono);
+  font-size: 11px;
+}
+
+.runtime-status {
   display: grid;
   place-items: center;
-  padding: clamp(24px, 5vw, 72px);
-  overflow: hidden;
-}
-
-.runtime-status__stage {
-  width: min(100%, 980px);
-  display: grid;
-  gap: clamp(18px, 2.2vw, 28px);
-}
-
-.runtime-status__brand-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--pd-space-4);
-}
-
-.runtime-status__brand-row .pd-spinner {
-  color: var(--pd-brand-accent);
+  padding: 24px;
 }
 
 .runtime-status__copy {
   display: grid;
-  gap: var(--pd-space-2);
+  gap: 12px;
+  width: min(680px, 100%);
 }
 
-.runtime-status__copy h1 {
-  max-width: 13ch;
-  margin: 0;
-  font-size: clamp(2.4rem, 7vw, 5.4rem);
-  line-height: 0.98;
+.runtime-status__brand,
+.runtime-status__brand-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.runtime-status__copy p {
-  max-width: 40rem;
-  font-size: var(--pd-type-size-body-large);
+.runtime-status--loading .runtime-status__copy {
+  border-inline-start: 2px solid var(--pd-brand-accent);
+}
+
+.runtime-status--message .runtime-status__copy {
+  border-inline-start: 2px solid var(--pd-status-warning);
 }
 
 .runtime-status__progress {
-  height: 0.38rem;
+  height: 3px;
   overflow: hidden;
-  border-radius: var(--pd-radius-pill);
-  background: color-mix(in srgb, var(--pd-separator-subtle) 70%, transparent);
+  border-radius: 999px;
+  background: var(--pd-surface-soft);
 }
 
-.runtime-status__progress span {
+.runtime-status__progress::after {
+  content: '';
   display: block;
   width: 42%;
   height: 100%;
   border-radius: inherit;
-  background: var(--pd-refractive-primary);
-  animation: runtime-loading-progress 1.35s var(--pd-motion-easing-emphasized) infinite;
+  background: var(--pd-brand-accent);
+  animation: runtime-progress 1.4s ease-in-out infinite alternate;
 }
 
-.runtime-status__blueprint {
-  display: grid;
-  gap: var(--pd-space-4);
-  opacity: 0.78;
+.pd-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--pd-separator);
+  border-block-start-color: var(--pd-brand-accent);
+  border-radius: 50%;
+  animation: runtime-spin 700ms linear infinite;
 }
 
-.runtime-status__blueprint-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--pd-space-4);
+.pd-skeleton,
+.pd-skeleton__line {
+  border-radius: 7px;
+  background: var(--pd-surface-soft);
 }
 
-.runtime-status__blueprint .pd-skeleton__line {
-  border-radius: var(--pd-radius-control);
-  background:
-    color-mix(in srgb, var(--pd-surface-raised) 52%, var(--pd-separator-subtle));
+.pd-skeleton__line {
+  height: 10px;
 }
 
-.runtime-status__blueprint .pd-skeleton[data-animated='true'] .pd-skeleton__line {
-  background-image: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--pd-separator-subtle) 64%, transparent) 0%,
-    color-mix(in srgb, var(--pd-surface-raised) 76%, var(--pd-separator-subtle)) 46%,
-    color-mix(in srgb, var(--pd-separator-subtle) 64%, transparent) 100%
-  );
+@keyframes runtime-spin {
+  to { transform: rotate(360deg); }
 }
 
-.runtime-dashboard {
-  max-width: 1240px;
-  margin: 0 auto;
-}
-
-.runtime-dashboard__heading {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--pd-space-8);
-}
-
-.runtime-dashboard__heading p {
-  max-width: 760px;
-}
-
-.runtime-dashboard__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--pd-space-5);
-  margin-top: var(--pd-space-8);
-}
-
-.runtime-panel {
-  padding: var(--pd-space-6);
-  border: var(--pd-border-width-subtle) solid var(--pd-separator);
-  border-radius: 12px;
-  background: var(--pd-surface, Canvas);
-}
-
-.runtime-panel--wide {
-  grid-column: 1 / -1;
-}
-
-.runtime-panel h2 {
-  margin: 0 0 var(--pd-space-5);
-  color: var(--pd-text);
-  font-size: var(--pd-type-size-body-large);
-}
-
-.runtime-panel dl {
-  display: grid;
-  gap: var(--pd-space-4);
-  margin: 0;
-}
-
-.runtime-panel dl > div {
-  display: grid;
-  grid-template-columns: minmax(100px, 0.7fr) minmax(0, 1.3fr);
-  gap: var(--pd-space-4);
-}
-
-.runtime-panel dt {
-  color: var(--pd-text-muted);
-}
-
-.runtime-panel dd {
-  min-width: 0;
-  margin: 0;
-  overflow-wrap: anywhere;
-  font-family: var(--pd-font-mono);
-  font-size: var(--pd-type-size-body-small);
-}
-
-.runtime-capabilities {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--pd-space-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.runtime-capabilities li {
-  padding: var(--pd-space-2) var(--pd-space-3);
-  border: var(--pd-border-width-subtle) solid var(--pd-separator);
-  border-radius: 999px;
-  font-size: var(--pd-type-size-caption);
-}
-
-.runtime-probe {
-  display: flex;
-  align-items: center;
-  gap: var(--pd-space-4);
-  flex-wrap: wrap;
-}
-
-.runtime-probe__result {
-  color: var(--pd-text-secondary);
-  font-family: var(--pd-font-mono);
-  font-size: var(--pd-type-size-body-small);
-}
-
-.runtime-probe__result[data-ok] {
-  color: var(--pd-brand-strong);
+@keyframes runtime-progress {
+  from { transform: translateX(0); }
+  to { transform: translateX(135%); }
 }
 
 @media (max-width: 860px) {
-  .runtime-status--loading {
-    place-items: start stretch;
-    padding: var(--pd-space-6);
-  }
-
-  .runtime-status__copy h1 {
-    max-width: 11ch;
-  }
-
+  .runtime-dashboard__grid,
+  .runtime-capabilities,
   .runtime-status__blueprint-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .runtime-dashboard__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .runtime-panel--wide {
     grid-column: auto;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .runtime-status__progress span {
-    animation: none;
-  }
-}
-
-@keyframes runtime-loading-progress {
-  0% {
-    transform: translateX(-120%);
-  }
-
-  48% {
-    transform: translateX(48%);
-  }
-
-  100% {
-    transform: translateX(240%);
   }
 }

@@ -190,7 +190,7 @@ export function CommandCenterWorkspace({
     ? 'Centrum Dowodzenia'
     : definition.displayTitle;
   const pageHeadingSubtitle = isRuntimeOnePage
-    ? 'Landing page w przebudowie: aktywne sekcje to KPI, Plan vs Benchmark oraz Drivery wyniku.'
+    ? 'Jedna przestrzeń operacyjna do kontroli KPI, realizacji benchmarku, driverów wyniku i decyzji wspieranych przez AI.'
     : definition.summary;
 
   useEffect(() => {

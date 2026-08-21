@@ -147,24 +147,13 @@
   overflow: visible;
   border: 1px solid var(--pd-refractive-border);
   border-radius: var(--pd-radius-overlay);
-  background: var(--pd-refractive-surface-subtle);
-  box-shadow: var(--pd-refractive-depth-strong);
-  backdrop-filter: blur(20px) saturate(1.08);
+  background: var(--pd-surface-panel);
+  box-shadow: var(--pd-shadow-control);
+  backdrop-filter: none;
 }
 
 .pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__workspace"]::after {
-  content: '';
-  position: absolute;
-  inset: 1px;
-  border-radius: inherit;
-  pointer-events: none;
-  background: linear-gradient(
-    110deg,
-    transparent 0%,
-    var(--pd-refractive-sheen) 48%,
-    transparent 100%
-  );
-  opacity: 0.45;
+  display: none;
 }
 
 .pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__workspace"] > * {

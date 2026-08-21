@@ -71,6 +71,7 @@ apps/web/storybook-static/
 apps/web/node_modules/
 apps/web/.cache/
 apps/web/.vite/
+apps/web/test-results/
 
 # Generated Storybook acceptance evidence
 /foundation-evidence/*

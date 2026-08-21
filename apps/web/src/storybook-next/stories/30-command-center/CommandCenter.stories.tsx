@@ -13,6 +13,9 @@ import {
   createStorybookBusinessData,
 } from '../../../screens/business';
 import {
+  businessScreenStorybookMeta,
+} from '../../data/businessScreenStorybookMeta';
+import {
   ProductionStoryShell,
 } from '../../production/ProductionStoryShell';
 
@@ -72,6 +75,7 @@ function CommandCenterStoryPage({
       canvasSummary="Storybook pokazuje ekran produkcyjny z danymi kontraktowymi fixture; runtime pobiera dane przez BFF."
       contract={{
         ...definition,
+        documentPath: businessScreenStorybookMeta[id].documentPath,
         owner: 'Command Center',
         sectionId: '30',
         sectionLabel: 'Centrum Dowodzenia',
@@ -91,7 +95,7 @@ function createStory(id: CommandCenterStoryId): Story {
   const definition = getDefinition(id);
 
   return {
-    name: definition.storyName,
+    name: businessScreenStorybookMeta[id].storyName,
     render: () => (
       <CommandCenterStoryPage id={id} />
     ),

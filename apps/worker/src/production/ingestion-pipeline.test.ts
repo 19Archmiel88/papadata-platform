@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type {
-  IntegrationProviderAdapter,
-  ProviderFetchRequest,
-  ProviderFetchResult,
-  ProviderRecord,
+import {
+  ProviderAdapterError,
+  type IntegrationProviderAdapter,
+  type ProviderFetchRequest,
+  type ProviderFetchResult,
+  type ProviderRecord,
 } from "@papadata/integrations";
 import {
   DurableIngestionError,
@@ -139,27 +140,99 @@ test("A04 cancellation is durable and cannot become succeeded", async () => {
   assert.equal(adapter.receivedCheckpoints.length, 0);
 });
 
-test("A04 empty provider page without persisted data is not a success", async () => {
+test("A04 empty provider page is a valid success when every reconciliation count is zero", async () => {
+  const repository = new InMemoryDurableRepository();
+  const adapter = new FakeAdapter({
+    records: [],
+    nextCheckpoint: "empty-window-checkpoint",
+  });
+
+  const result = await runPipeline(repository, adapter);
+
+  assert.equal(result.status, "succeeded");
+  assert.equal(repository.state, "succeeded");
+  assert.equal(result.fetchedCount, 0);
+  assert.equal(result.persistedSourceCount, 0);
+  assert.equal(result.normalizedCount, 0);
+  assert.equal(result.canonicalCount, 0);
+  assert.equal(repository.reconciliations.at(-1)?.status, "passed");
+  assert.equal(repository.sourceRecords.size, 0);
+  assert.equal(repository.checkpoints.get("orders"), "empty-window-checkpoint");
+});
+
+test("A04 empty provider page still fails when the provider marks the result partial", async () => {
   const repository = new InMemoryDurableRepository();
   const adapter = new FakeAdapter({
     records: [],
     nextCheckpoint: null,
+    partial: true,
   });
 
   await assert.rejects(
     () => runPipeline(repository, adapter),
-    DurableIngestionError,
+    (error: unknown) => {
+      assert.ok(error instanceof DurableIngestionError);
+      assert.match(error.message, /partial data/iu);
+      return true;
+    },
   );
 
   assert.equal(repository.state, "retryable_failed");
-  assert.equal(repository.sourceRecords.size, 0);
+});
+
+test("A04 retryable provider failure before the last attempt is retryable, not dead-lettered", async () => {
+  const repository = new InMemoryDurableRepository();
+  const adapter = new FailingAdapter(
+    new ProviderAdapterError("Provider is unreachable", "provider_outage", 30),
+  );
+
+  await assert.rejects(
+    () => runPipeline(repository, adapter, jobPayload(), "worker-a", { attempt: 1, maxAttempts: 5 }),
+    ProviderAdapterError,
+  );
+
+  assert.equal(repository.state, "retryable_failed");
+  assert.equal(repository.failures.at(-1)?.status, "retryable_failed");
+  assert.equal(repository.failures.at(-1)?.failureClass, "provider_outage");
+});
+
+test("A04 retryable provider failure on the final attempt is dead-lettered, not retried forever", async () => {
+  const repository = new InMemoryDurableRepository();
+  const adapter = new FailingAdapter(
+    new ProviderAdapterError("Provider is unreachable", "provider_outage", 30),
+  );
+
+  await assert.rejects(
+    () => runPipeline(repository, adapter, jobPayload(), "worker-a", { attempt: 5, maxAttempts: 5 }),
+    ProviderAdapterError,
+  );
+
+  assert.equal(repository.state, "dead_lettered");
+  assert.equal(repository.failures.at(-1)?.status, "dead_lettered");
+});
+
+test("A04 non-retryable provider failure is terminal even on the first attempt", async () => {
+  const repository = new InMemoryDurableRepository();
+  const adapter = new FailingAdapter(
+    new ProviderAdapterError("Invalid credentials", "authentication", null),
+  );
+
+  await assert.rejects(
+    () => runPipeline(repository, adapter, jobPayload(), "worker-a", { attempt: 1, maxAttempts: 5 }),
+    ProviderAdapterError,
+  );
+
+  assert.equal(repository.state, "terminal_failed");
+  assert.equal(repository.failures.at(-1)?.status, "terminal_failed");
+  assert.equal(repository.failures.at(-1)?.failureClass, "authentication");
 });
 
 async function runPipeline(
   repository: InMemoryDurableRepository,
-  adapter: FakeAdapter,
+  adapter: IntegrationProviderAdapter,
   payload = jobPayload(),
   leaseOwner = "worker-a",
+  attempts: { readonly attempt: number; readonly maxAttempts: number } = { attempt: 1, maxAttempts: 5 },
 ) {
   const pipeline = new DurableIngestionPipeline({
     repository,
@@ -168,8 +241,8 @@ async function runPipeline(
   return pipeline.run({
     payload,
     adapterFactory: async () => adapter,
-    attempt: 1,
-    maxAttempts: 5,
+    attempt: attempts.attempt,
+    maxAttempts: attempts.maxAttempts,
     leaseOwner,
     correlationId: "correlation-a",
   });
@@ -210,6 +283,27 @@ class FakeAdapter implements IntegrationProviderAdapter {
       await new Promise((resolve) => setTimeout(resolve, this.delayMs));
     }
     return this.result;
+  }
+}
+
+class FailingAdapter implements IntegrationProviderAdapter {
+  readonly providerId = "baselinker" as const;
+  readonly requiredScopes = ["api"] as const;
+  readonly optionalScopes = [] as const;
+  private readonly error: Error;
+
+  constructor(error: Error) {
+    this.error = error;
+  }
+
+  isConfigured(): boolean {
+    return true;
+  }
+
+  async verifyConnection(): Promise<void> {}
+
+  async fetch(): Promise<ProviderFetchResult> {
+    throw this.error;
   }
 }
 
@@ -354,8 +448,7 @@ class InMemoryDurableRepository implements DurableIngestionRepository {
     readonly normalizedCount: number;
     readonly canonicalCount: number;
   }) {
-    const status: "failed" | "passed" = input.fetchedCount > 0
-      && input.fetchedCount === input.persistedSourceCount
+    const status: "failed" | "passed" = input.fetchedCount === input.persistedSourceCount
       && input.persistedSourceCount === input.normalizedCount
       && input.normalizedCount === input.canonicalCount
       ? "passed"

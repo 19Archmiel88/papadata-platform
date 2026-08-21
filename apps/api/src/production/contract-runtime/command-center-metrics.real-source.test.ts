@@ -81,6 +81,30 @@ test("maps a real order row into a CanonicalOrderRecord using the ingested entit
   assert.equal(order.grossAmount, "199.50");
   assert.equal(order.providerId, "woocommerce");
   assert.equal(order.canonicalOrderId, "woocommerce:ext-order-1");
+  assert.equal(order.status, null, "order rows without a status field must map to null, not a fabricated default");
+});
+
+test("carries the WooCommerce order status through so the metric engine can filter revenue by it", async () => {
+  const dataSource = dataSourceWithRows([
+    row("woocommerce", "orders", "ext-order-pending", "2026-08-03T10:00:00.000Z", {
+      currency: "PLN",
+      grossAmount: 50,
+      orderId: "ext-order-pending",
+      orderNumber: "WC-101",
+      status: "Pending",
+    }),
+  ]);
+
+  const input = await createRealMetricEngineInput({
+    dataSource,
+    generatedAt: generatedAt as any,
+    periodEnd: periodEnd as any,
+    periodStart: periodStart as any,
+    tenantId,
+    workspaceId,
+  });
+
+  assert.equal(input.canonicalOrders[0]!.status, "pending", "status must be lowercased for case-insensitive matching downstream");
 });
 
 test("joins a refund to its order via the same deterministic id, without a lookup table", async () => {

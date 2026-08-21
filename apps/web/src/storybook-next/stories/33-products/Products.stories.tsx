@@ -15,6 +15,9 @@ import type {
   ProductsModuleData,
 } from '../../../screens/analytics';
 import {
+  analyticsModuleStorybookMeta,
+} from '../../data/analyticsModuleStorybookMeta';
+import {
   ProductsWorkspace,
 } from '../../production/AnalyticsDomainWorkspaces';
 import {
@@ -59,6 +62,7 @@ function ModuleStoryPage({ id }: { readonly id: ScreenId }) {
     <ProductionStoryShell
       contract={{
         ...definition,
+        documentPath: analyticsModuleStorybookMeta[id].documentPath,
         owner: 'Products',
         sectionId: '33',
         sectionLabel: 'Produkty',

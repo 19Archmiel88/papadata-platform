@@ -132,6 +132,199 @@ describe("backend Metric Engine", () => {
     assert.equal(metric(result, "revenue_after_refunds").value, "150.00");
     assert.equal(metric(result, "roas").value, "3.8571");
   });
+
+  test("gross_order_value i orders wykluczaja pending/cancelled/refunded, licza tylko completed", async () => {
+    const base = createMetricEngineInput();
+    const [templateOrder] = base.canonicalOrders;
+    assert.ok(templateOrder, "fixture must ship at least one canonical order");
+
+    const nonQualifying = ["pending", "cancelled", "refunded", "on-hold", "failed"].map(
+      (status, index) => ({
+        ...templateOrder,
+        canonicalOrderId: `status_filter_test_${status}`,
+        externalOrderId: `status-filter-${index}`,
+        grossAmount: "1000.00",
+        orderNumber: `STATUS-${status}`,
+        status,
+      }),
+    );
+    const qualifyingCompleted = {
+      ...templateOrder,
+      canonicalOrderId: "status_filter_test_completed",
+      externalOrderId: "status-filter-completed",
+      grossAmount: "1000.00",
+      orderNumber: "STATUS-completed",
+      status: "completed",
+    };
+
+    const before = await createService().calculate(base);
+    const after = await createService().calculate({
+      ...base,
+      canonicalOrders: [...base.canonicalOrders, ...nonQualifying, qualifyingCompleted],
+    });
+
+    const beforeGross = Number(metric(before, "gross_order_value").value);
+    const afterGross = Number(metric(after, "gross_order_value").value);
+    const beforeOrders = Number(metric(before, "orders").value);
+    const afterOrders = Number(metric(after, "orders").value);
+
+    assert.equal(
+      afterGross - beforeGross,
+      1000,
+      "only the single completed order (1000.00) should raise revenue; pending/cancelled/refunded/on-hold/failed must not",
+    );
+    assert.equal(
+      afterOrders - beforeOrders,
+      1,
+      "only the single completed order should raise the order count",
+    );
+  });
+
+  test("revenue_after_refunds nie jest podwojnie pomniejszane refundem zamowienia juz wykluczonego po statusie", async () => {
+    const base = createMetricEngineInput();
+    const [templateOrder] = base.canonicalOrders;
+    const [templateRefund] = base.canonicalRefunds;
+    assert.ok(templateOrder, "fixture must ship at least one canonical order");
+    assert.ok(templateRefund, "fixture must ship at least one canonical refund");
+
+    // Order fully refunded -> excluded from commerceOrders/gross_order_value
+    // by status alone (matches real WooCommerce: a fully-refunded order's
+    // status becomes "refunded"). Its own refund record must NOT also
+    // subtract from revenue_after_refunds, or the same loss gets counted
+    // twice: once by the order contributing 0 gross, once by the refund
+    // being subtracted on top.
+    const excludedOrder = {
+      ...templateOrder,
+      canonicalOrderId: "double_decrement_test_order",
+      externalOrderId: "double-decrement-order",
+      grossAmount: "500.00",
+      orderNumber: "DOUBLE-DECREMENT",
+      status: "refunded",
+    };
+    const refundAgainstExcludedOrder = {
+      ...templateRefund,
+      amount: "500.00",
+      canonicalOrderId: excludedOrder.canonicalOrderId,
+      canonicalRefundId: "double_decrement_test_refund",
+      externalRefundId: "double-decrement-refund",
+    };
+
+    // Control case: a still-qualifying ("completed") order that received a
+    // partial refund. This refund SHOULD reduce revenue_after_refunds,
+    // since the order's full gross is still counted.
+    const qualifyingOrder = {
+      ...templateOrder,
+      canonicalOrderId: "partial_refund_test_order",
+      externalOrderId: "partial-refund-order",
+      grossAmount: "300.00",
+      orderNumber: "PARTIAL-REFUND",
+      status: "completed",
+    };
+    const refundAgainstQualifyingOrder = {
+      ...templateRefund,
+      amount: "40.00",
+      canonicalOrderId: qualifyingOrder.canonicalOrderId,
+      canonicalRefundId: "partial_refund_test_refund",
+      externalRefundId: "partial-refund-refund",
+    };
+
+    const before = await createService().calculate(base);
+
+    const withExcludedOrderRefund = await createService().calculate({
+      ...base,
+      canonicalOrders: [...base.canonicalOrders, excludedOrder],
+      canonicalRefunds: [...base.canonicalRefunds, refundAgainstExcludedOrder],
+    });
+    const beforeRevenue = Number(metric(before, "revenue_after_refunds").value);
+    const afterExcludedRevenue = Number(metric(withExcludedOrderRefund, "revenue_after_refunds").value);
+
+    assert.equal(
+      afterExcludedRevenue,
+      beforeRevenue,
+      "a refund against an order already excluded by status must not change revenue_after_refunds at all -- " +
+        "not add (order stays excluded), and not subtract further (that would double-decrement)",
+    );
+
+    const withQualifyingOrderRefund = await createService().calculate({
+      ...base,
+      canonicalOrders: [...base.canonicalOrders, qualifyingOrder],
+      canonicalRefunds: [...base.canonicalRefunds, refundAgainstQualifyingOrder],
+    });
+    const afterQualifyingRevenue = Number(metric(withQualifyingOrderRefund, "revenue_after_refunds").value);
+
+    assert.equal(
+      afterQualifyingRevenue,
+      beforeRevenue + 300 - 40,
+      "a refund against a still-qualifying order must reduce revenue_after_refunds by exactly the refund amount",
+    );
+  });
+
+  test("return_value i return_rate_orders widza WSZYSTKIE refundy, wliczajac te przeciwko zamowieniom wykluczonym po statusie", async () => {
+    // Regression test: facts.refunds used to be pre-filtered down to only
+    // revenue-qualifying orders (to avoid double-decrementing
+    // revenue_after_refunds -- see the test above), which had the side
+    // effect of hiding real refunds from return_value/return_rate_orders/
+    // returned_units/return_rate_units entirely. Those metrics must reflect
+    // every real refund in the period; only revenue_after_refunds gets the
+    // narrower, revenue-qualifying-only view (via facts.revenueQualifyingRefunds).
+    const base = createMetricEngineInput();
+    const [templateOrder] = base.canonicalOrders;
+    const [templateRefund] = base.canonicalRefunds;
+    assert.ok(templateOrder, "fixture must ship at least one canonical order");
+    assert.ok(templateRefund, "fixture must ship at least one canonical refund");
+
+    const before = await createService().calculate(base);
+    const beforeReturnValue = Number(metric(before, "return_value").value);
+    const beforeReturnRateOrders = Number(metric(before, "return_rate_orders").value);
+    const beforeOrders = Number(metric(before, "orders").value);
+
+    // Full refund of an order whose status is "refunded" -- excluded from
+    // commerceOrders/orders by status, so it must not move the "orders"
+    // denominator, but its refund must still count in return_value and in
+    // the refunded-orders numerator of return_rate_orders.
+    const fullyRefundedOrder = {
+      ...templateOrder,
+      canonicalOrderId: "full_refund_status_test_order",
+      externalOrderId: "full-refund-status-test-order",
+      grossAmount: "220.00",
+      orderNumber: "FULL-REFUND-STATUS",
+      status: "refunded",
+    };
+    const fullRefund = {
+      ...templateRefund,
+      amount: "220.00",
+      canonicalOrderId: fullyRefundedOrder.canonicalOrderId,
+      canonicalRefundId: "full_refund_status_test_refund",
+      externalRefundId: "full-refund-status-test-refund",
+    };
+
+    const after = await createService().calculate({
+      ...base,
+      canonicalOrders: [...base.canonicalOrders, fullyRefundedOrder],
+      canonicalRefunds: [...base.canonicalRefunds, fullRefund],
+    });
+
+    const afterReturnValue = Number(metric(after, "return_value").value);
+    const afterReturnRateOrders = Number(metric(after, "return_rate_orders").value);
+    const afterOrders = Number(metric(after, "orders").value);
+
+    assert.equal(
+      afterReturnValue,
+      beforeReturnValue + 220,
+      "return_value must include a refund even when its order is excluded from revenue by status",
+    );
+    assert.equal(
+      afterOrders,
+      beforeOrders,
+      "a fully-refunded order (status: refunded) must not be counted in the orders denominator",
+    );
+    assert.equal(
+      afterReturnRateOrders,
+      (beforeReturnRateOrders * beforeOrders + 1) / afterOrders,
+      "return_rate_orders' numerator (refunded orders) must include the excluded order's refund even though " +
+        "the denominator (orders) does not count that order -- return_rate_orders operates on the full refund set",
+    );
+  });
 });
 
 describe("backend Dashboard API", { concurrency: false }, () => {

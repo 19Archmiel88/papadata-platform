@@ -16,6 +16,9 @@ import type {
   DecisionsScreenDefinition,
 } from '../../../screens/decisions';
 import {
+  decisionsScreenStorybookMeta,
+} from '../../data/decisionsScreenStorybookMeta';
+import {
   ProductionStoryShell,
 } from '../../production/ProductionStoryShell';
 
@@ -45,6 +48,7 @@ function ModuleStoryPage({ id }: { readonly id: ScreenId }) {
     <ProductionStoryShell
       contract={{
         ...definition,
+        documentPath: decisionsScreenStorybookMeta[id].documentPath,
         owner: 'Decyzje i działania',
         sectionId: '80',
         sectionLabel: 'Decyzje, działania i pomiar',

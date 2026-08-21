@@ -12,6 +12,9 @@ import {
   settingsScreenDefinitions,
 } from '../../../screens/settings';
 import {
+  settingsScreenStorybookMeta,
+} from '../../data/settingsScreenStorybookMeta';
+import {
   SettingsAdminWorkspace,
 } from '../../production/OperationalDomainWorkspaces';
 import {
@@ -68,6 +71,7 @@ function ModuleStoryPage({ id }: { readonly id: ScreenId }) {
     <ProductionStoryShell
       contract={{
         ...definition,
+        documentPath: settingsScreenStorybookMeta[id].documentPath,
         owner: 'Ustawienia i bezpieczeństwo',
         sectionId: '60',
         sectionLabel: 'Ustawienia, zespół i bezpieczeństwo',

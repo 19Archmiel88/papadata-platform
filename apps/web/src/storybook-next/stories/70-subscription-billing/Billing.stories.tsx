@@ -16,6 +16,9 @@ import type {
   BillingScreenDefinition,
 } from '../../../screens/billing';
 import {
+  billingScreenStorybookMeta,
+} from '../../data/billingScreenStorybookMeta';
+import {
   ProductionStoryShell,
 } from '../../production/ProductionStoryShell';
 
@@ -45,6 +48,7 @@ function ModuleStoryPage({ id }: { readonly id: ScreenId }) {
     <ProductionStoryShell
       contract={{
         ...definition,
+        documentPath: billingScreenStorybookMeta[id].documentPath,
         owner: 'Billing i płatności',
         sectionId: '70',
         sectionLabel: 'Subskrypcja i płatności',

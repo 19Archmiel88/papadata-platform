@@ -91,8 +91,8 @@ services:
     volumes:
       - ./infra/otel/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
     ports:
-      - "127.0.0.1:54317:4317"
-      - "127.0.0.1:54318:4318"
+      - "127.0.0.1:14317:4317"
+      - "127.0.0.1:14318:4318"
 
   migrate-production:
     image: postgres:16.13-alpine
@@ -204,6 +204,61 @@ services:
         condition: service_healthy
       minio-init:
         condition: service_completed_successfully
+
+  web-production:
+    build:
+      context: .
+      dockerfile: infra/production/web.Dockerfile
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - --quiet
+        - --tries=1
+        - --spider
+        - http://127.0.0.1:8080/index.html
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+  edge:
+    build:
+      context: .
+      dockerfile: infra/production/edge.Dockerfile
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    env_file: [.env.production-parity]
+    depends_on:
+      web-production:
+        condition: service_healthy
+      bff-production:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:443:8443"
+    volumes:
+      - ./.runtime/backend-production-parity/edge-tls:/run/papadata-edge-tls:ro
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - --quiet
+        - --tries=1
+        - --no-check-certificate
+        - --spider
+        - https://127.0.0.1:8443/
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
 
 volumes:
   papadata_pg_data:

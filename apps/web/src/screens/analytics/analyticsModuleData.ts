@@ -102,7 +102,6 @@ export type AnalyticsScreenVariant =
 export type AnalyticsScreenDefinition = {
   readonly apiPath: `/api/v1/${string}`;
   readonly displayTitle: string;
-  readonly documentPath: string;
   readonly group: AnalyticsModuleGroup;
   readonly id: AnalyticsScreenId;
   readonly navigation: boolean;
@@ -220,7 +219,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/campaigns/przeglad",
   displayTitle: "Przegląd",
-  documentPath: "08-kampanie-platne/31-01-przeglad.md",
   group: "campaigns",
   id: "31.01",
   navigation: true,
@@ -234,7 +232,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/campaigns/lista-kampanii",
   displayTitle: "Lista kampanii",
-  documentPath: "08-kampanie-platne/31-02-lista-kampanii.md",
   group: "campaigns",
   id: "31.02",
   navigation: true,
@@ -248,7 +245,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/campaigns/szczegoly-kampanii",
   displayTitle: "Szczegóły kampanii",
-  documentPath: "08-kampanie-platne/31-03-szczegoly-kampanii.md",
   group: "campaigns",
   id: "31.03",
   navigation: false,
@@ -262,7 +258,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/campaigns/atrybucja-i-sprzedaz",
   displayTitle: "Atrybucja i sprzedaż",
-  documentPath: "08-kampanie-platne/31-04-atrybucja-i-sprzedaz.md",
   group: "campaigns",
   id: "31.04",
   navigation: true,
@@ -276,7 +271,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/campaigns/budzet",
   displayTitle: "Budżet",
-  documentPath: "08-kampanie-platne/31-05-budzet.md",
   group: "campaigns",
   id: "31.05",
   navigation: true,
@@ -290,7 +284,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/campaigns/diagnostyka",
   displayTitle: "Diagnostyka",
-  documentPath: "08-kampanie-platne/31-06-diagnostyka.md",
   group: "campaigns",
   id: "31.06",
   navigation: true,
@@ -304,7 +297,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/campaigns/rekomendacje-kontekst-domenowy",
   displayTitle: "Rekomendacje — kontekst domenowy",
-  documentPath: "08-kampanie-platne/31-07-rekomendacje-kontekst-domenowy.md",
   group: "campaigns",
   id: "31.07",
   navigation: true,
@@ -318,7 +310,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/campaigns/warianty-kampanii",
   displayTitle: "Warianty kampanii",
-  documentPath: "08-kampanie-platne/31-08-warianty-kampanii.md",
   group: "campaigns",
   id: "31.08",
   navigation: true,
@@ -332,7 +323,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/orders/przeglad",
   displayTitle: "Przegląd",
-  documentPath: "09-zamowienia/32-01-przeglad.md",
   group: "orders",
   id: "32.01",
   navigation: true,
@@ -346,7 +336,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/orders/lista",
   displayTitle: "Lista",
-  documentPath: "09-zamowienia/32-02-lista.md",
   group: "orders",
   id: "32.02",
   navigation: true,
@@ -360,7 +349,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/orders/szczegoly",
   displayTitle: "Szczegóły",
-  documentPath: "09-zamowienia/32-03-szczegoly.md",
   group: "orders",
   id: "32.03",
   navigation: false,
@@ -374,7 +362,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/orders/os-zdarzen",
   displayTitle: "Oś zdarzeń",
-  documentPath: "09-zamowienia/32-04-os-zdarzen.md",
   group: "orders",
   id: "32.04",
   navigation: true,
@@ -388,7 +375,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/orders/porownanie-zrodel",
   displayTitle: "Porównanie źródeł",
-  documentPath: "09-zamowienia/32-05-porownanie-zrodel.md",
   group: "orders",
   id: "32.05",
   navigation: true,
@@ -402,7 +388,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/orders/rekoncyliacja-skrot",
   displayTitle: "Rekoncyliacja — skrót",
-  documentPath: "09-zamowienia/32-06-rekoncyliacja-skrot.md",
   group: "orders",
   id: "32.06",
   navigation: true,
@@ -416,7 +401,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/orders/eksport",
   displayTitle: "Eksport",
-  documentPath: "09-zamowienia/32-07-eksport.md",
   group: "orders",
   id: "32.07",
   navigation: true,
@@ -430,7 +414,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/orders/warianty-zamowien",
   displayTitle: "Warianty zamówień",
-  documentPath: "09-zamowienia/32-08-warianty-zamowien.md",
   group: "orders",
   id: "32.08",
   navigation: true,
@@ -444,7 +427,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/products/przeglad",
   displayTitle: "Przegląd",
-  documentPath: "10-produkty/33-01-przeglad.md",
   group: "products",
   id: "33.01",
   navigation: true,
@@ -458,7 +440,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/products/katalog",
   displayTitle: "Katalog",
-  documentPath: "10-produkty/33-02-katalog.md",
   group: "products",
   id: "33.02",
   navigation: true,
@@ -472,7 +453,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/products/szczegoly",
   displayTitle: "Szczegóły",
-  documentPath: "10-produkty/33-03-szczegoly.md",
   group: "products",
   id: "33.03",
   navigation: false,
@@ -486,7 +466,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/products/mapowanie",
   displayTitle: "Mapowanie",
-  documentPath: "10-produkty/33-04-mapowanie.md",
   group: "products",
   id: "33.04",
   navigation: true,
@@ -500,7 +479,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/products/oferty",
   displayTitle: "Oferty",
-  documentPath: "10-produkty/33-05-oferty.md",
   group: "products",
   id: "33.05",
   navigation: true,
@@ -514,7 +492,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/products/wydajnosc",
   displayTitle: "Wydajność",
-  documentPath: "10-produkty/33-06-wydajnosc.md",
   group: "products",
   id: "33.06",
   navigation: true,
@@ -528,7 +505,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/products/kolejka-brakow",
   displayTitle: "Kolejka braków",
-  documentPath: "10-produkty/33-07-kolejka-brakow.md",
   group: "products",
   id: "33.07",
   navigation: true,
@@ -542,7 +518,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/products/analiza-wplywu",
   displayTitle: "Analiza wpływu",
-  documentPath: "10-produkty/33-08-analiza-wplywu.md",
   group: "products",
   id: "33.08",
   navigation: true,
@@ -556,7 +531,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/products/warianty-produktow",
   displayTitle: "Warianty produktów",
-  documentPath: "10-produkty/33-09-warianty-produktow.md",
   group: "products",
   id: "33.09",
   navigation: true,
@@ -570,7 +544,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/customers/przeglad",
   displayTitle: "Przegląd",
-  documentPath: "11-klienci/34-01-przeglad.md",
   group: "customers",
   id: "34.01",
   navigation: true,
@@ -584,7 +557,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/customers/segmenty",
   displayTitle: "Segmenty",
-  documentPath: "11-klienci/34-02-segmenty.md",
   group: "customers",
   id: "34.02",
   navigation: true,
@@ -598,7 +570,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/customers/kohorty",
   displayTitle: "Kohorty",
-  documentPath: "11-klienci/34-03-kohorty.md",
   group: "customers",
   id: "34.03",
   navigation: true,
@@ -612,7 +583,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/customers/szczegoly-pseudonimizowane",
   displayTitle: "Szczegóły pseudonimizowane",
-  documentPath: "11-klienci/34-04-szczegoly-pseudonimizowane.md",
   group: "customers",
   id: "34.04",
   navigation: false,
@@ -626,7 +596,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/customers/konflikty-tozsamosci",
   displayTitle: "Konflikty tożsamości",
-  documentPath: "11-klienci/34-05-konflikty-tozsamosci.md",
   group: "customers",
   id: "34.05",
   navigation: true,
@@ -640,7 +609,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/customers/prywatnosc",
   displayTitle: "Prywatność",
-  documentPath: "11-klienci/34-06-prywatnosc.md",
   group: "customers",
   id: "34.06",
   navigation: true,
@@ -654,7 +622,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/customers/analiza-wplywu",
   displayTitle: "Analiza wpływu",
-  documentPath: "11-klienci/34-07-analiza-wplywu.md",
   group: "customers",
   id: "34.07",
   navigation: true,
@@ -668,7 +635,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/customers/warianty-klientow",
   displayTitle: "Warianty klientów",
-  documentPath: "11-klienci/34-08-warianty-klientow.md",
   group: "customers",
   id: "34.08",
   navigation: true,
@@ -682,7 +648,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/traffic/przeglad-ruchu",
   displayTitle: "Przegląd ruchu",
-  documentPath: "12-ruch-i-lejek/35-01-przeglad-ruchu.md",
   group: "traffic",
   id: "35.01",
   navigation: true,
@@ -696,7 +661,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/traffic/kanaly",
   displayTitle: "Kanały",
-  documentPath: "12-ruch-i-lejek/35-02-kanaly.md",
   group: "traffic",
   id: "35.02",
   navigation: true,
@@ -710,7 +674,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/traffic/lejek-widok",
   displayTitle: "Lejek — widok",
-  documentPath: "12-ruch-i-lejek/35-03-lejek-widok.md",
   group: "traffic",
   id: "35.03",
   navigation: true,
@@ -724,7 +687,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/traffic/lejek-szczegoly-kroku",
   displayTitle: "Lejek — szczegóły kroku",
-  documentPath: "12-ruch-i-lejek/35-04-lejek-szczegoly-kroku.md",
   group: "traffic",
   id: "35.04",
   navigation: false,
@@ -738,7 +700,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/traffic/definicje-lejka",
   displayTitle: "Definicje lejka",
-  documentPath: "12-ruch-i-lejek/35-05-definicje-lejka.md",
   group: "traffic",
   id: "35.05",
   navigation: true,
@@ -752,7 +713,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/traffic/ga4-vs-zamowienia",
   displayTitle: "GA4 vs zamówienia",
-  documentPath: "12-ruch-i-lejek/35-06-ga4-vs-zamowienia.md",
   group: "traffic",
   id: "35.06",
   navigation: true,
@@ -766,7 +726,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/traffic/jakosc-zdarzen",
   displayTitle: "Jakość zdarzeń",
-  documentPath: "12-ruch-i-lejek/35-07-jakosc-zdarzen.md",
   group: "traffic",
   id: "35.07",
   navigation: true,
@@ -780,7 +739,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/traffic/strony-wejscia",
   displayTitle: "Strony wejścia",
-  documentPath: "12-ruch-i-lejek/35-08-strony-wejscia.md",
   group: "traffic",
   id: "35.08",
   navigation: true,
@@ -794,7 +752,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
 {
   apiPath: "/api/v1/traffic/warianty-ruchu",
   displayTitle: "Warianty ruchu",
-  documentPath: "12-ruch-i-lejek/35-09-warianty-ruchu.md",
   group: "traffic",
   id: "35.09",
   navigation: true,

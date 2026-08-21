@@ -1,6 +1,8 @@
 import { setTimeout as delay } from "node:timers/promises";
 import { ProviderAdapterError } from "./provider-adapter.js";
 
+const MAX_BACKOFF_DELAY_MS = 5_000;
+
 export type ProviderHttpRequest = {
   readonly url: string;
   readonly method?: "DELETE" | "GET" | "PATCH" | "POST" | "PUT";
@@ -23,9 +25,17 @@ export type ProviderHttpClient = {
 
 export class FetchProviderHttpClient implements ProviderHttpClient {
   private readonly fetchImpl: typeof fetch;
+  private readonly delayImpl: (ms: number) => Promise<void>;
 
-  constructor(fetchImpl: typeof fetch = fetch) {
+  constructor(
+    fetchImpl: typeof fetch = fetch,
+    // Injectable only so tests can prove a long Retry-After (e.g. beyond
+    // the old, now-removed 10-minute ceiling) is passed through unclamped
+    // without a test actually having to wait that long.
+    delayImpl: (ms: number) => Promise<void> = delay,
+  ) {
     this.fetchImpl = fetchImpl;
+    this.delayImpl = delayImpl;
   }
 
   async requestJson<T>(request: ProviderHttpRequest): Promise<ProviderHttpResult<T>> {
@@ -37,6 +47,12 @@ export class FetchProviderHttpClient implements ProviderHttpClient {
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort("provider_timeout"), timeoutMs);
+      // Only an actual `Retry-After` response header counts as the
+      // provider telling us how long to wait; ProviderAdapterError.retryAfterSeconds
+      // also carries our own synthetic fallback guesses (e.g. 30s for a
+      // bare 5xx) which must stay bounded by the short backoff ceiling, not
+      // be honoured as if the provider had asked for that long.
+      let retryAfterHeaderSeconds: number | null = null;
 
       try {
         const response = await this.fetchImpl(request.url, {
@@ -57,6 +73,7 @@ export class FetchProviderHttpClient implements ProviderHttpClient {
           };
         }
 
+        retryAfterHeaderSeconds = readRetryAfter(response.headers);
         const failure = mapHttpFailure(response.status, data, response.headers);
         lastFailure = failure;
 
@@ -64,7 +81,7 @@ export class FetchProviderHttpClient implements ProviderHttpClient {
           throw failure;
         }
       } catch (error) {
-        const failure = normalizeTransportFailure(error);
+        const failure = normalizeTransportFailure(error, controller.signal.aborted);
         lastFailure = failure;
 
         if (!isRetryableFailure(failure) || attempt === maxAttempts) {
@@ -74,10 +91,21 @@ export class FetchProviderHttpClient implements ProviderHttpClient {
         clearTimeout(timeout);
       }
 
-      const retryAfterMs = lastFailure?.retryAfterSeconds
-        ? lastFailure.retryAfterSeconds * 1_000
-        : baseDelayMs * 2 ** (attempt - 1);
-      await delay(Math.min(retryAfterMs, 5_000));
+      if (retryAfterHeaderSeconds !== null) {
+        // Honour the provider's Retry-After header exactly, with no ceiling
+        // at all -- a prior version of this code capped it at 10 minutes,
+        // which is itself a truncation the same way the old 5s cap was:
+        // ad networks (Google Ads, Meta Ads) can legitimately return
+        // Retry-After values well past 10 minutes under sustained rate
+        // limiting, and silently shortening that is exactly the bug this
+        // client exists to avoid. `readRetryAfter` already rejects
+        // non-finite/negative values, so what reaches here is a real,
+        // finite value the provider actually sent.
+        await this.delayImpl(retryAfterHeaderSeconds * 1_000);
+      } else {
+        const backoffMs = baseDelayMs * 2 ** (attempt - 1);
+        await this.delayImpl(Math.min(backoffMs, MAX_BACKOFF_DELAY_MS));
+      }
     }
 
     throw lastFailure ?? new ProviderAdapterError(
@@ -192,10 +220,18 @@ function mapHttpFailure(
   return new ProviderAdapterError(message, "permanent", null);
 }
 
-function normalizeTransportFailure(error: unknown): ProviderAdapterError {
+function normalizeTransportFailure(error: unknown, timedOut: boolean): ProviderAdapterError {
   if (error instanceof ProviderAdapterError) return error;
 
-  if (error instanceof Error && error.name === "AbortError") {
+  // Prefer the timeout signal we control (`controller.signal.aborted`) over
+  // inspecting the error's shape: when `AbortController.abort(reason)` is
+  // called with a plain string reason (as this client does), fetch/undici
+  // can reject with that reason string directly rather than an
+  // Error/DOMException named "AbortError" -- so a `name === "AbortError"`
+  // check alone silently missed our own timeout and fell through to the
+  // generic branch, surfacing the confusing raw abort reason ("provider_timeout")
+  // as the error message instead of "Provider request timed out".
+  if (timedOut || (error instanceof Error && error.name === "AbortError")) {
     return new ProviderAdapterError("Provider request timed out", "transient", 15);
   }
 

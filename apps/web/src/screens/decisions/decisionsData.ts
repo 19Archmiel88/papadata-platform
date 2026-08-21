@@ -30,7 +30,6 @@ export type DecisionsScreenVariant =
 export type DecisionsScreenDefinition = {
   readonly apiPath: `/api/v1/${string}` | null;
   readonly displayTitle: string;
-  readonly documentPath: string;
   readonly id: DecisionsScreenId;
   readonly operationId: string | null;
   readonly route: `/app/${string}` | null;
@@ -68,7 +67,6 @@ export const decisionsScreenDefinitions: readonly DecisionsScreenDefinition[] = 
   {
     apiPath: '/api/v1/decisions/centrum-decyzji',
     displayTitle: 'Centrum decyzji',
-    documentPath: '18-wsparcie-marketingowe-decyzje-dzialania/80-01-centrum-decyzji.md',
     id: '80.01',
     operationId: 'decisions.center.read',
     route: '/app/decisions/centrum-decyzji',
@@ -79,7 +77,6 @@ export const decisionsScreenDefinitions: readonly DecisionsScreenDefinition[] = 
   {
     apiPath: '/api/v1/decisions/obserwacje',
     displayTitle: 'Obserwacje',
-    documentPath: '18-wsparcie-marketingowe-decyzje-dzialania/80-02-obserwacje.md',
     id: '80.02',
     operationId: 'decisions.observations.read',
     route: '/app/decisions/obserwacje',
@@ -90,7 +87,6 @@ export const decisionsScreenDefinitions: readonly DecisionsScreenDefinition[] = 
   {
     apiPath: '/api/v1/decisions/rekomendacje',
     displayTitle: 'Rekomendacje',
-    documentPath: '18-wsparcie-marketingowe-decyzje-dzialania/80-03-rekomendacje.md',
     id: '80.03',
     operationId: 'decisions.rekomendacje.read',
     route: '/app/decisions/rekomendacje',
@@ -101,7 +97,6 @@ export const decisionsScreenDefinitions: readonly DecisionsScreenDefinition[] = 
   {
     apiPath: '/api/v1/decisions/rejestr-decyzji',
     displayTitle: 'Rejestr decyzji',
-    documentPath: '18-wsparcie-marketingowe-decyzje-dzialania/80-04-rejestr-decyzji.md',
     id: '80.04',
     operationId: 'decisions.registry.read',
     route: '/app/decisions/rejestr-decyzji',
@@ -112,7 +107,6 @@ export const decisionsScreenDefinitions: readonly DecisionsScreenDefinition[] = 
   {
     apiPath: '/api/v1/decisions/brief-dzialania',
     displayTitle: 'Plan działania',
-    documentPath: '18-wsparcie-marketingowe-decyzje-dzialania/80-05-brief-dzialania.md',
     id: '80.05',
     operationId: 'decisions.action-brief.read',
     route: '/app/decisions/brief-dzialania',
@@ -123,7 +117,6 @@ export const decisionsScreenDefinitions: readonly DecisionsScreenDefinition[] = 
   {
     apiPath: '/api/v1/decisions/szczegoly-dzialania',
     displayTitle: 'Szczegóły działania',
-    documentPath: '18-wsparcie-marketingowe-decyzje-dzialania/80-06-szczegoly-dzialania.md',
     id: '80.06',
     operationId: 'decisions.action-detail.read',
     route: '/app/decisions/szczegoly-dzialania/act-001',
@@ -134,7 +127,6 @@ export const decisionsScreenDefinitions: readonly DecisionsScreenDefinition[] = 
   {
     apiPath: '/api/v1/decisions/pomiar',
     displayTitle: 'Pomiar',
-    documentPath: '18-wsparcie-marketingowe-decyzje-dzialania/80-07-pomiar.md',
     id: '80.07',
     operationId: 'decisions.measurement.read',
     route: '/app/decisions/pomiar',
@@ -145,7 +137,6 @@ export const decisionsScreenDefinitions: readonly DecisionsScreenDefinition[] = 
   {
     apiPath: '/api/v1/decisions/biblioteka-dzialan',
     displayTitle: 'Biblioteka działań',
-    documentPath: '18-wsparcie-marketingowe-decyzje-dzialania/80-08-biblioteka-dzialan.md',
     id: '80.08',
     operationId: 'decisions.action-library.read',
     route: '/app/decisions/biblioteka-dzialan',
@@ -156,7 +147,6 @@ export const decisionsScreenDefinitions: readonly DecisionsScreenDefinition[] = 
   {
     apiPath: '/api/v1/decisions/powiazania-z-modulami-i-sprawami',
     displayTitle: 'Powiązania z modułami',
-    documentPath: '18-wsparcie-marketingowe-decyzje-dzialania/80-09-powiazania-z-modulami-i-sprawami.md',
     id: '80.09',
     operationId: 'decisions.relations.read',
     route: '/app/decisions/powiazania-z-modulami-i-sprawami',
@@ -167,7 +157,6 @@ export const decisionsScreenDefinitions: readonly DecisionsScreenDefinition[] = 
   {
     apiPath: null,
     displayTitle: 'Warianty',
-    documentPath: '18-wsparcie-marketingowe-decyzje-dzialania/80-10-warianty-decyzji-i-dzialan.md',
     id: '80.10',
     operationId: null,
     route: null,

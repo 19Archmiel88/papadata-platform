@@ -516,6 +516,17 @@ describe("production A01 auth and route policies", () => {
       });
 
       assert.equal(health.statusCode, 200);
+
+      // /healthz is the canonical liveness probe name (matching BFF's own
+      // /healthz) -- the API previously only exposed /health, diverging
+      // from BFF's contract of exposing both. See the contract note at the
+      // top of apps/api/src/production/health.controller.ts.
+      const healthz = await fixture.inject({
+        method: "GET",
+        url: "/healthz",
+      });
+
+      assert.equal(healthz.statusCode, 200);
     });
   });
 });

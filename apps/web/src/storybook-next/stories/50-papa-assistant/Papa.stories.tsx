@@ -12,6 +12,9 @@ import {
   papaScreenDefinitions,
 } from '../../../screens/papa';
 import {
+  papaScreenStorybookMeta,
+} from '../../data/papaScreenStorybookMeta';
+import {
   PapaDecisionWorkspace,
 } from '../../production/OperationalDomainWorkspaces';
 import {
@@ -82,6 +85,7 @@ function ModuleStoryPage({ id }: { readonly id: ScreenId }) {
     <ProductionStoryShell
       contract={{
         ...definition,
+        documentPath: papaScreenStorybookMeta[id].documentPath,
         owner: 'Papa Asystent',
         sectionId: '50',
         sectionLabel: 'Papa Asystent i Laboratorium AI',

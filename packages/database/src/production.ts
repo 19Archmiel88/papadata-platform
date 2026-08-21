@@ -285,6 +285,7 @@ export class IntegrationRepository {
              now()
            )
            on conflict (tenant_id, workspace_id, idempotency_key)
+           where idempotency_key is not null
            do update set idempotency_key = excluded.idempotency_key
            returning connection_id as id, *`,
           [
@@ -1727,8 +1728,11 @@ function reconciliationStatus(
     input.fetchedCount === input.persistedSourceCount
     && input.persistedSourceCount === input.normalizedCount
     && input.normalizedCount === input.canonicalCount
-    && input.fetchedCount > 0
   ) {
+    // An empty provider window is a valid successful reconciliation when all
+    // stages agree on zero records. Connectivity/authentication/partial-data
+    // failures are handled separately and must not be conflated with a
+    // legitimate business period containing no data.
     return "passed";
   }
   return "failed";

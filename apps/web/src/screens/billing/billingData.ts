@@ -30,7 +30,6 @@ export type BillingScreenVariant =
 export type BillingScreenDefinition = {
   readonly apiPath: `/api/v1/${string}` | null;
   readonly displayTitle: string;
-  readonly documentPath: string;
   readonly id: BillingScreenId;
   readonly operationId: string | null;
   readonly route: `/app/${string}` | null;
@@ -72,7 +71,6 @@ export const billingScreenDefinitions: readonly BillingScreenDefinition[] = [
   {
     apiPath: '/api/v1/billing/subskrypcja',
     displayTitle: 'Subskrypcja',
-    documentPath: '17-subskrypcja-i-platnosci/70-01-subskrypcja.md',
     id: '70.01',
     operationId: 'billing.subscription.read',
     route: '/app/billing/subskrypcja',
@@ -83,7 +81,6 @@ export const billingScreenDefinitions: readonly BillingScreenDefinition[] = [
   {
     apiPath: '/api/v1/billing/uzycie-i-limity',
     displayTitle: 'Użycie i limity',
-    documentPath: '17-subskrypcja-i-platnosci/70-02-uzycie-i-limity.md',
     id: '70.02',
     operationId: 'billing.usage-limits.read',
     route: '/app/billing/uzycie-i-limity',
@@ -94,7 +91,6 @@ export const billingScreenDefinitions: readonly BillingScreenDefinition[] = [
   {
     apiPath: '/api/v1/billing/plany',
     displayTitle: 'Plany',
-    documentPath: '17-subskrypcja-i-platnosci/70-03-plany.md',
     id: '70.03',
     operationId: 'billing.plans.read',
     route: '/app/billing/plany',
@@ -105,7 +101,6 @@ export const billingScreenDefinitions: readonly BillingScreenDefinition[] = [
   {
     apiPath: '/api/v1/billing/faktury',
     displayTitle: 'Faktury',
-    documentPath: '17-subskrypcja-i-platnosci/70-04-faktury.md',
     id: '70.04',
     operationId: 'billing.invoices.read',
     route: '/app/billing/faktury',
@@ -116,7 +111,6 @@ export const billingScreenDefinitions: readonly BillingScreenDefinition[] = [
   {
     apiPath: '/api/v1/billing/platnosci',
     displayTitle: 'Płatności',
-    documentPath: '17-subskrypcja-i-platnosci/70-05-platnosci.md',
     id: '70.05',
     operationId: 'billing.payments.read',
     route: '/app/billing/platnosci',
@@ -127,7 +121,6 @@ export const billingScreenDefinitions: readonly BillingScreenDefinition[] = [
   {
     apiPath: '/api/v1/billing/zalegla-platnosc',
     displayTitle: 'Zaległa płatność',
-    documentPath: '17-subskrypcja-i-platnosci/70-06-zalegla-platnosc.md',
     id: '70.06',
     operationId: 'billing.overdue-payment.read',
     route: '/app/billing/zalegla-platnosc',
@@ -138,7 +131,6 @@ export const billingScreenDefinitions: readonly BillingScreenDefinition[] = [
   {
     apiPath: '/api/v1/billing/korekty',
     displayTitle: 'Korekty',
-    documentPath: '17-subskrypcja-i-platnosci/70-07-korekty.md',
     id: '70.07',
     operationId: 'billing.adjustments.read',
     route: '/app/billing/korekty',
@@ -149,7 +141,6 @@ export const billingScreenDefinitions: readonly BillingScreenDefinition[] = [
   {
     apiPath: '/api/v1/billing/zmiana-i-anulowanie',
     displayTitle: 'Zmiana lub anulowanie planu',
-    documentPath: '17-subskrypcja-i-platnosci/70-08-zmiana-i-anulowanie.md',
     id: '70.08',
     operationId: 'billing.change-cancel.read',
     route: '/app/billing/zmiana-i-anulowanie',
@@ -160,7 +151,6 @@ export const billingScreenDefinitions: readonly BillingScreenDefinition[] = [
   {
     apiPath: '/api/v1/billing/pilot-do-abonamentu',
     displayTitle: 'Przejście na abonament',
-    documentPath: '17-subskrypcja-i-platnosci/70-09-pilot-do-abonamentu.md',
     id: '70.09',
     operationId: 'billing.pilot-to-subscription.read',
     route: '/app/billing/pilot-do-abonamentu',
@@ -171,7 +161,6 @@ export const billingScreenDefinitions: readonly BillingScreenDefinition[] = [
   {
     apiPath: null,
     displayTitle: 'Warianty subskrypcji',
-    documentPath: '17-subskrypcja-i-platnosci/70-10-warianty-billingowe.md',
     id: '70.10',
     operationId: null,
     route: null,

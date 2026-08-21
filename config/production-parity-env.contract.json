@@ -528,6 +528,18 @@
       "example": "300"
     },
     {
+      "name": "BFF_MAX_BODY_BYTES",
+      "scope": [
+        "bff",
+        "edge"
+      ],
+      "source": {
+        "kind": "literal",
+        "value": "1048576"
+      },
+      "example": "1048576"
+    },
+    {
       "name": "BFF_RATE_LIMIT_WINDOW_MS",
       "scope": [
         "bff"

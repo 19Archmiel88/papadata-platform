@@ -3,9 +3,9 @@
 > Plik generowany przez `tools/generate-backend-capability-docs.mjs`. Nie edytować ręcznie.
 
 **Wydanie:** backend-migration-implementation-2026-08<br>
-**Operacje runtime:** 276<br>
+**Operacje runtime:** 277<br>
 **Kontrakt docelowy:** 218/218 dokładnych metod, ścieżek i operationId<br>
-**Dodatkowe operacje hardeningowe:** 58<br>
+**Dodatkowe operacje hardeningowe:** 59<br>
 **Integracje runtime:** 7/7<br>
 **Pełna zgodność semantyczna i odbiór live:** jeszcze nie zadeklarowane
 
@@ -150,6 +150,7 @@
 | identity.login | POST | `/v1/identity/login` | public | native-hardened-runtime | enabled |
 | identity.register | POST | `/v1/identity/register` | public | native-hardened-runtime | enabled |
 | infrastructure.health.live | GET | `/health` | public | native-hardened-runtime | enabled |
+| infrastructure.health.live.healthz | GET | `/healthz` | public | native-hardened-runtime | enabled |
 | infrastructure.health.ready | GET | `/readyz` | public | native-hardened-runtime | enabled |
 | infrastructure.health.startup | GET | `/startupz` | public | native-hardened-runtime | enabled |
 | infrastructure.metrics.read | GET | `/metrics` | infrastructure | native-hardened-runtime | enabled |

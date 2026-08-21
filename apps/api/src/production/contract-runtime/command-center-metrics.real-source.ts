@@ -207,6 +207,7 @@ function mapOrderRow(
     orderedAt: orderedAt as IsoDateTime,
     providerId,
     sourceAuthorityVersion: SALES_AUTHORITY_VERSION,
+    status: readEntityString(entity, "status")?.toLowerCase() ?? null,
     tenantId,
     workspaceId,
   };

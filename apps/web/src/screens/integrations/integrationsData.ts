@@ -30,7 +30,6 @@ export type IntegrationScreenVariant =
 export type IntegrationScreenDefinition = {
   readonly apiPath: `/api/v1/${string}`;
   readonly displayTitle: string;
-  readonly documentPath: string;
   readonly id: IntegrationScreenId;
   readonly navigation: boolean;
   readonly operationId: string;
@@ -78,7 +77,6 @@ export const integrationScreenDefinitions: readonly IntegrationScreenDefinition[
   {
     apiPath: '/api/v1/integrations/catalog',
     displayTitle: 'Katalog integracji',
-    documentPath: '13-integracje-i-synchronizacja/40-01-katalog-integracji.md',
     id: '40.01',
     navigation: true,
     operationId: 'integrations.catalog.read',
@@ -91,7 +89,6 @@ export const integrationScreenDefinitions: readonly IntegrationScreenDefinition[
   {
     apiPath: '/api/v1/integrations/connect',
     displayTitle: 'Kreator połączenia',
-    documentPath: '13-integracje-i-synchronizacja/40-02-kreator-polaczenia.md',
     id: '40.02',
     navigation: true,
     operationId: 'integrations.connection.wizard.read',
@@ -104,7 +101,6 @@ export const integrationScreenDefinitions: readonly IntegrationScreenDefinition[
   {
     apiPath: '/api/v1/integrations/detail',
     displayTitle: 'Szczegóły integracji',
-    documentPath: '13-integracje-i-synchronizacja/40-03-szczegoly-integracji.md',
     id: '40.03',
     navigation: false,
     operationId: 'integrations.detail.read',
@@ -117,7 +113,6 @@ export const integrationScreenDefinitions: readonly IntegrationScreenDefinition[
   {
     apiPath: '/api/v1/integrations/sync-history',
     displayTitle: 'Historia synchronizacji',
-    documentPath: '13-integracje-i-synchronizacja/40-04-historia-synchronizacji.md',
     id: '40.04',
     navigation: true,
     operationId: 'integrations.sync.history.read',
@@ -130,7 +125,6 @@ export const integrationScreenDefinitions: readonly IntegrationScreenDefinition[
   {
     apiPath: '/api/v1/integrations/sync-run',
     displayTitle: 'Przebieg synchronizacji',
-    documentPath: '13-integracje-i-synchronizacja/40-05-przebieg-synchronizacji.md',
     id: '40.05',
     navigation: true,
     operationId: 'integrations.sync.run.read',
@@ -143,7 +137,6 @@ export const integrationScreenDefinitions: readonly IntegrationScreenDefinition[
   {
     apiPath: '/api/v1/integrations/scope',
     displayTitle: 'Zakres synchronizacji',
-    documentPath: '13-integracje-i-synchronizacja/40-06-zakres-synchronizacji.md',
     id: '40.06',
     navigation: true,
     operationId: 'integrations.sync.scope.read',
@@ -156,7 +149,6 @@ export const integrationScreenDefinitions: readonly IntegrationScreenDefinition[
   {
     apiPath: '/api/v1/integrations/reconnect',
     displayTitle: 'Ponowne połączenie',
-    documentPath: '13-integracje-i-synchronizacja/40-07-ponowne-polaczenie.md',
     id: '40.07',
     navigation: true,
     operationId: 'integrations.reconnect.read',
@@ -169,7 +161,6 @@ export const integrationScreenDefinitions: readonly IntegrationScreenDefinition[
   {
     apiPath: '/api/v1/integrations/disconnect',
     displayTitle: 'Odłączenie',
-    documentPath: '13-integracje-i-synchronizacja/40-08-odlaczenie.md',
     id: '40.08',
     navigation: true,
     operationId: 'integrations.disconnect.read',
@@ -182,7 +173,6 @@ export const integrationScreenDefinitions: readonly IntegrationScreenDefinition[
   {
     apiPath: '/api/v1/integrations/provider-outage',
     displayTitle: 'Awaria providera',
-    documentPath: '13-integracje-i-synchronizacja/40-09-awaria-providera.md',
     id: '40.09',
     navigation: true,
     operationId: 'integrations.provider.outage.read',
@@ -195,7 +185,6 @@ export const integrationScreenDefinitions: readonly IntegrationScreenDefinition[
   {
     apiPath: '/api/v1/integrations/variants',
     displayTitle: 'Warianty integracji',
-    documentPath: '13-integracje-i-synchronizacja/40-10-warianty-integracji.md',
     id: '40.10',
     navigation: true,
     operationId: 'integrations.variants.read',

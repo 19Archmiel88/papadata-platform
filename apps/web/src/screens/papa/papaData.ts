@@ -50,7 +50,6 @@ export type PapaScreenVariant =
 export type PapaScreenDefinition = {
   readonly apiPath: `/api/v1/${string}` | null;
   readonly displayTitle: string;
-  readonly documentPath: string;
   readonly id: PapaScreenId;
   readonly operationId: string | null;
   readonly route: `/app/${string}` | null;
@@ -213,7 +212,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: '/api/v1/papa/panel-kontekstowy-papa',
     displayTitle: 'Panel kontekstowy Papa',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-01-panel-kontekstowy-papa.md',
     id: '50.01',
     operationId: 'papa.context-panel.read',
     route: '/app/papa/panel-kontekstowy-papa',
@@ -224,7 +222,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: '/api/v1/papa/assistantshell',
     displayTitle: 'Powłoka asystenta',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-02-assistantshell.md',
     id: '50.02',
     operationId: 'papa.assistant-shell.read',
     route: '/app/papa/assistantshell',
@@ -235,7 +232,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: null,
     displayTitle: 'Tryby pracy',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-03-tryby-pracy.md',
     id: '50.03',
     operationId: null,
     route: null,
@@ -246,7 +242,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: '/api/v1/papa/context-basket',
     displayTitle: 'Koszyk kontekstu',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-04-context-basket.md',
     id: '50.04',
     operationId: 'papa.context-basket.read',
     route: '/app/papa/context-basket',
@@ -257,7 +252,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: '/api/v1/papa/odpowiedz-papa',
     displayTitle: 'Odpowiedź Papa',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-05-odpowiedz-papa.md',
     id: '50.05',
     operationId: 'papa.answer.read',
     route: '/app/papa/odpowiedz-papa',
@@ -268,7 +262,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: '/api/v1/papa/dowody',
     displayTitle: 'Dowody',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-06-dowody.md',
     id: '50.06',
     operationId: 'papa.evidence.read',
     route: '/app/papa/dowody',
@@ -279,7 +272,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: null,
     displayTitle: 'Poziom pewności',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-07-confidence.md',
     id: '50.07',
     operationId: null,
     route: null,
@@ -290,7 +282,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: '/api/v1/papa/laboratorium-ai',
     displayTitle: 'Laboratorium AI',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-08-laboratorium-ai.md',
     id: '50.08',
     operationId: 'papa.lab.read',
     route: '/app/papa/laboratorium-ai',
@@ -301,7 +292,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: '/api/v1/papa/obserwacje',
     displayTitle: 'Obserwacje',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-09-obserwacje.md',
     id: '50.09',
     operationId: 'papa.observations.read',
     route: '/app/papa/obserwacje',
@@ -312,7 +302,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: null,
     displayTitle: 'Rekomendacje i warianty',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-10-rekomendacje-i-warianty.md',
     id: '50.10',
     operationId: null,
     route: null,
@@ -323,7 +312,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: '/api/v1/papa/propozycje-ai',
     displayTitle: 'Propozycje AI',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-11-propozycje-ai.md',
     id: '50.11',
     operationId: 'papa.proposals.read',
     route: '/app/papa/propozycje-ai',
@@ -334,7 +322,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: '/api/v1/papa/ai-action-approval',
     displayTitle: 'Akceptacja działań AI',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-12-ai-action-approval.md',
     id: '50.12',
     operationId: 'papa.action-approval.read',
     route: '/app/papa/ai-action-approval',
@@ -345,7 +332,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: '/api/v1/papa/ai-actions',
     displayTitle: 'Działania AI',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-13-ai-actions.md',
     id: '50.13',
     operationId: 'papa.actions.read',
     route: '/app/papa/ai-actions',
@@ -356,7 +342,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: null,
     displayTitle: 'Zablokowane działania AI',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-14-zablokowane-dzialania-ai.md',
     id: '50.14',
     operationId: null,
     route: null,
@@ -367,7 +352,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: '/api/v1/papa/historia-i-pamiec-papa',
     displayTitle: 'Historia i pamięć Papa',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-15-historia-i-pamiec-papa.md',
     id: '50.15',
     operationId: 'papa.history-memory.read',
     route: '/app/papa/historia-i-pamiec-papa',
@@ -378,7 +362,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: '/api/v1/papa/ustawienia-ai-i-governance',
     displayTitle: 'Ustawienia AI i nadzór',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-16-ustawienia-ai-i-governance.md',
     id: '50.16',
     operationId: 'papa.governance.read',
     route: '/app/papa/ustawienia-ai-i-governance',
@@ -389,7 +372,6 @@ export const papaScreenDefinitions: readonly PapaScreenDefinition[] = [
   {
     apiPath: null,
     displayTitle: 'Warianty Papa',
-    documentPath: '15-papa-asystent-i-laboratorium-ai/50-17-warianty-papa.md',
     id: '50.17',
     operationId: null,
     route: null,

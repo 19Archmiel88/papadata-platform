@@ -139,7 +139,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [api, bff, worker]
+        service: [api, bff, worker, web, edge]
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -186,3 +186,66 @@ jobs:
           name: security-evidence-${{ matrix.service }}-${{ github.sha }}
           path: trivy-${{ matrix.service }}.sarif
           if-no-files-found: warn
+
+  web-production-parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+        with:
+          version: 10.29.3
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24.18.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Static web production build
+        run: pnpm build:web
+
+      - name: Verify no Storybook/tooling leakage in built web artifact
+        run: pnpm verify:web-production-artifact:dist
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter @papadata/web exec playwright install --with-deps chromium
+
+      # ubuntu-latest's resolver does not reliably resolve *.localhost to
+      # 127.0.0.1 -- an explicit /etc/hosts entry is the only deterministic way.
+      - name: Resolve papadata.localhost to loopback
+        run: echo "127.0.0.1 papadata.localhost" | sudo tee -a /etc/hosts
+
+      - name: Prepare production-parity secrets and TLS
+        run: sh tools/prepare-production-parity.sh
+
+      - name: Start production-parity stack
+        run: docker compose -f compose.production-parity.yml --env-file .env.production-parity up --build --wait --wait-timeout 300
+
+      - name: Verify no Storybook/tooling leakage or disallowed files in web-production image
+        run: pnpm verify:web-production-artifact:image
+
+      - name: Web/edge smoke test
+        run: NODE_EXTRA_CA_CERTS=.runtime/backend-production-parity/edge-tls/ca.crt pnpm test:web-production-parity
+
+      - name: Edge CSP browser check
+        run: pnpm test:web-production-parity:csp
+
+      - name: Backend restart/failure test
+        run: node tests/backend-production-parity/restart-failure.mjs --chaos
+
+      - name: Dump compose logs
+        if: always()
+        run: docker compose -f compose.production-parity.yml logs --no-color
+
+      - name: Tear down production-parity stack
+        if: always()
+        run: docker compose -f compose.production-parity.yml down -v

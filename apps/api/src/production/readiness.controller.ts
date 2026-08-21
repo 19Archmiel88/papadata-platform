@@ -1,6 +1,7 @@
 import { Inject } from "@nestjs/common";
-import { Controller, Get, ServiceUnavailableException } from "@nestjs/common";
+import { Controller, Get, Res } from "@nestjs/common";
 import { ProductionDatabase } from "@papadata/database";
+import type { FastifyReply } from "fastify";
 import { createClient } from "redis";
 import { OperationId, PublicEndpoint } from "./auth/route-policy.js";
 import { readProductionConfig } from "./config.js";
@@ -12,6 +13,9 @@ type DependencyStatus = {
   readonly latencyMs: number;
 };
 
+// See the /healthz vs /health vs /readyz vs /startupz contract note at the
+// top of health.controller.ts (same directory) -- /readyz is the only
+// endpoint in this pair that checks dependencies.
 @Controller()
 export class ReadinessController {
   constructor(
@@ -22,7 +26,7 @@ export class ReadinessController {
   @Get("readyz")
   @PublicEndpoint()
   @OperationId("infrastructure.health.ready")
-  async ready(): Promise<object> {
+  async ready(@Res({ passthrough: true }) reply: FastifyReply): Promise<object> {
     const config = readProductionConfig();
     const checks = await Promise.all([
       timedCheck("postgresql", () => this.database.checkHealth()),
@@ -65,13 +69,20 @@ export class ReadinessController {
       }),
     ]);
 
+    const ready = checks.every((item) => item.ready);
     const response = {
-      status: checks.every((item) => item.ready) ? "ready" : "blocked",
+      status: ready ? "ready" : "blocked",
       dependencies: checks,
     };
 
-    if (response.status !== "ready") {
-      throw new ServiceUnavailableException(response);
+    // The generic ApiProblemFilter collapses every 5xx into a sanitized,
+    // dependency-agnostic envelope -- correct for business endpoints, but it
+    // would defeat the entire point of /readyz, whose payload exists so
+    // operators/monitoring can see *which* dependency is unhealthy. Setting
+    // the status directly (instead of throwing) keeps the full per-
+    // dependency body on the failure path too.
+    if (!ready) {
+      reply.status(503);
     }
 
     return response;

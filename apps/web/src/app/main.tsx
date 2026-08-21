@@ -6,6 +6,7 @@ import {
   getInitialPapaDataRuntimeGlobals,
 } from '../design-system/foundations/runtime';
 import { App } from './App';
+import { ErrorBoundary } from './ErrorBoundary';
 import '../design-system/foundations/foundations.css';
 import './app.css';
 
@@ -27,6 +28,14 @@ applyPapaDataRuntimeGlobals(
 
 createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    <ErrorBoundary
+      description="Wystąpił nieoczekiwany błąd aplikacji. Odśwież stronę, aby spróbować ponownie."
+      errorCode="APP_RUNTIME_CRASH"
+      onRetry={() => window.location.reload()}
+      retryLabel="Odśwież aplikację"
+      title="Coś poszło nie tak"
+    >
+      <App />
+    </ErrorBoundary>
   </StrictMode>,
 );

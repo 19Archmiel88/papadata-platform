@@ -12,6 +12,9 @@ import {
   dataQualityScreenDefinitions,
 } from '../../../screens/data-quality';
 import {
+  dataQualityScreenStorybookMeta,
+} from '../../data/dataQualityScreenStorybookMeta';
+import {
   DataQualityProductWorkspace,
 } from '../../production/OperationalDomainWorkspaces';
 import {
@@ -68,6 +71,7 @@ function ModuleStoryPage({ id }: { readonly id: ScreenId }) {
     <ProductionStoryShell
       contract={{
         ...definition,
+        documentPath: dataQualityScreenStorybookMeta[id].documentPath,
         owner: 'Jakość danych',
         sectionId: '41',
         sectionLabel: 'Jakość danych i integralność',

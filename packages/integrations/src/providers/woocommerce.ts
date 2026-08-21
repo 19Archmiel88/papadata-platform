@@ -61,7 +61,7 @@ export class WooCommerceAdapter implements IntegrationProviderAdapter {
           after: from,
           before: to,
           order: "asc",
-          orderby: "date_modified",
+          orderby: "modified",
           status: "any",
         });
         records.push(...orders.map((order) => ({
@@ -91,31 +91,12 @@ export class WooCommerceAdapter implements IntegrationProviderAdapter {
       }
 
       if (stream === "refunds") {
-        const orders = await this.fetchPages("orders", {
-          after: from,
-          before: to,
-          order: "asc",
-          orderby: "date_modified",
-          status: "any",
-        });
-        for (const order of orders) {
-          const orderId = readStringField(order, "id", "number") ?? randomUUID();
-          const refunds = readArrayField(order, "refunds");
-          for (const refund of refunds) {
-            records.push({
-              stream,
-              externalId: readStringField(refund, "id") ?? `${orderId}:${randomUUID()}`,
-              observedAt,
-              payload: {
-                orderId,
-                refund,
-              },
-            });
-          }
-        }
-        limitations.push(
-          "WooCommerce refunds are derived from order refund references; detailed refund line items are fetched during canonical enrichment.",
-        );
+        records.push(...await this.fetchRefundRecords({
+          from,
+          to,
+          observedAt,
+          limitations,
+        }));
       }
     }
 
@@ -125,6 +106,155 @@ export class WooCommerceAdapter implements IntegrationProviderAdapter {
       partial: false,
       limitations,
     };
+  }
+
+  private async fetchRefundRecords(input: {
+    readonly from: string | null;
+    readonly to: string | null;
+    readonly observedAt: string;
+    readonly limitations: string[];
+  }): Promise<readonly ProviderRecord[]> {
+    try {
+      // WooCommerce >= 9.0 exposes /wc/v3/refunds independently of parent
+      // orders. That is the correct source for a date-bounded refund stream:
+      // a refund created today for an order created years ago must still be
+      // discoverable without scanning an arbitrary order-history window.
+      const refunds = await this.fetchPages("refunds", {
+        after: input.from,
+        before: input.to,
+        order: "asc",
+      });
+      return this.toRefundRecords(refunds, input);
+    } catch (error) {
+      if (!isGlobalRefundEndpointUnavailable(error)) {
+        throw error;
+      }
+
+      input.limitations.push(
+        "WooCommerce /wc/v3/refunds is unavailable; used complete paginated order-history fallback without an arbitrary lower-date floor.",
+      );
+      return this.fetchRefundRecordsViaOrders(input);
+    }
+  }
+
+  private async fetchRefundRecordsViaOrders(input: {
+    readonly from: string | null;
+    readonly to: string | null;
+    readonly observedAt: string;
+    readonly limitations: string[];
+  }): Promise<readonly ProviderRecord[]> {
+    // Compatibility fallback for WooCommerce < 9.0. Do not add a fixed
+    // discovery floor here: completeness is more important than speed for
+    // this fallback, because a recent refund can reference an arbitrarily
+    // old order. fetchPages() provides full pagination.
+    const orders = await this.fetchPages("orders", {
+      after: null,
+      before: input.to,
+      order: "asc",
+      orderby: "date",
+      status: "any",
+    });
+    const records: ProviderRecord[] = [];
+
+    for (const order of orders) {
+      const orderId = readStringField(order, "id", "number");
+      if (!orderId) continue;
+      const currency = readStringField(order, "currency");
+      const refundRefs = readArrayField(order, "refunds");
+
+      for (const refundRef of refundRefs) {
+        const refundId = readStringField(refundRef, "id");
+        if (!refundId) continue;
+
+        let refundDetail: unknown = refundRef;
+        try {
+          const detail = await this.requestJson(`orders/${orderId}/refunds/${refundId}`);
+          refundDetail = detail.data;
+        } catch {
+          input.limitations.push(
+            `Could not fetch full refund detail for order ${orderId} refund ${refundId}; using the embedded order reference only.`,
+          );
+        }
+
+        if (!isRefundWithinWindow(refundDetail, input.from, input.to)) {
+          continue;
+        }
+
+        const refundPayload = normalizeRefundPayload(
+          isRecord(refundDetail) ? refundDetail : { id: refundId },
+        );
+        records.push({
+          stream: "refunds",
+          externalId: refundId,
+          observedAt: input.observedAt,
+          payload: {
+            ...refundPayload,
+            currency,
+            orderId,
+          },
+        });
+      }
+    }
+
+    return records;
+  }
+
+  private async toRefundRecords(
+    refunds: readonly unknown[],
+    input: {
+      readonly from: string | null;
+      readonly to: string | null;
+      readonly observedAt: string;
+      readonly limitations: string[];
+    },
+  ): Promise<readonly ProviderRecord[]> {
+    const records: ProviderRecord[] = [];
+    const currencyByOrderId = new Map<string, string | null>();
+
+    for (const refund of refunds) {
+      if (!isRefundWithinWindow(refund, input.from, input.to)) {
+        continue;
+      }
+
+      const refundId = readStringField(refund, "id", "refund_id", "refundId");
+      if (!refundId) {
+        input.limitations.push("WooCommerce returned a refund without an id; the record was skipped.");
+        continue;
+      }
+
+      const orderId = readStringField(refund, "parent_id", "order_id", "orderId");
+      let currency: string | null = null;
+      if (orderId) {
+        if (!currencyByOrderId.has(orderId)) {
+          try {
+            const order = await this.requestJson(`orders/${orderId}`);
+            currencyByOrderId.set(orderId, readStringField(order.data, "currency"));
+          } catch {
+            currencyByOrderId.set(orderId, null);
+            input.limitations.push(
+              `Could not fetch order ${orderId} while enriching refund ${refundId} with currency.`,
+            );
+          }
+        }
+        currency = currencyByOrderId.get(orderId) ?? null;
+      }
+
+      const refundPayload = normalizeRefundPayload(
+        isRecord(refund) ? refund : { id: refundId },
+      );
+      records.push({
+        stream: "refunds",
+        externalId: refundId,
+        observedAt: input.observedAt,
+        payload: {
+          ...refundPayload,
+          currency,
+          orderId,
+        },
+      });
+    }
+
+    return records;
   }
 
   private async fetchPages(
@@ -149,7 +279,7 @@ export class WooCommerceAdapter implements IntegrationProviderAdapter {
       items.push(...rows);
 
       const totalPages = Number(result.headers.get("x-wp-totalpages") ?? "0");
-      if (rows.length < 100 || (Number.isFinite(totalPages) && page >= totalPages)) {
+      if (rows.length < 100 || (Number.isFinite(totalPages) && totalPages > 0 && page >= totalPages)) {
         break;
       }
       page += 1;
@@ -224,4 +354,52 @@ function checkpointDate(checkpoint: string | null): string | null {
     if (Number.isFinite(Date.parse(checkpoint))) return checkpoint;
   }
   return null;
+}
+
+function normalizeRefundPayload(
+  refund: Readonly<Record<string, unknown>>,
+): Readonly<Record<string, unknown>> {
+  const gmt = readStringField(refund, "date_created_gmt");
+  if (!gmt || /[zZ]|[+-]\d{2}:?\d{2}$/u.test(gmt)) {
+    return refund;
+  }
+  return {
+    ...refund,
+    date_created_gmt: `${gmt}Z`,
+  };
+}
+
+function isGlobalRefundEndpointUnavailable(error: unknown): boolean {
+  return error instanceof ProviderAdapterError
+    && error.failureClass === "validation";
+}
+
+function isRefundWithinWindow(
+  refund: unknown,
+  from: string | null,
+  to: string | null,
+): boolean {
+  if (!from && !to) return true;
+  if (!isRecord(refund)) return false;
+
+  const gmt = readStringField(refund, "date_created_gmt");
+  const local = readStringField(refund, "date_created", "created_at", "createdAt");
+  const raw = gmt ?? local;
+  if (!raw) return false;
+
+  const normalized = gmt && !/[zZ]|[+-]\d{2}:?\d{2}$/u.test(gmt)
+    ? `${gmt}Z`
+    : raw;
+  const timestamp = Date.parse(normalized);
+  if (!Number.isFinite(timestamp)) return false;
+
+  if (from) {
+    const fromMs = Date.parse(from);
+    if (Number.isFinite(fromMs) && timestamp < fromMs) return false;
+  }
+  if (to) {
+    const toMs = Date.parse(to);
+    if (Number.isFinite(toMs) && timestamp >= toMs) return false;
+  }
+  return true;
 }

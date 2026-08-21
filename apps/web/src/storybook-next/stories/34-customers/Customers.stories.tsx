@@ -15,6 +15,9 @@ import type {
   CustomersModuleData,
 } from '../../../screens/analytics';
 import {
+  analyticsModuleStorybookMeta,
+} from '../../data/analyticsModuleStorybookMeta';
+import {
   CustomersWorkspace,
 } from '../../production/AnalyticsDomainWorkspaces';
 import {
@@ -58,6 +61,7 @@ function ModuleStoryPage({ id }: { readonly id: ScreenId }) {
     <ProductionStoryShell
       contract={{
         ...definition,
+        documentPath: analyticsModuleStorybookMeta[id].documentPath,
         owner: 'Customers',
         sectionId: '34',
         sectionLabel: 'Klienci',

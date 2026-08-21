@@ -9,6 +9,7 @@ import {
 } from 'react';
 
 import { useSession } from '../app/providers';
+import { ErrorBoundary } from '../app/ErrorBoundary';
 import {
   navigate,
   useLocationPath,
@@ -225,7 +226,13 @@ export function AppShell({
       workspacePending={workspacePending}
       workspaces={workspaces}
     >
-      {children}
+      <ErrorBoundary
+        description="Ten ekran napotkał nieoczekiwany błąd renderowania. Spróbuj ponownie lub przejdź do innego miejsca w aplikacji z nawigacji."
+        errorCode="SCREEN_RUNTIME_CRASH"
+        title="Nie udało się wyświetlić tego ekranu"
+      >
+        {children}
+      </ErrorBoundary>
     </ProductShellFrame>
   );
 }

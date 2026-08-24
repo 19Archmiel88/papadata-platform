@@ -32,6 +32,24 @@ const PLAN_ACTUAL_DAYS = 21;
 const PLAN_FORECAST_DAYS = 9;
 const MAX_WINDOW_DAYS = 366;
 
+const COMMAND_CENTER_METRIC_CODES: readonly DashboardMetricCode[] = [
+  "ad_spend",
+  "aov",
+  "gross_order_value",
+  "orders",
+  "platform_attributed_conversions",
+  "platform_attributed_revenue",
+  "product_margin",
+  "product_revenue",
+  "return_value",
+  "revenue_after_refunds",
+  "roas",
+];
+
+type MetricEngineSeries = ReturnType<typeof computeMetricEngineSeries>;
+
+const commandCenterSeriesByInput = new WeakMap<MetricEngineInput, MetricEngineSeries>();
+
 type DailyMetricRow = {
   readonly date: string;
   readonly values: Partial<Record<DashboardMetricCode, string | null>>;
@@ -302,6 +320,17 @@ function resolvePlanWindow(
     : fallback;
 }
 
+function computeCommandCenterMetricSeries(input: MetricEngineInput): MetricEngineSeries {
+  const cached = commandCenterSeriesByInput.get(input);
+  if (cached) {
+    return cached;
+  }
+
+  const series = computeMetricEngineSeries(input, COMMAND_CENTER_METRIC_CODES);
+  commandCenterSeriesByInput.set(input, series);
+  return series;
+}
+
 /**
  * Real AOV/ad_spend/ROAS/revenue/orders KPI records, computed by the
  * canonical metric engine instead of hardcoded literals. Ad spend is read
@@ -326,16 +355,6 @@ export async function buildCommandCenterKpiOverrides(
   readonly ga4Freshness: CommandCenterRuntimeRecord;
   readonly grossMargin: CommandCenterRuntimeRecord;
 }> {
-  const codes: readonly DashboardMetricCode[] = [
-    "revenue_after_refunds",
-    "orders",
-    "ad_spend",
-    "aov",
-    "roas",
-    "platform_attributed_conversions",
-    "product_revenue",
-    "product_margin",
-  ];
   const { periodEnd, periodStart, timezone } = resolveMetricWindow(generatedAt, dateRange, KPI_WINDOW_DAYS);
   const planWindow = resolvePlanWindow(generatedAt, dateRange);
   const [input, currentTrafficRows, previousTrafficRows] = await Promise.all([
@@ -359,7 +378,7 @@ export async function buildCommandCenterKpiOverrides(
       streams: ["traffic"],
     }),
   ]);
-  const { aggregate, daily, lastSuccessfulSyncAt, providers, readiness } = computeMetricEngineSeries(input, codes);
+  const { aggregate, daily, lastSuccessfulSyncAt, providers, readiness } = computeCommandCenterMetricSeries(input);
   const currentFunnel = aggregateFunnelSteps(currentTrafficRows);
   const previousFunnel = aggregateFunnelSteps(previousTrafficRows);
   const currentCartConversion = cartConversionRate(currentFunnel);
@@ -595,8 +614,8 @@ export async function buildCommandCenterPlanPerformanceData(
       workspaceId,
     }),
   ]);
-  const current = computeMetricEngineSeries(currentInput, ["revenue_after_refunds"]);
-  const previous = computeMetricEngineSeries(previousInput, ["revenue_after_refunds"]);
+  const current = computeCommandCenterMetricSeries(currentInput);
+  const previous = computeCommandCenterMetricSeries(previousInput);
 
   const actualTotalValue = numberOrNull(current.aggregate.revenue_after_refunds);
   const previousTotalValue = numberOrNull(previous.aggregate.revenue_after_refunds);
@@ -814,12 +833,6 @@ export async function buildCommandCenterDriversData(
     readonly volume: DriverDecompositionData;
   };
 }> {
-  const codes: readonly DashboardMetricCode[] = [
-    "orders",
-    "gross_order_value",
-    EFFICIENCY_RELATIONSHIP.xCode,
-    EFFICIENCY_RELATIONSHIP.yCode,
-  ];
   const { periodEnd, periodStart, timezone } = resolveMetricWindow(generatedAt, dateRange, KPI_WINDOW_DAYS);
   const input = await createRealMetricEngineInput({
     dataSource,
@@ -830,7 +843,7 @@ export async function buildCommandCenterDriversData(
     timezone,
     workspaceId,
   });
-  const { daily } = computeMetricEngineSeries(input, codes);
+  const { daily } = computeCommandCenterMetricSeries(input);
 
   return {
     driverRelationships: {
@@ -1340,13 +1353,7 @@ export async function buildCommandCenterWaterfallData(
     timezone,
     workspaceId,
   });
-  const { aggregate } = computeMetricEngineSeries(input, [
-    "gross_order_value",
-    "return_value",
-    "ad_spend",
-    "product_margin",
-    "product_revenue",
-  ]);
+  const { aggregate } = computeCommandCenterMetricSeries(input);
   const gross = numberOrZero(aggregate.gross_order_value);
   const returns = numberOrZero(aggregate.return_value);
   const adSpend = numberOrZero(aggregate.ad_spend);

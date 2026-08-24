@@ -44,6 +44,8 @@ import {
   buildCommandCenterTrafficSourcesData,
   buildCommandCenterWaterfallData,
 } from "./command-center-metrics.contract-data.js";
+import { CommandCenterMetricInputDataSource } from "./command-center-metric-input-data-source.js";
+import type { CommandCenterDataSource } from "./command-center-metrics.real-source.js";
 import {
   commandCenterRecord,
   type CommandCenterReadiness,
@@ -82,6 +84,8 @@ export class ContractRuntimeService {
 
   private readonly integrationRepository: IntegrationRepository;
 
+  private readonly commandCenterDataSource: CommandCenterDataSource;
+
   private readonly invitations: InvitationRepository;
 
   constructor(
@@ -92,6 +96,9 @@ export class ContractRuntimeService {
   ) {
     this.repository = new ProductDomainRepository(database);
     this.integrationRepository = new IntegrationRepository(database);
+    this.commandCenterDataSource = new CommandCenterMetricInputDataSource(
+      this.integrationRepository,
+    );
     this.invitations = new InvitationRepository(database);
   }
 
@@ -323,7 +330,7 @@ export class ContractRuntimeService {
           readRuntimeDateRange(request.query),
           principal.tenantId,
           principal.workspaceId,
-          this.integrationRepository,
+          this.commandCenterDataSource,
         ),
         operationId: request.operationId,
       };
@@ -693,7 +700,7 @@ export class ContractRuntimeService {
           readRuntimeDateRange(request.query),
           principal.tenantId,
           principal.workspaceId,
-          this.integrationRepository,
+          this.commandCenterDataSource,
         ),
         operationId: request.operationId,
         implementation: "canonical-dashboard-view-model",
@@ -746,13 +753,13 @@ type RuntimeDateRange = {
   readonly to: string;
 };
 
-async function commandCenterContractData(
+export async function commandCenterContractData(
   operationId: string,
   repositorySummary: Readonly<Record<string, unknown>>,
   dateRange: RuntimeDateRange | null,
   tenantId: string,
   workspaceId: string,
-  integrationRepository: IntegrationRepository,
+  integrationRepository: CommandCenterDataSource,
 ): Promise<object> {
   const updatedAt = optionalRecordDateString(repositorySummary, "generatedAt")
     ?? new Date().toISOString();
@@ -765,23 +772,7 @@ async function commandCenterContractData(
   const metricDateRange = dateRange
     ? { from: dateRange.from, timezone: dateRange.timezone, to: dateRange.to }
     : null;
-  const kpi = await buildCommandCenterKpiOverrides(
-    tenantId,
-    workspaceId,
-    updatedAt,
-    integrationRepository,
-    metricDateRange,
-  );
-  const records: readonly CommandCenterRuntimeRecord[] = [
-    kpi.revenue,
-    kpi.cartConversion,
-    kpi.roas,
-    kpi.orders,
-    kpi.aov,
-    kpi.adSpend,
-    kpi.cpa,
-    kpi.ga4Freshness,
-    kpi.grossMargin,
+  const sourceRecords: readonly CommandCenterRuntimeRecord[] = [
     commandCenterRecord(
       "11111111-1111-4111-8111-111111111106",
       "Strumienie integracji",
@@ -800,6 +791,32 @@ async function commandCenterContractData(
       6,
       domainCounts > 0 ? "ready" : "partial",
     ),
+  ];
+  const kpi = commandCenterOperationNeedsKpiRecords(operationId)
+    ? await buildCommandCenterKpiOverrides(
+        tenantId,
+        workspaceId,
+        updatedAt,
+        integrationRepository,
+        metricDateRange,
+      )
+    : null;
+  const kpiRecords: readonly CommandCenterRuntimeRecord[] = kpi
+    ? [
+        kpi.revenue,
+        kpi.cartConversion,
+        kpi.roas,
+        kpi.orders,
+        kpi.aov,
+        kpi.adSpend,
+        kpi.cpa,
+        kpi.ga4Freshness,
+        kpi.grossMargin,
+      ]
+    : [];
+  const records: readonly CommandCenterRuntimeRecord[] = [
+    ...kpiRecords,
+    ...sourceRecords,
   ];
   const ready = records.filter((record) => record.readiness === "ready").length;
   const warning = records.filter((record) => (
@@ -873,6 +890,18 @@ async function commandCenterContractData(
       operationId,
     },
   };
+}
+
+function commandCenterOperationNeedsKpiRecords(operationId: string): boolean {
+  return [
+    "command-center.ai-recommendations.read",
+    "command-center.attention.queue.read",
+    "command-center.kpi.read",
+    "command-center.overview.read",
+    "command-center.read",
+    "command-center.sales-signals.read",
+    "command-center.variants.read",
+  ].includes(operationId);
 }
 
 function readRuntimeDateRange(query: unknown): RuntimeDateRange | null {

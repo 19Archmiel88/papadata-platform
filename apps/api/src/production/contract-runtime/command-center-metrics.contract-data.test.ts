@@ -23,8 +23,8 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * count doesn't move but basket size does. Ad spend and conversion value
  * both vary independently so "efficiency" (ad_spend vs roas) can correlate.
  */
-function seededDataSource(days = 30): CommandCenterDataSource {
-  const endMs = Date.parse(generatedAt);
+function seededDataSource(days = 30, endAt = generatedAt): CommandCenterDataSource {
+  const endMs = Date.parse(endAt);
   const rows: Record<string, unknown>[] = [];
 
   for (let i = 0; i < days; i += 1) {
@@ -244,6 +244,32 @@ test("KPI overrides report unavailable/no_data, never fabricate ready, when no r
   }
 });
 
+test("KPI freshness is evaluated against generatedAt, not the latest business event", async () => {
+  const evaluationTime = "2026-08-25T10:00:00.000Z";
+  const latestCheckpoint = "2026-08-23T08:00:00.000Z";
+  const dataSource: CommandCenterDataSource = {
+    ...seededDataSource(30, "2026-08-23T20:00:00.000Z"),
+    async listSyncCheckpoints() {
+      return [
+        {
+          connection_id: "connection-woocommerce",
+          cursor: "cursor-woocommerce",
+          id: "checkpoint-woocommerce-orders",
+          provider_id: "woocommerce",
+          stream: "orders",
+          updated_at: new Date(latestCheckpoint),
+          watermark: new Date(latestCheckpoint),
+        },
+      ];
+    },
+  };
+
+  const kpi = await buildCommandCenterKpiOverrides(tenantId, workspaceId, evaluationTime, dataSource);
+
+  assert.equal(kpi.revenue.readiness, "stale");
+  assert.equal(kpi.revenue.lastSuccessfulSyncAt, latestCheckpoint);
+});
+
 test("plan performance trajectory: table rows are exactly what the chart would plot", async () => {
   const plan = await buildCommandCenterPlanPerformanceData(tenantId, workspaceId, generatedAt, seededDataSource());
 
@@ -399,6 +425,20 @@ test("plan performance: a fully past date range produces zero forecast days inst
     plan.trajectory.every((point) => point.forecast === null),
     "a fully past window must never manufacture forecast values",
   );
+});
+
+test("plan performance does not move today back to the latest business event", async () => {
+  const evaluationTime = "2026-08-25T10:00:00.000Z";
+  const plan = await buildCommandCenterPlanPerformanceData(
+    tenantId,
+    workspaceId,
+    evaluationTime,
+    seededDataSource(30, "2026-08-23T20:00:00.000Z"),
+    { from: "2026-08-01", timezone: "Europe/Warsaw", to: "2026-08-25" },
+  );
+
+  const forecastPoints = plan.trajectory.filter((point) => point.forecast !== null);
+  assert.equal(forecastPoints.length, 0);
 });
 
 test("KPI date range respects Europe/Warsaw local-day boundaries", async () => {

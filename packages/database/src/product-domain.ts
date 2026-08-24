@@ -405,9 +405,16 @@ export class ProductDomainRepository {
 
   async dashboardSummary(tenantId: string, workspaceId: string): Promise<Record<string, unknown>> {
     return this.database.withTenantWorkspace(tenantId, workspaceId, async (client) => {
+      const generatedAt = await client.query<{ readonly generated_at: Date | string | null }>(
+        `select transaction_timestamp() as generated_at`,
+      );
       const streams = await client.query<{ readonly stream: string; readonly records: number; readonly latest: string | null }>(
         `select stream, count(*)::int as records,
-                coalesce(max(business_time), max(ingested_at))::text as latest
+                max(coalesce(
+                  nullif(canonical_payload ->> 'occurredAt', '')::timestamptz,
+                  business_time,
+                  ingested_at
+                ))::text as latest
            from app.integration_canonical_records
           where tenant_id = $1::uuid and workspace_id = $2::uuid
           group by stream order by stream`,
@@ -421,13 +428,27 @@ export class ProductDomainRepository {
         [tenantId, workspaceId],
       );
       return {
-        generatedAt: new Date().toISOString(),
+        generatedAt: readGeneratedAt(generatedAt.rows[0]?.generated_at),
         readiness: streams.rows.length > 0 ? "ready" : "not_ready",
         integrationStreams: streams.rows,
         domainCounts: domainCounts.rows,
       };
     });
   }
+}
+
+function readGeneratedAt(value: Date | string | null | undefined): string {
+  if (value instanceof Date && Number.isFinite(value.getTime())) {
+    return value.toISOString();
+  }
+  if (typeof value === "string" && value.trim().length > 0) {
+    const parsed = Date.parse(value);
+    if (Number.isFinite(parsed)) {
+      return new Date(parsed).toISOString();
+    }
+  }
+
+  return new Date().toISOString();
 }
 
 export class WebhookReceiptRepository {

@@ -577,6 +577,123 @@ export class IntegrationRepository {
     );
   }
 
+  async readMetricEngineInputRows(
+    tenantId: string,
+    workspaceId: string,
+    input: {
+      readonly periodStart: string;
+      readonly periodEnd: string;
+    },
+  ): Promise<{
+    readonly canonicalRows: readonly Record<string, unknown>[];
+    readonly catalogRows: readonly Record<string, unknown>[];
+    readonly connectionRows: readonly Record<string, unknown>[];
+    readonly checkpointRows: readonly Record<string, unknown>[];
+    readonly reconciliationRun: Record<string, unknown> | null;
+    readonly openIssueRows: readonly Record<string, unknown>[];
+  }> {
+    return this.database.withTenantWorkspace(
+      tenantId,
+      workspaceId,
+      async (client) => {
+        const records = await client.query<Record<string, unknown>>(
+          `with scoped_records as (
+             select
+               canonical_record_id as id,
+               provider_id,
+               stream,
+               external_id,
+               canonical_payload,
+               coalesce(
+                 nullif(canonical_payload ->> 'occurredAt', '')::timestamptz,
+                 business_time,
+                 ingested_at
+               ) as effective_time
+             from app.integration_canonical_records
+             where tenant_id = $1
+               and workspace_id = $2
+               and stream = any($3::text[])
+           )
+           select *
+             from scoped_records
+            where effective_time >= case
+                    when stream = 'products' then $4::timestamptz
+                    else $5::timestamptz
+                  end
+              and effective_time < $6::timestamptz
+            order by effective_time asc`,
+          [
+            tenantId,
+            workspaceId,
+            [
+              "ad_spend",
+              "attributed_conversions",
+              "inventory",
+              "orders",
+              "products",
+              "refunds",
+            ],
+            "1970-01-01T00:00:00.000Z",
+            input.periodStart,
+            input.periodEnd,
+          ],
+        );
+        const connectionRows = await client.query<Record<string, unknown>>(
+          `select
+             connection_id as id,
+             connection.*
+           from app.integration_connections as connection
+           where tenant_id = $1
+             and workspace_id = $2
+             and deleted_at is null
+           order by created_at desc`,
+          [tenantId, workspaceId],
+        );
+        const checkpointRows = await client.query<Record<string, unknown>>(
+          `select
+             sync_checkpoint_id as id,
+             checkpoint.*
+           from app.sync_checkpoints as checkpoint
+           where tenant_id = $1
+             and workspace_id = $2
+           order by updated_at desc`,
+          [tenantId, workspaceId],
+        );
+        const reconciliationRun = await client.query<Record<string, unknown>>(
+          `select
+             reconciliation_run_id as id,
+             run.*
+           from app.integration_reconciliation_runs as run
+           where tenant_id = $1
+             and workspace_id = $2
+           order by created_at desc
+           limit 1`,
+          [tenantId, workspaceId],
+        );
+        const openIssueRows = await client.query<Record<string, unknown>>(
+          `select
+             data_issue_id as id,
+             issue.*
+           from app.data_issues as issue
+           where tenant_id = $1
+             and workspace_id = $2
+             and status = 'open'
+           order by created_at desc`,
+          [tenantId, workspaceId],
+        );
+
+        return {
+          canonicalRows: records.rows.filter((row) => row.stream !== "products"),
+          catalogRows: records.rows.filter((row) => row.stream === "products"),
+          connectionRows: connectionRows.rows,
+          checkpointRows: checkpointRows.rows,
+          reconciliationRun: reconciliationRun.rows[0] ?? null,
+          openIssueRows: openIssueRows.rows,
+        };
+      },
+    );
+  }
+
   async listSyncCheckpoints(
     tenantId: string,
     workspaceId: string,

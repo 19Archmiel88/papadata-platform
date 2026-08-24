@@ -279,3 +279,70 @@ test("a failed reconciliation run produces a global mismatch report", async () =
   assert.equal(input.reconciliationReports.length, 1);
   assert.equal(input.reconciliationReports[0]!.status, "mismatch");
 });
+
+test("uses a single scoped metric-engine row batch read when the data source provides one", async () => {
+  const rows = [
+    row("woocommerce", "products", "sku-1", "2026-08-02T10:00:00.000Z", {
+      name: "Mug",
+      sku: "PAPA-MUG",
+    }),
+    row("woocommerce", "orders", "ext-order-1", "2026-08-03T10:00:00.000Z", {
+      currency: "PLN",
+      grossAmount: 199.5,
+      lineItems: [{ externalProductId: "sku-1", grossAmount: 199.5, quantity: 1 }],
+      orderId: "ext-order-1",
+      orderNumber: "WC-100",
+    }),
+  ];
+  let rowBatchReads = 0;
+  let legacyCanonicalReads = 0;
+
+  const dataSource: CommandCenterDataSource = {
+    async readMetricEngineInputRows(_tenantId, _workspaceId, input) {
+      rowBatchReads += 1;
+      assert.deepEqual(input, {
+        periodEnd,
+        periodStart,
+      });
+
+      return {
+        canonicalRows: rows.filter((candidate) => candidate.stream !== "products"),
+        catalogRows: rows.filter((candidate) => candidate.stream === "products"),
+        connectionRows: [],
+        checkpointRows: [],
+        reconciliationRun: null,
+        openIssueRows: [],
+      };
+    },
+    async listCanonicalRecords() {
+      legacyCanonicalReads += 1;
+      return [];
+    },
+    async listConnections() {
+      return [];
+    },
+    async listSyncCheckpoints() {
+      return [];
+    },
+    async latestReconciliationRun() {
+      return null;
+    },
+    async listOpenDataIssues() {
+      return [];
+    },
+  };
+
+  const input = await createRealMetricEngineInput({
+    dataSource,
+    generatedAt: generatedAt as any,
+    periodEnd: periodEnd as any,
+    periodStart: periodStart as any,
+    tenantId,
+    workspaceId,
+  });
+
+  assert.equal(rowBatchReads, 1, "one MetricEngineInput must use one scoped row batch read");
+  assert.equal(legacyCanonicalReads, 0, "the legacy fan-out path must not run when a row batch reader exists");
+  assert.equal(input.canonicalOrders.length, 1);
+  assert.equal(input.canonicalProducts.length, 1);
+});

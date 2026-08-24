@@ -28,6 +28,29 @@ import {
  * in-memory fake instead of a real Postgres-backed repository.
  */
 export type CommandCenterDataSource = {
+  readonly createMetricEngineInput?: (options: {
+    readonly generatedAt: IsoDateTime;
+    readonly periodStart: IsoDateTime;
+    readonly periodEnd: IsoDateTime;
+    readonly tenantId: string;
+    readonly timezone?: string;
+    readonly workspaceId: string;
+  }) => Promise<MetricEngineInput>;
+  readonly readMetricEngineInputRows?: (
+    tenantId: string,
+    workspaceId: string,
+    input: {
+      readonly periodStart: string;
+      readonly periodEnd: string;
+    },
+  ) => Promise<{
+    readonly canonicalRows: readonly Record<string, unknown>[];
+    readonly catalogRows: readonly Record<string, unknown>[];
+    readonly connectionRows: readonly Record<string, unknown>[];
+    readonly checkpointRows: readonly Record<string, unknown>[];
+    readonly reconciliationRun: Record<string, unknown> | null;
+    readonly openIssueRows: readonly Record<string, unknown>[];
+  }>;
   readonly listCanonicalRecords: (
     tenantId: string,
     workspaceId: string,
@@ -109,22 +132,36 @@ export async function createRealMetricEngineInput(options: {
     workspaceId,
   } = options;
 
-  const [canonicalRows, catalogRows, connectionRows, checkpointRows, reconciliationRun, openIssueRows] = await Promise.all([
-    dataSource.listCanonicalRecords(tenantId, workspaceId, {
-      streams: ["orders", "refunds", "inventory", "ad_spend", "attributed_conversions"],
-      businessTimeFrom: periodStart,
-      businessTimeTo: periodEnd,
-    }),
-    dataSource.listCanonicalRecords(tenantId, workspaceId, {
-      streams: ["products"],
-      businessTimeFrom: "1970-01-01T00:00:00.000Z",
-      businessTimeTo: periodEnd,
-    }),
-    dataSource.listConnections(tenantId, workspaceId),
-    dataSource.listSyncCheckpoints(tenantId, workspaceId),
-    dataSource.latestReconciliationRun(tenantId, workspaceId),
-    dataSource.listOpenDataIssues(tenantId, workspaceId),
-  ]);
+  if (dataSource.createMetricEngineInput) {
+    return dataSource.createMetricEngineInput({
+      generatedAt,
+      periodEnd,
+      periodStart,
+      tenantId,
+      timezone,
+      workspaceId,
+    });
+  }
+
+  const {
+    canonicalRows,
+    catalogRows,
+    connectionRows,
+    checkpointRows,
+    reconciliationRun,
+    openIssueRows,
+  } = dataSource.readMetricEngineInputRows
+    ? await dataSource.readMetricEngineInputRows(tenantId, workspaceId, {
+        periodEnd,
+        periodStart,
+      })
+    : await readMetricEngineInputRowsWithLegacyFanOut(
+        dataSource,
+        tenantId,
+        workspaceId,
+        periodStart,
+        periodEnd,
+      );
 
   const rowsByStream = new Map<string, Record<string, unknown>[]>();
   const scopedRows = [
@@ -196,6 +233,47 @@ export async function createRealMetricEngineInput(options: {
     tenantId,
     timezone,
     workspaceId,
+  };
+}
+
+async function readMetricEngineInputRowsWithLegacyFanOut(
+  dataSource: CommandCenterDataSource,
+  tenantId: string,
+  workspaceId: string,
+  periodStart: IsoDateTime,
+  periodEnd: IsoDateTime,
+): Promise<{
+  readonly canonicalRows: readonly Record<string, unknown>[];
+  readonly catalogRows: readonly Record<string, unknown>[];
+  readonly connectionRows: readonly Record<string, unknown>[];
+  readonly checkpointRows: readonly Record<string, unknown>[];
+  readonly reconciliationRun: Record<string, unknown> | null;
+  readonly openIssueRows: readonly Record<string, unknown>[];
+}> {
+  const [canonicalRows, catalogRows, connectionRows, checkpointRows, reconciliationRun, openIssueRows] = await Promise.all([
+    dataSource.listCanonicalRecords(tenantId, workspaceId, {
+      streams: ["orders", "refunds", "inventory", "ad_spend", "attributed_conversions"],
+      businessTimeFrom: periodStart,
+      businessTimeTo: periodEnd,
+    }),
+    dataSource.listCanonicalRecords(tenantId, workspaceId, {
+      streams: ["products"],
+      businessTimeFrom: "1970-01-01T00:00:00.000Z",
+      businessTimeTo: periodEnd,
+    }),
+    dataSource.listConnections(tenantId, workspaceId),
+    dataSource.listSyncCheckpoints(tenantId, workspaceId),
+    dataSource.latestReconciliationRun(tenantId, workspaceId),
+    dataSource.listOpenDataIssues(tenantId, workspaceId),
+  ]);
+
+  return {
+    canonicalRows,
+    catalogRows,
+    connectionRows,
+    checkpointRows,
+    reconciliationRun,
+    openIssueRows,
   };
 }
 

@@ -602,6 +602,58 @@ export class InvitationRepository {
     return rows[0] ? readInvitation(rows[0]) : null;
   }
 
+  async markRevoked(
+    tenantId: string,
+    workspaceId: string,
+    invitationId: string,
+  ): Promise<boolean> {
+    if (!looksLikeUuid(invitationId)) {
+      return false;
+    }
+
+    return this.database.withTenantWorkspace(
+      tenantId,
+      workspaceId,
+      async (client) => {
+        const revoked = await client.query(
+          `update app.invitations
+              set status = 'revoked',
+                  revoked_at = coalesce(revoked_at, now()),
+                  updated_at = now()
+            where tenant_id = $1::uuid
+              and workspace_id = $2::uuid
+              and invitation_id = $3::uuid
+              and status = 'pending'
+            returning invitation_id`,
+          [
+            tenantId,
+            workspaceId,
+            invitationId,
+          ],
+        );
+
+        if ((revoked.rowCount ?? 0) !== 1) {
+          return false;
+        }
+
+        await client.query(
+          `update app.security_invitation_tokens
+              set revoked_at = coalesce(revoked_at, now())
+            where tenant_id = $1
+              and invitation_id = $2
+              and used_at is null
+              and revoked_at is null`,
+          [
+            tenantId,
+            invitationId,
+          ],
+        );
+
+        return true;
+      },
+    );
+  }
+
   // Consumes the signed token, creates the identity + membership and marks
   // the invitation accepted in ONE database transaction. If any later step
   // fails, the token consumption is rolled back as well, so a transient

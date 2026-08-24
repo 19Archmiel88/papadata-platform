@@ -21,6 +21,7 @@
 
 .pd-form-field__label {
   min-inline-size: 0;
+  color: var(--pd-form-label-color, inherit);
 }
 
 .pd-form-field__required {
@@ -43,10 +44,12 @@
   align-items: center;
   min-inline-size: 0;
   min-block-size: 2.65rem;
-  border: 1px solid var(--pd-form-border, var(--pd-separator));
-  border-radius: var(--pd-radius-control);
+  border: var(--pd-form-border-style, 1px solid var(--pd-form-border, var(--pd-separator)));
+  border-block-end: var(--pd-form-border-block-end, var(--pd-form-border-style, 1px solid var(--pd-form-border, var(--pd-separator))));
+  border-radius: var(--pd-form-radius, var(--pd-radius-control));
   background: var(--pd-form-surface, var(--pd-surface));
-  color: var(--pd-text);
+  color: var(--pd-form-text, var(--pd-text));
+  padding-inline: var(--pd-form-padding-inline, 0);
   box-shadow: none;
   transition:
     border-color 140ms ease,
@@ -55,12 +58,12 @@
 }
 
 .pd-form-control:hover {
-  border-color: var(--pd-separator-strong);
+  border-color: var(--pd-form-hover-border, var(--pd-separator-strong));
 }
 
 .pd-form-control:focus-within {
-  border-color: var(--pd-action-primary);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--pd-action-primary) 13%, transparent);
+  border-color: var(--pd-form-focus-border, var(--pd-action-primary));
+  box-shadow: var(--pd-form-focus-shadow, 0 0 0 3px color-mix(in srgb, var(--pd-action-primary) 13%, transparent));
 }
 
 .pd-form-field[data-invalid='true'] .pd-form-control,
@@ -85,7 +88,7 @@
   border: 0;
   outline: 0;
   background: transparent;
-  color: var(--pd-text);
+  color: var(--pd-form-text, var(--pd-text));
   font: inherit;
   font-size: 0.82rem;
   line-height: 1.4;
@@ -140,13 +143,13 @@
   border: 0;
   border-radius: var(--pd-radius-small);
   background: transparent;
-  color: var(--pd-text-muted);
+  color: var(--pd-form-toggle-color, var(--pd-text-muted));
   cursor: pointer;
 }
 
 .pd-form-control__toggle:hover {
-  background: var(--pd-surface-subtle);
-  color: var(--pd-text);
+  background: var(--pd-form-toggle-hover-surface, var(--pd-surface-subtle));
+  color: var(--pd-form-toggle-hover-color, var(--pd-text));
 }
 
 .pd-form-control__toggle:focus-visible {
@@ -170,7 +173,7 @@
 .pd-verification-code__helper,
 .pd-form-check__helper,
 .pd-form-switch__helper {
-  color: var(--pd-text-muted);
+  color: var(--pd-form-helper-color, var(--pd-text-muted));
   font-size: 0.67rem;
   line-height: 1.4;
 }
@@ -200,7 +203,7 @@
   display: block;
   block-size: 100%;
   border-radius: inherit;
-  background: var(--pd-action-primary);
+  background: var(--pd-form-strength-color, var(--pd-action-primary));
   transition: inline-size 180ms ease;
 }
 
@@ -257,16 +260,16 @@
   inline-size: 1.08rem;
   block-size: 1.08rem;
   margin-block-start: 0.08rem;
-  border: 1px solid var(--pd-separator-strong);
+  border: 1px solid var(--pd-form-check-border, var(--pd-separator-strong));
   border-radius: 0.28rem;
-  background: var(--pd-surface);
-  color: #151107;
+  background: var(--pd-form-check-surface, var(--pd-surface));
+  color: var(--pd-interactive-on);
   transition: border-color 140ms ease, background 140ms ease;
 }
 
 .pd-form-check__input:checked + .pd-form-check__control {
-  border-color: var(--pd-action-primary);
-  background: var(--pd-action-primary);
+  border-color: var(--pd-form-check-checked-border, var(--pd-action-primary));
+  background: var(--pd-form-check-checked-surface, var(--pd-action-primary));
 }
 
 .pd-form-check__input:focus-visible + .pd-form-check__control,
@@ -306,7 +309,7 @@
 }
 
 .pd-form-switch__input:checked + .pd-form-switch__track::after {
-  background: #151107;
+  background: var(--pd-interactive-on);
   transform: translate(0.86rem, -50%);
 }
 
@@ -319,7 +322,7 @@
 
 .pd-form-check__caption,
 .pd-form-switch__caption {
-  color: var(--pd-text-secondary);
+  color: var(--pd-form-check-caption-color, var(--pd-text-secondary));
   font-size: 0.76rem;
   font-weight: var(--pd-font-weight-medium);
   line-height: 1.35;
@@ -353,17 +356,22 @@
   display: grid;
   place-items: center;
   min-block-size: 3rem;
-  border: 1px solid var(--pd-separator);
-  border-radius: var(--pd-radius-control);
-  background: var(--pd-surface);
-  color: var(--pd-text);
+  border: var(--pd-verification-slot-border, 1px solid var(--pd-separator));
+  border-block-end: var(--pd-verification-slot-border-block-end, var(--pd-verification-slot-border, 1px solid var(--pd-separator)));
+  border-radius: var(--pd-verification-slot-radius, var(--pd-radius-control));
+  background: var(--pd-verification-slot-surface, var(--pd-surface));
+  color: var(--pd-verification-slot-color, var(--pd-text));
   font-family: var(--pd-font-mono);
   font-size: 1rem;
   font-variant-numeric: tabular-nums;
 }
 
 .pd-verification-code:focus-within .pd-verification-code__slot {
-  border-color: color-mix(in srgb, var(--pd-action-primary) 55%, var(--pd-separator));
+  border-color: var(--pd-verification-slot-focus-border, color-mix(in srgb, var(--pd-action-primary) 55%, var(--pd-separator)));
+}
+
+.pd-verification-code__slot[data-filled='true'] {
+  border-color: var(--pd-verification-slot-filled-border, var(--pd-separator));
 }
 
 .pd-verification-code__resend {

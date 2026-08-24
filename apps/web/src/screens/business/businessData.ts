@@ -5,6 +5,7 @@ import type {
   CampaignsSummary,
   CommandCenterRecord,
   CommandCenterSummary,
+  DecisionStatus,
   DiagnosticFinding,
   DriverRelationships,
   FunnelStepView,
@@ -85,18 +86,71 @@ export const commandCenterOnePageDataScreenIds = [
   '30.03',
   '30.04',
   '30.05',
+  '30.07',
+  '30.08',
+  '30.09',
+  '30.10',
+  '30.11',
+  '30.13',
 ] as const satisfies readonly BusinessScreenId[];
 
+/** Sessions/users per GA4 channel group — see `buildCommandCenterTrafficSourcesData` on the API. */
+export type TrafficSourceRow = {
+  readonly sessions: number;
+  readonly source: string;
+  readonly users: number;
+};
+
+/** Real per-product revenue/quantity — see `buildCommandCenterProductSalesData` on the API. */
+export type ProductSalesRow = {
+  readonly canonicalProductId: string;
+  readonly changePercent: number | null;
+  readonly productName: string;
+  readonly quantity: number;
+  readonly revenue: string;
+};
+
+export type CustomerSegmentRow = {
+  readonly arpu: number;
+  readonly customers: number;
+  readonly frequency: number;
+  readonly id: 'new' | 'returning';
+  readonly productsPerOrder: number;
+  readonly rawRevenue: number;
+  readonly revenue: string;
+  readonly segment: string;
+};
+
+export type CommittedActionRow = {
+  readonly dueLabel: string;
+  readonly expectedImpactLabel: string;
+  readonly goal: string;
+  readonly id: string;
+  readonly measurement: {
+    readonly baselineLabel: string;
+    readonly resultLabel: string;
+  } | null;
+  readonly owner: string;
+  readonly progress: number;
+  readonly registryHref: `/app/decisions/${string}`;
+  readonly status: DecisionStatus;
+  readonly title: string;
+};
+
 export type CommandCenterApiData = {
+  readonly committedActions?: readonly CommittedActionRow[];
+  readonly customerSegments?: readonly CustomerSegmentRow[];
   readonly driverRelationships?: DriverRelationships;
   readonly forecastMethod?: 'linear-run-rate';
   readonly forecastTotal?: number;
   readonly pageInfo: PageInfo;
   readonly planTotal?: number;
+  readonly productSales?: readonly ProductSalesRow[];
   readonly records: readonly CommandCenterRecord[];
   readonly recommendations?: readonly RecommendationView[];
   readonly steps?: readonly FunnelStepView[];
   readonly summary: CommandCenterSummary;
+  readonly trafficSources?: readonly TrafficSourceRow[];
   readonly trajectory?: readonly PlanTrajectoryPointView[];
   readonly waterfall?: readonly WaterfallItem[];
 };
@@ -129,6 +183,8 @@ export type BusinessScreenData =
   | {
       readonly driverRelationships: DriverRelationships | null;
       readonly evidence: readonly EvidenceRef[];
+      readonly committedActions: readonly CommittedActionRow[];
+      readonly customerSegments: readonly CustomerSegmentRow[];
       readonly forecastMethod: 'linear-run-rate' | null;
       readonly forecastTotal: number | null;
       readonly funnelSteps: readonly FunnelStepView[];
@@ -137,10 +193,12 @@ export type BusinessScreenData =
       readonly operationId: string;
       readonly pageInfo: PageInfo;
       readonly planTotal: number | null;
+      readonly productSales: readonly ProductSalesRow[];
       readonly records: readonly CommandCenterRecord[];
       readonly recommendations: readonly RecommendationView[];
       readonly sources: readonly DataSourceRef[];
       readonly summary: CommandCenterSummary;
+      readonly trafficSources: readonly TrafficSourceRow[];
       readonly trajectory: readonly PlanTrajectoryPointView[] | null;
       readonly waterfall: readonly WaterfallItem[];
       readonly warnings: readonly ApiProblem[];
@@ -1289,6 +1347,8 @@ export function createStorybookBusinessData(
   return {
     driverRelationships: null,
     evidence,
+    committedActions: [],
+    customerSegments: [],
     forecastMethod: null,
     forecastTotal: null,
     funnelSteps,
@@ -1300,10 +1360,12 @@ export function createStorybookBusinessData(
       total: records.length,
     },
     planTotal: null,
+    productSales: [],
     records,
     recommendations,
     sources: dataSources,
     summary: buildStoryCommandSummary(records),
+    trafficSources: [],
     trajectory: null,
     warnings: [],
     waterfall,
@@ -1311,7 +1373,7 @@ export function createStorybookBusinessData(
 }
 
 /**
- * Composes the three canonical one-page read contracts into the single view
+ * Composes the canonical one-page read contracts into the single view
  * model consumed by the runtime landing page. Each source keeps its own
  * generated contract; the merge happens only at the UI orchestration layer,
  * so no endpoint pretends to return fields that are not part of its schema.
@@ -1320,19 +1382,65 @@ export function mergeCommandCenterOnePageApiData(
   kpiData: CommandCenterApiData,
   planData: CommandCenterApiData,
   driversData: CommandCenterApiData,
+  trafficData: CommandCenterApiData,
+  productsData: CommandCenterApiData,
+  customersData: CommandCenterApiData,
+  funnelData: CommandCenterApiData,
+  recommendationsData: CommandCenterApiData,
+  waterfallData: CommandCenterApiData,
 ): CommandCenterApiData {
+  const records = mergeCommandCenterRecords(
+    kpiData,
+    planData,
+    driversData,
+    trafficData,
+    productsData,
+    customersData,
+    funnelData,
+    recommendationsData,
+    waterfallData,
+  );
+
   return {
     ...kpiData,
+    committedActions: recommendationsData.committedActions ?? kpiData.committedActions,
+    customerSegments: customersData.customerSegments ?? kpiData.customerSegments,
     driverRelationships: driversData.driverRelationships,
     forecastMethod: planData.forecastMethod,
     forecastTotal: planData.forecastTotal,
     planTotal: planData.planTotal,
-    // Funnel and waterfall endpoints are outside the active one-page scope.
-    // Never carry their old demo-shaped data into the executive landing.
-    steps: [],
+    pageInfo: {
+      ...kpiData.pageInfo,
+      total: records.length,
+    },
+    productSales: productsData.productSales,
+    records,
+    recommendations: recommendationsData.recommendations ?? kpiData.recommendations,
+    steps: funnelData.steps ?? [],
+    trafficSources: trafficData.trafficSources,
     trajectory: planData.trajectory,
-    waterfall: [],
+    waterfall: waterfallData.waterfall ?? [],
   };
+}
+
+function mergeCommandCenterRecords(
+  ...sources: readonly CommandCenterApiData[]
+): readonly CommandCenterRecord[] {
+  const seen = new Set<string>();
+  const records: CommandCenterRecord[] = [];
+
+  sources.forEach((source) => {
+    source.records.forEach((record) => {
+      if (seen.has(record.metricId)) {
+        return;
+      }
+
+      seen.add(record.metricId);
+      records.push(record);
+    });
+  });
+
+  return records;
 }
 
 export function createCommandCenterBusinessData(
@@ -1340,6 +1448,8 @@ export function createCommandCenterBusinessData(
   data: CommandCenterApiData,
 ): BusinessScreenData {
   return {
+    committedActions: data.committedActions ?? [],
+    customerSegments: data.customerSegments ?? [],
     driverRelationships: data.driverRelationships ?? null,
     evidence: [],
     forecastMethod: data.forecastMethod ?? null,
@@ -1350,10 +1460,12 @@ export function createCommandCenterBusinessData(
     operationId: definition.operationId,
     pageInfo: data.pageInfo,
     planTotal: data.planTotal ?? null,
+    productSales: data.productSales ?? [],
     records: data.records,
     recommendations: data.recommendations ?? [],
     sources: [],
     summary: data.summary,
+    trafficSources: data.trafficSources ?? [],
     trajectory: data.trajectory ?? null,
     warnings: [],
     waterfall: data.waterfall ?? [],

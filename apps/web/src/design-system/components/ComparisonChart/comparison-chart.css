@@ -13,9 +13,22 @@
 }
 
 .pd-comparison-chart__plot {
+  position: relative;
   inline-size: 100%;
-  block-size: clamp(18rem, 34vw, 24rem);
+  block-size: var(--pd-comparison-chart-plot-size, clamp(18rem, 34vw, 24rem));
   min-inline-size: 0;
+}
+
+.pd-comparison-chart__all-hidden {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: var(--pd-space-4);
+  color: var(--pd-text-muted);
+  font-size: 0.78rem;
+  text-align: center;
 }
 
 .pd-comparison-chart .recharts-cartesian-axis-tick-value,
@@ -98,27 +111,6 @@
   inline-size: 0.68rem;
   block-size: 0.68rem;
   border-radius: 0.18rem;
-  background: var(--pd-data-series-1);
-}
-
-.pd-comparison-chart__legend li[data-series-index='1'] .pd-comparison-chart__swatch {
-  background: var(--pd-data-series-2);
-}
-
-.pd-comparison-chart__legend li[data-series-index='2'] .pd-comparison-chart__swatch {
-  background: var(--pd-data-series-3);
-}
-
-.pd-comparison-chart__legend li[data-series-index='3'] .pd-comparison-chart__swatch {
-  background: var(--pd-data-series-4);
-}
-
-.pd-comparison-chart__legend li[data-series-index='4'] .pd-comparison-chart__swatch {
-  background: var(--pd-data-series-5);
-}
-
-.pd-comparison-chart__legend li[data-series-index='5'] .pd-comparison-chart__swatch {
-  background: var(--pd-data-series-6);
 }
 
 .pd-comparison-chart__benchmark-swatch {

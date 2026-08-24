@@ -40,8 +40,17 @@ export {
 } from './ChartFrame';
 
 export {
+  ChartLegend,
+} from './ChartLegend';
+
+export {
   ChartDataState,
 } from './ChartDataState';
+
+export {
+  ChartCrosshairTooltip,
+  ChartMarkTooltip,
+} from './ChartTooltip';
 
 export {
   ChartInteractionLayer,
@@ -311,9 +320,21 @@ export type {
 } from './ChartFrame';
 
 export type {
+  ChartLegendItem,
+  ChartLegendLineStyle,
+  ChartLegendProps,
+  ChartLegendSwatch,
+} from './ChartLegend';
+
+export type {
   ChartDataStateLabels,
   ChartDataStateProps,
 } from './ChartDataState';
+
+export type {
+  ChartCrosshairTooltipProps,
+  ChartMarkTooltipProps,
+} from './ChartTooltip';
 
 export type {
   ComboboxOption,

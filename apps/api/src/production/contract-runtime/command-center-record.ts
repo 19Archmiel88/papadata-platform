@@ -5,7 +5,12 @@ export type CommandCenterMetricUnit = "currency" | "duration" | "number" | "perc
 export type CommandCenterRuntimeRecord = {
   readonly delta: number | null;
   readonly label: string;
+  // Provider ids and last successful sync backing this KPI's value -- see
+  // metricEngineCore.ts's computeMetricEngineSeries/MetricSnapshotRecord.
+  // Empty/null for cards not (yet) driven by a single versioned metric code.
+  readonly lastSuccessfulSyncAt: string | null;
   readonly metricId: string;
+  readonly providers: readonly string[];
   readonly readiness: CommandCenterReadiness;
   readonly sparkline?: readonly number[];
   readonly target: number | null;
@@ -22,11 +27,15 @@ export function commandCenterRecord(
   target: number | null,
   readiness: CommandCenterReadiness,
   sparkline?: readonly number[],
+  providers: readonly string[] = [],
+  lastSuccessfulSyncAt: string | null = null,
 ): CommandCenterRuntimeRecord {
   return {
     delta,
     label,
+    lastSuccessfulSyncAt,
     metricId,
+    providers,
     readiness,
     ...(sparkline ? { sparkline } : {}),
     target,

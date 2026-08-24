@@ -105,3 +105,86 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Members + invitations panel (settings.memberships.read) --------------- */
+
+.pd-settings-memberships {
+  display: grid;
+  gap: var(--pd-space-5);
+}
+
+.pd-settings-memberships__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pd-settings-memberships__table th,
+.pd-settings-memberships__table td {
+  padding: var(--pd-space-2) var(--pd-space-3);
+  border-bottom: 1px solid var(--pd-separator-subtle);
+  text-align: start;
+}
+
+.pd-settings-memberships__table th {
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-small);
+  font-weight: 500;
+}
+
+.pd-settings-memberships__invite {
+  display: grid;
+  gap: var(--pd-space-3);
+  max-width: 26rem;
+  padding-block-start: var(--pd-space-4);
+  border-block-start: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-settings-memberships__invite h3 {
+  margin: 0;
+}
+
+.pd-settings-memberships__form {
+  display: grid;
+  gap: var(--pd-space-3);
+}
+
+.pd-settings-memberships__invite-link {
+  display: grid;
+  gap: var(--pd-space-3);
+}
+
+.pd-settings-memberships__invite-link-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pd-space-3);
+}
+
+/* Account security / MFA enrollment panel -------------------------------- */
+
+.pd-settings-mfa-enroll {
+  display: grid;
+  gap: var(--pd-space-4);
+  max-width: 30rem;
+}
+
+.pd-settings-mfa-enroll__secret dt {
+  color: var(--pd-text-muted);
+}
+
+.pd-settings-mfa-enroll__secret code {
+  overflow-wrap: anywhere;
+}
+
+.pd-settings-mfa-enroll__recovery-codes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--pd-space-2);
+  margin: var(--pd-space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-settings-mfa-enroll__recovery-codes code {
+  color: var(--pd-text-secondary);
+}

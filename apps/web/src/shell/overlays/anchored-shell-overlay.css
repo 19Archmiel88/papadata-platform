@@ -6,18 +6,103 @@
 }
 
 .pd-shell-anchored-overlay {
+  /*
+   * This popover is chrome (topbar/dropdown), which — like
+   * .pd-product-shell__sidebar-column (product-shell.css) — is always
+   * dark regardless of the app's light/dark theme setting. It renders
+   * outside that sidebar scope, so it doesn't inherit that remap and
+   * needs its own copy: without it, any child that reads the generic,
+   * theme-following text/surface/separator tokens (headings via the
+   * global h1-h6 reset, DateRangePicker's legend, the Select popover, …)
+   * resolves near-black-on-dark in light theme — a real, confirmed
+   * contrast bug (titles and the "Zakres dat analiz" legend rendered
+   * essentially invisible), not just a theoretical risk.
+   */
+  --pd-text: var(--pd-shell-text);
+  --pd-text-secondary: var(--pd-shell-text-secondary);
+  --pd-text-muted: var(--pd-shell-text-muted);
+  --pd-surface: var(--pd-shell-surface);
+  --pd-surface-panel: var(--pd-shell-surface);
+  --pd-surface-raised: var(--pd-shell-surface-raised);
+  --pd-surface-subtle: var(--pd-shell-surface-subtle);
+  --pd-surface-overlay: var(--pd-shell-surface-overlay);
+  --pd-surface-active: var(--pd-shell-surface-active);
+  --pd-separator-subtle: var(--pd-shell-separator);
+  --pd-separator: var(--pd-shell-separator);
+  --pd-separator-strong: var(--pd-shell-separator-strong);
+  --pd-brand-accent: var(--pd-shell-brand);
+  --pd-brand-action: var(--pd-shell-brand);
+  --pd-brand-action-hover: var(--pd-shell-brand-strong);
+  --pd-interactive: var(--pd-shell-brand);
+  --pd-interactive-subtle: var(--pd-shell-surface-active);
+  --pd-refractive-border: var(--pd-shell-separator);
+  --pd-refractive-border-hover: var(--pd-shell-separator-strong);
+  --pd-refractive-control: transparent;
+  --pd-refractive-control-hover: var(--pd-shell-surface-subtle);
+  color-scheme: dark;
+
   position: fixed;
+  top: var(--pd-shell-overlay-top, 72px);
+  right: var(--pd-shell-overlay-right, 16px);
+  left: auto;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   width: min(390px, calc(100vw - 24px));
   max-height: min(720px, calc(100dvh - 76px));
   overflow: hidden;
-  border: 1px solid var(--pd-shell-separator-strong);
   border-radius: 14px;
   background: var(--pd-shell-surface-overlay);
   color: var(--pd-shell-text);
   box-shadow: var(--pd-shadow-overlay);
   pointer-events: auto;
+}
+
+/*
+ * AnchoredShellOverlay przyjmuje prop width="wide" (np. kalendarz z
+ * DateRangePicker, którego wiersz Od/Do ma minimalną szerokość ~488px),
+ * ale do tej pory nie było reguły [data-width='wide'] — panel zawsze
+ * dostawał bazowe 390px, więc treść była ucinana i pojawiał się poziomy
+ * scrollbar. Realny bug ze screenshotu.
+ */
+.pd-shell-anchored-overlay[data-width='wide'] {
+  width: min(640px, calc(100vw - 24px));
+}
+
+/*
+ * AnchoredShellOverlay.tsx mierzy pozycję triggera (getBoundingClientRect)
+ * i przekazuje wynik jako --pd-shell-overlay-top/left/right w inline style
+ * — ale ta reguła bazowa nigdy tego nie czytała, więc każdy panel (Konto,
+ * Powiadomienia, kalendarz) lądował w domyślnej pozycji przeglądarki dla
+ * position:fixed bez ustawionych offsetów, i wiele otwartych naraz instancji
+ * (np. w Storybooku, gdzie kilka sekcji renderuje po kilka z open=true)
+ * nakładało się dokładnie na siebie w tym samym miejscu ekranu. Realny bug
+ * zgłoszony ze screenshotem, nie tylko w Storybooku — dotyczyłby też dwóch
+ * naraz otwartych dropdownów w prawdziwej aplikacji.
+ */
+.pd-shell-anchored-overlay[data-align='start'] {
+  right: auto;
+  left: var(--pd-shell-overlay-left, 16px);
+}
+
+/*
+ * Ten dropdown to część zawsze-ciemnego chrome (patrz product-shell.css),
+ * ale nie żyje wewnątrz .pd-product-shell__sidebar-column, więc nie
+ * dziedziczy tamtejszego lokalnego remapu --pd-brand-accent -> --pd-shell-brand.
+ * Bez tego nadpisania przyciski (np. X zamknięcia) łapały GLOBALNY,
+ * bursztynowy pierścień fokusu z foundations/themes/refractive-prism.css
+ * zamiast winnego akcentu chrome — realny błąd wizualny znaleziony live w
+ * Storybooku (Konto, Workspace switcher), nie tylko teoretyczny.
+ */
+.pd-shell-anchored-overlay :where(
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline-color: var(--pd-shell-brand);
+  box-shadow: 0 0 0 3px var(--pd-shell-brand-ambient);
 }
 
 .pd-shell-anchored-overlay__header {

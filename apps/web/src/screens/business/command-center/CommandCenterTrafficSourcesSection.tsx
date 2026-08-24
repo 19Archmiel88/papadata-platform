@@ -11,7 +11,7 @@ import {
   CommandSectionHeader,
 } from './CommandCenterSectionFrame';
 import {
-  formatMetricValue,
+  formatInteger,
   openPapaAssistantForElement,
   sourceColumns,
 } from './commandCenterOnePageModel';
@@ -38,44 +38,43 @@ export function CommandCenterTrafficSourcesSection({
             Analizuj z Papą
           </Button>
         )}
-        description="Ranking kanałów pokazuje, gdzie powstaje przychód. W runtime one-page ten sam kontekst jest włączony bezpośrednio do sekcji driverów wyniku."
+        description="Ranking kanałów według sesji i użytkowników z GA4. Przychód per kanał nie jest jeszcze pokazywany: wymagałby łączenia dwóch różnych wymiarów atrybucji GA4, co ryzykowałoby błędne przypisanie konwersji do kanału."
         eyebrow="Źródła"
-        title="Kanały przychodu"
+        title="Kanały ruchu"
         titleId="command-center-traffic-sources-title"
       />
       {sourceRows.length === 0 ? (
         <EmptyState
-          message="Kontrakt Centrum Dowodzenia nie dostarcza jeszcze podziału przychodu na źródła ruchu dla wybranego zakresu."
+          message="Kontrakt Centrum Dowodzenia nie dostarcza jeszcze podziału ruchu na źródła dla wybranego zakresu."
           title="Brak podziału na źródła ruchu"
           variant="configuration"
         />
       ) : (
         <>
           <ComparisonChart
-            ariaLabel="Ranking źródeł ruchu według przychodu"
+            ariaLabel="Ranking źródeł ruchu według sesji"
             className="pd-command-center-one-page__chart-surface"
             data={[...sourceRows]
-              .sort((left, right) => Number(right.rawRevenue ?? 0) - Number(left.rawRevenue ?? 0))
+              .sort((left, right) => Number(right.rawSessions ?? 0) - Number(left.rawSessions ?? 0))
               .map((row) => ({
                 id: String(row.id),
                 label: String(row.source),
                 values: {
-                  revenue: Number(row.rawRevenue ?? 0),
+                  sessions: Number(row.rawSessions ?? 0),
                 },
               }))}
-            series={[{ key: 'revenue', label: 'Przychód' }]}
-            unit="PLN"
-            valueFormatter={(value) => formatMetricValue(value, 'currency')}
+            series={[{ key: 'sessions', label: 'Sesje' }]}
+            valueFormatter={(value) => formatInteger(value)}
             variant="ranking"
           />
 
           <CommandChartTableFallback
-            ariaLabel="Źródła ruchu: sesje, użytkownicy, przychód, CR i CTR"
+            ariaLabel="Źródła ruchu: sesje i użytkownicy"
             columns={sourceColumns}
             emptyMessage="Brak źródeł ruchu."
-            minWidth={980}
+            minWidth={640}
             rows={sourceRows}
-            sortColumnId="revenue"
+            sortColumnId="sessions"
           />
         </>
       )}

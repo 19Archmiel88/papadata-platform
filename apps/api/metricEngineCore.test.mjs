@@ -325,6 +325,75 @@ describe("backend Metric Engine", () => {
         "the denominator (orders) does not count that order -- return_rate_orders operates on the full refund set",
     );
   });
+
+  test("providers i lastSuccessfulSyncAt odzwierciedlaja realne providery i checkpointy stojace za KPI, nie caly input", async () => {
+    const base = createMetricEngineInput();
+    const result = await createService().calculate(base);
+
+    const commerceProviders = [...new Set(base.canonicalOrders.map((order) => order.providerId))].sort();
+    const adProviders = [...new Set(base.canonicalAdSpend.map((spend) => spend.providerId))].sort();
+    assert.ok(commerceProviders.length > 0, "fixture must ship at least one canonical order");
+    assert.ok(adProviders.length > 0, "fixture must ship at least one canonical ad spend record");
+    assert.deepEqual(
+      commerceProviders.filter((providerId) => adProviders.includes(providerId)),
+      [],
+      "test fixture must keep commerce and ad providers disjoint, or this test can't prove attribution is per-metric",
+    );
+
+    const commerceCheckpoints = base.syncCheckpoints.filter((checkpoint) =>
+      commerceProviders.includes(checkpoint.providerId),
+    );
+    const adCheckpoints = base.syncCheckpoints.filter((checkpoint) =>
+      adProviders.includes(checkpoint.providerId),
+    );
+    assert.ok(commerceCheckpoints.length > 0, "fixture must ship a checkpoint for a commerce provider");
+    assert.ok(adCheckpoints.length > 0, "fixture must ship a checkpoint for an ad provider");
+    const latestCommerceSync = commerceCheckpoints
+      .map((checkpoint) => checkpoint.updatedAt)
+      .sort()
+      .at(-1);
+    const latestAdSync = adCheckpoints
+      .map((checkpoint) => checkpoint.updatedAt)
+      .sort()
+      .at(-1);
+
+    const ordersMetric = metric(result, "gross_order_value");
+    assert.deepEqual(
+      ordersMetric.providers,
+      commerceProviders,
+      "gross_order_value draws only on commerce orders -- it must not report ad providers as a source",
+    );
+    assert.equal(
+      ordersMetric.lastSuccessfulSyncAt,
+      latestCommerceSync,
+      "lastSuccessfulSyncAt for a commerce metric must be the newest commerce checkpoint, not an ad provider's",
+    );
+
+    const adSpendMetric = metric(result, "ad_spend");
+    assert.deepEqual(
+      adSpendMetric.providers,
+      adProviders,
+      "ad_spend draws only on ad spend records -- it must not report a commerce provider as a source",
+    );
+    assert.equal(
+      adSpendMetric.lastSuccessfulSyncAt,
+      latestAdSync,
+      "lastSuccessfulSyncAt for an ad metric must be the newest ad checkpoint, not a commerce provider's",
+    );
+
+    const noDataResult = await createService().calculate(createMetricEngineInput({ noData: true }));
+    const noDataMetric = metric(noDataResult, "gross_order_value");
+    assert.deepEqual(
+      noDataMetric.providers,
+      [],
+      "no evidence means no providers -- must not fabricate an attribution",
+    );
+    assert.equal(
+      noDataMetric.lastSuccessfulSyncAt,
+      null,
+      "no evidence means no known sync time -- must not fall back to some unrelated checkpoint",
+    );
+  });
 });
 
 describe("backend Dashboard API", { concurrency: false }, () => {

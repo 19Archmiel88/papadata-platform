@@ -80,18 +80,12 @@ export function CommandCenterScreen({
       problem: null,
     }));
 
-    const [kpiScreenId, planScreenId, driversScreenId] = commandCenterOnePageDataScreenIds;
-    const kpiDefinition = findBusinessScreenDefinition(kpiScreenId);
-    const planDefinition = findBusinessScreenDefinition(planScreenId);
-    const driversDefinition = findBusinessScreenDefinition(driversScreenId);
+    const dataDefinitions = commandCenterOnePageDataScreenIds.map((screenId) => (
+      findBusinessScreenDefinition(screenId)
+    ));
 
     if (
-      !kpiDefinition
-      || !planDefinition
-      || !driversDefinition
-      || kpiDefinition.group !== 'command-center'
-      || planDefinition.group !== 'command-center'
-      || driversDefinition.group !== 'command-center'
+      dataDefinitions.some((item) => !item || item.group !== 'command-center')
     ) {
       setState({
         data: null,
@@ -103,18 +97,34 @@ export function CommandCenterScreen({
       };
     }
 
-    Promise.all([
-      bffClient.readDomainScreen<CommandCenterApiData>(kpiDefinition.apiPath, { dateRange }),
-      bffClient.readDomainScreen<CommandCenterApiData>(planDefinition.apiPath, { dateRange }),
-      bffClient.readDomainScreen<CommandCenterApiData>(driversDefinition.apiPath, { dateRange }),
-    ])
-      .then(([kpiData, planData, driversData]) => {
+    Promise.all(
+      dataDefinitions.map((item) => (
+        bffClient.readDomainScreen<CommandCenterApiData>(item!.apiPath, { dateRange })
+      )),
+    )
+      .then(([
+        kpiData,
+        planData,
+        driversData,
+        trafficData,
+        productsData,
+        customersData,
+        funnelData,
+        recommendationsData,
+        waterfallData,
+      ]) => {
         if (!active) return;
 
         if (
           !isCommandCenterApiData(kpiData)
           || !isCommandCenterApiData(planData)
           || !isCommandCenterApiData(driversData)
+          || !isCommandCenterApiData(trafficData)
+          || !isCommandCenterApiData(productsData)
+          || !isCommandCenterApiData(customersData)
+          || !isCommandCenterApiData(funnelData)
+          || !isCommandCenterApiData(recommendationsData)
+          || !isCommandCenterApiData(waterfallData)
         ) {
           setState({
             data: null,
@@ -124,7 +134,17 @@ export function CommandCenterScreen({
           return;
         }
 
-        const data = mergeCommandCenterOnePageApiData(kpiData, planData, driversData);
+        const data = mergeCommandCenterOnePageApiData(
+          kpiData,
+          planData,
+          driversData,
+          trafficData,
+          productsData,
+          customersData,
+          funnelData,
+          recommendationsData,
+          waterfallData,
+        );
 
         setState({
           data: createCommandCenterBusinessData(definition, data),

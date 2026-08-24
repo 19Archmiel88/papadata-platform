@@ -46,14 +46,14 @@ body.pd-product-shell-scroll-lock {
   --pd-brand-accent: var(--pd-shell-brand);
   --pd-brand-action: var(--pd-shell-brand);
   --pd-brand-action-hover: var(--pd-shell-brand-strong);
-  --pd-brand-action-on: #151107;
+  --pd-brand-action-on: var(--pd-shell-brand-on);
   --pd-interactive: var(--pd-shell-brand);
   --pd-interactive-subtle: var(--pd-shell-surface-active);
   --pd-refractive-border: var(--pd-shell-separator);
   --pd-refractive-border-hover: var(--pd-shell-separator-strong);
   --pd-refractive-control: transparent;
   --pd-refractive-control-hover: var(--pd-shell-surface-subtle);
-  --pd-refractive-focus: 0 0 0 3px rgba(232, 163, 61, 0.18);
+  --pd-refractive-focus: 0 0 0 3px rgba(217, 117, 144, 0.18);
 
   min-width: 0;
   min-height: 0;
@@ -149,9 +149,8 @@ body.pd-product-shell-scroll-lock {
 }
 
 .pd-product-shell__nav-item[aria-current='page'] {
-  border-color: rgba(232, 163, 61, 0.12);
   color: var(--pd-shell-text);
-  background: rgba(232, 163, 61, 0.09);
+  background: rgba(217, 117, 144, 0.1);
   font-weight: 600;
 }
 
@@ -371,6 +370,24 @@ body.pd-product-shell-scroll-lock {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+
+.pd-product-shell__nav-item:focus-visible,
+.pd-product-shell__sidebar-footer-toggle:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 3px var(--pd-focus-ring);
+}
+
+.pd-product-shell__sidebar-footer--mobile {
+  margin-block-start: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-product-shell__nav-item,
+  .pd-product-shell__sidebar-footer-toggle {
+    transition-duration: 1ms;
+  }
 }
 
 @media (max-width: 1100px) {

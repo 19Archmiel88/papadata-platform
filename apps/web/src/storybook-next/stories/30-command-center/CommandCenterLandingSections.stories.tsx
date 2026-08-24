@@ -171,7 +171,6 @@ function DriversSectionDemo() {
       driverRelationships={demoDriverRelationships}
       onLensChange={setActiveLens}
       records={executiveKpis}
-      sourceRows={[]}
     />
   );
 }

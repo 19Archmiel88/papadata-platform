@@ -53,7 +53,13 @@ const REVENUE_EXCLUDED_ORDER_STATUSES: ReadonlySet<string> = new Set([
   "voided",
 ]);
 
-function isRevenueQualifyingOrder(order: CanonicalOrderRecord): boolean {
+/**
+ * Exported so other real-data builders (e.g. Command Center's product-sales
+ * breakdown) can filter orders by the exact same revenue-qualifying rule
+ * `createMetricFacts` uses internally, instead of re-declaring a second,
+ * driftable copy of `REVENUE_EXCLUDED_ORDER_STATUSES`.
+ */
+export function isRevenueQualifyingOrder(order: CanonicalOrderRecord): boolean {
   if (!order.status) return true;
   return !REVENUE_EXCLUDED_ORDER_STATUSES.has(order.status.toLowerCase());
 }
@@ -152,10 +158,18 @@ export type MetricSnapshotRecord = {
   readonly evidence: readonly string[];
   readonly generatedAt: IsoDateTime;
   readonly inputHash: string;
+  // Last time a sync completed for a provider this metric's evidence draws
+  // on (null when there is no relevant checkpoint yet, e.g. no_data). Lets a
+  // consumer show "as of <lastSuccessfulSyncAt>" per KPI instead of only a
+  // pass/fail staleness flag.
+  readonly lastSuccessfulSyncAt: IsoDateTime | null;
   readonly limitations: readonly string[];
   readonly metricCode: DashboardMetricCode;
   readonly periodEnd: IsoDateTime;
   readonly periodStart: IsoDateTime;
+  // Provider ids whose canonical facts contributed to this metric's evidence
+  // (derived from the same facts as `evidence`, not re-declared separately).
+  readonly providers: readonly string[];
   readonly readiness: MetricReadiness;
   readonly reasonCodes: readonly MetricReasonCode[];
   readonly snapshotId: string;
@@ -531,6 +545,7 @@ export class DashboardMetricService {
 
     return metricDefinitions.map((definition) => {
       const result = calculateMetric(definition.metricCode, input, facts);
+      const providers = providersFor(definition.metricCode, facts);
 
       return {
         currency: definition.unit === "money" ? input.currency : null,
@@ -538,10 +553,12 @@ export class DashboardMetricService {
         evidence: evidenceFor(definition.metricCode, input, facts),
         generatedAt: input.generatedAt,
         inputHash: inputHash(input, definition.metricCode),
+        lastSuccessfulSyncAt: lastSuccessfulSyncAtFor(providers, input.syncCheckpoints),
         limitations: result.limitations,
         metricCode: definition.metricCode,
         periodEnd: input.periodEnd,
         periodStart: input.periodStart,
+        providers,
         readiness: result.readiness,
         reasonCodes: result.reasonCodes,
         snapshotId: this.random.uuid(),
@@ -1013,6 +1030,12 @@ export function computeMetricEngineSeries(
   readonly aggregate: Partial<Record<DashboardMetricCode, string | null>>;
   readonly readiness: Partial<Record<DashboardMetricCode, MetricReadiness>>;
   readonly reasonCodes: Partial<Record<DashboardMetricCode, readonly MetricReasonCode[]>>;
+  // Mirrors MetricSnapshotRecord's providers/lastSuccessfulSyncAt (same
+  // providersFor/lastSuccessfulSyncAtFor helpers as calculateSnapshots) so a
+  // caller building an API response from this series -- not from snapshots --
+  // can still show a per-KPI "as of <lastSuccessfulSyncAt>" and its sources.
+  readonly providers: Partial<Record<DashboardMetricCode, readonly string[]>>;
+  readonly lastSuccessfulSyncAt: Partial<Record<DashboardMetricCode, IsoDateTime | null>>;
   readonly daily: readonly {
     readonly date: string;
     readonly values: Partial<Record<DashboardMetricCode, string | null>>;
@@ -1022,12 +1045,17 @@ export function computeMetricEngineSeries(
   const aggregate: Partial<Record<DashboardMetricCode, string | null>> = {};
   const readiness: Partial<Record<DashboardMetricCode, MetricReadiness>> = {};
   const reasonCodes: Partial<Record<DashboardMetricCode, readonly MetricReasonCode[]>> = {};
+  const providers: Partial<Record<DashboardMetricCode, readonly string[]>> = {};
+  const lastSuccessfulSyncAt: Partial<Record<DashboardMetricCode, IsoDateTime | null>> = {};
 
   for (const code of metricCodes) {
     const result = calculateMetric(code, input, aggregateFacts);
     aggregate[code] = result.value;
     readiness[code] = result.readiness;
     reasonCodes[code] = result.reasonCodes;
+    const codeProviders = providersFor(code, aggregateFacts);
+    providers[code] = codeProviders;
+    lastSuccessfulSyncAt[code] = lastSuccessfulSyncAtFor(codeProviders, input.syncCheckpoints);
   }
 
   const daily: {
@@ -1051,7 +1079,7 @@ export function computeMetricEngineSeries(
     daily.push({ date: dayWindow.date, values });
   }
 
-  return { aggregate, daily, readiness, reasonCodes };
+  return { aggregate, daily, lastSuccessfulSyncAt, providers, readiness, reasonCodes };
 }
 
 function seriesWeight(
@@ -1549,6 +1577,75 @@ function evidenceFor(
   return [`metric_input:${input.tenantId}:${input.workspaceId}`];
 }
 
+// Mirrors evidenceFor's categorization exactly, but returns the distinct
+// provider ids behind that evidence instead of record ids. Order lines carry
+// no providerId of their own -- it's resolved via the parent order.
+function providersFor(
+  metricCode: DashboardMetricCode,
+  facts: MetricFacts,
+): readonly string[] {
+  return [...new Set(rawProvidersFor(metricCode, facts))].sort();
+}
+
+function rawProvidersFor(
+  metricCode: DashboardMetricCode,
+  facts: MetricFacts,
+): readonly string[] {
+  if (commerceOrderMetricCodes.includes(metricCode)) {
+    return facts.commerceOrders.map((order) => order.providerId);
+  }
+
+  if (orderLineMetricCodes.includes(metricCode)) {
+    const providerByOrderId = new Map(
+      facts.commerceOrders.map((order) => [order.canonicalOrderId, order.providerId] as const),
+    );
+    return facts.orderLines
+      .map((line) => providerByOrderId.get(line.canonicalOrderId))
+      .filter((providerId) => providerId !== undefined);
+  }
+
+  if (refundMetricCodes.includes(metricCode)) {
+    return facts.refunds.map((refund) => refund.providerId);
+  }
+
+  if (inventoryMetricCodes.includes(metricCode)) {
+    return facts.inventorySnapshots.map((snapshot) => snapshot.providerId);
+  }
+
+  if (adMetricCodes.includes(metricCode)) {
+    return facts.adSpend.map((spend) => spend.providerId);
+  }
+
+  if (conversionMetricCodes.includes(metricCode)) {
+    return facts.attributedConversions.map((conversion) => conversion.providerId);
+  }
+
+  return [];
+}
+
+// Latest checkpoint among the providers this metric actually draws on (all
+// checkpoints when providers can't be attributed, e.g. no evidence yet).
+// Distinct from isStale(), which only asks whether the *newest* checkpoint
+// across the whole input is too old -- this instead surfaces the concrete
+// timestamp so a consumer can show "as of <time>" per KPI.
+function lastSuccessfulSyncAtFor(
+  providers: readonly string[],
+  syncCheckpoints: readonly SyncCheckpointRecord[],
+): IsoDateTime | null {
+  const relevant = providers.length
+    ? syncCheckpoints.filter((checkpoint) => providers.includes(checkpoint.providerId))
+    : syncCheckpoints;
+
+  if (!relevant.length) {
+    return null;
+  }
+
+  return relevant.reduce(
+    (latest, checkpoint) => (Date.parse(checkpoint.updatedAt) > Date.parse(latest) ? checkpoint.updatedAt : latest),
+    relevant[0]!.updatedAt,
+  );
+}
+
 function definition(
   metricCode: DashboardMetricCode,
   unit: MetricValueKind,
@@ -1694,7 +1791,7 @@ function isDateInPeriod(
   return value >= firstDate && value <= lastDate;
 }
 
-function decimalToCents(value: string): bigint {
+export function decimalToCents(value: string): bigint {
   const sign = value.startsWith("-") ? -1n : 1n;
   const normalized = sign < 0n ? value.slice(1) : value;
   const [units = "0", cents = ""] = normalized.split(".");
@@ -1702,7 +1799,7 @@ function decimalToCents(value: string): bigint {
   return sign * (BigInt(units) * 100n + BigInt(paddedCents));
 }
 
-function centsToDecimal(value: bigint): string {
+export function centsToDecimal(value: bigint): string {
   const sign = value < 0n ? "-" : "";
   const absolute = value < 0n ? -value : value;
   const units = absolute / 100n;

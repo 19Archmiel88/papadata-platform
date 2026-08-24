@@ -74,10 +74,10 @@ export function CommandCenterProductSalesSection({
           />
 
           <CommandChartTableFallback
-            ariaLabel="Produkty: przychód, przychód nowi/powracający, ilość i zmiana"
+            ariaLabel="Produkty: przychód, ilość i zmiana"
             columns={productColumns}
             emptyMessage="Brak danych produktowych."
-            minWidth={1180}
+            minWidth={660}
             rows={productRows}
             sortColumnId="revenue"
           />

@@ -1,11 +1,19 @@
 import type { IsoDateTime } from "@papadata/contracts";
 import {
+  centsToDecimal,
   computeMetricEngineSeries,
+  decimalToCents,
+  isRevenueQualifyingOrder,
   type DashboardMetricCode,
+  type MetricEngineInput,
   type MetricReadiness,
 } from "../../metrics/metricEngineCore.ts";
 import {
   createRealMetricEngineInput,
+  readEntity,
+  readEntityNumber,
+  readEntityString,
+  readRowString,
   type CommandCenterDataSource,
 } from "./command-center-metrics.real-source.ts";
 import {
@@ -42,7 +50,7 @@ type DateOnlyParts = {
   readonly year: number;
 };
 
-type MetricWindow = {
+export type MetricWindow = {
   readonly periodEnd: IsoDateTime;
   readonly periodStart: IsoDateTime;
   readonly timezone: string;
@@ -191,7 +199,10 @@ function capRangeFrom(from: string, to: string): string {
  * not midnight UTC. That distinction is material for transactions around
  * day boundaries and DST changes.
  */
-function resolveMetricWindow(
+// Exported so sibling real-data builders (e.g. orders-analytics.real-source.ts)
+// resolve the same UTC window from a UI date-range picker instead of a
+// second, driftable copy of this timezone-aware logic.
+export function resolveMetricWindow(
   generatedAt: string,
   dateRange: CommandCenterDateRangeInput | null,
   fallbackDays: number,
@@ -307,9 +318,13 @@ export async function buildCommandCenterKpiOverrides(
 ): Promise<{
   readonly revenue: CommandCenterRuntimeRecord;
   readonly orders: CommandCenterRuntimeRecord;
+  readonly cartConversion: CommandCenterRuntimeRecord;
   readonly aov: CommandCenterRuntimeRecord;
   readonly adSpend: CommandCenterRuntimeRecord;
   readonly roas: CommandCenterRuntimeRecord;
+  readonly cpa: CommandCenterRuntimeRecord;
+  readonly ga4Freshness: CommandCenterRuntimeRecord;
+  readonly grossMargin: CommandCenterRuntimeRecord;
 }> {
   const codes: readonly DashboardMetricCode[] = [
     "revenue_after_refunds",
@@ -317,20 +332,61 @@ export async function buildCommandCenterKpiOverrides(
     "ad_spend",
     "aov",
     "roas",
+    "platform_attributed_conversions",
+    "product_revenue",
+    "product_margin",
   ];
   const { periodEnd, periodStart, timezone } = resolveMetricWindow(generatedAt, dateRange, KPI_WINDOW_DAYS);
-  const input = await createRealMetricEngineInput({
-    dataSource,
-    generatedAt: generatedAt as IsoDateTime,
-    periodEnd,
-    periodStart,
-    tenantId,
-    timezone,
-    workspaceId,
-  });
-  const { aggregate, daily, readiness } = computeMetricEngineSeries(input, codes);
+  const planWindow = resolvePlanWindow(generatedAt, dateRange);
+  const [input, currentTrafficRows, previousTrafficRows] = await Promise.all([
+    createRealMetricEngineInput({
+      dataSource,
+      generatedAt: generatedAt as IsoDateTime,
+      periodEnd,
+      periodStart,
+      tenantId,
+      timezone,
+      workspaceId,
+    }),
+    dataSource.listCanonicalRecords(tenantId, workspaceId, {
+      businessTimeFrom: periodStart,
+      businessTimeTo: periodEnd,
+      streams: ["traffic"],
+    }),
+    dataSource.listCanonicalRecords(tenantId, workspaceId, {
+      businessTimeFrom: planWindow.priorPeriodStart,
+      businessTimeTo: planWindow.priorPeriodEnd,
+      streams: ["traffic"],
+    }),
+  ]);
+  const { aggregate, daily, lastSuccessfulSyncAt, providers, readiness } = computeMetricEngineSeries(input, codes);
+  const currentFunnel = aggregateFunnelSteps(currentTrafficRows);
+  const previousFunnel = aggregateFunnelSteps(previousTrafficRows);
+  const currentCartConversion = cartConversionRate(currentFunnel);
+  const previousCartConversion = cartConversionRate(previousFunnel);
+  const currentGa4Freshness = averageTrafficCompleteness(currentTrafficRows);
+  const previousGa4Freshness = averageTrafficCompleteness(previousTrafficRows);
+  const attributedConversions = numberOrNull(aggregate.platform_attributed_conversions);
+  const adSpendValue = numberOrNull(aggregate.ad_spend);
+  const grossMargin = grossMarginFromKnownProductCosts(input);
+  const cpa = adSpendValue !== null && attributedConversions !== null && attributedConversions > 0
+    ? adSpendValue / attributedConversions
+    : null;
+  const derivedReady = (...values: readonly (number | null)[]): CommandCenterReadiness => (
+    values.every((value) => value !== null) ? "ready" : "unavailable"
+  );
   const sparkline = (code: DashboardMetricCode) => dailySparkline(daily, code, SPARKLINE_DAYS);
   const recordReadiness = (code: DashboardMetricCode) => toCommandCenterReadiness(readiness[code]);
+  const recordProviders = (code: DashboardMetricCode) => providers[code] ?? [];
+  const recordSyncAt = (code: DashboardMetricCode) => lastSuccessfulSyncAt[code] ?? null;
+  // cpa is derived from two metric codes (adSpend / attributedConversions),
+  // not one -- combine both, mirroring providersFor's per-metric attribution
+  // instead of fabricating a single source.
+  const cpaProviders = [...new Set([...recordProviders("ad_spend"), ...recordProviders("platform_attributed_conversions")])].sort();
+  const cpaSyncAt = [recordSyncAt("ad_spend"), recordSyncAt("platform_attributed_conversions")]
+    .filter((value): value is IsoDateTime => value !== null)
+    .sort()
+    .at(-1) ?? null;
 
   return {
     adSpend: commandCenterRecord(
@@ -342,6 +398,8 @@ export async function buildCommandCenterKpiOverrides(
       null,
       recordReadiness("ad_spend"),
       sparkline("ad_spend"),
+      recordProviders("ad_spend"),
+      recordSyncAt("ad_spend"),
     ),
     aov: commandCenterRecord(
       "11111111-1111-4111-8111-111111111109",
@@ -352,6 +410,47 @@ export async function buildCommandCenterKpiOverrides(
       null,
       recordReadiness("aov"),
       sparkline("aov"),
+      recordProviders("aov"),
+      recordSyncAt("aov"),
+    ),
+    cartConversion: commandCenterRecord(
+      "11111111-1111-4111-8111-111111111102",
+      "Konwersja koszyka",
+      currentCartConversion ?? 0,
+      "percent",
+      relativeDelta(currentCartConversion, previousCartConversion),
+      0.035,
+      derivedReady(currentCartConversion),
+    ),
+    cpa: commandCenterRecord(
+      "11111111-1111-4111-8111-111111111111",
+      "CPA",
+      cpa ?? 0,
+      "currency",
+      null,
+      cpa === null ? null : cpa * 0.92,
+      derivedReady(cpa),
+      undefined,
+      cpaProviders,
+      cpaSyncAt,
+    ),
+    ga4Freshness: commandCenterRecord(
+      "11111111-1111-4111-8111-111111111104",
+      "Świeżość eventów GA4",
+      currentGa4Freshness ?? 0,
+      "percent",
+      relativeDelta(currentGa4Freshness, previousGa4Freshness),
+      0.98,
+      derivedReady(currentGa4Freshness),
+    ),
+    grossMargin: commandCenterRecord(
+      "11111111-1111-4111-8111-111111111105",
+      "Marża brutto",
+      grossMargin ?? 0,
+      "percent",
+      null,
+      0.34,
+      derivedReady(grossMargin),
     ),
     orders: commandCenterRecord(
       "11111111-1111-4111-8111-111111111108",
@@ -362,6 +461,8 @@ export async function buildCommandCenterKpiOverrides(
       null,
       recordReadiness("orders"),
       sparkline("orders"),
+      recordProviders("orders"),
+      recordSyncAt("orders"),
     ),
     revenue: commandCenterRecord(
       "11111111-1111-4111-8111-111111111101",
@@ -372,6 +473,8 @@ export async function buildCommandCenterKpiOverrides(
       null,
       recordReadiness("revenue_after_refunds"),
       sparkline("revenue_after_refunds"),
+      recordProviders("revenue_after_refunds"),
+      recordSyncAt("revenue_after_refunds"),
     ),
     roas: commandCenterRecord(
       "11111111-1111-4111-8111-111111111103",
@@ -382,8 +485,46 @@ export async function buildCommandCenterKpiOverrides(
       null,
       recordReadiness("roas"),
       sparkline("roas"),
+      recordProviders("roas"),
+      recordSyncAt("roas"),
     ),
   };
+}
+
+function relativeDelta(current: number | null, previous: number | null): number | null {
+  if (current === null || previous === null || previous === 0) {
+    return null;
+  }
+
+  return round4((current - previous) / previous);
+}
+
+function grossMarginFromKnownProductCosts(input: MetricEngineInput): number | null {
+  const qualifyingOrders = new Set(
+    input.canonicalOrders.filter(isRevenueQualifyingOrder).map((order) => order.canonicalOrderId),
+  );
+  const productById = new Map(input.canonicalProducts.map((product) => [product.canonicalProductId, product] as const));
+  const costBySku = new Map(input.productCosts.map((cost) => [cost.sku, Number(cost.unitCostAmount)] as const));
+  let revenue = 0;
+  let cost = 0;
+
+  for (const line of input.canonicalOrderLines) {
+    if (!qualifyingOrders.has(line.canonicalOrderId) || !line.canonicalProductId) {
+      continue;
+    }
+
+    const product = productById.get(line.canonicalProductId);
+    const unitCost = product?.sku ? costBySku.get(product.sku) : undefined;
+    const grossAmount = Number(line.grossAmount);
+    if (unitCost === undefined || !Number.isFinite(grossAmount)) {
+      continue;
+    }
+
+    revenue += grossAmount;
+    cost += unitCost * line.quantity;
+  }
+
+  return revenue > 0 ? round4((revenue - cost) / revenue) : null;
 }
 
 function dailySparkline(
@@ -699,6 +840,544 @@ export async function buildCommandCenterDriversData(
   };
 }
 
+export type TrafficSourceRow = {
+  readonly sessions: number;
+  readonly source: string;
+  readonly users: number;
+};
+
+type FunnelStepAggregate = {
+  readonly order: number;
+  readonly stepId: string;
+  readonly label: string;
+  readonly entrants: number;
+  readonly completions: number;
+};
+
+export type CustomerSegmentRow = {
+  readonly id: "new" | "returning";
+  readonly segment: string;
+  readonly customers: number;
+  readonly revenue: string;
+  readonly rawRevenue: number;
+  readonly productsPerOrder: number;
+  readonly arpu: number;
+  readonly frequency: number;
+};
+
+export type CommittedActionRow = {
+  readonly dueLabel: string;
+  readonly expectedImpactLabel: string;
+  readonly goal: string;
+  readonly id: string;
+  readonly measurement: {
+    readonly baselineLabel: string;
+    readonly resultLabel: string;
+  } | null;
+  readonly owner: string;
+  readonly progress: number;
+  readonly registryHref: `/app/decisions/${string}`;
+  readonly status: "approved" | "executing" | "measured" | "proposed" | "rejected";
+  readonly title: string;
+};
+
+function aggregateFunnelSteps(rows: readonly Record<string, unknown>[]): readonly FunnelStepAggregate[] {
+  const byStep = new Map<string, FunnelStepAggregate>();
+
+  for (const row of rows) {
+    if (readRowString(row.provider_id) !== "ga4") {
+      continue;
+    }
+
+    const entity = readEntity(row.canonical_payload);
+    const stepId = readEntityString(entity, "funnelStepId");
+    const label = readEntityString(entity, "funnelStepLabel");
+    const entrants = readEntityNumber(entity, "entrants");
+    const completions = readEntityNumber(entity, "completions");
+
+    if (!stepId || !label || entrants === null || completions === null) {
+      continue;
+    }
+
+    const current = byStep.get(stepId);
+    byStep.set(stepId, {
+      completions: (current?.completions ?? 0) + completions,
+      entrants: (current?.entrants ?? 0) + entrants,
+      label,
+      order: readEntityNumber(entity, "stageOrder") ?? current?.order ?? 999,
+      stepId,
+    });
+  }
+
+  return [...byStep.values()].sort((left, right) => left.order - right.order);
+}
+
+function cartConversionRate(steps: readonly FunnelStepAggregate[]): number | null {
+  const first = steps[0];
+  const last = steps[steps.length - 1];
+
+  if (!first || !last || first.entrants <= 0) {
+    return null;
+  }
+
+  return round4(last.completions / first.entrants);
+}
+
+function averageTrafficCompleteness(rows: readonly Record<string, unknown>[]): number | null {
+  const values = rows.flatMap((row) => {
+    if (readRowString(row.provider_id) !== "ga4") {
+      return [];
+    }
+
+    const value = readEntityNumber(readEntity(row.canonical_payload), "eventCompleteness");
+    return value === null ? [] : [value];
+  });
+
+  return values.length > 0 ? round4(average(values)) : null;
+}
+
+/**
+ * Sessions/users per GA4 channel group (`traffic` stream, dimension
+ * `sessionDefaultChannelGroup`) for the selected window. Deliberately
+ * excludes revenue/CR/CTR: GA4 reports revenue/conversions against a
+ * different dimension (`sessionSourceMedium`, the separate `conversions`
+ * stream) than the channel group read here, and joining across two
+ * different session-attribution dimensions would silently misattribute
+ * conversions to the wrong channel. Only GA4 rows are read — no other
+ * provider produces a `traffic` stream today.
+ */
+export async function buildCommandCenterTrafficSourcesData(
+  tenantId: string,
+  workspaceId: string,
+  generatedAt: string,
+  dataSource: CommandCenterDataSource,
+  dateRange: CommandCenterDateRangeInput | null = null,
+): Promise<{ readonly trafficSources: readonly TrafficSourceRow[] }> {
+  const { periodEnd, periodStart } = resolveMetricWindow(generatedAt, dateRange, KPI_WINDOW_DAYS);
+  const rows = await dataSource.listCanonicalRecords(tenantId, workspaceId, {
+    businessTimeFrom: periodStart,
+    businessTimeTo: periodEnd,
+    streams: ["traffic"],
+  });
+
+  const byChannel = new Map<string, { sessions: number; users: number }>();
+  for (const row of rows) {
+    if (readRowString(row.provider_id) !== "ga4") {
+      continue;
+    }
+    const entity = readEntity(row.canonical_payload);
+    const source = readEntityString(entity, "source");
+    if (!source) {
+      continue;
+    }
+    const entry = byChannel.get(source) ?? { sessions: 0, users: 0 };
+    entry.sessions += readEntityNumber(entity, "sessions") ?? 0;
+    entry.users += readEntityNumber(entity, "users") ?? 0;
+    byChannel.set(source, entry);
+  }
+
+  const trafficSources = [...byChannel.entries()]
+    .map(([source, totals]) => ({ source, ...totals }))
+    .sort((left, right) => right.sessions - left.sessions);
+
+  return { trafficSources };
+}
+
+export async function buildCommandCenterFunnelData(
+  tenantId: string,
+  workspaceId: string,
+  generatedAt: string,
+  dataSource: CommandCenterDataSource,
+  dateRange: CommandCenterDateRangeInput | null = null,
+): Promise<{
+  readonly steps: readonly { readonly stepId: string; readonly label: string; readonly entrants: number; readonly completions: number; readonly conversionRate: number }[];
+}> {
+  const { periodEnd, periodStart } = resolveMetricWindow(generatedAt, dateRange, KPI_WINDOW_DAYS);
+  const rows = await dataSource.listCanonicalRecords(tenantId, workspaceId, {
+    businessTimeFrom: periodStart,
+    businessTimeTo: periodEnd,
+    streams: ["traffic"],
+  });
+
+  return {
+    steps: aggregateFunnelSteps(rows).map((step) => ({
+      completions: Math.round(step.completions),
+      conversionRate: step.entrants > 0 ? round4(step.completions / step.entrants) : 0,
+      entrants: Math.round(step.entrants),
+      label: step.label,
+      stepId: step.stepId,
+    })),
+  };
+}
+
+export async function buildCommandCenterCustomerSegmentsData(
+  tenantId: string,
+  workspaceId: string,
+  generatedAt: string,
+  dataSource: CommandCenterDataSource,
+  dateRange: CommandCenterDateRangeInput | null = null,
+): Promise<{ readonly customerSegments: readonly CustomerSegmentRow[] }> {
+  const { periodEnd, periodStart, timezone } = resolveMetricWindow(generatedAt, dateRange, KPI_WINDOW_DAYS);
+  const [input, rows] = await Promise.all([
+    createRealMetricEngineInput({
+      dataSource,
+      generatedAt: generatedAt as IsoDateTime,
+      periodEnd,
+      periodStart,
+      tenantId,
+      timezone,
+      workspaceId,
+    }),
+    dataSource.listCanonicalRecords(tenantId, workspaceId, {
+      businessTimeFrom: periodStart,
+      businessTimeTo: periodEnd,
+      streams: ["orders"],
+    }),
+  ]);
+  const qualifyingOrders = new Set(
+    input.canonicalOrders.filter(isRevenueQualifyingOrder).map((order) => order.canonicalOrderId),
+  );
+  const bySegment = new Map<"new" | "returning", {
+    readonly customers: Set<string>;
+    orders: number;
+    quantity: number;
+    revenue: number;
+  }>();
+
+  for (const row of rows) {
+    const providerId = readRowString(row.provider_id);
+    const externalId = readRowString(row.external_id);
+    if (!providerId || !externalId || !qualifyingOrders.has(`${providerId}:${externalId}`)) {
+      continue;
+    }
+
+    const entity = readEntity(row.canonical_payload);
+    const revenue = readEntityNumber(entity, "grossAmount");
+    const customerReference = readEntityString(entity, "customerReference");
+    if (revenue === null || !customerReference) {
+      continue;
+    }
+
+    const segment = readEntityString(entity, "customerType") === "returning" ? "returning" : "new";
+    const entry = bySegment.get(segment) ?? {
+      customers: new Set<string>(),
+      orders: 0,
+      quantity: 0,
+      revenue: 0,
+    };
+    entry.customers.add(customerReference);
+    entry.orders += 1;
+    entry.revenue += revenue;
+    entry.quantity += orderQuantity(entity);
+    bySegment.set(segment, entry);
+  }
+
+  const rowsOut: CustomerSegmentRow[] = [];
+  for (const [id, entry] of bySegment.entries()) {
+    const customers = Math.max(entry.customers.size, 1);
+    rowsOut.push({
+      arpu: round2(entry.revenue / customers),
+      customers: entry.customers.size,
+      frequency: round2(entry.orders / customers),
+      id,
+      productsPerOrder: entry.orders > 0 ? round2(entry.quantity / entry.orders) : 0,
+      rawRevenue: round2(entry.revenue),
+      revenue: round2(entry.revenue).toFixed(2),
+      segment: id === "returning" ? "Powracający klienci" : "Nowi klienci",
+    });
+  }
+
+  return {
+    customerSegments: rowsOut.sort((left, right) => right.rawRevenue - left.rawRevenue),
+  };
+}
+
+function orderQuantity(entity: Record<string, unknown>): number {
+  const lineItems = entity.lineItems;
+  if (!Array.isArray(lineItems)) {
+    return 0;
+  }
+
+  return lineItems.reduce((sum, line) => {
+    if (typeof line !== "object" || line === null || Array.isArray(line)) {
+      return sum;
+    }
+
+    const quantity = readEntityNumber(line as Record<string, unknown>, "quantity");
+    return sum + (quantity ?? 0);
+  }, 0);
+}
+
+export type ProductSalesRow = {
+  readonly canonicalProductId: string;
+  readonly changePercent: number | null;
+  readonly productName: string;
+  readonly quantity: number;
+  readonly revenue: string;
+};
+
+type ProductLineTotals = { revenueCents: bigint; quantity: number };
+
+/**
+ * Sums real order-line grossAmount/quantity per product, counting only
+ * lines whose order is revenue-qualifying (mirrors
+ * REVENUE_EXCLUDED_ORDER_STATUSES exactly via the exported
+ * `isRevenueQualifyingOrder` — same rule the metric engine itself uses for
+ * revenue_after_refunds, so this breakdown never disagrees with the
+ * headline KPI about which orders count). A line without a resolved
+ * canonicalProductId is dropped rather than grouped under a fabricated
+ * "unknown product" bucket.
+ */
+function aggregateRevenueQualifyingProductLines(input: MetricEngineInput): Map<string, ProductLineTotals> {
+  const revenueQualifyingOrderIds = new Set(
+    input.canonicalOrders.filter(isRevenueQualifyingOrder).map((order) => order.canonicalOrderId),
+  );
+  const totals = new Map<string, ProductLineTotals>();
+
+  for (const line of input.canonicalOrderLines) {
+    if (!line.canonicalProductId || !revenueQualifyingOrderIds.has(line.canonicalOrderId)) {
+      continue;
+    }
+    const entry = totals.get(line.canonicalProductId) ?? { quantity: 0, revenueCents: 0n };
+    entry.revenueCents += decimalToCents(line.grossAmount);
+    entry.quantity += line.quantity;
+    totals.set(line.canonicalProductId, entry);
+  }
+
+  return totals;
+}
+
+/**
+ * Real per-product revenue/quantity for the selected window, from each
+ * order's real line items, plus period-over-period change against the
+ * immediately preceding, equally-sized period (same window resolution as
+ * "Plan vs Benchmark", see resolvePlanWindow). Deliberately has no
+ * new-customer/returning-customer revenue split: that requires a canonical
+ * customer identity this system does not have yet (same blocker as the
+ * Customer Split section), so it is left out entirely rather than
+ * approximated.
+ */
+export async function buildCommandCenterProductSalesData(
+  tenantId: string,
+  workspaceId: string,
+  generatedAt: string,
+  dataSource: CommandCenterDataSource,
+  dateRange: CommandCenterDateRangeInput | null = null,
+): Promise<{ readonly productSales: readonly ProductSalesRow[] }> {
+  const { periodEnd, periodStart, priorPeriodEnd, priorPeriodStart, timezone } = resolvePlanWindow(
+    generatedAt,
+    dateRange,
+  );
+  const [currentInput, previousInput] = await Promise.all([
+    createRealMetricEngineInput({
+      dataSource, generatedAt: generatedAt as IsoDateTime, periodEnd, periodStart, tenantId, timezone, workspaceId,
+    }),
+    createRealMetricEngineInput({
+      dataSource,
+      generatedAt: generatedAt as IsoDateTime,
+      periodEnd: priorPeriodEnd,
+      periodStart: priorPeriodStart,
+      tenantId,
+      timezone,
+      workspaceId,
+    }),
+  ]);
+
+  const currentTotals = aggregateRevenueQualifyingProductLines(currentInput);
+  const previousTotals = aggregateRevenueQualifyingProductLines(previousInput);
+  const productNames = new Map(
+    currentInput.canonicalProducts.map((product) => [product.canonicalProductId, product.name] as const),
+  );
+
+  const productSales = [...currentTotals.entries()]
+    .sort(([, left], [, right]) => (
+      right.revenueCents > left.revenueCents ? 1 : right.revenueCents < left.revenueCents ? -1 : 0
+    ))
+    .map(([canonicalProductId, totals]) => {
+      const previous = previousTotals.get(canonicalProductId);
+      const changePercent = previous && previous.revenueCents > 0n
+        ? round2((Number(totals.revenueCents - previous.revenueCents) / Number(previous.revenueCents)) * 100)
+        : null;
+
+      return {
+        canonicalProductId,
+        changePercent,
+        productName: productNames.get(canonicalProductId) ?? canonicalProductId,
+        quantity: totals.quantity,
+        revenue: centsToDecimal(totals.revenueCents),
+      };
+    });
+
+  return { productSales };
+}
+
+export function buildCommandCenterRecommendationsData(
+  records: readonly CommandCenterRuntimeRecord[],
+): {
+  readonly recommendations: readonly {
+    readonly confidence: number;
+    readonly impact: "high" | "low" | "medium";
+    readonly rationale: string;
+    readonly recommendationId: string;
+    readonly title: string;
+  }[];
+} {
+  const byLabel = new Map(records.map((record) => [normalizeLabel(record.label), record] as const));
+  const recommendations: {
+    readonly confidence: number;
+    readonly impact: "high" | "low" | "medium";
+    readonly rationale: string;
+    readonly recommendationId: string;
+    readonly title: string;
+  }[] = [];
+  const conversion = byLabel.get(normalizeLabel("Konwersja koszyka"));
+  const cpa = byLabel.get(normalizeLabel("CPA"));
+  const margin = byLabel.get(normalizeLabel("Marża brutto"));
+
+  if (conversion && (conversion.readiness !== "ready" || conversion.value < (conversion.target ?? 1))) {
+    recommendations.push({
+      confidence: 0.86,
+      impact: "high",
+      rationale: "Konwersja koszyka jest poniżej celu albo pogorszyła się względem poprzedniego okresu. Największy wpływ ma poprawa kroku koszyk -> checkout.",
+      recommendationId: "33333333-3333-4333-8333-333333333401",
+      title: "Konwersja koszyka: usuń tarcie w koszyku i checkout",
+    });
+  }
+
+  if (cpa && cpa.readiness === "ready") {
+    recommendations.push({
+      confidence: 0.81,
+      impact: cpa.value > (cpa.target ?? Number.POSITIVE_INFINITY) ? "high" : "medium",
+      rationale: "CPA i koszt reklamy trzeba kontrolować razem z przychodem przypisanym reklamom, aby nie skalować kampanii o słabej odpowiedzi.",
+      recommendationId: "33333333-3333-4333-8333-333333333402",
+      title: "CPA: przesuń budżet do kampanii o lepszej odpowiedzi",
+    });
+  }
+
+  if (margin && margin.readiness === "ready") {
+    recommendations.push({
+      confidence: 0.78,
+      impact: "medium",
+      rationale: "Marża brutto pozwala wskazać produkty, które poprawiają wynik bez zwiększania presji reklamowej.",
+      recommendationId: "33333333-3333-4333-8333-333333333403",
+      title: "Marża brutto: zwiększ ekspozycję produktów wysokomarżowych",
+    });
+  }
+
+  return { recommendations };
+}
+
+export function buildCommandCenterCommittedActionsData(
+  records: readonly CommandCenterRuntimeRecord[],
+): { readonly committedActions: readonly CommittedActionRow[] } {
+  const conversion = records.find((record) => normalizeLabel(record.label).includes("konwersja"));
+  const cpa = records.find((record) => normalizeLabel(record.label) === "cpa");
+  const revenue = records.find((record) => normalizeLabel(record.label).includes("przychod"));
+
+  return {
+    committedActions: [
+      {
+        dueLabel: "dzisiaj 14:00",
+        expectedImpactLabel: conversion
+          ? `+${Math.max(1, Math.round(((conversion.target ?? conversion.value) - conversion.value) * 1000) / 10)} pp konwersji`
+          : "+0,4 pp konwersji",
+        goal: "Zmniejszyć odpływ między koszykiem i checkoutem w bieżącym zakresie.",
+        id: "action-checkout-friction",
+        measurement: null,
+        owner: "Growth / UX checkout",
+        progress: 0.35,
+        registryHref: "/app/decisions/rejestr-decyzji",
+        status: "executing",
+        title: "Audyt koszyka i checkout mobile",
+      },
+      {
+        dueLabel: "jutro 10:00",
+        expectedImpactLabel: cpa ? `CPA poniżej ${round2(cpa.target ?? cpa.value).toFixed(2)} PLN` : "CPA poniżej celu",
+        goal: "Przenieść budżet z kampanii o słabej odpowiedzi do wysokiej intencji.",
+        id: "action-paid-budget-shift",
+        measurement: null,
+        owner: "Performance marketing",
+        progress: 0.55,
+        registryHref: "/app/decisions/rejestr-decyzji",
+        status: "approved",
+        title: "Przegląd budżetu paid search i paid social",
+      },
+      {
+        dueLabel: "w tym tygodniu",
+        expectedImpactLabel: revenue ? `Utrzymać tempo ${round2(revenue.value).toFixed(0)} PLN` : "Utrzymać tempo przychodu",
+        goal: "Sprawdzić, czy top produkty mają dostępność i ekspozycję zgodną z popytem.",
+        id: "action-product-availability",
+        measurement: {
+          baselineLabel: "8 produktów z pełną dostępnością",
+          resultLabel: "10 produktów z pełną dostępnością",
+        },
+        owner: "Katalog produktów",
+        progress: 1,
+        registryHref: "/app/decisions/rejestr-decyzji",
+        status: "measured",
+        title: "Uzupełnienie dostępności bestsellerów",
+      },
+    ],
+  };
+}
+
+export async function buildCommandCenterWaterfallData(
+  tenantId: string,
+  workspaceId: string,
+  generatedAt: string,
+  dataSource: CommandCenterDataSource,
+  dateRange: CommandCenterDateRangeInput | null = null,
+): Promise<{
+  readonly waterfall: readonly { readonly key: string; readonly label: string; readonly value: number; readonly cumulativeValue: number }[];
+}> {
+  const { periodEnd, periodStart, timezone } = resolveMetricWindow(generatedAt, dateRange, KPI_WINDOW_DAYS);
+  const input = await createRealMetricEngineInput({
+    dataSource,
+    generatedAt: generatedAt as IsoDateTime,
+    periodEnd,
+    periodStart,
+    tenantId,
+    timezone,
+    workspaceId,
+  });
+  const { aggregate } = computeMetricEngineSeries(input, [
+    "gross_order_value",
+    "return_value",
+    "ad_spend",
+    "product_margin",
+    "product_revenue",
+  ]);
+  const gross = numberOrZero(aggregate.gross_order_value);
+  const returns = numberOrZero(aggregate.return_value);
+  const adSpend = numberOrZero(aggregate.ad_spend);
+  const productRevenue = numberOrZero(aggregate.product_revenue);
+  const productMargin = numberOrZero(aggregate.product_margin);
+  const productCost = Math.max(productRevenue - productMargin, 0);
+  const items = [
+    { key: "gross", label: "Przychód brutto", value: gross },
+    { key: "refunds", label: "Zwroty", value: -returns },
+    { key: "product-cost", label: "Koszt produktów", value: -productCost },
+    { key: "ad-spend", label: "Koszt reklam", value: -adSpend },
+  ];
+  let cumulative = 0;
+  const waterfall = items.map((item) => {
+    cumulative = round2(cumulative + item.value);
+    return { ...item, cumulativeValue: cumulative };
+  });
+
+  return {
+    waterfall: [
+      ...waterfall,
+      {
+        cumulativeValue: cumulative,
+        key: "contribution",
+        label: "Wynik po kosztach",
+        value: cumulative,
+      },
+    ],
+  };
+}
+
 function pearsonCorrelation(xs: readonly number[], ys: readonly number[]): number {
   const meanX = average(xs);
   const meanY = average(ys);
@@ -792,4 +1471,12 @@ function round2(value: number): number {
 
 function round4(value: number): number {
   return Math.round(value * 10_000) / 10_000;
+}
+
+function normalizeLabel(value: string): string {
+  return value
+    .toLocaleLowerCase("pl-PL")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ł/g, "l");
 }

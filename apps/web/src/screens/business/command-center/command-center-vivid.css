@@ -5,6 +5,7 @@
   --pd-command-vivid-positive: var(--pd-status-success);
   --pd-command-vivid-warning: var(--pd-status-warning);
   --pd-command-vivid-danger: var(--pd-status-danger);
+  --pd-command-scenario-background: var(--pd-surface-soft);
 }
 
 .pd-command-center-one-page__command-bar,
@@ -13,8 +14,7 @@
 .pd-command-center-one-page__runway-stats,
 .pd-command-center-one-page__driver-metrics,
 .pd-command-center-one-page__decision-workspace,
-.pd-command-center-one-page__runtime-main-analysis,
-.pd-command-center-one-page__runtime-side-panel {
+.pd-command-center-one-page__runtime-main-analysis {
   border-color: var(--pd-separator-subtle);
   background: var(--pd-surface-panel);
   box-shadow: var(--pd-shadow-control);
@@ -57,8 +57,7 @@
   background: var(--pd-brand-accent);
 }
 
-.pd-command-center-one-page__plan-chart,
-.pd-command-center-one-page__decision-workspace-scenario {
+.pd-command-center-one-page__plan-chart {
   background: var(--pd-surface-soft);
 }
 
@@ -69,5 +68,10 @@
 
 .pd-command-center-one-page .pd-funnel-chart__bar,
 .pd-command-center-one-page .pd-waterfall-chart__bar {
+  background: var(--pd-command-inset, var(--pd-surface-subtle));
+}
+
+.pd-command-center-one-page .pd-funnel-chart__bar span,
+.pd-command-center-one-page .pd-waterfall-chart__bar span {
   background: var(--pd-data-series-1);
 }

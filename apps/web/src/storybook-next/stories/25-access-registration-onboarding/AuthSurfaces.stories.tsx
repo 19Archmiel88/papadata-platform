@@ -37,6 +37,23 @@ const recoveryRequestAction = fn();
 const resetAction = fn();
 const retryAction = fn();
 const acceptInvitationAction = fn();
+const stepUpAction = fn();
+const selectWorkspaceAction = fn();
+
+const demoWorkspaceOptions = [
+  {
+    tenantId: 'tenant_papadata',
+    tenantName: 'PapaData Sp. z o.o.',
+    workspaceId: 'workspace_ecommerce',
+    workspaceName: 'E-commerce PL',
+  },
+  {
+    tenantId: 'tenant_northwind',
+    tenantName: 'Northwind Retail',
+    workspaceId: 'workspace_marketing',
+    workspaceName: 'Marketing EU',
+  },
+];
 
 const meta = {
   title: '25 Dostęp i onboarding/Auth runtime',
@@ -593,34 +610,15 @@ export const AccessContextResolutionStory: Story = {
         </div>
       </StoryPresentationSection>
 
-      <StoryPresentationSection index="02" layout="showcase" title="Reauth i MFA">
-        <div className="pd-s25-stage pd-s25-stage--full">
-          <AuthFlowPanel
-            scenarios={[
-              {
-                action: 'Potwierdź ponownie',
-                description: 'Ponowne uwierzytelnienie zachowuje kontekst operacji i pokazuje, dlaczego sesja wymaga odświeżenia.',
-                meta: ['ponowne uwierzytelnienie', 'focus restoration', 'brak utraty kontekstu workspace'],
-                status: 'Step-up',
-                title: 'Ponowne uwierzytelnienie',
-                tone: 'warning',
-              },
-              {
-                description: 'Konfiguracja MFA jest wymagana przed wejściem do workspace i używa tego samego wzorca co challenge MFA.',
-                meta: ['konfiguracja MFA', 'verification code', 'error states'],
-                status: 'Wymagane',
-                title: 'Konfiguracja MFA',
-                tone: 'warning',
-              },
-              {
-                description: 'Ekran po wylogowaniu potwierdza zakończenie sesji i prowadzi do logowania bez pokazywania technicznych statusów.',
-                meta: ['przetwarzanie wylogowania', 'ekran po wylogowaniu', 'bez danych sesji'],
-                status: 'Wylogowano',
-                title: 'Ekran po wylogowaniu',
-                tone: 'success',
-              },
-            ]}
-          />
+      <StoryPresentationSection index="02" layout="showcase" title="Ponowne uwierzytelnienie (auth-24)">
+        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-reauth-ready">
+          <AuthSurface mode="reauth" onNavigate={navigateAction} onStepUpConfirm={stepUpAction} />
+        </div>
+      </StoryPresentationSection>
+
+      <StoryPresentationSection index="03" layout="showcase" title="Ekran po wylogowaniu (auth-26)">
+        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-logged-out-ready">
+          <AuthSurface mode="login" onLogin={loginAction} onNavigate={navigateAction} state="loggedOut" />
         </div>
       </StoryPresentationSection>
     </AuthPageFrame>
@@ -629,9 +627,18 @@ export const AccessContextResolutionStory: Story = {
     const stage = canvasElement.querySelector('[data-testid="auth-access-context-ready"]');
     if (!(stage instanceof HTMLElement)) throw new Error('Access context stage is not rendered.');
 
-    const canvas = within(canvasElement);
-    await expect(canvas.getByText('Ponowne uwierzytelnienie')).toBeInTheDocument();
-    await userEvent.click(canvas.getByRole('button', { name: 'Potwierdź ponownie' }));
+    const reauthStage = canvasElement.querySelector('[data-testid="auth-reauth-ready"]');
+    if (!(reauthStage instanceof HTMLElement)) throw new Error('Reauth stage is not rendered.');
+    const reauthCanvas = within(reauthStage);
+    await expect(reauthCanvas.getByRole('heading', { name: 'Potwierdź to jeszcze raz' })).toBeInTheDocument();
+    await userEvent.click(reauthCanvas.getByRole('button', { name: 'Potwierdź' }));
+    await expect(reauthCanvas.getAllByText('Kod MFA musi mieć 6 cyfr.')[0]).toBeInTheDocument();
+
+    const loggedOutStage = canvasElement.querySelector('[data-testid="auth-logged-out-ready"]');
+    if (!(loggedOutStage instanceof HTMLElement)) throw new Error('Logged-out stage is not rendered.');
+    const loggedOutCanvas = within(loggedOutStage);
+    await expect(loggedOutCanvas.getByRole('heading', { name: 'Zostałeś wylogowany' })).toBeInTheDocument();
+    await expect(loggedOutCanvas.getByRole('button', { name: 'Przejdź do logowania' })).toBeInTheDocument();
   },
 };
 
@@ -655,14 +662,6 @@ export const OnboardingStory: Story = {
                 tone: 'neutral',
               },
               {
-                action: 'Wybierz workspace',
-                description: 'Użytkownik wybiera workspace lub organizację/tenanta, jeśli token i członkostwa zwracają więcej niż jeden kontekst.',
-                meta: ['wybory workspace/tenant', 'organization switch', 'keyboard-only'],
-                status: 'Wymaga wyboru',
-                title: 'Wybór workspace i tenanta',
-                tone: 'warning',
-              },
-              {
                 description: 'Zgody są osobnym krokiem, a zakończenie procesu prowadzi do pierwszego ekranu aplikacji bez automatycznej mutacji w Storybooku.',
                 meta: ['zgody', 'zakończenie procesu', 'wejście do aplikacji'],
                 status: 'Gotowe',
@@ -680,6 +679,17 @@ export const OnboardingStory: Story = {
           />
         </div>
       </StoryPresentationSection>
+
+      <StoryPresentationSection index="02" layout="showcase" title="Wybór organizacji i workspace (auth-22/23)">
+        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-workspace-ready">
+          <AuthSurface
+            mode="workspace"
+            onNavigate={navigateAction}
+            onSelectWorkspace={selectWorkspaceAction}
+            workspaceOptions={demoWorkspaceOptions}
+          />
+        </div>
+      </StoryPresentationSection>
     </AuthPageFrame>
   ),
   play: async ({ canvasElement }) => {
@@ -688,6 +698,11 @@ export const OnboardingStory: Story = {
 
     const canvas = within(stage);
     await expect(canvas.getByText('Zgody i zakończenie procesu')).toBeInTheDocument();
-    await userEvent.click(canvas.getByRole('button', { name: 'Wybierz workspace' }));
+
+    const workspaceStage = canvasElement.querySelector('[data-testid="auth-workspace-ready"]');
+    if (!(workspaceStage instanceof HTMLElement)) throw new Error('Workspace selection stage is not rendered.');
+    const workspaceCanvas = within(workspaceStage);
+    await expect(workspaceCanvas.getByRole('heading', { name: 'Wybierz organizację' })).toBeInTheDocument();
+    await userEvent.click(workspaceCanvas.getByText('PapaData Sp. z o.o.'));
   },
 };

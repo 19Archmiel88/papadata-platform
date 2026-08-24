@@ -118,6 +118,34 @@ test("computeMetricEngineSeries: surfaces real per-metric aggregate readiness, n
   assert.deepEqual(empty.reasonCodes.orders, ["NO_DATA"]);
 });
 
+test("computeMetricEngineSeries: providers/lastSuccessfulSyncAt mirror per-metric attribution, not the whole input", () => {
+  const input = createMetricEngineInput();
+
+  const commerceProviders = [...new Set(input.canonicalOrders.map((order) => order.providerId))].sort();
+  const adProviders = [...new Set(input.canonicalAdSpend.map((spend) => spend.providerId))].sort();
+  assert.ok(commerceProviders.length > 0, "fixture must ship at least one canonical order");
+  assert.ok(adProviders.length > 0, "fixture must ship at least one canonical ad spend record");
+
+  const latestCheckpointFor = (providers: readonly string[]) => input.syncCheckpoints
+    .filter((checkpoint) => providers.includes(checkpoint.providerId))
+    .map((checkpoint) => checkpoint.updatedAt)
+    .sort()
+    .at(-1) ?? null;
+
+  const { lastSuccessfulSyncAt, providers } = computeMetricEngineSeries(input, ["gross_order_value", "ad_spend"]);
+
+  assert.deepEqual(providers.gross_order_value, commerceProviders, "gross_order_value must not report ad providers as a source");
+  assert.equal(lastSuccessfulSyncAt.gross_order_value, latestCheckpointFor(commerceProviders));
+
+  assert.deepEqual(providers.ad_spend, adProviders, "ad_spend must not report a commerce provider as a source");
+  assert.equal(lastSuccessfulSyncAt.ad_spend, latestCheckpointFor(adProviders));
+
+  const emptyInput = createMetricEngineInput({ noData: true });
+  const empty = computeMetricEngineSeries(emptyInput, ["gross_order_value"]);
+  assert.deepEqual(empty.providers.gross_order_value, [], "no evidence means no providers -- must not fabricate an attribution");
+  assert.equal(empty.lastSuccessfulSyncAt.gross_order_value, null, "no evidence means no known sync time");
+});
+
 test("computeMetricEngineSeries aligns daily buckets to the input timezone across DST", () => {
   const template = createMetricEngineSeriesInput({
     days: 1,

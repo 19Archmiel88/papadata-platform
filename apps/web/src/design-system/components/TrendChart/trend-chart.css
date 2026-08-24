@@ -88,6 +88,11 @@
     stroke-width 160ms ease;
 }
 
+.pd-trend-chart .pd-trend-chart__series--hidden .recharts-line-curve,
+.pd-trend-chart .pd-trend-chart__series--hidden .recharts-area-area {
+  opacity: 0;
+}
+
 .pd-trend-chart .recharts-surface:focus {
   outline: none;
 }
@@ -102,6 +107,10 @@
 .pd-trend-chart__latest-point-core {
   pointer-events: none;
   vector-effect: non-scaling-stroke;
+}
+
+.pd-trend-chart > .pd-trend-chart__legend-control {
+  margin-block-start: var(--pd-space-4);
 }
 
 .pd-trend-chart__legend {
@@ -160,22 +169,16 @@
   display: inline-block;
   inline-size: 1.45rem;
   flex: 0 0 1.45rem;
-  border-block-start: 2px solid var(--pd-data-actual);
+  border-block-start: 2px solid;
   border-radius: var(--pd-radius-pill);
 }
 
 .pd-trend-chart__legend li[data-series="plan"] .pd-trend-chart__swatch {
-  border-block-start-color: var(--pd-data-series-4);
   border-block-start-style: dashed;
 }
 
 .pd-trend-chart__legend li[data-series="previous-period"] .pd-trend-chart__swatch {
-  border-block-start-color: var(--pd-text-muted);
   border-block-start-style: dotted;
-}
-
-.pd-trend-chart__legend li[data-series="moving-average"] .pd-trend-chart__swatch {
-  border-block-start-color: var(--pd-data-series-2);
 }
 
 @media (max-width: 760px) {

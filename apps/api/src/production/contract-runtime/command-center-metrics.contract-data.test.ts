@@ -4,6 +4,8 @@ import {
   buildCommandCenterDriversData,
   buildCommandCenterKpiOverrides,
   buildCommandCenterPlanPerformanceData,
+  buildCommandCenterProductSalesData,
+  buildCommandCenterTrafficSourcesData,
 } from "./command-center-metrics.contract-data.ts";
 import type { CommandCenterDataSource } from "./command-center-metrics.real-source.ts";
 
@@ -164,6 +166,63 @@ test("KPI overrides read AOV and ad spend directly, never derive spend from reve
   assert.ok((kpi.revenue.sparkline?.length ?? 0) >= 2);
   assert.ok((kpi.revenue.sparkline?.length ?? 0) <= 10);
   assert.ok(new Set(kpi.revenue.sparkline).size > 1, "sparkline must show real day-to-day variation");
+});
+
+test("KPI overrides carry providers/lastSuccessfulSyncAt from the metric engine, not fabricated", async () => {
+  const woocommerceCheckpoint = "2026-08-18T12:00:00.000Z";
+  const googleAdsCheckpoint = "2026-08-19T00:00:00.000Z"; // newer than the woocommerce checkpoint
+  const dataSource: CommandCenterDataSource = {
+    ...seededDataSource(),
+    async listSyncCheckpoints() {
+      return [
+        {
+          connection_id: "connection-woocommerce",
+          id: "checkpoint-woocommerce",
+          provider_id: "woocommerce",
+          stream: "orders",
+          updated_at: woocommerceCheckpoint,
+          watermark: woocommerceCheckpoint,
+        },
+        {
+          connection_id: "connection-google-ads",
+          id: "checkpoint-google-ads",
+          provider_id: "google_ads",
+          stream: "ad_spend",
+          updated_at: googleAdsCheckpoint,
+          watermark: googleAdsCheckpoint,
+        },
+      ];
+    },
+  };
+
+  const kpi = await buildCommandCenterKpiOverrides(tenantId, workspaceId, generatedAt, dataSource);
+
+  assert.deepEqual(kpi.revenue.providers, ["woocommerce"], "revenue is a commerce metric -- ad providers must not leak in");
+  assert.equal(kpi.revenue.lastSuccessfulSyncAt, woocommerceCheckpoint);
+
+  assert.deepEqual(kpi.adSpend.providers, ["google_ads"], "ad spend must not report a commerce provider as a source");
+  assert.equal(kpi.adSpend.lastSuccessfulSyncAt, googleAdsCheckpoint);
+
+  // cpa is derived from two metric codes (ad_spend + attributed conversions),
+  // both fed by google_ads in this fixture -- providers must union, not pick one arbitrarily.
+  assert.deepEqual(kpi.cpa.providers, ["google_ads"]);
+  assert.equal(kpi.cpa.lastSuccessfulSyncAt, googleAdsCheckpoint);
+
+  // cards not (yet) backed by a single versioned metric code must not
+  // fabricate an attribution just because other cards have one.
+  assert.deepEqual(kpi.cartConversion.providers, []);
+  assert.equal(kpi.cartConversion.lastSuccessfulSyncAt, null);
+});
+
+test("KPI overrides report no providers/lastSuccessfulSyncAt when the fixture has no sync checkpoints", async () => {
+  // seededDataSource()'s listSyncCheckpoints() returns [] -- this proves the
+  // absence of a checkpoint never falls back to some other timestamp.
+  const kpi = await buildCommandCenterKpiOverrides(tenantId, workspaceId, generatedAt, seededDataSource());
+
+  assert.deepEqual(kpi.revenue.providers, ["woocommerce"], "providers come from evidence, not checkpoints");
+  assert.equal(kpi.revenue.lastSuccessfulSyncAt, null, "no checkpoint for the provider means no known sync time");
+  assert.deepEqual(kpi.adSpend.providers, ["google_ads"]);
+  assert.equal(kpi.adSpend.lastSuccessfulSyncAt, null);
 });
 
 test("KPI overrides are deterministic for the same inputs", async () => {
@@ -390,4 +449,160 @@ test("plan benchmark uses the immediately preceding equal period, not the curren
   const previous = uniqueWindows.find((window) => window.to === "2026-08-09T22:00:00.000Z");
   assert.ok(current, "expected current selected-period window");
   assert.ok(previous, "expected immediately preceding comparison window");
+});
+
+/**
+ * Two disjoint 9-day windows for the "2026-08-10".."2026-08-18" range (see
+ * "plan benchmark uses the immediately preceding equal period" above for how
+ * `resolvePlanWindow` derives them): current = Aug 10-18, previous = Aug
+ * 1-9. Product catalog rows are duplicated into both windows because
+ * `buildCommandCenterProductSalesData` fetches `products` bounded to each
+ * period independently — a product row dated outside a given window would
+ * make that window's own order lines referencing it unresolved.
+ */
+function productSalesDataSource(): CommandCenterDataSource {
+  const rows: Record<string, unknown>[] = [
+    canonicalRow("woocommerce", "products", "prod-a", "2026-08-05T10:00:00.000Z", { name: "Produkt A" }),
+    canonicalRow("woocommerce", "products", "prod-a", "2026-08-12T10:00:00.000Z", { name: "Produkt A" }),
+    canonicalRow("woocommerce", "products", "prod-b", "2026-08-12T10:00:00.000Z", { name: "Produkt B" }),
+
+    // Current window, revenue-qualifying: 2x prod-a @ 100 total, 1x prod-b @ 50.
+    canonicalRow("woocommerce", "orders", "order-cur-1", "2026-08-12T12:00:00.000Z", {
+      currency: "PLN",
+      grossAmount: 150,
+      lineItems: [
+        { externalProductId: "prod-a", grossAmount: 100, quantity: 2 },
+        { externalProductId: "prod-b", grossAmount: 50, quantity: 1 },
+      ],
+      status: "completed",
+    }),
+    // Current window, cancelled: must not contribute to prod-a totals.
+    canonicalRow("woocommerce", "orders", "order-cur-2", "2026-08-13T12:00:00.000Z", {
+      currency: "PLN",
+      grossAmount: 999,
+      lineItems: [{ externalProductId: "prod-a", grossAmount: 999, quantity: 99 }],
+      status: "cancelled",
+    }),
+    // Current window, qualifying, but its only line references a product
+    // never seen in the `products` stream: must be dropped, not grouped
+    // under a fabricated "unknown product" bucket.
+    canonicalRow("woocommerce", "orders", "order-cur-3", "2026-08-14T12:00:00.000Z", {
+      currency: "PLN",
+      grossAmount: 30,
+      lineItems: [{ externalProductId: "prod-unknown", grossAmount: 30, quantity: 1 }],
+      status: "completed",
+    }),
+    // Previous window, qualifying: 1x prod-a @ 40 — gives prod-a a real
+    // period-over-period comparison; prod-b has no previous-period data.
+    canonicalRow("woocommerce", "orders", "order-prev-1", "2026-08-05T12:00:00.000Z", {
+      currency: "PLN",
+      grossAmount: 40,
+      lineItems: [{ externalProductId: "prod-a", grossAmount: 40, quantity: 1 }],
+      status: "completed",
+    }),
+  ];
+
+  return {
+    async listCanonicalRecords(_tenantId, _workspaceId, input) {
+      const from = Date.parse(input.businessTimeFrom);
+      const to = Date.parse(input.businessTimeTo);
+      return rows.filter((row) => {
+        const time = (row.effective_time as Date).getTime();
+        return input.streams.includes(row.stream as string) && time >= from && time < to;
+      });
+    },
+    async listConnections() {
+      return [];
+    },
+    async listSyncCheckpoints() {
+      return [];
+    },
+    async latestReconciliationRun() {
+      return null;
+    },
+    async listOpenDataIssues() {
+      return [];
+    },
+  };
+}
+
+test("product sales: sums real order-line revenue/quantity per product, drops cancelled orders and unresolved products, computes real period-over-period change", async () => {
+  const { productSales } = await buildCommandCenterProductSalesData(
+    tenantId,
+    workspaceId,
+    generatedAt,
+    productSalesDataSource(),
+    { from: "2026-08-10", timezone: "Europe/Warsaw", to: "2026-08-18" },
+  );
+
+  assert.equal(productSales.length, 2, "the unresolved-product line must not create a third row");
+
+  const productA = productSales.find((row) => row.productName === "Produkt A");
+  const productB = productSales.find((row) => row.productName === "Produkt B");
+  assert.ok(productA);
+  assert.ok(productB);
+
+  assert.equal(productA?.revenue, "100.00");
+  assert.equal(productA?.quantity, 2);
+  assert.equal(productB?.revenue, "50.00");
+  assert.equal(productB?.quantity, 1);
+
+  // prod-a: (100 - 40) / 40 * 100 = 150% growth against its real previous-period revenue.
+  assert.equal(productA?.changePercent, 150);
+  // prod-b never appeared in the previous period: change stays honestly null, not 0% or 100%.
+  assert.equal(productB?.changePercent, null);
+
+  // Sorted by revenue, descending — matches the DataTable's default sort.
+  assert.deepEqual(productSales.map((row) => row.productName), ["Produkt A", "Produkt B"]);
+});
+
+function trafficSourcesDataSource(): CommandCenterDataSource {
+  const rows: Record<string, unknown>[] = [
+    canonicalRow("ga4", "traffic", "row-1", "2026-08-15T08:00:00.000Z", { sessions: 100, source: "Organic Search", users: 80 }),
+    canonicalRow("ga4", "traffic", "row-2", "2026-08-16T08:00:00.000Z", { sessions: 50, source: "Organic Search", users: 40 }),
+    canonicalRow("ga4", "traffic", "row-3", "2026-08-15T09:00:00.000Z", { sessions: 90, source: "Paid Search", users: 70 }),
+    // No `source` on the row: must be skipped, not grouped under an empty-string channel.
+    canonicalRow("ga4", "traffic", "row-4", "2026-08-15T10:00:00.000Z", { sessions: 20, users: 15 }),
+    // A non-GA4 provider happening to emit a `traffic` stream row must never
+    // be attributed to a GA4 channel group.
+    canonicalRow("shopify", "traffic", "row-5", "2026-08-15T11:00:00.000Z", { sessions: 500, source: "Organic Search", users: 400 }),
+  ];
+
+  return {
+    async listCanonicalRecords(_tenantId, _workspaceId, input) {
+      const from = Date.parse(input.businessTimeFrom);
+      const to = Date.parse(input.businessTimeTo);
+      return rows.filter((row) => {
+        const time = (row.effective_time as Date).getTime();
+        return input.streams.includes(row.stream as string) && time >= from && time < to;
+      });
+    },
+    async listConnections() {
+      return [];
+    },
+    async listSyncCheckpoints() {
+      return [];
+    },
+    async latestReconciliationRun() {
+      return null;
+    },
+    async listOpenDataIssues() {
+      return [];
+    },
+  };
+}
+
+test("traffic sources: sums real GA4 sessions/users per channel group, ignores non-GA4 rows and rows without a channel, sorts by sessions", async () => {
+  const { trafficSources } = await buildCommandCenterTrafficSourcesData(
+    tenantId,
+    workspaceId,
+    generatedAt,
+    trafficSourcesDataSource(),
+    { from: "2026-08-10", timezone: "Europe/Warsaw", to: "2026-08-18" },
+  );
+
+  assert.deepEqual(trafficSources, [
+    { sessions: 150, source: "Organic Search", users: 120 },
+    { sessions: 90, source: "Paid Search", users: 70 },
+  ]);
 });

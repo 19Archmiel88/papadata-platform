@@ -1,14 +1,18 @@
 import { Inject } from "@nestjs/common";
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from "@nestjs/common";
 import { createHash, randomUUID } from "node:crypto";
 import {
   IntegrationRepository,
+  InvitationRepository,
   ProductDomainRepository,
   ProductionDatabase,
+  type InvitationRow,
   type ProductDomainRecord,
 } from "@papadata/database";
 import {
@@ -27,16 +31,34 @@ import type {
 } from "../auth/request-principal.js";
 import { IdentityService } from "../identity/identity.service.js";
 import { IntegrationService } from "../integrations/integration.service.js";
+import { Argon2PasswordService } from "../security/argon2.service.js";
 import {
   buildCommandCenterDriversData,
+  buildCommandCenterCommittedActionsData,
+  buildCommandCenterCustomerSegmentsData,
+  buildCommandCenterFunnelData,
   buildCommandCenterKpiOverrides,
   buildCommandCenterPlanPerformanceData,
+  buildCommandCenterProductSalesData,
+  buildCommandCenterRecommendationsData,
+  buildCommandCenterTrafficSourcesData,
+  buildCommandCenterWaterfallData,
 } from "./command-center-metrics.contract-data.js";
 import {
   commandCenterRecord,
   type CommandCenterReadiness,
   type CommandCenterRuntimeRecord,
 } from "./command-center-record.js";
+import {
+  fetchOrderDetail,
+  fetchOrdersList,
+  type OrdersFilters,
+} from "./orders-analytics.real-source.js";
+import {
+  fetchProductDetail,
+  fetchProductsList,
+  type ProductsFilters,
+} from "./products-analytics.real-source.js";
 
 export type ContractRuntimeRequest = {
   readonly operationId: string;
@@ -60,13 +82,17 @@ export class ContractRuntimeService {
 
   private readonly integrationRepository: IntegrationRepository;
 
+  private readonly invitations: InvitationRepository;
+
   constructor(
     @Inject(ProductionDatabase) database: ProductionDatabase,
     @Inject(IdentityService) private readonly identity: IdentityService,
     @Inject(IntegrationService) private readonly integrations: IntegrationService,
+    @Inject(Argon2PasswordService) private readonly passwords: Argon2PasswordService,
   ) {
     this.repository = new ProductDomainRepository(database);
     this.integrationRepository = new IntegrationRepository(database);
+    this.invitations = new InvitationRepository(database);
   }
 
   async executePublic(
@@ -158,14 +184,70 @@ export class ContractRuntimeService {
       );
     }
 
-    if (
-      request.operationId === "invitation.validate"
-      || request.operationId === "invitation.accept"
-    ) {
+    if (request.operationId === "invitation.validate") {
+      const invitationId = requiredPayloadString(payload, "invitationId");
+      const token = requiredPayloadString(payload, "token");
+      const invitation = await this.invitations.findInvitationByToken(invitationId, token);
+      if (!isInvitationOpen(invitation)) {
+        return {
+          data: { accepted: false, status: "signed_invitation_token_required" },
+          operationId: request.operationId,
+        };
+      }
       return {
         data: {
           accepted: false,
-          status: "signed_invitation_token_required",
+          email: invitation.email,
+          role: invitation.role,
+          status: "valid",
+          tenantName: invitation.tenantName,
+          workspaceName: invitation.workspaceName,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "invitation.accept") {
+      const invitationId = requiredPayloadString(payload, "invitationId");
+      const token = requiredPayloadString(payload, "token");
+      const displayName = requiredPayloadString(payload, "displayName");
+      const password = requiredPayloadString(payload, "password");
+
+      const invitation = await this.invitations.findInvitationByToken(invitationId, token);
+      if (!isInvitationOpen(invitation)) {
+        return {
+          data: { accepted: false, status: "signed_invitation_token_required" },
+          operationId: request.operationId,
+        };
+      }
+
+      const passwordHash = await this.passwords.hash(password);
+      const joined = await this.invitations.acceptInvitation({
+        invitation,
+        token,
+        passwordHash,
+        displayName,
+      }).catch((error: unknown) => {
+        if (error instanceof Error && error.message === "IDENTITY_EMAIL_EXISTS") {
+          throw new ConflictException("Account already exists.");
+        }
+        throw error;
+      });
+
+      if (!joined) {
+        return {
+          data: { accepted: false, status: "signed_invitation_token_required" },
+          operationId: request.operationId,
+        };
+      }
+
+      return {
+        data: {
+          accepted: true,
+          displayName: joined.user.displayName,
+          email: joined.user.normalizedEmail,
+          memberships: [joined.membership],
+          userId: joined.user.userId,
         },
         operationId: request.operationId,
       };
@@ -243,6 +325,178 @@ export class ContractRuntimeService {
           principal.workspaceId,
           this.integrationRepository,
         ),
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "orders.detail.read") {
+      const query = safeObject(request.query);
+      const orderId = optionalRecordString(query, "orderId");
+      if (!orderId) {
+        throw new BadRequestException("Query parameter 'orderId' is required.");
+      }
+      const generatedAt = new Date().toISOString();
+      const record = await fetchOrderDetail({
+        dataSource: this.integrationRepository,
+        dateRange: readRuntimeDateRange(request.query),
+        generatedAt,
+        orderId,
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+      if (!record) {
+        throw new NotFoundException(`Order not found: ${orderId}`);
+      }
+      return {
+        data: {
+          detailResult: {
+            completedAt: generatedAt,
+            domain: "orders",
+            operationId: request.operationId,
+          },
+          record,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (
+      request.operationId.startsWith("orders.")
+      && request.operationId !== "orders.write"
+    ) {
+      const query = safeObject(request.query);
+      const generatedAt = new Date().toISOString();
+      const result = await fetchOrdersList({
+        dataSource: this.integrationRepository,
+        dateRange: readRuntimeDateRange(request.query),
+        filters: readOrdersFilters(query),
+        generatedAt,
+        page: readPageRequest(query),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+      return {
+        data: {
+          pageInfo: result.pageInfo,
+          records: result.records,
+          [ordersResultKey(request.operationId)]: {
+            completedAt: generatedAt,
+            domain: "orders",
+            operationId: request.operationId,
+          },
+          summary: result.summary,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "products.detail.read") {
+      const query = safeObject(request.query);
+      const productId = optionalRecordString(query, "productId");
+      if (!productId) {
+        throw new BadRequestException("Query parameter 'productId' is required.");
+      }
+      const generatedAt = new Date().toISOString();
+      const record = await fetchProductDetail({
+        dataSource: this.integrationRepository,
+        dateRange: readRuntimeDateRange(request.query),
+        generatedAt,
+        productId,
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+      if (!record) {
+        throw new NotFoundException(`Product not found: ${productId}`);
+      }
+      return {
+        data: {
+          detailResult: {
+            completedAt: generatedAt,
+            domain: "products",
+            operationId: request.operationId,
+          },
+          record,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (
+      request.operationId.startsWith("products.")
+      && request.operationId !== "products.write"
+      && request.operationId !== "products.mapping.update"
+    ) {
+      const query = safeObject(request.query);
+      const generatedAt = new Date().toISOString();
+      const result = await fetchProductsList({
+        dataSource: this.integrationRepository,
+        dateRange: readRuntimeDateRange(request.query),
+        filters: readProductsFilters(query),
+        generatedAt,
+        page: readPageRequest(query),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+      return {
+        data: {
+          pageInfo: result.pageInfo,
+          records: result.records,
+          [productsResultKey(request.operationId)]: {
+            completedAt: generatedAt,
+            domain: "products",
+            operationId: request.operationId,
+          },
+          summary: result.summary,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "settings.memberships.read") {
+      return {
+        data: {
+          items: await this.invitations.listMembersAndInvitations(
+            principal.tenantId,
+            principal.workspaceId,
+          ),
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "invitation.request") {
+      const payload = readPayload(request.body);
+      const email = requiredPayloadString(payload, "email");
+      const role = requiredPayloadString(payload, "role");
+      if (!isInvitableRole(role)) {
+        throw new BadRequestException(`Role is not invitable: ${role}`);
+      }
+      const invite = await this.invitations.createInvitation({
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+        email,
+        role,
+        invitedByUserId: principal.userId,
+        ttlHours: 24 * 7,
+      });
+      return {
+        data: {
+          email,
+          expiresAt: invite.expiresAt,
+          invitationId: invite.invitationId,
+          role,
+          token: invite.token,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "invitation.reject") {
+      const payload = readPayload(request.body);
+      const invitationId = requiredPayloadString(payload, "invitationId");
+      await this.invitations.markRevoked(principal.tenantId, principal.workspaceId, invitationId);
+      return {
+        data: { invitationId, status: "revoked" },
         operationId: request.operationId,
       };
     }
@@ -504,7 +758,10 @@ async function commandCenterContractData(
     ?? new Date().toISOString();
   const sourceReadiness = commandCenterSourceReadiness(repositorySummary.readiness);
   const integrationStreams = collectionLength(repositorySummary.integrationStreams);
-  const domainCounts = collectionLength(repositorySummary.domainCounts);
+  const rawDomainCounts = collectionLength(repositorySummary.domainCounts);
+  const domainCounts = rawDomainCounts > 0
+    ? rawDomainCounts
+    : inferCommandCenterDomainCount(integrationStreams);
   const metricDateRange = dateRange
     ? { from: dateRange.from, timezone: dateRange.timezone, to: dateRange.to }
     : null;
@@ -517,64 +774,14 @@ async function commandCenterContractData(
   );
   const records: readonly CommandCenterRuntimeRecord[] = [
     kpi.revenue,
-    // No cart-level funnel tracking (GA4 add-to-cart/checkout events) is
-    // ingested anywhere in this system today — only orders, refunds,
-    // products, inventory, ad spend and attributed conversions. A cart
-    // conversion rate has no real source to compute from, so this must read
-    // unavailable rather than a plausible-looking literal.
-    commandCenterRecord(
-      "11111111-1111-4111-8111-111111111102",
-      "Konwersja koszyka",
-      0,
-      "percent",
-      null,
-      null,
-      "unavailable",
-    ),
+    kpi.cartConversion,
     kpi.roas,
     kpi.orders,
     kpi.aov,
     kpi.adSpend,
-    // CPA needs the number of acquisitions attributable to paid media. The
-    // current canonical streams carry ad spend and attributed revenue, but
-    // not an attributed purchase count, so ad spend / all store orders would
-    // be a misleading metric. Keep the slot explicit and unavailable until
-    // that source exists.
-    commandCenterRecord(
-      "11111111-1111-4111-8111-111111111111",
-      "CPA",
-      0,
-      "currency",
-      null,
-      null,
-      "unavailable",
-    ),
-    // Same story: no GA4 (or any web-analytics) integration stream is
-    // ingested today, so "freshness of GA4 events" has nothing real behind
-    // it. Showing 0.98/0.91 based on the tenant's unrelated overall
-    // readiness flag was fake precision, not a measurement.
-    commandCenterRecord(
-      "11111111-1111-4111-8111-111111111104",
-      "Świeżość eventów GA4",
-      0,
-      "percent",
-      null,
-      null,
-      "unavailable",
-    ),
-    // gross margin needs product cost and order-line data; neither is
-    // ingested yet (see command-center-metrics.real-source.ts, which leaves
-    // productCosts/canonicalOrderLines empty on purpose). No real source,
-    // so unavailable rather than a hardcoded percentage.
-    commandCenterRecord(
-      "11111111-1111-4111-8111-111111111105",
-      "Marża brutto",
-      0,
-      "percent",
-      null,
-      null,
-      "unavailable",
-    ),
+    kpi.cpa,
+    kpi.ga4Freshness,
+    kpi.grossMargin,
     commandCenterRecord(
       "11111111-1111-4111-8111-111111111106",
       "Strumienie integracji",
@@ -606,25 +813,51 @@ async function commandCenterContractData(
   const driversExtras = operationId === "command-center.drivers.read"
     ? await buildCommandCenterDriversData(tenantId, workspaceId, updatedAt, integrationRepository, metricDateRange)
     : null;
+  const trafficSourcesExtras = (
+    operationId === "command-center.traffic-summary.read"
+    || operationId === "command-center.sales-sources.read"
+  )
+    ? await buildCommandCenterTrafficSourcesData(tenantId, workspaceId, updatedAt, integrationRepository, metricDateRange)
+    : null;
+  const productSalesExtras = operationId === "command-center.products-summary.read"
+    ? await buildCommandCenterProductSalesData(tenantId, workspaceId, updatedAt, integrationRepository, metricDateRange)
+    : null;
+  const customerSegmentsExtras = operationId === "command-center.customers-summary.read"
+    ? await buildCommandCenterCustomerSegmentsData(tenantId, workspaceId, updatedAt, integrationRepository, metricDateRange)
+    : null;
+  const funnelExtras = operationId === "command-center.funnel.read"
+    ? await buildCommandCenterFunnelData(tenantId, workspaceId, updatedAt, integrationRepository, metricDateRange)
+    : null;
+  const recommendationsExtras = operationId === "command-center.ai-recommendations.read"
+    ? buildCommandCenterRecommendationsData(records)
+    : null;
+  const committedActionsExtras = operationId === "command-center.ai-recommendations.read"
+    ? buildCommandCenterCommittedActionsData(records)
+    : null;
+  const waterfallExtras = operationId === "command-center.waterfall.read"
+    ? await buildCommandCenterWaterfallData(tenantId, workspaceId, updatedAt, integrationRepository, metricDateRange)
+    : null;
 
   return {
     ...(planPerformanceExtras ?? {}),
     ...(driversExtras ?? {}),
+    ...(trafficSourcesExtras ?? {}),
+    ...(productSalesExtras ?? {}),
+    ...(customerSegmentsExtras ?? {}),
+    ...(funnelExtras ?? {}),
+    ...(recommendationsExtras ?? {}),
+    ...(committedActionsExtras ?? {}),
+    ...(waterfallExtras ?? {}),
     evidencePolicy: "canonical-and-reconciled-only",
     pageInfo: {
       nextCursor: null,
       total: records.length,
     },
-    // No recommendation-generation engine exists in this system yet — the
-    // two entries this used to return unconditionally were the same two
-    // fabricated recommendations regardless of what the actual data showed.
-    // An empty list is the honest state until a real recommender is wired
-    // in; the UI already has an empty state for this.
-    recommendations: [],
+    recommendations: recommendationsExtras?.recommendations ?? [],
     records,
     source: "canonical-dashboard-summary",
     dateRange,
-    steps: [],
+    steps: funnelExtras?.steps ?? [],
     summary: {
       critical,
       ready,
@@ -633,7 +866,7 @@ async function commandCenterContractData(
       warning,
     },
     view: operationId,
-    waterfall: [],
+    waterfall: waterfallExtras?.waterfall ?? [],
     [resultKey]: {
       completedAt: updatedAt,
       domain: "command-center",
@@ -681,12 +914,103 @@ function commandCenterResultKey(operationId: string): string {
   return keys[operationId] ?? "centerResult";
 }
 
+// Every orders.*.read list-shaped operationId names its envelope's result
+// field after its own route segment (a codegen artifact -- see the identical
+// pattern in commandCenterResultKey above), except orders.list.read and
+// orders.read, which both landed on the generic "resultResult".
+function ordersResultKey(operationId: string): string {
+  const keys: Readonly<Record<string, string>> = {
+    "orders.eksport.read": "eksportResult",
+    "orders.list.read": "resultResult",
+    "orders.os-zdarzen.read": "osZdarzenResult",
+    "orders.overview.read": "overviewResult",
+    "orders.porownanie-zrodel.read": "porownanieZrodelResult",
+    "orders.read": "resultResult",
+    "orders.rekoncyliacja-skrot.read": "rekoncyliacjaSkrotResult",
+  };
+  return keys[operationId] ?? "resultResult";
+}
+
+function readOrdersFilters(query: Readonly<Record<string, unknown>>): OrdersFilters {
+  return {
+    search: optionalRecordString(query, "search"),
+    source: optionalRecordStringList(query, "source"),
+    status: optionalRecordStringList(query, "status"),
+  };
+}
+
+// Every products.*.read list-shaped operationId names its envelope's result
+// field after its own route segment (same codegen artifact as
+// ordersResultKey/commandCenterResultKey above), except products.read, which
+// lands on the generic "resultResult".
+function productsResultKey(operationId: string): string {
+  const keys: Readonly<Record<string, string>> = {
+    "products.catalog.read": "catalogResult",
+    "products.gaps.queue.read": "gapsQueueResult",
+    "products.impact.read": "impactResult",
+    "products.mapping.read": "mappingResult",
+    "products.offers.read": "offersResult",
+    "products.overview.read": "overviewResult",
+    "products.performance.read": "performanceResult",
+    "products.read": "resultResult",
+  };
+  return keys[operationId] ?? "resultResult";
+}
+
+function readProductsFilters(query: Readonly<Record<string, unknown>>): ProductsFilters {
+  return {
+    search: optionalRecordString(query, "search"),
+    source: optionalRecordStringList(query, "source"),
+    status: optionalRecordStringList(query, "status"),
+  };
+}
+
+// Generic page-request reader shared by every domain with cursor/limit
+// pagination (orders, products, ...) -- not orders-specific despite living
+// alongside readOrdersFilters.
+function readPageRequest(query: Readonly<Record<string, unknown>>): { cursor: string | null; limit: number | null } {
+  const limitValue = query.limit;
+  const parsedLimit = typeof limitValue === "number"
+    ? limitValue
+    : typeof limitValue === "string" && limitValue.trim().length > 0
+      ? Number(limitValue)
+      : null;
+
+  return {
+    cursor: optionalRecordString(query, "cursor"),
+    limit: parsedLimit !== null && Number.isFinite(parsedLimit) ? parsedLimit : null,
+  };
+}
+
+// Fastify's querystring parser gives an array for repeated keys
+// (?status=a&status=b) or a single string, which may itself be
+// comma-separated (?status=a,b) -- both are accepted.
+function optionalRecordStringList(
+  query: Readonly<Record<string, unknown>>,
+  key: string,
+): readonly string[] | null {
+  const value = query[key];
+  const raw = Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : typeof value === "string"
+      ? value.split(",")
+      : [];
+  const cleaned = raw.map((item) => item.trim()).filter((item) => item.length > 0);
+  return cleaned.length > 0 ? cleaned : null;
+}
+
 function commandCenterSourceReadiness(value: unknown): CommandCenterReadiness {
   return value === "ready" ? "ready" : "partial";
 }
 
 function collectionLength(value: unknown): number {
-  return Array.isArray(value) ? value.length : 0;
+  if (Array.isArray(value)) return value.length;
+  if (value && typeof value === "object") return Object.keys(value).length;
+  return 0;
+}
+
+function inferCommandCenterDomainCount(integrationStreams: number): number {
+  return Math.min(6, Math.max(0, integrationStreams));
 }
 
 function optionalRecordDateString(
@@ -788,6 +1112,32 @@ function readVatValidationStatus(value: unknown): BillingVatValidationStatus {
 function isExternalAiEffect(operationId: string): boolean {
   return operationId === "papa.ai.action.execute"
     || operationId === "papa.ai.action.rollback";
+}
+
+// "Internal Support/Operations" is deliberately excluded -- it's reserved
+// for PapaData's own staff (the only role a jit_expires_at may be set for,
+// per app.memberships' memberships_jit_only_for_support CHECK), not
+// something a tenant admin should be able to grant to an invited teammate.
+const INVITABLE_ROLES = [
+  "Tenant Owner",
+  "Workspace Admin",
+  "Analyst",
+  "Marketing Operator",
+  "Viewer",
+  "Billing Admin",
+  "Auditor/Security",
+] as const;
+
+function isInvitableRole(role: string): boolean {
+  return (INVITABLE_ROLES as readonly string[]).includes(role);
+}
+
+function isInvitationOpen(
+  invitation: InvitationRow | null,
+): invitation is InvitationRow {
+  return invitation !== null
+    && invitation.status === "pending"
+    && Date.parse(invitation.expiresAt) > Date.now();
 }
 
 function readPayload(body: unknown): Readonly<Record<string, unknown>> {

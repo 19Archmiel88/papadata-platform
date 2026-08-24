@@ -1,8 +1,8 @@
 .pd-inline-action,
 button.pd-inline-action,
 a.pd-inline-action {
-  --pd-inline-action-color: var(--pd-interactive);
-  --pd-inline-action-hover-color: var(--pd-interactive-hover);
+  --pd-inline-action-color: var(--pd-inline-action-default-color, var(--pd-interactive));
+  --pd-inline-action-hover-color: var(--pd-inline-action-default-hover-color, var(--pd-interactive-hover));
 
   appearance: none;
   position: relative;
@@ -99,8 +99,8 @@ a.pd-inline-action:focus-visible {
 
 .pd-inline-action--muted,
 .pd-inline-action[data-tone='muted'] {
-  --pd-inline-action-color: var(--pd-text-secondary);
-  --pd-inline-action-hover-color: var(--pd-text);
+  --pd-inline-action-color: var(--pd-inline-action-muted-color, var(--pd-text-secondary));
+  --pd-inline-action-hover-color: var(--pd-inline-action-muted-hover-color, var(--pd-text));
 }
 
 .pd-inline-action--danger,

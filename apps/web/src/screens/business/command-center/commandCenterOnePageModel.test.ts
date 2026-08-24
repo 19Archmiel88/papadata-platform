@@ -102,21 +102,20 @@ test("buildExecutiveKpiRecords maps an explicit canonical CPA record, including 
   assert.equal(cpa?.readiness, "unavailable");
 });
 
-test("commandCenterOnePageSectionIds includes Drivery wyniku, not just KPI and Plan", () => {
+test("commandCenterOnePageSectionIds defines the complete one-page runtime order", () => {
   // Regression test for a real bug: the runtime one-page (CommandCenterOnePage)
-  // and its section nav rail (CommandCenterWorkspace) previously hardcoded two
-  // independent, out-of-sync lists of sections, and neither included Drivers —
-  // so navigating to /app/command-center/drivery-wyniku fetched real driver
-  // data and then rendered only KPI + Plan, with no nav link to Drivers either.
-  // Both the page's CommandSectionAnchor ids and the nav rail are now built
-  // from this single array, so this one assertion covers both.
-  assert.ok(
-    commandCenterOnePageSectionIds.includes("command-section-drivers"),
-    "the one-page must render (and link to) a Drivers section",
-  );
+  // and its section nav rail (CommandCenterWorkspace) previously hardcoded
+  // independent, out-of-sync lists. Both are now built from this single array.
   assert.deepEqual(commandCenterOnePageSectionIds, [
     "command-section-kpi",
     "command-section-plan",
     "command-section-drivers",
+    "command-section-funnel",
+    "command-section-traffic",
+    "command-section-products",
+    "command-section-customers",
+    "command-section-attention",
+    "command-section-decision-workspace",
+    "command-section-committed-actions",
   ]);
 });

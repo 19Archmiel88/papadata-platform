@@ -68,3 +68,15 @@ WOOCOMMERCE_SANDBOX_CONSUMER_SECRET="cs_..." \
 pnpm --filter @papadata/worker exec tsx scripts/woocommerce-reconciliation.ts
 # Raport: .runtime/reports/production-parity-audit-<data>/woocommerce-reconciliation.json
 ```
+
+## seed-demo-account.ts (`apps/worker/scripts/`)
+
+Tworzy jedno realne, logowalne konto PapaData (`papadata-demo@papadata.test`) przez prawdziwy HTTP endpoint rejestracji (`POST /api/v1/auth/register/email` -- prawdziwy argon2 hash, nie placeholder), podpina mu połączenie WooCommerce do tego samego sandboksu co powyżej i odpala prawdziwy `DurableIngestionPipeline` (backfill od 2020-01-01) dla `orders`/`products`/`refunds`/`inventory`, po czym weryfikuje niezależnym logowaniem + realnym odczytem `GET /api/v1/command-center/kpi`, że dashboard zwraca policzone metryki. Idempotentny -- bezpieczny do ponownego uruchomienia (rejestracja na 409 przechodzi w login, connection/credential mają stałe idempotency keys).
+
+Node'owy global `fetch` (undici) po cichu odrzuca własny nagłówek `Host` (traktuje go jak "forbidden header" ze specyfikacji fetch) -- wywołania do BFF idą więc przez `node:http` bezpośrednio na `127.0.0.1:53001` (host-mapped port `bff-production`, patrz `compose.production-parity.yml`), z jawnym `Host: papadata.localhost:53001` (drugi wpis w `BFF_PUBLIC_HOSTS` w `.env.production-parity`, dokładnie dla tego przypadku) i `Origin: https://papadata.localhost`. Node'owy resolver DNS też nie rozpoznaje `*.localhost` tak jak curl/Chromium (patrz `https-trust-real-browser.mjs` wyżej), więc `papadata.localhost` per se nie rozwiąże się z tego skryptu -- login przez prawdziwy edge (`https://papadata.localhost`) trzeba zweryfikować osobno, np. curlem.
+
+```bash
+WOOCOMMERCE_SANDBOX_CONSUMER_KEY="ck_..." \
+WOOCOMMERCE_SANDBOX_CONSUMER_SECRET="cs_..." \
+pnpm --filter @papadata/worker exec tsx scripts/seed-demo-account.ts
+```

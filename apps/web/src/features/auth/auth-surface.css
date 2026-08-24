@@ -1,101 +1,317 @@
+@import './auth-theme.css';
+
+/* ==========================================================================
+   Układ
+   ==========================================================================
+   Zasada dla całego pliku: głębia i separatory zamiast ramek. Powierzchnie
+   różnicują się jasnością/cieniem (elevation), a rozdzielanie treści opiera
+   się na cienkich liniach separujących (border-top/border-inline-start) i
+   akcentach paska z boku — nie na obrysowanych "kartach" 1px border dookoła
+   każdego bloku. Wyjątek: baner cookies (prawdziwy floating overlay) — tam
+   głębia wynika z cienia (shadow), nie z ramki.
+   ========================================================================== */
+
 .pd-auth-surface {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
   min-height: 100dvh;
-  background: var(--pd-canvas);
-  color: var(--pd-text);
+  background: var(--pdauth-depth-glow) var(--pdauth-canvas);
+  color: var(--pdauth-ink);
+  font-family: var(--pd-font-sans);
 }
 
-.pd-auth-surface__canvas {
-  display: grid;
-  place-items: center;
+/*
+ * apps/web/src/app/routing/AppRouter.tsx renders AuthPage inside
+ * PublicAuthShell (className="pd-auth-route-shell"), which also renders
+ * PublicTopbar above it — the only place a visitor can toggle light/dark
+ * before signing in. Without this override the auth surface's own
+ * min-height: 100dvh stacks under the topbar and overflows the viewport.
+ */
+.pd-auth-route-shell {
+  display: flex;
+  flex-direction: column;
   min-height: 100dvh;
-  padding: clamp(24px, 5vw, 72px);
+}
+
+.pd-auth-route-shell .pd-auth-surface {
+  flex: 1;
+  min-height: 0;
+}
+
+.pd-auth-surface__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  grid-template-rows: minmax(0, 1fr);
+  flex: 1;
+  min-height: 0;
+}
+
+.pd-auth-surface__marketing {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 48px;
+  min-height: 0;
+  padding: clamp(32px, 5vw, 76px) clamp(28px, 5vw, 88px);
+  border-inline-end: 1px solid var(--pdauth-line);
+  background: var(--pdauth-depth-glow) var(--pdauth-surface);
+  overflow-y: auto;
+}
+
+.pd-auth-surface__brand-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pd-auth-surface__brand-row .pd-brand-mark {
+  color: var(--pdauth-ink);
+}
+
+.pd-auth-surface__brand-wordmark {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.pd-auth-surface__marketing-body {
+  display: grid;
+  gap: 30px;
+  max-width: 30rem;
+}
+
+.pd-auth-surface__marketing-eyebrow {
+  margin: 0;
+  color: var(--pdauth-ink-muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pd-auth-surface__marketing-headline {
+  margin: 0;
+  color: var(--pdauth-ink);
+  font-family: var(--pdauth-font-display);
+  font-size: clamp(28px, 3.2vw, 42px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.16;
+}
+
+.pd-auth-surface__marketing-description {
+  margin: 0;
+  max-width: 42ch;
+  color: var(--pdauth-ink-secondary);
+  line-height: 1.65;
+}
+
+/* Wykres nie jest już "kartą" — to treść w naturalnym przepływie panelu,
+   oddzielona wyłącznie cienką linią u góry. */
+.pd-auth-surface__chart {
+  display: grid;
+  gap: 14px;
+  max-width: 30rem;
+  padding-block-start: 18px;
+  border-block-start: 1px solid var(--pdauth-line);
+}
+
+.pd-auth-surface__chart-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.pd-auth-surface__chart-label {
+  color: var(--pdauth-ink-muted);
+  font-size: 11.5px;
+  letter-spacing: 0.03em;
+}
+
+.pd-auth-surface__chart-value {
+  font-family: var(--pdauth-font-display);
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.pd-auth-surface__chart-delta {
+  color: var(--pdauth-chart-positive);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.pd-auth-surface__chart-line {
+  fill: none;
+  stroke: var(--pdauth-accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pd-auth-surface__sources-label {
+  margin: 0 0 10px;
+  color: var(--pdauth-ink-muted);
+  font-size: 11.5px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.pd-auth-surface__sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.pd-auth-surface__source {
+  color: var(--pdauth-ink-secondary);
+  font-size: 13px;
+}
+
+.pd-auth-surface__marketing-footer {
+  color: var(--pdauth-ink-muted);
+  font-size: 12px;
+}
+
+/* Form panel ------------------------------------------------------------- */
+
+.pd-auth-surface__form-panel {
+  display: flex;
+  align-items: safe center;
+  justify-content: center;
+  min-height: 0;
+  padding: clamp(28px, 5vw, 64px);
+  overflow-y: auto;
 }
 
 .pd-auth-surface__workspace {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(360px, 520px);
-  gap: clamp(40px, 8vw, 120px);
-  align-items: center;
-  width: min(1080px, 100%);
+  gap: 24px;
+  width: min(23rem, 100%);
 }
 
-.pd-auth-surface__workspace > * {
-  min-width: 0;
+/* Rejestracja paruje krótkie pola tożsamości w 2 kolumny (imię+nazwisko /
+   organizacja, workspace / e-mail), więc karta dostaje trochę więcej
+   miejsca niż pozostałe, jednopolowe tryby Auth. */
+.pd-auth-surface[data-auth-mode='register'] .pd-auth-surface__workspace {
+  width: min(30rem, 100%);
 }
 
-.pd-auth-surface__brand-mark {
+.pd-auth-surface__card-header {
   display: grid;
-  align-content: center;
-  gap: 18px;
-  min-height: 320px;
-  padding: clamp(24px, 4vw, 48px);
-  border-inline-start: 2px solid var(--pd-brand-accent);
-}
-
-.pd-auth-surface__brand-mark .pd-brand-mark {
-  color: var(--pd-text);
+  gap: 10px;
 }
 
 .pd-auth-surface__eyebrow,
 .pd-auth-surface__state-eyebrow {
   margin: 0;
-  color: var(--pd-brand-action);
-  font-family: var(--pd-font-mono);
-  font-size: 10px;
+  color: var(--pdauth-accent);
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.075em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
+.pd-auth-surface__card-header h1 {
+  margin: 0;
+  color: var(--pdauth-ink);
+  font-family: var(--pdauth-font-display);
+  font-size: clamp(24px, 2.6vw, 30px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
 .pd-auth-surface__description {
-  max-width: 48ch;
+  max-width: 34ch;
   margin: 0;
-  color: var(--pd-text-secondary);
-  line-height: var(--pd-line-height-relaxed);
+  color: var(--pdauth-ink-secondary);
+  line-height: 1.6;
 }
 
-.pd-auth-surface__form,
-.pd-auth-surface__state-panel {
+.pd-auth-surface__form {
   display: grid;
-  gap: 18px;
+  gap: 20px;
   min-width: 0;
-  padding: clamp(22px, 3vw, 34px);
-  border: 1px solid var(--pd-separator-subtle);
-  border-radius: 16px;
-  background: var(--pd-surface-panel);
-  box-shadow: var(--pd-shadow-raised);
 }
 
-.pd-auth-surface__card-header {
+/* Parowanie krótkich pól tożsamości (imię+nazwisko/organizacja,
+   workspace/e-mail) w rejestracji — zamiast 4 osobnych pełnowymiarowych
+   rzędów. Hasło/Powtórz hasło zostają poza tym wzorcem (lista wymagań
+   pod polem hasła zaburzyłaby parowanie wysokości rzędu). */
+.pd-auth-surface__form-row {
   display: grid;
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px 16px;
 }
 
-.pd-auth-surface__card-header h1,
-.pd-auth-surface__card-header h2,
-.pd-auth-surface__card-header p,
-.pd-auth-surface__state-panel h1,
-.pd-auth-surface__state-panel h2,
-.pd-auth-surface__state-panel p {
-  margin: 0;
+.pd-auth-surface__form-row > * {
+  min-width: 0;
 }
 
-.pd-auth-surface__card-header h1,
-.pd-auth-surface__card-header h2,
-.pd-auth-surface__state-panel h1,
-.pd-auth-surface__state-panel h2 {
-  color: var(--pd-text);
-  font-size: clamp(24px, 3vw, 34px);
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 1.08;
+@container (max-width: 420px) {
+  .pd-auth-surface__form-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
-.pd-auth-surface__card-header p,
-.pd-auth-surface__state-panel p,
+/* Wybór metody rejestracji / wybór organizacji-workspace: lista rozdzielona
+   separatorami, nie stos osobnych ramek — każda pozycja różni się od tła
+   jedynie przy hover/focus. Ten sam wzorzec dla obu przypadków. */
+.pd-auth-surface__registration-choice,
+.pd-auth-surface__option-list {
+  display: grid;
+  border-block-start: 1px solid var(--pdauth-line);
+}
+
+.pd-auth-surface__choice,
+.pd-auth-surface__option {
+  display: grid;
+  gap: 4px;
+  padding: 14px 4px;
+  border: 0;
+  border-block-end: 1px solid var(--pdauth-line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--pdauth-ink-secondary);
+  cursor: pointer;
+  font: inherit;
+  text-align: start;
+  transition: background-color 130ms ease, padding-inline-start 130ms ease;
+}
+
+.pd-auth-surface__choice:hover,
+.pd-auth-surface__choice:focus-visible,
+.pd-auth-surface__option:hover,
+.pd-auth-surface__option:focus-visible {
+  padding-inline-start: 12px;
+  background: var(--pdauth-surface-soft);
+  color: var(--pdauth-ink);
+}
+
+.pd-auth-surface__option:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.pd-auth-surface__option-title {
+  color: var(--pdauth-ink);
+  font-weight: 500;
+}
+
+.pd-auth-surface__option-subtitle {
+  color: var(--pdauth-ink-muted);
+  font-size: 13px;
+}
+
+/* Komunikaty: pasek akcentu z boku zamiast pełnej ramki. */
+.pd-auth-surface__notice,
 .pd-auth-surface__scope-note {
-  color: var(--pd-text-secondary);
-  line-height: var(--pd-line-height-relaxed);
+  padding: 10px 0 10px 14px;
+  border-inline-start: 2px solid var(--pdauth-line-strong);
+  color: var(--pdauth-ink-secondary);
+  font-size: 13px;
+  line-height: 1.55;
 }
 
 .pd-auth-surface__links,
@@ -103,62 +319,186 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 8px 16px;
 }
 
-.pd-auth-surface__links a,
-.pd-auth-surface__state-action {
-  color: var(--pd-brand-action);
-  font-weight: 600;
-  text-decoration: none;
-}
+/* State panel (blocked / unavailable / recovery sent / ...) --------------
+   Głębia przez delikatne podbicie tła (elevation), rozdzielenie przez pasek
+   akcentu z boku — bez obrysowanej ramki dookoła. */
 
-.pd-auth-surface__links a:hover,
-.pd-auth-surface__state-action:hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.pd-auth-surface__registration-choice,
-.pd-auth-surface__choice {
+.pd-auth-surface__state-panel {
   display: grid;
-  gap: 8px;
+  gap: 12px;
+  padding: 18px 20px;
+  border-inline-start: 3px solid var(--pd-status-danger);
+  border-radius: 2px;
+  background: var(--pdauth-surface-soft);
 }
 
-.pd-auth-surface__choice {
-  padding: 13px 14px;
-  border: 1px solid var(--pd-separator-subtle);
-  border-radius: 10px;
-  background: var(--pd-surface);
-  color: var(--pd-text-secondary);
-  cursor: pointer;
-  transition: border-color 130ms ease, background-color 130ms ease;
+.pd-auth-surface__state-panel[data-tone='warning'] {
+  border-inline-start-color: var(--pd-status-warning);
 }
 
-.pd-auth-surface__choice:hover,
-.pd-auth-surface__choice:focus-visible {
-  border-color: var(--pd-brand-accent);
-  background: var(--pd-surface-soft);
+.pd-auth-surface__state-panel[data-tone='success'] {
+  border-inline-start-color: var(--pd-status-success);
 }
 
-.pd-auth-surface__notice,
-.pd-auth-surface__scope-note {
-  padding: 10px 12px;
-  border: 1px solid var(--pd-separator-subtle);
-  border-radius: 9px;
-  background: var(--pd-surface-soft);
-  font-size: var(--pd-type-size-body-small);
+.pd-auth-surface__state-panel[data-tone='info'] {
+  border-inline-start-color: var(--pdauth-accent);
 }
 
-@media (max-width: 860px) {
-  .pd-auth-surface__workspace {
+.pd-auth-surface__state-panel h2 {
+  margin: 0;
+  color: var(--pdauth-ink);
+  font-family: var(--pdauth-font-display);
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.pd-auth-surface__state-panel p {
+  margin: 0;
+  color: var(--pdauth-ink-secondary);
+  line-height: 1.6;
+}
+
+.pd-auth-surface__state-action {
+  color: var(--pdauth-accent);
+  font-weight: 600;
+}
+
+/* Shared components are themed through component-level CSS custom-property
+   hooks declared by .pd-auth-theme. Their canonical selectors stay owned by
+   the design system. */
+
+/* ==========================================================================
+   Responsywność
+   ==========================================================================
+   Reaguje na szerokość WŁASNEGO kontenera (.pd-auth-surface ustawia
+   container-type: inline-size wyżej), nie na szerokość viewportu — dzięki
+   temu układ poprawnie się zwija także wtedy, gdy AuthSurface jest osadzony
+   w węższej kolumnie (np. siatka podglądów w Storybooku), a nie tylko na
+   wąskim ekranie telefonu.
+   ========================================================================== */
+
+@container (max-width: 960px) {
+  .pd-auth-surface__layout {
     grid-template-columns: minmax(0, 1fr);
-    gap: 24px;
-    max-width: 560px;
+    /* Odpiąć pułap wysokości z układu dwukolumnowego: na wąskim ekranie
+       kolumny się stackują, więc chcemy naturalnego wzrostu i scrolla
+       całej strony, a nie dwóch niezależnych, wewnętrznie scrollowanych
+       paneli jeden nad drugim. */
+    grid-template-rows: none;
   }
 
-  .pd-auth-surface__brand-mark {
-    min-height: auto;
-    padding-block: 12px;
+  .pd-auth-surface__marketing {
+    border-inline-end: 0;
+    border-block-end: 1px solid var(--pdauth-line);
+    padding-block-end: 32px;
+    gap: 28px;
+    overflow-y: visible;
+  }
+
+  .pd-auth-surface__form-panel {
+    overflow-y: visible;
+  }
+
+  .pd-auth-surface__chart {
+    display: none;
+  }
+}
+
+@container (max-width: 560px) {
+  .pd-auth-surface__marketing-body {
+    gap: 20px;
+  }
+
+  .pd-auth-surface__sources {
+    gap: 10px 16px;
+  }
+}
+
+/* ==========================================================================
+   Baner zgody na cookies (RODO)
+   ==========================================================================
+   Jedyne miejsce w tym systemie, gdzie faktycznie chcemy widocznej
+   "powierzchni uniesionej nad stroną" — bo to jest floating overlay. Głębia
+   pochodzi z cienia (--pdauth-elevated-shadow), nie z ramki 1px.
+   ========================================================================== */
+
+.pd-auth-cookie-banner {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: var(--pd-layer-modal, 30);
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  font-family: var(--pd-font-sans);
+}
+
+.pd-auth-cookie-banner__panel {
+  display: grid;
+  gap: 16px;
+  width: min(880px, 100%);
+  padding: 20px 24px;
+  border-radius: 8px;
+  background: var(--pdauth-surface);
+  box-shadow: var(--pdauth-elevated-shadow);
+}
+
+.pd-auth-cookie-banner__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px 24px;
+}
+
+.pd-auth-cookie-banner__copy {
+  display: grid;
+  gap: 4px;
+  max-width: 48ch;
+}
+
+.pd-auth-cookie-banner__title {
+  margin: 0;
+  color: var(--pdauth-ink);
+  font-family: var(--pdauth-font-display);
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.pd-auth-cookie-banner__text {
+  margin: 0;
+  color: var(--pdauth-ink-secondary);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.pd-auth-cookie-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.pd-auth-cookie-banner__preferences {
+  display: grid;
+  gap: 12px;
+  padding-block-start: 14px;
+  border-block-start: 1px solid var(--pdauth-line-subtle);
+}
+
+.pd-auth-cookie-banner__preference {
+  display: grid;
+}
+
+@media (max-width: 640px) {
+  .pd-auth-cookie-banner__actions {
+    width: 100%;
+  }
+
+  .pd-auth-cookie-banner__actions .pd-button {
+    flex: 1 1 auto;
   }
 }

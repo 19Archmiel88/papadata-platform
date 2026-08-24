@@ -69,43 +69,6 @@ export function CommandSectionHeader({
   );
 }
 
-export function CommandRuntimeSourceSummary({
-  id,
-  rows,
-}: {
-  readonly id?: string;
-  readonly rows: readonly DataRow[];
-}) {
-  return (
-    <aside
-      aria-label="Kanały sprzedaży"
-      className="pd-command-center-one-page__runtime-side-panel"
-      id={id}
-    >
-      <header>
-        <span>Źródła</span>
-        <h3>Kanały sprzedaży</h3>
-        <p>Udział w przychodzie i skala ruchu.</p>
-      </header>
-
-      <div className="pd-command-center-one-page__source-list">
-        {rows.slice(0, 5).map((row) => (
-          <article key={String(row.id)}>
-            <div className="pd-command-center-one-page__source-list-main">
-              <strong>{row.source}</strong>
-              <span>{row.revenue}</span>
-            </div>
-            <div className="pd-command-center-one-page__source-list-meta">
-              <span>{formatPercent(Number(row.share ?? 0))} przychodu</span>
-              <span>{row.sessions} sesji</span>
-            </div>
-          </article>
-        ))}
-      </div>
-    </aside>
-  );
-}
-
 export function CommandRuntimeTableDisclosure({
   children,
   label,

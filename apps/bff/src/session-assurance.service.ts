@@ -183,6 +183,17 @@ export class BffSessionAssuranceService {
       this.config.internalPrincipalHeaderName,
       signInternalPrincipalToken(input.session, this.config, new Date()),
     );
+    // CommandExecutionInterceptor (apps/api/src/production/commands/command-execution.interceptor.ts)
+    // requires Idempotency-Key on every state-changing request that carries
+    // a resolved principal -- which this internal call does (the signed
+    // principal token above). Without this, every mfa/confirm and step-up
+    // call 409s with "A valid Idempotency-Key header is required", found
+    // live while proving the invitations flow end-to-end
+    // (apps/worker/scripts/verify-invitations-flow.ts) -- MFA confirm/step-up
+    // had never actually worked through the BFF. A fresh key per call is
+    // correct here: this is a genuinely new command each time, not a retry
+    // of a client-supplied one.
+    headers.set("idempotency-key", randomUUID());
 
     if (upstreamAuthorization) {
       headers.set("authorization", upstreamAuthorization);

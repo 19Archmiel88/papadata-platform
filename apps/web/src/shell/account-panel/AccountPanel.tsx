@@ -11,6 +11,9 @@ import type {
   ShellUser,
 } from '../app-shell/shellTypes';
 import {
+  SegmentedControl,
+} from '../../design-system';
+import {
   AnchoredShellOverlay,
 } from '../overlays';
 import './account-panel.css';
@@ -50,6 +53,14 @@ export function AccountPanel({
   user,
 }: AccountPanelProps) {
   const copy = accountCopy(locale);
+  const languageOptions = [
+    { label: 'PL', value: 'pl' },
+    { label: 'EN', value: 'en' },
+  ] as const;
+  const themeOptions = [
+    { label: copy.light, value: 'light' },
+    { label: copy.dark, value: 'dark' },
+  ] as const;
 
   function navigateTo(path: string) {
     onOpenChange(false);
@@ -100,49 +111,29 @@ export function AccountPanel({
         <AccountGroup label={copy.preferences}>
           <div className="pd-shell-account-panel__preference">
             <span>{copy.language}</span>
-            <div
-              aria-label={copy.language}
+            <SegmentedControl
+              ariaLabel={copy.language}
               className="pd-shell-account-panel__segmented"
-              role="group"
-            >
-              <button
-                aria-pressed={locale === 'pl'}
-                onClick={() => onLocaleChange('pl')}
-                type="button"
-              >
-                PL
-              </button>
-              <button
-                aria-pressed={locale === 'en'}
-                onClick={() => onLocaleChange('en')}
-                type="button"
-              >
-                EN
-              </button>
-            </div>
+              items={languageOptions}
+              onValueChange={(nextLocale) => {
+                onLocaleChange(nextLocale as AccountPanelLocale);
+              }}
+              size="compact"
+              value={locale}
+            />
           </div>
           <div className="pd-shell-account-panel__preference">
             <span>{copy.theme}</span>
-            <div
-              aria-label={copy.theme}
+            <SegmentedControl
+              ariaLabel={copy.theme}
               className="pd-shell-account-panel__segmented"
-              role="group"
-            >
-              <button
-                aria-pressed={theme === 'light'}
-                onClick={() => onThemeChange('light')}
-                type="button"
-              >
-                {copy.light}
-              </button>
-              <button
-                aria-pressed={theme === 'dark'}
-                onClick={() => onThemeChange('dark')}
-                type="button"
-              >
-                {copy.dark}
-              </button>
-            </div>
+              items={themeOptions}
+              onValueChange={(nextTheme) => {
+                onThemeChange(nextTheme as AccountPanelTheme);
+              }}
+              size="compact"
+              value={theme}
+            />
           </div>
         </AccountGroup>
 
@@ -188,7 +179,7 @@ function AccountGroup({
 }) {
   return (
     <section className="pd-shell-account-panel__group">
-      <h3>{label}</h3>
+      <h3 className="pd-shell-account-panel__group-title">{label}</h3>
       <div className="pd-shell-account-panel__group-content">
         {children}
       </div>

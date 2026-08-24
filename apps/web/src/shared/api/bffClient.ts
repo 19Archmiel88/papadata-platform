@@ -59,6 +59,15 @@ export type BffNotificationList = {
 
 export type BffIntegrationJob = Readonly<Record<string, unknown>>;
 
+export type InvitationPreview = {
+  readonly accepted: boolean;
+  readonly email?: string;
+  readonly role?: string;
+  readonly status: string;
+  readonly tenantName?: string;
+  readonly workspaceName?: string;
+};
+
 export type RegisterInput = {
   readonly displayName?: string;
   readonly email: string;
@@ -162,6 +171,116 @@ class BffClient {
         readonly session: BffSession;
         readonly verified: boolean;
       };
+    }>(response);
+    assertOk(response, payload);
+    return payload.data;
+  }
+
+  async stepUp(input: {
+    readonly code: string;
+    readonly operationScope: string;
+  }): Promise<{
+    readonly session: BffSession;
+    readonly stepUpExpiresAt: string;
+  }> {
+    const csrfToken = await this.getCsrfToken();
+    const response = await this.fetch('/api/v1/auth/step-up', {
+      method: 'POST',
+      headers: {
+        'x-papadata-csrf': csrfToken,
+      },
+      body: JSON.stringify(input),
+    });
+    const payload = await readJson<{
+      readonly data: {
+        readonly session: BffSession;
+        readonly stepUpExpiresAt: string;
+      };
+    }>(response);
+    assertOk(response, payload);
+    return payload.data;
+  }
+
+  async enrollMfa(input: {
+    readonly accountName: string;
+  }): Promise<{
+    readonly otpauthUri: string;
+    readonly recoveryCodes: readonly string[];
+    readonly secret: string;
+  }> {
+    // Unlike every other authenticated command, this one is proxied
+    // generically (ProxyController's catch-all, apps/bff/src/proxy.controller.ts)
+    // straight to SecurityController.enroll() -- a hand-written controller
+    // that returns its object directly, not wrapped in the generated
+    // contract runtime's { data: ... } envelope. Confirmed against the real
+    // running response (apps/worker/scripts/verify-invitations-flow.ts) --
+    // authenticatedCommand()'s payload.data would be undefined here.
+    const csrfToken = await this.getCsrfToken();
+    const response = await this.fetch('/api/v1/security/mfa/enroll', {
+      method: 'POST',
+      headers: {
+        'idempotency-key': createCorrelationId(),
+        'x-papadata-csrf': csrfToken,
+      },
+      body: JSON.stringify(input),
+    });
+    const payload = await readJson<{
+      readonly otpauthUri: string;
+      readonly recoveryCodes: readonly string[];
+      readonly secret: string;
+    }>(response);
+    assertOk(response, payload);
+    return payload;
+  }
+
+  async inviteMember(input: {
+    readonly email: string;
+    readonly role: string;
+  }): Promise<{
+    readonly email: string;
+    readonly expiresAt: string;
+    readonly invitationId: string;
+    readonly role: string;
+    readonly token: string;
+  }> {
+    return this.authenticatedCommand('/api/v1/auth/invitations/request', input);
+  }
+
+  async revokeInvitation(invitationId: string): Promise<{
+    readonly invitationId: string;
+    readonly status: string;
+  }> {
+    return this.authenticatedCommand('/api/v1/invitation/reject', { invitationId });
+  }
+
+  async validateInvitation(input: {
+    readonly invitationId: string;
+    readonly token: string;
+  }): Promise<InvitationPreview> {
+    const response = await this.fetch('/api/v1/auth/invitations/validate', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
+    const payload = await readJson<{ readonly data: InvitationPreview }>(response);
+    assertOk(response, payload);
+    return payload.data;
+  }
+
+  async acceptInvitation(input: {
+    readonly displayName: string;
+    readonly invitationId: string;
+    readonly password: string;
+    readonly token: string;
+  }): Promise<{
+    readonly accepted: boolean;
+    readonly email?: string;
+  }> {
+    const response = await this.fetch('/api/v1/auth/invitations/accept', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
+    const payload = await readJson<{
+      readonly data: { readonly accepted: boolean; readonly email?: string };
     }>(response);
     assertOk(response, payload);
     return payload.data;

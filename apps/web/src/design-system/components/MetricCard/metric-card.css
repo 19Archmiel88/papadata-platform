@@ -208,10 +208,14 @@
 }
 
 .pd-metric-card__state-message {
+  display: var(--pd-metric-card-state-display, block);
   margin: 0;
+  overflow: var(--pd-metric-card-state-overflow, visible);
   color: var(--pd-text-muted);
-  font-size: 0.72rem;
-  line-height: 1.45;
+  font-size: var(--pd-metric-card-state-font-size, 0.72rem);
+  line-height: var(--pd-metric-card-state-line-height, 1.45);
+  -webkit-box-orient: var(--pd-metric-card-state-box-orient, initial);
+  -webkit-line-clamp: var(--pd-metric-card-state-line-clamp, initial);
 }
 
 .pd-metric-card__sparkline {

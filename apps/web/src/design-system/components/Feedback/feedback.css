@@ -74,10 +74,10 @@
   gap: var(--pd-space-3);
   align-items: start;
   padding: var(--pd-space-4);
-  border: 1px solid var(--pd-separator-subtle);
-  border-inline-start: 3px solid var(--pd-feedback-tone);
-  border-radius: var(--pd-radius-small);
-  background: var(--pd-surface);
+  border: var(--pd-feedback-surface-border, 1px solid var(--pd-separator-subtle));
+  border-inline-start: var(--pd-feedback-surface-start-border, 3px solid var(--pd-feedback-tone));
+  border-radius: var(--pd-feedback-surface-radius, var(--pd-radius-small));
+  background: var(--pd-feedback-surface-background, var(--pd-surface));
 }
 
 .pd-feedback-surface[data-tone='success'],
@@ -104,8 +104,8 @@
 .pd-feedback-state__symbol {
   display: inline-grid;
   place-items: center;
-  inline-size: 2rem;
-  block-size: 2rem;
+  inline-size: var(--pd-feedback-symbol-size, 2rem);
+  block-size: var(--pd-feedback-symbol-size, 2rem);
   border-radius: var(--pd-radius-small);
   background: color-mix(in srgb, var(--pd-feedback-tone) 9%, transparent);
   color: var(--pd-feedback-tone);
@@ -128,7 +128,7 @@
 .pd-feedback-surface__title,
 .pd-feedback-state__title {
   margin: 0;
-  color: var(--pd-text);
+  color: var(--pd-feedback-title-color, var(--pd-text));
   font-size: 0.8rem;
   font-weight: var(--pd-font-weight-semibold);
 }
@@ -136,7 +136,7 @@
 .pd-feedback-surface__message,
 .pd-feedback-state__description {
   margin: 0;
-  color: var(--pd-text-secondary);
+  color: var(--pd-feedback-message-color, var(--pd-text-secondary));
   font-size: 0.72rem;
   line-height: 1.5;
 }
@@ -179,25 +179,16 @@
   display: grid;
   justify-items: start;
   gap: var(--pd-space-4);
-  max-inline-size: 38rem;
-  padding: var(--pd-space-6);
+  max-inline-size: var(--pd-feedback-state-max-inline-size, 38rem);
+  padding: var(--pd-feedback-state-padding, var(--pd-space-6));
+  border: var(--pd-feedback-state-border, 0);
+  border-radius: var(--pd-feedback-state-radius, 0);
+  background: var(--pd-feedback-state-background, transparent);
 }
 
 .pd-toast {
   max-inline-size: min(26rem, calc(100vw - 2rem));
   box-shadow: var(--pd-shadow-floating);
-}
-
-.pd-visually-hidden {
-  position: absolute !important;
-  inline-size: 1px !important;
-  block-size: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
 }
 
 @media (max-width: 520px) {

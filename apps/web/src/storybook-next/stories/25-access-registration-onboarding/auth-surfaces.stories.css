@@ -1,12 +1,18 @@
 .pd-s25-page .pd-f0-page__inner {
   width: min(100%, 1440px);
-}.pd-s25-stage {
+}
+
+.pd-s25-stage {
   container-type: inline-size;
   min-width: 0;
   min-height: auto;
-}.pd-s25-stage--full {
+}
+
+.pd-s25-stage--full {
   width: 100%;
-}.pd-s25-stage > [data-auth-mode] {
+}
+
+.pd-s25-stage > [data-auth-mode] {
   min-height: auto;
 }
 
@@ -21,12 +27,16 @@
 .pd-s25-grid--compact,
 .pd-s25-grid--three.pd-s25-grid--compact {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 620px), 1fr));
-}.pd-s25-flow-panel {
+}
+
+.pd-s25-flow-panel {
   display: grid;
   gap: var(--pd-space-5);
   width: 100%;
   min-width: 0;
-}.pd-s25-flow-panel__header {
+}
+
+.pd-s25-flow-panel__header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr);
   gap: var(--pd-space-5);
@@ -34,20 +44,30 @@
   min-width: 0;
   padding-block-end: var(--pd-space-4);
   border-bottom: 1px solid var(--pd-separator-subtle);
-}.pd-s25-flow-panel__header > div {
+}
+
+.pd-s25-flow-panel__header > div {
   display: grid;
   gap: var(--pd-space-2);
   min-width: 0;
-}.pd-s25-flow-panel__header h3,
+}
+
+.pd-s25-flow-panel__header h3,
 .pd-s25-flow-panel__header p {
   margin: 0;
-}.pd-s25-flow-panel__header h3 {
+}
+
+.pd-s25-flow-panel__header h3 {
   color: var(--pd-text-strong);
   font-size: var(--pd-font-size-5);
   line-height: var(--pd-line-height-tight);
-}.pd-s25-flow-panel__header p {
+}
+
+.pd-s25-flow-panel__header p {
   color: var(--pd-text-muted);
-}.pd-s25-flow-steps {
+}
+
+.pd-s25-flow-steps {
   display: grid;
   gap: 0;
   min-width: 0;
@@ -56,31 +76,47 @@
   width: 100%;
   list-style: none;
   border-block: 1px solid var(--pd-separator-subtle);
-}.pd-s25-flow-step {
+}
+
+.pd-s25-flow-step {
   display: grid;
   gap: var(--pd-space-4);
   min-width: 0;
   padding: var(--pd-space-5);
-}.pd-s25-flow-step + .pd-s25-flow-step {
+}
+
+.pd-s25-flow-step + .pd-s25-flow-step {
   border-top: 1px solid var(--pd-separator-subtle);
-}.pd-s25-flow-step[data-current="true"] {
+}
+
+.pd-s25-flow-step[data-current='true'] {
   border-left: 3px solid var(--pd-accent);
   padding-left: calc(var(--pd-space-5) - 3px);
-}.pd-s25-flow-step header {
+}
+
+.pd-s25-flow-step header {
   display: grid;
   gap: var(--pd-space-3);
   min-width: 0;
-}.pd-s25-flow-step h3,
+}
+
+.pd-s25-flow-step h3,
 .pd-s25-flow-step p {
   margin: 0;
-}.pd-s25-flow-step h3 {
+}
+
+.pd-s25-flow-step h3 {
   color: var(--pd-text-strong);
   font-size: var(--pd-font-size-5);
   line-height: var(--pd-line-height-tight);
-}.pd-s25-flow-step p {
+}
+
+.pd-s25-flow-step p {
   color: var(--pd-text-muted);
   line-height: var(--pd-line-height-body);
-}.pd-s25-flow-step ul {
+}
+
+.pd-s25-flow-step ul {
   display: grid;
   gap: var(--pd-space-2);
   margin: 0;
@@ -94,117 +130,66 @@
   .pd-s25-grid--compact,
   .pd-s25-grid--three.pd-s25-grid--compact {
     grid-template-columns: 1fr;
-  }.pd-s25-flow-panel__header {
-  grid-template-columns: 1fr;
-}
-}/* -------------------------------------------------------------------------- */
-/* Section 25 surface ownership                                                */
-/* -------------------------------------------------------------------------- */
+  }
 
-/*
-  The Storybook stage is only a structural wrapper. It must not own a rounded
-  visual surface, otherwise Auth examples become nested containers and rounded
-  corners get clipped when a real AuthSurface or a process step is rendered
-  inside it.
+  .pd-s25-flow-panel__header {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Section 25 surface ownership
+   --------------------------------------------------------------------------
+   AuthSurface (features/auth/AuthSurface.tsx + auth-surface.css) owns its
+   complete visual identity end to end — the "Editorial Clarity" redesign.
+   Storybook must show the exact production look, so this stylesheet no
+   longer reskins pd-auth-surface* internals (no borders, radii, shadows,
+   or backdrop layered back on top here). The stage is a structural
+   wrapper only: it constrains story width and lets AuthSurface fill it,
+   the same way AppRouter's PublicAuthShell does in the real app.
 */
+
 .pd-f0-page[data-pd-story-section='25'] .pd-s25-stage {
   position: relative;
   padding-block: clamp(12px, 2vw, 24px);
   padding-inline: 0;
-}.pd-f0-page[data-pd-story-section='25'] .pd-s25-stage > *,
+}
+
+.pd-f0-page[data-pd-story-section='25'] .pd-s25-stage > *,
 .pd-f0-page[data-pd-story-section='25'] .pd-s25-flow-panel > * {
   position: relative;
   z-index: auto;
-}/* The process flow uses separators, not card-like preview containers. */
+}
+
+/* The process flow uses separators, not card-like preview containers. */
 .pd-f0-page[data-pd-story-section='25'] .pd-s25-flow-panel {
   position: relative;
   padding: 0;
-}.pd-f0-page[data-pd-story-section='25'] .pd-s25-flow-steps {
+}
+
+.pd-f0-page[data-pd-story-section='25'] .pd-s25-flow-steps {
   border-block: 1px solid var(--pd-separator-subtle);
-}.pd-f0-page[data-pd-story-section='25'] .pd-s25-flow-step {
+}
+
+.pd-f0-page[data-pd-story-section='25'] .pd-s25-flow-step {
   position: relative;
   padding-block: var(--pd-space-5);
   padding-inline: 0;
-}.pd-f0-page[data-pd-story-section='25'] .pd-s25-flow-step + .pd-s25-flow-step {
+}
+
+.pd-f0-page[data-pd-story-section='25'] .pd-s25-flow-step + .pd-s25-flow-step {
   border-top: 1px solid var(--pd-separator-subtle);
-}.pd-f0-page[data-pd-story-section='25'] .pd-s25-flow-step[data-current='true'] {
+}
+
+.pd-f0-page[data-pd-story-section='25'] .pd-s25-flow-step[data-current='true'] {
   padding-inline-start: var(--pd-space-4);
   border-left: 3px solid var(--pd-accent);
-}/* AuthSurface remains the only enclosed app surface in Auth runtime stories. */
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface"] {
+}
+
+.pd-f0-page[data-pd-story-section='25'] [class~='pd-auth-surface'] {
   min-height: auto;
-  padding: clamp(18px, 2.6vw, 34px);
-  color: var(--pd-text);
-}.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__canvas"] {
-  width: min(980px, 100%);
-  gap: clamp(24px, 4vw, 58px);
-}.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__hero"] {
-  padding: clamp(8px, 2vw, 18px);
 }
 
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__workspace"] {
-  position: relative;
-  overflow: visible;
-  border: 1px solid var(--pd-refractive-border);
-  border-radius: var(--pd-radius-overlay);
-  background: var(--pd-surface-panel);
-  box-shadow: var(--pd-shadow-control);
-  backdrop-filter: none;
-}
-
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__workspace"]::after {
-  display: none;
-}
-
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__workspace"] > * {
-  position: relative;
-  z-index: 1;
-}.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface"] h1,
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface"] h2,
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface"] h3 {
-  color: var(--pd-text);
-  font-weight: var(--pd-font-weight-medium);
-  letter-spacing: -0.045em;
-}.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__eyebrow"],
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__state-eyebrow"] {
-  color: var(--pd-brand-highlight);
-  font-weight: var(--pd-font-weight-medium);
-  letter-spacing: 0.09em;
-}
-
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__state-panel"] {
-  border: 1px solid var(--pd-refractive-border);
-  border-radius: var(--pd-radius-surface);
-  background: var(--pd-refractive-control);
-  box-shadow: var(--pd-shadow-control);
-}
-
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__state-panel"][data-tone='critical'],
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__state-panel"][data-tone='success'],
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__state-panel"][data-tone='warning'],
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__state-panel"][data-tone='info'] {
-  box-shadow: var(--pd-shadow-control);
-}
-
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__state-panel"][data-tone='critical'] {
-  border-color: color-mix(in srgb, var(--pd-status-danger) 42%, var(--pd-refractive-border));
-}
-
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__state-panel"][data-tone='success'] {
-  border-color: color-mix(in srgb, var(--pd-status-success) 36%, var(--pd-refractive-border));
-}
-
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__state-panel"][data-tone='warning'] {
-  border-color: color-mix(in srgb, var(--pd-status-warning) 42%, var(--pd-refractive-border));
-}
-
-.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__state-panel"][data-tone='info'] {
-  border-color: color-mix(in srgb, var(--pd-brand-action) 38%, var(--pd-refractive-border));
-}.pd-f0-page[data-pd-story-section='25'] .pd-s25-flow-step [class~="pd-button"] {
+.pd-f0-page[data-pd-story-section='25'] .pd-s25-flow-step [class~='pd-button'] {
   justify-self: start;
-}
-
-@container (max-width: 760px) {.pd-f0-page[data-pd-story-section='25'] [class~="pd-auth-surface__canvas"] {
-  grid-template-columns: 1fr;
-}
 }

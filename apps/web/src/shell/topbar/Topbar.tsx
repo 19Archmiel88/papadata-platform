@@ -6,7 +6,6 @@ import type {
 } from '../../../../../contracts/ui-contract-types';
 
 import {
-  DateRangePicker,
   Icon,
   PapaDataBrand,
 } from '../../design-system';
@@ -25,6 +24,9 @@ import type {
 import {
   AccountPanel,
 } from '../account-panel';
+import {
+  DateRangeOverlay,
+} from '../date-range-overlay';
 import type {
   ShellNavigate,
   ShellNavigationGroup,
@@ -35,9 +37,6 @@ import type {
 import {
   NotificationCenter,
 } from '../notifications';
-import {
-  AnchoredShellOverlay,
-} from '../overlays';
 import './topbar.css';
 
 type RuntimeLocale = PapaDataRuntimeLocale;
@@ -398,12 +397,14 @@ export function AuthenticatedTopbar({
       </button>
 
       <div className="pd-shell-topbar__actions">
-        <AnchoredShellOverlay
-          className="pd-shell-topbar__calendar-overlay"
-          description={copy.calendarDescription}
+        <DateRangeOverlay
+          copy={copy}
+          locale={locale}
+          onChange={onDateRangeChange}
           onOpenChange={(open) => setShellOverlay('calendar', open)}
           open={activeOverlay === 'calendar'}
-          title={copy.calendar}
+          presets={calendarPresets(locale)}
+          quickOptions={calendarQuickOptions(locale)}
           trigger={(
             <button
               aria-label={copy.calendar}
@@ -413,23 +414,8 @@ export function AuthenticatedTopbar({
               <Icon decorative name="calendar" size={20} />
             </button>
           )}
-          width="wide"
-        >
-          <DateRangePicker
-            fromLabel={copy.dateFrom}
-            helperText={copy.calendarHelper}
-            label={copy.dateRange}
-            locale={locale}
-            onChange={onDateRangeChange}
-            presetLabel={copy.datePreset}
-            presets={calendarPresets(locale)}
-            quickOptions={calendarQuickOptions(locale)}
-            quickOptionsLabel={copy.calendarQuickOptions}
-            timezone={dateRange.timezone}
-            toLabel={copy.dateTo}
-            value={dateRange}
-          />
-        </AnchoredShellOverlay>
+          value={dateRange}
+        />
 
         {papaAvailable ? (
           <button

@@ -1,0 +1,28 @@
+.pd-shell-date-range-overlay {
+  box-sizing: border-box;
+  min-inline-size: 0;
+  inline-size: 100%;
+  padding: 18px 20px 20px;
+}
+
+.pd-shell-date-range-overlay__picker {
+  align-items: start;
+}
+
+.pd-shell-date-range-overlay__picker legend {
+  display: block;
+  inline-size: 100%;
+  margin-block: 0 var(--pd-space-1);
+  overflow: visible;
+  line-height: 1.25;
+}
+
+.pd-shell-date-range-overlay__picker .pd-date-range-picker__quick-options {
+  margin-block-start: 0;
+}
+
+@media (max-width: 700px) {
+  .pd-shell-date-range-overlay {
+    padding: 14px;
+  }
+}

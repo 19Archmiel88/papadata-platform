@@ -24,6 +24,11 @@ export {
 } from './radius';
 
 export {
+  dataSeriesTokens,
+  resolveSeriesColor,
+} from './seriesColor';
+
+export {
   shadowTokens,
 } from './shadows';
 

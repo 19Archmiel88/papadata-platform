@@ -1,0 +1,57 @@
+.pd-chart-tooltip {
+  z-index: var(--pd-layer-popover);
+  display: grid;
+  gap: var(--pd-space-1);
+  min-inline-size: 10rem;
+  padding: var(--pd-space-2) var(--pd-space-3);
+  border: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-surface);
+  background: var(--pd-surface-raised);
+  box-shadow: var(--pd-shadow-floating);
+  color: var(--pd-text);
+  font-size: 0.72rem;
+}
+
+.pd-chart-tooltip__heading {
+  padding-block-end: var(--pd-space-1);
+  border-block-end: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: 0.64rem;
+}
+
+.pd-chart-tooltip__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: var(--pd-space-1) var(--pd-space-3);
+}
+
+.pd-chart-tooltip__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pd-space-2);
+  min-inline-size: 0;
+  color: var(--pd-text-secondary);
+}
+
+.pd-chart-tooltip__key {
+  inline-size: 0.62rem;
+  block-size: 0.14rem;
+  flex-shrink: 0;
+  border-radius: var(--pd-radius-small);
+  background: var(--pd-text-muted);
+}
+
+.pd-chart-tooltip__value {
+  color: var(--pd-text);
+  font-family: var(--pd-font-mono);
+  font-weight: var(--pd-font-weight-medium);
+  white-space: nowrap;
+}
+
+.pd-chart-tooltip__detail {
+  grid-column: 1 / -1;
+  color: var(--pd-text-muted);
+  font-size: 0.66rem;
+}

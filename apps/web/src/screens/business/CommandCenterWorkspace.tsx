@@ -48,7 +48,7 @@ import {
 } from './command-center/commandCenterLegacyVariants';
 import {
   buildOperationalDecisions,
-  commandCenterOnePageSectionIds,
+  commandCenterOnePageSections,
   openPapaAssistant,
 } from './command-center/commandCenterOnePageModel';
 import {
@@ -97,12 +97,6 @@ const commandCenterScreenNavigation: readonly CommandNavigationItem[] = (
     }))
 );
 
-const commandCenterRuntimeSectionLabels: Readonly<Record<(typeof commandCenterOnePageSectionIds)[number], string>> = {
-  'command-section-drivers': 'Drivery wyniku',
-  'command-section-kpi': 'KPI',
-  'command-section-plan': 'Plan vs Benchmark',
-};
-
 /**
  * Sections rendered on the single scrolling runtime one-page — every
  * command-center route in `mode="runtime"` shares this same page rather than
@@ -115,10 +109,10 @@ const commandCenterRuntimeSectionLabels: Readonly<Record<(typeof commandCenterOn
  * unreachable from the one-page despite its own route existing.
  */
 export const commandCenterRuntimeNavigation: readonly CommandNavigationItem[] = (
-  commandCenterOnePageSectionIds.map((id) => ({
-    href: `#${id}`,
-    id,
-    label: commandCenterRuntimeSectionLabels[id],
+  commandCenterOnePageSections.map((section) => ({
+    href: `#${section.id}`,
+    id: section.id,
+    label: section.label,
   }))
 );
 

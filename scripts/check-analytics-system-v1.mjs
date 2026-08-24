@@ -803,6 +803,7 @@ for (const marker of [
   'plan',
   'previousPeriod',
   'movingAverage',
+  'ChartCrosshairTooltip',
 ]) {
   ensure(
     trendRuntime.includes(marker),
@@ -822,13 +823,14 @@ const comparisonRuntime = readText(
 for (const marker of [
   "from 'recharts'",
   'Bar',
-  'ComposedChart',
+  'BarChart',
   'ReferenceLine',
   'ResponsiveContainer',
   'accessibilityLayer',
   "'grouped'",
   "'ranking'",
   'benchmark',
+  'ChartMarkTooltip',
 ]) {
   ensure(
     comparisonRuntime.includes(marker),
@@ -842,8 +844,8 @@ ensure(
 );
 
 ensure(
-  !comparisonRuntime.includes('Tooltip'),
-  '15.04 must not take tooltip ownership from 15.09.',
+  comparisonRuntime.includes("from '../ChartTooltip'"),
+  '15.04 must consume the shared 15.09 chart tooltip contract.',
 );
 
 const shareRuntime = readText(
@@ -863,6 +865,7 @@ for (const marker of [
   "'bar'",
   "'stacked'",
   'segments',
+  'ChartMarkTooltip',
 ]) {
   ensure(
     shareRuntime.includes(marker),
@@ -876,8 +879,8 @@ ensure(
 );
 
 ensure(
-  !shareRuntime.includes('Tooltip'),
-  '15.05 must not take tooltip ownership from 15.09.',
+  shareRuntime.includes("from '../ChartTooltip'"),
+  '15.05 must consume the shared 15.09 chart tooltip contract.',
 );
 
 const correlationRuntime = readText(
@@ -897,6 +900,7 @@ for (const marker of [
   "'driver-analysis'",
   'driver-hypothesis',
   'noCausality',
+  'ChartMarkTooltip',
 ]) {
   ensure(
     correlationRuntime.includes(marker),
@@ -910,8 +914,8 @@ ensure(
 );
 
 ensure(
-  !correlationRuntime.includes('Tooltip'),
-  '15.06 must not take tooltip ownership from 15.09.',
+  correlationRuntime.includes("from '../ChartTooltip'"),
+  '15.06 must consume the shared 15.09 chart tooltip contract.',
 );
 
 const forecastRuntime = readText(

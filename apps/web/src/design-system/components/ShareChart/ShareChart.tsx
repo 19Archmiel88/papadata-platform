@@ -1,10 +1,16 @@
 import type {
   HTMLAttributes,
 } from 'react';
+import type {
+  TooltipContentProps,
+} from 'recharts';
 
 import {
   useChartMotion,
 } from '../../foundations/motion';
+import {
+  resolveSeriesColor,
+} from '../../foundations/tokens';
 import {
   Bar,
   BarChart,
@@ -14,10 +20,23 @@ import {
   Pie,
   PieChart,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
 
+import {
+  useSeriesVisibility,
+} from '../Analytics/useSeriesVisibility';
+import {
+  ChartMarkTooltip,
+} from '../ChartTooltip';
+import {
+  ChartLegend,
+} from '../ChartLegend';
+import type {
+  ChartLegendItem,
+} from '../ChartLegend';
 import { joinClassNames } from '../Field/fieldUtils';
 import './share-chart.css';
 
@@ -73,7 +92,7 @@ const defaultLabels: ShareChartLabels = {
   value: 'Wartość',
 };
 
-const seriesTokens = [
+const shareSeriesTokens = [
   'var(--pd-share-series-1)',
   'var(--pd-share-series-2)',
   'var(--pd-share-series-3)',
@@ -93,12 +112,6 @@ function formatDefaultPercent(value: number): string {
     maximumFractionDigits: 1,
     style: 'percent',
   }).format(value / 100);
-}
-
-function resolveSeriesToken(index: number): string {
-  return seriesTokens[
-    index % seriesTokens.length
-  ] ?? seriesTokens[0];
 }
 
 function clampPercent(value: number): number {
@@ -164,7 +177,7 @@ function normalizeSegments(
       return {
         ...segment,
         dataKey: `segment${index}`,
-        color: resolveSeriesToken(index),
+        color: resolveSeriesColor(index, shareSeriesTokens),
         percent,
         percentLabel: formatPercent(percent),
         value,
@@ -221,7 +234,7 @@ function groupSmallDonutSegments(
   return [
     ...visibleSegments,
     {
-      color: resolveSeriesToken(otherIndex),
+      color: resolveSeriesColor(otherIndex, shareSeriesTokens),
       dataKey: `segment${otherIndex}`,
       id: 'other',
       label: labels.other,
@@ -247,50 +260,22 @@ function buildStackRow(
   );
 }
 
-function ShareLegend({
-  labels,
-  segments,
-}: {
-  readonly labels: ShareChartLabels;
-  readonly segments: readonly RuntimeSegment[];
-}) {
-  return (
-    <ol
-      aria-label={labels.legend}
-      className="pd-share-chart__legend"
-    >
-      {segments.map((segment) => (
-        <li key={segment.id}>
-          <span
-            aria-hidden="true"
-            className="pd-share-chart__swatch"
-            style={{
-              background: segment.color,
-            }}
-          />
-          <span className="pd-share-chart__legend-label">
-            {segment.label}
-          </span>
-          <span className="pd-share-chart__legend-value">
-            {segment.percentLabel}
-          </span>
-        </li>
-      ))}
-    </ol>
-  );
-}
-
 function ShareMeta({
+  isVisible,
   labels,
   segments,
 }: {
+  readonly isVisible: (id: string) => boolean;
   readonly labels: ShareChartLabels;
   readonly segments: readonly RuntimeSegment[];
 }) {
   return (
     <dl className="pd-share-chart__meta">
       {segments.map((segment) => (
-        <div key={segment.id}>
+        <div
+          data-active={isVisible(segment.id) ? undefined : 'false'}
+          key={segment.id}
+        >
           <dt>{segment.label}</dt>
           <dd>
             <span>{segment.valueLabel}</span>
@@ -320,6 +305,7 @@ export function ShareChart({
   ...props
 }: ShareChartProps) {
   const chartMotion = useChartMotion();
+  const seriesVisibility = useSeriesVisibility();
   const resolvedLabels: ShareChartLabels = {
     ...defaultLabels,
     ...labels,
@@ -358,9 +344,34 @@ export function ShareChart({
 
   const hasData = runtimeSegments.length > 0;
 
-  const stackRow = buildStackRow(
-    runtimeSegments,
+  const visibleSegments = runtimeSegments.filter(
+    (segment) => seriesVisibility.isVisible(segment.id),
   );
+  const legendItems: readonly ChartLegendItem[] = runtimeSegments.map((segment) => ({
+    color: segment.color,
+    id: segment.id,
+    label: segment.label,
+    swatch: 'square',
+    valueLabel: segment.percentLabel,
+  }));
+
+  const stackRow = buildStackRow(
+    visibleSegments,
+  );
+
+  function renderShareTooltip(tooltipProps: TooltipContentProps) {
+    return (
+      <ChartMarkTooltip
+        {...tooltipProps}
+        detail={(entry) => {
+          const segment = entry.payload as RuntimeSegment | undefined;
+
+          return segment ? segment.valueLabel : null;
+        }}
+        valueFormatter={formatPercent}
+      />
+    );
+  }
 
   return (
     <div
@@ -391,10 +402,16 @@ export function ShareChart({
                   width="100%"
                 >
                   <PieChart accessibilityLayer>
+                    <Tooltip content={renderShareTooltip} />
+
                     <Pie
+                      activeShape={{
+                        stroke: 'var(--pd-text)',
+                        strokeWidth: 2,
+                      }}
                       cx="50%"
                       cy="50%"
-                      data={runtimeSegments}
+                      data={visibleSegments}
                       dataKey="percent"
                       innerRadius="58%"
                       animationDuration={chartMotion.animationDuration}
@@ -405,7 +422,7 @@ export function ShareChart({
                       stroke="var(--pd-surface)"
                       strokeWidth={2}
                     >
-                      {runtimeSegments.map((segment) => (
+                      {visibleSegments.map((segment) => (
                         <Cell
                           fill={segment.color}
                           key={segment.id}
@@ -434,7 +451,7 @@ export function ShareChart({
                     <BarChart
                       accessibilityLayer
                       barCategoryGap="28%"
-                      data={runtimeSegments}
+                      data={visibleSegments}
                       layout="vertical"
                       margin={{
                         bottom: 8,
@@ -474,7 +491,16 @@ export function ShareChart({
                         type="category"
                         width={132}
                       />
+                      <Tooltip
+                        content={renderShareTooltip}
+                        cursor={false}
+                        shared={false}
+                      />
                       <Bar
+                        activeBar={{
+                          stroke: 'var(--pd-text)',
+                          strokeWidth: 1.5,
+                        }}
                         dataKey="percent"
                         animationDuration={chartMotion.animationDuration}
                         isAnimationActive={chartMotion.isAnimationActive}
@@ -483,7 +509,7 @@ export function ShareChart({
                         stroke="none"
                         strokeWidth={0}
                       >
-                        {runtimeSegments.map((segment) => (
+                        {visibleSegments.map((segment) => (
                           <Cell
                             fill={segment.color}
                             key={segment.id}
@@ -499,6 +525,12 @@ export function ShareChart({
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
+
+                  {visibleSegments.length === 0 ? (
+                    <p className="pd-share-chart__all-hidden" role="status">
+                      Wszystkie segmenty ukryte. Kliknij w legendzie, aby je przywrócić.
+                    </p>
+                  ) : null}
                 </div>
 
                 <div
@@ -508,6 +540,7 @@ export function ShareChart({
                   {runtimeSegments.map((segment) => (
                     <div
                       className="pd-share-chart__bar-row"
+                      data-active={seriesVisibility.isVisible(segment.id) ? undefined : 'false'}
                       key={segment.id}
                     >
                       <div className="pd-share-chart__bar-row-header">
@@ -557,10 +590,15 @@ export function ShareChart({
                       hide
                       type="category"
                     />
-                    {runtimeSegments.map((segment, index) => {
-                      const isOnly = runtimeSegments.length === 1;
+                    <Tooltip
+                      content={renderShareTooltip}
+                      cursor={false}
+                      shared={false}
+                    />
+                    {visibleSegments.map((segment, index) => {
+                      const isOnly = visibleSegments.length === 1;
                       const isFirst = index === 0;
-                      const isLast = index === runtimeSegments.length - 1;
+                      const isLast = index === visibleSegments.length - 1;
                       const radius: number | [number, number, number, number] = isOnly
                         ? [8, 8, 8, 8]
                         : isFirst
@@ -571,6 +609,10 @@ export function ShareChart({
 
                       return (
                         <Bar
+                          activeBar={{
+                            stroke: 'var(--pd-text)',
+                            strokeWidth: 1.5,
+                          }}
                           barSize={7}
                           dataKey={segment.dataKey}
                           fill={segment.color}
@@ -591,13 +633,17 @@ export function ShareChart({
           </div>
 
           <ShareMeta
+            isVisible={seriesVisibility.isVisible}
             labels={resolvedLabels}
             segments={runtimeSegments}
           />
 
-          <ShareLegend
-            labels={resolvedLabels}
-            segments={runtimeSegments}
+          <ChartLegend
+            ariaLabel={resolvedLabels.legend}
+            isVisible={seriesVisibility.isVisible}
+            items={legendItems}
+            onToggle={seriesVisibility.toggle}
+            size="compact"
           />
         </>
       ) : (

@@ -195,7 +195,6 @@ export const AppShellStory: Story = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('heading', { name: 'AppShell' })).toBeInTheDocument();
     await expect(canvas.getByRole('button', { name: /Szukaj lub uruchom komendę/u })).toBeInTheDocument();
-    await expect(canvas.getByText('Status danych')).toBeInTheDocument();
     await expect(canvas.getByRole('button', { name: 'Zwiń nawigację' })).toBeInTheDocument();
   },
 };

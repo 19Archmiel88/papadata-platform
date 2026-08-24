@@ -91,10 +91,34 @@ function normalizeOrder(payload: Readonly<Record<string, unknown>>, observedAt: 
       currency: normalizeCurrencyCode(currency),
       grossAmount: amount,
       lineItemCount: lineItems.length,
+      lineItems: lineItems.map((item) => normalizeOrderLineItem(item)),
       customerReference: firstString(payload,
         "customer.id", "customer.email", "email", "buyer.email", "deliveryAddress.email"),
       updatedAt: firstString(payload, "updated_at", "updatedAt", "date_modified_gmt", "updatedAt"),
     },
+  };
+}
+
+/**
+ * Preserves per-line productId/quantity/amount from a raw order-line payload
+ * instead of discarding it down to a bare count — needed for a real
+ * "revenue per product" breakdown. Field paths cover the provider shapes
+ * seen elsewhere in this file (WooCommerce `line_items`, Shopify
+ * `lineItems.nodes`, BaseLinker/Allegro `products`/`items`); a line whose
+ * shape doesn't match any known path yields null fields rather than a
+ * fabricated value, and is dropped downstream instead of counted.
+ */
+function normalizeOrderLineItem(item: unknown): Readonly<Record<string, unknown>> {
+  if (!isRecord(item)) {
+    return { externalProductId: null, grossAmount: null, quantity: null };
+  }
+
+  return {
+    externalProductId: firstString(item,
+      "product_id", "productId", "product.id", "offer.id", "sku"),
+    grossAmount: firstNumber(item,
+      "total", "totalPrice", "originalTotalSet.shopMoney.amount", "price.amount", "price", "priceBrutto"),
+    quantity: firstNumber(item, "quantity", "qty"),
   };
 }
 
@@ -189,7 +213,8 @@ function normalizeAnalytics(
     entity: {
       analyticsType: stream,
       date,
-      source: firstString(payload, "sessionSource", "source", "firstUserSource"),
+      source: firstString(payload,
+        "sessionSource", "source", "firstUserSource", "sessionDefaultChannelGroup", "sessionSourceMedium"),
       medium: firstString(payload, "sessionMedium", "medium", "firstUserMedium"),
       campaign: firstString(payload, "sessionCampaignName", "campaign", "firstUserCampaignName"),
       sessions: firstNumber(payload, "sessions"),

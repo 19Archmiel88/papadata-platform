@@ -23,7 +23,7 @@
   place-items: center;
   width: 38px;
   height: 38px;
-  border: 1px solid color-mix(in srgb, var(--pd-brand-accent) 45%, var(--pd-shell-separator));
+  border: 1px solid color-mix(in srgb, var(--pd-shell-brand) 45%, var(--pd-shell-separator));
   border-radius: 10px;
   background: var(--pd-shell-surface-active);
   color: var(--pd-shell-text);
@@ -86,13 +86,20 @@
   border-radius: 8px;
   background: transparent;
   color: var(--pd-shell-text-secondary);
-  cursor: pointer;
   font: inherit;
   text-align: left;
 }
 
-.pd-shell-account-panel__action:hover,
-.pd-shell-account-panel__preference:hover {
+.pd-shell-account-panel__action,
+.pd-shell-account-panel__logout {
+  cursor: pointer;
+}
+
+.pd-shell-account-panel__preference {
+  cursor: default;
+}
+
+.pd-shell-account-panel__action:hover {
   border-color: var(--pd-shell-separator);
   background: var(--pd-shell-surface-active);
   color: var(--pd-shell-text);
@@ -104,10 +111,29 @@
 }
 
 .pd-shell-account-panel__segmented {
-  padding: 3px;
-  border: 1px solid var(--pd-shell-separator);
-  border-radius: 8px;
-  background: var(--pd-shell-canvas);
+  --pd-text: var(--pd-shell-text);
+  --pd-text-secondary: var(--pd-shell-text-secondary);
+  --pd-text-muted: var(--pd-shell-text-muted);
+  --pd-brand-line: var(--pd-shell-brand);
+  --pd-segmented-gap: 0;
+  --pd-segmented-compact-gap: 0;
+  --pd-segmented-padding: 3px;
+  --pd-segmented-border: 1px solid var(--pd-shell-separator);
+  --pd-segmented-radius: 8px;
+  --pd-segmented-background: var(--pd-shell-canvas);
+  --pd-segmented-item-min-height: 28px;
+  --pd-segmented-item-min-inline-size: 42px;
+  --pd-segmented-item-padding-inline: 10px;
+  --pd-segmented-item-radius: 6px;
+  --pd-segmented-item-color: var(--pd-shell-text-muted);
+  --pd-segmented-item-font-size: 12px;
+  --pd-segmented-item-font-weight: 600;
+  --pd-segmented-indicator-display: none;
+  --pd-segmented-active-background: var(--pd-shell-surface-raised);
+  --pd-segmented-active-color: var(--pd-shell-text);
+
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
 }
 
 .pd-shell-account-panel__footer {

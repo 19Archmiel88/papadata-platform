@@ -88,6 +88,9 @@ export function CommandCenterDecisionWorkspace({
   const projectedValue = recommendation
     ? resolveRecommendationProjectedValue(record, recommendation)
     : null;
+  const scenario = recommendation && projectedValue !== null
+    ? { projectedValue, recommendation }
+    : null;
   const ctaLabel = recommendation
     ? resolveRecommendationCtaLabel(executionState)
     : 'Zapytaj Papę o ten sygnał';
@@ -114,6 +117,7 @@ export function CommandCenterDecisionWorkspace({
     <aside
       aria-labelledby="command-decision-workspace-title"
       className="pd-command-center-one-page__decision-workspace"
+      data-has-scenario={scenario ? 'true' : undefined}
       data-kind={kind}
       onKeyDown={handleKeyDown}
     >
@@ -138,7 +142,10 @@ export function CommandCenterDecisionWorkspace({
         </Button>
       </header>
 
-      <section aria-label="Co się dzieje">
+      <section
+        aria-label="Co się dzieje"
+        className="pd-command-center-one-page__decision-workspace-block"
+      >
         <p className="pd-command-center-one-page__decision-workspace-eyebrow">Co się dzieje</p>
         <p>{decision.diagnosis}</p>
         <p className="pd-command-center-one-page__decision-workspace-state">
@@ -147,13 +154,19 @@ export function CommandCenterDecisionWorkspace({
         </p>
       </section>
 
-      <section aria-label="Wpływ">
+      <section
+        aria-label="Wpływ"
+        className="pd-command-center-one-page__decision-workspace-block"
+      >
         <p className="pd-command-center-one-page__decision-workspace-eyebrow">Wpływ</p>
         <p>{decision.businessImpact}</p>
       </section>
 
       {projection ? (
-        <section aria-label="Jeśli nic nie zrobisz">
+        <section
+          aria-label="Jeśli nic nie zrobisz"
+          className="pd-command-center-one-page__decision-workspace-block"
+        >
           <p className="pd-command-center-one-page__decision-workspace-eyebrow">Jeśli nic nie zrobisz</p>
           <p>
             {formatSignedMetricValue(projection.deltaValue, record.unit)}
@@ -198,18 +211,18 @@ export function CommandCenterDecisionWorkspace({
         </div>
       </section>
 
-      {recommendation && projectedValue !== null ? (
+      {scenario ? (
         <section aria-label="Scenariusze i efekty" className="pd-command-center-one-page__decision-workspace-scenario">
           <p className="pd-command-center-one-page__decision-workspace-eyebrow">Scenariusze i efekty</p>
           <ComparisonChart
-            ariaLabel={`Symulacja wpływu rekomendacji: ${recommendation.title}`}
+            ariaLabel={`Symulacja wpływu rekomendacji: ${scenario.recommendation.title}`}
             className="pd-command-center-one-page__decision-workspace-chart"
             data={[{
               id: record.metricId,
               label: shortenMetricLabel(record.label),
               values: {
                 current: record.value,
-                projected: projectedValue,
+                projected: scenario.projectedValue,
               },
             }]}
             series={[

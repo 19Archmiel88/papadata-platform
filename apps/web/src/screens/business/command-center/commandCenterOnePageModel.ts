@@ -5,6 +5,7 @@ import type {
 } from '../../../../../../contracts/api-schemas';
 import type {
   DataColumn,
+  DataRow,
 } from '../../../../../../contracts/component-shared';
 import type {
   DateRange,
@@ -12,8 +13,12 @@ import type {
 import type {
   BusinessScreenData,
   BusinessScreenDefinition,
+  CustomerSegmentRow,
+  ProductSalesRow,
+  TrafficSourceRow,
 } from '../businessData';
 import {
+  formatInteger,
   formatMetricValue,
   formatPercent as formatWorkspacePercent,
   formatSignedPercent,
@@ -47,9 +52,34 @@ export const commandCenterOnePageSectionIds = [
   'command-section-kpi',
   'command-section-plan',
   'command-section-drivers',
+  'command-section-funnel',
+  'command-section-traffic',
+  'command-section-products',
+  'command-section-customers',
+  'command-section-attention',
+  'command-section-decision-workspace',
+  'command-section-committed-actions',
 ] as const;
 
 export type CommandCenterOnePageSectionId = (typeof commandCenterOnePageSectionIds)[number];
+
+export type CommandCenterOnePageSectionDefinition = {
+  readonly id: CommandCenterOnePageSectionId;
+  readonly label: string;
+};
+
+export const commandCenterOnePageSections: readonly CommandCenterOnePageSectionDefinition[] = [
+  { id: 'command-section-kpi', label: 'KPI' },
+  { id: 'command-section-plan', label: 'Plan vs Benchmark' },
+  { id: 'command-section-drivers', label: 'Drivery wyniku' },
+  { id: 'command-section-funnel', label: 'Lejek' },
+  { id: 'command-section-traffic', label: 'Ruch' },
+  { id: 'command-section-products', label: 'Produkty' },
+  { id: 'command-section-customers', label: 'Klienci' },
+  { id: 'command-section-attention', label: 'Priorytety' },
+  { id: 'command-section-decision-workspace', label: 'Decyzja' },
+  { id: 'command-section-committed-actions', label: 'Działania' },
+];
 
 export type OperationalPriority =
   | 'critical'
@@ -95,13 +125,18 @@ export type CommandNoActionProjection = {
   readonly projectedValue: number;
 };
 
+/**
+ * No `revenue`/`cr`/`ctr` columns: GA4 reports revenue/conversions against a
+ * different session-attribution dimension (`sessionSourceMedium`) than the
+ * channel group read here (`sessionDefaultChannelGroup`, see
+ * `buildCommandCenterTrafficSourcesData` on the API) — joining the two would
+ * silently misattribute conversions to the wrong channel, so this table
+ * shows only what GA4 actually reports per channel group.
+ */
 export const sourceColumns: readonly DataColumn[] = [
   { id: 'source', label: 'Nazwa źródła ruchu', sortable: true, width: 240 },
   { align: 'right', id: 'sessions', label: 'Ilość sesji', sortable: true, width: 150 },
   { align: 'right', id: 'users', label: 'Ilość użytkowników', sortable: true, width: 170 },
-  { align: 'right', id: 'revenue', label: 'Przychód', sortable: true, width: 160 },
-  { align: 'right', id: 'cr', label: 'CR', sortable: true, width: 120 },
-  { align: 'right', id: 'ctr', label: 'CTR', sortable: true, width: 120 },
 ];
 
 export const customerColumns: readonly DataColumn[] = [
@@ -113,14 +148,55 @@ export const customerColumns: readonly DataColumn[] = [
   { align: 'right', id: 'frequency', label: 'Częstotliwość', sortable: true, width: 160 },
 ];
 
+/**
+ * No new/returning revenue split: that requires a canonical customer
+ * identity this system does not have yet (see `buildCommandCenterProductSalesData`
+ * on the API, same blocker as the Customer Split section), so the column is
+ * left out entirely rather than approximated.
+ */
 export const productColumns: readonly DataColumn[] = [
   { id: 'product', label: 'Produkt', sortable: true, width: 260 },
   { align: 'right', id: 'revenue', label: 'Przychód', sortable: true, width: 160 },
-  { align: 'right', id: 'newRevenue', label: 'Przychód nowi klienci', sortable: true, width: 210 },
-  { align: 'right', id: 'returningRevenue', label: 'Przychód powracający', sortable: true, width: 220 },
   { align: 'right', id: 'quantity', label: 'Ilość', sortable: true, width: 120 },
   { align: 'right', id: 'change', label: 'Zmiana', sortable: true, width: 120 },
 ];
+
+/** Real per-product revenue/quantity/change rows for {@link CommandCenterProductSalesSection}. */
+export function buildProductSalesRows(productSales: readonly ProductSalesRow[]): readonly DataRow[] {
+  return productSales.map((product) => ({
+    change: product.changePercent === null ? null : formatSignedPercent(product.changePercent / 100),
+    id: product.canonicalProductId,
+    product: product.productName,
+    quantity: formatInteger(product.quantity),
+    rawRevenue: Number(product.revenue),
+    revenue: formatMetricValue(Number(product.revenue), 'currency'),
+  }));
+}
+
+/** Real GA4 session/user rows for {@link CommandCenterTrafficSourcesSection}. */
+export function buildTrafficSourceRows(trafficSources: readonly TrafficSourceRow[]): readonly DataRow[] {
+  return trafficSources.map((entry) => ({
+    id: entry.source,
+    rawSessions: entry.sessions,
+    sessions: formatInteger(entry.sessions),
+    source: entry.source,
+    users: formatInteger(entry.users),
+  }));
+}
+
+/** Real new/returning-customer segment rows for {@link CommandCenterCustomerSplitSection}. */
+export function buildCustomerSegmentRows(customerSegments: readonly CustomerSegmentRow[]): readonly DataRow[] {
+  return customerSegments.map((segment) => ({
+    arpu: formatMetricValue(segment.arpu, 'currency'),
+    customers: formatInteger(segment.customers),
+    frequency: new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 2 }).format(segment.frequency),
+    id: segment.id,
+    productsPerOrder: new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 2 }).format(segment.productsPerOrder),
+    rawRevenue: segment.rawRevenue,
+    revenue: formatMetricValue(Number(segment.revenue), 'currency'),
+    segment: segment.segment,
+  }));
+}
 
 /**
  * Executive KPI set for the one-page.

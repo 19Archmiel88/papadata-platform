@@ -138,7 +138,7 @@ export function AppShell({
     setProblem(null);
     try {
       await logout();
-      navigate('/login', { replace: true });
+      navigate('/login?loggedOut=1', { replace: true });
     } catch (cause) {
       setProblem(errorMessage(cause, 'Nie udało się wylogować.'));
     } finally {

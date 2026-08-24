@@ -1,0 +1,96 @@
+@import '@fontsource/newsreader/400.css';
+@import '@fontsource/newsreader/500.css';
+@import '@fontsource/newsreader/600.css';
+
+/**
+ * Auth keeps a dedicated semantic namespace for its editorial visual language,
+ * but every raw palette value is owned by design-system foundations. This file
+ * only aliases foundation tokens for the auth feature.
+ */
+.pd-auth-theme {
+  --pdauth-font-display: 'Newsreader', 'Iowan Old Style', 'Georgia', serif;
+
+  --pdauth-canvas: var(--pd-auth-canvas);
+  --pdauth-surface: var(--pd-auth-surface);
+  --pdauth-surface-soft: var(--pd-auth-surface-soft);
+  --pdauth-surface-subtle: var(--pd-auth-surface-subtle);
+
+  --pdauth-ink: var(--pd-auth-ink);
+  --pdauth-ink-secondary: var(--pd-auth-ink-secondary);
+  --pdauth-ink-muted: var(--pd-auth-ink-muted);
+  --pdauth-ink-on-accent: var(--pd-auth-ink-on-accent);
+
+  --pdauth-line: var(--pd-auth-line);
+  --pdauth-line-subtle: var(--pd-auth-line-subtle);
+  --pdauth-line-strong: var(--pd-auth-line-strong);
+
+  --pdauth-accent: var(--pd-auth-accent);
+  --pdauth-accent-hover: var(--pd-auth-accent-hover);
+  --pdauth-accent-tint: var(--pd-auth-accent-tint);
+  --pdauth-focus-ring: var(--pd-auth-focus-ring);
+
+  --pdauth-cta-surface: var(--pd-auth-cta-surface);
+  --pdauth-cta-surface-hover: var(--pd-auth-cta-surface-hover);
+  --pdauth-cta-ink: var(--pd-auth-cta-ink);
+
+  --pdauth-chart-positive: var(--pd-auth-chart-positive);
+  --pdauth-depth-glow: var(--pd-auth-depth-glow);
+  --pdauth-elevated-shadow: var(--pd-auth-elevated-shadow);
+
+  /* Component theming hooks. Canonical component CSS remains the sole owner
+     of Button/Field/TextAction/Feedback selectors. */
+  --pd-form-label-color: var(--pdauth-ink-secondary);
+  --pd-form-border-style: 0;
+  --pd-form-border-block-end: 1.5px solid var(--pdauth-line-strong);
+  --pd-form-radius: 0;
+  --pd-form-surface: transparent;
+  --pd-form-padding-inline: 2px;
+  --pd-form-hover-border: var(--pdauth-ink-muted);
+  --pd-form-focus-border: var(--pdauth-accent);
+  --pd-form-focus-shadow: none;
+  --pd-form-text: var(--pdauth-ink);
+  --pd-form-toggle-color: var(--pdauth-ink-muted);
+  --pd-form-toggle-hover-surface: var(--pdauth-surface-soft);
+  --pd-form-toggle-hover-color: var(--pdauth-ink);
+  --pd-form-helper-color: var(--pdauth-ink-muted);
+  --pd-form-strength-color: var(--pdauth-accent);
+  --pd-verification-slot-border: 0;
+  --pd-verification-slot-border-block-end: 1.5px solid var(--pdauth-line-strong);
+  --pd-verification-slot-radius: 0;
+  --pd-verification-slot-surface: transparent;
+  --pd-verification-slot-color: var(--pdauth-ink);
+  --pd-verification-slot-focus-border: var(--pdauth-accent);
+  --pd-verification-slot-filled-border: var(--pdauth-ink-muted);
+  --pd-form-check-border: var(--pdauth-line-strong);
+  --pd-form-check-surface: transparent;
+  --pd-form-check-checked-border: var(--pdauth-accent);
+  --pd-form-check-checked-surface: var(--pdauth-accent);
+  --pd-form-check-caption-color: var(--pdauth-ink-secondary);
+
+  --pd-button-primary-color: var(--pdauth-cta-ink);
+  --pd-button-primary-hover-color: var(--pdauth-cta-ink);
+  --pd-button-primary-surface: var(--pdauth-cta-surface);
+  --pd-button-primary-hover-surface: var(--pdauth-cta-surface-hover);
+  --pd-button-primary-border: var(--pdauth-cta-surface);
+  --pd-button-primary-hover-border: var(--pdauth-cta-surface-hover);
+  --pd-button-secondary-color: var(--pdauth-ink);
+  --pd-button-secondary-hover-color: var(--pdauth-ink);
+  --pd-button-secondary-surface: transparent;
+  --pd-button-secondary-hover-surface: var(--pdauth-surface-soft);
+  --pd-button-secondary-border: var(--pdauth-line-strong);
+  --pd-button-secondary-hover-border: var(--pdauth-ink-muted);
+  --pd-button-radius: 3px;
+  --pd-button-focus-shadow: 0 0 0 3px var(--pdauth-focus-ring);
+
+  --pd-inline-action-default-color: var(--pdauth-accent);
+  --pd-inline-action-default-hover-color: var(--pdauth-accent-hover);
+  --pd-inline-action-muted-color: var(--pdauth-ink-secondary);
+  --pd-inline-action-muted-hover-color: var(--pdauth-ink);
+
+  --pd-feedback-surface-border: 0;
+  --pd-feedback-surface-start-border: 2px solid var(--pd-feedback-tone);
+  --pd-feedback-surface-radius: 2px;
+  --pd-feedback-surface-background: var(--pdauth-surface-soft);
+  --pd-feedback-title-color: var(--pdauth-ink);
+  --pd-feedback-message-color: var(--pdauth-ink-secondary);
+}

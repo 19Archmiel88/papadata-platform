@@ -11,6 +11,24 @@ type RuntimeGroup = Omit<ShellNavigationGroup, 'items'> & {
   readonly items: readonly RuntimeItem[];
 };
 
+const runtimeCapabilityAliases: Readonly<Record<string, readonly string[]>> = {
+  'ai.assistant.run': ['ai.read', 'ai.use', 'decisions.read'],
+  'analytics.command_center.read': ['analytics.read', 'decisions.read'],
+  'analytics.metrics.read': [
+    'analytics.read',
+    'campaigns.read',
+    'customers.read',
+    'orders.read',
+    'products.read',
+    'traffic.read',
+  ],
+  'billing.manage': ['billing.read'],
+  'integrations.catalog.read': ['integrations.read'],
+  'integrations.connection.read': ['integrations.read'],
+  'settings.manage': ['settings.read'],
+  'workspace.read': ['help.read', 'settings.read'],
+};
+
 const runtimeNavigation: readonly RuntimeGroup[] = [
   {
     id: 'analytics',
@@ -37,8 +55,6 @@ const runtimeNavigation: readonly RuntimeGroup[] = [
     items: [
       {
         capabilities: ['integrations.read', 'integrations.catalog.read'],
-        disabled: true,
-        disabledReason: 'Pełny runtime siedmiu integracji jest zamykany w osobnym zakresie P0.',
         icon: 'integration',
         id: 'integrations',
         label: 'Integracje',
@@ -124,6 +140,22 @@ function hasAnyCapability(
   required: readonly string[],
 ): boolean {
   if (required.length === 0) return true;
-  const available = new Set(capabilities);
+  const available = expandRuntimeCapabilities(capabilities);
   return required.some((capability) => available.has(capability));
+}
+
+function expandRuntimeCapabilities(
+  capabilities: readonly string[],
+): ReadonlySet<string> {
+  const available = new Set<string>();
+
+  capabilities.forEach((capability) => {
+    available.add(capability);
+
+    runtimeCapabilityAliases[capability]?.forEach((alias) => {
+      available.add(alias);
+    });
+  });
+
+  return available;
 }

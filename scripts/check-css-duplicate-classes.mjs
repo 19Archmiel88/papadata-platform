@@ -24,7 +24,6 @@ const allowedDuplicateClasses = new Set([
   'pd-data-table',
   'pd-data-table__summary',
   'pd-form-control__meta',
-  'pd-inline-action__content',
   'pd-product-shell',
   'pd-product-shell__body',
   'pd-product-shell__side-rail',
@@ -162,7 +161,7 @@ const owners = new Map();
 
 for (const file of collectCssFiles(scannedRoot)) {
   const relative = path.relative(root, file).replaceAll('\\\\', '/');
-  const source = readFileSync(file, 'utf8');
+  const source = readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 
   for (const match of source.matchAll(classPattern)) {
     const className = match[1];

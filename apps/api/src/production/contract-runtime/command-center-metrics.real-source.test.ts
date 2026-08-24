@@ -200,6 +200,47 @@ test("sets canonicalProductId on an inventory snapshot only when a matching prod
   assert.equal(unmapped.canonicalInventorySnapshots[0]!.canonicalProductId, null);
 });
 
+test("maps real order-line productId/quantity/grossAmount, resolving canonicalProductId only against a known product and dropping lines with no numeric quantity/amount", async () => {
+  const dataSource = dataSourceWithRows([
+    row("woocommerce", "products", "sku-known", "2026-08-01T10:00:00.000Z", {
+      name: "Kubek",
+      sku: "PAPA-MUG",
+    }),
+    row("woocommerce", "orders", "ext-order-lines", "2026-08-03T10:00:00.000Z", {
+      currency: "PLN",
+      grossAmount: 130,
+      lineItems: [
+        { externalProductId: "sku-known", grossAmount: 100, quantity: 2 },
+        { externalProductId: "sku-unresolved", grossAmount: 30, quantity: 1 },
+        { externalProductId: "sku-known" }, // no grossAmount/quantity: must be dropped, not counted as zero.
+      ],
+      orderId: "ext-order-lines",
+      orderNumber: "WC-LINES",
+    }),
+  ]);
+
+  const input = await createRealMetricEngineInput({
+    dataSource,
+    generatedAt: generatedAt as any,
+    periodEnd: periodEnd as any,
+    periodStart: periodStart as any,
+    tenantId,
+    workspaceId,
+  });
+
+  assert.equal(input.canonicalOrderLines.length, 2, "the malformed third line must be dropped, not kept as a zero-value line");
+
+  const resolvedLine = input.canonicalOrderLines.find((line) => line.grossAmount === "100.00");
+  assert.ok(resolvedLine);
+  assert.equal(resolvedLine?.canonicalOrderId, "woocommerce:ext-order-lines");
+  assert.equal(resolvedLine?.canonicalProductId, "woocommerce:sku-known");
+  assert.equal(resolvedLine?.quantity, 2);
+
+  const unresolvedLine = input.canonicalOrderLines.find((line) => line.grossAmount === "30.00");
+  assert.ok(unresolvedLine);
+  assert.equal(unresolvedLine?.canonicalProductId, null, "a product never seen in the products stream must not be guessed");
+});
+
 test("an empty ingestion window produces empty canonical arrays, no primary inventory source, and no product costs", async () => {
   const input = await createRealMetricEngineInput({
     dataSource: dataSourceWithRows([]),

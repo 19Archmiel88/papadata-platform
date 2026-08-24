@@ -1,6 +1,7 @@
 export * from './account-panel';
 export * from './app-shell';
 export * from './command-palette';
+export * from './date-range-overlay';
 export * from './notifications';
 export * from './operation-center';
 export * from './overlays';

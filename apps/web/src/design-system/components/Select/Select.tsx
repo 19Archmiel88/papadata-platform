@@ -6,9 +6,11 @@ import type {
 } from 'react';
 import {
   forwardRef,
+  useCallback,
   useEffect,
   useId,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -243,6 +245,13 @@ export const Select = forwardRef<
   const [query, setQuery] = useState('');
   const [uncontrolledValue, setUncontrolledValue] = useState(value);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [panelPosition, setPanelPosition] = useState<{
+    readonly left: number;
+    readonly maxHeight: number;
+    readonly openUpward: boolean;
+    readonly top: number;
+    readonly width: number;
+  } | null>(null);
 
   const state = resolveFormControlState({
     disabled,
@@ -370,6 +379,62 @@ export const Select = forwardRef<
       );
     };
   }, [isOpen]);
+
+  const updatePanelPosition = useCallback(() => {
+    const trigger = triggerRef.current;
+    if (!trigger || typeof window === 'undefined') return;
+
+    const rect = trigger.getBoundingClientRect();
+    const gap = 6;
+    const edgeMargin = 12;
+    const preferredMaxHeight = 352; // 22rem, matches the design's option-list cap.
+    // Never narrower than the trigger, but a narrow trigger (e.g. a compact
+    // preset select in a topbar dropdown) shouldn't force option labels
+    // like "Ostatnie 90 dni" to truncate — give the popover a sane floor.
+    const width = Math.min(
+      Math.max(rect.width, 220),
+      window.innerWidth - edgeMargin * 2,
+    );
+    const spaceBelow = window.innerHeight - rect.bottom - gap - edgeMargin;
+    const spaceAbove = rect.top - gap - edgeMargin;
+    const openUpward = spaceBelow < 160 && spaceAbove > spaceBelow;
+
+    setPanelPosition({
+      left: Math.min(
+        Math.max(edgeMargin, rect.left),
+        window.innerWidth - width - edgeMargin,
+      ),
+      maxHeight: Math.max(
+        120,
+        Math.min(preferredMaxHeight, openUpward ? spaceAbove : spaceBelow),
+      ),
+      openUpward,
+      top: openUpward ? rect.top - gap : rect.bottom + gap,
+      width,
+    });
+  }, []);
+
+  // Popover is position:fixed and its extent is computed from the trigger's
+  // real viewport rect, not CSS anchored to a relative ancestor — so it can
+  // never be clipped by a scrolling/overflow:hidden container the select
+  // happens to be nested in (e.g. a topbar dropdown), unlike a plain
+  // position:absolute popover would be.
+  useLayoutEffect(() => {
+    if (!isOpen) {
+      setPanelPosition(null);
+      return;
+    }
+
+    updatePanelPosition();
+
+    window.addEventListener('resize', updatePanelPosition);
+    window.addEventListener('scroll', updatePanelPosition, true);
+
+    return () => {
+      window.removeEventListener('resize', updatePanelPosition);
+      window.removeEventListener('scroll', updatePanelPosition, true);
+    };
+  }, [isOpen, updatePanelPosition]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -838,10 +903,18 @@ export const Select = forwardRef<
           </span>
         </button>
 
-        {isOpen ? (
+        {isOpen && panelPosition ? (
           <div
             className="pd-select__panel"
+            data-open-upward={panelPosition.openUpward ? true : undefined}
             data-state={state}
+            style={{
+              left: panelPosition.left,
+              maxHeight: panelPosition.maxHeight,
+              top: panelPosition.top,
+              transform: panelPosition.openUpward ? 'translateY(-100%)' : undefined,
+              width: panelPosition.width,
+            }}
           >
             {searchable ? (
               <div className="pd-select__search-shell">

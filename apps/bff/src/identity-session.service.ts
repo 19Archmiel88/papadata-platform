@@ -190,10 +190,12 @@ function normalizeIdentityFields(
   const {
     fullName,
     input,
+    rememberDevice,
     ...body
   } = value;
   void fullName;
   void input;
+  void rememberDevice;
 
   return displayName && !optionalString(body.displayName)
     ? { ...body, displayName }

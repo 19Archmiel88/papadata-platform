@@ -27,7 +27,6 @@ import {
 } from './commandCenterLens';
 import {
   CommandChartTableFallback,
-  CommandRuntimeSourceSummary,
   CommandSectionHeader,
 } from './CommandCenterSectionFrame';
 import {
@@ -410,13 +409,11 @@ export function CommandCenterDriversSection({
   driverRelationships,
   onLensChange,
   records,
-  sourceRows,
 }: {
   readonly activeLens: CommandLens;
   readonly driverRelationships: DriverRelationships | null;
   readonly onLensChange: (lens: CommandLens) => void;
   readonly records: readonly CommandCenterRecord[];
-  readonly sourceRows: readonly DataRow[];
 }) {
   const lens = findCommandLens(activeLens);
   const visualization = buildLensVisualization(activeLens, records, driverRelationships);
@@ -454,32 +451,23 @@ export function CommandCenterDriversSection({
         <p>{lens.question}</p>
       </div>
 
-      <div className="pd-command-center-one-page__runtime-split">
-        <div className="pd-command-center-one-page__runtime-main-analysis">
-          {visualization ?? (
-            <EmptyState
-              message="Dla wybranej perspektywy brakuje metryk w bieżącym zakresie danych."
-              title="Brak danych dla tej perspektywy"
-              variant="empty"
-            />
-          )}
+      <div className="pd-command-center-one-page__runtime-main-analysis">
+        {visualization ?? (
+          <EmptyState
+            message="Dla wybranej perspektywy brakuje metryk w bieżącym zakresie danych."
+            title="Brak danych dla tej perspektywy"
+            variant="empty"
+          />
+        )}
 
-          {table ? (
-            <CommandChartTableFallback
-              ariaLabel={table.ariaLabel}
-              columns={table.columns}
-              emptyMessage="Brak danych dla tej perspektywy."
-              minWidth={table.minWidth}
-              rows={table.rows}
-              sortColumnId={table.sortColumnId}
-            />
-          ) : null}
-        </div>
-
-        {sourceRows.length > 0 ? (
-          <CommandRuntimeSourceSummary
-            id="command-section-traffic-sources"
-            rows={sourceRows}
+        {table ? (
+          <CommandChartTableFallback
+            ariaLabel={table.ariaLabel}
+            columns={table.columns}
+            emptyMessage="Brak danych dla tej perspektywy."
+            minWidth={table.minWidth}
+            rows={table.rows}
+            sortColumnId={table.sortColumnId}
           />
         ) : null}
       </div>

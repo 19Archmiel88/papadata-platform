@@ -14,7 +14,7 @@
 
 .pd-share-chart__plot {
   min-inline-size: 0;
-  block-size: clamp(16rem, 28vw, 20rem);
+  block-size: var(--pd-share-chart-plot-size, clamp(16rem, 28vw, 20rem));
   max-block-size: 21rem;
   overflow: hidden;
 }
@@ -203,6 +203,18 @@
 
 .pd-share-chart__bar-list {
   display: none;
+}
+
+.pd-share-chart__all-hidden {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: var(--pd-space-4);
+  color: var(--pd-text-muted);
+  font-size: 0.78rem;
+  text-align: center;
 }
 
 .pd-share-chart__empty {

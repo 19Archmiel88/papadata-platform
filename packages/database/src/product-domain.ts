@@ -1,6 +1,9 @@
-import { createHash, randomUUID } from "node:crypto";
+import { createHash, randomBytes, randomUUID } from "node:crypto";
 import type { PoolClient } from "pg";
-import type { CanonicalCapability } from "@papadata/contracts";
+import {
+  resolveMembershipCapabilities,
+  type CanonicalCapability,
+} from "@papadata/contracts";
 import { ProductionDatabase } from "./production.js";
 
 export type IdentityUserRow = {
@@ -465,6 +468,333 @@ export class WebhookReceiptRepository {
       return (result.rowCount ?? 0) === 1;
     });
   }
+}
+
+export type InvitationRow = {
+  readonly invitationId: string;
+  readonly tenantId: string;
+  readonly workspaceId: string;
+  readonly tenantName: string;
+  readonly workspaceName: string;
+  readonly email: string;
+  readonly role: string;
+  readonly status: string;
+  readonly invitedByUserId: string;
+  readonly expiresAt: string;
+};
+
+export type MemberListRow = {
+  readonly id: string;
+  readonly person: string;
+  readonly email: string;
+  readonly role: string;
+  readonly status: string;
+  readonly mfa: boolean;
+  readonly lastSeenAt: string | null;
+};
+
+// Real team-membership and invitation data access. It stays separate from
+// IdentityRepository because it owns tenant-scoped membership/invitation
+// lifecycle as well as the pre-auth signed-invitation boundary.
+export class InvitationRepository {
+  private readonly database: ProductionDatabase;
+
+  constructor(database: ProductionDatabase) {
+    this.database = database;
+  }
+
+  async listMembersAndInvitations(
+    tenantId: string,
+    workspaceId: string,
+  ): Promise<readonly MemberListRow[]> {
+    return this.database.withTenantWorkspace(tenantId, workspaceId, async (client) => {
+      const members = await client.query<Record<string, unknown>>(
+        `select m.membership_id::text as id, u.full_name as person, u.email,
+                m.role, m.status, u.mfa_enabled as mfa, m.updated_at as last_seen_at
+           from app.memberships m
+           join app.users u on u.user_id = m.user_id
+          where m.tenant_id = $1::uuid and m.workspace_id = $2::uuid
+          order by m.created_at asc`,
+        [tenantId, workspaceId],
+      );
+      const invitations = await client.query<Record<string, unknown>>(
+        `select invitation_id::text as id, email as person, email,
+                role, 'invited'::text as status, false as mfa, created_at as last_seen_at
+           from app.invitations
+          where tenant_id = $1::uuid and workspace_id = $2::uuid and status = 'pending'
+          order by created_at asc`,
+        [tenantId, workspaceId],
+      );
+      return [...members.rows, ...invitations.rows].map(readMemberListRow);
+    });
+  }
+
+  // Creates the invitation and its one-time token in the same tenant-scoped
+  // transaction. The raw token is returned once and never persisted; only
+  // its SHA-256 hash is stored.
+  async createInvitation(input: {
+    readonly tenantId: string;
+    readonly workspaceId: string;
+    readonly email: string;
+    readonly role: string;
+    readonly invitedByUserId: string;
+    readonly ttlHours: number;
+  }): Promise<{ readonly invitationId: string; readonly token: string; readonly expiresAt: string }> {
+    const token = randomBytes(32).toString("base64url");
+    const tokenHash = createHash("sha256").update(token).digest("hex");
+    const issuedAt = new Date();
+    const expiresAt = new Date(issuedAt.getTime() + input.ttlHours * 3_600_000).toISOString();
+
+    return this.database.withTenantWorkspace(input.tenantId, input.workspaceId, async (client) => {
+      const result = await client.query<{ readonly invitation_id: string }>(
+        `insert into app.invitations (
+           invitation_id, tenant_id, workspace_id, email, role, status,
+           token_hash, invited_by_user_id, expires_at
+         ) values (gen_random_uuid(), $1::uuid, $2::uuid, $3, $4, 'pending',
+                   $5, $6::uuid, $7::timestamptz)
+         returning invitation_id::text`,
+        [
+          input.tenantId,
+          input.workspaceId,
+          normalizeEmail(input.email),
+          input.role,
+          tokenHash,
+          input.invitedByUserId,
+          expiresAt,
+        ],
+      );
+      const invitationId = requiredString(requiredRow(result.rows[0]).invitation_id);
+
+      await client.query(
+        `insert into app.security_invitation_tokens (
+           tenant_id, invitation_id, token_version, token_hash, issued_at, expires_at
+         ) values ($1, $2, 1, $3, $4::timestamptz, $5::timestamptz)`,
+        [
+          input.tenantId,
+          invitationId,
+          tokenHash,
+          issuedAt.toISOString(),
+          expiresAt,
+        ],
+      );
+
+      return { invitationId, token, expiresAt };
+    });
+  }
+
+  // Public/pre-auth lookup. The token hash is part of the SECURITY DEFINER
+  // lookup itself, so invitation metadata is never disclosed for a bare
+  // invitation id. The function is defined by migrations 0021/0022.
+  async findInvitationByToken(
+    invitationId: string,
+    token: string,
+  ): Promise<InvitationRow | null> {
+    if (!looksLikeUuid(invitationId)) return null;
+
+    const tokenHash = createHash("sha256").update(token).digest("hex");
+    const rows = await this.database.queryGlobalReadonly<Record<string, unknown>>(
+      `select invitation_id::text, tenant_id::text, workspace_id::text,
+              tenant_name, workspace_name,
+              email, role, status, invited_by_user_id::text, expires_at
+         from app.lookup_invitation_for_acceptance($1::uuid, $2)`,
+      [invitationId, tokenHash],
+    );
+    return rows[0] ? readInvitation(rows[0]) : null;
+  }
+
+  // Consumes the signed token, creates the identity + membership and marks
+  // the invitation accepted in ONE database transaction. If any later step
+  // fails, the token consumption is rolled back as well, so a transient
+  // failure cannot burn a valid invitation.
+  async acceptInvitation(input: {
+    readonly invitation: InvitationRow;
+    readonly token: string;
+    readonly passwordHash: string;
+    readonly displayName: string;
+  }): Promise<{ readonly user: IdentityUserRow; readonly membership: IdentityMembershipRow } | null> {
+    const invitation = input.invitation;
+    const normalizedEmail = normalizeEmail(invitation.email);
+    const identityKey = identityKeyForEmail(normalizedEmail);
+    const userId = randomUUID();
+    const membershipId = randomUUID();
+    const tokenHash = createHash("sha256").update(input.token).digest("hex");
+    const dataScope = dataScopeForRole(invitation.role);
+    const capabilities = resolveMembershipCapabilities({
+      dataScope,
+      jitExpiresAt: null,
+      role: invitation.role,
+      status: "active",
+    });
+
+    return this.database.withIdentityTenantWorkspace(
+      identityKey,
+      null,
+      invitation.tenantId,
+      invitation.workspaceId,
+      async (client) => {
+        const lockedInvitation = await client.query<{ readonly invitation_id: string }>(
+          `select invitation_id::text
+             from app.invitations
+            where invitation_id = $1::uuid
+              and tenant_id = $2::uuid
+              and workspace_id = $3::uuid
+              and token_hash = $4
+              and status = 'pending'
+              and expires_at > now()
+            for update`,
+          [
+            invitation.invitationId,
+            invitation.tenantId,
+            invitation.workspaceId,
+            tokenHash,
+          ],
+        );
+        if (!lockedInvitation.rows[0]) return null;
+
+        const consumed = await client.query(
+          `update app.security_invitation_tokens
+              set used_at = now()
+            where tenant_id = $1
+              and invitation_id = $2
+              and token_hash = $3
+              and used_at is null
+              and revoked_at is null
+              and expires_at > now()
+            returning id`,
+          [invitation.tenantId, invitation.invitationId, tokenHash],
+        );
+        if ((consumed.rowCount ?? 0) !== 1) return null;
+
+        const existing = await client.query<{ readonly user_id: string }>(
+          "select user_id::text from app.identity_users where identity_key = $1 limit 1",
+          [identityKey],
+        );
+        if (existing.rows[0]) throw new Error("IDENTITY_EMAIL_EXISTS");
+
+        await client.query(
+          `insert into app.users (
+             user_id, email, full_name, status, email_verified, mfa_enabled
+           ) values ($1::uuid, $2, $3, 'active', false, false)`,
+          [userId, normalizedEmail, input.displayName],
+        );
+
+        const userResult = await client.query<Record<string, unknown>>(
+          `insert into app.identity_users (
+             user_id, identity_key, normalized_email, password_hash, display_name
+           ) values ($1::uuid, $2, $3, $4, $5)
+           returning user_id::text, identity_key, normalized_email, password_hash,
+                     display_name, status, email_verified_at, failed_login_attempts,
+                     locked_until`,
+          [userId, identityKey, normalizedEmail, input.passwordHash, input.displayName],
+        );
+        const user = readIdentityUser(requiredRow(userResult.rows[0]));
+        await setIdentityUser(client, user.userId);
+
+        await client.query(
+          `insert into app.memberships (
+             membership_id, tenant_id, workspace_id, user_id, role, status, data_scope
+           ) values ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5, 'active', $6)`,
+          [
+            membershipId,
+            invitation.tenantId,
+            invitation.workspaceId,
+            userId,
+            invitation.role,
+            dataScope,
+          ],
+        );
+
+        const membershipResult = await client.query<Record<string, unknown>>(
+          `insert into app.identity_memberships (
+             membership_id, user_id, tenant_id, workspace_id, tenant_name, workspace_name,
+             roles, capabilities
+           ) values ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5, $6, $7::jsonb, $8::jsonb)
+           returning membership_id::text, user_id::text, tenant_id::text,
+                     workspace_id::text, tenant_name, workspace_name, roles,
+                     capabilities, status`,
+          [
+            membershipId,
+            user.userId,
+            invitation.tenantId,
+            invitation.workspaceId,
+            invitation.tenantName,
+            invitation.workspaceName,
+            JSON.stringify([invitation.role]),
+            JSON.stringify(capabilities),
+          ],
+        );
+
+        const accepted = await client.query(
+          `update app.invitations
+              set status = 'accepted', accepted_by_user_id = $4::uuid,
+                  accepted_at = now(), updated_at = now()
+            where invitation_id = $1::uuid
+              and tenant_id = $2::uuid
+              and workspace_id = $3::uuid
+              and status = 'pending'
+              and token_hash = $5
+              and expires_at > now()
+            returning invitation_id`,
+          [
+            invitation.invitationId,
+            invitation.tenantId,
+            invitation.workspaceId,
+            user.userId,
+            tokenHash,
+          ],
+        );
+        if ((accepted.rowCount ?? 0) !== 1) {
+          throw new Error("INVITATION_STATE_CHANGED");
+        }
+
+        return {
+          user,
+          membership: readMembership(requiredRow(membershipResult.rows[0])),
+        };
+      },
+    );
+  }
+
+}
+
+function looksLikeUuid(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iu.test(value);
+}
+
+// Matches resolveMembershipCapabilities' per-role dataScope requirement so
+// an invited member receives the capabilities implied by their role.
+function dataScopeForRole(role: string): string {
+  if (role === "Tenant Owner") return "tenant";
+  if (role === "Billing Admin") return "billing";
+  if (role === "Auditor/Security") return "audit";
+  return "workspace";
+}
+
+function readMemberListRow(row: Record<string, unknown>): MemberListRow {
+  return {
+    id: requiredString(row.id),
+    person: requiredString(row.person),
+    email: requiredString(row.email),
+    role: requiredString(row.role),
+    status: requiredString(row.status),
+    mfa: row.mfa === true,
+    lastSeenAt: nullableString(row.last_seen_at),
+  };
+}
+
+function readInvitation(row: Record<string, unknown>): InvitationRow {
+  return {
+    invitationId: requiredString(row.invitation_id),
+    tenantId: requiredString(row.tenant_id),
+    workspaceId: requiredString(row.workspace_id),
+    tenantName: requiredString(row.tenant_name),
+    workspaceName: requiredString(row.workspace_name),
+    email: requiredString(row.email),
+    role: requiredString(row.role),
+    status: requiredString(row.status),
+    invitedByUserId: requiredString(row.invited_by_user_id),
+    expiresAt: requiredString(row.expires_at),
+  };
 }
 
 export function identityKeyForEmail(email: string): string {

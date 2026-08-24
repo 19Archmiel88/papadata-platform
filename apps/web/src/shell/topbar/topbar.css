@@ -169,9 +169,9 @@ header.pd-shell-topbar[data-variant='public'] {
 .pd-shell-topbar__papa-control[aria-pressed='true'],
 .pd-shell-topbar__control[aria-expanded='true'],
 .pd-shell-topbar__profile-trigger[aria-expanded='true'] {
-  border-color: rgba(232, 163, 61, 0.16);
+  border-color: rgba(217, 117, 144, 0.16);
   color: var(--pd-shell-brand-strong);
-  background: rgba(232, 163, 61, 0.08);
+  background: rgba(217, 117, 144, 0.08);
 }
 
 .pd-shell-topbar__mobile-menu {
@@ -195,7 +195,7 @@ header.pd-shell-topbar[data-variant='public'] {
   padding-inline: 3px;
   border: 2px solid var(--pd-shell-canvas);
   border-radius: 999px;
-  color: #151107;
+  color: var(--pd-shell-brand-on);
   background: var(--pd-shell-brand);
   font-size: 8px;
   font-weight: 700;
@@ -274,7 +274,7 @@ header.pd-shell-topbar[data-variant='public'] {
 .pd-shell-topbar__profile-trigger:focus-visible,
 .pd-shell-topbar__mobile-menu:focus-visible {
   outline: 0;
-  box-shadow: 0 0 0 3px rgba(232, 163, 61, 0.18);
+  box-shadow: 0 0 0 3px rgba(217, 117, 144, 0.18);
 }
 
 .pd-shell-topbar__calendar-overlay {

@@ -153,21 +153,46 @@
   --pd-workspace-text-secondary: #555550;
   --pd-workspace-text-muted: #85857e;
 
-  --pd-shell-canvas: #0d0d0f;
-  --pd-shell-surface: #131315;
-  --pd-shell-surface-subtle: #19191c;
-  --pd-shell-surface-raised: #202024;
-  --pd-shell-surface-overlay: rgba(19, 19, 21, 0.985);
-  --pd-shell-surface-active: #2b251c;
-  --pd-shell-text: #ededee;
-  --pd-shell-text-secondary: #b8b8bd;
-  --pd-shell-text-muted: #77777f;
+  --pd-shell-canvas: #121214;
+  --pd-shell-surface: #19191c;
+  --pd-shell-surface-subtle: #201f23;
+  --pd-shell-surface-raised: #27262b;
+  --pd-shell-surface-overlay: rgba(25, 24, 28, 0.985);
+  --pd-shell-surface-active: #2a1f23;
+  --pd-shell-text: #f1f0f2;
+  --pd-shell-text-secondary: #b6b4bb;
+  --pd-shell-text-muted: #84828a;
   --pd-shell-separator: rgba(255, 255, 255, 0.08);
   --pd-shell-separator-strong: rgba(255, 255, 255, 0.14);
-  --pd-shell-brand: #e8a33d;
-  --pd-shell-brand-strong: #f0c77c;
-  --pd-shell-brand-ambient: rgba(232, 163, 61, 0.12);
-  --pd-shell-glow: rgba(232, 163, 61, 0.10);
+  --pd-shell-brand: #d97590;
+  --pd-shell-brand-strong: #e28fa5;
+  --pd-shell-brand-on: #19151a;
+  --pd-shell-brand-ambient: rgba(217, 117, 144, 0.12);
+  --pd-shell-glow: rgba(217, 117, 144, 0.10);
+
+  /* Auth / access visual language. Owned by foundations; feature CSS consumes
+     these semantic tokens and contains no local raw palette. */
+  --pd-auth-canvas: #faf8f3;
+  --pd-auth-surface: #fefdfb;
+  --pd-auth-surface-soft: #f5f2ea;
+  --pd-auth-surface-subtle: #efeade;
+  --pd-auth-ink: #211f1a;
+  --pd-auth-ink-secondary: #5c574c;
+  --pd-auth-ink-muted: #8a8474;
+  --pd-auth-ink-on-accent: #fefdfb;
+  --pd-auth-line: #e3ded2;
+  --pd-auth-line-subtle: #ece7db;
+  --pd-auth-line-strong: #c9c2b0;
+  --pd-auth-accent: #b5652f;
+  --pd-auth-accent-hover: #954f22;
+  --pd-auth-accent-tint: rgba(181, 101, 47, 0.10);
+  --pd-auth-focus-ring: rgba(181, 101, 47, 0.22);
+  --pd-auth-cta-surface: #211f1a;
+  --pd-auth-cta-surface-hover: #34312a;
+  --pd-auth-cta-ink: #fefdfb;
+  --pd-auth-chart-positive: #4f7a52;
+  --pd-auth-depth-glow: none;
+  --pd-auth-elevated-shadow: 0 1px 2px rgba(33, 31, 26, 0.06);
 
   --pd-separator-subtle: rgba(23, 23, 21, 0.08);
   --pd-separator: rgba(23, 23, 21, 0.12);
@@ -223,6 +248,7 @@
   --pd-status-warning: #bd741d;
   --pd-status-warning-subtle: #fff3df;
   --pd-status-danger: #c94852;
+  --pd-status-danger-on: #ffffff;
   --pd-status-danger-subtle: #fcebed;
   --pd-status-danger-border: rgba(201, 72, 82, 0.32);
   --pd-status-neutral: #73736d;
@@ -379,21 +405,48 @@
   --pd-workspace-text-secondary: #b8b8bd;
   --pd-workspace-text-muted: #77777f;
 
-  --pd-shell-canvas: #0b0b0d;
-  --pd-shell-surface: #111113;
-  --pd-shell-surface-subtle: #17171a;
-  --pd-shell-surface-raised: #1d1d21;
-  --pd-shell-surface-overlay: rgba(17, 17, 19, 0.985);
-  --pd-shell-surface-active: #2b251c;
-  --pd-shell-text: #ededee;
-  --pd-shell-text-secondary: #b8b8bd;
-  --pd-shell-text-muted: #77777f;
+  --pd-shell-canvas: #121214;
+  --pd-shell-surface: #19191c;
+  --pd-shell-surface-subtle: #201f23;
+  --pd-shell-surface-raised: #27262b;
+  --pd-shell-surface-overlay: rgba(25, 24, 28, 0.985);
+  --pd-shell-surface-active: #2a1f23;
+  --pd-shell-text: #f1f0f2;
+  --pd-shell-text-secondary: #b6b4bb;
+  --pd-shell-text-muted: #84828a;
   --pd-shell-separator: rgba(255, 255, 255, 0.08);
   --pd-shell-separator-strong: rgba(255, 255, 255, 0.14);
-  --pd-shell-brand: #e8a33d;
-  --pd-shell-brand-strong: #f0c77c;
-  --pd-shell-brand-ambient: rgba(232, 163, 61, 0.12);
-  --pd-shell-glow: rgba(232, 163, 61, 0.10);
+  --pd-shell-brand: #d97590;
+  --pd-shell-brand-strong: #e28fa5;
+  --pd-shell-brand-on: #19151a;
+  --pd-shell-brand-ambient: rgba(217, 117, 144, 0.12);
+  --pd-shell-glow: rgba(217, 117, 144, 0.10);
+
+  --pd-auth-canvas: #121214;
+  --pd-auth-surface: #19191c;
+  --pd-auth-surface-soft: #201f23;
+  --pd-auth-surface-subtle: #27262b;
+  --pd-auth-ink: #f1f0f2;
+  --pd-auth-ink-secondary: #b6b4bb;
+  --pd-auth-ink-muted: #84828a;
+  --pd-auth-ink-on-accent: #17151a;
+  --pd-auth-line: #2d2c32;
+  --pd-auth-line-subtle: #212026;
+  --pd-auth-line-strong: #46444d;
+  --pd-auth-accent: #d97590;
+  --pd-auth-accent-hover: #e28fa5;
+  --pd-auth-accent-tint: rgba(217, 117, 144, 0.14);
+  --pd-auth-focus-ring: rgba(217, 117, 144, 0.30);
+  --pd-auth-cta-surface: #d97590;
+  --pd-auth-cta-surface-hover: #e28fa5;
+  --pd-auth-cta-ink: #19151a;
+  --pd-auth-chart-positive: #7bc493;
+  --pd-auth-depth-glow: radial-gradient(
+    ellipse 1100px 640px at 12% -8%,
+    rgba(255, 255, 255, 0.07),
+    transparent 62%
+  );
+  --pd-auth-elevated-shadow: 0 20px 48px -22px rgba(0, 0, 0, 0.60);
 
   --pd-separator-subtle: rgba(255, 255, 255, 0.07);
   --pd-separator: rgba(255, 255, 255, 0.11);
@@ -449,6 +502,7 @@
   --pd-status-warning: #e8a33d;
   --pd-status-warning-subtle: #382912;
   --pd-status-danger: #f0616b;
+  --pd-status-danger-on: #151107;
   --pd-status-danger-subtle: #41191e;
   --pd-status-danger-border: rgba(240, 97, 107, 0.34);
   --pd-status-neutral: #8e8e96;

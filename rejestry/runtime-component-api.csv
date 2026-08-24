@@ -12,6 +12,9 @@ Textarea,apps/web/src/design-system/components/Field/Textarea.tsx,TextareaProps,
 FileInput,apps/web/src/design-system/components/Field/FileInput.tsx,FileInputProps,00.15,accepted,Design System
 VerificationCodeInput,apps/web/src/design-system/components/VerificationCodeInput/VerificationCodeInput.tsx,VerificationCodeInputProps,00.15,accepted,Design System
 ChartFrame,apps/web/src/design-system/components/ChartFrame/ChartFrame.tsx,ChartFrameProps,15.01,accepted,Analytics UI
+ChartLegend,apps/web/src/design-system/components/ChartLegend/ChartLegend.tsx,ChartLegendProps,15.09,accepted,Analytics UI
+ChartCrosshairTooltip,apps/web/src/design-system/components/ChartTooltip/ChartTooltip.tsx,ChartCrosshairTooltipProps,15.09,accepted,Analytics UI
+ChartMarkTooltip,apps/web/src/design-system/components/ChartTooltip/ChartTooltip.tsx,ChartMarkTooltipProps,15.09,accepted,Analytics UI
 MetricCard,apps/web/src/design-system/components/MetricCard/MetricCard.tsx,MetricCardProps,15.02,accepted,Analytics UI
 TrendChart,apps/web/src/design-system/components/TrendChart/TrendChart.tsx,TrendChartProps,15.03,accepted,Analytics UI
 ComparisonChart,apps/web/src/design-system/components/ComparisonChart/ComparisonChart.tsx,ComparisonChartProps,15.04,accepted,Analytics UI

@@ -7,6 +7,9 @@ import {
   useChartMotion,
 } from '../../foundations/motion';
 import {
+  resolveSeriesColor,
+} from '../../foundations/tokens';
+import {
   Cell,
   CartesianGrid,
   LabelList,
@@ -15,11 +18,18 @@ import {
   ResponsiveContainer,
   Scatter,
   ScatterChart,
+  Tooltip,
   XAxis,
   YAxis,
   ZAxis,
 } from 'recharts';
 
+import {
+  useSeriesVisibility,
+} from '../Analytics/useSeriesVisibility';
+import {
+  ChartMarkTooltip,
+} from '../ChartTooltip';
 import { joinClassNames } from '../Field/fieldUtils';
 import './correlation-chart.css';
 
@@ -154,6 +164,58 @@ const roleColors: Record<CorrelationChartPointRole, string> = {
   outlier: 'var(--pd-correlation-outlier)',
   standard: 'var(--pd-correlation-point)',
 };
+
+/**
+ * `standard` and `outlier` stay fixed, non-cycling tokens — outlier in
+ * particular must never enter the series ramp, or "flagged anomalous" would
+ * blur into "just cluster #6". Only `cluster`/`driver-hypothesis` points
+ * differentiate by which cluster they belong to.
+ */
+function buildClusterColorIndex(
+  clusters: readonly CorrelationChartCluster[],
+  points: readonly RuntimePoint[],
+): ReadonlyMap<string, number> {
+  const orderedIds: string[] = [];
+  const seen = new Set<string>();
+
+  const addId = (id: string | null | undefined) => {
+    if (id && !seen.has(id)) {
+      seen.add(id);
+      orderedIds.push(id);
+    }
+  };
+
+  clusters.forEach((cluster) => addId(cluster.id));
+  points.forEach((point) => addId(point.clusterId));
+
+  return new Map(orderedIds.map((id, index) => [id, index]));
+}
+
+function resolvePointColor(
+  point: RuntimePoint,
+  clusterColorIndex: ReadonlyMap<string, number>,
+): string {
+  if (
+    (point.role === 'cluster' || point.role === 'driver-hypothesis')
+    && point.clusterId !== null
+    && clusterColorIndex.has(point.clusterId)
+  ) {
+    return resolveSeriesColor(clusterColorIndex.get(point.clusterId)!);
+  }
+
+  return roleColors[point.role];
+}
+
+function resolveClusterAreaColor(
+  cluster: CorrelationChartCluster,
+  clusterColorIndex: ReadonlyMap<string, number>,
+): string {
+  const index = clusterColorIndex.get(cluster.id);
+
+  return index === undefined
+    ? roleColors.cluster
+    : resolveSeriesColor(index);
+}
 
 type CorrelationPointShapeProps = {
   readonly cx?: number | string;
@@ -539,6 +601,7 @@ export function CorrelationChart({
   ...props
 }: CorrelationChartProps) {
   const chartMotion = useChartMotion();
+  const seriesVisibility = useSeriesVisibility();
   const resolvedLabels: CorrelationChartLabels = {
     ...defaultLabels,
     ...labels,
@@ -552,6 +615,19 @@ export function CorrelationChart({
     points,
   );
 
+  const presentRoles = new Set(
+    runtimePoints.map((point) => point.role),
+  );
+
+  const visiblePoints = runtimePoints.filter(
+    (point) => seriesVisibility.isVisible(point.role),
+  );
+
+  const clusterColorIndex = buildClusterColorIndex(
+    clusters,
+    runtimePoints,
+  );
+
   const normalizedClusters = clusters.filter((cluster) => {
     const [xStart, xEnd] = cluster.xRange;
     const [yStart, yEnd] = cluster.yRange;
@@ -562,23 +638,27 @@ export function CorrelationChart({
       && Number.isFinite(yEnd);
   });
 
+  const visibleClusters = seriesVisibility.isVisible('cluster')
+    ? normalizedClusters
+    : [];
+
   const xScale = resolveAxisScale([
-    ...runtimePoints.map((point) => point.x),
-    ...normalizedClusters.flatMap((cluster) => [
+    ...visiblePoints.map((point) => point.x),
+    ...visibleClusters.flatMap((cluster) => [
       ...cluster.xRange,
     ]),
   ]);
 
   const yScale = resolveAxisScale([
-    ...runtimePoints.map((point) => point.y),
-    ...normalizedClusters.flatMap((cluster) => [
+    ...visiblePoints.map((point) => point.y),
+    ...visibleClusters.flatMap((cluster) => [
       ...cluster.yRange,
     ]),
   ]);
 
   const trendSegment = trendline
     ? resolveTrendSegment(
-      runtimePoints,
+      visiblePoints,
       xScale.domain,
     )
     : null;
@@ -679,12 +759,16 @@ export function CorrelationChart({
                   type="number"
                 />
 
-                {normalizedClusters.map((cluster) => {
+                {visibleClusters.map((cluster) => {
                   const [x1, x2] = normalizeClusterRange(
                     cluster.xRange,
                   );
                   const [y1, y2] = normalizeClusterRange(
                     cluster.yRange,
+                  );
+                  const areaColor = resolveClusterAreaColor(
+                    cluster,
+                    clusterColorIndex,
                   );
 
                   return (
@@ -692,7 +776,7 @@ export function CorrelationChart({
                       className="pd-correlation-chart__cluster-area"
                       ifOverflow="extendDomain"
                       key={cluster.id}
-                      stroke="var(--pd-correlation-cluster)"
+                      stroke={areaColor}
                       strokeDasharray="4 5"
                       strokeOpacity={0.52}
                       x1={x1}
@@ -714,17 +798,33 @@ export function CorrelationChart({
                   />
                 ) : null}
 
+                <Tooltip
+                  content={(tooltipProps) => (
+                    <ChartMarkTooltip
+                      {...tooltipProps}
+                      detail={(entry) => {
+                        const point = entry.payload as RuntimePoint | undefined;
+
+                        return point
+                          ? `${point.label} · ${formatObservationMeasure(point, xLabel, yLabel, formatValue)}`
+                          : null;
+                      }}
+                      valueFormatter={formatValue}
+                    />
+                  )}
+                />
+
                 <Scatter
-                  data={runtimePoints}
+                  data={visiblePoints}
                   dataKey="y"
                   animationDuration={chartMotion.animationDuration}
                   isAnimationActive={chartMotion.isAnimationActive}
                   name={resolvedLabels.relationship}
                   shape={renderCorrelationPointShape}
                 >
-                  {runtimePoints.map((point) => (
+                  {visiblePoints.map((point) => (
                     <Cell
-                      fill={roleColors[point.role]}
+                      fill={resolvePointColor(point, clusterColorIndex)}
                       key={point.id}
                       stroke="var(--pd-surface)"
                       strokeWidth={point.role === 'standard' ? 1.2 : 1.8}
@@ -740,13 +840,19 @@ export function CorrelationChart({
                 </Scatter>
               </ScatterChart>
             </ResponsiveContainer>
+
+            {visiblePoints.length === 0 ? (
+              <p className="pd-correlation-chart__all-hidden" role="status">
+                Wszystkie serie ukryte. Kliknij w legendzie, aby je przywrócić.
+              </p>
+            ) : null}
           </div>
 
           <ol
             aria-label={resolvedLabels.observations}
             className="pd-correlation-chart__observations"
           >
-            {runtimePoints.map((point) => (
+            {visiblePoints.map((point) => (
               <li
                 data-role={point.role}
                 key={point.id}
@@ -827,23 +933,36 @@ export function CorrelationChart({
                 'driver-hypothesis',
                 'outlier',
               ] as const
-            ).map((role) => (
-              <li
-                data-role={role}
-                key={role}
-              >
-                <span
-                  aria-hidden="true"
-                  className="pd-correlation-chart__swatch"
-                  style={{
-                    background: roleColors[role],
-                  }}
-                />
-                <span>
-                  {resolvedLabels[pointRoleLabels[role]]}
-                </span>
-              </li>
-            ))}
+            )
+              .filter((role) => presentRoles.has(role))
+              .map((role) => {
+                const roleVisible = seriesVisibility.isVisible(role);
+
+                return (
+                  <li
+                    data-active={roleVisible ? undefined : 'false'}
+                    data-role={role}
+                    key={role}
+                  >
+                    <button
+                      aria-pressed={roleVisible}
+                      onClick={() => seriesVisibility.toggle(role)}
+                      type="button"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="pd-correlation-chart__swatch"
+                        style={{
+                          background: roleColors[role],
+                        }}
+                      />
+                      <span>
+                        {resolvedLabels[pointRoleLabels[role]]}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
           </ol>
         </>
       ) : (

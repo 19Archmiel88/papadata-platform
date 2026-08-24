@@ -205,6 +205,20 @@ export function AppRouter() {
         );
   }
 
+  if (pathname === '/accept-invite') {
+    // Deliberately no auth-status redirect: this link creates a brand-new
+    // identity joining an existing tenant, unrelated to whatever session (if
+    // any) the visitor already has. Invitation acceptance is isolated from
+    // the currently active authenticated session.
+    return (
+      <RouteSuspense>
+        <PublicAuthShell>
+          <AuthPage mode="accept-invite" />
+        </PublicAuthShell>
+      </RouteSuspense>
+    );
+  }
+
   if (pathname === '/recover-access') {
     return status === 'authenticated'
       ? <Redirect to="/app" />
@@ -212,6 +226,30 @@ export function AppRouter() {
           <RouteSuspense>
             <PublicAuthShell>
               <AuthPage mode="recover" />
+            </PublicAuthShell>
+          </RouteSuspense>
+        );
+  }
+
+  if (pathname === '/reauth') {
+    return status !== 'authenticated'
+      ? <Redirect to="/login" />
+      : (
+          <RouteSuspense>
+            <PublicAuthShell>
+              <AuthPage mode="reauth" />
+            </PublicAuthShell>
+          </RouteSuspense>
+        );
+  }
+
+  if (pathname === '/select-workspace') {
+    return status !== 'authenticated'
+      ? <Redirect to="/login" />
+      : (
+          <RouteSuspense>
+            <PublicAuthShell>
+              <AuthPage mode="workspace" />
             </PublicAuthShell>
           </RouteSuspense>
         );

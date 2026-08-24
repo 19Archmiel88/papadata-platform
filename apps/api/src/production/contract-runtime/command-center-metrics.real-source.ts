@@ -6,6 +6,7 @@ import {
   type CanonicalAdSpendRecord,
   type CanonicalAttributedConversionRecord,
   type CanonicalInventorySnapshotRecord,
+  type CanonicalOrderLineRecord,
   type CanonicalOrderRecord,
   type CanonicalProductRecord,
   type CanonicalRefundRecord,
@@ -67,6 +68,7 @@ const INTEGRATION_STREAMS = [
   "orders",
   "products",
   "refunds",
+  "traffic",
 ] as const;
 
 const DATA_ISSUE_CODES = [
@@ -80,9 +82,13 @@ const DATA_ISSUE_CODES = [
  * Builds a real, per-tenant MetricEngineInput from ingested
  * `integration_canonical_records` rows instead of the sandbox fact
  * template. Anything without a genuine real-data source today (product
- * costs, order line items, customer returns) is left empty rather than
- * fabricated — the metric engine's existing MISSING_* / NO_DATA reason
- * codes already report that honestly.
+ * costs, customer returns) is left empty rather than fabricated — the
+ * metric engine's existing MISSING_* / NO_DATA reason codes already report
+ * that honestly. `canonicalOrderLines` is populated from each order's real
+ * per-line productId/quantity/grossAmount (see `normalizeOrder` in
+ * canonical-normalizer.ts); a line whose product couldn't be resolved to a
+ * known canonical product keeps `canonicalProductId: null` rather than
+ * guessing.
  */
 export async function createRealMetricEngineInput(options: {
   readonly dataSource: CommandCenterDataSource;
@@ -103,10 +109,15 @@ export async function createRealMetricEngineInput(options: {
     workspaceId,
   } = options;
 
-  const [canonicalRows, connectionRows, checkpointRows, reconciliationRun, openIssueRows] = await Promise.all([
+  const [canonicalRows, catalogRows, connectionRows, checkpointRows, reconciliationRun, openIssueRows] = await Promise.all([
     dataSource.listCanonicalRecords(tenantId, workspaceId, {
-      streams: ["orders", "refunds", "products", "inventory", "ad_spend", "attributed_conversions"],
+      streams: ["orders", "refunds", "inventory", "ad_spend", "attributed_conversions"],
       businessTimeFrom: periodStart,
+      businessTimeTo: periodEnd,
+    }),
+    dataSource.listCanonicalRecords(tenantId, workspaceId, {
+      streams: ["products"],
+      businessTimeFrom: "1970-01-01T00:00:00.000Z",
       businessTimeTo: periodEnd,
     }),
     dataSource.listConnections(tenantId, workspaceId),
@@ -116,7 +127,12 @@ export async function createRealMetricEngineInput(options: {
   ]);
 
   const rowsByStream = new Map<string, Record<string, unknown>[]>();
-  for (const row of canonicalRows) {
+  const scopedRows = [
+    ...canonicalRows.filter((row) => readString(row.stream) !== "products"),
+    ...catalogRows.filter((row) => readString(row.stream) === "products"),
+  ];
+
+  for (const row of scopedRows) {
     const stream = readString(row.stream);
     if (!stream) {
       continue;
@@ -130,10 +146,15 @@ export async function createRealMetricEngineInput(options: {
     .map((row) => mapProductRow(row, tenantId, workspaceId))
     .filter((record): record is CanonicalProductRecord => record !== null);
   const knownProductIds = new Set(canonicalProducts.map((product) => product.canonicalProductId));
+  const productCosts = (rowsByStream.get("products") ?? [])
+    .map(mapProductCostRow)
+    .filter((record): record is { readonly currency: string; readonly sku: string; readonly unitCostAmount: string } => record !== null);
 
   const canonicalOrders = (rowsByStream.get("orders") ?? [])
     .map((row) => mapOrderRow(row, tenantId, workspaceId))
     .filter((record): record is CanonicalOrderRecord => record !== null);
+  const canonicalOrderLines = (rowsByStream.get("orders") ?? [])
+    .flatMap((row) => mapOrderLineRows(row, tenantId, workspaceId, knownProductIds));
   const canonicalRefunds = (rowsByStream.get("refunds") ?? [])
     .map((row) => mapRefundRow(row, tenantId, workspaceId))
     .filter((record): record is CanonicalRefundRecord => record !== null);
@@ -159,7 +180,7 @@ export async function createRealMetricEngineInput(options: {
     canonicalAttributedConversions,
     canonicalCustomerReturns: [],
     canonicalInventorySnapshots,
-    canonicalOrderLines: [],
+    canonicalOrderLines,
     canonicalOrders,
     canonicalProducts,
     canonicalRefunds,
@@ -169,7 +190,7 @@ export async function createRealMetricEngineInput(options: {
     periodEnd,
     periodStart,
     primaryInventorySource: findPrimaryInventorySource(connectionRows, tenantId, workspaceId),
-    productCosts: [],
+    productCosts,
     reconciliationReports: buildReconciliationReports(reconciliationRun, tenantId, workspaceId, generatedAt),
     syncCheckpoints,
     tenantId,
@@ -211,6 +232,56 @@ function mapOrderRow(
     tenantId,
     workspaceId,
   };
+}
+
+/**
+ * Real per-line productId/quantity/grossAmount preserved by `normalizeOrder`
+ * (canonical-normalizer.ts) under `entity.lineItems`, mapped to canonical
+ * order-line records for the product-sales breakdown. A line missing a
+ * numeric quantity/amount (provider shape not recognized) is dropped rather
+ * than counted as zero; a line whose product external id doesn't resolve to
+ * a known canonical product keeps `canonicalProductId: null`.
+ */
+function mapOrderLineRows(
+  row: Record<string, unknown>,
+  tenantId: string,
+  workspaceId: string,
+  knownProductIds: ReadonlySet<string>,
+): readonly CanonicalOrderLineRecord[] {
+  const providerId = readString(row.provider_id);
+  const externalId = readString(row.external_id);
+  if (!providerId || !externalId || !isCommerceProviderId(providerId)) {
+    return [];
+  }
+  const entity = readEntity(row.canonical_payload);
+  const rawLines = entity.lineItems;
+  if (!Array.isArray(rawLines)) {
+    return [];
+  }
+  const canonicalOrderId = canonicalId(providerId, externalId);
+
+  return rawLines.flatMap((rawLine, index): readonly CanonicalOrderLineRecord[] => {
+    if (!isRecord(rawLine)) {
+      return [];
+    }
+    const grossAmount = readEntityNumber(rawLine, "grossAmount");
+    const quantity = readEntityNumber(rawLine, "quantity");
+    if (grossAmount === null || quantity === null) {
+      return [];
+    }
+    const externalProductId = readEntityString(rawLine, "externalProductId");
+    const productKey = externalProductId ? canonicalId(providerId, externalProductId) : null;
+
+    return [{
+      canonicalLineId: canonicalId(providerId, `${externalId}:${index}`),
+      canonicalOrderId,
+      canonicalProductId: productKey && knownProductIds.has(productKey) ? productKey : null,
+      grossAmount: numberToDecimalString(grossAmount),
+      quantity: Math.max(0, Math.round(quantity)),
+      tenantId,
+      workspaceId,
+    }];
+  });
 }
 
 function mapRefundRow(
@@ -272,6 +343,24 @@ function mapProductRow(
     sku: readEntityString(entity, "sku"),
     tenantId,
     workspaceId,
+  };
+}
+
+function mapProductCostRow(
+  row: Record<string, unknown>,
+): { readonly currency: string; readonly sku: string; readonly unitCostAmount: string } | null {
+  const entity = readEntity(row.canonical_payload);
+  const sku = readEntityString(entity, "sku");
+  const unitCost = readEntityNumber(entity, "unitCost");
+
+  if (!sku || unitCost === null) {
+    return null;
+  }
+
+  return {
+    currency: readEntityString(entity, "currency") ?? "PLN",
+    sku,
+    unitCostAmount: numberToDecimalString(unitCost),
   };
 }
 
@@ -522,7 +611,10 @@ function numberToDecimalString(value: number): string {
   return (Math.round(value * 100) / 100).toFixed(2);
 }
 
-function effectiveIso(value: unknown): string | null {
+// Exported so sibling real-data builders (e.g. orders-analytics.real-source.ts)
+// can normalize `effective_time`/`updated_at` row columns the same way,
+// instead of duplicating this Date/string coercion with a second chance to drift.
+export function effectiveIso(value: unknown): string | null {
   if (value instanceof Date) {
     return Number.isFinite(value.getTime()) ? value.toISOString() : null;
   }
@@ -541,21 +633,27 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function readEntity(payload: unknown): Record<string, unknown> {
+// Exported so sibling real-data builders (traffic sources, product sales in
+// command-center-metrics.contract-data.ts) can read `canonical_payload` rows
+// the same way this module does, instead of duplicating the same
+// entity-unwrapping logic with a second chance to drift.
+export function readEntity(payload: unknown): Record<string, unknown> {
   if (!isRecord(payload)) {
     return {};
   }
   return isRecord(payload.entity) ? payload.entity : {};
 }
 
-function readEntityString(entity: Record<string, unknown>, field: string): string | null {
+export function readEntityString(entity: Record<string, unknown>, field: string): string | null {
   return readString(entity[field]);
 }
 
-function readEntityNumber(entity: Record<string, unknown>, field: string): number | null {
+export function readEntityNumber(entity: Record<string, unknown>, field: string): number | null {
   const value = entity[field];
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
+
+export { readString as readRowString };
 
 function isCommerceProviderId(value: string): value is CommerceProviderId {
   return (COMMERCE_PROVIDER_IDS as readonly string[]).includes(value);

@@ -6,20 +6,36 @@ import {
   useChartMotion,
 } from '../../foundations/motion';
 import {
+  resolveSeriesColor,
+} from '../../foundations/tokens';
+import {
   useId,
   useState,
 } from 'react';
 import {
   Bar,
+  BarChart,
   CartesianGrid,
-  ComposedChart,
   LabelList,
   ReferenceLine,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
 
+import {
+  useSeriesVisibility,
+} from '../Analytics/useSeriesVisibility';
+import {
+  ChartMarkTooltip,
+} from '../ChartTooltip';
+import {
+  ChartLegend,
+} from '../ChartLegend';
+import type {
+  ChartLegendItem,
+} from '../ChartLegend';
 import { joinClassNames } from '../Field/fieldUtils';
 import './comparison-chart.css';
 
@@ -90,19 +106,6 @@ const defaultLabels: ComparisonChartLabels = {
   legend: 'Serie porównania',
 };
 
-const seriesTokens = [
-  'var(--pd-data-series-1)',
-  'var(--pd-data-series-2)',
-  'var(--pd-data-series-3)',
-  'var(--pd-data-series-4)',
-  'var(--pd-data-series-5)',
-  'var(--pd-data-series-6)',
-  'var(--pd-data-series-7)',
-  'var(--pd-data-series-8)',
-  'var(--pd-data-series-9)',
-  'var(--pd-data-series-10)',
-] as const;
-
 function formatDefaultValue(value: number): string {
   return new Intl.NumberFormat('pl-PL', {
     maximumFractionDigits: 2,
@@ -128,12 +131,6 @@ function getNumericValue(
     && Number.isFinite(value)
     ? value
     : 0;
-}
-
-function resolveSeriesToken(index: number): string {
-  return seriesTokens[
-    index % seriesTokens.length
-  ] ?? seriesTokens[0];
 }
 
 function resolveDomain(
@@ -209,6 +206,7 @@ export function ComparisonChart({
   ...props
 }: ComparisonChartProps) {
   const chartMotion = useChartMotion();
+  const seriesVisibility = useSeriesVisibility();
   const reactId = useId();
   const gradientBaseId = `pd-comparison-gradient-${reactId.replaceAll(':', '')}`;
   const [isCompactPlot, setIsCompactPlot] =
@@ -285,13 +283,37 @@ export function ComparisonChart({
       : null
   );
 
+  const renderedSeries = runtimeSeries.filter(
+    (item) => seriesVisibility.isVisible(item.key),
+  );
+
   const domain = resolveDomain(
     chartData,
-    runtimeSeries,
+    renderedSeries,
     visibleBenchmark,
   );
 
   const isRanking = variant === 'ranking';
+  const legendItems: readonly ChartLegendItem[] = [
+    ...runtimeSeries.map((item): ChartLegendItem => ({
+      color: resolveSeriesColor(item.index),
+      id: item.key,
+      label: item.label,
+      swatch: 'square',
+    })),
+    ...(visibleBenchmark
+      ? [
+          {
+            color: 'var(--pd-data-target)',
+            id: 'benchmark',
+            label: visibleBenchmark.label,
+            lineStyle: 'dashed' as const,
+            readonly: true,
+            valueLabel: formatValue(visibleBenchmark.value),
+          },
+        ]
+      : []),
+  ];
 
   return (
     <div
@@ -338,7 +360,7 @@ export function ComparisonChart({
           }}
           width="100%"
         >
-          <ComposedChart
+          <BarChart
             accessibilityLayer
             barCategoryGap={
               variant === 'grouped'
@@ -389,12 +411,12 @@ export function ComparisonChart({
                   >
                     <stop
                       offset="0%"
-                      stopColor={resolveSeriesToken(item.index)}
+                      stopColor={resolveSeriesColor(item.index)}
                       stopOpacity={1}
                     />
                     <stop
                       offset="100%"
-                      stopColor={resolveSeriesToken(item.index)}
+                      stopColor={resolveSeriesColor(item.index)}
                       stopOpacity={0.62}
                     />
                   </linearGradient>
@@ -528,15 +550,30 @@ export function ComparisonChart({
               />
             ) : null}
 
-            {runtimeSeries.map((item) => (
+            <Tooltip
+              content={(tooltipProps) => (
+                <ChartMarkTooltip
+                  {...tooltipProps}
+                  valueFormatter={formatValue}
+                />
+              )}
+              cursor={false}
+              shared={false}
+            />
+
+            {renderedSeries.map((item) => (
               <Bar
+                activeBar={{
+                  stroke: 'var(--pd-text)',
+                  strokeWidth: 1.5,
+                }}
                 animationDuration={chartMotion.animationDuration}
                 animationEasing="ease-out"
                 dataKey={item.dataKey}
                 fill={
                   visualStyle === 'vivid'
                     ? `url(#${gradientBaseId}-${item.index})`
-                    : resolveSeriesToken(item.index)
+                    : resolveSeriesColor(item.index)
                 }
                 fillOpacity={
                   item.index === 0
@@ -583,43 +620,23 @@ export function ComparisonChart({
                 ) : null}
               </Bar>
             ))}
-          </ComposedChart>
+          </BarChart>
         </ResponsiveContainer>
+
+        {renderedSeries.length === 0 ? (
+          <p className="pd-comparison-chart__all-hidden" role="status">
+            Wszystkie serie ukryte. Kliknij w legendzie, aby je przywrócić.
+          </p>
+        ) : null}
       </div>
 
-      <ul
-        aria-label={resolvedLabels.legend}
-        className="pd-comparison-chart__legend"
-      >
-        {runtimeSeries.map((item) => (
-          <li
-            data-series-index={item.index}
-            key={item.key}
-          >
-            <span
-              aria-hidden="true"
-              className="pd-comparison-chart__swatch"
-            />
-            <span>{item.label}</span>
-          </li>
-        ))}
-
-        {visibleBenchmark ? (
-          <li data-series="benchmark">
-            <span
-              aria-hidden="true"
-              className="pd-comparison-chart__benchmark-swatch"
-            />
-            <span className="pd-comparison-chart__legend-label">
-              {visibleBenchmark.label}
-              <span className="pd-comparison-chart__benchmark-value">
-                {' · '}
-                {formatValue(visibleBenchmark.value)}
-              </span>
-            </span>
-          </li>
-        ) : null}
-      </ul>
+      <ChartLegend
+        ariaLabel={resolvedLabels.legend}
+        isVisible={seriesVisibility.isVisible}
+        items={legendItems}
+        onToggle={seriesVisibility.toggle}
+        size="compact"
+      />
     </div>
   );
 }

@@ -117,16 +117,21 @@
     transparent
   );
 
-  position: absolute;
+  /*
+   * position:fixed with left/top/width/max-height computed in Select.tsx
+   * from the trigger's real getBoundingClientRect() — not CSS anchored to
+   * .pd-select__trigger-shell's containing block. A plain position:absolute
+   * popover gets silently clipped by any scrolling/overflow:hidden ancestor
+   * (e.g. a topbar dropdown panel); this was a real, confirmed bug where
+   * the "Zakres" preset list rendered ~95% clipped inside the calendar
+   * overlay. Fixed positioning escapes that regardless of ancestor overflow.
+   */
+  position: fixed;
   z-index: var(--pd-layer-popover);
-  top: calc(100% + var(--pd-space-2));
-  right: 0;
-  left: 0;
   display: grid;
-  max-block-size: min(22rem, calc(100dvh - 8rem));
+  overflow: hidden;
   gap: var(--pd-space-2);
   padding: var(--pd-space-3);
-  overflow: hidden;
   border:
     var(--pd-border-width-subtle)
     solid

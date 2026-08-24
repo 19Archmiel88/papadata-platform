@@ -275,28 +275,6 @@
   line-height: 1.5;
 }
 
-.pd-inline-action__content {
-  position: relative;
-  display: inline-flex;
-  gap: var(--pd-space-2);
-  align-items: center;
-}
-
-.pd-inline-action__activity-line {
-  position: absolute;
-  inset: auto 0 -0.25rem;
-  block-size: 1px;
-  background: var(--pd-action-primary);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 150ms ease;
-}
-
-.pd-inline-action:hover .pd-inline-action__activity-line,
-.pd-chart-frame__alternative[open] .pd-inline-action__activity-line {
-  transform: scaleX(1);
-}
-
 @media (max-width: 820px) {
   .pd-chart-frame__header {
     grid-template-columns: minmax(0, 1fr);

@@ -65,6 +65,15 @@ export function resolveAuthSurfaceCopy(
     };
   }
 
+  if (state === 'loggedOut') {
+    return {
+      description: 'Sesja została bezpiecznie zakończona na tym urządzeniu.',
+      eyebrow: 'Wylogowano',
+      scopeNote: '',
+      title: 'Zostałeś wylogowany',
+    };
+  }
+
   if (mode === 'entry') {
     return {
       description: 'Zaloguj się lub utwórz konto, aby przejść do właściwego obszaru roboczego PapaData.',
@@ -98,6 +107,33 @@ export function resolveAuthSurfaceCopy(
       eyebrow: 'Weryfikacja dwuetapowa',
       scopeNote: '',
       title: 'Potwierdź logowanie',
+    };
+  }
+
+  if (mode === 'accept-invite') {
+    return {
+      description: 'Zostałeś zaproszony do zespołu w PapaData. Ustaw hasło, aby dołączyć.',
+      eyebrow: 'Zaproszenie',
+      scopeNote: 'Dołączasz do istniejącej organizacji i workspace — nie tworzysz nowego konta firmowego.',
+      title: 'Dołącz do zespołu',
+    };
+  }
+
+  if (mode === 'reauth') {
+    return {
+      description: 'Ta czynność wymaga świeżego potwierdzenia tożsamości. Wpisz aktualny kod z aplikacji uwierzytelniającej.',
+      eyebrow: 'Ponowne uwierzytelnienie',
+      scopeNote: 'Kontekst organizacji i workspace pozostaje bez zmian — potwierdzasz wyłącznie tożsamość.',
+      title: 'Potwierdź to jeszcze raz',
+    };
+  }
+
+  if (mode === 'workspace') {
+    return {
+      description: 'Masz dostęp do więcej niż jednej organizacji. Wybierz, w którym obszarze roboczym chcesz teraz pracować.',
+      eyebrow: 'Wybór obszaru roboczego',
+      scopeNote: 'Wybór możesz później zmienić w dowolnym momencie w aplikacji.',
+      title: 'Wybierz organizację',
     };
   }
 
@@ -193,6 +229,34 @@ export function resolveAuthStatePanel(
       body: 'Polityka bezpieczeństwa wymaga skonfigurowania dodatkowej metody uwierzytelniania przed dalszym dostępem.',
       eyebrow: 'Dodatkowe zabezpieczenie',
       title: 'Wymagana jest konfiguracja MFA',
+      tone: 'info',
+    };
+  }
+
+  if (state === 'loggedOut') {
+    return {
+      actionLabel: 'Przejdź do logowania',
+      body: 'Sesja i lokalne dane dostępu zostały wyczyszczone na tym urządzeniu.',
+      eyebrow: 'Wylogowano',
+      title: 'Do zobaczenia',
+      tone: 'success',
+    };
+  }
+
+  if (mode === 'reauth') {
+    return {
+      body: 'Ta czynność wymaga świeżego potwierdzenia — wpisz aktualny kod, nawet jeśli logowałeś się niedawno. Po kilku nieudanych próbach dalsza weryfikacja może zostać czasowo zablokowana.',
+      eyebrow: 'Wymagane potwierdzenie',
+      title: 'Świeży dowód tożsamości',
+      tone: 'info',
+    };
+  }
+
+  if (mode === 'workspace') {
+    return {
+      body: 'Twoje konto należy do więcej niż jednej organizacji. Wybór decyduje, którego kontekstu (danych, integracji, uprawnień) użyjemy w tej sesji.',
+      eyebrow: 'Kilka organizacji',
+      title: 'Kontynuuj we właściwym kontekście',
       tone: 'info',
     };
   }

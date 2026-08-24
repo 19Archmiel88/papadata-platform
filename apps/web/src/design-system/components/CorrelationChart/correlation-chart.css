@@ -27,8 +27,9 @@
 }
 
 .pd-correlation-chart__plot {
+  position: relative;
   inline-size: 100%;
-  block-size: clamp(20rem, 36vw, 26rem);
+  block-size: var(--pd-correlation-chart-plot-size, clamp(20rem, 36vw, 26rem));
   min-inline-size: 0;
   cursor: crosshair;
 }
@@ -199,6 +200,11 @@
 
 .pd-correlation-chart__legend li {
   display: inline-flex;
+  align-items: center;
+}
+
+.pd-correlation-chart__legend button {
+  display: inline-flex;
   gap: 0.45rem;
   align-items: center;
   min-block-size: 1.9rem;
@@ -207,13 +213,48 @@
   border-radius: var(--pd-radius-pill);
   background: var(--pd-surface-subtle);
   color: var(--pd-text-secondary);
+  font: inherit;
   font-size: 0.7rem;
+  cursor: pointer;
+  transition:
+    opacity 140ms ease,
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
+}
+
+.pd-correlation-chart__legend button:hover {
+  border-color: var(--pd-separator);
+  background: var(--pd-surface-raised);
+  color: var(--pd-text);
+}
+
+.pd-correlation-chart__legend button:focus-visible {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: 2px;
+}
+
+.pd-correlation-chart__legend li[data-active='false'] button {
+  opacity: 0.44;
+  background: transparent;
 }
 
 .pd-correlation-chart__swatch {
   inline-size: 0.62rem;
   block-size: 0.62rem;
   border-radius: 0.16rem;
+}
+
+.pd-correlation-chart__all-hidden {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: var(--pd-space-4);
+  color: var(--pd-text-muted);
+  font-size: 0.78rem;
+  text-align: center;
 }
 
 .pd-correlation-chart__empty {

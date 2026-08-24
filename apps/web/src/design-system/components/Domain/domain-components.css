@@ -412,6 +412,28 @@
   display: block;
   min-block-size: 0.58rem;
   border-radius: var(--pd-radius-small);
+  overflow: hidden;
+  background: var(--pd-surface-subtle);
+}
+
+/*
+ * The magnitude-encoding element is the innermost <span style={{inlineSize}}>
+ * — the outer .pd-*__bar above is just the full-width track. Without this
+ * rule the inner span had no background/height of its own (a bare inline
+ * span with only a percentage width set), so every bar rendered as the same
+ * full-width track color regardless of value — the chart showed no magnitude
+ * at all. A plain descendant selector (not a direct-child one) is used
+ * because SalesSources wraps an extra non-dynamic <span> around its
+ * width-carrying one; matching both is harmless since they'd render the
+ * identical color.
+ */
+.pd-sales-sources__bar span,
+.pd-sales-funnel__bar span,
+.pd-funnel-chart__bar span,
+.pd-waterfall-chart__bar span {
+  display: block;
+  block-size: 100%;
+  border-radius: inherit;
   background: var(--pd-data-series-1);
 }
 
@@ -437,11 +459,22 @@
   min-inline-size: 0;
 }
 
-.pd-waterfall-chart__items li[data-kind='negative'] .pd-waterfall-chart__bar {
+/* Every value here is already direct-labeled as text, so a tooltip would add nothing — just a hover response on the mark itself. */
+.pd-funnel-chart__steps li .pd-funnel-chart__bar span,
+.pd-waterfall-chart__items li .pd-waterfall-chart__bar span {
+  transition: filter 120ms ease;
+}
+
+.pd-funnel-chart__steps li:hover .pd-funnel-chart__bar span,
+.pd-waterfall-chart__items li:hover .pd-waterfall-chart__bar span {
+  filter: brightness(1.12);
+}
+
+.pd-waterfall-chart__items li[data-kind='decrease'] .pd-waterfall-chart__bar span {
   background: var(--pd-status-danger);
 }
 
-.pd-waterfall-chart__items li[data-kind='positive'] .pd-waterfall-chart__bar {
+.pd-waterfall-chart__items li[data-kind='increase'] .pd-waterfall-chart__bar span {
   background: var(--pd-status-success);
 }
 

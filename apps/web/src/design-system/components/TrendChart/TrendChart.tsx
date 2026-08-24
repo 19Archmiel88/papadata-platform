@@ -15,10 +15,26 @@ import {
   Line,
   ReferenceDot,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
 
+import {
+  useChartZoom,
+} from '../Analytics/useChartZoom';
+import {
+  useSeriesVisibility,
+} from '../Analytics/useSeriesVisibility';
+import {
+  ChartCrosshairTooltip,
+} from '../ChartTooltip';
+import {
+  ChartLegend,
+} from '../ChartLegend';
+import type {
+  ChartLegendItem,
+} from '../ChartLegend';
 import { joinClassNames } from '../Field/fieldUtils';
 import './trend-chart.css';
 
@@ -76,6 +92,14 @@ const defaultLabels: TrendChartLabels = {
   movingAverage: 'Średnia krocząca',
   plan: 'Plan',
   previousPeriod: 'Poprzedni okres',
+};
+
+/** Single source of truth for series color — feeds both the plotted line and its legend swatch, so the two can't drift apart. */
+const seriesColorByKey: Record<NumericSeriesKey, string> = {
+  actual: 'var(--pd-data-actual)',
+  movingAverage: 'var(--pd-data-series-2)',
+  plan: 'var(--pd-data-series-8)',
+  previousPeriod: 'var(--pd-data-series-7)',
 };
 
 function hasNumericSeries(
@@ -227,8 +251,19 @@ export function TrendChart({
 }: TrendChartProps) {
   const reactId = useId();
   const chartMotion = useChartMotion();
+  const seriesVisibility = useSeriesVisibility();
+  const {
+    isZoomed,
+    onPointerCancel,
+    onPointerDown,
+    onPointerUp,
+    onWheel,
+    resetZoom,
+    visibleData,
+  } = useChartZoom(data, 6);
 
-  const gradientId = `pd-trend-area-${reactId.replaceAll(':', '')}`;
+  const elementIdBase = reactId.replaceAll(':', '');
+  const gradientId = `pd-trend-area-${elementIdBase}`;
 
   const resolvedLabels: TrendChartLabels = {
     ...defaultLabels,
@@ -237,36 +272,79 @@ export function TrendChart({
 
   const formatValue = valueFormatter ?? formatDefaultValue;
 
-  const chartData = data.map((datum) => ({
+  const chartData = visibleData.map((datum) => ({
     ...datum,
   }));
 
   const hasActual = hasNumericSeries(
-    data,
+    visibleData,
     'actual',
   );
 
   const hasPlan = hasNumericSeries(
-    data,
+    visibleData,
     'plan',
   );
 
   const hasPreviousPeriod = hasNumericSeries(
-    data,
+    visibleData,
     'previousPeriod',
   );
 
   const hasMovingAverage = hasNumericSeries(
-    data,
+    visibleData,
     'movingAverage',
   );
 
-  const latestActualDatum = findLatestActualDatum(data);
+  const latestActualDatum = findLatestActualDatum(visibleData);
 
   const {
     domain,
     ticks,
-  } = resolveYAxisScale(data);
+  } = resolveYAxisScale(visibleData);
+  const legendItems: ChartLegendItem[] = [];
+
+  if (hasActual) {
+    legendItems.push({
+      color: seriesColorByKey.actual,
+      id: 'actual',
+      label: resolvedLabels.actual,
+    });
+  }
+
+  if (hasPlan) {
+    legendItems.push({
+      color: seriesColorByKey.plan,
+      id: 'plan',
+      label: resolvedLabels.plan,
+      lineStyle: 'dashed',
+    });
+  }
+
+  if (hasPreviousPeriod) {
+    legendItems.push({
+      color: seriesColorByKey.previousPeriod,
+      id: 'previousPeriod',
+      label: resolvedLabels.previousPeriod,
+      lineStyle: 'dotted',
+    });
+  }
+
+  if (hasMovingAverage) {
+    legendItems.push({
+      color: seriesColorByKey.movingAverage,
+      id: 'movingAverage',
+      label: resolvedLabels.movingAverage,
+    });
+  }
+
+  function isSeriesShown(key: NumericSeriesKey): boolean {
+    return seriesVisibility.isVisible(key);
+  }
+
+  function seriesClassName(key: NumericSeriesKey): string | undefined {
+    return isSeriesShown(key) ? undefined : 'pd-trend-chart__series--hidden';
+  }
 
   return (
     <div
@@ -280,18 +358,36 @@ export function TrendChart({
       data-variant={variant}
       role="group"
     >
-      {unit ? (
-        <div
-          aria-hidden="true"
-          className="pd-trend-chart__axis-caption"
-        >
-          <span>{unit}</span>
+      <div className="pd-trend-chart__topline">
+        {unit ? (
+          <div
+            aria-hidden="true"
+            className="pd-trend-chart__axis-caption"
+          >
+            <span>{unit}</span>
+          </div>
+        ) : null}
+
+        <div className="pd-trend-chart__interaction-hint">
+          <span>przeciągnij lub przewiń = przybliż</span>
+          {isZoomed ? (
+            <button
+              onClick={resetZoom}
+              type="button"
+            >
+              Reset zakresu
+            </button>
+          ) : null}
         </div>
-      ) : null}
+      </div>
 
       <div
         className="pd-trend-chart__plot"
         data-slot="plot"
+        onPointerCancel={onPointerCancel}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+        onWheel={onWheel}
       >
         <ResponsiveContainer
           debounce={80}
@@ -386,15 +482,30 @@ export function TrendChart({
               width={55}
             />
 
+            <Tooltip
+              content={(tooltipProps) => (
+                <ChartCrosshairTooltip
+                  {...tooltipProps}
+                  isSeriesVisible={(dataKey) => isSeriesShown(dataKey as NumericSeriesKey)}
+                  valueFormatter={formatValue}
+                />
+              )}
+              cursor={{
+                stroke: 'var(--pd-separator-strong)',
+              }}
+            />
+
             {variant === 'area' && hasActual ? (
               <Area
                 activeDot={false}
                 animationDuration={chartMotion.animationDuration}
                 animationEasing="ease-out"
                 baseValue={domain[0]}
+                className={seriesClassName('actual')}
                 connectNulls={false}
                 dataKey="actual"
                 fill={`url(#${gradientId})`}
+                id={`pd-trend-${elementIdBase}-actual-area`}
                 fillOpacity={1}
                 isAnimationActive={chartMotion.isAnimationActive}
                 legendType="none"
@@ -406,14 +517,16 @@ export function TrendChart({
             {hasPreviousPeriod ? (
               <Line
                 activeDot={false}
+                className={seriesClassName('previousPeriod')}
                 connectNulls={false}
                 dataKey="previousPeriod"
                 dot={false}
+                id={`pd-trend-${elementIdBase}-previous-period-line`}
                 animationDuration={chartMotion.animationDuration}
                 animationEasing="ease-out"
                 isAnimationActive={chartMotion.isAnimationActive}
                 name={resolvedLabels.previousPeriod}
-                stroke="var(--pd-data-series-7)"
+                stroke={seriesColorByKey.previousPeriod}
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeOpacity={0.82}
@@ -425,14 +538,16 @@ export function TrendChart({
             {hasPlan ? (
               <Line
                 activeDot={false}
+                className={seriesClassName('plan')}
                 connectNulls={false}
                 dataKey="plan"
                 dot={false}
+                id={`pd-trend-${elementIdBase}-plan-line`}
                 animationDuration={chartMotion.animationDuration}
                 animationEasing="ease-out"
                 isAnimationActive={chartMotion.isAnimationActive}
                 name={resolvedLabels.plan}
-                stroke="var(--pd-data-series-8)"
+                stroke={seriesColorByKey.plan}
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeOpacity={0.9}
@@ -444,14 +559,16 @@ export function TrendChart({
             {hasMovingAverage ? (
               <Line
                 activeDot={false}
+                className={seriesClassName('movingAverage')}
                 connectNulls={false}
                 dataKey="movingAverage"
                 dot={false}
+                id={`pd-trend-${elementIdBase}-moving-average-line`}
                 animationDuration={chartMotion.animationDuration}
                 animationEasing="ease-out"
                 isAnimationActive={chartMotion.isAnimationActive}
                 name={resolvedLabels.movingAverage}
-                stroke="var(--pd-data-series-2)"
+                stroke={seriesColorByKey.movingAverage}
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeOpacity={0.84}
@@ -463,14 +580,16 @@ export function TrendChart({
             {hasActual ? (
               <Line
                 activeDot={false}
+                className={seriesClassName('actual')}
                 connectNulls={false}
                 dataKey="actual"
                 dot={false}
                 animationDuration={chartMotion.animationDuration}
                 animationEasing="ease-out"
+                id={`pd-trend-${elementIdBase}-actual-line`}
                 isAnimationActive={chartMotion.isAnimationActive}
                 name={resolvedLabels.actual}
-                stroke="var(--pd-data-actual)"
+                stroke={seriesColorByKey.actual}
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeOpacity={1}
@@ -479,7 +598,7 @@ export function TrendChart({
               />
             ) : null}
 
-            {latestActualDatum?.actual != null ? (
+            {latestActualDatum?.actual != null && isSeriesShown('actual') ? (
               <>
                 <ReferenceDot
                   className="pd-trend-chart__latest-point-ring"
@@ -507,50 +626,13 @@ export function TrendChart({
         </ResponsiveContainer>
       </div>
 
-      <ul
-        aria-label={resolvedLabels.legend}
-        className="pd-trend-chart__legend"
-      >
-        {hasActual ? (
-          <li data-series="actual">
-            <span
-              aria-hidden="true"
-              className="pd-trend-chart__swatch"
-            />
-            <span>{resolvedLabels.actual}</span>
-          </li>
-        ) : null}
-
-        {hasPlan ? (
-          <li data-series="plan">
-            <span
-              aria-hidden="true"
-              className="pd-trend-chart__swatch"
-            />
-            <span>{resolvedLabels.plan}</span>
-          </li>
-        ) : null}
-
-        {hasPreviousPeriod ? (
-          <li data-series="previous-period">
-            <span
-              aria-hidden="true"
-              className="pd-trend-chart__swatch"
-            />
-            <span>{resolvedLabels.previousPeriod}</span>
-          </li>
-        ) : null}
-
-        {hasMovingAverage ? (
-          <li data-series="moving-average">
-            <span
-              aria-hidden="true"
-              className="pd-trend-chart__swatch"
-            />
-            <span>{resolvedLabels.movingAverage}</span>
-          </li>
-        ) : null}
-      </ul>
+      <ChartLegend
+        ariaLabel={resolvedLabels.legend}
+        className="pd-trend-chart__legend-control"
+        isVisible={seriesVisibility.isVisible}
+        items={legendItems}
+        onToggle={seriesVisibility.toggle}
+      />
     </div>
   );
 }

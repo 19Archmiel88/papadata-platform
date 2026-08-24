@@ -10,9 +10,9 @@
 
 .pd-shell-notification-center__toolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  gap: 6px 10px;
   padding: 10px 12px;
   border-block-end: 1px solid var(--pd-shell-separator);
   background: var(--pd-shell-surface-raised);
@@ -20,8 +20,16 @@
 
 .pd-shell-notification-center__filters {
   display: flex;
+  flex: 1 1 auto;
   flex-wrap: wrap;
   gap: 5px;
+  min-width: 0;
+}
+
+.pd-shell-notification-center__mark-all {
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+  white-space: nowrap;
 }
 
 .pd-shell-notification-center__filters button,
@@ -47,7 +55,7 @@
 }
 
 .pd-shell-notification-center__filters button[aria-pressed='true'] {
-  box-shadow: inset 0 -2px 0 var(--pd-brand-accent);
+  box-shadow: inset 0 -2px 0 var(--pd-shell-brand);
 }
 
 .pd-shell-notification-center__list {
@@ -72,7 +80,7 @@
 }
 
 .pd-shell-notification[data-unread='true'] {
-  box-shadow: inset 2px 0 0 var(--pd-brand-accent);
+  box-shadow: inset 2px 0 0 var(--pd-shell-brand);
 }
 
 .pd-shell-notification__meta,
@@ -132,7 +140,7 @@
 
 .pd-shell-notification__preset-grid button:hover,
 .pd-shell-notification__actions button:hover {
-  border-color: color-mix(in srgb, var(--pd-brand-accent) 50%, var(--pd-shell-separator));
+  border-color: color-mix(in srgb, var(--pd-shell-brand) 50%, var(--pd-shell-separator));
   color: var(--pd-shell-text);
 }
 

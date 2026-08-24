@@ -16,7 +16,7 @@ button.pd-button {
   justify-content: center;
   padding: 0 var(--pd-space-4);
   border: 1px solid var(--pd-button-border);
-  border-radius: var(--pd-radius-control);
+  border-radius: var(--pd-button-radius, var(--pd-radius-control));
   outline: 0;
   background: var(--pd-button-surface);
   color: var(--pd-button-color);
@@ -86,7 +86,7 @@ button.pd-button:hover {
 
 .pd-button:focus-visible,
 button.pd-button:focus-visible {
-  box-shadow: 0 0 0 3px var(--pd-focus-ring);
+  box-shadow: var(--pd-button-focus-shadow, 0 0 0 3px var(--pd-focus-ring));
 }
 
 .pd-button:active,
@@ -96,18 +96,22 @@ button.pd-button:active {
 
 .pd-button--primary,
 .pd-button[data-variant='primary'] {
-  --pd-button-color: var(--pd-brand-action-on);
-  --pd-button-hover-color: var(--pd-brand-action-on);
-  --pd-button-surface: var(--pd-brand-action);
-  --pd-button-surface-hover: var(--pd-brand-action-hover);
-  --pd-button-border: var(--pd-brand-action);
-  --pd-button-border-hover: var(--pd-brand-action-hover);
+  --pd-button-color: var(--pd-button-primary-color, var(--pd-brand-action-on));
+  --pd-button-hover-color: var(--pd-button-primary-hover-color, var(--pd-brand-action-on));
+  --pd-button-surface: var(--pd-button-primary-surface, var(--pd-brand-action));
+  --pd-button-surface-hover: var(--pd-button-primary-hover-surface, var(--pd-brand-action-hover));
+  --pd-button-border: var(--pd-button-primary-border, var(--pd-brand-action));
+  --pd-button-border-hover: var(--pd-button-primary-hover-border, var(--pd-brand-action-hover));
 }
 
 .pd-button--secondary,
 .pd-button[data-variant='secondary'] {
-  --pd-button-surface: var(--pd-surface);
-  --pd-button-surface-hover: var(--pd-surface-soft);
+  --pd-button-color: var(--pd-button-secondary-color, var(--pd-text));
+  --pd-button-hover-color: var(--pd-button-secondary-hover-color, var(--pd-text));
+  --pd-button-surface: var(--pd-button-secondary-surface, var(--pd-surface));
+  --pd-button-surface-hover: var(--pd-button-secondary-hover-surface, var(--pd-surface-soft));
+  --pd-button-border: var(--pd-button-secondary-border, var(--pd-separator));
+  --pd-button-border-hover: var(--pd-button-secondary-hover-border, var(--pd-separator-strong));
 }
 
 .pd-button--ghost,
@@ -122,8 +126,8 @@ button.pd-button:active {
 
 .pd-button--danger,
 .pd-button[data-variant='danger'] {
-  --pd-button-color: #ffffff;
-  --pd-button-hover-color: #ffffff;
+  --pd-button-color: var(--pd-status-danger-on);
+  --pd-button-hover-color: var(--pd-status-danger-on);
   --pd-button-surface: var(--pd-status-danger);
   --pd-button-surface-hover: color-mix(in srgb, var(--pd-status-danger) 88%, black);
   --pd-button-border: var(--pd-status-danger);

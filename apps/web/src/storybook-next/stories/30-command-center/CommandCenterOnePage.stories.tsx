@@ -10,11 +10,14 @@ import {
 } from '../../../screens/business';
 
 const meta = {
-  title: '30 Centrum Dowodzenia/Landing page',
+  title: '30 Centrum Dowodzenia/Runtime dashboard',
   parameters: {
     layout: 'fullscreen',
     docs: {
-      disable: true,
+      description: {
+        component:
+          'Pelny ekran runtime sklada realne sekcje Command Center w komponent CommandCenterDashboardLayout.',
+      },
     },
   },
 } satisfies Meta;
@@ -34,7 +37,7 @@ if (!onePageDefinition) {
 const storyData = createStorybookBusinessData(onePageDefinition);
 
 export const FullLandingPageStory: Story = {
-  name: '30.00 Cały landing page',
+  name: '30.01 Pelny dashboard runtime',
   render: () => (
     <BusinessScreen
       data={storyData}

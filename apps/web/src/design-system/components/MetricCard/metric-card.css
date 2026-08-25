@@ -74,6 +74,18 @@
   --pd-metric-signal: var(--pd-data-actual);
 }
 
+/*
+ * The headline number itself carries the signal, not just the small trend
+ * glyph next to it — a glance across a row of cards should surface which
+ * ones need attention. Deliberately excludes 'info'/'neutral': tinting every
+ * card regardless of whether anything moved would just be noise.
+ */
+.pd-metric-card[data-signal='positive'] .pd-metric-card__value > span,
+.pd-metric-card[data-signal='negative'] .pd-metric-card__value > span,
+.pd-metric-card[data-signal='warning'] .pd-metric-card__value > span {
+  color: color-mix(in srgb, var(--pd-metric-signal) 62%, var(--pd-text));
+}
+
 .pd-metric-card__header {
   display: flex;
   gap: var(--pd-space-3);
@@ -92,9 +104,11 @@
 .pd-metric-card__label {
   min-inline-size: 0;
   color: var(--pd-text-secondary);
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: var(--pd-font-weight-medium);
   line-height: 1.35;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .pd-metric-card__help {
@@ -218,10 +232,22 @@
 }
 
 .pd-metric-card__comparison > span:first-child {
+  display: inline-flex;
+  align-items: center;
   color: var(--pd-metric-signal, var(--pd-text-muted));
   font-family: var(--pd-font-mono);
   font-size: 0.78rem;
   font-weight: var(--pd-font-weight-semibold);
+}
+
+.pd-metric-card__trend-glyph {
+  inline-size: 0.68rem;
+  block-size: 0.68rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
 }
 
 .pd-metric-card__comparison[data-direction='up'] > span:first-child {
@@ -230,6 +256,26 @@
 
 .pd-metric-card__comparison[data-direction='down'] > span:first-child {
   color: var(--pd-status-danger);
+}
+
+/* Glance-able companion to the Cel/Odchylenie numbers below — position vs.
+   target at a look, without replacing the precise figures. */
+.pd-metric-card__progress {
+  position: relative;
+  inline-size: 100%;
+  block-size: 3px;
+  overflow: hidden;
+  border-radius: var(--pd-radius-pill);
+  background: var(--pd-separator);
+}
+
+.pd-metric-card__progress-fill {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  border-radius: inherit;
+  background: var(--pd-metric-signal, var(--pd-data-actual));
+  transition: inline-size var(--pd-motion-duration-deliberate) var(--pd-motion-easing-standard);
 }
 
 .pd-metric-card__state-message {

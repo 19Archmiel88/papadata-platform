@@ -71,6 +71,7 @@ export type MetricCardProps = Omit<
   readonly layout?: MetricCardLayout;
   readonly metricId: string;
   readonly papaAction?: AnalyticsAction | null;
+  readonly progressRatio?: number | null;
   readonly signal?: AnalyticsSignalTone;
   readonly sourceLabel?: string | null;
   readonly sparklinePoints?: readonly number[];
@@ -87,17 +88,39 @@ type SparklineCoordinate = readonly [
   y: number,
 ];
 
-const trendGlyphMap = {
-  up: '↗',
-  down: '↘',
-  flat: '→',
-  unknown: '·',
-} satisfies Record<AnalyticsTrendDirection, string>;
+// Rotating a single up-right arrow reads more crafted than switching between
+// three separate unicode glyphs (↗/↘/→), which render with inconsistent
+// weight/alignment across platform fonts at this size. 0deg = up-right,
+// 90deg clockwise = down-right, -45deg = flat/horizontal.
+const trendGlyphRotationMap = {
+  up: 0,
+  down: 90,
+  flat: -45,
+  unknown: null,
+} satisfies Record<AnalyticsTrendDirection, number | null>;
 
-function resolveTrendGlyph(
-  direction: AnalyticsTrendDirection,
-): string {
-  return trendGlyphMap[direction];
+function TrendGlyph({
+  direction,
+}: {
+  readonly direction: AnalyticsTrendDirection;
+}) {
+  const rotation = trendGlyphRotationMap[direction];
+
+  if (rotation === null) {
+    return <span aria-hidden="true">·</span>;
+  }
+
+  return (
+    <svg
+      aria-hidden="true"
+      className="pd-metric-card__trend-glyph"
+      focusable="false"
+      style={{ transform: `rotate(${rotation}deg)` }}
+      viewBox="0 0 12 12"
+    >
+      <path d="M2.25 9.75 9.75 2.25M9.75 2.25H4.75M9.75 2.25V7.25" />
+    </svg>
+  );
 }
 
 function buildSparklineCoordinates(
@@ -220,6 +243,7 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
       layout = 'default',
       metricId,
       papaAction = null,
+      progressRatio = null,
       signal = 'neutral',
       sourceLabel = null,
       sparklinePoints = [],
@@ -256,6 +280,11 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
       || definitionChangeLabel,
     );
     const showActions = Boolean(detailAction || papaAction);
+    const progressPercent = hasValue
+      && progressRatio !== null
+      && Number.isFinite(progressRatio)
+      ? Math.min(100, Math.max(0, progressRatio * 100))
+      : null;
 
     const describedBy = !hasValue && !isProcessing && stateMessage
       ? stateMessageId
@@ -351,7 +380,7 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
               data-direction={comparison.direction}
             >
               <span aria-hidden="true">
-                {resolveTrendGlyph(comparison.direction)}
+                <TrendGlyph direction={comparison.direction} />
               </span>
 
               <span>{comparison.label}</span>
@@ -367,6 +396,18 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
             </p>
           ) : null}
         </div>
+
+        {progressPercent !== null ? (
+          <div
+            aria-hidden="true"
+            className="pd-metric-card__progress"
+          >
+            <span
+              className="pd-metric-card__progress-fill"
+              style={{ inlineSize: `${progressPercent}%` }}
+            />
+          </div>
+        ) : null}
 
         {showSparkline ? (
           <MetricSparkline points={sparklinePoints} />

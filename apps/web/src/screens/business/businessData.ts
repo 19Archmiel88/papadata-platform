@@ -1303,6 +1303,49 @@ export const businessTrendSeries: readonly ChartSeries[] = [
   },
 ];
 
+const productSales: readonly ProductSalesRow[] = [
+  { canonicalProductId: 'prod-coffee-premium-1kg', changePercent: 14.2, productName: 'Zestaw kawowy Premium 1kg', quantity: 640, revenue: '128400.00' },
+  { canonicalProductId: 'prod-espresso-x200', changePercent: 6.5, productName: 'Ekspres przelewowy X200', quantity: 210, revenue: '96200.00' },
+  { canonicalProductId: 'prod-filters-v60-100', changePercent: -3.1, productName: 'Filtry papierowe V60 (100 szt.)', quantity: 3100, revenue: '54300.00' },
+  { canonicalProductId: 'prod-grinder-slim', changePercent: 9.8, productName: 'Młynek ręczny Slim', quantity: 540, revenue: '48800.00' },
+  { canonicalProductId: 'prod-thermo-mug-400', changePercent: -11.4, productName: 'Kubek termiczny 400ml', quantity: 1380, revenue: '41200.00' },
+  { canonicalProductId: 'prod-barista-starter', changePercent: 2.0, productName: 'Zestaw startowy Barista', quantity: 190, revenue: '36700.00' },
+  { canonicalProductId: 'prod-coffee-ethiopia-250', changePercent: null, productName: 'Kawa mielona Etiopia 250g', quantity: 990, revenue: '29800.00' },
+  { canonicalProductId: 'prod-scale-kitchen-01', changePercent: -5.6, productName: 'Waga kuchenna 0.1g', quantity: 410, revenue: '22500.00' },
+];
+
+const trafficSources: readonly TrafficSourceRow[] = [
+  { sessions: 18400, source: 'Organic', users: 14200 },
+  { sessions: 15200, source: 'Google Ads', users: 11800 },
+  { sessions: 9800, source: 'Meta Ads', users: 7600 },
+  { sessions: 7200, source: 'Direct', users: 6100 },
+  { sessions: 3400, source: 'Email', users: 2900 },
+  { sessions: 2100, source: 'Partners', users: 1750 },
+];
+
+const customerSegments: readonly CustomerSegmentRow[] = [
+  {
+    arpu: 169.78,
+    customers: 1840,
+    frequency: 1,
+    id: 'new',
+    productsPerOrder: 1.4,
+    rawRevenue: 312400,
+    revenue: '312400.00',
+    segment: 'Nowi klienci',
+  },
+  {
+    arpu: 446.77,
+    customers: 960,
+    frequency: 2.6,
+    id: 'returning',
+    productsPerOrder: 2.1,
+    rawRevenue: 428900,
+    revenue: '428900.00',
+    segment: 'Powracający klienci',
+  },
+];
+
 export function findBusinessScreenDefinition(
   idOrRoute: string,
 ): BusinessScreenDefinition | null {
@@ -1348,7 +1391,7 @@ export function createStorybookBusinessData(
     driverRelationships: null,
     evidence,
     committedActions: [],
-    customerSegments: [],
+    customerSegments,
     forecastMethod: null,
     forecastTotal: null,
     funnelSteps,
@@ -1360,12 +1403,12 @@ export function createStorybookBusinessData(
       total: records.length,
     },
     planTotal: null,
-    productSales: [],
+    productSales,
     records,
     recommendations,
     sources: dataSources,
     summary: buildStoryCommandSummary(records),
-    trafficSources: [],
+    trafficSources,
     trajectory: null,
     warnings: [],
     waterfall,

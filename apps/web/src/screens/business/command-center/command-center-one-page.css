@@ -161,23 +161,60 @@
   box-shadow: none;
 }
 
-.pd-command-center-one-page__runtime-kpi .pd-metric-card:first-child {
+/*
+ * :nth-of-type / :first-of-type, not :nth-child / :first-child — the group
+ * title <p> inserted before each row of 4 cards (see
+ * CommandCenterKpiSection.tsx) is a different tag (<p> vs. the card's
+ * <article>), so it doesn't count toward these positional siblings. Using
+ * :nth-child here would silently shift every card's popover-edge and
+ * top-border-strength assignment by one.
+ */
+.pd-command-center-one-page__runtime-kpi .pd-metric-card:first-of-type {
   border-block-start-color: var(--pd-command-border-strong);
 }
 
 .pd-command-center-one-page__runtime-kpi .pd-metric-card[data-emphasis='recommendation'] {
   padding-inline-start: 16px;
   border-inline-start: 4px solid var(--pd-brand-accent);
+  background: linear-gradient(120deg, var(--pd-brand-ambient), transparent 65%);
   box-shadow: none;
 }
 
-.pd-command-center-one-page__runtime-kpi .pd-metric-card:nth-child(4n + 1) {
+.pd-command-center-one-page__runtime-kpi .pd-metric-card[data-emphasis='recommendation'] .pd-metric-card__label {
+  color: var(--pd-text-secondary);
+}
+
+.pd-command-center-one-page__runtime-kpi .pd-metric-card:hover,
+.pd-command-center-one-page__runtime-kpi .pd-metric-card:focus-within {
+  border-radius: var(--pd-radius-control);
+  background: var(--pd-surface-raised);
+  outline: 1px solid var(--pd-brand-line);
+  outline-offset: -1px;
+  box-shadow: var(--pd-shadow-control);
+}
+
+.pd-command-center-one-page__kpi-group-title {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding-block: 2px;
+  color: var(--pd-text-muted);
+  font-size: 0.66rem;
+  font-weight: var(--pd-font-weight-medium);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.pd-command-center-one-page__kpi-group-title:not(:first-child) {
+  padding-block-start: 8px;
+}
+
+.pd-command-center-one-page__runtime-kpi .pd-metric-card:nth-of-type(4n + 1) {
   --pd-metric-help-popover-inline-start: 0;
   --pd-metric-help-popover-inline-end: auto;
   --pd-metric-help-popover-translate-x: 0;
 }
 
-.pd-command-center-one-page__runtime-kpi .pd-metric-card:nth-child(4n) {
+.pd-command-center-one-page__runtime-kpi .pd-metric-card:nth-of-type(4n) {
   --pd-metric-help-popover-inline-start: auto;
   --pd-metric-help-popover-inline-end: 0;
   --pd-metric-help-popover-translate-x: 0;

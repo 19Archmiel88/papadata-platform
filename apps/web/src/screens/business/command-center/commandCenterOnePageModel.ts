@@ -24,6 +24,9 @@ import {
   formatSignedPercent,
   resolveUnitLabel as resolveWorkspaceUnitLabel,
 } from '../commandCenterWorkspaceFormatters';
+import {
+  formatPapaDataRelativeTime,
+} from '../../../design-system/foundations/runtime';
 
 export type CommandCenterData = Extract<
   BusinessScreenData,
@@ -501,7 +504,48 @@ export function resolveMetricDeviationLabel(record: CommandCenterRecord): string
   return formatSignedMetricValue(record.value - record.target, record.unit);
 }
 
+/**
+ * "2 minuty temu"/"3 godziny temu" with correct Polish pluralisation, using
+ * the design system's shared relative-time formatter (Intl-backed, not a
+ * hand-rolled "min temu" invariant) — reused here rather than duplicated
+ * because the source timestamp (`lastSuccessfulSyncAt`) is now real, so the
+ * label should read as precisely as the number it explains.
+ */
+function resolveLineageRelativeTime(iso: string): string {
+  const timestamp = Date.parse(iso);
+
+  if (!Number.isFinite(timestamp)) {
+    return 'świeże źródła';
+  }
+
+  const deltaMinutes = Math.round((Date.now() - timestamp) / 60_000);
+
+  if (Math.abs(deltaMinutes) < 1) {
+    return formatPapaDataRelativeTime(0, 'second', 'pl');
+  }
+
+  if (Math.abs(deltaMinutes) < 60) {
+    return formatPapaDataRelativeTime(-deltaMinutes, 'minute', 'pl');
+  }
+
+  const deltaHours = Math.round(deltaMinutes / 60);
+
+  if (Math.abs(deltaHours) < 24) {
+    return formatPapaDataRelativeTime(-deltaHours, 'hour', 'pl');
+  }
+
+  const deltaDays = Math.round(deltaHours / 24);
+
+  return formatPapaDataRelativeTime(-deltaDays, 'day', 'pl');
+}
+
 export function resolveMetricFreshnessLabel(record: CommandCenterRecord): string {
+  // Real lineage: the metric engine's own checkpoint beats a guess derived
+  // from readiness alone whenever it's actually present on the record.
+  if (record.readiness === 'ready' && record.lastSuccessfulSyncAt) {
+    return resolveLineageRelativeTime(record.lastSuccessfulSyncAt);
+  }
+
   switch (record.readiness) {
     case 'ready':
       return 'świeże źródła';
@@ -516,7 +560,25 @@ export function resolveMetricFreshnessLabel(record: CommandCenterRecord): string
   }
 }
 
+const providerDisplayNames: Record<string, string> = {
+  allegro: 'Allegro',
+  baselinker: 'BaseLinker',
+  ga4: 'GA4',
+  google_ads: 'Google Ads',
+  meta_ads: 'Meta Ads',
+  shopify: 'Shopify',
+  woocommerce: 'WooCommerce',
+};
+
 export function resolveMetricSourceLabel(record: CommandCenterRecord): string {
+  // Real lineage: prefer the actual provider(s) the metric engine attributed
+  // this KPI to over guessing from the card's label text.
+  if (record.providers && record.providers.length > 0) {
+    return record.providers
+      .map((providerId) => providerDisplayNames[providerId] ?? providerId)
+      .join(' + ');
+  }
+
   const label = normalizeLabel(record.label);
 
   if (label.includes('ga4') || label.includes('event') || label.includes('ruch')) return 'GA4';

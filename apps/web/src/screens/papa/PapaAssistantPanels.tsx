@@ -12,6 +12,7 @@ import {
   Button,
   ComparisonChart,
   DataTable,
+  InlineNotice,
   MetricCard,
   RecommendationCard,
   ShareChart,
@@ -22,31 +23,27 @@ import {
   papaEvidenceRefs,
   papaLabExperimentColumns,
   papaLabExperimentRows,
-  papaReportColumns,
-  papaReportRows,
 } from './papaData';
 import type {
   PapaAssistantStatus,
-  PapaChatMessage,
   PapaElementThread,
   PapaLabExperiment,
   PapaRecommendationRecord,
-  PapaReportArtifact,
   PapaScreenVariant,
   PapaWorkspaceData,
 } from './papaData';
+import type {
+  PapaMessageEvidence,
+} from '../../shell/papa-assistant';
 import {
+  PapaMessageThread,
   createPapaAssistantMessage,
-  downloadPapaAssistantReport,
+  resolvePapaElementDraftScope,
+  resolvePapaMainDraftScope,
   usePapaAssistantRuntime,
   usePapaScreenContext,
 } from '../../shell/papa-assistant';
 import './papa-assistant-panels.css';
-
-type RecommendationFeedback = {
-  readonly recommendationId: string;
-  readonly decision: 'approved' | 'rejected';
-};
 
 type ComposerSubmitValue =
   | string
@@ -65,7 +62,7 @@ export function PapaAssistantRuntime({
 
   return (
     <>
-      <PapaAssistantStatusPanel data={data} />
+      <PapaAssistantReadinessStrip data={data} />
 
       {showRecommendations ? (
         <PapaRecommendationPanel data={data} />
@@ -85,7 +82,42 @@ export function PapaAssistantRuntime({
   );
 }
 
-function PapaAssistantStatusPanel({
+export function PapaAssistantReadinessStrip({
+  data,
+}: {
+  readonly data: PapaWorkspaceData;
+}) {
+  return (
+    <section
+      aria-label="Gotowość Papa Asystenta"
+      className="pd-papa-readiness-strip"
+    >
+      <div>
+        <span>Gotowość</span>
+        <strong>{resolveReadinessText(data.summary.readiness)}</strong>
+      </div>
+      <div>
+        <span>Kontekst</span>
+        <strong>{data.summary.contextItems}</strong>
+      </div>
+      <div>
+        <span>Dowody</span>
+        <strong>{data.summary.evidenceCount}</strong>
+      </div>
+      <div>
+        <span>Pewność</span>
+        <strong>{formatPercent(data.summary.confidence)}</strong>
+      </div>
+      <StatusBadge
+        status="Stan danych"
+        text={resolveReadinessText(data.summary.readiness)}
+        tone={resolveReadinessTone(data.summary.readiness)}
+      />
+    </section>
+  );
+}
+
+export function PapaAssistantStatusPanel({
   data,
 }: {
   readonly data: PapaWorkspaceData;
@@ -249,17 +281,6 @@ function PapaRecommendationPanel({
   readonly data: PapaWorkspaceData;
 }) {
   const evidence = papaEvidenceRefs(data.evidence);
-  const [feedback, setFeedback] = useState<readonly RecommendationFeedback[]>([]);
-
-  function updateFeedback(
-    recommendationId: string,
-    decision: RecommendationFeedback['decision'],
-  ) {
-    setFeedback((current) => [
-      ...current.filter((item) => item.recommendationId !== recommendationId),
-      { decision, recommendationId },
-    ]);
-  }
 
   return (
     <section
@@ -278,12 +299,14 @@ function PapaRecommendationPanel({
         />
       </header>
 
+      <InlineNotice
+        message="Rekomendacje są prezentowane w trybie tylko do odczytu. Akceptacja, odrzucenie i wykonanie wymagają trwałego workflow decyzji po stronie backendu; lokalny klik nie zmienia stanu biznesowego."
+        title="Decyzje AI wymagają trwałego zatwierdzenia"
+        tone="info"
+      />
+
       <div className="pd-papa-recommendation-grid">
         {data.recommendations.map((recommendation) => {
-          const itemFeedback = feedback.find((item) => (
-            item.recommendationId === recommendation.id
-          ));
-
           return (
             <div
               className="pd-papa-recommendation-item"
@@ -299,12 +322,6 @@ function PapaRecommendationPanel({
                 recommendationId={recommendation.id}
                 risk={recommendation.risk}
                 title={recommendation.title}
-                onApprove={() => {
-                  updateFeedback(recommendation.id, 'approved');
-                }}
-                onReject={() => {
-                  updateFeedback(recommendation.id, 'rejected');
-                }}
               />
               <div className="pd-papa-recommendation-item__body">
                 <p>{recommendation.summary}</p>
@@ -318,19 +335,11 @@ function PapaRecommendationPanel({
                     <dd>{recommendation.nextStep}</dd>
                   </div>
                 </dl>
-                {itemFeedback ? (
-                  <StatusBadge
-                    status="Decyzja"
-                    text={itemFeedback.decision === 'approved' ? 'Oznaczono do akceptacji' : 'Oznaczono do odrzucenia'}
-                    tone={itemFeedback.decision === 'approved' ? 'success' : 'critical'}
-                  />
-                ) : (
-                  <StatusBadge
-                    status="Stan"
-                    text={resolveRecommendationStatusText(recommendation.status)}
-                    tone={resolveRecommendationStatusTone(recommendation.status)}
-                  />
-                )}
+                <StatusBadge
+                  status="Stan"
+                  text={resolveRecommendationStatusText(recommendation.status)}
+                  tone={resolveRecommendationStatusTone(recommendation.status)}
+                />
               </div>
             </div>
           );
@@ -370,39 +379,46 @@ function PapaConversationDeck({
   );
 }
 
-function PapaAssistantChat({
+export function PapaAssistantChat({
   data,
 }: {
   readonly data: PapaWorkspaceData;
 }) {
   const {
-    addMainMessages,
+    captureContext,
+    clearComposerDraft,
+    composerDrafts,
     lastSnapshot,
+    mainError,
+    mainSubmitting,
     messages,
+    setComposerDraft,
+    submitMainMessage,
   } = usePapaAssistantRuntime();
+  const {
+    captureCurrentScreenContext,
+  } = usePapaScreenContext();
+  const evidence = useMemo(() => (
+    buildMessageEvidence(data)
+  ), [
+    data,
+  ]);
 
   function handleSubmit(value: ComposerSubmitValue) {
     if (typeof value !== 'string') {
       return;
     }
 
-    const userMessage = createPapaAssistantMessage({
-      author: 'user',
-      body: value,
-      evidenceIds: [],
-    });
-    const assistantMessage = createPapaAssistantMessage({
-      author: 'assistant',
-      body: lastSnapshot
-        ? buildAssistantReplyForSnapshot(data, lastSnapshot.title)
-        : buildAssistantReply(data),
-      evidenceIds: data.evidence.map((item) => item.id),
-    });
+    clearComposerDraft(resolvePapaMainDraftScope());
+    void submitWithContext(value).catch(() => undefined);
+  }
 
-    addMainMessages([
-      userMessage,
-      assistantMessage,
-    ]);
+  async function submitWithContext(value: string) {
+    await captureContext(
+      captureCurrentScreenContext('chat-message'),
+      'chat-message',
+    );
+    await submitMainMessage(value);
   }
 
   return (
@@ -419,7 +435,19 @@ function PapaAssistantChat({
         />
       </header>
 
-      <MessageList messages={messages} />
+      <PapaMessageThread
+        className="pd-papa-chat-thread"
+        evidence={evidence}
+        messages={messages}
+      />
+
+      {mainError ? (
+        <InlineNotice
+          message={mainError}
+          title="Papa nie odpowiedział"
+          tone="critical"
+        />
+      ) : null}
 
       <AssistantComposer
         attachments={[
@@ -439,24 +467,38 @@ function PapaAssistantChat({
         contextItemIds={data.contextItems.map((item) => item.id)}
         label="Pytanie do Papa"
         placeholder="Zapytaj o rekomendacje, ryzyko albo dowody..."
-        submitting={false}
-        value=""
+        submitting={mainSubmitting}
+        value={composerDrafts[resolvePapaMainDraftScope()] ?? ''}
         onSubmit={handleSubmit}
+        onValueChange={(nextValue) => {
+          setComposerDraft(resolvePapaMainDraftScope(), nextValue);
+        }}
       />
     </article>
   );
 }
 
-function PapaElementChat({
+export function PapaElementChat({
   data,
+  initialElementId,
 }: {
   readonly data: PapaWorkspaceData;
+  readonly initialElementId?: string;
 }) {
-  const initialElementId = data.elementThreads[0]?.elementId ?? '';
-  const [selectedElementId, setSelectedElementId] = useState(initialElementId);
+  const resolvedInitialElementId = data.elementThreads.some((thread) => (
+    thread.elementId === initialElementId
+  ))
+    ? initialElementId ?? ''
+    : data.elementThreads[0]?.elementId ?? '';
+  const [selectedElementId, setSelectedElementId] = useState(resolvedInitialElementId);
   const {
-    addElementMessages,
+    clearComposerDraft,
+    composerDrafts,
+    elementError,
     elementMessages,
+    elementSubmitting,
+    setComposerDraft,
+    submitElementMessage,
   } = usePapaAssistantRuntime();
   const selectedThread = resolveSelectedThread(data.elementThreads, selectedElementId);
   const messages = selectedThread
@@ -467,33 +509,26 @@ function PapaElementChat({
       )),
     ]
     : [];
+  const evidence = useMemo(() => (
+    buildMessageEvidence(data)
+  ), [
+    data,
+  ]);
+  const draftScope = selectedThread
+    ? resolvePapaElementDraftScope(selectedThread.elementId)
+    : null;
 
   function handleSubmit(value: ComposerSubmitValue) {
     if (typeof value !== 'string') {
       return;
     }
 
-    if (!selectedThread) {
+    if (!selectedThread || !draftScope) {
       return;
     }
 
-    const userMessage = createPapaAssistantMessage({
-      author: 'user',
-      body: value,
-      contextItemId: selectedThread.elementId,
-      evidenceIds: [],
-    });
-    const assistantMessage = createPapaAssistantMessage({
-      author: 'assistant',
-      body: buildElementReply(selectedThread),
-      contextItemId: selectedThread.elementId,
-      evidenceIds: selectedThread.messages.flatMap((message) => message.evidenceIds),
-    });
-
-    addElementMessages([
-      userMessage,
-      assistantMessage,
-    ]);
+    clearComposerDraft(draftScope);
+    void submitElementMessage(selectedThread.elementId, value).catch(() => undefined);
   }
 
   return (
@@ -531,7 +566,21 @@ function PapaElementChat({
         ))}
       </div>
 
-      <MessageList messages={messages} />
+      <PapaMessageThread
+        className="pd-papa-chat-thread"
+        emptyMessage="Wybierz element z bieżącego ekranu, żeby zawęzić rozmowę."
+        emptyTitle="Brak rozmowy elementu"
+        evidence={evidence}
+        messages={messages}
+      />
+
+      {elementError ? (
+        <InlineNotice
+          message={elementError}
+          title="Papa nie odpowiedział"
+          tone="critical"
+        />
+      ) : null}
 
       <AssistantComposer
         attachments={[]}
@@ -539,33 +588,31 @@ function PapaElementChat({
         contextItemIds={selectedThread ? [selectedThread.elementId] : []}
         label="Pytanie o wybrany element"
         placeholder="Zapytaj tylko o wybrany element..."
-        submitting={false}
-        value=""
+        submitting={elementSubmitting}
+        value={draftScope ? composerDrafts[draftScope] ?? '' : ''}
         onSubmit={handleSubmit}
+        onValueChange={(nextValue) => {
+          if (!draftScope) {
+            return;
+          }
+
+          setComposerDraft(draftScope, nextValue);
+        }}
       />
     </article>
   );
 }
 
-function MessageList({
-  messages,
-}: {
-  readonly messages: readonly PapaChatMessage[];
-}) {
-  return (
-    <ol className="pd-papa-message-list">
-      {messages.map((message) => (
-        <li
-          data-author={message.author}
-          key={message.id}
-        >
-          <span>{resolveMessageAuthor(message.author)}</span>
-          <p>{message.body}</p>
-          <small>{formatDateTime(message.createdAt)}</small>
-        </li>
-      ))}
-    </ol>
-  );
+function buildMessageEvidence(
+  data: PapaWorkspaceData,
+): readonly PapaMessageEvidence[] {
+  return data.evidence.map((item) => ({
+    confidence: item.confidence,
+    freshnessAt: item.freshnessAt,
+    id: item.id,
+    label: item.claim,
+    source: item.source,
+  }));
 }
 
 function PapaAssistantLaboratory({
@@ -601,56 +648,66 @@ function PapaAssistantLaboratory({
         />
       </header>
 
-      <div className="pd-papa-lab-grid">
-        {data.labExperiments.map((experiment) => (
-          <PapaLabExperimentCard
-            experiment={experiment}
-            key={experiment.id}
-          />
-        ))}
-      </div>
-
-      <figure className="pd-papa-lab-comparison">
-        <figcaption>
-          <span>Porównanie wariantów</span>
-          <strong>Baseline vs wariant Papa</strong>
-        </figcaption>
-        <ComparisonChart
-          ariaLabel="Porównanie eksperymentów Papa"
-          data={comparisonData}
-          series={[
-            { key: 'baseline', label: 'Baseline' },
-            { key: 'variant', label: 'Wariant Papa' },
-          ]}
-          unit=""
-          variant="grouped"
+      {data.labExperiments.length === 0 ? (
+        <InlineNotice
+          message="Laboratorium nie pokazuje danych demonstracyjnych. Eksperymenty i warianty pojawią się tutaj dopiero po podłączeniu trwałego źródła spraw AI i wyników eksperymentów."
+          title="Brak utrwalonych eksperymentów"
+          tone="info"
         />
-      </figure>
+      ) : (
+        <>
+          <div className="pd-papa-lab-grid">
+            {data.labExperiments.map((experiment) => (
+              <PapaLabExperimentCard
+                experiment={experiment}
+                key={experiment.id}
+              />
+            ))}
+          </div>
 
-      <DataTable
-        ariaLabel="Eksperymenty Laboratorium Papa"
-        columns={papaLabExperimentColumns}
-        density="compact"
-        emptyMessage="Brak eksperymentów w bieżącym zakresie."
-        emptyTitle="Brak eksperymentów"
-        loading={false}
-        minWidth={920}
-        rowCount={data.labExperiments.length}
-        rows={papaLabExperimentRows(data.labExperiments)}
-        selectedRowIds={[]}
-        sort={null}
-        statusColumn={{
-          columnId: 'status',
-          label: 'Status eksperymentu',
-          mapTone: {
-            blocked: 'danger',
-            draft: 'neutral',
-            ready: 'success',
-            running: 'warning',
-          },
-        }}
-        summary={`${data.labExperiments.length} eksperymenty`}
-      />
+          <figure className="pd-papa-lab-comparison">
+            <figcaption>
+              <span>Porównanie wariantów</span>
+              <strong>Baseline vs wariant Papa</strong>
+            </figcaption>
+            <ComparisonChart
+              ariaLabel="Porównanie eksperymentów Papa"
+              data={comparisonData}
+              series={[
+                { key: 'baseline', label: 'Baseline' },
+                { key: 'variant', label: 'Wariant Papa' },
+              ]}
+              unit=""
+              variant="grouped"
+            />
+          </figure>
+
+          <DataTable
+            ariaLabel="Eksperymenty Laboratorium Papa"
+            columns={papaLabExperimentColumns}
+            density="compact"
+            emptyMessage="Brak eksperymentów w bieżącym zakresie."
+            emptyTitle="Brak eksperymentów"
+            loading={false}
+            minWidth={920}
+            rowCount={data.labExperiments.length}
+            rows={papaLabExperimentRows(data.labExperiments)}
+            selectedRowIds={[]}
+            sort={null}
+            statusColumn={{
+              columnId: 'status',
+              label: 'Status eksperymentu',
+              mapTone: {
+                blocked: 'danger',
+                draft: 'neutral',
+                ready: 'success',
+                running: 'warning',
+              },
+            }}
+            summary={`${data.labExperiments.length} eksperymenty`}
+          />
+        </>
+      )}
     </section>
   );
 }
@@ -693,7 +750,7 @@ function PapaLabExperimentCard({
   );
 }
 
-function PapaReportCenter({
+export function PapaReportCenter({
   data,
 }: {
   readonly data: PapaWorkspaceData;
@@ -701,28 +758,27 @@ function PapaReportCenter({
   const {
     addMainMessages,
     createReport,
+    downloadReport,
+    reportError,
     reports,
   } = usePapaAssistantRuntime();
   const {
     captureCurrentScreenContext,
   } = usePapaScreenContext();
 
-  function generateCurrentScreenReport(format: 'pdf' | 'csv') {
+  async function generateCurrentScreenReport(
+    format: 'csv' | 'pdf' | 'xlsx',
+  ): Promise<void> {
     const snapshot = captureCurrentScreenContext(`lab-report-${format}`);
-    const report = createReport(
-      snapshot,
-      format,
-      'screen',
-    );
+    const report = await createReport(snapshot, format, 'screen');
 
     addMainMessages([
       createPapaAssistantMessage({
-        author: 'assistant',
-        body: `Wygenerowałem raport ${format.toUpperCase()} dla widoku „${snapshot.title}” i zakresu ${snapshot.dateRangeLabel}.`,
+        author: 'system',
+        body: `Raport ${format.toUpperCase()} ${report.id} został przekazany do generatora backendowego dla widoku „${snapshot.title}”.`,
         evidenceIds: snapshot.evidence.map((item) => item.id),
       }),
     ]);
-    downloadPapaAssistantReport(report);
   }
 
   return (
@@ -733,31 +789,58 @@ function PapaReportCenter({
       <header className="pd-papa-assistant-panel__header">
         <div>
           <span>Raporty</span>
-          <h2 id="papa-report-heading">Eksport PDF i CSV</h2>
+          <h2 id="papa-report-heading">Raporty z Laboratorium</h2>
         </div>
         <StatusBadge
           status="Eksport"
-          text={reports.length > 0 ? `${reports.length} runtime` : 'Gotowy'}
-          tone="success"
+          text={reports.length > 0 ? `${reports.length} zadania` : 'Brak raportów'}
+          tone={reports.some((item) => item.status === 'failed') ? 'critical' : 'info'}
         />
       </header>
+
+      <InlineNotice
+        message="Raporty są generowane po stronie backendu jako kontrolowane eksporty CSV, PDF i XLSX. Interfejs nie tworzy pozornego PDF w przeglądarce."
+        title="Eksport kontrolowany przez backend"
+        tone="info"
+      />
 
       <div className="pd-papa-runtime-report-actions">
         <Button
           size="small"
-          variant="primary"
-          onClick={() => generateCurrentScreenReport('pdf')}
+          variant="secondary"
+          onClick={() => {
+            void generateCurrentScreenReport('pdf').catch(() => undefined);
+          }}
         >
-          Generuj PDF z aktualnego widoku
+          Generuj PDF
         </Button>
         <Button
           size="small"
           variant="secondary"
-          onClick={() => generateCurrentScreenReport('csv')}
+          onClick={() => {
+            void generateCurrentScreenReport('xlsx').catch(() => undefined);
+          }}
+        >
+          Generuj XLSX
+        </Button>
+        <Button
+          size="small"
+          variant="primary"
+          onClick={() => {
+            void generateCurrentScreenReport('csv').catch(() => undefined);
+          }}
         >
           Generuj CSV z aktualnego widoku
         </Button>
       </div>
+
+      {reportError ? (
+        <InlineNotice
+          message={reportError}
+          title="Raport nie został przygotowany"
+          tone="critical"
+        />
+      ) : null}
 
       {reports.length > 0 ? (
         <div className="pd-papa-runtime-report-grid">
@@ -773,8 +856,8 @@ function PapaReportCenter({
                 </div>
                 <StatusBadge
                   status="Status"
-                  text="Gotowy"
-                  tone="success"
+                  text={resolveBackendReportStatusText(report.status)}
+                  tone={resolveBackendReportStatusTone(report.status)}
                 />
               </header>
               <p>{report.description}</p>
@@ -787,102 +870,68 @@ function PapaReportCenter({
                   <dt>Snapshot</dt>
                   <dd>{report.snapshotId}</dd>
                 </div>
+                <div>
+                  <dt>Elementy</dt>
+                  <dd>{report.metricCount + report.tableCount + report.chartCount}</dd>
+                </div>
               </dl>
               <div className="pd-papa-report__actions">
                 <Button
+                  disabled={report.status === 'failed' || report.status === 'cancelled' || report.status === 'expired'}
                   size="small"
                   variant="secondary"
-                  onClick={() => downloadPapaAssistantReport(report)}
+                  onClick={() => {
+                    void downloadReport(report).catch(() => undefined);
+                  }}
                 >
-                  Pobierz ponownie
+                  {report.status === 'ready' ? 'Pobierz' : 'Sprawdź i pobierz'}
                 </Button>
               </div>
             </article>
           ))}
         </div>
+      ) : (
+        <p className="pd-papa-assistant-panel__empty">
+          Brak raportów utworzonych dla bieżącej rozmowy i workspace.
+        </p>
+      )}
+
+      {data.recommendations.length > 0 ? (
+        <p className="pd-papa-assistant-panel__footnote">
+          Bieżący snapshot zawiera {data.recommendations.length} rekomendacje; zostaną ujęte w eksporcie zgodnie z zakresem raportu.
+        </p>
       ) : null}
-
-      <div className="pd-papa-report-grid">
-        {data.reports.map((report) => (
-          <article
-            className="pd-papa-report"
-            key={report.id}
-          >
-            <header>
-              <div>
-                <span>{report.owner}</span>
-                <h3>{report.title}</h3>
-              </div>
-              <StatusBadge
-                status="Status"
-                text={resolveReportStatusText(report.status)}
-                tone={resolveReportStatusTone(report.status)}
-              />
-            </header>
-            <p>{report.description}</p>
-            <dl>
-              <div>
-                <dt>Źródła</dt>
-                <dd>{report.datasets.join(', ')}</dd>
-              </div>
-              <div>
-                <dt>Wygenerowano</dt>
-                <dd>{formatDateTime(report.generatedAt)}</dd>
-              </div>
-            </dl>
-            <div className="pd-papa-report__actions">
-              {report.formats.includes('pdf') ? (
-                <Button
-                  size="small"
-                  variant="secondary"
-                  onClick={() => {
-                    downloadReport(report, 'pdf', data);
-                  }}
-                >
-                  Pobierz PDF
-                </Button>
-              ) : null}
-              {report.formats.includes('csv') ? (
-                <Button
-                  size="small"
-                  variant="secondary"
-                  onClick={() => {
-                    downloadReport(report, 'csv', data);
-                  }}
-                >
-                  Pobierz CSV
-                </Button>
-              ) : null}
-            </div>
-          </article>
-        ))}
-      </div>
-
-      <DataTable
-        ariaLabel="Raporty Papa"
-        columns={papaReportColumns}
-        density="compact"
-        emptyMessage="Brak raportów w bieżącym zakresie."
-        emptyTitle="Brak raportów"
-        loading={false}
-        minWidth={820}
-        rowCount={data.reports.length}
-        rows={papaReportRows(data.reports)}
-        selectedRowIds={[]}
-        sort={null}
-        statusColumn={{
-          columnId: 'status',
-          label: 'Status raportu',
-          mapTone: {
-            building: 'warning',
-            ready: 'success',
-            stale: 'warning',
-          },
-        }}
-        summary={`${data.reports.length} raporty`}
-      />
     </section>
   );
+}
+
+function resolveBackendReportStatusText(
+  status: 'cancelled' | 'expired' | 'failed' | 'generating' | 'queued' | 'ready',
+): string {
+  switch (status) {
+    case 'ready':
+      return 'Gotowy';
+    case 'failed':
+      return 'Błąd';
+    case 'cancelled':
+      return 'Anulowany';
+    case 'expired':
+      return 'Wygasł';
+    case 'generating':
+      return 'Generowanie';
+    case 'queued':
+    default:
+      return 'W kolejce';
+  }
+}
+
+function resolveBackendReportStatusTone(
+  status: 'cancelled' | 'expired' | 'failed' | 'generating' | 'queued' | 'ready',
+): SemanticStatusTone {
+  if (status === 'ready') return 'success';
+  if (status === 'failed') return 'critical';
+  if (status === 'queued' || status === 'generating') return 'processing';
+  return 'neutral';
 }
 
 function shouldShowConversation(variant: PapaScreenVariant): boolean {
@@ -916,173 +965,6 @@ function resolveSelectedThread(
     ?? null;
 }
 
-function buildAssistantReply(data: PapaWorkspaceData): string {
-  const recommendation = data.recommendations.find((item) => (
-    item.status === 'needs-approval'
-  )) ?? data.recommendations[0];
-
-  if (!recommendation) {
-    return 'Nie widzę aktywnej rekomendacji w bieżącym zakresie. Mogę przeanalizować dowody i wskazać brakujące źródła.';
-  }
-
-  return `${recommendation.summary} Pewność odpowiedzi wynosi ${formatPercent(data.summary.confidence)}, a wykonanie działań wysokiego ryzyka pozostaje w akceptacji człowieka.`;
-}
-
-function buildAssistantReplyForSnapshot(
-  data: PapaWorkspaceData,
-  screenTitle: string,
-): string {
-  return `Kontynuuję analizę z widoku „${screenTitle}”. W Laboratorium zachowuję ten sam koszyk kontekstu, ${data.summary.evidenceCount} dowodów i pewność ${formatPercent(data.summary.confidence)}. Mogę teraz doprecyzować rekomendacje albo wygenerować raport z tego zakresu.`;
-}
-
-function buildElementReply(thread: PapaElementThread): string {
-  switch (thread.status) {
-    case 'blocked':
-      return `Ten element jest zablokowany. Papa może wyjaśnić powód i wskazać właściciela, ale nie uruchomi działania bez zgody.`;
-    case 'partial':
-      return `Ten element ma częściowe dane. Najpierw trzeba uzupełnić źródło, potem wrócić do rekomendacji.`;
-    case 'ready':
-    default:
-      return `Ten element jest gotowy do analizy. Papa może połączyć go z dowodami i decyzją w bieżącym wątku.`;
-  }
-}
-
-function downloadReport(
-  report: PapaReportArtifact,
-  format: 'pdf' | 'csv',
-  data: PapaWorkspaceData,
-) {
-  const blob = format === 'pdf'
-    ? buildPdfBlob(report, data)
-    : buildCsvBlob(report, data);
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = `${report.id}.${format}`;
-  document.body.append(anchor);
-  anchor.click();
-  anchor.remove();
-  window.setTimeout(() => {
-    URL.revokeObjectURL(url);
-  }, 0);
-}
-
-function buildCsvBlob(
-  report: PapaReportArtifact,
-  data: PapaWorkspaceData,
-): Blob {
-  const rows = [
-    ['Raport', report.title],
-    ['Status', resolveReportStatusText(report.status)],
-    ['Właściciel', report.owner],
-    ['Wygenerowano', formatDateTime(report.generatedAt)],
-    ['Zakres', formatContextRange(data)],
-    ['Pewność', formatPercent(data.summary.confidence)],
-    ['Rekomendacje', String(data.recommendations.length)],
-    ['Dowody', String(data.evidence.length)],
-    ['Źródła', report.datasets.join(' | ')],
-    [],
-    ['Rekomendacja', 'Właściciel', 'Ryzyko', 'Następny krok'],
-    ...data.recommendations.map((recommendation) => [
-      recommendation.title,
-      recommendation.owner,
-      resolveImpactText(recommendation.risk),
-      recommendation.nextStep,
-    ]),
-  ];
-
-  const csv = rows.map((row) => (
-    row.map(escapeCsvCell).join(',')
-  )).join('\n');
-
-  return new Blob([csv], {
-    type: 'text/csv;charset=utf-8',
-  });
-}
-
-function buildPdfBlob(
-  report: PapaReportArtifact,
-  data: PapaWorkspaceData,
-): Blob {
-  const lines = [
-    report.title,
-    report.description,
-    `Status: ${resolveReportStatusText(report.status)}`,
-    `Zakres: ${formatContextRange(data)}`,
-    `Pewnosc: ${formatPercent(data.summary.confidence)}`,
-    `Rekomendacje: ${data.recommendations.length}`,
-    `Dowody: ${data.evidence.length}`,
-    ...data.recommendations.map((recommendation) => (
-      `${recommendation.title}: ${recommendation.nextStep}`
-    )),
-  ].map(toPdfText);
-
-  const content = [
-    'BT',
-    '/F1 14 Tf',
-    '50 760 Td',
-    ...lines.slice(0, 24).flatMap((line, index) => [
-      index === 0 ? '' : '0 -22 Td',
-      `(${escapePdfText(line)}) Tj`,
-    ]).filter(Boolean),
-    'ET',
-  ].join('\n');
-
-  const objects = [
-    '1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj',
-    '2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj',
-    '3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >> endobj',
-    '4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj',
-    `5 0 obj << /Length ${content.length} >> stream\n${content}\nendstream endobj`,
-  ];
-
-  let pdf = '%PDF-1.4\n';
-  const offsets = [0];
-
-  for (const object of objects) {
-    offsets.push(pdf.length);
-    pdf += `${object}\n`;
-  }
-
-  const xrefStart = pdf.length;
-  pdf += `xref\n0 ${objects.length + 1}\n`;
-  pdf += '0000000000 65535 f \n';
-  pdf += offsets.slice(1).map((offset) => (
-    `${String(offset).padStart(10, '0')} 00000 n `
-  )).join('\n');
-  pdf += `\ntrailer << /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`;
-
-  return new Blob([pdf], {
-    type: 'application/pdf',
-  });
-}
-
-function escapeCsvCell(value: string): string {
-  return `"${value.replaceAll('"', '""')}"`;
-}
-
-function formatContextRange(data: PapaWorkspaceData): string {
-  const from = data.context.range?.from ?? 'brak początku';
-  const to = data.context.range?.to ?? 'brak końca';
-
-  return `${from} - ${to}`;
-}
-
-function toPdfText(value: string): string {
-  return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/gu, '')
-    .replaceAll('ł', 'l')
-    .replaceAll('Ł', 'L')
-    .replace(/[^\x20-\x7E]/gu, '');
-}
-
-function escapePdfText(value: string): string {
-  return value
-    .replaceAll('\\', '\\\\')
-    .replaceAll('(', '\\(')
-    .replaceAll(')', '\\)');
-}
 
 function resolveReadinessText(value: PapaWorkspaceData['summary']['readiness']): string {
   switch (value) {
@@ -1192,7 +1074,7 @@ function resolveRecommendationStatusTone(
   }
 }
 
-function resolveElementStatusText(
+export function resolveElementStatusText(
   status: PapaElementThread['status'],
 ): string {
   switch (status) {
@@ -1206,7 +1088,7 @@ function resolveElementStatusText(
   }
 }
 
-function resolveElementStatusTone(
+export function resolveElementStatusTone(
   status: PapaElementThread['status'],
 ): SemanticStatusTone {
   switch (status) {
@@ -1249,62 +1131,6 @@ function resolveLabStatusTone(
     case 'running':
     default:
       return 'processing';
-  }
-}
-
-function resolveReportStatusText(
-  status: PapaReportArtifact['status'],
-): string {
-  switch (status) {
-    case 'building':
-      return 'Budowany';
-    case 'stale':
-      return 'Nieświeży';
-    case 'ready':
-    default:
-      return 'Gotowy';
-  }
-}
-
-function resolveReportStatusTone(
-  status: PapaReportArtifact['status'],
-): SemanticStatusTone {
-  switch (status) {
-    case 'building':
-      return 'processing';
-    case 'stale':
-      return 'warning';
-    case 'ready':
-    default:
-      return 'success';
-  }
-}
-
-function resolveImpactText(
-  value: PapaRecommendationRecord['risk'],
-): string {
-  switch (value) {
-    case 'high':
-      return 'Wysokie';
-    case 'medium':
-      return 'Średnie';
-    case 'low':
-    default:
-      return 'Niskie';
-  }
-}
-
-function resolveMessageAuthor(
-  author: PapaChatMessage['author'],
-): string {
-  switch (author) {
-    case 'assistant':
-      return 'Papa';
-    case 'system':
-      return 'System';
-    case 'user':
-    default:
-      return 'Ty';
   }
 }
 

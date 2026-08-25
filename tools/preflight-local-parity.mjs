@@ -37,7 +37,7 @@ await checkCanonicalHostname(localContract.canonicalLocalEndpoint.hostname);
 const totalGiB = os.totalmem() / (1024 ** 3);
 record("system-memory", totalGiB >= 8, `${totalGiB.toFixed(1)} GiB`, "8 GiB minimum recommended; 16 GiB preferred for full parity.", false);
 
-const ports = [4173, 5173, 53001, 54000, 14317, 14318, 55432, 56379, 59000, 59001, 6010];
+const ports = [4173, 5173, 53001, 54100, 14317, 14318, 55432, 56379, 59000, 59001, 6010];
 const edgePortFree = await portIsFree(443);
 record(
   "port:443 (LP-6)",

@@ -30,6 +30,3 @@ export {
 export {
   CommandCenterFunnelSection,
 } from './CommandCenterFunnelSection';
-export {
-  CommandCenterCommittedActionsSection,
-} from './CommandCenterCommittedActionsSection';

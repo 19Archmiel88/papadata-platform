@@ -633,8 +633,7 @@ export class DataDecisionsContractController {
 
   @Post("v1/papa/answer")
   @OperationId("papa.answer.generate")
-  @RequireCapabilities("ai.action_proposal.create")
-  @RequireAuthLevel("mfa")
+  @RequireCapabilities("ai.assistant.run")
   @AuditDeniedAccess()
   papa_answer_generate_38(
     @Principal() principal: RequestPrincipal,
@@ -715,8 +714,7 @@ export class DataDecisionsContractController {
 
   @Post("v1/papa/context/capture")
   @OperationId("papa.context.capture")
-  @RequireCapabilities("ai.action_proposal.create")
-  @RequireAuthLevel("mfa")
+  @RequireCapabilities("ai.assistant.run")
   @AuditDeniedAccess()
   papa_context_capture_43(
     @Principal() principal: RequestPrincipal,
@@ -797,8 +795,7 @@ export class DataDecisionsContractController {
 
   @Post("v1/papa/observations")
   @OperationId("papa.observation.save")
-  @RequireCapabilities("ai.action_proposal.create")
-  @RequireAuthLevel("mfa")
+  @RequireCapabilities("ai.assistant.run")
   @AuditDeniedAccess()
   papa_observation_save_48(
     @Principal() principal: RequestPrincipal,
@@ -878,3 +875,47 @@ export class DataDecisionsContractController {
     );
   }
 }
+
+/**
+ * Papa/Lab runtime operation contract anchor.
+ *
+ * This generated controller must stay aligned with:
+ * - contracts/papa-lab-runtime-operations.json
+ * - contracts/api-schemas.ts
+ * - apps/api/src/production/contract-runtime/contract-runtime.service.ts
+ */
+export const GENERATED_PAPA_LAB_RUNTIME_OPERATION_CONTRACT_VERSION = "papa-lab-runtime-operations.v1" as const;
+
+export const GENERATED_PAPA_LAB_RUNTIME_OPERATION_IDS = [
+  "papa.context.capture",
+  "papa.answer.generate",
+  "papa.answer.read",
+  "papa.context-panel.read",
+  "papa.assistant-shell.read",
+  "papa.observations.read",
+  "papa.observation.save",
+  "papa.history-memory.read",
+  "papa.context-basket.read",
+  "papa.evidence.read",
+  "papa.lab.read",
+  "papa.proposals.read",
+  "papa.governance.read",
+  "papa.actions.read",
+  "papa.action-approval.read",
+  "papa.ai.action.validate",
+  "papa.ai.action.approve",
+  "papa.ai.action.reject",
+  "papa.ai.action.execute",
+  "papa.ai.action.rollback",
+  "papa.ai.notifications.read",
+  "papa.ai.notification.mark-read",
+  "papa.ai.notification.snooze",
+  "papa.ai.notification.unsnooze",
+  "papa.metric-provenance.read",
+  "papa.answer-contract.read",
+  "papa.provider-governance.read",
+  "papa.privacy-redaction.read"
+] as const;
+
+export type GeneratedPapaLabRuntimeOperationId =
+  typeof GENERATED_PAPA_LAB_RUNTIME_OPERATION_IDS[number];

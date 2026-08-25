@@ -137,7 +137,7 @@ services:
       otel-collector:
         condition: service_started
     ports:
-      - "127.0.0.1:54000:4000"
+      - "127.0.0.1:54100:4000"
     healthcheck:
       test:
         - CMD

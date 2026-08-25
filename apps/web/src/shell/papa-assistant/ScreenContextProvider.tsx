@@ -1,6 +1,9 @@
 import type {
   ReactNode,
 } from 'react';
+import type {
+  DateRange,
+} from '../../../../../contracts/ui-contract-types';
 import {
   createContext,
   useCallback,
@@ -64,6 +67,7 @@ export type PapaScreenContext = Required<
   >
 > & {
   readonly activeSection: string | null;
+  readonly dateRange: DateRange | null;
   readonly dateRangeLabel: string;
   readonly operationId: string | null;
   readonly readiness: string | null;
@@ -96,6 +100,7 @@ const fallbackContext: PapaScreenContext = {
   activeSection: null,
   breadcrumbs: ['Aplikacja'],
   charts: [],
+  dateRange: null,
   dateRangeLabel: 'Bieżący zakres',
   elements: [],
   evidence: [],
@@ -131,6 +136,7 @@ const PapaScreenContextState =
 export function PapaScreenContextProvider({
   activePath,
   children,
+  dateRange,
   dateRangeLabel,
   sectionLabel,
   userLabel,
@@ -139,6 +145,7 @@ export function PapaScreenContextProvider({
 }: {
   readonly activePath: string;
   readonly children: ReactNode;
+  readonly dateRange: DateRange;
   readonly dateRangeLabel: string;
   readonly sectionLabel: string;
   readonly userLabel: string;
@@ -151,6 +158,7 @@ export function PapaScreenContextProvider({
   const baseContext = useMemo<PapaScreenContext>(() => ({
     ...fallbackContext,
     breadcrumbs: ['Aplikacja', sectionLabel],
+    dateRange,
     dateRangeLabel,
     route: activePath,
     sectionLabel,
@@ -161,6 +169,7 @@ export function PapaScreenContextProvider({
     workspaceName,
   }), [
     activePath,
+    dateRange,
     dateRangeLabel,
     sectionLabel,
     userLabel,

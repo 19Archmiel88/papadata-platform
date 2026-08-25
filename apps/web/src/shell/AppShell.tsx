@@ -188,6 +188,8 @@ export function AppShell({
   return (
     <ProductShellFrame
       activePath={activePath}
+      activeTenantId={session?.activeTenantId}
+      activeUserId={session?.userId}
       activeWorkspaceId={session?.activeWorkspaceId}
       commands={commands}
       loggingOut={loggingOut}

@@ -62,7 +62,7 @@
   border: 1px solid var(--pd-command-border);
   border-radius: 10px;
   background: var(--pd-surface-overlay);
-  box-shadow: var(--pd-shadow-control);
+  box-shadow: none;
   scrollbar-width: none;
 }
 
@@ -77,7 +77,7 @@
   border: 1px solid var(--pd-command-border);
   border-radius: 12px;
   background: var(--pd-command-surface);
-  box-shadow: var(--pd-shadow-control);
+  box-shadow: none;
 }
 
 .pd-command-center-workspace__summary > div {
@@ -160,7 +160,7 @@
   border: 1px solid var(--pd-command-border);
   border-radius: 14px;
   background: var(--pd-command-surface);
-  box-shadow: var(--pd-shadow-control);
+  box-shadow: none;
 }
 
 .pd-command-center-workspace__executive-brief {
@@ -273,7 +273,7 @@
   border: 1px solid var(--pd-command-border);
   border-radius: 14px;
   background: var(--pd-command-surface);
-  box-shadow: var(--pd-shadow-control);
+  box-shadow: none;
 }
 
 .pd-command-center-workspace__chart-surface--forecast {
@@ -304,7 +304,7 @@
   border-color: var(--pd-command-border);
   border-radius: 12px;
   background: var(--pd-command-surface);
-  box-shadow: var(--pd-shadow-control);
+  box-shadow: none;
 }
 
 .pd-command-center-workspace__table .pd-data-table__summary {
@@ -461,6 +461,36 @@
   margin: 0;
   color: var(--pd-text-secondary);
   line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-command-center-workspace {
+  --pd-command-border: transparent;
+  --pd-command-border-strong: transparent;
+}
+
+.pd-command-center-workspace .pd-command-center-workspace__header,
+.pd-command-center-workspace .pd-page-header__meta div,
+.pd-command-center-workspace .pd-command-center-workspace__navigation,
+.pd-command-center-workspace .pd-command-center-workspace__summary,
+.pd-command-center-workspace .pd-command-center-workspace__summary > div,
+.pd-command-center-workspace .pd-command-center-workspace__executive-brief,
+.pd-command-center-workspace .pd-command-center-workspace__decision-board,
+.pd-command-center-workspace .pd-command-center-workspace__data-status,
+.pd-command-center-workspace .pd-command-center-workspace__executive-stats,
+.pd-command-center-workspace .pd-command-center-workspace__executive-stats > *,
+.pd-command-center-workspace .pd-command-center-workspace__attention-list > *,
+.pd-command-center-workspace .pd-command-center-workspace__recommendations > *,
+.pd-command-center-workspace .pd-command-center-workspace__driver-list > *,
+.pd-command-center-workspace .pd-command-center-workspace__mobile-records > *,
+.pd-command-center-workspace .pd-command-center-workspace__source-mix,
+.pd-command-center-workspace .pd-command-center-workspace__source-mix > div,
+.pd-command-center-workspace .pd-command-center-workspace__chart-surface,
+.pd-command-center-workspace .pd-command-center-workspace__table,
+.pd-command-center-workspace .pd-command-center-workspace__table .pd-data-table__summary,
+.pd-command-center-workspace .pd-command-center-workspace__analysis-frame .pd-chart-interaction-layer,
+.pd-command-center-workspace .pd-command-center-workspace__analysis-frame .pd-chart-interaction-layer__visualization,
+.pd-command-center-workspace .pd-command-center-workspace__ai-signal-board article {
+  border-block-width: 0 !important;
 }
 
 @media (max-width: 1180px) {

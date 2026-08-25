@@ -16,7 +16,6 @@ import {
   SectionNavigation,
 } from '../../design-system';
 import {
-  getPapaNavigation,
   papaActionColumns,
   papaActionRows,
   papaContextColumns,
@@ -28,6 +27,7 @@ import {
   papaMemoryRows,
   papaModeColumns,
   papaModeRows,
+  resolvePapaDecisionCardStatus,
 } from './papaData';
 import type {
   PapaDecision,
@@ -35,8 +35,18 @@ import type {
   PapaWorkspaceData,
 } from './papaData';
 import {
+  getPapaGroupMembers,
+  getPapaGroupNavigation,
+  isPapaConversationVariant,
+  resolvePapaNavigationGroup,
+} from './papaNavigationGroups';
+import {
+  PapaAssistantReadinessStrip,
   PapaAssistantRuntime,
 } from './PapaAssistantPanels';
+import {
+  PapaConversationWorkspace,
+} from './PapaConversationWorkspace';
 import type {
   PapaScreenContextElement,
 } from '../../shell/papa-assistant';
@@ -143,7 +153,7 @@ export function PapaWorkspace({
       status: item.status,
       value: item.nextStep,
     })),
-    route: definition.route ?? '/app/papa/laboratorium-ai',
+    route: definition.route ?? '/app/papa/panel-kontekstowy-papa',
     screenId: definition.id,
     summary: definition.summary,
     tables: [
@@ -189,19 +199,32 @@ export function PapaWorkspace({
       />
 
       <SectionNavigation
-        activeId={definition.id}
-        ariaLabel="Widoki: Papa Asystent i Laboratorium AI"
+        activeId={resolvePapaNavigationGroup(definition.variant).id}
+        ariaLabel="Obszary Papa Asystenta i Laboratorium AI"
         className="pd-papa-workspace__navigation"
-        items={getPapaNavigation()}
+        items={getPapaGroupNavigation()}
         orientation="horizontal"
         size="compact"
         sticky
       />
 
+      {shouldShowSubNavigation(definition) ? (
+        <SectionNavigation
+          activeId={definition.id}
+          ariaLabel={`Widoki w obszarze: ${resolvePapaNavigationGroup(definition.variant).label}`}
+          className="pd-papa-workspace__sub-navigation"
+          items={getPapaGroupMembers(resolvePapaNavigationGroup(definition.variant).id).map((item) => ({
+            href: item.routeBase ?? '/app/papa/panel-kontekstowy-papa',
+            id: item.id,
+            label: item.displayTitle,
+          }))}
+          orientation="horizontal"
+          size="compact"
+        />
+      ) : null}
+
       <DataStatusBanner
-        blockingIssues={[
-          { id: 'papa-cost-gap', label: 'Niepełne koszty kampanii', severity: 'warning' },
-        ]}
+        blockingIssues={resolvePapaBlockingIssues(data.summary.readiness)}
         context={data.context}
         readiness={data.summary.readiness}
         sources={[...data.sources]}
@@ -209,17 +232,35 @@ export function PapaWorkspace({
 
       <PapaSummary data={data} />
 
-      <PapaAssistantRuntime
-        data={data}
-        variant={definition.variant}
-      />
+      {isPapaConversationVariant(definition.variant) ? (
+        <>
+          <PapaAssistantReadinessStrip data={data} />
+          <PapaConversationWorkspace data={data} />
+        </>
+      ) : (
+        <>
+          <PapaAssistantRuntime
+            data={data}
+            variant={definition.variant}
+          />
 
-      <PapaContent
-        data={data}
-        definition={definition}
-      />
+          <PapaContent
+            data={data}
+            definition={definition}
+          />
+        </>
+      )}
     </section>
   );
+}
+
+function shouldShowSubNavigation(
+  definition: PapaScreenDefinition,
+): boolean {
+  const group = resolvePapaNavigationGroup(definition.variant);
+
+  return group.id !== 'conversation'
+    && getPapaGroupMembers(group.id).length > 1;
 }
 
 function PapaSummary({
@@ -480,25 +521,25 @@ function ContextMetrics({
         <MetricCard
           label="Elementy kontekstu"
           metricId="papa-context-count"
-          status="ready"
-          statusLabel="Dane aktualne"
+          status={resolveMetricReadiness(data.summary.readiness)}
+          statusLabel={resolvePapaReadinessLabel(data.summary.readiness)}
           unit="elementy"
           value={String(data.summary.contextItems)}
         />
         <MetricCard
           label="Dowody"
           metricId="papa-evidence-count"
-          status="ready"
-          statusLabel="Dane aktualne"
+          status={data.summary.evidenceCount > 0 ? 'ready' : 'noData'}
+          statusLabel={data.summary.evidenceCount > 0 ? 'Dostępne' : 'Brak dowodów'}
           unit="źródła"
           value={String(data.summary.evidenceCount)}
         />
         <MetricCard
           label="Pewność"
           metricId="papa-confidence"
-          signal="warning"
-          status="partial"
-          statusLabel="Częściowe koszty"
+          signal={data.summary.confidence >= 0.85 ? 'positive' : 'warning'}
+          status={data.summary.confidence >= 0.85 ? 'ready' : data.summary.confidence > 0 ? 'partial' : 'noData'}
+          statusLabel={data.summary.confidence > 0 ? 'Na podstawie dowodów' : 'Brak podstaw'}
           unit="%"
           value={String(Math.round(data.summary.confidence * 100))}
         />
@@ -634,7 +675,7 @@ function DecisionList({
             key={decision.id}
             owner={decision.owner}
             priority={decision.impact}
-            status={resolveDecisionCardStatus(decision.status)}
+            status={resolvePapaDecisionCardStatus(decision.status)}
             title={decision.title}
           />
         ))}
@@ -643,19 +684,42 @@ function DecisionList({
   );
 }
 
-function resolveDecisionCardStatus(
-  status: PapaDecision['status'],
-): 'approved' | 'rejected' | 'measured' | 'proposed' | 'executing' {
-  switch (status) {
-    case 'approved':
-      return 'approved';
-    case 'rejected':
-      return 'rejected';
-    case 'review':
-      return 'executing';
-    case 'new':
+function resolvePapaBlockingIssues(
+  readiness: PapaWorkspaceData['summary']['readiness'],
+): { id: string; label: string; severity: 'info' | 'warning' | 'critical' }[] {
+  if (readiness === 'ready' || readiness === 'processing') return [];
+  if (readiness === 'blocked' || readiness === 'sourceError') {
+    return [{
+      id: 'papa-runtime-blocked',
+      label: readiness === 'sourceError' ? 'Błąd źródła danych' : 'Kontekst jest zablokowany',
+      severity: 'critical',
+    }];
+  }
+
+  return [{
+    id: 'papa-runtime-readiness',
+    label: readiness === 'noData' ? 'Brak danych do analizy' : 'Kontekst wymaga weryfikacji',
+    severity: 'warning',
+  }];
+}
+
+function resolveMetricReadiness(
+  readiness: PapaWorkspaceData['summary']['readiness'],
+): 'blocked' | 'noData' | 'partial' | 'ready' | 'stale' {
+  switch (readiness) {
+    case 'ready':
+      return 'ready';
+    case 'blocked':
+    case 'sourceError':
+      return 'blocked';
+    case 'stale':
+      return 'stale';
+    case 'noData':
+      return 'noData';
+    case 'processing':
+    case 'partial':
     default:
-      return 'proposed';
+      return 'partial';
   }
 }
 

@@ -278,7 +278,7 @@ header.pd-shell-topbar[data-variant='public'] {
 }
 
 .pd-shell-topbar__calendar-overlay {
-  color-scheme: var(--pd-color-scheme, light);
+  color-scheme: dark;
 }
 
 @media (max-width: 1100px) {

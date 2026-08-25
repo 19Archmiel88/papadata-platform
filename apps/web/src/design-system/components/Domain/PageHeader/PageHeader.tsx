@@ -9,6 +9,9 @@ import {
   joinClassNames,
   useId,
 } from '../domainShared';
+import {
+  Breadcrumbs,
+} from '../../Breadcrumbs';
 
 export type PageHeaderProps = Omit<
   ContractPageHeaderProps,
@@ -52,22 +55,17 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(
       >
         <div className="pd-page-header__main">
           {breadcrumbs.length > 0 ? (
-            <nav
-              aria-label="Ścieżka ekranu"
+            <Breadcrumbs
+              ariaLabel="Ścieżka ekranu"
               className="pd-page-header__breadcrumbs"
-            >
-              <ol>
-                {breadcrumbs.map((item) => (
-                  <li key={item.label}>
-                    {item.href ? (
-                      <a href={item.href}>{item.label}</a>
-                    ) : (
-                      <span aria-current="page">{item.label}</span>
-                    )}
-                  </li>
-                ))}
-              </ol>
-            </nav>
+              items={breadcrumbs.map((item, index) => ({
+                current: index === breadcrumbs.length - 1,
+                href: item.href,
+                id: `page-header-breadcrumb-${index}-${item.label}`,
+                label: item.label,
+              }))}
+              maxVisible={5}
+            />
           ) : null}
 
           <div className="pd-page-header__heading">

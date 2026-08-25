@@ -198,6 +198,7 @@ function capabilityFor(operationId, method) {
   }
   if (operationId.startsWith("papa.") || operationId.startsWith("decisions.") || operationId.startsWith("actions.")) {
     if (!write) return operationId.includes("governance") ? "ai.governance.read" : "ai.history.read";
+    if (isAssistantConversationOperation(operationId)) return "ai.assistant.run";
     if (operationId.includes("approve")) return "ai.action_proposal.approve";
     if (operationId.includes("execute") || operationId.includes("rollback")) return "ai.action_proposal.execute";
     return "ai.action_proposal.create";
@@ -216,8 +217,22 @@ function capabilityFor(operationId, method) {
 
 function authLevelFor(operationId, method) {
   if (method === "GET") return "session";
+  if (isAssistantConversationOperation(operationId)) return "session";
   if (/approve|execute|rollback|payment|password|mfa|invitation|billing|account-security|support-access/iu.test(operationId)) return "step_up";
   return "mfa";
+}
+
+// papa.context.capture/answer.generate/observation.save continue an
+// ongoing chat -- they read/append conversation state, the same risk class
+// as ai.history.read, not the ai.action_proposal.create default every
+// other papa.* write falls into (a real business-state-changing AI
+// action). ai.assistant.run in packages/contracts/src/capability-catalog.ts
+// is already medium risk / mfaRequired:false for exactly this reason; the
+// blanket "mfa" default below used to override that for these three ops.
+function isAssistantConversationOperation(operationId) {
+  return operationId === "papa.context.capture"
+    || operationId === "papa.answer.generate"
+    || operationId === "papa.observation.save";
 }
 
 function decoratorFor(method) {
@@ -242,3 +257,51 @@ async function collectFiles(directory) {
   }
   return result;
 }
+
+/*
+ * Papa/Lab operation contract alignment anchor.
+ *
+ * Source of truth:
+ * - contracts/papa-lab-runtime-operations.json
+ *
+ * Version:
+ * - papa-lab-runtime-operations.v1
+ *
+ * The contract runtime generator must keep generated controller surfaces aligned
+ * with this operation matrix. Do not add new `papa.*` handlers without updating
+ * the JSON contract and the generated controller anchor.
+ */
+const PAPA_LAB_RUNTIME_OPERATION_CONTRACT_ANCHOR = {
+  version: "papa-lab-runtime-operations.v1",
+  source: "contracts/papa-lab-runtime-operations.json",
+  operationIds: [
+  "papa.context.capture",
+  "papa.answer.generate",
+  "papa.answer.read",
+  "papa.context-panel.read",
+  "papa.assistant-shell.read",
+  "papa.observations.read",
+  "papa.observation.save",
+  "papa.history-memory.read",
+  "papa.context-basket.read",
+  "papa.evidence.read",
+  "papa.lab.read",
+  "papa.proposals.read",
+  "papa.governance.read",
+  "papa.actions.read",
+  "papa.action-approval.read",
+  "papa.ai.action.validate",
+  "papa.ai.action.approve",
+  "papa.ai.action.reject",
+  "papa.ai.action.execute",
+  "papa.ai.action.rollback",
+  "papa.ai.notifications.read",
+  "papa.ai.notification.mark-read",
+  "papa.ai.notification.snooze",
+  "papa.ai.notification.unsnooze",
+  "papa.metric-provenance.read",
+  "papa.answer-contract.read",
+  "papa.provider-governance.read",
+  "papa.privacy-redaction.read"
+],
+};

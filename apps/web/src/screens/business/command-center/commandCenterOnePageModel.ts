@@ -56,9 +56,6 @@ export const commandCenterOnePageSectionIds = [
   'command-section-traffic',
   'command-section-products',
   'command-section-customers',
-  'command-section-attention',
-  'command-section-decision-workspace',
-  'command-section-committed-actions',
 ] as const;
 
 export type CommandCenterOnePageSectionId = (typeof commandCenterOnePageSectionIds)[number];
@@ -76,9 +73,6 @@ export const commandCenterOnePageSections: readonly CommandCenterOnePageSectionD
   { id: 'command-section-traffic', label: 'Ruch' },
   { id: 'command-section-products', label: 'Produkty' },
   { id: 'command-section-customers', label: 'Klienci' },
-  { id: 'command-section-attention', label: 'Priorytety' },
-  { id: 'command-section-decision-workspace', label: 'Decyzja' },
-  { id: 'command-section-committed-actions', label: 'Działania' },
 ];
 
 export type OperationalPriority =
@@ -168,6 +162,8 @@ export function buildProductSalesRows(productSales: readonly ProductSalesRow[]):
     id: product.canonicalProductId,
     product: product.productName,
     quantity: formatInteger(product.quantity),
+    rawChangePercent: product.changePercent,
+    rawQuantity: product.quantity,
     rawRevenue: Number(product.revenue),
     revenue: formatMetricValue(Number(product.revenue), 'currency'),
   }));
@@ -192,6 +188,10 @@ export function buildCustomerSegmentRows(customerSegments: readonly CustomerSegm
     frequency: new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 2 }).format(segment.frequency),
     id: segment.id,
     productsPerOrder: new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 2 }).format(segment.productsPerOrder),
+    rawArpu: segment.arpu,
+    rawCustomers: segment.customers,
+    rawFrequency: segment.frequency,
+    rawProductsPerOrder: segment.productsPerOrder,
     rawRevenue: segment.rawRevenue,
     revenue: formatMetricValue(Number(segment.revenue), 'currency'),
     segment: segment.segment,

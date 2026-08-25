@@ -105,44 +105,15 @@ function ChartPanel({
   );
 }
 
-function PriorityQueue() {
-  return (
-    <StoryPanel
-      label="Priorytety"
-      title="Co wymaga decyzji teraz"
-      variant="queue"
-    >
-      <ol className="pd-command-dashboard-story__queue">
-        {['Konwersja koszyka', 'ROAS blended', 'Koszt reklamy', 'CPA'].map((item, index) => (
-          <li key={item}>
-            <span>{String(index + 1).padStart(2, '0')}</span>
-            <div>
-              <strong>{item}</strong>
-              <small>Dowod, wplyw, wlasciciel i termin w jednym wierszu.</small>
-            </div>
-          </li>
-        ))}
-      </ol>
-    </StoryPanel>
-  );
-}
-
 function LayoutContractDemo() {
   return (
     <div className="pd-command-dashboard-layout-story__stage">
       <CommandCenterDashboardLayout
-        actions={(
-          <StoryPanel label="Dzialania" title="Dzialania i pomiar">
-            <p>Zamkniecie petli: decyzja, wlasciciel, status, efekt, termin.</p>
-          </StoryPanel>
-        )}
         customers={<ChartPanel label="Klienci" title="Nowi i powracajacy" />}
-        decisionWorkspace={<ChartPanel label="Decyzja" title="Dowody i rekomendacja" />}
         drivers={<ChartPanel label="Drivery" title="Co napedza wynik" />}
         funnel={<ChartPanel label="Lejek" title="Lejek sprzedazy" />}
         kpis={<KpiDeck />}
         plan={<ChartPanel label="Plan" title="Plan vs Benchmark" />}
-        priorities={<PriorityQueue />}
         products={<ChartPanel label="Produkty" title="Najlepiej sprzedajace sie produkty" />}
         traffic={<ChartPanel label="Zrodla" title="Kanaly ruchu" />}
       />
@@ -164,7 +135,7 @@ export const LayoutContract: Story = {
             },
             {
               label: 'Sloty',
-              value: '10',
+              value: '7',
             },
             {
               label: 'Tryb',

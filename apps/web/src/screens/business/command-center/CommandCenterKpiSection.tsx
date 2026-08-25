@@ -163,7 +163,6 @@ function renderKpiCard(
       helpText={resolveCommandMetricHelpText(record)}
       key={record.metricId}
       label={record.label}
-      layout="sparkline-aside"
       metricId={record.metricId}
       role="listitem"
       signal={resolveMetricSignal(record)}

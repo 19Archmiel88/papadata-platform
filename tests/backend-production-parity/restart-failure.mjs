@@ -36,7 +36,7 @@ await restartAndVerify("bff-production", async () => {
   await waitHttp("http://127.0.0.1:53001/readyz", 200);
 });
 await restartAndVerify("api-production", async () => {
-  await waitHttp("http://127.0.0.1:54000/readyz", 200);
+  await waitHttp("http://127.0.0.1:54100/readyz", 200);
   await waitHttp("http://127.0.0.1:53001/readyz", 200);
 });
 await restartAndVerify("worker-production", async () => {
@@ -119,7 +119,7 @@ async function dependencyOutage(service, dependencyName, dependents) {
   evidence.push({ action: "stop", service, state: serviceState(service) });
 
   try {
-    const blocked = await waitReadyzDependency("http://127.0.0.1:54000/readyz", dependencyName, false);
+    const blocked = await waitReadyzDependency("http://127.0.0.1:54100/readyz", dependencyName, false);
     evidence.push({
       action: `${dependencyName}-outage-detected`,
       service,
@@ -142,7 +142,7 @@ async function dependencyOutage(service, dependencyName, dependents) {
 
   runCompose(["up", "-d", service]);
   try {
-    const recovered = await waitReadyzDependency("http://127.0.0.1:54000/readyz", dependencyName, true);
+    const recovered = await waitReadyzDependency("http://127.0.0.1:54100/readyz", dependencyName, true);
     evidence.push({
       action: "failure-recovery",
       service,
@@ -214,7 +214,7 @@ async function gracefulShutdown(service) {
     if (service === "worker-production") {
       await waitRunning(service);
     } else {
-      const port = service === "bff-production" ? 53001 : 54000;
+      const port = service === "bff-production" ? 53001 : 54100;
       await waitHttp(`http://127.0.0.1:${port}/readyz`, 200);
     }
     evidence.push({ action: "graceful-shutdown-recovery", service, result: "pass", durationMs: Math.round(performance.now() - started) });

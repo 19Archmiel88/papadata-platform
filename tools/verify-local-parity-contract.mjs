@@ -19,7 +19,7 @@ if (contract.serviceExposure?.api !== "private") failures.push("API must remain 
 if (contract.serviceExposure?.worker !== "private") failures.push("Worker must remain private.");
 
 const compose = await readFile(resolve(repoRoot, "compose.production-parity.yml"), "utf8");
-for (const binding of ["127.0.0.1:55432:5432", "127.0.0.1:56379:6379", "127.0.0.1:53001:3001", "127.0.0.1:54000:4000"]) {
+for (const binding of ["127.0.0.1:55432:5432", "127.0.0.1:56379:6379", "127.0.0.1:53001:3001", "127.0.0.1:54100:4000"]) {
   if (!compose.includes(binding)) failures.push(`Compose loopback binding missing: ${binding}`);
 }
 if (!compose.includes("image: redis:7.2-alpine")) failures.push("Local Redis must align with GCP REDIS_7_2.");

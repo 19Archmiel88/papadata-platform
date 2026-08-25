@@ -179,7 +179,11 @@ export function CommandCenterPlanExecutionSection({
           </button>
         </div>
 
-        <CommandCenterPlanTrajectoryChart trajectory={trajectory} />
+        <CommandCenterPlanTrajectoryChart
+          forecastTotal={forecastTotal}
+          planTotal={planTotal}
+          trajectory={trajectory}
+        />
 
         {isTableVisible ? (
           <div

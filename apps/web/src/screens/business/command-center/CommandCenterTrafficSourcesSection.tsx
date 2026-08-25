@@ -66,6 +66,7 @@ export function CommandCenterTrafficSourcesSection({
             series={[{ key: 'sessions', label: 'Sesje' }]}
             valueFormatter={(value) => formatInteger(value)}
             variant="ranking"
+            visualStyle="vivid"
           />
 
           <CommandChartTableFallback

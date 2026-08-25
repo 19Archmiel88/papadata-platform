@@ -1,13 +1,22 @@
 import {
+  useMemo,
+} from 'react';
+
+import {
   InlineNotice,
 } from '../../design-system';
+import {
+  usePapaAssistantRuntime,
+} from '../../shell/papa-assistant';
 import {
   PapaWorkspace,
 } from './PapaWorkspace';
 import {
-  createPapaStorybookData,
   findPapaScreenDefinition,
 } from './papaData';
+import {
+  createPapaRuntimeData,
+} from './papaRuntimeData';
 
 export type PapaScreenProps = {
   readonly path?: string;
@@ -20,6 +29,23 @@ export function PapaScreen({
     ? '/app/papa/panel-kontekstowy-papa'
     : path;
   const definition = findPapaScreenDefinition(normalizedPath);
+  const {
+    lastSnapshot,
+    messages,
+    reports,
+    scope,
+  } = usePapaAssistantRuntime();
+  const data = useMemo(() => createPapaRuntimeData({
+    lastSnapshot,
+    messages,
+    reports,
+    scope,
+  }), [
+    lastSnapshot,
+    messages,
+    reports,
+    scope,
+  ]);
 
   if (!definition) {
     return (
@@ -33,8 +59,9 @@ export function PapaScreen({
 
   return (
     <PapaWorkspace
-      data={createPapaStorybookData()}
+      data={data}
       definition={definition}
+      mode="runtime"
     />
   );
 }

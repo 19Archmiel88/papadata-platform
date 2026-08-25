@@ -1,4 +1,8 @@
 .pd-metric-card {
+  --pd-metric-help-popover-inline-start: 50%;
+  --pd-metric-help-popover-inline-end: auto;
+  --pd-metric-help-popover-translate-x: -50%;
+  --pd-metric-help-popover-width: min(18rem, calc(100vw - 2rem));
   position: relative;
   display: grid;
   grid-template-rows: auto auto 1fr;
@@ -96,21 +100,26 @@
 .pd-metric-card__help {
   position: relative;
   display: inline-flex;
+  flex: 0 0 auto;
 }
 
 .pd-metric-card__help-trigger {
   display: inline-grid;
   place-items: center;
-  inline-size: 1.15rem;
-  block-size: 1.15rem;
+  inline-size: 1.35rem;
+  block-size: 1.35rem;
   padding: 0;
   border: 1px solid var(--pd-separator);
   border-radius: 50%;
   background: transparent;
   color: var(--pd-text-muted);
   font: inherit;
-  font-size: 0.62rem;
   cursor: help;
+}
+
+.pd-metric-card__help-trigger:hover {
+  border-color: var(--pd-separator-strong);
+  color: var(--pd-text-secondary);
 }
 
 .pd-metric-card__help-trigger:focus-visible {
@@ -121,8 +130,12 @@
 .pd-metric-card__help-popover {
   position: absolute;
   z-index: var(--pd-z-tooltip, 900);
-  inset: calc(100% + 0.45rem) auto auto 50%;
-  inline-size: min(16rem, 70vw);
+  inset:
+    calc(100% + 0.45rem)
+    var(--pd-metric-help-popover-inline-end)
+    auto
+    var(--pd-metric-help-popover-inline-start);
+  inline-size: var(--pd-metric-help-popover-width);
   padding: 0.55rem 0.65rem;
   border: 1px solid var(--pd-separator);
   border-radius: var(--pd-radius-small);
@@ -131,8 +144,9 @@
   box-shadow: var(--pd-shadow-floating);
   font-size: 0.7rem;
   line-height: 1.45;
+  overflow-wrap: anywhere;
   opacity: 0;
-  transform: translate(-50%, -2px);
+  transform: translate(var(--pd-metric-help-popover-translate-x), -2px);
   pointer-events: none;
   transition: opacity 120ms ease, transform 120ms ease;
 }
@@ -140,7 +154,18 @@
 .pd-metric-card__help:hover .pd-metric-card__help-popover,
 .pd-metric-card__help-trigger:focus + .pd-metric-card__help-popover {
   opacity: 1;
-  transform: translate(-50%, 0);
+  transform: translate(var(--pd-metric-help-popover-translate-x), 0);
+}
+
+/*
+ * The card clips overflow by default (shadow bars, sparkline, long labels
+ * all rely on this everywhere MetricCard is used). The help popover is the
+ * one piece of content that must escape the card bounds, so overflow is
+ * relaxed only while it's actually showing, not for every card everywhere.
+ */
+.pd-metric-card:has(.pd-metric-card__help:hover),
+.pd-metric-card:has(.pd-metric-card__help-trigger:focus) {
+  overflow: visible;
 }
 
 .pd-metric-card__value-region {

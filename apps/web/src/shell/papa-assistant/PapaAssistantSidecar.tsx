@@ -8,19 +8,17 @@ import {
 } from 'react';
 
 import {
+  AlertDialog,
   AssistantComposer,
   Button,
   Icon,
+  InlineNotice,
   OverlayRoot,
   StatusBadge,
+  Tabs,
 } from '../../design-system';
-import {
-  createPapaStorybookData,
-} from '../../screens/papa/papaData';
 import type {
   PapaChatMessage,
-  PapaElementThread,
-  PapaWorkspaceData,
 } from '../../screens/papa/papaData';
 import type {
   PapaScreenContext,
@@ -36,12 +34,19 @@ import type {
 } from './PapaAssistantRuntimeContext';
 import {
   createPapaAssistantMessage,
-  downloadPapaAssistantReport,
+  resolvePapaElementDraftScope,
+  resolvePapaMainDraftScope,
   usePapaAssistantRuntime,
 } from './PapaAssistantRuntimeContext';
 import {
   usePapaScreenContext,
 } from './ScreenContextProvider';
+import type {
+  PapaMessageEvidence,
+} from './PapaMessageThread';
+import {
+  PapaMessageThread,
+} from './PapaMessageThread';
 import './papa-assistant.css';
 
 type PapaAssistantMode =
@@ -100,27 +105,37 @@ export function PapaAssistantSidecar({
     currentContext,
   } = usePapaScreenContext();
   const {
-    addElementMessages,
     addMainMessages,
+    captureContext,
+    clearComposerDraft,
+    composerDrafts,
     conversationId,
     createReport,
+    downloadReport,
+    elementError,
     elementMessages,
+    elementSubmitting,
     lastSnapshot,
+    mainError,
+    mainSubmitting,
     messages,
     rememberSnapshot,
+    reportError,
     reports,
     resetConversation: resetRuntimeConversation,
+    setComposerDraft,
+    submitElementMessage,
+    submitMainMessage,
   } = usePapaAssistantRuntime();
-  const papaData = useMemo(() => createPapaStorybookData(), []);
   const [mode, setMode] = useState<PapaAssistantMode>('screen');
   const [handledRequestId, setHandledRequestId] =
     useState<string | null>(null);
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
 
   const elements = useMemo(() => (
-    buildAssistantElements(currentContext, papaData)
+    buildAssistantElements(currentContext)
   ), [
     currentContext,
-    papaData,
   ]);
 
   const [selectedElementId, setSelectedElementId] =
@@ -136,6 +151,11 @@ export function PapaAssistantSidecar({
         )),
       ]
     : [];
+  const conversationEvidence = useMemo(() => (
+    buildMessageEvidence(currentContext)
+  ), [
+    currentContext,
+  ]);
 
   useEffect(() => {
     if (
@@ -193,7 +213,7 @@ export function PapaAssistantSidecar({
     }
 
     if (request.action === 'analyze-screen') {
-      analyzeCurrentScreen();
+      void analyzeCurrentScreen().catch(() => undefined);
     }
 
     if (request.action === 'open-element') {
@@ -214,75 +234,43 @@ export function PapaAssistantSidecar({
     request,
   ]);
 
-  function analyzeCurrentScreen() {
+  async function analyzeCurrentScreen() {
     const snapshot = captureCurrentScreenContext('screen-analysis');
-    rememberSnapshot(snapshot);
     setMode('screen');
-    addMainMessages([
-      createMessage({
-        author: 'system',
-        body: `Snapshot ${snapshot.snapshotId} zapisany z ekranu ${snapshot.title}.`,
-        evidenceIds: snapshot.evidence.map((item) => item.id),
-      }),
-      createMessage({
-        author: 'assistant',
-        body: buildScreenAnalysisReply(snapshot, papaData),
-        evidenceIds: snapshot.evidence.map((item) => item.id),
-      }),
-    ]);
+    await captureContext(snapshot, 'screen-analysis');
+    await submitMainMessage(
+      'Przeanalizuj bieżący ekran i podsumuj najważniejsze wnioski.',
+    );
   }
 
-  function handleMainSubmit(value: string) {
+  async function handleMainSubmit(value: string) {
     const snapshot = captureCurrentScreenContext('chat-message');
-    rememberSnapshot(snapshot);
-    addMainMessages([
-      createMessage({
-        author: 'user',
-        body: value,
-        evidenceIds: [],
-      }),
-      createMessage({
-        author: 'assistant',
-        body: buildMainReply(value, snapshot, papaData),
-        evidenceIds: snapshot.evidence.map((item) => item.id),
-      }),
-    ]);
+    clearComposerDraft(resolvePapaMainDraftScope());
+    await captureContext(snapshot, 'chat-message');
+    await submitMainMessage(value);
   }
 
-  function handleElementSubmit(value: string) {
+  async function handleElementSubmit(value: string) {
     if (!selectedElement) {
       return;
     }
 
-    const reply = buildElementReply(value, selectedElement);
-
-    addElementMessages([
-      createMessage({
-        author: 'user',
-        body: value,
-        contextItemId: selectedElement.id,
-        evidenceIds: [],
-      }),
-      createMessage({
-        author: 'assistant',
-        body: reply,
-        contextItemId: selectedElement.id,
-        evidenceIds: selectedElement.evidenceIds ?? [],
-      }),
-    ]);
+    clearComposerDraft(resolvePapaElementDraftScope(selectedElement.id));
+    await submitElementMessage(selectedElement.id, value);
   }
 
   function resetConversation() {
     resetRuntimeConversation();
     setMode('screen');
+    setResetConfirmOpen(false);
   }
 
-  function handleReportCreate(
+  async function handleReportCreate(
     format: PapaAssistantReportFormat,
     scope: PapaAssistantReportScope,
-  ) {
+  ): Promise<void> {
     const snapshot = captureCurrentScreenContext(`report-${scope}-${format}`);
-    const report = createReport(
+    const report = await createReport(
       snapshot,
       format,
       scope,
@@ -291,173 +279,251 @@ export function PapaAssistantSidecar({
     addMainMessages([
       createMessage({
         author: 'system',
-        body: `Raport ${report.id} został wygenerowany dla zakresu ${report.dateRangeLabel}.`,
+        body: `Raport ${report.id} został przekazany do bezpiecznego generatora backendowego dla zakresu ${report.dateRangeLabel}.`,
         evidenceIds: snapshot.evidence.map((item) => item.id),
       }),
       createMessage({
         author: 'assistant',
-        body: `Gotowe. Raport ${report.format.toUpperCase()} obejmuje ekran „${report.screenTitle}”, ${report.metricCount} metryk, ${report.tableCount} tabel, ${report.chartCount} wykresów i ${report.recommendationCount} rekomendacji.`,
+        body: `Raport ${report.format.toUpperCase()} obejmuje ekran „${report.screenTitle}”, ${report.metricCount} metryk, ${report.tableCount} tabel, ${report.chartCount} wykresów i ${report.recommendationCount} rekomendacji. Pobranie będzie dostępne po zakończeniu zadania.`,
         evidenceIds: snapshot.evidence.map((item) => item.id),
       }),
     ]);
-    downloadPapaAssistantReport(report);
   }
 
   return (
-    <OverlayRoot
-      backdrop="none"
-      className="pd-papa-assistant-overlay"
-      lockScroll={false}
-      open={open}
-    >
-      <aside
-        aria-label="Papa Asystent"
-        aria-modal="false"
-        className="pd-overlay-surface pd-papa-sidecar"
-        role="dialog"
+    <>
+      <OverlayRoot
+        backdrop="none"
+        className="pd-papa-assistant-overlay"
+        lockScroll={false}
+        open={open}
       >
-        <header className="pd-papa-sidecar__header">
-          <div>
-            <span className="pd-papa-sidecar__eyebrow">
-              Papa Asystent
-            </span>
-            <h2>Analiza bieżącego ekranu</h2>
-            <p>
-              Wspólny wątek dla dashboardu i Laboratorium. Kontekst
-              jest pobierany z aktywnego widoku.
-            </p>
-          </div>
-          <Button
-            aria-label="Zamknij Papa Asystenta"
-            size="small"
-            variant="ghost"
-            onClick={() => onOpenChange(false)}
-          >
-            Zamknij
-          </Button>
-        </header>
-
-        <div className="pd-papa-sidecar__toolbar">
-          <Button
-            size="small"
-            startIcon={<Icon decorative name="assistant" size={16} />}
-            variant="primary"
-            onClick={analyzeCurrentScreen}
-          >
-            Analizuj ekran
-          </Button>
-          <Button
-            size="small"
-            variant="secondary"
-            onClick={() => onNavigate?.('/app/papa/laboratorium-ai')}
-          >
-            Laboratorium
-          </Button>
-          <Button
-            size="small"
-            variant="secondary"
-            onClick={() => setMode('report')}
-          >
-            Raport
-          </Button>
-          <Button
-            size="small"
-            variant="ghost"
-            onClick={resetConversation}
-          >
-            Nowa rozmowa
-          </Button>
-        </div>
-
-        <section
-          aria-label="Kontekst ekranu dla Papa"
-          className="pd-papa-sidecar__context"
+        <aside
+          aria-label="Papa Asystent"
+          aria-modal="false"
+          className="pd-overlay-surface pd-papa-sidecar"
+          role="dialog"
         >
-          <div>
-            <span>Ekran</span>
-            <strong>{currentContext.title}</strong>
-            <small>{currentContext.route}</small>
-          </div>
-          <div>
-            <span>Zakres</span>
-            <strong>{currentContext.dateRangeLabel}</strong>
-            <small>{currentContext.workspaceName}</small>
-          </div>
-          <StatusBadge
-            status="Readiness"
-            text={currentContext.readiness ?? 'Kontekst powłoki'}
-            tone={resolveReadinessTone(currentContext.readiness)}
-          />
-        </section>
+          <header className="pd-papa-sidecar__header">
+            <div>
+              <span className="pd-papa-sidecar__eyebrow">
+                Papa Asystent
+              </span>
+              <h2>Analiza bieżącego ekranu</h2>
+              <p>
+                Wspólny wątek dla dashboardu i Laboratorium. Kontekst
+                jest pobierany z aktywnego widoku.
+              </p>
+            </div>
+            <div className="pd-papa-sidecar__header-actions">
+              <button
+                className="pd-papa-sidecar__conversation-chip"
+                title="Skopiuj conversationId"
+                type="button"
+                onClick={() => {
+                  copyConversationId(conversationId);
+                }}
+              >
+                {shortenConversationId(conversationId)}
+              </button>
+              <button
+                aria-label="Zamknij Papa Asystenta"
+                className="pd-papa-sidecar__close-button"
+                type="button"
+                onClick={() => onOpenChange(false)}
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+          </header>
 
-        <nav
-          aria-label="Tryb rozmowy Papa"
-          className="pd-papa-sidecar__mode-switch"
-        >
-          <button
-            aria-pressed={mode === 'screen'}
-            type="button"
-            onClick={() => setMode('screen')}
-          >
-            Czat główny
-          </button>
-          <button
-            aria-pressed={mode === 'element'}
-            type="button"
-            onClick={() => setMode('element')}
-          >
-            Czat elementu
-          </button>
-          <button
-            aria-pressed={mode === 'report'}
-            type="button"
-            onClick={() => setMode('report')}
-          >
-            Raport
-          </button>
-        </nav>
+          <div className="pd-papa-sidecar__toolbar">
+            <Button
+              size="small"
+              startIcon={<Icon decorative name="assistant" size={16} />}
+              variant="primary"
+              onClick={() => {
+                void analyzeCurrentScreen().catch(() => undefined);
+              }}
+            >
+              Analizuj ekran
+            </Button>
+            <Button
+              size="small"
+              variant="secondary"
+              onClick={() => onNavigate?.('/app/papa/panel-kontekstowy-papa')}
+            >
+              Laboratorium
+            </Button>
+            <Button
+              size="small"
+              variant="secondary"
+              onClick={() => setMode('report')}
+            >
+              Raport
+            </Button>
+            <Button
+              size="small"
+              variant="ghost"
+              onClick={() => setResetConfirmOpen(true)}
+            >
+              Nowa rozmowa
+            </Button>
+          </div>
 
-        {mode === 'screen' ? (
-          <PapaMainThread
-            context={currentContext}
-            conversationId={conversationId}
-            lastSnapshot={lastSnapshot}
-            messages={messages}
-            onSubmit={handleMainSubmit}
+          <section
+            aria-label="Kontekst ekranu dla Papa"
+            className="pd-papa-sidecar__context"
+          >
+            <div>
+              <span>Ekran</span>
+              <strong>{currentContext.title}</strong>
+              <small>{currentContext.route}</small>
+            </div>
+            <div>
+              <span>Zakres</span>
+              <strong>{currentContext.dateRangeLabel}</strong>
+              <small>{currentContext.workspaceName}</small>
+            </div>
+            <StatusBadge
+              status="Readiness"
+              text={currentContext.readiness ?? 'Kontekst powłoki'}
+              tone={resolveReadinessTone(currentContext.readiness)}
+            />
+          </section>
+
+          <Tabs
+            activation="manual"
+            activeId={mode}
+            ariaLabel="Tryb rozmowy Papa"
+            className="pd-papa-sidecar__tabs"
+            items={[
+              {
+                badge: messages.length > 0 ? String(messages.length) : undefined,
+                icon: 'assistant',
+                id: 'screen',
+                label: 'Rozmowa',
+                panel: (
+                  <PapaMainThread
+                    context={currentContext}
+                    conversationId={conversationId}
+                    draft={composerDrafts[resolvePapaMainDraftScope()] ?? ''}
+                    error={mainError}
+                    evidence={conversationEvidence}
+                    lastSnapshot={lastSnapshot}
+                    messages={messages}
+                    submitting={mainSubmitting}
+                    onAnalyze={analyzeCurrentScreen}
+                    onDraftChange={(value) => {
+                      setComposerDraft(resolvePapaMainDraftScope(), value);
+                    }}
+                    onSubmit={(value) => {
+                      void handleMainSubmit(value).catch(() => undefined);
+                    }}
+                  />
+                ),
+              },
+              {
+                badge: selectedElementMessages.length > 0
+                  ? String(selectedElementMessages.length)
+                  : undefined,
+                icon: 'data',
+                id: 'element',
+                label: 'Element',
+                panel: (
+                  <PapaElementThread
+                    draft={selectedElement
+                      ? composerDrafts[resolvePapaElementDraftScope(selectedElement.id)] ?? ''
+                      : ''}
+                    elements={elements}
+                    error={elementError}
+                    evidence={conversationEvidence}
+                    messages={selectedElementMessages}
+                    submitting={elementSubmitting}
+                    onDraftChange={(value) => {
+                      if (!selectedElement) {
+                        return;
+                      }
+
+                      setComposerDraft(
+                        resolvePapaElementDraftScope(selectedElement.id),
+                        value,
+                      );
+                    }}
+                    onSelectElement={setSelectedElementId}
+                    onSubmit={(value) => {
+                      void handleElementSubmit(value).catch(() => undefined);
+                    }}
+                    selectedElement={selectedElement}
+                    selectedElementId={selectedElementId}
+                  />
+                ),
+              },
+              {
+                badge: reports.length > 0 ? String(reports.length) : undefined,
+                icon: 'decisions',
+                id: 'report',
+                label: 'Raport',
+                panel: (
+                  <PapaReportThread
+                    context={currentContext}
+                    lastSnapshot={lastSnapshot}
+                    error={reportError}
+                    onCreateReport={handleReportCreate}
+                    onDownloadReport={downloadReport}
+                    reports={reports}
+                  />
+                ),
+              },
+            ]}
+            orientation="horizontal"
+            size="compact"
+            onActiveIdChange={(nextId) => {
+              if (isPapaAssistantMode(nextId)) {
+                setMode(nextId);
+              }
+            }}
           />
-        ) : mode === 'element' ? (
-          <PapaElementThread
-            elements={elements}
-            messages={selectedElementMessages}
-            onSelectElement={setSelectedElementId}
-            onSubmit={handleElementSubmit}
-            selectedElement={selectedElement}
-            selectedElementId={selectedElementId}
-          />
-        ) : (
-          <PapaReportThread
-            context={currentContext}
-            lastSnapshot={lastSnapshot}
-            onCreateReport={handleReportCreate}
-            reports={reports}
-          />
-        )}
-      </aside>
-    </OverlayRoot>
+        </aside>
+      </OverlayRoot>
+      <AlertDialog
+        cancelLabel="Zostaw rozmowę"
+        confirmLabel="Rozpocznij od nowa"
+        destructive
+        message="To rozpocznie nową rozmowę w bieżącym workspace i wyczyści lokalne drafty. Poprzednia historia pozostaje po stronie serwera zgodnie z retencją."
+        open={resetConfirmOpen}
+        title="Rozpocząć nową rozmowę?"
+        onCancel={() => setResetConfirmOpen(false)}
+        onConfirm={resetConversation}
+        onOpenChange={(nextOpen) => setResetConfirmOpen(nextOpen)}
+      />
+    </>
   );
 }
 
 function PapaMainThread({
   context,
   conversationId,
+  draft,
+  error,
+  evidence,
   lastSnapshot,
   messages,
+  submitting,
+  onAnalyze,
+  onDraftChange,
   onSubmit,
 }: {
   readonly context: PapaScreenContext;
-  readonly conversationId: string;
+  readonly conversationId: string | null;
+  readonly draft: string;
+  readonly error: string | null;
+  readonly evidence: readonly PapaMessageEvidence[];
   readonly lastSnapshot: PapaScreenContextSnapshot | null;
   readonly messages: readonly PapaChatMessage[];
+  readonly submitting: boolean;
+  readonly onAnalyze: () => void;
+  readonly onDraftChange: (value: string) => void;
   readonly onSubmit: (value: string) => void;
 }) {
   function handleSubmit(value: ComposerSubmitValue) {
@@ -469,12 +535,14 @@ function PapaMainThread({
   return (
     <section
       aria-labelledby="papa-main-thread-heading"
-      className="pd-papa-sidecar__thread"
+      className="pd-papa-sidecar__thread pd-papa-sidecar__thread--chat"
     >
       <header className="pd-papa-sidecar__thread-header">
         <div>
           <span>Conversation ID</span>
-          <h3 id="papa-main-thread-heading">{conversationId}</h3>
+          <h3 id="papa-main-thread-heading">
+            {conversationId ?? 'Nowa rozmowa (zostanie zapisana po pierwszej wiadomości)'}
+          </h3>
         </div>
         <small>
           {lastSnapshot
@@ -483,10 +551,25 @@ function PapaMainThread({
         </small>
       </header>
 
-      <PapaMessageList messages={messages} />
+      <PapaMessageThread
+        emptyActionLabel="Analizuj ekran"
+        emptyMessage="Papa nie pokaże tu przykładowej rozmowy. Uruchom analizę ekranu albo zadaj pytanie z bieżącym koszykiem kontekstu."
+        emptyTitle="Rozmowa jest pusta"
+        evidence={evidence}
+        messages={messages}
+        onEmptyAction={onAnalyze}
+      />
+
+      {error ? (
+        <InlineNotice
+          className="pd-papa-sidecar__error"
+          message={error}
+          title="Papa nie odpowiedział"
+          tone="critical"
+        />
+      ) : null}
 
       <AssistantComposer
-        key={`main-${messages.length}`}
         attachments={lastSnapshot ? [
           {
             id: lastSnapshot.snapshotId,
@@ -503,8 +586,9 @@ function PapaMainThread({
         ].map((item) => item.id)}
         label="Pytanie do Papa"
         placeholder="Zapytaj o wynik, ryzyko, rekomendację albo dowody..."
-        submitting={false}
-        value=""
+        submitting={submitting}
+        value={draft}
+        onValueChange={onDraftChange}
         onSubmit={handleSubmit}
       />
     </section>
@@ -512,15 +596,25 @@ function PapaMainThread({
 }
 
 function PapaElementThread({
+  draft,
   elements,
+  error,
+  evidence,
   messages,
+  submitting,
+  onDraftChange,
   onSelectElement,
   onSubmit,
   selectedElement,
   selectedElementId,
 }: {
+  readonly draft: string;
   readonly elements: readonly PapaAssistantElement[];
+  readonly error: string | null;
+  readonly evidence: readonly PapaMessageEvidence[];
   readonly messages: readonly PapaChatMessage[];
+  readonly submitting: boolean;
+  readonly onDraftChange: (value: string) => void;
   readonly onSelectElement: (elementId: string) => void;
   readonly onSubmit: (value: string) => void;
   readonly selectedElement: PapaAssistantElement | null;
@@ -535,7 +629,7 @@ function PapaElementThread({
   return (
     <section
       aria-labelledby="papa-element-thread-heading"
-      className="pd-papa-sidecar__thread"
+      className="pd-papa-sidecar__thread pd-papa-sidecar__thread--element"
     >
       <header className="pd-papa-sidecar__thread-header">
         <div>
@@ -571,20 +665,31 @@ function PapaElementThread({
         ))}
       </div>
 
-      <PapaMessageList
+      <PapaMessageThread
         emptyMessage="Wybierz element z bieżącego ekranu, żeby zawęzić rozmowę."
+        emptyTitle="Brak rozmowy elementu"
+        evidence={evidence}
         messages={messages}
       />
 
+      {error ? (
+        <InlineNotice
+          className="pd-papa-sidecar__error"
+          message={error}
+          title="Papa nie odpowiedział"
+          tone="critical"
+        />
+      ) : null}
+
       <AssistantComposer
-        key={`element-${selectedElementId}-${messages.length}`}
         attachments={[]}
         className="pd-papa-sidecar__composer"
         contextItemIds={selectedElement ? [selectedElement.id] : []}
         label="Pytanie o wybrany element"
         placeholder="Zapytaj tylko o ten KPI, rekord, wykres albo rekomendację..."
-        submitting={false}
-        value=""
+        submitting={submitting}
+        value={draft}
+        onValueChange={onDraftChange}
         onSubmit={handleSubmit}
       />
     </section>
@@ -593,16 +698,20 @@ function PapaElementThread({
 
 function PapaReportThread({
   context,
+  error,
   lastSnapshot,
   onCreateReport,
+  onDownloadReport,
   reports,
 }: {
   readonly context: PapaScreenContext;
+  readonly error: string | null;
   readonly lastSnapshot: PapaScreenContextSnapshot | null;
   readonly onCreateReport: (
     format: PapaAssistantReportFormat,
     scope: PapaAssistantReportScope,
-  ) => void;
+  ) => Promise<void>;
+  readonly onDownloadReport: (report: PapaAssistantReportArtifact) => Promise<void>;
   readonly reports: readonly PapaAssistantReportArtifact[];
 }) {
   const [scope, setScope] =
@@ -615,7 +724,7 @@ function PapaReportThread({
   return (
     <section
       aria-labelledby="papa-report-thread-heading"
-      className="pd-papa-sidecar__thread"
+      className="pd-papa-sidecar__thread pd-papa-sidecar__thread--report"
     >
       <header className="pd-papa-sidecar__thread-header">
         <div>
@@ -678,20 +787,31 @@ function PapaReportThread({
 
         <div className="pd-papa-sidecar__report-actions">
           <Button
+            disabled
             size="small"
-            variant="primary"
-            onClick={() => onCreateReport('pdf', scope)}
+            title="PDF zostanie włączony po podłączeniu bezpiecznego renderera backendowego."
+            variant="secondary"
           >
-            Generuj PDF
+            PDF niedostępny
           </Button>
           <Button
             size="small"
-            variant="secondary"
-            onClick={() => onCreateReport('csv', scope)}
+            variant="primary"
+            onClick={() => {
+              void onCreateReport('csv', scope).catch(() => undefined);
+            }}
           >
             Generuj CSV
           </Button>
         </div>
+
+        {error ? (
+          <InlineNotice
+            message={error}
+            title="Raport nie został przygotowany"
+            tone="critical"
+          />
+        ) : null}
       </div>
 
       <div className="pd-papa-sidecar__report-list">
@@ -709,8 +829,8 @@ function PapaReportThread({
                 </div>
                 <StatusBadge
                   status="Status"
-                  text="Gotowy"
-                  tone="success"
+                  text={resolveRuntimeReportStatusText(report.status)}
+                  tone={resolveRuntimeReportStatusTone(report.status)}
                 />
               </header>
               <p>{report.description}</p>
@@ -731,7 +851,9 @@ function PapaReportThread({
               <Button
                 size="small"
                 variant="secondary"
-                onClick={() => downloadPapaAssistantReport(report)}
+                onClick={() => {
+                  void onDownloadReport(report).catch(() => undefined);
+                }}
               >
                 Pobierz ponownie
               </Button>
@@ -743,40 +865,8 @@ function PapaReportThread({
   );
 }
 
-function PapaMessageList({
-  emptyMessage = 'Brak wiadomości w bieżącym wątku.',
-  messages,
-}: {
-  readonly emptyMessage?: string;
-  readonly messages: readonly PapaChatMessage[];
-}) {
-  if (messages.length === 0) {
-    return (
-      <p className="pd-papa-sidecar__empty-thread">
-        {emptyMessage}
-      </p>
-    );
-  }
-
-  return (
-    <ol className="pd-papa-sidecar__messages">
-      {messages.map((message) => (
-        <li
-          data-author={message.author}
-          key={message.id}
-        >
-          <span>{resolveMessageAuthor(message.author)}</span>
-          <p>{message.body}</p>
-          <small>{formatShortDateTime(message.createdAt)}</small>
-        </li>
-      ))}
-    </ol>
-  );
-}
-
 function buildAssistantElements(
   context: PapaScreenContext,
-  data: PapaWorkspaceData,
 ): readonly PapaAssistantElement[] {
   return uniqueElements([
     ...context.metrics,
@@ -785,48 +875,7 @@ function buildAssistantElements(
     ...context.charts,
     ...context.evidence,
     ...context.elements,
-    ...data.contextItems.map<PapaAssistantElement>((item) => ({
-      description: `${item.source}; retencja ${item.retention}`,
-      evidenceIds: [],
-      id: item.id,
-      kind: item.kind === 'metric'
-        ? 'metric'
-        : item.kind === 'decision'
-          ? 'decision'
-          : 'record',
-      label: item.label,
-      source: item.source,
-      status: `${Math.round(item.confidence * 100)}% confidence`,
-      value: null,
-      baseMessages: [],
-    })),
-    ...data.elementThreads.map((thread) => threadToElement(thread)),
   ]);
-}
-
-function threadToElement(
-  thread: PapaElementThread,
-): PapaAssistantElement {
-  const kind: PapaScreenContextElementKind =
-    thread.elementKind === 'action'
-      ? 'decision'
-      : thread.elementKind === 'segment'
-        ? 'record'
-        : thread.elementKind;
-
-  return {
-    description: `Wątek elementu ${thread.elementLabel}`,
-    evidenceIds: Array.from(new Set(
-      thread.messages.flatMap((message) => message.evidenceIds),
-    )),
-    id: thread.elementId,
-    kind,
-    label: thread.elementLabel,
-    source: 'Papa',
-    status: thread.status,
-    value: null,
-    baseMessages: thread.messages,
-  };
 }
 
 function uniqueElements(
@@ -850,109 +899,6 @@ function uniqueElements(
   }
 
   return result;
-}
-
-function buildScreenAnalysisReply(
-  snapshot: PapaScreenContextSnapshot,
-  data: PapaWorkspaceData,
-): string {
-  const headlineMetric =
-    snapshot.metrics[0]
-    ?? snapshot.elements.find((item) => item.kind === 'metric')
-    ?? null;
-  const recommendation =
-    snapshot.recommendations[0]
-    ?? data.recommendations.find((item) => item.status === 'needs-approval')
-    ?? data.recommendations[0]
-    ?? null;
-  const evidenceCount =
-    snapshot.evidence.length || data.evidence.length;
-  const metricsSummary = snapshot.metrics
-    .slice(0, 4)
-    .map((item) => (
-      `${item.label}${item.value ? ` ${item.value}` : ''}${item.status ? ` (${item.status})` : ''}`
-    ))
-    .join('; ');
-  const chartSummary = snapshot.charts
-    .slice(0, 3)
-    .map((item) => item.label)
-    .join(', ');
-  const tableSummary = snapshot.tables
-    .slice(0, 3)
-    .map((item) => (
-      item.value ? `${item.label}: ${item.value}` : item.label
-    ))
-    .join('; ');
-
-  const fragments = [
-    `Analizuję ekran „${snapshot.title}” dla zakresu ${snapshot.dateRangeLabel}.`,
-    snapshot.readiness
-      ? `Stan danych: ${snapshot.readiness}.`
-      : 'Stan danych wynika z kontekstu powłoki.',
-    headlineMetric
-      ? `Najważniejszy element: ${headlineMetric.label}${headlineMetric.value ? ` (${headlineMetric.value})` : ''}.`
-      : 'Na ekranie nie ma jeszcze zarejestrowanej metryki, więc pracuję na kontekście route i workspace.',
-    metricsSummary
-      ? `KPI w koszyku kontekstu: ${metricsSummary}.`
-      : 'Brak KPI w koszyku kontekstu.',
-    chartSummary
-      ? `Wykresy do interpretacji: ${chartSummary}.`
-      : 'Brak wykresów zgłoszonych do Papa.',
-    tableSummary
-      ? `Tabele raportowe: ${tableSummary}.`
-      : 'Brak tabel alternatywnych w snapshotcie.',
-    recommendation
-      ? `Rekomendacja: ${'summary' in recommendation ? recommendation.summary : recommendation.description ?? recommendation.label}.`
-      : 'Nie widzę aktywnej rekomendacji w snapshotcie.',
-    `Dowody dostępne dla odpowiedzi: ${evidenceCount}.`,
-  ];
-
-  return fragments.join(' ');
-}
-
-function buildMainReply(
-  value: string,
-  snapshot: PapaScreenContextSnapshot,
-  data: PapaWorkspaceData,
-): string {
-  const normalized = value.toLowerCase();
-
-  if (normalized.includes('dowod') || normalized.includes('evidence')) {
-    return `Na ekranie „${snapshot.title}” mam ${snapshot.evidence.length || data.evidence.length} dowody. Najpierw sprawdziłbym świeżość źródeł, potem wpływ na decyzję i dopiero wtedy przygotował rekomendację.`;
-  }
-
-  if (normalized.includes('ryzyk') || normalized.includes('blokad')) {
-    const blocked = data.statuses.find((status) => status.state === 'blocked');
-
-    return blocked
-      ? `${blocked.title}: ${blocked.description} To wymaga decyzji człowieka przed akcją AI.`
-      : 'Nie widzę blokady krytycznej, ale każda mutacja nadal wymaga capability, idempotency key i zatwierdzenia.';
-  }
-
-  if (
-    normalized.includes('raport')
-    || normalized.includes('pdf')
-    || normalized.includes('csv')
-  ) {
-    return `Mogę wygenerować raport PDF lub CSV dla widoku „${snapshot.title}” i zakresu ${snapshot.dateRangeLabel}. Przejdź do trybu „Raport”, wybierz cały widok, KPI, tabele albo rekomendacje i uruchom eksport.`;
-  }
-
-  return buildScreenAnalysisReply(snapshot, data);
-}
-
-function buildElementReply(
-  value: string,
-  element: PapaAssistantElement,
-): string {
-  const ask = value.trim();
-  const status = element.status
-    ? ` Status elementu: ${element.status}.`
-    : '';
-  const evidence = element.evidenceIds?.length
-    ? ` Dowody powiązane: ${element.evidenceIds.length}.`
-    : ' Brak jawnie podpiętych dowodów w rejestrze elementu.';
-
-  return `Wątek dotyczy elementu „${element.label}”. ${ask ? `Pytanie: ${ask}.` : ''}${status}${evidence} Papa ogranicza odpowiedź do tego elementu i nie miesza go z resztą dashboardu.`;
 }
 
 function createMessage({
@@ -985,6 +931,77 @@ function countContextElements(
     ...context.evidence,
     ...context.elements,
   ].length;
+}
+
+function buildMessageEvidence(
+  context: PapaScreenContext,
+): readonly PapaMessageEvidence[] {
+  return context.evidence.map((item) => ({
+    id: item.id,
+    label: item.label,
+    source: item.source ?? item.description ?? null,
+  }));
+}
+
+function resolveRuntimeReportStatusText(
+  status: PapaAssistantReportArtifact['status'],
+): string {
+  switch (status) {
+    case 'ready':
+      return 'Gotowy';
+    case 'failed':
+      return 'Błąd';
+    case 'expired':
+      return 'Wygasł';
+    case 'cancelled':
+      return 'Anulowany';
+    case 'generating':
+      return 'Generowanie';
+    case 'queued':
+    default:
+      return 'W kolejce';
+  }
+}
+
+function resolveRuntimeReportStatusTone(
+  status: PapaAssistantReportArtifact['status'],
+): 'critical' | 'neutral' | 'success' | 'warning' {
+  if (status === 'ready') return 'success';
+  if (status === 'failed') return 'critical';
+  if (status === 'queued' || status === 'generating') return 'warning';
+  return 'neutral';
+}
+
+function copyConversationId(conversationId: string | null): void {
+  if (
+    !conversationId
+    || typeof navigator === 'undefined'
+    || !navigator.clipboard
+  ) {
+    return;
+  }
+
+  void navigator.clipboard.writeText(conversationId);
+}
+
+function isPapaAssistantMode(
+  value: string,
+): value is PapaAssistantMode {
+  return value === 'screen'
+    || value === 'element'
+    || value === 'report';
+}
+
+function shortenConversationId(conversationId: string | null): string {
+  if (!conversationId) {
+    return 'Nowa rozmowa';
+  }
+
+  if (conversationId.length <= 22) {
+    return conversationId;
+  }
+
+  return `${conversationId.slice(0, 14)}...${conversationId.slice(-6)}`;
 }
 
 function resolveReportScopeCounts(
@@ -1075,27 +1092,4 @@ function resolveElementKindLabel(
     default:
       return 'Rekord';
   }
-}
-
-function resolveMessageAuthor(
-  author: PapaChatMessage['author'],
-): string {
-  switch (author) {
-    case 'assistant':
-      return 'Papa';
-    case 'system':
-      return 'System';
-    case 'user':
-    default:
-      return 'Ty';
-  }
-}
-
-function formatShortDateTime(value: string): string {
-  return new Intl.DateTimeFormat('pl-PL', {
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    month: '2-digit',
-  }).format(new Date(value));
 }

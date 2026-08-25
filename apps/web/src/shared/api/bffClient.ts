@@ -59,6 +59,65 @@ export type BffNotificationList = {
 
 export type BffIntegrationJob = Readonly<Record<string, unknown>>;
 
+export type PapaAnswerEvidence = {
+  readonly evidenceId: string;
+  readonly source: string;
+  readonly collectedAt: string;
+  readonly confidence: number;
+};
+
+export type PapaAnswerRecord = {
+  readonly messageId: string;
+  readonly content: string;
+  readonly confidence: number | null;
+  readonly evidence: readonly PapaAnswerEvidence[];
+  readonly actionId: string | null;
+  readonly status: 'blocked' | 'completed' | 'ready';
+  readonly riskLevel: 'critical' | 'high' | 'low' | 'medium';
+  readonly approvalRequired: boolean;
+  readonly role: 'assistant' | 'system' | 'user';
+  readonly createdAt: string;
+  readonly limitations: readonly string[];
+};
+
+export type PapaAnswerSummary = {
+  readonly total: number;
+  readonly ready: number;
+  readonly warning: number;
+  readonly critical: number;
+  readonly updatedAt: string;
+};
+
+export type PapaContextCaptureResult = {
+  readonly conversationId: string;
+  readonly snapshotId: string;
+};
+
+export type PapaAnswerGenerateResult = {
+  readonly conversationId: string;
+  readonly caseThreadId: string | null;
+  readonly messageId: string;
+  readonly record: PapaAnswerRecord;
+};
+
+export type BffReportRecord = {
+  readonly id: string;
+  readonly report_type: string;
+  readonly format: 'csv' | 'json' | 'pdf' | 'xlsx';
+  readonly status: 'queued' | 'generating' | 'ready' | 'failed' | 'expired' | 'cancelled';
+  readonly date_from: string;
+  readonly date_to: string;
+  readonly filters: Readonly<Record<string, unknown>>;
+  readonly object_key: string | null;
+  readonly checksum_sha256: string | null;
+  readonly size_bytes: number | null;
+  readonly content_type: string | null;
+  readonly error_code: string | null;
+  readonly created_at: string;
+  readonly ready_at: string | null;
+  readonly expires_at: string | null;
+};
+
 export type InvitationPreview = {
   readonly accepted: boolean;
   readonly email?: string;
@@ -424,6 +483,94 @@ class BffClient {
     await this.authenticatedCommand(`/api/v1/notifications/${encodeURIComponent(notificationId)}/unsnooze`);
   }
 
+  async capturePapaContext(input: {
+    readonly captureReason: string;
+    readonly conversationId: string | null;
+    readonly parentConversationId: string | null;
+    readonly snapshot: Readonly<Record<string, unknown>>;
+    readonly title: string;
+    readonly idempotencyKey?: string;
+  }): Promise<PapaContextCaptureResult> {
+    const { idempotencyKey, ...body } = input;
+    const data = await this.authenticatedCommand<{
+      readonly contextCaptureResult: PapaContextCaptureResult;
+    }>('/api/v1/papa/context/capture', body, { idempotencyKey });
+    return data.contextCaptureResult;
+  }
+
+  async generatePapaAnswer(input: {
+    readonly caseThreadId: string | null;
+    readonly conversationId: string | null;
+    readonly parentConversationId: string | null;
+    readonly prompt: string;
+    readonly idempotencyKey?: string;
+  }): Promise<PapaAnswerGenerateResult> {
+    const { idempotencyKey, ...body } = input;
+    const data = await this.authenticatedCommand<{
+      readonly answerGenerateResult: {
+        readonly caseThreadId: string | null;
+        readonly conversationId: string;
+        readonly messageId: string;
+      };
+      readonly record: PapaAnswerRecord;
+    }>('/api/v1/papa/answer', body, { idempotencyKey });
+    return {
+      caseThreadId: data.answerGenerateResult.caseThreadId,
+      conversationId: data.answerGenerateResult.conversationId,
+      messageId: data.answerGenerateResult.messageId,
+      record: data.record,
+    };
+  }
+
+  async readPapaAnswers(conversationId: string): Promise<{
+    readonly records: readonly PapaAnswerRecord[];
+    readonly summary: PapaAnswerSummary;
+  }> {
+    return this.readDomainScreen(
+      `/api/v1/papa/odpowiedz-papa?conversationId=${encodeURIComponent(conversationId)}`,
+    );
+  }
+
+  async createPapaReport(input: {
+    readonly reportType: string;
+    readonly format: 'csv' | 'json' | 'pdf' | 'xlsx';
+    readonly dateFrom: string;
+    readonly dateTo: string;
+    readonly filters: Readonly<Record<string, unknown>>;
+    readonly idempotencyKey: string;
+  }): Promise<BffReportRecord> {
+    return this.authenticatedCommand<BffReportRecord>(
+      '/api/v1/reports',
+      input,
+      { idempotencyKey: input.idempotencyKey },
+    );
+  }
+
+  async readPapaReport(reportId: string): Promise<BffReportRecord> {
+    const response = await this.fetch(
+      `/api/v1/reports/${encodeURIComponent(reportId)}`,
+      { method: 'GET' },
+    );
+    const payload = await readJson<{ readonly data: BffReportRecord }>(response);
+    assertOk(response, payload);
+    return payload.data;
+  }
+
+  async getPapaReportDownload(reportId: string): Promise<{
+    readonly url: string;
+    readonly expiresInSeconds: number;
+  }> {
+    const response = await this.fetch(
+      `/api/v1/reports/${encodeURIComponent(reportId)}/download`,
+      { method: 'GET' },
+    );
+    const payload = await readJson<{
+      readonly data: { readonly url: string; readonly expiresInSeconds: number };
+    }>(response);
+    assertOk(response, payload);
+    return payload.data;
+  }
+
   async readIntegrationJobs(): Promise<readonly BffIntegrationJob[]> {
     const response = await this.fetch('/api/v1/integrations/jobs', { method: 'GET' });
     const payload = await readJson<{ readonly data: readonly BffIntegrationJob[] }>(response);
@@ -442,12 +589,13 @@ class BffClient {
   private async authenticatedCommand<TData = unknown>(
     path: string,
     body?: Readonly<Record<string, unknown>>,
+    options: { readonly idempotencyKey?: string } = {},
   ): Promise<TData> {
     const csrfToken = await this.getCsrfToken();
     const response = await this.fetch(path, {
       method: 'POST',
       headers: {
-        'idempotency-key': createCorrelationId(),
+        'idempotency-key': options.idempotencyKey ?? createCorrelationId(),
         'x-papadata-csrf': csrfToken,
       },
       ...(body ? { body: JSON.stringify(body) } : {}),
@@ -940,3 +1088,43 @@ function createCorrelationId(): string {
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
+
+/**
+ * Papa/Lab runtime operation contract anchor for BFF calls.
+ * Source of truth: contracts/papa-lab-runtime-operations.json.
+ */
+export const BFF_PAPA_LAB_RUNTIME_OPERATION_CONTRACT_VERSION = "papa-lab-runtime-operations.v1" as const;
+
+export const BFF_PAPA_LAB_RUNTIME_OPERATION_IDS = [
+  "papa.context.capture",
+  "papa.answer.generate",
+  "papa.answer.read",
+  "papa.context-panel.read",
+  "papa.assistant-shell.read",
+  "papa.observations.read",
+  "papa.observation.save",
+  "papa.history-memory.read",
+  "papa.context-basket.read",
+  "papa.evidence.read",
+  "papa.lab.read",
+  "papa.proposals.read",
+  "papa.governance.read",
+  "papa.actions.read",
+  "papa.action-approval.read",
+  "papa.ai.action.validate",
+  "papa.ai.action.approve",
+  "papa.ai.action.reject",
+  "papa.ai.action.execute",
+  "papa.ai.action.rollback",
+  "papa.ai.notifications.read",
+  "papa.ai.notification.mark-read",
+  "papa.ai.notification.snooze",
+  "papa.ai.notification.unsnooze",
+  "papa.metric-provenance.read",
+  "papa.answer-contract.read",
+  "papa.provider-governance.read",
+  "papa.privacy-redaction.read"
+] as const;
+
+export type BffPapaLabRuntimeOperationId =
+  typeof BFF_PAPA_LAB_RUNTIME_OPERATION_IDS[number];

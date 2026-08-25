@@ -1,93 +1,9 @@
 .pd-command-center-dashboard-layout {
   display: grid;
-  gap: 14px;
+  gap: clamp(28px, 4vw, 46px);
   min-inline-size: 0;
 }
 
 .pd-command-center-dashboard-layout > * {
   min-inline-size: 0;
-}
-
-.pd-command-center-dashboard-layout__body {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 14px;
-  align-items: start;
-  min-inline-size: 0;
-}
-
-.pd-command-center-dashboard-layout__primary-stack,
-.pd-command-center-dashboard-layout__secondary-stack {
-  display: grid;
-  gap: 14px;
-  align-content: start;
-  min-inline-size: 0;
-}
-
-.pd-command-center-dashboard-layout__primary-stack {
-  grid-column: span 7;
-}
-
-.pd-command-center-dashboard-layout__secondary-stack {
-  grid-column: span 5;
-}
-
-.pd-command-center-dashboard-layout__kpis,
-.pd-command-center-dashboard-layout__plan,
-.pd-command-center-dashboard-layout__priorities,
-.pd-command-center-dashboard-layout__drivers,
-.pd-command-center-dashboard-layout__funnel,
-.pd-command-center-dashboard-layout__traffic,
-.pd-command-center-dashboard-layout__products,
-.pd-command-center-dashboard-layout__customers,
-.pd-command-center-dashboard-layout__decision-workspace,
-.pd-command-center-dashboard-layout__actions {
-  min-inline-size: 0;
-}
-
-.pd-command-center-dashboard-layout__plan .pd-command-plan-section {
-  min-block-size: auto;
-}
-
-.pd-command-center-dashboard-layout__priorities {
-  max-block-size: 43rem;
-  overflow: auto;
-}
-
-.pd-command-center-dashboard-layout__decision-workspace .pd-command-center-one-page__section,
-.pd-command-center-dashboard-layout__actions .pd-command-center-one-page__section {
-  min-block-size: auto;
-}
-
-@media (max-width: 1460px) {
-  .pd-command-center-dashboard-layout__primary-stack {
-    grid-column: span 8;
-  }
-
-  .pd-command-center-dashboard-layout__secondary-stack {
-    grid-column: span 4;
-  }
-}
-
-@media (max-width: 1280px) {
-  .pd-command-center-dashboard-layout__primary-stack,
-  .pd-command-center-dashboard-layout__secondary-stack {
-    grid-column: span 6;
-  }
-}
-
-@media (max-width: 1180px) {
-  .pd-command-center-dashboard-layout__body {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .pd-command-center-dashboard-layout__primary-stack,
-  .pd-command-center-dashboard-layout__secondary-stack {
-    grid-column: auto;
-  }
-
-  .pd-command-center-dashboard-layout__priorities {
-    max-block-size: none;
-    overflow: visible;
-  }
 }

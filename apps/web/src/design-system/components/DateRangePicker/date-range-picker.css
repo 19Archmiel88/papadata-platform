@@ -1,4 +1,30 @@
 .pd-date-range-picker {
+  --pd-date-range-control-surface: color-mix(
+    in srgb,
+    var(--pd-surface-raised) 92%,
+    transparent
+  );
+  --pd-date-range-control-surface-hover: color-mix(
+    in srgb,
+    var(--pd-surface-raised) 88%,
+    var(--pd-text) 4%
+  );
+  --pd-date-range-control-border: color-mix(
+    in srgb,
+    var(--pd-text) 18%,
+    transparent
+  );
+  --pd-date-range-control-border-hover: color-mix(
+    in srgb,
+    var(--pd-text) 30%,
+    transparent
+  );
+  --pd-date-range-control-shadow: none;
+  --pd-form-border: var(--pd-date-range-control-border);
+  --pd-form-hover-border: var(--pd-date-range-control-border-hover);
+  --pd-form-surface: var(--pd-date-range-control-surface);
+  --pd-form-text: var(--pd-text);
+
   display: grid;
   grid-template-columns:
     minmax(11rem, 0.9fr)
@@ -90,8 +116,33 @@
 }
 
 .pd-date-range-picker label > span {
-  color: var(--pd-text-muted);
+  color: var(--pd-text-secondary);
   font-size: var(--pd-type-size-body-small);
+  font-weight: var(--pd-font-weight-medium);
+  line-height: 1.25;
+}
+
+.pd-date-range-picker .pd-form-field__label-row {
+  color: var(--pd-text-secondary);
+}
+
+.pd-date-range-picker .pd-form-control {
+  border-color: var(--pd-date-range-control-border);
+  background: var(--pd-date-range-control-surface);
+  box-shadow: var(--pd-date-range-control-shadow);
+}
+
+.pd-date-range-picker .pd-form-control:hover {
+  border-color: var(--pd-date-range-control-border-hover);
+  background: var(--pd-date-range-control-surface-hover);
+}
+
+.pd-date-range-picker .pd-select__trigger-label {
+  color: var(--pd-text);
+}
+
+.pd-date-range-picker .pd-select__indicator {
+  color: var(--pd-text-secondary);
 }
 
 .pd-date-range-picker input {
@@ -102,22 +153,41 @@
   border:
     var(--pd-border-width-subtle)
     solid
-    var(--pd-separator);
+    var(--pd-date-range-control-border);
   border-radius: var(--pd-radius-control);
   outline: 0;
-  background: var(--pd-form-surface, var(--pd-surface-raised));
+  background: var(--pd-date-range-control-surface);
   color: var(--pd-text);
   color-scheme: inherit;
   font: inherit;
   font-weight: var(--pd-font-weight-medium);
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, white 16%, transparent),
-    0 10px 22px -18px color-mix(in srgb, var(--pd-text) 28%, transparent);
+  box-shadow: var(--pd-date-range-control-shadow);
+}
+
+.pd-date-range-picker input:hover {
+  border-color: var(--pd-date-range-control-border-hover);
+  background: var(--pd-date-range-control-surface-hover);
+}
+
+.pd-date-range-picker input::-webkit-datetime-edit,
+.pd-date-range-picker input::-webkit-datetime-edit-fields-wrapper,
+.pd-date-range-picker input::-webkit-datetime-edit-text,
+.pd-date-range-picker input::-webkit-datetime-edit-day-field,
+.pd-date-range-picker input::-webkit-datetime-edit-month-field,
+.pd-date-range-picker input::-webkit-datetime-edit-year-field {
+  color: currentColor;
 }
 
 .pd-date-range-picker input::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  opacity: 0.82;
+  filter: var(--pd-date-range-calendar-icon-filter, none);
+  opacity: 0.78;
+}
+
+.pd-date-range-picker input:disabled {
+  color: var(--pd-text-muted);
+  background: color-mix(in srgb, var(--pd-date-range-control-surface) 78%, transparent);
+  opacity: 0.72;
 }
 
 .pd-date-range-picker[data-state='error'] input {
@@ -127,6 +197,11 @@
 .pd-date-range-picker input:focus-visible {
   outline: var(--pd-focus-width) solid var(--pd-focus-visible);
   outline-offset: var(--pd-focus-offset);
+}
+
+[data-theme='dark'] .pd-date-range-picker,
+.pd-shell-anchored-overlay .pd-date-range-picker {
+  --pd-date-range-calendar-icon-filter: invert(1) brightness(1.12);
 }
 
 .pd-date-range-picker .pd-form-control__meta {

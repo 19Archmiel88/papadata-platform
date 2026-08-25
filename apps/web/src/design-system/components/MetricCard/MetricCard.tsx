@@ -299,7 +299,11 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
                   className="pd-metric-card__help-trigger"
                   type="button"
                 >
-                  ?
+                  <Icon
+                    decorative
+                    name="help"
+                    size={16}
+                  />
                 </button>
 
                 <span

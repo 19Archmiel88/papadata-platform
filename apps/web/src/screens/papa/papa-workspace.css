@@ -8,8 +8,13 @@
 }
 
 .pd-papa-workspace__header,
-.pd-papa-workspace__navigation {
+.pd-papa-workspace__navigation,
+.pd-papa-workspace__sub-navigation {
   min-width: 0;
+}
+
+.pd-papa-workspace__navigation + .pd-papa-workspace__sub-navigation {
+  margin-block-start: calc(var(--pd-space-6) * -1 + var(--pd-space-2));
 }
 
 .pd-papa-workspace__summary {

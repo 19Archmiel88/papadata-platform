@@ -119,7 +119,7 @@ export interface OrdersRecord { orderId: UUID; externalOrderId: string; orderedA
 export interface OrdersSummary { total: number; ready: number; warning: number; critical: number; updatedAt: ISODateTime; }
 export interface OrdersForecast { horizonEnd: ISODateTime; expected: number; lowerBound: number; upperBound: number; confidence: number; }
 export interface OrdersTimelineEvent { eventId: UUID; occurredAt: ISODateTime; type: string; actorId: UUID | null; description: string; }
-export interface PapaRecord { messageId: UUID; content: string; confidence: number | null; evidence: EvidenceRef[]; actionId: UUID | null; status: PapaStatus; riskLevel: RiskLevel; approvalRequired: boolean; }
+export interface PapaRecord { messageId: UUID; content: string; confidence: number | null; evidence: EvidenceRef[]; actionId: UUID | null; status: PapaStatus; riskLevel: RiskLevel; approvalRequired: boolean; role: "assistant" | "system" | "user"; createdAt: ISODateTime; limitations: string[]; }
 export interface PapaSummary { total: number; ready: number; warning: number; critical: number; updatedAt: ISODateTime; }
 export interface PapaForecast { horizonEnd: ISODateTime; expected: number; lowerBound: number; upperBound: number; confidence: number; }
 export interface PapaTimelineEvent { eventId: UUID; occurredAt: ISODateTime; type: string; actorId: UUID | null; description: string; }
@@ -1267,13 +1267,13 @@ export interface PapaAiActionValidateRequest { context: ApiContext; metadata: Mu
 export interface PapaAiActionValidateData { outcomeId: UUID; status: CommandStatus; changedResourceIds: UUID[]; nextAction: PapaAiActionValidateNextAction | null; aiActionValidateResult: PapaAiActionValidateResult; }
 export interface PapaAiActionValidateResponse { operationId: 'papa.ai.action.validate'; correlationId: string; generatedAt: ISODateTime; data: PapaAiActionValidateData; warnings: ApiProblem[]; }
 export interface PapaAnswerGenerateFilters { search: string | null; status: string[] | null; source: string[] | null; answerGenerateFilter: string | number | boolean | null; }
-export interface PapaAnswerGenerateInput { requestedBy: UUID; effectiveAt: ISODateTime | null; answerGenerateValue: string | number | boolean | null; }
+export interface PapaAnswerGenerateInput { requestedBy: UUID; effectiveAt: ISODateTime | null; answerGenerateValue: string | number | boolean | null; conversationId: UUID | string | null; parentConversationId: UUID | string | null; caseThreadId: UUID | string | null; prompt: string; }
 export interface PapaAnswerGenerateNextAction { type: 'answerGenerate'; label: string; route: string | null; }
-export interface PapaAnswerGenerateResult { operationId: 'papa.answer.generate'; completedAt: ISODateTime; domain: 'papa'; }
+export interface PapaAnswerGenerateResult { operationId: 'papa.answer.generate'; completedAt: ISODateTime; domain: 'papa'; conversationId: UUID | string; caseThreadId: UUID | string | null; messageId: UUID | string; }
 export interface PapaAnswerGenerateRequest { context: ApiContext; metadata: MutationMetadata; messageId: UUID | string | null; input: PapaAnswerGenerateInput; }
 export interface PapaAnswerGenerateData { outcomeId: UUID; status: CommandStatus; changedResourceIds: UUID[]; nextAction: PapaAnswerGenerateNextAction | null; answerGenerateResult: PapaAnswerGenerateResult; }
 export interface PapaAnswerGenerateResponse { operationId: 'papa.answer.generate'; correlationId: string; generatedAt: ISODateTime; data: PapaAnswerGenerateData; warnings: ApiProblem[]; }
-export interface PapaAnswerReadFilters { search: string | null; status: string[] | null; source: string[] | null; answerFilter: string | number | boolean | null; }
+export interface PapaAnswerReadFilters { search: string | null; status: string[] | null; source: string[] | null; answerFilter: string | number | boolean | null; conversationId: UUID | string | null; }
 export interface PapaAnswerReadInput { requestedBy: UUID; effectiveAt: ISODateTime | null; answerValue: string | number | boolean | null; }
 export interface PapaAnswerReadNextAction { type: 'answer'; label: string; route: string | null; }
 export interface PapaAnswerReadResult { operationId: 'papa.answer.read'; completedAt: ISODateTime; domain: 'papa'; }
@@ -1302,9 +1302,9 @@ export interface PapaContextPanelReadRequest { context: ApiContext; dateRange: D
 export interface PapaContextPanelReadData { records: PapaRecord[]; pageInfo: PageInfo; summary: PapaSummary; contextPanelResult: PapaContextPanelReadResult; }
 export interface PapaContextPanelReadResponse { operationId: 'papa.context-panel.read'; correlationId: string; generatedAt: ISODateTime; data: PapaContextPanelReadData; warnings: ApiProblem[]; }
 export interface PapaContextCaptureFilters { search: string | null; status: string[] | null; source: string[] | null; contextCaptureFilter: string | number | boolean | null; }
-export interface PapaContextCaptureInput { requestedBy: UUID; effectiveAt: ISODateTime | null; contextCaptureValue: string | number | boolean | null; }
+export interface PapaContextCaptureInput { requestedBy: UUID; effectiveAt: ISODateTime | null; contextCaptureValue: string | number | boolean | null; conversationId: UUID | string | null; parentConversationId: UUID | string | null; captureReason: string; snapshot: Record<string, unknown>; }
 export interface PapaContextCaptureNextAction { type: 'contextCapture'; label: string; route: string | null; }
-export interface PapaContextCaptureResult { operationId: 'papa.context.capture'; completedAt: ISODateTime; domain: 'papa'; }
+export interface PapaContextCaptureResult { operationId: 'papa.context.capture'; completedAt: ISODateTime; domain: 'papa'; conversationId: UUID | string; snapshotId: UUID | string; }
 export interface PapaContextCaptureRequest { context: ApiContext; metadata: MutationMetadata; messageId: UUID | string | null; input: PapaContextCaptureInput; }
 export interface PapaContextCaptureData { outcomeId: UUID; status: CommandStatus; changedResourceIds: UUID[]; nextAction: PapaContextCaptureNextAction | null; contextCaptureResult: PapaContextCaptureResult; }
 export interface PapaContextCaptureResponse { operationId: 'papa.context.capture'; correlationId: string; generatedAt: ISODateTime; data: PapaContextCaptureData; warnings: ApiProblem[]; }
@@ -1337,13 +1337,13 @@ export interface PapaLabReadRequest { context: ApiContext; dateRange: DateRangeR
 export interface PapaLabReadData { records: PapaRecord[]; pageInfo: PageInfo; summary: PapaSummary; labResult: PapaLabReadResult; }
 export interface PapaLabReadResponse { operationId: 'papa.lab.read'; correlationId: string; generatedAt: ISODateTime; data: PapaLabReadData; warnings: ApiProblem[]; }
 export interface PapaObservationSaveFilters { search: string | null; status: string[] | null; source: string[] | null; observationSaveFilter: string | number | boolean | null; }
-export interface PapaObservationSaveInput { requestedBy: UUID; effectiveAt: ISODateTime | null; observationSaveValue: string | number | boolean | null; }
+export interface PapaObservationSaveInput { requestedBy: UUID; effectiveAt: ISODateTime | null; observationSaveValue: string | number | boolean | null; conversationId: UUID | string | null; content: string; }
 export interface PapaObservationSaveNextAction { type: 'observationSave'; label: string; route: string | null; }
-export interface PapaObservationSaveResult { operationId: 'papa.observation.save'; completedAt: ISODateTime; domain: 'papa'; }
+export interface PapaObservationSaveResult { operationId: 'papa.observation.save'; completedAt: ISODateTime; domain: 'papa'; conversationId: UUID | string; messageId: UUID | string; }
 export interface PapaObservationSaveRequest { context: ApiContext; metadata: MutationMetadata; messageId: UUID | string | null; input: PapaObservationSaveInput; }
 export interface PapaObservationSaveData { outcomeId: UUID; status: CommandStatus; changedResourceIds: UUID[]; nextAction: PapaObservationSaveNextAction | null; observationSaveResult: PapaObservationSaveResult; }
 export interface PapaObservationSaveResponse { operationId: 'papa.observation.save'; correlationId: string; generatedAt: ISODateTime; data: PapaObservationSaveData; warnings: ApiProblem[]; }
-export interface PapaObservationsReadFilters { search: string | null; status: string[] | null; source: string[] | null; observationsFilter: string | number | boolean | null; }
+export interface PapaObservationsReadFilters { search: string | null; status: string[] | null; source: string[] | null; observationsFilter: string | number | boolean | null; conversationId: UUID | string | null; }
 export interface PapaObservationsReadInput { requestedBy: UUID; effectiveAt: ISODateTime | null; observationsValue: string | number | boolean | null; }
 export interface PapaObservationsReadNextAction { type: 'observations'; label: string; route: string | null; }
 export interface PapaObservationsReadResult { operationId: 'papa.observations.read'; completedAt: ISODateTime; domain: 'papa'; }
@@ -1623,3 +1623,216 @@ export interface WorkspaceResolveResult { operationId: 'workspace.resolve'; comp
 export interface WorkspaceResolveRequest { context: ApiContext; dateRange: DateRangeRequest | null; page: PageRequest | null; workspaceId: UUID | string; filters: WorkspaceResolveFilters | null; }
 export interface WorkspaceResolveData { records: WorkspaceRecord[]; pageInfo: PageInfo; summary: WorkspaceSummary; resolveResult: WorkspaceResolveResult; }
 export interface WorkspaceResolveResponse { operationId: 'workspace.resolve'; correlationId: string; generatedAt: ISODateTime; data: WorkspaceResolveData; warnings: ApiProblem[]; }
+
+/**
+ * Papa/Lab runtime operation contract.
+ *
+ * Added by FIX 13 to keep API schemas, generated runtime controller,
+ * BFF client and contract runtime service aligned.
+ */
+export const PAPA_LAB_RUNTIME_OPERATION_CONTRACT_VERSION = "papa-lab-runtime-operations.v1" as const;
+
+export const PAPA_LAB_RUNTIME_OPERATION_IDS = [
+  "papa.context.capture",
+  "papa.answer.generate",
+  "papa.answer.read",
+  "papa.context-panel.read",
+  "papa.assistant-shell.read",
+  "papa.observations.read",
+  "papa.observation.save",
+  "papa.history-memory.read",
+  "papa.context-basket.read",
+  "papa.evidence.read",
+  "papa.lab.read",
+  "papa.proposals.read",
+  "papa.governance.read",
+  "papa.actions.read",
+  "papa.action-approval.read",
+  "papa.ai.action.validate",
+  "papa.ai.action.approve",
+  "papa.ai.action.reject",
+  "papa.ai.action.execute",
+  "papa.ai.action.rollback",
+  "papa.ai.notifications.read",
+  "papa.ai.notification.mark-read",
+  "papa.ai.notification.snooze",
+  "papa.ai.notification.unsnooze",
+  "papa.metric-provenance.read",
+  "papa.answer-contract.read",
+  "papa.provider-governance.read",
+  "papa.privacy-redaction.read"
+] as const;
+
+export type PapaLabRuntimeOperationId =
+  typeof PAPA_LAB_RUNTIME_OPERATION_IDS[number];
+
+export const PAPA_LAB_RUNTIME_OPERATION_MATRIX = [
+  {
+    "operationId": "papa.context.capture",
+    "kind": "command",
+    "requiresIdempotencyKey": true,
+    "effect": "internal_write"
+  },
+  {
+    "operationId": "papa.answer.generate",
+    "kind": "command",
+    "requiresIdempotencyKey": true,
+    "effect": "provider_read"
+  },
+  {
+    "operationId": "papa.answer.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.context-panel.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.assistant-shell.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.observations.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.observation.save",
+    "kind": "command",
+    "requiresIdempotencyKey": true,
+    "effect": "internal_write"
+  },
+  {
+    "operationId": "papa.history-memory.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.context-basket.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.evidence.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.lab.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.proposals.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.governance.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.actions.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.action-approval.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.ai.action.validate",
+    "kind": "command",
+    "requiresIdempotencyKey": true,
+    "effect": "internal_write"
+  },
+  {
+    "operationId": "papa.ai.action.approve",
+    "kind": "command",
+    "requiresIdempotencyKey": true,
+    "effect": "internal_write"
+  },
+  {
+    "operationId": "papa.ai.action.reject",
+    "kind": "command",
+    "requiresIdempotencyKey": true,
+    "effect": "internal_write"
+  },
+  {
+    "operationId": "papa.ai.action.execute",
+    "kind": "blocked",
+    "requiresIdempotencyKey": true,
+    "effect": "external_effect_blocked"
+  },
+  {
+    "operationId": "papa.ai.action.rollback",
+    "kind": "blocked",
+    "requiresIdempotencyKey": true,
+    "effect": "external_effect_blocked"
+  },
+  {
+    "operationId": "papa.ai.notifications.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.ai.notification.mark-read",
+    "kind": "command",
+    "requiresIdempotencyKey": true,
+    "effect": "internal_write"
+  },
+  {
+    "operationId": "papa.ai.notification.snooze",
+    "kind": "command",
+    "requiresIdempotencyKey": true,
+    "effect": "internal_write"
+  },
+  {
+    "operationId": "papa.ai.notification.unsnooze",
+    "kind": "command",
+    "requiresIdempotencyKey": true,
+    "effect": "internal_write"
+  },
+  {
+    "operationId": "papa.metric-provenance.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.answer-contract.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.provider-governance.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  },
+  {
+    "operationId": "papa.privacy-redaction.read",
+    "kind": "query",
+    "requiresIdempotencyKey": false,
+    "effect": "read"
+  }
+] as const;

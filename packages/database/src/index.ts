@@ -103,6 +103,7 @@ export const remainingBackendTables = [
   "assistant_evidence",
   "assistant_approvals",
   "assistant_audit_events",
+  "assistant_context_snapshots",
   "billing_subscriptions",
   "billing_events",
   "billing_invoices",

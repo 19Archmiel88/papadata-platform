@@ -141,6 +141,16 @@ export type PapaChatMessage = {
   readonly createdAt: string;
   readonly contextItemId?: string;
   readonly evidenceIds: readonly string[];
+  /**
+   * Structured fields from a real papa.answer.generate/read response.
+   * Absent for locally-generated system messages (e.g. "new conversation
+   * started") and for pre-backend fixture data — PapaMessageThread falls
+   * back to text heuristics only when these are undefined.
+   */
+  readonly approvalRequired?: boolean;
+  readonly confidence?: number | null;
+  readonly isRefusal?: boolean;
+  readonly riskLevel?: 'critical' | 'high' | 'low' | 'medium';
 };
 
 export type PapaElementThread = {
@@ -879,6 +889,22 @@ export function papaEvidenceRefs(
     label: record.claim,
     source: record.source,
   }));
+}
+
+export function resolvePapaDecisionCardStatus(
+  status: PapaDecision['status'],
+): 'approved' | 'rejected' | 'measured' | 'proposed' | 'executing' {
+  switch (status) {
+    case 'approved':
+      return 'approved';
+    case 'rejected':
+      return 'rejected';
+    case 'review':
+      return 'executing';
+    case 'new':
+    default:
+      return 'proposed';
+  }
 }
 
 function resolveContextKindLabel(

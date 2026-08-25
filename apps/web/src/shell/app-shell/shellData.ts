@@ -98,7 +98,7 @@ export const defaultShellNavigation = [
         icon: 'assistant',
         id: 'papa',
         label: 'Laboratorium Papa Asystenta',
-        path: '/app/papa/laboratorium-ai',
+        path: '/app/papa/panel-kontekstowy-papa',
       },
     ],
   },
@@ -174,7 +174,7 @@ export const defaultShellCommands = [
       'ai',
     ],
     label: 'Otwórz Papa Asystenta',
-    path: '/app/papa/laboratorium-ai',
+    path: '/app/papa/panel-kontekstowy-papa',
     section: 'Papa',
   },
   {

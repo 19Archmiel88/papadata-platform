@@ -7,7 +7,10 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { createHash, randomUUID } from "node:crypto";
+import type { AiProviderAdapter } from "@papadata/ai-runtime";
+import { LocalDeterministicProvider } from "@papadata/ai-runtime";
 import {
+  AssistantConversationRepository,
   IntegrationRepository,
   InvitationRepository,
   ProductDomainRepository,
@@ -61,6 +64,14 @@ import {
   fetchProductsList,
   type ProductsFilters,
 } from "./products-analytics.real-source.js";
+import {
+  capturePapaContext,
+  generatePapaAnswer,
+  listHistoryRecords,
+  listObservationRecords,
+  listPapaAnswerRecords,
+  saveObservation,
+} from "./papa-conversation.real-source.js";
 
 export type ContractRuntimeRequest = {
   readonly operationId: string;
@@ -88,6 +99,10 @@ export class ContractRuntimeService {
 
   private readonly invitations: InvitationRepository;
 
+  private readonly assistantConversations: AssistantConversationRepository;
+
+  private readonly assistantProvider: AiProviderAdapter;
+
   constructor(
     @Inject(ProductionDatabase) database: ProductionDatabase,
     @Inject(IdentityService) private readonly identity: IdentityService,
@@ -100,6 +115,8 @@ export class ContractRuntimeService {
       this.integrationRepository,
     );
     this.invitations = new InvitationRepository(database);
+    this.assistantConversations = new AssistantConversationRepository(database);
+    this.assistantProvider = new LocalDeterministicProvider();
   }
 
   async executePublic(
@@ -508,11 +525,661 @@ export class ContractRuntimeService {
       };
     }
 
+    if (request.operationId === "papa.context.capture") {
+      const payload = readPayload(request.body);
+      const result = await capturePapaContext({
+        captureReason: optionalPayloadString(payload, "captureReason") ?? "context-capture",
+        conversationId: optionalPayloadString(payload, "conversationId"),
+        idempotencyKey: requireIdempotencyKey(request),
+        parentConversationId: optionalPayloadString(payload, "parentConversationId"),
+        repository: this.assistantConversations,
+        snapshot: readPayloadObject(payload, "snapshot"),
+        tenantId: principal.tenantId,
+        title: optionalPayloadString(payload, "title") ?? "Papa Asystent",
+        userId: principal.userId,
+        workspaceId: principal.workspaceId,
+      });
+      if (!result) {
+        throw new NotFoundException(
+          `Conversation not found: ${optionalPayloadString(payload, "conversationId")}`,
+        );
+      }
+      return {
+        data: {
+          contextCaptureResult: {
+            completedAt: new Date().toISOString(),
+            conversationId: result.conversationId,
+            domain: "papa",
+            operationId: request.operationId,
+            snapshotId: result.snapshotId,
+          },
+          outcomeId: result.snapshotId,
+          status: "applied",
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.answer.generate") {
+      const payload = readPayload(request.body);
+      const prompt = requiredPayloadString(payload, "prompt");
+      const result = await generatePapaAnswer({
+        caseThreadId: optionalPayloadString(payload, "caseThreadId"),
+        conversationId: optionalPayloadString(payload, "conversationId"),
+        idempotencyKey: requireIdempotencyKey(request),
+        parentConversationId: optionalPayloadString(payload, "parentConversationId"),
+        prompt,
+        provider: this.assistantProvider,
+        repository: this.assistantConversations,
+        tenantId: principal.tenantId,
+        userId: principal.userId,
+        workspaceId: principal.workspaceId,
+      });
+      if (!result) {
+        throw new NotFoundException(
+          `Conversation not found: ${optionalPayloadString(payload, "conversationId")}`,
+        );
+      }
+      return {
+        data: {
+          answerGenerateResult: {
+            caseThreadId: result.caseThreadId,
+            completedAt: new Date().toISOString(),
+            conversationId: result.conversationId,
+            domain: "papa",
+            messageId: result.messageId,
+            operationId: request.operationId,
+          },
+          outcomeId: result.messageId,
+          record: result.record,
+          status: "applied",
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.answer.read") {
+      const query = safeObject(request.query);
+      const generatedAt = new Date().toISOString();
+      const result = await listPapaAnswerRecords({
+        conversationId: optionalRecordString(query, "conversationId"),
+        limit: readLimit(request.query),
+        repository: this.assistantConversations,
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+      return {
+        data: {
+          answerResult: {
+            completedAt: generatedAt,
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          pageInfo: { nextCursor: null, total: result.records.length },
+          records: result.records,
+          summary: result.summary,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (
+      request.operationId === "papa.context-panel.read"
+      || request.operationId === "papa.assistant-shell.read"
+    ) {
+      const query = safeObject(request.query);
+      const generatedAt = new Date().toISOString();
+      const result = await listPapaAnswerRecords({
+        conversationId: optionalRecordString(query, "conversationId"),
+        limit: readLimit(request.query),
+        repository: this.assistantConversations,
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+      return {
+        data: {
+          [papaResultKey(request.operationId)]: {
+            completedAt: generatedAt,
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          pageInfo: { nextCursor: null, total: result.records.length },
+          records: result.records,
+          summary: result.summary,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.observations.read") {
+      const query = safeObject(request.query);
+      const generatedAt = new Date().toISOString();
+      const result = await listObservationRecords({
+        conversationId: optionalRecordString(query, "conversationId"),
+        limit: readLimit(request.query),
+        repository: this.assistantConversations,
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+      return {
+        data: {
+          observationsResult: {
+            completedAt: generatedAt,
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          pageInfo: { nextCursor: null, total: result.records.length },
+          records: result.records,
+          summary: result.summary,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.observation.save") {
+      const payload = readPayload(request.body);
+      const content = requiredPayloadString(payload, "content");
+      const result = await saveObservation({
+        content,
+        conversationId: optionalPayloadString(payload, "conversationId"),
+        idempotencyKey: requireIdempotencyKey(request),
+        repository: this.assistantConversations,
+        tenantId: principal.tenantId,
+        userId: principal.userId,
+        workspaceId: principal.workspaceId,
+      });
+      if (!result) {
+        throw new NotFoundException(
+          `Conversation not found: ${optionalPayloadString(payload, "conversationId")}`,
+        );
+      }
+      return {
+        data: {
+          observationSaveResult: {
+            completedAt: new Date().toISOString(),
+            conversationId: result.conversationId,
+            domain: "papa",
+            messageId: result.messageId,
+            operationId: request.operationId,
+          },
+          outcomeId: result.messageId,
+          record: result.record,
+          status: "applied",
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.history-memory.read") {
+      const generatedAt = new Date().toISOString();
+      const result = await listHistoryRecords({
+        limit: readLimit(request.query),
+        repository: this.assistantConversations,
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+      return {
+        data: {
+          historyMemoryResult: {
+            completedAt: generatedAt,
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          pageInfo: { nextCursor: null, total: result.records.length },
+          records: result.records,
+          summary: result.summary,
+          timeline: result.timeline,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.context-basket.read") {
+      const query = safeObject(request.query);
+      const result = await this.assistantConversations.readAssistantContextBasket({
+        conversationId: optionalRecordString(query, "conversationId"),
+        limit: readLimit(request.query),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          contextBasketResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.evidence.read") {
+      const query = safeObject(request.query);
+      const result = await this.assistantConversations.readAssistantEvidence({
+        caseThreadId: optionalRecordString(query, "caseThreadId"),
+        conversationId: optionalRecordString(query, "conversationId"),
+        limit: readLimit(request.query),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          evidenceResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.lab.read") {
+      const query = safeObject(request.query);
+      const result = await this.assistantConversations.readAssistantLab({
+        caseThreadId: optionalRecordString(query, "caseThreadId"),
+        conversationId: optionalRecordString(query, "conversationId"),
+        limit: readLimit(request.query),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          labResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.proposals.read") {
+      const query = safeObject(request.query);
+      const result = await this.assistantConversations.readAssistantProposals({
+        caseThreadId: optionalRecordString(query, "caseThreadId"),
+        conversationId: optionalRecordString(query, "conversationId"),
+        limit: readLimit(request.query),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          proposalsResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.governance.read") {
+      const result = await this.assistantConversations.readAssistantGovernance({
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          governanceResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.actions.read") {
+      const query = safeObject(request.query);
+      const result = await this.assistantConversations.readAssistantActions({
+        caseThreadId: optionalRecordString(query, "caseThreadId"),
+        conversationId: optionalRecordString(query, "conversationId"),
+        limit: readLimit(request.query),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          actionsResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.action-approval.read") {
+      const result = await this.assistantConversations.readAssistantActionApprovals({
+        limit: readLimit(request.query),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          actionApprovalResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.ai.action.validate") {
+      const payload = readPayload(request.body);
+      const result = await this.assistantConversations.validateAssistantAction({
+        actionProposalId: optionalPayloadString(payload, "actionProposalId"),
+        idempotencyKey: requireIdempotencyKey(request),
+        operationId: request.operationId,
+        tenantId: principal.tenantId,
+        userId: principal.userId,
+        validationResult: optionalPapaPayloadObject(payload, "validationResult") ?? {
+          readOnlyMvp: true,
+          validatedAt: new Date().toISOString(),
+        },
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          actionValidationResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.ai.action.approve") {
+      const payload = readPayload(request.body);
+      const result = await this.assistantConversations.approveAssistantAction({
+        actionProposalId: optionalPayloadString(payload, "actionProposalId"),
+        exactConsent: requiredPayloadString(payload, "exactConsent"),
+        idempotencyKey: requireIdempotencyKey(request),
+        operationId: request.operationId,
+        tenantId: principal.tenantId,
+        userId: principal.userId,
+        validationResult: optionalPapaPayloadObject(payload, "validationResult") ?? {
+          approvedAt: new Date().toISOString(),
+          readOnlyMvp: true,
+        },
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          actionApprovalResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.ai.action.reject") {
+      const payload = readPayload(request.body);
+      const result = await this.assistantConversations.rejectAssistantAction({
+        actionProposalId: optionalPayloadString(payload, "actionProposalId"),
+        idempotencyKey: requireIdempotencyKey(request),
+        operationId: request.operationId,
+        rejectionReason: requiredPayloadString(payload, "rejectionReason"),
+        tenantId: principal.tenantId,
+        userId: principal.userId,
+        validationResult: optionalPapaPayloadObject(payload, "validationResult") ?? {
+          readOnlyMvp: true,
+          rejectedAt: new Date().toISOString(),
+        },
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          actionRejectionResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+
     if (isExternalAiEffect(request.operationId)) {
       throw new ForbiddenException(
         "External AI side effects remain disabled until live provider approval and revalidation evidence are available.",
       );
     }
+
+    if (request.operationId === "papa.privacy-redaction.read") {
+      const query = safeObject(request.query);
+      const result = await this.assistantConversations.readAssistantPrivacyRedactionEvents({
+        conversationId: optionalRecordString(query, "conversationId"),
+        includeBlocked: optionalRecordString(query, "includeBlocked") === "true",
+        limit: readLimit(request.query),
+        operationId: optionalRecordString(query, "operationId"),
+        stage: optionalRecordString(query, "stage"),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          privacyRedactionResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+
+    if (request.operationId === "papa.answer-contract.read") {
+      const query = safeObject(request.query);
+      const result = await this.assistantConversations.readAssistantAiAnswerContracts({
+        answerMessageId: optionalRecordString(query, "answerMessageId"),
+        conversationId: optionalRecordString(query, "conversationId"),
+        limit: readLimit(request.query),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          answerContractResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.provider-governance.read") {
+      const query = safeObject(request.query);
+      const result = await this.assistantConversations.readAssistantProviderGovernanceEvents({
+        answerMessageId: optionalRecordString(query, "answerMessageId"),
+        conversationId: optionalRecordString(query, "conversationId"),
+        limit: readLimit(request.query),
+        operationId: optionalRecordString(query, "operationId"),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          providerGovernanceResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+
+    if (request.operationId === "papa.metric-provenance.read") {
+      const query = safeObject(request.query);
+      const result = await this.assistantConversations.readAssistantMetricProvenance({
+        conversationId: optionalRecordString(query, "conversationId"),
+        limit: readLimit(request.query),
+        snapshotId: optionalRecordString(query, "snapshotId"),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          metricProvenanceResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+
+    if (request.operationId === "papa.ai.notifications.read") {
+      const query = safeObject(request.query);
+      const result = await this.assistantConversations.readAssistantAiNotifications({
+        caseId: optionalRecordString(query, "caseId"),
+        caseThreadId: optionalRecordString(query, "caseThreadId"),
+        includeRead: optionalRecordString(query, "includeRead") === "true",
+        includeSnoozed: optionalRecordString(query, "includeSnoozed") === "true",
+        limit: readLimit(request.query),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          aiNotificationsResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.ai.notification.mark-read") {
+      const payload = readPayload(request.body);
+      const result = await this.assistantConversations.markAssistantAiNotificationRead({
+        notificationId: requiredPayloadString(payload, "notificationId"),
+        read: optionalPayloadString(payload, "read") !== "false",
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          aiNotificationReadResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          record: result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.ai.notification.snooze") {
+      const payload = readPayload(request.body);
+      const result = await this.assistantConversations.snoozeAssistantAiNotification({
+        notificationId: requiredPayloadString(payload, "notificationId"),
+        snoozedUntil: requiredPayloadString(payload, "snoozedUntil"),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          aiNotificationSnoozeResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          record: result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.ai.notification.unsnooze") {
+      const payload = readPayload(request.body);
+      const result = await this.assistantConversations.snoozeAssistantAiNotification({
+        notificationId: requiredPayloadString(payload, "notificationId"),
+        snoozedUntil: null,
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          aiNotificationUnsnoozeResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          record: result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+
+    if (request.operationId.startsWith("papa.")) {
+      if (request.method !== "GET") {
+        requireIdempotencyKey(request);
+      }
+
+      throw new BadRequestException(
+        `Papa operation ${request.operationId} requires a dedicated Papa domain handler and cannot fall through to ProductDomainRepository.`,
+      );
+    }
+
 
     const descriptor = operationDescriptor(request.operationId);
     if (request.method === "GET") {
@@ -710,6 +1377,19 @@ export class ContractRuntimeService {
     return null;
   }
 }
+
+
+function optionalPapaPayloadObject(
+  payload: Readonly<Record<string, unknown>>,
+  key: string,
+): Record<string, unknown> | null {
+  const value = payload[key];
+
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : null;
+}
+
 
 function accessView(principal: RequestPrincipal, operationId: string): object {
   const memberships = principal.memberships;
@@ -960,6 +1640,14 @@ function ordersResultKey(operationId: string): string {
   return keys[operationId] ?? "resultResult";
 }
 
+function papaResultKey(operationId: string): string {
+  const keys: Readonly<Record<string, string>> = {
+    "papa.assistant-shell.read": "assistantShellResult",
+    "papa.context-panel.read": "contextPanelResult",
+  };
+  return keys[operationId] ?? "resultResult";
+}
+
 function readOrdersFilters(query: Readonly<Record<string, unknown>>): OrdersFilters {
   return {
     search: optionalRecordString(query, "search"),
@@ -1062,6 +1750,16 @@ function operationDescriptor(operationId: string): {
     entityType: (segments.length > 0 ? segments.join("_") : "record")
       .replaceAll("-", "_"),
   };
+}
+
+function requireIdempotencyKey(request: ContractRuntimeRequest): string {
+  const value = request.idempotencyKey?.trim();
+  if (!value) {
+    throw new BadRequestException(
+      `Idempotency-Key header is required for ${request.operationId}.`,
+    );
+  }
+  return value;
 }
 
 function operationExternalKey(
@@ -1172,6 +1870,9 @@ function isInvitationOpen(
 function readPayload(body: unknown): Readonly<Record<string, unknown>> {
   const record = safeObject(body);
   const input = record.input;
+  if (input && typeof input === "object" && !Array.isArray(input)) {
+    return { ...record, ...safeObject(input) };
+  }
   if (typeof input === "string") {
     const trimmed = input.trim();
     if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
@@ -1192,6 +1893,16 @@ function safeObject(value: unknown): Readonly<Record<string, unknown>> {
     throw new BadRequestException("Request payload must be an object.");
   }
   return value as Readonly<Record<string, unknown>>;
+}
+
+function readPayloadObject(
+  payload: Readonly<Record<string, unknown>>,
+  key: string,
+): Record<string, unknown> {
+  const value = payload[key];
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
 }
 
 function readLimit(query: unknown): number {

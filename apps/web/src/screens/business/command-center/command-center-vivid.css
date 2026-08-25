@@ -16,8 +16,8 @@
 .pd-command-center-one-page__decision-workspace,
 .pd-command-center-one-page__runtime-main-analysis {
   border-color: var(--pd-separator-subtle);
-  background: var(--pd-surface-panel);
-  box-shadow: var(--pd-shadow-control);
+  background: transparent;
+  box-shadow: none;
   backdrop-filter: none;
 }
 
@@ -58,7 +58,7 @@
 }
 
 .pd-command-center-one-page__plan-chart {
-  background: var(--pd-surface-soft);
+  background: transparent;
 }
 
 .pd-command-center-one-page .pd-funnel-chart__steps,
@@ -73,5 +73,5 @@
 
 .pd-command-center-one-page .pd-funnel-chart__bar span,
 .pd-command-center-one-page .pd-waterfall-chart__bar span {
-  background: var(--pd-data-series-1);
+  background: linear-gradient(90deg, var(--pd-data-series-1), var(--pd-data-series-2));
 }

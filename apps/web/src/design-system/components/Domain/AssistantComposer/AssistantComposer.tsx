@@ -3,6 +3,9 @@ import type {
   HTMLAttributes,
 } from '../domainShared';
 import {
+  useEffect,
+} from 'react';
+import {
   Button,
   Textarea,
   forwardRef,
@@ -20,6 +23,7 @@ export type AssistantComposerProps = HTMLAttributes<HTMLElement> & {
   readonly contextItemIds: readonly string[];
   readonly label: string;
   readonly onSubmit?: ((value: string) => void) | undefined;
+  readonly onValueChange?: ((value: string) => void) | undefined;
   readonly placeholder: string;
   readonly submitting: boolean;
   readonly value: string;
@@ -35,6 +39,7 @@ export const AssistantComposer = forwardRef<
     contextItemIds,
     label,
     onSubmit,
+    onValueChange,
     placeholder,
     submitting,
     value,
@@ -44,6 +49,12 @@ export const AssistantComposer = forwardRef<
 ) {
   const [draft, setDraft] = useState(value);
   const statusId = useId();
+
+  useEffect(() => {
+    setDraft(value);
+  }, [
+    value,
+  ]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -70,7 +81,9 @@ export const AssistantComposer = forwardRef<
           rows={4}
           value={draft}
           onChange={(event) => {
-            setDraft(event.currentTarget.value);
+            const nextDraft = event.currentTarget.value;
+            setDraft(nextDraft);
+            onValueChange?.(nextDraft);
           }}
         />
         <div className="pd-assistant-composer__footer">

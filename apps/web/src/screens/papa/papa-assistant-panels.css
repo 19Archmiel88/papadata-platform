@@ -216,31 +216,26 @@
   border-inline-start-color: var(--pd-data-series-4);
 }
 
-.pd-papa-message-list {
-  display: grid;
+.pd-papa-chat-thread,
+.pd-papa-chat-thread.pd-papa-message-thread__empty {
   max-height: 420px;
   min-height: 240px;
-  gap: var(--pd-space-3);
   min-width: 0;
-  margin: 0;
-  padding: 0 var(--pd-space-2) 0 0;
-  overflow: auto;
   overscroll-behavior: contain;
   scrollbar-color: color-mix(in srgb, var(--pd-text-muted) 54%, transparent) transparent;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
-  list-style: none;
 }
 
-.pd-papa-message-list::-webkit-scrollbar {
+.pd-papa-chat-thread::-webkit-scrollbar {
   width: 10px;
 }
 
-.pd-papa-message-list::-webkit-scrollbar-track {
+.pd-papa-chat-thread::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.pd-papa-message-list::-webkit-scrollbar-thumb {
+.pd-papa-chat-thread::-webkit-scrollbar-thumb {
   border: 3px solid transparent;
   border-radius: var(--pd-scrollbar-radius);
   background:
@@ -251,38 +246,8 @@
     padding-box;
 }
 
-.pd-papa-message-list li {
-  display: grid;
+.pd-papa-chat-thread li[data-author='user'] {
   width: min(88%, 620px);
-  gap: var(--pd-space-1);
-  min-width: 0;
-  padding: var(--pd-space-3);
-  border: 1px solid var(--pd-separator-subtle);
-  border-radius: var(--pd-radius-small);
-  background: color-mix(in srgb, var(--pd-surface-panel) 68%, transparent);
-}
-
-.pd-papa-message-list li[data-author='user'] {
-  justify-self: end;
-  border-color: color-mix(in srgb, var(--pd-interactive) 34%, var(--pd-separator-subtle));
-  background: color-mix(in srgb, var(--pd-surface-active) 42%, var(--pd-surface-panel));
-}
-
-.pd-papa-message-list li[data-author='system'] {
-  width: 100%;
-  border-style: dashed;
-  background: color-mix(in srgb, var(--pd-surface-subtle) 48%, transparent);
-}
-
-.pd-papa-message-list span {
-  color: var(--pd-text-muted);
-  font-size: var(--pd-type-size-caption);
-  font-weight: var(--pd-font-weight-semibold);
-}
-
-.pd-papa-message-list small {
-  color: var(--pd-text-muted);
-  font-size: var(--pd-type-size-caption);
 }
 
 .pd-papa-chat-composer {
@@ -366,7 +331,74 @@
     min-height: 220px;
   }
 
-  .pd-papa-message-list {
+  .pd-papa-chat-thread {
     max-height: 360px;
+  }
+}
+
+/* Runtime readiness is intentionally compact. The full diagnostic dashboard
+ * remains available to Storybook/diagnostic stories, but normal Papa screens
+ * must lead with the task-specific content instead of repeating a dashboard. */
+.pd-papa-readiness-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pd-space-3);
+  min-width: 0;
+  padding: var(--pd-space-3) var(--pd-space-4);
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-small);
+  background: color-mix(in srgb, var(--pd-surface-raised) 36%, transparent);
+}
+
+.pd-papa-readiness-strip > div {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--pd-space-1);
+  min-width: 0;
+}
+
+.pd-papa-readiness-strip > div + div {
+  padding-inline-start: var(--pd-space-3);
+  border-inline-start: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-papa-readiness-strip span {
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-papa-readiness-strip strong {
+  color: var(--pd-text-strong);
+  font-size: var(--pd-type-size-body);
+  font-weight: var(--pd-font-weight-semibold);
+}
+
+.pd-papa-readiness-strip .pd-status-badge {
+  margin-inline-start: auto;
+}
+
+.pd-papa-assistant-panel__empty,
+.pd-papa-assistant-panel__footnote {
+  margin: 0;
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-caption);
+}
+
+@media (max-width: 760px) {
+  .pd-papa-readiness-strip {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pd-papa-readiness-strip > div + div {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+
+  .pd-papa-readiness-strip .pd-status-badge {
+    grid-column: 1 / -1;
+    margin-inline-start: 0;
+    justify-self: start;
   }
 }

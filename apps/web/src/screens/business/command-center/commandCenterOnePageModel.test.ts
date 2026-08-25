@@ -114,8 +114,5 @@ test("commandCenterOnePageSectionIds defines the complete one-page runtime order
     "command-section-traffic",
     "command-section-products",
     "command-section-customers",
-    "command-section-attention",
-    "command-section-decision-workspace",
-    "command-section-committed-actions",
   ]);
 });

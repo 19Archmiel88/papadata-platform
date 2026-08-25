@@ -3,9 +3,14 @@ export {
 } from './PapaAssistantSidecar';
 
 export {
+  PapaMessageThread,
+} from './PapaMessageThread';
+
+export {
   PapaAssistantRuntimeProvider,
   createPapaAssistantMessage,
-  downloadPapaAssistantReport,
+  resolvePapaElementDraftScope,
+  resolvePapaMainDraftScope,
   usePapaAssistantRuntime,
 } from './PapaAssistantRuntimeContext';
 
@@ -16,10 +21,16 @@ export {
 } from './ScreenContextProvider';
 
 export type {
+  PapaMessageEvidence,
+  PapaMessageThreadProps,
+} from './PapaMessageThread';
+
+export type {
   PapaAssistantMode,
   PapaAssistantOpenAction,
   PapaAssistantOpenRequest,
   PapaAssistantReportArtifact,
+  PapaAssistantRuntimeScope,
   PapaAssistantReportFormat,
   PapaAssistantReportScope,
 } from './PapaAssistantRuntimeContext';

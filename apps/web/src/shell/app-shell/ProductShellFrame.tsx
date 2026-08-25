@@ -70,6 +70,8 @@ type NotificationMutation = (
 
 export type ProductShellFrameProps = {
   readonly activePath: string;
+  readonly activeTenantId?: string | null;
+  readonly activeUserId?: string | null;
   readonly activeWorkspaceId?: string | null;
   readonly children: ReactNode;
   readonly commands?: readonly ShellCommandResult[];
@@ -101,6 +103,8 @@ export type ProductShellFrameProps = {
 
 export function ProductShellFrame({
   activePath,
+  activeTenantId = null,
+  activeUserId = null,
   activeWorkspaceId = null,
   children,
   commands = [],
@@ -246,13 +250,20 @@ export function ProductShellFrame({
     <ShellDateRangeContext.Provider value={dateRangeContext}>
       <PapaScreenContextProvider
         activePath={activePath}
+        dateRange={dateRange}
         dateRangeLabel={formatShellDateRangeLabel(dateRange)}
         sectionLabel={sectionLabel}
         userLabel={user.displayName}
         workspaceId={selectedWorkspace?.id ?? activeWorkspaceId}
         workspaceName={selectedWorkspace?.name ?? 'Workspace'}
       >
-        <PapaAssistantRuntimeProvider>
+        <PapaAssistantRuntimeProvider
+          scope={{
+            tenantId: activeTenantId,
+            userId: activeUserId ?? user.email,
+            workspaceId: selectedWorkspace?.id ?? activeWorkspaceId,
+          }}
+        >
           <div className="pd-product-shell">
             <AuthenticatedTopbar
               activeOverlay={overlay}

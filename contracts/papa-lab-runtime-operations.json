@@ -1,0 +1,181 @@
+{
+  "version": "papa-lab-runtime-operations.v1",
+  "domain": "papa",
+  "source": "FIX 13 API/contracts alignment",
+  "policy": {
+    "genericPapaFallbackAllowed": false,
+    "externalAiExecuteRollbackAllowed": false,
+    "commandsRequireIdempotencyKey": true,
+    "queriesRequireTenantWorkspaceScope": true
+  },
+  "operations": [
+    {
+      "operationId": "papa.context.capture",
+      "kind": "command",
+      "requiresIdempotencyKey": true,
+      "effect": "internal_write"
+    },
+    {
+      "operationId": "papa.answer.generate",
+      "kind": "command",
+      "requiresIdempotencyKey": true,
+      "effect": "provider_read"
+    },
+    {
+      "operationId": "papa.answer.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.context-panel.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.assistant-shell.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.observations.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.observation.save",
+      "kind": "command",
+      "requiresIdempotencyKey": true,
+      "effect": "internal_write"
+    },
+    {
+      "operationId": "papa.history-memory.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.context-basket.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.evidence.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.lab.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.proposals.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.governance.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.actions.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.action-approval.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.ai.action.validate",
+      "kind": "command",
+      "requiresIdempotencyKey": true,
+      "effect": "internal_write"
+    },
+    {
+      "operationId": "papa.ai.action.approve",
+      "kind": "command",
+      "requiresIdempotencyKey": true,
+      "effect": "internal_write"
+    },
+    {
+      "operationId": "papa.ai.action.reject",
+      "kind": "command",
+      "requiresIdempotencyKey": true,
+      "effect": "internal_write"
+    },
+    {
+      "operationId": "papa.ai.action.execute",
+      "kind": "blocked",
+      "requiresIdempotencyKey": true,
+      "effect": "external_effect_blocked"
+    },
+    {
+      "operationId": "papa.ai.action.rollback",
+      "kind": "blocked",
+      "requiresIdempotencyKey": true,
+      "effect": "external_effect_blocked"
+    },
+    {
+      "operationId": "papa.ai.notifications.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.ai.notification.mark-read",
+      "kind": "command",
+      "requiresIdempotencyKey": true,
+      "effect": "internal_write"
+    },
+    {
+      "operationId": "papa.ai.notification.snooze",
+      "kind": "command",
+      "requiresIdempotencyKey": true,
+      "effect": "internal_write"
+    },
+    {
+      "operationId": "papa.ai.notification.unsnooze",
+      "kind": "command",
+      "requiresIdempotencyKey": true,
+      "effect": "internal_write"
+    },
+    {
+      "operationId": "papa.metric-provenance.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.answer-contract.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.provider-governance.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.privacy-redaction.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    }
+  ]
+}

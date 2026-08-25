@@ -36,7 +36,22 @@ import {
   CommandCenterPlanExecutionSection,
 } from '../../../screens/business/command-center/CommandCenterPlanExecutionSection';
 import {
+  CommandCenterCustomerSplitSection,
+} from '../../../screens/business/command-center/CommandCenterCustomerSplitSection';
+import {
+  CommandCenterFunnelSection,
+} from '../../../screens/business/command-center/CommandCenterFunnelSection';
+import {
+  CommandCenterProductSalesSection,
+} from '../../../screens/business/command-center/CommandCenterProductSalesSection';
+import {
+  CommandCenterTrafficSourcesSection,
+} from '../../../screens/business/command-center/CommandCenterTrafficSourcesSection';
+import {
+  buildCustomerSegmentRows,
   buildDemoExecutiveKpiRecords,
+  buildProductSalesRows,
+  buildTrafficSourceRows,
 } from '../../../screens/business/command-center/commandCenterOnePageModel';
 import '../../../screens/business/command-center/command-center-one-page.css';
 import '../../../screens/business/command-center/command-center-vivid.css';
@@ -183,3 +198,49 @@ export const DriversSectionStory: Story = {
     </SectionCanvas>
   ),
 };
+
+export const SalesFunnelSectionStory: Story = {
+  name: 'Lejek sprzedaży',
+  render: () => (
+    <SectionCanvas>
+      <CommandCenterFunnelSection
+        data={baseData}
+        dataState={dataState}
+      />
+    </SectionCanvas>
+  ),
+};
+
+export const ProductSalesSectionStory: Story = {
+  name: 'Najlepiej sprzedające się produkty',
+  render: () => (
+    <SectionCanvas>
+      <CommandCenterProductSalesSection
+        productRows={buildProductSalesRows(baseData.productSales)}
+      />
+    </SectionCanvas>
+  ),
+};
+
+export const TrafficSourcesSectionStory: Story = {
+  name: 'Kanały ruchu',
+  render: () => (
+    <SectionCanvas>
+      <CommandCenterTrafficSourcesSection
+        sourceRows={buildTrafficSourceRows(baseData.trafficSources)}
+      />
+    </SectionCanvas>
+  ),
+};
+
+export const CustomerSplitSectionStory: Story = {
+  name: 'Nowi i powracający',
+  render: () => (
+    <SectionCanvas>
+      <CommandCenterCustomerSplitSection
+        customerRows={buildCustomerSegmentRows(baseData.customerSegments)}
+      />
+    </SectionCanvas>
+  ),
+};
+

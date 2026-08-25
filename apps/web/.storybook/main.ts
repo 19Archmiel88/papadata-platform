@@ -1,10 +1,14 @@
+// PapaData Storybook core web-only whitelist.
+// UI Storybook laduje tylko dopracowane sekcje web/runtime.
+// Pozostale stories zostaja w repo jako material kontraktowy/checkowy.
 import type {
   StorybookConfig,
 } from '@storybook/react-vite';
 
 const config: StorybookConfig = {
   stories: [
-    '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
+    "../src/storybook-next/stories/25-access-registration-onboarding/AuthSurfaces.stories.tsx",
+    "../src/storybook-next/stories/30-command-center/CommandCenterLandingSections.stories.tsx",
   ],
 
   addons: [

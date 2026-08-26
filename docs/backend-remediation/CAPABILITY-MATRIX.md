@@ -3,9 +3,9 @@
 > Plik generowany przez `tools/generate-backend-capability-docs.mjs`. Nie edytować ręcznie.
 
 **Wydanie:** backend-migration-implementation-2026-08<br>
-**Operacje runtime:** 277<br>
+**Operacje runtime:** 281<br>
 **Kontrakt docelowy:** 218/218 dokładnych metod, ścieżek i operationId<br>
-**Dodatkowe operacje hardeningowe:** 59<br>
+**Dodatkowe operacje hardeningowe:** 63<br>
 **Integracje runtime:** 7/7<br>
 **Pełna zgodność semantyczna i odbiór live:** jeszcze nie zadeklarowane
 
@@ -148,6 +148,10 @@
 | help.support-request.read | GET | `/v1/help/zgloszenie-wsparcia` | capability | contract-compatibility-runtime | compatibility |
 | help.write | POST | `/v1/help/write` | mfa+capability | contract-compatibility-runtime | compatibility |
 | identity.login | POST | `/v1/identity/login` | public | native-hardened-runtime | enabled |
+| identity.oauth.callback | POST | `/v1/identity/oauth/callback` | public | native-hardened-runtime | enabled |
+| identity.oauth.link.start | POST | `/v1/identity/oauth/link/start` | mfa+capability | native-hardened-runtime | enabled |
+| identity.oauth.reauth.start | POST | `/v1/identity/oauth/reauth/start` | mfa+capability | native-hardened-runtime | enabled |
+| identity.oauth.start | POST | `/v1/identity/oauth/start` | public | native-hardened-runtime | enabled |
 | identity.register | POST | `/v1/identity/register` | public | native-hardened-runtime | enabled |
 | infrastructure.health.live | GET | `/health` | public | native-hardened-runtime | enabled |
 | infrastructure.health.live.healthz | GET | `/healthz` | public | native-hardened-runtime | enabled |
@@ -215,17 +219,17 @@
 | papa.ai.action.reject | POST | `/v1/papa/ai-actions/reject` | mfa+capability | contract-compatibility-runtime | compatibility |
 | papa.ai.action.rollback | POST | `/v1/papa/ai-actions/rollback` | step_up+capability | contract-compatibility-runtime | blocked-until-live-approval |
 | papa.ai.action.validate | POST | `/v1/papa/ai-actions/validate` | mfa+capability | contract-compatibility-runtime | compatibility |
-| papa.answer.generate | POST | `/v1/papa/answer` | mfa+capability | contract-compatibility-runtime | compatibility |
+| papa.answer.generate | POST | `/v1/papa/answer` | capability | contract-compatibility-runtime | compatibility |
 | papa.answer.read | GET | `/v1/papa/odpowiedz-papa` | capability | contract-compatibility-runtime | compatibility |
 | papa.assistant-shell.read | GET | `/v1/papa/assistantshell` | capability | contract-compatibility-runtime | compatibility |
 | papa.context-basket.read | GET | `/v1/papa/context-basket` | capability | contract-compatibility-runtime | compatibility |
 | papa.context-panel.read | GET | `/v1/papa/panel-kontekstowy-papa` | capability | contract-compatibility-runtime | compatibility |
-| papa.context.capture | POST | `/v1/papa/context/capture` | mfa+capability | contract-compatibility-runtime | compatibility |
+| papa.context.capture | POST | `/v1/papa/context/capture` | capability | contract-compatibility-runtime | compatibility |
 | papa.evidence.read | GET | `/v1/papa/dowody` | capability | contract-compatibility-runtime | compatibility |
 | papa.governance.read | GET | `/v1/papa/ustawienia-ai-i-governance` | capability | contract-compatibility-runtime | compatibility |
 | papa.history-memory.read | GET | `/v1/papa/historia-i-pamiec-papa` | capability | contract-compatibility-runtime | compatibility |
 | papa.lab.read | GET | `/v1/papa/laboratorium-ai` | capability | contract-compatibility-runtime | compatibility |
-| papa.observation.save | POST | `/v1/papa/observations` | mfa+capability | contract-compatibility-runtime | compatibility |
+| papa.observation.save | POST | `/v1/papa/observations` | capability | contract-compatibility-runtime | compatibility |
 | papa.observations.read | GET | `/v1/papa/obserwacje` | capability | contract-compatibility-runtime | compatibility |
 | papa.proposals.read | GET | `/v1/papa/propozycje-ai` | capability | contract-compatibility-runtime | compatibility |
 | papa.read | GET | `/v1/papa/read` | capability | contract-compatibility-runtime | compatibility |

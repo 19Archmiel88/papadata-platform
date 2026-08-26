@@ -470,11 +470,12 @@ export function CommandCenterWorkspace({
       />
       )}
 
-      {(!isRuntimeOnePage || (isRuntimeNavigationVisible && navigationItems.length > 1)) ? (
+      {(!isRuntimeOnePage || navigationItems.length > 1) ? (
         <SectionNavigation
           activeId={isRuntimeOnePage ? activeRuntimeSectionId : definition.id}
           ariaLabel="Sekcje Centrum Dowodzenia"
           className="pd-command-center-workspace__navigation pd-command-center-one-page__navigation"
+          data-runtime-visible={isRuntimeOnePage ? isRuntimeNavigationVisible : undefined}
           itemProps={isRuntimeOnePage
             ? (item) => ({
                 onClick: (event) => {
@@ -482,6 +483,7 @@ export function CommandCenterWorkspace({
                     item,
                     event,
                     setActiveRuntimeSectionId,
+                    setRuntimeNavigationVisible,
                   );
                 },
               })
@@ -654,6 +656,7 @@ function handleRuntimeNavigationClick(
   item: CommandNavigationItem,
   event: MouseEvent<HTMLAnchorElement>,
   setActiveRuntimeSectionId: (id: string) => void,
+  setRuntimeNavigationVisible: (visible: boolean) => void,
 ): void {
   if (!item.href.startsWith('#')) {
     return;
@@ -674,11 +677,23 @@ function handleRuntimeNavigationClick(
     });
   }
 
+  // The first section (KPI) represents "top of page" — clicking it should
+  // scroll up *and* close the rail, not just navigate there. Every other
+  // section sets a hash-bearing URL and leaves the rail open so the reader
+  // can keep jumping between sections; without this special case, the
+  // visibility effect's hash-priority check would keep the rail stuck open
+  // forever once any hash had ever been set, even back at the top.
+  const isTopSection = item.id === commandCenterRuntimeNavigation[0]?.id;
+
   window.history.replaceState(
     window.history.state,
     '',
-    `/app/command-center${item.href}`,
+    isTopSection ? '/app/command-center' : `/app/command-center${item.href}`,
   );
+
+  if (isTopSection) {
+    setRuntimeNavigationVisible(false);
+  }
 }
 
 function buildIssues(

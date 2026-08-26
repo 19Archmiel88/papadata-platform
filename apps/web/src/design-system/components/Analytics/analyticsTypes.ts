@@ -45,7 +45,7 @@ export type AnalyticsAction = {
 };
 
 const analyticsDataStateToneMap = {
-  ready: 'info',
+  ready: 'success',
   loading: 'processing',
   empty: 'neutral',
   noData: 'neutral',

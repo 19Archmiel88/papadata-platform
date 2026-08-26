@@ -55,6 +55,7 @@
   position: sticky;
   top: 8px;
   z-index: var(--pd-layer-sticky);
+  justify-self: center;
   width: fit-content;
   max-width: 100%;
   overflow: auto hidden;
@@ -62,12 +63,43 @@
   border: 1px solid var(--pd-command-border);
   border-radius: 10px;
   background: var(--pd-surface-overlay);
-  box-shadow: none;
+  backdrop-filter: blur(14px);
+  box-shadow: var(--pd-shadow-floating);
   scrollbar-width: none;
+  /* Default/legacy state: fully visible, no attribute needed — the
+     per-screen (non-runtime) nav never sets data-runtime-visible at all, so
+     it renders like this permanently, unaffected by the slide below. */
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  transition:
+    opacity 220ms var(--pd-motion-easing-standard),
+    transform 220ms var(--pd-motion-easing-standard),
+    visibility 0ms linear 0ms;
 }
 
 .pd-command-center-workspace__navigation::-webkit-scrollbar {
   display: none;
+}
+
+/*
+ * The runtime one-page rail slides in from just under the topbar instead of
+ * popping in/out with the mount — the component stays mounted the whole
+ * time (see CommandCenterWorkspace.tsx) and this attribute alone drives the
+ * transition. visibility is delayed only on the way out (transition-delay
+ * matches the opacity/transform duration) so the hidden rail's links stop
+ * being keyboard-focusable/announced only once they've actually faded away,
+ * not before — showing it, by contrast, must be focusable immediately.
+ */
+.pd-command-center-workspace__navigation[data-runtime-visible='false'] {
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 180ms var(--pd-motion-easing-standard),
+    transform 180ms var(--pd-motion-easing-standard),
+    visibility 0ms linear 180ms;
 }
 
 .pd-command-center-workspace__summary {

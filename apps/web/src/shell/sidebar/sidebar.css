@@ -3,6 +3,8 @@
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .pd-product-shell__runtime-status {

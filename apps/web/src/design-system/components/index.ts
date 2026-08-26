@@ -147,6 +147,7 @@ export {
 export {
   FileInput,
   PasswordField,
+  resolvePasswordStrengthLevel,
   Textarea,
   TextField,
 } from './Field';
@@ -258,6 +259,10 @@ export {
 export {
   VerificationCodeInput,
 } from './VerificationCodeInput';
+
+export {
+  VisuallyHidden,
+} from './VisuallyHidden';
 
 export type {
   AlertDialogProps,
@@ -467,6 +472,7 @@ export type {
 export type {
   FileInputProps,
   PasswordFieldProps,
+  PasswordStrengthLevel,
   TextareaProps,
   TextFieldProps,
 } from './Field';
@@ -603,3 +609,7 @@ export type {
 export type {
   VerificationCodeInputProps,
 } from './VerificationCodeInput';
+
+export type {
+  VisuallyHiddenProps,
+} from './VisuallyHidden';

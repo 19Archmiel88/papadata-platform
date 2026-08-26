@@ -2,10 +2,69 @@
   color: var(--pd-shell-text);
 }
 
+.pd-shell-notification-overlay[role='dialog'] {
+  --pd-shell-overlay-max-block: 35rem;
+
+  width: min(30rem, calc(100vw - 24px));
+}
+
 .pd-shell-notification-center {
   display: grid;
+  gap: 0;
   min-width: 0;
   min-height: 0;
+  font-size: 12px;
+  line-height: 1.38;
+}
+
+.pd-shell-notification-center__overview {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 11px 12px;
+  border-block-end: 1px solid var(--pd-shell-separator);
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--pd-shell-brand) 8%, transparent),
+      transparent 64%
+    ),
+    var(--pd-shell-surface);
+}
+
+.pd-shell-notification-center__overview > span {
+  width: 32px;
+  height: 32px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--pd-shell-separator);
+  border-radius: 9px;
+  color: var(--pd-shell-brand-strong);
+  background: var(--pd-shell-surface-raised);
+}
+
+.pd-shell-notification-center__overview div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.pd-shell-notification-center__overview strong {
+  overflow: hidden;
+  color: var(--pd-shell-text);
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pd-shell-notification-center__overview small {
+  overflow: hidden;
+  color: var(--pd-shell-text-muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pd-shell-notification-center__toolbar {
@@ -13,9 +72,9 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 6px 10px;
-  padding: 10px 12px;
+  padding: 8px 10px;
   border-block-end: 1px solid var(--pd-shell-separator);
-  background: var(--pd-shell-surface-raised);
+  background: var(--pd-shell-surface);
 }
 
 .pd-shell-notification-center__filters {
@@ -34,15 +93,15 @@
 
 .pd-shell-notification-center__filters button,
 .pd-shell-notification-center__mark-all {
-  min-height: 30px;
-  padding: 5px 8px;
+  min-height: 28px;
+  padding: 4px 8px;
   border: 1px solid transparent;
   border-radius: 7px;
   background: transparent;
   color: var(--pd-shell-text-muted);
   cursor: pointer;
   font: inherit;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
 }
 
@@ -61,15 +120,18 @@
 .pd-shell-notification-center__list {
   display: grid;
   min-height: 0;
-  overflow: auto;
+  max-height: min(21rem, calc(100dvh - 17rem));
+  overflow-y: auto;
+  scrollbar-gutter: auto;
 }
 
 .pd-shell-notification {
   position: relative;
+  grid-template-columns: 28px minmax(0, 1fr);
   display: grid;
-  gap: 7px;
+  gap: 9px;
   min-width: 0;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-block-end: 1px solid var(--pd-shell-separator);
   background: var(--pd-shell-surface);
   transition: background-color 120ms ease;
@@ -83,6 +145,62 @@
   box-shadow: inset 2px 0 0 var(--pd-shell-brand);
 }
 
+.pd-shell-notification__tone-mark {
+  width: 28px;
+  height: 28px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--pd-shell-separator);
+  border-radius: 8px;
+  color: var(--pd-shell-text-muted);
+  background: var(--pd-shell-surface-raised);
+}
+
+.pd-shell-notification[data-tone='success'] .pd-shell-notification__tone-mark {
+  color: var(--pd-status-success);
+}
+
+.pd-shell-notification[data-tone='warning'],
+.pd-shell-notification[data-tone='critical'] {
+  --pd-shell-notification-tone-color: var(--pd-status-warning);
+}
+
+.pd-shell-notification[data-tone='warning'] .pd-shell-notification__tone-mark,
+.pd-shell-notification[data-tone='critical'] .pd-shell-notification__tone-mark {
+  color: var(--pd-shell-notification-tone-color);
+}
+
+.pd-shell-notification__content {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.pd-shell-notification h3,
+.pd-shell-notification p {
+  margin: 0;
+}
+
+.pd-shell-notification h3 {
+  overflow: hidden;
+  color: var(--pd-shell-text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pd-shell-notification p {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--pd-shell-text-secondary);
+  font-size: 11px;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 .pd-shell-notification__meta,
 .pd-shell-notification__state {
   display: flex;
@@ -91,11 +209,12 @@
   gap: 6px;
   color: var(--pd-shell-text-muted);
   font-size: 10px;
+  line-height: 1.25;
 }
 
 .pd-shell-notification__state {
   width: fit-content;
-  padding: 2px 6px;
+  padding: 1px 5px;
   border: 1px solid var(--pd-shell-separator);
   border-radius: 999px;
   background: var(--pd-shell-surface-raised);
@@ -110,25 +229,47 @@
   gap: 6px;
 }
 
+.pd-shell-notification__actions {
+  position: relative;
+}
+
+.pd-shell-notification__actions summary {
+  color: var(--pd-shell-text-muted);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  list-style: none;
+}
+
+.pd-shell-notification__actions summary::-webkit-details-marker {
+  display: none;
+}
+
 .pd-shell-notification__actions-panel {
+  position: absolute;
+  right: 0;
+  z-index: 1;
+  min-width: 13rem;
   display: grid;
-  gap: 8px;
-  padding: 9px;
-  border: 1px solid var(--pd-shell-separator);
+  gap: 6px;
+  margin-block-start: 6px;
+  padding: 8px;
+  border: 1px solid var(--pd-shell-separator-strong);
   border-radius: 9px;
-  background: var(--pd-shell-canvas);
+  background: var(--pd-shell-surface-overlay);
+  box-shadow: var(--pd-shadow-overlay);
 }
 
 .pd-shell-notification__preset-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 5px;
 }
 
 .pd-shell-notification__preset-grid button,
 .pd-shell-notification__actions button {
-  min-height: 30px;
-  padding: 5px 8px;
+  min-height: 28px;
+  padding: 4px 7px;
   border: 1px solid var(--pd-shell-separator);
   border-radius: 7px;
   background: var(--pd-shell-surface-raised);
@@ -152,8 +293,8 @@
 }
 
 .pd-shell-notification-center__mutation-error {
-  margin: 8px 12px;
-  padding: 9px 10px;
+  margin: 8px 10px 0;
+  padding: 8px 9px;
   border: 1px solid color-mix(in srgb, var(--pd-status-danger) 42%, var(--pd-shell-separator));
   border-radius: 8px;
   background: color-mix(in srgb, var(--pd-status-danger) 8%, var(--pd-shell-surface));
@@ -161,8 +302,65 @@
   font-size: 10px;
 }
 
+.pd-shell-notification-center__notice {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 18px 14px;
+}
+
+.pd-shell-notification-center__notice > span {
+  width: 32px;
+  height: 32px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--pd-shell-separator);
+  border-radius: 9px;
+  color: var(--pd-shell-text-muted);
+  background: var(--pd-shell-surface-raised);
+}
+
+.pd-shell-notification-center__notice[data-tone='warning'] > span {
+  color: var(--pd-status-warning);
+}
+
+.pd-shell-notification-center__notice strong,
+.pd-shell-notification-center__notice p {
+  margin: 0;
+}
+
+.pd-shell-notification-center__notice strong {
+  color: var(--pd-shell-text);
+  font-size: 13px;
+}
+
+.pd-shell-notification-center__notice p {
+  margin-block-start: 2px;
+  color: var(--pd-shell-text-muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.pd-shell-notification-center__footer-note {
+  padding: 8px 12px;
+  border-block-start: 1px solid var(--pd-shell-separator);
+  color: var(--pd-shell-text-muted);
+  background: var(--pd-shell-surface);
+  font-size: 10px;
+}
+
 @media (max-width: 520px) {
+  .pd-shell-notification-center__toolbar {
+    display: grid;
+  }
+
+  .pd-shell-notification-center__filters,
   .pd-shell-notification__preset-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-shell-notification-center__mark-all {
+    margin-inline-start: 0;
   }
 }

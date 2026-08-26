@@ -25,6 +25,10 @@ import { HealthController } from "./health.controller.js";
 import { IntegrationController } from "./integrations/integration.controller.js";
 import { IdentityController } from "./identity/identity.controller.js";
 import { IdentityService } from "./identity/identity.service.js";
+import { OAuthController } from "./identity/oauth.controller.js";
+import { OAuthFlowService } from "./identity/oauth-flow.service.js";
+import { OAuthProviderConfig } from "./identity/oauth-provider.config.js";
+import { OAuthTokenVerifierService } from "./identity/oauth-token-verifier.service.js";
 import { ProductController } from "./product/product.controller.js";
 import { ProductService } from "./product/product.service.js";
 import {
@@ -67,6 +71,7 @@ export const productionControllers = [
   PrivacyController,
   ReportController,
   IdentityController,
+  OAuthController,
   ProductController,
   NotificationController,
   ...contractRuntimeControllers,
@@ -93,6 +98,9 @@ export const productionControllers = [
     PrivacyService,
     ReportService,
     IdentityService,
+    OAuthProviderConfig,
+    OAuthTokenVerifierService,
+    OAuthFlowService,
     ProductService,
     NotificationService,
     ContractRuntimeService,

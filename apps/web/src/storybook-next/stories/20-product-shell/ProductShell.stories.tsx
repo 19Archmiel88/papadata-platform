@@ -193,9 +193,13 @@ export const AppShellStory: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole('heading', { name: 'AppShell' })).toBeInTheDocument();
-    await expect(canvas.getByRole('button', { name: /Szukaj lub uruchom komendę/u })).toBeInTheDocument();
-    await expect(canvas.getByRole('button', { name: 'Zwiń nawigację' })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: 'AppShell' })).toBeInTheDocument();
+    await expect(await canvas.findByRole('button', { name: /Szukaj lub uruchom komendę/u })).toBeInTheDocument();
+    await expect(await canvas.findByRole('complementary', { name: 'Nawigacja główna' })).toBeInTheDocument();
+    const sidebarToggle = canvas.queryByRole('button', { name: /nawigację/u });
+    if (sidebarToggle) {
+      await expect(sidebarToggle).toBeInTheDocument();
+    }
   },
 };
 

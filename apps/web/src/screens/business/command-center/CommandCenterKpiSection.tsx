@@ -1,8 +1,13 @@
+import {
+  Fragment,
+} from 'react';
+
 import type {
   CommandCenterRecord,
 } from '../../../../../../contracts/api-schemas';
 import {
   MetricCard,
+  VisuallyHidden,
 } from '../../../design-system';
 import type {
   AnalyticsDataState,
@@ -34,6 +39,21 @@ const executiveKpiOrder = [
   'command-kpi-ad-cost',
   'command-kpi-roas',
   'command-kpi-cpa',
+] as const;
+
+// Purely a quiet visual grouping over the same fixed 2×4 order above — the
+// grid layout, card count and metricId order are untouched. Splits the wall
+// of 8 cards into "what we sold" vs. "what it cost to sell it", the same way
+// this row already reads left-to-right.
+const executiveKpiGroups = [
+  {
+    metricIds: executiveKpiOrder.slice(0, 4),
+    title: 'Wynik sprzedaży',
+  },
+  {
+    metricIds: executiveKpiOrder.slice(4),
+    title: 'Efektywność i marketing',
+  },
 ] as const;
 
 const percentLikeMetricMatchers = [
@@ -130,6 +150,16 @@ function buildMetricComparison(record: CommandCenterRecord) {
   };
 }
 
+// Feeds MetricCard's inline target-progress bar — a glance-able companion to
+// the existing Cel/Odchylenie numbers, not a replacement for them.
+function resolveTargetProgressRatio(record: CommandCenterRecord): number | null {
+  if (record.value === null || record.target === null || record.target === 0) {
+    return null;
+  }
+
+  return record.value / record.target;
+}
+
 function resolveCommandMetricState(
   record: CommandCenterRecord,
   dataState: AnalyticsDataState,
@@ -164,13 +194,14 @@ function renderKpiCard(
       key={record.metricId}
       label={record.label}
       metricId={record.metricId}
+      progressRatio={isUnavailable ? null : resolveTargetProgressRatio(record)}
       role="listitem"
       signal={resolveMetricSignal(record)}
       sourceLabel={resolveMetricSourceLabel(record)}
       sparklinePoints={isUnavailable ? [] : (record.sparkline ?? [])}
       stateMessage={isUnavailable ? 'Brak wiarygodnego źródła danych dla tej metryki.' : null}
       status={resolveCommandMetricState(record, dataState)}
-      statusLabel={resolveReadinessLabel(record.readiness)}
+      statusLabel={record.readiness === 'ready' ? '' : resolveReadinessLabel(record.readiness)}
       targetLabel={isUnavailable ? null : formatCommandTargetLabel(record)}
       value={isUnavailable ? null : formatCommandMetricValue(record)}
     />
@@ -192,27 +223,47 @@ export function CommandCenterKpiSection({
   readonly dataState: AnalyticsDataState;
   readonly records: readonly CommandCenterRecord[];
 }) {
-  const kpiRecords = executiveKpiOrder
-    .map((metricId) => records.find((record) => record.metricId === metricId) ?? null)
-    .filter(isCommandRecord);
+  const kpiGroups = executiveKpiGroups.map((group) => ({
+    records: group.metricIds
+      .map((metricId) => records.find((record) => record.metricId === metricId) ?? null)
+      .filter(isCommandRecord),
+    title: group.title,
+  }));
+
+  const hasKpiRecords = kpiGroups.some((group) => group.records.length > 0);
 
   return (
     <section
       aria-labelledby="command-center-kpi-title"
       className="pd-command-center-one-page__section pd-command-center-one-page__runtime-kpi"
     >
-      <CommandSectionHeader
-        eyebrow="KPI"
-        titleId="command-center-kpi-title"
-      />
+      <VisuallyHidden as="div">
+        <CommandSectionHeader
+          eyebrow="KPI"
+          title="Najważniejsze KPI okresu"
+          titleId="command-center-kpi-title"
+        />
+      </VisuallyHidden>
 
-      {kpiRecords.length > 0 ? (
+      {hasKpiRecords ? (
         <div
           aria-label="Najważniejsze KPI okresu"
           className="pd-command-center-one-page__kpi-grid"
           role="list"
         >
-          {kpiRecords.map((record) => renderKpiCard(record, dataState))}
+          {kpiGroups.map((group) => (
+            group.records.length > 0 ? (
+              <Fragment key={group.title}>
+                <VisuallyHidden as="div">
+                  <p className="pd-command-center-one-page__kpi-group-title">
+                    {group.title}
+                  </p>
+                </VisuallyHidden>
+
+                {group.records.map((record) => renderKpiCard(record, dataState))}
+              </Fragment>
+            ) : null
+          ))}
         </div>
       ) : null}
     </section>

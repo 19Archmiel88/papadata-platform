@@ -1,9 +1,13 @@
+import {
+  useId,
+  useState,
+} from 'react';
 import type {
   DataColumn,
 } from '../../../../../../contracts/component-shared';
 import {
-  Button,
   InlineNotice,
+  VisuallyHidden,
 } from '../../../design-system';
 import type {
   AnalyticsDataState,
@@ -19,12 +23,10 @@ import type {
 import {
   formatInteger,
   formatPercent,
-  openPapaAssistantForElement,
 } from './commandCenterOnePageModel';
 
-const funnelElementId = 'command-funnel';
 const funnelViewBox = {
-  height: 500,
+  height: 420,
   plotLeft: 82,
   plotRight: 930,
   plotTop: 96,
@@ -33,6 +35,20 @@ const funnelViewBox = {
   width: 1000,
 } as const;
 const funnelAxisTicks = [0, 0.25, 0.5, 0.75, 1] as const;
+
+/**
+ * Ordinal color: one hue, monotone lightness by step position — the
+ * documented pattern for "swapping order changes meaning" data (funnel
+ * stages, tiers, cohort buckets), not a second competing categorical hue
+ * per bar. Step 1 = fullest tint, last step = lightest, mixed toward the
+ * surface color so it degrades gracefully in both themes.
+ */
+function resolveFunnelStepFill(index: number, total: number): string {
+  const ratio = total > 1 ? index / (total - 1) : 0;
+  const mixPercent = 100 - ratio * 55;
+
+  return `color-mix(in srgb, var(--pd-data-actual) ${mixPercent.toFixed(1)}%, var(--pd-surface))`;
+}
 
 const funnelColumns: readonly DataColumn[] = [
   { id: 'label', label: 'Krok', sortable: true, width: 240 },
@@ -111,15 +127,8 @@ function findLargestDropoff(
   ), null);
 }
 
-function buildFunnelFlowPath(
-  points: readonly {
-    readonly x: number;
-    readonly y: number;
-  }[],
-): string {
-  return points
-    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`)
-    .join(' ');
+function resolveFunnelTooltipX(x: number): number {
+  return x > funnelViewBox.plotRight - 190 ? x - 210 : x + 14;
 }
 
 function CommandFunnelConversionChart({
@@ -127,16 +136,20 @@ function CommandFunnelConversionChart({
 }: {
   readonly steps: readonly FunnelStep[];
 }) {
+  const [activeStepId, setActiveStepId] = useState<string | null>(null);
+  const tooltipTitleId = useId();
   const runtimeSteps = buildRuntimeFunnelSteps(steps);
   const largestDropoff = findLargestDropoff(runtimeSteps);
   const firstStep = runtimeSteps[0] ?? null;
   const finalStep = runtimeSteps[runtimeSteps.length - 1] ?? null;
+  const activeStepIndex = runtimeSteps.findIndex((step) => step.stepId === activeStepId);
+  const activeStep = activeStepIndex >= 0 ? runtimeSteps[activeStepIndex] : null;
   const plotWidth = funnelViewBox.plotRight - funnelViewBox.plotLeft;
-  const flowPoints = runtimeSteps.map((step, index) => ({
-    x: funnelViewBox.plotLeft + plotWidth * step.conversionFromPrevious,
-    y: funnelViewBox.plotTop + index * funnelViewBox.rowGap + funnelViewBox.rowHeight / 2,
-  }));
-  const flowPath = flowPoints.length > 0 ? buildFunnelFlowPath(flowPoints) : '';
+
+  function resolveRowY(index: number): number {
+    return funnelViewBox.plotTop + index * funnelViewBox.rowGap;
+  }
+
   const summaryMetrics = [
     {
       detail: firstStep ? firstStep.label : 'brak danych',
@@ -179,21 +192,6 @@ function CommandFunnelConversionChart({
         preserveAspectRatio="xMidYMid meet"
         viewBox={`0 0 ${funnelViewBox.width} ${funnelViewBox.height}`}
       >
-        <defs>
-          <linearGradient id="command-funnel-survive" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="var(--pd-data-series-2)" />
-            <stop offset="100%" stopColor="var(--pd-data-series-8)" />
-          </linearGradient>
-          <linearGradient id="command-funnel-dropoff" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="color-mix(in srgb, var(--pd-data-series-1) 68%, transparent)" />
-            <stop offset="100%" stopColor="color-mix(in srgb, var(--pd-data-series-4) 74%, transparent)" />
-          </linearGradient>
-          <linearGradient id="command-funnel-path" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="var(--pd-data-series-2)" />
-            <stop offset="100%" stopColor="var(--pd-data-series-1)" />
-          </linearGradient>
-        </defs>
-
         <rect
           className="pd-command-funnel-chart__plot-bg"
           height={funnelViewBox.rowGap * Math.max(runtimeSteps.length - 1, 0) + funnelViewBox.rowHeight + 62}
@@ -226,32 +224,46 @@ function CommandFunnelConversionChart({
           );
         })}
 
+        {/* Now an honest label: every bar's width is overallConversion (share
+            of step 1), so this axis is finally one consistent scale for
+            every row instead of an unrelated static ruler. */}
         <text
           className="pd-command-funnel-chart__axis-title"
           x={funnelViewBox.plotLeft}
           y={funnelViewBox.plotTop - 72}
         >
-          Konwersja z poprzedniego kroku
+          Udział względem kroku 1
         </text>
 
-        {flowPath ? (
-          <path
-            className="pd-command-funnel-chart__flow-path"
-            d={flowPath}
-          />
-        ) : null}
-
         {runtimeSteps.map((step, index) => {
-          const rowY = funnelViewBox.plotTop + index * funnelViewBox.rowGap;
-          const survivedWidth = plotWidth * step.conversionFromPrevious;
-          const dropoffWidth = plotWidth - survivedWidth;
+          const rowY = resolveRowY(index);
+          const barWidth = plotWidth * step.overallConversion;
           const isLargestDropoff = largestDropoff?.stepId === step.stepId;
 
           return (
-            <g
-              data-largest-dropoff={isLargestDropoff ? 'true' : undefined}
-              key={step.stepId}
-            >
+            <g key={step.stepId}>
+              {index > 0 ? (
+                <g
+                  className="pd-command-funnel-chart__dropoff-annotation"
+                  data-emphasis={isLargestDropoff ? 'true' : undefined}
+                >
+                  <text
+                    textAnchor="middle"
+                    x={funnelViewBox.plotLeft + plotWidth / 2}
+                    y={rowY - 32}
+                  >
+                    ↓
+                  </text>
+                  <text
+                    textAnchor="middle"
+                    x={funnelViewBox.plotLeft + plotWidth / 2}
+                    y={rowY - 18}
+                  >
+                    odpływ {formatPercent(step.dropoffFromPrevious)} · −{formatInteger(step.droppedFromPrevious)} osób
+                  </text>
+                </g>
+              ) : null}
+
               <text
                 className="pd-command-funnel-chart__step-index"
                 textAnchor="end"
@@ -278,74 +290,82 @@ function CommandFunnelConversionChart({
               <rect
                 className="pd-command-funnel-chart__track"
                 height={funnelViewBox.rowHeight}
-                rx="10"
+                rx="6"
                 width={plotWidth}
                 x={funnelViewBox.plotLeft}
                 y={rowY}
               />
               <rect
-                className="pd-command-funnel-chart__survived"
+                className="pd-command-funnel-chart__bar"
                 height={funnelViewBox.rowHeight}
-                rx="10"
-                width={Math.max(survivedWidth, 2)}
+                rx="6"
+                style={{ fill: resolveFunnelStepFill(index, runtimeSteps.length) }}
+                width={Math.max(barWidth, 2)}
                 x={funnelViewBox.plotLeft}
                 y={rowY}
               />
-              {dropoffWidth > 2 ? (
-                <rect
-                  className="pd-command-funnel-chart__dropoff"
-                  height={funnelViewBox.rowHeight}
-                  rx="10"
-                  width={dropoffWidth}
-                  x={funnelViewBox.plotLeft + survivedWidth}
-                  y={rowY}
-                />
-              ) : null}
-              {index > 0 ? (
-                <>
-                  <text
-                    className="pd-command-funnel-chart__retention-label"
-                    x={funnelViewBox.plotLeft + Math.min(Math.max(survivedWidth, 74), plotWidth - 170)}
-                    y={rowY + 22}
-                  >
-                    przechodzi {formatPercent(step.conversionFromPrevious)}
-                  </text>
-                  <text
-                    className="pd-command-funnel-chart__dropoff-label"
-                    textAnchor="end"
-                    x={funnelViewBox.plotRight - 14}
-                    y={rowY + 22}
-                  >
-                    odpływ {formatPercent(step.dropoffFromPrevious)}
-                  </text>
-                </>
-              ) : (
-                <text
-                  className="pd-command-funnel-chart__retention-label"
-                  x={funnelViewBox.plotLeft + 18}
-                  y={rowY + 22}
-                >
-                  pełna baza sesji
-                </text>
-              )}
+
+              {/* The bar itself is the hit target — wider than the painted
+                  fill so the gap/annotation area above the row is reachable
+                  too. Mouse-only: the whole chart is aria-hidden (the real
+                  data lives in the always-reachable "Pokaż dane" table), so
+                  making descendants tab-focusable here would be the
+                  focusable-but-hidden anti-pattern, not an accessibility
+                  improvement. */}
+              <rect
+                className="pd-command-funnel-chart__hit-area"
+                height={funnelViewBox.rowHeight + 36}
+                width={plotWidth}
+                x={funnelViewBox.plotLeft}
+                y={rowY - 28}
+                onMouseEnter={() => setActiveStepId(step.stepId)}
+                onMouseLeave={() => setActiveStepId((current) => (current === step.stepId ? null : current))}
+              />
             </g>
           );
         })}
 
-        {finalStep ? (
-          <g className="pd-command-funnel-chart__final-marker">
-            <line
-              x1={funnelViewBox.plotLeft + plotWidth * finalStep.overallConversion}
-              x2={funnelViewBox.plotLeft + plotWidth * finalStep.overallConversion}
-              y1={funnelViewBox.plotTop + funnelViewBox.rowGap * Math.max(runtimeSteps.length - 1, 0) + funnelViewBox.rowHeight + 18}
-              y2={funnelViewBox.plotTop + funnelViewBox.rowGap * Math.max(runtimeSteps.length - 1, 0) + funnelViewBox.rowHeight + 48}
+        {activeStep ? (
+          <g
+            className="pd-command-funnel-chart__tooltip"
+            transform={`translate(${resolveFunnelTooltipX(funnelViewBox.plotLeft + plotWidth * activeStep.overallConversion)}, ${resolveRowY(activeStepIndex) - 8})`}
+          >
+            <rect
+              aria-labelledby={tooltipTitleId}
+              height="94"
+              rx="9"
+              width="208"
             />
             <text
-              textAnchor="middle"
-              x={funnelViewBox.plotLeft + plotWidth * finalStep.overallConversion}
-              y={funnelViewBox.plotTop + funnelViewBox.rowGap * Math.max(runtimeSteps.length - 1, 0) + funnelViewBox.rowHeight + 68}
+              className="pd-command-funnel-chart__tooltip-title"
+              id={tooltipTitleId}
+              x="14"
+              y="22"
             >
-              finalnie {formatPercent(finalStep.overallConversion)}
+              {activeStep.label}
+            </text>
+            <text
+              className="pd-command-funnel-chart__tooltip-value"
+              x="14"
+              y="42"
+            >
+              {formatInteger(activeStep.completions)} osób
+            </text>
+            <text
+              className="pd-command-funnel-chart__tooltip-detail"
+              x="14"
+              y="62"
+            >
+              {activeStepIndex === 0
+                ? 'Punkt startowy lejka'
+                : `Od poprzedniego kroku: ${formatPercent(activeStep.conversionFromPrevious)}`}
+            </text>
+            <text
+              className="pd-command-funnel-chart__tooltip-detail"
+              x="14"
+              y="80"
+            >
+              Skumulowane od kroku 1: {formatPercent(activeStep.overallConversion)}
             </text>
           </g>
         ) : null}
@@ -381,21 +401,14 @@ export function CommandCenterFunnelSection({
       aria-labelledby="command-center-funnel-title"
       className="pd-command-center-one-page__section"
     >
-      <CommandSectionHeader
-        actions={hasFunnelSteps ? (
-          <Button
-            onClick={() => openPapaAssistantForElement(funnelElementId)}
-            size="small"
-            variant="secondary"
-          >
-            Analizuj z Papą
-          </Button>
-        ) : null}
-        description="Adnotacja pokazuje największy odpływ bez dokładania osobnej karty ponad właściwym lejkiem."
-        eyebrow="Lejek"
-        title="Lejek sprzedaży"
-        titleId="command-center-funnel-title"
-      />
+      <VisuallyHidden as="div">
+        <CommandSectionHeader
+          description="Adnotacja pokazuje największy odpływ bez dokładania osobnej karty ponad właściwym lejkiem."
+          eyebrow="Lejek"
+          title="Lejek sprzedaży"
+          titleId="command-center-funnel-title"
+        />
+      </VisuallyHidden>
 
       {hasFunnelSteps ? (
         <>

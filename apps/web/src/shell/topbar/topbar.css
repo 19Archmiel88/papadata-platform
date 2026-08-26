@@ -73,9 +73,21 @@ header.pd-shell-topbar[data-variant='public'] {
 }
 
 .pd-shell-topbar__brand > span {
-  --brand-lockup-gap: 7px;
-  --brand-lockup-mark-size: 26px;
-  --brand-lockup-wordmark-size: 17px;
+  --pd-brand: var(--pd-auth-accent);
+  --pd-brand-line: var(--pd-auth-accent);
+  --pd-brand-ambient: var(--pd-auth-accent-tint);
+  --brand-logo-base-fill: var(--pd-shell-canvas);
+  --brand-logo-base-stroke: var(--pd-shell-separator-strong);
+  --brand-logo-mid-fill: var(--pd-shell-surface-raised);
+  --brand-lockup-gap: 8px;
+  --brand-lockup-mark-size: 30px;
+  --brand-lockup-wordmark-size: 19px;
+
+  padding-bottom: 0;
+}
+
+.pd-shell-topbar__brand > span::after {
+  display: none;
 }
 
 .pd-shell-topbar__section-context {

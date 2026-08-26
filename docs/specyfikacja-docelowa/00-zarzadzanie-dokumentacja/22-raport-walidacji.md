@@ -11,7 +11,7 @@ work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumente
 
 # Raport walidacji dokumentacji docelowej
 
-Ten plik jest aktualizowany z kopii głównego raportu po uruchomieniu validatora. Źródło: [`RAPORT-WALIDACJI.md`](../../../RAPORT-WALIDACJI.md).
+Ten plik jest aktualizowany z kopii głównego raportu po uruchomieniu validatora. Źródło: [`docs/audits/2026-08/raport-walidacji-2026-08-14.md`](../../../docs/audits/2026-08/raport-walidacji-2026-08-14.md).
 
 
 ## Utrzymanie dokumentu 1.0

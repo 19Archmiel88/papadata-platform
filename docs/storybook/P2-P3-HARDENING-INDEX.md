@@ -8,9 +8,9 @@
 | P2.02 | `scripts/check-doc-placeholders.mjs` |
 | P2.03 | `scripts/check-css-duplicate-classes.mjs` |
 | P2.04 | `scripts/check-css-local-hex.mjs` |
-| P2.05 | `RAPORT-WALIDACJI.md`, `RAPORT-KOMPLETNOSCI-I-JAKOSCI.md` |
-| P2.06 | `RAPORT-WALIDACJI.md` |
-| P2.07 | `RAPORT-KOMPLETNOSCI-I-JAKOSCI.md` |
+| P2.05 | `docs/audits/2026-08/raport-walidacji-2026-08-14.md`, `docs/audits/2026-08/raport-kompletnosci-i-jakosci-2026-08-14.md` |
+| P2.06 | `docs/audits/2026-08/raport-walidacji-2026-08-14.md` |
+| P2.07 | `docs/audits/2026-08/raport-kompletnosci-i-jakosci-2026-08-14.md` |
 | P2.08 | `OWNER-APPROVAL-CRITERIA.md`, `STORY-RUNTIME-ROUTE-MATRIX.md` |
 | P2.09 | `BROWSER-AUDIT-INDEX.md`, `audit-storybook-business-screens` |
 | P2.10 | `OWNER-APPROVAL-CRITERIA.md` i raporty bez sugestii podpisanego prawa |

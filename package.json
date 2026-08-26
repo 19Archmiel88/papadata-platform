@@ -10,6 +10,7 @@
     "dev:worker": "pnpm --filter @papadata/worker dev:production",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test --concurrency=1",
+    "lint": "eslint . --max-warnings=0",
     "build": "turbo run build",
     "verify": "pnpm verify:backend",
     "start:local": "docker compose --env-file .env.example up --build api worker",
@@ -19,7 +20,7 @@
     "security:audit": "pnpm audit --prod",
     "security:check": "pnpm audit --prod && pnpm build",
     "start:production-parity": "pnpm prepare:production-parity && docker compose -f compose.production-parity.yml --env-file .env.production-parity up --build",
-    "stop:production-parity": "docker compose -f compose.production-parity.yml down",
+    "stop:production-parity": "docker compose -f compose.production-parity.yml --env-file .env.production-parity down",
     "test:production-foundation": "pnpm --filter @papadata/integrations test",
     "test:master-remediation": "pnpm --filter @papadata/integrations test && pnpm --filter @papadata/storage test && pnpm --filter @papadata/ai-runtime test",
     "verify:master-remediation": "pnpm typecheck && pnpm test:master-remediation && pnpm build",
@@ -65,11 +66,19 @@
     "test:backend-production-parity:restart": "node tests/backend-production-parity/restart-failure.mjs",
     "test:web-production-parity": "node tests/web-production-parity/smoke.mjs",
     "test:web-production-parity:csp": "pnpm --filter @papadata/web exec playwright test --config playwright.production-parity.config.ts",
-    "test:web-production-parity:https-trust": "node tests/web-production-parity/https-trust-real-browser.mjs"
+    "test:web-production-parity:https-trust": "node tests/web-production-parity/https-trust-real-browser.mjs",
+    "verify:papa-assistant": "node tools/verify-papa-assistant-completion.mjs",
+    "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.9.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.5",
+    "globals": "^17.11.0",
     "turbo": "2.10.9",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.68.0"
   },
   "packageManager": "pnpm@10.29.3",
   "pnpm": {
@@ -92,7 +101,7 @@
     ]
   },
   "engines": {
-    "node": "24.18.0",
+    "node": "24.18.1",
     "pnpm": "10.29.3"
   }
 }

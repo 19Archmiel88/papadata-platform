@@ -218,18 +218,6 @@ export type PapaAnswerGenerationResult = {
 };
 
 export async function generatePapaAnswer(options: {
-  const providerPrivacy = await persistPapaPreProviderRedactionProof({
-    createdByUserId: options.userId,
-    idempotencyKey: options.idempotencyKey,
-    operationId: "papa.answer.generate",
-    rawInput: readPapaPrivacyPromptInput(options as unknown as Record<string, unknown>),
-    repository: options.repository,
-    tenantId: options.tenantId,
-    threadId: options.conversationId,
-    workspaceId: options.workspaceId,
-  });
-
-
   readonly repository: AssistantConversationRepository;
   readonly provider: AiProviderAdapter;
   readonly tenantId: string;
@@ -241,6 +229,17 @@ export async function generatePapaAnswer(options: {
   readonly prompt: string;
   readonly idempotencyKey: string;
 }): Promise<PapaAnswerGenerationResult | null> {
+  const providerPrivacy = await persistPapaPreProviderRedactionProof({
+    createdByUserId: options.userId,
+    idempotencyKey: options.idempotencyKey,
+    operationId: "papa.answer.generate",
+    rawInput: readPapaPrivacyPromptInput(options as unknown as Record<string, unknown>),
+    repository: options.repository,
+    tenantId: options.tenantId,
+    threadId: options.conversationId ?? options.parentConversationId ?? options.idempotencyKey,
+    workspaceId: options.workspaceId,
+  });
+
   const prompt = providerPrivacy.redactedInput.trim();
   if (!prompt) throw new RangeError("prompt must not be blank");
 
@@ -736,14 +735,14 @@ function calculateGroundingConfidence(grounding: GroundingContext): number {
   ]
     .map((item) => parsePercent(item.status))
     .filter((value): value is number => value !== null);
-  const readinessBase = readinessConfidence(grounding.readiness);
+  const readinessBase = readinessConfidence(grounding.readiness) ?? 0.5;
   if (explicit.length === 0) return readinessBase;
 
   const average = explicit.reduce((sum, value) => sum + value, 0) / explicit.length;
   return clampConfidence((average * 0.75) + (readinessBase * 0.25));
 }
 
-function readinessConfidence(readiness: string | null): number | null{
+function readinessConfidence(readiness: string | null): number | null {
   const value = readiness?.toLowerCase() ?? "";
   if (value.includes("ready") || value.includes("gotow")) return 0.9;
   if (value.includes("partial") || value.includes("części")) return 0.65;
@@ -879,7 +878,9 @@ async function persistGroundingEvidence(options: {
     : options.grounding.metrics;
 
   for (const item of candidates.slice(0, 20)) {
-    const sourceType = resolvePapaEvidenceSourceType(item);
+    const resolvedSourceType = resolvePapaEvidenceSourceType(item);
+    const sourceType: "dashboard_readiness" | "metric_snapshot" =
+      resolvedSourceType === "dashboard_readiness" ? "dashboard_readiness" : "metric_snapshot";
     const evidenceRow = await options.repository.appendEvidence({
       tenantId: options.tenantId,
       workspaceId: options.workspaceId,

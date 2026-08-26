@@ -47,13 +47,19 @@
   left: auto;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  width: min(390px, calc(100vw - 24px));
-  max-height: min(720px, calc(100dvh - 76px));
+  width: min(22rem, calc(100vw - 24px));
+  max-height: min(
+    var(--pd-shell-overlay-max-block, 36rem),
+    calc(100dvh - var(--pd-shell-overlay-top, 72px) - 12px)
+  );
   overflow: hidden;
-  border-radius: 14px;
+  border: 1px solid var(--pd-shell-separator-strong);
+  border-radius: 12px;
   background: var(--pd-shell-surface-overlay);
   color: var(--pd-shell-text);
   box-shadow: var(--pd-shadow-overlay);
+  font-size: var(--pd-type-size-body-small);
+  line-height: 1.45;
   pointer-events: auto;
 }
 
@@ -64,8 +70,12 @@
  * dostawał bazowe 390px, więc treść była ucinana i pojawiał się poziomy
  * scrollbar. Realny bug ze screenshotu.
  */
+.pd-shell-anchored-overlay[data-width='narrow'] {
+  width: min(19rem, calc(100vw - 24px));
+}
+
 .pd-shell-anchored-overlay[data-width='wide'] {
-  width: min(640px, calc(100vw - 24px));
+  width: min(32rem, calc(100vw - 24px));
 }
 
 /*
@@ -111,7 +121,7 @@
   justify-content: space-between;
   gap: 12px;
   min-width: 0;
-  padding: 13px 14px;
+  padding: 11px 12px;
   border-block-end: 1px solid var(--pd-shell-separator);
   background: var(--pd-shell-surface-raised);
 }
@@ -124,18 +134,22 @@
 
 .pd-shell-anchored-overlay__header h2,
 .pd-shell-anchored-overlay__header h3 {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.2;
 }
 
 .pd-shell-anchored-overlay__header p {
+  margin-block-start: 2px;
   color: var(--pd-shell-text-muted);
   font-size: 11px;
+  line-height: 1.35;
 }
 
 .pd-shell-anchored-overlay__body {
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
   background: var(--pd-shell-surface);
 }
 
@@ -150,6 +164,8 @@
   background: transparent;
   color: var(--pd-shell-text-muted);
   cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
 }
 
 .pd-shell-anchored-overlay__close:hover,

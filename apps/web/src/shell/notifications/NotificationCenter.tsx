@@ -7,8 +7,7 @@ import {
 } from 'react';
 
 import {
-  EmptyState,
-  ErrorState,
+  Icon,
   TextAction,
 } from '../../design-system';
 import type {
@@ -77,6 +76,11 @@ export function NotificationCenter({
     if (filter === 'critical') return notification.priority === 'critical';
     return true;
   }), [filter, notifications, now]);
+  const previewNotifications = visibleNotifications.slice(0, 4);
+  const hiddenNotificationCount = Math.max(
+    0,
+    visibleNotifications.length - previewNotifications.length,
+  );
 
   async function mutate(
     notification: ShellNotification,
@@ -117,6 +121,16 @@ export function NotificationCenter({
       width="wide"
     >
       <div className="pd-shell-notification-center">
+        <div className="pd-shell-notification-center__overview">
+          <span aria-hidden="true">
+            <Icon decorative name={unreadCount > 0 ? 'notifications' : 'success'} size={20} />
+          </span>
+          <div>
+            <strong>{formatUnreadSummary(unreadCount, locale)}</strong>
+            <small>{copy.previewDescription}</small>
+          </div>
+        </div>
+
         <div className="pd-shell-notification-center__toolbar">
           <div
             aria-label={copy.filters}
@@ -157,36 +171,43 @@ export function NotificationCenter({
         ) : null}
 
         {error ? (
-          <ErrorState
-            errorCode="NOTIFICATIONS_ERROR"
+          <NotificationNotice
             message={error}
             title={copy.errorTitle}
-            variant="system"
+            tone="warning"
           />
-        ) : visibleNotifications.length === 0 ? (
-          <EmptyState
+        ) : previewNotifications.length === 0 ? (
+          <NotificationNotice
             message={filter === 'snoozed' ? copy.emptySnoozed : copy.empty}
             title={copy.emptyTitle}
-            variant="empty"
+            tone="neutral"
           />
         ) : (
-          <div className="pd-shell-notification-center__list" role="list">
-            {visibleNotifications.map((notification) => (
-              <NotificationItem
-                copy={copy}
-                key={notification.id}
-                locale={locale}
-                notification={notification}
-                onMarkRead={onMarkRead}
-                onMarkUnread={onMarkUnread}
-                onMutate={mutate}
-                onNotificationAction={onNotificationAction}
-                onSnooze={onSnooze}
-                onUnsnooze={onUnsnooze}
-                pending={pendingId === notification.id}
-              />
-            ))}
-          </div>
+          <>
+            <div className="pd-shell-notification-center__list" role="list">
+              {previewNotifications.map((notification) => (
+                <NotificationItem
+                  copy={copy}
+                  key={notification.id}
+                  locale={locale}
+                  notification={notification}
+                  onMarkRead={onMarkRead}
+                  onMarkUnread={onMarkUnread}
+                  onMutate={mutate}
+                  onNotificationAction={onNotificationAction}
+                  onSnooze={onSnooze}
+                  onUnsnooze={onUnsnooze}
+                  pending={pendingId === notification.id}
+                />
+              ))}
+            </div>
+
+            {hiddenNotificationCount > 0 ? (
+              <div className="pd-shell-notification-center__footer-note">
+                {formatHiddenSummary(hiddenNotificationCount, locale)}
+              </div>
+            ) : null}
+          </>
         )}
       </div>
     </AnchoredShellOverlay>
@@ -216,7 +237,6 @@ function NotificationItem({
   readonly onUnsnooze?: NotificationMutation | undefined;
   readonly pending: boolean;
 }) {
-  const [customUntil, setCustomUntil] = useState('');
   const snoozed = isSnoozed(notification, Date.now());
   const stateLabel = snoozed
     ? copy.snoozed
@@ -232,119 +252,127 @@ function NotificationItem({
       data-unread={notification.unread ? true : undefined}
       role="listitem"
     >
-      <header>
-        <div>
-          <h3 id={`${notification.id}-title`}>{notification.title}</h3>
-          <div className="pd-shell-notification__meta">
-            <span>{notification.time}</span>
-            <span>{categoryLabel(notification.category, locale)}</span>
-            <span className="pd-shell-notification__state">{stateLabel}</span>
+      <span aria-hidden="true" className="pd-shell-notification__tone-mark">
+        <Icon decorative name={notification.tone === 'success' ? 'success' : 'warning'} size={16} />
+      </span>
+
+      <div className="pd-shell-notification__content">
+        <header>
+          <div>
+            <h3 id={`${notification.id}-title`}>{notification.title}</h3>
+            <div className="pd-shell-notification__meta">
+              <span>{notification.time}</span>
+              <span>{categoryLabel(notification.category, locale)}</span>
+              <span className="pd-shell-notification__state">{stateLabel}</span>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <p>{notification.message}</p>
+        <p>{notification.message}</p>
 
-      {snoozed && notification.snoozedUntil ? (
-        <p className="pd-shell-notification__snooze-until">
-          {copy.returnsAt}: {formatDateTime(notification.snoozedUntil, locale)}
-        </p>
-      ) : null}
-
-      <div className="pd-shell-notification__primary-actions">
-        {notification.actionLabel && notification.actionPath && onNotificationAction ? (
-          <TextAction
-            onClick={() => {
-              void onMutate(notification, () => onNotificationAction(notification));
-            }}
-            size="small"
-          >
-            {notification.actionLabel}
-          </TextAction>
+        {snoozed && notification.snoozedUntil ? (
+          <p className="pd-shell-notification__snooze-until">
+            {copy.returnsAt}: {formatDateTime(notification.snoozedUntil, locale)}
+          </p>
         ) : null}
 
-        <details className="pd-shell-notification__actions">
-          <summary>{copy.more}</summary>
-          <div className="pd-shell-notification__actions-panel">
-            {notification.unread ? (
-              <button
-                disabled={pending || !onMarkRead}
-                onClick={() => {
-                  if (onMarkRead) void onMutate(notification, () => onMarkRead(notification));
-                }}
-                type="button"
-              >
-                {copy.markRead}
-              </button>
-            ) : (
-              <button
-                disabled={pending || !onMarkUnread}
-                onClick={() => {
-                  if (onMarkUnread) void onMutate(notification, () => onMarkUnread(notification));
-                }}
-                type="button"
-              >
-                {copy.markUnread}
-              </button>
-            )}
+        <div className="pd-shell-notification__primary-actions">
+          {notification.actionLabel && notification.actionPath && onNotificationAction ? (
+            <TextAction
+              onClick={() => {
+                void onMutate(notification, () => onNotificationAction(notification));
+              }}
+              size="small"
+            >
+              {notification.actionLabel}
+            </TextAction>
+          ) : null}
 
-            {snoozed ? (
-              <button
-                disabled={pending || !onUnsnooze}
-                onClick={() => {
-                  if (onUnsnooze) void onMutate(notification, () => onUnsnooze(notification));
-                }}
-                type="button"
-              >
-                {copy.unsnooze}
-              </button>
-            ) : notification.canSnooze === false ? (
-              <span className="pd-shell-notification__policy-note">
-                {copy.snoozeUnavailable}
-              </span>
-            ) : onSnooze ? (
-              <div className="pd-shell-notification__snooze-controls">
-                <span>{copy.remindLater}</span>
-                <div className="pd-shell-notification__preset-grid">
-                  {snoozePresets(locale).map((preset) => (
-                    <button
-                      disabled={pending}
-                      key={preset.label}
-                      onClick={() => {
-                        void onMutate(notification, () => onSnooze(notification, preset.until()));
-                      }}
-                      type="button"
-                    >
-                      {preset.label}
-                    </button>
-                  ))}
-                </div>
-                <label>
-                  <span>{copy.customTime}</span>
-                  <input
-                    min={minLocalDateTime()}
-                    onChange={(event) => setCustomUntil(event.target.value)}
-                    type="datetime-local"
-                    value={customUntil}
-                  />
-                </label>
+          <details className="pd-shell-notification__actions">
+            <summary>{copy.more}</summary>
+            <div className="pd-shell-notification__actions-panel">
+              {notification.unread ? (
                 <button
-                  disabled={pending || !customUntil}
+                  disabled={pending || !onMarkRead}
                   onClick={() => {
-                    const parsed = new Date(customUntil);
-                    if (!Number.isFinite(parsed.getTime())) return;
-                    void onMutate(notification, () => onSnooze(notification, parsed.toISOString()));
+                    if (onMarkRead) void onMutate(notification, () => onMarkRead(notification));
                   }}
                   type="button"
                 >
-                  {copy.confirmCustom}
+                  {copy.markRead}
                 </button>
-              </div>
-            ) : null}
-          </div>
-        </details>
+              ) : (
+                <button
+                  disabled={pending || !onMarkUnread}
+                  onClick={() => {
+                    if (onMarkUnread) void onMutate(notification, () => onMarkUnread(notification));
+                  }}
+                  type="button"
+                >
+                  {copy.markUnread}
+                </button>
+              )}
+
+              {snoozed ? (
+                <button
+                  disabled={pending || !onUnsnooze}
+                  onClick={() => {
+                    if (onUnsnooze) void onMutate(notification, () => onUnsnooze(notification));
+                  }}
+                  type="button"
+                >
+                  {copy.unsnooze}
+                </button>
+              ) : notification.canSnooze === false ? (
+                <span className="pd-shell-notification__policy-note">
+                  {copy.snoozeUnavailable}
+                </span>
+              ) : onSnooze ? (
+                <div className="pd-shell-notification__snooze-controls">
+                  <span>{copy.remindLater}</span>
+                  <div className="pd-shell-notification__preset-grid">
+                    {snoozePresets(locale).slice(0, 3).map((preset) => (
+                      <button
+                        disabled={pending}
+                        key={preset.label}
+                        onClick={() => {
+                          void onMutate(notification, () => onSnooze(notification, preset.until()));
+                        }}
+                        type="button"
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </details>
+        </div>
       </div>
     </article>
+  );
+}
+
+function NotificationNotice({
+  message,
+  title,
+  tone,
+}: {
+  readonly message: string;
+  readonly title: string;
+  readonly tone: 'neutral' | 'warning';
+}) {
+  return (
+    <div className="pd-shell-notification-center__notice" data-tone={tone} role="status">
+      <span aria-hidden="true">
+        <Icon decorative name={tone === 'warning' ? 'warning' : 'notifications'} size={20} />
+      </span>
+      <div>
+        <strong>{title}</strong>
+        <p>{message}</p>
+      </div>
+    </div>
   );
 }
 
@@ -403,12 +431,6 @@ function nextWorkdayMorning() {
   return date;
 }
 
-function minLocalDateTime() {
-  const date = new Date(Date.now() + 60_000);
-  const offset = date.getTimezoneOffset() * 60_000;
-  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
-}
-
 function formatDateTime(value: string, locale: NotificationLocale) {
   const date = new Date(value);
   if (!Number.isFinite(date.getTime())) return value;
@@ -416,6 +438,29 @@ function formatDateTime(value: string, locale: NotificationLocale) {
     dateStyle: 'medium',
     timeStyle: 'short',
   }).format(date);
+}
+
+function formatUnreadSummary(unreadCount: number, locale: NotificationLocale) {
+  if (locale === 'en') {
+    if (unreadCount === 0) return 'No unread notifications';
+    if (unreadCount === 1) return '1 unread notification';
+    return `${unreadCount} unread notifications`;
+  }
+
+  if (unreadCount === 0) return 'Brak nowych powiadomień';
+  if (unreadCount === 1) return '1 nowe powiadomienie';
+  if (unreadCount < 5) return `${unreadCount} nowe powiadomienia`;
+  return `${unreadCount} nowych powiadomień`;
+}
+
+function formatHiddenSummary(count: number, locale: NotificationLocale) {
+  if (locale === 'en') {
+    return `${count} more item${count === 1 ? '' : 's'} hidden by the compact preview.`;
+  }
+
+  if (count === 1) return 'Jeszcze 1 wpis poza kompaktowym podglądem.';
+  if (count < 5) return `Jeszcze ${count} wpisy poza kompaktowym podglądem.`;
+  return `Jeszcze ${count} wpisów poza kompaktowym podglądem.`;
 }
 
 function notificationCopy(locale: NotificationLocale) {
@@ -437,6 +482,7 @@ function notificationCopy(locale: NotificationLocale) {
         more: 'Actions',
         mutationFailed: 'The notification could not be updated.',
         notifications: 'Notifications',
+        previewDescription: 'Compact preview for the active workspace.',
         read: 'Read',
         remindLater: 'Remind later',
         returnsAt: 'Returns',
@@ -463,6 +509,7 @@ function notificationCopy(locale: NotificationLocale) {
         more: 'Akcje',
         mutationFailed: 'Nie udało się zaktualizować powiadomienia.',
         notifications: 'Powiadomienia',
+        previewDescription: 'Kompaktowy podgląd dla aktywnego workspace.',
         read: 'Przeczytane',
         remindLater: 'Przypomnij później',
         returnsAt: 'Ponownie pojawi się',

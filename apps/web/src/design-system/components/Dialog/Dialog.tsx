@@ -245,7 +245,15 @@ export const Dialog = forwardRef<
               type="button"
               variant="ghost"
             >
-              Zamknij
+              <span
+                aria-hidden="true"
+                className="pd-overlay-surface__close-glyph"
+              >
+                ×
+              </span>
+              <span className="pd-overlay-surface__close-label">
+                Zamknij
+              </span>
             </Button>
           ) : null}
         </header>

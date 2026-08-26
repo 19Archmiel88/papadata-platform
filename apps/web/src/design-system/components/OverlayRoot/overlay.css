@@ -96,6 +96,29 @@
   cursor: pointer;
 }
 
+.pd-overlay-surface__close .pd-button__label {
+  display: inline-grid;
+  place-items: center;
+  overflow: visible;
+}
+
+.pd-overlay-surface__close-glyph {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.pd-overlay-surface__close-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .pd-overlay-surface__close:hover {
   border-color: var(--pd-separator);
   background: var(--pd-surface-subtle);

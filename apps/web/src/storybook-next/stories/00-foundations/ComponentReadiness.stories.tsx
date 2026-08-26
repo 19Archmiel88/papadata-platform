@@ -540,8 +540,8 @@ function BaseP0BacklogReadiness() {
         index="01"
         layout="wide"
         summary={copy({
-          pl: 'Lista obejmuje bazowe oraz przekrojowe pozycje P0 z dokumentu audyt14082026.md przeniesione do jawnego statusu rejestrowego.',
-          en: 'The list covers base and cross-cutting P0 items from audyt14082026.md moved into explicit registry status.',
+          pl: 'Lista obejmuje bazowe oraz przekrojowe pozycje P0 z dokumentu docs/audits/2026-08/instrukcja-domkniecia-przebudow-2026-08-14.md przeniesione do jawnego statusu rejestrowego.',
+          en: 'The list covers base and cross-cutting P0 items from docs/audits/2026-08/instrukcja-domkniecia-przebudow-2026-08-14.md moved into explicit registry status.',
         })}
         title={copy({ pl: 'Zakres zamknięcia', en: 'Closure scope' })}
       >
@@ -603,8 +603,8 @@ function BaseP0BacklogBatch2Readiness() {
         index="01"
         layout="wide"
         summary={copy({
-          pl: 'Zakres odpowiada bieżącym pozycjom P0.SB01-P0.SB30 z audyt14082026.md.',
-          en: 'The scope matches the current P0.SB01-P0.SB30 items from audyt14082026.md.',
+          pl: 'Zakres odpowiada bieżącym pozycjom P0.SB01-P0.SB30 z docs/audits/2026-08/instrukcja-domkniecia-przebudow-2026-08-14.md.',
+          en: 'The scope matches the current P0.SB01-P0.SB30 items from docs/audits/2026-08/instrukcja-domkniecia-przebudow-2026-08-14.md.',
         })}
         title={copy({ pl: 'Zakres zamknięcia', en: 'Closure scope' })}
       >

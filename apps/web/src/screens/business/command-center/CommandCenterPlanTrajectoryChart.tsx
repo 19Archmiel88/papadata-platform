@@ -3,6 +3,7 @@ import type {
   WheelEvent as ReactWheelEvent,
 } from 'react';
 import {
+  useId,
   useRef,
   useState,
 } from 'react';
@@ -97,6 +98,15 @@ export function CommandCenterPlanTrajectoryChart({
   planTotal,
   trajectory,
 }: CommandCenterPlanTrajectoryChartProps) {
+  // useId() includes colons, which aren't safe inside a CSS/SVG url(#id)
+  // reference (some engines need them escaped) — stripped here since these
+  // ids are only ever consumed as fragment references, never rendered.
+  const gradientIdBase = useId().replace(/:/g, '');
+  const actualFillId = `${gradientIdBase}-actual-fill`;
+  const forecastFillId = `${gradientIdBase}-forecast-fill`;
+  const actualGlowId = `${gradientIdBase}-actual-glow`;
+  const forecastGlowId = `${gradientIdBase}-forecast-glow`;
+
   const [visibleSeries, setVisibleSeries] = useState(initialVisibleSeries);
   const [activePointId, setActivePointId] = useState<string | null>(null);
   const hoverCloseRef = useRef<number | null>(null);
@@ -371,6 +381,27 @@ export function CommandCenterPlanTrajectoryChart({
         >
           <title>Dzienne tempo przychodu, benchmark i prognoza</title>
           <desc>Hover pokazuje wartości punktów. Przeciągnięcie wybiera zakres, Shift plus scroll zmienia skalę, a pełne wartości są dostępne także w tabeli.</desc>
+
+          <defs>
+            <linearGradient id={actualFillId} x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" style={{ stopColor: 'var(--pd-data-actual)', stopOpacity: 0.3 }} />
+              <stop offset="100%" style={{ stopColor: 'var(--pd-data-actual)', stopOpacity: 0 }} />
+            </linearGradient>
+
+            <linearGradient id={forecastFillId} x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" style={{ stopColor: 'var(--pd-data-forecast)', stopOpacity: 0.24 }} />
+              <stop offset="100%" style={{ stopColor: 'var(--pd-data-forecast)', stopOpacity: 0 }} />
+            </linearGradient>
+
+            <filter height="160%" id={actualGlowId} width="140%" x="-20%" y="-30%">
+              <feDropShadow dx="0" dy="1" floodColor="var(--pd-data-actual)" floodOpacity="0.45" stdDeviation="2.5" />
+            </filter>
+
+            <filter height="160%" id={forecastGlowId} width="140%" x="-20%" y="-30%">
+              <feDropShadow dx="0" dy="1" floodColor="var(--pd-data-forecast)" floodOpacity="0.4" stdDeviation="2.5" />
+            </filter>
+          </defs>
+
           <g className="pd-command-plan-trajectory__grid">
             <line x1={PLOT_LEFT} x2={PLOT_RIGHT} y1={PLOT_BOTTOM} y2={PLOT_BOTTOM} />
             <line x1={PLOT_LEFT} x2={PLOT_RIGHT} y1={(PLOT_TOP + PLOT_BOTTOM * 2) / 3} y2={(PLOT_TOP + PLOT_BOTTOM * 2) / 3} />
@@ -422,6 +453,7 @@ export function CommandCenterPlanTrajectoryChart({
               className="pd-command-plan-trajectory__area pd-command-plan-trajectory__area--actual"
               d={actualAreaPath}
               data-visible={visibleSeries.actual ? 'true' : 'false'}
+              fill={`url(#${actualFillId})`}
             />
           ) : null}
 
@@ -431,6 +463,7 @@ export function CommandCenterPlanTrajectoryChart({
               className="pd-command-plan-trajectory__area pd-command-plan-trajectory__area--forecast"
               d={forecastAreaPath}
               data-visible={visibleSeries.forecast ? 'true' : 'false'}
+              fill={`url(#${forecastFillId})`}
             />
           ) : null}
 
@@ -463,6 +496,7 @@ export function CommandCenterPlanTrajectoryChart({
             aria-hidden={!visibleSeries.actual}
             className="pd-command-plan-trajectory__line pd-command-plan-trajectory__line--actual"
             data-visible={visibleSeries.actual ? 'true' : 'false'}
+            filter={`url(#${actualGlowId})`}
             points={actualLinePoints}
           />
 
@@ -470,6 +504,7 @@ export function CommandCenterPlanTrajectoryChart({
             aria-hidden={!visibleSeries.forecast}
             className="pd-command-plan-trajectory__line pd-command-plan-trajectory__line--forecast"
             data-visible={visibleSeries.forecast ? 'true' : 'false'}
+            filter={`url(#${forecastGlowId})`}
             points={forecastLinePoints}
           />
 

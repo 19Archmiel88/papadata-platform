@@ -45,7 +45,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: 24.18.0
+          node-version: 24.18.1
           cache: pnpm
 
       - name: Install dependencies
@@ -74,7 +74,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: 24.18.0
+          node-version: 24.18.1
           cache: pnpm
 
       - name: Install dependencies
@@ -204,7 +204,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: 24.18.0
+          node-version: 24.18.1
           cache: pnpm
 
       - name: Install dependencies
@@ -244,8 +244,8 @@ jobs:
 
       - name: Dump compose logs
         if: always()
-        run: docker compose -f compose.production-parity.yml logs --no-color
+        run: docker compose -f compose.production-parity.yml --env-file .env.production-parity logs --no-color
 
       - name: Tear down production-parity stack
         if: always()
-        run: docker compose -f compose.production-parity.yml down -v
+        run: docker compose -f compose.production-parity.yml --env-file .env.production-parity down -v

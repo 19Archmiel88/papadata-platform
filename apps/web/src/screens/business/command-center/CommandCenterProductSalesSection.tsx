@@ -1,25 +1,27 @@
+import {
+  useId,
+  useState,
+} from 'react';
 import type {
   DataRow,
 } from '../../../../../../contracts/component-shared';
 import {
-  Button,
   EmptyState,
+  VisuallyHidden,
 } from '../../../design-system';
 import {
   CommandChartTableFallback,
   CommandSectionHeader,
 } from './CommandCenterSectionFrame';
 import {
-  openPapaAssistantForElement,
   productColumns,
 } from './commandCenterOnePageModel';
 
-const productSalesElementId = 'command-product-sales';
 const productViewBox = {
   height: 640,
   plotBottom: 520,
   plotLeft: 216,
-  plotRight: 860,
+  plotRight: 900,
   plotTop: 76,
   rowGap: 52,
   rowHeight: 20,
@@ -38,8 +40,25 @@ type ProductChartRow = {
   readonly quantity: number;
   readonly revenue: number;
   readonly share: number;
-  readonly tone: 'decline' | 'growth' | 'leader' | 'neutral';
 };
+
+/**
+ * Ordinal color: one hue, monotone lightness by rank — products are already
+ * sorted by revenue, so "swapping the order would change the meaning" the
+ * same way funnel stages do. Reuses the funnel's --pd-data-actual hue for a
+ * consistent "this color = a real outcome metric" language across Command
+ * Center, rather than picking a new one per chart.
+ */
+function resolveProductStepFill(index: number, total: number): string {
+  const ratio = total > 1 ? index / (total - 1) : 0;
+  const mixPercent = 100 - ratio * 55;
+
+  return `color-mix(in srgb, var(--pd-data-actual) ${mixPercent.toFixed(1)}%, var(--pd-surface))`;
+}
+
+function resolveProductTooltipX(x: number): number {
+  return x > productViewBox.plotRight - 190 ? x - 210 : x + 14;
+}
 
 const currencyFormatter = new Intl.NumberFormat('pl-PL', {
   currency: 'PLN',
@@ -126,8 +145,12 @@ function formatIntegerValue(value: number): string {
   return integerFormatter.format(value);
 }
 
+// Pre-existing bug, not introduced by this pass: at 24 chars, a mono-font
+// label anchored at plotLeft-18 routinely ran past the rank number's own
+// slot at plotLeft-162 (only ~144 viewBox units of gutter for both) —
+// visually confirmed via screenshot. 16 clears it with room to spare.
 function truncateProductLabel(label: string): string {
-  return label.length > 24 ? `${label.slice(0, 21)}...` : label;
+  return label.length > 16 ? `${label.slice(0, 13)}...` : label;
 }
 
 function buildProductChartRows(
@@ -151,14 +174,6 @@ function buildProductChartRows(
     const share = totalRevenue > 0 ? row.revenue / totalRevenue : 0;
     const cumulativeShare = totalRevenue > 0 ? cumulativeRevenue / totalRevenue : 0;
     const averageUnitRevenue = row.quantity > 0 ? row.revenue / row.quantity : null;
-    const isLeader = index === 0 || share >= 0.22;
-    const tone = isLeader
-      ? 'leader'
-      : row.changePercent !== null && row.changePercent >= 8
-        ? 'growth'
-        : row.changePercent !== null && row.changePercent <= -8
-          ? 'decline'
-          : 'neutral';
 
     return {
       ...row,
@@ -166,20 +181,8 @@ function buildProductChartRows(
       cumulativeShare,
       index,
       share,
-      tone,
     };
   });
-}
-
-function buildLinePath(
-  points: readonly {
-    readonly x: number;
-    readonly y: number;
-  }[],
-): string {
-  return points
-    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`)
-    .join(' ');
 }
 
 function resolveProductInsight(rows: readonly ProductChartRow[]): string {
@@ -211,7 +214,10 @@ function CommandProductPortfolioChart({
 }: {
   readonly productRows: readonly DataRow[];
 }) {
+  const [activeRowId, setActiveRowId] = useState<string | null>(null);
+  const tooltipTitleId = useId();
   const rows = buildProductChartRows(productRows);
+  const activeRow = rows.find((row) => row.id === activeRowId) ?? null;
   const leaderRevenue = rows[0]?.revenue ?? 1;
   const plotWidth = productViewBox.plotRight - productViewBox.plotLeft;
   const plotHeight = productViewBox.plotBottom - productViewBox.plotTop;
@@ -219,14 +225,11 @@ function CommandProductPortfolioChart({
     productViewBox.plotLeft
     + plotWidth * Math.max(0, Math.min(1, value / Math.max(leaderRevenue, 1)))
   );
-  const shareY = (share: number) => (
-    productViewBox.plotBottom - share * plotHeight
-  );
-  const cumulativePoints = rows.map((row, index) => ({
-    x: productViewBox.plotLeft + (plotWidth / Math.max(rows.length - 1, 1)) * index,
-    y: shareY(row.cumulativeShare),
-  }));
-  const linePath = cumulativePoints.length > 0 ? buildLinePath(cumulativePoints) : '';
+
+  function resolveRowY(index: number): number {
+    return productViewBox.plotTop + index * productViewBox.rowGap;
+  }
+
   const topThreeShare = rows.slice(0, 3).reduce((sum, row) => sum + row.share, 0);
   const positiveRows = rows.filter((row) => (row.changePercent ?? 0) > 0).length;
   const negativeRows = rows.filter((row) => (row.changePercent ?? 0) < 0).length;
@@ -272,29 +275,6 @@ function CommandProductPortfolioChart({
         preserveAspectRatio="xMidYMid meet"
         viewBox={`0 0 ${productViewBox.width} ${productViewBox.height}`}
       >
-        <defs>
-          <linearGradient id="command-products-leader" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="var(--pd-data-series-1)" />
-            <stop offset="100%" stopColor="color-mix(in srgb, var(--pd-data-series-1) 62%, var(--pd-data-series-2) 38%)" />
-          </linearGradient>
-          <linearGradient id="command-products-growth" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="var(--pd-data-series-2)" />
-            <stop offset="100%" stopColor="color-mix(in srgb, var(--pd-data-series-2) 74%, var(--pd-text) 26%)" />
-          </linearGradient>
-          <linearGradient id="command-products-decline" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="var(--pd-data-series-4)" />
-            <stop offset="100%" stopColor="color-mix(in srgb, var(--pd-data-series-4) 72%, var(--pd-data-series-1) 28%)" />
-          </linearGradient>
-          <linearGradient id="command-products-neutral" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="color-mix(in srgb, var(--pd-data-series-3) 76%, var(--pd-text) 24%)" />
-            <stop offset="100%" stopColor="color-mix(in srgb, var(--pd-data-series-3) 42%, transparent)" />
-          </linearGradient>
-          <linearGradient id="command-products-pareto" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="var(--pd-data-series-2)" />
-            <stop offset="100%" stopColor="var(--pd-data-series-1)" />
-          </linearGradient>
-        </defs>
-
         <rect
           className="pd-command-products-chart__plot-bg"
           height={plotHeight + 74}
@@ -327,26 +307,6 @@ function CommandProductPortfolioChart({
           );
         })}
 
-        {[0.5, 0.8, 1].map((share) => (
-          <g key={`product-share-${share}`}>
-            <line
-              className="pd-command-products-chart__pareto-grid"
-              x1={productViewBox.plotLeft}
-              x2={productViewBox.plotRight}
-              y1={shareY(share)}
-              y2={shareY(share)}
-            />
-            <text
-              className="pd-command-products-chart__share-label"
-              textAnchor="start"
-              x={productViewBox.plotRight + 12}
-              y={shareY(share) + 4}
-            >
-              {formatPercent(share)}
-            </text>
-          </g>
-        ))}
-
         <text
           className="pd-command-products-chart__axis-title"
           x={productViewBox.plotLeft}
@@ -354,27 +314,16 @@ function CommandProductPortfolioChart({
         >
           Przychód produktu
         </text>
-        <text
-          className="pd-command-products-chart__axis-title"
-          textAnchor="end"
-          x={productViewBox.plotRight + 74}
-          y={productViewBox.plotTop - 56}
-        >
-          Kumulacja udziału
-        </text>
 
         {rows.map((row, index) => {
-          const y = productViewBox.plotTop + index * productViewBox.rowGap;
+          const y = resolveRowY(index);
           const barWidth = Math.max(scaleX(row.revenue) - productViewBox.plotLeft, 4);
           const averageLabel = row.averageUnitRevenue === null
             ? '—'
             : formatCompactCurrency(row.averageUnitRevenue);
 
           return (
-            <g
-              data-tone={row.tone}
-              key={row.id}
-            >
+            <g key={row.id}>
               <text
                 className="pd-command-products-chart__rank"
                 textAnchor="end"
@@ -394,7 +343,7 @@ function CommandProductPortfolioChart({
               <rect
                 className="pd-command-products-chart__track"
                 height={productViewBox.rowHeight}
-                rx="7"
+                rx="6"
                 width={plotWidth}
                 x={productViewBox.plotLeft}
                 y={y}
@@ -402,7 +351,8 @@ function CommandProductPortfolioChart({
               <rect
                 className="pd-command-products-chart__bar"
                 height={productViewBox.rowHeight}
-                rx="7"
+                rx="6"
+                style={{ fill: resolveProductStepFill(index, rows.length) }}
                 width={barWidth}
                 x={productViewBox.plotLeft}
                 y={y}
@@ -419,7 +369,7 @@ function CommandProductPortfolioChart({
                 x={productViewBox.plotLeft}
                 y={y + 41}
               >
-                {formatIntegerValue(row.quantity)} szt. · średnio {averageLabel}/szt.
+                {formatIntegerValue(row.quantity)} szt. · średnio {averageLabel}/szt. · skum. {formatPercent(row.cumulativeShare)}
               </text>
               <text
                 className="pd-command-products-chart__change"
@@ -430,37 +380,66 @@ function CommandProductPortfolioChart({
               >
                 zmiana {formatSignedPercent(row.changePercent === null ? null : row.changePercent / 100)}
               </text>
+
+              {/* Mouse-only hit target — the whole chart is aria-hidden (the
+                  real data lives in the always-reachable "Pokaż dane" table),
+                  so a tab-focusable descendant here would be the
+                  focusable-but-hidden anti-pattern, not an improvement. */}
+              <rect
+                className="pd-command-products-chart__hit-area"
+                height={productViewBox.rowHeight + 26}
+                width={plotWidth}
+                x={productViewBox.plotLeft}
+                y={y - 20}
+                onMouseEnter={() => setActiveRowId(row.id)}
+                onMouseLeave={() => setActiveRowId((current) => (current === row.id ? null : current))}
+              />
             </g>
           );
         })}
 
-        {linePath ? (
-          <path
-            className="pd-command-products-chart__pareto-line"
-            d={linePath}
-          />
-        ) : null}
-
-        {cumulativePoints.map((point, index) => (
-          <g key={`pareto-point-${rows[index]?.id ?? index}`}>
-            <circle
-              className="pd-command-products-chart__pareto-point"
-              cx={point.x}
-              cy={point.y}
-              r="5"
+        {activeRow ? (
+          <g
+            className="pd-command-products-chart__tooltip"
+            transform={`translate(${resolveProductTooltipX(scaleX(activeRow.revenue))}, ${resolveRowY(activeRow.index) - 8})`}
+          >
+            <rect
+              aria-labelledby={tooltipTitleId}
+              height="112"
+              rx="9"
+              width="212"
             />
-            {index === 2 || index === cumulativePoints.length - 1 ? (
-              <text
-                className="pd-command-products-chart__pareto-value"
-                textAnchor="middle"
-                x={point.x}
-                y={point.y - 12}
-              >
-                {formatPercent(rows[index]?.cumulativeShare ?? 0)}
-              </text>
-            ) : null}
+            <text
+              className="pd-command-products-chart__tooltip-title"
+              id={tooltipTitleId}
+              x="14"
+              y="22"
+            >
+              {activeRow.product}
+            </text>
+            <text
+              className="pd-command-products-chart__tooltip-value"
+              x="14"
+              y="42"
+            >
+              {formatCurrency(activeRow.revenue)}
+            </text>
+            <text
+              className="pd-command-products-chart__tooltip-detail"
+              x="14"
+              y="61"
+            >
+              Udział: {formatPercent(activeRow.share)} · skumulowany {formatPercent(activeRow.cumulativeShare)}
+            </text>
+            <text
+              className="pd-command-products-chart__tooltip-detail"
+              x="14"
+              y="79"
+            >
+              {formatIntegerValue(activeRow.quantity)} szt. · zmiana {formatSignedPercent(activeRow.changePercent === null ? null : activeRow.changePercent / 100)}
+            </text>
           </g>
-        ))}
+        ) : null}
       </svg>
 
       <ul className="pd-command-products-visual__metrics">
@@ -493,21 +472,14 @@ export function CommandCenterProductSalesSection({
       aria-labelledby="command-center-products-title"
       className="pd-command-center-one-page__section"
     >
-      <CommandSectionHeader
-        actions={(
-          <Button
-            onClick={() => openPapaAssistantForElement(productSalesElementId)}
-            size="small"
-            variant="secondary"
-          >
-            Analizuj z Papą
-          </Button>
-        )}
-        description="Ranking produktów według przychodu pozwala szybko znaleźć pozycje, które realnie przesuwają wynik okresu."
-        eyebrow="Produkty"
-        title="Najlepiej sprzedające się produkty"
-        titleId="command-center-products-title"
-      />
+      <VisuallyHidden as="div">
+        <CommandSectionHeader
+          description="Ranking produktów według przychodu pozwala szybko znaleźć pozycje, które realnie przesuwają wynik okresu."
+          eyebrow="Produkty"
+          title="Najlepiej sprzedające się produkty"
+          titleId="command-center-products-title"
+        />
+      </VisuallyHidden>
       {productRows.length === 0 ? (
         <EmptyState
           message="Kontrakt Centrum Dowodzenia nie dostarcza jeszcze sprzedaży w podziale na produkty dla wybranego zakresu."

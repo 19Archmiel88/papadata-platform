@@ -41,6 +41,8 @@ function formatPercentOfPlan(value: number | null, planTotal: number | null): st
   return `${percentFormatter.format(value / planTotal)} benchmarku`;
 }
 
+const COLLAPSED_ROW_LIMIT = 5;
+
 export function CommandCenterPlanExecutionSection({
   forecastMethod,
   forecastTotal,
@@ -48,7 +50,12 @@ export function CommandCenterPlanExecutionSection({
   trajectory,
 }: CommandCenterPlanExecutionSectionProps) {
   const [isTableVisible, setIsTableVisible] = useState(false);
+  const [areAllRowsVisible, setAreAllRowsVisible] = useState(false);
   const tableId = useId();
+  const visibleTrajectoryRows = areAllRowsVisible
+    ? trajectory
+    : trajectory.slice(0, COLLAPSED_ROW_LIMIT);
+  const hiddenRowCount = trajectory.length - visibleTrajectoryRows.length;
 
   const actualTotal = trajectory.some((point) => point.actual !== null)
     ? trajectory.reduce((sum, point) => sum + (point.actual ?? 0), 0)
@@ -149,7 +156,7 @@ export function CommandCenterPlanExecutionSection({
             </p>
 
             <div className="pd-command-plan-summary-card__meta">
-              {card.helper ? <span>{card.helper}</span> : null}
+              {card.helper ? <span className="pd-command-plan-summary-card__helper">{card.helper}</span> : null}
               <span>{card.meta}</span>
             </div>
           </article>
@@ -167,6 +174,19 @@ export function CommandCenterPlanExecutionSection({
               Dzienny przychód netto, dzienny benchmark poprzedniego okresu i liniowa projekcja pozostałych dni.
             </p>
           </div>
+        </div>
+
+        <CommandCenterPlanTrajectoryChart
+          forecastTotal={forecastTotal}
+          planTotal={planTotal}
+          trajectory={trajectory}
+        />
+
+        <div className="pd-command-plan-table-toolbar">
+          <div className="pd-command-plan-table-toolbar__copy">
+            <span>Szczegółowa tabela trajektorii — dokładnie te dane, które renderuje wykres powyżej</span>
+            <span>Jednostka: PLN</span>
+          </div>
 
           <button
             aria-controls={tableId}
@@ -179,22 +199,11 @@ export function CommandCenterPlanExecutionSection({
           </button>
         </div>
 
-        <CommandCenterPlanTrajectoryChart
-          forecastTotal={forecastTotal}
-          planTotal={planTotal}
-          trajectory={trajectory}
-        />
-
         {isTableVisible ? (
           <div
             className="pd-command-plan-table"
             id={tableId}
           >
-            <div className="pd-command-plan-table__header">
-              <span>Szczegółowa tabela trajektorii — dokładnie te dane, które renderuje wykres powyżej</span>
-              <span>Jednostka: PLN</span>
-            </div>
-
             <div className="pd-command-plan-table__scroll">
               <table>
                 <thead>
@@ -208,7 +217,7 @@ export function CommandCenterPlanExecutionSection({
                 </thead>
 
                 <tbody>
-                  {trajectory.map((point) => {
+                  {visibleTrajectoryRows.map((point) => {
                     const observed = point.actual ?? point.forecast;
                     const rowGap = observed === null || point.plan <= 0
                       ? null
@@ -227,6 +236,17 @@ export function CommandCenterPlanExecutionSection({
                 </tbody>
               </table>
             </div>
+
+            {trajectory.length > COLLAPSED_ROW_LIMIT ? (
+              <button
+                aria-expanded={areAllRowsVisible}
+                className="pd-command-plan-table__expand"
+                onClick={() => setAreAllRowsVisible((current) => !current)}
+                type="button"
+              >
+                {areAllRowsVisible ? 'Pokaż mniej' : `Pokaż więcej (${hiddenRowCount})`}
+              </button>
+            ) : null}
           </div>
         ) : null}
       </article>

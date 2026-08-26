@@ -106,9 +106,9 @@ Każdy element Storybooka ma mieć: PL/EN, light/dark, desktop/tablet/mobile, ke
 | P2.02 | TECH | Dodać guard na placeholdery w dokumentacji | Brak artefaktów generatora w docs | `scripts/check-doc-placeholders.mjs` |
 | P2.03 | TECH | Dodać guard na duplikaty klas CSS | Wyjątki tylko dla fundamentów i wariantów runtime | `scripts/check-css-duplicate-classes.mjs` |
 | P2.04 | TECH | Dodać guard na lokalne hex kolory poza tokenami | Brak lokalnych palet w stories | `scripts/check-css-local-hex.mjs` |
-| P2.05 | TECH | Uporządkować raporty root | Tylko aktualne raporty, bez historycznych PASS jako gate | `RAPORT-WALIDACJI.md`, `RAPORT-KOMPLETNOSCI-I-JAKOSCI.md` |
-| P2.06 | TECH | Zaktualizować `RAPORT-WALIDACJI.md` po finalnym checku | Liczby zgodne z repo | `RAPORT-WALIDACJI.md` |
-| P2.07 | TECH | Zaktualizować `RAPORT-KOMPLETNOSCI-I-JAKOSCI.md` | Bez nieaktualnych ostrzeżeń | `RAPORT-KOMPLETNOSCI-I-JAKOSCI.md` |
+| P2.05 | TECH | Uporządkować raporty root | Tylko aktualne raporty, bez historycznych PASS jako gate | `docs/audits/2026-08/raport-walidacji-2026-08-14.md`, `docs/audits/2026-08/raport-kompletnosci-i-jakosci-2026-08-14.md` |
+| P2.06 | TECH | Zaktualizować `docs/audits/2026-08/raport-walidacji-2026-08-14.md` po finalnym checku | Liczby zgodne z repo | `docs/audits/2026-08/raport-walidacji-2026-08-14.md` |
+| P2.07 | TECH | Zaktualizować `docs/audits/2026-08/raport-kompletnosci-i-jakosci-2026-08-14.md` | Bez nieaktualnych ostrzeżeń | `docs/audits/2026-08/raport-kompletnosci-i-jakosci-2026-08-14.md` |
 | P2.08 | TECH | Rozdzielić raport techniczny od akceptacji właścicielskiej | Brak mylenia PASS z owner approval | `OWNER-APPROVAL-CRITERIA.md` |
 | P2.09 | TECH | Dodać indeks artefaktów browser audit | Łatwe śledzenie screenshotów i JSON | `BROWSER-AUDIT-INDEX.md` |
 | P2.10 | TECH | Znormalizować statusy `legal-template` w raportach | Brak sugestii produkcyjnego prawa | raporty root |

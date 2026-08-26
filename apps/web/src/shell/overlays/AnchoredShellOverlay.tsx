@@ -27,7 +27,7 @@ export type AnchoredShellOverlayProps = {
   readonly open: boolean;
   readonly title: string;
   readonly trigger: ReactElement;
-  readonly width?: 'medium' | 'wide';
+  readonly width?: 'narrow' | 'medium' | 'wide';
 };
 
 export function AnchoredShellOverlay({

@@ -72,7 +72,25 @@ export class BffIdentitySessionService {
     const email = readRequiredString(payload.data.email);
     const displayName = readRequiredString(payload.data.displayName);
     const memberships = readMemberships(payload.data.memberships);
-    const active = memberships[0];
+    await this.establishSession(reply, { displayName, email, memberships, userId });
+  }
+
+  // Shared by password login/register and OAuth login/register/
+  // accept_invitation: both paths resolve to the exact same
+  // {userId, email, displayName, memberships} bootstrap shape, so both
+  // must issue the session cookie identically — one real mechanism, not a
+  // parallel one for OAuth.
+  async establishSession(
+    reply: FastifyReply,
+    bootstrap: {
+      readonly userId: string;
+      readonly email: string;
+      readonly displayName: string;
+      readonly memberships: readonly BffSessionMembership[];
+    },
+    extraData: Readonly<Record<string, unknown>> = {},
+  ): Promise<BffSessionRecord> {
+    const active = bootstrap.memberships[0];
     if (!active) throw new UnauthorizedException("No active membership.");
     const expiresAt = new Date(Date.now() + this.config.cookieMaxAgeSeconds * 1_000).toISOString();
     const session: BffSessionRecord = {
@@ -81,12 +99,12 @@ export class BffIdentitySessionService {
       authLevel: "session",
       capabilities: active.capabilities,
       expiresAt,
-      memberships,
+      memberships: bootstrap.memberships,
       revokedAt: null,
       sessionId: randomUUID(),
       stepUpExpiresAt: null,
-      user: { displayName, email },
-      userId,
+      user: { displayName: bootstrap.displayName, email: bootstrap.email },
+      userId: bootstrap.userId,
     };
     await this.sessions.saveSession(session);
     reply
@@ -103,14 +121,16 @@ export class BffIdentitySessionService {
       )
       .send({
         data: {
+          ...extraData,
           session: publicSession(session),
           user: {
-            userId,
-            email,
-            displayName,
+            userId: bootstrap.userId,
+            email: bootstrap.email,
+            displayName: bootstrap.displayName,
           },
         },
       });
+    return session;
   }
 
   async logout(request: FastifyRequest, reply: FastifyReply): Promise<void> {

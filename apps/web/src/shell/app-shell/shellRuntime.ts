@@ -46,7 +46,7 @@ const runtimeNavigation: readonly RuntimeGroup[] = [
     id: 'ai',
     label: 'AI',
     items: [
-      { capabilities: ['ai.assistant.run', 'ai.use', 'ai.read'], icon: 'assistant', id: 'papa', label: 'Laboratorium Papa Asystenta', path: '/app/papa/panel-kontekstowy-papa' },
+      { capabilities: ['ai.assistant.run', 'ai.use', 'ai.read'], icon: 'assistant', id: 'papa', label: 'Laboratorium Papa Asystenta', path: '/app/papa' },
     ],
   },
   {
@@ -117,7 +117,7 @@ export function createRuntimeShellCommands(
           id: 'open-papa-assistant',
           keywords: ['papa', 'asystent', 'ai'],
           label: 'Otwórz Papa Asystenta',
-          path: '/app/papa/panel-kontekstowy-papa',
+          path: '/app/papa',
           section: 'Papa',
         },
         {
@@ -126,7 +126,7 @@ export function createRuntimeShellCommands(
           id: 'analyze-current-screen',
           keywords: ['analiza', 'ekran', 'papa'],
           label: 'Analizuj bieżący ekran',
-          path: '/app/papa/panel-kontekstowy-papa',
+          path: '/app/papa',
           section: 'Papa',
         },
       ]

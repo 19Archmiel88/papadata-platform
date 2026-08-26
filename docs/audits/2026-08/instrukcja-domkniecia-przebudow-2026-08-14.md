@@ -42,7 +42,7 @@ Po zakończeniu jednego zakresu automatycznie przechodź do następnego.
 
 Dopiero po pełnym zakończeniu przebudowy 60 przejdź do:
 
-`/home/papadata/papadata-platform/audyt14082026.md`
+`/home/papadata/papadata-platform/docs/audits/2026-08/instrukcja-domkniecia-przebudow-2026-08-14.md`
 
 Od tego momentu FAZA 0 jest zakończona i zaczynają obowiązywać wszystkie dalsze instrukcje tego prompta.
 
@@ -82,7 +82,7 @@ git log -10 --oneline --decorate
 
 Następnie przeanalizuj aktualne:
 
-- `/home/papadata/papadata-platform/audyt14082026.md`,
+- `/home/papadata/papadata-platform/docs/audits/2026-08/instrukcja-domkniecia-przebudow-2026-08-14.md`,
 - `docs/`,
 - `docs/storybook/`,
 - `docs/specyfikacja-docelowa/`,
@@ -96,7 +96,7 @@ Następnie przeanalizuj aktualne:
 
 Repozytorium jest źródłem prawdy.
 
-`audyt14082026.md` jest punktem wejścia i planem pracy, ale jego informacje muszą być porównane z aktualnym stanem kodu.
+`docs/audits/2026-08/instrukcja-domkniecia-przebudow-2026-08-14.md` jest punktem wejścia i planem pracy, ale jego informacje muszą być porównane z aktualnym stanem kodu.
 
 Nie wykonuj destrukcyjnych resetów, force push, `git clean -fd`, rebase ani usuwania nieswoich zmian.
 
@@ -313,7 +313,7 @@ Aktualizuj odpowiednio:
 - MANIFEST,
 - checksumy,
 - release readiness,
-- `audyt14082026.md`.
+- `docs/audits/2026-08/instrukcja-domkniecia-przebudow-2026-08-14.md`.
 
 Nie aktualizuj wszystkiego mechanicznie.
 
@@ -573,7 +573,7 @@ Jeżeli commit/push jednoznacznie należą do aktualnego zadania, wykonaj je dop
 
 # Najważniejsza zasada
 
-**Najpierw bezwzględnie zakończ przebudowy 41 -> 50 -> 60 wyłącznie w kodzie i bez testów/checków. Dopiero po zakończeniu 60 przejdź do `audyt14082026.md` i rozpocznij pełny cykl audytu, implementacji i walidacji. Następnie nie kończ po wykonaniu pierwotnej listy — kończ dopiero wtedy, gdy lista jest wykonana, wszystkie naprawialne problemy odkryte po drodze są zamknięte, pełna walidacja przechodzi, a ponowny audyt nie znajduje kolejnego naprawialnego problemu należącego do bieżącego zakresu.**
+**Najpierw bezwzględnie zakończ przebudowy 41 -> 50 -> 60 wyłącznie w kodzie i bez testów/checków. Dopiero po zakończeniu 60 przejdź do `docs/audits/2026-08/instrukcja-domkniecia-przebudow-2026-08-14.md` i rozpocznij pełny cykl audytu, implementacji i walidacji. Następnie nie kończ po wykonaniu pierwotnej listy — kończ dopiero wtedy, gdy lista jest wykonana, wszystkie naprawialne problemy odkryte po drodze są zamknięte, pełna walidacja przechodzi, a ponowny audyt nie znajduje kolejnego naprawialnego problemu należącego do bieżącego zakresu.**
 
 # Audyt projektu, plan i realizacja Storybook - 2026-08-14
 
@@ -581,7 +581,7 @@ Jeżeli commit/push jednoznacznie należą do aktualnego zadania, wykonaj je dop
 
 Audyt objal biezacy stan repozytorium `/home/papadata/papadata-platform`, ze szczegolnym naciskiem na katalog `docs/`, specyfikacje docelowa, rejestry, kontrakty, Storybook, backend, testy i build. Po audycie wykonano zakres Storybook wskazany 2026-08-14: katalog gotowosci komponentow bazowych oraz katalog komponentow analitycznych i domenowych.
 
-Praca wykonana na branchu `storybook-components-audit-14082026`. Dokument `audyt14082026.md` zostal przeniesiony na ten branch i zaktualizowany po implementacji.
+Praca wykonana na branchu `storybook-components-audit-14082026`. Dokument `docs/audits/2026-08/instrukcja-domkniecia-przebudow-2026-08-14.md` zostal przeniesiony na ten branch i zaktualizowany po implementacji.
 
 Aktualizacja nazewnictwa i planu wykonana na branchu `storybook-polish-docs-plan-14082026`. Zakres aktualizacji: polskie nazwy technicznych eksportow nowych stories, polskie etykiety tabel w trybie PL, kontrola zgodnosci 00.21/15.11 z dokumentacja, wykonanie P0 z listy Storybook przez katalogi 00.22/15.12 oraz rozszerzenie planu o kolejne story z backlogu.
 

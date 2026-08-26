@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { CommandCenterRecord } from "../../../../../../contracts/api-schemas.ts";
-import { buildExecutiveKpiRecords, commandCenterOnePageSectionIds } from "./commandCenterOnePageModel.ts";
+import {
+  buildExecutiveKpiRecords,
+  commandCenterOnePageSectionIds,
+  resolveMetricFreshnessLabel,
+  resolveMetricSourceLabel,
+} from "./commandCenterOnePageModel.ts";
 
 function record(
   metricId: string,
@@ -102,6 +107,44 @@ test("buildExecutiveKpiRecords maps an explicit canonical CPA record, including 
   assert.equal(cpa?.readiness, "unavailable");
 });
 
+test("resolveMetricFreshnessLabel reads the real lastSuccessfulSyncAt checkpoint over the generic readiness guess", () => {
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60_000).toISOString();
+  const withCheckpoint = { ...record("m", "Przychód", 1_000), lastSuccessfulSyncAt: fiveMinutesAgo };
+
+  const label = resolveMetricFreshnessLabel(withCheckpoint);
+
+  assert.match(label, /temu$/);
+  assert.notEqual(label, "świeże źródła");
+});
+
+test("resolveMetricFreshnessLabel falls back to the generic readiness label when there is no real checkpoint", () => {
+  const withoutCheckpoint = record("m", "Przychód", 1_000);
+
+  assert.equal(resolveMetricFreshnessLabel(withoutCheckpoint), "świeże źródła");
+});
+
+test("resolveMetricFreshnessLabel ignores a stale lastSuccessfulSyncAt from a non-ready record", () => {
+  // readiness !== 'ready' still takes the switch's own branch — a checkpoint
+  // on a stale/partial/unavailable record must not be read as "fresh".
+  const stale = { ...record("m", "Przychód", 1_000), lastSuccessfulSyncAt: new Date().toISOString(), readiness: "stale" as const };
+
+  assert.equal(resolveMetricFreshnessLabel(stale), "wymaga odświeżenia");
+});
+
+test("resolveMetricSourceLabel prefers real providers over guessing from the label text", () => {
+  const woo = { ...record("m", "Przychód", 1_000), providers: ["woocommerce"] };
+  const ads = { ...record("m", "ROAS blended", 4, "ratio"), providers: ["google_ads", "meta_ads"] };
+
+  assert.equal(resolveMetricSourceLabel(woo), "WooCommerce");
+  assert.equal(resolveMetricSourceLabel(ads), "Google Ads + Meta Ads");
+});
+
+test("resolveMetricSourceLabel falls back to label-text guessing when providers are absent", () => {
+  const withoutProviders = record("m", "Ruch GA4", 1_000);
+
+  assert.equal(resolveMetricSourceLabel(withoutProviders), "GA4");
+});
+
 test("commandCenterOnePageSectionIds defines the complete one-page runtime order", () => {
   // Regression test for a real bug: the runtime one-page (CommandCenterOnePage)
   // and its section nav rail (CommandCenterWorkspace) previously hardcoded
@@ -111,8 +154,8 @@ test("commandCenterOnePageSectionIds defines the complete one-page runtime order
     "command-section-plan",
     "command-section-drivers",
     "command-section-funnel",
-    "command-section-traffic",
     "command-section-products",
+    "command-section-traffic",
     "command-section-customers",
   ]);
 });

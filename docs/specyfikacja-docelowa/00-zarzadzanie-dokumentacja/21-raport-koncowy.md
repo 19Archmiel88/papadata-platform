@@ -11,7 +11,7 @@ work_prerequisite: "Przed wykonaniem prac należy zapoznać się z tym dokumente
 
 # Raport końcowy — specyfikacja docelowa PapaData
 
-Pakiet format legacy zastępuje boilerplate kontraktami rozdzielonymi według typu. Security i mobile zachowują pełne źródła. Ekrany używają operation IDs oraz indywidualnych komponentów. Wynik walidacji znajduje się w głównym `RAPORT-WALIDACJI.md`.
+Pakiet format legacy zastępuje boilerplate kontraktami rozdzielonymi według typu. Security i mobile zachowują pełne źródła. Ekrany używają operation IDs oraz indywidualnych komponentów. Wynik walidacji znajduje się w głównym `docs/audits/2026-08/raport-walidacji-2026-08-14.md`.
 
 
 ## Utrzymanie dokumentu 1.0

@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-14T12:32:21.557Z",
-  "gitHead": "unavailable",
+  "generatedAt": "2026-08-26T12:53:33.550Z",
+  "gitHead": "c8d8c49792e36c17a2eadd8279df50ee1c0aab6f",
   "releaseName": "backend-migration-implementation-2026-08",
   "targetReleaseClaimed": false,
   "checks": {
     "release": {
       "status": "pass",
-      "output": "BACKEND_RELEASE_SCOPE=PASS operations=272 target=212 providers=7 release=backend-migration-implementation-2026-08"
+      "output": "BACKEND_RELEASE_SCOPE=PASS operations=281 target=218 providers=7 release=backend-migration-implementation-2026-08"
     },
     "security": {
       "status": "pass",
       "output": "BACKEND_SECURITY_CONTROLS=PASS controls=30 acceptance_pending=22"
     }
   },
-  "operationCount": 272,
+  "operationCount": 281,
   "controlCount": 30,
   "acceptancePending": [
     "AUD-002",
@@ -41,7 +41,7 @@
     "AUD-030"
   ],
   "hashes": {
-    "releaseScope": "3f40b31cd9ee6677034e149b1f5fcc171435c16d5f57a2d28fbc85ef88513a5a",
+    "releaseScope": "d2490e004b7e525c61fb833f953c2400e37b9857fffa91b400107d76eade2556",
     "securityControls": "8b2ed6cd312c9d06776b5d2553e895c2bb41b7d4c3040a8c337a39dd50940ae5"
   }
 }

@@ -11,12 +11,15 @@ import {
 } from "./security.service.js";
 import { BFF_CONFIG } from "./tokens.js";
 
+// api/v1/auth/oauth/start and .../callback are deliberately NOT here —
+// they now have a real, dedicated handler (BffOAuthService via
+// ContractAuthController) instead of this generic pass-through, since
+// OAuth login/register must establish a real BFF session cookie the same
+// way password login does, which this generic proxy cannot do.
 const publicContractPaths = [
   "api/v1/auth/access/blocked",
   "api/v1/auth/email/resend",
   "api/v1/auth/email/verify",
-  "api/v1/auth/oauth/callback",
-  "api/v1/auth/oauth/start",
   "api/v1/auth/password/recovery/request",
   "api/v1/auth/password/recovery/token/validate",
   "api/v1/auth/password/reset",

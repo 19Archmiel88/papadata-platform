@@ -1,11 +1,13 @@
 export {
   PasswordField,
+  resolvePasswordStrengthLevel,
 } from './PasswordField';
 export {
   TextField,
 } from './TextField';
 export type {
   PasswordFieldProps,
+  PasswordStrengthLevel,
 } from './PasswordField';
 export type {
   TextFieldProps,

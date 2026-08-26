@@ -1,3 +1,7 @@
+import {
+  useEffect,
+  useState,
+} from 'react';
 import { useSession } from '../../app/providers';
 import {
   navigate,
@@ -6,6 +10,7 @@ import {
 import {
   bffClient,
   type BffSession,
+  type OAuthAvailability,
 } from '../../shared/api/bffClient';
 import {
   AuthSurface,
@@ -45,6 +50,21 @@ export function AuthPage({
   const invitationId = mode === 'accept-invite' ? params.get('invitationId') : null;
   const invitationToken = mode === 'accept-invite' ? params.get('token') : null;
   const showLoggedOut = mode === 'login' && params.get('loggedOut') === '1';
+  const [oauthAvailability, setOauthAvailability] = useState<OAuthAvailability | undefined>(undefined);
+
+  useEffect(() => {
+    let cancelled = false;
+    bffClient.readAuthStatus()
+      .then((status) => {
+        if (!cancelled) setOauthAvailability(status.oauth);
+      })
+      .catch(() => {
+        // Leave oauthAvailability undefined — the buttons treat that the
+        // same as "configuration_required" for both providers, a safe
+        // default if the status call itself fails.
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   function navigateWithinAuth(path: string) {
     if (!rawReturnTo || !isAuthPath(path)) {
@@ -76,6 +96,7 @@ export function AuthPage({
         initialInvitationToken={invitationToken}
         initialResetToken={resetToken}
         mode={mode}
+        oauthAvailability={oauthAvailability}
         onAcceptInvitation={async (input) => {
           const { displayName, invitationId: id, password, token } = input;
           const result = await bffClient.acceptInvitation({
@@ -100,6 +121,26 @@ export function AuthPage({
           navigate(returnTo, { replace: true });
         }}
         onNavigate={navigateWithinAuth}
+        onOAuthContinue={async ({ intent, provider }) => {
+          if (intent === 'link_account') {
+            const { redirectUrl } = await bffClient.linkOAuthAccount({ provider, returnTo });
+            window.location.assign(redirectUrl);
+            return;
+          }
+          if (intent === 'reauth') {
+            const { redirectUrl } = await bffClient.startOAuthReauth({ provider, returnTo });
+            window.location.assign(redirectUrl);
+            return;
+          }
+          const { redirectUrl } = await bffClient.startOAuth({
+            intent,
+            provider,
+            returnTo,
+            ...(invitationId ? { invitationId } : {}),
+            ...(invitationToken ? { invitationToken } : {}),
+          });
+          window.location.assign(redirectUrl);
+        }}
         onPasswordRecoveryRequest={(input) =>
           bffClient.requestPasswordRecovery(input)}
         onPasswordReset={async (input) => {

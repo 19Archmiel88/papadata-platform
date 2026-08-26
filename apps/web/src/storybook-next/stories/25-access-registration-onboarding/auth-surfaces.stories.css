@@ -36,6 +36,26 @@
   min-width: 0;
 }
 
+.pd-s25-auth-components {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pd-space-5);
+  width: 100%;
+  min-width: 0;
+  padding: var(--pd-space-5);
+  background: var(--pdauth-canvas);
+  color: var(--pdauth-ink);
+}
+
+.pd-s25-auth-component {
+  display: grid;
+  align-content: center;
+  min-width: 0;
+  min-height: 11rem;
+  padding: var(--pd-space-5);
+  background: var(--pdauth-surface);
+}
+
 .pd-s25-flow-panel__header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr);
@@ -133,6 +153,10 @@
   }
 
   .pd-s25-flow-panel__header {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-s25-auth-components {
     grid-template-columns: 1fr;
   }
 }

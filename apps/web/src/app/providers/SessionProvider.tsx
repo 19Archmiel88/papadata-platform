@@ -43,6 +43,11 @@ type SessionContextValue = {
   readonly register: (input: RegisterInput) => Promise<BffSession>;
   readonly logout: () => Promise<void>;
   readonly refresh: () => Promise<void>;
+  // For flows whose session-establishing call doesn't go through login()/
+  // register() directly — currently only the OAuth callback landing page,
+  // which already has the fresh {session, user} in its own response and
+  // shouldn't need a second round-trip to /session just to apply it.
+  readonly applySession: (session: BffSession, user: AuthenticatedUser | null) => void;
   readonly selectWorkspace: (workspaceId: string) => Promise<BffSession>;
   readonly stepUp: (code: string, operationScope: string) => Promise<BffSession>;
 };
@@ -132,6 +137,7 @@ export function SessionProvider({
   }, []);
 
   const value = useMemo<SessionContextValue>(() => ({
+    applySession: applyAuthenticated,
     error,
     login,
     logout,
@@ -142,7 +148,7 @@ export function SessionProvider({
     status,
     stepUp,
     user,
-  }), [error, login, logout, refresh, register, selectWorkspace, session, status, stepUp, user]);
+  }), [applyAuthenticated, error, login, logout, refresh, register, selectWorkspace, session, status, stepUp, user]);
 
   return (
     <SessionContext.Provider value={value}>

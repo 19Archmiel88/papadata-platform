@@ -204,16 +204,74 @@
   block-size: 100%;
   border-radius: inherit;
   background: var(--pd-form-strength-color, var(--pd-action-primary));
-  transition: inline-size 180ms ease;
+  transition:
+    inline-size 180ms ease,
+    background-color 180ms ease;
 }
 
+/* Level colors take priority over the single static --pd-form-strength-color
+   fallback above (e.g. auth-theme.css) — weak/fair read as a real warning,
+   not just "the brand color at 25% width", which is what a single fixed
+   color leaves the user to infer. */
+.pd-form-control__strength-bar[data-level='weak'] .pd-form-control__strength-fill {
+  background: var(--pd-status-danger);
+}
+
+.pd-form-control__strength-bar[data-level='fair'] .pd-form-control__strength-fill {
+  background: var(--pd-status-warning);
+}
+
+.pd-form-control__strength-bar[data-level='strong'] .pd-form-control__strength-fill {
+  background: var(--pd-status-success);
+}
+
+.pd-form-control__strength-bar[data-level='excellent'] .pd-form-control__strength-fill {
+  background: var(--pd-brand-accent);
+}
+
+.pd-form-control__strength-label {
+  margin: 0;
+  color: var(--pd-text-muted);
+  font-size: 0.66rem;
+  font-weight: 600;
+}
+
+.pd-form-control__strength-label[data-level='weak'] {
+  color: var(--pd-status-danger);
+}
+
+.pd-form-control__strength-label[data-level='fair'] {
+  color: var(--pd-status-warning);
+}
+
+.pd-form-control__strength-label[data-level='strong'] {
+  color: var(--pd-status-success);
+}
+
+.pd-form-control__strength-label[data-level='excellent'] {
+  color: var(--pd-brand-accent);
+}
+
+/* 2 columns instead of a single stacked list — 4 short requirement labels
+   in one column was needlessly tall (a real contributor to the register
+   form overflowing short/medium viewports with no scroll available). */
 .pd-form-control__requirements {
   display: grid;
-  gap: 0.25rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.15rem 0.75rem;
   margin: 0;
   padding-inline-start: 1rem;
   color: var(--pd-text-muted);
   font-size: 0.66rem;
+}
+
+/* Previously unstyled: data-met was already set per-item but nothing read
+   it, so a met requirement looked identical to an unmet one — the only
+   feedback was re-reading the text. color also recolors the <li> marker
+   (::marker inherits color by default), so the bullet itself flips too. */
+.pd-form-control__requirements li[data-met='true'] {
+  color: var(--pd-status-success);
+  font-weight: 600;
 }
 
 .pd-form-control--file {

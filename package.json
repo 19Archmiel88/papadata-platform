@@ -20,7 +20,7 @@
     "security:audit": "pnpm audit --prod",
     "security:check": "pnpm audit --prod && pnpm build",
     "start:production-parity": "pnpm prepare:production-parity && docker compose -f compose.production-parity.yml --env-file .env.production-parity up --build",
-    "stop:production-parity": "docker compose -f compose.production-parity.yml down",
+    "stop:production-parity": "docker compose -f compose.production-parity.yml --env-file .env.production-parity down",
     "test:production-foundation": "pnpm --filter @papadata/integrations test",
     "test:master-remediation": "pnpm --filter @papadata/integrations test && pnpm --filter @papadata/storage test && pnpm --filter @papadata/ai-runtime test",
     "verify:master-remediation": "pnpm typecheck && pnpm test:master-remediation && pnpm build",
@@ -101,7 +101,7 @@
     ]
   },
   "engines": {
-    "node": "24.18.0",
+    "node": "24.18.1",
     "pnpm": "10.29.3"
   }
 }

@@ -1370,6 +1370,46 @@
     "implementation": "native-hardened-runtime"
   },
   {
+    "operationId": "identity.oauth.callback",
+    "method": "POST",
+    "servicePath": "/v1/identity/oauth/callback",
+    "bffPath": "/api/v1/identity/oauth/callback",
+    "controllerFile": "apps/api/src/production/identity/oauth.controller.ts",
+    "auth": "public",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "identity.oauth.link.start",
+    "method": "POST",
+    "servicePath": "/v1/identity/oauth/link/start",
+    "bffPath": "/api/v1/identity/oauth/link/start",
+    "controllerFile": "apps/api/src/production/identity/oauth.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "identity.oauth.reauth.start",
+    "method": "POST",
+    "servicePath": "/v1/identity/oauth/reauth/start",
+    "bffPath": "/api/v1/identity/oauth/reauth/start",
+    "controllerFile": "apps/api/src/production/identity/oauth.controller.ts",
+    "auth": "mfa+capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "identity.oauth.start",
+    "method": "POST",
+    "servicePath": "/v1/identity/oauth/start",
+    "bffPath": "/api/v1/identity/oauth/start",
+    "controllerFile": "apps/api/src/production/identity/oauth.controller.ts",
+    "auth": "public",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
     "operationId": "identity.register",
     "method": "POST",
     "servicePath": "/v1/identity/register",
@@ -1384,6 +1424,16 @@
     "method": "GET",
     "servicePath": "/health",
     "bffPath": "/api/health",
+    "controllerFile": "apps/api/src/production/health.controller.ts",
+    "auth": "public",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "infrastructure.health.live.healthz",
+    "method": "GET",
+    "servicePath": "/healthz",
+    "bffPath": "/api/healthz",
     "controllerFile": "apps/api/src/production/health.controller.ts",
     "auth": "public",
     "releaseStatus": "enabled",
@@ -1764,17 +1814,57 @@
     "method": "GET",
     "servicePath": "/v1/notifications",
     "bffPath": "/api/v1/notifications",
-    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "controllerFile": "apps/api/src/production/notifications/notification.controller.ts",
     "auth": "capability",
     "releaseStatus": "enabled",
     "implementation": "native-hardened-runtime"
   },
   {
-    "operationId": "notifications.update",
-    "method": "PATCH",
-    "servicePath": "/v1/notifications/{key}",
-    "bffPath": "/api/v1/notifications/{key}",
-    "controllerFile": "apps/api/src/production/product/product.controller.ts",
+    "operationId": "notifications.mark-all-read",
+    "method": "POST",
+    "servicePath": "/v1/notifications/read-all",
+    "bffPath": "/api/v1/notifications/read-all",
+    "controllerFile": "apps/api/src/production/notifications/notification.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "notifications.mark-read",
+    "method": "POST",
+    "servicePath": "/v1/notifications/{id}/read",
+    "bffPath": "/api/v1/notifications/{id}/read",
+    "controllerFile": "apps/api/src/production/notifications/notification.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "notifications.mark-unread",
+    "method": "POST",
+    "servicePath": "/v1/notifications/{id}/unread",
+    "bffPath": "/api/v1/notifications/{id}/unread",
+    "controllerFile": "apps/api/src/production/notifications/notification.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "notifications.snooze",
+    "method": "POST",
+    "servicePath": "/v1/notifications/{id}/snooze",
+    "bffPath": "/api/v1/notifications/{id}/snooze",
+    "controllerFile": "apps/api/src/production/notifications/notification.controller.ts",
+    "auth": "capability",
+    "releaseStatus": "enabled",
+    "implementation": "native-hardened-runtime"
+  },
+  {
+    "operationId": "notifications.unsnooze",
+    "method": "POST",
+    "servicePath": "/v1/notifications/{id}/unsnooze",
+    "bffPath": "/api/v1/notifications/{id}/unsnooze",
+    "controllerFile": "apps/api/src/production/notifications/notification.controller.ts",
     "auth": "capability",
     "releaseStatus": "enabled",
     "implementation": "native-hardened-runtime"
@@ -1995,7 +2085,7 @@
     "servicePath": "/v1/papa/answer",
     "bffPath": "/api/v1/papa/answer",
     "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
-    "auth": "mfa+capability",
+    "auth": "capability",
     "releaseStatus": "compatibility",
     "implementation": "contract-compatibility-runtime"
   },
@@ -2045,7 +2135,7 @@
     "servicePath": "/v1/papa/context/capture",
     "bffPath": "/api/v1/papa/context/capture",
     "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
-    "auth": "mfa+capability",
+    "auth": "capability",
     "releaseStatus": "compatibility",
     "implementation": "contract-compatibility-runtime"
   },
@@ -2095,7 +2185,7 @@
     "servicePath": "/v1/papa/observations",
     "bffPath": "/api/v1/papa/observations",
     "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
-    "auth": "mfa+capability",
+    "auth": "capability",
     "releaseStatus": "compatibility",
     "implementation": "contract-compatibility-runtime"
   },

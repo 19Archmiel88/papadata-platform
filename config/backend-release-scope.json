@@ -7,7 +7,7 @@
     "targetContract": "contracts/openapi-1.0.json",
     "targetOperations": 218,
     "exactTargetOperations": 218,
-    "extraHardeningOperations": 59,
+    "extraHardeningOperations": 63,
     "routeMethodOperationIdParity": true,
     "targetReleaseClaimed": false,
     "semanticConformanceClaimed": false,
@@ -1386,6 +1386,46 @@
       "implementation": "native-hardened-runtime"
     },
     {
+      "operationId": "identity.oauth.callback",
+      "method": "POST",
+      "servicePath": "/v1/identity/oauth/callback",
+      "bffPath": "/api/v1/identity/oauth/callback",
+      "controllerFile": "apps/api/src/production/identity/oauth.controller.ts",
+      "auth": "public",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "identity.oauth.link.start",
+      "method": "POST",
+      "servicePath": "/v1/identity/oauth/link/start",
+      "bffPath": "/api/v1/identity/oauth/link/start",
+      "controllerFile": "apps/api/src/production/identity/oauth.controller.ts",
+      "auth": "mfa+capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "identity.oauth.reauth.start",
+      "method": "POST",
+      "servicePath": "/v1/identity/oauth/reauth/start",
+      "bffPath": "/api/v1/identity/oauth/reauth/start",
+      "controllerFile": "apps/api/src/production/identity/oauth.controller.ts",
+      "auth": "mfa+capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "identity.oauth.start",
+      "method": "POST",
+      "servicePath": "/v1/identity/oauth/start",
+      "bffPath": "/api/v1/identity/oauth/start",
+      "controllerFile": "apps/api/src/production/identity/oauth.controller.ts",
+      "auth": "public",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
       "operationId": "identity.register",
       "method": "POST",
       "servicePath": "/v1/identity/register",
@@ -2061,7 +2101,7 @@
       "servicePath": "/v1/papa/answer",
       "bffPath": "/api/v1/papa/answer",
       "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
-      "auth": "mfa+capability",
+      "auth": "capability",
       "releaseStatus": "compatibility",
       "implementation": "contract-compatibility-runtime"
     },
@@ -2111,7 +2151,7 @@
       "servicePath": "/v1/papa/context/capture",
       "bffPath": "/api/v1/papa/context/capture",
       "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
-      "auth": "mfa+capability",
+      "auth": "capability",
       "releaseStatus": "compatibility",
       "implementation": "contract-compatibility-runtime"
     },
@@ -2161,7 +2201,7 @@
       "servicePath": "/v1/papa/observations",
       "bffPath": "/api/v1/papa/observations",
       "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
-      "auth": "mfa+capability",
+      "auth": "capability",
       "releaseStatus": "compatibility",
       "implementation": "contract-compatibility-runtime"
     },
@@ -4539,7 +4579,7 @@
     "migrated-access-policy": 2,
     "migrated-billing-policy": 17,
     "migrated-data-quality-policy": 4,
-    "native-hardened-runtime": 66,
+    "native-hardened-runtime": 70,
     "native-identity-service": 2,
     "native-integration-service": 4
   },

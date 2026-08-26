@@ -11,7 +11,11 @@ import type {
   ShellUser,
 } from '../app-shell/shellTypes';
 import {
+  Icon,
   SegmentedControl,
+} from '../../design-system';
+import type {
+  PapaDataIconName,
 } from '../../design-system';
 import {
   AnchoredShellOverlay,
@@ -93,16 +97,18 @@ export function AccountPanel({
           <div>
             <strong>{user.displayName}</strong>
             <span>{user.email}</span>
-            <small>{user.role}</small>
+            <small className="pd-shell-account-panel__role">{user.role}</small>
           </div>
         </header>
 
         <AccountGroup label={copy.account}>
           <AccountAction
+            icon="security"
             label={copy.security}
             onClick={() => navigateTo('/app/settings/bezpieczenstwo-konta')}
           />
           <AccountAction
+            icon="security"
             label={copy.sessions}
             onClick={() => navigateTo('/app/settings/sesje')}
           />
@@ -140,6 +146,7 @@ export function AccountPanel({
         <AccountGroup label={copy.activity}>
           <AccountAction
             badge={operationCount > 0 ? String(operationCount) : null}
+            icon="data"
             label={copy.operations}
             onClick={openOperations}
           />
@@ -147,6 +154,7 @@ export function AccountPanel({
 
         <AccountGroup label={copy.help}>
           <AccountAction
+            icon="help"
             label={copy.helpCenter}
             onClick={() => navigateTo('/app/help/strona-glowna-pomocy')}
           />
@@ -189,10 +197,12 @@ function AccountGroup({
 
 function AccountAction({
   badge = null,
+  icon,
   label,
   onClick,
 }: {
   readonly badge?: string | null;
+  readonly icon: PapaDataIconName;
   readonly label: string;
   readonly onClick: () => void;
 }) {
@@ -202,7 +212,10 @@ function AccountAction({
       onClick={onClick}
       type="button"
     >
-      <span>{label}</span>
+      <span aria-hidden="true" className="pd-shell-account-panel__action-icon">
+        <Icon decorative name={icon} size={16} />
+      </span>
+      <span className="pd-shell-account-panel__action-label">{label}</span>
       <span className="pd-shell-account-panel__action-end">
         {badge ? (
           <span className="pd-shell-account-panel__badge">

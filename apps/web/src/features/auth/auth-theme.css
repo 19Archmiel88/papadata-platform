@@ -1,14 +1,13 @@
-@import '@fontsource/newsreader/400.css';
-@import '@fontsource/newsreader/500.css';
-@import '@fontsource/newsreader/600.css';
-
 /**
  * Auth keeps a dedicated semantic namespace for its editorial visual language,
  * but every raw palette value is owned by design-system foundations. This file
- * only aliases foundation tokens for the auth feature.
+ * only aliases foundation tokens for the auth feature. The Newsreader face
+ * itself is loaded once, globally, by foundations.css — not re-imported here
+ * — so any other screen referencing --pd-font-serif doesn't depend on the
+ * Auth route having been visited first.
  */
 .pd-auth-theme {
-  --pdauth-font-display: 'Newsreader', 'Iowan Old Style', 'Georgia', serif;
+  --pdauth-font-display: var(--pd-font-serif);
 
   --pdauth-canvas: var(--pd-auth-canvas);
   --pdauth-surface: var(--pd-auth-surface);
@@ -34,6 +33,9 @@
   --pdauth-cta-ink: var(--pd-auth-cta-ink);
 
   --pdauth-chart-positive: var(--pd-auth-chart-positive);
+  --pdauth-chart-fill-start: color-mix(in srgb, var(--pdauth-accent) 22%, transparent);
+  --pdauth-chart-fill-end: color-mix(in srgb, var(--pdauth-accent) 2%, transparent);
+  --pdauth-chart-shadow: color-mix(in srgb, var(--pdauth-accent) 32%, transparent);
   --pdauth-depth-glow: var(--pd-auth-depth-glow);
   --pdauth-elevated-shadow: var(--pd-auth-elevated-shadow);
 

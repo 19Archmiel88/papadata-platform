@@ -124,6 +124,11 @@ export function WorkspaceSwitcher({
 
             <span className="pd-product-shell__workspace-copy">
               <strong>{activeWorkspace.name}</strong>
+              <small>
+                {activeWorkspace.role}
+                {' · '}
+                {activeWorkspace.statusText}
+              </small>
             </span>
 
             <span aria-hidden="true" className="pd-product-shell__workspace-chevron">
@@ -157,9 +162,11 @@ export function WorkspaceSwitcher({
                 </span>
                 <span className="pd-product-shell__workspace-option-copy">
                   <strong>{workspace.name}</strong>
-                  <span>
-                    {isActive ? 'Wybrany workspace' : workspace.disabled ? 'Niedostępny' : 'Dostępny'}
-                  </span>
+                  <small>
+                    {workspace.role}
+                    {' · '}
+                    {workspace.statusText}
+                  </small>
                 </span>
                 <span className="pd-product-shell__workspace-option-state">
                   {isPending ? 'Zmiana…' : isActive ? 'Wybrany' : 'Wybierz'}

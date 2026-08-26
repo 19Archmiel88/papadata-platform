@@ -16,6 +16,15 @@ import {
   AuthSurface,
 } from '../../../features/auth/AuthSurface';
 import {
+  AuthDataSourceMarquee,
+} from '../../../features/auth/AuthDataSourceMarquee';
+import {
+  AuthInsightChart,
+} from '../../../features/auth/AuthInsightChart';
+import {
+  AuthRuntimePreferences,
+} from '../../../features/auth/AuthRuntimePreferences';
+import {
   Button,
   InlineNotice,
   ProgressIndicator,
@@ -39,6 +48,22 @@ const retryAction = fn();
 const acceptInvitationAction = fn();
 const stepUpAction = fn();
 const selectWorkspaceAction = fn();
+const oauthContinueAction = fn();
+
+// AuthSurface's handler props are required (no silent no-op-on-missing-handler
+// in production) — every story instance needs the full set regardless of
+// which handler that particular scenario is exercising.
+const allAuthHandlerProps = {
+  onAcceptInvitation: acceptInvitationAction,
+  onLogin: loginAction,
+  onMfaConfirm: mfaAction,
+  onOAuthContinue: oauthContinueAction,
+  onPasswordRecoveryRequest: recoveryRequestAction,
+  onPasswordReset: resetAction,
+  onRegister: registerAction,
+  onSelectWorkspace: selectWorkspaceAction,
+  onStepUpConfirm: stepUpAction,
+};
 
 const demoWorkspaceOptions = [
   {
@@ -182,14 +207,14 @@ export const AuthEntryStory: Story = {
     >
       <StoryPresentationSection index="01" layout="showcase" title="Widok docelowy">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-entry-ready">
-          <AuthSurface mode="entry" onNavigate={navigateAction} />
+          <AuthSurface {...allAuthHandlerProps} mode="entry" onNavigate={navigateAction} />
         </div>
       </StoryPresentationSection>
 
       <StoryPresentationSection index="02" layout="showcase" title="Stany blokujące bez przycinania powierzchni">
         <div className="pd-s25-grid pd-s25-grid--compact">
           <div className="pd-s25-stage" data-testid="auth-entry-unavailable">
-            <AuthSurface
+            <AuthSurface {...allAuthHandlerProps}
               mode="entry"
               onNavigate={navigateAction}
               onRetry={retryAction}
@@ -197,7 +222,7 @@ export const AuthEntryStory: Story = {
             />
           </div>
           <div className="pd-s25-stage" data-testid="auth-entry-blocked">
-            <AuthSurface
+            <AuthSurface {...allAuthHandlerProps}
               mode="entry"
               onNavigate={navigateAction}
               state="blocked"
@@ -371,7 +396,7 @@ export const LoginStory: Story = {
     >
       <StoryPresentationSection index="01" layout="showcase" title="Formularz docelowy">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-login-ready">
-          <AuthSurface
+          <AuthSurface {...allAuthHandlerProps}
             mode="login"
             onLogin={loginAction}
             onNavigate={navigateAction}
@@ -382,7 +407,7 @@ export const LoginStory: Story = {
       <StoryPresentationSection index="02" layout="showcase" title="Stan limitu prób">
         <div className="pd-s25-grid pd-s25-grid--compact">
           <div className="pd-s25-stage" data-testid="auth-login-rate-limited">
-            <AuthSurface
+            <AuthSurface {...allAuthHandlerProps}
               initialEmail="operator@papadata.local"
               mode="login"
               onLogin={loginAction}
@@ -408,6 +433,44 @@ export const LoginStory: Story = {
   },
 };
 
+export const AuthVisualComponentsStory: Story = {
+  name: '25.02 Komponenty wizualne Auth',
+  render: () => (
+    <AuthPageFrame
+      storyId="25.02-components"
+      summary="Kontrolki preferencji, animowane źródła danych i wykres/krokomierz są osobnymi komponentami produkcyjnymi używanymi przez AuthSurface."
+      title="Komponenty Auth"
+    >
+      <StoryPresentationSection index="01" layout="showcase" title="Preferencje, źródła i wykresy">
+        <div className="pd-s25-auth-components pd-auth-theme">
+          <div className="pd-s25-auth-component" data-testid="auth-runtime-preferences">
+            <AuthRuntimePreferences />
+          </div>
+
+          <div className="pd-s25-auth-component" data-testid="auth-source-marquee">
+            <AuthDataSourceMarquee locale="pl" />
+          </div>
+
+          <div className="pd-s25-auth-component" data-testid="auth-revenue-chart">
+            <AuthInsightChart locale="pl" mode="login" />
+          </div>
+
+          <div className="pd-s25-auth-component" data-testid="auth-registration-stepper-chart">
+            <AuthInsightChart locale="pl" mode="register" />
+          </div>
+        </div>
+      </StoryPresentationSection>
+    </AuthPageFrame>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByTestId('auth-runtime-preferences')).toBeInTheDocument();
+    await expect(canvas.getByTestId('auth-source-marquee')).toBeInTheDocument();
+    await expect(canvas.getByText('Przychód z 30 dni')).toBeInTheDocument();
+    await expect(canvas.getByText('Kroki uruchomienia')).toBeInTheDocument();
+  },
+};
+
 export const RegistrationStory: Story = {
   name: '25.03 Rejestracja',
   render: () => (
@@ -418,7 +481,7 @@ export const RegistrationStory: Story = {
     >
       <StoryPresentationSection index="01" layout="showcase" title="Rejestracja e-mail">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-registration-ready">
-          <AuthSurface
+          <AuthSurface {...allAuthHandlerProps}
             mode="register"
             onNavigate={navigateAction}
             onRegister={registerAction}
@@ -429,7 +492,7 @@ export const RegistrationStory: Story = {
       <StoryPresentationSection index="02" layout="showcase" title="Zakończenie kroku">
         <div className="pd-s25-grid pd-s25-grid--compact">
           <div className="pd-s25-stage" data-testid="auth-registration-completed">
-            <AuthSurface
+            <AuthSurface {...allAuthHandlerProps}
               initialEmail="founder@papadata.local"
               mode="register"
               onNavigate={navigateAction}
@@ -450,7 +513,10 @@ export const RegistrationStory: Story = {
 
     const canvas = within(registrationStage);
     await expect(
-      canvas.getByRole('button', { name: 'Kontynuuj przez OAuth' }),
+      canvas.getByRole('button', { name: 'Kontynuuj przez Google' }),
+    ).toBeDisabled();
+    await expect(
+      canvas.getByRole('button', { name: 'Kontynuuj przez Microsoft' }),
     ).toBeDisabled();
     await userEvent.click(
       canvas.getByRole('button', { name: 'Utwórz konto e-mailem' }),
@@ -479,7 +545,7 @@ export const MfaStory: Story = {
     >
       <StoryPresentationSection index="01" layout="showcase" title="Challenge aktywny">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-mfa-ready">
-          <AuthSurface
+          <AuthSurface {...allAuthHandlerProps}
             mode="mfa"
             onMfaConfirm={mfaAction}
             onNavigate={navigateAction}
@@ -490,7 +556,7 @@ export const MfaStory: Story = {
       <StoryPresentationSection index="02" layout="showcase" title="Limit prób i enrollment">
         <div className="pd-s25-grid pd-s25-grid--compact">
           <div className="pd-s25-stage" data-testid="auth-mfa-rate-limited">
-            <AuthSurface
+            <AuthSurface {...allAuthHandlerProps}
               mode="mfa"
               onMfaConfirm={mfaAction}
               onNavigate={navigateAction}
@@ -498,7 +564,7 @@ export const MfaStory: Story = {
             />
           </div>
           <div className="pd-s25-stage" data-testid="auth-mfa-enrollment">
-            <AuthSurface
+            <AuthSurface {...allAuthHandlerProps}
               mode="mfa"
               onMfaConfirm={mfaAction}
               onNavigate={navigateAction}
@@ -532,7 +598,7 @@ export const AccessRecoveryStory: Story = {
     >
       <StoryPresentationSection index="01" layout="showcase" title="Request odzyskania dostępu">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-recovery-request">
-          <AuthSurface
+          <AuthSurface {...allAuthHandlerProps}
             mode="recover"
             onNavigate={navigateAction}
             onPasswordRecoveryRequest={recoveryRequestAction}
@@ -543,7 +609,7 @@ export const AccessRecoveryStory: Story = {
       <StoryPresentationSection index="02" layout="showcase" title="Wysłanie resetu i nowe hasło">
         <div className="pd-s25-grid pd-s25-grid--compact">
           <div className="pd-s25-stage" data-testid="auth-recovery-sent">
-            <AuthSurface
+            <AuthSurface {...allAuthHandlerProps}
               initialEmail="user@example.com"
               mode="recover"
               onNavigate={navigateAction}
@@ -552,7 +618,7 @@ export const AccessRecoveryStory: Story = {
             />
           </div>
           <div className="pd-s25-stage" data-testid="auth-recovery-reset">
-            <AuthSurface
+            <AuthSurface {...allAuthHandlerProps}
               initialEmail="user@example.com"
               initialResetToken="rst_demo_token"
               mode="recover"
@@ -602,23 +668,23 @@ export const AccessContextResolutionStory: Story = {
       <StoryPresentationSection index="01" layout="showcase" title="Kontekst i blokady">
         <div className="pd-s25-grid pd-s25-grid--compact" data-testid="auth-access-context-ready">
           <div className="pd-s25-stage">
-            <AuthSurface mode="entry" onNavigate={navigateAction} state="blocked" />
+            <AuthSurface {...allAuthHandlerProps} mode="entry" onNavigate={navigateAction} state="blocked" />
           </div>
           <div className="pd-s25-stage">
-            <AuthSurface mode="entry" onNavigate={navigateAction} onRetry={retryAction} state="serviceUnavailable" />
+            <AuthSurface {...allAuthHandlerProps} mode="entry" onNavigate={navigateAction} onRetry={retryAction} state="serviceUnavailable" />
           </div>
         </div>
       </StoryPresentationSection>
 
       <StoryPresentationSection index="02" layout="showcase" title="Ponowne uwierzytelnienie (auth-24)">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-reauth-ready">
-          <AuthSurface mode="reauth" onNavigate={navigateAction} onStepUpConfirm={stepUpAction} />
+          <AuthSurface {...allAuthHandlerProps} mode="reauth" onNavigate={navigateAction} onStepUpConfirm={stepUpAction} />
         </div>
       </StoryPresentationSection>
 
       <StoryPresentationSection index="03" layout="showcase" title="Ekran po wylogowaniu (auth-26)">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-logged-out-ready">
-          <AuthSurface mode="login" onLogin={loginAction} onNavigate={navigateAction} state="loggedOut" />
+          <AuthSurface {...allAuthHandlerProps} mode="login" onLogin={loginAction} onNavigate={navigateAction} state="loggedOut" />
         </div>
       </StoryPresentationSection>
     </AuthPageFrame>
@@ -682,7 +748,7 @@ export const OnboardingStory: Story = {
 
       <StoryPresentationSection index="02" layout="showcase" title="Wybór organizacji i workspace (auth-22/23)">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-workspace-ready">
-          <AuthSurface
+          <AuthSurface {...allAuthHandlerProps}
             mode="workspace"
             onNavigate={navigateAction}
             onSelectWorkspace={selectWorkspaceAction}

@@ -87,17 +87,17 @@
       "sha256": "9a04bafbb34e65018b27b76ec32ebc830f3baac68c0a87a097ad1e2b2b01fcd4"
     },
     {
-      "path": "POTWIERDZENIE-PRIORYTETOW-P0.md",
+      "path": "docs/audits/2026-08/potwierdzenie-priorytetow-p0.md",
       "bytes": 1397,
       "sha256": "645ffba2dcd355c8620229eee70092a19761ec8398cc6fab4f63e9ce0aacc682"
     },
     {
-      "path": "RAPORT-KOMPLETNOSCI-I-JAKOSCI.md",
+      "path": "docs/audits/2026-08/raport-kompletnosci-i-jakosci-2026-08-14.md",
       "bytes": 2285,
       "sha256": "cd34d0fd02820ab48d77ebc3b959501c153c87895c2e493f08b39505126fdb54"
     },
     {
-      "path": "RAPORT-WALIDACJI.md",
+      "path": "docs/audits/2026-08/raport-walidacji-2026-08-14.md",
       "bytes": 2103,
       "sha256": "9ebe6f3b98b69493f2393097b741d24e1c5d1d357764e93b20bbb55ed897dd90"
     },
@@ -3537,12 +3537,12 @@
       "sha256": "fb0142810aea3be80424433ce4bda6f0b6ef3cad247f4c4fa69c748ad45ef0ea"
     },
     {
-      "path": "audy12082026.md",
+      "path": "docs/audits/2026-08/audyt-dokumentacji-storybooka-i-frontendu-2026-08-12.md",
       "bytes": 15788,
       "sha256": "925fe2287cbaf3bb53518ddaeec20987f7259c84574ebb297c9039c99353c1ae"
     },
     {
-      "path": "audyt14082026.md",
+      "path": "docs/audits/2026-08/instrukcja-domkniecia-przebudow-2026-08-14.md",
       "bytes": 77336,
       "sha256": "42cde041ff4dafca65b6d2b4bb188f8e475521bfcef871e00596483d077f67e5"
     },

@@ -15,14 +15,29 @@ import {
   InlineNotice,
   PapaDataBrand,
   PasswordField,
+  resolvePasswordStrengthLevel,
   TextAction,
   TextField,
   VerificationCodeInput,
 } from '../../design-system';
 import {
+  papaDataRuntimePreferenceChangeEvent,
+} from '../../design-system/foundations/runtime';
+import type {
+  PapaDataRuntimeLocale,
+} from '../../design-system/foundations/runtime';
+import {
   resolveAuthStatePanel,
   resolveAuthSurfaceCopy,
 } from './authSurfaceContent';
+import { AuthDataSourceMarquee } from './AuthDataSourceMarquee';
+import { AuthInsightChart } from './AuthInsightChart';
+import { AuthRuntimePreferences } from './AuthRuntimePreferences';
+import {
+  isOAuthProviderEnabled,
+  type OAuthAvailability,
+  type OAuthProviderId,
+} from './oauthOutcomes';
 import './auth-surface.css';
 
 export type AuthSurfaceMode =
@@ -91,6 +106,11 @@ export type AuthPasswordResetInput = {
 
 export type AuthInvitationPreview = {
   readonly email?: string;
+  // True when this invitation's email already has a PapaData identity
+  // elsewhere (e.g. joining a second tenant) — the accept form must ask the
+  // visitor to sign in with their existing password instead of creating a
+  // new account.
+  readonly existingIdentity?: boolean;
   readonly role?: string;
   readonly status: string;
   readonly tenantName?: string;
@@ -105,6 +125,13 @@ export type AuthAcceptInvitationInput = {
   readonly token: string;
 };
 
+export type OAuthIntent =
+  | 'login'
+  | 'register'
+  | 'accept_invitation'
+  | 'link_account'
+  | 'reauth';
+
 export type AuthSurfaceProps = {
   readonly initialEmail?: string;
   readonly initialInvitationId?: string | null;
@@ -112,21 +139,34 @@ export type AuthSurfaceProps = {
   readonly initialRememberDevice?: boolean;
   readonly initialResetToken?: string | null;
   readonly mode: AuthSurfaceMode;
+  // Real per-provider availability from auth.status.read — governs
+  // whether the OAuth buttons render enabled or disabled-with-explanation.
+  // Absent/undefined is treated the same as "configuration_required" for
+  // both providers (safe default while status is still loading).
+  readonly oauthAvailability?: OAuthAvailability;
   readonly workspaceOptions?: readonly AuthWorkspaceOption[];
-  readonly onAcceptInvitation?: (input: AuthAcceptInvitationInput) => Promise<void> | void;
-  readonly onLogin?: (input: AuthLoginInput) => Promise<void> | void;
-  readonly onMfaConfirm?: (input: AuthMfaInput) => Promise<void> | void;
+  readonly onAcceptInvitation: (input: AuthAcceptInvitationInput) => Promise<void>;
+  readonly onLogin: (input: AuthLoginInput) => Promise<void>;
+  readonly onMfaConfirm: (input: AuthMfaInput) => Promise<void>;
   readonly onNavigate?: (path: string) => void;
-  readonly onPasswordRecoveryRequest?: (
+  // Real navigation (window.location.assign to the provider's consent
+  // screen) — never a no-op button. Required, like every other handler
+  // here: a missing OAuth handler must be a build error, not a dead
+  // button.
+  readonly onOAuthContinue: (input: {
+    readonly provider: OAuthProviderId;
+    readonly intent: OAuthIntent;
+  }) => Promise<void>;
+  readonly onPasswordRecoveryRequest: (
     input: AuthRecoveryRequestInput,
-  ) => Promise<void> | void;
-  readonly onPasswordReset?: (
+  ) => Promise<void>;
+  readonly onPasswordReset: (
     input: AuthPasswordResetInput,
-  ) => Promise<void> | void;
-  readonly onRegister?: (input: AuthRegisterInput) => Promise<void> | void;
+  ) => Promise<void>;
+  readonly onRegister: (input: AuthRegisterInput) => Promise<void>;
   readonly onRetry?: () => Promise<void> | void;
-  readonly onSelectWorkspace?: (workspaceId: string) => Promise<void> | void;
-  readonly onStepUpConfirm?: (input: AuthStepUpInput) => Promise<void> | void;
+  readonly onSelectWorkspace: (workspaceId: string) => Promise<void>;
+  readonly onStepUpConfirm: (input: AuthStepUpInput) => Promise<void>;
   readonly onValidateInvitation?: (
     input: { readonly invitationId: string; readonly token: string },
   ) => Promise<AuthInvitationPreview>;
@@ -147,6 +187,47 @@ type FieldProblems = {
 };
 
 type RegistrationStage = 'choice' | 'email';
+type AuthLocale = PapaDataRuntimeLocale;
+type AuthFormCopy = ReturnType<typeof resolveAuthFormCopy>;
+
+function readAuthRuntimeLocale(): AuthLocale {
+  if (typeof document === 'undefined') return 'pl';
+  return document.documentElement.dataset.locale === 'en' ? 'en' : 'pl';
+}
+
+function useAuthRuntimeLocale(): AuthLocale {
+  const [locale, setLocale] = useState<AuthLocale>(readAuthRuntimeLocale);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    function handleRuntimePreferenceChange(event: Event) {
+      if (event instanceof CustomEvent) {
+        const detail = event.detail as { readonly locale?: unknown } | null;
+        if (detail?.locale === 'pl' || detail?.locale === 'en') {
+          setLocale(detail.locale);
+          return;
+        }
+      }
+
+      setLocale(readAuthRuntimeLocale());
+    }
+
+    window.addEventListener(
+      papaDataRuntimePreferenceChangeEvent,
+      handleRuntimePreferenceChange,
+    );
+
+    return () => {
+      window.removeEventListener(
+        papaDataRuntimePreferenceChangeEvent,
+        handleRuntimePreferenceChange,
+      );
+    };
+  }, []);
+
+  return locale;
+}
 
 export function AuthSurface({
   initialEmail = '',
@@ -155,11 +236,13 @@ export function AuthSurface({
   initialRememberDevice = false,
   initialResetToken = null,
   mode,
+  oauthAvailability,
   workspaceOptions = [],
   onAcceptInvitation,
   onLogin,
   onMfaConfirm,
   onNavigate,
+  onOAuthContinue,
   onPasswordRecoveryRequest,
   onPasswordReset,
   onRegister,
@@ -196,15 +279,27 @@ export function AuthSurface({
   const [problem, setProblem] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [pendingWorkspaceId, setPendingWorkspaceId] = useState<string | null>(null);
+  const [oauthPending, setOauthPending] = useState<OAuthProviderId | null>(null);
   const [invitationPreview, setInvitationPreview] = useState<AuthInvitationPreview | null>(null);
   const [invitationPreviewError, setInvitationPreviewError] = useState<string | null>(null);
   const [invitationPreviewLoading, setInvitationPreviewLoading] = useState(mode === 'accept-invite');
   const surfaceRef = useRef<HTMLElement | null>(null);
+  const locale = useAuthRuntimeLocale();
+  const formCopy = useMemo(
+    () => resolveAuthFormCopy(locale),
+    [locale],
+  );
+
+  useEffect(() => {
+    setFieldProblems({});
+    setProblem(null);
+    setSuccess(null);
+  }, [locale]);
 
   useEffect(() => {
     if (mode !== 'accept-invite') return;
     if (!initialInvitationId || !initialInvitationToken || !onValidateInvitation) {
-      setInvitationPreviewError('Link zaproszenia jest nieprawidłowy.');
+      setInvitationPreviewError(formCopy.invitationInvalid);
       setInvitationPreviewLoading(false);
       return;
     }
@@ -216,25 +311,24 @@ export function AuthSurface({
     }).then((preview) => {
       if (cancelled) return;
       if (preview.status !== 'valid') {
-        setInvitationPreviewError('To zaproszenie wygasło lub zostało już wykorzystane. Poproś o nowe.');
+        setInvitationPreviewError(formCopy.invitationExpired);
       } else {
         setInvitationPreview(preview);
       }
     }).catch((cause: unknown) => {
       if (cancelled) return;
       setInvitationPreviewError(
-        cause instanceof Error ? cause.message : 'Nie udało się zweryfikować zaproszenia.',
+        cause instanceof Error ? cause.message : formCopy.invitationVerifyError,
       );
     }).finally(() => {
       if (!cancelled) setInvitationPreviewLoading(false);
     });
     return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, initialInvitationId, initialInvitationToken]);
+  }, [mode, initialInvitationId, initialInvitationToken, formCopy]);
 
   const isResetFlow = mode === 'recover' && Boolean(resetToken);
-  const copy = resolveAuthSurfaceCopy(mode, state, isResetFlow);
-  const statePanel = resolveAuthStatePanel(mode, state, isResetFlow);
+  const copy = resolveAuthSurfaceCopy(mode, state, isResetFlow, locale);
+  const statePanel = resolveAuthStatePanel(mode, state, isResetFlow, locale);
   const isHardBlocked = state === 'blocked' || state === 'serviceUnavailable';
   const isSubmissionBlocked = isHardBlocked || state === 'rateLimited';
   const isPassiveState = (
@@ -256,58 +350,73 @@ export function AuthSurface({
   const passwordRequirements = useMemo(() => [
     {
       id: 'length',
-      label: 'Co najmniej 12 znaków',
+      label: formCopy.passwordRequirementLength,
       met: password.length >= 12,
     },
     {
       id: 'lowercase',
-      label: 'Mała litera',
+      label: formCopy.passwordRequirementLowercase,
       met: /[a-z]/u.test(password),
     },
     {
       id: 'uppercase',
-      label: 'Wielka litera',
+      label: formCopy.passwordRequirementUppercase,
       met: /[A-Z]/u.test(password),
     },
     {
       id: 'digit',
-      label: 'Cyfra',
+      label: formCopy.passwordRequirementDigit,
       met: /[0-9]/u.test(password),
     },
-  ], [password]);
+  ], [formCopy, password]);
 
   const newPasswordRequirements = useMemo(() => [
     {
       id: 'length',
-      label: 'Co najmniej 12 znaków',
+      label: formCopy.passwordRequirementLength,
       met: newPassword.length >= 12,
     },
     {
       id: 'lowercase',
-      label: 'Mała litera',
+      label: formCopy.passwordRequirementLowercase,
       met: /[a-z]/u.test(newPassword),
     },
     {
       id: 'uppercase',
-      label: 'Wielka litera',
+      label: formCopy.passwordRequirementUppercase,
       met: /[A-Z]/u.test(newPassword),
     },
     {
       id: 'digit',
-      label: 'Cyfra',
+      label: formCopy.passwordRequirementDigit,
       met: /[0-9]/u.test(newPassword),
     },
-  ], [newPassword]);
+  ], [formCopy, newPassword]);
+
+  const passwordStrength = useMemo(
+    () => computePasswordStrength(password, passwordRequirements),
+    [password, passwordRequirements],
+  );
+  const passwordStrengthLabel = passwordStrength === null
+    ? null
+    : resolvePasswordStrengthLabel(passwordStrength, formCopy);
+  const newPasswordStrength = useMemo(
+    () => computePasswordStrength(newPassword, newPasswordRequirements),
+    [newPassword, newPasswordRequirements],
+  );
+  const newPasswordStrengthLabel = newPasswordStrength === null
+    ? null
+    : resolvePasswordStrengthLabel(newPasswordStrength, formCopy);
 
   async function submitLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (isSubmissionBlocked) return;
 
-    const problems = validateLogin(email, password);
+    const problems = validateLogin(email, password, formCopy);
     if (!submitIfValid(problems)) return;
 
     await runSubmit(async () => {
-      await onLogin?.({
+      await onLogin({
         email: email.trim(),
         password,
         rememberDevice,
@@ -326,11 +435,12 @@ export function AuthSurface({
       workspaceName,
       password,
       passwordConfirmation,
+      formCopy,
     );
     if (!submitIfValid(problems)) return;
 
     await runSubmit(async () => {
-      await onRegister?.({
+      await onRegister({
         email: email.trim(),
         fullName: fullName.trim(),
         organizationName: organizationName.trim(),
@@ -338,7 +448,7 @@ export function AuthSurface({
         passwordConfirmation,
         workspaceName: workspaceName.trim(),
       });
-      setSuccess('Rejestracja została przyjęta do dalszego procesu dostępu.');
+      setSuccess(formCopy.registrationAccepted);
     });
   }
 
@@ -346,15 +456,21 @@ export function AuthSurface({
     event.preventDefault();
     if (isSubmissionBlocked || !initialInvitationId || !initialInvitationToken) return;
 
-    const problems = validateAcceptInvitation(fullName, password, passwordConfirmation);
+    const isExistingIdentity = invitationPreview?.existingIdentity === true;
+    const problems = isExistingIdentity
+      ? validateAcceptInvitationExistingIdentity(password, formCopy)
+      : validateAcceptInvitation(fullName, password, passwordConfirmation, formCopy);
     if (!submitIfValid(problems)) return;
 
     await runSubmit(async () => {
-      await onAcceptInvitation?.({
-        displayName: fullName.trim(),
+      await onAcceptInvitation({
+        // The backend only uses displayName/passwordConfirmation for the
+        // new-identity path — an existing identity authenticates with its
+        // current password instead, so these are simply unused there.
+        displayName: isExistingIdentity ? '' : fullName.trim(),
         invitationId: initialInvitationId,
         password,
-        passwordConfirmation,
+        passwordConfirmation: isExistingIdentity ? password : passwordConfirmation,
         token: initialInvitationToken,
       });
     });
@@ -364,14 +480,14 @@ export function AuthSurface({
     event.preventDefault();
     if (isSubmissionBlocked) return;
 
-    const problems = validateMfa(code);
+    const problems = validateMfa(code, formCopy);
     if (!submitIfValid(problems)) return;
 
     await runSubmit(async () => {
-      await onMfaConfirm?.({
+      await onMfaConfirm({
         code: code.trim(),
       });
-      setSuccess('MFA potwierdzone. Sesja może przejść dalej.');
+      setSuccess(formCopy.mfaConfirmed);
     });
   }
 
@@ -379,15 +495,34 @@ export function AuthSurface({
     event.preventDefault();
     if (isSubmissionBlocked) return;
 
-    const problems = validateMfa(code);
+    const problems = validateMfa(code, formCopy);
     if (!submitIfValid(problems)) return;
 
     await runSubmit(async () => {
-      await onStepUpConfirm?.({
+      await onStepUpConfirm({
         code: code.trim(),
       });
-      setSuccess('Tożsamość potwierdzona ponownie. Możesz kontynuować.');
+      setSuccess(formCopy.reauthConfirmed);
     });
+  }
+
+  async function startOAuthFlow(provider: OAuthProviderId, intent: OAuthIntent) {
+    if (oauthPending) return;
+    setProblem(null);
+    setOauthPending(provider);
+    try {
+      // A real navigation follows inside onOAuthContinue
+      // (window.location.assign to the provider's consent screen) — this
+      // only ever throws for a request that fails before that redirect.
+      await onOAuthContinue({ intent, provider });
+    } catch (cause) {
+      setProblem(
+        cause instanceof Error
+          ? cause.message
+          : formCopy.operationFailed,
+      );
+      setOauthPending(null);
+    }
   }
 
   async function selectWorkspaceOption(workspaceId: string) {
@@ -395,12 +530,12 @@ export function AuthSurface({
     setProblem(null);
     setPendingWorkspaceId(workspaceId);
     try {
-      await onSelectWorkspace?.(workspaceId);
+      await onSelectWorkspace(workspaceId);
     } catch (cause) {
       setProblem(
         cause instanceof Error
           ? cause.message
-          : 'Nie udało się wybrać obszaru roboczego.',
+          : formCopy.workspaceSelectError,
       );
     } finally {
       setPendingWorkspaceId(null);
@@ -411,15 +546,15 @@ export function AuthSurface({
     event.preventDefault();
     if (isSubmissionBlocked) return;
 
-    const problems = validateRecoveryRequest(email);
+    const problems = validateRecoveryRequest(email, formCopy);
     if (!submitIfValid(problems)) return;
 
     await runSubmit(async () => {
-      await onPasswordRecoveryRequest?.({
+      await onPasswordRecoveryRequest({
         email: email.trim(),
       });
       setSuccess(
-        'Jeżeli konto istnieje, wysłaliśmy instrukcję odzyskania dostępu.',
+        formCopy.recoverySent,
       );
     });
   }
@@ -434,18 +569,19 @@ export function AuthSurface({
       newPasswordConfirmation,
       otp,
       resetToken,
+      formCopy,
     );
     if (!submitIfValid(problems)) return;
 
     await runSubmit(async () => {
-      await onPasswordReset?.({
+      await onPasswordReset({
         email: email.trim(),
         newPassword,
         newPasswordConfirmation,
         otp: otp.trim(),
         resetToken: resetToken.trim(),
       });
-      setSuccess('Hasło zostało ustawione. Możesz wrócić do logowania.');
+      setSuccess(formCopy.passwordReset);
     });
   }
 
@@ -456,7 +592,7 @@ export function AuthSurface({
     const firstProblem = Object.values(problems).find(Boolean);
 
     if (firstProblem) {
-      setProblem('Popraw oznaczone pola, aby bezpiecznie kontynuować.');
+      setProblem(formCopy.fixFields);
       window.requestAnimationFrame(() => {
         surfaceRef.current
           ?.querySelector<HTMLElement>('[aria-invalid="true"]')
@@ -477,7 +613,7 @@ export function AuthSurface({
       setProblem(
         cause instanceof Error
           ? cause.message
-          : 'Operacja nie powiodła się.',
+          : formCopy.operationFailed,
       );
     } finally {
       setSubmitting(false);
@@ -497,13 +633,15 @@ export function AuthSurface({
       ref={surfaceRef}
     >
       <div className="pd-auth-surface__layout">
-        <AuthMarketingPanel />
+        <AuthMarketingPanel locale={locale} mode={mode} />
 
         <section
           aria-describedby="auth-description"
           aria-labelledby="auth-title"
           className="pd-auth-surface__form-panel"
         >
+          <AuthRuntimePreferences />
+
           <div className="pd-auth-surface__workspace">
             <div className="pd-auth-surface__card-header">
               <p className="pd-auth-surface__eyebrow">{copy.eyebrow}</p>
@@ -518,6 +656,7 @@ export function AuthSurface({
                 action={(
                   <AuthStateActions
                     actionLabel={statePanel.actionLabel}
+                    locale={locale}
                     onNavigate={navigateTo}
                     onRetry={onRetry}
                     state={state}
@@ -534,7 +673,7 @@ export function AuthSurface({
               <InlineNotice
                 className="pd-auth-surface__notice"
                 message={problem}
-                title="Sprawdź dane"
+                title={formCopy.problemTitle}
                 tone="critical"
               />
             ) : null}
@@ -543,7 +682,7 @@ export function AuthSurface({
               <InlineNotice
                 className="pd-auth-surface__notice"
                 message={success}
-                title="Operacja przyjęta"
+                title={formCopy.successTitle}
                 tone="success"
               />
             ) : null}
@@ -551,6 +690,7 @@ export function AuthSurface({
             {mode === 'entry' && !isPassiveState ? (
               <AuthEntryActions
                 disabled={isHardBlocked}
+                locale={locale}
                 onNavigate={navigateTo}
               />
             ) : null}
@@ -561,7 +701,7 @@ export function AuthSurface({
                   autocomplete="email"
                   inputType="email"
                   invalid={Boolean(fieldProblems.email)}
-                  label="E-mail"
+                  label={formCopy.email}
                   message={fieldProblems.email}
                   onChange={(event) => setEmail(event.currentTarget.value)}
                   required
@@ -571,19 +711,21 @@ export function AuthSurface({
                 <PasswordField
                   autocomplete="current-password"
                   invalid={Boolean(fieldProblems.password)}
-                  label="Hasło"
+                  label={formCopy.password}
                   message={fieldProblems.password}
                   onChange={(event) => setPassword(event.currentTarget.value)}
                   onVisibilityChange={setPasswordVisible}
                   required
                   value={password}
                   visible={passwordVisible}
+                  visibilityLabelHidden={formCopy.showPassword}
+                  visibilityLabelVisible={formCopy.hidePassword}
                 />
 
                 <Checkbox
                   checked={rememberDevice}
-                  helperText="Zaufanie urządzeniu zależy od polityki organizacji."
-                  label="Zapamiętaj to urządzenie"
+                  helperText={formCopy.rememberDeviceHelper}
+                  label={formCopy.rememberDevice}
                   onChange={(event) => setRememberDevice(event.currentTarget.checked)}
                   value="remember-device"
                 />
@@ -592,12 +734,20 @@ export function AuthSurface({
                   disabled={isSubmissionBlocked}
                   fullWidth
                   loading={submitting}
-                  loadingLabel="Logowanie..."
+                  loadingLabel={formCopy.loginLoading}
                   size="large"
                   type="submit"
                 >
-                  Zaloguj się
+                  {formCopy.login}
                 </Button>
+
+                <OAuthProviderButtons
+                  formCopy={formCopy}
+                  intent="login"
+                  oauthAvailability={oauthAvailability}
+                  oauthPending={oauthPending}
+                  onStart={(provider, intent) => void startOAuthFlow(provider, intent)}
+                />
               </form>
             ) : null}
 
@@ -605,7 +755,7 @@ export function AuthSurface({
               && registrationStage === 'choice'
               && !isPassiveState ? (
                 <div
-                  aria-label="Wybierz metodę rejestracji"
+                  aria-label={formCopy.registrationChoiceLabel}
                   className="pd-auth-surface__registration-choice"
                 >
                   <Button
@@ -613,17 +763,15 @@ export function AuthSurface({
                     onClick={() => setRegistrationStage('email')}
                     size="large"
                   >
-                    Utwórz konto e-mailem
+                    {formCopy.createByEmail}
                   </Button>
-                  <Button
-                    disabled
-                    fullWidth
-                    size="large"
-                    variant="secondary"
-                  >
-                    Kontynuuj przez OAuth
-                  </Button>
-                  <p>Ta metoda nie jest obecnie dostępna.</p>
+                  <OAuthProviderButtons
+                    formCopy={formCopy}
+                    intent="register"
+                    oauthAvailability={oauthAvailability}
+                    oauthPending={oauthPending}
+                    onStart={(provider, intent) => void startOAuthFlow(provider, intent)}
+                  />
                 </div>
               ) : null}
 
@@ -635,7 +783,7 @@ export function AuthSurface({
                     <TextField
                       autocomplete="name"
                       invalid={Boolean(fieldProblems.fullName)}
-                      label="Imię i nazwisko"
+                      label={formCopy.fullName}
                       message={fieldProblems.fullName}
                       onChange={(event) => setFullName(event.currentTarget.value)}
                       required
@@ -645,7 +793,7 @@ export function AuthSurface({
                     <TextField
                       autocomplete="organization"
                       invalid={Boolean(fieldProblems.organizationName)}
-                      label="Organizacja"
+                      label={formCopy.organization}
                       message={fieldProblems.organizationName}
                       onChange={(event) => setOrganizationName(event.currentTarget.value)}
                       required
@@ -656,7 +804,7 @@ export function AuthSurface({
                   <div className="pd-auth-surface__form-row">
                     <TextField
                       invalid={Boolean(fieldProblems.workspaceName)}
-                      label="Workspace"
+                      label={formCopy.workspace}
                       message={fieldProblems.workspaceName}
                       onChange={(event) => setWorkspaceName(event.currentTarget.value)}
                       required
@@ -667,7 +815,7 @@ export function AuthSurface({
                       autocomplete="email"
                       inputType="email"
                       invalid={Boolean(fieldProblems.email)}
-                      label="E-mail"
+                      label={formCopy.email}
                       message={fieldProblems.email}
                       onChange={(event) => setEmail(event.currentTarget.value)}
                       required
@@ -678,56 +826,62 @@ export function AuthSurface({
                   <PasswordField
                     autocomplete="new-password"
                     invalid={Boolean(fieldProblems.password)}
-                    label="Hasło"
+                    label={formCopy.password}
                     message={fieldProblems.password}
                     onChange={(event) => setPassword(event.currentTarget.value)}
                     onVisibilityChange={setPasswordVisible}
                     requirements={passwordRequirements}
                     required
+                    strength={passwordStrength}
+                    strengthLabel={passwordStrengthLabel}
                     value={password}
                     visible={passwordVisible}
+                    visibilityLabelHidden={formCopy.showPassword}
+                    visibilityLabelVisible={formCopy.hidePassword}
                   />
 
                   <PasswordField
                     autocomplete="new-password"
                     invalid={Boolean(fieldProblems.passwordConfirmation)}
-                    label="Powtórz hasło"
+                    label={formCopy.passwordConfirmation}
                     message={fieldProblems.passwordConfirmation}
                     onChange={(event) => setPasswordConfirmation(event.currentTarget.value)}
                     onVisibilityChange={setPasswordConfirmationVisible}
                     required
                     value={passwordConfirmation}
                     visible={passwordConfirmationVisible}
+                    visibilityLabelHidden={formCopy.showPassword}
+                    visibilityLabelVisible={formCopy.hidePassword}
                   />
 
                   <Button
                     disabled={isSubmissionBlocked}
                     fullWidth
                     loading={submitting}
-                    loadingLabel="Tworzenie konta..."
+                    loadingLabel={formCopy.createLoading}
                     size="large"
                     type="submit"
                   >
-                    Utwórz konto
+                    {formCopy.createAccount}
                   </Button>
 
                   <TextAction
                     onClick={() => setRegistrationStage('choice')}
                     tone="muted"
                   >
-                    Wybierz inną metodę rejestracji
+                    {formCopy.chooseOtherRegistration}
                   </TextAction>
                 </form>
               ) : null}
 
             {mode === 'accept-invite' && !isPassiveState ? (
               invitationPreviewLoading ? (
-                <p className="pd-auth-surface__scope-note">Sprawdzanie zaproszenia…</p>
+                <p className="pd-auth-surface__scope-note">{formCopy.invitationChecking}</p>
               ) : invitationPreviewError ? (
                 <InlineNotice
                   className="pd-auth-surface__notice"
                   message={invitationPreviewError}
-                  title="Zaproszenie niedostępne"
+                  title={formCopy.invitationUnavailable}
                   tone="critical"
                 />
               ) : (
@@ -736,57 +890,81 @@ export function AuthSurface({
                     {invitationPreview?.email}
                     {' — '}
                     {invitationPreview?.role}
-                    {' w '}
+                    {formCopy.invitationIn}
                     {invitationPreview?.tenantName}
                     {' / '}
                     {invitationPreview?.workspaceName}
                   </p>
 
-                  <TextField
-                    autocomplete="name"
-                    invalid={Boolean(fieldProblems.fullName)}
-                    label="Imię i nazwisko"
-                    message={fieldProblems.fullName}
-                    onChange={(event) => setFullName(event.currentTarget.value)}
-                    required
-                    value={fullName}
-                  />
+                  {invitationPreview?.existingIdentity ? (
+                    <InlineNotice
+                      className="pd-auth-surface__notice"
+                      message={formCopy.invitationExistingAccountNote}
+                      tone="info"
+                    />
+                  ) : (
+                    <TextField
+                      autocomplete="name"
+                      invalid={Boolean(fieldProblems.fullName)}
+                      label={formCopy.fullName}
+                      message={fieldProblems.fullName}
+                      onChange={(event) => setFullName(event.currentTarget.value)}
+                      required
+                      value={fullName}
+                    />
+                  )}
 
                   <PasswordField
-                    autocomplete="new-password"
+                    autocomplete={invitationPreview?.existingIdentity ? 'current-password' : 'new-password'}
                     invalid={Boolean(fieldProblems.password)}
-                    label="Hasło"
+                    label={formCopy.password}
                     message={fieldProblems.password}
                     onChange={(event) => setPassword(event.currentTarget.value)}
                     onVisibilityChange={setPasswordVisible}
-                    requirements={passwordRequirements}
+                    requirements={invitationPreview?.existingIdentity ? undefined : passwordRequirements}
                     required
+                    strength={invitationPreview?.existingIdentity ? undefined : passwordStrength}
+                    strengthLabel={invitationPreview?.existingIdentity ? undefined : passwordStrengthLabel}
                     value={password}
                     visible={passwordVisible}
+                    visibilityLabelHidden={formCopy.showPassword}
+                    visibilityLabelVisible={formCopy.hidePassword}
                   />
 
-                  <PasswordField
-                    autocomplete="new-password"
-                    invalid={Boolean(fieldProblems.passwordConfirmation)}
-                    label="Powtórz hasło"
-                    message={fieldProblems.passwordConfirmation}
-                    onChange={(event) => setPasswordConfirmation(event.currentTarget.value)}
-                    onVisibilityChange={setPasswordConfirmationVisible}
-                    required
-                    value={passwordConfirmation}
-                    visible={passwordConfirmationVisible}
-                  />
+                  {invitationPreview?.existingIdentity ? null : (
+                    <PasswordField
+                      autocomplete="new-password"
+                      invalid={Boolean(fieldProblems.passwordConfirmation)}
+                      label={formCopy.passwordConfirmation}
+                      message={fieldProblems.passwordConfirmation}
+                      onChange={(event) => setPasswordConfirmation(event.currentTarget.value)}
+                      onVisibilityChange={setPasswordConfirmationVisible}
+                      required
+                      value={passwordConfirmation}
+                      visible={passwordConfirmationVisible}
+                      visibilityLabelHidden={formCopy.showPassword}
+                      visibilityLabelVisible={formCopy.hidePassword}
+                    />
+                  )}
 
                   <Button
                     disabled={isSubmissionBlocked}
                     fullWidth
                     loading={submitting}
-                    loadingLabel="Dołączanie…"
+                    loadingLabel={invitationPreview?.existingIdentity ? formCopy.signInAndJoinLoading : formCopy.joiningLoading}
                     size="large"
                     type="submit"
                   >
-                    Dołącz do zespołu
+                    {invitationPreview?.existingIdentity ? formCopy.signInAndJoin : formCopy.joinTeam}
                   </Button>
+
+                  <OAuthProviderButtons
+                    formCopy={formCopy}
+                    intent="accept_invitation"
+                    oauthAvailability={oauthAvailability}
+                    oauthPending={oauthPending}
+                    onStart={(provider, intent) => void startOAuthFlow(provider, intent)}
+                  />
                 </form>
               )
             ) : null}
@@ -794,9 +972,9 @@ export function AuthSurface({
             {mode === 'mfa' && !isPassiveState ? (
               <form className="pd-auth-surface__form" noValidate onSubmit={submitMfa}>
                 <VerificationCodeInput
-                  helperText="Wpisz 6-cyfrowy kod z aplikacji uwierzytelniającej."
+                  helperText={formCopy.mfaHelper}
                   invalid={Boolean(fieldProblems.code)}
-                  label="Kod MFA"
+                  label={formCopy.mfaCode}
                   message={fieldProblems.code}
                   onChange={(event) => setCode(event.currentTarget.value)}
                   required
@@ -807,11 +985,11 @@ export function AuthSurface({
                   disabled={isSubmissionBlocked}
                   fullWidth
                   loading={submitting}
-                  loadingLabel="Weryfikacja..."
+                  loadingLabel={formCopy.verifyingLoading}
                   size="large"
                   type="submit"
                 >
-                  Potwierdź MFA
+                  {formCopy.confirmMfa}
                 </Button>
               </form>
             ) : null}
@@ -819,9 +997,9 @@ export function AuthSurface({
             {mode === 'reauth' && !isPassiveState ? (
               <form className="pd-auth-surface__form" noValidate onSubmit={submitReauth}>
                 <VerificationCodeInput
-                  helperText="Wpisz aktualny 6-cyfrowy kod z aplikacji uwierzytelniającej."
+                  helperText={formCopy.reauthHelper}
                   invalid={Boolean(fieldProblems.code)}
-                  label="Kod potwierdzający"
+                  label={formCopy.confirmationCode}
                   message={fieldProblems.code}
                   onChange={(event) => setCode(event.currentTarget.value)}
                   required
@@ -832,24 +1010,32 @@ export function AuthSurface({
                   disabled={isSubmissionBlocked}
                   fullWidth
                   loading={submitting}
-                  loadingLabel="Potwierdzanie..."
+                  loadingLabel={formCopy.confirmingLoading}
                   size="large"
                   type="submit"
                 >
-                  Potwierdź
+                  {formCopy.confirm}
                 </Button>
+
+                <OAuthProviderButtons
+                  formCopy={formCopy}
+                  intent="reauth"
+                  oauthAvailability={oauthAvailability}
+                  oauthPending={oauthPending}
+                  onStart={(provider, intent) => void startOAuthFlow(provider, intent)}
+                />
               </form>
             ) : null}
 
             {mode === 'workspace' && !isPassiveState ? (
               <div
-                aria-label="Wybierz organizację i obszar roboczy"
+                aria-label={formCopy.workspaceListLabel}
                 className="pd-auth-surface__option-list"
               >
                 {workspaceOptions.map((option) => (
                   <button
                     className="pd-auth-surface__option"
-                    disabled={Boolean(pendingWorkspaceId) || !onSelectWorkspace}
+                    disabled={Boolean(pendingWorkspaceId)}
                     key={option.workspaceId}
                     onClick={() => void selectWorkspaceOption(option.workspaceId)}
                     type="button"
@@ -859,7 +1045,7 @@ export function AuthSurface({
                     </span>
                     <span className="pd-auth-surface__option-subtitle">
                       {option.workspaceName ?? option.workspaceId}
-                      {pendingWorkspaceId === option.workspaceId ? ' — wybieranie...' : ''}
+                      {pendingWorkspaceId === option.workspaceId ? formCopy.selecting : ''}
                     </span>
                   </button>
                 ))}
@@ -876,7 +1062,7 @@ export function AuthSurface({
                   autocomplete="email"
                   inputType="email"
                   invalid={Boolean(fieldProblems.email)}
-                  label="E-mail konta"
+                  label={formCopy.accountEmail}
                   message={fieldProblems.email}
                   onChange={(event) => setEmail(event.currentTarget.value)}
                   required
@@ -887,11 +1073,11 @@ export function AuthSurface({
                   disabled={isSubmissionBlocked}
                   fullWidth
                   loading={submitting}
-                  loadingLabel="Wysyłanie..."
+                  loadingLabel={formCopy.sendingLoading}
                   size="large"
                   type="submit"
                 >
-                  Wyślij instrukcję
+                  {formCopy.sendInstructions}
                 </Button>
               </form>
             ) : null}
@@ -906,7 +1092,7 @@ export function AuthSurface({
                   autocomplete="email"
                   inputType="email"
                   invalid={Boolean(fieldProblems.email)}
-                  label="E-mail konta"
+                  label={formCopy.accountEmail}
                   message={fieldProblems.email}
                   onChange={(event) => setEmail(event.currentTarget.value)}
                   required
@@ -914,9 +1100,9 @@ export function AuthSurface({
                 />
 
                 <VerificationCodeInput
-                  helperText="Kod jednorazowy z wiadomości resetu."
+                  helperText={formCopy.otpHelper}
                   invalid={Boolean(fieldProblems.otp)}
-                  label="Kod OTP"
+                  label={formCopy.otpCode}
                   message={fieldProblems.otp}
                   onChange={(event) => setOtp(event.currentTarget.value)}
                   required
@@ -932,42 +1118,49 @@ export function AuthSurface({
                 <PasswordField
                   autocomplete="new-password"
                   invalid={Boolean(fieldProblems.password)}
-                  label="Nowe hasło"
+                  label={formCopy.newPassword}
                   message={fieldProblems.password}
                   onChange={(event) => setNewPassword(event.currentTarget.value)}
                   onVisibilityChange={setNewPasswordVisible}
                   requirements={newPasswordRequirements}
                   required
+                  strength={newPasswordStrength}
+                  strengthLabel={newPasswordStrengthLabel}
                   value={newPassword}
                   visible={newPasswordVisible}
+                  visibilityLabelHidden={formCopy.showPassword}
+                  visibilityLabelVisible={formCopy.hidePassword}
                 />
 
                 <PasswordField
                   autocomplete="new-password"
                   invalid={Boolean(fieldProblems.newPasswordConfirmation)}
-                  label="Powtórz nowe hasło"
+                  label={formCopy.newPasswordConfirmation}
                   message={fieldProblems.newPasswordConfirmation}
                   onChange={(event) => setNewPasswordConfirmation(event.currentTarget.value)}
                   onVisibilityChange={setNewPasswordConfirmationVisible}
                   required
                   value={newPasswordConfirmation}
                   visible={newPasswordConfirmationVisible}
+                  visibilityLabelHidden={formCopy.showPassword}
+                  visibilityLabelVisible={formCopy.hidePassword}
                 />
 
                 <Button
                   disabled={isSubmissionBlocked}
                   fullWidth
                   loading={submitting}
-                  loadingLabel="Ustawianie hasła..."
+                  loadingLabel={formCopy.settingPasswordLoading}
                   size="large"
                   type="submit"
                 >
-                  Ustaw nowe hasło
+                  {formCopy.setNewPassword}
                 </Button>
               </form>
             ) : null}
 
             <AuthSecondaryActions
+              locale={locale}
               mode={mode}
               onNavigate={navigateTo}
             />
@@ -984,56 +1177,34 @@ export function AuthSurface({
   );
 }
 
-function AuthMarketingPanel() {
+function AuthMarketingPanel({
+  locale,
+  mode,
+}: {
+  readonly locale: AuthLocale;
+  readonly mode: AuthSurfaceMode;
+}) {
+  const copy = resolveAuthMarketingCopy(locale);
+
   return (
     <aside className="pd-auth-surface__marketing" aria-hidden="true">
       <div className="pd-auth-surface__brand-row">
-        <PapaDataBrand decorative size="small" variant="mark" />
-        <span className="pd-auth-surface__brand-wordmark">PapaData</span>
+        <PapaDataBrand decorative size="medium" variant="lockup" />
       </div>
 
       <div className="pd-auth-surface__marketing-body">
         <p className="pd-auth-surface__marketing-eyebrow">
-          Dla zespołów e-commerce i marketingu
+          {copy.eyebrow}
         </p>
         <h2 className="pd-auth-surface__marketing-headline">
-          Dane, którym można zaufać przy każdej decyzji.
+          {copy.headline}
         </h2>
         <p className="pd-auth-surface__marketing-description">
-          Sprzedaż, reklama i ruch ze wszystkich kanałów — połączone w jeden,
-          spójny obraz Twojego biznesu, gotowy zanim zaczniesz poranną kawę.
+          {copy.description}
         </p>
 
-        <div className="pd-auth-surface__chart">
-          <div className="pd-auth-surface__chart-head">
-            <div>
-              <div className="pd-auth-surface__chart-label">
-                PRZYCHÓD — 30 DNI (PRÓBKA)
-              </div>
-              <div className="pd-auth-surface__chart-value">412 380 zł</div>
-            </div>
-            <div className="pd-auth-surface__chart-delta">↑ 18,4%</div>
-          </div>
-          <svg height="88" preserveAspectRatio="none" viewBox="0 0 512 88" width="100%">
-            <polyline
-              className="pd-auth-surface__chart-line"
-              points="0,70 40,64 80,66 120,50 160,54 200,40 240,44 280,28 320,32 360,18 400,24 440,10 480,14 512,4"
-            />
-          </svg>
-        </div>
-
-        <div>
-          <p className="pd-auth-surface__sources-label">
-            Podłączone źródła danych
-          </p>
-          <div className="pd-auth-surface__sources">
-            <span className="pd-auth-surface__source">WooCommerce</span>
-            <span className="pd-auth-surface__source">Shopify</span>
-            <span className="pd-auth-surface__source">Google Ads</span>
-            <span className="pd-auth-surface__source">Meta Ads</span>
-            <span className="pd-auth-surface__source">GA4</span>
-          </div>
-        </div>
+        <AuthInsightChart locale={locale} mode={mode} />
+        <AuthDataSourceMarquee locale={locale} />
       </div>
 
       <div className="pd-auth-surface__marketing-footer">© PapaData</div>
@@ -1041,22 +1212,290 @@ function AuthMarketingPanel() {
   );
 }
 
+function resolveAuthMarketingCopy(locale: AuthLocale) {
+  return locale === 'en'
+    ? {
+      description: 'Sales, ads, and traffic from every channel combined into one coherent view of your business before the first decision of the day.',
+      eyebrow: 'For e-commerce and marketing teams',
+      headline: 'Data you can trust for every decision.',
+    }
+    : {
+      description: 'Sprzedaż, reklama i ruch ze wszystkich kanałów — połączone w jeden, spójny obraz Twojego biznesu, gotowy zanim zaczniesz poranną kawę.',
+      eyebrow: 'Dla zespołów e-commerce i marketingu',
+      headline: 'Dane, którym można zaufać przy każdej decyzji.',
+    };
+}
+
+function resolveAuthFormCopy(locale: AuthLocale) {
+  return locale === 'en'
+    ? {
+      accountEmail: 'Account e-mail',
+      chooseOtherRegistration: 'Choose another registration method',
+      confirm: 'Confirm',
+      confirmationCode: 'Confirmation code',
+      confirmingLoading: 'Confirming...',
+      confirmMfa: 'Confirm MFA',
+      continueGoogle: 'Continue with Google',
+      continueGoogleLoading: 'Redirecting to Google...',
+      continueMicrosoft: 'Continue with Microsoft',
+      continueMicrosoftLoading: 'Redirecting to Microsoft...',
+      continueOAuth: 'Continue with OAuth',
+      createAccount: 'Create account',
+      createByEmail: 'Create account with e-mail',
+      createLoading: 'Creating account...',
+      email: 'E-mail',
+      fixFields: 'Correct the highlighted fields to continue safely.',
+      fullName: 'Full name',
+      invitationChecking: 'Checking invitation...',
+      invitationExistingAccountNote: 'This e-mail already has a PapaData account — sign in to join this workspace.',
+      invitationExpired: 'This invitation has expired or has already been used. Ask for a new one.',
+      invitationIn: ' in ',
+      invitationInvalid: 'The invitation link is invalid.',
+      invitationUnavailable: 'Invitation unavailable',
+      invitationVerifyError: 'Could not verify the invitation.',
+      joiningLoading: 'Joining...',
+      joinTeam: 'Join the team',
+      login: 'Sign in',
+      loginLoading: 'Signing in...',
+      methodUnavailable: 'This method is not currently available.',
+      mfaCode: 'MFA code',
+      mfaConfirmed: 'MFA confirmed. The session can continue.',
+      mfaHelper: 'Enter the 6-digit code from your authenticator app.',
+      newPassword: 'New password',
+      newPasswordConfirmation: 'Repeat new password',
+      operationFailed: 'The operation failed.',
+      organization: 'Organization',
+      otpCode: 'OTP code',
+      otpHelper: 'One-time code from the reset message.',
+      password: 'Password',
+      passwordConfirmation: 'Repeat password',
+      passwordMismatch: 'Passwords must match.',
+      passwordRequired: 'Password is required.',
+      passwordRequirementDigit: 'Digit',
+      passwordRequirementLength: 'At least 12 characters',
+      passwordRequirementLowercase: 'Lowercase letter',
+      passwordRequirementUppercase: 'Uppercase letter',
+      passwordReset: 'The password has been set. You can return to sign in.',
+      passwordStrengthExcellent: 'Password strength: excellent',
+      passwordStrengthFair: 'Password strength: fair',
+      passwordStrengthStrong: 'Password strength: strong',
+      passwordStrengthWeak: 'Password strength: weak',
+      problemTitle: 'Check details',
+      reauthConfirmed: 'Identity confirmed again. You can continue.',
+      reauthHelper: 'Enter the current 6-digit code from your authenticator app.',
+      recoverySent: 'If the account exists, we have sent access recovery instructions.',
+      registrationAccepted: 'Registration has been accepted for the next access step.',
+      registrationChoiceLabel: 'Choose registration method',
+      rememberDevice: 'Remember this device',
+      rememberDeviceHelper: 'Device trust depends on your organization policy.',
+      requiredEmail: 'Enter a valid e-mail address.',
+      requiredFullName: 'Enter your full name.',
+      requiredOrganization: 'Enter organization name.',
+      requiredOtpCode: 'The confirmation code must have 6 digits.',
+      requiredResetToken: 'The recovery link is invalid or expired.',
+      requiredVerificationCode: 'The MFA code must have 6 digits.',
+      requiredWorkspace: 'Enter workspace name.',
+      sendInstructions: 'Send instructions',
+      sendingLoading: 'Sending...',
+      selecting: ' - selecting...',
+      setNewPassword: 'Set new password',
+      settingPasswordLoading: 'Setting password...',
+      signInAndJoin: 'Sign in and join',
+      signInAndJoinLoading: 'Signing in...',
+      hidePassword: 'Hide password',
+      showPassword: 'Show password',
+      strongPasswordDigit: (label: string) => `${label} must contain a digit.`,
+      strongPasswordLength: (label: string) => `${label} must be at least 12 characters.`,
+      strongPasswordLowercase: (label: string) => `${label} must contain a lowercase letter.`,
+      strongPasswordUppercase: (label: string) => `${label} must contain an uppercase letter.`,
+      successTitle: 'Operation accepted',
+      verifyingLoading: 'Verifying...',
+      workspace: 'Workspace',
+      workspaceListLabel: 'Choose organization and workspace',
+      workspaceSelectError: 'Could not choose the workspace.',
+    }
+    : {
+      accountEmail: 'E-mail konta',
+      chooseOtherRegistration: 'Wybierz inną metodę rejestracji',
+      confirm: 'Potwierdź',
+      confirmationCode: 'Kod potwierdzający',
+      confirmingLoading: 'Potwierdzanie...',
+      confirmMfa: 'Potwierdź MFA',
+      continueGoogle: 'Kontynuuj przez Google',
+      continueGoogleLoading: 'Przekierowanie do Google...',
+      continueMicrosoft: 'Kontynuuj przez Microsoft',
+      continueMicrosoftLoading: 'Przekierowanie do Microsoft...',
+      continueOAuth: 'Kontynuuj przez OAuth',
+      createAccount: 'Utwórz konto',
+      createByEmail: 'Utwórz konto e-mailem',
+      createLoading: 'Tworzenie konta...',
+      email: 'E-mail',
+      fixFields: 'Popraw oznaczone pola, aby bezpiecznie kontynuować.',
+      fullName: 'Imię i nazwisko',
+      invitationChecking: 'Sprawdzanie zaproszenia...',
+      invitationExistingAccountNote: 'Ten e-mail ma już konto PapaData — zaloguj się, aby dołączyć do tego workspace.',
+      invitationExpired: 'To zaproszenie wygasło lub zostało już wykorzystane. Poproś o nowe.',
+      invitationIn: ' w ',
+      invitationInvalid: 'Link zaproszenia jest nieprawidłowy.',
+      invitationUnavailable: 'Zaproszenie niedostępne',
+      invitationVerifyError: 'Nie udało się zweryfikować zaproszenia.',
+      joiningLoading: 'Dołączanie...',
+      joinTeam: 'Dołącz do zespołu',
+      login: 'Zaloguj się',
+      loginLoading: 'Logowanie...',
+      methodUnavailable: 'Ta metoda nie jest obecnie dostępna.',
+      mfaCode: 'Kod MFA',
+      mfaConfirmed: 'MFA potwierdzone. Sesja może przejść dalej.',
+      mfaHelper: 'Wpisz 6-cyfrowy kod z aplikacji uwierzytelniającej.',
+      newPassword: 'Nowe hasło',
+      newPasswordConfirmation: 'Powtórz nowe hasło',
+      operationFailed: 'Operacja nie powiodła się.',
+      organization: 'Organizacja',
+      otpCode: 'Kod OTP',
+      otpHelper: 'Kod jednorazowy z wiadomości resetu.',
+      password: 'Hasło',
+      passwordConfirmation: 'Powtórz hasło',
+      passwordMismatch: 'Hasła muszą być identyczne.',
+      passwordRequired: 'Hasło jest wymagane.',
+      passwordRequirementDigit: 'Cyfra',
+      passwordRequirementLength: 'Co najmniej 12 znaków',
+      passwordRequirementLowercase: 'Mała litera',
+      passwordRequirementUppercase: 'Wielka litera',
+      passwordReset: 'Hasło zostało ustawione. Możesz wrócić do logowania.',
+      passwordStrengthExcellent: 'Siła hasła: bardzo silne',
+      passwordStrengthFair: 'Siła hasła: średnie',
+      passwordStrengthStrong: 'Siła hasła: silne',
+      passwordStrengthWeak: 'Siła hasła: słabe',
+      problemTitle: 'Sprawdź dane',
+      reauthConfirmed: 'Tożsamość potwierdzona ponownie. Możesz kontynuować.',
+      reauthHelper: 'Wpisz aktualny 6-cyfrowy kod z aplikacji uwierzytelniającej.',
+      recoverySent: 'Jeżeli konto istnieje, wysłaliśmy instrukcję odzyskania dostępu.',
+      registrationAccepted: 'Rejestracja została przyjęta do dalszego procesu dostępu.',
+      registrationChoiceLabel: 'Wybierz metodę rejestracji',
+      rememberDevice: 'Zapamiętaj to urządzenie',
+      rememberDeviceHelper: 'Zaufanie urządzeniu zależy od polityki organizacji.',
+      requiredEmail: 'Podaj poprawny adres e-mail.',
+      requiredFullName: 'Podaj imię i nazwisko.',
+      requiredOrganization: 'Podaj nazwę organizacji.',
+      requiredOtpCode: 'Kod potwierdzający musi mieć 6 cyfr.',
+      requiredResetToken: 'Link odzyskiwania jest nieprawidłowy lub wygasł.',
+      requiredVerificationCode: 'Kod MFA musi mieć 6 cyfr.',
+      requiredWorkspace: 'Podaj nazwę workspace.',
+      sendInstructions: 'Wyślij instrukcję',
+      sendingLoading: 'Wysyłanie...',
+      selecting: ' — wybieranie...',
+      setNewPassword: 'Ustaw nowe hasło',
+      settingPasswordLoading: 'Ustawianie hasła...',
+      signInAndJoin: 'Zaloguj się i dołącz',
+      signInAndJoinLoading: 'Logowanie...',
+      hidePassword: 'Ukryj hasło',
+      showPassword: 'Pokaż hasło',
+      strongPasswordDigit: (label: string) => `${label} musi zawierać cyfrę.`,
+      strongPasswordLength: (label: string) => `${label} musi mieć co najmniej 12 znaków.`,
+      strongPasswordLowercase: (label: string) => `${label} musi zawierać małą literę.`,
+      strongPasswordUppercase: (label: string) => `${label} musi zawierać wielką literę.`,
+      successTitle: 'Operacja przyjęta',
+      verifyingLoading: 'Weryfikacja...',
+      workspace: 'Workspace',
+      workspaceListLabel: 'Wybierz organizację i obszar roboczy',
+      workspaceSelectError: 'Nie udało się wybrać obszaru roboczego.',
+    };
+}
+
+function resolveAuthActionCopy(locale: AuthLocale) {
+  return locale === 'en'
+    ? {
+      backToEntry: 'Back to auth entry',
+      backToLogin: 'Back to sign in',
+      createAccount: 'Create account',
+      goToApp: 'Go to application',
+      goToLogin: 'Go to sign in',
+      login: 'Sign in',
+      noAccountCreate: 'No account? Create one',
+      recoverAccess: 'Recover access',
+      retry: 'Try again',
+    }
+    : {
+      backToEntry: 'Wróć do wejścia Auth',
+      backToLogin: 'Wróć do logowania',
+      createAccount: 'Utwórz konto',
+      goToApp: 'Przejdź do aplikacji',
+      goToLogin: 'Przejdź do logowania',
+      login: 'Zaloguj się',
+      noAccountCreate: 'Nie masz konta? Utwórz konto',
+      recoverAccess: 'Odzyskaj dostęp',
+      retry: 'Spróbuj ponownie',
+    };
+}
+
+function OAuthProviderButtons({
+  formCopy,
+  intent,
+  oauthAvailability,
+  oauthPending,
+  onStart,
+}: {
+  readonly formCopy: AuthFormCopy;
+  readonly intent: OAuthIntent;
+  readonly oauthAvailability?: OAuthAvailability;
+  readonly oauthPending: OAuthProviderId | null;
+  readonly onStart: (provider: OAuthProviderId, intent: OAuthIntent) => void;
+}) {
+  const googleAvailable = isOAuthProviderEnabled(oauthAvailability, 'google');
+  const microsoftAvailable = isOAuthProviderEnabled(oauthAvailability, 'microsoft');
+  const pending = Boolean(oauthPending);
+
+  return (
+    <div className="pd-auth-surface__oauth-buttons">
+      <Button
+        disabled={pending || !googleAvailable}
+        fullWidth
+        loading={oauthPending === 'google'}
+        loadingLabel={formCopy.continueGoogleLoading}
+        onClick={() => onStart('google', intent)}
+        size="large"
+        type="button"
+        variant="secondary"
+      >
+        {formCopy.continueGoogle}
+      </Button>
+      <Button
+        disabled={pending || !microsoftAvailable}
+        fullWidth
+        loading={oauthPending === 'microsoft'}
+        loadingLabel={formCopy.continueMicrosoftLoading}
+        onClick={() => onStart('microsoft', intent)}
+        size="large"
+        type="button"
+        variant="secondary"
+      >
+        {formCopy.continueMicrosoft}
+      </Button>
+      {!googleAvailable || !microsoftAvailable ? <p>{formCopy.methodUnavailable}</p> : null}
+    </div>
+  );
+}
+
 function AuthEntryActions({
   disabled,
+  locale,
   onNavigate,
 }: {
   readonly disabled: boolean;
+  readonly locale: AuthLocale;
   readonly onNavigate: (path: string) => void;
 }) {
+  const copy = resolveAuthActionCopy(locale);
+
   return (
-    <div className="pd-auth-surface__choice">
+    <div className="pd-auth-surface__entry-actions">
       <Button
         disabled={disabled}
         fullWidth
         onClick={() => onNavigate('/login')}
         size="large"
       >
-        Zaloguj się
+        {copy.login}
       </Button>
       <Button
         disabled={disabled}
@@ -1065,44 +1504,51 @@ function AuthEntryActions({
         size="large"
         variant="secondary"
       >
-        Utwórz konto
+        {copy.createAccount}
       </Button>
-      <TextAction
+      <Button
         disabled={disabled}
+        fullWidth
         onClick={() => onNavigate('/recover-access')}
+        size="large"
+        variant="ghost"
       >
-        Odzyskaj dostęp
-      </TextAction>
+        {copy.recoverAccess}
+      </Button>
     </div>
   );
 }
 
 function AuthSecondaryActions({
+  locale,
   mode,
   onNavigate,
 }: {
+  readonly locale: AuthLocale;
   readonly mode: AuthSurfaceMode;
   readonly onNavigate: (path: string) => void;
 }) {
   if (mode === 'entry') return null;
 
+  const copy = resolveAuthActionCopy(locale);
+
   return (
     <div className="pd-auth-surface__links">
       {mode !== 'login' ? (
         <TextAction onClick={() => onNavigate('/login')}>
-          Wróć do logowania
+          {copy.backToLogin}
         </TextAction>
       ) : null}
       {mode === 'login' ? (
         <>
           <TextAction onClick={() => onNavigate('/register')}>
-            Nie masz konta? Utwórz konto
+            {copy.noAccountCreate}
           </TextAction>
           <TextAction
             onClick={() => onNavigate('/recover-access')}
             tone="muted"
           >
-            Odzyskaj dostęp
+            {copy.recoverAccess}
           </TextAction>
         </>
       ) : null}
@@ -1111,7 +1557,7 @@ function AuthSecondaryActions({
           onClick={() => onNavigate('/auth')}
           tone="muted"
         >
-          Wróć do wejścia Auth
+          {copy.backToEntry}
         </TextAction>
       ) : null}
     </div>
@@ -1120,15 +1566,19 @@ function AuthSecondaryActions({
 
 function AuthStateActions({
   actionLabel,
+  locale,
   onNavigate,
   onRetry,
   state,
 }: {
   readonly actionLabel?: string;
+  readonly locale: AuthLocale;
   readonly onNavigate: (path: string) => void;
   readonly onRetry?: () => Promise<void> | void;
   readonly state: AuthSurfaceState;
 }) {
+  const copy = resolveAuthActionCopy(locale);
+
   if (state === 'serviceUnavailable') {
     return (
       <Button
@@ -1136,7 +1586,7 @@ function AuthStateActions({
         onClick={() => void onRetry?.()}
         variant="secondary"
       >
-        Spróbuj ponownie
+        {copy.retry}
       </Button>
     );
   }
@@ -1148,10 +1598,10 @@ function AuthStateActions({
           onClick={() => onNavigate('/recover-access')}
           variant="secondary"
         >
-          Odzyskaj dostęp
+          {copy.recoverAccess}
         </Button>
         <TextAction onClick={() => onNavigate('/login')}>
-          Wróć do logowania
+          {copy.backToLogin}
         </TextAction>
       </div>
     );
@@ -1160,7 +1610,7 @@ function AuthStateActions({
   if (state === 'applicationReady') {
     return (
       <Button onClick={() => onNavigate('/app')}>
-        Przejdź do aplikacji
+        {copy.goToApp}
       </Button>
     );
   }
@@ -1168,7 +1618,7 @@ function AuthStateActions({
   if (state === 'loggedOut') {
     return (
       <Button onClick={() => onNavigate('/login')} variant="secondary">
-        Przejdź do logowania
+        {copy.goToLogin}
       </Button>
     );
   }
@@ -1235,10 +1685,11 @@ function resolvePresentedSurfaceId(
 function validateLogin(
   email: string,
   password: string,
+  copy: AuthFormCopy,
 ): FieldProblems {
   return {
-    email: validateEmail(email),
-    password: password ? undefined : 'Hasło jest wymagane.',
+    email: validateEmail(email, copy),
+    password: password ? undefined : copy.passwordRequired,
   };
 }
 
@@ -1249,22 +1700,23 @@ function validateRegistration(
   workspaceName: string,
   password: string,
   passwordConfirmation: string,
+  copy: AuthFormCopy,
 ): FieldProblems {
   return {
-    email: validateEmail(email),
+    email: validateEmail(email, copy),
     fullName: fullName.trim().length >= 2
       ? undefined
-      : 'Podaj imię i nazwisko.',
+      : copy.requiredFullName,
     organizationName: organizationName.trim().length >= 2
       ? undefined
-      : 'Podaj nazwę organizacji.',
-    password: validateStrongPassword(password, 'Hasło'),
+      : copy.requiredOrganization,
+    password: validateStrongPassword(password, copy.password, copy),
     passwordConfirmation: passwordConfirmation === password
       ? undefined
-      : 'Hasła muszą być identyczne.',
+      : copy.passwordMismatch,
     workspaceName: workspaceName.trim().length >= 2
       ? undefined
-      : 'Podaj nazwę workspace.',
+      : copy.requiredWorkspace,
   };
 }
 
@@ -1272,29 +1724,47 @@ function validateAcceptInvitation(
   fullName: string,
   password: string,
   passwordConfirmation: string,
+  copy: AuthFormCopy,
 ): FieldProblems {
   return {
     fullName: fullName.trim().length >= 2
       ? undefined
-      : 'Podaj imię i nazwisko.',
-    password: validateStrongPassword(password, 'Hasło'),
+      : copy.requiredFullName,
+    password: validateStrongPassword(password, copy.password, copy),
     passwordConfirmation: passwordConfirmation === password
       ? undefined
-      : 'Hasła muszą być identyczne.',
+      : copy.passwordMismatch,
   };
 }
 
-function validateMfa(code: string): FieldProblems {
+// The invited email already has an account: this is a sign-in, not account
+// creation, so only an existing (not "new strong") password is required.
+function validateAcceptInvitationExistingIdentity(
+  password: string,
+  copy: AuthFormCopy,
+): FieldProblems {
+  return {
+    password: password ? undefined : copy.passwordRequired,
+  };
+}
+
+function validateMfa(
+  code: string,
+  copy: AuthFormCopy,
+): FieldProblems {
   return {
     code: /^\d{6}$/u.test(code.trim())
       ? undefined
-      : 'Kod MFA musi mieć 6 cyfr.',
+      : copy.requiredVerificationCode,
   };
 }
 
-function validateRecoveryRequest(email: string): FieldProblems {
+function validateRecoveryRequest(
+  email: string,
+  copy: AuthFormCopy,
+): FieldProblems {
   return {
-    email: validateEmail(email),
+    email: validateEmail(email, copy),
   };
 }
 
@@ -1304,35 +1774,81 @@ function validatePasswordReset(
   newPasswordConfirmation: string,
   otp: string,
   resetToken: string,
+  copy: AuthFormCopy,
 ): FieldProblems {
   return {
-    email: validateEmail(email),
+    email: validateEmail(email, copy),
     newPasswordConfirmation: newPasswordConfirmation === newPassword
       ? undefined
-      : 'Hasła muszą być identyczne.',
+      : copy.passwordMismatch,
     otp: /^\d{6}$/u.test(otp.trim())
       ? undefined
-      : 'Kod potwierdzający musi mieć 6 cyfr.',
-    password: validateStrongPassword(newPassword, 'Nowe hasło'),
+      : copy.requiredOtpCode,
+    password: validateStrongPassword(newPassword, copy.newPassword, copy),
     resetToken: resetToken.trim()
       ? undefined
-      : 'Link odzyskiwania jest nieprawidłowy lub wygasł.',
+      : copy.requiredResetToken,
   };
 }
 
-function validateEmail(email: string): string | undefined {
+function validateEmail(
+  email: string,
+  copy: AuthFormCopy,
+): string | undefined {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(email.trim())
     ? undefined
-    : 'Podaj poprawny adres e-mail.';
+    : copy.requiredEmail;
 }
 
 function validateStrongPassword(
   password: string,
-  label: 'Hasło' | 'Nowe hasło',
+  label: string,
+  copy: AuthFormCopy,
 ): string | undefined {
-  if (password.length < 12) return `${label} musi mieć co najmniej 12 znaków.`;
-  if (!/[a-z]/u.test(password)) return `${label} musi zawierać małą literę.`;
-  if (!/[A-Z]/u.test(password)) return `${label} musi zawierać wielką literę.`;
-  if (!/[0-9]/u.test(password)) return `${label} musi zawierać cyfrę.`;
+  if (password.length < 12) return copy.strongPasswordLength(label);
+  if (!/[a-z]/u.test(password)) return copy.strongPasswordLowercase(label);
+  if (!/[A-Z]/u.test(password)) return copy.strongPasswordUppercase(label);
+  if (!/[0-9]/u.test(password)) return copy.strongPasswordDigit(label);
   return undefined;
+}
+
+/**
+ * Score derived from the same 4 requirement checks the checklist already
+ * shows (so the bar and the checklist can never visually disagree), plus a
+ * length bonus for going beyond the 12-character minimum — rewards a longer
+ * password without inventing a 5th, unlisted criterion (e.g. symbols) the
+ * checklist doesn't mention. Returns null for an empty password so the bar
+ * doesn't render at all before the user has typed anything.
+ */
+function computePasswordStrength(
+  password: string,
+  requirements: readonly { readonly met: boolean }[],
+): number | null {
+  if (password.length === 0) {
+    return null;
+  }
+
+  const metCount = requirements.filter((requirement) => requirement.met).length;
+  const requirementScore = requirements.length > 0
+    ? (metCount / requirements.length) * 70
+    : 0;
+  const lengthBonus = (Math.min(Math.max(password.length - 12, 0), 12) / 12) * 30;
+
+  return Math.round(Math.min(100, requirementScore + lengthBonus));
+}
+
+function resolvePasswordStrengthLabel(
+  score: number,
+  copy: AuthFormCopy,
+): string {
+  switch (resolvePasswordStrengthLevel(score)) {
+    case 'excellent':
+      return copy.passwordStrengthExcellent;
+    case 'strong':
+      return copy.passwordStrengthStrong;
+    case 'fair':
+      return copy.passwordStrengthFair;
+    default:
+      return copy.passwordStrengthWeak;
+  }
 }

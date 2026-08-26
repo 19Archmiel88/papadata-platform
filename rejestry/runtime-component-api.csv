@@ -52,6 +52,7 @@ InlineNotice,apps/web/src/design-system/components/InlineNotice/InlineNotice.tsx
 KeyValueList,apps/web/src/design-system/components/KeyValueList/KeyValueList.tsx,KeyValueListProps,10.target,review,Design System
 Menu,apps/web/src/design-system/components/Menu/Menu.tsx,MenuProps,10.target,review,Design System
 OverlayRoot,apps/web/src/design-system/components/OverlayRoot/OverlayRoot.tsx,OverlayRootProps,20.10,accepted,Product Shell
+VisuallyHidden,apps/web/src/design-system/components/VisuallyHidden/VisuallyHidden.tsx,VisuallyHiddenProps,00.target,review,Design System
 Pagination,apps/web/src/design-system/components/Pagination/Pagination.tsx,PaginationProps,10.target,review,Design System
 PaginationNav,apps/web/src/design-system/components/PaginationNav/PaginationNav.tsx,PaginationNavProps,10.target,review,Design System
 Popover,apps/web/src/design-system/components/Popover/Popover.tsx,PopoverProps,20.10,accepted,Product Shell

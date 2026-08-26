@@ -23,6 +23,30 @@ type PasswordRequirement = {
   readonly met: boolean;
 };
 
+export type PasswordStrengthLevel = 'excellent' | 'fair' | 'strong' | 'weak';
+
+/**
+ * Single source of truth for the weak/fair/strong/excellent cutoffs, shared
+ * by the bar's own color (`data-level` below) and by any caller supplying a
+ * `strengthLabel` — exported so callers can pick matching copy per level
+ * instead of guessing thresholds that could silently drift from the bar's.
+ */
+export function resolvePasswordStrengthLevel(score: number): PasswordStrengthLevel {
+  if (score >= 90) {
+    return 'excellent';
+  }
+
+  if (score >= 70) {
+    return 'strong';
+  }
+
+  if (score >= 40) {
+    return 'fair';
+  }
+
+  return 'weak';
+}
+
 export type PasswordFieldProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
   | 'autoComplete'
@@ -42,6 +66,7 @@ export type PasswordFieldProps = Omit<
   readonly required?: boolean;
   readonly status?: FormControlStatus;
   readonly strength?: number | null;
+  readonly strengthLabel?: string | null;
   readonly toggleButtonProps?: Omit<
     ButtonHTMLAttributes<HTMLButtonElement>,
     'children' | 'type'
@@ -72,6 +97,7 @@ export const PasswordField = forwardRef<
     required = false,
     status = 'default',
     strength = null,
+    strengthLabel = null,
     toggleButtonProps,
     valid = false,
     value,
@@ -173,15 +199,28 @@ export const PasswordField = forwardRef<
       {normalizedStrength !== null || requirements.length > 0 ? (
         <div className="pd-form-control__strength">
           {normalizedStrength !== null ? (
-            <div
-              aria-hidden="true"
-              className="pd-form-control__strength-bar"
-            >
-              <span
-                className="pd-form-control__strength-fill"
-                style={{ width: `${normalizedStrength}%` }}
-              />
-            </div>
+            <>
+              <div
+                aria-hidden="true"
+                className="pd-form-control__strength-bar"
+                data-level={resolvePasswordStrengthLevel(normalizedStrength)}
+              >
+                <span
+                  className="pd-form-control__strength-fill"
+                  style={{ width: `${normalizedStrength}%` }}
+                />
+              </div>
+
+              {strengthLabel ? (
+                <p
+                  aria-live="polite"
+                  className="pd-form-control__strength-label"
+                  data-level={resolvePasswordStrengthLevel(normalizedStrength)}
+                >
+                  {strengthLabel}
+                </p>
+              ) : null}
+            </>
           ) : null}
 
           {requirements.length > 0 ? (

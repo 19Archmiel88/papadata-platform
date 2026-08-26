@@ -56,8 +56,8 @@ export const commandCenterOnePageSectionIds = [
   'command-section-plan',
   'command-section-drivers',
   'command-section-funnel',
-  'command-section-traffic',
   'command-section-products',
+  'command-section-traffic',
   'command-section-customers',
 ] as const;
 
@@ -73,8 +73,8 @@ export const commandCenterOnePageSections: readonly CommandCenterOnePageSectionD
   { id: 'command-section-plan', label: 'Plan vs Benchmark' },
   { id: 'command-section-drivers', label: 'Drivery wyniku' },
   { id: 'command-section-funnel', label: 'Lejek' },
-  { id: 'command-section-traffic', label: 'Ruch' },
   { id: 'command-section-products', label: 'Produkty' },
+  { id: 'command-section-traffic', label: 'Źródła' },
   { id: 'command-section-customers', label: 'Klienci' },
 ];
 
@@ -177,6 +177,7 @@ export function buildTrafficSourceRows(trafficSources: readonly TrafficSourceRow
   return trafficSources.map((entry) => ({
     id: entry.source,
     rawSessions: entry.sessions,
+    rawUsers: entry.users,
     sessions: formatInteger(entry.sessions),
     source: entry.source,
     users: formatInteger(entry.users),

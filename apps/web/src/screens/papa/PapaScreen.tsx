@@ -6,6 +6,10 @@ import {
   InlineNotice,
 } from '../../design-system';
 import {
+  PapaAssistantLaboratory,
+  papaAssistantFixture,
+} from '../../features/papa-assistant';
+import {
   usePapaAssistantRuntime,
 } from '../../shell/papa-assistant';
 import {
@@ -23,11 +27,9 @@ export type PapaScreenProps = {
 };
 
 export function PapaScreen({
-  path = '/app/papa/panel-kontekstowy-papa',
+  path = '/app/papa',
 }: PapaScreenProps) {
-  const normalizedPath = path === '/app/papa'
-    ? '/app/papa/panel-kontekstowy-papa'
-    : path;
+  const normalizedPath = path;
   const definition = findPapaScreenDefinition(normalizedPath);
   const {
     lastSnapshot,
@@ -46,6 +48,14 @@ export function PapaScreen({
     reports,
     scope,
   ]);
+
+  if (
+    path === '/app/papa' ||
+    path === '/app/papa/laboratorium-ai' ||
+    path === '/app/papa/panel-kontekstowy-papa'
+  ) {
+    return <PapaAssistantLaboratory data={papaAssistantFixture} />;
+  }
 
   if (!definition) {
     return (

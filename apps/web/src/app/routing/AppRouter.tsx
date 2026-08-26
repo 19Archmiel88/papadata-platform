@@ -10,9 +10,6 @@ import {
   Skeleton,
   Spinner,
 } from '../../design-system/components';
-import {
-  PublicTopbar,
-} from '../../shell/topbar';
 import { useSession } from '../providers';
 import {
   navigate,
@@ -24,6 +21,14 @@ const AuthPage = lazy(async () => {
 
   return {
     default: module.AuthPage,
+  };
+});
+
+const OAuthCallbackPage = lazy(async () => {
+  const module = await import('../../features/auth/OAuthCallbackPage');
+
+  return {
+    default: module.OAuthCallbackPage,
   };
 });
 
@@ -194,15 +199,18 @@ export function AppRouter() {
   }
 
   if (pathname === '/mfa') {
-    return status === 'anonymous'
-      ? <Redirect to="/login" />
-      : (
-          <RouteSuspense>
-            <PublicAuthShell>
-              <AuthPage mode="mfa" />
-            </PublicAuthShell>
-          </RouteSuspense>
-        );
+    if (status === 'anonymous') {
+      const returnTo = encodeURIComponent(location);
+      return <Redirect to={`/auth?returnTo=${returnTo}`} />;
+    }
+
+    return (
+      <RouteSuspense>
+        <PublicAuthShell>
+          <AuthPage mode="mfa" />
+        </PublicAuthShell>
+      </RouteSuspense>
+    );
   }
 
   if (pathname === '/accept-invite') {
@@ -214,6 +222,20 @@ export function AppRouter() {
       <RouteSuspense>
         <PublicAuthShell>
           <AuthPage mode="accept-invite" />
+        </PublicAuthShell>
+      </RouteSuspense>
+    );
+  }
+
+  if (pathname === '/oauth/callback') {
+    // Deliberately no auth-status redirect, mirroring /accept-invite: this
+    // route's job is establishing or changing session state (login,
+    // register, accept-invite, link-account, reauth all land here), not
+    // requiring one to already exist.
+    return (
+      <RouteSuspense>
+        <PublicAuthShell>
+          <OAuthCallbackPage />
         </PublicAuthShell>
       </RouteSuspense>
     );
@@ -232,27 +254,33 @@ export function AppRouter() {
   }
 
   if (pathname === '/reauth') {
-    return status !== 'authenticated'
-      ? <Redirect to="/login" />
-      : (
-          <RouteSuspense>
-            <PublicAuthShell>
-              <AuthPage mode="reauth" />
-            </PublicAuthShell>
-          </RouteSuspense>
-        );
+    if (status !== 'authenticated') {
+      const returnTo = encodeURIComponent(location);
+      return <Redirect to={`/auth?returnTo=${returnTo}`} />;
+    }
+
+    return (
+      <RouteSuspense>
+        <PublicAuthShell>
+          <AuthPage mode="reauth" />
+        </PublicAuthShell>
+      </RouteSuspense>
+    );
   }
 
   if (pathname === '/select-workspace') {
-    return status !== 'authenticated'
-      ? <Redirect to="/login" />
-      : (
-          <RouteSuspense>
-            <PublicAuthShell>
-              <AuthPage mode="workspace" />
-            </PublicAuthShell>
-          </RouteSuspense>
-        );
+    if (status !== 'authenticated') {
+      const returnTo = encodeURIComponent(location);
+      return <Redirect to={`/auth?returnTo=${returnTo}`} />;
+    }
+
+    return (
+      <RouteSuspense>
+        <PublicAuthShell>
+          <AuthPage mode="workspace" />
+        </PublicAuthShell>
+      </RouteSuspense>
+    );
   }
 
   if (pathname === '/app' || pathname.startsWith('/app/')) {
@@ -397,12 +425,7 @@ function PublicAuthShell({
 }: {
   readonly children: ReactNode;
 }) {
-  return (
-    <div className="pd-auth-route-shell">
-      <PublicTopbar onNavigate={navigate} />
-      {children}
-    </div>
-  );
+  return <div className="pd-auth-route-shell">{children}</div>;
 }
 
 function RouteSuspense({

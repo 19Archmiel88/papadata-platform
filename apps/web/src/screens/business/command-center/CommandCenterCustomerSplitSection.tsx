@@ -2,8 +2,8 @@ import type {
   DataRow,
 } from '../../../../../../contracts/component-shared';
 import {
-  Button,
   EmptyState,
+  VisuallyHidden,
 } from '../../../design-system';
 import {
   CommandChartTableFallback,
@@ -13,21 +13,24 @@ import {
   customerColumns,
   formatMetricValue,
   formatPercent,
-  openPapaAssistantForElement,
 } from './commandCenterOnePageModel';
 
-const customerSplitElementId = 'command-customer-split';
 const customerViewBox = {
-  height: 690,
-  matrixBottom: 566,
-  matrixLeft: 96,
-  matrixRight: 918,
-  matrixTop: 292,
-  mixLeft: 96,
+  gapRowGap: 66,
+  gapRowHeight: 28,
+  gapTop: 322,
+  height: 560,
+  // Wide enough for the longest row label ("Baza klientów") right-anchored
+  // 18 units before it, in user-unit space — the chart's aspect ratio (and
+  // therefore how much accidental letterboxing margin the browser adds
+  // around it) can change independently of this, so the label itself must
+  // never depend on that margin to stay on-canvas.
+  mixLeft: 168,
   mixRight: 918,
   width: 1000,
 } as const;
 const customerShareTicks = [0, 0.25, 0.5, 0.75, 1] as const;
+const minGapDomain = 0.2;
 
 type CustomerSegmentPoint = {
   readonly arpu: number;
@@ -201,6 +204,24 @@ function resolveCustomerInsight(points: readonly CustomerSegmentPoint[]): string
   return `${returningCopy}${newCopy}${arpuCopy}${gapCopy}`;
 }
 
+/**
+ * The gap chart's row label matches the legend above it ("Powracający"/
+ * "Nowi") rather than the free-text `segment` field (e.g. "Powracający
+ * klienci") used elsewhere on this screen — that string's length isn't
+ * bounded by the contract, and the plot's left margin is sized for these
+ * two known, short tone labels, not for arbitrary segment text.
+ */
+function resolveSegmentToneLabel(tone: CustomerSegmentPoint['tone']): string {
+  return tone === 'returning' ? 'Powracający' : 'Nowi';
+}
+
+/** Symmetric domain around 0, rounded up to the nearest 5pp, with a floor so a near-zero gap doesn't render as an invisible sliver. */
+function resolveGapDomain(points: readonly CustomerSegmentPoint[]): number {
+  const maxAbsGap = points.reduce((max, point) => Math.max(max, Math.abs(point.valueGap)), 0);
+
+  return Math.max(minGapDomain, Math.ceil((maxAbsGap + 0.02) * 20) / 20);
+}
+
 function CommandCustomerEconomicsChart({
   customerRows,
 }: {
@@ -215,11 +236,13 @@ function CommandCustomerEconomicsChart({
   const strongestSegment = [...points].sort((left, right) => right.arpuIndex - left.arpuIndex)[0] ?? null;
   const arpuLift = resolveArpuLift(points);
   const mixWidth = customerViewBox.mixRight - customerViewBox.mixLeft;
-  const matrixWidth = customerViewBox.matrixRight - customerViewBox.matrixLeft;
-  const matrixHeight = customerViewBox.matrixBottom - customerViewBox.matrixTop;
+  const gapCenterX = customerViewBox.mixLeft + mixWidth / 2;
+  const gapHalfWidth = mixWidth / 2;
+  const gapDomain = resolveGapDomain(points);
   const scaleMixX = (share: number) => customerViewBox.mixLeft + mixWidth * Math.max(0, Math.min(1, share));
-  const scaleMatrixX = (share: number) => customerViewBox.matrixLeft + matrixWidth * Math.max(0, Math.min(1, share));
-  const scaleMatrixY = (share: number) => customerViewBox.matrixBottom - matrixHeight * Math.max(0, Math.min(1, share));
+  const scaleGapX = (gap: number) => (
+    gapCenterX + gapHalfWidth * Math.max(-1, Math.min(1, gap / gapDomain))
+  );
   const metrics = [
     {
       detail: 'udział powracających w przychodzie',
@@ -249,7 +272,7 @@ function CommandCustomerEconomicsChart({
 
   return (
     <div
-      aria-label="Analityka klientów nowych i powracających: miks przychodu, miks bazy i matryca wartości"
+      aria-label="Analityka klientów nowych i powracających: miks przychodu, miks bazy i odchylenie wartości segmentu"
       className="pd-command-customers-visual"
       role="group"
     >
@@ -269,19 +292,54 @@ function CommandCustomerEconomicsChart({
             <stop offset="0%" stopColor="var(--pd-data-series-2)" />
             <stop offset="100%" stopColor="color-mix(in srgb, var(--pd-data-series-2) 54%, var(--pd-data-series-3) 46%)" />
           </linearGradient>
-          <radialGradient id="command-customers-bubble" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="color-mix(in srgb, var(--pd-text) 100%, transparent)" />
-            <stop offset="100%" stopColor="color-mix(in srgb, var(--pd-text) 12%, transparent)" />
-          </radialGradient>
         </defs>
 
         <text
           className="pd-command-customers-chart__axis-title"
           x={customerViewBox.mixLeft}
-          y="58"
+          y="34"
         >
           Miks segmentów
         </text>
+
+        {/* Explicit legend — without it the reader has no way to tell which
+            color means "nowi" vs "powracający" from the mix bars alone; the
+            tone/color mapping was previously only discoverable by scrolling
+            down to the metric cards. */}
+        <g className="pd-command-customers-chart__legend">
+          <rect
+            className="pd-command-customers-chart__legend-swatch"
+            data-tone="returning"
+            height="14"
+            rx="4"
+            width="14"
+            x={customerViewBox.mixLeft}
+            y="46"
+          />
+          <text
+            className="pd-command-customers-chart__legend-label"
+            x={customerViewBox.mixLeft + 22}
+            y="57"
+          >
+            Powracający
+          </text>
+          <rect
+            className="pd-command-customers-chart__legend-swatch"
+            data-tone="new"
+            height="14"
+            rx="4"
+            width="14"
+            x={customerViewBox.mixLeft + 170}
+            y="46"
+          />
+          <text
+            className="pd-command-customers-chart__legend-label"
+            x={customerViewBox.mixLeft + 192}
+            y="57"
+          >
+            Nowi
+          </text>
+        </g>
 
         {customerShareTicks.map((tick) => {
           const x = scaleMixX(tick);
@@ -292,14 +350,14 @@ function CommandCustomerEconomicsChart({
                 className="pd-command-customers-chart__grid-line"
                 x1={x}
                 x2={x}
-                y1="84"
-                y2="206"
+                y1="86"
+                y2="208"
               />
               <text
                 className="pd-command-customers-chart__axis-value"
                 textAnchor="middle"
                 x={x}
-                y="232"
+                y="234"
               >
                 {formatPercent(tick)}
               </text>
@@ -308,8 +366,8 @@ function CommandCustomerEconomicsChart({
         })}
 
         {[
-          { kind: 'revenue' as const, label: 'Przychód', segments: revenueSegments, y: 104 },
-          { kind: 'customers' as const, label: 'Baza klientów', segments: customerSegments, y: 166 },
+          { kind: 'revenue' as const, label: 'Przychód', segments: revenueSegments, y: 106 },
+          { kind: 'customers' as const, label: 'Baza klientów', segments: customerSegments, y: 168 },
         ].map((row) => (
           <g key={row.label}>
             <text
@@ -364,147 +422,105 @@ function CommandCustomerEconomicsChart({
 
         <text
           className="pd-command-customers-chart__axis-title"
-          x={customerViewBox.matrixLeft}
-          y="262"
+          x={customerViewBox.mixLeft}
+          y="286"
         >
-          Matryca wartości segmentu
+          Odchylenie wartości segmentu
         </text>
-
-        <rect
-          className="pd-command-customers-chart__matrix-bg"
-          height={matrixHeight}
-          width={matrixWidth}
-          x={customerViewBox.matrixLeft}
-          y={customerViewBox.matrixTop}
-        />
-
-        {customerShareTicks.map((tick) => {
-          const x = scaleMatrixX(tick);
-          const y = scaleMatrixY(tick);
-
-          return (
-            <g key={`customer-matrix-axis-${tick}`}>
-              <line
-                className="pd-command-customers-chart__matrix-grid"
-                x1={x}
-                x2={x}
-                y1={customerViewBox.matrixTop}
-                y2={customerViewBox.matrixBottom}
-              />
-              <line
-                className="pd-command-customers-chart__matrix-grid"
-                x1={customerViewBox.matrixLeft}
-                x2={customerViewBox.matrixRight}
-                y1={y}
-                y2={y}
-              />
-              <text
-                className="pd-command-customers-chart__axis-value"
-                textAnchor="middle"
-                x={x}
-                y={customerViewBox.matrixBottom + 32}
-              >
-                {formatPercent(tick)}
-              </text>
-              <text
-                className="pd-command-customers-chart__axis-value"
-                textAnchor="end"
-                x={customerViewBox.matrixLeft - 14}
-                y={y + 4}
-              >
-                {formatPercent(tick)}
-              </text>
-            </g>
-          );
-        })}
+        <text
+          className="pd-command-customers-chart__axis-subtitle"
+          x={customerViewBox.mixLeft}
+          y="304"
+        >
+          udział w przychodzie − udział w bazie klientów
+        </text>
 
         <line
-          className="pd-command-customers-chart__parity-line"
-          x1={customerViewBox.matrixLeft}
-          x2={customerViewBox.matrixRight}
-          y1={customerViewBox.matrixBottom}
-          y2={customerViewBox.matrixTop}
+          className="pd-command-customers-chart__gap-zero-line"
+          x1={gapCenterX}
+          x2={gapCenterX}
+          y1={customerViewBox.gapTop - 12}
+          y2={customerViewBox.gapTop + customerViewBox.gapRowGap + customerViewBox.gapRowHeight + 12}
         />
-        <text
-          className="pd-command-customers-chart__parity-label"
-          textAnchor="end"
-          x={customerViewBox.matrixRight - 14}
-          y={customerViewBox.matrixTop + 18}
-        >
-          parytet: udział przychodu = udział bazy
-        </text>
 
-        {points.map((point) => {
-          const x = scaleMatrixX(point.customerShare);
-          const y = scaleMatrixY(point.revenueShare);
-          const radius = Math.min(Math.max(14 + point.arpuIndex * 7, 14), 28);
+        {points.map((point, index) => {
+          const y = customerViewBox.gapTop + index * customerViewBox.gapRowGap;
+          const barX = scaleGapX(point.valueGap);
+          const barStart = Math.min(barX, gapCenterX);
+          const barWidth = Math.max(Math.abs(barX - gapCenterX), 2);
+          const isPositive = point.valueGap >= 0;
 
           return (
             <g
               data-tone={point.tone}
-              key={`matrix-${point.id}`}
+              key={`gap-${point.id}`}
             >
-              <line
-                className="pd-command-customers-chart__value-gap"
-                x1={x}
-                x2={x}
-                y1={scaleMatrixY(point.customerShare)}
-                y2={y}
-              />
-              <circle
-                className="pd-command-customers-chart__bubble-halo"
-                cx={x}
-                cy={y}
-                r={radius + 8}
-              />
-              <circle
-                className="pd-command-customers-chart__bubble"
-                cx={x}
-                cy={y}
-                r={radius}
-              />
               <text
-                className="pd-command-customers-chart__bubble-label"
-                textAnchor="middle"
-                x={x}
-                y={y - radius - 12}
+                className="pd-command-customers-chart__row-label"
+                textAnchor="end"
+                x={customerViewBox.mixLeft - 18}
+                y={y + customerViewBox.gapRowHeight / 2 + 5}
               >
-                {point.id === 'returning' ? 'powracający' : 'nowi'} · ARPU {decimalFormatter.format(point.arpuIndex)}x
+                {resolveSegmentToneLabel(point.tone)}
               </text>
+              <rect
+                className="pd-command-customers-chart__gap-track"
+                height={customerViewBox.gapRowHeight}
+                rx="8"
+                width={mixWidth}
+                x={customerViewBox.mixLeft}
+                y={y}
+              />
+              <rect
+                className="pd-command-customers-chart__gap-bar"
+                height={customerViewBox.gapRowHeight}
+                rx="8"
+                width={barWidth}
+                x={barStart}
+                y={y}
+              />
               <text
-                className="pd-command-customers-chart__bubble-value"
-                textAnchor="middle"
-                x={x}
-                y={y + 4}
+                className="pd-command-customers-chart__gap-value"
+                data-direction={isPositive ? 'positive' : 'negative'}
+                textAnchor={isPositive ? 'start' : 'end'}
+                x={isPositive ? barX + 10 : barX - 10}
+                y={y + customerViewBox.gapRowHeight / 2 + 5}
               >
-                {formatCompactCurrency(point.revenue)}
+                {formatSignedPercent(point.valueGap)}
               </text>
             </g>
           );
         })}
 
         <text
-          className="pd-command-customers-chart__axis-title"
+          className="pd-command-customers-chart__axis-value"
           textAnchor="middle"
-          x={(customerViewBox.matrixLeft + customerViewBox.matrixRight) / 2}
-          y={customerViewBox.matrixBottom + 70}
+          x={scaleGapX(-gapDomain)}
+          y={customerViewBox.gapTop + customerViewBox.gapRowGap + customerViewBox.gapRowHeight + 34}
         >
-          Udział w bazie klientów
+          {formatSignedPercent(-gapDomain)}
         </text>
         <text
-          className="pd-command-customers-chart__axis-title"
+          className="pd-command-customers-chart__axis-value"
           textAnchor="middle"
-          transform={`rotate(-90 ${customerViewBox.matrixLeft - 70} ${(customerViewBox.matrixTop + customerViewBox.matrixBottom) / 2})`}
-          x={customerViewBox.matrixLeft - 70}
-          y={(customerViewBox.matrixTop + customerViewBox.matrixBottom) / 2}
+          x={gapCenterX}
+          y={customerViewBox.gapTop + customerViewBox.gapRowGap + customerViewBox.gapRowHeight + 34}
         >
-          Udział w przychodzie
+          parytet 0%
+        </text>
+        <text
+          className="pd-command-customers-chart__axis-value"
+          textAnchor="middle"
+          x={scaleGapX(gapDomain)}
+          y={customerViewBox.gapTop + customerViewBox.gapRowGap + customerViewBox.gapRowHeight + 34}
+        >
+          {formatSignedPercent(gapDomain)}
         </text>
 
         <text
           className="pd-command-customers-chart__total"
           x={customerViewBox.mixLeft}
-          y="650"
+          y={customerViewBox.height - 24}
         >
           Razem: {formatMetricValue(totalRevenue, 'currency')} · {formatIntegerValue(totalCustomers)} klientów
         </text>
@@ -561,21 +577,14 @@ export function CommandCenterCustomerSplitSection({
       aria-labelledby="command-center-customers-title"
       className="pd-command-center-one-page__section pd-command-center-one-page__customer-section"
     >
-      <CommandSectionHeader
-        actions={(
-          <Button
-            onClick={() => openPapaAssistantForElement(customerSplitElementId)}
-            size="small"
-            variant="secondary"
-          >
-            Analizuj z Papą
-          </Button>
-        )}
-        description="Udział przychodu i podstawowa ekonomika segmentów nowych i powracających klientów."
-        eyebrow="Klienci"
-        title="Nowi i powracający"
-        titleId="command-center-customers-title"
-      />
+      <VisuallyHidden as="div">
+        <CommandSectionHeader
+          description="Udział przychodu i podstawowa ekonomika segmentów nowych i powracających klientów."
+          eyebrow="Klienci"
+          title="Nowi i powracający"
+          titleId="command-center-customers-title"
+        />
+      </VisuallyHidden>
       {customerRows.length === 0 ? (
         <EmptyState
           message="Kontrakt Centrum Dowodzenia nie dostarcza jeszcze podziału na klientów nowych i powracających dla wybranego zakresu."

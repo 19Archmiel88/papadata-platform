@@ -34,6 +34,38 @@ export type AuthenticationResult = {
   readonly user: AuthenticatedUser;
 };
 
+export type OAuthProviderId = 'google' | 'microsoft';
+
+export type OAuthAvailability = {
+  readonly google: 'available' | 'configuration_required';
+  readonly microsoft: 'available' | 'configuration_required';
+};
+
+export type OAuthStartResult = {
+  readonly redirectUrl: string;
+  readonly state: string;
+};
+
+// Every variant carries `returnTo` — the callback URL only ever has
+// code/state, so this is the only way this landing page learns where the
+// flow was supposed to continue afterward, success or not.
+export type OAuthCallbackResult = (
+  | {
+      readonly outcome: 'authenticated';
+      readonly session: BffSession;
+      readonly user: AuthenticatedUser;
+    }
+  | { readonly outcome: 'linked'; readonly provider: OAuthProviderId | null }
+  | {
+      readonly outcome: 'reauth_confirmed';
+      readonly session: BffSession;
+      readonly stepUpExpiresAt: string;
+    }
+  | { readonly outcome: 'no_linked_account'; readonly email?: string }
+  | { readonly outcome: 'email_already_registered'; readonly email?: string }
+  | { readonly outcome: 'invitation_invalid' }
+) & { readonly returnTo: string | null };
+
 export type BffNotification = {
   readonly createdAt: string;
   readonly id: string;
@@ -121,6 +153,7 @@ export type BffReportRecord = {
 export type InvitationPreview = {
   readonly accepted: boolean;
   readonly email?: string;
+  readonly existingIdentity?: boolean;
   readonly role?: string;
   readonly status: string;
   readonly tenantName?: string;
@@ -361,6 +394,67 @@ class BffClient {
     readonly resetToken: string;
   }): Promise<void> {
     await this.publicCommand('/api/v1/auth/password/reset', input);
+  }
+
+  async readAuthStatus(): Promise<{ readonly oauth: OAuthAvailability }> {
+    const response = await this.fetch('/api/v1/auth/status', { method: 'GET' });
+    const payload = await readJson<{
+      readonly data: { readonly oauth: OAuthAvailability };
+    }>(response);
+    assertOk(response, payload);
+    return payload.data;
+  }
+
+  async startOAuth(input: {
+    readonly provider: OAuthProviderId;
+    readonly intent: 'login' | 'register' | 'accept_invitation';
+    readonly invitationId?: string;
+    readonly invitationToken?: string;
+    readonly returnTo?: string;
+  }): Promise<OAuthStartResult> {
+    const response = await this.fetch('/api/v1/auth/oauth/start', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
+    const payload = await readJson<{ readonly data: OAuthStartResult }>(response);
+    assertOk(response, payload);
+    return payload.data;
+  }
+
+  async linkOAuthAccount(input: {
+    readonly provider: OAuthProviderId;
+    readonly returnTo?: string;
+  }): Promise<OAuthStartResult> {
+    return this.authenticatedCommand<OAuthStartResult>(
+      '/api/v1/auth/oauth/link/start',
+      input,
+    );
+  }
+
+  async startOAuthReauth(input: {
+    readonly provider: OAuthProviderId;
+    readonly returnTo?: string;
+  }): Promise<OAuthStartResult> {
+    return this.authenticatedCommand<OAuthStartResult>(
+      '/api/v1/auth/oauth/reauth/start',
+      input,
+    );
+  }
+
+  // No `provider` here on purpose: the backend recovers it from the
+  // consumed OAuth transaction row keyed by `state`, so the callback URL
+  // (which the provider controls) never needs to carry it either.
+  async completeOAuthCallback(input: {
+    readonly code: string;
+    readonly state: string;
+  }): Promise<OAuthCallbackResult> {
+    const response = await this.fetch('/api/v1/auth/oauth/callback', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
+    const payload = await readJson<{ readonly data: OAuthCallbackResult }>(response);
+    assertOk(response, payload);
+    return payload.data;
   }
 
   async logout(): Promise<void> {

@@ -1,4 +1,7 @@
 import type {
+  PapaDataRuntimeLocale,
+} from '../../design-system/foundations/runtime';
+import type {
   AuthSurfaceMode,
   AuthSurfaceState,
 } from './AuthSurface';
@@ -28,7 +31,12 @@ export function resolveAuthSurfaceCopy(
   mode: AuthSurfaceMode,
   state: AuthSurfaceState,
   isResetFlow: boolean,
+  locale: PapaDataRuntimeLocale = 'pl',
 ): AuthSurfaceCopy {
+  if (locale === 'en') {
+    return resolveAuthSurfaceCopyEn(mode, state, isResetFlow);
+  }
+
   if (state === 'blocked') {
     return {
       description: 'Nie możemy teraz przyznać dostępu. Ze względów bezpieczeństwa nie pokazujemy szczegółów reguły, która zatrzymała proces.',
@@ -156,7 +164,12 @@ export function resolveAuthStatePanel(
   mode: AuthSurfaceMode,
   state: AuthSurfaceState,
   isResetFlow: boolean,
+  locale: PapaDataRuntimeLocale = 'pl',
 ): AuthStatePanel | null {
+  if (locale === 'en') {
+    return resolveAuthStatePanelEn(mode, state, isResetFlow);
+  }
+
   if (state === 'validationError') {
     return {
       body: 'Sprawdź oznaczone pola. Wprowadzone wartości pozostają w formularzu, a fokus przechodzi do pierwszego błędu.',
@@ -275,6 +288,264 @@ export function resolveAuthStatePanel(
       body: 'Link odzyskiwania został rozpoznany. Ustaw i potwierdź nowe hasło, aby zakończyć ten etap.',
       eyebrow: 'Odzyskiwanie dostępu',
       title: 'Utwórz nowe hasło',
+      tone: 'info',
+    };
+  }
+
+  return null;
+}
+
+function resolveAuthSurfaceCopyEn(
+  mode: AuthSurfaceMode,
+  state: AuthSurfaceState,
+  isResetFlow: boolean,
+): AuthSurfaceCopy {
+  if (state === 'blocked') {
+    return {
+      description: 'We cannot grant access right now. For security reasons, we do not expose the policy details that stopped the process.',
+      eyebrow: 'Access security',
+      scopeNote: 'Use only the secure recovery path or administrator support.',
+      title: 'Access needs additional verification',
+    };
+  }
+
+  if (state === 'serviceUnavailable') {
+    return {
+      description: 'We cannot verify access right now. This is a service availability issue, not a problem with your credentials.',
+      eyebrow: 'Service availability',
+      scopeNote: 'Non-secret data stays in place. Try again when the service is available.',
+      title: 'We cannot check access right now',
+    };
+  }
+
+  if (state === 'applicationReady') {
+    return {
+      description: 'Identity and access context are confirmed. You can continue to the right workspace.',
+      eyebrow: 'Access confirmed',
+      scopeNote: 'Continuing keeps the recognized organization and workspace context.',
+      title: 'Everything is ready',
+    };
+  }
+
+  if (state === 'registrationCompleted') {
+    return {
+      description: 'The account has been prepared. The next step depends on required verification and access context.',
+      eyebrow: 'Registration',
+      scopeNote: 'Next steps follow security requirements and organization access.',
+      title: 'Account created',
+    };
+  }
+
+  if (state === 'loggedOut') {
+    return {
+      description: 'The session has been safely ended on this device.',
+      eyebrow: 'Signed out',
+      scopeNote: '',
+      title: 'You have been signed out',
+    };
+  }
+
+  if (mode === 'entry') {
+    return {
+      description: 'Sign in or create an account to continue to the right PapaData workspace.',
+      eyebrow: 'Secure access',
+      scopeNote: 'Neutral messages protect account and organization privacy.',
+      title: 'Welcome to PapaData',
+    };
+  }
+
+  if (mode === 'login') {
+    return {
+      description: 'Enter your credentials. If your organization requires additional verification, we will ask for it in the next step.',
+      eyebrow: 'Sign in',
+      scopeNote: '',
+      title: 'Sign in',
+    };
+  }
+
+  if (mode === 'register') {
+    return {
+      description: 'Choose how to create an account and provide only the data needed at this stage.',
+      eyebrow: 'Registration',
+      scopeNote: 'Company identification, consents, and workspace selection remain separate steps.',
+      title: 'Create account',
+    };
+  }
+
+  if (mode === 'mfa') {
+    return {
+      description: 'Confirm sign-in with a code from your authenticator app. The number of attempts is limited.',
+      eyebrow: 'Two-step verification',
+      scopeNote: '',
+      title: 'Confirm sign-in',
+    };
+  }
+
+  if (mode === 'accept-invite') {
+    return {
+      description: 'You have been invited to a PapaData team. Set a password to join.',
+      eyebrow: 'Invitation',
+      scopeNote: 'You are joining an existing organization and workspace, not creating a new company account.',
+      title: 'Join the team',
+    };
+  }
+
+  if (mode === 'reauth') {
+    return {
+      description: 'This action needs a fresh identity confirmation. Enter the current code from your authenticator app.',
+      eyebrow: 'Re-authentication',
+      scopeNote: 'The organization and workspace context stays unchanged. You only confirm your identity.',
+      title: 'Confirm this again',
+    };
+  }
+
+  if (mode === 'workspace') {
+    return {
+      description: 'You have access to more than one organization. Choose the workspace you want to use now.',
+      eyebrow: 'Workspace selection',
+      scopeNote: 'You can change this choice later in the application.',
+      title: 'Choose organization',
+    };
+  }
+
+  return isResetFlow
+    ? {
+      description: 'Set a new password after opening a valid recovery link. The new password should be unique to PapaData.',
+      eyebrow: 'New password',
+      scopeNote: 'After the password change, previous sessions may be ended.',
+      title: 'Set a new password',
+    }
+    : {
+      description: 'Enter the e-mail address used for sign-in. The response will not confirm whether an account exists.',
+      eyebrow: 'Access recovery',
+      scopeNote: '',
+      title: 'Recover access',
+    };
+}
+
+function resolveAuthStatePanelEn(
+  mode: AuthSurfaceMode,
+  state: AuthSurfaceState,
+  isResetFlow: boolean,
+): AuthStatePanel | null {
+  if (state === 'validationError') {
+    return {
+      body: 'Check the highlighted fields. Entered values stay in the form and focus moves to the first error.',
+      eyebrow: 'Check details',
+      title: 'Some details need correction',
+      tone: 'warning',
+    };
+  }
+
+  if (state === 'rateLimited') {
+    return {
+      actionLabel: 'Another attempt will be available after the temporary block ends.',
+      body: 'The attempt limit has been reached. Do not send more requests until the temporary block expires.',
+      eyebrow: 'Abuse protection',
+      title: 'A short pause is required',
+      tone: 'warning',
+    };
+  }
+
+  if (state === 'blocked') {
+    return {
+      actionLabel: 'Use access recovery or administrator support.',
+      body: 'Access was stopped by a security policy. We do not show details that could reveal account or organization information.',
+      eyebrow: 'Security',
+      title: 'Access is blocked',
+      tone: 'critical',
+    };
+  }
+
+  if (state === 'serviceUnavailable') {
+    return {
+      actionLabel: 'Try again when the service is available.',
+      body: 'Access could not be verified right now. This does not mean there is a problem with your account or credentials.',
+      eyebrow: 'Service availability',
+      title: 'The access service is temporarily unavailable',
+      tone: 'critical',
+    };
+  }
+
+  if (state === 'recoverySent') {
+    return {
+      body: 'If the account qualifies for recovery, instructions have been sent to the provided address.',
+      eyebrow: 'Instructions sent',
+      title: 'Check your inbox',
+      tone: 'success',
+    };
+  }
+
+  if (state === 'registrationCompleted') {
+    return {
+      body: 'The account has been prepared. The next step will be selected based on required verification and available context.',
+      eyebrow: 'Registration completed',
+      title: 'The account is ready',
+      tone: 'success',
+    };
+  }
+
+  if (state === 'applicationReady') {
+    return {
+      actionLabel: 'You can continue to the application.',
+      body: 'The session and required access context have been confirmed.',
+      eyebrow: 'Access confirmed',
+      title: 'You can continue',
+      tone: 'success',
+    };
+  }
+
+  if (state === 'mfaEnrollmentRequired') {
+    return {
+      body: 'Security policy requires configuring an additional authentication method before access continues.',
+      eyebrow: 'Additional security',
+      title: 'MFA setup is required',
+      tone: 'info',
+    };
+  }
+
+  if (state === 'loggedOut') {
+    return {
+      actionLabel: 'Go to sign in',
+      body: 'The session and local access data have been cleared on this device.',
+      eyebrow: 'Signed out',
+      title: 'See you soon',
+      tone: 'success',
+    };
+  }
+
+  if (mode === 'reauth') {
+    return {
+      body: 'This action needs a fresh confirmation. Enter the current code even if you signed in recently. After several failed attempts, verification may be temporarily blocked.',
+      eyebrow: 'Confirmation required',
+      title: 'Fresh proof of identity',
+      tone: 'info',
+    };
+  }
+
+  if (mode === 'workspace') {
+    return {
+      body: 'Your account belongs to more than one organization. The choice decides which context, data, integrations, and permissions are used in this session.',
+      eyebrow: 'Multiple organizations',
+      title: 'Continue in the right context',
+      tone: 'info',
+    };
+  }
+
+  if (mode === 'mfa') {
+    return {
+      body: 'Enter the current six-digit code. After several failed attempts, verification may be temporarily blocked.',
+      eyebrow: 'Verification',
+      title: 'Security code',
+      tone: 'info',
+    };
+  }
+
+  if (mode === 'recover' && isResetFlow) {
+    return {
+      body: 'The recovery link has been recognized. Set and confirm a new password to finish this step.',
+      eyebrow: 'Access recovery',
+      title: 'Create a new password',
       tone: 'info',
     };
   }

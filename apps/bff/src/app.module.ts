@@ -15,6 +15,7 @@ import { BffSecurityService } from "./security.service.js";
 import { BffRateLimitService } from "./rate-limit.service.js";
 import { CloudRunIdentityService } from "./cloud-run-identity.service.js";
 import { BffIdentitySessionService } from "./identity-session.service.js";
+import { BffOAuthService } from "./oauth.service.js";
 import { BffSessionAssuranceService } from "./session-assurance.service.js";
 
 @Module({})
@@ -41,6 +42,7 @@ export class BffAppModule {
         BffRateLimitService,
         CloudRunIdentityService,
         BffIdentitySessionService,
+        BffOAuthService,
         BffSessionAssuranceService,
         CsrfGuard,
       ],

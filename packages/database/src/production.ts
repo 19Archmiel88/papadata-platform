@@ -77,6 +77,18 @@ export class ProductionDatabase {
     const result = await this.pool.query<T>(text, [...values]);
     return result.rows;
   }
+
+  // For tables with genuinely no tenant/identity RLS boundary to scope by
+  // (e.g. app.security_oauth_transactions, whose rows exist before any
+  // identity is resolved). Use withTenantWorkspace/withIdentity instead
+  // whenever a real boundary exists — this bypasses RLS scoping entirely,
+  // so it must only ever touch tables that were deliberately left without
+  // a tenant_id/identity_key RLS policy.
+  async withSystem<T>(
+    operation: (client: PoolClient) => Promise<T>,
+  ): Promise<T> {
+    return withTransaction(this.pool, operation);
+  }
 }
 
 /**

@@ -1,6 +1,10 @@
 .pd-command-center-dashboard-layout {
   display: grid;
-  gap: clamp(28px, 4vw, 46px);
+  /* Tightened from clamp(16px, 2.2vw, 28px) now that sections no longer
+     carry a visible header block above their content (see VisuallyHidden
+     usage in each CommandCenter*Section) — the old value left a
+     disproportionately large gap once that header height was gone. */
+  gap: clamp(10px, 1.6vw, 20px);
   min-inline-size: 0;
 }
 

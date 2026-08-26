@@ -162,6 +162,37 @@ export class IdentityRepository {
     );
   }
 
+  // For OAuth login, where the identity was already resolved by
+  // (provider, subject_id) rather than by email — looks the user up
+  // directly by userId/identityKey instead of re-deriving identityKey from
+  // a possibly-stale email.
+  async findByUserId(userId: string, identityKey: string): Promise<IdentityUserRow | null> {
+    return this.database.withIdentity(identityKey, userId, async (client) => {
+      const result = await client.query<Record<string, unknown>>(
+        `select user_id::text, identity_key, normalized_email, password_hash,
+                display_name, status, email_verified_at, failed_login_attempts,
+                locked_until
+           from app.identity_users
+          where user_id = $1::uuid
+          limit 1`,
+        [userId],
+      );
+      return result.rows[0] ? readIdentityUser(result.rows[0]) : null;
+    });
+  }
+
+  // For authenticated flows (OAuth link_account/reauth) that only carry
+  // userId, not identityKey — the BFF's internal principal token never
+  // includes identityKey. Pre-auth-safe SECURITY DEFINER lookup, migration
+  // 0034.
+  async findIdentityKeyByUserId(userId: string): Promise<string | null> {
+    const rows = await this.database.queryGlobalReadonly<{ readonly identity_key: string | null }>(
+      "select app.lookup_identity_key_for_user($1::uuid) as identity_key",
+      [userId],
+    );
+    return rows[0]?.identity_key ?? null;
+  }
+
   async listMemberships(user: IdentityUserRow): Promise<readonly IdentityMembershipRow[]> {
     return this.database.withIdentity(user.identityKey, user.userId, async (client) => {
       const result = await client.query<Record<string, unknown>>(
@@ -679,6 +710,10 @@ export class InvitationRepository {
   // the invitation accepted in ONE database transaction. If any later step
   // fails, the token consumption is rolled back as well, so a transient
   // failure cannot burn a valid invitation.
+  //
+  // Only for an email with no existing identity — use
+  // acceptInvitationForExistingIdentity when one already exists (see there
+  // for why a blind password cannot be accepted in that case).
   async acceptInvitation(input: {
     readonly invitation: InvitationRow;
     readonly token: string;
@@ -689,15 +724,7 @@ export class InvitationRepository {
     const normalizedEmail = normalizeEmail(invitation.email);
     const identityKey = identityKeyForEmail(normalizedEmail);
     const userId = randomUUID();
-    const membershipId = randomUUID();
     const tokenHash = createHash("sha256").update(input.token).digest("hex");
-    const dataScope = dataScopeForRole(invitation.role);
-    const capabilities = resolveMembershipCapabilities({
-      dataScope,
-      jitExpiresAt: null,
-      role: invitation.role,
-      status: "active",
-    });
 
     return this.database.withIdentityTenantWorkspace(
       identityKey,
@@ -705,38 +732,8 @@ export class InvitationRepository {
       invitation.tenantId,
       invitation.workspaceId,
       async (client) => {
-        const lockedInvitation = await client.query<{ readonly invitation_id: string }>(
-          `select invitation_id::text
-             from app.invitations
-            where invitation_id = $1::uuid
-              and tenant_id = $2::uuid
-              and workspace_id = $3::uuid
-              and token_hash = $4
-              and status = 'pending'
-              and expires_at > now()
-            for update`,
-          [
-            invitation.invitationId,
-            invitation.tenantId,
-            invitation.workspaceId,
-            tokenHash,
-          ],
-        );
-        if (!lockedInvitation.rows[0]) return null;
-
-        const consumed = await client.query(
-          `update app.security_invitation_tokens
-              set used_at = now()
-            where tenant_id = $1
-              and invitation_id = $2
-              and token_hash = $3
-              and used_at is null
-              and revoked_at is null
-              and expires_at > now()
-            returning id`,
-          [invitation.tenantId, invitation.invitationId, tokenHash],
-        );
-        if ((consumed.rowCount ?? 0) !== 1) return null;
+        const locked = await lockAndConsumeInvitationToken(client, invitation, tokenHash);
+        if (!locked) return null;
 
         const existing = await client.query<{ readonly user_id: string }>(
           "select user_id::text from app.identity_users where identity_key = $1 limit 1",
@@ -763,71 +760,515 @@ export class InvitationRepository {
         const user = readIdentityUser(requiredRow(userResult.rows[0]));
         await setIdentityUser(client, user.userId);
 
-        await client.query(
-          `insert into app.memberships (
-             membership_id, tenant_id, workspace_id, user_id, role, status, data_scope
-           ) values ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5, 'active', $6)`,
-          [
-            membershipId,
-            invitation.tenantId,
-            invitation.workspaceId,
-            userId,
-            invitation.role,
-            dataScope,
-          ],
+        const membership = await insertMembershipAndMarkAccepted(
+          client,
+          invitation,
+          user.userId,
+          tokenHash,
         );
 
-        const membershipResult = await client.query<Record<string, unknown>>(
-          `insert into app.identity_memberships (
-             membership_id, user_id, tenant_id, workspace_id, tenant_name, workspace_name,
-             roles, capabilities
-           ) values ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5, $6, $7::jsonb, $8::jsonb)
-           returning membership_id::text, user_id::text, tenant_id::text,
-                     workspace_id::text, tenant_name, workspace_name, roles,
-                     capabilities, status`,
-          [
-            membershipId,
-            user.userId,
-            invitation.tenantId,
-            invitation.workspaceId,
-            invitation.tenantName,
-            invitation.workspaceName,
-            JSON.stringify([invitation.role]),
-            JSON.stringify(capabilities),
-          ],
-        );
-
-        const accepted = await client.query(
-          `update app.invitations
-              set status = 'accepted', accepted_by_user_id = $4::uuid,
-                  accepted_at = now(), updated_at = now()
-            where invitation_id = $1::uuid
-              and tenant_id = $2::uuid
-              and workspace_id = $3::uuid
-              and status = 'pending'
-              and token_hash = $5
-              and expires_at > now()
-            returning invitation_id`,
-          [
-            invitation.invitationId,
-            invitation.tenantId,
-            invitation.workspaceId,
-            user.userId,
-            tokenHash,
-          ],
-        );
-        if ((accepted.rowCount ?? 0) !== 1) {
-          throw new Error("INVITATION_STATE_CHANGED");
-        }
-
-        return {
-          user,
-          membership: readMembership(requiredRow(membershipResult.rows[0])),
-        };
+        return { user, membership };
       },
     );
   }
 
+  // Existing-identity counterpart to acceptInvitation: the invited email
+  // already has a PapaData account (e.g. joining a second tenant), so this
+  // only adds a membership — it never creates a new app.users/
+  // app.identity_users row and never accepts a blind password from the
+  // client. The caller must verify the submitted (or, for OAuth accept, the
+  // provider-confirmed) credential BEFORE calling this — a failed
+  // verification must never reach here, since reaching here always
+  // consumes the invitation token.
+  async acceptInvitationForExistingIdentity(input: {
+    readonly invitation: InvitationRow;
+    readonly token: string;
+    readonly userId: string;
+    readonly identityKey: string;
+  }): Promise<{ readonly membership: IdentityMembershipRow } | null> {
+    const invitation = input.invitation;
+    const tokenHash = createHash("sha256").update(input.token).digest("hex");
+
+    return this.database.withIdentityTenantWorkspace(
+      input.identityKey,
+      input.userId,
+      invitation.tenantId,
+      invitation.workspaceId,
+      async (client) => {
+        const locked = await lockAndConsumeInvitationToken(client, invitation, tokenHash);
+        if (!locked) return null;
+
+        const alreadyMember = await client.query<{ readonly membership_id: string }>(
+          `select membership_id::text
+             from app.memberships
+            where tenant_id = $1::uuid and workspace_id = $2::uuid and user_id = $3::uuid
+            limit 1`,
+          [invitation.tenantId, invitation.workspaceId, input.userId],
+        );
+        if (alreadyMember.rows[0]) throw new Error("ALREADY_MEMBER");
+
+        const membership = await insertMembershipAndMarkAccepted(
+          client,
+          invitation,
+          input.userId,
+          tokenHash,
+        );
+
+        return { membership };
+      },
+    );
+  }
+
+}
+
+// Shared by acceptInvitation and acceptInvitationForExistingIdentity: locks
+// the invitation row and consumes its one-time token. Returns false (no
+// mutation beyond the lock, which the transaction rolls back) if the
+// invitation is not in an acceptable state — a failed caller-side
+// verification upstream of this call must never reach it in the first
+// place, since reaching here always burns the token.
+async function lockAndConsumeInvitationToken(
+  client: PoolClient,
+  invitation: InvitationRow,
+  tokenHash: string,
+): Promise<boolean> {
+  const lockedInvitation = await client.query<{ readonly invitation_id: string }>(
+    `select invitation_id::text
+       from app.invitations
+      where invitation_id = $1::uuid
+        and tenant_id = $2::uuid
+        and workspace_id = $3::uuid
+        and token_hash = $4
+        and status = 'pending'
+        and expires_at > now()
+      for update`,
+    [invitation.invitationId, invitation.tenantId, invitation.workspaceId, tokenHash],
+  );
+  if (!lockedInvitation.rows[0]) return false;
+
+  const consumed = await client.query(
+    `update app.security_invitation_tokens
+        set used_at = now()
+      where tenant_id = $1
+        and invitation_id = $2
+        and token_hash = $3
+        and used_at is null
+        and revoked_at is null
+        and expires_at > now()
+      returning id`,
+    [invitation.tenantId, invitation.invitationId, tokenHash],
+  );
+  return (consumed.rowCount ?? 0) === 1;
+}
+
+// Shared by acceptInvitation and acceptInvitationForExistingIdentity: the
+// membership insert and invitation status update are identical once the
+// target userId is known, whether that user was just created or already
+// existed.
+async function insertMembershipAndMarkAccepted(
+  client: PoolClient,
+  invitation: InvitationRow,
+  userId: string,
+  tokenHash: string,
+): Promise<IdentityMembershipRow> {
+  const membershipId = randomUUID();
+  const dataScope = dataScopeForRole(invitation.role);
+  const capabilities = resolveMembershipCapabilities({
+    dataScope,
+    jitExpiresAt: null,
+    role: invitation.role,
+    status: "active",
+  });
+
+  await client.query(
+    `insert into app.memberships (
+       membership_id, tenant_id, workspace_id, user_id, role, status, data_scope
+     ) values ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5, 'active', $6)`,
+    [membershipId, invitation.tenantId, invitation.workspaceId, userId, invitation.role, dataScope],
+  );
+
+  const membershipResult = await client.query<Record<string, unknown>>(
+    `insert into app.identity_memberships (
+       membership_id, user_id, tenant_id, workspace_id, tenant_name, workspace_name,
+       roles, capabilities
+     ) values ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5, $6, $7::jsonb, $8::jsonb)
+     returning membership_id::text, user_id::text, tenant_id::text,
+               workspace_id::text, tenant_name, workspace_name, roles,
+               capabilities, status`,
+    [
+      membershipId,
+      userId,
+      invitation.tenantId,
+      invitation.workspaceId,
+      invitation.tenantName,
+      invitation.workspaceName,
+      JSON.stringify([invitation.role]),
+      JSON.stringify(capabilities),
+    ],
+  );
+
+  const accepted = await client.query(
+    `update app.invitations
+        set status = 'accepted', accepted_by_user_id = $4::uuid,
+            accepted_at = now(), updated_at = now()
+      where invitation_id = $1::uuid
+        and tenant_id = $2::uuid
+        and workspace_id = $3::uuid
+        and status = 'pending'
+        and token_hash = $5
+        and expires_at > now()
+      returning invitation_id`,
+    [invitation.invitationId, invitation.tenantId, invitation.workspaceId, userId, tokenHash],
+  );
+  if ((accepted.rowCount ?? 0) !== 1) {
+    throw new Error("INVITATION_STATE_CHANGED");
+  }
+
+  return readMembership(requiredRow(membershipResult.rows[0]));
+}
+
+export type PasswordResetTokenLookup = {
+  readonly userId: string;
+  readonly identityKey: string;
+  readonly normalizedEmail: string;
+  readonly expiresAt: string;
+};
+
+// Real password reset, mirroring InvitationRepository's token pattern
+// (single-use, expiring, hashed at rest) instead of building email
+// delivery infrastructure that doesn't exist yet in this repo.
+export class PasswordResetRepository {
+  private readonly database: ProductionDatabase;
+
+  constructor(database: ProductionDatabase) {
+    this.database = database;
+  }
+
+  // Creates the reset token in the same identity-scoped transaction as the
+  // user it belongs to. The raw token is returned once and never
+  // persisted; only its SHA-256 hash is stored.
+  async createResetToken(input: {
+    readonly user: IdentityUserRow;
+    readonly ttlHours: number;
+  }): Promise<{ readonly token: string; readonly expiresAt: string }> {
+    const token = randomBytes(32).toString("base64url");
+    const tokenHash = createHash("sha256").update(token).digest("hex");
+    const expiresAt = new Date(Date.now() + input.ttlHours * 3_600_000).toISOString();
+
+    await this.database.withIdentity(
+      input.user.identityKey,
+      input.user.userId,
+      async (client) => {
+        await client.query(
+          `insert into app.security_password_reset_tokens (
+             user_id, identity_key, token_hash, expires_at
+           ) values ($1::uuid, $2, $3, $4::timestamptz)`,
+          [input.user.userId, input.user.identityKey, tokenHash, expiresAt],
+        );
+      },
+    );
+
+    return { token, expiresAt };
+  }
+
+  // Public/pre-auth lookup, mirrors findInvitationByToken: the token hash
+  // is part of the SECURITY DEFINER lookup itself (migration 0033), so a
+  // bare guess never discloses whether an account exists.
+  async findValidToken(token: string): Promise<PasswordResetTokenLookup | null> {
+    const tokenHash = createHash("sha256").update(token).digest("hex");
+    const rows = await this.database.queryGlobalReadonly<Record<string, unknown>>(
+      `select user_id::text, identity_key, normalized_email, expires_at
+         from app.lookup_password_reset_token($1)`,
+      [tokenHash],
+    );
+    const row = rows[0];
+    if (!row) return null;
+    return {
+      userId: requiredString(row.user_id),
+      identityKey: requiredString(row.identity_key),
+      normalizedEmail: requiredString(row.normalized_email),
+      expiresAt: requiredString(row.expires_at),
+    };
+  }
+
+  // Consumes the token and updates the password hash in ONE transaction,
+  // mirroring acceptInvitation's lock-consume-mutate shape: re-locks the
+  // token row `for update` so a concurrent use of the same token can never
+  // succeed twice, and a failure after locking rolls the consumption back
+  // too, so a transient failure cannot burn a valid token.
+  async consumeAndResetPassword(input: {
+    readonly lookup: PasswordResetTokenLookup;
+    readonly token: string;
+    readonly newPasswordHash: string;
+  }): Promise<boolean> {
+    const tokenHash = createHash("sha256").update(input.token).digest("hex");
+
+    return this.database.withIdentity(
+      input.lookup.identityKey,
+      input.lookup.userId,
+      async (client) => {
+        const lockedToken = await client.query<{ readonly id: string }>(
+          `select id
+             from app.security_password_reset_tokens
+            where user_id = $1::uuid
+              and token_hash = $2
+              and used_at is null
+              and revoked_at is null
+              and expires_at > now()
+            for update`,
+          [input.lookup.userId, tokenHash],
+        );
+        const lockedTokenRow = lockedToken.rows[0];
+        if (!lockedTokenRow) return false;
+
+        const consumed = await client.query(
+          `update app.security_password_reset_tokens
+              set used_at = now()
+            where id = $1::uuid
+              and used_at is null
+              and revoked_at is null
+              and expires_at > now()
+            returning id`,
+          [lockedTokenRow.id],
+        );
+        if ((consumed.rowCount ?? 0) !== 1) return false;
+
+        await client.query(
+          `update app.identity_users
+              set password_hash = $2,
+                  failed_login_attempts = 0,
+                  locked_until = null,
+                  updated_at = now()
+            where user_id = $1::uuid`,
+          [input.lookup.userId, input.newPasswordHash],
+        );
+
+        return true;
+      },
+    );
+  }
+}
+
+export type OAuthProvider = "google" | "microsoft";
+
+export type OAuthIntent =
+  | "login"
+  | "register"
+  | "accept_invitation"
+  | "link_account"
+  | "reauth";
+
+export type OAuthTransactionRow = {
+  readonly id: string;
+  readonly state: string;
+  readonly provider: OAuthProvider;
+  readonly intent: OAuthIntent;
+  readonly nonce: string;
+  readonly pkceCodeVerifier: string;
+  readonly invitationId: string | null;
+  readonly invitationToken: string | null;
+  readonly linkingUserId: string | null;
+  readonly linkingIdentityKey: string | null;
+  readonly linkingTenantId: string | null;
+  readonly linkingSessionId: string | null;
+  readonly returnTo: string | null;
+};
+
+export type OAuthLinkLookup = {
+  readonly userId: string;
+  readonly identityKey: string;
+};
+
+// Real Google/Microsoft OAuth identity linking (migration 0034). This
+// repository only ever resolves/records provider identity <-> user_id
+// pairs — it never touches tenant, workspace, role or capability data.
+// Every caller must route the actual access decision through
+// IdentityRepository/InvitationRepository, the same as email/password auth.
+export class IdentityOAuthRepository {
+  private readonly database: ProductionDatabase;
+
+  constructor(database: ProductionDatabase) {
+    this.database = database;
+  }
+
+  // Persists PKCE/state/nonce and any invitation/linking context for the
+  // handshake round-trip. Deliberately uses withSystem: no identity exists
+  // yet for login/register/accept_invitation, so there is no RLS context
+  // to scope by (see migration 0034's comment on this table).
+  async createTransaction(input: {
+    readonly provider: OAuthProvider;
+    readonly intent: OAuthIntent;
+    readonly nonce: string;
+    readonly pkceCodeVerifier: string;
+    readonly invitationId?: string | null;
+    readonly invitationToken?: string | null;
+    readonly linkingUserId?: string | null;
+    readonly linkingIdentityKey?: string | null;
+    readonly linkingTenantId?: string | null;
+    readonly linkingSessionId?: string | null;
+    readonly returnTo?: string | null;
+    readonly ttlMinutes: number;
+  }): Promise<{ readonly state: string; readonly expiresAt: string }> {
+    const state = randomBytes(32).toString("base64url");
+    const expiresAt = new Date(Date.now() + input.ttlMinutes * 60_000).toISOString();
+
+    await this.database.withSystem(async (client) => {
+      await client.query(
+        `insert into app.security_oauth_transactions (
+           state, provider, intent, nonce, pkce_code_verifier,
+           invitation_id, invitation_token, linking_user_id, linking_identity_key,
+           linking_tenant_id, linking_session_id, return_to, expires_at
+         ) values ($1, $2, $3, $4, $5, $6::uuid, $7, $8::uuid, $9, $10::uuid, $11, $12, $13::timestamptz)`,
+        [
+          state,
+          input.provider,
+          input.intent,
+          input.nonce,
+          input.pkceCodeVerifier,
+          input.invitationId ?? null,
+          input.invitationToken ?? null,
+          input.linkingUserId ?? null,
+          input.linkingIdentityKey ?? null,
+          input.linkingTenantId ?? null,
+          input.linkingSessionId ?? null,
+          input.returnTo ?? null,
+          expiresAt,
+        ],
+      );
+    });
+
+    return { state, expiresAt };
+  }
+
+  // Single-use: locks and marks the transaction consumed in one step, so a
+  // replayed callback (the same `state` opened twice) can never succeed
+  // twice.
+  async consumeTransaction(state: string): Promise<OAuthTransactionRow | null> {
+    return this.database.withSystem(async (client) => {
+      const locked = await client.query<Record<string, unknown>>(
+        `select id::text, state, provider, intent, nonce, pkce_code_verifier,
+                invitation_id::text, invitation_token,
+                linking_user_id::text, linking_identity_key,
+                linking_tenant_id::text, linking_session_id, return_to
+           from app.security_oauth_transactions
+          where state = $1
+            and consumed_at is null
+            and expires_at > now()
+          for update`,
+        [state],
+      );
+      const row = locked.rows[0];
+      if (!row) return null;
+
+      const consumed = await client.query(
+        `update app.security_oauth_transactions
+            set consumed_at = now()
+          where state = $1
+            and consumed_at is null
+            and expires_at > now()
+          returning id`,
+        [state],
+      );
+      if ((consumed.rowCount ?? 0) !== 1) return null;
+
+      return readOAuthTransaction(row);
+    });
+  }
+
+  // Public/pre-auth lookup, mirrors findInvitationByToken/findValidToken:
+  // resolves a provider identity to a user without any identity RLS
+  // context in place yet — that's precisely what this call establishes.
+  // Defined by migration 0034.
+  async findLinkBySubject(
+    provider: OAuthProvider,
+    providerSubjectId: string,
+  ): Promise<OAuthLinkLookup | null> {
+    const rows = await this.database.queryGlobalReadonly<Record<string, unknown>>(
+      "select user_id::text, identity_key from app.lookup_oauth_link($1, $2)",
+      [provider, providerSubjectId],
+    );
+    const row = rows[0];
+    if (!row) return null;
+    return {
+      userId: requiredString(row.user_id),
+      identityKey: requiredString(row.identity_key),
+    };
+  }
+
+  // Creates or replaces the link for an already-known identity. The
+  // (provider, provider_subject_id) unique index — not application logic —
+  // is what actually guarantees one provider identity can never attach to
+  // two different users: a conflict there surfaces as
+  // OAUTH_IDENTITY_ALREADY_LINKED instead of silently overwriting.
+  async createLink(input: {
+    readonly userId: string;
+    readonly identityKey: string;
+    readonly provider: OAuthProvider;
+    readonly providerSubjectId: string;
+    readonly providerEmail: string;
+  }): Promise<void> {
+    await this.database.withIdentity(input.identityKey, input.userId, async (client) => {
+      try {
+        await client.query(
+          `insert into app.identity_oauth_links (
+             user_id, provider, provider_subject_id, provider_email, last_login_at
+           ) values ($1::uuid, $2, $3, $4, now())
+           on conflict (user_id, provider)
+           do update set provider_subject_id = excluded.provider_subject_id,
+                          provider_email = excluded.provider_email,
+                          last_login_at = now()`,
+          [input.userId, input.provider, input.providerSubjectId, input.providerEmail],
+        );
+      } catch (error) {
+        if (isUniqueViolation(error, "identity_oauth_links_provider_subject_uq")) {
+          throw new Error("OAUTH_IDENTITY_ALREADY_LINKED");
+        }
+        throw error;
+      }
+    });
+  }
+
+  async touchLogin(input: {
+    readonly userId: string;
+    readonly identityKey: string;
+    readonly provider: OAuthProvider;
+  }): Promise<void> {
+    await this.database.withIdentity(input.identityKey, input.userId, async (client) => {
+      await client.query(
+        `update app.identity_oauth_links
+            set last_login_at = now()
+          where user_id = $1::uuid and provider = $2`,
+        [input.userId, input.provider],
+      );
+    });
+  }
+}
+
+function readOAuthTransaction(row: Record<string, unknown>): OAuthTransactionRow {
+  return {
+    id: requiredString(row.id),
+    state: requiredString(row.state),
+    provider: requiredString(row.provider) as OAuthProvider,
+    intent: requiredString(row.intent) as OAuthIntent,
+    nonce: requiredString(row.nonce),
+    pkceCodeVerifier: requiredString(row.pkce_code_verifier),
+    invitationId: nullableString(row.invitation_id),
+    invitationToken: nullableString(row.invitation_token),
+    linkingUserId: nullableString(row.linking_user_id),
+    linkingIdentityKey: nullableString(row.linking_identity_key),
+    linkingTenantId: nullableString(row.linking_tenant_id),
+    linkingSessionId: nullableString(row.linking_session_id),
+    returnTo: nullableString(row.return_to),
+  };
+}
+
+function isUniqueViolation(error: unknown, constraintName: string): boolean {
+  return (
+    typeof error === "object"
+    && error !== null
+    && (error as { code?: unknown }).code === "23505"
+    && (error as { constraint?: unknown }).constraint === constraintName
+  );
 }
 
 function looksLikeUuid(value: string): boolean {

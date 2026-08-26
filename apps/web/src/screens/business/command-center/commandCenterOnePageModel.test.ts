@@ -154,8 +154,8 @@ test("commandCenterOnePageSectionIds defines the complete one-page runtime order
     "command-section-plan",
     "command-section-drivers",
     "command-section-funnel",
-    "command-section-traffic",
     "command-section-products",
+    "command-section-traffic",
     "command-section-customers",
   ]);
 });

@@ -66,7 +66,15 @@
   display: grid;
   gap: 18px;
   min-width: 0;
-  padding: clamp(22px, 3.5vw, 34px);
+  /* Split from a single padding: vertical is what actually drives the gap
+     between two stacked sections (together with the dashboard layout's own
+     gap), so it's tightened independently of the horizontal content
+     margin, which stays as-is. */
+  padding-inline: clamp(22px, 3.5vw, 34px);
+  /* Tightened from clamp(14px, 2.2vw, 22px) — same reasoning as the
+     dashboard layout's gap above: sections start directly with their
+     content now, so the old top/bottom breathing room read as too loose. */
+  padding-block: clamp(10px, 1.6vw, 16px);
   border: 0;
   border-block: 1px solid var(--pd-command-soft-line);
   border-radius: 0;
@@ -98,23 +106,31 @@
   margin: 0;
 }
 
+/* Headline weight matches Auth's own display treatment
+   (.pd-auth-surface__card-header h1: serif, 500, -0.01em) — same editorial
+   register on both the sign-in screen and the dashboard the user lands on
+   right after it. */
 .pd-command-center-one-page__section-header h2,
 .pd-command-center-one-page__section-header h3,
 .pd-command-plan-section__title {
   color: var(--pd-text);
+  font-family: var(--pd-font-serif);
   font-size: clamp(1.25rem, 2vw, 1.7rem);
-  font-weight: var(--pd-font-weight-semibold);
-  letter-spacing: 0;
+  font-weight: 500;
+  letter-spacing: -0.01em;
   line-height: 1.15;
 }
 
+/* Sans, not mono — matches Auth's own uppercase eyebrows
+   (.pd-auth-surface__eyebrow: sans, 600, 0.06em), which never use the
+   monospace face either. Mono stays reserved for tabular numerals. */
 .pd-command-center-one-page__section-header span[id],
 .pd-command-center-one-page__section-header > div > span:first-child {
   color: var(--pd-text-muted);
-  font-family: var(--pd-font-mono);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0;
+  font-family: var(--pd-font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -141,43 +157,46 @@
 .pd-command-center-one-page__kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0 clamp(18px, 2.4vw, 34px);
+  gap: 18px clamp(18px, 2.4vw, 34px);
   min-width: 0;
 }
 
 .pd-command-center-one-page__runtime-kpi {
   gap: 12px;
+  /* Pulled up close to the topbar deliberately — this is the first thing on
+     the screen, not one section among equals, so it doesn't need the same
+     22-34px breathing room every other section gets. */
+  padding-block-start: 4px;
 }
 
+/*
+ * Real elevated tiles, not flat hairline rows — depth comes from
+ * box-shadow + a surface color, the same technique Auth's own floating
+ * surface uses (see auth-surface.css's "Baner zgody" comment: "Głębia
+ * pochodzi z cienia, nie z ramki 1px"), not from a 1px outline. An outline
+ * on a card with zero horizontal padding sits flush against the text with
+ * no breathing room, which is exactly what looked "glued on" before.
+ */
 .pd-command-center-one-page__runtime-kpi .pd-metric-card {
   grid-template-rows: auto auto auto auto auto;
   min-block-size: 10.25rem;
   min-height: 0;
-  padding: 18px 0 16px;
+  padding: 18px 16px 16px;
   border: 0;
-  border-block-start: 1px solid var(--pd-command-soft-line);
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-/*
- * :nth-of-type / :first-of-type, not :nth-child / :first-child — the group
- * title <p> inserted before each row of 4 cards (see
- * CommandCenterKpiSection.tsx) is a different tag (<p> vs. the card's
- * <article>), so it doesn't count toward these positional siblings. Using
- * :nth-child here would silently shift every card's popover-edge and
- * top-border-strength assignment by one.
- */
-.pd-command-center-one-page__runtime-kpi .pd-metric-card:first-of-type {
-  border-block-start-color: var(--pd-command-border-strong);
+  border-radius: var(--pd-radius-control);
+  background: var(--pd-surface);
+  box-shadow: var(--pd-shadow-raised);
+  transition:
+    box-shadow 180ms var(--pd-motion-easing-standard),
+    background-color 180ms var(--pd-motion-easing-standard),
+    transform 180ms var(--pd-motion-easing-standard);
 }
 
 .pd-command-center-one-page__runtime-kpi .pd-metric-card[data-emphasis='recommendation'] {
-  padding-inline-start: 16px;
   border-inline-start: 4px solid var(--pd-brand-accent);
-  background: linear-gradient(120deg, var(--pd-brand-ambient), transparent 65%);
-  box-shadow: none;
+  background:
+    linear-gradient(120deg, var(--pd-brand-ambient), transparent 65%),
+    var(--pd-surface);
 }
 
 .pd-command-center-one-page__runtime-kpi .pd-metric-card[data-emphasis='recommendation'] .pd-metric-card__label {
@@ -186,28 +205,26 @@
 
 .pd-command-center-one-page__runtime-kpi .pd-metric-card:hover,
 .pd-command-center-one-page__runtime-kpi .pd-metric-card:focus-within {
-  border-radius: var(--pd-radius-control);
   background: var(--pd-surface-raised);
-  outline: 1px solid var(--pd-brand-line);
-  outline-offset: -1px;
-  box-shadow: var(--pd-shadow-control);
+  box-shadow: var(--pd-shadow-floating);
+  transform: translateY(-2px);
 }
 
-.pd-command-center-one-page__kpi-group-title {
-  grid-column: 1 / -1;
-  margin: 0;
-  padding-block: 2px;
-  color: var(--pd-text-muted);
-  font-size: 0.66rem;
-  font-weight: var(--pd-font-weight-medium);
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
+.pd-command-center-one-page__runtime-kpi .pd-metric-card[data-emphasis='recommendation']:hover,
+.pd-command-center-one-page__runtime-kpi .pd-metric-card[data-emphasis='recommendation']:focus-within {
+  background:
+    linear-gradient(120deg, var(--pd-brand-ambient), transparent 65%),
+    var(--pd-surface-raised);
 }
 
-.pd-command-center-one-page__kpi-group-title:not(:first-child) {
-  padding-block-start: 8px;
-}
-
+/*
+ * :nth-of-type / :first-of-type, not :nth-child / :first-child — the group
+ * title <p> inserted before each row of 4 cards (see
+ * CommandCenterKpiSection.tsx) is a different tag (<p> vs. the card's
+ * <article>), so it doesn't count toward these positional siblings. Using
+ * :nth-child here would silently shift every card's popover-edge assignment
+ * by one.
+ */
 .pd-command-center-one-page__runtime-kpi .pd-metric-card:nth-of-type(4n + 1) {
   --pd-metric-help-popover-inline-start: 0;
   --pd-metric-help-popover-inline-end: auto;
@@ -218,6 +235,18 @@
   --pd-metric-help-popover-inline-start: auto;
   --pd-metric-help-popover-inline-end: 0;
   --pd-metric-help-popover-translate-x: 0;
+}
+
+.pd-command-center-one-page__kpi-group-title {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding-block: 2px;
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-sans);
+  font-size: 0.66rem;
+  font-weight: var(--pd-font-weight-medium);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
 }
 
 .pd-command-center-one-page__runtime-kpi .pd-metric-card[data-metric-id='command-kpi-revenue'] {
@@ -249,8 +278,13 @@
   --pd-metric-signal: var(--pd-data-series-2);
 }
 
+/* Serif, weight 500 — matches Auth's own big display numeral
+   (.pd-auth-surface__chart-value: same serif face, same weight, "412 380
+   zł") rather than the design system's default mono/semibold treatment. */
 .pd-command-center-one-page .pd-metric-card__value > span {
+  font-family: var(--pd-font-serif);
   font-size: clamp(1.45rem, 2vw, 2.05rem);
+  font-weight: 500;
   letter-spacing: 0;
 }
 
@@ -260,7 +294,9 @@
 }
 
 .pd-command-center-one-page .pd-metric-card__benchmarks {
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  /* Fixed 2 columns, not auto-fit(minmax(12rem, ...)) — at this card's
+     actual width auto-fit only ever resolved to 1 column, so Cel and
+     Odchylenie always stacked instead of sitting at the same height. */
   padding-block-start: 10px;
 }
 
@@ -360,10 +396,14 @@
   margin: 0;
 }
 
+/* Serif, weight 500 — same sub-heading register as
+   .pd-command-plan-trajectory__title (the section's own <h2> is already
+   serif via the shared .pd-command-center-one-page__section-header rule). */
 .pd-command-driver-visual__copy h3 {
   color: var(--pd-text);
+  font-family: var(--pd-font-serif);
   font-size: clamp(1.08rem, 1.45vw, 1.34rem);
-  font-weight: var(--pd-font-weight-semibold);
+  font-weight: 500;
   letter-spacing: 0;
   line-height: 1.18;
 }
@@ -375,12 +415,22 @@
   line-height: var(--pd-line-height-relaxed);
 }
 
+/*
+ * Real elevated panel instead of an invisible border (--pd-command-border
+ * resolves to transparent in this scope, so the old border-block never
+ * actually rendered) — same box-shadow/radius/surface language as the KPI
+ * cards and the Plan vs Benchmark trajectory panel. The decorative gradient
+ * washes stay, layered on top of the solid surface color rather than on
+ * transparent.
+ */
 .pd-command-driver-bridge,
 .pd-command-driver-efficiency {
   display: block;
   inline-size: 100%;
   min-inline-size: 0;
-  border-block: 1px solid var(--pd-command-border);
+  padding: clamp(14px, 2vw, 22px);
+  border-radius: var(--pd-radius-control);
+  box-shadow: var(--pd-shadow-raised);
   background:
     radial-gradient(
       circle at 18% 0%,
@@ -391,7 +441,8 @@
       180deg,
       color-mix(in srgb, var(--pd-surface-soft) 58%, transparent),
       transparent 56%
-    );
+    ),
+    var(--pd-surface);
 }
 
 .pd-command-driver-bridge {
@@ -497,8 +548,11 @@
   vector-effect: non-scaling-stroke;
 }
 
+/* fill comes from the gradient def in CommandCenterDriversSection.tsx
+   (fill="url(#...)", id built from useId() for collision-safety) — no fill
+   override here, since a CSS class rule always beats an SVG presentation
+   attribute. */
 .pd-command-driver-efficiency__area {
-  fill: url('#command-driver-efficiency-area');
   opacity: 0.82;
 }
 
@@ -518,9 +572,11 @@
   vector-effect: non-scaling-stroke;
 }
 
+/* filter comes from the JSX circle's own filter="url(#...)" attribute
+   (id built from useId()) — not set here for the same reason as the area
+   fill above. */
 .pd-command-driver-efficiency g[data-tone='strong'] .pd-command-driver-efficiency__point {
   fill: var(--pd-data-series-2);
-  filter: url('#command-driver-efficiency-glow');
 }
 
 .pd-command-driver-efficiency g[data-tone='weak'] .pd-command-driver-efficiency__point {
@@ -539,31 +595,53 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px 20px;
   margin: 0;
-  padding: 16px 0 0;
-  border-block-start: 1px solid var(--pd-command-soft-line);
+  padding: 0;
   list-style: none;
 }
 
+/* Same card family as the KPI cards and Plan summary cards: real surface +
+   box-shadow at rest, no border, bigger shadow + lift on hover. The tone
+   accent moves from coloring only the value text to also getting a real
+   border-inline-start stripe, like the Plan summary cards' tone accent. */
 .pd-command-driver-visual__metrics li {
   display: grid;
   gap: 5px;
   min-width: 0;
-  padding-block: 2px 14px;
-  border-block-end: 1px solid var(--pd-command-soft-line);
+  padding: 14px 16px;
+  border-inline-start: 4px solid transparent;
+  border-radius: var(--pd-radius-control);
+  background: var(--pd-surface);
+  box-shadow: var(--pd-shadow-raised);
+  transition:
+    box-shadow 180ms var(--pd-motion-easing-standard),
+    background-color 180ms var(--pd-motion-easing-standard),
+    transform 180ms var(--pd-motion-easing-standard);
 }
 
+.pd-command-driver-visual__metrics li:hover,
+.pd-command-driver-visual__metrics li:focus-within {
+  background: var(--pd-surface-raised);
+  box-shadow: var(--pd-shadow-floating);
+  transform: translateY(-2px);
+}
+
+/* Uppercase + tracking, matching .pd-metric-card__label. */
 .pd-command-driver-visual__metrics span {
   color: var(--pd-text-muted);
-  font-size: var(--pd-type-size-caption);
+  font-size: 0.7rem;
   font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
+/* Serif, weight 500 — same headline-number treatment as the KPI cards and
+   Plan summary cards, not the design system's default mono/800. */
 .pd-command-driver-visual__metrics strong {
   color: var(--pd-text);
-  font-family: var(--pd-font-mono);
+  font-family: var(--pd-font-serif);
   font-size: clamp(1.05rem, 1.6vw, 1.38rem);
   font-variant-numeric: tabular-nums;
-  font-weight: 800;
+  font-weight: 500;
   letter-spacing: 0;
 }
 
@@ -573,12 +651,24 @@
   line-height: 1.35;
 }
 
+.pd-command-driver-visual__metrics li[data-tone='positive'] {
+  border-inline-start-color: var(--pd-data-series-2);
+}
+
 .pd-command-driver-visual__metrics li[data-tone='positive'] strong {
   color: var(--pd-data-series-2);
 }
 
+.pd-command-driver-visual__metrics li[data-tone='danger'] {
+  border-inline-start-color: var(--pd-data-series-4);
+}
+
 .pd-command-driver-visual__metrics li[data-tone='danger'] strong {
   color: var(--pd-data-series-4);
+}
+
+.pd-command-driver-visual__metrics li[data-tone='warning'] {
+  border-inline-start-color: var(--pd-data-series-1);
 }
 
 .pd-command-driver-visual__metrics li[data-tone='warning'] strong {
@@ -596,12 +686,18 @@
   min-width: 0;
 }
 
+/* Real elevated panel — same box-shadow/radius/surface language as the
+   trajectory panel in Plan vs Benchmark and the driver charts, not an
+   invisible border-block (--pd-command-border resolves to transparent in
+   this scope, so the old border never actually rendered). */
 .pd-command-funnel-chart {
   display: block;
   inline-size: 100%;
   block-size: clamp(26rem, 46vw, 36rem);
   min-inline-size: 0;
-  border-block: 1px solid var(--pd-command-border);
+  padding: clamp(14px, 2vw, 22px);
+  border-radius: var(--pd-radius-control);
+  box-shadow: var(--pd-shadow-raised);
   background:
     radial-gradient(
       circle at 12% 0%,
@@ -612,7 +708,8 @@
       180deg,
       color-mix(in srgb, var(--pd-surface-soft) 56%, transparent),
       transparent 60%
-    );
+    ),
+    var(--pd-surface);
 }
 
 .pd-command-funnel-chart__plot-bg {
@@ -627,9 +724,6 @@
 
 .pd-command-funnel-chart__axis-title,
 .pd-command-funnel-chart__axis-value,
-.pd-command-funnel-chart__dropoff-label,
-.pd-command-funnel-chart__final-marker text,
-.pd-command-funnel-chart__retention-label,
 .pd-command-funnel-chart__step-index,
 .pd-command-funnel-chart__step-label,
 .pd-command-funnel-chart__step-value {
@@ -663,6 +757,8 @@
   font-weight: 700;
 }
 
+/* Unfilled reference track — a lighter, neutral step so the bar's own
+   ordinal hue (below) is the only color doing identity/magnitude work. */
 .pd-command-funnel-chart__track {
   fill: color-mix(in srgb, var(--pd-text) 7%, transparent);
   stroke: color-mix(in srgb, var(--pd-text) 9%, transparent);
@@ -670,56 +766,69 @@
   vector-effect: non-scaling-stroke;
 }
 
-.pd-command-funnel-chart__survived {
-  fill: url('#command-funnel-survive');
-  filter: drop-shadow(0 8px 16px color-mix(in srgb, var(--pd-data-series-2) 14%, transparent));
+/* fill is set inline per-row (resolveFunnelStepFill in the .tsx — an
+   ordinal one-hue ramp keyed to step position, not a CSS class), so only
+   the non-color mark properties live here. */
+.pd-command-funnel-chart__bar {
+  transition: filter 130ms ease;
+  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--pd-data-actual) 16%, transparent));
 }
 
-.pd-command-funnel-chart__dropoff {
-  fill: url('#command-funnel-dropoff');
-  opacity: 0.62;
+.pd-command-funnel-chart__bar:has(~ .pd-command-funnel-chart__hit-area:hover) {
+  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--pd-data-actual) 16%, transparent))
+    brightness(1.08);
 }
 
-.pd-command-funnel-chart__retention-label,
-.pd-command-funnel-chart__dropoff-label {
+.pd-command-funnel-chart__hit-area {
+  fill: transparent;
+  cursor: pointer;
+}
+
+/* Odpływ = status koloru (strata), nie kolejna barwa kategoryczna — osobna
+   adnotacja w przerwie między wierszami, nie drugi segment wewnątrz paska. */
+.pd-command-funnel-chart__dropoff-annotation {
+  fill: var(--pd-status-danger);
+  font-family: var(--pd-font-mono);
   font-size: 0.66rem;
-  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0;
   pointer-events: none;
 }
 
-.pd-command-funnel-chart__retention-label {
-  fill: var(--pd-text);
-}
-
-.pd-command-funnel-chart__dropoff-label {
-  fill: color-mix(in srgb, var(--pd-data-series-1) 86%, var(--pd-text) 14%);
-}
-
-.pd-command-funnel-chart g[data-largest-dropoff='true'] .pd-command-funnel-chart__dropoff {
-  opacity: 0.82;
-  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--pd-data-series-4) 18%, transparent));
-}
-
-.pd-command-funnel-chart__flow-path {
-  fill: none;
-  stroke: url('#command-funnel-path');
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 3;
-  opacity: 0.8;
-  vector-effect: non-scaling-stroke;
-}
-
-.pd-command-funnel-chart__final-marker line {
-  stroke: var(--pd-data-series-1);
-  stroke-width: 2;
-  vector-effect: non-scaling-stroke;
-}
-
-.pd-command-funnel-chart__final-marker text {
-  fill: var(--pd-data-series-1);
-  font-size: 0.67rem;
+.pd-command-funnel-chart__dropoff-annotation[data-emphasis='true'] {
+  font-size: 0.7rem;
   font-weight: 800;
+}
+
+.pd-command-funnel-chart__tooltip {
+  pointer-events: none;
+}
+
+.pd-command-funnel-chart__tooltip rect {
+  fill: var(--pd-surface-overlay);
+  stroke: var(--pd-separator);
+  stroke-width: 1;
+}
+
+.pd-command-funnel-chart__tooltip-title {
+  fill: var(--pd-text);
+  font-family: var(--pd-font-sans);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pd-command-funnel-chart__tooltip-value {
+  fill: var(--pd-data-actual);
+  font-family: var(--pd-font-mono);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pd-command-funnel-chart__tooltip-detail {
+  fill: var(--pd-text-secondary);
+  font-family: var(--pd-font-sans);
+  font-size: 10px;
 }
 
 .pd-command-funnel-visual__metrics {
@@ -727,31 +836,49 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px 20px;
   margin: 0;
-  padding: 16px 0 0;
-  border-block-start: 1px solid var(--pd-command-soft-line);
+  padding: 0;
   list-style: none;
 }
 
+/* Same card family as the KPI/Plan/Driver cards: real surface + box-shadow
+   at rest, no border, bigger shadow + lift on hover; tone accent moves from
+   text-only color to a real border-inline-start stripe. */
 .pd-command-funnel-visual__metrics li {
   display: grid;
   gap: 5px;
   min-width: 0;
-  padding-block: 2px 14px;
-  border-block-end: 1px solid var(--pd-command-soft-line);
+  padding: 14px 16px;
+  border-inline-start: 4px solid transparent;
+  border-radius: var(--pd-radius-control);
+  background: var(--pd-surface);
+  box-shadow: var(--pd-shadow-raised);
+  transition:
+    box-shadow 180ms var(--pd-motion-easing-standard),
+    background-color 180ms var(--pd-motion-easing-standard),
+    transform 180ms var(--pd-motion-easing-standard);
+}
+
+.pd-command-funnel-visual__metrics li:hover,
+.pd-command-funnel-visual__metrics li:focus-within {
+  background: var(--pd-surface-raised);
+  box-shadow: var(--pd-shadow-floating);
+  transform: translateY(-2px);
 }
 
 .pd-command-funnel-visual__metrics span {
   color: var(--pd-text-muted);
-  font-size: var(--pd-type-size-caption);
+  font-size: 0.7rem;
   font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .pd-command-funnel-visual__metrics strong {
   color: var(--pd-text);
-  font-family: var(--pd-font-mono);
+  font-family: var(--pd-font-serif);
   font-size: clamp(1.05rem, 1.6vw, 1.38rem);
   font-variant-numeric: tabular-nums;
-  font-weight: 800;
+  font-weight: 500;
   letter-spacing: 0;
 }
 
@@ -761,12 +888,24 @@
   line-height: 1.35;
 }
 
+.pd-command-funnel-visual__metrics li[data-tone='positive'] {
+  border-inline-start-color: var(--pd-data-series-2);
+}
+
 .pd-command-funnel-visual__metrics li[data-tone='positive'] strong {
   color: var(--pd-data-series-2);
 }
 
+.pd-command-funnel-visual__metrics li[data-tone='danger'] {
+  border-inline-start-color: var(--pd-data-series-4);
+}
+
 .pd-command-funnel-visual__metrics li[data-tone='danger'] strong {
   color: var(--pd-data-series-4);
+}
+
+.pd-command-funnel-visual__metrics li[data-tone='warning'] {
+  border-inline-start-color: var(--pd-data-series-1);
 }
 
 .pd-command-funnel-visual__metrics li[data-tone='warning'] strong {
@@ -779,48 +918,48 @@
   min-width: 0;
 }
 
+/* Real elevated panel — same box-shadow/radius/surface language as the
+   already-migrated funnel/driver/plan panels, not an invisible border-block
+   (--pd-command-border resolves to transparent in this scope, so the old
+   border never actually rendered). */
 .pd-command-products-chart {
   display: block;
   inline-size: 100%;
   block-size: clamp(32rem, 55vw, 46rem);
   min-inline-size: 0;
-  border-block: 1px solid var(--pd-command-border);
+  padding: clamp(14px, 2vw, 22px);
+  border-radius: var(--pd-radius-control);
+  box-shadow: var(--pd-shadow-raised);
   background:
     radial-gradient(
       circle at 14% 0%,
-      color-mix(in srgb, var(--pd-data-series-1) 10%, transparent),
+      color-mix(in srgb, var(--pd-data-actual) 10%, transparent),
       transparent 34%
     ),
     linear-gradient(
       180deg,
       color-mix(in srgb, var(--pd-surface-soft) 58%, transparent),
       transparent 62%
-    );
+    ),
+    var(--pd-surface);
 }
 
 .pd-command-products-chart__plot-bg {
   fill: color-mix(in srgb, var(--pd-surface-soft) 34%, transparent);
 }
 
-.pd-command-products-chart__grid-line,
-.pd-command-products-chart__pareto-grid {
+.pd-command-products-chart__grid-line {
   stroke: var(--pd-command-soft-line);
   stroke-dasharray: 3 9;
   vector-effect: non-scaling-stroke;
 }
 
-.pd-command-products-chart__pareto-grid {
-  opacity: 0.74;
-}
-
 .pd-command-products-chart__axis-title,
 .pd-command-products-chart__axis-value,
 .pd-command-products-chart__change,
-.pd-command-products-chart__pareto-value,
 .pd-command-products-chart__product-label,
 .pd-command-products-chart__rank,
 .pd-command-products-chart__row-meta,
-.pd-command-products-chart__share-label,
 .pd-command-products-chart__value {
   font-family: var(--pd-font-mono);
   font-variant-numeric: tabular-nums;
@@ -835,8 +974,7 @@
 }
 
 .pd-command-products-chart__axis-value,
-.pd-command-products-chart__rank,
-.pd-command-products-chart__share-label {
+.pd-command-products-chart__rank {
   fill: var(--pd-text-muted);
   font-size: 0.66rem;
 }
@@ -858,21 +996,21 @@
   vector-effect: non-scaling-stroke;
 }
 
+/* fill is set inline per-row (resolveProductStepFill in the .tsx — ordinal
+   one-hue ramp by rank, not a CSS class/gradient def). */
 .pd-command-products-chart__bar {
-  fill: url('#command-products-neutral');
-  filter: drop-shadow(0 8px 15px color-mix(in srgb, var(--pd-text) 12%, transparent));
+  transition: filter 130ms ease;
+  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--pd-data-actual) 16%, transparent));
 }
 
-.pd-command-products-chart g[data-tone='leader'] .pd-command-products-chart__bar {
-  fill: url('#command-products-leader');
+.pd-command-products-chart__bar:has(~ .pd-command-products-chart__hit-area:hover) {
+  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--pd-data-actual) 16%, transparent))
+    brightness(1.08);
 }
 
-.pd-command-products-chart g[data-tone='growth'] .pd-command-products-chart__bar {
-  fill: url('#command-products-growth');
-}
-
-.pd-command-products-chart g[data-tone='decline'] .pd-command-products-chart__bar {
-  fill: url('#command-products-decline');
+.pd-command-products-chart__hit-area {
+  fill: transparent;
+  cursor: pointer;
 }
 
 .pd-command-products-chart__value {
@@ -881,7 +1019,13 @@
   font-weight: 800;
 }
 
-.pd-command-products-chart__row-meta,
+.pd-command-products-chart__row-meta {
+  fill: var(--pd-text-muted);
+  font-size: 0.64rem;
+  font-weight: 700;
+}
+
+/* Zmiana = status koloru (dobrze/źle), nie kolejna barwa kategoryczna. */
 .pd-command-products-chart__change {
   fill: var(--pd-text-muted);
   font-size: 0.64rem;
@@ -889,34 +1033,41 @@
 }
 
 .pd-command-products-chart__change[data-change='positive'] {
-  fill: var(--pd-data-series-2);
+  fill: var(--pd-status-success);
 }
 
 .pd-command-products-chart__change[data-change='negative'] {
-  fill: var(--pd-data-series-4);
+  fill: var(--pd-status-danger);
 }
 
-.pd-command-products-chart__pareto-line {
-  fill: none;
-  stroke: url('#command-products-pareto');
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 3;
-  opacity: 0.86;
-  vector-effect: non-scaling-stroke;
+.pd-command-products-chart__tooltip {
+  pointer-events: none;
 }
 
-.pd-command-products-chart__pareto-point {
-  fill: var(--pd-data-series-1);
-  stroke: var(--pd-surface-panel);
-  stroke-width: 2;
-  vector-effect: non-scaling-stroke;
+.pd-command-products-chart__tooltip rect {
+  fill: var(--pd-surface-overlay);
+  stroke: var(--pd-separator);
+  stroke-width: 1;
 }
 
-.pd-command-products-chart__pareto-value {
-  fill: var(--pd-data-series-1);
-  font-size: 0.64rem;
-  font-weight: 800;
+.pd-command-products-chart__tooltip-title {
+  fill: var(--pd-text);
+  font-family: var(--pd-font-sans);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pd-command-products-chart__tooltip-value {
+  fill: var(--pd-data-actual);
+  font-family: var(--pd-font-mono);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pd-command-products-chart__tooltip-detail {
+  fill: var(--pd-text-secondary);
+  font-family: var(--pd-font-sans);
+  font-size: 10px;
 }
 
 .pd-command-products-visual__metrics {
@@ -924,31 +1075,51 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px 20px;
   margin: 0;
-  padding: 16px 0 0;
-  border-block-start: 1px solid var(--pd-command-soft-line);
+  padding: 0;
   list-style: none;
 }
 
+/* Same card family as the KPI/Plan/Driver/Funnel cards: real surface +
+   box-shadow at rest, no border, bigger shadow + lift on hover; tone accent
+   moves from text-only color to a real border-inline-start stripe. Tone
+   taxonomy (leader/warning/growth/decline/neutral) is unchanged — it's
+   already a considered system for these 4 specific cards. */
 .pd-command-products-visual__metrics li {
   display: grid;
   gap: 5px;
   min-width: 0;
-  padding-block: 2px 14px;
-  border-block-end: 1px solid var(--pd-command-soft-line);
+  padding: 14px 16px;
+  border-inline-start: 4px solid transparent;
+  border-radius: var(--pd-radius-control);
+  background: var(--pd-surface);
+  box-shadow: var(--pd-shadow-raised);
+  transition:
+    box-shadow 180ms var(--pd-motion-easing-standard),
+    background-color 180ms var(--pd-motion-easing-standard),
+    transform 180ms var(--pd-motion-easing-standard);
+}
+
+.pd-command-products-visual__metrics li:hover,
+.pd-command-products-visual__metrics li:focus-within {
+  background: var(--pd-surface-raised);
+  box-shadow: var(--pd-shadow-floating);
+  transform: translateY(-2px);
 }
 
 .pd-command-products-visual__metrics span {
   color: var(--pd-text-muted);
-  font-size: var(--pd-type-size-caption);
+  font-size: 0.7rem;
   font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .pd-command-products-visual__metrics strong {
   color: var(--pd-text);
-  font-family: var(--pd-font-mono);
+  font-family: var(--pd-font-serif);
   font-size: clamp(1.05rem, 1.6vw, 1.38rem);
   font-variant-numeric: tabular-nums;
-  font-weight: 800;
+  font-weight: 500;
   letter-spacing: 0;
 }
 
@@ -958,13 +1129,26 @@
   line-height: 1.35;
 }
 
+.pd-command-products-visual__metrics li[data-tone='leader'],
+.pd-command-products-visual__metrics li[data-tone='warning'] {
+  border-inline-start-color: var(--pd-data-series-1);
+}
+
 .pd-command-products-visual__metrics li[data-tone='leader'] strong,
 .pd-command-products-visual__metrics li[data-tone='warning'] strong {
   color: var(--pd-data-series-1);
 }
 
+.pd-command-products-visual__metrics li[data-tone='growth'] {
+  border-inline-start-color: var(--pd-data-series-2);
+}
+
 .pd-command-products-visual__metrics li[data-tone='growth'] strong {
   color: var(--pd-data-series-2);
+}
+
+.pd-command-products-visual__metrics li[data-tone='decline'] {
+  border-inline-start-color: var(--pd-data-series-4);
 }
 
 .pd-command-products-visual__metrics li[data-tone='decline'] strong {
@@ -972,6 +1156,221 @@
 }
 
 .pd-command-products-visual__insight {
+  margin: 0;
+  padding-block: 14px 0;
+  border-block-start: 1px solid var(--pd-command-soft-line);
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+  line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-command-traffic-visual {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.pd-command-traffic-chart {
+  display: block;
+  inline-size: 100%;
+  block-size: clamp(32rem, 55vw, 46rem);
+  min-inline-size: 0;
+  padding: clamp(14px, 2vw, 22px);
+  border-radius: var(--pd-radius-control);
+  box-shadow: var(--pd-shadow-raised);
+  background:
+    radial-gradient(
+      circle at 14% 0%,
+      color-mix(in srgb, var(--pd-data-actual) 10%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pd-surface-soft) 58%, transparent),
+      transparent 62%
+    ),
+    var(--pd-surface);
+}
+
+.pd-command-traffic-chart__plot-bg {
+  fill: color-mix(in srgb, var(--pd-surface-soft) 34%, transparent);
+}
+
+.pd-command-traffic-chart__grid-line {
+  stroke: var(--pd-command-soft-line);
+  stroke-dasharray: 3 9;
+  vector-effect: non-scaling-stroke;
+}
+
+.pd-command-traffic-chart__axis-title,
+.pd-command-traffic-chart__axis-value,
+.pd-command-traffic-chart__rank,
+.pd-command-traffic-chart__row-meta,
+.pd-command-traffic-chart__source-label,
+.pd-command-traffic-chart__value {
+  font-family: var(--pd-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.pd-command-traffic-chart__axis-title {
+  fill: var(--pd-text-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.pd-command-traffic-chart__axis-value,
+.pd-command-traffic-chart__rank {
+  fill: var(--pd-text-muted);
+  font-size: 0.66rem;
+}
+
+.pd-command-traffic-chart__rank {
+  font-weight: 800;
+}
+
+.pd-command-traffic-chart__source-label {
+  fill: var(--pd-text);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.pd-command-traffic-chart__track {
+  fill: color-mix(in srgb, var(--pd-text) 7%, transparent);
+  stroke: color-mix(in srgb, var(--pd-text) 9%, transparent);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+/* fill is set inline per-row (resolveTrafficStepFill in the .tsx — ordinal
+   one-hue ramp by rank, not a CSS class/gradient def). */
+.pd-command-traffic-chart__bar {
+  transition: filter 130ms ease;
+  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--pd-data-actual) 16%, transparent));
+}
+
+.pd-command-traffic-chart__bar:has(~ .pd-command-traffic-chart__hit-area:hover) {
+  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--pd-data-actual) 16%, transparent))
+    brightness(1.08);
+}
+
+.pd-command-traffic-chart__hit-area {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.pd-command-traffic-chart__value {
+  fill: var(--pd-text);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.pd-command-traffic-chart__row-meta {
+  fill: var(--pd-text-muted);
+  font-size: 0.64rem;
+  font-weight: 700;
+}
+
+.pd-command-traffic-chart__tooltip {
+  pointer-events: none;
+}
+
+.pd-command-traffic-chart__tooltip rect {
+  fill: var(--pd-surface-overlay);
+  stroke: var(--pd-separator);
+  stroke-width: 1;
+}
+
+.pd-command-traffic-chart__tooltip-title {
+  fill: var(--pd-text);
+  font-family: var(--pd-font-sans);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pd-command-traffic-chart__tooltip-value {
+  fill: var(--pd-data-actual);
+  font-family: var(--pd-font-mono);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pd-command-traffic-chart__tooltip-detail {
+  fill: var(--pd-text-secondary);
+  font-family: var(--pd-font-sans);
+  font-size: 10px;
+}
+
+.pd-command-traffic-visual__metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Same card family as the KPI/Plan/Driver/Funnel/Product cards: real
+   surface + box-shadow at rest, no border, bigger shadow + lift on hover;
+   tone accent moves from text-only color to a real border-inline-start
+   stripe. */
+.pd-command-traffic-visual__metrics li {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 14px 16px;
+  border-inline-start: 4px solid transparent;
+  border-radius: var(--pd-radius-control);
+  background: var(--pd-surface);
+  box-shadow: var(--pd-shadow-raised);
+  transition:
+    box-shadow 180ms var(--pd-motion-easing-standard),
+    background-color 180ms var(--pd-motion-easing-standard),
+    transform 180ms var(--pd-motion-easing-standard);
+}
+
+.pd-command-traffic-visual__metrics li:hover,
+.pd-command-traffic-visual__metrics li:focus-within {
+  background: var(--pd-surface-raised);
+  box-shadow: var(--pd-shadow-floating);
+  transform: translateY(-2px);
+}
+
+.pd-command-traffic-visual__metrics span {
+  color: var(--pd-text-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.pd-command-traffic-visual__metrics strong {
+  color: var(--pd-text);
+  font-family: var(--pd-font-serif);
+  font-size: clamp(1.05rem, 1.6vw, 1.38rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.pd-command-traffic-visual__metrics small {
+  color: var(--pd-text-muted);
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
+.pd-command-traffic-visual__metrics li[data-tone='leader'],
+.pd-command-traffic-visual__metrics li[data-tone='warning'] {
+  border-inline-start-color: var(--pd-data-series-1);
+}
+
+.pd-command-traffic-visual__metrics li[data-tone='leader'] strong,
+.pd-command-traffic-visual__metrics li[data-tone='warning'] strong {
+  color: var(--pd-data-series-1);
+}
+
+.pd-command-traffic-visual__insight {
   margin: 0;
   padding-block: 14px 0;
   border-block-start: 1px solid var(--pd-command-soft-line);
@@ -1269,24 +1668,57 @@
   font-size: var(--pd-type-size-body-small);
 }
 
-.pd-command-center-one-page__table-disclosure,
 .pd-command-center-one-page__funnel-summary {
   color: var(--pd-text-muted);
   font-size: var(--pd-type-size-caption);
 }
 
 .pd-command-center-one-page__table-disclosure {
+  display: grid;
+  gap: 12px;
+}
+
+/*
+ * Same principle and look as .pd-command-plan-trajectory__table-trigger in
+ * Plan vs Benchmark — a real pill button (border/radius/surface), not a
+ * bare colored link or a native <details>/<summary> marker.
+ */
+.pd-command-center-one-page__table-disclosure-trigger {
+  justify-self: start;
+  padding: 7px 10px;
+  border: 1px solid var(--pd-separator);
+  border-radius: 8px;
+  background: var(--pd-surface);
+  color: var(--pd-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
+  transition: border-color 130ms ease, background-color 130ms ease, color 130ms ease;
+}
+
+.pd-command-center-one-page__table-disclosure-trigger:hover {
+  border-color: var(--pd-brand-accent);
+  background: var(--pd-surface-soft);
+  color: var(--pd-text);
+}
+
+/* Same principle and look as .pd-command-plan-table__expand — a lightweight
+   text link under the table, not another pill. */
+.pd-command-center-one-page__table-disclosure-expand {
+  justify-self: start;
   border: 0;
   padding: 0;
   background: transparent;
   color: var(--pd-brand-action);
   cursor: pointer;
   font: inherit;
-  font-weight: 700;
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
 }
 
-.pd-command-center-one-page__table-disclosure > div {
-  margin-block-start: 12px;
+.pd-command-center-one-page__table-disclosure-expand:hover {
+  color: var(--pd-interactive-hover);
 }
 
 .pd-command-center-one-page__funnel-summary {
@@ -1328,7 +1760,10 @@
 .pd-command-customers-chart {
   display: block;
   inline-size: 100%;
-  block-size: clamp(34rem, 58vw, 48rem);
+  /* Matches the chart's own viewBox aspect ratio (1000:560) so "meet"
+     scaling stays width-constrained instead of letterboxing top/bottom —
+     tuned down from the old 690-tall matrix-chart proportions. */
+  block-size: clamp(28rem, 47vw, 39rem);
   min-inline-size: 0;
   border-block: 1px solid var(--pd-command-border);
   background:
@@ -1344,27 +1779,21 @@
     );
 }
 
-.pd-command-customers-chart__matrix-bg,
 .pd-command-customers-chart__plot-bg {
   fill: color-mix(in srgb, var(--pd-surface-soft) 34%, transparent);
 }
 
-.pd-command-customers-chart__grid-line,
-.pd-command-customers-chart__matrix-grid {
+.pd-command-customers-chart__grid-line {
   stroke: var(--pd-command-soft-line);
   stroke-dasharray: 3 9;
   vector-effect: non-scaling-stroke;
 }
 
-.pd-command-customers-chart__matrix-grid {
-  opacity: 0.74;
-}
-
 .pd-command-customers-chart__axis-title,
+.pd-command-customers-chart__axis-subtitle,
 .pd-command-customers-chart__axis-value,
-.pd-command-customers-chart__bubble-label,
-.pd-command-customers-chart__bubble-value,
-.pd-command-customers-chart__parity-label,
+.pd-command-customers-chart__gap-value,
+.pd-command-customers-chart__legend-label,
 .pd-command-customers-chart__row-label,
 .pd-command-customers-chart__segment-value,
 .pd-command-customers-chart__total {
@@ -1380,10 +1809,28 @@
   text-transform: uppercase;
 }
 
-.pd-command-customers-chart__axis-value,
-.pd-command-customers-chart__parity-label {
+.pd-command-customers-chart__axis-subtitle {
+  fill: var(--pd-text-muted);
+  font-size: 0.62rem;
+}
+
+.pd-command-customers-chart__axis-value {
   fill: var(--pd-text-muted);
   font-size: 0.64rem;
+}
+
+.pd-command-customers-chart__legend-swatch[data-tone='returning'] {
+  fill: var(--pd-data-series-1);
+}
+
+.pd-command-customers-chart__legend-swatch[data-tone='new'] {
+  fill: var(--pd-data-series-2);
+}
+
+.pd-command-customers-chart__legend-label {
+  fill: var(--pd-text-secondary);
+  font-size: 0.66rem;
+  font-weight: 700;
 }
 
 .pd-command-customers-chart__row-label {
@@ -1392,7 +1839,8 @@
   font-weight: 800;
 }
 
-.pd-command-customers-chart__track {
+.pd-command-customers-chart__track,
+.pd-command-customers-chart__gap-track {
   fill: color-mix(in srgb, var(--pd-text) 7%, transparent);
   stroke: color-mix(in srgb, var(--pd-text) 9%, transparent);
   stroke-width: 1;
@@ -1416,47 +1864,34 @@
   font-weight: 800;
 }
 
-.pd-command-customers-chart__parity-line {
-  stroke: color-mix(in srgb, var(--pd-text) 54%, transparent);
-  stroke-dasharray: 7 9;
+.pd-command-customers-chart__gap-zero-line {
+  stroke: color-mix(in srgb, var(--pd-text) 40%, transparent);
   stroke-width: 1.4;
   vector-effect: non-scaling-stroke;
 }
 
-.pd-command-customers-chart__value-gap {
-  stroke: color-mix(in srgb, var(--pd-data-series-1) 72%, transparent);
-  stroke-width: 2;
-  vector-effect: non-scaling-stroke;
-}
-
-.pd-command-customers-chart__bubble-halo {
-  fill: url('#command-customers-bubble');
-  opacity: 0.11;
-}
-
-.pd-command-customers-chart__bubble {
+/* fill is the flat "new" tone by default, overridden per-row below — same
+   pattern as __mix-segment, but a solid fill (not the gradient) reads
+   better as a short diverging bar than as a wide stacked strip. */
+.pd-command-customers-chart__gap-bar {
   fill: var(--pd-data-series-2);
-  stroke: var(--pd-surface-panel);
-  stroke-width: 2;
-  filter: drop-shadow(0 10px 18px color-mix(in srgb, var(--pd-data-series-2) 16%, transparent));
-  vector-effect: non-scaling-stroke;
 }
 
-.pd-command-customers-chart g[data-tone='returning'] .pd-command-customers-chart__bubble {
+.pd-command-customers-chart g[data-tone='returning'] .pd-command-customers-chart__gap-bar {
   fill: var(--pd-data-series-1);
-  filter: drop-shadow(0 10px 18px color-mix(in srgb, var(--pd-data-series-1) 18%, transparent));
 }
 
-.pd-command-customers-chart__bubble-label {
-  fill: var(--pd-text);
-  font-size: 0.66rem;
+.pd-command-customers-chart__gap-value {
+  font-size: 0.68rem;
   font-weight: 800;
 }
 
-.pd-command-customers-chart__bubble-value {
-  fill: var(--pd-surface-panel);
-  font-size: 0.62rem;
-  font-weight: 900;
+.pd-command-customers-chart__gap-value[data-direction='positive'] {
+  fill: var(--pd-status-success);
+}
+
+.pd-command-customers-chart__gap-value[data-direction='negative'] {
+  fill: var(--pd-status-danger);
 }
 
 .pd-command-customers-chart__total {
@@ -1757,7 +2192,7 @@
   }
 
   .pd-command-customers-chart {
-    block-size: 30rem;
+    block-size: 17rem;
   }
 
   .pd-command-center-one-page__attention-card {
@@ -1784,17 +2219,7 @@
 .pd-command-center-one-page .pd-command-plan-section,
 .pd-command-center-one-page .pd-metric-card,
 .pd-command-center-one-page .pd-command-center-one-page__chart-surface,
-.pd-command-center-one-page .pd-command-driver-bridge,
-.pd-command-center-one-page .pd-command-driver-efficiency,
-.pd-command-center-one-page .pd-command-funnel-chart,
-.pd-command-center-one-page .pd-command-products-chart,
 .pd-command-center-one-page .pd-command-customers-chart,
-.pd-command-center-one-page .pd-command-driver-visual__metrics,
-.pd-command-center-one-page .pd-command-driver-visual__metrics li,
-.pd-command-center-one-page .pd-command-funnel-visual__metrics,
-.pd-command-center-one-page .pd-command-funnel-visual__metrics li,
-.pd-command-center-one-page .pd-command-products-visual__metrics,
-.pd-command-center-one-page .pd-command-products-visual__metrics li,
 .pd-command-center-one-page .pd-command-customers-visual__metrics,
 .pd-command-center-one-page .pd-command-customers-visual__metrics li,
 .pd-command-center-one-page .pd-command-customers-visual__segments article,

@@ -19,6 +19,7 @@ export const papaDataIconNames = [
   'warning',
   'calendar',
   'theme',
+  'moon',
   'notifications',
   'menu',
   'products',
@@ -129,6 +130,10 @@ function IconPaths({
           <circle cx="12" cy="12" r="4.5" />
           <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" />
         </>
+      );
+    case 'moon':
+      return (
+        <path d="M19.5 14.7A7.6 7.6 0 0 1 9.3 4.5 7.8 7.8 0 1 0 19.5 14.7Z" />
       );
     case 'notifications':
       return (

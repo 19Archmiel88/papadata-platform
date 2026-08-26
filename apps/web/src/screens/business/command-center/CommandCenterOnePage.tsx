@@ -42,7 +42,6 @@ import {
   buildCustomerSegmentRows,
   buildProductSalesRows,
   buildTrafficSourceRows,
-  commandCenterOnePageSectionIds,
 } from './commandCenterOnePageModel';
 import './command-center-one-page.css';
 import './command-center-vivid.css';
@@ -60,7 +59,7 @@ export function CommandCenterOnePage({
   const [driversLens, setDriversLens] = useState(defaultCommandLens);
 
   const kpis = (
-    <CommandSectionAnchor id={commandCenterOnePageSectionIds[0]}>
+    <CommandSectionAnchor id="command-section-kpi">
       <CommandCenterKpiSection
         dataState={dataState}
         records={executiveKpis}
@@ -68,7 +67,7 @@ export function CommandCenterOnePage({
     </CommandSectionAnchor>
   );
   const plan = (
-    <CommandSectionAnchor id={commandCenterOnePageSectionIds[1]}>
+    <CommandSectionAnchor id="command-section-plan">
       <CommandCenterPlanExecutionSection
         forecastMethod={data.forecastMethod}
         forecastTotal={data.forecastTotal}
@@ -78,7 +77,7 @@ export function CommandCenterOnePage({
     </CommandSectionAnchor>
   );
   const drivers = (
-    <CommandSectionAnchor id={commandCenterOnePageSectionIds[2]}>
+    <CommandSectionAnchor id="command-section-drivers">
       <CommandCenterDriversSection
         activeLens={driversLens}
         driverRelationships={data.driverRelationships}
@@ -88,7 +87,7 @@ export function CommandCenterOnePage({
     </CommandSectionAnchor>
   );
   const funnel = (
-    <CommandSectionAnchor id={commandCenterOnePageSectionIds[3]}>
+    <CommandSectionAnchor id="command-section-funnel">
       <CommandCenterFunnelSection
         data={data}
         dataState={dataState}
@@ -96,21 +95,21 @@ export function CommandCenterOnePage({
     </CommandSectionAnchor>
   );
   const traffic = (
-    <CommandSectionAnchor id={commandCenterOnePageSectionIds[4]}>
+    <CommandSectionAnchor id="command-section-traffic">
       <CommandCenterTrafficSourcesSection
         sourceRows={buildTrafficSourceRows(data.trafficSources)}
       />
     </CommandSectionAnchor>
   );
   const products = (
-    <CommandSectionAnchor id={commandCenterOnePageSectionIds[5]}>
+    <CommandSectionAnchor id="command-section-products">
       <CommandCenterProductSalesSection
         productRows={buildProductSalesRows(data.productSales)}
       />
     </CommandSectionAnchor>
   );
   const customers = (
-    <CommandSectionAnchor id={commandCenterOnePageSectionIds[6]}>
+    <CommandSectionAnchor id="command-section-customers">
       <CommandCenterCustomerSplitSection customerRows={buildCustomerSegmentRows(data.customerSegments)} />
     </CommandSectionAnchor>
   );

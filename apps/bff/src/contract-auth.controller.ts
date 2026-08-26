@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Inject, Options, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { BffIdentitySessionService } from "./identity-session.service.js";
+import { BffOAuthService } from "./oauth.service.js";
 import { BffSessionAssuranceService } from "./session-assurance.service.js";
 import { BffSecurityService } from "./security.service.js";
 
@@ -12,6 +13,9 @@ export class ContractAuthController {
 
     @Inject(BffSessionAssuranceService)
     private readonly sessionAssurance: BffSessionAssuranceService,
+
+    @Inject(BffOAuthService)
+    private readonly oauth: BffOAuthService,
 
     @Inject(BffSecurityService)
     private readonly security: BffSecurityService,
@@ -62,6 +66,42 @@ export class ContractAuthController {
     @Body() body: unknown,
   ): Promise<void> {
     return this.sessionAssurance.issueStepUp(request, reply, body);
+  }
+
+  @Post("oauth/start")
+  startOAuth(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Body() body: unknown,
+  ): Promise<void> {
+    return this.oauth.start(request, reply, body);
+  }
+
+  @Post("oauth/link/start")
+  startOAuthLink(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Body() body: unknown,
+  ): Promise<void> {
+    return this.oauth.startLink(request, reply, body);
+  }
+
+  @Post("oauth/reauth/start")
+  startOAuthReauth(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Body() body: unknown,
+  ): Promise<void> {
+    return this.oauth.startReauth(request, reply, body);
+  }
+
+  @Post("oauth/callback")
+  completeOAuthCallback(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Body() body: unknown,
+  ): Promise<void> {
+    return this.oauth.callback(request, reply, body);
   }
 
   @Post("logout")

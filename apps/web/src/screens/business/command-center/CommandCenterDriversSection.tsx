@@ -1,3 +1,6 @@
+import {
+  useId,
+} from 'react';
 import type {
   CommandCenterRecord,
   DriverDecompositionView,
@@ -10,9 +13,9 @@ import type {
   DataRow,
 } from '../../../../../../contracts/component-shared';
 import {
-  Button,
   EmptyState,
   SegmentedControl,
+  VisuallyHidden,
 } from '../../../design-system';
 import type {
   CommandLens,
@@ -30,10 +33,8 @@ import {
 import {
   findRecordById,
   formatMetricValue,
-  openPapaAssistantForElement,
 } from './commandCenterOnePageModel';
 
-const driversElementId = 'command-sales-costs';
 const bridgeViewBox = {
   height: 430,
   plotBottom: 318,
@@ -778,6 +779,14 @@ function CommandDriverEfficiencyChart({
 }: {
   readonly relationship: DriverRelationshipView;
 }) {
+  // useId() includes colons, unsafe inside a CSS/SVG url(#id) reference —
+  // stripped since these ids are only ever consumed as fragment references.
+  // Unlike the bridge chart (which already takes a per-lens idPrefix prop),
+  // these were literal strings with no uniqueness guard.
+  const idBase = useId().replace(/:/g, '');
+  const areaFillId = `${idBase}-efficiency-area`;
+  const glowFilterId = `${idBase}-efficiency-glow`;
+
   const points = relationship.points.filter((point) => (
     Number.isFinite(point.x)
     && Number.isFinite(point.y)
@@ -900,11 +909,11 @@ function CommandDriverEfficiencyChart({
         viewBox={`0 0 ${efficiencyViewBox.width} ${efficiencyViewBox.height}`}
       >
         <defs>
-          <linearGradient id="command-driver-efficiency-area" x1="0" x2="0" y1="0" y2="1">
+          <linearGradient id={areaFillId} x1="0" x2="0" y1="0" y2="1">
             <stop offset="0%" stopColor="color-mix(in srgb, var(--pd-data-series-2) 18%, transparent)" />
             <stop offset="100%" stopColor="color-mix(in srgb, var(--pd-data-series-2) 2%, transparent)" />
           </linearGradient>
-          <filter id="command-driver-efficiency-glow" x="-40%" y="-40%" width="180%" height="180%">
+          <filter height="180%" id={glowFilterId} width="180%" x="-40%" y="-40%">
             <feGaussianBlur result="blur" stdDeviation="5" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -1009,6 +1018,7 @@ function CommandDriverEfficiencyChart({
         <path
           className="pd-command-driver-efficiency__area"
           d={`${curvePath} L ${plottedPoints[plottedPoints.length - 1]?.xPlot ?? efficiencyViewBox.plotLeft} ${efficiencyViewBox.plotBottom} L ${plottedPoints[0]?.xPlot ?? efficiencyViewBox.plotLeft} ${efficiencyViewBox.plotBottom} Z`}
+          fill={`url(#${areaFillId})`}
         />
         <path
           className="pd-command-driver-efficiency__curve"
@@ -1029,6 +1039,7 @@ function CommandDriverEfficiencyChart({
                 className="pd-command-driver-efficiency__point"
                 cx={point.xPlot}
                 cy={point.yPlot}
+                filter={point.tone === 'strong' ? `url(#${glowFilterId})` : undefined}
                 r={isBest || isWeakest ? 7 : 5}
               />
               {shouldLabel ? (
@@ -1248,21 +1259,14 @@ export function CommandCenterDriversSection({
       aria-labelledby="command-center-sales-cost-title"
       className="pd-command-center-one-page__section"
     >
-      <CommandSectionHeader
-        actions={(
-          <Button
-            onClick={() => openPapaAssistantForElement(driversElementId)}
-            size="small"
-            variant="secondary"
-          >
-            Analizuj z Papą
-          </Button>
-        )}
-        description="Trzy perspektywy na to, co napędza wynik. Metryki o różnych jednostkach nie są sztucznie rysowane na wspólnej osi."
-        eyebrow="Drivery wyniku"
-        title="Co napędza wynik"
-        titleId="command-center-sales-cost-title"
-      />
+      <VisuallyHidden as="div">
+        <CommandSectionHeader
+          description="Trzy perspektywy na to, co napędza wynik. Metryki o różnych jednostkach nie są sztucznie rysowane na wspólnej osi."
+          eyebrow="Drivery wyniku"
+          title="Co napędza wynik"
+          titleId="command-center-sales-cost-title"
+        />
+      </VisuallyHidden>
 
       <div className="pd-command-center-one-page__lens-switch">
         <SegmentedControl

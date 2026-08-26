@@ -382,6 +382,7 @@ export function ProductShellFrame({
             />
 
             <Drawer
+              className="pd-product-shell__mobile-navigation-drawer"
               description="Mobilna nawigacja produktu z focus restore i zamknięciem Escape."
               dismissible
               onOpenChange={(open) => setOverlay(open ? 'mobile-navigation' : null)}

@@ -11,8 +11,10 @@ import type { AiProviderAdapter } from "@papadata/ai-runtime";
 import { LocalDeterministicProvider } from "@papadata/ai-runtime";
 import {
   AssistantConversationRepository,
+  IdentityRepository,
   IntegrationRepository,
   InvitationRepository,
+  PasswordResetRepository,
   ProductDomainRepository,
   ProductionDatabase,
   type InvitationRow,
@@ -33,6 +35,7 @@ import type {
   RequestPrincipalMembership,
 } from "../auth/request-principal.js";
 import { IdentityService } from "../identity/identity.service.js";
+import { OAuthProviderConfig } from "../identity/oauth-provider.config.js";
 import { IntegrationService } from "../integrations/integration.service.js";
 import { Argon2PasswordService } from "../security/argon2.service.js";
 import {
@@ -99,6 +102,10 @@ export class ContractRuntimeService {
 
   private readonly invitations: InvitationRepository;
 
+  private readonly identities: IdentityRepository;
+
+  private readonly passwordResets: PasswordResetRepository;
+
   private readonly assistantConversations: AssistantConversationRepository;
 
   private readonly assistantProvider: AiProviderAdapter;
@@ -108,6 +115,7 @@ export class ContractRuntimeService {
     @Inject(IdentityService) private readonly identity: IdentityService,
     @Inject(IntegrationService) private readonly integrations: IntegrationService,
     @Inject(Argon2PasswordService) private readonly passwords: Argon2PasswordService,
+    @Inject(OAuthProviderConfig) private readonly oauthConfig: OAuthProviderConfig,
   ) {
     this.repository = new ProductDomainRepository(database);
     this.integrationRepository = new IntegrationRepository(database);
@@ -115,6 +123,8 @@ export class ContractRuntimeService {
       this.integrationRepository,
     );
     this.invitations = new InvitationRepository(database);
+    this.identities = new IdentityRepository(database);
+    this.passwordResets = new PasswordResetRepository(database);
     this.assistantConversations = new AssistantConversationRepository(database);
     this.assistantProvider = new LocalDeterministicProvider();
   }
@@ -178,17 +188,94 @@ export class ContractRuntimeService {
         data: {
           authentication: "available",
           emailPassword: true,
-          oauth: "configuration_required",
-          passwordRecovery: "delivery_provider_required",
+          oauth: {
+            google: this.oauthConfig.statusFor("google"),
+            microsoft: this.oauthConfig.statusFor("microsoft"),
+          },
+          passwordRecovery: "token_link_available",
         },
         operationId: request.operationId,
       };
     }
 
-    if (
-      request.operationId.startsWith("auth.password.recovery.")
-      || request.operationId === "auth.email.resend"
-    ) {
+    if (request.operationId === "auth.password.recovery.request") {
+      const email = requiredPayloadString(payload, "email");
+      const user = await this.identities.findByEmail(email);
+      if (!user) {
+        // Disclosure-safe: never reveal whether an account exists for this
+        // email — same response shape whether the account is real or not.
+        return {
+          data: {
+            accepted: true,
+            disclosureSafe: true,
+            deliveryStatus: "provider_configuration_required",
+          },
+          operationId: request.operationId,
+        };
+      }
+
+      const { token, expiresAt } = await this.passwordResets.createResetToken({
+        user,
+        ttlHours: 2,
+      });
+      return {
+        data: {
+          accepted: true,
+          disclosureSafe: false,
+          deliveryStatus: "token_issued",
+          expiresAt,
+          // No email delivery pathway exists yet — the reset link is
+          // surfaced directly, the same way admin-generated invitation
+          // links are surfaced today, instead of being auto-emailed.
+          resetToken: token,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "auth.password.recovery.token.validate") {
+      const token = requiredPayloadString(payload, "token");
+      const lookup = await this.passwordResets.findValidToken(token);
+      return {
+        data: {
+          email: lookup?.normalizedEmail ?? null,
+          valid: lookup !== null,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "auth.password.reset") {
+      const resetToken = requiredPayloadString(payload, "resetToken");
+      const newPassword = requiredPayloadString(payload, "newPassword");
+      const lookup = await this.passwordResets.findValidToken(resetToken);
+      if (!lookup) {
+        return {
+          data: { accepted: false, status: "invalid_or_expired_token" },
+          operationId: request.operationId,
+        };
+      }
+
+      const newPasswordHash = await this.passwords.hash(newPassword);
+      const reset = await this.passwordResets.consumeAndResetPassword({
+        lookup,
+        newPasswordHash,
+        token: resetToken,
+      });
+      if (!reset) {
+        return {
+          data: { accepted: false, status: "invalid_or_expired_token" },
+          operationId: request.operationId,
+        };
+      }
+
+      return {
+        data: { accepted: true, email: lookup.normalizedEmail },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "auth.email.resend") {
       return {
         data: {
           accepted: true,
@@ -199,12 +286,18 @@ export class ContractRuntimeService {
       };
     }
 
-    if (
-      request.operationId.startsWith("auth.oauth.")
-      || request.operationId === "auth.account.link"
-    ) {
+    if (request.operationId.startsWith("auth.oauth.")) {
       throw new ForbiddenException(
         "OAuth identity linking is disabled until an approved identity provider is configured.",
+      );
+    }
+
+    if (
+      request.operationId === "auth.registration.finalize"
+      || request.operationId === "auth.email.verify"
+    ) {
+      throw new ForbiddenException(
+        `Not implemented — no email delivery pathway exists yet for ${request.operationId}.`,
       );
     }
 
@@ -218,10 +311,15 @@ export class ContractRuntimeService {
           operationId: request.operationId,
         };
       }
+      const existingIdentity = await this.identities.findByEmail(invitation.email);
       return {
         data: {
           accepted: false,
           email: invitation.email,
+          // Lets the frontend render "sign in to join" instead of a
+          // create-account form when this email already has a PapaData
+          // identity elsewhere (e.g. joining a second tenant).
+          existingIdentity: existingIdentity !== null,
           role: invitation.role,
           status: "valid",
           tenantName: invitation.tenantName,
@@ -234,7 +332,6 @@ export class ContractRuntimeService {
     if (request.operationId === "invitation.accept") {
       const invitationId = requiredPayloadString(payload, "invitationId");
       const token = requiredPayloadString(payload, "token");
-      const displayName = requiredPayloadString(payload, "displayName");
       const password = requiredPayloadString(payload, "password");
 
       const invitation = await this.invitations.findInvitationByToken(invitationId, token);
@@ -245,6 +342,53 @@ export class ContractRuntimeService {
         };
       }
 
+      const existingIdentity = await this.identities.findByEmail(invitation.email);
+
+      if (existingIdentity) {
+        const validPassword = await this.passwords.verify(existingIdentity.passwordHash, password);
+        if (!validPassword) {
+          // Deliberately does not touch the invitation token or call any
+          // accept method — a failed sign-in attempt must never burn a
+          // valid invitation.
+          return {
+            data: { accepted: false, status: "invalid_credentials" },
+            operationId: request.operationId,
+          };
+        }
+
+        const joined = await this.invitations.acceptInvitationForExistingIdentity({
+          identityKey: existingIdentity.identityKey,
+          invitation,
+          token,
+          userId: existingIdentity.userId,
+        }).catch((error: unknown) => {
+          if (error instanceof Error && error.message === "ALREADY_MEMBER") {
+            throw new ConflictException("Already a member of this workspace.");
+          }
+          throw error;
+        });
+
+        if (!joined) {
+          return {
+            data: { accepted: false, status: "signed_invitation_token_required" },
+            operationId: request.operationId,
+          };
+        }
+
+        return {
+          data: {
+            accepted: true,
+            displayName: existingIdentity.displayName,
+            email: existingIdentity.normalizedEmail,
+            memberships: [joined.membership],
+            outcome: "existing_identity_linked",
+            userId: existingIdentity.userId,
+          },
+          operationId: request.operationId,
+        };
+      }
+
+      const displayName = requiredPayloadString(payload, "displayName");
       const passwordHash = await this.passwords.hash(password);
       const joined = await this.invitations.acceptInvitation({
         invitation,
@@ -271,6 +415,7 @@ export class ContractRuntimeService {
           displayName: joined.user.displayName,
           email: joined.user.normalizedEmail,
           memberships: [joined.membership],
+          outcome: "new_identity",
           userId: joined.user.userId,
         },
         operationId: request.operationId,
@@ -302,6 +447,46 @@ export class ContractRuntimeService {
         },
         operationId: request.operationId,
       };
+    }
+
+    // These operationIds are generated, routed contract endpoints with no
+    // dedicated handler here — without an explicit rejection they fall
+    // through to the generic ProductDomainRepository upsert at the bottom of
+    // this method, which would echo back a fake "success" that performs no
+    // real work. Each has a real, authoritative implementation elsewhere;
+    // callers must use that instead.
+    if (request.operationId === "auth.account.link") {
+      throw new ForbiddenException(
+        "OAuth identity linking is disabled until an approved identity provider is configured.",
+      );
+    }
+
+    if (
+      request.operationId === "auth.mfa.enroll"
+      || request.operationId === "auth.mfa.confirm"
+      || request.operationId === "auth.mfa.verify"
+    ) {
+      throw new ForbiddenException(
+        `${request.operationId} is not the authoritative MFA path — use /v1/security/mfa/*.`,
+      );
+    }
+
+    if (request.operationId === "auth.reauthenticate") {
+      throw new ForbiddenException(
+        "auth.reauthenticate is not the authoritative step-up path — use /v1/security/step-up.",
+      );
+    }
+
+    if (request.operationId === "auth.logout") {
+      throw new ForbiddenException(
+        "auth.logout is not executable here — session revocation is handled locally by the BFF.",
+      );
+    }
+
+    if (request.operationId === "auth.consents.accept") {
+      throw new ForbiddenException(
+        "Not implemented — no consent-tracking store exists yet for auth.consents.accept.",
+      );
     }
 
     if (

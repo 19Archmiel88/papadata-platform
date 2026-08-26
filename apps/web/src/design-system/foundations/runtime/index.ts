@@ -52,6 +52,9 @@ export const defaultPapaDataRuntimeGlobals =
 const papaDataRuntimeStorageKey =
   'papadata.runtime-preferences.v1';
 
+export const papaDataRuntimePreferenceChangeEvent =
+  'papadata-runtime-preference-change';
+
 function includesValue<const Value extends string>(
   values: readonly Value[],
   value: unknown,
@@ -229,6 +232,48 @@ export function applyPapaDataRuntimeGlobals(
     target.setAttribute(
       'lang',
       globals.locale,
+    );
+  }
+
+  return globals;
+}
+
+export function applyStoredPapaDataRuntimePreference(
+  input: PapaDataRuntimeGlobalsInput,
+): PapaDataRuntimeGlobals {
+  if (typeof document === 'undefined') {
+    return normalizePapaDataRuntimeGlobals(input);
+  }
+
+  writeStoredPapaDataRuntimeGlobals(input);
+
+  const globals = getInitialPapaDataRuntimeGlobals({
+    density: document.documentElement.dataset.density,
+    locale: document.documentElement.dataset.locale,
+    motion:
+      document.documentElement.dataset.motionRequested
+      ?? document.documentElement.dataset.motion,
+    theme: document.documentElement.dataset.theme,
+    ...input,
+  });
+
+  const targets = new Set<HTMLElement>([
+    document.documentElement,
+    ...Array.from(
+      document.querySelectorAll<HTMLElement>('.pd-storybook-canvas'),
+    ),
+  ]);
+
+  targets.forEach((target) => {
+    applyPapaDataRuntimeGlobals(target, globals);
+  });
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent(
+        papaDataRuntimePreferenceChangeEvent,
+        { detail: globals },
+      ),
     );
   }
 

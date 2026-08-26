@@ -13,9 +13,8 @@ import type {
   DateRangePickerPreset,
 } from '../../design-system';
 import {
-  applyPapaDataRuntimeGlobals,
+  applyStoredPapaDataRuntimePreference,
   getInitialPapaDataRuntimeGlobals,
-  writeStoredPapaDataRuntimeGlobals,
 } from '../../design-system/foundations/runtime';
 import type {
   PapaDataRuntimeLocale,
@@ -54,40 +53,6 @@ function readRuntimeLocale(): RuntimeLocale {
 function readRuntimeTheme(): RuntimeTheme {
   if (typeof document === 'undefined') return 'light';
   return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
-}
-
-function applyRuntimePreference(
-  attribute: 'data-locale' | 'data-theme',
-  value: RuntimeLocale | RuntimeTheme,
-) {
-  if (typeof document === 'undefined') return;
-
-  const nextInput = attribute === 'data-locale'
-    ? { locale: value as RuntimeLocale }
-    : { theme: value as RuntimeTheme };
-
-  writeStoredPapaDataRuntimeGlobals(nextInput);
-
-  const globals = getInitialPapaDataRuntimeGlobals({
-    density: document.documentElement.dataset.density,
-    locale: document.documentElement.dataset.locale,
-    motion:
-      document.documentElement.dataset.motionRequested
-      ?? document.documentElement.dataset.motion,
-    theme: document.documentElement.dataset.theme,
-    ...nextInput,
-  });
-
-  const targets = new Set<HTMLElement>([
-    document.documentElement,
-    ...Array.from(
-      document.querySelectorAll<HTMLElement>('.pd-storybook-canvas'),
-    ),
-  ]);
-
-  targets.forEach((target) => {
-    applyPapaDataRuntimeGlobals(target, globals);
-  });
 }
 
 function resolveSectionLabel(
@@ -258,12 +223,12 @@ export function PublicTopbar({
 
   function changeLocale(nextLocale: RuntimeLocale) {
     setLocale(nextLocale);
-    applyRuntimePreference('data-locale', nextLocale);
+    applyStoredPapaDataRuntimePreference({ locale: nextLocale });
   }
 
   function changeTheme(nextTheme: RuntimeTheme) {
     setTheme(nextTheme);
-    applyRuntimePreference('data-theme', nextTheme);
+    applyStoredPapaDataRuntimePreference({ theme: nextTheme });
   }
 
   return (
@@ -347,12 +312,12 @@ export function AuthenticatedTopbar({
 
   function changeLocale(nextLocale: RuntimeLocale) {
     setLocale(nextLocale);
-    applyRuntimePreference('data-locale', nextLocale);
+    applyStoredPapaDataRuntimePreference({ locale: nextLocale });
   }
 
   function changeTheme(nextTheme: RuntimeTheme) {
     setTheme(nextTheme);
-    applyRuntimePreference('data-theme', nextTheme);
+    applyStoredPapaDataRuntimePreference({ theme: nextTheme });
   }
 
   function setShellOverlay(overlay: Exclude<ShellOverlay, null>, open: boolean) {

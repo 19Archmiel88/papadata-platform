@@ -7,6 +7,7 @@ import type {
 } from '../../../../../../contracts/api-schemas';
 import {
   MetricCard,
+  VisuallyHidden,
 } from '../../../design-system';
 import type {
   AnalyticsDataState,
@@ -236,10 +237,13 @@ export function CommandCenterKpiSection({
       aria-labelledby="command-center-kpi-title"
       className="pd-command-center-one-page__section pd-command-center-one-page__runtime-kpi"
     >
-      <CommandSectionHeader
-        eyebrow="KPI"
-        titleId="command-center-kpi-title"
-      />
+      <VisuallyHidden as="div">
+        <CommandSectionHeader
+          eyebrow="KPI"
+          title="Najważniejsze KPI okresu"
+          titleId="command-center-kpi-title"
+        />
+      </VisuallyHidden>
 
       {hasKpiRecords ? (
         <div
@@ -250,12 +254,11 @@ export function CommandCenterKpiSection({
           {kpiGroups.map((group) => (
             group.records.length > 0 ? (
               <Fragment key={group.title}>
-                <p
-                  className="pd-command-center-one-page__kpi-group-title"
-                  role="presentation"
-                >
-                  {group.title}
-                </p>
+                <VisuallyHidden as="div">
+                  <p className="pd-command-center-one-page__kpi-group-title">
+                    {group.title}
+                  </p>
+                </VisuallyHidden>
 
                 {group.records.map((record) => renderKpiCard(record, dataState))}
               </Fragment>

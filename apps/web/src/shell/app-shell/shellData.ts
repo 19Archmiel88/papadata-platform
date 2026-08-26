@@ -98,7 +98,7 @@ export const defaultShellNavigation = [
         icon: 'assistant',
         id: 'papa',
         label: 'Laboratorium Papa Asystenta',
-        path: '/app/papa/panel-kontekstowy-papa',
+        path: '/app/papa',
       },
     ],
   },
@@ -165,16 +165,16 @@ export const defaultShellNavigation = [
 export const defaultShellCommands = [
   {
     action: 'open-papa',
-    description: 'Otwiera globalny czat Papa z kontekstem bieżącego ekranu.',
+    description: 'Otwiera Papa Asystenta i Laboratorium z kontekstem bieżącego ekranu.',
     id: 'open-papa-assistant',
     keywords: [
       'papa',
       'asystent',
-      'czat',
+      'laboratorium',
       'ai',
     ],
     label: 'Otwórz Papa Asystenta',
-    path: '/app/papa/panel-kontekstowy-papa',
+    path: '/app/papa',
     section: 'Papa',
   },
   {
@@ -188,7 +188,7 @@ export const defaultShellCommands = [
       'snapshot',
     ],
     label: 'Analizuj bieżący ekran',
-    path: '/app/papa/panel-kontekstowy-papa',
+    path: '/app/papa',
     section: 'Papa',
   },
   {

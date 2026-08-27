@@ -8,18 +8,12 @@ import {
 } from 'storybook/test';
 
 import {
-  createIntegrationsStorybookData,
-  integrationScreenDefinitions,
+  IntegrationsWorkspace,
 } from '../../../screens/integrations';
 import {
-  integrationsScreenStorybookMeta,
-} from '../../data/integrationsScreenStorybookMeta';
-import {
-  IntegrationsProductWorkspace,
-} from '../../production/OperationalDomainWorkspaces';
-import {
-  ProductionStoryShell,
-} from '../../production/ProductionStoryShell';
+  createIntegrationsRuntimeFallbackData,
+  integrationScreenDefinitions,
+} from '../../../screens/integrations/integrationsData';
 
 const meta = {
   title: '40 Integracje i synchronizacja/Ekrany produkcyjne',
@@ -44,69 +38,75 @@ type ScreenId =
   | '40.09'
   | '40.10';
 
-const definitions = integrationScreenDefinitions;
+const storyPaths: Record<ScreenId, string> = {
+  '40.01': '/app/integrations/sources',
+  '40.02': '/app/integrations/add',
+  '40.03': '/app/integrations/sources',
+  '40.04': '/app/integrations/data-health',
+  '40.05': '/app/integrations/data-health',
+  '40.06': '/app/integrations/add',
+  '40.07': '/app/integrations/sources',
+  '40.08': '/app/integrations/sources',
+  '40.09': '/app/integrations/sources',
+  '40.10': '/app/integrations/data-health',
+};
 
 function getDefinition(id: ScreenId) {
-  const definition = definitions.find((item) => item.id === id);
+  const definition = integrationScreenDefinitions.find((item) => item.id === id);
   if (!definition) throw new Error(`Missing definition for ${id}`);
   return definition;
 }
 
-function ModuleStoryPage({ id }: { readonly id: ScreenId }) {
-  const definition = getDefinition(id);
+function ModuleStoryPage({
+  id,
+}: {
+  readonly id: ScreenId;
+}) {
   return (
-    <ProductionStoryShell
-      contract={{
-        ...definition,
-        documentPath: integrationsScreenStorybookMeta[id].documentPath,
-        owner: 'Integrations',
-        sectionId: '40',
-        sectionLabel: 'Integracje i synchronizacja',
-      }}
-    >
-      <IntegrationsProductWorkspace
-        data={createIntegrationsStorybookData(definition)}
-        definition={definition}
-      />
-    </ProductionStoryShell>
+    <IntegrationsWorkspace
+      definition={getDefinition(id)}
+      mode="storybook"
+      path={storyPaths[id]}
+      runtime={createIntegrationsRuntimeFallbackData()}
+      onProviderTest={async (provider) => ({
+        canSave: provider.connectable,
+        formValidation: {
+          fieldErrors: {},
+          message: 'Dane mają poprawny format.',
+          status: 'passed',
+        },
+        provider: provider.provider,
+        providerTest: {
+          message: provider.connectable
+            ? 'Połączenie z API dostawcy zostało zwalidowane pomyślnie.'
+            : 'Readiness providera blokuje test produkcyjny.',
+          status: provider.connectable ? 'passed' : 'failed',
+        },
+      })}
+    />
   );
 }
 
 function createStory(id: ScreenId): Story {
-  const definition = getDefinition(id);
   return {
     render: () => <ModuleStoryPage id={id} />,
     play: async ({ canvasElement }) => {
-      const element = canvasElement.querySelector(`[data-screen-id="${id}"]`);
-      if (!(element instanceof HTMLElement)) throw new Error(`Screen ${id} is not rendered.`);
-      const screen = within(element);
-      await expect(screen.getByRole('heading', { level: 1, name: definition.displayTitle })).toBeInTheDocument();
-      await expect(screen.getByRole('navigation', { name: 'Widoki integracji' })).toBeInTheDocument();
-      await expect(screen.getByRole('heading', { name: 'Co trzeba sprawdzić w integracjach teraz' })).toBeInTheDocument();
-      await expect(screen.getByRole('heading', { name: 'Kolejka integracji do obsługi' })).toBeInTheDocument();
-      await expect(screen.getAllByRole('heading', { level: 2, name: integrationVariantHeading[definition.variant] })[0]).toBeInTheDocument();
-      await expect(element).toHaveAttribute('data-screen-variant', definition.variant);
-      if (definition.variant === 'detail') {
-        await expect(screen.getByRole('heading', { level: 3, name: 'Shopify Orders' })).toBeInTheDocument();
-      } else if (definition.variant === 'catalog') {
-        await expect(screen.getByRole('table', { name: /Integracje i synchronizacja/u })).toBeInTheDocument();
+      const screen = within(canvasElement);
+      await expect(screen.getByRole('heading', { level: 1, name: 'Integracje i Jakość Danych' })).toBeInTheDocument();
+      await expect(screen.getByRole('navigation', { name: 'Tabs' })).toBeInTheDocument();
+      if (storyPaths[id].endsWith('/add')) {
+        await expect(screen.getByText('Rekomendowana Ścieżka Integracji PapaData')).toBeInTheDocument();
+        await expect(screen.getAllByRole('button', { name: 'Połącz' })[0]).toBeInTheDocument();
+      } else if (storyPaths[id].endsWith('/data-health')) {
+        await expect(screen.getByRole('heading', { name: 'Gotowość Obszarów Biznesowych' })).toBeInTheDocument();
+        await expect(screen.getByRole('table', { name: 'Historia pobrań danych' })).toBeInTheDocument();
+      } else {
+        await expect(screen.getByRole('table', { name: 'Źródła danych i jakość danych' })).toBeInTheDocument();
+        await expect(screen.getAllByRole('button', { name: /Napraw/u })[0]).toBeInTheDocument();
       }
     },
   };
 }
-
-const integrationVariantHeading = {
-  catalog: 'Źródła danych według świeżości i błędów',
-  connect: 'Kreator połączenia bez uruchamiania OAuth',
-  detail: 'Integracja, zakres danych i ostatnie zdarzenia',
-  disconnect: 'Skutki odłączenia przed operacją destrukcyjną',
-  history: 'Historia synchronizacji',
-  'provider-outage': 'Źródła dotknięte awarią providera',
-  reconnect: 'Ponowne połączenie bez mutacji tokenu',
-  scope: 'Zakres synchronizacji i wpływ na produkt',
-  'sync-run': 'Przebieg synchronizacji krok po kroku',
-  variants: 'Stany produkcyjne integracji',
-} as const;
 
 export const Screen40_01Story = {
   ...createStory('40.01'),

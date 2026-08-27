@@ -1026,6 +1026,7 @@ export function createMetricEngineSeriesInput(options: {
 export function computeMetricEngineSeries(
   input: MetricEngineInput,
   metricCodes: readonly DashboardMetricCode[],
+  options: { readonly includeDaily?: boolean } = {},
 ): {
   readonly aggregate: Partial<Record<DashboardMetricCode, string | null>>;
   readonly readiness: Partial<Record<DashboardMetricCode, MetricReadiness>>;
@@ -1063,20 +1064,22 @@ export function computeMetricEngineSeries(
     readonly values: Partial<Record<DashboardMetricCode, string | null>>;
   }[] = [];
 
-  for (const dayWindow of buildCalendarDayWindows(input)) {
-    const dayInput: MetricEngineInput = {
-      ...input,
-      periodEnd: toIsoDateTime(dayWindow.endMs),
-      periodStart: toIsoDateTime(dayWindow.startMs),
-    };
-    const dayFacts = createMetricFacts(dayInput);
-    const values: Partial<Record<DashboardMetricCode, string | null>> = {};
+  if (options.includeDaily !== false) {
+    for (const dayWindow of buildCalendarDayWindows(input)) {
+      const dayInput: MetricEngineInput = {
+        ...input,
+        periodEnd: toIsoDateTime(dayWindow.endMs),
+        periodStart: toIsoDateTime(dayWindow.startMs),
+      };
+      const dayFacts = createMetricFacts(dayInput);
+      const values: Partial<Record<DashboardMetricCode, string | null>> = {};
 
-    for (const code of metricCodes) {
-      values[code] = calculateMetric(code, dayInput, dayFacts).value;
+      for (const code of metricCodes) {
+        values[code] = calculateMetric(code, dayInput, dayFacts).value;
+      }
+
+      daily.push({ date: dayWindow.date, values });
     }
-
-    daily.push({ date: dayWindow.date, values });
   }
 
   return { aggregate, daily, lastSuccessfulSyncAt, providers, readiness, reasonCodes };
@@ -1378,9 +1381,16 @@ function createMetricFacts(input: MetricEngineInput): MetricFacts {
         (snapshot) => snapshot.providerId === input.primaryInventorySource?.providerId,
       )
     : input.canonicalInventorySnapshots;
-  const adSpend = input.canonicalAdSpend.filter((spend) =>
-    isDateInPeriod(spend.date, input.periodStart, input.periodEnd, input.timezone),
+  const adSpendDateRange = dateOnlyRangeForPeriod(
+    input.periodStart,
+    input.periodEnd,
+    input.timezone,
   );
+  const adSpend = adSpendDateRange
+    ? input.canonicalAdSpend.filter(
+        (spend) => spend.date >= adSpendDateRange.firstDate && spend.date <= adSpendDateRange.lastDate,
+      )
+    : [];
   const attributedConversions = input.canonicalAttributedConversions.filter((conversion) =>
     isInPeriod(conversion.conversionTime, input.periodStart, input.periodEnd),
   );
@@ -1773,22 +1783,22 @@ function isInPeriod(value: IsoDateTime, periodStart: IsoDateTime, periodEnd: Iso
   return time >= Date.parse(periodStart) && time < Date.parse(periodEnd);
 }
 
-function isDateInPeriod(
-  value: string,
+function dateOnlyRangeForPeriod(
   periodStart: IsoDateTime,
   periodEnd: IsoDateTime,
   timezone: string,
-): boolean {
+): { readonly firstDate: string; readonly lastDate: string } | null {
   const startMs = Date.parse(periodStart);
   const endMs = Date.parse(periodEnd);
   if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) {
-    return false;
+    return null;
   }
 
   const normalizedTimeZone = normalizeSeriesTimeZone(timezone);
-  const firstDate = localDateOnlyForInstant(startMs, normalizedTimeZone);
-  const lastDate = localDateOnlyForInstant(endMs - 1, normalizedTimeZone);
-  return value >= firstDate && value <= lastDate;
+  return {
+    firstDate: localDateOnlyForInstant(startMs, normalizedTimeZone),
+    lastDate: localDateOnlyForInstant(endMs - 1, normalizedTimeZone),
+  };
 }
 
 export function decimalToCents(value: string): bigint {

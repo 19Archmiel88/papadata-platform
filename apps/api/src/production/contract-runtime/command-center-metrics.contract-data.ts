@@ -46,6 +46,10 @@ const COMMAND_CENTER_METRIC_CODES: readonly DashboardMetricCode[] = [
   "roas",
 ];
 
+const PLAN_PERFORMANCE_METRIC_CODES: readonly DashboardMetricCode[] = [
+  "revenue_after_refunds",
+];
+
 type MetricEngineSeries = ReturnType<typeof computeMetricEngineSeries>;
 
 const commandCenterSeriesByInput = new WeakMap<MetricEngineInput, MetricEngineSeries>();
@@ -614,8 +618,17 @@ export async function buildCommandCenterPlanPerformanceData(
       workspaceId,
     }),
   ]);
-  const current = computeCommandCenterMetricSeries(currentInput);
-  const previous = computeCommandCenterMetricSeries(previousInput);
+  // This endpoint only needs revenue-after-refunds. Computing the full
+  // Command Center metric set for both windows duplicated expensive daily
+  // fact expansion and pushed a 90-day request past the BFF 5s timeout.
+  // The previous period is aggregate-only because no previous daily points
+  // are rendered; the current period keeps daily points for the trajectory.
+  const current = computeMetricEngineSeries(currentInput, PLAN_PERFORMANCE_METRIC_CODES);
+  const previous = computeMetricEngineSeries(
+    previousInput,
+    PLAN_PERFORMANCE_METRIC_CODES,
+    { includeDaily: false },
+  );
 
   const actualTotalValue = numberOrNull(current.aggregate.revenue_after_refunds);
   const previousTotalValue = numberOrNull(previous.aggregate.revenue_after_refunds);
@@ -628,10 +641,14 @@ export async function buildCommandCenterPlanPerformanceData(
   // so a legitimate zero-sales day stays zero rather than being dropped from
   // the denominator. Unknown/incomplete previous data produces no benchmark.
   const previousIsReady = previous.readiness.revenue_after_refunds === "ready";
+  // resolvePlanWindow always constructs the previous period with the same
+  // number of local calendar days as the current elapsed period. Reuse the
+  // current day count rather than materializing a previous daily series that
+  // the response never exposes.
   const previousAverage = previousIsReady
     && previousTotalValue !== null
-    && previous.daily.length > 0
-    ? previousTotalValue / previous.daily.length
+    && current.daily.length > 0
+    ? previousTotalValue / current.daily.length
     : 0;
   const dailyBenchmark = previousAverage > 0 ? previousAverage * PLAN_GROWTH_FACTOR : 0;
   const totalDays = current.daily.length + forecastDays;
@@ -926,6 +943,21 @@ function aggregateFunnelSteps(rows: readonly Record<string, unknown>[]): readonl
 }
 
 function cartConversionRate(steps: readonly FunnelStepAggregate[]): number | null {
+  const checkout = steps.find((step) => {
+    const id = step.stepId.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_");
+    return id === "checkout" || id === "checkout_start" || id === "begin_checkout";
+  });
+
+  if (checkout) {
+    return checkout.entrants > 0
+      ? round4(checkout.completions / checkout.entrants)
+      : null;
+  }
+
+  // Compatibility fallback for older canonical traffic rows that did not
+  // identify the checkout step explicitly. This preserves the former
+  // first-to-last funnel ratio without overriding the cart-specific metric
+  // when a real checkout step is available.
   const first = steps[0];
   const last = steps[steps.length - 1];
 

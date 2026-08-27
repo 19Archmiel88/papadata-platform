@@ -90,6 +90,7 @@ export type BffNotificationList = {
 };
 
 export type BffIntegrationJob = Readonly<Record<string, unknown>>;
+export type BffIntegrationProviderTestResult = Readonly<Record<string, unknown>>;
 
 export type PapaAnswerEvidence = {
   readonly evidenceId: string;
@@ -118,6 +119,65 @@ export type PapaAnswerSummary = {
   readonly warning: number;
   readonly critical: number;
   readonly updatedAt: string;
+};
+
+export type PapaReportDefinitionRow = {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string | null;
+  readonly visibility: 'private' | 'tenant' | 'workspace';
+  readonly status: 'archived' | 'draft' | 'ready';
+  readonly currentVersion: number;
+  readonly chartTypes: readonly unknown[];
+  readonly metricSelection: readonly unknown[];
+  readonly layout: readonly unknown[];
+  readonly filters: Readonly<Record<string, unknown>>;
+  readonly dateRange: Readonly<Record<string, unknown>>;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+};
+
+export type PapaReportDefinitionReadRuntimeData = {
+  readonly reports: readonly PapaReportDefinitionRow[];
+  readonly exports: readonly Readonly<Record<string, unknown>>[];
+  readonly schedules: readonly Readonly<Record<string, unknown>>[];
+  readonly pageInfo: { readonly nextCursor: string | null; readonly total: number };
+  readonly summary: Readonly<Record<string, unknown>>;
+};
+
+export type PapaReportDefinitionUpsertInput = {
+  /**
+   * Must be a stable key per draft (not regenerated on every save) — the
+   * backend upserts on (tenant, workspace, idempotencyKey), so reusing the
+   * same key is what turns a repeated "Zapisz" into an update instead of a
+   * new row.
+   */
+  readonly idempotencyKey: string;
+  readonly name: string;
+  readonly description?: string | null;
+  readonly visibility?: 'private' | 'tenant' | 'workspace';
+  readonly chartTypes: readonly unknown[];
+  readonly metricSelection: readonly unknown[];
+  readonly layout: readonly unknown[];
+  readonly filters?: Readonly<Record<string, unknown>>;
+  readonly dateRange?: Readonly<Record<string, unknown>>;
+  readonly status?: 'archived' | 'draft' | 'ready';
+  readonly caseId?: string | null;
+};
+
+export type PapaReportExportRow = {
+  readonly id: string;
+  readonly reportDefinitionId: string | null;
+  readonly format: 'csv' | 'pdf' | 'xlsx';
+  readonly status: string;
+  readonly createdAt: string;
+};
+
+export type PapaReportScheduleRow = {
+  readonly id: string;
+  readonly reportDefinitionId: string;
+  readonly cadence: string;
+  readonly status: string;
 };
 
 export type PapaContextCaptureResult = {
@@ -625,6 +685,98 @@ class BffClient {
     );
   }
 
+  async readPapaLab<TData = unknown>(input: {
+    readonly caseThreadId?: string | null;
+    readonly conversationId?: string | null;
+    readonly limit?: number | null;
+  } = {}): Promise<TData> {
+    const search = new URLSearchParams();
+    if (input.caseThreadId) search.set('caseThreadId', input.caseThreadId);
+    if (input.conversationId) search.set('conversationId', input.conversationId);
+    if (input.limit !== undefined && input.limit !== null) {
+      search.set('limit', String(input.limit));
+    }
+    const query = search.toString();
+    return this.readDomainScreen<TData>(
+      `/api/v1/papa/laboratorium-ai${query ? `?${query}` : ''}` as `/api/v1/${string}`,
+    );
+  }
+
+  async readPapaGovernance<TData = unknown>(): Promise<TData> {
+    return this.readDomainScreen<TData>('/api/v1/papa/ustawienia-ai-i-governance');
+  }
+
+  async readPapaReportDefinitions(input: {
+    readonly caseId?: string | null;
+    readonly limit?: number | null;
+  } = {}): Promise<PapaReportDefinitionReadRuntimeData> {
+    const search = new URLSearchParams();
+    if (input.caseId) search.set('caseId', input.caseId);
+    if (input.limit !== undefined && input.limit !== null) {
+      search.set('limit', String(input.limit));
+    }
+    const query = search.toString();
+    return this.readDomainScreen<PapaReportDefinitionReadRuntimeData>(
+      `/api/v1/papa/report-definitions${query ? `?${query}` : ''}` as `/api/v1/${string}`,
+    );
+  }
+
+  async upsertPapaReportDefinition(
+    input: PapaReportDefinitionUpsertInput,
+  ): Promise<PapaReportDefinitionRow> {
+    const { idempotencyKey, ...body } = input;
+    const data = await this.authenticatedCommand<{ readonly record: PapaReportDefinitionRow }>(
+      '/api/v1/papa/report-definitions',
+      body,
+      { idempotencyKey },
+    );
+    return data.record;
+  }
+
+  async duplicatePapaReportDefinition(input: {
+    readonly reportDefinitionId: string;
+    readonly idempotencyKey: string;
+  }): Promise<PapaReportDefinitionRow> {
+    const data = await this.authenticatedCommand<{ readonly record: PapaReportDefinitionRow }>(
+      '/api/v1/papa/report-definitions/duplicate',
+      { reportDefinitionId: input.reportDefinitionId },
+      { idempotencyKey: input.idempotencyKey },
+    );
+    return data.record;
+  }
+
+  async createPapaReportExport(input: {
+    readonly reportDefinitionId: string;
+    readonly reportVersionId?: string | null;
+    readonly format: 'csv' | 'pdf' | 'xlsx';
+    readonly exportScope?: 'report' | 'section' | 'table';
+    readonly idempotencyKey: string;
+  }): Promise<PapaReportExportRow> {
+    const { idempotencyKey, ...body } = input;
+    const data = await this.authenticatedCommand<{ readonly record: PapaReportExportRow }>(
+      '/api/v1/papa/report-definitions/exports',
+      body,
+      { idempotencyKey },
+    );
+    return data.record;
+  }
+
+  async upsertPapaReportSchedule(input: {
+    readonly reportDefinitionId: string;
+    readonly cadence: string;
+    readonly recipients: readonly string[];
+    readonly exportFormats: readonly ('csv' | 'pdf' | 'xlsx')[];
+    readonly idempotencyKey: string;
+  }): Promise<PapaReportScheduleRow> {
+    const { idempotencyKey, ...body } = input;
+    const data = await this.authenticatedCommand<{ readonly record: PapaReportScheduleRow }>(
+      '/api/v1/papa/report-definitions/schedule',
+      body,
+      { idempotencyKey },
+    );
+    return data.record;
+  }
+
   async createPapaReport(input: {
     readonly reportType: string;
     readonly format: 'csv' | 'json' | 'pdf' | 'xlsx';
@@ -672,12 +824,100 @@ class BffClient {
     return payload.data;
   }
 
+  async readIntegrationsStatus<TData = unknown>(): Promise<TData> {
+    return this.readDomainScreen<TData>('/api/v1/integrations/status');
+  }
+
+  async readIntegrationsCatalog<TData = unknown>(): Promise<TData> {
+    return this.readDomainScreen<TData>('/api/v1/integrations/catalog');
+  }
+
+  async readIntegrationsLogs<TData = unknown>(): Promise<TData> {
+    return this.readDomainScreen<TData>('/api/v1/integrations/logs');
+  }
+
+  async readIntegrationsCompleteness<TData = unknown>(): Promise<TData> {
+    return this.readDomainScreen<TData>('/api/v1/integrations/completeness');
+  }
+
   async retryIntegrationJob(jobId: string): Promise<void> {
     await this.authenticatedCommand(`/api/v1/integrations/jobs/${encodeURIComponent(jobId)}/retry`);
   }
 
   async cancelIntegrationJob(jobId: string): Promise<void> {
     await this.authenticatedCommand(`/api/v1/integrations/jobs/${encodeURIComponent(jobId)}/cancel`);
+  }
+
+  async testIntegrationProvider(
+    provider: string,
+    input: Readonly<Record<string, unknown>>,
+  ): Promise<BffIntegrationProviderTestResult> {
+    return this.authenticatedCommand(
+      `/api/v1/integrations/${encodeURIComponent(provider)}/test`,
+      input,
+    );
+  }
+
+  async createIntegrationConnection(input: {
+    readonly providerId: string;
+    readonly credentialReference: string;
+    readonly requestedScopes: readonly string[];
+  }): Promise<Readonly<Record<string, unknown>>> {
+    return this.authenticatedCommand('/api/v1/integrations/connections', {
+      ...input,
+      idempotencyKey: createCorrelationId(),
+    });
+  }
+
+  async startIntegrationSync(input: {
+    readonly connectionId: string;
+    readonly providerId: string;
+    readonly streams: readonly string[];
+  }): Promise<Readonly<Record<string, unknown>>> {
+    return this.authenticatedCommand(
+      `/api/v1/integrations/connections/${encodeURIComponent(input.connectionId)}/sync`,
+      {
+        idempotencyKey: createCorrelationId(),
+        providerId: input.providerId,
+        streams: input.streams,
+      },
+    );
+  }
+
+  async startIntegrationBackfill(input: {
+    readonly connectionId: string;
+    readonly providerId: string;
+    readonly streams: readonly string[];
+  }): Promise<Readonly<Record<string, unknown>>> {
+    const to = new Date();
+    const from = new Date(to);
+    from.setUTCDate(from.getUTCDate() - 90);
+    return this.authenticatedCommand(
+      `/api/v1/integrations/connections/${encodeURIComponent(input.connectionId)}/backfill`,
+      {
+        from: from.toISOString(),
+        idempotencyKey: createCorrelationId(),
+        providerId: input.providerId,
+        streams: input.streams,
+        to: to.toISOString(),
+      },
+    );
+  }
+
+  async disconnectIntegrationConnection(connectionId: string): Promise<void> {
+    const csrfToken = await this.getCsrfToken();
+    const response = await this.fetch(
+      `/api/v1/integrations/connections/${encodeURIComponent(connectionId)}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'idempotency-key': createCorrelationId(),
+          'x-papadata-csrf': csrfToken,
+        },
+      },
+    );
+    const payload = await readJson<unknown>(response);
+    assertOk(response, payload);
   }
 
   private async authenticatedCommand<TData = unknown>(
@@ -823,9 +1063,15 @@ const localClientCapabilities = [
   'data_quality.read',
   'decisions.manage',
   'decisions.read',
+  'integrations.catalog.read',
+  'integrations.connection.manage',
+  'integrations.connection.read',
+  'integrations.credentials.manage',
   'integrations.jobs.manage',
+  'integrations.jobs.read',
   'integrations.manage',
   'integrations.read',
+  'integrations.sync.run',
   'reports.create',
   'reports.read',
   'settings.manage',
@@ -1217,7 +1463,12 @@ export const BFF_PAPA_LAB_RUNTIME_OPERATION_IDS = [
   "papa.metric-provenance.read",
   "papa.answer-contract.read",
   "papa.provider-governance.read",
-  "papa.privacy-redaction.read"
+  "papa.privacy-redaction.read",
+  "papa.report-definition.read",
+  "papa.report-definition.upsert",
+  "papa.report-definition.duplicate",
+  "papa.report-export.create",
+  "papa.report-schedule.upsert"
 ] as const;
 
 export type BffPapaLabRuntimeOperationId =

@@ -1660,7 +1660,12 @@ export const PAPA_LAB_RUNTIME_OPERATION_IDS = [
   "papa.metric-provenance.read",
   "papa.answer-contract.read",
   "papa.provider-governance.read",
-  "papa.privacy-redaction.read"
+  "papa.privacy-redaction.read",
+  "papa.report-definition.read",
+  "papa.report-definition.upsert",
+  "papa.report-definition.duplicate",
+  "papa.report-export.create",
+  "papa.report-schedule.upsert"
 ] as const;
 
 export type PapaLabRuntimeOperationId =

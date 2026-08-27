@@ -168,6 +168,69 @@ test("KPI overrides read AOV and ad spend directly, never derive spend from reve
   assert.ok(new Set(kpi.revenue.sparkline).size > 1, "sparkline must show real day-to-day variation");
 });
 
+test("KPI overrides consume runtime-native GA4 traffic fields and use checkout conversion semantics", async () => {
+  const base = seededDataSource();
+  const trafficRows = [
+    canonicalRow("ga4", "traffic", "channel-google", "2026-08-18T12:00:00.000Z", {
+      eventCompleteness: 1,
+      sessions: 100,
+      source: "google",
+      users: 80,
+    }),
+    canonicalRow("ga4", "traffic", "funnel-home", "2026-08-18T12:00:00.000Z", {
+      completions: 60,
+      entrants: 100,
+      funnelStepId: "home",
+      funnelStepLabel: "Home",
+      stageOrder: 1,
+    }),
+    canonicalRow("ga4", "traffic", "funnel-checkout", "2026-08-18T12:00:00.000Z", {
+      completions: 5,
+      entrants: 20,
+      funnelStepId: "checkout",
+      funnelStepLabel: "Checkout",
+      stageOrder: 2,
+    }),
+    canonicalRow("ga4", "traffic", "funnel-purchase", "2026-08-18T12:00:00.000Z", {
+      completions: 5,
+      entrants: 5,
+      funnelStepId: "purchase",
+      funnelStepLabel: "Purchase",
+      stageOrder: 3,
+    }),
+  ];
+  const dataSource: CommandCenterDataSource = {
+    ...base,
+    async listCanonicalRecords(scopedTenantId, scopedWorkspaceId, input) {
+      const baseRows = await base.listCanonicalRecords(scopedTenantId, scopedWorkspaceId, input);
+      if (!input.streams.includes("traffic")) {
+        return baseRows;
+      }
+      const from = Date.parse(input.businessTimeFrom);
+      const to = Date.parse(input.businessTimeTo);
+      return [
+        ...baseRows,
+        ...trafficRows.filter((row) => {
+          const time = (row.effective_time as Date).getTime();
+          return time >= from && time < to;
+        }),
+      ];
+    },
+  };
+
+  const kpi = await buildCommandCenterKpiOverrides(
+    tenantId,
+    workspaceId,
+    generatedAt,
+    dataSource,
+  );
+
+  assert.equal(kpi.cartConversion.readiness, "ready");
+  assert.equal(kpi.cartConversion.value, 0.25, "checkout completions / checkout entrants must drive cart conversion");
+  assert.equal(kpi.ga4Freshness.readiness, "ready");
+  assert.equal(kpi.ga4Freshness.value, 1, "eventCompleteness is the runtime GA4 freshness field");
+});
+
 test("KPI overrides carry providers/lastSuccessfulSyncAt from the metric engine, not fabricated", async () => {
   const woocommerceCheckpoint = "2026-08-18T12:00:00.000Z";
   const googleAdsCheckpoint = "2026-08-19T00:00:00.000Z"; // newer than the woocommerce checkpoint

@@ -199,6 +199,17 @@
   --pd-auth-depth-glow: none;
   --pd-auth-elevated-shadow: 0 1px 2px rgba(33, 31, 26, 0.06);
 
+  /* Shared "premium surface" language, generalized from the Auth/Command Center
+     depth-not-border technique so other screens can reuse it without depending
+     on the auth- or command-center-scoped tokens above. */
+  --pd-premium-ambient-wash: linear-gradient(120deg, var(--pd-brand-ambient), transparent 65%);
+  --pd-premium-depth-glow: none;
+  --pd-premium-panel-wash:
+    radial-gradient(circle at 18% 0%, color-mix(in srgb, var(--pd-data-series-1) 10%, transparent), transparent 34%),
+    linear-gradient(180deg, color-mix(in srgb, var(--pd-surface-soft) 58%, transparent), transparent 56%);
+  --pd-premium-hero-numeral-font: var(--pd-font-serif);
+  --pd-premium-hero-numeral-weight: 500;
+
   --pd-separator-subtle: rgba(23, 23, 21, 0.08);
   --pd-separator: rgba(23, 23, 21, 0.12);
   --pd-separator-strong: rgba(23, 23, 21, 0.18);
@@ -452,6 +463,14 @@
     transparent 62%
   );
   --pd-auth-elevated-shadow: 0 20px 48px -22px rgba(0, 0, 0, 0.60);
+
+  /* Dark-mode-only ambient glow, mirroring --pd-auth-depth-glow's strategy:
+     a no-op in light mode, a subtle top-left sheen in dark mode. */
+  --pd-premium-depth-glow: radial-gradient(
+    ellipse 1100px 640px at 12% -8%,
+    rgba(255, 255, 255, 0.06),
+    transparent 62%
+  );
 
   --pd-separator-subtle: rgba(255, 255, 255, 0.07);
   --pd-separator: rgba(255, 255, 255, 0.11);

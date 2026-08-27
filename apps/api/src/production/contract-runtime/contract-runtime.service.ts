@@ -501,7 +501,10 @@ export class ContractRuntimeService {
 
     if (request.operationId === "integrations.catalog.read") {
       return {
-        data: this.integrations.listProviders(),
+        data: await this.integrations.listProviders(
+          principal.tenantId,
+          principal.workspaceId,
+        ),
         operationId: request.operationId,
       };
     }
@@ -1072,6 +1075,145 @@ export class ContractRuntimeService {
       };
     }
 
+    if (request.operationId === "papa.report-definition.read") {
+      const query = safeObject(request.query);
+      const result = await this.assistantConversations.readAssistantReportDefinitions({
+        caseId: optionalRecordString(query, "caseId"),
+        limit: readLimit(request.query),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          reportDefinitionResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          ...result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.report-definition.upsert") {
+      const payload = readPayload(request.body);
+      const result = await this.assistantConversations.upsertAssistantReportDefinition({
+        caseId: optionalPayloadString(payload, "caseId"),
+        chartTypes: optionalPayloadArray(payload, "chartTypes"),
+        comments: optionalPayloadArray(payload, "comments"),
+        createdByUserId: principal.userId,
+        dataTables: optionalPayloadArray(payload, "dataTables"),
+        dateRange: optionalPapaPayloadObject(payload, "dateRange") ?? {},
+        description: optionalPayloadString(payload, "description"),
+        filters: optionalPapaPayloadObject(payload, "filters") ?? {},
+        idempotencyKey: requireIdempotencyKey(request),
+        layout: optionalPayloadArray(payload, "layout"),
+        metricSelection: optionalPayloadArray(payload, "metricSelection"),
+        metricSnapshotRef: optionalPapaPayloadObject(payload, "metricSnapshotRef"),
+        name: requiredPayloadString(payload, "name"),
+        ordering: optionalPayloadArray(payload, "ordering"),
+        ownerUserId: principal.userId,
+        schedule: optionalPapaPayloadObject(payload, "schedule"),
+        segmentations: optionalPayloadArray(payload, "segmentations"),
+        status: readReportDefinitionStatus(optionalPayloadString(payload, "status")),
+        tenantId: principal.tenantId,
+        visibility: readReportDefinitionVisibility(optionalPayloadString(payload, "visibility")),
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          reportDefinitionUpsertResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+          record: result,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.report-definition.duplicate") {
+      const payload = readPayload(request.body);
+      const result = await this.assistantConversations.duplicateAssistantReportDefinition({
+        createdByUserId: principal.userId,
+        idempotencyKey: requireIdempotencyKey(request),
+        reportDefinitionId: requiredPayloadString(payload, "reportDefinitionId"),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          record: result,
+          reportDefinitionDuplicateResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.report-export.create") {
+      const payload = readPayload(request.body);
+      const result = await this.assistantConversations.createAssistantReportExport({
+        createdByUserId: principal.userId,
+        exportScope: readReportExportScope(optionalPayloadString(payload, "exportScope")),
+        format: readReportExportFormat(requiredPayloadString(payload, "format")),
+        idempotencyKey: requireIdempotencyKey(request),
+        reportDefinitionId: optionalPayloadString(payload, "reportDefinitionId"),
+        reportVersionId: optionalPayloadString(payload, "reportVersionId"),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          record: result,
+          reportExportResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "papa.report-schedule.upsert") {
+      const payload = readPayload(request.body);
+      const result = await this.assistantConversations.upsertAssistantReportSchedule({
+        cadence: requiredPayloadString(payload, "cadence"),
+        createdByUserId: principal.userId,
+        exportFormats: optionalPayloadArray(payload, "exportFormats"),
+        idempotencyKey: requireIdempotencyKey(request),
+        nextRunAt: null,
+        recipients: optionalPayloadArray(payload, "recipients"),
+        reportDefinitionId: requiredPayloadString(payload, "reportDefinitionId"),
+        status: "active",
+        tenantId: principal.tenantId,
+        timezone: "Europe/Warsaw",
+        workspaceId: principal.workspaceId,
+      });
+
+      return {
+        data: {
+          record: result,
+          reportScheduleResult: {
+            completedAt: new Date().toISOString(),
+            domain: "papa",
+            operationId: request.operationId,
+          },
+        },
+        operationId: request.operationId,
+      };
+    }
+
     if (request.operationId === "papa.ai.action.validate") {
       const payload = readPayload(request.body);
       const result = await this.assistantConversations.validateAssistantAction({
@@ -1573,6 +1715,39 @@ function optionalPapaPayloadObject(
   return value && typeof value === "object" && !Array.isArray(value)
     ? value as Record<string, unknown>
     : null;
+}
+
+function optionalPayloadArray(
+  payload: Readonly<Record<string, unknown>>,
+  key: string,
+): readonly unknown[] {
+  const value = payload[key];
+  return Array.isArray(value) ? value : [];
+}
+
+function readReportDefinitionStatus(
+  value: string | null,
+): "archived" | "draft" | "ready" {
+  return value === "ready" || value === "archived" ? value : "draft";
+}
+
+function readReportDefinitionVisibility(
+  value: string | null,
+): "private" | "tenant" | "workspace" {
+  return value === "private" || value === "tenant" ? value : "workspace";
+}
+
+function readReportExportScope(
+  value: string | null,
+): "report" | "section" | "table" {
+  return value === "section" || value === "table" ? value : "report";
+}
+
+function readReportExportFormat(
+  value: string,
+): "csv" | "pdf" | "xlsx" {
+  if (value === "csv" || value === "pdf" || value === "xlsx") return value;
+  throw new BadRequestException("Request field \"format\" must be one of: csv, pdf, xlsx.");
 }
 
 

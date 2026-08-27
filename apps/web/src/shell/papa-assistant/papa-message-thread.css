@@ -17,29 +17,33 @@
   min-inline-size: 0;
 }
 
+/* User/system turns intentionally stay card-less (no border, no shadow) —
+   elevation in this thread is reserved for the assistant's structured
+   answer, the "premium artifact" of the exchange; a running conversation
+   with a shadow on every line would read as noisy, not premium. */
 .pd-papa-message-thread > li[data-author='user'],
 .pd-papa-message-thread > li[data-author='system'] {
   display: grid;
   gap: 6px;
   width: min(100%, 88%);
-  padding: 11px 12px;
-  border: 1px solid var(--pd-separator-subtle);
-  border-radius: 10px;
-  background: var(--pd-surface);
+  padding: 8px 4px;
+  border: 0;
   color: var(--pd-text-secondary);
   line-height: var(--pd-line-height-relaxed);
 }
 
 .pd-papa-message-thread > li[data-author='user'] {
   justify-self: end;
-  border-color: color-mix(in srgb, var(--pd-brand-accent) 28%, var(--pd-separator-subtle));
-  background: color-mix(in srgb, var(--pd-brand-accent) 6%, var(--pd-surface));
+  padding-inline-end: 10px;
+  border-inline-end: 2px solid color-mix(in srgb, var(--pd-brand-accent) 45%, transparent);
+  text-align: end;
 }
 
 .pd-papa-message-thread > li[data-author='system'] {
   width: 100%;
-  border-style: dashed;
-  background: var(--pd-surface-soft);
+  padding-inline-start: 10px;
+  border-inline-start: 2px solid var(--pd-separator-strong);
+  color: var(--pd-text-muted);
 }
 
 .pd-papa-message-thread > li[data-author='user'] > span,
@@ -66,12 +70,16 @@
   font-size: 0.7rem;
 }
 
+/* The assistant's structured answer is the one thing in this thread that
+   earns a card: depth comes from shadow + an accent-colored inline-start
+   bar, not a 1px outline, mirroring the Command Center/Auth technique. */
 .pd-papa-message-thread__assistant {
   display: grid;
   gap: 10px;
   padding: 12px;
-  border: 1px solid color-mix(in srgb, var(--pd-brand-action) 22%, var(--pd-separator-subtle));
-  border-radius: 10px;
+  border: 0;
+  border-inline-start: 3px solid var(--pd-brand-accent);
+  border-radius: var(--pd-radius-surface, 10px);
   background:
     linear-gradient(
       180deg,
@@ -79,6 +87,7 @@
       transparent 62%
     ),
     var(--pd-surface);
+  box-shadow: var(--pd-shadow-raised);
   color: var(--pd-text-secondary);
   line-height: var(--pd-line-height-relaxed);
 }
@@ -110,6 +119,127 @@
   gap: 6px;
 }
 
+/* react-markdown emits real <p>/<ul>/<pre> tags with browser default
+   margins — reset them to the single-<p> look this bubble had before. */
+.pd-papa-message-thread__body {
+  display: grid;
+  gap: 8px;
+}
+
+.pd-papa-message-thread__body > :first-child {
+  margin-block-start: 0;
+}
+
+.pd-papa-message-thread__body > :last-child {
+  margin-block-end: 0;
+}
+
+.pd-papa-message-thread__body p {
+  margin: 0;
+}
+
+.pd-papa-message-thread__body ul,
+.pd-papa-message-thread__body ol {
+  margin: 0;
+  padding-inline-start: 1.3em;
+}
+
+.pd-papa-message-thread__body li + li {
+  margin-block-start: 2px;
+}
+
+.pd-papa-message-thread__body code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--pd-surface-soft);
+  font-family: var(--pd-font-mono);
+  font-size: 0.85em;
+}
+
+.pd-papa-message-thread__body pre {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--pd-surface-soft);
+  box-shadow: var(--pd-shadow-control);
+  overflow-x: auto;
+}
+
+.pd-papa-message-thread__body pre code {
+  padding: 0;
+  background: transparent;
+}
+
+.pd-papa-message-thread__body table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.pd-papa-message-thread__body th,
+.pd-papa-message-thread__body td {
+  border-block-end: 1px solid var(--pd-separator-subtle);
+  padding: 4px 8px;
+  text-align: start;
+}
+
+/* Honest "Papa is composing" affordance: styled like a forming answer card
+   (same accent bar + shadow as a real assistant bubble), never a fabricated
+   preview of the answer text — it is gated purely by the real network
+   pending flag, with zero timers. */
+.pd-papa-message-thread__pending {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 0;
+  border-inline-start: 3px solid var(--pd-brand-accent);
+  border-radius: var(--pd-radius-surface, 10px);
+  background: var(--pd-surface);
+  box-shadow: var(--pd-shadow-raised);
+  color: var(--pd-text-secondary);
+  font-size: 0.85rem;
+}
+
+.pd-papa-message-thread__pending-dots {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.pd-papa-message-thread__pending-dots span {
+  inline-size: 5px;
+  block-size: 5px;
+  border-radius: 999px;
+  background: var(--pd-brand-accent);
+  animation: pd-papa-pending-pulse 1.1s ease-in-out infinite;
+}
+
+.pd-papa-message-thread__pending-dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.pd-papa-message-thread__pending-dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes pd-papa-pending-pulse {
+  0%, 80%, 100% {
+    opacity: 0.25;
+    transform: scale(0.85);
+  }
+
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-papa-message-thread__pending-dots span {
+    animation: none;
+    opacity: 0.7;
+  }
+}
+
 .pd-papa-message-thread__evidence {
   display: grid;
   gap: 7px;
@@ -129,9 +259,10 @@
   display: grid;
   gap: 2px;
   padding: 8px 9px;
-  border: 1px solid var(--pd-separator-subtle);
+  border: 0;
   border-radius: 8px;
   background: var(--pd-surface-soft);
+  box-shadow: var(--pd-shadow-control);
 }
 
 .pd-papa-message-thread__evidence strong {

@@ -556,6 +556,7 @@ declare
   v_connection_id uuid;
   v_batch_id uuid;
   v_fingerprint text;
+  v_canonical_payload jsonb;
 begin
   perform set_config('app.tenant_id', p_tenant::text, true);
   perform set_config('app.workspace_id', p_workspace::text, true);
@@ -566,6 +567,18 @@ begin
   v_connection_id := pg_temp.seed_uuid('papadata-local-seed:' || p_scenario || ':connection:' || p_provider);
   v_batch_id := pg_temp.seed_uuid('papadata-local-seed:' || p_scenario || ':batch:' || p_provider || ':' || p_stream);
   v_fingerprint := encode(digest(p_scenario || '|' || p_provider || '|' || p_stream || '|' || p_external_id, 'sha256'), 'hex');
+
+  v_canonical_payload := jsonb_build_object(
+    'version', 'integration.canonical.v1',
+    'providerId', p_provider,
+    'stream', p_stream,
+    'externalId', p_external_id,
+    'entity', p_payload,
+    'quality', jsonb_build_object(
+      'status', 'valid',
+      'missingFields', '[]'::jsonb
+    )
+  );
 
   insert into app.source_records (
     source_record_id, tenant_id, workspace_id, source_batch_id, connection_id,
@@ -593,7 +606,7 @@ begin
   ) values (
     pg_temp.seed_uuid('papadata-local-seed:' || p_scenario || ':normalized:' || p_provider || ':' || p_stream || ':' || p_external_id),
     p_tenant, p_workspace, v_source_record_id,
-    p_provider, p_stream, p_external_id, p_payload, 'valid', now()
+    p_provider, p_stream, p_external_id, v_canonical_payload, 'valid', now()
   )
   on conflict (source_record_id) do update set
     payload = excluded.payload,
@@ -607,7 +620,7 @@ begin
   ) values (
     pg_temp.seed_uuid('papadata-local-seed:' || p_scenario || ':canonical:' || p_provider || ':' || p_stream || ':' || p_external_id),
     p_tenant, p_workspace, v_source_record_id, v_connection_id,
-    p_provider, p_stream, p_external_id, p_payload, 'integration.canonical.v1',
+    p_provider, p_stream, p_external_id, v_canonical_payload, 'integration.canonical.v1',
     jsonb_build_object(
       'seed', true,
       'scenario', p_scenario,
@@ -872,8 +885,10 @@ begin
         business_time
       );
 
-      -- GA4 traffic: two channel rows/day. Totals keep checkout -> purchase at 25%
-      -- while sessions and funnel counts still vary through the week.
+      -- GA4 traffic uses the same canonical shape as the Command Center runtime:
+      -- channel rows carry source/sessions/users/eventCompleteness, while dedicated
+      -- funnel rows carry funnelStepId/funnelStepLabel/entrants/completions/stageOrder.
+      -- The checkout step preserves checkout -> purchase conversion at exactly 25%.
       if not scenario.is_partial then
         call pg_temp.put_fact(
           scenario.scenario_key, scenario.tenant_id, scenario.workspace_id,
@@ -881,15 +896,9 @@ begin
           jsonb_build_object(
             'sessions', 120 + (12 * k),
             'users', 96 + (8 * k),
-            'homePageCount', 108 + (10 * k),
-            'productViewCount', 72 + (8 * k),
-            'addToCartCount', 24 + (3 * k),
-            'cartViewCount', 18 + (2 * k),
-            'checkoutStartCount', 12 + (2 * k),
-            'purchaseCount', 3,
             'source', 'google',
             'medium', 'cpc',
-            'completeness', 1
+            'eventCompleteness', 1
           ),
           business_time
         );
@@ -899,15 +908,82 @@ begin
           jsonb_build_object(
             'sessions', 80 + (8 * k),
             'users', 64 + (8 * k),
-            'homePageCount', 72 + (6 * k),
-            'productViewCount', 48 + (5 * k),
-            'addToCartCount', 16 + (3 * k),
-            'cartViewCount', 12 + (2 * k),
-            'checkoutStartCount', 8 + (2 * k),
-            'purchaseCount', 2 + k,
             'source', 'organic',
             'medium', 'organic',
-            'completeness', 1
+            'eventCompleteness', 1
+          ),
+          business_time
+        );
+
+        call pg_temp.put_fact(
+          scenario.scenario_key, scenario.tenant_id, scenario.workspace_id,
+          'ga4', 'traffic', 'ga4-funnel-home-' || day_offset::text,
+          jsonb_build_object(
+            'funnelStepId', 'home',
+            'funnelStepLabel', 'Strona główna',
+            'stageOrder', 1,
+            'entrants', 180 + (16 * k),
+            'completions', 120 + (13 * k)
+          ),
+          business_time
+        );
+        call pg_temp.put_fact(
+          scenario.scenario_key, scenario.tenant_id, scenario.workspace_id,
+          'ga4', 'traffic', 'ga4-funnel-product-view-' || day_offset::text,
+          jsonb_build_object(
+            'funnelStepId', 'product_view',
+            'funnelStepLabel', 'Widok produktu',
+            'stageOrder', 2,
+            'entrants', 120 + (13 * k),
+            'completions', 40 + (6 * k)
+          ),
+          business_time
+        );
+        call pg_temp.put_fact(
+          scenario.scenario_key, scenario.tenant_id, scenario.workspace_id,
+          'ga4', 'traffic', 'ga4-funnel-add-to-cart-' || day_offset::text,
+          jsonb_build_object(
+            'funnelStepId', 'add_to_cart',
+            'funnelStepLabel', 'Dodanie do koszyka',
+            'stageOrder', 3,
+            'entrants', 40 + (6 * k),
+            'completions', 30 + (4 * k)
+          ),
+          business_time
+        );
+        call pg_temp.put_fact(
+          scenario.scenario_key, scenario.tenant_id, scenario.workspace_id,
+          'ga4', 'traffic', 'ga4-funnel-cart-' || day_offset::text,
+          jsonb_build_object(
+            'funnelStepId', 'cart',
+            'funnelStepLabel', 'Koszyk',
+            'stageOrder', 4,
+            'entrants', 30 + (4 * k),
+            'completions', 20 + (4 * k)
+          ),
+          business_time
+        );
+        call pg_temp.put_fact(
+          scenario.scenario_key, scenario.tenant_id, scenario.workspace_id,
+          'ga4', 'traffic', 'ga4-funnel-checkout-' || day_offset::text,
+          jsonb_build_object(
+            'funnelStepId', 'checkout',
+            'funnelStepLabel', 'Rozpoczęcie checkoutu',
+            'stageOrder', 5,
+            'entrants', 20 + (4 * k),
+            'completions', 5 + k
+          ),
+          business_time
+        );
+        call pg_temp.put_fact(
+          scenario.scenario_key, scenario.tenant_id, scenario.workspace_id,
+          'ga4', 'traffic', 'ga4-funnel-purchase-' || day_offset::text,
+          jsonb_build_object(
+            'funnelStepId', 'purchase',
+            'funnelStepLabel', 'Zakup',
+            'stageOrder', 6,
+            'entrants', 5 + k,
+            'completions', 5 + k
           ),
           business_time
         );

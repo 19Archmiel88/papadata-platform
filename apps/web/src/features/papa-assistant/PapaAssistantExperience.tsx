@@ -1086,7 +1086,16 @@ export function InlineAssistant({
   );
 }
 
-export function PapaAssistantLaboratory({
+/**
+ * Fixture-driven showcase of the full 5-section Laboratory composition
+ * (Zapytaj/Rekomendacje/Biblioteka/Briefingi/Eksport i MCP) described in
+ * docs/papa-assistant/papa-asystent-kontekst-produktowy.md. Always renders
+ * `papaAssistantFixture` unless a caller supplies its own `data` — this is
+ * a Storybook/demo composition, not the runtime Laboratory screen (that's
+ * `PapaLabExperimentBoard` + the tabs wired in `PapaAssistantPanels.tsx`,
+ * reachable at /app/papa/laboratorium-ai).
+ */
+export function PapaAssistantLaboratoryFixtureShowcase({
   data = papaAssistantFixture,
 }: PapaSurfaceProps) {
   return (

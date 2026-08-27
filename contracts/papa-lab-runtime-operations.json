@@ -176,6 +176,36 @@
       "kind": "query",
       "requiresIdempotencyKey": false,
       "effect": "read"
+    },
+    {
+      "operationId": "papa.report-definition.read",
+      "kind": "query",
+      "requiresIdempotencyKey": false,
+      "effect": "read"
+    },
+    {
+      "operationId": "papa.report-definition.upsert",
+      "kind": "command",
+      "requiresIdempotencyKey": true,
+      "effect": "internal_write"
+    },
+    {
+      "operationId": "papa.report-definition.duplicate",
+      "kind": "command",
+      "requiresIdempotencyKey": true,
+      "effect": "internal_write"
+    },
+    {
+      "operationId": "papa.report-export.create",
+      "kind": "command",
+      "requiresIdempotencyKey": true,
+      "effect": "internal_write"
+    },
+    {
+      "operationId": "papa.report-schedule.upsert",
+      "kind": "command",
+      "requiresIdempotencyKey": true,
+      "effect": "internal_write"
     }
   ]
 }

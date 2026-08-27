@@ -5,9 +5,9 @@
   "generatedAtPolicy": "deterministic-no-timestamp",
   "contractPosition": {
     "targetContract": "contracts/openapi-1.0.json",
-    "targetOperations": 218,
-    "exactTargetOperations": 218,
-    "extraHardeningOperations": 63,
+    "targetOperations": 223,
+    "exactTargetOperations": 223,
+    "extraHardeningOperations": 69,
     "routeMethodOperationIdParity": true,
     "targetReleaseClaimed": false,
     "semanticConformanceClaimed": false,
@@ -1506,6 +1506,16 @@
       "implementation": "native-integration-service"
     },
     {
+      "operationId": "integrations.completeness.read",
+      "method": "GET",
+      "servicePath": "/v1/integrations/completeness",
+      "bffPath": "/api/v1/integrations/completeness",
+      "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
       "operationId": "integrations.connection-wizard.read",
       "method": "GET",
       "servicePath": "/v1/integrations/kreator-polaczenia",
@@ -1606,6 +1616,16 @@
       "implementation": "native-hardened-runtime"
     },
     {
+      "operationId": "integrations.logs.read",
+      "method": "GET",
+      "servicePath": "/v1/integrations/logs",
+      "bffPath": "/api/v1/integrations/logs",
+      "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
       "operationId": "integrations.oauth.callback",
       "method": "POST",
       "servicePath": "/v1/integrations/oauth/callback",
@@ -1624,6 +1644,16 @@
       "auth": "capability",
       "releaseStatus": "compatibility",
       "implementation": "contract-compatibility-runtime"
+    },
+    {
+      "operationId": "integrations.provider.test",
+      "method": "POST",
+      "servicePath": "/v1/integrations/{provider}/test",
+      "bffPath": "/api/v1/integrations/{provider}/test",
+      "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+      "auth": "step_up+capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
     },
     {
       "operationId": "integrations.providers.list",
@@ -1664,6 +1694,36 @@
       "auth": "mfa+capability",
       "releaseStatus": "compatibility",
       "implementation": "contract-compatibility-runtime"
+    },
+    {
+      "operationId": "integrations.runtime-catalog.read",
+      "method": "GET",
+      "servicePath": "/v1/integrations/catalog",
+      "bffPath": "/api/v1/integrations/catalog",
+      "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "integrations.runtime.read",
+      "method": "GET",
+      "servicePath": "/v1/integrations",
+      "bffPath": "/api/v1/integrations",
+      "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "integrations.status.read",
+      "method": "GET",
+      "servicePath": "/v1/integrations/status",
+      "bffPath": "/api/v1/integrations/status",
+      "controllerFile": "apps/api/src/production/integrations/integration.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
     },
     {
       "operationId": "integrations.sync-history.read",
@@ -2230,6 +2290,56 @@
       "method": "GET",
       "servicePath": "/v1/papa/read",
       "bffPath": "/api/v1/papa/read",
+      "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "compatibility",
+      "implementation": "contract-compatibility-runtime"
+    },
+    {
+      "operationId": "papa.report-definition.duplicate",
+      "method": "POST",
+      "servicePath": "/v1/papa/report-definitions/duplicate",
+      "bffPath": "/api/v1/papa/report-definitions/duplicate",
+      "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "compatibility",
+      "implementation": "contract-compatibility-runtime"
+    },
+    {
+      "operationId": "papa.report-definition.read",
+      "method": "GET",
+      "servicePath": "/v1/papa/report-definitions",
+      "bffPath": "/api/v1/papa/report-definitions",
+      "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "compatibility",
+      "implementation": "contract-compatibility-runtime"
+    },
+    {
+      "operationId": "papa.report-definition.upsert",
+      "method": "POST",
+      "servicePath": "/v1/papa/report-definitions",
+      "bffPath": "/api/v1/papa/report-definitions",
+      "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "compatibility",
+      "implementation": "contract-compatibility-runtime"
+    },
+    {
+      "operationId": "papa.report-export.create",
+      "method": "POST",
+      "servicePath": "/v1/papa/report-definitions/exports",
+      "bffPath": "/api/v1/papa/report-definitions/exports",
+      "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "compatibility",
+      "implementation": "contract-compatibility-runtime"
+    },
+    {
+      "operationId": "papa.report-schedule.upsert",
+      "method": "POST",
+      "servicePath": "/v1/papa/report-definitions/schedule",
+      "bffPath": "/api/v1/papa/report-definitions/schedule",
       "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
       "auth": "capability",
       "releaseStatus": "compatibility",
@@ -4276,6 +4386,46 @@
       "implementation": "contract-compatibility-runtime"
     },
     {
+      "operationId": "papa.report-definition.duplicate",
+      "method": "POST",
+      "servicePath": "/v1/papa/report-definitions/duplicate",
+      "runtimeOperationId": "papa.report-definition.duplicate",
+      "exact": true,
+      "implementation": "contract-compatibility-runtime"
+    },
+    {
+      "operationId": "papa.report-definition.read",
+      "method": "GET",
+      "servicePath": "/v1/papa/report-definitions",
+      "runtimeOperationId": "papa.report-definition.read",
+      "exact": true,
+      "implementation": "contract-compatibility-runtime"
+    },
+    {
+      "operationId": "papa.report-definition.upsert",
+      "method": "POST",
+      "servicePath": "/v1/papa/report-definitions",
+      "runtimeOperationId": "papa.report-definition.upsert",
+      "exact": true,
+      "implementation": "contract-compatibility-runtime"
+    },
+    {
+      "operationId": "papa.report-export.create",
+      "method": "POST",
+      "servicePath": "/v1/papa/report-definitions/exports",
+      "runtimeOperationId": "papa.report-export.create",
+      "exact": true,
+      "implementation": "contract-compatibility-runtime"
+    },
+    {
+      "operationId": "papa.report-schedule.upsert",
+      "method": "POST",
+      "servicePath": "/v1/papa/report-definitions/schedule",
+      "runtimeOperationId": "papa.report-schedule.upsert",
+      "exact": true,
+      "implementation": "contract-compatibility-runtime"
+    },
+    {
       "operationId": "papa.write",
       "method": "POST",
       "servicePath": "/v1/papa/write",
@@ -4574,12 +4724,12 @@
   ],
   "semanticImplementationCounts": {
     "canonical-command-center-runtime": 15,
-    "contract-compatibility-runtime": 159,
+    "contract-compatibility-runtime": 164,
     "explicit-limited-handler": 8,
     "migrated-access-policy": 2,
     "migrated-billing-policy": 17,
     "migrated-data-quality-policy": 4,
-    "native-hardened-runtime": 70,
+    "native-hardened-runtime": 76,
     "native-identity-service": 2,
     "native-integration-service": 4
   },

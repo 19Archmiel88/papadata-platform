@@ -1,5 +1,6 @@
 import {
   useMemo,
+  useState,
 } from 'react';
 import type {
   DataRow,
@@ -51,6 +52,8 @@ import type {
   PapaScreenContextElement,
 } from '../../shell/papa-assistant';
 import {
+  usePapaAssistantRuntime,
+  usePapaScreenContext,
   useRegisterScreenContext,
 } from '../../shell/papa-assistant';
 import './papa-workspace.css';
@@ -66,6 +69,14 @@ export function PapaWorkspace({
   definition,
   mode = 'runtime',
 }: PapaWorkspaceProps) {
+  const {
+    captureContext,
+  } = usePapaAssistantRuntime();
+  const {
+    captureCurrentScreenContext,
+  } = usePapaScreenContext();
+  const [refreshError, setRefreshError] = useState<string | null>(null);
+  const [refreshingContext, setRefreshingContext] = useState(false);
   const screenContext = useMemo(() => ({
     activeSection: definition.displayTitle,
     breadcrumbs: [
@@ -173,6 +184,40 @@ export function PapaWorkspace({
 
   useRegisterScreenContext(screenContext);
 
+  async function handleRefreshContext() {
+    setRefreshError(null);
+    setRefreshingContext(true);
+
+    try {
+      const snapshot = captureCurrentScreenContext('papa-workspace-refresh');
+      await captureContext(
+        {
+          ...snapshot,
+          activeSection: screenContext.activeSection ?? null,
+          breadcrumbs: screenContext.breadcrumbs,
+          charts: screenContext.charts,
+          elements: screenContext.elements,
+          evidence: screenContext.evidence,
+          filters: screenContext.filters,
+          metrics: screenContext.metrics,
+          operationId: screenContext.operationId ?? null,
+          readiness: screenContext.readiness ?? null,
+          recommendations: screenContext.recommendations,
+          route: screenContext.route,
+          screenId: screenContext.screenId ?? null,
+          summary: screenContext.summary ?? null,
+          tables: screenContext.tables,
+          title: screenContext.title,
+        },
+        'papa-workspace-refresh',
+      );
+    } catch (error) {
+      setRefreshError(describePapaWorkspaceRefreshError(error));
+    } finally {
+      setRefreshingContext(false);
+    }
+  }
+
   return (
     <section
       aria-label={`Papa: ${definition.displayTitle}`}
@@ -185,7 +230,13 @@ export function PapaWorkspace({
       <PageHeader
         className="pd-papa-workspace__header"
         actions={(
-          <Button size="small" variant="secondary">
+          <Button
+            loading={refreshingContext}
+            loadingLabel="Odświeżanie..."
+            onClick={() => void handleRefreshContext()}
+            size="small"
+            variant="secondary"
+          >
             Odśwież kontekst
           </Button>
         )}
@@ -207,6 +258,14 @@ export function PapaWorkspace({
         size="compact"
         sticky
       />
+
+      {refreshError ? (
+        <InlineNotice
+          message={refreshError}
+          title="Nie udało się odświeżyć kontekstu"
+          tone="critical"
+        />
+      ) : null}
 
       {shouldShowSubNavigation(definition) ? (
         <SectionNavigation
@@ -753,6 +812,14 @@ function formatPapaContextRange(
   const to = data.context.range?.to ?? 'brak końca';
 
   return `${from} - ${to}`;
+}
+
+function describePapaWorkspaceRefreshError(error: unknown): string {
+  if (error instanceof Error && error.message.trim()) {
+    return error.message;
+  }
+
+  return 'Papa nie mógł zapisać aktualnego kontekstu ekranu. Spróbuj ponownie po odświeżeniu danych.';
 }
 
 function formatPercent(value: number): string {

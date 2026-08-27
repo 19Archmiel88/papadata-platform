@@ -4,6 +4,7 @@ import type {
 import type {
   PapaAssistantReportArtifact,
   PapaAssistantRuntimeScope,
+  PapaLabRuntimeState,
   PapaScreenContextElement,
   PapaScreenContextSnapshot,
 } from '../../shell/papa-assistant';
@@ -18,13 +19,19 @@ import type {
   PapaReportArtifact,
   PapaWorkspaceData,
 } from './papaData';
+import {
+  clamp,
+  parseConfidence,
+} from './papaNumberParsing';
 
 export function createPapaRuntimeData({
+  labRuntime = null,
   lastSnapshot,
   messages,
   reports,
   scope,
 }: {
+  readonly labRuntime?: PapaLabRuntimeState | null;
   readonly lastSnapshot: PapaScreenContextSnapshot | null;
   readonly messages: readonly PapaChatMessage[];
   readonly reports: readonly PapaAssistantReportArtifact[];
@@ -45,7 +52,7 @@ export function createPapaRuntimeData({
   const generatedAt = new Date().toISOString();
 
   return {
-    actions: [],
+    actions: labRuntime?.actions ?? [],
     assistantTrend: buildAssistantTrend(messages),
     chatMessages: messages,
     context: {
@@ -56,7 +63,7 @@ export function createPapaRuntimeData({
       workspaceId: scope.workspaceId ?? snapshot?.workspaceId ?? 'unresolved-workspace',
     },
     contextItems,
-    decisions: [],
+    decisions: labRuntime?.decisions ?? [],
     elementThreads: contextItems.map((item) => ({
       elementId: item.id,
       elementKind: item.kind,
@@ -70,9 +77,9 @@ export function createPapaRuntimeData({
     })),
     evidence,
     generatedAt,
-    labExperiments: [],
+    labExperiments: labRuntime?.experiments ?? [],
     memory: buildMemory(messages),
-    modeRecords: [],
+    modeRecords: labRuntime?.modeRecords ?? [],
     recommendations,
     reports: reports.map(mapRuntimeReport),
     sources: buildSources(evidence, snapshot),
@@ -441,14 +448,6 @@ function resolveImpact(
   return 'low';
 }
 
-function parseConfidence(value: string | null | undefined): number | null {
-  if (!value) return null;
-  const match = value.match(/(\d+(?:[.,]\d+)?)\s*%/u);
-  if (!match?.[1]) return null;
-  const parsed = Number(match[1].replace(',', '.')) / 100;
-  return Number.isFinite(parsed) ? clamp(parsed) : null;
-}
-
 function uniqueById<T extends { readonly id: string }>(
   values: readonly T[],
 ): readonly T[] {
@@ -463,8 +462,4 @@ function uniqueById<T extends { readonly id: string }>(
 function summarize(value: string): string {
   const compact = value.replace(/\s+/gu, ' ').trim();
   return compact.length > 120 ? `${compact.slice(0, 117)}...` : compact;
-}
-
-function clamp(value: number): number {
-  return Math.max(0, Math.min(1, value));
 }

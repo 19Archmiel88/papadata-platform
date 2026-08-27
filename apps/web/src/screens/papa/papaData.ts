@@ -79,9 +79,11 @@ export type PapaDecision = {
   readonly id: string;
   readonly title: string;
   readonly owner: string;
-  readonly status: 'new' | 'review' | 'approved' | 'rejected';
+  readonly status:
+    | 'new' | 'review' | 'approved' | 'rejected'
+    | 'scheduled' | 'executing' | 'monitoring' | 'resolved' | 'dismissed';
   readonly impact: 'low' | 'medium' | 'high';
-  readonly dueAt: string;
+  readonly dueAt: string | null;
 };
 
 export type PapaActionRecord = {
@@ -90,7 +92,7 @@ export type PapaActionRecord = {
   readonly owner: string;
   readonly status: 'draft' | 'approval' | 'blocked' | 'ready';
   readonly operationId: string | null;
-  readonly risk: 'low' | 'medium' | 'high';
+  readonly risk: 'low' | 'medium' | 'high' | 'unknown';
 };
 
 export type PapaModeRecord = {
@@ -165,11 +167,16 @@ export type PapaLabExperiment = {
   readonly id: string;
   readonly name: string;
   readonly hypothesis: string;
-  readonly status: 'draft' | 'running' | 'ready' | 'blocked';
+  readonly status: 'draft' | 'running' | 'paused' | 'completed' | 'cancelled';
   readonly owner: string;
-  readonly confidence: number;
-  readonly baseline: number;
-  readonly variant: number;
+  /**
+   * `null` when the persisted experiment has no parseable measured value yet
+   * (e.g. `measuredOutcome`/`baseline` JSON without a numeric field) — never
+   * fabricated as `0`. Consumers must render an explicit "no data" state.
+   */
+  readonly confidence: number | null;
+  readonly baseline: number | null;
+  readonly variant: number | null;
   readonly nextStep: string;
   readonly reportId: string;
 };
@@ -662,7 +669,7 @@ const labExperiments: readonly PapaLabExperiment[] = [
     nextStep: 'Zatwierdź test budżetu w kolejce decyzji.',
     owner: 'Media płatne',
     reportId: 'papa-report-weekly',
-    status: 'ready',
+    status: 'completed',
     variant: 3.6,
   },
   {
@@ -686,7 +693,7 @@ const labExperiments: readonly PapaLabExperiment[] = [
     nextStep: 'Uzupełnij mapowanie kosztów przed generacją działań.',
     owner: 'Analityka danych',
     reportId: 'papa-report-data-quality',
-    status: 'blocked',
+    status: 'paused',
     variant: 98,
   },
 ];
@@ -855,14 +862,16 @@ export function papaLabExperimentRows(
   records: readonly PapaLabExperiment[],
 ): readonly DataRow[] {
   return records.map((record) => ({
-    confidence: formatPercent(record.confidence),
+    confidence: record.confidence === null ? 'Brak danych' : formatPercent(record.confidence),
     id: record.id,
     name: record.name,
     nextStep: record.nextStep,
     owner: record.owner,
     status: record.status,
     statusLabel: resolveLabStatusLabel(record.status),
-    uplift: formatSignedNumber(record.variant - record.baseline),
+    uplift: record.variant === null || record.baseline === null
+      ? 'Brak danych'
+      : formatSignedNumber(record.variant - record.baseline),
   }));
 }
 
@@ -898,9 +907,15 @@ export function resolvePapaDecisionCardStatus(
     case 'approved':
       return 'approved';
     case 'rejected':
+    case 'dismissed':
       return 'rejected';
     case 'review':
+    case 'executing':
+    case 'monitoring':
       return 'executing';
+    case 'resolved':
+      return 'measured';
+    case 'scheduled':
     case 'new':
     default:
       return 'proposed';
@@ -948,8 +963,10 @@ function resolveRiskLabel(
     case 'medium':
       return 'Średnie';
     case 'low':
-    default:
       return 'Niskie';
+    case 'unknown':
+    default:
+      return 'Nieznane';
   }
 }
 
@@ -957,12 +974,14 @@ function resolveLabStatusLabel(
   status: PapaLabExperiment['status'],
 ): string {
   switch (status) {
-    case 'blocked':
-      return 'Zablokowany';
+    case 'cancelled':
+      return 'Anulowany';
+    case 'completed':
+      return 'Zakończony';
     case 'draft':
       return 'Szkic';
-    case 'ready':
-      return 'Gotowy';
+    case 'paused':
+      return 'Wstrzymany';
     case 'running':
     default:
       return 'W toku';

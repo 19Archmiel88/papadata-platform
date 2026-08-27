@@ -112,6 +112,14 @@ const CommandCenterScreen = lazy(async () => {
   };
 });
 
+const IntegrationsScreen = lazy(async () => {
+  const module = await import('../../screens/IntegrationsScreen');
+
+  return {
+    default: module.IntegrationsScreen,
+  };
+});
+
 const SettingsRuntimeScreen = lazy(async () => {
   const module = await import('../../screens/settings');
 
@@ -349,6 +357,19 @@ export function AppRouter() {
       );
     }
 
+    if (pathname === '/app/integrations') {
+      return <Redirect to="/app/integrations/sources" />;
+    }
+
+    if (pathname.startsWith('/app/integrations/')) {
+      return (
+        <RouteSuspense>
+          <AppShell>
+            <IntegrationsScreen path={pathname} />
+          </AppShell>
+        </RouteSuspense>
+      );
+    }
 
     if (pathname === '/app/settings') {
       return <Redirect to="/app/settings/organizacja" />;

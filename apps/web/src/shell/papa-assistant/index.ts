@@ -12,6 +12,7 @@ export {
   resolvePapaElementDraftScope,
   resolvePapaMainDraftScope,
   usePapaAssistantRuntime,
+  usePapaLabRuntime,
 } from './PapaAssistantRuntimeContext';
 
 export {
@@ -33,6 +34,7 @@ export type {
   PapaAssistantRuntimeScope,
   PapaAssistantReportFormat,
   PapaAssistantReportScope,
+  PapaLabRuntimeState,
 } from './PapaAssistantRuntimeContext';
 
 export type {

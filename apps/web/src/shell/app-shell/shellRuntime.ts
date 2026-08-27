@@ -54,11 +54,11 @@ const runtimeNavigation: readonly RuntimeGroup[] = [
     label: 'Dane i integracje',
     items: [
       {
-        capabilities: ['integrations.read', 'integrations.catalog.read'],
+        capabilities: ['integrations.read', 'integrations.connection.read', 'integrations.catalog.read'],
         icon: 'integration',
         id: 'integrations',
         label: 'Integracje',
-        path: '/app/integrations/katalog-integracji',
+        path: '/app/integrations/sources',
       },
     ],
   },

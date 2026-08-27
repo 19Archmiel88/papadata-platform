@@ -1,7 +1,14 @@
 import {
+  AnimatePresence,
+  motion,
+} from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import {
   EmptyState,
   InlineNotice,
   StatusBadge,
+  useMotionPresets,
 } from '../../design-system';
 import type {
   PapaChatMessage,
@@ -24,6 +31,14 @@ export type PapaMessageThreadProps = {
   readonly evidence?: readonly PapaMessageEvidence[];
   readonly messages: readonly PapaChatMessage[];
   readonly onEmptyAction?: (() => void) | undefined;
+  /**
+   * Mirrors the real `mainSubmitting`/`elementSubmitting` flag from
+   * PapaAssistantRuntimeContext, gated directly on the in-flight
+   * `bffClient.generatePapaAnswer(...)` call. It drives a "Papa się
+   * zastanawia" affordance — never a simulated/typed-out preview of the
+   * answer, since there is no real token stream to reflect.
+   */
+  readonly pending?: boolean;
 };
 
 export function PapaMessageThread({
@@ -34,13 +49,14 @@ export function PapaMessageThread({
   evidence = [],
   messages,
   onEmptyAction,
+  pending = false,
 }: PapaMessageThreadProps) {
   const evidenceById = new Map(evidence.map((item) => [
     item.id,
     item,
   ]));
 
-  if (messages.length === 0) {
+  if (messages.length === 0 && !pending) {
     return (
       <EmptyState
         className={joinClassNames(
@@ -72,7 +88,35 @@ export function PapaMessageThread({
           message={message}
         />
       ))}
+      <AnimatePresence>
+        {pending ? <PapaPendingIndicator key="pd-papa-pending" /> : null}
+      </AnimatePresence>
     </ol>
+  );
+}
+
+function PapaPendingIndicator() {
+  const { overlay } = useMotionPresets();
+
+  return (
+    <motion.li
+      animate={{ opacity: 0.7, y: 0 }}
+      aria-live="polite"
+      className="pd-papa-message-thread__pending"
+      data-author="assistant"
+      data-pending="true"
+      exit={{ opacity: 0, y: 4 }}
+      initial={{ opacity: 0, y: 4 }}
+      role="status"
+      transition={overlay}
+    >
+      <span className="pd-papa-message-thread__pending-dots" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </span>
+      Papa przetwarza pytanie
+    </motion.li>
   );
 }
 
@@ -83,37 +127,43 @@ function PapaMessageItem({
   readonly evidenceById: ReadonlyMap<string, PapaMessageEvidence>;
   readonly message: PapaChatMessage;
 }) {
+  const entrance = {
+    animate: { opacity: 1, y: 0 },
+    initial: { opacity: 0, y: 6 },
+    transition: { duration: 0.18, ease: [0.2, 0, 0, 1] as const },
+  };
+
   if (message.author === 'assistant') {
     return (
-      <li data-author="assistant">
+      <motion.li data-author="assistant" {...entrance}>
         <AssistantMessage
           evidenceById={evidenceById}
           message={message}
         />
-      </li>
+      </motion.li>
     );
   }
 
   if (message.author === 'system') {
     return (
-      <li data-author="system">
+      <motion.li data-author="system" {...entrance}>
         <span>System</span>
         <p>{message.body}</p>
         <time dateTime={message.createdAt}>
           {formatShortDateTime(message.createdAt)}
         </time>
-      </li>
+      </motion.li>
     );
   }
 
   return (
-    <li data-author="user">
+    <motion.li data-author="user" {...entrance}>
       <span>Ty</span>
       <p>{message.body}</p>
       <time dateTime={message.createdAt}>
         {formatShortDateTime(message.createdAt)}
       </time>
-    </li>
+    </motion.li>
   );
 }
 
@@ -171,7 +221,9 @@ function AssistantMessage({
         />
       </header>
 
-      <p>{message.body}</p>
+      <div className="pd-papa-message-thread__body">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.body}</ReactMarkdown>
+      </div>
 
       <div className="pd-papa-message-thread__assistant-meta">
         <StatusBadge

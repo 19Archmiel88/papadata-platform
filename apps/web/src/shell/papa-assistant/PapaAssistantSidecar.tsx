@@ -6,6 +6,10 @@ import {
   useMemo,
   useState,
 } from 'react';
+import {
+  AnimatePresence,
+  motion,
+} from 'framer-motion';
 
 import {
   AlertDialog,
@@ -16,6 +20,7 @@ import {
   OverlayRoot,
   StatusBadge,
   Tabs,
+  useMotionPresets,
 } from '../../design-system';
 import type {
   PapaChatMessage,
@@ -131,6 +136,23 @@ export function PapaAssistantSidecar({
   const [handledRequestId, setHandledRequestId] =
     useState<string | null>(null);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+  const { overlay: overlayTransition } = useMotionPresets();
+
+  /* OverlayRoot unmounts the instant `open` flips false (no exit-transition
+     hook of its own — see OverlayRoot.tsx), so the exit animation is driven
+     here instead: keep OverlayRoot mounted a moment longer than `open` while
+     AnimatePresence plays the real exit, then let onExitComplete finish the
+     unmount. This is call-site-only — OverlayRoot.tsx stays untouched, so
+     every other dialog/drawer built on it keeps its current behavior. */
+  const [prevOpen, setPrevOpen] = useState(open);
+  const [isClosing, setIsClosing] = useState(false);
+
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    setIsClosing(!open);
+  }
+
+  const overlayMounted = open || isClosing;
 
   const elements = useMemo(() => (
     buildAssistantElements(currentContext)
@@ -296,13 +318,20 @@ export function PapaAssistantSidecar({
         backdrop="none"
         className="pd-papa-assistant-overlay"
         lockScroll={false}
-        open={open}
+        open={overlayMounted}
       >
-        <aside
+        <AnimatePresence onExitComplete={() => setIsClosing(false)}>
+          {open ? (
+        <motion.aside
+          animate={{ opacity: 1, x: 0 }}
           aria-label="Papa Asystent"
           aria-modal="false"
           className="pd-overlay-surface pd-papa-sidecar"
+          exit={{ opacity: 0, x: 24 }}
+          initial={{ opacity: 0, x: 24 }}
+          key="papa-sidecar"
           role="dialog"
+          transition={overlayTransition}
         >
           <header className="pd-papa-sidecar__header">
             <div>
@@ -484,7 +513,9 @@ export function PapaAssistantSidecar({
               }
             }}
           />
-        </aside>
+        </motion.aside>
+          ) : null}
+        </AnimatePresence>
       </OverlayRoot>
       <AlertDialog
         cancelLabel="Zostaw rozmowę"
@@ -557,6 +588,7 @@ function PapaMainThread({
         emptyTitle="Rozmowa jest pusta"
         evidence={evidence}
         messages={messages}
+        pending={submitting}
         onEmptyAction={onAnalyze}
       />
 
@@ -670,6 +702,7 @@ function PapaElementThread({
         emptyTitle="Brak rozmowy elementu"
         evidence={evidence}
         messages={messages}
+        pending={submitting}
       />
 
       {error ? (

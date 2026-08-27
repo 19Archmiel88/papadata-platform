@@ -229,10 +229,22 @@ function authLevelFor(operationId, method) {
 // action). ai.assistant.run in packages/contracts/src/capability-catalog.ts
 // is already medium risk / mfaRequired:false for exactly this reason; the
 // blanket "mfa" default below used to override that for these three ops.
+//
+// papa.report-definition.upsert/duplicate, papa.report-export.create and
+// papa.report-schedule.upsert are the same risk class: saving/duplicating
+// a personal Chart Studio layout, queuing a CSV/PDF/XLSX export of it, or
+// scheduling a recurring export is "save my view of data I can already
+// read" -- not a business-state-changing action against a connected
+// provider (which is what ai.action_proposal.create/approve/execute exist
+// to gate behind MFA/step-up for).
 function isAssistantConversationOperation(operationId) {
   return operationId === "papa.context.capture"
     || operationId === "papa.answer.generate"
-    || operationId === "papa.observation.save";
+    || operationId === "papa.observation.save"
+    || operationId === "papa.report-definition.upsert"
+    || operationId === "papa.report-definition.duplicate"
+    || operationId === "papa.report-export.create"
+    || operationId === "papa.report-schedule.upsert";
 }
 
 function decoratorFor(method) {
@@ -302,6 +314,11 @@ const PAPA_LAB_RUNTIME_OPERATION_CONTRACT_ANCHOR = {
   "papa.metric-provenance.read",
   "papa.answer-contract.read",
   "papa.provider-governance.read",
-  "papa.privacy-redaction.read"
+  "papa.privacy-redaction.read",
+  "papa.report-definition.read",
+  "papa.report-definition.upsert",
+  "papa.report-definition.duplicate",
+  "papa.report-export.create",
+  "papa.report-schedule.upsert"
 ],
 };

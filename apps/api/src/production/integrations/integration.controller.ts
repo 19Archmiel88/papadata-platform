@@ -31,8 +31,85 @@ export class IntegrationController {
   @Get("providers")
   @OperationId("integrations.providers.list")
   @RequireCapabilities("integrations.catalog.read")
-  listProviders(): object {
-    return { data: this.service.listProviders() };
+  async listProviders(
+    @Principal() principal: RequestPrincipal,
+  ): Promise<object> {
+    return {
+      data: await this.service.listProviders(
+        principal.tenantId,
+        principal.workspaceId,
+      ),
+    };
+  }
+
+  @Get()
+  @OperationId("integrations.runtime.read")
+  @RequireCapabilities("integrations.connection.read")
+  async readRuntime(
+    @Principal() principal: RequestPrincipal,
+  ): Promise<object> {
+    return {
+      data: await this.service.readStatus(
+        principal.tenantId,
+        principal.workspaceId,
+      ),
+    };
+  }
+
+  @Get("status")
+  @OperationId("integrations.status.read")
+  @RequireCapabilities("integrations.connection.read")
+  async readStatus(
+    @Principal() principal: RequestPrincipal,
+  ): Promise<object> {
+    return {
+      data: await this.service.readStatus(
+        principal.tenantId,
+        principal.workspaceId,
+      ),
+    };
+  }
+
+  @Get("catalog")
+  @OperationId("integrations.runtime-catalog.read")
+  @RequireCapabilities("integrations.catalog.read")
+  async readCatalog(
+    @Principal() principal: RequestPrincipal,
+  ): Promise<object> {
+    return {
+      data: await this.service.readCatalog(
+        principal.tenantId,
+        principal.workspaceId,
+      ),
+    };
+  }
+
+  @Get("logs")
+  @OperationId("integrations.logs.read")
+  @RequireCapabilities("integrations.jobs.read")
+  async readLogs(
+    @Principal() principal: RequestPrincipal,
+  ): Promise<object> {
+    return {
+      data: await this.service.readLogs(
+        principal.tenantId,
+        principal.workspaceId,
+      ),
+    };
+  }
+
+  @Get("completeness")
+  @OperationId("integrations.completeness.read")
+  @RequireCapabilities("integrations.connection.read")
+  async readCompleteness(
+    @Principal() principal: RequestPrincipal,
+  ): Promise<object> {
+    return {
+      data: await this.service.readCompleteness(
+        principal.tenantId,
+        principal.workspaceId,
+      ),
+    };
   }
 
   @Get("connections")
@@ -69,6 +146,20 @@ export class IntegrationController {
           idempotencyKey: toIdempotencyKey(request.idempotencyKey),
         },
       ),
+    };
+  }
+
+  @Post(":provider/test")
+  @OperationId("integrations.provider.test")
+  @RequireCapabilities("integrations.credentials.manage")
+  @RequireAuthLevel("step_up")
+  @AuditDeniedAccess()
+  async testProvider(
+    @Param("provider") provider: string,
+    @Body() request: Record<string, unknown>,
+  ): Promise<object> {
+    return {
+      data: await this.service.testProviderConnection(provider, request),
     };
   }
 

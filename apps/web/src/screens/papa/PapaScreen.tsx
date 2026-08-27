@@ -6,11 +6,8 @@ import {
   InlineNotice,
 } from '../../design-system';
 import {
-  PapaAssistantLaboratory,
-  papaAssistantFixture,
-} from '../../features/papa-assistant';
-import {
   usePapaAssistantRuntime,
+  usePapaLabRuntime,
 } from '../../shell/papa-assistant';
 import {
   PapaWorkspace,
@@ -26,10 +23,14 @@ export type PapaScreenProps = {
   readonly path?: string;
 };
 
+const PAPA_DEFAULT_SCREEN_PATH = '/app/papa/panel-kontekstowy-papa';
+
 export function PapaScreen({
   path = '/app/papa',
 }: PapaScreenProps) {
-  const normalizedPath = path;
+  const normalizedPath = path === '/app/papa' || path === '/app/papa/'
+    ? PAPA_DEFAULT_SCREEN_PATH
+    : path;
   const definition = findPapaScreenDefinition(normalizedPath);
   const {
     lastSnapshot,
@@ -37,25 +38,23 @@ export function PapaScreen({
     reports,
     scope,
   } = usePapaAssistantRuntime();
+  const labRuntime = usePapaLabRuntime({
+    enabled: definition?.variant === 'lab',
+  });
   const data = useMemo(() => createPapaRuntimeData({
+    labRuntime: definition?.variant === 'lab' ? labRuntime : null,
     lastSnapshot,
     messages,
     reports,
     scope,
   }), [
+    definition?.variant,
+    labRuntime,
     lastSnapshot,
     messages,
     reports,
     scope,
   ]);
-
-  if (
-    path === '/app/papa' ||
-    path === '/app/papa/laboratorium-ai' ||
-    path === '/app/papa/panel-kontekstowy-papa'
-  ) {
-    return <PapaAssistantLaboratory data={papaAssistantFixture} />;
-  }
 
   if (!definition) {
     return (

@@ -1,10 +1,13 @@
 import {
   type HTMLAttributes,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
 
 import type {
+  ComparisonChartDatum,
+  ShareChartSegment,
   SemanticStatusTone,
 } from '../../design-system';
 import {
@@ -25,8 +28,11 @@ import {
   papaLabExperimentRows,
 } from './papaData';
 import type {
+  PapaActionRecord,
   PapaAssistantStatus,
+  PapaDecision,
   PapaElementThread,
+  PapaEvidenceItem,
   PapaLabExperiment,
   PapaRecommendationRecord,
   PapaScreenVariant,
@@ -43,6 +49,9 @@ import {
   usePapaAssistantRuntime,
   usePapaScreenContext,
 } from '../../shell/papa-assistant';
+import type {
+  PapaReportDefinitionRow,
+} from '../../shared/api/bffClient';
 import './papa-assistant-panels.css';
 
 type ComposerSubmitValue =
@@ -74,8 +83,9 @@ export function PapaAssistantRuntime({
 
       {showLab ? (
         <>
-          <PapaAssistantLaboratory data={data} />
+          <PapaLabExperimentBoard data={data} />
           <PapaReportCenter data={data} />
+          <PapaReportBuilderStudio data={data} />
         </>
       ) : null}
     </>
@@ -439,6 +449,7 @@ export function PapaAssistantChat({
         className="pd-papa-chat-thread"
         evidence={evidence}
         messages={messages}
+        pending={mainSubmitting}
       />
 
       {mainError ? (
@@ -572,6 +583,7 @@ export function PapaElementChat({
         emptyTitle="Brak rozmowy elementu"
         evidence={evidence}
         messages={messages}
+        pending={elementSubmitting}
       />
 
       {elementError ? (
@@ -615,13 +627,18 @@ function buildMessageEvidence(
   }));
 }
 
-function PapaAssistantLaboratory({
+function PapaLabExperimentBoard({
   data,
 }: {
   readonly data: PapaWorkspaceData;
 }) {
+  const comparableExperiments = useMemo(() => (
+    data.labExperiments.filter((experiment) => (
+      experiment.baseline !== null && experiment.variant !== null
+    ))
+  ), [data.labExperiments]);
   const comparisonData = useMemo(() => (
-    data.labExperiments.map((experiment) => ({
+    comparableExperiments.map((experiment) => ({
       id: experiment.id,
       label: experiment.name,
       values: {
@@ -629,7 +646,7 @@ function PapaAssistantLaboratory({
         variant: experiment.variant,
       },
     }))
-  ), [data.labExperiments]);
+  ), [comparableExperiments]);
 
   return (
     <section
@@ -649,11 +666,13 @@ function PapaAssistantLaboratory({
       </header>
 
       {data.labExperiments.length === 0 ? (
-        <InlineNotice
-          message="Laboratorium nie pokazuje danych demonstracyjnych. Eksperymenty i warianty pojawią się tutaj dopiero po podłączeniu trwałego źródła spraw AI i wyników eksperymentów."
-          title="Brak utrwalonych eksperymentów"
-          tone="info"
-        />
+        <div className="pd-papa-lab-empty">
+          <InlineNotice
+            message="Laboratorium nie pokazuje danych demonstracyjnych. Eksperymenty i warianty pojawią się tutaj dopiero po podłączeniu trwałego źródła spraw AI i wyników eksperymentów."
+            title="Brak utrwalonych eksperymentów"
+            tone="info"
+          />
+        </div>
       ) : (
         <>
           <div className="pd-papa-lab-grid">
@@ -665,22 +684,30 @@ function PapaAssistantLaboratory({
             ))}
           </div>
 
-          <figure className="pd-papa-lab-comparison">
-            <figcaption>
-              <span>Porównanie wariantów</span>
-              <strong>Baseline vs wariant Papa</strong>
-            </figcaption>
-            <ComparisonChart
-              ariaLabel="Porównanie eksperymentów Papa"
-              data={comparisonData}
-              series={[
-                { key: 'baseline', label: 'Baseline' },
-                { key: 'variant', label: 'Wariant Papa' },
-              ]}
-              unit=""
-              variant="grouped"
+          {comparableExperiments.length > 0 ? (
+            <figure className="pd-papa-lab-comparison">
+              <figcaption>
+                <span>Porównanie wariantów</span>
+                <strong>Baseline vs wariant Papa</strong>
+              </figcaption>
+              <ComparisonChart
+                ariaLabel="Porównanie eksperymentów Papa"
+                data={comparisonData}
+                series={[
+                  { key: 'baseline', label: 'Baseline' },
+                  { key: 'variant', label: 'Wariant Papa' },
+                ]}
+                unit=""
+                variant="grouped"
+              />
+            </figure>
+          ) : (
+            <InlineNotice
+              message="Żaden eksperyment w bieżącym zakresie nie ma jeszcze zmierzonej wartości baseline/wariantu — porównanie pojawi się, gdy pomiar zostanie zapisany."
+              title="Brak zmierzonych wartości do porównania"
+              tone="info"
             />
-          </figure>
+          )}
 
           <DataTable
             ariaLabel="Eksperymenty Laboratorium Papa"
@@ -698,9 +725,10 @@ function PapaAssistantLaboratory({
               columnId: 'status',
               label: 'Status eksperymentu',
               mapTone: {
-                blocked: 'danger',
+                cancelled: 'danger',
+                completed: 'success',
                 draft: 'neutral',
-                ready: 'success',
+                paused: 'neutral',
                 running: 'warning',
               },
             }}
@@ -734,15 +762,19 @@ function PapaLabExperimentCard({
       <dl>
         <div>
           <dt>Pewność</dt>
-          <dd>{formatPercent(experiment.confidence)}</dd>
+          <dd>{experiment.confidence === null ? 'Brak danych' : formatPercent(experiment.confidence)}</dd>
         </div>
         <div>
           <dt>Wariant</dt>
-          <dd>{formatNumber(experiment.variant)}</dd>
+          <dd>{experiment.variant === null ? 'Brak danych' : formatNumber(experiment.variant)}</dd>
         </div>
         <div>
           <dt>Różnica</dt>
-          <dd>{formatSignedNumber(experiment.variant - experiment.baseline)}</dd>
+          <dd>
+            {experiment.variant === null || experiment.baseline === null
+              ? 'Brak danych'
+              : formatSignedNumber(experiment.variant - experiment.baseline)}
+          </dd>
         </div>
       </dl>
       <strong>{experiment.nextStep}</strong>
@@ -902,6 +934,573 @@ export function PapaReportCenter({
         </p>
       ) : null}
     </section>
+  );
+}
+
+type ReportBuilderChartKind =
+  | 'trend'
+  | 'comparisonActions'
+  | 'comparisonDecisions'
+  | 'shareEvidence'
+  | 'shareRecommendations';
+
+type ReportBuilderChartOption = {
+  readonly kind: ReportBuilderChartKind;
+  readonly label: string;
+  readonly chartType: 'comparison' | 'share' | 'trend';
+};
+
+const reportBuilderChartOptions: readonly ReportBuilderChartOption[] = [
+  { chartType: 'trend', kind: 'trend', label: 'Trend pewności odpowiedzi Papa' },
+  { chartType: 'comparison', kind: 'comparisonDecisions', label: 'Decyzje według statusu' },
+  { chartType: 'comparison', kind: 'comparisonActions', label: 'Działania AI według ryzyka' },
+  { chartType: 'share', kind: 'shareEvidence', label: 'Dowody według poziomu pewności' },
+  { chartType: 'share', kind: 'shareRecommendations', label: 'Rekomendacje według statusu' },
+];
+
+type DraftReportChart = {
+  readonly id: string;
+  readonly kind: ReportBuilderChartKind;
+  readonly title: string;
+};
+
+const decisionStatusLabel: Record<PapaDecision['status'], string> = {
+  approved: 'Zatwierdzone',
+  dismissed: 'Odrzucone (pominięte)',
+  executing: 'Wykonywane',
+  monitoring: 'Monitorowane',
+  new: 'Nowe',
+  rejected: 'Odrzucone',
+  resolved: 'Zakończone',
+  review: 'Do przeglądu',
+  scheduled: 'Zaplanowane',
+};
+
+const actionRiskLabel: Record<PapaActionRecord['risk'], string> = {
+  high: 'Wysokie',
+  low: 'Niskie',
+  medium: 'Średnie',
+  unknown: 'Nieznane',
+};
+
+const recommendationStatusLabel: Record<PapaRecommendationRecord['status'], string> = {
+  draft: 'Szkic',
+  'needs-approval': 'Wymaga zgody',
+  recommended: 'Rekomendowane',
+  blocked: 'Zablokowane',
+};
+
+function buildComparisonDatumFromCounts(
+  counts: ReadonlyMap<string, number>,
+  labelFor: (key: string) => string,
+): readonly ComparisonChartDatum[] {
+  return [...counts.entries()].map(([key, count]) => ({
+    id: key,
+    label: labelFor(key),
+    values: { count },
+  }));
+}
+
+function countBy<T>(
+  items: readonly T[],
+  keyOf: (item: T) => string,
+): ReadonlyMap<string, number> {
+  const counts = new Map<string, number>();
+  for (const item of items) {
+    const key = keyOf(item);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return counts;
+}
+
+function buildShareSegmentsFromCounts(
+  counts: ReadonlyMap<string, number>,
+  labelFor: (key: string) => string,
+): { readonly segments: readonly ShareChartSegment[]; readonly total: number } {
+  const total = [...counts.values()].reduce((sum, value) => sum + value, 0);
+  const segments = [...counts.entries()].map(([key, value]) => ({
+    id: key,
+    label: labelFor(key),
+    percent: total > 0 ? value / total : 0,
+    value,
+  }));
+  return { segments, total };
+}
+
+function confidenceBucket(confidence: number): string {
+  if (confidence >= 0.85) return 'wysoka';
+  if (confidence >= 0.6) return 'ograniczona';
+  return 'niewystarczająca';
+}
+
+function evidenceConfidenceSegments(
+  evidence: readonly PapaEvidenceItem[],
+): { readonly segments: readonly ShareChartSegment[]; readonly total: number } {
+  const counts = countBy(evidence, (item) => confidenceBucket(item.confidence));
+  return buildShareSegmentsFromCounts(counts, (key) => key);
+}
+
+function decisionStatusComparison(
+  decisions: readonly PapaDecision[],
+): readonly ComparisonChartDatum[] {
+  const counts = countBy(decisions, (item) => item.status);
+  return buildComparisonDatumFromCounts(counts, (key) => decisionStatusLabel[key as PapaDecision['status']] ?? key);
+}
+
+function actionRiskComparison(
+  actions: readonly PapaActionRecord[],
+): readonly ComparisonChartDatum[] {
+  const counts = countBy(actions, (item) => item.risk);
+  return buildComparisonDatumFromCounts(counts, (key) => actionRiskLabel[key as PapaActionRecord['risk']] ?? key);
+}
+
+function recommendationStatusSegments(
+  recommendations: readonly PapaRecommendationRecord[],
+): { readonly segments: readonly ShareChartSegment[]; readonly total: number } {
+  const counts = countBy(recommendations, (item) => item.status);
+  return buildShareSegmentsFromCounts(
+    counts,
+    (key) => recommendationStatusLabel[key as PapaRecommendationRecord['status']] ?? key,
+  );
+}
+
+function ReportBuilderChartPreview({
+  ariaLabel,
+  data,
+  kind,
+}: {
+  readonly ariaLabel: string;
+  readonly data: PapaWorkspaceData;
+  readonly kind: ReportBuilderChartKind;
+}) {
+  switch (kind) {
+    case 'trend': {
+      if (data.assistantTrend.length === 0) {
+        return (
+          <InlineNotice
+            message="Brak punktów trendu w bieżącym zakresie danych."
+            title="Brak danych do wykresu"
+            tone="info"
+          />
+        );
+      }
+      return (
+        <TrendChart
+          ariaLabel={ariaLabel}
+          data={data.assistantTrend}
+          labels={{ actual: 'Pewność', movingAverage: 'Średnia', plan: 'Próg' }}
+          unit="%"
+          variant="area"
+        />
+      );
+    }
+    case 'comparisonDecisions': {
+      const comparisonData = decisionStatusComparison(data.decisions);
+      if (comparisonData.length === 0) {
+        return (
+          <InlineNotice
+            message="Brak decyzji w bieżącym zakresie danych."
+            title="Brak danych do wykresu"
+            tone="info"
+          />
+        );
+      }
+      return (
+        <ComparisonChart
+          ariaLabel={ariaLabel}
+          data={comparisonData}
+          series={[{ key: 'count', label: 'Liczba decyzji' }]}
+          unit=""
+          variant="bar"
+        />
+      );
+    }
+    case 'comparisonActions': {
+      const comparisonData = actionRiskComparison(data.actions);
+      if (comparisonData.length === 0) {
+        return (
+          <InlineNotice
+            message="Brak działań AI w bieżącym zakresie danych."
+            title="Brak danych do wykresu"
+            tone="info"
+          />
+        );
+      }
+      return (
+        <ComparisonChart
+          ariaLabel={ariaLabel}
+          data={comparisonData}
+          series={[{ key: 'count', label: 'Liczba działań' }]}
+          unit=""
+          variant="bar"
+        />
+      );
+    }
+    case 'shareEvidence': {
+      const { segments, total } = evidenceConfidenceSegments(data.evidence);
+      if (segments.length === 0) {
+        return (
+          <InlineNotice
+            message="Brak dowodów w bieżącym zakresie danych."
+            title="Brak danych do wykresu"
+            tone="info"
+          />
+        );
+      }
+      return (
+        <ShareChart
+          ariaLabel={ariaLabel}
+          display="donut"
+          segments={segments}
+          total={total}
+        />
+      );
+    }
+    case 'shareRecommendations':
+    default: {
+      const { segments, total } = recommendationStatusSegments(data.recommendations);
+      if (segments.length === 0) {
+        return (
+          <InlineNotice
+            message="Brak rekomendacji w bieżącym zakresie danych."
+            title="Brak danych do wykresu"
+            tone="info"
+          />
+        );
+      }
+      return (
+        <ShareChart
+          ariaLabel={ariaLabel}
+          display="donut"
+          segments={segments}
+          total={total}
+        />
+      );
+    }
+  }
+}
+
+function createDraftId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return `draft-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+/**
+ * Real, backend-backed report/chart creator required by the approved target
+ * spec for screen 50.08 ("Laboratorium AI"): docs/specyfikacja-docelowa/
+ * 15-papa-asystent-i-laboratorium-ai/50-08-laboratorium-ai.md, section
+ * "Decyzja P0 — raporty i ciągłość". Every chart offered here is computed
+ * from the same PapaWorkspaceData already rendered elsewhere on this screen
+ * — nothing is fabricated or simulated. Saving persists through the real
+ * papa.report-definition.* operations (packages already exercised in
+ * apps/api tests); this component only adds the missing UI.
+ */
+export function PapaReportBuilderStudio({
+  data,
+}: {
+  readonly data: PapaWorkspaceData;
+}) {
+  const {
+    duplicateReportDefinition,
+    exportReportDefinition,
+    reportBuilderSaving,
+    reportDefinitions,
+    reportDefinitionsError,
+    reportDefinitionsLoading,
+    refreshReportDefinitions,
+    saveReportDefinition,
+    scheduleReportDefinition,
+  } = usePapaAssistantRuntime();
+
+  const [draftId, setDraftId] = useState(createDraftId);
+  const [draftKind, setDraftKind] = useState<ReportBuilderChartKind>('trend');
+  const [draftCharts, setDraftCharts] = useState<readonly DraftReportChart[]>([]);
+  const [draftName, setDraftName] = useState('');
+  const [draftDescription, setDraftDescription] = useState('');
+  const [saveNotice, setSaveNotice] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  useEffect(() => {
+    void refreshReportDefinitions();
+  }, [refreshReportDefinitions]);
+
+  const selectedOption = reportBuilderChartOptions.find((option) => option.kind === draftKind)
+    ?? reportBuilderChartOptions[0];
+
+  function addChartToDraft() {
+    setDraftCharts((current) => [
+      ...current,
+      { id: createDraftId(), kind: draftKind, title: selectedOption.label },
+    ]);
+    setSaveNotice(null);
+  }
+
+  function removeChartFromDraft(id: string) {
+    setDraftCharts((current) => current.filter((item) => item.id !== id));
+  }
+
+  async function handleSaveDefinition() {
+    setActionError(null);
+    try {
+      await saveReportDefinition({
+        chartTypes: draftCharts.map((chart) => (
+          reportBuilderChartOptions.find((option) => option.kind === chart.kind)?.chartType ?? 'trend'
+        )),
+        description: draftDescription.trim().length > 0 ? draftDescription.trim() : null,
+        idempotencyKey: draftId,
+        layout: draftCharts,
+        metricSelection: draftCharts.map((chart) => chart.kind),
+        name: draftName.trim(),
+        status: 'ready',
+      });
+      setSaveNotice(`Definicja raportu „${draftName.trim()}” została zapisana.`);
+      setDraftName('');
+      setDraftDescription('');
+      setDraftCharts([]);
+      setDraftId(createDraftId());
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : 'Nie udało się zapisać definicji raportu.');
+    }
+  }
+
+  return (
+    <section
+      aria-labelledby="papa-report-builder-heading"
+      className="pd-papa-assistant-panel pd-papa-report-builder"
+    >
+      <header className="pd-papa-assistant-panel__header">
+        <div>
+          <span>Studio wykresów</span>
+          <h2 id="papa-report-builder-heading">Kreator raportów Laboratorium</h2>
+        </div>
+        <StatusBadge
+          status="Zapisane definicje"
+          text={reportDefinitionsLoading ? 'Ładowanie…' : `${reportDefinitions.length} definicje`}
+          tone="info"
+        />
+      </header>
+
+      <InlineNotice
+        message="Wykresy w kreatorze pochodzą z tych samych danych, które widać już na tym ekranie — żaden z nich nie jest symulowany ani przewidywany."
+        title="Realne dane, nie symulacja"
+        tone="info"
+      />
+
+      <div className="pd-papa-report-builder__grid">
+        <div className="pd-papa-report-builder__config">
+          <label>
+            <span>Typ wykresu</span>
+            <select
+              aria-label="Wybierz typ wykresu do dodania"
+              value={draftKind}
+              onChange={(event) => setDraftKind(event.currentTarget.value as ReportBuilderChartKind)}
+            >
+              {reportBuilderChartOptions.map((option) => (
+                <option key={option.kind} value={option.kind}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <Button
+            size="small"
+            variant="secondary"
+            onClick={addChartToDraft}
+          >
+            Dodaj wykres do raportu
+          </Button>
+
+          <div className="pd-papa-report-builder__preview">
+            <ReportBuilderChartPreview
+              ariaLabel={`Podgląd: ${selectedOption.label}`}
+              data={data}
+              kind={draftKind}
+            />
+          </div>
+        </div>
+
+        <div className="pd-papa-report-builder__canvas">
+          <header>
+            <h3>Twój raport</h3>
+            <span>{draftCharts.length > 0 ? `${draftCharts.length} wykresy w zestawie` : 'Brak dodanych wykresów'}</span>
+          </header>
+
+          {draftCharts.length === 0 ? (
+            <p className="pd-papa-assistant-panel__empty">
+              Dodaj co najmniej jeden wykres, aby móc zapisać definicję raportu.
+            </p>
+          ) : (
+            <div className="pd-papa-report-builder__canvas-grid">
+              {draftCharts.map((chart) => (
+                <article key={chart.id}>
+                  <header>
+                    <strong>{chart.title}</strong>
+                    <button
+                      aria-label={`Usuń z raportu: ${chart.title}`}
+                      type="button"
+                      onClick={() => removeChartFromDraft(chart.id)}
+                    >
+                      ×
+                    </button>
+                  </header>
+                  <ReportBuilderChartPreview
+                    ariaLabel={chart.title}
+                    data={data}
+                    kind={chart.kind}
+                  />
+                </article>
+              ))}
+            </div>
+          )}
+
+          <label>
+            <span>Nazwa raportu</span>
+            <input
+              aria-label="Nazwa definicji raportu"
+              type="text"
+              value={draftName}
+              onChange={(event) => setDraftName(event.currentTarget.value)}
+            />
+          </label>
+          <label>
+            <span>Opis (opcjonalnie)</span>
+            <input
+              aria-label="Opis definicji raportu"
+              type="text"
+              value={draftDescription}
+              onChange={(event) => setDraftDescription(event.currentTarget.value)}
+            />
+          </label>
+
+          <Button
+            disabled={draftCharts.length === 0 || draftName.trim().length === 0}
+            loading={reportBuilderSaving}
+            loadingLabel="Zapisywanie…"
+            size="small"
+            variant="primary"
+            onClick={() => {
+              void handleSaveDefinition();
+            }}
+          >
+            Zapisz definicję raportu
+          </Button>
+
+          {saveNotice ? (
+            <InlineNotice message={saveNotice} title="Zapisano" tone="success" />
+          ) : null}
+          {actionError ? (
+            <InlineNotice message={actionError} title="Nie udało się wykonać operacji" tone="critical" />
+          ) : null}
+        </div>
+      </div>
+
+      {reportDefinitionsError ? (
+        <InlineNotice message={reportDefinitionsError} title="Nie udało się pobrać zapisanych raportów" tone="critical" />
+      ) : null}
+
+      {reportDefinitions.length > 0 ? (
+        <div className="pd-papa-report-builder__saved-grid">
+          {reportDefinitions.map((definition) => (
+            <SavedReportDefinitionCard
+              definition={definition}
+              key={definition.id}
+              onDuplicate={() => {
+                setActionError(null);
+                void duplicateReportDefinition(definition.id).catch((error: unknown) => {
+                  setActionError(error instanceof Error ? error.message : 'Nie udało się zduplikować raportu.');
+                });
+              }}
+              onExport={(format) => {
+                setActionError(null);
+                void exportReportDefinition({ format, reportDefinitionId: definition.id }).catch((error: unknown) => {
+                  setActionError(error instanceof Error ? error.message : 'Nie udało się utworzyć eksportu.');
+                });
+              }}
+              onSchedule={(cadence) => {
+                setActionError(null);
+                void scheduleReportDefinition({
+                  cadence,
+                  exportFormats: ['pdf'],
+                  recipients: [],
+                  reportDefinitionId: definition.id,
+                }).catch((error: unknown) => {
+                  setActionError(error instanceof Error ? error.message : 'Nie udało się zapisać harmonogramu.');
+                });
+              }}
+            />
+          ))}
+        </div>
+      ) : !reportDefinitionsLoading ? (
+        <p className="pd-papa-assistant-panel__empty">
+          Brak zapisanych definicji raportów. Skomponuj wykresy powyżej i zapisz pierwszą definicję.
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+function SavedReportDefinitionCard({
+  definition,
+  onDuplicate,
+  onExport,
+  onSchedule,
+}: {
+  readonly definition: PapaReportDefinitionRow;
+  readonly onDuplicate: () => void;
+  readonly onExport: (format: 'csv' | 'pdf' | 'xlsx') => void;
+  readonly onSchedule: (cadence: string) => void;
+}) {
+  const [cadence, setCadence] = useState('weekly');
+
+  return (
+    <article className="pd-papa-report-builder__saved-card">
+      <header>
+        <div>
+          <strong>{definition.name}</strong>
+          <span>{definition.chartTypes.length} wykresy</span>
+        </div>
+        <StatusBadge
+          status="Status"
+          text={definition.status}
+          tone={definition.status === 'ready' ? 'success' : definition.status === 'archived' ? 'neutral' : 'warning'}
+        />
+      </header>
+      {definition.description ? <p>{definition.description}</p> : null}
+      <div className="pd-papa-report-builder__saved-actions">
+        <Button size="small" variant="secondary" onClick={onDuplicate}>
+          Duplikuj
+        </Button>
+        <Button size="small" variant="secondary" onClick={() => onExport('pdf')}>
+          Eksport PDF
+        </Button>
+        <Button size="small" variant="secondary" onClick={() => onExport('csv')}>
+          Eksport CSV
+        </Button>
+        <Button size="small" variant="secondary" onClick={() => onExport('xlsx')}>
+          Eksport XLSX
+        </Button>
+      </div>
+      <div className="pd-papa-report-builder__saved-schedule">
+        <label>
+          <span>Harmonogram</span>
+          <select
+            aria-label={`Harmonogram raportu ${definition.name}`}
+            value={cadence}
+            onChange={(event) => setCadence(event.currentTarget.value)}
+          >
+            <option value="daily">Codziennie</option>
+            <option value="weekly">Co tydzień</option>
+            <option value="monthly">Co miesiąc</option>
+          </select>
+        </label>
+        <Button size="small" variant="secondary" onClick={() => onSchedule(cadence)}>
+          Zapisz harmonogram
+        </Button>
+      </div>
+    </article>
   );
 }
 
@@ -1106,12 +1705,14 @@ function resolveLabStatusText(
   status: PapaLabExperiment['status'],
 ): string {
   switch (status) {
-    case 'blocked':
-      return 'Zablokowany';
+    case 'cancelled':
+      return 'Anulowany';
+    case 'completed':
+      return 'Zakończony';
     case 'draft':
       return 'Szkic';
-    case 'ready':
-      return 'Gotowy';
+    case 'paused':
+      return 'Wstrzymany';
     case 'running':
     default:
       return 'W toku';
@@ -1122,12 +1723,14 @@ function resolveLabStatusTone(
   status: PapaLabExperiment['status'],
 ): SemanticStatusTone {
   switch (status) {
-    case 'blocked':
+    case 'cancelled':
       return 'critical';
+    case 'completed':
+      return 'success';
     case 'draft':
       return 'neutral';
-    case 'ready':
-      return 'success';
+    case 'paused':
+      return 'warning';
     case 'running':
     default:
       return 'processing';

@@ -17,7 +17,14 @@ export const defaultShellWorkspaces = [
   {
     capabilities: [
       'analytics.read',
+      'integrations.catalog.read',
+      'integrations.connection.manage',
+      'integrations.connection.read',
+      'integrations.credentials.manage',
+      'integrations.jobs.manage',
+      'integrations.jobs.read',
       'integrations.manage',
+      'integrations.sync.run',
       'billing.read',
     ],
     id: 'commerce',
@@ -107,12 +114,10 @@ export const defaultShellNavigation = [
     label: 'Dane i integracje',
     items: [
       {
-        disabled: true,
-        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym środowisku.',
         icon: 'integration',
         id: 'integrations',
         label: 'Integracje',
-        path: '/app/integrations/katalog-integracji',
+        path: '/app/integrations/sources',
       },
     ],
   },
@@ -211,8 +216,8 @@ export const defaultShellCommands = [
       'sync',
       'provider',
     ],
-    label: 'Otwórz katalog integracji',
-    path: '/app/integrations/katalog-integracji',
+    label: 'Otwórz Integracje',
+    path: '/app/integrations/sources',
     section: 'Dane',
   },
   {
@@ -272,7 +277,7 @@ export const defaultShellNotifications = [
   },
   {
     actionLabel: 'Otwórz integracje',
-    actionPath: '/app/integrations',
+    actionPath: '/app/integrations/sources',
     canSnooze: true,
     category: 'integrations',
     createdAt: '2026-08-17T12:02:00+02:00',

@@ -3,9 +3,9 @@
 > Plik generowany przez `tools/generate-backend-capability-docs.mjs`. Nie edytować ręcznie.
 
 **Wydanie:** backend-migration-implementation-2026-08<br>
-**Operacje runtime:** 281<br>
-**Kontrakt docelowy:** 218/218 dokładnych metod, ścieżek i operationId<br>
-**Dodatkowe operacje hardeningowe:** 63<br>
+**Operacje runtime:** 292<br>
+**Kontrakt docelowy:** 223/223 dokładnych metod, ścieżek i operationId<br>
+**Dodatkowe operacje hardeningowe:** 69<br>
 **Integracje runtime:** 7/7<br>
 **Pełna zgodność semantyczna i odbiór live:** jeszcze nie zadeklarowane
 
@@ -160,6 +160,7 @@
 | infrastructure.metrics.read | GET | `/metrics` | infrastructure | native-hardened-runtime | enabled |
 | integrations.backfill.start | POST | `/v1/integrations/connections/{id}/backfill` | mfa+capability | native-hardened-runtime | enabled |
 | integrations.catalog.read | GET | `/v1/integrations/katalog-integracji` | capability | native-integration-service | compatibility |
+| integrations.completeness.read | GET | `/v1/integrations/completeness` | capability | native-hardened-runtime | enabled |
 | integrations.connection-wizard.read | GET | `/v1/integrations/kreator-polaczenia` | capability | contract-compatibility-runtime | compatibility |
 | integrations.connection.create | POST | `/v1/integrations/connections` | step_up+capability | native-hardened-runtime | enabled |
 | integrations.connections.disconnect | DELETE | `/v1/integrations/connections/{id}` | step_up+capability | native-hardened-runtime | enabled |
@@ -170,12 +171,17 @@
 | integrations.jobs.get | GET | `/v1/integrations/jobs/{id}` | capability | native-hardened-runtime | enabled |
 | integrations.jobs.list | GET | `/v1/integrations/jobs` | capability | native-hardened-runtime | enabled |
 | integrations.jobs.retry | POST | `/v1/integrations/jobs/{id}/retry` | mfa+capability | native-hardened-runtime | enabled |
+| integrations.logs.read | GET | `/v1/integrations/logs` | capability | native-hardened-runtime | enabled |
 | integrations.oauth.callback | POST | `/v1/integrations/oauth/callback` | mfa+capability | contract-compatibility-runtime | compatibility |
 | integrations.provider-outage.read | GET | `/v1/integrations/awaria-providera` | capability | contract-compatibility-runtime | compatibility |
+| integrations.provider.test | POST | `/v1/integrations/{provider}/test` | step_up+capability | native-hardened-runtime | enabled |
 | integrations.providers.list | GET | `/v1/integrations/providers` | capability | native-hardened-runtime | enabled |
 | integrations.read | GET | `/v1/integrations/read` | capability | native-integration-service | compatibility |
 | integrations.reconnect.read | GET | `/v1/integrations/ponowne-polaczenie` | capability | contract-compatibility-runtime | compatibility |
 | integrations.reconnect.start | POST | `/v1/integrations/reconnect/start` | mfa+capability | contract-compatibility-runtime | compatibility |
+| integrations.runtime-catalog.read | GET | `/v1/integrations/catalog` | capability | native-hardened-runtime | enabled |
+| integrations.runtime.read | GET | `/v1/integrations` | capability | native-hardened-runtime | enabled |
+| integrations.status.read | GET | `/v1/integrations/status` | capability | native-hardened-runtime | enabled |
 | integrations.sync-history.read | GET | `/v1/integrations/historia-synchronizacji` | capability | native-integration-service | compatibility |
 | integrations.sync-run.read | GET | `/v1/integrations/przebieg-synchronizacji` | capability | native-integration-service | compatibility |
 | integrations.sync-scope.read | GET | `/v1/integrations/zakres-synchronizacji` | capability | contract-compatibility-runtime | compatibility |
@@ -233,6 +239,11 @@
 | papa.observations.read | GET | `/v1/papa/obserwacje` | capability | contract-compatibility-runtime | compatibility |
 | papa.proposals.read | GET | `/v1/papa/propozycje-ai` | capability | contract-compatibility-runtime | compatibility |
 | papa.read | GET | `/v1/papa/read` | capability | contract-compatibility-runtime | compatibility |
+| papa.report-definition.duplicate | POST | `/v1/papa/report-definitions/duplicate` | capability | contract-compatibility-runtime | compatibility |
+| papa.report-definition.read | GET | `/v1/papa/report-definitions` | capability | contract-compatibility-runtime | compatibility |
+| papa.report-definition.upsert | POST | `/v1/papa/report-definitions` | capability | contract-compatibility-runtime | compatibility |
+| papa.report-export.create | POST | `/v1/papa/report-definitions/exports` | capability | contract-compatibility-runtime | compatibility |
+| papa.report-schedule.upsert | POST | `/v1/papa/report-definitions/schedule` | capability | contract-compatibility-runtime | compatibility |
 | papa.write | POST | `/v1/papa/write` | mfa+capability | contract-compatibility-runtime | compatibility |
 | privacy.identity-verifications.create | POST | `/v1/privacy/identity-verifications` | step_up+capability | native-hardened-runtime | limited |
 | privacy.requests.approve | POST | `/v1/privacy/requests/{id}/approve` | step_up+capability | native-hardened-runtime | limited |

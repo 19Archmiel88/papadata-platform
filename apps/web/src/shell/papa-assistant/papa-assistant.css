@@ -13,8 +13,8 @@
   max-block-size: 100dvh;
   min-width: 0;
   overflow: hidden;
-  border-inline-start: 1px solid var(--pd-separator);
-  background: var(--pd-surface-panel);
+  border: 0;
+  background: var(--pd-premium-depth-glow) var(--pd-surface-panel);
   color: var(--pd-text);
   box-shadow: var(--pd-shadow-overlay);
 }
@@ -324,9 +324,21 @@
   resize: vertical;
 }
 
+/* Container-less composer input, mirroring Auth's underline field recipe
+   (same --pd-form-* override hooks Auth uses, restated with generic
+   foundation tokens instead of the auth-scoped --pdauth-* aliases). */
+.pd-papa-sidecar__composer .pd-assistant-composer .pd-form-control {
+  --pd-form-border-style: 0;
+  --pd-form-border-block-end: 1.5px solid var(--pd-separator-strong);
+  --pd-form-radius: 0;
+  --pd-form-surface: transparent;
+  --pd-form-padding-inline: 2px;
+  --pd-form-focus-border: var(--pd-brand-accent);
+  --pd-form-focus-shadow: none;
+}
+
 @media (max-width: 560px) {
   .pd-papa-sidecar {
     width: 100vw;
-    border-inline-start: 0;
   }
 }

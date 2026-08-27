@@ -730,6 +730,75 @@ export class IntegrationRepository {
     );
   }
 
+  async listCanonicalCoverageByDay(
+    tenantId: string,
+    workspaceId: string,
+    input: {
+      readonly from: string;
+      readonly to: string;
+    },
+  ): Promise<readonly Record<string, unknown>[]> {
+    return this.database.withTenantWorkspace(
+      tenantId,
+      workspaceId,
+      async (client) => {
+        const result = await client.query<Record<string, unknown>>(
+          `with scoped_records as (
+             select
+               connection_id::text as connection_id,
+               provider_id,
+               stream,
+               coalesce(business_time, ingested_at) as effective_time,
+               ingested_at
+             from app.integration_canonical_records
+             where tenant_id = $1
+               and workspace_id = $2
+               and coalesce(business_time, ingested_at) >= $3::timestamptz
+               and coalesce(business_time, ingested_at) < $4::timestamptz
+           )
+           select
+             connection_id,
+             provider_id,
+             stream,
+             to_char(date_trunc('day', effective_time at time zone 'UTC'), 'YYYY-MM-DD') as day,
+             count(*)::int as record_count,
+             max(ingested_at)::text as latest_ingested_at
+           from scoped_records
+           group by connection_id, provider_id, stream, day
+           order by day desc, provider_id asc, stream asc`,
+          [tenantId, workspaceId, input.from, input.to],
+        );
+
+        return result.rows;
+      },
+    );
+  }
+
+  async listReconciliationRuns(
+    tenantId: string,
+    workspaceId: string,
+  ): Promise<readonly Record<string, unknown>[]> {
+    return this.database.withTenantWorkspace(
+      tenantId,
+      workspaceId,
+      async (client) => {
+        const result = await client.query<Record<string, unknown>>(
+          `select
+             reconciliation_run_id as id,
+             run.*
+           from app.integration_reconciliation_runs as run
+           where tenant_id = $1
+             and workspace_id = $2
+           order by created_at desc
+           limit 100`,
+          [tenantId, workspaceId],
+        );
+
+        return result.rows;
+      },
+    );
+  }
+
   async latestReconciliationRun(
     tenantId: string,
     workspaceId: string,
@@ -3155,6 +3224,7 @@ export class AssistantConversationRepository {
                  status,
                  decision,
                  rationale,
+                 decided_by_user_id::text as "decidedByUserId",
                  baseline,
                  expected_outcome as "expectedOutcome",
                  measured_outcome as "measuredOutcome",
@@ -3186,6 +3256,7 @@ export class AssistantConversationRepository {
                  validation,
                  limits,
                  status,
+                 created_by_user_id::text as "createdByUserId",
                  created_at as "createdAt",
                  updated_at as "updatedAt"
                from app.assistant_action_proposals
@@ -3234,6 +3305,7 @@ export class AssistantConversationRepository {
                  expected_outcome as "expectedOutcome",
                  measured_outcome as "measuredOutcome",
                  status,
+                 created_by_user_id::text as "createdByUserId",
                  created_at as "createdAt",
                  updated_at as "updatedAt"
                from app.assistant_lab_experiments
@@ -3407,6 +3479,7 @@ export class AssistantConversationRepository {
              validation,
              limits,
              status,
+             created_by_user_id::text as "createdByUserId",
              created_at as "createdAt",
              updated_at as "updatedAt"
            from app.assistant_action_proposals

@@ -13904,6 +13904,304 @@
         ]
       }
     },
+    "/api/v1/papa/report-definitions": {
+      "get": {
+        "operationId": "papa.report-definition.read",
+        "summary": "odczyt zapisanych definicji Studia Wykresów Laboratorium AI",
+        "tags": [
+          "papa"
+        ],
+        "responses": {
+          "200": {
+            "description": "Sukces",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PapaReportDefinitionReadResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "caseId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "papa.report-definition.upsert",
+        "summary": "zapis (utworzenie lub aktualizacja) definicji wykresu Studia Wykresów",
+        "tags": [
+          "papa"
+        ],
+        "responses": {
+          "200": {
+            "description": "Sukces",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PapaReportDefinitionUpsertResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PapaReportDefinitionUpsertRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/papa/report-definitions/duplicate": {
+      "post": {
+        "operationId": "papa.report-definition.duplicate",
+        "summary": "duplikacja istniejącej definicji wykresu Studia Wykresów",
+        "tags": [
+          "papa"
+        ],
+        "responses": {
+          "200": {
+            "description": "Sukces",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PapaReportDefinitionDuplicateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PapaReportDefinitionDuplicateRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/papa/report-definitions/exports": {
+      "post": {
+        "operationId": "papa.report-export.create",
+        "summary": "utworzenie zadania eksportu (CSV/PDF/XLSX) dla definicji wykresu",
+        "tags": [
+          "papa"
+        ],
+        "responses": {
+          "200": {
+            "description": "Sukces",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PapaReportExportCreateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PapaReportExportCreateRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/papa/report-definitions/schedule": {
+      "post": {
+        "operationId": "papa.report-schedule.upsert",
+        "summary": "zapis harmonogramu cyklicznego eksportu dla definicji wykresu",
+        "tags": [
+          "papa"
+        ],
+        "responses": {
+          "200": {
+            "description": "Sukces",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PapaReportScheduleUpsertResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PapaReportScheduleUpsertRequest"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/papa/observations": {
       "post": {
         "operationId": "papa.observation.save",
@@ -33834,6 +34132,420 @@
           },
           "data": {
             "$ref": "#/components/schemas/PapaLabReadData"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        }
+      },
+      "PapaReportDefinitionRecord": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "name",
+          "visibility",
+          "status",
+          "chartTypes",
+          "metricSelection"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "private",
+              "workspace",
+              "tenant"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "ready",
+              "archived"
+            ]
+          },
+          "currentVersion": {
+            "type": "integer"
+          },
+          "chartTypes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "metricSelection": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "layout": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PapaReportDefinitionReadData": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "records",
+          "summary"
+        ],
+        "properties": {
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PapaReportDefinitionRecord"
+            }
+          },
+          "summary": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "PapaReportDefinitionReadResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "correlationId",
+          "generatedAt",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "operationId": {
+            "const": "papa.report-definition.read"
+          },
+          "correlationId": {
+            "type": "string"
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PapaReportDefinitionReadData"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        }
+      },
+      "PapaReportDefinitionUpsertRequest": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "name",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "description": "Stable per-draft key — repeated saves of the same draft must reuse it so the backend updates in place instead of creating a new definition."
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "private",
+              "workspace",
+              "tenant"
+            ]
+          },
+          "chartTypes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "metricSelection": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "layout": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "filters": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "dateRange": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "ready",
+              "archived"
+            ]
+          }
+        }
+      },
+      "PapaReportDefinitionUpsertResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "correlationId",
+          "generatedAt",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "operationId": {
+            "const": "papa.report-definition.upsert"
+          },
+          "correlationId": {
+            "type": "string"
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PapaReportDefinitionRecord"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        }
+      },
+      "PapaReportDefinitionDuplicateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reportDefinitionId",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "reportDefinitionId": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          }
+        }
+      },
+      "PapaReportDefinitionDuplicateResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "correlationId",
+          "generatedAt",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "operationId": {
+            "const": "papa.report-definition.duplicate"
+          },
+          "correlationId": {
+            "type": "string"
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PapaReportDefinitionRecord"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        }
+      },
+      "PapaReportExportCreateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reportDefinitionId",
+          "format",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "reportDefinitionId": {
+            "type": "string"
+          },
+          "reportVersionId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "csv",
+              "pdf",
+              "xlsx"
+            ]
+          },
+          "exportScope": {
+            "type": "string",
+            "enum": [
+              "report",
+              "section",
+              "table"
+            ]
+          },
+          "idempotencyKey": {
+            "type": "string"
+          }
+        }
+      },
+      "PapaReportExportCreateResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "correlationId",
+          "generatedAt",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "operationId": {
+            "const": "papa.report-export.create"
+          },
+          "correlationId": {
+            "type": "string"
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiProblem"
+            }
+          }
+        }
+      },
+      "PapaReportScheduleUpsertRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reportDefinitionId",
+          "cadence",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "reportDefinitionId": {
+            "type": "string"
+          },
+          "cadence": {
+            "type": "string"
+          },
+          "recipients": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "exportFormats": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "csv",
+                "pdf",
+                "xlsx"
+              ]
+            }
+          },
+          "idempotencyKey": {
+            "type": "string"
+          }
+        }
+      },
+      "PapaReportScheduleUpsertResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "correlationId",
+          "generatedAt",
+          "data",
+          "warnings"
+        ],
+        "properties": {
+          "operationId": {
+            "const": "papa.report-schedule.upsert"
+          },
+          "correlationId": {
+            "type": "string"
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
           },
           "warnings": {
             "type": "array",

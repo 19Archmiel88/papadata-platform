@@ -858,12 +858,96 @@ export class DataDecisionsContractController {
   }
 
 
+  @Post("v1/papa/report-definitions/duplicate")
+  @OperationId("papa.report-definition.duplicate")
+  @RequireCapabilities("ai.assistant.run")
+  @AuditDeniedAccess()
+  papa_report_definition_duplicate_52(
+    @Principal() principal: RequestPrincipal,
+    @Req() request: FastifyRequest,
+    @Headers("x-correlation-id") correlationId?: string,
+    @Headers("idempotency-key") idempotencyKey?: string,
+  ): Promise<object> {
+    return this.runtime.executeAuthenticated(
+      principal,
+      contractRequest("papa.report-definition.duplicate", "POST", "/v1/papa/report-definitions/duplicate", request, correlationId, idempotencyKey),
+    );
+  }
+
+
+  @Get("v1/papa/report-definitions")
+  @OperationId("papa.report-definition.read")
+  @RequireCapabilities("ai.history.read")
+  papa_report_definition_read_53(
+    @Principal() principal: RequestPrincipal,
+    @Req() request: FastifyRequest,
+    @Headers("x-correlation-id") correlationId?: string,
+    @Headers("idempotency-key") idempotencyKey?: string,
+  ): Promise<object> {
+    return this.runtime.executeAuthenticated(
+      principal,
+      contractRequest("papa.report-definition.read", "GET", "/v1/papa/report-definitions", request, correlationId, idempotencyKey),
+    );
+  }
+
+
+  @Post("v1/papa/report-definitions")
+  @OperationId("papa.report-definition.upsert")
+  @RequireCapabilities("ai.assistant.run")
+  @AuditDeniedAccess()
+  papa_report_definition_upsert_54(
+    @Principal() principal: RequestPrincipal,
+    @Req() request: FastifyRequest,
+    @Headers("x-correlation-id") correlationId?: string,
+    @Headers("idempotency-key") idempotencyKey?: string,
+  ): Promise<object> {
+    return this.runtime.executeAuthenticated(
+      principal,
+      contractRequest("papa.report-definition.upsert", "POST", "/v1/papa/report-definitions", request, correlationId, idempotencyKey),
+    );
+  }
+
+
+  @Post("v1/papa/report-definitions/exports")
+  @OperationId("papa.report-export.create")
+  @RequireCapabilities("ai.assistant.run")
+  @AuditDeniedAccess()
+  papa_report_export_create_55(
+    @Principal() principal: RequestPrincipal,
+    @Req() request: FastifyRequest,
+    @Headers("x-correlation-id") correlationId?: string,
+    @Headers("idempotency-key") idempotencyKey?: string,
+  ): Promise<object> {
+    return this.runtime.executeAuthenticated(
+      principal,
+      contractRequest("papa.report-export.create", "POST", "/v1/papa/report-definitions/exports", request, correlationId, idempotencyKey),
+    );
+  }
+
+
+  @Post("v1/papa/report-definitions/schedule")
+  @OperationId("papa.report-schedule.upsert")
+  @RequireCapabilities("ai.assistant.run")
+  @AuditDeniedAccess()
+  papa_report_schedule_upsert_56(
+    @Principal() principal: RequestPrincipal,
+    @Req() request: FastifyRequest,
+    @Headers("x-correlation-id") correlationId?: string,
+    @Headers("idempotency-key") idempotencyKey?: string,
+  ): Promise<object> {
+    return this.runtime.executeAuthenticated(
+      principal,
+      contractRequest("papa.report-schedule.upsert", "POST", "/v1/papa/report-definitions/schedule", request, correlationId, idempotencyKey),
+    );
+  }
+
+
   @Post("v1/papa/write")
   @OperationId("papa.write")
   @RequireCapabilities("ai.action_proposal.create")
   @RequireAuthLevel("mfa")
   @AuditDeniedAccess()
-  papa_write_52(
+  papa_write_57(
     @Principal() principal: RequestPrincipal,
     @Req() request: FastifyRequest,
     @Headers("x-correlation-id") correlationId?: string,

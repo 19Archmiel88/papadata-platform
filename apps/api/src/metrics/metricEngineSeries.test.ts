@@ -233,3 +233,49 @@ test("days_of_inventory treats two complete Warsaw calendar days across DST as t
     "two complete local calendar days must remain two day equivalents across the spring DST transition",
   );
 });
+
+
+test("computeMetricEngineSeries keeps a 366-day series below the synchronous CPU budget", () => {
+  const input = createMetricEngineSeriesInput({
+    days: 366,
+    generatedAt: "2026-08-19T00:00:00.000Z" as any,
+    tenantId: "tenant_long_window",
+    workspaceId: "workspace_long_window",
+  });
+
+  const startedAt = performance.now();
+  const result = computeMetricEngineSeries(input, [
+    "ad_spend",
+    "aov",
+    "orders",
+    "revenue_after_refunds",
+    "roas",
+  ]);
+  const elapsedMs = performance.now() - startedAt;
+
+  assert.equal(result.daily.length, 366);
+  assert.ok(
+    elapsedMs < 4_000,
+    `366-day metric series must stay below 4s CPU budget; observed ${elapsedMs.toFixed(1)}ms`,
+  );
+});
+
+test("computeMetricEngineSeries aggregate-only mode preserves aggregate metadata and skips daily expansion", () => {
+  const input = createMetricEngineSeriesInput({
+    days: 30,
+    generatedAt: "2026-08-19T00:00:00.000Z" as any,
+    tenantId: "tenant_aggregate_only",
+    workspaceId: "workspace_aggregate_only",
+  });
+  const metricCodes = ["revenue_after_refunds", "orders"] as const;
+
+  const full = computeMetricEngineSeries(input, metricCodes);
+  const aggregateOnly = computeMetricEngineSeries(input, metricCodes, { includeDaily: false });
+
+  assert.deepEqual(aggregateOnly.aggregate, full.aggregate);
+  assert.deepEqual(aggregateOnly.readiness, full.readiness);
+  assert.deepEqual(aggregateOnly.reasonCodes, full.reasonCodes);
+  assert.deepEqual(aggregateOnly.providers, full.providers);
+  assert.deepEqual(aggregateOnly.lastSuccessfulSyncAt, full.lastSuccessfulSyncAt);
+  assert.deepEqual(aggregateOnly.daily, []);
+});

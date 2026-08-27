@@ -2054,6 +2054,7 @@ function renderPapaVariant(
       return (
         <>
           <PapaLabBoard data={data} />
+          <PapaReportBuilderBoard data={data} />
           <PapaActionBoard
             actions={data.actions}
             heading="Eksperymenty i szkice działań"
@@ -2386,6 +2387,60 @@ function PapaLabBoard({
           { detail: 'Zatwierdzenie człowieka jest wymagane poza tym widokiem.', id: 'approval', label: 'Akceptacja', status: 'queued' },
         ]}
       />
+    </section>
+  );
+}
+
+const reportBuilderChartCatalog: readonly { readonly id: string; readonly label: string; readonly summary: string }[] = [
+  { id: 'trend', label: 'Trend pewności odpowiedzi Papa', summary: 'Rzeczywisty i planowany poziom pewności w czasie.' },
+  { id: 'comparison-decisions', label: 'Decyzje według statusu', summary: 'Liczba decyzji w kolejce Papa per status.' },
+  { id: 'comparison-actions', label: 'Działania AI według ryzyka', summary: 'Liczba szkiców działań per poziom ryzyka.' },
+  { id: 'share-evidence', label: 'Dowody według poziomu pewności', summary: 'Udział dowodów o wysokiej/ograniczonej/niewystarczającej pewności.' },
+  { id: 'share-recommendations', label: 'Rekomendacje według statusu', summary: 'Udział rekomendacji w każdym stanie cyklu życia.' },
+];
+
+/**
+ * Target-spec illustration of the P0 requirement in docs/specyfikacja-docelowa/
+ * 15-papa-asystent-i-laboratorium-ai/50-08-laboratorium-ai.md ("Decyzja P0 —
+ * raporty i ciągłość"): a report/chart creator with saved definitions and
+ * PDF/CSV/XLSX export. This board is documentation/fixture-only, matching the
+ * rest of this file — the real, backend-wired implementation lives in
+ * apps/web/src/screens/papa/PapaAssistantPanels.tsx (PapaReportBuilderStudio),
+ * reachable at runtime under /app/papa/laboratorium-ai.
+ */
+function PapaReportBuilderBoard({
+  data,
+}: {
+  readonly data: PapaWorkspaceData;
+}) {
+  return (
+    <section className="pd-production-section">
+      <header>
+        <h2>Kreator raportów Laboratorium</h2>
+        <span>{reportBuilderChartCatalog.length} typy wykresów</span>
+      </header>
+      <ProcessRail
+        activeId="save"
+        items={[
+          { detail: 'Operator wybiera typ wykresu i realne dane workspace Papa.', id: 'pick', label: 'Wybierz wykres', status: 'ready' },
+          { detail: 'Wykres trafia do zestawu raportu bez utraty poprzednich wyborów.', id: 'compose', label: 'Dodaj do raportu', status: 'ready' },
+          { detail: 'Definicja raportu (nazwa, wykresy, filtry) zapisuje się trwale.', id: 'save', label: 'Zapisz definicję', status: 'partial' },
+          { detail: 'Eksport PDF/CSV/XLSX oraz harmonogram cykliczny.', id: 'export', label: 'Eksportuj i planuj', status: 'queued' },
+        ]}
+      />
+      <div className="pd-domain-card-grid">
+        {reportBuilderChartCatalog.map((chart) => (
+          <article key={chart.id}>
+            <h3>{chart.label}</h3>
+            <p>{chart.summary}</p>
+          </article>
+        ))}
+      </div>
+      <p className="pd-production-section__footnote">
+        {data.reports.length > 0
+          ? `${data.reports.length} raporty w bibliotece Laboratorium — kreator dodaje kolejne definicje z zapisanymi wykresami.`
+          : 'Kreator zapisuje nowe definicje raportów przez papa.report-definition.upsert; eksport przez papa.report-export.create.'}
+      </p>
     </section>
   );
 }

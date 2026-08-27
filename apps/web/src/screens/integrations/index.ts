@@ -13,8 +13,15 @@ export {
 export type {
   IntegrationEvent,
   IntegrationRecord,
+  IntegrationCatalogRuntime,
+  IntegrationCompletenessRuntime,
+  IntegrationProviderTestResult,
+  IntegrationRuntimeCatalogProvider,
+  IntegrationRuntimeSource,
+  IntegrationRuntimeStatus,
   IntegrationScreenDefinition,
   IntegrationScreenId,
   IntegrationScreenVariant,
   IntegrationsData,
+  IntegrationsRuntimeView,
 } from './integrationsData';

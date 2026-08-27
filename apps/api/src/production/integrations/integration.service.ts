@@ -13,6 +13,17 @@ import { ProviderRegistry, type CredentialProvider } from "@papadata/integration
 import { IntegrationQueueService } from "../queue/queue.service.js";
 import { INTEGRATION_CREDENTIAL_PROVIDER } from "./credential-provider.js";
 import { createProviderRegistry } from "./provider.factory.js";
+import {
+  buildIntegrationCatalog,
+  buildIntegrationCompleteness,
+  buildIntegrationLogs,
+  buildIntegrationRuntimeStatus,
+  isMvpProviderId,
+  testProviderCredential,
+  type IntegrationCredentialTestRequest,
+  type IntegrationCredentialTestResult,
+  type IntegrationRuntimeStatus,
+} from "./integration-runtime.js";
 
 @Injectable()
 export class IntegrationService {
@@ -30,29 +41,22 @@ export class IntegrationService {
     this.repository = new IntegrationRepository(database);
   }
 
-  listProviders(): object {
-    const enabled = this.registry.listDescriptors().map((provider) => ({
-      ...provider,
-      runtimeAvailability: this.registry.hasAdapter(provider.providerId)
-        ? "adapter_implemented"
-        : "not_implemented",
-      releaseStatus: "enabled",
-    }));
-    const targetOnly = this.registry.listTargetDescriptors()
-      .filter((provider) => !this.registry.hasAdapter(provider.providerId))
-      .map((provider) => ({
-        providerId: provider.providerId,
-        displayName: provider.displayName,
-        category: provider.category,
-        runtimeAvailability: "not_implemented",
-        releaseStatus: "target_only",
-        connectable: false,
-      }));
+  async listProviders(
+    tenantId: string,
+    workspaceId: string,
+  ): Promise<object> {
+    const connections = await this.repository.listConnections(tenantId, workspaceId);
+    const providers = buildIntegrationCatalog({
+      connections,
+      descriptors: this.registry.listTargetDescriptors(),
+      hasAdapter: (provider) => this.registry.hasAdapter(provider),
+    });
 
     return {
-      enabled,
-      targetOnly,
-      releasePolicy: "Only providers backed by a registered adapter are connectable.",
+      enabled: providers.filter((provider) => provider.connectable),
+      providers,
+      releasePolicy: "Provider is connectable only when backend readiness is production_ready, an adapter exists and environment status is ready.",
+      targetOnly: providers.filter((provider) => !provider.connectable),
     };
   }
 
@@ -68,6 +72,70 @@ export class IntegrationService {
     workspaceId: string,
   ): Promise<readonly Record<string, unknown>[]> {
     return this.repository.listJobs(tenantId, workspaceId);
+  }
+
+  async readStatus(
+    tenantId: string,
+    workspaceId: string,
+  ): Promise<IntegrationRuntimeStatus> {
+    return this.readRuntimeStatusSnapshot(tenantId, workspaceId);
+  }
+
+  async readCatalog(
+    tenantId: string,
+    workspaceId: string,
+  ): Promise<object> {
+    const connections = await this.repository.listConnections(tenantId, workspaceId);
+    return {
+      generatedAt: new Date().toISOString(),
+      providers: buildIntegrationCatalog({
+        connections,
+        descriptors: this.registry.listTargetDescriptors(),
+        hasAdapter: (provider) => this.registry.hasAdapter(provider),
+      }),
+    };
+  }
+
+  async readLogs(
+    tenantId: string,
+    workspaceId: string,
+  ): Promise<object> {
+    const [jobs, reconciliationRows] = await Promise.all([
+      this.repository.listJobs(tenantId, workspaceId),
+      this.repository.listReconciliationRuns(tenantId, workspaceId),
+    ]);
+
+    return {
+      generatedAt: new Date().toISOString(),
+      logs: buildIntegrationLogs({
+        descriptors: this.registry.listTargetDescriptors(),
+        jobs,
+        reconciliationRows,
+      }),
+    };
+  }
+
+  async readCompleteness(
+    tenantId: string,
+    workspaceId: string,
+  ): Promise<object> {
+    const status = await this.readRuntimeStatusSnapshot(tenantId, workspaceId);
+    return buildIntegrationCompleteness(status);
+  }
+
+  async testProviderConnection(
+    provider: string,
+    request: IntegrationCredentialTestRequest,
+  ): Promise<IntegrationCredentialTestResult> {
+    if (!isMvpProviderId(provider)) {
+      throw new Error("Unsupported integration provider");
+    }
+
+    if (!this.registry.hasAdapter(provider)) {
+      throw new Error("Integration provider adapter is not registered");
+    }
+
+    return testProviderCredential(provider, request);
   }
 
   findJob(
@@ -218,6 +286,45 @@ export class IntegrationService {
     });
 
     return job;
+  }
+
+  private async readRuntimeStatusSnapshot(
+    tenantId: string,
+    workspaceId: string,
+  ): Promise<IntegrationRuntimeStatus> {
+    const now = new Date();
+    const from = new Date(now);
+    from.setUTCDate(from.getUTCDate() - 90);
+    const [
+      connections,
+      jobs,
+      checkpoints,
+      issues,
+      coverageRows,
+      reconciliationRows,
+    ] = await Promise.all([
+      this.repository.listConnections(tenantId, workspaceId),
+      this.repository.listJobs(tenantId, workspaceId),
+      this.repository.listSyncCheckpoints(tenantId, workspaceId),
+      this.repository.listOpenDataIssues(tenantId, workspaceId),
+      this.repository.listCanonicalCoverageByDay(tenantId, workspaceId, {
+        from: from.toISOString(),
+        to: now.toISOString(),
+      }),
+      this.repository.listReconciliationRuns(tenantId, workspaceId),
+    ]);
+
+    return buildIntegrationRuntimeStatus({
+      checkpoints,
+      connections,
+      coverageRows,
+      descriptors: this.registry.listTargetDescriptors(),
+      hasAdapter: (provider) => this.registry.hasAdapter(provider),
+      issues,
+      jobs,
+      now,
+      reconciliationRows,
+    });
   }
 }
 

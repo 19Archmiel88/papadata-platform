@@ -15,12 +15,6 @@ import {
 import type {
   BillingScreenDefinition,
 } from '../../../screens/billing';
-import {
-  billingScreenStorybookMeta,
-} from '../../data/billingScreenStorybookMeta';
-import {
-  ProductionStoryShell,
-} from '../../production/ProductionStoryShell';
 
 const meta = {
   title: '70 Subskrypcja i płatności/Ekrany produkcyjne',
@@ -45,21 +39,11 @@ function ModuleStoryPage({ id }: { readonly id: ScreenId }) {
   const definition = getDefinition(id);
 
   return (
-    <ProductionStoryShell
-      contract={{
-        ...definition,
-        documentPath: billingScreenStorybookMeta[id].documentPath,
-        owner: 'Billing i płatności',
-        sectionId: '70',
-        sectionLabel: 'Subskrypcja i płatności',
-      }}
-    >
-      <BillingWorkspace
-        data={createBillingStorybookData()}
-        definition={definition}
-        mode="storybook"
-      />
-    </ProductionStoryShell>
+    <BillingWorkspace
+      data={createBillingStorybookData()}
+      definition={definition}
+      mode="storybook"
+    />
   );
 }
 
@@ -72,10 +56,10 @@ function createStory(id: ScreenId): Story {
       const element = canvasElement.querySelector(`[data-screen-id="${id}"]`);
       if (!(element instanceof HTMLElement)) throw new Error(`Screen ${id} is not rendered.`);
       const screen = within(element);
-      await expect(screen.getByRole('heading', { level: 1, name: definition.displayTitle })).toBeInTheDocument();
-      await expect(screen.getByRole('navigation', { name: 'Widoki subskrypcji i płatności' })).toBeInTheDocument();
-      await expect(screen.getByRole('heading', { name: 'Co trzeba sprawdzić w subskrypcji teraz' })).toBeInTheDocument();
-      await expect(screen.getByRole('heading', { name: 'Kolejka decyzji billingowych' })).toBeInTheDocument();
+      await expect(screen.getByRole('heading', { level: 1, name: 'Subskrypcja i płatności' })).toBeInTheDocument();
+      await expect(screen.getByRole('navigation', { name: 'Zakładki billingowe' })).toBeInTheDocument();
+      await expect(screen.getByText('ID-10 / administration')).toBeInTheDocument();
+      await expect(screen.getByText('Papa Asystent Billing')).toBeInTheDocument();
       await expect(element).toHaveAttribute('data-screen-variant', definition.variant);
     },
   };

@@ -1,35 +1,29 @@
-@import "tailwindcss";
-
 .pd-pa-lab,
 .pd-pa-flow,
 .pd-pa-inline {
-  --pd-pa-bg: color-mix(in oklab, var(--pd-color-surface, #f7f8fb), white 16%);
-  --pd-pa-ink: var(--pd-color-text, #15141a);
-  --pd-pa-muted: var(--pd-color-text-muted, #6f6b78);
-  --pd-pa-line: color-mix(in oklab, var(--pd-color-border, #d8d5df), transparent 18%);
-  --pd-pa-panel: color-mix(in oklab, var(--pd-color-surface-raised, #ffffff), white 4%);
-  --pd-pa-panel-dark: #111115;
-  --pd-pa-panel-dark-2: #19181f;
-  --pd-pa-accent: #d99a2b;
+  --pd-pa-bg: var(--pd-canvas);
+  --pd-pa-ink: var(--pd-text);
+  --pd-pa-muted: var(--pd-text-secondary);
+  --pd-pa-line: var(--pd-separator-subtle);
+  --pd-pa-panel: var(--pd-surface);
+  --pd-pa-accent: var(--pd-brand-accent);
   --pd-pa-accent-2: #e56f9b;
   --pd-pa-cyan: #43bfc7;
-  --pd-pa-radius: 8px;
+  --pd-pa-radius: var(--pd-radius-surface, 8px);
   box-sizing: border-box;
   color: var(--pd-pa-ink);
 }
 
 .pd-pa-shell {
-  --pd-pa-bg: color-mix(in oklab, var(--pd-color-surface, #f7f8fb), white 16%);
-  --pd-pa-ink: var(--pd-color-text, #15141a);
-  --pd-pa-muted: var(--pd-color-text-muted, #6f6b78);
-  --pd-pa-line: color-mix(in oklab, var(--pd-color-border, #d8d5df), transparent 18%);
-  --pd-pa-panel: color-mix(in oklab, var(--pd-color-surface-raised, #ffffff), white 4%);
-  --pd-pa-panel-dark: #111115;
-  --pd-pa-panel-dark-2: #19181f;
-  --pd-pa-accent: #d99a2b;
+  --pd-pa-bg: var(--pd-canvas);
+  --pd-pa-ink: var(--pd-text);
+  --pd-pa-muted: var(--pd-text-secondary);
+  --pd-pa-line: var(--pd-separator-subtle);
+  --pd-pa-panel: var(--pd-surface);
+  --pd-pa-accent: var(--pd-brand-accent);
   --pd-pa-accent-2: #e56f9b;
   --pd-pa-cyan: #43bfc7;
-  --pd-pa-radius: 8px;
+  --pd-pa-radius: var(--pd-radius-surface, 8px);
   --pd-pa-panel-width: 460px;
   box-sizing: border-box;
   color: var(--pd-pa-ink);
@@ -58,25 +52,9 @@
   letter-spacing: 0;
 }
 
-[data-theme='dark'] .pd-pa-shell,
-.pd-pa-shell[data-theme='dark'],
-[data-theme='dark'] .pd-pa-lab,
-.pd-pa-lab[data-theme='dark'],
-[data-theme='dark'] .pd-pa-flow,
-.pd-pa-flow[data-theme='dark'],
-[data-theme='dark'] .pd-pa-inline,
-.pd-pa-inline[data-theme='dark'] {
-  --pd-pa-bg: #0b0c10;
-  --pd-pa-ink: #f6f3ee;
-  --pd-pa-muted: #aaa2b1;
-  --pd-pa-line: rgba(255, 255, 255, 0.12);
-  --pd-pa-panel: #14151b;
-}
-
 .pd-pa-shell[data-presentation='full'] {
   background:
-    linear-gradient(135deg, rgba(217, 154, 43, 0.08), transparent 28%),
-    linear-gradient(315deg, rgba(67, 191, 199, 0.07), transparent 32%),
+    var(--pd-premium-panel-wash),
     var(--pd-pa-bg);
   padding: 18px;
 }
@@ -90,11 +68,11 @@
 }
 
 .pd-pa-shell__workbench {
-  background: var(--pd-pa-panel-dark);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--pd-surface);
+  border: 0;
   border-radius: var(--pd-pa-radius);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
-  color: #f7f3ec;
+  box-shadow: var(--pd-shadow-raised);
+  color: var(--pd-pa-ink);
   display: grid;
   grid-template-rows: auto auto auto auto minmax(0, 1fr) auto;
   inline-size: min(100%, var(--pd-pa-panel-width));
@@ -109,7 +87,7 @@
 }
 
 .pd-pa-header {
-  border-block-end: 1px solid rgba(255, 255, 255, 0.1);
+  border-block-end: 1px solid var(--pd-separator-subtle);
   display: grid;
   gap: 12px;
   padding: 18px 20px 14px;
@@ -136,10 +114,10 @@
 .pd-pa-header__mark,
 .pd-pa-status-dot {
   align-items: center;
-  background: linear-gradient(135deg, rgba(217, 154, 43, 0.22), rgba(229, 111, 155, 0.16));
-  border: 1px solid rgba(217, 154, 43, 0.35);
+  background: linear-gradient(135deg, var(--pd-brand-ambient), rgba(229, 111, 155, 0.16));
+  border: 1px solid color-mix(in srgb, var(--pd-brand-accent) 35%, transparent);
   border-radius: var(--pd-pa-radius);
-  color: #f0b75d;
+  color: var(--pd-brand-accent);
   display: inline-flex;
   flex: 0 0 auto;
   justify-content: center;
@@ -166,7 +144,7 @@
 }
 
 .pd-pa-header h1 {
-  color: #f7f3ec;
+  color: var(--pd-pa-ink);
   font-size: 22px;
   letter-spacing: 0;
   line-height: 1.1;
@@ -181,7 +159,7 @@
 .pd-pa-recommendation header span,
 .pd-pa-refusal header span,
 .pd-pa-lab__hero span {
-  color: #d8a558;
+  color: var(--pd-brand-accent);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0;
@@ -197,14 +175,14 @@
   background: rgba(229, 111, 155, 0.08);
   border: 1px solid rgba(229, 111, 155, 0.2);
   border-radius: var(--pd-pa-radius);
-  color: #d7d1dd;
+  color: var(--pd-pa-muted);
   font-size: 12px;
   line-height: 1.45;
   padding: 10px 12px;
 }
 
 .pd-pa-context {
-  border-block-end: 1px solid rgba(255, 255, 255, 0.08);
+  border-block-end: 1px solid var(--pd-separator-subtle);
   display: grid;
   gap: 12px;
   padding: 14px 20px;
@@ -232,7 +210,7 @@
 .pd-pa-decision dt,
 .pd-pa-library dt,
 .pd-pa-briefings dt {
-  color: #8f8997;
+  color: var(--pd-pa-muted);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -245,16 +223,22 @@
 .pd-pa-decision dd,
 .pd-pa-library dd,
 .pd-pa-briefings dd {
-  color: #eee9f3;
+  color: var(--pd-pa-ink);
   font-size: 12px;
   margin: 2px 0 0;
   min-inline-size: 0;
   overflow-wrap: anywhere;
 }
 
+.pd-pa-lab__hero dl dd {
+  font-family: var(--pd-premium-hero-numeral-font);
+  font-size: clamp(1.25rem, 1.6vw, 1.65rem);
+  font-weight: var(--pd-premium-hero-numeral-weight);
+}
+
 .pd-pa-mode,
 .pd-pa-view-tabs {
-  border-block-end: 1px solid rgba(255, 255, 255, 0.08);
+  border-block-end: 1px solid var(--pd-separator-subtle);
   display: flex;
   gap: 6px;
   overflow-x: auto;
@@ -263,12 +247,11 @@
 
 .pd-pa-mode button,
 .pd-pa-view-tabs button,
-.pd-pa-lab__tabs a,
 .pd-pa-composer__prompts button {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--pd-surface-soft);
+  border: 1px solid var(--pd-separator);
   border-radius: var(--pd-pa-radius);
-  color: #cac4d0;
+  color: var(--pd-pa-muted);
   cursor: pointer;
   font: inherit;
   font-size: 12px;
@@ -280,11 +263,10 @@
 
 .pd-pa-mode button[aria-pressed='true'],
 .pd-pa-view-tabs button[aria-current='page'],
-.pd-pa-lab__tabs a:hover,
 .pd-pa-composer__prompts button:hover {
-  background: rgba(229, 111, 155, 0.16);
-  border-color: rgba(229, 111, 155, 0.42);
-  color: #fff4f8;
+  background: color-mix(in srgb, var(--pd-brand-accent) 16%, var(--pd-surface-soft));
+  border-color: color-mix(in srgb, var(--pd-brand-accent) 42%, transparent);
+  color: var(--pd-pa-ink);
 }
 
 .pd-pa-shell__body {
@@ -305,8 +287,8 @@
 }
 
 .pd-pa-shell__inspector {
-  background: rgba(255, 255, 255, 0.025);
-  border-inline-start: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--pd-surface-soft);
+  border-inline-start: 1px solid var(--pd-separator-subtle);
   display: grid;
   gap: 12px;
   padding: 14px;
@@ -324,9 +306,38 @@
 .pd-pa-briefings,
 .pd-pa-export,
 .pd-pa-history {
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--pd-surface);
+  border: 0;
   border-radius: var(--pd-pa-radius);
+  box-shadow: var(--pd-shadow-raised);
+  transition: box-shadow 180ms ease, transform 180ms ease;
+}
+
+.pd-pa-panel:hover,
+.pd-pa-panel:focus-within,
+.pd-pa-conversation:hover,
+.pd-pa-conversation:focus-within,
+.pd-pa-evidence:hover,
+.pd-pa-evidence:focus-within,
+.pd-pa-artifacts:hover,
+.pd-pa-artifacts:focus-within,
+.pd-pa-recommendation:hover,
+.pd-pa-recommendation:focus-within,
+.pd-pa-decision:hover,
+.pd-pa-decision:focus-within,
+.pd-pa-report:hover,
+.pd-pa-report:focus-within,
+.pd-pa-refusal:hover,
+.pd-pa-refusal:focus-within,
+.pd-pa-library:hover,
+.pd-pa-library:focus-within,
+.pd-pa-briefings:hover,
+.pd-pa-briefings:focus-within,
+.pd-pa-export:hover,
+.pd-pa-export:focus-within,
+.pd-pa-history:hover,
+.pd-pa-history:focus-within {
+  box-shadow: var(--pd-shadow-floating);
 }
 
 .pd-pa-panel,
@@ -370,7 +381,7 @@
 .pd-pa-briefings h2,
 .pd-pa-export h2,
 .pd-pa-history h2 {
-  color: #fbf8ff;
+  color: var(--pd-pa-ink);
   font-size: 16px;
   letter-spacing: 0;
   line-height: 1.2;
@@ -380,7 +391,7 @@
   background: rgba(67, 191, 199, 0.1);
   border: 1px solid rgba(67, 191, 199, 0.2);
   border-radius: var(--pd-pa-radius);
-  color: #c8f5f8;
+  color: var(--pd-pa-ink);
   font-size: 12px;
   margin-block-end: 12px;
   padding: 9px 10px;
@@ -401,7 +412,9 @@
 }
 
 .pd-pa-message {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--pd-surface-soft);
+  border: 0;
+  border-inline-start: 3px solid transparent;
   border-radius: var(--pd-pa-radius);
   display: grid;
   gap: 10px;
@@ -410,10 +423,12 @@
 
 .pd-pa-message[data-author='assistant'] {
   background: rgba(229, 111, 155, 0.08);
+  border-inline-start-color: var(--pd-pa-accent-2);
 }
 
 .pd-pa-message[data-author='user'] {
   background: rgba(67, 191, 199, 0.07);
+  border-inline-start-color: var(--pd-pa-cyan);
 }
 
 .pd-pa-message header,
@@ -435,7 +450,7 @@
 .pd-pa-recommendation p,
 .pd-pa-refusal p,
 .pd-pa-lab p {
-  color: #c9c3d0;
+  color: var(--pd-pa-muted);
   font-size: 13px;
   line-height: 1.45;
   margin: 0;
@@ -449,7 +464,7 @@
 .pd-pa-artifact-table small,
 .pd-pa-report small,
 .pd-pa-scenario small {
-  color: #928c9a;
+  color: var(--pd-text-muted);
   font-size: 11px;
 }
 
@@ -480,15 +495,16 @@
 .pd-pa-library article,
 .pd-pa-briefings article,
 .pd-pa-export article {
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: var(--pd-surface-soft);
+  border: 0;
   border-radius: var(--pd-pa-radius);
+  box-shadow: var(--pd-shadow-control);
   padding: 12px;
 }
 
 .pd-pa-answer-grid h3,
 .pd-pa-recommendation h3 {
-  color: #f5d08b;
+  color: var(--pd-brand-accent);
   font-size: 12px;
   letter-spacing: 0;
   margin: 0 0 8px;
@@ -496,7 +512,7 @@
 }
 
 .pd-pa-answer-grid ul {
-  color: #ddd7e4;
+  color: var(--pd-pa-muted);
   display: grid;
   font-size: 12px;
   gap: 6px;
@@ -513,19 +529,19 @@
 .pd-pa-status-dot[data-tone='success'] {
   background: rgba(38, 166, 116, 0.14);
   border-color: rgba(38, 166, 116, 0.35);
-  color: #74dfb9;
+  color: #1f9d6c;
 }
 
 .pd-pa-status-dot[data-tone='critical'] {
   background: rgba(229, 87, 112, 0.14);
   border-color: rgba(229, 87, 112, 0.35);
-  color: #ff9dae;
+  color: #d94f66;
 }
 
 .pd-pa-status-dot[data-tone='warning'] {
   background: rgba(217, 154, 43, 0.14);
   border-color: rgba(217, 154, 43, 0.35);
-  color: #f2c778;
+  color: var(--pd-brand-accent);
 }
 
 .pd-pa-tool strong,
@@ -536,7 +552,7 @@
 .pd-pa-library strong,
 .pd-pa-briefings strong,
 .pd-pa-export strong {
-  color: #f7f3ec;
+  color: var(--pd-pa-ink);
   display: block;
   font-size: 13px;
 }
@@ -545,7 +561,7 @@
 .pd-pa-operation span,
 .pd-pa-basket span,
 .pd-pa-export span {
-  color: #a9a2b0;
+  color: var(--pd-text-muted);
   display: block;
   font-size: 12px;
 }
@@ -574,7 +590,7 @@
 
 .pd-pa-evidence article h3,
 .pd-pa-artifact-table h3 {
-  color: #fff;
+  color: var(--pd-pa-ink);
   font-size: 14px;
   margin: 0;
 }
@@ -598,7 +614,7 @@
 .pd-pa-artifact-table label,
 .pd-pa-composer label,
 .pd-pa-history label {
-  color: #aaa2b1;
+  color: var(--pd-text-muted);
   display: grid;
   flex: 1 1 180px;
   font-size: 11px;
@@ -612,13 +628,14 @@
 .pd-pa-composer select,
 .pd-pa-composer textarea,
 .pd-pa-history input {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: var(--pd-pa-radius);
-  color: #fff;
+  background: transparent;
+  border: 0;
+  border-block-end: 1.5px solid var(--pd-separator-strong);
+  border-radius: 0;
+  color: var(--pd-pa-ink);
   font: inherit;
   min-block-size: 36px;
-  padding: 8px 10px;
+  padding: 8px 4px;
 }
 
 .pd-pa-artifact-table__columns {
@@ -631,7 +648,7 @@
 }
 
 .pd-pa-artifact-table__columns legend {
-  color: #aaa2b1;
+  color: var(--pd-text-muted);
   font-size: 11px;
   font-weight: 700;
   inline-size: 100%;
@@ -641,8 +658,8 @@
 
 .pd-pa-artifact-table__columns label {
   align-items: center;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--pd-surface-soft);
+  border: 1px solid var(--pd-separator);
   border-radius: var(--pd-pa-radius);
   display: inline-flex;
   flex: 0 0 auto;
@@ -668,8 +685,8 @@
 
 .pd-pa-artifact-table th,
 .pd-pa-artifact-table td {
-  border-block-end: 1px solid rgba(255, 255, 255, 0.08);
-  color: #ded8e4;
+  border-block-end: 1px solid var(--pd-separator-subtle);
+  color: var(--pd-pa-muted);
   font-size: 12px;
   padding: 9px 8px;
   text-align: start;
@@ -677,7 +694,7 @@
 }
 
 .pd-pa-artifact-table th {
-  color: #f2c778;
+  color: var(--pd-brand-accent);
   font-size: 11px;
   text-transform: uppercase;
 }
@@ -693,13 +710,15 @@
 }
 
 .pd-pa-scenario span {
-  color: #9f98a7;
+  color: var(--pd-text-muted);
   font-size: 12px;
 }
 
 .pd-pa-scenario strong {
-  color: #fff;
-  font-size: 24px;
+  color: var(--pd-pa-ink);
+  font-family: var(--pd-premium-hero-numeral-font);
+  font-size: 22px;
+  font-weight: var(--pd-premium-hero-numeral-weight);
 }
 
 .pd-pa-recommendation__meta {
@@ -718,7 +737,7 @@
 }
 
 .pd-pa-progress {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--pd-surface-sunken);
   border-radius: 999px;
   block-size: 8px;
   overflow: hidden;
@@ -731,12 +750,12 @@
 }
 
 .pd-pa-refusal {
-  border-color: rgba(229, 87, 112, 0.28);
+  border-inline-start: 3px solid rgba(229, 87, 112, 0.6);
 }
 
 .pd-pa-composer {
-  background: #17161d;
-  border-block-start: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--pd-surface);
+  border-block-start: 1px solid var(--pd-separator-subtle);
   display: grid;
   gap: 10px;
   padding: 14px 20px 16px;
@@ -751,7 +770,7 @@
 }
 
 .pd-pa-composer h2 {
-  color: #fff;
+  color: var(--pd-pa-ink);
   font-size: 14px;
   margin: 0;
 }
@@ -777,16 +796,16 @@
 }
 
 .pd-pa-composer footer span {
-  color: #aaa2b1;
+  color: var(--pd-text-muted);
   font-size: 12px;
 }
 
 .pd-pa-inline {
-  background: var(--pd-pa-panel-dark);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--pd-premium-depth-glow) var(--pd-surface);
+  border: 0;
   border-radius: var(--pd-pa-radius);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
-  color: #f7f3ec;
+  box-shadow: var(--pd-shadow-overlay);
+  color: var(--pd-pa-ink);
   display: grid;
   gap: 12px;
   inline-size: min(100%, 460px);
@@ -810,8 +829,7 @@
 
 .pd-pa-lab {
   background:
-    linear-gradient(135deg, rgba(217, 154, 43, 0.08), transparent 26%),
-    linear-gradient(315deg, rgba(229, 111, 155, 0.08), transparent 28%),
+    var(--pd-premium-ambient-wash),
     var(--pd-pa-bg);
   color: var(--pd-pa-ink);
   display: grid;
@@ -826,10 +844,13 @@
 
 .pd-pa-lab__hero {
   align-items: end;
-  background: var(--pd-pa-panel-dark);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    var(--pd-premium-panel-wash),
+    var(--pd-surface);
+  border: 0;
   border-radius: var(--pd-pa-radius);
-  color: #f7f3ec;
+  box-shadow: var(--pd-shadow-raised);
+  color: var(--pd-pa-ink);
   display: grid;
   gap: 20px;
   grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
@@ -843,7 +864,7 @@
 }
 
 .pd-pa-lab__hero h1 {
-  color: #f7f3ec;
+  color: var(--pd-pa-ink);
   font-size: clamp(28px, 4vw, 54px);
   letter-spacing: 0;
   line-height: 0.96;
@@ -852,7 +873,7 @@
 }
 
 .pd-pa-lab__hero p {
-  color: #d7d1dd;
+  color: var(--pd-pa-muted);
   max-inline-size: 700px;
   overflow-wrap: anywhere;
 }
@@ -860,19 +881,24 @@
 .pd-pa-lab__tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 18px;
   min-inline-size: 0;
+  scroll-behavior: smooth;
 }
 
 .pd-pa-lab__tabs a {
-  background: var(--pd-pa-panel);
-  border-color: var(--pd-pa-line);
+  background: transparent;
+  border: 0;
+  border-block-end: 1.5px solid transparent;
+  border-radius: 0;
   color: var(--pd-pa-muted);
+  padding: 6px 2px;
+  transition: border-color 180ms ease, color 180ms ease;
 }
 
 .pd-pa-lab__tabs a:hover,
 .pd-pa-lab__tabs a:focus-visible {
-  background: color-mix(in oklab, var(--pd-pa-accent) 14%, var(--pd-pa-panel));
+  border-block-end-color: var(--pd-brand-accent);
   color: var(--pd-pa-ink);
 }
 
@@ -886,24 +912,6 @@
   display: grid;
   gap: 14px;
   min-inline-size: 0;
-}
-
-.pd-pa-lab .pd-pa-recommendation,
-.pd-pa-lab .pd-pa-decision,
-.pd-pa-lab .pd-pa-report,
-.pd-pa-lab .pd-pa-library,
-.pd-pa-lab .pd-pa-briefings,
-.pd-pa-lab .pd-pa-export,
-.pd-pa-lab .pd-pa-evidence,
-.pd-pa-lab .pd-pa-history,
-.pd-pa-lab .pd-pa-refusal,
-.pd-pa-flow .pd-pa-recommendation,
-.pd-pa-flow .pd-pa-report,
-.pd-pa-flow .pd-pa-refusal {
-  background: var(--pd-pa-panel-dark);
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.18);
-  color: #f7f3ec;
 }
 
 .pd-pa-flow {
@@ -924,10 +932,11 @@
 }
 
 .pd-pa-process li {
-  background: var(--pd-pa-panel-dark);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--pd-surface);
+  border: 0;
   border-radius: var(--pd-pa-radius);
-  color: #f7f3ec;
+  box-shadow: var(--pd-shadow-raised);
+  color: var(--pd-pa-ink);
   padding: 12px;
 }
 
@@ -963,7 +972,7 @@
   }
 
   .pd-pa-shell__inspector {
-    border-block-start: 1px solid rgba(255, 255, 255, 0.08);
+    border-block-start: 1px solid var(--pd-separator-subtle);
     border-inline-start: 0;
   }
 }
@@ -1045,7 +1054,7 @@
 }
 
 .pd-pa-story-stage {
-  background: var(--pd-pa-bg, #0b0c10);
+  background: var(--pd-pa-bg, var(--pd-canvas));
   min-block-size: 100vh;
   padding: 20px;
 }

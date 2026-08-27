@@ -55,6 +55,27 @@ select (count(*) > 0) as seed_scenario_valid from verify_scenarios \gset
   \quit 2
 \endif
 
+-- Runtime canonical envelope gate.
+do $$
+begin
+  if exists (
+    select 1
+      from app.integration_canonical_records r
+     where coalesce((r.source_lineage ->> 'seed')::boolean, false)
+       and (
+         jsonb_typeof(r.canonical_payload) <> 'object'
+         or jsonb_typeof(r.canonical_payload -> 'entity') <> 'object'
+         or r.canonical_payload ->> 'version' <> 'integration.canonical.v1'
+         or r.canonical_payload ->> 'providerId' <> r.provider_id
+         or r.canonical_payload ->> 'stream' <> r.stream
+         or r.canonical_payload ->> 'externalId' <> r.external_id
+       )
+  ) then
+    raise exception 'Seed canonical payload does not match the production runtime envelope';
+  end if;
+end;
+$$;
+
 do $$
 declare
   scenario record;
@@ -81,6 +102,8 @@ declare
   actual_conversions integer;
   actual_attributed_revenue numeric;
   actual_traffic_rows integer;
+  actual_traffic_channel_rows integer;
+  actual_funnel_rows integer;
   actual_checkout numeric;
   actual_purchases numeric;
   actual_completeness numeric;
@@ -104,6 +127,8 @@ declare
   expected_gross_margin numeric;
   actual_cart_conversion numeric;
   expected_traffic_rows integer;
+  expected_traffic_channel_rows integer;
+  expected_funnel_rows integer;
   new_created_at timestamptz;
   onboarding_completed_at timestamptz;
   first_connection_at timestamptz;
@@ -363,23 +388,23 @@ begin
        where r.tenant_id = scenario.tenant_id
          and r.workspace_id = scenario.workspace_id
          and r.stream = 'orders'
-         and lower(coalesce(r.canonical_payload ->> 'status', '')) not in (
+         and lower(coalesce(r.canonical_payload #>> '{entity,status}', '')) not in (
            'cancelled','canceled','checkout-draft','draft','failed','on-hold','pending','refunded','trash','voided'
          )
          and (
-           nullif(r.canonical_payload ->> 'customerReference', '') is null
-           or nullif(r.canonical_payload ->> 'customerType', '') is null
-           or jsonb_array_length(coalesce(r.canonical_payload -> 'lineItems', '[]'::jsonb)) = 0
+           nullif(r.canonical_payload #>> '{entity,customerReference}', '') is null
+           or nullif(r.canonical_payload #>> '{entity,customerType}', '') is null
+           or jsonb_array_length(coalesce(r.canonical_payload #> '{entity,lineItems}', '[]'::jsonb)) = 0
          )
     ) then
       raise exception '[%] qualifying commerce facts are missing customer/product breakdown data', scenario.scenario_key;
     end if;
 
     select
-      coalesce(sum((i.canonical_payload ->> 'availableQuantity')::numeric), 0),
+      coalesce(sum((i.canonical_payload #>> '{entity,availableQuantity}')::numeric), 0),
       coalesce(sum(
-        (i.canonical_payload ->> 'availableQuantity')::numeric
-        * (p.canonical_payload ->> 'unitCost')::numeric
+        (i.canonical_payload #>> '{entity,availableQuantity}')::numeric
+        * (p.canonical_payload #>> '{entity,unitCost}')::numeric
       ), 0)
       into actual_stock, actual_stock_value
       from app.integration_canonical_records i
@@ -392,7 +417,7 @@ begin
        and p.workspace_id = i.workspace_id
        and p.provider_id = i.provider_id
        and p.stream = 'products'
-       and p.external_id = i.canonical_payload ->> 'productId'
+       and p.external_id = i.canonical_payload #>> '{entity,productId}'
      where i.tenant_id = scenario.tenant_id
        and i.workspace_id = scenario.workspace_id
        and i.stream = 'inventory';
@@ -418,15 +443,15 @@ begin
            and r.stream = 'orders'
            and r.business_time >= range_start
            and r.business_time < range_end
-           and lower(coalesce(r.canonical_payload ->> 'status', '')) not in (
+           and lower(coalesce(r.canonical_payload #>> '{entity,status}', '')) not in (
              'cancelled','canceled','checkout-draft','draft','failed','on-hold','pending','refunded','trash','voided'
            )
       ), line_totals as (
         select
           coalesce(sum((line.value ->> 'quantity')::numeric), 0) as units,
-          coalesce(sum((p.canonical_payload ->> 'unitCost')::numeric * (line.value ->> 'quantity')::numeric), 0) as product_cost
+          coalesce(sum((p.canonical_payload #>> '{entity,unitCost}')::numeric * (line.value ->> 'quantity')::numeric), 0) as product_cost
         from qualifying_orders q
-        cross join lateral jsonb_array_elements(q.canonical_payload -> 'lineItems') as line(value)
+        cross join lateral jsonb_array_elements(q.canonical_payload #> '{entity,lineItems}') as line(value)
         left join app.integration_canonical_records p
           on p.tenant_id = scenario.tenant_id
          and p.workspace_id = scenario.workspace_id
@@ -435,7 +460,7 @@ begin
          and p.external_id = line.value ->> 'externalProductId'
       )
       select count(*)::int,
-             coalesce(sum((q.canonical_payload ->> 'grossAmount')::numeric), 0),
+             coalesce(sum((q.canonical_payload #>> '{entity,grossAmount}')::numeric), 0),
              lt.units,
              lt.product_cost
         into actual_orders, actual_gross, actual_units, actual_product_cost
@@ -448,7 +473,7 @@ begin
       actual_units := coalesce(actual_units, 0);
       actual_product_cost := coalesce(actual_product_cost, 0);
 
-      select coalesce(sum((r.canonical_payload ->> 'amount')::numeric), 0)
+      select coalesce(sum((r.canonical_payload #>> '{entity,amount}')::numeric), 0)
         into actual_refunds
         from app.integration_canonical_records r
        where r.tenant_id = scenario.tenant_id
@@ -463,19 +488,19 @@ begin
               and o.workspace_id = scenario.workspace_id
               and o.stream = 'orders'
               and o.provider_id = r.provider_id
-              and o.external_id = r.canonical_payload ->> 'orderId'
+              and o.external_id = r.canonical_payload #>> '{entity,orderId}'
               and o.business_time >= range_start
               and o.business_time < range_end
-              and lower(coalesce(o.canonical_payload ->> 'status', '')) not in (
+              and lower(coalesce(o.canonical_payload #>> '{entity,status}', '')) not in (
                 'cancelled','canceled','checkout-draft','draft','failed','on-hold','pending','refunded','trash','voided'
               )
          );
       actual_revenue := actual_gross - actual_refunds;
 
       select
-        coalesce(sum((r.canonical_payload ->> 'spend')::numeric), 0),
-        coalesce(sum((r.canonical_payload ->> 'clicks')::numeric), 0),
-        coalesce(sum((r.canonical_payload ->> 'impressions')::numeric), 0)
+        coalesce(sum((r.canonical_payload #>> '{entity,spend}')::numeric), 0),
+        coalesce(sum((r.canonical_payload #>> '{entity,clicks}')::numeric), 0),
+        coalesce(sum((r.canonical_payload #>> '{entity,impressions}')::numeric), 0)
         into actual_ad_spend, actual_clicks, actual_impressions
         from app.integration_canonical_records r
        where r.tenant_id = scenario.tenant_id
@@ -485,7 +510,7 @@ begin
          and r.business_time < range_end;
 
       select count(*)::int,
-             coalesce(sum((r.canonical_payload ->> 'conversionValue')::numeric), 0)
+             coalesce(sum((r.canonical_payload #>> '{entity,conversionValue}')::numeric), 0)
         into actual_conversions, actual_attributed_revenue
         from app.integration_canonical_records r
        where r.tenant_id = scenario.tenant_id
@@ -494,11 +519,34 @@ begin
          and r.business_time >= range_start
          and r.business_time < range_end;
 
-      select count(*)::int,
-             coalesce(sum((r.canonical_payload ->> 'checkoutStartCount')::numeric), 0),
-             coalesce(sum((r.canonical_payload ->> 'purchaseCount')::numeric), 0),
-             avg((r.canonical_payload ->> 'completeness')::numeric)
-        into actual_traffic_rows, actual_checkout, actual_purchases, actual_completeness
+      select
+        count(*)::int,
+        count(*) filter (
+          where nullif(r.canonical_payload #>> '{entity,source}', '') is not null
+        )::int,
+        count(*) filter (
+          where nullif(r.canonical_payload #>> '{entity,funnelStepId}', '') is not null
+        )::int,
+        coalesce(sum(
+          (r.canonical_payload #>> '{entity,entrants}')::numeric
+        ) filter (
+          where r.canonical_payload #>> '{entity,funnelStepId}' = 'checkout'
+        ), 0),
+        coalesce(sum(
+          (r.canonical_payload #>> '{entity,completions}')::numeric
+        ) filter (
+          where r.canonical_payload #>> '{entity,funnelStepId}' = 'purchase'
+        ), 0),
+        avg((r.canonical_payload #>> '{entity,eventCompleteness}')::numeric) filter (
+          where r.canonical_payload #>> '{entity,eventCompleteness}' is not null
+        )
+        into
+          actual_traffic_rows,
+          actual_traffic_channel_rows,
+          actual_funnel_rows,
+          actual_checkout,
+          actual_purchases,
+          actual_completeness
         from app.integration_canonical_records r
        where r.tenant_id = scenario.tenant_id
          and r.workspace_id = scenario.workspace_id
@@ -516,6 +564,8 @@ begin
         expected_ad_spend := 40 * window_days + 2 * weekly_variation_sum;
         expected_conversions := 2 * window_days;
         expected_traffic_rows := 0;
+        expected_traffic_channel_rows := 0;
+        expected_funnel_rows := 0;
       else
         expected_orders := 4 * window_days;
         expected_gross := 390 * window_days + 8 * weekly_variation_sum;
@@ -524,7 +574,9 @@ begin
         expected_product_cost := 155 * window_days;
         expected_ad_spend := 60 * window_days + 3 * weekly_variation_sum;
         expected_conversions := 3 * window_days;
-        expected_traffic_rows := 2 * window_days;
+        expected_traffic_rows := 8 * window_days;
+        expected_traffic_channel_rows := 2 * window_days;
+        expected_funnel_rows := 6 * window_days;
       end if;
 
       expected_revenue := expected_gross - expected_refunds;
@@ -564,15 +616,21 @@ begin
       end if;
 
       if scenario.is_partial then
-        if actual_traffic_rows <> 0 or actual_cart_conversion is not null then
+        if actual_traffic_rows <> 0
+           or actual_traffic_channel_rows <> 0
+           or actual_funnel_rows <> 0
+           or actual_cart_conversion is not null then
           raise exception '[%][%d] GA4 should be unavailable in the partial scenario', scenario.scenario_key, window_days;
         end if;
       else
         if actual_traffic_rows <> expected_traffic_rows
+           or actual_traffic_channel_rows <> expected_traffic_channel_rows
+           or actual_funnel_rows <> expected_funnel_rows
            or abs(actual_cart_conversion - 0.25) > 0.000001
            or abs(coalesce(actual_completeness, 0) - 1) > 0.000001 then
-          raise exception '[%][%d] GA4 verification failed: rows=%, cartConversion=%, completeness=%',
-            scenario.scenario_key, window_days, actual_traffic_rows, actual_cart_conversion, actual_completeness;
+          raise exception '[%][%d] GA4 verification failed: rows=%, channelRows=%, funnelRows=%, cartConversion=%, completeness=%',
+            scenario.scenario_key, window_days, actual_traffic_rows, actual_traffic_channel_rows,
+            actual_funnel_rows, actual_cart_conversion, actual_completeness;
         end if;
       end if;
 

@@ -76,6 +76,32 @@
   min-width: 0;
 }
 
+.pd-papa-lab-grid {
+  gap: var(--pd-space-5);
+}
+
+/* The empty-state card intentionally reads as a designed screen, not a dead
+   end: it borrows the Command Center/Auth depth-not-border technique so the
+   real, everyday state of this screen (labExperiments is empty until a
+   persistent AI case/experiment source exists) still looks premium. */
+.pd-papa-lab-empty {
+  display: grid;
+  gap: var(--pd-space-4);
+  padding: clamp(28px, 4vw, 44px) clamp(20px, 3vw, 32px);
+  border: 0;
+  border-radius: var(--pd-radius-surface);
+  background:
+    var(--pd-premium-panel-wash),
+    var(--pd-surface);
+  box-shadow: var(--pd-shadow-raised);
+}
+
+.pd-papa-lab-empty .pd-feedback-surface {
+  --pd-feedback-surface-border: 0;
+  --pd-feedback-surface-start-border: 0;
+  --pd-feedback-surface-background: transparent;
+}
+
 .pd-papa-assistant-status-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -271,6 +297,28 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+/* Lab cards opt out of the shared bordered/no-shadow card recipe above in
+   favor of the Command Center/Auth depth-not-border technique: the border
+   is dropped and elevation comes from box-shadow instead, escalating on
+   hover/focus like a Command Center KPI card. The accent-colored
+   border-inline-start stays (now 4px, matching Command Center's
+   recommendation-tier stripe) as the "headline result" cue. */
+.pd-papa-lab-experiment,
+.pd-papa-lab-comparison {
+  border: 0;
+  border-inline-start-width: 4px;
+  box-shadow: var(--pd-shadow-raised);
+  transition: box-shadow 180ms ease, transform 180ms ease;
+}
+
+.pd-papa-lab-experiment:hover,
+.pd-papa-lab-experiment:focus-within,
+.pd-papa-lab-comparison:hover,
+.pd-papa-lab-comparison:focus-within {
+  box-shadow: var(--pd-shadow-floating);
+  transform: translateY(-2px);
+}
+
 .pd-papa-lab-experiment {
   border-inline-start-color: var(--pd-data-series-2);
 }
@@ -400,5 +448,169 @@
     grid-column: 1 / -1;
     margin-inline-start: 0;
     justify-self: start;
+  }
+}
+
+.pd-papa-report-builder__grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.6fr);
+  gap: var(--pd-space-5);
+  min-width: 0;
+}
+
+.pd-papa-report-builder__config,
+.pd-papa-report-builder__canvas {
+  display: grid;
+  gap: var(--pd-space-3);
+  min-width: 0;
+  align-content: start;
+}
+
+.pd-papa-report-builder__config label,
+.pd-papa-report-builder__canvas label {
+  display: grid;
+  gap: var(--pd-space-1);
+  font-size: var(--pd-type-size-caption);
+  color: var(--pd-text-muted);
+}
+
+.pd-papa-report-builder__config select,
+.pd-papa-report-builder__canvas select,
+.pd-papa-report-builder__canvas input[type='text'] {
+  padding: var(--pd-space-2) var(--pd-space-3);
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-small);
+  background: var(--pd-surface);
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-body);
+}
+
+.pd-papa-report-builder__preview {
+  min-height: 220px;
+  padding: var(--pd-space-3);
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-small);
+  background: color-mix(in srgb, var(--pd-surface-raised) 42%, transparent);
+}
+
+.pd-papa-report-builder__canvas > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--pd-space-3);
+}
+
+.pd-papa-report-builder__canvas > header span {
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-papa-report-builder__canvas-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pd-space-3);
+  min-width: 0;
+}
+
+.pd-papa-report-builder__canvas-grid article {
+  display: grid;
+  gap: var(--pd-space-2);
+  min-width: 0;
+  padding: var(--pd-space-3);
+  border: 1px solid var(--pd-separator-subtle);
+  border-inline-start: 3px solid var(--pd-data-series-3);
+  border-radius: var(--pd-radius-small);
+  background: color-mix(in srgb, var(--pd-surface-raised) 42%, transparent);
+}
+
+.pd-papa-report-builder__canvas-grid article header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pd-space-2);
+}
+
+.pd-papa-report-builder__canvas-grid article button {
+  border: 0;
+  background: transparent;
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-body-large);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pd-papa-report-builder__saved-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--pd-space-4);
+  min-width: 0;
+}
+
+.pd-papa-report-builder__saved-card {
+  display: grid;
+  gap: var(--pd-space-3);
+  min-width: 0;
+  padding: var(--pd-space-4);
+  border: 1px solid var(--pd-separator-subtle);
+  border-inline-start: 3px solid var(--pd-brand-accent);
+  border-radius: var(--pd-radius-small);
+  background: color-mix(in srgb, var(--pd-surface-raised) 42%, transparent);
+}
+
+.pd-papa-report-builder__saved-card > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--pd-space-3);
+}
+
+.pd-papa-report-builder__saved-card > header > div {
+  display: grid;
+  gap: var(--pd-space-1);
+  min-width: 0;
+}
+
+.pd-papa-report-builder__saved-card > header span {
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-papa-report-builder__saved-card p {
+  margin: 0;
+  color: var(--pd-text-secondary);
+}
+
+.pd-papa-report-builder__saved-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2);
+}
+
+.pd-papa-report-builder__saved-schedule {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--pd-space-3);
+}
+
+.pd-papa-report-builder__saved-schedule label {
+  display: grid;
+  gap: var(--pd-space-1);
+  font-size: var(--pd-type-size-caption);
+  color: var(--pd-text-muted);
+}
+
+.pd-papa-report-builder__saved-schedule select {
+  padding: var(--pd-space-2) var(--pd-space-3);
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-small);
+  background: var(--pd-surface);
+  color: var(--pd-text);
+}
+
+@media (max-width: 960px) {
+  .pd-papa-report-builder__grid,
+  .pd-papa-report-builder__canvas-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

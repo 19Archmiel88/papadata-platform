@@ -29,6 +29,10 @@ export {
 } from './seriesColor';
 
 export {
+  premiumSurfaceTokens,
+} from './premiumSurface';
+
+export {
   shadowTokens,
 } from './shadows';
 

@@ -14,16 +14,44 @@ import {
 import type {
   BffReportRecord,
   PapaAnswerRecord,
+  PapaReportDefinitionRow,
+  PapaReportDefinitionUpsertInput,
+  PapaReportExportRow,
+  PapaReportScheduleRow,
 } from '../../shared/api/bffClient';
 import {
   bffClient,
 } from '../../shared/api/bffClient';
 import type {
+  PapaActionRecord,
   PapaChatMessage,
+  PapaDecision,
+  PapaLabExperiment,
+  PapaModeRecord,
 } from '../../screens/papa/papaData';
+import type {
+  PapaGovernancePolicy,
+  PapaGovernanceRuntimePayload,
+  PapaGovernanceSummary,
+  PapaLabRuntimePayload,
+} from './papaLabRuntimeParsing';
+import {
+  buildModeRecordsFromGovernance,
+  readLabResultCompletedAt,
+  readPapaGovernancePolicy,
+  readPapaGovernanceSummary,
+  readPapaLabActions,
+  readPapaLabDecisions,
+  readPapaLabExperiments,
+} from './papaLabRuntimeParsing';
 import type {
   PapaScreenContextSnapshot,
 } from './ScreenContextProvider';
+
+export type {
+  PapaGovernancePolicy,
+  PapaGovernanceSummary,
+} from './papaLabRuntimeParsing';
 
 export type PapaAssistantMode =
   | 'screen'
@@ -94,6 +122,10 @@ type PapaAssistantRuntimeState = {
   readonly mainSubmitting: boolean;
   readonly messages: readonly PapaChatMessage[];
   readonly parentConversationId: string | null;
+  readonly reportBuilderSaving: boolean;
+  readonly reportDefinitions: readonly PapaReportDefinitionRow[];
+  readonly reportDefinitionsError: string | null;
+  readonly reportDefinitionsLoading: boolean;
   readonly reportError: string | null;
   readonly reports: readonly PapaAssistantReportArtifact[];
 };
@@ -116,8 +148,25 @@ type PapaAssistantRuntimeContextValue = PapaAssistantRuntimeState & {
   readonly downloadReport: (
     report: PapaAssistantReportArtifact,
   ) => Promise<void>;
+  readonly duplicateReportDefinition: (
+    reportDefinitionId: string,
+  ) => Promise<PapaReportDefinitionRow>;
+  readonly exportReportDefinition: (input: {
+    readonly reportDefinitionId: string;
+    readonly format: 'csv' | 'pdf' | 'xlsx';
+  }) => Promise<PapaReportExportRow>;
+  readonly refreshReportDefinitions: () => Promise<void>;
   readonly rememberSnapshot: (snapshot: PapaScreenContextSnapshot) => void;
   readonly resetConversation: () => void;
+  readonly saveReportDefinition: (
+    input: PapaReportDefinitionUpsertInput,
+  ) => Promise<PapaReportDefinitionRow>;
+  readonly scheduleReportDefinition: (input: {
+    readonly reportDefinitionId: string;
+    readonly cadence: string;
+    readonly recipients: readonly string[];
+    readonly exportFormats: readonly ('csv' | 'pdf' | 'xlsx')[];
+  }) => Promise<PapaReportScheduleRow>;
   readonly scope: PapaAssistantRuntimeScope;
   readonly setComposerDraft: (scope: string, draft: string) => void;
   readonly submitElementMessage: (
@@ -125,6 +174,18 @@ type PapaAssistantRuntimeContextValue = PapaAssistantRuntimeState & {
     prompt: string,
   ) => Promise<void>;
   readonly submitMainMessage: (prompt: string) => Promise<void>;
+};
+
+export type PapaLabRuntimeState = {
+  readonly actions: readonly PapaActionRecord[];
+  readonly decisions: readonly PapaDecision[];
+  readonly error: string | null;
+  readonly experiments: readonly PapaLabExperiment[];
+  readonly generatedAt: string | null;
+  readonly governance: PapaGovernancePolicy | null;
+  readonly governanceSummary: PapaGovernanceSummary | null;
+  readonly loading: boolean;
+  readonly modeRecords: readonly PapaModeRecord[];
 };
 
 const fallbackScope: PapaAssistantRuntimeScope = {
@@ -145,6 +206,10 @@ const fallbackRuntimeState: PapaAssistantRuntimeState = {
   mainSubmitting: false,
   messages: [],
   parentConversationId: null,
+  reportBuilderSaving: false,
+  reportDefinitions: [],
+  reportDefinitionsError: null,
+  reportDefinitionsLoading: false,
   reportError: null,
   reports: [],
 };
@@ -158,13 +223,85 @@ const PapaAssistantRuntimeStateContext =
     clearComposerDraft: () => undefined,
     createReport: () => Promise.reject(new Error('Brak aktywnego runtime Papa.')),
     downloadReport: () => Promise.reject(new Error('Brak aktywnego runtime Papa.')),
+    duplicateReportDefinition: () => Promise.reject(new Error('Brak aktywnego runtime Papa.')),
+    exportReportDefinition: () => Promise.reject(new Error('Brak aktywnego runtime Papa.')),
+    refreshReportDefinitions: () => Promise.resolve(),
     rememberSnapshot: () => undefined,
     resetConversation: () => undefined,
+    saveReportDefinition: () => Promise.reject(new Error('Brak aktywnego runtime Papa.')),
+    scheduleReportDefinition: () => Promise.reject(new Error('Brak aktywnego runtime Papa.')),
     scope: fallbackScope,
     setComposerDraft: () => undefined,
     submitElementMessage: () => Promise.resolve(),
     submitMainMessage: () => Promise.resolve(),
   });
+
+const fallbackLabRuntimeState: PapaLabRuntimeState = {
+  actions: [],
+  decisions: [],
+  error: null,
+  experiments: [],
+  generatedAt: null,
+  governance: null,
+  governanceSummary: null,
+  loading: false,
+  modeRecords: [],
+};
+
+export function usePapaLabRuntime({
+  enabled,
+}: {
+  readonly enabled: boolean;
+}): PapaLabRuntimeState {
+  const [state, setState] = useState<PapaLabRuntimeState>(fallbackLabRuntimeState);
+
+  useEffect(() => {
+    if (!enabled) {
+      setState(fallbackLabRuntimeState);
+      return;
+    }
+
+    let active = true;
+    setState((current) => ({
+      ...current,
+      error: null,
+      loading: true,
+    }));
+
+    void Promise.all([
+      bffClient.readPapaLab<PapaLabRuntimePayload>({ limit: 50 }),
+      bffClient.readPapaGovernance<PapaGovernanceRuntimePayload>(),
+    ])
+      .then(([labPayload, governancePayload]) => {
+        if (!active) return;
+        const governance = readPapaGovernancePolicy(governancePayload);
+        setState({
+          actions: readPapaLabActions(labPayload),
+          decisions: readPapaLabDecisions(labPayload),
+          error: null,
+          experiments: readPapaLabExperiments(labPayload),
+          generatedAt: readLabResultCompletedAt(labPayload) ?? new Date().toISOString(),
+          governance,
+          governanceSummary: readPapaGovernanceSummary(governancePayload),
+          loading: false,
+          modeRecords: buildModeRecordsFromGovernance(governance),
+        });
+      })
+      .catch((error) => {
+        if (!active) return;
+        setState({
+          ...fallbackLabRuntimeState,
+          error: describePapaError(error),
+        });
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [enabled]);
+
+  return state;
+}
 
 export function PapaAssistantRuntimeProvider({
   children,
@@ -516,6 +653,140 @@ export function PapaAssistantRuntimeProvider({
     }
   }, []);
 
+  const refreshReportDefinitions = useCallback(async (): Promise<void> => {
+    setState((current) => ({
+      ...current,
+      reportDefinitionsError: null,
+      reportDefinitionsLoading: true,
+    }));
+
+    try {
+      const payload = await bffClient.readPapaReportDefinitions({ limit: 50 });
+      setState((current) => ({
+        ...current,
+        reportDefinitions: payload.reports,
+        reportDefinitionsError: null,
+        reportDefinitionsLoading: false,
+      }));
+    } catch (error) {
+      setState((current) => ({
+        ...current,
+        reportDefinitionsError: describePapaError(error),
+        reportDefinitionsLoading: false,
+      }));
+    }
+  }, []);
+
+  const saveReportDefinition = useCallback(async (
+    input: PapaReportDefinitionUpsertInput,
+  ): Promise<PapaReportDefinitionRow> => {
+    setState((current) => ({
+      ...current,
+      reportBuilderSaving: true,
+    }));
+
+    try {
+      const record = await bffClient.upsertPapaReportDefinition(input);
+      setState((current) => ({
+        ...current,
+        reportBuilderSaving: false,
+        reportDefinitions: [
+          record,
+          ...current.reportDefinitions.filter((item) => item.id !== record.id),
+        ],
+        reportDefinitionsError: null,
+      }));
+      return record;
+    } catch (error) {
+      setState((current) => ({
+        ...current,
+        reportBuilderSaving: false,
+        reportDefinitionsError: describePapaError(error),
+      }));
+      throw error;
+    }
+  }, []);
+
+  const duplicateReportDefinition = useCallback(async (
+    reportDefinitionId: string,
+  ): Promise<PapaReportDefinitionRow> => {
+    try {
+      const record = await bffClient.duplicatePapaReportDefinition({
+        idempotencyKey: stableIdempotencyKey(`papa-report-duplicate-${reportDefinitionId}-${Date.now()}`),
+        reportDefinitionId,
+      });
+      setState((current) => ({
+        ...current,
+        reportDefinitions: [
+          record,
+          ...current.reportDefinitions,
+        ],
+        reportDefinitionsError: null,
+      }));
+      return record;
+    } catch (error) {
+      setState((current) => ({
+        ...current,
+        reportDefinitionsError: describePapaError(error),
+      }));
+      throw error;
+    }
+  }, []);
+
+  const exportReportDefinition = useCallback(async (input: {
+    readonly reportDefinitionId: string;
+    readonly format: 'csv' | 'pdf' | 'xlsx';
+  }): Promise<PapaReportExportRow> => {
+    try {
+      const record = await bffClient.createPapaReportExport({
+        format: input.format,
+        idempotencyKey: stableIdempotencyKey(
+          `papa-report-export-${input.reportDefinitionId}-${input.format}-${Date.now()}`,
+        ),
+        reportDefinitionId: input.reportDefinitionId,
+      });
+      setState((current) => ({
+        ...current,
+        reportDefinitionsError: null,
+      }));
+      return record;
+    } catch (error) {
+      setState((current) => ({
+        ...current,
+        reportDefinitionsError: describePapaError(error),
+      }));
+      throw error;
+    }
+  }, []);
+
+  const scheduleReportDefinition = useCallback(async (input: {
+    readonly reportDefinitionId: string;
+    readonly cadence: string;
+    readonly recipients: readonly string[];
+    readonly exportFormats: readonly ('csv' | 'pdf' | 'xlsx')[];
+  }): Promise<PapaReportScheduleRow> => {
+    try {
+      const record = await bffClient.upsertPapaReportSchedule({
+        cadence: input.cadence,
+        exportFormats: input.exportFormats,
+        idempotencyKey: stableIdempotencyKey(`papa-report-schedule-${input.reportDefinitionId}`),
+        recipients: input.recipients,
+        reportDefinitionId: input.reportDefinitionId,
+      });
+      setState((current) => ({
+        ...current,
+        reportDefinitionsError: null,
+      }));
+      return record;
+    } catch (error) {
+      setState((current) => ({
+        ...current,
+        reportDefinitionsError: describePapaError(error),
+      }));
+      throw error;
+    }
+  }, []);
+
   const resetConversation = useCallback(() => {
     setState({
       ...fallbackRuntimeState,
@@ -537,8 +808,13 @@ export function PapaAssistantRuntimeProvider({
     clearComposerDraft,
     createReport,
     downloadReport,
+    duplicateReportDefinition,
+    exportReportDefinition,
+    refreshReportDefinitions,
     rememberSnapshot,
     resetConversation,
+    saveReportDefinition,
+    scheduleReportDefinition,
     scope,
     setComposerDraft,
     submitElementMessage,
@@ -550,8 +826,13 @@ export function PapaAssistantRuntimeProvider({
     clearComposerDraft,
     createReport,
     downloadReport,
+    duplicateReportDefinition,
+    exportReportDefinition,
+    refreshReportDefinitions,
     rememberSnapshot,
     resetConversation,
+    saveReportDefinition,
+    scheduleReportDefinition,
     scope,
     setComposerDraft,
     state,

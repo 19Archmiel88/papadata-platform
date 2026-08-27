@@ -666,7 +666,7 @@ async function ensureSeedBatch(
   input: {
     readonly connectionId: string;
     readonly providerId: DemoProviderId;
-    readonly sourceStream: Exclude<DemoCanonicalRecord["stream"], "traffic">;
+    readonly sourceStream: DemoCanonicalRecord["stream"];
     readonly tenantId: string;
     readonly workspaceId: string;
   },
@@ -733,7 +733,7 @@ async function upsertCanonicalDemoRecord(
   input: DemoCanonicalRecord & {
     readonly connectionId: string;
     readonly sourceBatchId: string;
-    readonly sourceStream: Exclude<DemoCanonicalRecord["stream"], "traffic">;
+    readonly sourceStream: DemoCanonicalRecord["stream"];
     readonly syncJobId: string;
     readonly tenantId: string;
     readonly workspaceId: string;
@@ -840,8 +840,8 @@ async function upsertDemoCheckpoints(
   watermark: string,
 ): Promise<void> {
   const checkpointInputs: readonly {
-    readonly providerId: Exclude<DemoProviderId, "ga4">;
-    readonly stream: "ad_spend" | "attributed_conversions" | "inventory" | "orders" | "products" | "refunds";
+    readonly providerId: DemoProviderId;
+    readonly stream: DemoCanonicalRecord["stream"];
   }[] = [
     { providerId: "woocommerce", stream: "orders" },
     { providerId: "woocommerce", stream: "products" },
@@ -851,6 +851,7 @@ async function upsertDemoCheckpoints(
     { providerId: "google_ads", stream: "attributed_conversions" },
     { providerId: "meta_ads", stream: "ad_spend" },
     { providerId: "meta_ads", stream: "attributed_conversions" },
+    { providerId: "ga4", stream: "traffic" },
   ];
 
   for (const checkpoint of checkpointInputs) {
@@ -895,8 +896,8 @@ async function upsertDemoCheckpoints(
 
 function sourceStreamFor(
   stream: DemoCanonicalRecord["stream"],
-): Exclude<DemoCanonicalRecord["stream"], "traffic"> {
-  return stream === "traffic" ? "attributed_conversions" : stream;
+): DemoCanonicalRecord["stream"] {
+  return stream;
 }
 
 function stableHash(value: string): string {

@@ -1,6 +1,6 @@
 import type {
   AnalyticsScreenId,
-} from '../../screens/analytics/analyticsModuleData';
+} from '../runtime/screens/analytics/analyticsModuleData';
 
 export type AnalyticsModuleStorybookMeta = {
   readonly documentPath: string;

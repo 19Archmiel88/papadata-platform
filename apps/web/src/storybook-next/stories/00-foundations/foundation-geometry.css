@@ -833,7 +833,7 @@
   text-align: right;
 }.pd-f0-depth-stage__table-row:not([data-head="true"]) span:nth-child(2) {
   color: var(--pd-text);
-  font-weight: 650;
+  font-weight: var(--pd-font-weight-semibold);
 }.pd-f0-depth-stage__table-row:not([data-head="true"]) span:nth-child(3) {
   color: var(--pd-f0-depth-margin);
 }.pd-f0-depth-stage__data-status {

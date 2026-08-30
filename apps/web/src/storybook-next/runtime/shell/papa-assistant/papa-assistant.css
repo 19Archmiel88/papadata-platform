@@ -1,0 +1,344 @@
+.pd-papa-assistant-overlay .pd-overlay-root__viewport {
+  align-items: stretch;
+  justify-content: flex-end;
+  padding: 0;
+}
+
+.pd-papa-sidecar {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  inline-size: min(460px, 100vw);
+  max-inline-size: 100vw;
+  block-size: 100dvh;
+  max-block-size: 100dvh;
+  min-width: 0;
+  overflow: hidden;
+  border: 0;
+  background: var(--pd-premium-depth-glow) var(--pd-surface-panel);
+  color: var(--pd-text);
+  box-shadow: var(--pd-shadow-overlay);
+}
+
+.pd-papa-sidecar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding: 13px 14px;
+  border-block-end: 1px solid var(--pd-separator-subtle);
+  background: var(--pd-surface-panel);
+}
+
+.pd-papa-sidecar__header-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.pd-papa-sidecar__conversation-chip {
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: 999px;
+  background: var(--pd-surface-soft);
+  color: var(--pd-text-muted);
+  cursor: pointer;
+  font-family: var(--pd-font-mono);
+  font-size: 12px;
+  padding: 4px 9px;
+  transition: color 140ms ease, border-color 140ms ease;
+}
+
+.pd-papa-sidecar__conversation-chip:hover {
+  border-color: color-mix(in srgb, var(--pd-brand-accent) 40%, var(--pd-separator));
+  color: var(--pd-text);
+}
+
+.pd-papa-sidecar__conversation-chip:focus-visible {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: 2px;
+}
+
+.pd-papa-sidecar__close-button {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  inline-size: 26px;
+  block-size: 26px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--pd-text-secondary);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.pd-papa-sidecar__close-button:hover {
+  background: var(--pd-surface-soft);
+  color: var(--pd-text);
+}
+
+.pd-papa-sidecar__close-button:focus-visible {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: 2px;
+}
+
+.pd-papa-sidecar__header > div:first-child {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pd-papa-sidecar__eyebrow {
+  margin: 0;
+  color: var(--pd-brand-action);
+  font-family: var(--pd-font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.pd-papa-sidecar__header h2,
+.pd-papa-sidecar__header h3,
+.pd-papa-sidecar__header p {
+  margin: 0;
+}
+
+.pd-papa-sidecar__header h2,
+.pd-papa-sidecar__header h3 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pd-papa-sidecar__header p {
+  color: var(--pd-text-muted);
+  font-size: 12px;
+}
+
+.pd-papa-sidecar__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border-block-end: 1px solid var(--pd-separator-subtle);
+  background: var(--pd-surface-soft);
+}
+
+.pd-papa-sidecar__context,
+.pd-papa-sidecar__thread,
+.pd-papa-sidecar__report-builder {
+  min-height: 0;
+  overflow: auto;
+}
+
+.pd-papa-sidecar__tabs {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.pd-papa-sidecar__tabs > .pd-tabs__list {
+  flex: 0 0 auto;
+  margin: 8px 12px 0;
+}
+
+.pd-papa-sidecar__tabs > .pd-tabs__panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-block-start: 0;
+}
+
+.pd-papa-sidecar__tabs > .pd-tabs__panel > .pd-tabs__panel-inner {
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
+  min-height: 0;
+}
+
+.pd-papa-sidecar__thread--chat,
+.pd-papa-sidecar__thread--element {
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.pd-papa-sidecar__thread--chat > .pd-papa-sidecar__thread-header,
+.pd-papa-sidecar__thread--element > .pd-papa-sidecar__thread-header,
+.pd-papa-sidecar__thread--element > .pd-papa-sidecar__element-picker,
+.pd-papa-sidecar__thread--chat > .pd-papa-sidecar__composer,
+.pd-papa-sidecar__thread--element > .pd-papa-sidecar__composer {
+  flex: 0 0 auto;
+}
+
+.pd-papa-sidecar__thread--chat > .pd-papa-message-thread,
+.pd-papa-sidecar__thread--chat > .pd-papa-message-thread__empty,
+.pd-papa-sidecar__thread--element > .pd-papa-message-thread,
+.pd-papa-sidecar__thread--element > .pd-papa-message-thread__empty {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.pd-papa-sidecar__context {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border-block-end: 1px solid var(--pd-separator-subtle);
+  color: var(--pd-text-secondary);
+  font-size: 13px;
+}
+
+.pd-papa-sidecar__element-picker {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-block-end: 2px;
+}
+
+.pd-papa-sidecar__element-picker button {
+  flex: 0 0 auto;
+  min-height: 28px;
+  padding: 4px 8px;
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: 999px;
+  background: var(--pd-surface);
+  color: var(--pd-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
+
+.pd-papa-sidecar__element-picker button[aria-pressed='true'] {
+  border-color: color-mix(in srgb, var(--pd-brand-accent) 48%, var(--pd-separator));
+  color: var(--pd-text);
+  box-shadow: inset 0 -2px 0 var(--pd-brand-accent);
+}
+
+.pd-papa-sidecar__report-list {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 12px;
+  list-style: none;
+}
+
+.pd-papa-sidecar__report-list > * {
+  min-width: 0;
+  padding: 10px 11px;
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: 10px;
+  background: var(--pd-surface);
+  color: var(--pd-text-secondary);
+  line-height: var(--pd-line-height-relaxed);
+}
+
+.pd-papa-sidecar__thread-header,
+.pd-papa-sidecar__report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-block-end: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-papa-sidecar__report-scope {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border-block-end: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-papa-sidecar__report-scope button {
+  display: grid;
+  grid-template-columns: minmax(92px, auto) minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-control);
+  background: var(--pd-surface);
+  color: var(--pd-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  text-align: start;
+}
+
+.pd-papa-sidecar__report-scope button[aria-pressed='true'] {
+  border-color: color-mix(in srgb, var(--pd-brand-accent) 48%, var(--pd-separator));
+  background: color-mix(in srgb, var(--pd-brand-accent) 9%, var(--pd-surface));
+  color: var(--pd-text);
+}
+
+.pd-papa-sidecar__report-scope button span {
+  font-weight: var(--pd-font-weight-semibold);
+}
+
+.pd-papa-sidecar__report-scope button small {
+  min-width: 0;
+  color: var(--pd-text-muted);
+  line-height: var(--pd-line-height-normal);
+}
+
+.pd-papa-sidecar__report-counts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 10px 12px;
+}
+
+.pd-papa-sidecar__report-counts > * {
+  padding: 8px;
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-control);
+  background: var(--pd-surface-soft);
+  text-align: center;
+}
+
+.pd-papa-sidecar__empty-thread {
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+  padding: 24px;
+  color: var(--pd-text-muted);
+  text-align: center;
+}
+
+.pd-papa-sidecar__composer {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-block-start: 1px solid var(--pd-separator-subtle);
+  background: var(--pd-surface-panel);
+}
+
+.pd-papa-sidecar__composer textarea {
+  width: 100%;
+  min-height: 76px;
+  resize: vertical;
+}
+
+/* Container-less composer input, mirroring Auth's underline field recipe
+   (same --pd-form-* override hooks Auth uses, restated with generic
+   foundation tokens instead of the auth-scoped --pdauth-* aliases). */
+.pd-papa-sidecar__composer .pd-assistant-composer .pd-form-control {
+  --pd-form-border-style: 0;
+  --pd-form-border-block-end: 1.5px solid var(--pd-separator-strong);
+  --pd-form-radius: 0;
+  --pd-form-surface: transparent;
+  --pd-form-padding-inline: 2px;
+  --pd-form-focus-border: var(--pd-brand-accent);
+  --pd-form-focus-shadow: none;
+}
+
+@media (max-width: 560px) {
+  .pd-papa-sidecar {
+    width: 100vw;
+  }
+}

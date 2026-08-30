@@ -15,6 +15,32 @@ export type {
 } from './Panel';
 
 export {
+  PriorityBand,
+} from './PriorityBand';
+
+export type {
+  PriorityBandProps,
+  PriorityBandTone,
+} from './PriorityBand';
+
+export {
+  ProductSectionFrame,
+} from './ProductSectionFrame';
+
+export type {
+  ProductSectionFrameProps,
+} from './ProductSectionFrame';
+
+export {
+  ProductSectionTopbar,
+} from './ProductSectionTopbar';
+
+export type {
+  ProductSectionTopbarItem,
+  ProductSectionTopbarProps,
+} from './ProductSectionTopbar';
+
+export {
   DetailPanel,
 } from './DetailPanel';
 

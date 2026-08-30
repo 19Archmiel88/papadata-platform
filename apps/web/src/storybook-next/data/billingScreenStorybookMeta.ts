@@ -1,6 +1,6 @@
 import type {
   BillingScreenId,
-} from '../../screens/billing/billingData';
+} from '../runtime/screens/billing/billingData';
 
 export type BillingScreenStorybookMeta = {
   readonly documentPath: string;

@@ -29,7 +29,7 @@ import type {
 } from '../../design-system';
 import {
   analyticsScreenDefinitions,
-} from '../../screens/analytics';
+} from '../runtime/screens/analytics/index';
 import type {
   AnalyticsScreenDefinition,
   CampaignsModuleData,
@@ -37,7 +37,7 @@ import type {
   OrdersModuleData,
   ProductsModuleData,
   TrafficModuleData,
-} from '../../screens/analytics';
+} from '../runtime/screens/analytics/index';
 import {
   ProductionScreenCanvas,
 } from './ProductionStoryShell';
@@ -687,7 +687,7 @@ function CampaignDetailSurface({
             description={`${formatMoney(record.spend)} wykorzystane z ${formatMoney(record.budget)}.`}
             indeterminate={false}
             label="Wykorzystanie budżetu kampanii"
-            max={Math.max(record.budget.amount, 1)}
+            max={Math.max(record.budget?.amount ?? 1, 1)}
             showValue
             tone={campaignBudgetPressure(record) >= 0.9 ? 'warning' : 'success'}
             value={record.spend.amount}
@@ -998,7 +998,11 @@ function CampaignVariantsSurface({
 
 function buildCampaignContext(data: CampaignsModuleData): CampaignContext {
   const spend = sumMoney(data.records.map((record) => record.spend));
-  const budget = sumMoney(data.records.map((record) => record.budget));
+  const budget = sumMoney(
+    data.records
+      .map((record) => record.budget)
+      .filter((value): value is Money => value !== null),
+  );
   const revenue = sumMoney(data.records.map((record) => record.revenue));
   const roas = spend.amount > 0
     ? revenue.amount / spend.amount
@@ -1141,7 +1145,9 @@ function buildCampaignDecisions({
 }
 
 function campaignBudgetPressure(record: CampaignsRecord): number {
-  return record.spend.amount / Math.max(record.budget.amount, 1);
+  // No fabricated budget when it's genuinely unknown -- falls back to spend
+  // itself as the denominator (pressure = 1, neutral) rather than guessing.
+  return record.spend.amount / Math.max(record.budget?.amount ?? record.spend.amount, 1);
 }
 
 function campaignRiskScore(record: CampaignsRecord): number {
@@ -3359,7 +3365,7 @@ function CampaignPacingBoard({
     <div className="pd-campaign-board__lane" aria-label="Wykorzystanie budżetu kampanii">
       <h3>Wykorzystanie według kanału</h3>
       {records.map((record) => {
-        const pacing = record.spend.amount / Math.max(record.budget.amount, 1);
+        const pacing = record.spend.amount / Math.max(record.budget?.amount ?? record.spend.amount, 1);
         return (
           <div className="pd-campaign-board__pacing" key={record.campaignId}>
             <div className="pd-production-row">
@@ -3678,7 +3684,7 @@ function LandingPages({
 
 function campaignRows(records: readonly CampaignsRecord[]): readonly DataRow[] {
   return records.map((record) => ({
-    budgetPacing: formatPercent(record.spend.amount / Math.max(record.budget.amount, 1)),
+    budgetPacing: formatPercent(record.spend.amount / Math.max(record.budget?.amount ?? record.spend.amount, 1)),
     channel: campaignChannelLabel(record.channel),
     id: record.campaignId,
     name: record.name,
@@ -3749,7 +3755,10 @@ function sumMoney(values: readonly Money[]): Money {
   };
 }
 
-function formatMoney(value: Money): string {
+function formatMoney(value: Money | null): string {
+  if (!value) {
+    return 'Brak danych';
+  }
   return new Intl.NumberFormat('pl-PL', {
     currency: value.currency,
     maximumFractionDigits: 0,

@@ -1,6 +1,6 @@
 import type {
   IntegrationScreenId,
-} from '../../screens/integrations/integrationsData';
+} from '../runtime/screens/integrations/integrationsData';
 
 export type IntegrationsScreenStorybookMeta = {
   readonly documentPath: string;

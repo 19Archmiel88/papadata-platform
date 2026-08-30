@@ -21,6 +21,10 @@ import {
   type CommandCenterReadiness,
   type CommandCenterRuntimeRecord,
 } from "./command-center-record.js";
+import {
+  classifyCustomerOrders,
+  CUSTOMER_HISTORY_FLOOR,
+} from "./customer-lifecycle.js";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_TIMEZONE = "Europe/Warsaw";
@@ -1063,25 +1067,35 @@ export async function buildCommandCenterCustomerSegmentsData(
   dateRange: CommandCenterDateRangeInput | null = null,
 ): Promise<{ readonly customerSegments: readonly CustomerSegmentRow[] }> {
   const { periodEnd, periodStart, timezone } = resolveMetricWindow(generatedAt, dateRange, KPI_WINDOW_DAYS);
-  const [input, rows] = await Promise.all([
+  // New-vs-returning can only be decided from a customer's FULL order
+  // history, not just this window (see customer-lifecycle.ts) -- so both
+  // fetches reach back to the real ingestion floor, not periodStart.
+  const [allTimeInput, rows] = await Promise.all([
     createRealMetricEngineInput({
       dataSource,
       generatedAt: generatedAt as IsoDateTime,
       periodEnd,
-      periodStart,
+      periodStart: CUSTOMER_HISTORY_FLOOR as IsoDateTime,
       tenantId,
       timezone,
       workspaceId,
     }),
     dataSource.listCanonicalRecords(tenantId, workspaceId, {
-      businessTimeFrom: periodStart,
+      businessTimeFrom: CUSTOMER_HISTORY_FLOOR,
       businessTimeTo: periodEnd,
       streams: ["orders"],
     }),
   ]);
-  const qualifyingOrders = new Set(
-    input.canonicalOrders.filter(isRevenueQualifyingOrder).map((order) => order.canonicalOrderId),
-  );
+  const qualifyingOrders = allTimeInput.canonicalOrders.filter(isRevenueQualifyingOrder);
+  const classified = classifyCustomerOrders(qualifyingOrders, rows);
+  const entityByOrderId = new Map<string, Record<string, unknown>>();
+  for (const row of rows) {
+    const providerId = readRowString(row.provider_id);
+    const externalId = readRowString(row.external_id);
+    if (providerId && externalId) {
+      entityByOrderId.set(`${providerId}:${externalId}`, readEntity(row.canonical_payload));
+    }
+  }
   const bySegment = new Map<"new" | "returning", {
     readonly customers: Set<string>;
     orders: number;
@@ -1089,21 +1103,20 @@ export async function buildCommandCenterCustomerSegmentsData(
     revenue: number;
   }>();
 
-  for (const row of rows) {
-    const providerId = readRowString(row.provider_id);
-    const externalId = readRowString(row.external_id);
-    if (!providerId || !externalId || !qualifyingOrders.has(`${providerId}:${externalId}`)) {
+  for (const { customerReference, isFirstOrder, order } of classified) {
+    // Only orders that actually fall in the reporting window count toward
+    // this window's new/returning totals -- a customer's history outside the
+    // window is only used above to decide isFirstOrder correctly.
+    if (order.orderedAt < periodStart || order.orderedAt >= periodEnd) {
+      continue;
+    }
+    const entity = entityByOrderId.get(order.canonicalOrderId) ?? {};
+    const revenue = Number.parseFloat(order.grossAmount);
+    if (!Number.isFinite(revenue)) {
       continue;
     }
 
-    const entity = readEntity(row.canonical_payload);
-    const revenue = readEntityNumber(entity, "grossAmount");
-    const customerReference = readEntityString(entity, "customerReference");
-    if (revenue === null || !customerReference) {
-      continue;
-    }
-
-    const segment = readEntityString(entity, "customerType") === "returning" ? "returning" : "new";
+    const segment = isFirstOrder ? "new" : "returning";
     const entry = bySegment.get(segment) ?? {
       customers: new Set<string>(),
       orders: 0,

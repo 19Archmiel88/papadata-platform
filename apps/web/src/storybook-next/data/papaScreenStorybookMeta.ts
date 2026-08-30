@@ -1,6 +1,6 @@
 import type {
   PapaScreenId,
-} from '../../screens/papa/papaData';
+} from '../runtime/screens/papa/papaData';
 
 export type PapaScreenStorybookMeta = {
   readonly documentPath: string;

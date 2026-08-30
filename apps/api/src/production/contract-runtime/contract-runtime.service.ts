@@ -58,6 +58,12 @@ import {
   type CommandCenterRuntimeRecord,
 } from "./command-center-record.js";
 import {
+  fetchCampaignDetail,
+  fetchCampaignsAttribution,
+  fetchCampaignsList,
+  type CampaignsFilters,
+} from "./campaigns-analytics.real-source.js";
+import {
   fetchOrderDetail,
   fetchOrdersList,
   type OrdersFilters,
@@ -67,6 +73,12 @@ import {
   fetchProductsList,
   type ProductsFilters,
 } from "./products-analytics.real-source.js";
+import {
+  buildCustomerPortfolio,
+  fetchCustomerDetail,
+  type CustomerSegment,
+  type CustomersFilters,
+} from "./customers-analytics.real-source.js";
 import {
   capturePapaContext,
   generatePapaAnswer,
@@ -659,6 +671,191 @@ export class ContractRuntimeService {
             operationId: request.operationId,
           },
           summary: result.summary,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "campaigns.detail.read") {
+      const query = safeObject(request.query);
+      const campaignId = optionalRecordString(query, "campaignId");
+      if (!campaignId) {
+        throw new BadRequestException("Query parameter 'campaignId' is required.");
+      }
+      const generatedAt = new Date().toISOString();
+      const record = await fetchCampaignDetail({
+        campaignId,
+        dataSource: this.integrationRepository,
+        dateRange: readRuntimeDateRange(request.query),
+        generatedAt,
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+      if (!record) {
+        throw new NotFoundException(`Campaign not found: ${campaignId}`);
+      }
+      return {
+        data: {
+          detailResult: {
+            completedAt: generatedAt,
+            domain: "campaigns",
+            operationId: request.operationId,
+          },
+          record,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (
+      request.operationId.startsWith("campaigns.")
+      && request.operationId !== "campaigns.write"
+      && request.operationId !== "campaigns.budget.change.propose"
+    ) {
+      const query = safeObject(request.query);
+      const generatedAt = new Date().toISOString();
+      const filters = readCampaignsFilters(query);
+      const page = readPageRequest(query);
+      const dataSource = this.integrationRepository;
+      const dateRange = readRuntimeDateRange(request.query);
+      const shared = {
+        dataSource,
+        dateRange,
+        filters,
+        generatedAt,
+        page,
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      };
+
+      // campaigns.attribution-sales.read is the only operationId whose base
+      // shape differs (it needs the real per-channel attribution rows, not
+      // just records/pageInfo/summary) -- everything else shares one fetch.
+      if (request.operationId === "campaigns.attribution-sales.read") {
+        const result = await fetchCampaignsAttribution(shared);
+        return {
+          data: {
+            attribution: result.attribution,
+            pageInfo: result.pageInfo,
+            records: result.records,
+            [campaignsResultKey(request.operationId)]: {
+              completedAt: generatedAt,
+              domain: "campaigns",
+              operationId: request.operationId,
+            },
+            summary: result.summary,
+          },
+          operationId: request.operationId,
+        };
+      }
+
+      const result = await fetchCampaignsList(shared);
+      // diagnostics/recommendations need creative-level ad data and a budget
+      // reallocation model that don't exist anywhere in the canonical
+      // pipeline today -- honestly empty rather than fabricated (see
+      // campaigns-analytics.real-source.ts and the plan this implements).
+      const extra: Record<string, unknown> = {};
+      if (request.operationId === "campaigns.diagnostics.read") {
+        extra.diagnostics = [];
+      }
+      if (
+        request.operationId === "campaigns.budget.recommendation.read"
+        || request.operationId === "campaigns.recommendations.read"
+      ) {
+        extra.recommendations = [];
+      }
+
+      return {
+        data: {
+          pageInfo: result.pageInfo,
+          records: result.records,
+          [campaignsResultKey(request.operationId)]: {
+            completedAt: generatedAt,
+            domain: "campaigns",
+            operationId: request.operationId,
+          },
+          summary: result.summary,
+          ...extra,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "customers.pseudonymized-detail.read") {
+      const query = safeObject(request.query);
+      const customerPseudonym = optionalRecordString(query, "customerPseudonym");
+      if (!customerPseudonym) {
+        throw new BadRequestException("Query parameter 'customerPseudonym' is required.");
+      }
+      const generatedAt = new Date().toISOString();
+      const record = await fetchCustomerDetail({
+        customerPseudonym,
+        dataSource: this.integrationRepository,
+        dateRange: readRuntimeDateRange(request.query),
+        generatedAt,
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+      if (!record) {
+        throw new NotFoundException(`Customer not found: ${customerPseudonym}`);
+      }
+      return {
+        data: {
+          pseudonymizedDetailResult: {
+            completedAt: generatedAt,
+            domain: "customers",
+            operationId: request.operationId,
+          },
+          record,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (
+      request.operationId.startsWith("customers.")
+      && request.operationId !== "customers.write"
+    ) {
+      const query = safeObject(request.query);
+      const generatedAt = new Date().toISOString();
+      const portfolio = await buildCustomerPortfolio({
+        dataSource: this.integrationRepository,
+        dateRange: readRuntimeDateRange(request.query),
+        filters: readCustomersFilters(query),
+        generatedAt,
+        page: readPageRequest(query),
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+
+      // Every customers.*.read list-shaped operationId reads the same
+      // portfolio, which already computes segments/pareto/trend/cac/
+      // affinity/priorityAlert/cohorts alongside the per-customer records
+      // (see customers-analytics.real-source.ts) -- the real /app/customers
+      // screen only ever calls customers.overview.read, so these must not
+      // be gated to a single, narrower operationId.
+      const extra: Record<string, unknown> = {
+        affinity: portfolio.affinity,
+        cac: portfolio.cac,
+        cohorts: portfolio.cohorts,
+        pareto: portfolio.pareto,
+        portfolioTotals: portfolio.portfolioTotals,
+        priorityAlert: portfolio.priorityAlert,
+        segments: portfolio.segments,
+        trend: portfolio.trend,
+      };
+
+      return {
+        data: {
+          pageInfo: portfolio.pageInfo,
+          records: portfolio.records,
+          [customersResultKey(request.operationId)]: {
+            completedAt: generatedAt,
+            domain: "customers",
+            operationId: request.operationId,
+          },
+          summary: portfolio.summary,
+          ...extra,
         },
         operationId: request.operationId,
       };
@@ -2039,6 +2236,61 @@ function readProductsFilters(query: Readonly<Record<string, unknown>>): Products
     search: optionalRecordString(query, "search"),
     source: optionalRecordStringList(query, "source"),
     status: optionalRecordStringList(query, "status"),
+  };
+}
+
+// Every campaigns.*.read list-shaped operationId names its envelope's result
+// field after its own route segment (same codegen artifact as
+// ordersResultKey/productsResultKey above), except campaigns.list.read and
+// campaigns.read, which both land on the generic "resultResult".
+function campaignsResultKey(operationId: string): string {
+  const keys: Readonly<Record<string, string>> = {
+    "campaigns.attribution-sales.read": "attributionSalesResult",
+    "campaigns.budget.read": "budgetResult",
+    "campaigns.budget.recommendation.read": "budgetRecommendationResult",
+    "campaigns.diagnostics.read": "diagnosticsResult",
+    "campaigns.list.read": "resultResult",
+    "campaigns.overview.read": "overviewResult",
+    "campaigns.read": "resultResult",
+    "campaigns.recommendations.read": "recommendationsResult",
+  };
+  return keys[operationId] ?? "resultResult";
+}
+
+function readCampaignsFilters(query: Readonly<Record<string, unknown>>): CampaignsFilters {
+  const channel = optionalRecordStringList(query, "channel");
+  return {
+    channel: channel as readonly ("googleAds" | "metaAds" | "tiktokAds" | "other")[] | null,
+    search: optionalRecordString(query, "search"),
+  };
+}
+
+// Every customers.*.read list-shaped operationId names its envelope's
+// result field after its own route segment (same codegen artifact as
+// ordersResultKey/productsResultKey/campaignsResultKey above), except
+// customers.list.read and customers.read, which both land on the generic
+// "resultResult".
+function customersResultKey(operationId: string): string {
+  const keys: Readonly<Record<string, string>> = {
+    "customers.cohorts.read": "cohortsResult",
+    "customers.identity-conflicts.read": "identityConflictsResult",
+    "customers.impact.read": "impactResult",
+    "customers.overview.read": "overviewResult",
+    "customers.privacy.read": "privacyResult",
+    "customers.read": "resultResult",
+    "customers.segment.analyze": "segmentAnalyzeResult",
+    "customers.segments.read": "segmentsResult",
+  };
+  return keys[operationId] ?? "resultResult";
+}
+
+function readCustomersFilters(query: Readonly<Record<string, unknown>>): CustomersFilters {
+  const segment = optionalRecordStringList(query, "segment");
+  const riskStatus = optionalRecordStringList(query, "riskStatus");
+  return {
+    riskStatus: riskStatus as readonly ("at_risk" | "active" | "lapsed")[] | null,
+    search: optionalRecordString(query, "search"),
+    segment: segment as readonly CustomerSegment[] | null,
   };
 }
 

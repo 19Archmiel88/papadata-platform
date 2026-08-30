@@ -5,6 +5,7 @@ import type {
 } from 'react';
 import {
   forwardRef,
+  useEffect,
   useId,
   useState,
 } from 'react';
@@ -123,6 +124,7 @@ export {
   TrendChart,
   forwardRef,
   joinClassNames,
+  useEffect,
   useId,
   useState,
 };

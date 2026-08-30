@@ -1,0 +1,151 @@
+/**
+ * Storybook-only presentation layer: iframe canvas framing and the
+ * ProductShellFrame-embedded page overrides used when a BI mockup is
+ * rendered inside StorybookProductShellFrame. The shared color-semantics
+ * unification (--pd-vl-*, and each page's --pd-Xbi-* remap) now lives in
+ * design-system/foundations/dashboard-visual-unification.css so it also
+ * applies to real production screens, not just this Storybook wrapper.
+ */
+.pd-storybook-canvas :is(
+  .pd-ccbi,
+  .pd-pcbi,
+  .pd-obi,
+  .pd-pbi,
+  .pd-cbi,
+  .pd-tbi,
+  .pd-msbi,
+  .pd-hc,
+  .pd-set,
+  .pd-pal
+) {
+  background: rgb(var(--pd-vl-canvas));
+  color: rgb(var(--pd-vl-text));
+  font-family: var(--pd-font-sans);
+  letter-spacing: var(--pd-letter-spacing);
+}
+
+.pd-storybook-product-shell-frame {
+  min-height: 100vh;
+  background: var(--pd-canvas);
+}
+
+.pd-storybook-product-shell-page {
+  min-width: 0;
+}
+
+.pd-storybook-product-shell-page > :is(
+  .pd-ccbi,
+  .pd-pcbi,
+  .pd-obi,
+  .pd-pbi,
+  .pd-cbi,
+  .pd-tbi,
+  .pd-msbi,
+  .pd-hc,
+  .pd-set,
+  .pd-pal
+) {
+  min-height: auto;
+  background: transparent;
+}
+
+.pd-storybook-product-shell-page :is(
+  .pd-ccbi__content,
+  .pd-pcbi__content,
+  .pd-obi__content,
+  .pd-pbi__content,
+  .pd-cbi__content,
+  .pd-tbi__content,
+  .pd-msbi__content,
+  .pd-hc__content,
+  .pd-pal__content
+) {
+  max-width: none;
+  padding: 0 0 var(--pd-space-12);
+}
+
+.pd-storybook-product-shell-page .pd-set {
+  height: auto;
+  min-height: auto;
+  overflow: visible;
+}
+
+.pd-storybook-product-shell-page .pd-set-content {
+  height: auto;
+  max-width: none;
+  overflow: visible;
+  padding: 0 0 var(--pd-space-12);
+}
+
+.pd-storybook-product-shell-page :is(
+  .pd-pcbi-anchor-nav,
+  .pd-obi-anchor-nav,
+  .pd-pbi-anchor-nav,
+  .pd-cbi-anchor-nav,
+  .pd-tbi-anchor-nav
+) {
+  display: none;
+}
+
+.pd-storybook-product-shell-page :is(.pd-msbi-nav, .pd-set-nav) {
+  position: static;
+  inset: auto;
+  width: 100%;
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  margin-block: 0 var(--pd-space-6);
+}
+
+.pd-storybook-product-shell-page :is(
+  .pd-tbi-header,
+  .pd-msbi-header,
+  .pd-pal-header,
+  .pd-set-header
+) {
+  position: static;
+  top: auto;
+  z-index: auto;
+  border: 1px solid rgb(var(--pd-vl-border));
+  border-radius: var(--pd-radius-surface);
+  background: rgb(var(--pd-vl-surface));
+  box-shadow: var(--pd-shadow-raised);
+  color: rgb(var(--pd-vl-text));
+  margin-block-end: var(--pd-space-6);
+}
+
+.pd-storybook-product-shell-page :is(
+  .pd-tbi-header,
+  .pd-msbi-header,
+  .pd-pal-header,
+  .pd-set-header
+) :is(h1, h2, h3, strong, p, span, small, em) {
+  color: inherit;
+}
+
+.pd-storybook-product-shell-page .pd-pal-tabs {
+  max-width: 100%;
+  padding-inline: var(--pd-space-4);
+  scrollbar-gutter: stable;
+}
+
+.pd-storybook-product-shell-page .pd-pal-tabs__item {
+  min-width: max-content;
+}
+
+.pd-tbi,
+.pd-tbi__content,
+.pd-tbi-table-wrap {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.pd-tbi-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pd-tbi-table {
+  width: 100%;
+  min-width: min(920px, 100%);
+}

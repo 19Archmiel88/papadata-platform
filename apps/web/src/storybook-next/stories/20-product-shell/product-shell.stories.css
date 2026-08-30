@@ -1,17 +1,33 @@
 .pd-s20-page .pd-f0-page__inner {
   width: min(100%, 1680px);
-}.pd-s20-stage {
+}
+
+/* ProductShellFrame locks document.body scroll on mount — correct in
+   production, where exactly one instance owns the full viewport and scrolls
+   its own content internally. Storybook mounts it alongside page chrome and
+   sometimes multiple demo instances on one page, so the lock must not apply
+   here or the whole story becomes unscrollable. */
+body.pd-product-shell-scroll-lock {
+  overflow: auto !important;
+}
+.pd-s20-stage {
   min-width: 0;
-}.pd-s20-stage--compact {
+  background: var(--pd-shell-canvas);
+}
+.pd-s20-stage--compact {
   max-width: 960px;
-}.pd-s20-stage--mobile {
+}
+.pd-s20-stage--mobile {
   max-width: 430px;
   margin-inline: auto;
-}.pd-s20-stage--mobile .pd-product-shell {
+}
+.pd-s20-stage--mobile .pd-product-shell {
   min-height: 780px;
-}.pd-s20-stage--mobile .pd-product-shell__body {
+}
+.pd-s20-stage--mobile .pd-product-shell__body {
   display: block;
-}.pd-s20-stage--mobile .pd-product-shell__sidebar-column,
+}
+.pd-s20-stage--mobile .pd-product-shell__sidebar-column,
 .pd-s20-stage--mobile .pd-product-shell__side-rail {
   display: none;
 }
@@ -30,15 +46,18 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--pd-space-5);
-}.pd-s20-panel {
+}
+.pd-s20-panel {
   min-width: 0;
   display: grid;
   gap: var(--pd-space-4);
   padding: var(--pd-space-5);
-}.pd-s20-panel h3,
+}
+.pd-s20-panel h3,
 .pd-s20-panel p {
   margin: 0;
-}.pd-s20-panel p {
+}
+.pd-s20-panel p {
   color: var(--pd-text-secondary);
   line-height: var(--pd-line-height-relaxed);
 }
@@ -52,79 +71,18 @@
   .pd-s20-isolated__row {
     grid-template-columns: 1fr;
   }
-}.pd-s20-stage .pd-product-shell {
+}
+.pd-s20-stage .pd-product-shell {
   min-height: 760px;
-}/* Prism Refractive pass for 20 Powłoka produktu. */
-.pd-f0-page[data-pd-story-section="20"] .pd-s20-stage {
-  --pd-shell-canvas: rgb(9 13 22);
-  --pd-shell-surface: rgb(15 23 42 / 0.84);
-  --pd-shell-surface-subtle: rgb(30 41 59 / 0.64);
-  --pd-shell-surface-raised: rgb(30 41 59 / 0.88);
-  --pd-shell-surface-overlay: rgb(15 23 42 / 0.94);
-  --pd-shell-surface-active: rgb(49 46 129 / 0.42);
-  --pd-shell-text: rgb(241 245 249);
-  --pd-shell-text-secondary: rgb(203 213 225);
-  --pd-shell-text-muted: rgb(148 163 184);
-  --pd-shell-separator: rgb(255 255 255 / 0.1);
-  --pd-shell-separator-strong: rgb(255 255 255 / 0.18);
-  --pd-shell-brand: rgb(99 102 241);
-  --pd-shell-brand-strong: rgb(199 210 254);
-  --pd-shell-brand-ambient: rgb(99 102 241 / 0.2);
-  --pd-shell-glow: rgb(99 102 241 / 0.3);
-  --pd-workspace-canvas: rgb(248 250 252);
-  --pd-workspace-surface: rgb(255 255 255 / 0.86);
-  --pd-workspace-surface-panel: rgb(255 255 255 / 0.92);
-  --pd-workspace-surface-raised: rgb(255 255 255 / 0.96);
-  position: relative;
-}:root[data-theme="dark"] .pd-f0-page[data-pd-story-section="20"] .pd-s20-stage,
-html.dark .pd-f0-page[data-pd-story-section="20"] .pd-s20-stage {
-  --pd-workspace-canvas: rgb(9 13 22);
-  --pd-workspace-surface: rgb(15 23 42 / 0.76);
-  --pd-workspace-surface-panel: rgb(15 23 42 / 0.82);
-  --pd-workspace-surface-raised: rgb(30 41 59 / 0.84);
-}.pd-f0-page[data-pd-story-section="20"] .pd-s20-stage > *,
+}
+
+/* Stacking context so overlays (command palette, notifications, account
+   panel) layer correctly above panel content within the Storybook stage. */
+.pd-f0-page[data-pd-story-section="20"] .pd-s20-stage > *,
 .pd-f0-page[data-pd-story-section="20"] .pd-s20-panel > * {
   position: relative;
   z-index: 1;
-}.pd-f0-page[data-pd-story-section="20"] .pd-s20-panel {
+}
+.pd-f0-page[data-pd-story-section="20"] .pd-s20-panel {
   position: relative;
-}/* -------------------------------------------------------------------------- */
-/* Section 20 hard reset — shell controls must use Prism, not legacy surfaces  */
-/* -------------------------------------------------------------------------- */
-
-.pd-f0-page[data-pd-story-section='20'] .pd-s20-stage,
-.pd-f0-page[data-pd-story-section='20'] .pd-s20-panel {
-  --pd-shell-canvas: rgb(9 13 22);
-  --pd-shell-surface: rgb(15 23 42 / 0.88);
-  --pd-shell-surface-subtle: rgb(30 41 59 / 0.66);
-  --pd-shell-surface-raised: rgb(30 41 59 / 0.9);
-  --pd-shell-surface-overlay: rgb(15 23 42 / 0.94);
-  --pd-shell-surface-active: rgb(79 70 229 / 0.22);
-  --pd-shell-text: rgb(248 250 252);
-  --pd-shell-text-secondary: rgb(203 213 225);
-  --pd-shell-text-muted: rgb(148 163 184);
-  --pd-shell-separator: rgb(255 255 255 / 0.1);
-  --pd-shell-separator-strong: rgb(255 255 255 / 0.18);
-  --pd-shell-brand: rgb(129 140 248);
-  --pd-shell-brand-strong: rgb(199 210 254);
-  --pd-shell-brand-ambient: rgb(99 102 241 / 0.2);
-  --pd-shell-glow: rgb(99 102 241 / 0.3);
-  --pd-workspace-canvas: rgb(248 250 252);
-  --pd-workspace-surface: rgb(255 255 255 / 0.88);
-  --pd-workspace-surface-panel: rgb(255 255 255 / 0.94);
-  --pd-workspace-surface-raised: rgb(255 255 255 / 0.98);
-  --pd-brand-action: rgb(79 70 229);
-  --pd-brand-action-hover: rgb(67 56 202);
-  --pd-brand-action-on: rgb(255 255 255);
-}.pd-f0-page[data-pd-story-section='20'] [class~="pd-product-shell__workspace"],
-.pd-f0-page[data-pd-story-section='20'] [class~="pd-product-shell__content"],
-.pd-f0-page[data-pd-story-section='20'] [class~="pd-product-shell__page"] {
-  color: rgb(15 23 42);
-}:root[data-theme='dark'] .pd-f0-page[data-pd-story-section='20'] [class~="pd-product-shell__workspace"],
-html.dark .pd-f0-page[data-pd-story-section='20'] [class~="pd-product-shell__workspace"],
-:root[data-theme='dark'] .pd-f0-page[data-pd-story-section='20'] [class~="pd-product-shell__content"],
-html.dark .pd-f0-page[data-pd-story-section='20'] [class~="pd-product-shell__content"],
-:root[data-theme='dark'] .pd-f0-page[data-pd-story-section='20'] [class~="pd-product-shell__page"],
-html.dark .pd-f0-page[data-pd-story-section='20'] [class~="pd-product-shell__page"] {
-  color: rgb(241 245 249);
 }

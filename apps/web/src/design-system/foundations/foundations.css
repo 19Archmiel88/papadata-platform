@@ -1,12 +1,12 @@
+@import './product-page-layout.css';
 @import "@fontsource/inter/400.css";
 @import "@fontsource/inter/500.css";
 @import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
-@import "@fontsource/newsreader/400.css";
-@import "@fontsource/newsreader/500.css";
-@import "@fontsource/newsreader/600.css";
 @import "./themes/refractive-prism.css";
+@import "./dashboard-visual-unification.css";
 
 :root {
   font-family: var(--pd-font-sans);
@@ -74,7 +74,7 @@ h5,
 h6 {
   color: var(--pd-text);
   font-weight: var(--pd-font-weight-semibold);
-  letter-spacing: -0.025em;
+  letter-spacing: var(--pd-letter-spacing);
 }
 
 p {

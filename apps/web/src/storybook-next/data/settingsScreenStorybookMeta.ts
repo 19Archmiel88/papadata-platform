@@ -1,6 +1,6 @@
 import type {
   SettingsScreenId,
-} from '../../screens/settings/settingsData';
+} from '../runtime/screens/settings/settingsData';
 
 export type SettingsScreenStorybookMeta = {
   readonly documentPath: string;

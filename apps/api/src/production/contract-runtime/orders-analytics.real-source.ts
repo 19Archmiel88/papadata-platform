@@ -11,6 +11,7 @@ import {
   resolveMetricWindow,
   type CommandCenterDateRangeInput,
 } from "./command-center-metrics.contract-data.ts";
+import { pseudonymizeCustomerReference } from "./customer-lifecycle.ts";
 
 /** Narrow slice of `CommandCenterDataSource` this module actually needs. */
 export type OrdersDataSource = Pick<CommandCenterDataSource, "listCanonicalRecords">;
@@ -125,15 +126,19 @@ function mapCanonicalOrderRow(row: Record<string, unknown>): RealOrdersRecord | 
     return null;
   }
 
+  // `customerReference` (email / provider customer id, see normalizeOrder in
+  // canonical-normalizer.ts) is real and already flows through the canonical
+  // payload -- Command Center's own Customer Split section already relies on
+  // it (see customer-lifecycle.ts). It was never wired into this list
+  // before; hashed here rather than shown raw so no PII reaches the UI.
+  const customerReference = readEntityString(entity, "customerReference");
+
   return {
     amount: {
       amount: Math.round(grossAmount * 100) / 100,
       currency: readEntityString(entity, "currency") ?? "PLN",
     },
-    // No real customer identity is resolved anywhere in the pipeline yet
-    // (see P0 "canonical customer identity") -- left null rather than
-    // fabricating a pseudonym from order fields.
-    customerPseudonym: null,
+    customerPseudonym: customerReference ? pseudonymizeCustomerReference(customerReference) : null,
     externalOrderId: externalId,
     orderedAt: orderedAt as IsoDateTime,
     orderId: `${providerId}:${externalId}`,

@@ -1,0 +1,371 @@
+/*
+ * PapaData shared product-page layout primitives.
+ *
+ * Generated from exact cross-page duplicates confirmed by
+ * UI Precision Audit V2.
+ *
+ * This file contains layout only:
+ * - no product semantics
+ * - no colors
+ * - no business copy
+ * - no component behavior
+ */
+
+/* anchor-navigation-visible */
+.pd-msbi-nav.is-visible,
+.pd-ccbi-anchor-nav.is-visible,
+.pd-pbi-anchor-nav.is-visible,
+.pd-obi-anchor-nav.is-visible,
+.pd-pcbi-anchor-nav.is-visible,
+.pd-tbi-anchor-nav.is-visible,
+.pd-set-nav.is-visible,
+.pd-cbi-anchor-nav.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+  visibility: visible;
+}
+
+/* product-page-content */
+.pd-ccbi__content,
+.pd-pbi__content,
+.pd-obi__content,
+.pd-tbi__content,
+.pd-cbi__content {
+  display: grid;
+  gap: 32px;
+  margin: 0 auto;
+  max-width: 1280px;
+  padding: 24px;
+  width: 100%;
+}
+
+/* anchor-navigation-inner */
+.pd-pbi-anchor-nav > div,
+.pd-obi-anchor-nav > div,
+.pd-pcbi-anchor-nav > div,
+.pd-tbi-anchor-nav > div,
+.pd-cbi-anchor-nav > div {
+  display: flex;
+  gap: 6px;
+  max-width: calc(100vw - 48px);
+  overflow-x: auto;
+  padding: 6px 10px;
+}
+
+/* two-column-layout */
+.pd-pbi-two-col,
+.pd-obi-two-column,
+.pd-pcbi-two-column,
+.pd-tbi-split,
+.pd-cbi-affinity-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* P1-2 shared grid primitives */
+
+/* three-column-compact */
+.pd-obi-return-summary,
+.pd-pcbi-alert-grid, .pd-pcbi-card-grid--thirds,
+.pd-pcbi-simulator-metrics,
+.pd-cbi-rfm-cards {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* four-column-grid */
+.pd-pbi-lifecycle-grid,
+.pd-pcbi-creative-grid,
+.pd-tbi-quality-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* two-column-compact-12 */
+.pd-pal-saved-chart-grid,
+.pd-obi-discount-segments,
+.pd-tbi-drawer-metrics {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* two-column-compact-14 */
+.pd-msbi-problem-grid,
+.pd-msbi-form-grid,
+.pd-set-field-row {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* three-column-grid-with-margin */
+.pd-ccbi-kpi-grid,
+.pd-obi-insight-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 16px;
+}
+
+/* six-column-compact */
+.pd-pbi-kpi-grid,
+.pd-obi-kpi-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+/* six-column-grid */
+.pd-pcbi-kpi-grid,
+.pd-tbi-kpi-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+/* P1-3 shared flex / action / modal primitives */
+
+/* flex-center-space-between */
+.pd-msbi-price-box div,
+.pd-pal-recommendation-callout div,
+.pd-pal-slider > span,
+.pd-pcbi-kpi__head, .pd-pcbi-kpi__meta,
+.pd-pcbi-creative-metric div,
+.pd-pcbi-creative-card__head,
+.pd-cbi-kpi-card > div,
+.pd-cbi-rfm-card div,
+.pd-cbi-pareto-card div {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* flex-center-wrap-gap-8 */
+.pd-msbi-inspector__head > div:first-child > div,
+.pd-pal-brand__title-row,
+.pd-obi-priority__meta, .pd-obi-priority__actions,
+.pd-obi-explorer-actions,
+.pd-cbi-drawer__head > div > div {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* flex-center-space-between-gap-10 */
+.pd-pbi-risk-card > div:first-child, .pd-pbi-risk-card footer, .pd-pbi-deadstock-alert > div, .pd-pbi-basket-card > div:first-child, .pd-pbi-lifecycle-card > div,
+.pd-pcbi-alert div,
+.pd-set-audit-item__head,
+.pd-cbi-ai-card > div:first-child, .pd-cbi-ai-card footer {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+/* actions-wrap-end-gap-8 */
+.pd-ccbi-product-tools,
+.pd-pbi-table-tools,
+.pd-tbi-header-actions {
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* flex-center-space-between-gap-8 */
+.pd-pbi-kpi-card__top,
+.pd-obi-kpi-card > div,
+.pd-pcbi-platform-card div {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+/* modal-head */
+.pd-pbi-modal__head,
+.pd-cbi-modal__head {
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+/* modal-heading */
+.pd-pbi-modal__head h2,
+.pd-cbi-modal h2 {
+  font-size: var(--pd-type-size-heading-3);
+  margin-top: 8px;
+}
+
+/* modal-actions */
+.pd-pbi-modal-actions,
+.pd-cbi-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+/* drawer-backdrop-layout */
+.pd-pbi-drawer-backdrop,
+.pd-cbi-drawer-backdrop {
+  align-items: stretch;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* toolbar-controls-wrap-end */
+.pd-pcbi-table-toolbar__controls,
+.pd-cbi-explorer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* P1-4 shared typography / compact layout primitives */
+
+/* caption-semibold */
+.pd-pbi-kpi-card__trend span,
+.pd-obi-kpi-card p {
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
+}
+
+/* flex-start-space-between */
+.pd-pbi-matrix-cell > span,
+.pd-pcbi-drawer__head, .pd-pcbi-ai-drawer__head {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* micro-semibold */
+.pd-pbi-matrix-cell > span:last-child small,
+.pd-obi-lifecycle-stage small {
+  font-size: var(--pd-type-size-micro);
+  font-weight: 600;
+}
+
+/* mono-caption */
+.pd-pal-state-list__item strong,
+.pd-pcbi-budget-range b {
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+}
+
+/* two-column-compact-8 */
+.pd-pal-chart-type-grid, .pd-pal-control-grid,
+.pd-set-status-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* micro-uppercase-semibold */
+.pd-obi-lifecycle-stage span,
+.pd-pcbi-performer-group > span {
+  font-size: var(--pd-type-size-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* body-large-semibold */
+.pd-obi-return-summary strong,
+.pd-tbi-device-card > div:last-child strong {
+  font-size: var(--pd-type-size-body-large);
+  font-weight: 600;
+}
+
+/* vertical-stack-gap-8 */
+.pd-obi-refunded-product, .pd-obi-line-items article,
+.pd-pcbi-pacing > div:first-child, .pd-pcbi-table-footer, .pd-pcbi-drawer__footer {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* note-caption */
+.pd-tbi-semantic-note p,
+.pd-set-panel-note p {
+  font-size: var(--pd-type-size-caption);
+  line-height: 1.55;
+}
+
+/* two-column-gap-20 */
+.pd-hc-context-grid, .pd-hc-analytics,
+.pd-cbi-ai-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* P1-5 shared safe paired layouts */
+
+/* definition-list */
+.pd-pbi-definition-list,
+.pd-cbi-definition-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+/* card-body-grid-padding-16 */
+.pd-pcbi-creative-card__body,
+.pd-cbi-affinity-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+/* ai-card-body-grid */
+.pd-pcbi-ai-response section,
+.pd-cbi-ai-card__body {
+  display: grid;
+  gap: 6px;
+}
+
+/* page-header-inner */
+.pd-tbi-header__inner,
+.pd-msbi-header__inner {
+  margin: 0 auto;
+  max-width: 1280px;
+  padding: 0 24px;
+}
+
+/* P1-6 shared progress / wrapped controls */
+
+/* progress-fill-rounded */
+.pd-ccbi-share-cell b,
+.pd-cbi-progress__bar {
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+}
+
+/* progress-fill */
+.pd-ccbi-latency-list b i,
+.pd-pcbi-pacing__bar span {
+  display: block;
+  height: 100%;
+}
+
+/* wrapped-controls-gap-10 */
+.pd-pbi-hero-metrics,
+.pd-pal-palette-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* wrapped-controls-gap-8 */
+.pd-pbi-segmented,
+.pd-pal-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

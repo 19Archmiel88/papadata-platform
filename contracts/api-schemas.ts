@@ -71,7 +71,7 @@ export interface BillingRecord { subscriptionId: UUID; planCode: string; status:
 export interface BillingSummary { total: number; ready: number; warning: number; critical: number; updatedAt: ISODateTime; }
 export interface BillingForecast { horizonEnd: ISODateTime; expected: number; lowerBound: number; upperBound: number; confidence: number; }
 export interface BillingTimelineEvent { eventId: UUID; occurredAt: ISODateTime; type: string; actorId: UUID | null; description: string; }
-export interface CampaignsRecord { campaignId: UUID; name: string; channel: CampaignChannel; status: CampaignStatus; budget: Money; spend: Money; revenue: Money; roas: number | null; }
+export interface CampaignsRecord { campaignId: UUID; name: string; channel: CampaignChannel; status: CampaignStatus | null; budget: Money | null; spend: Money; revenue: Money; roas: number | null; impressions?: number | null; clicks?: number | null; ctr?: number | null; cpc?: number | null; cpm?: number | null; conversions?: number | null; }
 export interface CampaignsSummary { total: number; ready: number; warning: number; critical: number; updatedAt: ISODateTime; }
 export interface CampaignsForecast { horizonEnd: ISODateTime; expected: number; lowerBound: number; upperBound: number; confidence: number; }
 export interface CampaignsTimelineEvent { eventId: UUID; occurredAt: ISODateTime; type: string; actorId: UUID | null; description: string; }
@@ -83,7 +83,15 @@ export interface CompanyRecord { companyId: UUID | null; nip: string; legalName:
 export interface CompanySummary { total: number; ready: number; warning: number; critical: number; updatedAt: ISODateTime; }
 export interface CompanyForecast { horizonEnd: ISODateTime; expected: number; lowerBound: number; upperBound: number; confidence: number; }
 export interface CompanyTimelineEvent { eventId: UUID; occurredAt: ISODateTime; type: string; actorId: UUID | null; description: string; }
-export interface CustomersRecord { customerPseudonym: string; segmentId: UUID | null; cohortKey: string | null; ordersCount: number; revenue: Money; ltv: Money | null; consentStatus: ConsentStatus; }
+export interface CustomersRecord { customerPseudonym: string; segmentId: UUID | null; cohortKey: string | null; ordersCount: number; revenue: Money; ltv: Money | null; consentStatus: ConsentStatus; segmentLabel?: string; rfmScore?: string; recencyDays?: number; aov?: Money; isNewCustomer?: boolean; }
+export interface CustomersSegmentSummaryView { segmentId: UUID; segmentLabel: string; description: string; count: number; revenue: Money; }
+export interface CustomersParetoBucketView { bucket: 'A' | 'B' | 'C'; customers: number; revenue: Money; cumulativeRevenueShare: number; }
+export interface CustomersTrendPointView { date: string; newCustomers: number; returningCustomers: number; newRevenue: number; returningRevenue: number; }
+export interface CustomersCacView { spend: Money; newCustomers: number; cac: number | null; }
+export interface CustomersAffinityRowView { name: string; orders: number; revenue: Money; }
+export interface CustomersAffinityView { newProducts: CustomersAffinityRowView[]; returningProducts: CustomersAffinityRowView[]; }
+export interface CustomersPriorityAlertView { count: number; revenue: Money; }
+export interface CustomersPortfolioTotalsView { totalCustomers: number; newCustomers: number; returningCustomers: number; activeCustomers: number; totalLtv: Money; totalWindowRevenue: Money; aovAllTime: Money | null; }
 export interface CustomersSummary { total: number; ready: number; warning: number; critical: number; updatedAt: ISODateTime; }
 export interface CustomersForecast { horizonEnd: ISODateTime; expected: number; lowerBound: number; upperBound: number; confidence: number; }
 export interface CustomersTimelineEvent { eventId: UUID; occurredAt: ISODateTime; type: string; actorId: UUID | null; description: string; }
@@ -683,7 +691,7 @@ export interface CustomersOverviewReadInput { requestedBy: UUID; effectiveAt: IS
 export interface CustomersOverviewReadNextAction { type: 'overview'; label: string; route: string | null; }
 export interface CustomersOverviewReadResult { operationId: 'customers.overview.read'; completedAt: ISODateTime; domain: 'customers'; }
 export interface CustomersOverviewReadRequest { context: ApiContext; dateRange: DateRangeRequest | null; page: PageRequest | null; filters: CustomersOverviewReadFilters | null; }
-export interface CustomersOverviewReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; overviewResult: CustomersOverviewReadResult; }
+export interface CustomersOverviewReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; overviewResult: CustomersOverviewReadResult; segments?: CustomersSegmentSummaryView[]; pareto?: CustomersParetoBucketView[]; trend?: CustomersTrendPointView[]; cac?: CustomersCacView | null; affinity?: CustomersAffinityView; priorityAlert?: CustomersPriorityAlertView | null; portfolioTotals?: CustomersPortfolioTotalsView; }
 export interface CustomersOverviewReadResponse { operationId: 'customers.overview.read'; correlationId: string; generatedAt: ISODateTime; data: CustomersOverviewReadData; warnings: ApiProblem[]; }
 export interface CustomersPrivacyReadFilters { search: string | null; status: string[] | null; source: string[] | null; privacyFilter: string | number | boolean | null; }
 export interface CustomersPrivacyReadInput { requestedBy: UUID; effectiveAt: ISODateTime | null; privacyValue: string | number | boolean | null; }

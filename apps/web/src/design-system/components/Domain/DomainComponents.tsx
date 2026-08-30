@@ -1,6 +1,9 @@
 export {
   PageHeader,
   Panel,
+  PriorityBand,
+  ProductSectionFrame,
+  ProductSectionTopbar,
   DetailPanel,
   DataStatusBanner,
   EvidencePanel,
@@ -29,6 +32,11 @@ export {
 export type {
   PageHeaderProps,
   PanelProps,
+  PriorityBandProps,
+  PriorityBandTone,
+  ProductSectionFrameProps,
+  ProductSectionTopbarItem,
+  ProductSectionTopbarProps,
   DetailPanelProps,
   DataStatusBannerProps,
   EvidencePanelProps,

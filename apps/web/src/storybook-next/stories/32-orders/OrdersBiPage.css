@@ -1,0 +1,1398 @@
+.pd-obi {
+  --pd-obi-surface-card: 255 255 255;
+  --pd-obi-amber-50: 247 245 243;
+  --pd-obi-amber-100: 240 235 229;
+  --pd-obi-amber-200: 228 215 200;
+  --pd-obi-amber-300: 217 191 160;
+  --pd-obi-amber-500: 213 140 52;
+  --pd-obi-amber-600: 195 119 30;
+  --pd-obi-amber-700: 159 98 24;
+  --pd-obi-amber-800: 120 76 23;
+  --pd-obi-amber-900: 89 59 23;
+  --pd-obi-blue-50: 244 245 245;
+  --pd-obi-blue-100: 234 235 235;
+  --pd-obi-blue-200: 213 214 216;
+  --pd-obi-blue-400: 152 158 164;
+  --pd-obi-blue-500: 123 133 142;
+  --pd-obi-blue-600: 102 112 122;
+  --pd-obi-blue-700: 84 92 100;
+  --pd-obi-blue-800: 66 71 77;
+  --pd-obi-blue-900: 52 56 60;
+  --pd-obi-emerald-50: 243 246 245;
+  --pd-obi-emerald-100: 231 239 236;
+  --pd-obi-emerald-200: 205 224 218;
+  --pd-obi-emerald-400: 123 193 171;
+  --pd-obi-emerald-600: 56 169 132;
+  --pd-obi-emerald-700: 45 138 108;
+  --pd-obi-emerald-800: 38 105 83;
+  --pd-obi-emerald-900: 33 79 64;
+  --pd-obi-indigo-50: 247 245 243;
+  --pd-obi-indigo-100: 240 235 229;
+  --pd-obi-indigo-200: 227 216 201;
+  --pd-obi-indigo-600: 189 124 36;
+  --pd-obi-indigo-700: 154 102 29;
+  --pd-obi-indigo-900: 87 61 26;
+  --pd-obi-indigo-950: 51 38 20;
+  --pd-obi-red-50: 246 243 243;
+  --pd-obi-red-100: 239 230 231;
+  --pd-obi-red-200: 224 204 206;
+  --pd-obi-red-500: 193 73 82;
+  --pd-obi-red-600: 173 51 61;
+  --pd-obi-red-700: 142 42 50;
+  --pd-obi-red-800: 107 36 41;
+  --pd-obi-red-900: 81 32 35;
+  --pd-obi-sky-50: 244 245 245;
+  --pd-obi-sky-100: 234 235 235;
+  --pd-obi-sky-200: 213 214 215;
+  --pd-obi-sky-600: 105 112 119;
+  --pd-obi-sky-700: 86 92 98;
+  --pd-obi-slate-50: 245 245 245;
+  --pd-obi-slate-100: 235 235 234;
+  --pd-obi-slate-200: 215 215 213;
+  --pd-obi-slate-300: 190 190 187;
+  --pd-obi-slate-400: 161 161 155;
+  --pd-obi-slate-500: 138 138 128;
+  --pd-obi-slate-600: 117 117 107;
+  --pd-obi-slate-700: 96 96 88;
+  --pd-obi-slate-800: 74 74 68;
+  --pd-obi-slate-900: 58 58 54;
+  --pd-obi-slate-950: 37 37 35;
+  --pd-obi-violet-50: 245 244 246;
+  --pd-obi-violet-100: 234 232 237;
+  --pd-obi-violet-200: 213 208 220;
+  --pd-obi-violet-300: 186 177 200;
+  --pd-obi-violet-600: 106 78 147;
+  --pd-obi-violet-700: 86 64 120;
+  --pd-obi-violet-800: 68 51 91;
+  --pd-obi-violet-900: 53 42 70;
+  --pd-section-frame-surface: rgb(var(--pd-obi-surface-card));
+  --pd-section-frame-text: rgb(var(--pd-obi-slate-900));
+  --pd-section-frame-muted: rgb(var(--pd-obi-slate-500));
+  --pd-section-topbar-surface: rgb(var(--pd-obi-surface-card) / 0.94);
+  --pd-section-topbar-text: rgb(var(--pd-obi-slate-500));
+  --pd-section-topbar-active-surface: rgb(var(--pd-obi-amber-600) / 0.14);
+  --pd-section-topbar-active-border: rgb(var(--pd-obi-amber-500) / 0.5);
+  --pd-section-topbar-active-text: rgb(var(--pd-obi-amber-700));
+  background: rgb(var(--pd-obi-slate-50));
+  color: rgb(var(--pd-obi-slate-900));
+  font-family: var(--pd-font-sans);
+  min-height: 100vh;
+}
+
+.pd-obi * {
+  box-sizing: border-box;
+}
+
+.pd-obi button,
+.pd-obi input,
+.pd-obi select {
+  font: inherit;
+}
+
+.pd-obi button {
+  cursor: pointer;
+}
+
+
+.pd-obi-inline-pills,
+.pd-obi-heading-with-pill {
+  align-items: center;
+  display: flex;
+}
+
+.pd-obi-dark-button,
+.pd-obi-warning-button,
+.pd-obi-outline-button,
+.pd-obi-muted-button,
+.pd-obi-link-button {
+  align-items: center;
+  border-radius: var(--pd-radius-small);
+  display: inline-flex;
+  gap: 7px;
+  justify-content: center;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.pd-obi-dark-button {
+  background: rgb(var(--pd-obi-slate-800));
+  border: 1px solid rgb(var(--pd-obi-slate-700));
+  color: white;
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
+  min-height: 34px;
+  padding: 7px 11px;
+}
+
+.pd-obi-dark-button:hover {
+  background: rgb(var(--pd-obi-slate-700));
+}
+
+.pd-obi-panel,
+.pd-obi-priority {
+  border-radius: var(--pd-radius-small);
+}
+
+.pd-obi-panel {
+  background: rgb(var(--pd-obi-surface-card));
+  box-shadow: var(--pd-shadow-raised);
+  padding: 20px;
+}
+
+.pd-obi-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.pd-obi-stack--tight {
+  gap: 8px;
+}
+
+.pd-obi-panel-head {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.pd-obi h1,
+.pd-obi h2,
+.pd-obi h3,
+.pd-obi p {
+  margin: 0;
+}
+
+.pd-obi h1 {
+  color: rgb(var(--pd-obi-slate-900));
+  font-size: var(--pd-type-size-heading-3);
+  font-weight: 600;
+}
+
+.pd-obi h2 {
+  color: rgb(var(--pd-obi-slate-900));
+  font-size: var(--pd-type-size-body-large);
+  font-weight: 600;
+}
+
+.pd-obi h3 {
+  color: rgb(var(--pd-obi-slate-900));
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.pd-obi p {
+  color: rgb(var(--pd-obi-slate-500));
+  font-size: var(--pd-type-size-body-small);
+  line-height: 1.55;
+}
+
+.pd-obi-priority {
+  align-items: center;
+  background: linear-gradient(90deg, rgb(var(--pd-obi-amber-50)), rgb(var(--pd-obi-amber-100)), rgb(var(--pd-obi-amber-50)));
+  border: 1px solid rgb(var(--pd-obi-amber-200));
+  box-shadow: var(--pd-shadow-control);
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.pd-obi-priority > div:first-child {
+  display: grid;
+  gap: 8px;
+  max-width: 840px;
+}
+
+.pd-obi-priority h2 {
+  font-size: var(--pd-type-size-section);
+}
+
+.pd-obi-priority p {
+  color: rgb(var(--pd-obi-slate-700));
+  font-size: var(--pd-type-size-caption);
+}
+
+
+.pd-obi-priority__meta {
+  color: rgb(var(--pd-obi-slate-600));
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-obi-priority__meta strong {
+  color: rgb(var(--pd-obi-slate-900));
+}
+
+.pd-obi-priority__actions {
+  flex: 0 0 auto;
+}
+
+.pd-obi-warning-button {
+  background: rgb(var(--pd-obi-amber-600));
+  border: 1px solid rgb(var(--pd-obi-amber-600));
+  color: white;
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
+  min-height: 40px;
+  padding: 10px 14px;
+}
+
+.pd-obi-outline-button {
+  background: rgb(var(--pd-obi-surface-card));
+  border: 1px solid rgb(var(--pd-obi-amber-300));
+  color: rgb(var(--pd-obi-slate-800));
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
+  min-height: 40px;
+  padding: 10px 14px;
+}
+
+.pd-obi-inline-pills {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pd-obi-inline-pills > span:last-child {
+  color: rgb(var(--pd-obi-amber-900));
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
+}
+
+.pd-obi-pill,
+.pd-obi-data-badge {
+  border-radius: var(--pd-radius-small);
+  display: inline-flex;
+  font-size: var(--pd-type-size-micro);
+  font-weight: 600;
+  line-height: 1;
+  padding: 5px 7px;
+}
+
+.pd-obi-pill {
+  text-transform: uppercase;
+}
+
+.pd-obi-pill--amber-strong {
+  background: rgb(var(--pd-obi-amber-600));
+  color: white;
+}
+
+.pd-obi-pill--blue-soft {
+  background: rgb(var(--pd-obi-blue-100));
+  color: rgb(var(--pd-obi-blue-800));
+}
+
+.pd-obi-pill--violet-strong {
+  background: rgb(var(--pd-obi-violet-600));
+  color: white;
+}
+
+.pd-obi-kpi-card {
+  background: rgb(var(--pd-obi-surface-card));
+  border-radius: var(--pd-radius-small);
+  box-shadow: var(--pd-shadow-raised);
+  display: grid;
+  gap: 8px;
+  min-height: 118px;
+  padding: 16px;
+  transition: box-shadow 180ms var(--pd-motion-easing-standard);
+}
+
+.pd-obi-kpi-card:hover {
+  box-shadow: var(--pd-shadow-floating);
+}
+
+
+.pd-obi-kpi-card > div > span:first-child {
+  color: rgb(var(--pd-obi-slate-500));
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
+}
+
+.pd-obi-kpi-card > strong {
+  font-family: var(--pd-premium-hero-numeral-font);
+  font-size: var(--pd-type-size-metric);
+  font-weight: var(--pd-premium-hero-numeral-weight);
+}
+
+.pd-obi-kpi-card small {
+  color: rgb(var(--pd-obi-slate-500));
+  font-size: var(--pd-type-size-caption);
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+
+.pd-obi-data-badge {
+  border: 1px solid;
+}
+
+.pd-obi-data-badge:hover {
+  transform: translateY(-1px);
+}
+
+.pd-obi-data-badge--emerald {
+  background: rgb(var(--pd-obi-emerald-100));
+  border-color: rgb(var(--pd-obi-emerald-200));
+  color: rgb(var(--pd-obi-emerald-800));
+}
+
+.pd-obi-data-badge--blue {
+  background: rgb(var(--pd-obi-blue-100));
+  border-color: rgb(var(--pd-obi-blue-200));
+  color: rgb(var(--pd-obi-blue-800));
+}
+
+.pd-obi-data-badge--violet {
+  background: rgb(var(--pd-obi-violet-100));
+  border-color: rgb(var(--pd-obi-violet-200));
+  color: rgb(var(--pd-obi-violet-800));
+}
+
+.pd-obi-data-badge--amber {
+  background: rgb(var(--pd-obi-amber-100));
+  border-color: rgb(var(--pd-obi-amber-200));
+  color: rgb(var(--pd-obi-amber-800));
+}
+
+.pd-obi-tone-text--amber {
+  color: rgb(var(--pd-obi-amber-700));
+}
+
+.pd-obi-tone-text--blue {
+  color: rgb(var(--pd-obi-blue-600));
+}
+
+.pd-obi-tone-text--emerald {
+  color: rgb(var(--pd-obi-emerald-600));
+}
+
+.pd-obi-tone-text--indigo {
+  color: rgb(var(--pd-obi-indigo-600));
+}
+
+.pd-obi-tone-text--red {
+  color: rgb(var(--pd-obi-red-600));
+}
+
+.pd-obi-tone-text--slate {
+  color: rgb(var(--pd-obi-slate-900));
+}
+
+.pd-obi-tone-text--muted {
+  color: rgb(var(--pd-obi-slate-400));
+}
+
+.pd-obi-operational-grid {
+  background: rgb(var(--pd-obi-slate-100));
+  border: 1px solid rgb(var(--pd-obi-slate-200));
+  border-radius: var(--pd-radius-small);
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 12px;
+}
+
+.pd-obi-operational-grid article {
+  display: grid;
+  gap: 3px;
+}
+
+.pd-obi-operational-grid span,
+.pd-obi-operational-grid small {
+  color: rgb(var(--pd-obi-slate-500));
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-obi-operational-grid strong {
+  color: rgb(var(--pd-obi-slate-800));
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-obi-panel-head {
+  gap: 14px;
+}
+
+.pd-obi-chart {
+  height: 350px;
+  min-width: 0;
+  width: 100%;
+}
+
+.pd-obi-chart--short {
+  height: 300px;
+}
+
+.pd-obi-segmented {
+  align-items: center;
+  background: rgb(var(--pd-obi-slate-100));
+  border-radius: var(--pd-radius-small);
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+}
+
+.pd-obi-segmented button {
+  background: transparent;
+  border: 0;
+  border-radius: var(--pd-radius-small);
+  color: rgb(var(--pd-obi-slate-600));
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
+  min-height: 30px;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+
+.pd-obi-segmented button[data-active="true"] {
+  background: rgb(var(--pd-obi-surface-card));
+  box-shadow: var(--pd-shadow-control);
+  color: rgb(var(--pd-obi-blue-600));
+}
+
+.pd-obi-code-pill {
+  background: rgb(var(--pd-obi-slate-100));
+  border-radius: var(--pd-radius-small);
+  color: rgb(var(--pd-obi-slate-500));
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+  padding: 6px 9px;
+}
+
+.pd-obi-lifecycle-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+.pd-obi-lifecycle-stage {
+  border: 1px solid;
+  border-radius: var(--pd-radius-small);
+  display: grid;
+  gap: 5px;
+  min-height: 96px;
+  padding: 12px 9px;
+  text-align: center;
+}
+
+
+.pd-obi-lifecycle-stage strong {
+  font-size: var(--pd-type-size-section);
+  font-weight: 600;
+}
+
+
+.pd-obi-lifecycle-stage--slate {
+  background: rgb(var(--pd-obi-slate-50));
+  border-color: rgb(var(--pd-obi-slate-200));
+  color: rgb(var(--pd-obi-slate-800));
+}
+
+.pd-obi-lifecycle-stage--amber {
+  background: rgb(var(--pd-obi-amber-50));
+  border-color: rgb(var(--pd-obi-amber-200));
+  color: rgb(var(--pd-obi-amber-800));
+}
+
+.pd-obi-lifecycle-stage--blue {
+  background: rgb(var(--pd-obi-blue-50));
+  border-color: rgb(var(--pd-obi-blue-200));
+  color: rgb(var(--pd-obi-blue-800));
+}
+
+.pd-obi-lifecycle-stage--indigo {
+  background: rgb(var(--pd-obi-indigo-50));
+  border-color: rgb(var(--pd-obi-indigo-200));
+  color: rgb(var(--pd-obi-indigo-700));
+}
+
+.pd-obi-lifecycle-stage--sky {
+  background: rgb(var(--pd-obi-sky-50));
+  border-color: rgb(var(--pd-obi-sky-200));
+  color: rgb(var(--pd-obi-sky-700));
+}
+
+.pd-obi-lifecycle-stage--violet {
+  background: rgb(var(--pd-obi-violet-50));
+  border-color: rgb(var(--pd-obi-violet-200));
+  color: rgb(var(--pd-obi-violet-800));
+}
+
+.pd-obi-lifecycle-stage--emerald {
+  background: rgb(var(--pd-obi-emerald-50));
+  border-color: rgb(var(--pd-obi-emerald-200));
+  color: rgb(var(--pd-obi-emerald-800));
+}
+
+.pd-obi-lifecycle-stage--red {
+  background: rgb(var(--pd-obi-red-50));
+  border-color: rgb(var(--pd-obi-red-200));
+  color: rgb(var(--pd-obi-red-800));
+}
+
+.pd-obi-heading-with-pill {
+  gap: 8px;
+}
+
+
+.pd-obi-explorer-actions label {
+  align-items: center;
+  background: rgb(var(--pd-obi-slate-50));
+  border: 1px solid rgb(var(--pd-obi-slate-300));
+  border-radius: var(--pd-radius-small);
+  display: flex;
+  gap: 8px;
+  min-width: 260px;
+  padding: 0 9px;
+}
+
+.pd-obi-explorer-actions input,
+.pd-obi-order-ai input {
+  background: transparent;
+  border: 0;
+  color: rgb(var(--pd-obi-slate-800));
+  font-size: var(--pd-type-size-caption);
+  min-height: 36px;
+  outline: 0;
+  width: 100%;
+}
+
+.pd-obi-muted-button {
+  background: rgb(var(--pd-obi-slate-100));
+  border: 1px solid rgb(var(--pd-obi-slate-200));
+  color: rgb(var(--pd-obi-slate-700));
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
+  min-height: 36px;
+  padding: 8px 11px;
+}
+
+.pd-obi-table-wrap,
+.pd-obi-simple-table-wrap {
+  overflow-x: auto;
+}
+
+.pd-obi-orders-table,
+.pd-obi-simple-table {
+  border-collapse: collapse;
+  font-size: var(--pd-type-size-caption);
+  min-width: 880px;
+  text-align: left;
+  width: 100%;
+}
+
+.pd-obi-orders-table th,
+.pd-obi-simple-table th {
+  background: rgb(var(--pd-obi-slate-50));
+  border-bottom: 1px solid rgb(var(--pd-obi-slate-200));
+  color: rgb(var(--pd-obi-slate-500));
+  font-size: var(--pd-type-size-micro);
+  font-weight: 600;
+  padding: 12px;
+  text-transform: uppercase;
+}
+
+.pd-obi-orders-table td,
+.pd-obi-simple-table td {
+  border-bottom: 1px solid rgb(var(--pd-obi-slate-100));
+  color: rgb(var(--pd-obi-slate-600));
+  padding: 12px;
+  vertical-align: middle;
+}
+
+.pd-obi-orders-table tbody tr:hover {
+  background: rgb(var(--pd-obi-slate-50));
+}
+
+.pd-obi-orders-table td:first-child strong,
+.pd-obi-simple-table td:first-child strong {
+  color: rgb(var(--pd-obi-blue-600));
+}
+
+.pd-obi-orders-table td strong {
+  color: rgb(var(--pd-obi-slate-900));
+}
+
+.pd-obi-orders-table small {
+  color: rgb(var(--pd-obi-slate-400));
+  display: block;
+  font-size: var(--pd-type-size-micro);
+  margin-top: 3px;
+}
+
+.pd-obi-orders-table td:last-child,
+.pd-obi-orders-table th:last-child {
+  text-align: right;
+}
+
+.pd-obi-source-badge,
+.pd-obi-fulfillment-badge,
+.pd-obi-payment-badge,
+.pd-obi-sla-badge {
+  border-radius: var(--pd-radius-small);
+  display: inline-flex;
+  font-size: var(--pd-type-size-micro);
+  font-weight: 600;
+  padding: 5px 7px;
+}
+
+.pd-obi-source-badge {
+  background: rgb(var(--pd-obi-slate-100));
+  border: 1px solid rgb(var(--pd-obi-slate-200));
+  color: rgb(var(--pd-obi-slate-700));
+}
+
+.pd-obi-fulfillment-badge {
+  background: rgb(var(--pd-obi-indigo-50));
+  color: rgb(var(--pd-obi-indigo-700));
+}
+
+.pd-obi-payment-badge--ok,
+.pd-obi-sla-badge--ok {
+  background: rgb(var(--pd-obi-emerald-100));
+  color: rgb(var(--pd-obi-emerald-800));
+}
+
+.pd-obi-payment-badge--failed,
+.pd-obi-sla-badge--breached {
+  background: rgb(var(--pd-obi-red-100));
+  color: rgb(var(--pd-obi-red-800));
+}
+
+.pd-obi-sla-badge--warning {
+  background: rgb(var(--pd-obi-amber-100));
+  color: rgb(var(--pd-obi-amber-800));
+}
+
+.pd-obi-refund-value {
+  color: rgb(var(--pd-obi-amber-700)) !important;
+  font-weight: 600;
+}
+
+.pd-obi-muted-value {
+  color: rgb(var(--pd-obi-slate-400)) !important;
+}
+
+.pd-obi-link-button {
+  background: transparent;
+  border: 0;
+  color: rgb(var(--pd-obi-blue-600));
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
+  padding: 0;
+}
+
+.pd-obi-link-button:hover {
+  color: rgb(var(--pd-obi-blue-800));
+  text-decoration: underline;
+}
+
+.pd-obi-empty-cell {
+  color: rgb(var(--pd-obi-slate-400)) !important;
+  font-weight: 600;
+  height: 88px;
+  text-align: center !important;
+}
+
+.pd-obi-table-footer {
+  align-items: center;
+  border-top: 1px solid rgb(var(--pd-obi-slate-100));
+  color: rgb(var(--pd-obi-slate-500));
+  display: flex;
+  font-size: var(--pd-type-size-caption);
+  gap: 12px;
+  justify-content: space-between;
+  padding-top: 12px;
+}
+
+.pd-obi-table-footer > div:last-child {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.pd-obi-table-footer button {
+  background: rgb(var(--pd-obi-slate-100));
+  border: 1px solid rgb(var(--pd-obi-slate-200));
+  border-radius: var(--pd-radius-small);
+  color: rgb(var(--pd-obi-slate-700));
+  font-size: var(--pd-type-size-caption);
+  min-height: 28px;
+  padding: 4px 9px;
+}
+
+.pd-obi-table-footer button:disabled {
+  opacity: 0.5;
+}
+
+.pd-obi-table-footer strong,
+.pd-obi-table-footer span {
+  color: rgb(var(--pd-obi-slate-900));
+  font-weight: 600;
+}
+
+
+.pd-obi-payment-grid {
+  align-items: center;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 1fr);
+}
+
+.pd-obi-payment-side {
+  display: grid;
+  gap: 12px;
+}
+
+.pd-obi-warning-note,
+.pd-obi-info-note {
+  border-radius: var(--pd-radius-small);
+  font-size: var(--pd-type-size-caption);
+  line-height: 1.5;
+  padding: 12px;
+}
+
+.pd-obi-warning-note {
+  background: rgb(var(--pd-obi-amber-50));
+  border: 1px solid rgb(var(--pd-obi-amber-200));
+  color: rgb(var(--pd-obi-amber-900));
+}
+
+.pd-obi-warning-note strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.pd-obi-info-note {
+  background: rgb(var(--pd-obi-slate-50));
+  border: 1px solid rgb(var(--pd-obi-slate-200));
+  color: rgb(var(--pd-obi-slate-600));
+}
+
+.pd-obi-payment-side dl {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+}
+
+.pd-obi-payment-side div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pd-obi-payment-side dt,
+.pd-obi-payment-side dd {
+  color: rgb(var(--pd-obi-slate-700));
+  font-size: var(--pd-type-size-caption);
+  margin: 0;
+}
+
+.pd-obi-payment-side dd {
+  color: rgb(var(--pd-obi-slate-900));
+  font-weight: 600;
+  text-align: right;
+}
+
+
+.pd-obi-segment-card,
+.pd-obi-return-summary article,
+.pd-obi-refunded-product,
+.pd-obi-funnel-step,
+.pd-obi-timeline-grid article,
+.pd-obi-economics article,
+.pd-obi-line-items article {
+  border-radius: var(--pd-radius-small);
+}
+
+.pd-obi-segment-card {
+  border: 1px solid;
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+}
+
+.pd-obi-segment-card--slate {
+  background: rgb(var(--pd-obi-slate-50));
+  border-color: rgb(var(--pd-obi-slate-200));
+}
+
+.pd-obi-segment-card--blue {
+  background: rgb(var(--pd-obi-blue-50));
+  border-color: rgb(var(--pd-obi-blue-200));
+}
+
+.pd-obi-segment-card span,
+.pd-obi-segment-card p {
+  color: rgb(var(--pd-obi-slate-600));
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-obi-segment-card > strong {
+  color: rgb(var(--pd-obi-slate-900));
+  font-size: var(--pd-type-size-section);
+  font-weight: 600;
+}
+
+.pd-obi-segment-card small {
+  color: rgb(var(--pd-obi-slate-500));
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-obi-segment-card b {
+  color: rgb(var(--pd-obi-emerald-600));
+  font-weight: 600;
+}
+
+.pd-obi-simple-table {
+  min-width: 560px;
+}
+
+
+.pd-obi-return-summary article {
+  background: rgb(var(--pd-obi-slate-50));
+  border: 1px solid rgb(var(--pd-obi-slate-200));
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  text-align: center;
+}
+
+.pd-obi-return-summary span {
+  color: rgb(var(--pd-obi-slate-500));
+  font-size: var(--pd-type-size-micro);
+}
+
+
+.pd-obi-refunded-product {
+  align-items: center;
+  background: rgb(var(--pd-obi-slate-50));
+  border: 1px solid rgb(var(--pd-obi-slate-200));
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.pd-obi-refunded-product strong {
+  color: rgb(var(--pd-obi-slate-800));
+  display: block;
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-obi-refunded-product span {
+  color: rgb(var(--pd-obi-slate-400));
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-obi-refunded-product b {
+  font-size: var(--pd-type-size-body);
+  white-space: nowrap;
+}
+
+.pd-obi-funnel-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.pd-obi-funnel-step {
+  background: rgb(var(--pd-obi-slate-50));
+  border: 1px solid rgb(var(--pd-obi-slate-200));
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  text-align: center;
+}
+
+.pd-obi-funnel-step--emerald {
+  background: rgb(var(--pd-obi-emerald-50));
+  border-color: rgb(var(--pd-obi-emerald-200));
+}
+
+.pd-obi-funnel-step span {
+  color: rgb(var(--pd-obi-slate-400));
+  font-size: var(--pd-type-size-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.pd-obi-funnel-step strong {
+  color: rgb(var(--pd-obi-slate-900));
+  font-size: var(--pd-type-size-body-large);
+}
+
+.pd-obi-funnel-step small {
+  color: rgb(var(--pd-obi-slate-500));
+  font-size: var(--pd-type-size-micro);
+  font-weight: 600;
+}
+
+.pd-obi-funnel-step--amber small {
+  color: rgb(var(--pd-obi-amber-600));
+}
+
+.pd-obi-funnel-step--emerald span,
+.pd-obi-funnel-step--emerald strong,
+.pd-obi-funnel-step--emerald small {
+  color: rgb(var(--pd-obi-emerald-800));
+}
+
+.pd-obi-insight__confidence {
+  background: rgb(var(--pd-obi-violet-900) / 0.8);
+  border: 1px solid rgb(var(--pd-obi-violet-700));
+  border-radius: var(--pd-radius-pill);
+  color: rgb(var(--pd-obi-violet-200));
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+
+.pd-obi-insight__mark {
+  align-items: center;
+  background: rgb(var(--pd-obi-violet-600));
+  border-radius: var(--pd-radius-small);
+  color: white;
+  display: inline-flex;
+  font-size: var(--pd-type-size-body-small);
+  font-weight: 600;
+  gap: 7px;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+
+.pd-obi-insight-grid article {
+  background: rgb(var(--pd-obi-slate-800) / 0.82);
+  border: 1px solid rgb(var(--pd-obi-slate-700));
+  border-radius: var(--pd-radius-small);
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+}
+
+.pd-obi-insight-grid strong {
+  font-size: var(--pd-type-size-body);
+}
+
+.pd-obi-insight-grid p {
+  color: rgb(var(--pd-obi-slate-300));
+  line-height: 1.55;
+}
+
+.pd-obi-modal-backdrop,
+.pd-obi-drawer-backdrop {
+  background: rgb(var(--pd-obi-slate-900) / 0.52);
+  bottom: 0;
+  display: flex;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 80;
+}
+
+.pd-obi-modal-backdrop {
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.pd-obi-drawer-backdrop {
+  justify-content: flex-end;
+}
+
+.pd-obi-modal,
+.pd-obi-drawer {
+  background: rgb(var(--pd-obi-surface-card));
+  box-shadow: var(--pd-shadow-overlay);
+}
+
+.pd-obi-modal {
+  border-radius: var(--pd-radius-small);
+  display: grid;
+  gap: 16px;
+  max-width: 450px;
+  padding: 24px;
+  width: 100%;
+}
+
+.pd-obi-modal header {
+  align-items: center;
+  border-bottom: 1px solid rgb(var(--pd-obi-slate-200));
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 12px;
+}
+
+.pd-obi-modal header > div {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.pd-obi-modal header button,
+.pd-obi-drawer__head button {
+  background: transparent;
+  border: 0;
+  color: rgb(var(--pd-obi-slate-400));
+  font-size: var(--pd-type-size-section);
+  font-weight: 600;
+}
+
+.pd-obi-modal h2 {
+  color: rgb(var(--pd-obi-slate-900));
+  font-size: var(--pd-type-size-body-large);
+}
+
+.pd-obi-modal__body {
+  display: grid;
+  gap: 12px;
+}
+
+.pd-obi-modal__body span {
+  color: rgb(var(--pd-obi-slate-400));
+  display: block;
+  font-size: var(--pd-type-size-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.pd-obi-modal__body strong {
+  color: rgb(var(--pd-obi-slate-900));
+  display: block;
+  font-family: var(--pd-font-mono);
+  font-size: var(--pd-type-size-caption);
+  margin-top: 3px;
+}
+
+.pd-obi-modal__body p {
+  background: rgb(var(--pd-obi-slate-50));
+  border: 1px solid rgb(var(--pd-obi-slate-200));
+  border-radius: var(--pd-radius-small);
+  color: rgb(var(--pd-obi-slate-600));
+  font-size: var(--pd-type-size-caption);
+  margin-top: 5px;
+  padding: 9px;
+}
+
+.pd-obi-modal footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pd-obi-drawer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 680px;
+  overflow-y: auto;
+  width: min(100%, 680px);
+}
+
+.pd-obi-drawer__content {
+  display: grid;
+  flex: 1;
+  gap: 24px;
+  padding: 24px;
+}
+
+.pd-obi-drawer__head {
+  align-items: flex-start;
+  border-bottom: 1px solid rgb(var(--pd-obi-slate-200));
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 16px;
+}
+
+.pd-obi-drawer__head h2 {
+  color: rgb(var(--pd-obi-slate-900));
+  font-size: var(--pd-type-size-heading-3);
+}
+
+.pd-obi-drawer__head p {
+  color: rgb(var(--pd-obi-slate-500));
+  font-size: var(--pd-type-size-caption);
+  margin-top: 6px;
+}
+
+.pd-obi-drawer__head p strong {
+  color: rgb(var(--pd-obi-slate-700));
+  font-family: var(--pd-font-mono);
+}
+
+.pd-obi-timeline-grid,
+.pd-obi-economics {
+  background: rgb(var(--pd-obi-slate-50));
+  border: 1px solid rgb(var(--pd-obi-slate-200));
+  border-radius: var(--pd-radius-small);
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.pd-obi-timeline-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.pd-obi-economics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.pd-obi-timeline-grid article,
+.pd-obi-economics article {
+  display: grid;
+  gap: 4px;
+}
+
+.pd-obi-timeline-grid span,
+.pd-obi-economics span,
+.pd-obi-timeline-grid small,
+.pd-obi-economics small {
+  color: rgb(var(--pd-obi-slate-400));
+  font-size: var(--pd-type-size-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.pd-obi-timeline-grid strong,
+.pd-obi-economics strong {
+  color: rgb(var(--pd-obi-slate-800));
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-obi-line-items {
+  display: grid;
+  gap: 8px;
+}
+
+.pd-obi-line-items article {
+  align-items: center;
+  background: rgb(var(--pd-obi-slate-50));
+  border: 1px solid rgb(var(--pd-obi-slate-200));
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.pd-obi-line-items strong {
+  color: rgb(var(--pd-obi-slate-800));
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-obi-line-items span {
+  color: rgb(var(--pd-obi-slate-400));
+  display: block;
+  font-size: var(--pd-type-size-caption);
+  margin-top: 2px;
+}
+
+.pd-obi-order-ai {
+  background: rgb(var(--pd-obi-violet-50));
+  border: 1px solid rgb(var(--pd-obi-violet-200));
+  border-radius: var(--pd-radius-small);
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+}
+
+.pd-obi-order-ai > div {
+  align-items: center;
+  color: rgb(var(--pd-obi-violet-700));
+  display: flex;
+  font-size: var(--pd-type-size-caption);
+  gap: 7px;
+}
+
+.pd-obi-order-ai p {
+  color: rgb(var(--pd-obi-violet-900));
+  font-size: var(--pd-type-size-caption);
+}
+
+.pd-obi-order-ai form {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.pd-obi-order-ai input {
+  background: rgb(var(--pd-obi-surface-card));
+  border: 1px solid rgb(var(--pd-obi-violet-300));
+  border-radius: var(--pd-radius-small);
+  padding: 0 10px;
+}
+
+.pd-obi-order-ai button {
+  background: rgb(var(--pd-obi-violet-700));
+  border: 0;
+  border-radius: var(--pd-radius-small);
+  color: white;
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
+  min-height: 32px;
+  padding: 6px 10px;
+}
+
+.pd-obi-order-ai small {
+  color: rgb(var(--pd-obi-violet-800));
+  font-size: var(--pd-type-size-micro);
+  font-weight: 600;
+}
+
+.pd-obi-drawer__footer {
+  border-top: 1px solid rgb(var(--pd-obi-slate-200));
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px;
+}
+
+@media (max-width: 1180px) {
+  .pd-obi-kpi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pd-obi-lifecycle-grid,
+  .pd-obi-funnel-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 980px) {
+  .pd-obi-panel-head,
+  .pd-obi-priority {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pd-obi-priority__actions,
+  .pd-obi-explorer-actions {
+    justify-content: flex-start;
+  }
+
+  .pd-obi-two-column,
+  .pd-obi-payment-grid,
+  .pd-obi-insight-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-obi-lifecycle-grid,
+  .pd-obi-funnel-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pd-obi-operational-grid,
+  .pd-obi-timeline-grid,
+  .pd-obi-economics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .pd-obi__content {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .pd-obi-table-footer,
+  .pd-obi-table-footer > div:last-child,
+  .pd-obi-order-ai form {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pd-obi-kpi-grid,
+  .pd-obi-operational-grid,
+  .pd-obi-lifecycle-grid,
+  .pd-obi-funnel-grid,
+  .pd-obi-discount-segments,
+  .pd-obi-return-summary,
+  .pd-obi-timeline-grid,
+  .pd-obi-economics {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-obi-explorer-actions,
+  .pd-obi-explorer-actions label,
+  .pd-obi-muted-button,
+  .pd-obi-warning-button,
+  .pd-obi-outline-button {
+    width: 100%;
+  }
+
+  .pd-obi-segmented {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pd-obi-chart {
+    height: 280px;
+  }
+
+  }
+
+[data-theme="dark"] .pd-obi {
+  --pd-obi-surface-card: 30 30 34;
+  --pd-obi-amber-50: 16 13 10;
+  --pd-obi-amber-100: 30 24 16;
+  --pd-obi-amber-200: 56 44 26;
+  --pd-obi-amber-300: 97 72 36;
+  --pd-obi-amber-500: 218 145 37;
+  --pd-obi-amber-600: 232 164 64;
+  --pd-obi-amber-700: 237 181 100;
+  --pd-obi-amber-800: 237 198 141;
+  --pd-obi-amber-900: 238 215 180;
+  --pd-obi-blue-50: 12 12 13;
+  --pd-obi-blue-100: 22 22 24;
+  --pd-obi-blue-200: 40 40 42;
+  --pd-obi-blue-400: 94 94 100;
+  --pd-obi-blue-500: 123 123 132;
+  --pd-obi-blue-600: 144 144 152;
+  --pd-obi-blue-700: 165 165 171;
+  --pd-obi-blue-800: 186 186 191;
+  --pd-obi-blue-900: 208 208 210;
+  --pd-obi-emerald-50: 11 15 13;
+  --pd-obi-emerald-100: 19 27 25;
+  --pd-obi-emerald-200: 31 50 44;
+  --pd-obi-emerald-400: 62 132 110;
+  --pd-obi-emerald-600: 94 202 167;
+  --pd-obi-emerald-700: 125 212 184;
+  --pd-obi-emerald-800: 158 219 200;
+  --pd-obi-emerald-900: 191 228 216;
+  --pd-obi-indigo-50: 16 13 10;
+  --pd-obi-indigo-100: 30 24 16;
+  --pd-obi-indigo-200: 56 44 26;
+  --pd-obi-indigo-600: 232 164 64;
+  --pd-obi-indigo-700: 237 181 100;
+  --pd-obi-indigo-900: 238 215 180;
+  --pd-obi-indigo-950: 243 232 216;
+  --pd-obi-red-50: 16 10 10;
+  --pd-obi-red-100: 30 16 17;
+  --pd-obi-red-200: 56 25 27;
+  --pd-obi-red-500: 222 33 46;
+  --pd-obi-red-600: 236 59 72;
+  --pd-obi-red-700: 240 97 107;
+  --pd-obi-red-800: 239 138 145;
+  --pd-obi-red-900: 239 179 183;
+  --pd-obi-sky-50: 12 12 13;
+  --pd-obi-sky-100: 22 22 24;
+  --pd-obi-sky-200: 40 40 42;
+  --pd-obi-sky-600: 144 144 152;
+  --pd-obi-sky-700: 165 165 171;
+  --pd-obi-slate-50: 12 12 13;
+  --pd-obi-slate-100: 22 22 23;
+  --pd-obi-slate-200: 40 40 42;
+  --pd-obi-slate-300: 65 65 68;
+  --pd-obi-slate-400: 95 95 99;
+  --pd-obi-slate-500: 124 124 131;
+  --pd-obi-slate-600: 145 145 151;
+  --pd-obi-slate-700: 166 166 171;
+  --pd-obi-slate-800: 187 187 190;
+  --pd-obi-slate-900: 208 208 210;
+  --pd-obi-slate-950: 229 229 230;
+  --pd-obi-violet-50: 13 11 15;
+  --pd-obi-violet-100: 23 18 28;
+  --pd-obi-violet-200: 40 30 52;
+  --pd-obi-violet-300: 65 44 88;
+  --pd-obi-violet-600: 145 86 210;
+  --pd-obi-violet-700: 166 118 218;
+  --pd-obi-violet-800: 187 154 224;
+  --pd-obi-violet-900: 208 188 230;
+}

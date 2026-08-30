@@ -95,3 +95,10 @@ apps/web/test-results/
 
 # Legacy donor is stored outside the runtime repository
 /migration/donor/
+.runtime/
+.playwright-cli/
+output/
+apps/web/output/
+storybook-static/
+playwright-report/
+test-results/

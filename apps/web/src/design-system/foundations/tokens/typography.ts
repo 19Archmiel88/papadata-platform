@@ -61,10 +61,12 @@ export const typographyTokens = {
 export const typographyContract = {
   interfaceFont: 'Inter',
   dataFont: 'JetBrains Mono',
+  displayAccentFont: 'Newsreader',
 
   allowedFontFamilies: [
     'Inter',
     'JetBrains Mono',
+    'Newsreader',
   ],
 
   forbiddenFontFamilies: [
@@ -84,6 +86,20 @@ export const typographyContract = {
     ordinaryDescriptionsUseDataFont: false,
     navigationUsesDataFont: false,
     buttonsUseDataFont: false,
+
+    // Approved 2026-08-29: the editorial serif accent already shipped in
+    // Auth's hero display numeral and Command Center's headline KPI
+    // numerals/section headings (see command-center-one-page.css,
+    // command-center-plan-execution.css). Scoped narrowly — it is not a
+    // second interface font, only a display accent for the handful of
+    // "big number" and section-title moments that intentionally echo
+    // Auth's editorial numeral treatment.
+    heroMetricsMayUseDisplayAccentFont: true,
+    sectionHeadingsMayUseDisplayAccentFont: true,
+    bodyUsesDisplayAccentFont: false,
+    navigationUsesDisplayAccentFont: false,
+    formsUseDisplayAccentFont: false,
+    buttonsUseDisplayAccentFont: false,
   },
 } as const;
 

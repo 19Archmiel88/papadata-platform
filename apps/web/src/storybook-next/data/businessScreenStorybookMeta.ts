@@ -1,6 +1,6 @@
 import type {
   BusinessScreenId,
-} from '../../screens/business/businessData';
+} from '../runtime/screens/business/businessData';
 
 export type BusinessScreenStorybookMeta = {
   readonly documentPath: string;

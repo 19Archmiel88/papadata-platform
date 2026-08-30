@@ -1,6 +1,6 @@
 import type {
   DecisionsScreenId,
-} from '../../screens/decisions/decisionsData';
+} from '../runtime/screens/decisions/decisionsData';
 
 export type DecisionsScreenStorybookMeta = {
   readonly documentPath: string;

@@ -1,0 +1,1137 @@
+/**
+ * Dashboard visual unification: single canonical semantic color ramp
+ * (--pd-vl-*) consumed by every dashboard BI screen (Storybook mockup
+ * AND real production screen alike), so a page's local ramp tokens
+ * (--pd-cbi-*, --pd-obi-*, --pd-tbi-*, ...) resolve to ONE shared source
+ * instead of each page hand-maintaining its own ~50-property copy.
+ * Loaded globally via foundations.css so it applies in Storybook and in
+ * the real app without either side needing to import it explicitly.
+ */
+:root,
+[data-theme="light"] {
+  --pd-vl-canvas: 244 244 241;
+  --pd-vl-surface: 255 255 255;
+  --pd-vl-surface-soft: 248 247 245;
+  --pd-vl-surface-muted: 239 239 235;
+  --pd-vl-border: 229 229 226;
+  --pd-vl-border-strong: 211 211 207;
+  --pd-vl-text: 12 13 15;
+  --pd-vl-text-secondary: 64 64 63;
+  --pd-vl-text-muted: 122 122 128;
+  --pd-vl-inverse: 255 255 255;
+  --pd-vl-shell: 12 13 15;
+  --pd-vl-shell-panel: 23 23 26;
+  --pd-vl-shell-accent-deep: 80 7 36;
+  --pd-vl-shell-accent-soft: 249 168 212;
+
+  --pd-vl-accent-50: 253 242 248;
+  --pd-vl-accent-100: 252 231 243;
+  --pd-vl-accent-200: 251 207 232;
+  --pd-vl-accent-300: 249 168 212;
+  --pd-vl-accent-400: 244 114 182;
+  --pd-vl-accent-500: 236 72 153;
+  --pd-vl-accent-600: 219 39 119;
+  --pd-vl-accent-700: 190 24 93;
+  --pd-vl-accent-800: 157 23 77;
+  --pd-vl-accent-900: 131 24 67;
+  --pd-vl-accent-950: 80 7 36;
+
+  --pd-vl-success-50: 240 253 244;
+  --pd-vl-success-100: 220 252 231;
+  --pd-vl-success-200: 187 247 208;
+  --pd-vl-success-300: 134 239 172;
+  --pd-vl-success-400: 74 222 128;
+  --pd-vl-success-500: 34 197 94;
+  --pd-vl-success-600: 22 163 74;
+  --pd-vl-success-700: 21 128 61;
+  --pd-vl-success-800: 22 101 52;
+  --pd-vl-success-900: 20 83 45;
+  --pd-vl-success-950: 5 46 22;
+
+  --pd-vl-warning-50: 255 251 235;
+  --pd-vl-warning-100: 254 243 199;
+  --pd-vl-warning-200: 253 230 138;
+  --pd-vl-warning-300: 252 211 77;
+  --pd-vl-warning-400: 251 191 36;
+  --pd-vl-warning-500: 245 158 11;
+  --pd-vl-warning-600: 217 119 6;
+  --pd-vl-warning-700: 180 83 9;
+  --pd-vl-warning-800: 146 64 14;
+  --pd-vl-warning-900: 120 53 15;
+  --pd-vl-warning-950: 69 26 3;
+
+  --pd-vl-danger-50: 254 242 242;
+  --pd-vl-danger-100: 254 226 226;
+  --pd-vl-danger-200: 254 202 202;
+  --pd-vl-danger-300: 252 165 165;
+  --pd-vl-danger-400: 248 113 113;
+  --pd-vl-danger-500: 239 68 68;
+  --pd-vl-danger-600: 220 38 38;
+  --pd-vl-danger-700: 185 28 28;
+  --pd-vl-danger-800: 153 27 27;
+  --pd-vl-danger-900: 127 29 29;
+  --pd-vl-danger-950: 69 10 10;
+
+  --pd-vl-info-50: 239 246 255;
+  --pd-vl-info-100: 219 234 254;
+  --pd-vl-info-200: 191 219 254;
+  --pd-vl-info-300: 147 197 253;
+  --pd-vl-info-400: 96 165 250;
+  --pd-vl-info-500: 59 130 246;
+  --pd-vl-info-600: 37 99 235;
+  --pd-vl-info-700: 29 78 216;
+  --pd-vl-info-800: 30 64 175;
+  --pd-vl-info-900: 30 58 138;
+
+  --pd-vl-violet-50: 245 243 255;
+  --pd-vl-violet-100: 237 233 254;
+  --pd-vl-violet-200: 221 214 254;
+  --pd-vl-violet-300: 196 181 253;
+  --pd-vl-violet-400: 167 139 250;
+  --pd-vl-violet-500: 139 92 246;
+  --pd-vl-violet-600: 124 58 237;
+  --pd-vl-violet-700: 109 40 217;
+  --pd-vl-violet-800: 91 33 182;
+  --pd-vl-violet-900: 76 29 149;
+  --pd-vl-violet-950: 46 16 101;
+
+  --pd-vl-slate-50: 245 245 245;
+  --pd-vl-slate-100: 235 235 234;
+  --pd-vl-slate-200: 215 215 213;
+  --pd-vl-slate-300: 190 190 187;
+  --pd-vl-slate-400: 161 161 155;
+  --pd-vl-slate-500: 138 138 128;
+  --pd-vl-slate-600: 117 117 107;
+  --pd-vl-slate-700: 96 96 88;
+  --pd-vl-slate-800: 74 74 68;
+  --pd-vl-slate-900: 58 58 54;
+  --pd-vl-slate-950: 37 37 35;
+}
+
+[data-theme="dark"] {
+  --pd-vl-canvas: 12 13 15;
+  --pd-vl-surface: 23 23 26;
+  --pd-vl-surface-soft: 34 34 38;
+  --pd-vl-surface-muted: 42 42 46;
+  --pd-vl-border: 58 58 64;
+  --pd-vl-border-strong: 75 75 82;
+  --pd-vl-text: 245 245 247;
+  --pd-vl-text-secondary: 186 186 193;
+  --pd-vl-text-muted: 113 113 122;
+  --pd-vl-inverse: 12 13 15;
+  --pd-vl-shell: 12 13 15;
+  --pd-vl-shell-panel: 23 23 26;
+  --pd-vl-shell-accent-deep: 80 7 36;
+  --pd-vl-shell-accent-soft: 249 168 212;
+
+  --pd-vl-accent-50: 58 20 40;
+  --pd-vl-accent-100: 80 7 36;
+  --pd-vl-accent-200: 131 24 67;
+  --pd-vl-accent-300: 157 23 77;
+  --pd-vl-accent-400: 190 24 93;
+  --pd-vl-accent-500: 236 72 153;
+  --pd-vl-accent-600: 244 114 182;
+  --pd-vl-accent-700: 249 168 212;
+  --pd-vl-accent-800: 251 207 232;
+  --pd-vl-accent-900: 252 231 243;
+  --pd-vl-accent-950: 253 242 248;
+
+  --pd-vl-success-50: 18 51 34;
+  --pd-vl-success-100: 20 83 45;
+  --pd-vl-success-200: 22 101 52;
+  --pd-vl-success-300: 21 128 61;
+  --pd-vl-success-400: 22 163 74;
+  --pd-vl-success-500: 34 197 94;
+  --pd-vl-success-600: 74 222 128;
+  --pd-vl-success-700: 134 239 172;
+  --pd-vl-success-800: 187 247 208;
+  --pd-vl-success-900: 220 252 231;
+  --pd-vl-success-950: 240 253 244;
+
+  --pd-vl-warning-50: 58 42 10;
+  --pd-vl-warning-100: 69 26 3;
+  --pd-vl-warning-200: 120 53 15;
+  --pd-vl-warning-300: 146 64 14;
+  --pd-vl-warning-400: 217 119 6;
+  --pd-vl-warning-500: 245 158 11;
+  --pd-vl-warning-600: 251 191 36;
+  --pd-vl-warning-700: 252 211 77;
+  --pd-vl-warning-800: 253 230 138;
+  --pd-vl-warning-900: 254 243 199;
+  --pd-vl-warning-950: 255 251 235;
+
+  --pd-vl-danger-50: 60 20 24;
+  --pd-vl-danger-100: 69 10 10;
+  --pd-vl-danger-200: 127 29 29;
+  --pd-vl-danger-300: 153 27 27;
+  --pd-vl-danger-400: 185 28 28;
+  --pd-vl-danger-500: 239 68 68;
+  --pd-vl-danger-600: 248 113 113;
+  --pd-vl-danger-700: 252 165 165;
+  --pd-vl-danger-800: 254 202 202;
+  --pd-vl-danger-900: 254 226 226;
+  --pd-vl-danger-950: 254 242 242;
+
+  --pd-vl-info-50: 18 35 58;
+  --pd-vl-info-100: 30 58 138;
+  --pd-vl-info-200: 30 64 175;
+  --pd-vl-info-300: 29 78 216;
+  --pd-vl-info-400: 37 99 235;
+  --pd-vl-info-500: 59 130 246;
+  --pd-vl-info-600: 96 165 250;
+  --pd-vl-info-700: 147 197 253;
+  --pd-vl-info-800: 191 219 254;
+  --pd-vl-info-900: 219 234 254;
+
+  --pd-vl-violet-50: 33 18 55;
+  --pd-vl-violet-100: 46 16 101;
+  --pd-vl-violet-200: 76 29 149;
+  --pd-vl-violet-300: 91 33 182;
+  --pd-vl-violet-400: 109 40 217;
+  --pd-vl-violet-500: 139 92 246;
+  --pd-vl-violet-600: 167 139 250;
+  --pd-vl-violet-700: 196 181 253;
+  --pd-vl-violet-800: 221 214 254;
+  --pd-vl-violet-900: 237 233 254;
+  --pd-vl-violet-950: 245 243 255;
+
+  --pd-vl-slate-50: 12 12 13;
+  --pd-vl-slate-100: 22 22 23;
+  --pd-vl-slate-200: 40 40 42;
+  --pd-vl-slate-300: 65 65 68;
+  --pd-vl-slate-400: 95 95 99;
+  --pd-vl-slate-500: 124 124 131;
+  --pd-vl-slate-600: 145 145 151;
+  --pd-vl-slate-700: 166 166 171;
+  --pd-vl-slate-800: 187 187 190;
+  --pd-vl-slate-900: 208 208 210;
+  --pd-vl-slate-950: 229 229 230;
+}
+
+body .pd-ccbi,
+html[data-theme="dark"] .pd-ccbi {
+  --pd-ccbi-indigo-300: var(--pd-vl-accent-300);
+  --pd-ccbi-indigo-400: var(--pd-vl-accent-400);
+  --pd-ccbi-indigo-500: var(--pd-vl-accent-500);
+  --pd-ccbi-indigo-600: var(--pd-vl-accent-600);
+  --pd-ccbi-amber-100: var(--pd-vl-warning-100);
+  --pd-ccbi-amber-300: var(--pd-vl-warning-300);
+  --pd-ccbi-amber-400: var(--pd-vl-warning-400);
+  --pd-ccbi-amber-500: var(--pd-vl-warning-500);
+  --pd-ccbi-amber-950: var(--pd-vl-warning-950);
+  --pd-ccbi-emerald-300: var(--pd-vl-success-300);
+  --pd-ccbi-emerald-400: var(--pd-vl-success-400);
+  --pd-ccbi-emerald-500: var(--pd-vl-success-500);
+  --pd-ccbi-rose-300: var(--pd-vl-danger-300);
+  --pd-ccbi-rose-400: var(--pd-vl-danger-400);
+  --pd-ccbi-rose-500: var(--pd-vl-danger-500);
+  --pd-ccbi-rose-600: var(--pd-vl-danger-600);
+  --pd-ccbi-rose-950: var(--pd-vl-danger-950);
+  --pd-ccbi-blue-300: var(--pd-vl-info-300);
+  --pd-ccbi-blue-400: var(--pd-vl-info-400);
+  --pd-ccbi-blue-500: var(--pd-vl-info-500);
+  --pd-ccbi-blue-600: var(--pd-vl-info-600);
+  --pd-ccbi-cyan-400: var(--pd-vl-info-400);
+  --pd-ccbi-violet-400: var(--pd-vl-violet-400);
+  --pd-ccbi-violet-500: var(--pd-vl-violet-500);
+}
+
+body .pd-pcbi,
+html[data-theme="dark"] .pd-pcbi {
+  --pd-pcbi-pink-500: var(--pd-vl-accent-500);
+}
+
+body .pd-pcbi,
+body .pd-obi,
+body .pd-pbi,
+body .pd-cbi,
+body .pd-tbi,
+body .pd-msbi,
+body .pd-hc,
+body .pd-set,
+body .pd-pal,
+html[data-theme="dark"] .pd-pcbi,
+html[data-theme="dark"] .pd-obi,
+html[data-theme="dark"] .pd-pbi,
+html[data-theme="dark"] .pd-cbi,
+html[data-theme="dark"] .pd-tbi,
+html[data-theme="dark"] .pd-msbi,
+html[data-theme="dark"] .pd-hc,
+html[data-theme="dark"] .pd-set,
+html[data-theme="dark"] .pd-pal {
+  --pd-pcbi-indigo-50: var(--pd-vl-accent-50);
+  --pd-pcbi-indigo-100: var(--pd-vl-accent-100);
+  --pd-pcbi-indigo-200: var(--pd-vl-accent-200);
+  --pd-pcbi-indigo-300: var(--pd-vl-accent-300);
+  --pd-pcbi-indigo-400: var(--pd-vl-accent-400);
+  --pd-pcbi-indigo-500: var(--pd-vl-accent-500);
+  --pd-pcbi-indigo-600: var(--pd-vl-accent-600);
+  --pd-pcbi-indigo-700: var(--pd-vl-accent-700);
+  --pd-pcbi-indigo-800: var(--pd-vl-accent-800);
+  --pd-pcbi-indigo-900: var(--pd-vl-accent-900);
+  --pd-pcbi-indigo-950: var(--pd-vl-accent-950);
+}
+
+body .pd-obi,
+html[data-theme="dark"] .pd-obi {
+  --pd-obi-indigo-50: var(--pd-vl-accent-50);
+  --pd-obi-indigo-100: var(--pd-vl-accent-100);
+  --pd-obi-indigo-200: var(--pd-vl-accent-200);
+  --pd-obi-indigo-600: var(--pd-vl-accent-600);
+  --pd-obi-indigo-700: var(--pd-vl-accent-700);
+  --pd-obi-indigo-900: var(--pd-vl-accent-900);
+  --pd-obi-indigo-950: var(--pd-vl-accent-950);
+}
+
+body .pd-pbi,
+html[data-theme="dark"] .pd-pbi {
+  --pd-pbi-indigo-50: var(--pd-vl-accent-50);
+  --pd-pbi-indigo-100: var(--pd-vl-accent-100);
+  --pd-pbi-indigo-200: var(--pd-vl-accent-200);
+  --pd-pbi-indigo-300: var(--pd-vl-accent-300);
+  --pd-pbi-indigo-500: var(--pd-vl-accent-500);
+  --pd-pbi-indigo-600: var(--pd-vl-accent-600);
+  --pd-pbi-indigo-700: var(--pd-vl-accent-700);
+  --pd-pbi-indigo-800: var(--pd-vl-accent-800);
+  --pd-pbi-indigo-900: var(--pd-vl-accent-900);
+  --pd-pbi-indigo-950: var(--pd-vl-accent-950);
+}
+
+body .pd-cbi,
+html[data-theme="dark"] .pd-cbi {
+  --pd-cbi-indigo-50: var(--pd-vl-accent-50);
+  --pd-cbi-indigo-100: var(--pd-vl-accent-100);
+  --pd-cbi-indigo-200: var(--pd-vl-accent-200);
+  --pd-cbi-indigo-300: var(--pd-vl-accent-300);
+  --pd-cbi-indigo-400: var(--pd-vl-accent-400);
+  --pd-cbi-indigo-500: var(--pd-vl-accent-500);
+  --pd-cbi-indigo-600: var(--pd-vl-accent-600);
+  --pd-cbi-indigo-700: var(--pd-vl-accent-700);
+  --pd-cbi-indigo-800: var(--pd-vl-accent-800);
+  --pd-cbi-indigo-900: var(--pd-vl-accent-900);
+  --pd-cbi-indigo-950: var(--pd-vl-accent-950);
+}
+
+body .pd-tbi,
+html[data-theme="dark"] .pd-tbi {
+  --pd-tbi-indigo-50: var(--pd-vl-accent-50);
+  --pd-tbi-indigo-100: var(--pd-vl-accent-100);
+  --pd-tbi-indigo-200: var(--pd-vl-accent-200);
+  --pd-tbi-indigo-300: var(--pd-vl-accent-300);
+  --pd-tbi-indigo-400: var(--pd-vl-accent-400);
+  --pd-tbi-indigo-500: var(--pd-vl-accent-500);
+  --pd-tbi-indigo-600: var(--pd-vl-accent-600);
+  --pd-tbi-indigo-700: var(--pd-vl-accent-700);
+  --pd-tbi-indigo-800: var(--pd-vl-accent-800);
+  --pd-tbi-indigo-900: var(--pd-vl-accent-900);
+  --pd-tbi-indigo-950: var(--pd-vl-accent-950);
+}
+
+body .pd-msbi,
+html[data-theme="dark"] .pd-msbi {
+  --pd-msbi-indigo-50: var(--pd-vl-accent-50);
+  --pd-msbi-indigo-100: var(--pd-vl-accent-100);
+  --pd-msbi-indigo-200: var(--pd-vl-accent-200);
+  --pd-msbi-indigo-500: var(--pd-vl-accent-500);
+  --pd-msbi-indigo-600: var(--pd-vl-accent-600);
+  --pd-msbi-indigo-700: var(--pd-vl-accent-700);
+}
+
+body .pd-hc,
+html[data-theme="dark"] .pd-hc {
+  --pd-hc-brand-50: var(--pd-vl-accent-50);
+  --pd-hc-brand-100: var(--pd-vl-accent-100);
+  --pd-hc-brand-200: var(--pd-vl-accent-200);
+  --pd-hc-brand-500: var(--pd-vl-accent-500);
+  --pd-hc-brand-600: var(--pd-vl-accent-600);
+  --pd-hc-brand-700: var(--pd-vl-accent-700);
+  --pd-hc-brand-800: var(--pd-vl-accent-800);
+  --pd-hc-brand-900: var(--pd-vl-accent-900);
+}
+
+body .pd-set,
+html[data-theme="dark"] .pd-set {
+  --pd-set-indigo-50: var(--pd-vl-accent-50);
+  --pd-set-indigo-100: var(--pd-vl-accent-100);
+  --pd-set-indigo-200: var(--pd-vl-accent-200);
+  --pd-set-indigo-300: var(--pd-vl-accent-300);
+  --pd-set-indigo-400: var(--pd-vl-accent-400);
+  --pd-set-indigo-500: var(--pd-vl-accent-500);
+  --pd-set-indigo-600: var(--pd-vl-accent-600);
+  --pd-set-indigo-700: var(--pd-vl-accent-700);
+  --pd-set-indigo-800: var(--pd-vl-accent-800);
+  --pd-set-indigo-900: var(--pd-vl-accent-900);
+  --pd-set-indigo-950: var(--pd-vl-accent-950);
+}
+
+body .pd-pal,
+html[data-theme="dark"] .pd-pal {
+  --pd-pal-indigo-50: var(--pd-vl-accent-50);
+  --pd-pal-indigo-100: var(--pd-vl-accent-100);
+  --pd-pal-indigo-200: var(--pd-vl-accent-200);
+  --pd-pal-indigo-600: var(--pd-vl-accent-600);
+  --pd-pal-indigo-700: var(--pd-vl-accent-700);
+  --pd-pal-indigo-900: var(--pd-vl-accent-900);
+}
+
+body .pd-pcbi,
+body .pd-obi,
+body .pd-pbi,
+body .pd-cbi,
+body .pd-tbi,
+body .pd-msbi,
+body .pd-hc,
+body .pd-set,
+body .pd-pal,
+html[data-theme="dark"] .pd-pcbi,
+html[data-theme="dark"] .pd-obi,
+html[data-theme="dark"] .pd-pbi,
+html[data-theme="dark"] .pd-cbi,
+html[data-theme="dark"] .pd-tbi,
+html[data-theme="dark"] .pd-msbi,
+html[data-theme="dark"] .pd-hc,
+html[data-theme="dark"] .pd-set,
+html[data-theme="dark"] .pd-pal {
+  --pd-pcbi-emerald-50: var(--pd-vl-success-50);
+  --pd-pcbi-emerald-100: var(--pd-vl-success-100);
+  --pd-pcbi-emerald-200: var(--pd-vl-success-200);
+  --pd-pcbi-emerald-300: var(--pd-vl-success-300);
+  --pd-pcbi-emerald-400: var(--pd-vl-success-400);
+  --pd-pcbi-emerald-500: var(--pd-vl-success-500);
+  --pd-pcbi-emerald-600: var(--pd-vl-success-600);
+  --pd-pcbi-emerald-700: var(--pd-vl-success-700);
+  --pd-pcbi-emerald-800: var(--pd-vl-success-800);
+  --pd-pcbi-emerald-900: var(--pd-vl-success-900);
+  --pd-pcbi-emerald-950: var(--pd-vl-success-950);
+}
+
+body .pd-obi,
+body .pd-pbi,
+body .pd-cbi,
+body .pd-tbi,
+body .pd-msbi,
+body .pd-hc,
+body .pd-set,
+body .pd-pal,
+html[data-theme="dark"] .pd-obi,
+html[data-theme="dark"] .pd-pbi,
+html[data-theme="dark"] .pd-cbi,
+html[data-theme="dark"] .pd-tbi,
+html[data-theme="dark"] .pd-msbi,
+html[data-theme="dark"] .pd-hc,
+html[data-theme="dark"] .pd-set,
+html[data-theme="dark"] .pd-pal {
+  --pd-obi-emerald-50: var(--pd-vl-success-50);
+  --pd-obi-emerald-100: var(--pd-vl-success-100);
+  --pd-obi-emerald-200: var(--pd-vl-success-200);
+  --pd-obi-emerald-400: var(--pd-vl-success-400);
+  --pd-obi-emerald-600: var(--pd-vl-success-600);
+  --pd-obi-emerald-700: var(--pd-vl-success-700);
+  --pd-obi-emerald-800: var(--pd-vl-success-800);
+  --pd-obi-emerald-900: var(--pd-vl-success-900);
+}
+
+body .pd-pbi,
+body .pd-cbi,
+body .pd-tbi,
+body .pd-msbi,
+body .pd-hc,
+body .pd-set,
+body .pd-pal,
+html[data-theme="dark"] .pd-pbi,
+html[data-theme="dark"] .pd-cbi,
+html[data-theme="dark"] .pd-tbi,
+html[data-theme="dark"] .pd-msbi,
+html[data-theme="dark"] .pd-hc,
+html[data-theme="dark"] .pd-set,
+html[data-theme="dark"] .pd-pal {
+  --pd-pbi-emerald-50: var(--pd-vl-success-50);
+  --pd-pbi-emerald-100: var(--pd-vl-success-100);
+  --pd-pbi-emerald-200: var(--pd-vl-success-200);
+  --pd-pbi-emerald-400: var(--pd-vl-success-400);
+  --pd-pbi-emerald-600: var(--pd-vl-success-600);
+  --pd-pbi-emerald-700: var(--pd-vl-success-700);
+  --pd-pbi-emerald-800: var(--pd-vl-success-800);
+  --pd-pbi-emerald-900: var(--pd-vl-success-900);
+}
+
+body .pd-cbi,
+html[data-theme="dark"] .pd-cbi {
+  --pd-cbi-emerald-50: var(--pd-vl-success-50);
+  --pd-cbi-emerald-100: var(--pd-vl-success-100);
+  --pd-cbi-emerald-200: var(--pd-vl-success-200);
+  --pd-cbi-emerald-300: var(--pd-vl-success-300);
+  --pd-cbi-emerald-400: var(--pd-vl-success-400);
+  --pd-cbi-emerald-600: var(--pd-vl-success-600);
+  --pd-cbi-emerald-700: var(--pd-vl-success-700);
+  --pd-cbi-emerald-800: var(--pd-vl-success-800);
+}
+
+body .pd-tbi,
+html[data-theme="dark"] .pd-tbi {
+  --pd-tbi-emerald-50: var(--pd-vl-success-50);
+  --pd-tbi-emerald-100: var(--pd-vl-success-100);
+  --pd-tbi-emerald-200: var(--pd-vl-success-200);
+  --pd-tbi-emerald-400: var(--pd-vl-success-400);
+  --pd-tbi-emerald-500: var(--pd-vl-success-500);
+  --pd-tbi-emerald-600: var(--pd-vl-success-600);
+  --pd-tbi-emerald-700: var(--pd-vl-success-700);
+  --pd-tbi-emerald-800: var(--pd-vl-success-800);
+}
+
+body .pd-msbi,
+html[data-theme="dark"] .pd-msbi {
+  --pd-msbi-emerald-50: var(--pd-vl-success-50);
+  --pd-msbi-emerald-100: var(--pd-vl-success-100);
+  --pd-msbi-emerald-200: var(--pd-vl-success-200);
+  --pd-msbi-emerald-500: var(--pd-vl-success-500);
+  --pd-msbi-emerald-600: var(--pd-vl-success-600);
+  --pd-msbi-emerald-700: var(--pd-vl-success-700);
+}
+
+body .pd-hc,
+html[data-theme="dark"] .pd-hc {
+  --pd-hc-emerald-50: var(--pd-vl-success-50);
+  --pd-hc-emerald-100: var(--pd-vl-success-100);
+  --pd-hc-emerald-200: var(--pd-vl-success-200);
+  --pd-hc-emerald-500: var(--pd-vl-success-500);
+  --pd-hc-emerald-600: var(--pd-vl-success-600);
+  --pd-hc-emerald-700: var(--pd-vl-success-700);
+}
+
+body .pd-set,
+html[data-theme="dark"] .pd-set {
+  --pd-set-emerald-50: var(--pd-vl-success-50);
+  --pd-set-emerald-100: var(--pd-vl-success-100);
+  --pd-set-emerald-200: var(--pd-vl-success-200);
+  --pd-set-emerald-300: var(--pd-vl-success-300);
+  --pd-set-emerald-400: var(--pd-vl-success-400);
+  --pd-set-emerald-500: var(--pd-vl-success-500);
+  --pd-set-emerald-600: var(--pd-vl-success-600);
+  --pd-set-emerald-700: var(--pd-vl-success-700);
+  --pd-set-emerald-800: var(--pd-vl-success-800);
+  --pd-set-emerald-900: var(--pd-vl-success-900);
+  --pd-set-emerald-950: var(--pd-vl-success-950);
+}
+
+body .pd-pal,
+html[data-theme="dark"] .pd-pal {
+  --pd-pal-emerald-50: var(--pd-vl-success-50);
+  --pd-pal-emerald-100: var(--pd-vl-success-100);
+  --pd-pal-emerald-600: var(--pd-vl-success-600);
+  --pd-pal-emerald-800: var(--pd-vl-success-800);
+}
+
+body .pd-pcbi,
+body .pd-obi,
+body .pd-pbi,
+body .pd-cbi,
+body .pd-tbi,
+body .pd-msbi,
+body .pd-hc,
+body .pd-set,
+body .pd-pal,
+html[data-theme="dark"] .pd-pcbi,
+html[data-theme="dark"] .pd-obi,
+html[data-theme="dark"] .pd-pbi,
+html[data-theme="dark"] .pd-cbi,
+html[data-theme="dark"] .pd-tbi,
+html[data-theme="dark"] .pd-msbi,
+html[data-theme="dark"] .pd-hc,
+html[data-theme="dark"] .pd-set,
+html[data-theme="dark"] .pd-pal {
+  --pd-pcbi-amber-50: var(--pd-vl-warning-50);
+  --pd-pcbi-amber-100: var(--pd-vl-warning-100);
+  --pd-pcbi-amber-200: var(--pd-vl-warning-200);
+  --pd-pcbi-amber-300: var(--pd-vl-warning-300);
+  --pd-pcbi-amber-400: var(--pd-vl-warning-400);
+  --pd-pcbi-amber-500: var(--pd-vl-warning-500);
+  --pd-pcbi-amber-600: var(--pd-vl-warning-600);
+  --pd-pcbi-amber-700: var(--pd-vl-warning-700);
+  --pd-pcbi-amber-800: var(--pd-vl-warning-800);
+  --pd-pcbi-amber-900: var(--pd-vl-warning-900);
+  --pd-pcbi-amber-950: var(--pd-vl-warning-950);
+}
+
+body .pd-obi,
+body .pd-pbi,
+body .pd-cbi,
+body .pd-tbi,
+body .pd-msbi,
+body .pd-hc,
+body .pd-set,
+body .pd-pal,
+html[data-theme="dark"] .pd-obi,
+html[data-theme="dark"] .pd-pbi,
+html[data-theme="dark"] .pd-cbi,
+html[data-theme="dark"] .pd-tbi,
+html[data-theme="dark"] .pd-msbi,
+html[data-theme="dark"] .pd-hc,
+html[data-theme="dark"] .pd-set,
+html[data-theme="dark"] .pd-pal {
+  --pd-obi-amber-50: var(--pd-vl-warning-50);
+  --pd-obi-amber-100: var(--pd-vl-warning-100);
+  --pd-obi-amber-200: var(--pd-vl-warning-200);
+  --pd-obi-amber-300: var(--pd-vl-warning-300);
+  --pd-obi-amber-500: var(--pd-vl-warning-500);
+  --pd-obi-amber-600: var(--pd-vl-warning-600);
+  --pd-obi-amber-700: var(--pd-vl-warning-700);
+  --pd-obi-amber-800: var(--pd-vl-warning-800);
+  --pd-obi-amber-900: var(--pd-vl-warning-900);
+}
+
+body .pd-pbi,
+body .pd-cbi,
+body .pd-tbi,
+body .pd-msbi,
+body .pd-hc,
+body .pd-set,
+body .pd-pal,
+html[data-theme="dark"] .pd-pbi,
+html[data-theme="dark"] .pd-cbi,
+html[data-theme="dark"] .pd-tbi,
+html[data-theme="dark"] .pd-msbi,
+html[data-theme="dark"] .pd-hc,
+html[data-theme="dark"] .pd-set,
+html[data-theme="dark"] .pd-pal {
+  --pd-pbi-amber-50: var(--pd-vl-warning-50);
+  --pd-pbi-amber-100: var(--pd-vl-warning-100);
+  --pd-pbi-amber-200: var(--pd-vl-warning-200);
+  --pd-pbi-amber-300: var(--pd-vl-warning-300);
+  --pd-pbi-amber-400: var(--pd-vl-warning-400);
+  --pd-pbi-amber-500: var(--pd-vl-warning-500);
+  --pd-pbi-amber-600: var(--pd-vl-warning-600);
+  --pd-pbi-amber-700: var(--pd-vl-warning-700);
+  --pd-pbi-amber-800: var(--pd-vl-warning-800);
+  --pd-pbi-amber-900: var(--pd-vl-warning-900);
+}
+
+body .pd-cbi,
+html[data-theme="dark"] .pd-cbi {
+  --pd-cbi-amber-50: var(--pd-vl-warning-50);
+  --pd-cbi-amber-100: var(--pd-vl-warning-100);
+  --pd-cbi-amber-200: var(--pd-vl-warning-200);
+  --pd-cbi-amber-300: var(--pd-vl-warning-300);
+  --pd-cbi-amber-400: var(--pd-vl-warning-400);
+  --pd-cbi-amber-500: var(--pd-vl-warning-500);
+  --pd-cbi-amber-600: var(--pd-vl-warning-600);
+  --pd-cbi-amber-700: var(--pd-vl-warning-700);
+  --pd-cbi-amber-900: var(--pd-vl-warning-900);
+}
+
+body .pd-tbi,
+html[data-theme="dark"] .pd-tbi {
+  --pd-tbi-amber-50: var(--pd-vl-warning-50);
+  --pd-tbi-amber-100: var(--pd-vl-warning-100);
+  --pd-tbi-amber-200: var(--pd-vl-warning-200);
+  --pd-tbi-amber-500: var(--pd-vl-warning-500);
+  --pd-tbi-amber-600: var(--pd-vl-warning-600);
+  --pd-tbi-amber-700: var(--pd-vl-warning-700);
+  --pd-tbi-amber-800: var(--pd-vl-warning-800);
+  --pd-tbi-amber-950: var(--pd-vl-warning-950);
+}
+
+body .pd-msbi,
+html[data-theme="dark"] .pd-msbi {
+  --pd-msbi-amber-50: var(--pd-vl-warning-50);
+  --pd-msbi-amber-100: var(--pd-vl-warning-100);
+  --pd-msbi-amber-200: var(--pd-vl-warning-200);
+  --pd-msbi-amber-500: var(--pd-vl-warning-500);
+  --pd-msbi-amber-600: var(--pd-vl-warning-600);
+  --pd-msbi-amber-700: var(--pd-vl-warning-700);
+  --pd-msbi-amber-900: var(--pd-vl-warning-900);
+}
+
+body .pd-hc,
+html[data-theme="dark"] .pd-hc {
+  --pd-hc-amber-50: var(--pd-vl-warning-50);
+  --pd-hc-amber-100: var(--pd-vl-warning-100);
+  --pd-hc-amber-200: var(--pd-vl-warning-200);
+  --pd-hc-amber-300: var(--pd-vl-warning-300);
+  --pd-hc-amber-500: var(--pd-vl-warning-500);
+  --pd-hc-amber-600: var(--pd-vl-warning-600);
+  --pd-hc-amber-700: var(--pd-vl-warning-700);
+  --pd-hc-amber-800: var(--pd-vl-warning-800);
+}
+
+body .pd-set,
+html[data-theme="dark"] .pd-set {
+  --pd-set-amber-50: var(--pd-vl-warning-50);
+  --pd-set-amber-100: var(--pd-vl-warning-100);
+  --pd-set-amber-200: var(--pd-vl-warning-200);
+  --pd-set-amber-300: var(--pd-vl-warning-300);
+  --pd-set-amber-400: var(--pd-vl-warning-400);
+  --pd-set-amber-500: var(--pd-vl-warning-500);
+  --pd-set-amber-600: var(--pd-vl-warning-600);
+  --pd-set-amber-700: var(--pd-vl-warning-700);
+  --pd-set-amber-800: var(--pd-vl-warning-800);
+  --pd-set-amber-900: var(--pd-vl-warning-900);
+  --pd-set-amber-950: var(--pd-vl-warning-950);
+}
+
+body .pd-pal,
+html[data-theme="dark"] .pd-pal {
+  --pd-pal-amber-50: var(--pd-vl-warning-50);
+  --pd-pal-amber-100: var(--pd-vl-warning-100);
+  --pd-pal-amber-600: var(--pd-vl-warning-600);
+  --pd-pal-amber-800: var(--pd-vl-warning-800);
+}
+
+body .pd-obi,
+body .pd-pbi,
+body .pd-cbi,
+body .pd-tbi,
+body .pd-msbi,
+body .pd-hc,
+body .pd-set,
+body .pd-pal,
+html[data-theme="dark"] .pd-obi,
+html[data-theme="dark"] .pd-pbi,
+html[data-theme="dark"] .pd-cbi,
+html[data-theme="dark"] .pd-tbi,
+html[data-theme="dark"] .pd-msbi,
+html[data-theme="dark"] .pd-hc,
+html[data-theme="dark"] .pd-set,
+html[data-theme="dark"] .pd-pal {
+  --pd-obi-red-50: var(--pd-vl-danger-50);
+  --pd-obi-red-100: var(--pd-vl-danger-100);
+  --pd-obi-red-200: var(--pd-vl-danger-200);
+  --pd-obi-red-500: var(--pd-vl-danger-500);
+  --pd-obi-red-600: var(--pd-vl-danger-600);
+  --pd-obi-red-700: var(--pd-vl-danger-700);
+  --pd-obi-red-800: var(--pd-vl-danger-800);
+  --pd-obi-red-900: var(--pd-vl-danger-900);
+}
+
+body .pd-pcbi,
+body .pd-pbi,
+body .pd-cbi,
+body .pd-tbi,
+body .pd-msbi,
+body .pd-set,
+body .pd-pal,
+html[data-theme="dark"] .pd-pcbi,
+html[data-theme="dark"] .pd-pbi,
+html[data-theme="dark"] .pd-cbi,
+html[data-theme="dark"] .pd-tbi,
+html[data-theme="dark"] .pd-msbi,
+html[data-theme="dark"] .pd-set,
+html[data-theme="dark"] .pd-pal {
+  --pd-pcbi-rose-50: var(--pd-vl-danger-50);
+  --pd-pcbi-rose-100: var(--pd-vl-danger-100);
+  --pd-pcbi-rose-200: var(--pd-vl-danger-200);
+  --pd-pcbi-rose-300: var(--pd-vl-danger-300);
+  --pd-pcbi-rose-400: var(--pd-vl-danger-400);
+  --pd-pcbi-rose-500: var(--pd-vl-danger-500);
+  --pd-pcbi-rose-600: var(--pd-vl-danger-600);
+  --pd-pcbi-rose-700: var(--pd-vl-danger-700);
+  --pd-pcbi-rose-800: var(--pd-vl-danger-800);
+  --pd-pcbi-rose-900: var(--pd-vl-danger-900);
+}
+
+body .pd-pbi,
+html[data-theme="dark"] .pd-pbi {
+  --pd-pbi-red-600: var(--pd-vl-danger-600);
+  --pd-pbi-rose-50: var(--pd-vl-danger-50);
+  --pd-pbi-rose-100: var(--pd-vl-danger-100);
+  --pd-pbi-rose-200: var(--pd-vl-danger-200);
+  --pd-pbi-rose-300: var(--pd-vl-danger-300);
+  --pd-pbi-rose-500: var(--pd-vl-danger-500);
+  --pd-pbi-rose-600: var(--pd-vl-danger-600);
+  --pd-pbi-rose-700: var(--pd-vl-danger-700);
+  --pd-pbi-rose-800: var(--pd-vl-danger-800);
+  --pd-pbi-rose-900: var(--pd-vl-danger-900);
+}
+
+body .pd-cbi,
+html[data-theme="dark"] .pd-cbi {
+  --pd-cbi-rose-50: var(--pd-vl-danger-50);
+  --pd-cbi-rose-100: var(--pd-vl-danger-100);
+  --pd-cbi-rose-200: var(--pd-vl-danger-200);
+  --pd-cbi-rose-500: var(--pd-vl-danger-500);
+  --pd-cbi-rose-600: var(--pd-vl-danger-600);
+  --pd-cbi-rose-700: var(--pd-vl-danger-700);
+  --pd-cbi-rose-800: var(--pd-vl-danger-800);
+}
+
+body .pd-tbi,
+html[data-theme="dark"] .pd-tbi {
+  --pd-tbi-rose-50: var(--pd-vl-danger-50);
+  --pd-tbi-rose-100: var(--pd-vl-danger-100);
+  --pd-tbi-rose-200: var(--pd-vl-danger-200);
+  --pd-tbi-rose-500: var(--pd-vl-danger-500);
+  --pd-tbi-rose-600: var(--pd-vl-danger-600);
+  --pd-tbi-rose-700: var(--pd-vl-danger-700);
+  --pd-tbi-rose-800: var(--pd-vl-danger-800);
+}
+
+body .pd-msbi,
+html[data-theme="dark"] .pd-msbi {
+  --pd-msbi-rose-50: var(--pd-vl-danger-50);
+  --pd-msbi-rose-100: var(--pd-vl-danger-100);
+  --pd-msbi-rose-200: var(--pd-vl-danger-200);
+  --pd-msbi-rose-500: var(--pd-vl-danger-500);
+  --pd-msbi-rose-600: var(--pd-vl-danger-600);
+  --pd-msbi-rose-700: var(--pd-vl-danger-700);
+}
+
+body .pd-hc,
+html[data-theme="dark"] .pd-hc {
+  --pd-hc-red-50: var(--pd-vl-danger-50);
+  --pd-hc-red-100: var(--pd-vl-danger-100);
+  --pd-hc-red-200: var(--pd-vl-danger-200);
+  --pd-hc-red-500: var(--pd-vl-danger-500);
+  --pd-hc-red-600: var(--pd-vl-danger-600);
+  --pd-hc-red-700: var(--pd-vl-danger-700);
+}
+
+body .pd-set,
+html[data-theme="dark"] .pd-set {
+  --pd-set-rose-50: var(--pd-vl-danger-50);
+  --pd-set-rose-100: var(--pd-vl-danger-100);
+  --pd-set-rose-200: var(--pd-vl-danger-200);
+  --pd-set-rose-300: var(--pd-vl-danger-300);
+  --pd-set-rose-400: var(--pd-vl-danger-400);
+  --pd-set-rose-500: var(--pd-vl-danger-500);
+  --pd-set-rose-600: var(--pd-vl-danger-600);
+  --pd-set-rose-700: var(--pd-vl-danger-700);
+  --pd-set-rose-800: var(--pd-vl-danger-800);
+  --pd-set-rose-900: var(--pd-vl-danger-900);
+  --pd-set-rose-950: var(--pd-vl-danger-950);
+}
+
+body .pd-pal,
+html[data-theme="dark"] .pd-pal {
+  --pd-pal-rose-50: var(--pd-vl-danger-50);
+  --pd-pal-rose-100: var(--pd-vl-danger-100);
+  --pd-pal-rose-600: var(--pd-vl-danger-600);
+  --pd-pal-rose-800: var(--pd-vl-danger-800);
+}
+
+body .pd-obi,
+body .pd-pbi,
+body .pd-cbi,
+body .pd-tbi,
+body .pd-hc,
+body .pd-pal,
+html[data-theme="dark"] .pd-obi,
+html[data-theme="dark"] .pd-pbi,
+html[data-theme="dark"] .pd-cbi,
+html[data-theme="dark"] .pd-tbi,
+html[data-theme="dark"] .pd-hc,
+html[data-theme="dark"] .pd-pal {
+  --pd-obi-blue-50: var(--pd-vl-info-50);
+  --pd-obi-blue-100: var(--pd-vl-info-100);
+  --pd-obi-blue-200: var(--pd-vl-info-200);
+  --pd-obi-blue-400: var(--pd-vl-info-400);
+  --pd-obi-blue-500: var(--pd-vl-info-500);
+  --pd-obi-blue-600: var(--pd-vl-info-600);
+  --pd-obi-blue-700: var(--pd-vl-info-700);
+  --pd-obi-blue-800: var(--pd-vl-info-800);
+  --pd-obi-blue-900: var(--pd-vl-info-900);
+  --pd-obi-sky-50: var(--pd-vl-info-50);
+  --pd-obi-sky-100: var(--pd-vl-info-100);
+  --pd-obi-sky-200: var(--pd-vl-info-200);
+  --pd-obi-sky-600: var(--pd-vl-info-600);
+  --pd-obi-sky-700: var(--pd-vl-info-700);
+}
+
+body .pd-pbi,
+html[data-theme="dark"] .pd-pbi {
+  --pd-pbi-blue-50: var(--pd-vl-info-50);
+  --pd-pbi-blue-100: var(--pd-vl-info-100);
+  --pd-pbi-blue-200: var(--pd-vl-info-200);
+  --pd-pbi-blue-600: var(--pd-vl-info-600);
+  --pd-pbi-blue-700: var(--pd-vl-info-700);
+  --pd-pbi-blue-800: var(--pd-vl-info-800);
+  --pd-pbi-blue-900: var(--pd-vl-info-900);
+  --pd-pbi-sky-50: var(--pd-vl-info-50);
+  --pd-pbi-sky-100: var(--pd-vl-info-100);
+  --pd-pbi-sky-200: var(--pd-vl-info-200);
+  --pd-pbi-sky-600: var(--pd-vl-info-600);
+  --pd-pbi-sky-700: var(--pd-vl-info-700);
+}
+
+body .pd-cbi,
+html[data-theme="dark"] .pd-cbi {
+  --pd-cbi-blue-50: var(--pd-vl-info-50);
+  --pd-cbi-blue-100: var(--pd-vl-info-100);
+  --pd-cbi-blue-200: var(--pd-vl-info-200);
+  --pd-cbi-blue-600: var(--pd-vl-info-600);
+  --pd-cbi-blue-800: var(--pd-vl-info-800);
+  --pd-cbi-cyan-100: var(--pd-vl-info-100);
+  --pd-cbi-cyan-600: var(--pd-vl-info-600);
+  --pd-cbi-cyan-800: var(--pd-vl-info-800);
+}
+
+body .pd-hc,
+html[data-theme="dark"] .pd-hc {
+  --pd-hc-blue-50: var(--pd-vl-info-50);
+  --pd-hc-blue-100: var(--pd-vl-info-100);
+  --pd-hc-blue-200: var(--pd-vl-info-200);
+  --pd-hc-blue-500: var(--pd-vl-info-500);
+  --pd-hc-blue-600: var(--pd-vl-info-600);
+  --pd-hc-blue-700: var(--pd-vl-info-700);
+}
+
+body .pd-pal,
+html[data-theme="dark"] .pd-pal {
+  --pd-pal-blue-50: var(--pd-vl-info-50);
+  --pd-pal-blue-600: var(--pd-vl-info-600);
+  --pd-pal-teal-50: var(--pd-vl-info-50);
+  --pd-pal-teal-600: var(--pd-vl-info-600);
+}
+
+body .pd-pcbi,
+body .pd-obi,
+body .pd-pbi,
+body .pd-cbi,
+body .pd-hc,
+body .pd-set,
+html[data-theme="dark"] .pd-pcbi,
+html[data-theme="dark"] .pd-obi,
+html[data-theme="dark"] .pd-pbi,
+html[data-theme="dark"] .pd-cbi,
+html[data-theme="dark"] .pd-hc,
+html[data-theme="dark"] .pd-set {
+  --pd-pcbi-violet-50: var(--pd-vl-violet-50);
+  --pd-pcbi-violet-100: var(--pd-vl-violet-100);
+  --pd-pcbi-violet-500: var(--pd-vl-violet-500);
+  --pd-pcbi-violet-800: var(--pd-vl-violet-800);
+  --pd-obi-violet-50: var(--pd-vl-violet-50);
+  --pd-obi-violet-100: var(--pd-vl-violet-100);
+  --pd-obi-violet-200: var(--pd-vl-violet-200);
+  --pd-obi-violet-300: var(--pd-vl-violet-300);
+  --pd-obi-violet-600: var(--pd-vl-violet-600);
+  --pd-obi-violet-700: var(--pd-vl-violet-700);
+  --pd-obi-violet-800: var(--pd-vl-violet-800);
+  --pd-obi-violet-900: var(--pd-vl-violet-900);
+}
+
+body .pd-pbi,
+body .pd-cbi,
+body .pd-hc,
+body .pd-set,
+html[data-theme="dark"] .pd-pbi,
+html[data-theme="dark"] .pd-cbi,
+html[data-theme="dark"] .pd-hc,
+html[data-theme="dark"] .pd-set {
+  --pd-pbi-violet-50: var(--pd-vl-violet-50);
+  --pd-pbi-violet-100: var(--pd-vl-violet-100);
+  --pd-pbi-violet-600: var(--pd-vl-violet-600);
+  --pd-pbi-violet-700: var(--pd-vl-violet-700);
+  --pd-cbi-violet-100: var(--pd-vl-violet-100);
+  --pd-cbi-violet-600: var(--pd-vl-violet-600);
+  --pd-cbi-violet-800: var(--pd-vl-violet-800);
+  --pd-hc-violet-50: var(--pd-vl-violet-50);
+  --pd-hc-violet-100: var(--pd-vl-violet-100);
+  --pd-hc-violet-200: var(--pd-vl-violet-200);
+  --pd-hc-violet-600: var(--pd-vl-violet-600);
+  --pd-hc-violet-700: var(--pd-vl-violet-700);
+}
+
+body .pd-set,
+html[data-theme="dark"] .pd-set {
+  --pd-set-violet-50: var(--pd-vl-violet-50);
+  --pd-set-violet-100: var(--pd-vl-violet-100);
+  --pd-set-violet-200: var(--pd-vl-violet-200);
+  --pd-set-violet-300: var(--pd-vl-violet-300);
+  --pd-set-violet-400: var(--pd-vl-violet-400);
+  --pd-set-violet-500: var(--pd-vl-violet-500);
+  --pd-set-violet-600: var(--pd-vl-violet-600);
+  --pd-set-violet-700: var(--pd-vl-violet-700);
+  --pd-set-violet-800: var(--pd-vl-violet-800);
+  --pd-set-violet-900: var(--pd-vl-violet-900);
+  --pd-set-violet-950: var(--pd-vl-violet-950);
+}
+
+/*
+ * Command Center intentionally does NOT get the shared slate remap that
+ * the other 9 pages get. Its slate ramp direction is inverted relative to
+ * every other page (a leftover of being converted from a dark-only design
+ * -- see project memory) and its own CSS file was written throughout
+ * assuming that inverted direction. Normalizing it here once broke a wide
+ * swath of unrelated text-on-dark-chrome pairings across the whole file
+ * (found via live user report, 2026-08-30) -- reverted. Command Center's
+ * own local slate values (defined in CommandCenterBiPage.css) are used
+ * as-is; only its specific known-broken spots (e.g. the anchor-nav
+ * shadow) are pinned locally in that file instead.
+ */
+
+body .pd-pcbi,
+html[data-theme="dark"] .pd-pcbi {
+  --pd-pcbi-slate-50: var(--pd-vl-slate-50);
+  --pd-pcbi-slate-100: var(--pd-vl-slate-100);
+  --pd-pcbi-slate-200: var(--pd-vl-slate-200);
+  --pd-pcbi-slate-300: var(--pd-vl-slate-300);
+  --pd-pcbi-slate-400: var(--pd-vl-slate-400);
+  --pd-pcbi-slate-500: var(--pd-vl-slate-500);
+  --pd-pcbi-slate-600: var(--pd-vl-slate-600);
+  --pd-pcbi-slate-700: var(--pd-vl-slate-700);
+  --pd-pcbi-slate-800: var(--pd-vl-slate-800);
+  --pd-pcbi-slate-900: var(--pd-vl-slate-900);
+  --pd-pcbi-slate-950: var(--pd-vl-slate-950);
+}
+
+body .pd-obi,
+html[data-theme="dark"] .pd-obi {
+  --pd-obi-slate-50: var(--pd-vl-slate-50);
+  --pd-obi-slate-100: var(--pd-vl-slate-100);
+  --pd-obi-slate-200: var(--pd-vl-slate-200);
+  --pd-obi-slate-300: var(--pd-vl-slate-300);
+  --pd-obi-slate-400: var(--pd-vl-slate-400);
+  --pd-obi-slate-500: var(--pd-vl-slate-500);
+  --pd-obi-slate-600: var(--pd-vl-slate-600);
+  --pd-obi-slate-700: var(--pd-vl-slate-700);
+  --pd-obi-slate-800: var(--pd-vl-slate-800);
+  --pd-obi-slate-900: var(--pd-vl-slate-900);
+  --pd-obi-slate-950: var(--pd-vl-slate-950);
+}
+
+body .pd-pbi,
+html[data-theme="dark"] .pd-pbi {
+  --pd-pbi-slate-50: var(--pd-vl-slate-50);
+  --pd-pbi-slate-100: var(--pd-vl-slate-100);
+  --pd-pbi-slate-200: var(--pd-vl-slate-200);
+  --pd-pbi-slate-300: var(--pd-vl-slate-300);
+  --pd-pbi-slate-400: var(--pd-vl-slate-400);
+  --pd-pbi-slate-500: var(--pd-vl-slate-500);
+  --pd-pbi-slate-600: var(--pd-vl-slate-600);
+  --pd-pbi-slate-700: var(--pd-vl-slate-700);
+  --pd-pbi-slate-800: var(--pd-vl-slate-800);
+  --pd-pbi-slate-900: var(--pd-vl-slate-900);
+  --pd-pbi-slate-950: var(--pd-vl-slate-950);
+}
+
+body .pd-cbi,
+html[data-theme="dark"] .pd-cbi {
+  --pd-cbi-slate-50: var(--pd-vl-slate-50);
+  --pd-cbi-slate-100: var(--pd-vl-slate-100);
+  --pd-cbi-slate-200: var(--pd-vl-slate-200);
+  --pd-cbi-slate-300: var(--pd-vl-slate-300);
+  --pd-cbi-slate-400: var(--pd-vl-slate-400);
+  --pd-cbi-slate-500: var(--pd-vl-slate-500);
+  --pd-cbi-slate-600: var(--pd-vl-slate-600);
+  --pd-cbi-slate-700: var(--pd-vl-slate-700);
+  --pd-cbi-slate-800: var(--pd-vl-slate-800);
+  --pd-cbi-slate-900: var(--pd-vl-slate-900);
+  --pd-cbi-slate-950: var(--pd-vl-slate-950);
+}
+
+body .pd-tbi,
+html[data-theme="dark"] .pd-tbi {
+  --pd-tbi-slate-50: var(--pd-vl-slate-50);
+  --pd-tbi-slate-100: var(--pd-vl-slate-100);
+  --pd-tbi-slate-200: var(--pd-vl-slate-200);
+  --pd-tbi-slate-300: var(--pd-vl-slate-300);
+  --pd-tbi-slate-400: var(--pd-vl-slate-400);
+  --pd-tbi-slate-500: var(--pd-vl-slate-500);
+  --pd-tbi-slate-600: var(--pd-vl-slate-600);
+  --pd-tbi-slate-700: var(--pd-vl-slate-700);
+  --pd-tbi-slate-800: var(--pd-vl-slate-800);
+  --pd-tbi-slate-900: var(--pd-vl-slate-900);
+  --pd-tbi-slate-950: var(--pd-vl-slate-950);
+}
+
+body .pd-msbi,
+html[data-theme="dark"] .pd-msbi {
+  --pd-msbi-slate-50: var(--pd-vl-slate-50);
+  --pd-msbi-slate-100: var(--pd-vl-slate-100);
+  --pd-msbi-slate-200: var(--pd-vl-slate-200);
+  --pd-msbi-slate-300: var(--pd-vl-slate-300);
+  --pd-msbi-slate-400: var(--pd-vl-slate-400);
+  --pd-msbi-slate-500: var(--pd-vl-slate-500);
+  --pd-msbi-slate-600: var(--pd-vl-slate-600);
+  --pd-msbi-slate-700: var(--pd-vl-slate-700);
+  --pd-msbi-slate-800: var(--pd-vl-slate-800);
+  --pd-msbi-slate-900: var(--pd-vl-slate-900);
+  --pd-msbi-slate-950: var(--pd-vl-slate-950);
+}
+
+body .pd-hc,
+html[data-theme="dark"] .pd-hc {
+  --pd-hc-slate-50: var(--pd-vl-slate-50);
+  --pd-hc-slate-100: var(--pd-vl-slate-100);
+  --pd-hc-slate-200: var(--pd-vl-slate-200);
+  --pd-hc-slate-300: var(--pd-vl-slate-300);
+  --pd-hc-slate-400: var(--pd-vl-slate-400);
+  --pd-hc-slate-500: var(--pd-vl-slate-500);
+  --pd-hc-slate-600: var(--pd-vl-slate-600);
+  --pd-hc-slate-700: var(--pd-vl-slate-700);
+  --pd-hc-slate-800: var(--pd-vl-slate-800);
+  --pd-hc-slate-900: var(--pd-vl-slate-900);
+  --pd-hc-slate-950: var(--pd-vl-slate-950);
+}
+
+body .pd-set,
+html[data-theme="dark"] .pd-set {
+  --pd-set-slate-50: var(--pd-vl-slate-50);
+  --pd-set-slate-100: var(--pd-vl-slate-100);
+  --pd-set-slate-200: var(--pd-vl-slate-200);
+  --pd-set-slate-300: var(--pd-vl-slate-300);
+  --pd-set-slate-400: var(--pd-vl-slate-400);
+  --pd-set-slate-500: var(--pd-vl-slate-500);
+  --pd-set-slate-600: var(--pd-vl-slate-600);
+  --pd-set-slate-700: var(--pd-vl-slate-700);
+  --pd-set-slate-800: var(--pd-vl-slate-800);
+  --pd-set-slate-900: var(--pd-vl-slate-900);
+  --pd-set-slate-950: var(--pd-vl-slate-950);
+}
+
+body .pd-pal,
+html[data-theme="dark"] .pd-pal {
+  --pd-pal-slate-50: var(--pd-vl-slate-50);
+  --pd-pal-slate-100: var(--pd-vl-slate-100);
+  --pd-pal-slate-200: var(--pd-vl-slate-200);
+  --pd-pal-slate-300: var(--pd-vl-slate-300);
+  --pd-pal-slate-400: var(--pd-vl-slate-400);
+  --pd-pal-slate-500: var(--pd-vl-slate-500);
+  --pd-pal-slate-600: var(--pd-vl-slate-600);
+  --pd-pal-slate-700: var(--pd-vl-slate-700);
+  --pd-pal-slate-800: var(--pd-vl-slate-800);
+  --pd-pal-slate-900: var(--pd-vl-slate-900);
+}
+
+/*
+ * "Always dark, on-brand" hero/priority bands: a chrome surface that stays
+ * dark regardless of theme (matching the shell), not a normal card that
+ * flips with --pd-vl-*. Uses the non-flipping --pd-vl-shell-accent-* tokens
+ * instead of a normal (flipping) ramp step, and hardcodes white text since
+ * the background is deliberately always dark.
+ */
+body .pd-cbi-priority,
+html[data-theme="dark"] .pd-cbi-priority {
+  background:
+    radial-gradient(circle at 12% 0%, rgb(var(--pd-vl-accent-500) / 0.30), transparent 42%),
+    linear-gradient(135deg, rgb(var(--pd-vl-shell)), rgb(var(--pd-vl-shell-panel)) 62%, rgb(var(--pd-vl-shell-accent-deep)));
+  border-color: rgb(var(--pd-vl-accent-500) / 0.46);
+  color: white;
+}
+
+body .pd-cbi-priority :is(h2, p, strong, span),
+html[data-theme="dark"] .pd-cbi-priority :is(h2, p, strong, span) {
+  color: white;
+}
+
+body .pd-cbi-priority .pd-cbi-timestamp,
+html[data-theme="dark"] .pd-cbi-priority .pd-cbi-timestamp {
+  color: rgb(var(--pd-vl-shell-accent-soft));
+}
+
+body .pd-hc-hero,
+html[data-theme="dark"] .pd-hc-hero {
+  background:
+    radial-gradient(circle at 14% 0%, rgb(var(--pd-vl-accent-500) / 0.28), transparent 40%),
+    linear-gradient(135deg, rgb(var(--pd-vl-shell)), rgb(var(--pd-vl-shell-panel)) 60%, rgb(var(--pd-vl-shell-accent-deep)));
+  color: white;
+}
+
+body .pd-hc-hero :is(h1, p, span, strong, button),
+html[data-theme="dark"] .pd-hc-hero :is(h1, p, span, strong, button) {
+  color: white;
+}
+
+body .pd-hc-hero .pd-hc-search :is(input, span, button),
+html[data-theme="dark"] .pd-hc-hero .pd-hc-search :is(input, span, button) {
+  color: rgb(var(--pd-vl-text));
+}

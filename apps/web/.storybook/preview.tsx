@@ -1,5 +1,7 @@
 /// <reference types="vite/client" />
 
+import { StorybookProductViewCleanup } from './StorybookProductViewCleanup';
+
 import type {
   Decorator,
   Preview,
@@ -46,7 +48,9 @@ const withPapaDataRuntime: Decorator = (
       data-theme={runtimeGlobals.theme}
       key={canvasKey}
     >
-      <Story />
+      <StorybookProductViewCleanup>
+        <Story />
+      </StorybookProductViewCleanup>
     </div>
   );
 };

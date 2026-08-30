@@ -15,8 +15,7 @@
   },
   "scripts": {
     "build": "tsc -b tsconfig.json",
-    "typecheck": "tsc -b tsconfig.json --pretty false",
-    "test": "tsx --test src/*.test.ts"
+    "typecheck": "tsc -b tsconfig.json --pretty false"
   },
   "dependencies": {
     "@papadata/contracts": "workspace:*"
@@ -26,7 +25,6 @@
     "pnpm": "10.29.3"
   },
   "devDependencies": {
-    "@types/node": "^24.13.3",
-    "tsx": "^4.23.1"
+    "@types/node": "^24.13.3"
   }
 }

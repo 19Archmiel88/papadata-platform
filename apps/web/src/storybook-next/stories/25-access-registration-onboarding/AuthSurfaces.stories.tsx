@@ -14,16 +14,16 @@ import {
 
 import {
   AuthSurface,
-} from '../../../features/auth/AuthSurface';
+} from '../../runtime/features/auth/AuthSurface';
 import {
   AuthDataSourceMarquee,
-} from '../../../features/auth/AuthDataSourceMarquee';
+} from '../../runtime/features/auth/AuthDataSourceMarquee';
 import {
   AuthInsightChart,
-} from '../../../features/auth/AuthInsightChart';
+} from '../../runtime/features/auth/AuthInsightChart';
 import {
   AuthRuntimePreferences,
-} from '../../../features/auth/AuthRuntimePreferences';
+} from '../../runtime/features/auth/AuthRuntimePreferences';
 import {
   Button,
   InlineNotice,

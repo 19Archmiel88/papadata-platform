@@ -1,6 +1,6 @@
 import type {
   DataQualityScreenId,
-} from '../../screens/data-quality/dataQualityData';
+} from '../runtime/screens/data-quality/dataQualityData';
 
 export type DataQualityScreenStorybookMeta = {
   readonly documentPath: string;

@@ -1,7 +1,7 @@
 // Ten plik jest generowany automatycznie.
 // Nie edytuj go ręcznie.
 // Źródło: ../storybook-contract.json
-// SHA-256 źródła: 1affd14129450e1c19b5676b202c364e24bbd40daa19a384308ab4617c51771d
+// SHA-256 źródła: 25b9db22d7a4efb39c44cd8d9c2a840a756d91b90d320590408a449afa3b3545
 
 import type { CatalogEntryDefinition } from './types';
 
@@ -22,8 +22,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "premium",
       "hierarchia wizualna",
@@ -31,11 +31,10 @@ export const storybookCatalog = [
       "dark mode",
       "akcent marki"
     ],
-    "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Kierunek wizualny",
-    "storyExport": "KierunekWizualny",
     "accepted": true
   },
   {
@@ -54,8 +53,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "Inter",
       "JetBrains Mono",
@@ -71,11 +70,10 @@ export const storybookCatalog = [
       "wyrównanie kwot",
       "bezpieczne zawijanie identyfikatorów"
     ],
-    "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Typografia",
-    "storyExport": "Typografia",
     "accepted": true
   },
   {
@@ -94,8 +92,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "kolory marki",
       "kolory neutralne",
@@ -109,11 +107,10 @@ export const storybookCatalog = [
       "ton przetwarzania",
       "kontrast light/dark"
     ],
-    "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Kolory semantyczne",
-    "storyExport": "KolorySemantyczne",
     "accepted": true
   },
   {
@@ -132,8 +129,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "stabilny klucz domenowy",
       "czytelna etykieta",
@@ -143,11 +140,10 @@ export const storybookCatalog = [
       "light mode",
       "dark mode"
     ],
-    "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Role semantyczne statusów",
-    "storyExport": "StatusySystemowe",
     "accepted": true
   },
   {
@@ -166,8 +162,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "skala odstępów",
       "marginesy ekranów",
@@ -181,11 +177,10 @@ export const storybookCatalog = [
       "compact",
       "jawne viewporty Storybooka"
     ],
-    "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Odstępy i siatka",
-    "storyExport": "SpacingIGrid",
     "accepted": true
   },
   {
@@ -204,10 +199,10 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
-    "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "requirements": [
       "radius kontrolki",
@@ -220,7 +215,6 @@ export const storybookCatalog = [
       "responsive"
     ],
     "displayTitle": "Promienie i geometria",
-    "storyExport": "PromienieIGeometria",
     "accepted": true
   },
   {
@@ -239,10 +233,10 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
-    "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "requirements": [
       "linia strukturalna",
@@ -255,7 +249,6 @@ export const storybookCatalog = [
       "separacja bez nadmiaru kontenerów"
     ],
     "displayTitle": "Linie i separacja",
-    "storyExport": "LinieISeparacja",
     "accepted": true
   },
   {
@@ -274,10 +267,10 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
-    "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "requirements": [
       "canvas bazowy",
@@ -291,7 +284,6 @@ export const storybookCatalog = [
       "dark mode"
     ],
     "displayTitle": "Głębia i warstwy",
-    "storyExport": "GlebiaIWarstwy",
     "accepted": true
   },
   {
@@ -310,8 +302,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "styl ikon",
       "stroke",
@@ -323,11 +315,10 @@ export const storybookCatalog = [
       "dostępna nazwa",
       "handoff pełnego katalogu do 00.13"
     ],
-    "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Ikonografia",
-    "storyExport": "Ikonografia",
     "accepted": true
   },
   {
@@ -346,8 +337,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "tokeny czasu",
       "tokeny easing",
@@ -365,11 +356,10 @@ export const storybookCatalog = [
       "przerwanie animacji",
       "play testy interakcji"
     ],
-    "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Animacje",
-    "storyExport": "MotionIReducedMotion",
     "accepted": true
   },
   {
@@ -388,8 +378,8 @@ export const storybookCatalog = [
     "prototypeStatus": "none",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "obsługa klawiatury",
       "focus-visible",
@@ -404,11 +394,10 @@ export const storybookCatalog = [
       "mobile reflow",
       "kontrast light/dark"
     ],
-    "storyTitle": "00 Fundamenty/01 Fundamenty wizualne",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/foundations-clean-start.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Dostępność",
-    "storyExport": "Dostepnosc",
     "accepted": true
   },
   {
@@ -427,10 +416,10 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
-    "storyTitle": "00 Fundamenty/02 Powierzchnie i komunikaty",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/surface-messaging.stories.tsx",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "requirements": [
       "canvas aplikacji",
@@ -444,7 +433,6 @@ export const storybookCatalog = [
       "motyw ciemny"
     ],
     "displayTitle": "Canvas, tło i powierzchnie",
-    "storyExport": "HierarchiaPowierzchni",
     "accepted": false
   },
   {
@@ -463,10 +451,10 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
-    "storyTitle": "00 Fundamenty/02 Powierzchnie i komunikaty",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/surface-messaging.stories.tsx",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "requirements": [
       "info",
@@ -479,7 +467,6 @@ export const storybookCatalog = [
       "motyw ciemny"
     ],
     "displayTitle": "Komunikat w kontekście",
-    "storyExport": "KomunikatWKontekscie",
     "accepted": false
   },
   {
@@ -498,10 +485,10 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
-    "storyTitle": "00 Fundamenty/02 Powierzchnie i komunikaty",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/surface-messaging.stories.tsx",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "requirements": [
       "ton statusu",
@@ -513,7 +500,6 @@ export const storybookCatalog = [
       "info"
     ],
     "displayTitle": "Status obiektu",
-    "storyExport": "StatusObiektu",
     "accepted": false
   },
   {
@@ -532,10 +518,10 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
-    "storyTitle": "00 Fundamenty/02 Powierzchnie i komunikaty",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/surface-messaging.stories.tsx",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "requirements": [
       "krótkotrwała operacja",
@@ -545,7 +531,6 @@ export const storybookCatalog = [
       "nie zmienia układu"
     ],
     "displayTitle": "Toast operacyjny",
-    "storyExport": "ToastOperacyjny",
     "accepted": false
   },
   {
@@ -564,10 +549,10 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
-    "storyTitle": "00 Fundamenty/02 Powierzchnie i komunikaty",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/surface-messaging.stories.tsx",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "requirements": [
       "pusty stan",
@@ -577,7 +562,6 @@ export const storybookCatalog = [
       "akcja kontekstowa"
     ],
     "displayTitle": "Stany puste, błędy i blokady",
-    "storyExport": "StanyPusteBledyIBlokady",
     "accepted": false
   },
   {
@@ -743,8 +727,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "Button",
       "IconButton",
@@ -803,11 +787,10 @@ export const storybookCatalog = [
       "play test",
       "jawny status w rejestrze"
     ],
-    "storyTitle": "00 Fundamenty/06 Katalog komponentów/Komponenty bazowe",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/ComponentReadiness.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Katalog komponentów bazowych",
-    "storyExport": "KomponentyBazoweStory",
     "accepted": false
   },
   {
@@ -826,8 +809,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "Data i zakres czasu",
       "Dialogi i warstwy",
@@ -857,11 +840,10 @@ export const storybookCatalog = [
       "play test",
       "jawny status w rejestrze"
     ],
-    "storyTitle": "00 Fundamenty/06 Katalog komponentów/Backlog P0 komponentów bazowych",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/ComponentReadiness.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Backlog P0 komponentów bazowych",
-    "storyExport": "BacklogP0KomponentowBazowychStory",
     "accepted": false
   },
   {
@@ -880,8 +862,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BottomSheet",
       "BrandLockup",
@@ -929,11 +911,10 @@ export const storybookCatalog = [
       "play test",
       "jawny status w rejestrze"
     ],
-    "storyTitle": "00 Fundamenty/06 Katalog komponentów/Backlog P0 komponentów bazowych - pakiet 2",
-    "storyFile": "apps/web/src/storybook-next/stories/00-foundations/ComponentReadiness.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Fundamenty",
     "displayTitle": "Backlog P0 komponentów bazowych - pakiet 2",
-    "storyExport": "BacklogP0KomponentowBazowychPakiet2Story",
     "accepted": false
   },
   {
@@ -952,8 +933,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "auth canvas",
       "relacja formularz–canvas",
@@ -962,11 +943,10 @@ export const storybookCatalog = [
       "dark",
       "handoff do Access/Auth patterns"
     ],
-    "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie",
-    "storyFile": "apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Tła i powierzchnie",
     "displayTitle": "Ekrany dostępu",
-    "storyExport": "TloAuth",
     "accepted": true
   },
   {
@@ -985,8 +965,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "canvas aplikacji",
       "relacja regionów shell",
@@ -995,11 +975,10 @@ export const storybookCatalog = [
       "compact",
       "handoff do AppShell"
     ],
-    "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie",
-    "storyFile": "apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Tła i powierzchnie",
     "displayTitle": "Tło aplikacji",
-    "storyExport": "CanvasAplikacji",
     "accepted": true
   },
   {
@@ -1018,8 +997,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "remaining chart-family decisions",
       "remaining table decisions",
@@ -1029,11 +1008,10 @@ export const storybookCatalog = [
       "remaining detail/evidence/recommendation layer decisions",
       "handoff to 15/18"
     ],
-    "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie",
-    "storyFile": "apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Tła i powierzchnie",
     "displayTitle": "Powierzchnie danych",
-    "storyExport": "PowierzchniaDanych",
     "accepted": true
   },
   {
@@ -1052,19 +1030,18 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "subtle/default/strong",
       "focus/active/danger jako role odrębne",
       "mapa separacji",
       "handoff do 00.07"
     ],
-    "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie",
-    "storyFile": "apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Tła i powierzchnie",
     "displayTitle": "Separatory i obramowania",
-    "storyExport": "SeparatoryIObramowania",
     "accepted": true
   },
   {
@@ -1083,8 +1060,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "dozwolone gradienty",
       "subtelne światło",
@@ -1096,11 +1073,10 @@ export const storybookCatalog = [
       "zakaz przypadkowego glow i halo",
       "handoff do 00.08"
     ],
-    "storyTitle": "05 Laboratorium decyzji/Tła i powierzchnie",
-    "storyFile": "apps/web/src/storybook-next/stories/05-surfaces/surfaces-laboratory.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Tła i powierzchnie",
     "displayTitle": "Gradienty i światło",
-    "storyExport": "GradientySwiatloISzklo",
     "accepted": true
   },
   {
@@ -1119,8 +1095,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "business question",
       "data status",
@@ -1135,11 +1111,10 @@ export const storybookCatalog = [
       "processing legacy alias for loading",
       "light/dark/reflow"
     ],
-    "storyTitle": "15 Wykresy i dane/01 Powierzchnie analityczne/ChartFrame",
-    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/ChartFrame.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Wykresy i dane",
     "displayTitle": "Kontener wykresu",
-    "storyExport": "ChartFrameStory",
     "accepted": true
   },
   {
@@ -1158,8 +1133,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "metric value/unit",
       "comparison direction",
@@ -1174,11 +1149,10 @@ export const storybookCatalog = [
       "processing legacy alias for loading",
       "light/dark/reflow"
     ],
-    "storyTitle": "15 Wykresy i dane/01 Powierzchnie analityczne/MetricCard",
-    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/MetricCard.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Wykresy i dane",
     "displayTitle": "Karta wskaźnika",
-    "storyExport": "MetricCardStory",
     "accepted": true
   },
   {
@@ -1197,8 +1171,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "line",
       "area",
@@ -1207,11 +1181,10 @@ export const storybookCatalog = [
       "previous period",
       "moving average"
     ],
-    "storyTitle": "15 Wykresy i dane/02 Rodziny wykresów/Trendy",
-    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/TrendChart.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Wykresy i dane",
     "displayTitle": "Trendy",
-    "storyExport": "TrendChartStory",
     "accepted": true
   },
   {
@@ -1230,8 +1203,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "bar",
       "grouped bar",
@@ -1239,11 +1212,10 @@ export const storybookCatalog = [
       "benchmark",
       "period comparison"
     ],
-    "storyTitle": "15 Wykresy i dane/02 Rodziny wykresów/Porównania",
-    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/ComparisonChart.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Wykresy i dane",
     "displayTitle": "Porównania",
-    "storyExport": "ComparisonChartStory",
     "accepted": true
   },
   {
@@ -1262,8 +1234,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "donut",
       "bar",
@@ -1286,11 +1258,10 @@ export const storybookCatalog = [
       "high contrast swatches",
       "shared mobile zero axis"
     ],
-    "storyTitle": "15 Wykresy i dane/02 Rodziny wykresów/Udziały i struktura",
-    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/ShareChart.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Wykresy i dane",
     "displayTitle": "Udziały i struktura",
-    "storyExport": "ShareChartStory",
     "accepted": true
   },
   {
@@ -1309,8 +1280,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "scatter plot",
       "correlation",
@@ -1339,11 +1310,10 @@ export const storybookCatalog = [
       "compact container label reduction",
       "reduced vertical gridlines in dense charts"
     ],
-    "storyTitle": "15 Wykresy i dane/02 Rodziny wykresów/Zależności i korelacje",
-    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/CorrelationChart.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Wykresy i dane",
     "displayTitle": "Zależności i korelacje",
-    "storyExport": "CorrelationChartStory",
     "accepted": true
   },
   {
@@ -1362,8 +1332,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "actual",
       "forecast",
@@ -1383,11 +1353,10 @@ export const storybookCatalog = [
       "15.09 interaction handoff",
       "15.10 responsive/a11y final pass handoff"
     ],
-    "storyTitle": "15 Wykresy i dane/02 Rodziny wykresów/Prognoza i AI",
-    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/ForecastChart.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Wykresy i dane",
     "displayTitle": "Prognoza i AI",
-    "storyExport": "ForecastChartStory",
     "accepted": true
   },
   {
@@ -1406,8 +1375,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "loading",
       "empty",
@@ -1423,11 +1392,10 @@ export const storybookCatalog = [
       "polite/assertive live region",
       "renderable partial/stale/delayed states"
     ],
-    "storyTitle": "15 Wykresy i dane/03 Stany i interakcje/Stany danych",
-    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/DataStates.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Wykresy i dane",
     "displayTitle": "Stany danych",
-    "storyExport": "DataStatesStory",
     "accepted": true
   },
   {
@@ -1446,8 +1414,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "tooltip",
       "hover",
@@ -1464,11 +1432,10 @@ export const storybookCatalog = [
       "does not change data meaning",
       "15.03-15.07 chart geometry remains owned by chart families"
     ],
-    "storyTitle": "15 Wykresy i dane/03 Stany i interakcje/Interakcje i filtry",
-    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/ChartInteractions.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Wykresy i dane",
     "displayTitle": "Interakcje i filtry",
-    "storyExport": "ChartInteractionsStory",
     "accepted": true
   },
   {
@@ -1487,8 +1454,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "desktop",
       "tablet",
@@ -1505,11 +1472,10 @@ export const storybookCatalog = [
       "section 15 final regression pass",
       "15.01-15.09 owner matrix"
     ],
-    "storyTitle": "15 Wykresy i dane/04 Jakość prezentacji/Responsywność i dostępność",
-    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/ChartAccessibilityReview.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Wykresy i dane",
     "displayTitle": "Responsywność i dostępność",
-    "storyExport": "ChartAccessibilityReviewStory",
     "accepted": true
   },
   {
@@ -1528,8 +1494,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "ChartFrame",
       "MetricCard",
@@ -1572,11 +1538,10 @@ export const storybookCatalog = [
       "play test",
       "jawny status w rejestrze"
     ],
-    "storyTitle": "15 Wykresy i dane/05 Katalog komponentów/Analityczne i domenowe",
-    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/DomainComponentReadiness.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Wykresy i dane",
     "displayTitle": "Katalog komponentów analityczno-domenowych",
-    "storyExport": "AnalityczneIDomenoweStory",
     "accepted": false
   },
   {
@@ -1595,8 +1560,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "not_started",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AttributionComparison",
       "BudgetPacing",
@@ -1632,11 +1597,10 @@ export const storybookCatalog = [
       "play test",
       "jawny status w rejestrze"
     ],
-    "storyTitle": "15 Wykresy i dane/05 Katalog komponentów/Backlog P0 komponentów domenowych",
-    "storyFile": "apps/web/src/storybook-next/stories/15-data-visualizations/DomainComponentReadiness.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Wykresy i dane",
     "displayTitle": "Backlog P0 komponentów domenowych",
-    "storyExport": "BacklogP0KomponentowDomenowychStory",
     "accepted": false
   },
   {
@@ -2762,8 +2726,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BusinessScreen",
       "CommandCenterScreen",
@@ -2773,12 +2737,11 @@ export const storybookCatalog = [
       "DecisionQueue",
       "EvidencePanel"
     ],
-    "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Centrum Dowodzenia",
     "displayTitle": "Widok główny",
-    "accepted": true,
-    "storyExport": "CommandCenterOverviewStory"
+    "accepted": true
   },
   {
     "id": "30.02",
@@ -2796,8 +2759,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BusinessScreen",
       "CommandCenterScreen",
@@ -2807,12 +2770,11 @@ export const storybookCatalog = [
       "DecisionQueue",
       "EvidencePanel"
     ],
-    "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Centrum Dowodzenia",
     "displayTitle": "Elementy wymagające uwagi",
-    "accepted": true,
-    "storyExport": "CommandCenterAttentionQueueStory"
+    "accepted": true
   },
   {
     "id": "30.03",
@@ -2830,8 +2792,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BusinessScreen",
       "CommandCenterScreen",
@@ -2841,12 +2803,11 @@ export const storybookCatalog = [
       "DecisionQueue",
       "EvidencePanel"
     ],
-    "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Centrum Dowodzenia",
     "displayTitle": "KPI",
-    "accepted": true,
-    "storyExport": "CommandCenterKpiStory"
+    "accepted": true
   },
   {
     "id": "30.04",
@@ -2864,8 +2825,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BusinessScreen",
       "CommandCenterScreen",
@@ -2875,12 +2836,11 @@ export const storybookCatalog = [
       "DecisionQueue",
       "EvidencePanel"
     ],
-    "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Centrum Dowodzenia",
     "displayTitle": "Plan i wynik",
-    "accepted": true,
-    "storyExport": "CommandCenterPlanPerformanceStory"
+    "accepted": true
   },
   {
     "id": "30.05",
@@ -2898,8 +2858,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BusinessScreen",
       "CommandCenterScreen",
@@ -2909,12 +2869,11 @@ export const storybookCatalog = [
       "DecisionQueue",
       "EvidencePanel"
     ],
-    "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Centrum Dowodzenia",
     "displayTitle": "Czynniki wyniku",
-    "accepted": true,
-    "storyExport": "CommandCenterDriversStory"
+    "accepted": true
   },
   {
     "id": "30.06",
@@ -2932,8 +2891,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BusinessScreen",
       "CommandCenterScreen",
@@ -2943,12 +2902,11 @@ export const storybookCatalog = [
       "DecisionQueue",
       "EvidencePanel"
     ],
-    "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Centrum Dowodzenia",
     "displayTitle": "Źródła sprzedaży",
-    "accepted": true,
-    "storyExport": "CommandCenterSalesSourcesStory"
+    "accepted": true
   },
   {
     "id": "30.07",
@@ -2966,8 +2924,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BusinessScreen",
       "CommandCenterScreen",
@@ -2977,12 +2935,11 @@ export const storybookCatalog = [
       "DecisionQueue",
       "EvidencePanel"
     ],
-    "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Centrum Dowodzenia",
     "displayTitle": "Ruch",
-    "accepted": true,
-    "storyExport": "CommandCenterTrafficStory"
+    "accepted": true
   },
   {
     "id": "30.08",
@@ -3000,8 +2957,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BusinessScreen",
       "CommandCenterScreen",
@@ -3011,12 +2968,11 @@ export const storybookCatalog = [
       "DecisionQueue",
       "EvidencePanel"
     ],
-    "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Centrum Dowodzenia",
     "displayTitle": "Produkty",
-    "accepted": true,
-    "storyExport": "CommandCenterProductsStory"
+    "accepted": true
   },
   {
     "id": "30.09",
@@ -3034,8 +2990,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BusinessScreen",
       "CommandCenterScreen",
@@ -3045,12 +3001,11 @@ export const storybookCatalog = [
       "DecisionQueue",
       "EvidencePanel"
     ],
-    "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Centrum Dowodzenia",
     "displayTitle": "Klienci",
-    "accepted": true,
-    "storyExport": "CommandCenterCustomersStory"
+    "accepted": true
   },
   {
     "id": "30.10",
@@ -3068,8 +3023,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BusinessScreen",
       "CommandCenterScreen",
@@ -3079,12 +3034,11 @@ export const storybookCatalog = [
       "DecisionQueue",
       "EvidencePanel"
     ],
-    "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Centrum Dowodzenia",
     "displayTitle": "Lejek",
-    "accepted": true,
-    "storyExport": "CommandCenterFunnelStory"
+    "accepted": true
   },
   {
     "id": "30.11",
@@ -3102,8 +3056,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BusinessScreen",
       "CommandCenterScreen",
@@ -3113,12 +3067,11 @@ export const storybookCatalog = [
       "DecisionQueue",
       "EvidencePanel"
     ],
-    "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Centrum Dowodzenia",
     "displayTitle": "Rekomendacje AI",
-    "accepted": true,
-    "storyExport": "CommandCenterRecommendationsStory"
+    "accepted": true
   },
   {
     "id": "30.12",
@@ -3136,8 +3089,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BusinessScreen",
       "CommandCenterScreen",
@@ -3147,12 +3100,11 @@ export const storybookCatalog = [
       "DecisionQueue",
       "EvidencePanel"
     ],
-    "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Centrum Dowodzenia",
     "displayTitle": "Sygnały sprzedażowe",
-    "accepted": true,
-    "storyExport": "CommandCenterSalesSignalsStory"
+    "accepted": true
   },
   {
     "id": "30.13",
@@ -3170,8 +3122,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BusinessScreen",
       "CommandCenterScreen",
@@ -3181,12 +3133,11 @@ export const storybookCatalog = [
       "DecisionQueue",
       "EvidencePanel"
     ],
-    "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Centrum Dowodzenia",
     "displayTitle": "Zmiany wyniku",
-    "accepted": true,
-    "storyExport": "CommandCenterWaterfallStory"
+    "accepted": true
   },
   {
     "id": "30.14",
@@ -3204,8 +3155,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "BusinessScreen",
       "CommandCenterWorkspace",
@@ -3213,11 +3164,10 @@ export const storybookCatalog = [
       "DataTable",
       "ready/loading/empty/error/partial/stale/offline"
     ],
-    "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/30-command-center/CommandCenter.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Centrum Dowodzenia",
     "displayTitle": "Warianty Centrum Dowodzenia",
-    "storyExport": "CommandCenterVariantsStory",
     "accepted": true
   },
   {
@@ -3236,8 +3186,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "BFF read shape",
@@ -3246,12 +3196,11 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/31-paid-campaigns/Campaigns.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Kampanie płatne",
     "displayTitle": "Przegląd",
-    "accepted": true,
-    "storyExport": "Screen31_01Story"
+    "accepted": true
   },
   {
     "id": "31.02",
@@ -3269,8 +3218,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "BFF read shape",
@@ -3279,12 +3228,11 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/31-paid-campaigns/Campaigns.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Kampanie płatne",
     "displayTitle": "Lista kampanii",
-    "accepted": true,
-    "storyExport": "Screen31_02Story"
+    "accepted": true
   },
   {
     "id": "31.03",
@@ -3302,8 +3250,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "BFF read shape",
@@ -3312,12 +3260,11 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/31-paid-campaigns/Campaigns.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Kampanie płatne",
     "displayTitle": "Szczegóły kampanii",
-    "accepted": true,
-    "storyExport": "Screen31_03Story"
+    "accepted": true
   },
   {
     "id": "31.04",
@@ -3335,8 +3282,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "BFF read shape",
@@ -3345,12 +3292,11 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/31-paid-campaigns/Campaigns.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Kampanie płatne",
     "displayTitle": "Atrybucja i sprzedaż",
-    "accepted": true,
-    "storyExport": "Screen31_04Story"
+    "accepted": true
   },
   {
     "id": "31.05",
@@ -3368,8 +3314,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "BFF read shape",
@@ -3378,12 +3324,11 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/31-paid-campaigns/Campaigns.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Kampanie płatne",
     "displayTitle": "Budżet",
-    "accepted": true,
-    "storyExport": "Screen31_05Story"
+    "accepted": true
   },
   {
     "id": "31.06",
@@ -3401,8 +3346,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "BFF read shape",
@@ -3411,12 +3356,11 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/31-paid-campaigns/Campaigns.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Kampanie płatne",
     "displayTitle": "Diagnostyka",
-    "accepted": true,
-    "storyExport": "Screen31_06Story"
+    "accepted": true
   },
   {
     "id": "31.07",
@@ -3434,8 +3378,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "BFF read shape",
@@ -3444,11 +3388,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/31-paid-campaigns/Campaigns.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Kampanie płatne",
     "displayTitle": "Rekomendacje",
-    "storyExport": "Screen31_07Story",
     "accepted": true
   },
   {
@@ -3467,8 +3410,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "BFF read shape",
@@ -3477,11 +3420,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/31-paid-campaigns/Campaigns.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Kampanie płatne",
     "displayTitle": "Warianty",
-    "storyExport": "Screen31_08Story",
     "accepted": true
   },
   {
@@ -3500,8 +3442,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Orders data contract",
@@ -3510,11 +3452,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "32 Zamówienia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/32-orders/Orders.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Zamówienia",
     "displayTitle": "Przegląd",
-    "storyExport": "Screen32_01Story",
     "accepted": true
   },
   {
@@ -3533,8 +3474,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Orders data contract",
@@ -3543,11 +3484,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "32 Zamówienia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/32-orders/Orders.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Zamówienia",
     "displayTitle": "Lista",
-    "storyExport": "Screen32_02Story",
     "accepted": true
   },
   {
@@ -3566,8 +3506,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Orders data contract",
@@ -3576,11 +3516,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "32 Zamówienia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/32-orders/Orders.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Zamówienia",
     "displayTitle": "Szczegóły",
-    "storyExport": "Screen32_03Story",
     "accepted": true
   },
   {
@@ -3599,8 +3538,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Orders data contract",
@@ -3609,11 +3548,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "32 Zamówienia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/32-orders/Orders.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Zamówienia",
     "displayTitle": "Historia zdarzeń",
-    "storyExport": "Screen32_04Story",
     "accepted": true
   },
   {
@@ -3632,8 +3570,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Orders data contract",
@@ -3642,11 +3580,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "32 Zamówienia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/32-orders/Orders.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Zamówienia",
     "displayTitle": "Porównanie źródeł",
-    "storyExport": "Screen32_05Story",
     "accepted": true
   },
   {
@@ -3665,8 +3602,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Orders data contract",
@@ -3675,11 +3612,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "32 Zamówienia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/32-orders/Orders.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Zamówienia",
     "displayTitle": "Rekoncyliacja",
-    "storyExport": "Screen32_06Story",
     "accepted": true
   },
   {
@@ -3698,8 +3634,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Orders data contract",
@@ -3708,11 +3644,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "32 Zamówienia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/32-orders/Orders.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Zamówienia",
     "displayTitle": "Eksport",
-    "storyExport": "Screen32_07Story",
     "accepted": true
   },
   {
@@ -3731,8 +3666,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Orders data contract",
@@ -3741,11 +3676,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "32 Zamówienia/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/32-orders/Orders.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Zamówienia",
     "displayTitle": "Warianty",
-    "storyExport": "Screen32_08Story",
     "accepted": true
   },
   {
@@ -3764,8 +3698,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Products data contract",
@@ -3774,11 +3708,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "33 Produkty/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/33-products/Products.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Produkty",
     "displayTitle": "Przegląd",
-    "storyExport": "Screen33_01Story",
     "accepted": true
   },
   {
@@ -3797,8 +3730,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Products data contract",
@@ -3807,11 +3740,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "33 Produkty/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/33-products/Products.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Produkty",
     "displayTitle": "Katalog",
-    "storyExport": "Screen33_02Story",
     "accepted": true
   },
   {
@@ -3830,8 +3762,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Products data contract",
@@ -3840,11 +3772,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "33 Produkty/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/33-products/Products.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Produkty",
     "displayTitle": "Szczegóły",
-    "storyExport": "Screen33_03Story",
     "accepted": true
   },
   {
@@ -3863,8 +3794,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Products data contract",
@@ -3873,11 +3804,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "33 Produkty/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/33-products/Products.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Produkty",
     "displayTitle": "Mapowanie",
-    "storyExport": "Screen33_04Story",
     "accepted": true
   },
   {
@@ -3896,8 +3826,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Products data contract",
@@ -3906,11 +3836,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "33 Produkty/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/33-products/Products.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Produkty",
     "displayTitle": "Oferty",
-    "storyExport": "Screen33_05Story",
     "accepted": true
   },
   {
@@ -3929,8 +3858,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Products data contract",
@@ -3939,11 +3868,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "33 Produkty/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/33-products/Products.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Produkty",
     "displayTitle": "Wydajność",
-    "storyExport": "Screen33_06Story",
     "accepted": true
   },
   {
@@ -3962,8 +3890,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Products data contract",
@@ -3972,11 +3900,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "33 Produkty/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/33-products/Products.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Produkty",
     "displayTitle": "Braki w danych",
-    "storyExport": "Screen33_07Story",
     "accepted": true
   },
   {
@@ -3995,8 +3922,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Products data contract",
@@ -4005,11 +3932,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "33 Produkty/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/33-products/Products.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Produkty",
     "displayTitle": "Analiza wpływu",
-    "storyExport": "Screen33_08Story",
     "accepted": true
   },
   {
@@ -4028,8 +3954,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Products data contract",
@@ -4038,11 +3964,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "33 Produkty/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/33-products/Products.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Produkty",
     "displayTitle": "Warianty",
-    "storyExport": "Screen33_09Story",
     "accepted": true
   },
   {
@@ -4061,8 +3986,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Customers data contract",
@@ -4072,11 +3997,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "34 Klienci/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/34-customers/Customers.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Klienci",
     "displayTitle": "Przegląd",
-    "storyExport": "Screen34_01Story",
     "accepted": true
   },
   {
@@ -4095,8 +4019,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Customers data contract",
@@ -4106,11 +4030,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "34 Klienci/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/34-customers/Customers.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Klienci",
     "displayTitle": "Segmenty",
-    "storyExport": "Screen34_02Story",
     "accepted": true
   },
   {
@@ -4129,8 +4052,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Customers data contract",
@@ -4140,11 +4063,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "34 Klienci/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/34-customers/Customers.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Klienci",
     "displayTitle": "Kohorty",
-    "storyExport": "Screen34_03Story",
     "accepted": true
   },
   {
@@ -4163,8 +4085,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Customers data contract",
@@ -4174,11 +4096,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "34 Klienci/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/34-customers/Customers.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Klienci",
     "displayTitle": "Szczegóły klienta",
-    "storyExport": "Screen34_04Story",
     "accepted": true
   },
   {
@@ -4197,8 +4118,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Customers data contract",
@@ -4208,11 +4129,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "34 Klienci/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/34-customers/Customers.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Klienci",
     "displayTitle": "Konflikty tożsamości",
-    "storyExport": "Screen34_05Story",
     "accepted": true
   },
   {
@@ -4231,8 +4151,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Customers data contract",
@@ -4242,11 +4162,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "34 Klienci/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/34-customers/Customers.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Klienci",
     "displayTitle": "Prywatność",
-    "storyExport": "Screen34_06Story",
     "accepted": true
   },
   {
@@ -4265,8 +4184,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Customers data contract",
@@ -4276,11 +4195,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "34 Klienci/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/34-customers/Customers.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Klienci",
     "displayTitle": "Analiza wpływu",
-    "storyExport": "Screen34_07Story",
     "accepted": true
   },
   {
@@ -4299,8 +4217,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Customers data contract",
@@ -4310,11 +4228,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "34 Klienci/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/34-customers/Customers.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Klienci",
     "displayTitle": "Warianty",
-    "storyExport": "Screen34_08Story",
     "accepted": true
   },
   {
@@ -4333,8 +4250,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Traffic data contract",
@@ -4344,11 +4261,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/35-traffic-funnel/Traffic.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ruch i lejek sprzedażowy",
     "displayTitle": "Przegląd ruchu",
-    "storyExport": "Screen35_01Story",
     "accepted": true
   },
   {
@@ -4367,8 +4283,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Traffic data contract",
@@ -4378,11 +4294,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/35-traffic-funnel/Traffic.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ruch i lejek sprzedażowy",
     "displayTitle": "Kanały",
-    "storyExport": "Screen35_02Story",
     "accepted": true
   },
   {
@@ -4401,8 +4316,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Traffic data contract",
@@ -4412,11 +4327,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/35-traffic-funnel/Traffic.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ruch i lejek sprzedażowy",
     "displayTitle": "Widok lejka",
-    "storyExport": "Screen35_03Story",
     "accepted": true
   },
   {
@@ -4435,8 +4349,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Traffic data contract",
@@ -4446,11 +4360,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/35-traffic-funnel/Traffic.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ruch i lejek sprzedażowy",
     "displayTitle": "Szczegóły etapu lejka",
-    "storyExport": "Screen35_04Story",
     "accepted": true
   },
   {
@@ -4469,8 +4382,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Traffic data contract",
@@ -4480,11 +4393,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/35-traffic-funnel/Traffic.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ruch i lejek sprzedażowy",
     "displayTitle": "Definicje lejka",
-    "storyExport": "Screen35_05Story",
     "accepted": true
   },
   {
@@ -4503,8 +4415,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Traffic data contract",
@@ -4514,11 +4426,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/35-traffic-funnel/Traffic.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ruch i lejek sprzedażowy",
     "displayTitle": "Ruch a zamówienia",
-    "storyExport": "Screen35_06Story",
     "accepted": true
   },
   {
@@ -4537,8 +4448,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Traffic data contract",
@@ -4548,11 +4459,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/35-traffic-funnel/Traffic.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ruch i lejek sprzedażowy",
     "displayTitle": "Jakość zdarzeń",
-    "storyExport": "Screen35_07Story",
     "accepted": true
   },
   {
@@ -4571,8 +4481,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Traffic data contract",
@@ -4582,11 +4492,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/35-traffic-funnel/Traffic.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ruch i lejek sprzedażowy",
     "displayTitle": "Strony wejścia",
-    "storyExport": "Screen35_08Story",
     "accepted": true
   },
   {
@@ -4605,8 +4514,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "AnalyticsModuleWorkspace",
       "Traffic data contract",
@@ -4616,11 +4525,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/35-traffic-funnel/Traffic.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ruch i lejek sprzedażowy",
     "displayTitle": "Warianty",
-    "storyExport": "Screen35_09Story",
     "accepted": true
   },
   {
@@ -4639,8 +4547,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "IntegrationsWorkspace",
       "DataTable",
@@ -4651,11 +4559,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "40 Integracje i synchronizacja/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/40-integrations/Integrations.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Integracje",
     "displayTitle": "Katalog integracji",
-    "storyExport": "Screen40_01Story",
     "accepted": true
   },
   {
@@ -4674,8 +4581,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "IntegrationsWorkspace",
       "DataTable",
@@ -4686,11 +4593,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "40 Integracje i synchronizacja/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/40-integrations/Integrations.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Integracje",
     "displayTitle": "Konfiguracja połączenia",
-    "storyExport": "Screen40_02Story",
     "accepted": true
   },
   {
@@ -4709,8 +4615,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "IntegrationsWorkspace",
       "DataTable",
@@ -4721,11 +4627,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "40 Integracje i synchronizacja/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/40-integrations/Integrations.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Integracje",
     "displayTitle": "Szczegóły integracji",
-    "storyExport": "Screen40_03Story",
     "accepted": true
   },
   {
@@ -4744,8 +4649,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "IntegrationsWorkspace",
       "DataTable",
@@ -4756,11 +4661,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "40 Integracje i synchronizacja/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/40-integrations/Integrations.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Integracje",
     "displayTitle": "Historia synchronizacji",
-    "storyExport": "Screen40_04Story",
     "accepted": true
   },
   {
@@ -4779,8 +4683,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "IntegrationsWorkspace",
       "DataTable",
@@ -4791,11 +4695,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "40 Integracje i synchronizacja/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/40-integrations/Integrations.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Integracje",
     "displayTitle": "Szczegóły synchronizacji",
-    "storyExport": "Screen40_05Story",
     "accepted": true
   },
   {
@@ -4814,8 +4717,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "IntegrationsWorkspace",
       "DataTable",
@@ -4826,11 +4729,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "40 Integracje i synchronizacja/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/40-integrations/Integrations.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Integracje",
     "displayTitle": "Zakres synchronizacji",
-    "storyExport": "Screen40_06Story",
     "accepted": true
   },
   {
@@ -4849,8 +4751,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "IntegrationsWorkspace",
       "DataTable",
@@ -4861,11 +4763,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "40 Integracje i synchronizacja/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/40-integrations/Integrations.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Integracje",
     "displayTitle": "Ponowne połączenie",
-    "storyExport": "Screen40_07Story",
     "accepted": true
   },
   {
@@ -4884,8 +4785,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "IntegrationsWorkspace",
       "DataTable",
@@ -4896,11 +4797,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "40 Integracje i synchronizacja/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/40-integrations/Integrations.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Integracje",
     "displayTitle": "Odłączenie",
-    "storyExport": "Screen40_08Story",
     "accepted": true
   },
   {
@@ -4919,8 +4819,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "IntegrationsWorkspace",
       "DataTable",
@@ -4931,11 +4831,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "40 Integracje i synchronizacja/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/40-integrations/Integrations.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Integracje",
     "displayTitle": "Awaria dostawcy",
-    "storyExport": "Screen40_09Story",
     "accepted": true
   },
   {
@@ -4954,8 +4853,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "IntegrationsWorkspace",
       "DataTable",
@@ -4966,11 +4865,10 @@ export const storybookCatalog = [
       "PL/EN",
       "keyboard/focus"
     ],
-    "storyTitle": "40 Integracje i synchronizacja/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/40-integrations/Integrations.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Integracje",
     "displayTitle": "Warianty",
-    "storyExport": "Screen40_10Story",
     "accepted": true
   },
   {
@@ -4989,8 +4887,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -4998,11 +4896,10 @@ export const storybookCatalog = [
       "keyboard-focus-play-test",
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states"
     ],
-    "storyTitle": "41 Jakość danych i integralność/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/41-data-quality/DataQuality.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Jakość danych",
     "displayTitle": "Centrum jakości",
-    "storyExport": "Screen41_01Story",
     "accepted": true
   },
   {
@@ -5021,8 +4918,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5030,11 +4927,10 @@ export const storybookCatalog = [
       "keyboard-focus-play-test",
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states"
     ],
-    "storyTitle": "41 Jakość danych i integralność/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/41-data-quality/DataQuality.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Jakość danych",
     "displayTitle": "Zbiór danych",
-    "storyExport": "Screen41_02Story",
     "accepted": true
   },
   {
@@ -5053,8 +4949,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5062,11 +4958,10 @@ export const storybookCatalog = [
       "keyboard-focus-play-test",
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states"
     ],
-    "storyTitle": "41 Jakość danych i integralność/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/41-data-quality/DataQuality.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Jakość danych",
     "displayTitle": "Pochodzenie danych",
-    "storyExport": "Screen41_03Story",
     "accepted": true
   },
   {
@@ -5085,8 +4980,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5094,11 +4989,10 @@ export const storybookCatalog = [
       "keyboard-focus-play-test",
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states"
     ],
-    "storyTitle": "41 Jakość danych i integralność/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/41-data-quality/DataQuality.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Jakość danych",
     "displayTitle": "Nakładanie źródeł",
-    "storyExport": "Screen41_04Story",
     "accepted": true
   },
   {
@@ -5117,8 +5011,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5126,11 +5020,10 @@ export const storybookCatalog = [
       "keyboard-focus-play-test",
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states"
     ],
-    "storyTitle": "41 Jakość danych i integralność/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/41-data-quality/DataQuality.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Jakość danych",
     "displayTitle": "Nadrzędność źródła",
-    "storyExport": "Screen41_05Story",
     "accepted": true
   },
   {
@@ -5149,8 +5042,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5159,11 +5052,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "41 Jakość danych i integralność/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/41-data-quality/DataQuality.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Jakość danych",
     "displayTitle": "Konflikty",
-    "storyExport": "Screen41_06Story",
     "accepted": true
   },
   {
@@ -5182,8 +5074,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5192,11 +5084,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "41 Jakość danych i integralność/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/41-data-quality/DataQuality.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Jakość danych",
     "displayTitle": "Przegląd ręczny",
-    "storyExport": "Screen41_07Story",
     "accepted": true
   },
   {
@@ -5215,8 +5106,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5225,11 +5116,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "41 Jakość danych i integralność/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/41-data-quality/DataQuality.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Jakość danych",
     "displayTitle": "Ponowne przetwarzanie",
-    "storyExport": "Screen41_08Story",
     "accepted": true
   },
   {
@@ -5248,8 +5138,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5258,11 +5148,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "41 Jakość danych i integralność/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/41-data-quality/DataQuality.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Jakość danych",
     "displayTitle": "Rekoncyliacja",
-    "storyExport": "Screen41_09Story",
     "accepted": true
   },
   {
@@ -5281,8 +5170,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5291,11 +5180,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "41 Jakość danych i integralność/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/41-data-quality/DataQuality.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Jakość danych",
     "displayTitle": "Warianty jakości danych",
-    "storyExport": "Screen41_10Story",
     "accepted": true
   },
   {
@@ -5314,8 +5202,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5324,11 +5212,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Panel kontekstowy Papa",
-    "storyExport": "Screen50_01Story",
     "accepted": true
   },
   {
@@ -5347,8 +5234,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5357,11 +5244,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Powłoka asystenta",
-    "storyExport": "Screen50_02Story",
     "accepted": true
   },
   {
@@ -5380,8 +5266,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5390,11 +5276,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Tryby pracy",
-    "storyExport": "Screen50_03Story",
     "accepted": true
   },
   {
@@ -5413,8 +5298,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5423,11 +5308,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Koszyk kontekstu",
-    "storyExport": "Screen50_04Story",
     "accepted": true
   },
   {
@@ -5446,8 +5330,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5456,11 +5340,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Odpowiedź Papa",
-    "storyExport": "Screen50_05Story",
     "accepted": true
   },
   {
@@ -5479,8 +5362,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5489,11 +5372,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Dowody",
-    "storyExport": "Screen50_06Story",
     "accepted": true
   },
   {
@@ -5512,8 +5394,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5522,11 +5404,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Poziom pewności",
-    "storyExport": "Screen50_07Story",
     "accepted": true
   },
   {
@@ -5545,8 +5426,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5555,11 +5436,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Laboratorium AI",
-    "storyExport": "Screen50_08Story",
     "accepted": true
   },
   {
@@ -5578,8 +5458,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5588,11 +5468,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Obserwacje",
-    "storyExport": "Screen50_09Story",
     "accepted": true
   },
   {
@@ -5611,8 +5490,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5621,11 +5500,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Rekomendacje i warianty",
-    "storyExport": "Screen50_10Story",
     "accepted": true
   },
   {
@@ -5644,8 +5522,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5654,11 +5532,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Propozycje AI",
-    "storyExport": "Screen50_11Story",
     "accepted": true
   },
   {
@@ -5677,8 +5554,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5687,11 +5564,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Akceptacja działań AI",
-    "storyExport": "Screen50_12Story",
     "accepted": true
   },
   {
@@ -5710,8 +5586,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5720,11 +5596,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Działania AI",
-    "storyExport": "Screen50_13Story",
     "accepted": true
   },
   {
@@ -5743,8 +5618,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5753,11 +5628,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Zablokowane działania AI",
-    "storyExport": "Screen50_14Story",
     "accepted": true
   },
   {
@@ -5776,8 +5650,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5786,11 +5660,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Historia i pamięć asystenta",
-    "storyExport": "Screen50_15Story",
     "accepted": true
   },
   {
@@ -5809,8 +5682,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5819,11 +5692,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Ustawienia AI i nadzór",
-    "storyExport": "Screen50_16Story",
     "accepted": true
   },
   {
@@ -5842,8 +5714,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5852,11 +5724,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "50 Papa Asystent i Laboratorium AI/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/50-papa-assistant/Papa.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Papa Asystent",
     "displayTitle": "Warianty asystenta",
-    "storyExport": "Screen50_17Story",
     "accepted": true
   },
   {
@@ -5875,8 +5746,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5885,11 +5756,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/60-settings-security/Settings.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ustawienia i bezpieczeństwo",
     "displayTitle": "Organizacja",
-    "storyExport": "Screen60_01Story",
     "accepted": true
   },
   {
@@ -5908,8 +5778,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5918,11 +5788,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/60-settings-security/Settings.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ustawienia i bezpieczeństwo",
     "displayTitle": "Przestrzeń pracy",
-    "storyExport": "Screen60_02Story",
     "accepted": true
   },
   {
@@ -5941,8 +5810,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5951,11 +5820,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/60-settings-security/Settings.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ustawienia i bezpieczeństwo",
     "displayTitle": "Członkowie zespołu",
-    "storyExport": "Screen60_03Story",
     "accepted": true
   },
   {
@@ -5974,8 +5842,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -5984,11 +5852,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/60-settings-security/Settings.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ustawienia i bezpieczeństwo",
     "displayTitle": "Role i uprawnienia",
-    "storyExport": "Screen60_04Story",
     "accepted": true
   },
   {
@@ -6007,8 +5874,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -6017,11 +5884,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/60-settings-security/Settings.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ustawienia i bezpieczeństwo",
     "displayTitle": "Bezpieczeństwo konta",
-    "storyExport": "Screen60_05Story",
     "accepted": true
   },
   {
@@ -6040,8 +5906,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -6050,11 +5916,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/60-settings-security/Settings.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ustawienia i bezpieczeństwo",
     "displayTitle": "Sesje",
-    "storyExport": "Screen60_06Story",
     "accepted": true
   },
   {
@@ -6073,8 +5938,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -6083,11 +5948,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/60-settings-security/Settings.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ustawienia i bezpieczeństwo",
     "displayTitle": "Audyt",
-    "storyExport": "Screen60_07Story",
     "accepted": true
   },
   {
@@ -6106,8 +5970,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -6116,11 +5980,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/60-settings-security/Settings.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ustawienia i bezpieczeństwo",
     "displayTitle": "Prywatność",
-    "storyExport": "Screen60_08Story",
     "accepted": true
   },
   {
@@ -6139,8 +6002,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -6149,11 +6012,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/60-settings-security/Settings.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ustawienia i bezpieczeństwo",
     "displayTitle": "Dostęp dla wsparcia",
-    "storyExport": "Screen60_09Story",
     "accepted": true
   },
   {
@@ -6172,8 +6034,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "implemented",
     "testStatus": "passing",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "pl-en-copy-ready",
       "light-dark-ready",
@@ -6182,11 +6044,10 @@ export const storybookCatalog = [
       "contrast-keyboard-focus-forms-semantics-aria-alt-error-states",
       "no-container-in-container-local-css"
     ],
-    "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/60-settings-security/Settings.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Ustawienia i bezpieczeństwo",
     "displayTitle": "Warianty",
-    "storyExport": "Screen60_10Story",
     "accepted": true
   },
   {
@@ -6205,8 +6066,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6214,11 +6075,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "70 Subskrypcja i płatności/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/70-subscription-billing/Billing.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Subskrypcja i płatności",
     "displayTitle": "Subskrypcja",
-    "storyExport": "Screen70_01Story",
     "accepted": false
   },
   {
@@ -6237,8 +6097,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6246,11 +6106,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "70 Subskrypcja i płatności/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/70-subscription-billing/Billing.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Subskrypcja i płatności",
     "displayTitle": "Wykorzystanie i limity",
-    "storyExport": "Screen70_02Story",
     "accepted": false
   },
   {
@@ -6269,8 +6128,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6278,11 +6137,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "70 Subskrypcja i płatności/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/70-subscription-billing/Billing.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Subskrypcja i płatności",
     "displayTitle": "Plany",
-    "storyExport": "Screen70_03Story",
     "accepted": false
   },
   {
@@ -6301,8 +6159,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6310,11 +6168,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "70 Subskrypcja i płatności/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/70-subscription-billing/Billing.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Subskrypcja i płatności",
     "displayTitle": "Faktury",
-    "storyExport": "Screen70_04Story",
     "accepted": false
   },
   {
@@ -6333,8 +6190,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6342,11 +6199,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "70 Subskrypcja i płatności/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/70-subscription-billing/Billing.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Subskrypcja i płatności",
     "displayTitle": "Płatności",
-    "storyExport": "Screen70_05Story",
     "accepted": false
   },
   {
@@ -6365,8 +6221,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6374,11 +6230,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "70 Subskrypcja i płatności/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/70-subscription-billing/Billing.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Subskrypcja i płatności",
     "displayTitle": "Zaległa płatność",
-    "storyExport": "Screen70_06Story",
     "accepted": false
   },
   {
@@ -6397,8 +6252,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6406,11 +6261,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "70 Subskrypcja i płatności/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/70-subscription-billing/Billing.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Subskrypcja i płatności",
     "displayTitle": "Korekty",
-    "storyExport": "Screen70_07Story",
     "accepted": false
   },
   {
@@ -6429,8 +6283,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6438,11 +6292,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "70 Subskrypcja i płatności/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/70-subscription-billing/Billing.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Subskrypcja i płatności",
     "displayTitle": "Zmiana lub anulowanie planu",
-    "storyExport": "Screen70_08Story",
     "accepted": false
   },
   {
@@ -6461,8 +6314,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6470,11 +6323,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "70 Subskrypcja i płatności/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/70-subscription-billing/Billing.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Subskrypcja i płatności",
     "displayTitle": "Przejście na abonament",
-    "storyExport": "Screen70_09Story",
     "accepted": false
   },
   {
@@ -6493,8 +6345,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6502,11 +6354,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "70 Subskrypcja i płatności/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/70-subscription-billing/Billing.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Subskrypcja i płatności",
     "displayTitle": "Warianty subskrypcji",
-    "storyExport": "Screen70_10Story",
     "accepted": false
   },
   {
@@ -6525,8 +6376,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6534,11 +6385,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "80 Decyzje, działania i pomiar/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/80-decisions-actions-measurement/Decisions.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Decyzje i działania",
     "displayTitle": "Centrum decyzji",
-    "storyExport": "Screen80_01Story",
     "accepted": false
   },
   {
@@ -6557,8 +6407,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6566,11 +6416,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "80 Decyzje, działania i pomiar/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/80-decisions-actions-measurement/Decisions.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Decyzje i działania",
     "displayTitle": "Obserwacje",
-    "storyExport": "Screen80_02Story",
     "accepted": false
   },
   {
@@ -6589,8 +6438,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6598,11 +6447,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "80 Decyzje, działania i pomiar/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/80-decisions-actions-measurement/Decisions.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Decyzje i działania",
     "displayTitle": "Rekomendacje",
-    "storyExport": "Screen80_03Story",
     "accepted": false
   },
   {
@@ -6621,8 +6469,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6630,11 +6478,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "80 Decyzje, działania i pomiar/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/80-decisions-actions-measurement/Decisions.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Decyzje i działania",
     "displayTitle": "Rejestr decyzji",
-    "storyExport": "Screen80_04Story",
     "accepted": false
   },
   {
@@ -6653,8 +6500,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6662,11 +6509,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "80 Decyzje, działania i pomiar/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/80-decisions-actions-measurement/Decisions.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Decyzje i działania",
     "displayTitle": "Plan działania",
-    "storyExport": "Screen80_05Story",
     "accepted": false
   },
   {
@@ -6685,8 +6531,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6694,11 +6540,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "80 Decyzje, działania i pomiar/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/80-decisions-actions-measurement/Decisions.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Decyzje i działania",
     "displayTitle": "Szczegóły działania",
-    "storyExport": "Screen80_06Story",
     "accepted": false
   },
   {
@@ -6717,8 +6562,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6726,11 +6571,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "80 Decyzje, działania i pomiar/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/80-decisions-actions-measurement/Decisions.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Decyzje i działania",
     "displayTitle": "Pomiar",
-    "storyExport": "Screen80_07Story",
     "accepted": false
   },
   {
@@ -6749,8 +6593,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6758,11 +6602,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "80 Decyzje, działania i pomiar/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/80-decisions-actions-measurement/Decisions.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Decyzje i działania",
     "displayTitle": "Biblioteka działań",
-    "storyExport": "Screen80_08Story",
     "accepted": false
   },
   {
@@ -6781,8 +6624,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6790,11 +6633,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "80 Decyzje, działania i pomiar/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/80-decisions-actions-measurement/Decisions.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Decyzje i działania",
     "displayTitle": "Powiązania z modułami",
-    "storyExport": "Screen80_09Story",
     "accepted": false
   },
   {
@@ -6813,8 +6655,8 @@ export const storybookCatalog = [
     "prototypeStatus": "implemented",
     "productionStatus": "review",
     "testStatus": "partial",
-    "storyStatus": "implemented",
-    "storyVisibility": "visible",
+    "storyStatus": "deprecated",
+    "storyVisibility": "hidden",
     "requirements": [
       "polska nazwa",
       "light i dark",
@@ -6822,11 +6664,10 @@ export const storybookCatalog = [
       "klawiatura i focus-visible",
       "wymagane stany z macierzy stanów"
     ],
-    "storyTitle": "80 Decyzje, działania i pomiar/Ekrany produkcyjne",
-    "storyFile": "apps/web/src/storybook-next/stories/80-decisions-actions-measurement/Decisions.stories.tsx",
+    "storyTitle": null,
+    "storyFile": null,
     "displaySectionTitle": "Decyzje i działania",
     "displayTitle": "Warianty",
-    "storyExport": "Screen80_10Story",
     "accepted": false
   },
   {

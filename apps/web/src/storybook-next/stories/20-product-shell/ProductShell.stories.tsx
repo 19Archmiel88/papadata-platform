@@ -26,10 +26,11 @@ import {
   OperationCenter,
   ProductShellFrame,
   PublicTopbar,
+  type ShellOperation,
   ShellLayerDemo,
   Sidebar,
   WorkspaceSwitcher,
-} from '../../../shell';
+} from '../../runtime/shell/index';
 import '../../../storybook-next/presentation/story-presentation.css';
 import {
   StoryPresentationMeta,
@@ -61,11 +62,13 @@ type Story = StoryObj<typeof meta>;
 
 function ShellPage({
   children,
+  status = 'accepted',
   storyId,
   summary,
   title,
 }: {
   readonly children: React.ReactNode;
+  readonly status?: string;
   readonly storyId: string;
   readonly summary: string;
   readonly title: string;
@@ -83,7 +86,7 @@ function ShellPage({
             },
             {
               label: 'Status',
-              value: 'accepted',
+              value: status,
             },
             {
               label: 'Dokument',
@@ -135,6 +138,7 @@ function CommandCenterPreview() {
 function ShellFrameDemo({
   activePath = '/app/command-center',
   initialOverlay = null,
+  operations = defaultShellOperations,
   problem = null,
   sidebarCollapsed = false,
   sidebarDense = false,
@@ -159,7 +163,7 @@ function ShellFrameDemo({
         onSelectWorkspace={navigateAction}
         onSnoozeNotification={notificationMutationAction}
         onUnsnoozeNotification={notificationMutationAction}
-        operations={defaultShellOperations}
+        operations={operations}
         problem={problem}
         sidebarCollapsed={sidebarCollapsed}
         sidebarDense={sidebarDense}
@@ -172,6 +176,36 @@ function ShellFrameDemo({
     </div>
   );
 }
+
+const footerDemoOperationsAllClear: readonly ShellOperation[] = [
+  {
+    action: null,
+    actionLabel: null,
+    description: 'Pobieranie zamówień i refundów z ostatnich 30 dni.',
+    errorCode: null,
+    id: 'sync-woo-completed',
+    progress: 100,
+    startedAt: '11:58',
+    status: 'completed',
+    statusText: 'Zakończone',
+    title: 'Synchronizacja WooCommerce',
+  },
+];
+
+const footerDemoOperationsSyncing: readonly ShellOperation[] = [
+  {
+    action: 'cancel',
+    actionLabel: 'Anuluj',
+    description: 'Pobieranie zamówień i refundów z ostatnich 30 dni.',
+    errorCode: null,
+    id: 'sync-woo-running',
+    progress: 42,
+    startedAt: '12:24',
+    status: 'running',
+    statusText: 'W toku',
+    title: 'Synchronizacja WooCommerce',
+  },
+];
 
 export const AppShellStory: Story = {
   name: '20.01 AppShell',
@@ -548,5 +582,49 @@ export const MobileShellStory: Story = {
   play: async ({ canvasElement }) => {
     const page = within(canvasElement.ownerDocument.body);
     await expect(await page.findByRole('dialog', { name: 'Nawigacja' })).toBeInTheDocument();
+  },
+};
+
+export const FooterStatusBarStory: Story = {
+  name: '20.12 Pasek stopki',
+  render: () => (
+    <ShellPage
+      storyId="20.12"
+      summary="Stały, cienki pasek stopki na dole powłoki. Status pochodzi z tej samej listy operacji integracji co Operation Center — nie z osobnego, wymyślonego źródła. Niezależny od zwijania/rozwijania sidebara, tak jak topbar."
+      title="Pasek stopki"
+    >
+      <StoryPresentationSection
+        index="01"
+        layout="full"
+        summary="Brak aktywnych operacji w kolejce — sidebar rozwinięty, pasek zajmuje pełną szerokość powłoki."
+        title="Wariant: brak aktywnych operacji"
+      >
+        <ShellFrameDemo operations={footerDemoOperationsAllClear} />
+      </StoryPresentationSection>
+      <StoryPresentationSection
+        index="02"
+        layout="full"
+        summary="Synchronizacja w toku — sidebar zwinięty, pasek stopki pozostaje bez zmian, dokładnie jak topbar."
+        title="Wariant: synchronizacja w toku, sidebar zwinięty"
+      >
+        <ShellFrameDemo operations={footerDemoOperationsSyncing} sidebarCollapsed />
+      </StoryPresentationSection>
+      <StoryPresentationSection
+        index="03"
+        layout="full"
+        summary="Ten sam zestaw operacji co w 20.09 Operacje w tle (jedna failed) — pasek i Operation Center czytają dokładnie tę samą listę, więc nie mogą sobie zaprzeczyć."
+        title="Wariant: operacja wymaga uwagi"
+      >
+        <ShellFrameDemo operations={defaultShellOperations} />
+      </StoryPresentationSection>
+    </ShellPage>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const bars = await canvas.findAllByRole('contentinfo', { name: 'Stan synchronizacji' });
+    await expect(bars.length).toBeGreaterThanOrEqual(3);
+    await expect(canvas.getByText('Brak aktywnych operacji integracji')).toBeInTheDocument();
+    await expect(canvas.getByText('Synchronizacja w toku')).toBeInTheDocument();
+    await expect(canvas.getByText('1 operacja integracji wymaga uwagi')).toBeInTheDocument();
   },
 };

@@ -13,8 +13,7 @@
   },
   "scripts": {
     "build": "tsc -b tsconfig.json",
-    "typecheck": "tsc -b tsconfig.json --pretty false",
-    "test": "node --test src/*.test.mjs"
+    "typecheck": "tsc -b tsconfig.json --pretty false"
   },
   "dependencies": {
     "@papadata/contracts": "workspace:*",

@@ -33,9 +33,16 @@ const publicContractPaths = [
 @Controller()
 export class ContractPublicController {
   constructor(
-    @Inject(BFF_CONFIG) private readonly config: BffConfig,
+    @Inject(BFF_CONFIG)
+    private readonly config: BffConfig,
+
+    @Inject(BffSecurityService)
     private readonly security: BffSecurityService,
+
+    @Inject(BffRateLimitService)
     private readonly rateLimit: BffRateLimitService,
+
+    @Inject(CloudRunIdentityService)
     private readonly cloudRunIdentity: CloudRunIdentityService,
   ) {}
 

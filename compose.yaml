@@ -107,6 +107,13 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_URL: redis://redis:6379
+      # Without this, PrincipalService.findSession() throws a config error
+      # on every request and every authenticated proxied call 401s -- the
+      # JWT itself can still verify fine, masking the real cause. The
+      # prefix must match the bff service's BFF_SESSION_REDIS_PREFIX (both
+      # default to "papadata:auth") since this is the same live session
+      # record the BFF reads/revokes, re-checked independently here.
+      PAPADATA_API_AUTH_SESSION_STORE: redis-auth-state
       PAPADATA_STORAGE_DRIVER: minio
       PAPADATA_STORAGE_BUCKET: papadata-artifacts
       PAPADATA_STORAGE_ENDPOINT: http://minio:9000

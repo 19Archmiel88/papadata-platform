@@ -1,86 +1,86 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-30T18:01:03.845Z",
-  "startedAt": "2026-08-30T18:00:30.612Z",
+  "generatedAt": "2026-08-30T20:05:57.018Z",
+  "startedAt": "2026-08-30T20:05:21.065Z",
   "status": "pass",
   "flow": "Edge -> Web -> BFF -> API -> PostgreSQL/Redis -> Worker -> Object Storage",
   "steps": [
     {
       "id": "prepare-production-parity",
       "status": "pass",
-      "durationMs": 279,
+      "durationMs": 293,
       "output": "> papadata-platform@0.1.0 prepare:production-parity /home/papadata/papadata-platform\n> sh tools/prepare-production-parity.sh\n\nProduction-parity environment prepared.\nEnvironment file: /home/papadata/papadata-platform/.env.production-parity\nRedis TLS assets: /home/papadata/papadata-platform/.runtime/backend-production-parity/redis-tls\nEdge TLS assets: /home/papadata/papadata-platform/.runtime/backend-production-parity/edge-tls\nCanonical local origin: https://papadata.localhost\nNext: pnpm verify:production-parity-env\nThen: pnpm start:production-parity"
     },
     {
       "id": "verify-production-parity-env",
       "status": "pass",
-      "durationMs": 257,
+      "durationMs": 249,
       "output": "> papadata-platform@0.1.0 verify:production-parity-env /home/papadata/papadata-platform\n> node tools/verify-production-parity-env-contract.mjs\n\n{\n  \"contract\": \"papadata-runtime-env-v1\",\n  \"checkedVariables\": 42,\n  \"generatedEnvPresent\": true,\n  \"result\": \"pass\",\n  \"failures\": []\n}"
     },
     {
       "id": "compose-config",
       "status": "pass",
       "durationMs": 49,
-      "output": "PAPADATA_PLATFORM_PASSWORD: 87dbd901f9c1984bb6a35141501fe339f2e1c99de9fe454b43fc857b8630f96b\n      PAPADATA_STORAGE_ACCESS_KEY: parity-72bde63632bc\n      PAPADATA_STORAGE_BUCKET: papadata-artifacts\n      PAPADATA_STORAGE_DRIVER: minio\n      PAPADATA_STORAGE_ENDPOINT: http://minio:9000\n      PAPADATA_STORAGE_SECRET_KEY: cfe1809c12c3e19a1128bb21256068eff61b682599208b2441b27ab182abb3c2\n      PAPADATA_TEST_PASSWORD: 973f37a52f01d0caf4cb8df4874daed3317b5bc8b80391d6818ecfaffc3f2336\n      POSTGRES_PASSWORD: e8551246c16a4101fa0a46e99d2f54798b882c412e674566670798ba81be3ae6\n      REDIS_CA_BASE64: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVQVENDQXFXZ0F3SUJBZ0lVSVBJMWwrRnhHa21pN2Jyd2FwTnpLbFM0ZHhFd0RRWUpLb1pJaHZjTkFRRUwKQlFBd0xqRXNNQ29HQTFVRUF3d2pVR0Z3WVVSaGRHRWdVSEp2WkhWamRHbHZiaUJRWVhKcGRIa2dVbVZrYVhNZwpRMEV3SGhjTk1qWXdPRE13TVRjME5qVXpXaGNOTWpZd09USTVNVGMwTmpVeldqQXVNU3d3S2dZRFZRUUREQ05RCllYQmhSR0YwWVNCUWNtOWtkV04wYVc5dUlGQmhjbWwwZVNCU1pXUnBjeUJEUVRDQ0FhSXdEUVlKS29aSWh2Y04KQVFFQkJRQURnZ0dQQURDQ0FZb0NnZ0dCQU5pekxXc05nQ3plN1FZQndHcE1YQlBqbW5kU2Rqb1c1bEpZSGNVUApKRVlkOXB5L0FtWmMwY1RaTUFxaCsrbUV1ZHZpUTY1eWhoMm4yc1NCVmlMT0VQemxvVXlPZGdmMEo3Q0k4NFlKCmZaaWNTZThONGNTNnBCZU1ZVW5BeU03cm1uYmxXZWxDTTJtcVlpRnV5TG16aXNLUlBBQU5JRFhjSjloWU1sU28Kd29WL2NxRUJJK2NOaTNPUTlRQVJhOEN2RDVNWVFLejNGRHRwclJ5enBkZDU2c3VYMU9SaXM2S2pCaHFwUC9oZwpzUVBWeVcwNmhWRXdzdlUzTmRFSWdGNGtYU2dlOHdiNTA4dTlubUZ4eVBpc2hHdjg4Y2FwY251UFJnandWNGUrCnF5VkdCNjNIZFRMVkx3eWRpWnhTb3BpdXhXQUFJdDNORk0yWXM3UXhrNi8rbDArckRvS1BjUzMvRG13WHlzamwKOWtndG8vTW1EYmpuZTlBT1c3ZDBUUHFvVFozWCtIeEliMHhpcVFpSnhyRVpHeEVMNElEYk9lTWYxaWVEME5ZSQoyeVFISXY3dnFzcjRtQXBUMVc3UTM4dEVqcy9Gb0N3SG5UNWlobTU4cnpoSEh1KzhyYm96SkMzSXFaTXhsamQyCkhqSno5eUQ0UnYzTW9pWFV6RkV6NVVTTlZ3SURBUUFCbzFNd1VUQWRCZ05WSFE0RUZnUVVEdU92T2hrbkRKaWcKeTRHQUtxWWV5eGlDbGFjd0h3WURWUjBqQkJnd0ZvQVVEdU92T2hrbkRKaWd5NEdBS3FZZXl4aUNsYWN3RHdZRApWUjBUQVFIL0JBVXdBd0VCL3pBTkJna3Foa2lHOXcwQkFRc0ZBQU9DQVlFQWtXNjlXZjFMUzhURkZNaWNucjVECm5jUWU2cDlaM2w5NUd3RFJGOGJIbkg0cXFrck93eTJId1E5cFM2ZEZtK1ZUd0d0R0hTTDNFbHpQK29rbVpxMU4KeVhPU2I5blhreUpzN3ZqTDZsVWthTzF1WjNFRmpydXFLZ1BVbjVHTUtGZEd6RnlVZ2NrVXhtWDl2enFpRkNETQpIQnhkK1lncytERldLVkNOSEhsSU9SaVJRQ3FkK1RmaW10QWEvRkkzU05uRjhZZ1pvdll4WHNYa2F2KzVqcitiClNEU3RhK09MSTM4QzZSTmsxRFlOYzJIcXhoMWVza0JXeHI5K2ZzM2dmQmZNbWdlaVZwcHB4SEYvY3ZRTy9qTzIKZEtodklaT0hZZC8yUndJTkxGUXJockg5YmxpRnBxeGhBQ0o1aTRFWjhSbTRzcnJWeDVWSEx2WGMzNy9ONlpYbQpkSHd1WU9Rbmx4Q3U4NGxuUXMvaE9kK0ZzMXRpaGJpK2ltRVlhQzI1V0VxUG0rNTEvMVRXSVE0OEFYVFNIUzZYClorQm5yYkpyeE90a1BtY0pRQUdGRjBHNGVURTk2U0dTSlB1eG9NbFlOTnRZMU9HTU5zOE9Ec0t5bU9mNTg5eGcKNERnUTF6UHowVU5vM1pDaTBLZ0wvR084dm5IbHowMlljemlzMTBxNWp4OWgKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\n      REDIS_PASSWORD: 24cc8433da38a12411007830e674c6ee321205ebacf76eeb76344a0c8edf81cf\n      REDIS_URL: rediss://default:24cc8433da38a12411007830e674c6ee321205ebacf76eeb76344a0c8edf81cf@redis-production:6379\n      SCHEDULER_DATABASE_URL: postgresql://papadata_platform:87dbd901f9c1984bb6a35141501fe339f2e1c99de9fe454b43fc857b8630f96b@postgres-production:5432/papadata\n    init: true\n    networks:\n      default: null\n    restart: unless-stopped\n    security_opt:\n      - no-new-privileges:true\n    stop_grace_period: 30s\nnetworks:\n  default:\n    name: papadata-platform_default\nvolumes:\n  papadata_minio_data:\n    name: papadata-platform_papadata_minio_data\n  papadata_pg_data:\n    name: papadata-platform_papadata_pg_data\n  papadata_redis_data:\n    name: papadata-platform_papadata_redis_data"
+      "output": "PAPADATA_PLATFORM_PASSWORD: 0d1d057bbcb14532a0e02c6c3b1fe9478c06c53e4e01ac0cbe54beef2a577d0d\n      PAPADATA_STORAGE_ACCESS_KEY: parity-228adb1cd20a\n      PAPADATA_STORAGE_BUCKET: papadata-artifacts\n      PAPADATA_STORAGE_DRIVER: minio\n      PAPADATA_STORAGE_ENDPOINT: http://minio:9000\n      PAPADATA_STORAGE_SECRET_KEY: 89dfff65ae3fb7eb186734ca90ff7552d6bc7f368bc35d3af60f2dee7375c767\n      PAPADATA_TEST_PASSWORD: 7d38b3e91c991ad122cebde8efac83fcc88b7fb969a1648601eb126a885742e6\n      POSTGRES_PASSWORD: 06c870e9ea9281ef45baa458861c1b10d8f45a64719ccfa8c1feb48170d9118f\n      REDIS_CA_BASE64: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVQVENDQXFXZ0F3SUJBZ0lVUlhWOTg1ZS83alFMOVJnNFhGV2pFV1BVaXVFd0RRWUpLb1pJaHZjTkFRRUwKQlFBd0xqRXNNQ29HQTFVRUF3d2pVR0Z3WVVSaGRHRWdVSEp2WkhWamRHbHZiaUJRWVhKcGRIa2dVbVZrYVhNZwpRMEV3SGhjTk1qWXdPRE13TVRreU9ERTRXaGNOTWpZd09USTVNVGt5T0RFNFdqQXVNU3d3S2dZRFZRUUREQ05RCllYQmhSR0YwWVNCUWNtOWtkV04wYVc5dUlGQmhjbWwwZVNCU1pXUnBjeUJEUVRDQ0FhSXdEUVlKS29aSWh2Y04KQVFFQkJRQURnZ0dQQURDQ0FZb0NnZ0dCQUxaclp0cHdjYys5a1V1Sk9HR05Xa0kvWTQwSjJKckcydHo4ZkZrRwpZYXZOY2QyelhDWFAzZE9mVHM5VDlkNlBtNHZpRzhCd1M1NHVMeXZtUzNXUWd4U1VUVkJCaExnRW5aS09ZL0IzCjJtTWFHZ0VML2ZHLzYzQk15VisxVEpQaHJWSGU0c3B6S241RHJjMTJsUENVcTNlODhZUDhjVEtuQW1JTFh2WlQKNEpRbFpsRDlYVzdaY1EzZU45RUlzV2lGSmNNRnYzZ3pybWtZODFwV2NCbmZaUS9Cd3VwTm5GbkU0ZkZDNVNPbgpoMkF0ME0wT0ZBRmZKQlFRODk0UHc2a3NEUVcvWnNiNWx6elhUdlBBQUxiZjlpTzUyNnZDbmdHdmYybE5udi9MCkozTjZrNHBLQjlXelF2eVpoZGtjTlkvMVkrV2x6NHNkR3FNNnhyQXo2MGVqRGVteklZcHNlTDVhZmdqVkNGbjIKUnZrVnVyelhvOS85TmlSMUYzRGFEMWh4Q0pVSVExR2hER3g4SUpLZmNpVW9GVzlyYVlyRHUrQUhXUk0rV1creQp0ZWtJVHFjajFTZVFGVjIrN0JJOWxpYW44S0dPcFljYmVmeEZMN040dEZ3N0VWZU5CZHFRU2hNSlBrbUJyNUw5CmJIM2twTTZrdmdVNXp5SU5ncnplbmE5R1J3SURBUUFCbzFNd1VUQWRCZ05WSFE0RUZnUVV2N2ZxTFp0VXRRc00KLy9jeGtxT0RTLyt2Z0NZd0h3WURWUjBqQkJnd0ZvQVV2N2ZxTFp0VXRRc00vL2N4a3FPRFMvK3ZnQ1l3RHdZRApWUjBUQVFIL0JBVXdBd0VCL3pBTkJna3Foa2lHOXcwQkFRc0ZBQU9DQVlFQVBVVlorZHFJQTAyb09BUi9rN3ZaCmQzbVZXaFIrSHNDMFNrREszaUYrck5XY1M2MHNQb05wUzYyaDJXdm1NbUhtellPb2FVenA5TEhGbS9naElja1EKNHNmSDRscDBxZCt2TktkOXYzaUJ5N1l1SC9YbWFZNlVSYVZYZVV3V01YNlh3QzI5ZUxMRGJDejFqNkZreE54cQpOVHlSL05rYUV0RTRXSzhaVWgyeUFlM0FoUnpPSVF5YTBCUVdQMStjSWdlWXhiVFA5N1p0VWNrdHQvZ1UxbmQyCmRVUGNsTHBwRkxRZ2crcWtKTXRpYnpRT2RpNFovL0p1ek1ZenRNMXZXUWpIeWZoUkdGSk5JVVRrYXZScEJPbXQKN3oweDh2RDFvSXdGOWJZaTJvbU55d3RvOTZJUlFXRGxBKyt0MXhPWnlTWDVHb09KOVcxakVVc3ZHK1dMSCs1SgpITXlVVWppWEYwNmZhUmx6UzBSYmJIeHM1enltZlZza2xyYmZVYzY5LzFPdDdEYTZTZHBrN3RMWHIwZFUyUnRpCkdGYlVxb0JoRXBwQTExSWZrb3h5ZldKWEVhMHpPM2VUcmo4Y1hJdTNnM1VTUnpqcnNNNGRxdngwcjJZN0pmejIKUHMyY3hLSyt1dEtUd2RmdlpmeGZiNHVlQWEvQm5zeFcvRGRFdDJvSXN3TTQKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\n      REDIS_PASSWORD: bdc5a4a6bc1067e4c4566e56966ebc71b906b5250b07adfe35918bcced1e7430\n      REDIS_URL: rediss://default:bdc5a4a6bc1067e4c4566e56966ebc71b906b5250b07adfe35918bcced1e7430@redis-production:6379\n      SCHEDULER_DATABASE_URL: postgresql://papadata_platform:0d1d057bbcb14532a0e02c6c3b1fe9478c06c53e4e01ac0cbe54beef2a577d0d@postgres-production:5432/papadata\n    init: true\n    networks:\n      default: null\n    restart: unless-stopped\n    security_opt:\n      - no-new-privileges:true\n    stop_grace_period: 30s\nnetworks:\n  default:\n    name: papadata-platform_default\nvolumes:\n  papadata_minio_data:\n    name: papadata-platform_papadata_minio_data\n  papadata_pg_data:\n    name: papadata-platform_papadata_pg_data\n  papadata_redis_data:\n    name: papadata-platform_papadata_redis_data"
     },
     {
       "id": "compose-down-before-run",
       "status": "pass",
-      "durationMs": 217,
+      "durationMs": 155,
       "output": ""
     },
     {
       "id": "compose-up-build",
       "status": "pass",
-      "durationMs": 20762,
-      "output": "Container papadata-platform-redis-production-1 Waiting \n Container papadata-platform-minio-init-1 Waiting \n Container papadata-platform-postgres-production-1 Waiting \n Container papadata-platform-redis-production-1 Waiting \n Container papadata-platform-minio-init-1 Waiting \n Container papadata-platform-migrate-production-1 Waiting \n Container papadata-platform-minio-init-1 Exited \n Container papadata-platform-postgres-production-1 Healthy \n Container papadata-platform-redis-production-1 Healthy \n Container papadata-platform-migrate-production-1 Exited \n Container papadata-platform-migrate-production-1 Exited \n Container papadata-platform-minio-init-1 Exited \n Container papadata-platform-api-production-1 Starting \n Container papadata-platform-redis-production-1 Healthy \n Container papadata-platform-worker-production-1 Starting \n Container papadata-platform-worker-production-1 Started \n Container papadata-platform-api-production-1 Started \n Container papadata-platform-api-production-1 Waiting \n Container papadata-platform-redis-production-1 Waiting \n Container papadata-platform-redis-production-1 Healthy \n Container papadata-platform-api-production-1 Healthy \n Container papadata-platform-bff-production-1 Starting \n Container papadata-platform-bff-production-1 Started \n Container papadata-platform-bff-production-1 Waiting \n Container papadata-platform-web-production-1 Waiting \n Container papadata-platform-web-production-1 Healthy \n Container papadata-platform-bff-production-1 Healthy \n Container papadata-platform-edge-1 Starting \n Container papadata-platform-edge-1 Started"
+      "durationMs": 23223,
+      "output": "Container papadata-platform-redis-production-1 Waiting \n Container papadata-platform-minio-init-1 Waiting \n Container papadata-platform-minio-init-1 Waiting \n Container papadata-platform-migrate-production-1 Waiting \n Container papadata-platform-migrate-production-1 Waiting \n Container papadata-platform-postgres-production-1 Waiting \n Container papadata-platform-minio-init-1 Exited \n Container papadata-platform-redis-production-1 Healthy \n Container papadata-platform-minio-init-1 Exited \n Container papadata-platform-redis-production-1 Healthy \n Container papadata-platform-postgres-production-1 Healthy \n Container papadata-platform-migrate-production-1 Exited \n Container papadata-platform-api-production-1 Starting \n Container papadata-platform-migrate-production-1 Exited \n Container papadata-platform-worker-production-1 Starting \n Container papadata-platform-api-production-1 Started \n Container papadata-platform-redis-production-1 Waiting \n Container papadata-platform-api-production-1 Waiting \n Container papadata-platform-worker-production-1 Started \n Container papadata-platform-redis-production-1 Healthy \n Container papadata-platform-api-production-1 Healthy \n Container papadata-platform-bff-production-1 Starting \n Container papadata-platform-bff-production-1 Started \n Container papadata-platform-bff-production-1 Waiting \n Container papadata-platform-web-production-1 Waiting \n Container papadata-platform-web-production-1 Healthy \n Container papadata-platform-bff-production-1 Healthy \n Container papadata-platform-edge-1 Starting \n Container papadata-platform-edge-1 Started"
     },
     {
       "id": "compose-health",
       "status": "pass",
-      "durationMs": 5204,
+      "durationMs": 5213,
       "output": "api-production:running/healthy bff-production:running/healthy edge:running/healthy migrate-production:exited minio:running minio-init:exited otel-collector:running postgres-production:running/healthy redis-production:running/healthy web-production:running/healthy worker-production:running"
     },
     {
       "id": "direct-readiness",
       "status": "pass",
-      "durationMs": 54,
-      "output": "{\"api\":{\"status\":\"ready\",\"dependencies\":[{\"name\":\"postgresql\",\"ready\":true,\"latencyMs\":3},{\"name\":\"redis\",\"ready\":true,\"latencyMs\":9},{\"name\":\"storage\",\"ready\":true,\"latencyMs\":9}]},\"bff\":{\"dependencies\":[{\"name\":\"api\",\"ready\":true}],\"service\":\"papadata-bff\",\"status\":\"ready\",\"upstream\":{\"status\":\"ready\",\"dependencies\":[{\"name\":\"postgresql\",\"ready\":true,\"latencyMs\":4},{\"name\":\"redis\",\"ready\":true,\"latencyMs\":10},{\"name\":\"storage\",\"ready\":true,\"latencyMs\":3}]}}}"
+      "durationMs": 59,
+      "output": "{\"api\":{\"status\":\"ready\",\"dependencies\":[{\"name\":\"postgresql\",\"ready\":true,\"latencyMs\":3},{\"name\":\"redis\",\"ready\":true,\"latencyMs\":8},{\"name\":\"storage\",\"ready\":true,\"latencyMs\":3}]},\"bff\":{\"dependencies\":[{\"name\":\"api\",\"ready\":true}],\"service\":\"papadata-bff\",\"status\":\"ready\",\"upstream\":{\"status\":\"ready\",\"dependencies\":[{\"name\":\"postgresql\",\"ready\":true,\"latencyMs\":3},{\"name\":\"redis\",\"ready\":true,\"latencyMs\":9},{\"name\":\"storage\",\"ready\":true,\"latencyMs\":3}]}}}"
     },
     {
       "id": "edge-health-readiness",
       "status": "pass",
-      "durationMs": 39,
-      "output": "{\"dependencies\":[{\"name\":\"api\",\"ready\":true}],\"service\":\"papadata-bff\",\"status\":\"ready\",\"upstream\":{\"status\":\"ready\",\"dependencies\":[{\"name\":\"postgresql\",\"ready\":true,\"latencyMs\":4},{\"name\":\"redis\",\"ready\":true,\"latencyMs\":9},{\"name\":\"storage\",\"ready\":true,\"latencyMs\":4}]}}"
+      "durationMs": 41,
+      "output": "{\"dependencies\":[{\"name\":\"api\",\"ready\":true}],\"service\":\"papadata-bff\",\"status\":\"ready\",\"upstream\":{\"status\":\"ready\",\"dependencies\":[{\"name\":\"postgresql\",\"ready\":true,\"latencyMs\":4},{\"name\":\"redis\",\"ready\":true,\"latencyMs\":9},{\"name\":\"storage\",\"ready\":true,\"latencyMs\":3}]}}"
     },
     {
       "id": "redis-tls-auth",
       "status": "pass",
-      "durationMs": 380,
+      "durationMs": 268,
       "output": "PONG"
     },
     {
       "id": "edge-bff-api-auth-rbac-worker-storage-e2e",
       "status": "pass",
-      "durationMs": 2668,
-      "output": "{\"tenantId\":\"ab33b9f5-abb2-42ba-941c-701d8d92e7f4\",\"workspaceId\":\"68f24721-b7e1-4683-a021-dcb2dad4bc00\",\"reportId\":\"e03f24f2-7757-4518-871a-5971c2ff10a7\",\"objectKey\":\"reports/ab33b9f5-abb2-42ba-941c-701d8d92e7f4/68f24721-b7e1-4683-a021-dcb2dad4bc00/e03f24f2-7757-4518-871a-5971c2ff10a7.json\"}"
+      "durationMs": 2564,
+      "output": "{\"tenantId\":\"609b76f9-961f-450b-9d3c-dd90062f1093\",\"workspaceId\":\"39759d26-ae05-43df-affc-111aa7210799\",\"reportId\":\"85337660-f24c-4be0-b52e-525df79a0923\",\"objectKey\":\"reports/609b76f9-961f-450b-9d3c-dd90062f1093/39759d26-ae05-43df-affc-111aa7210799/85337660-f24c-4be0-b52e-525df79a0923.json\"}"
     },
     {
       "id": "postgres-rls-runtime",
       "status": "pass",
-      "durationMs": 170,
-      "output": "--------------------------------------\n ab33b9f5-abb2-42ba-941c-701d8d92e7f4\n(1 row)\n\n              set_config              \n--------------------------------------\n 68f24721-b7e1-4683-a021-dcb2dad4bc00\n(1 row)\n\n visible_same_tenant \n---------------------\n                   1\n(1 row)\n\n              set_config              \n--------------------------------------\n 00000000-0000-4000-8000-0000000000ff\n(1 row)\n\n              set_config              \n--------------------------------------\n 68f24721-b7e1-4683-a021-dcb2dad4bc00\n(1 row)\n\n visible_other_tenant \n----------------------\n                    0\n(1 row)"
+      "durationMs": 264,
+      "output": "--------------------------------------\n 609b76f9-961f-450b-9d3c-dd90062f1093\n(1 row)\n\n              set_config              \n--------------------------------------\n 39759d26-ae05-43df-affc-111aa7210799\n(1 row)\n\n visible_same_tenant \n---------------------\n                   1\n(1 row)\n\n              set_config              \n--------------------------------------\n 00000000-0000-4000-8000-0000000000ff\n(1 row)\n\n              set_config              \n--------------------------------------\n 39759d26-ae05-43df-affc-111aa7210799\n(1 row)\n\n visible_other_tenant \n----------------------\n                    0\n(1 row)"
     },
     {
       "id": "minio-object-runtime",
       "status": "pass",
-      "durationMs": 779,
-      "output": "Added `local` successfully.\nBucket created successfully `local/papadata-artifacts`.\nAccess permission for `local/papadata-artifacts` is set to `private`\n\n Container papadata-platform-minio-init-run-9d76bedc16c3 Creating \n Container papadata-platform-minio-init-run-9d76bedc16c3 Created"
+      "durationMs": 977,
+      "output": "Added `local` successfully.\nBucket created successfully `local/papadata-artifacts`.\nAccess permission for `local/papadata-artifacts` is set to `private`\n\n Container papadata-platform-minio-init-run-68eb7c70edab Creating \n Container papadata-platform-minio-init-run-68eb7c70edab Created"
     },
     {
       "id": "compose-down-after-run",
       "status": "pass",
-      "output": "Container papadata-platform-api-production-1 Stopped \n Container papadata-platform-api-production-1 Removing \n Container papadata-platform-api-production-1 Removed \n Container papadata-platform-otel-collector-1 Stopping \n Container papadata-platform-migrate-production-1 Stopping \n Container papadata-platform-redis-production-1 Stopping \n Container papadata-platform-minio-init-1 Stopping \n Container papadata-platform-migrate-production-1 Stopped \n Container papadata-platform-migrate-production-1 Removing \n Container papadata-platform-minio-init-1 Stopped \n Container papadata-platform-minio-init-1 Removing \n Container papadata-platform-migrate-production-1 Removed \n Container papadata-platform-postgres-production-1 Stopping \n Container papadata-platform-minio-init-1 Removed \n Container papadata-platform-minio-1 Stopping \n Container papadata-platform-otel-collector-1 Stopped \n Container papadata-platform-otel-collector-1 Removing \n Container papadata-platform-otel-collector-1 Removed \n Container papadata-platform-redis-production-1 Stopped \n Container papadata-platform-redis-production-1 Removing \n Container papadata-platform-redis-production-1 Removed \n Container papadata-platform-postgres-production-1 Stopped \n Container papadata-platform-postgres-production-1 Removing \n Container papadata-platform-postgres-production-1 Removed \n Container papadata-platform-minio-1 Stopped \n Container papadata-platform-minio-1 Removing \n Container papadata-platform-minio-1 Removed \n Network papadata-platform_default Removing \n Network papadata-platform_default Removed"
+      "output": "Container papadata-platform-api-production-1 Stopped \n Container papadata-platform-api-production-1 Removing \n Container papadata-platform-api-production-1 Removed \n Container papadata-platform-migrate-production-1 Stopping \n Container papadata-platform-minio-init-1 Stopping \n Container papadata-platform-otel-collector-1 Stopping \n Container papadata-platform-redis-production-1 Stopping \n Container papadata-platform-minio-init-1 Stopped \n Container papadata-platform-minio-init-1 Removing \n Container papadata-platform-migrate-production-1 Stopped \n Container papadata-platform-migrate-production-1 Removing \n Container papadata-platform-minio-init-1 Removed \n Container papadata-platform-minio-1 Stopping \n Container papadata-platform-migrate-production-1 Removed \n Container papadata-platform-postgres-production-1 Stopping \n Container papadata-platform-otel-collector-1 Stopped \n Container papadata-platform-otel-collector-1 Removing \n Container papadata-platform-otel-collector-1 Removed \n Container papadata-platform-redis-production-1 Stopped \n Container papadata-platform-redis-production-1 Removing \n Container papadata-platform-redis-production-1 Removed \n Container papadata-platform-minio-1 Stopped \n Container papadata-platform-minio-1 Removing \n Container papadata-platform-minio-1 Removed \n Container papadata-platform-postgres-production-1 Stopped \n Container papadata-platform-postgres-production-1 Removing \n Container papadata-platform-postgres-production-1 Removed \n Network papadata-platform_default Removing \n Network papadata-platform_default Removed"
     }
   ],
   "error": null

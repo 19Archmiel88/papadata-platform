@@ -295,7 +295,11 @@ export class ContractRuntimeService {
       }
 
       return {
-        data: { accepted: true, email: lookup.normalizedEmail },
+        // userId lets the BFF revoke every existing session for this
+        // account after a password reset (see ContractPublicController) --
+        // safe to return here since the caller has already proven
+        // possession of the (single-use, now-consumed) reset token.
+        data: { accepted: true, email: lookup.normalizedEmail, userId: lookup.userId },
         operationId: request.operationId,
       };
     }

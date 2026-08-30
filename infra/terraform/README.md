@@ -24,6 +24,8 @@ Terraform nie tworzy wersji sekretów aplikacyjnych. `runtime_secret_ids` wskazu
 - `bff_cookie_secret`
 - `bff_cookie_previous_secret`
 - `bff_csrf_secret`
+- `bff_refresh_cookie_secret`
+- `bff_refresh_cookie_previous_secret`
 
 Te same sekrety `api_auth_active_secret` i `api_auth_previous_secret` są wstrzykiwane do API oraz BFF, co eliminuje ryzyko rozjazdu materiału podpisującego principal. Tylko sekrety wynikające z utworzonego przez Terraform Redis (`redis_url`, `redis_ca_base64`) są wersjonowane przez ten moduł. Stan Terraform zawiera dane wrażliwe generowane przez providera. Produkcja wymaga prywatnego GCS backendu, wersjonowania, CMEK zgodnego z polityką organizacji, ograniczonego IAM i logów dostępu. `backend.tf.example` nie jest konfiguracją produkcyjną samą w sobie.
 

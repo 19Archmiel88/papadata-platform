@@ -29,8 +29,13 @@ export type BffConfig = {
   readonly redisCaBase64: string | null;
   readonly redisCommandTimeoutMs: number;
   readonly redisConnectTimeoutMs: number;
+  readonly refreshCookieName: string;
+  readonly refreshCookiePath: string;
+  readonly refreshCookiePreviousSecret: string | null;
+  readonly refreshCookieSecret: string;
   readonly requestIdHeaderName: string;
   readonly runtimeEnvironment: BffRuntimeEnvironment;
+  readonly sessionAbsoluteTtlSeconds: number;
   readonly sessionCookieName: string;
   readonly sessionRedisPrefix: string;
   readonly sessionRedisUrl: string;
@@ -69,6 +74,11 @@ export function readBffConfig(
     env,
     "BFF_INTERNAL_AUTH_PREVIOUS_SECRET",
   );
+  const refreshCookieSecret = readSecret(env, "BFF_REFRESH_COOKIE_SECRET");
+  const refreshCookiePreviousSecret = readOptionalSecret(
+    env,
+    "BFF_REFRESH_COOKIE_PREVIOUS_SECRET",
+  );
 
   assertDistinctSecrets({
     BFF_COOKIE_SECRET: cookieSecret,
@@ -79,6 +89,10 @@ export function readBffConfig(
     BFF_INTERNAL_AUTH_ACTIVE_SECRET: internalAuthActiveSecret,
     ...(internalAuthPreviousSecret
       ? { BFF_INTERNAL_AUTH_PREVIOUS_SECRET: internalAuthPreviousSecret }
+      : {}),
+    BFF_REFRESH_COOKIE_SECRET: refreshCookieSecret,
+    ...(refreshCookiePreviousSecret
+      ? { BFF_REFRESH_COOKIE_PREVIOUS_SECRET: refreshCookiePreviousSecret }
       : {}),
   });
 
@@ -186,9 +200,23 @@ export function readBffConfig(
       100,
       30_000,
     ),
+    refreshCookieName: env.BFF_REFRESH_COOKIE_NAME?.trim() || "pd_refresh",
+    // Scoped narrowly to the one route that ever reads it, unlike the
+    // session cookie's path -- reduces exposure of the long-lived refresh
+    // token to any other endpoint.
+    refreshCookiePath: env.BFF_REFRESH_COOKIE_PATH?.trim() || "/api/v1/auth/refresh",
+    refreshCookiePreviousSecret,
+    refreshCookieSecret,
     requestIdHeaderName:
       env.BFF_REQUEST_ID_HEADER_NAME?.trim().toLowerCase() || "x-request-id",
     runtimeEnvironment,
+    sessionAbsoluteTtlSeconds: readBoundedInteger(
+      env.BFF_SESSION_ABSOLUTE_TTL_SECONDS,
+      "BFF_SESSION_ABSOLUTE_TTL_SECONDS",
+      30 * 24 * 60 * 60,
+      60 * 60,
+      90 * 24 * 60 * 60,
+    ),
     sessionCookieName: env.BFF_SESSION_COOKIE_NAME?.trim() || "pd_session",
     sessionRedisPrefix: env.BFF_SESSION_REDIS_PREFIX?.trim() || "papadata:auth",
     sessionRedisUrl,

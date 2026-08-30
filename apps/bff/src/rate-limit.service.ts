@@ -60,9 +60,9 @@ export class BffRateLimitService implements OnModuleDestroy {
 
   async consumePublic(input: {
     readonly ipAddress: string;
-    readonly route: "login" | "register" | "public-contract";
+    readonly route: "login" | "refresh" | "register" | "public-contract";
   }): Promise<void> {
-    const max = input.route === "login"
+    const max = input.route === "login" || input.route === "refresh"
       ? Math.max(5, Math.floor(this.config.rateLimitMax / 20))
       : input.route === "register"
         ? Math.max(3, Math.floor(this.config.rateLimitMax / 50))

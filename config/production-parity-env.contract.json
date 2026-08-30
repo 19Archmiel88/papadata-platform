@@ -449,6 +449,38 @@
       "example": "replace-with-32-byte-random-csrf-secret"
     },
     {
+      "name": "BFF_REFRESH_COOKIE_SECRET",
+      "scope": [
+        "bff"
+      ],
+      "secret": true,
+      "terraform": {
+        "secretKey": "bff_refresh_cookie_secret",
+        "envName": "BFF_REFRESH_COOKIE_SECRET"
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-32-byte-random-refresh-cookie-secret-active"
+    },
+    {
+      "name": "BFF_REFRESH_COOKIE_PREVIOUS_SECRET",
+      "scope": [
+        "bff"
+      ],
+      "secret": true,
+      "terraform": {
+        "secretKey": "bff_refresh_cookie_previous_secret",
+        "envName": "BFF_REFRESH_COOKIE_PREVIOUS_SECRET"
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "example": "replace-with-32-byte-random-refresh-cookie-secret-previous"
+    },
+    {
       "name": "BFF_INTERNAL_AUTH_ACTIVE_SECRET",
       "scope": [
         "bff"

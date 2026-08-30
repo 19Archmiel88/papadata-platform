@@ -52,7 +52,7 @@ export class PlatformQueueService implements OnModuleDestroy {
       return;
     }
     await requiredQueue(this.queue).add(payload.jobType, payload, {
-      jobId: payload.idempotencyKey,
+      jobId: toBullMqJobId(payload.idempotencyKey),
     });
   }
 
@@ -72,4 +72,8 @@ function requiredQueue(
 ): Queue<PlatformJobPayload> {
   if (!queue) throw new Error("Platform queue is unavailable.");
   return queue;
+}
+
+function toBullMqJobId(value: string): string {
+  return value.replaceAll(":", "_");
 }

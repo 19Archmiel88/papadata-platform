@@ -9,17 +9,33 @@
     "dev:bff": "pnpm --filter @papadata/bff dev:production",
     "dev:worker": "pnpm --filter @papadata/worker dev:production",
     "typecheck": "turbo run typecheck",
+    "typecheck:backend": "pnpm --filter @papadata/contracts --filter @papadata/database --filter @papadata/integrations --filter @papadata/storage --filter @papadata/ai-runtime --filter @papadata/api --filter @papadata/bff --filter @papadata/worker run typecheck",
     "build": "turbo run build",
+    "build:backend": "pnpm --filter @papadata/contracts --filter @papadata/database --filter @papadata/integrations --filter @papadata/storage --filter @papadata/ai-runtime --filter @papadata/api --filter @papadata/bff --filter @papadata/worker run build",
+    "test": "pnpm test:backend",
+    "test:backend": "node tools/verify-backend-tests.mjs",
+    "verify": "pnpm verify:backend",
+    "verify:backend": "node tools/verify-backend-gate.mjs",
+    "verify:backend-release": "node tools/verify-backend-release-scope.mjs",
+    "verify:backend-security": "node tools/verify-backend-security-controls.mjs",
+    "verify:migration-parity": "sh tools/verify-migration-parity.sh",
+    "verify:production-parity-env": "node tools/verify-production-parity-env-contract.mjs",
+    "verify:production-parity-runtime": "pnpm verify:production-parity-env && pnpm test:backend-production-parity",
+    "verify:licenses": "mkdir -p artifacts/backend-evidence && pnpm licenses list --prod --json > artifacts/backend-evidence/licenses.json && node tools/check-license-report.mjs artifacts/backend-evidence/licenses.json",
+    "evidence:backend": "node tools/generate-backend-evidence.mjs",
     "start:local": "docker compose --env-file .env.example up --build api worker",
     "migrate": "docker compose --env-file .env.example run --rm migrate up",
     "migrate:status": "docker compose --env-file .env.example run --rm migrate status",
+    "test:migrations": "docker compose --env-file .env.example run --rm migrate test",
+    "test:backend-production-parity": "node tests/backend-production-parity/e2e.mjs",
     "security:audit": "pnpm audit --prod",
     "security:check": "pnpm audit --prod && pnpm build",
     "start:production-parity": "pnpm prepare:production-parity && docker compose -f compose.production-parity.yml --env-file .env.production-parity up --build",
     "stop:production-parity": "docker compose -f compose.production-parity.yml --env-file .env.production-parity down",
     "storybook": "pnpm --filter @papadata/web storybook",
     "build-storybook": "pnpm --filter @papadata/web build-storybook",
-    "prepare:production-parity": "sh tools/prepare-production-parity.sh"
+    "prepare:production-parity": "sh tools/prepare-production-parity.sh",
+    "generate:production-parity-env-example": "node tools/generate-production-parity-env-example.mjs"
   },
   "devDependencies": {
     "turbo": "2.10.9",
@@ -46,7 +62,7 @@
     ]
   },
   "engines": {
-    "node": "24.18.1",
+    "node": "24.18.0",
     "pnpm": "10.29.3"
   }
 }

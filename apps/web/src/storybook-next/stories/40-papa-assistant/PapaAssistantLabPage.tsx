@@ -55,7 +55,6 @@ import {
   papaLabPalettes,
   papaLabRefusalReasons,
   papaLabRunStates,
-  papaLabRunSteps,
   papaLabSavedCharts,
   papaLabTabs,
   papaLabTimeframes,
@@ -92,7 +91,6 @@ export type PapaAssistantLabPageProps = {
   readonly initialFocusMode?: boolean;
   readonly initialInspectorTab?: PapaLabInspectorTabId;
   readonly initialMode?: PapaLabWorkbenchModeId;
-  readonly initialRunPanelExpanded?: boolean;
   readonly initialRunState?: PapaLabRunStateId;
   readonly initialTab?: PapaLabTabId;
 };
@@ -103,7 +101,6 @@ export function PapaAssistantLabPage({
   initialFocusMode = false,
   initialInspectorTab = 'context',
   initialMode = 'diagnosis',
-  initialRunPanelExpanded = false,
   initialRunState = 'completed',
 }: PapaAssistantLabPageProps) {
   return (
@@ -113,7 +110,6 @@ export function PapaAssistantLabPage({
       initialFocusMode={initialFocusMode}
       initialInspectorTab={initialInspectorTab}
       initialMode={initialMode}
-      initialRunPanelExpanded={initialRunPanelExpanded}
       initialRunState={initialRunState}
     />
   );
@@ -125,7 +121,6 @@ export function PapaLabWorkbench({
   initialFocusMode = false,
   initialInspectorTab = 'context',
   initialMode = 'diagnosis',
-  initialRunPanelExpanded = false,
   initialRunState = 'completed',
 }: Omit<PapaAssistantLabPageProps, 'initialTab'>) {
   const [activeMode, setActiveMode] = useState<PapaLabWorkbenchModeId>(initialMode);
@@ -135,7 +130,6 @@ export function PapaLabWorkbench({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isInspectorCollapsed, setIsInspectorCollapsed] = useState(false);
   const [isFocusMode, setIsFocusMode] = useState(initialFocusMode);
-  const [isRunPanelExpanded, setIsRunPanelExpanded] = useState(initialRunPanelExpanded);
   const [runState, setRunState] = useState<PapaLabRunStateId>(initialRunState);
   const [contextItems, setContextItems] = useState<readonly PapaLabContextBasketItem[]>(papaLabContextBasketSeed);
   const [currentDecisionState, setCurrentDecisionState] = useState<PapaLabDecisionStateId>('needsReview');
@@ -175,24 +169,13 @@ export function PapaLabWorkbench({
       data-sidebar-collapsed={isSidebarCollapsed ? 'true' : 'false'}
       data-testid="papa-assistant-lab-page"
     >
-      <PapaLabCommandBar
+      <PapaLabTopBar
         activeMode={activeMode}
         isFocusMode={isFocusMode}
         isInspectorCollapsed={isInspectorCollapsed}
         isSidebarCollapsed={isSidebarCollapsed}
         onFocusModeToggle={() => setIsFocusMode((currentValue) => !currentValue)}
         onInspectorToggle={() => setIsInspectorCollapsed((currentValue) => !currentValue)}
-        onRun={() => {
-          setRunState('running');
-          setIsRunPanelExpanded(true);
-        }}
-        onSave={() => setRunState('draft')}
-        onSidebarToggle={() => setIsSidebarCollapsed((currentValue) => !currentValue)}
-        runState={runState}
-      />
-
-      <PapaLabModeSwitcher
-        activeMode={activeMode}
         onModeChange={(mode) => {
           setActiveMode(mode);
           if (mode === 'decision') {
@@ -204,6 +187,10 @@ export function PapaLabWorkbench({
             setCanvasTool('chart');
           }
         }}
+        onRun={() => setRunState('running')}
+        onSave={() => setRunState('draft')}
+        onSidebarToggle={() => setIsSidebarCollapsed((currentValue) => !currentValue)}
+        runState={runState}
       />
 
       <div className="pd-pal-workbench__body">
@@ -239,23 +226,18 @@ export function PapaLabWorkbench({
           />
         )}
       </div>
-
-      <PapaLabRunPanel
-        isExpanded={isRunPanelExpanded && !isFocusMode}
-        onToggle={() => setIsRunPanelExpanded((currentValue) => !currentValue)}
-        runState={runState}
-      />
     </main>
   );
 }
 
-function PapaLabCommandBar({
+function PapaLabTopBar({
   activeMode,
   isFocusMode,
   isInspectorCollapsed,
   isSidebarCollapsed,
   onFocusModeToggle,
   onInspectorToggle,
+  onModeChange,
   onRun,
   onSave,
   onSidebarToggle,
@@ -267,45 +249,39 @@ function PapaLabCommandBar({
   readonly isSidebarCollapsed: boolean;
   readonly onFocusModeToggle: () => void;
   readonly onInspectorToggle: () => void;
+  readonly onModeChange: (mode: PapaLabWorkbenchModeId) => void;
   readonly onRun: () => void;
   readonly onSave: () => void;
   readonly onSidebarToggle: () => void;
   readonly runState: PapaLabRunStateId;
 }) {
   const runStateDefinition = findRunState(runState);
-  const modeDefinition = papaLabWorkbenchModes.find((mode) => mode.id === activeMode) ?? papaLabWorkbenchModes[0];
 
   return (
-    <header className="pd-pal-command-bar">
-      <div className="pd-pal-command-bar__brand">
-        <div className="pd-pal-brand__mark" aria-hidden="true">
-          P
-        </div>
-        <div>
-          <div className="pd-pal-command-bar__title-row">
-            <h1>Laboratorium Papa Asystenta</h1>
-            <Icon decorative name="assistant" size={20} />
-          </div>
-          <p>Analiza: Spadek konwersji checkout | Tryb: {modeDefinition.label}</p>
-        </div>
-      </div>
-
-      <div className="pd-pal-command-bar__meta" aria-label="Kontekst roboczy">
-        <button type="button">
-          <span>Workspace</span>
-          <strong>PapaData Sales</strong>
-        </button>
-        <button type="button">
-          <span>Zakres dat</span>
-          <strong>12-18 maj 2025</strong>
-          <Icon decorative name="calendar" size={16} />
-        </button>
+    <header className="pd-pal-top-bar">
+      <div className="pd-pal-top-bar__title">
+        <Icon decorative name="assistant" size={20} />
+        <h1>Laboratorium Papa Asystenta</h1>
         <span className={`pd-pal-workbench-badge pd-pal-workbench-badge--${runStateDefinition.tone}`}>
           {runStateDefinition.label}
         </span>
       </div>
 
-      <div className="pd-pal-command-bar__actions" aria-label="Akcje Laboratorium">
+      <nav aria-label="Tryby Laboratorium" className="pd-pal-mode-switcher">
+        {papaLabWorkbenchModes.map((mode) => (
+          <button
+            aria-current={activeMode === mode.id ? 'page' : undefined}
+            key={mode.id}
+            onClick={() => onModeChange(mode.id)}
+            type="button"
+          >
+            <Icon decorative name={mode.icon} size={20} />
+            <span>{mode.label}</span>
+          </button>
+        ))}
+      </nav>
+
+      <div className="pd-pal-top-bar__actions" aria-label="Akcje Laboratorium">
         <button
           aria-label={isSidebarCollapsed ? 'Pokaż analizy' : 'Ukryj analizy'}
           aria-pressed={!isSidebarCollapsed}
@@ -351,30 +327,6 @@ function PapaLabCommandBar({
         </button>
       </div>
     </header>
-  );
-}
-
-function PapaLabModeSwitcher({
-  activeMode,
-  onModeChange,
-}: {
-  readonly activeMode: PapaLabWorkbenchModeId;
-  readonly onModeChange: (mode: PapaLabWorkbenchModeId) => void;
-}) {
-  return (
-    <nav aria-label="Tryby Laboratorium" className="pd-pal-mode-switcher">
-      {papaLabWorkbenchModes.map((mode) => (
-        <button
-          aria-current={activeMode === mode.id ? 'page' : undefined}
-          key={mode.id}
-          onClick={() => onModeChange(mode.id)}
-          type="button"
-        >
-          <Icon decorative name={mode.icon} size={20} />
-          <span>{mode.label}</span>
-        </button>
-      ))}
-    </nav>
   );
 }
 
@@ -1350,60 +1302,6 @@ function PapaLabEmbeddedReportCanvas() {
         </table>
       </div>
     </div>
-  );
-}
-
-function PapaLabRunPanel({
-  isExpanded,
-  onToggle,
-  runState,
-}: {
-  readonly isExpanded: boolean;
-  readonly onToggle: () => void;
-  readonly runState: PapaLabRunStateId;
-}) {
-  const runStateDefinition = findRunState(runState);
-
-  return (
-    <section className="pd-pal-run-panel" data-expanded={isExpanded ? 'true' : 'false'}>
-      <button
-        aria-expanded={isExpanded}
-        className="pd-pal-run-panel__toggle"
-        onClick={onToggle}
-        type="button"
-      >
-        <strong>Przebieg analizy</strong>
-        <span>{isExpanded ? 'Zwiń' : 'Rozwiń'}</span>
-      </button>
-      <div className="pd-pal-run-panel__summary">
-        <span className={`pd-pal-workbench-badge pd-pal-workbench-badge--${runStateDefinition.tone}`}>
-          {runStateDefinition.label}
-        </span>
-        <span>Run: #A-2025-05-18-1042</span>
-        <span>00:03:27</span>
-        <span>Koszt: 31.80 PLN</span>
-        <button type="button">Zobacz logi</button>
-      </div>
-
-      <div className="pd-pal-run-steps" aria-label="Jawne etapy procesu analizy">
-        {papaLabRunSteps.map((step) => (
-          <article className={`pd-pal-run-step pd-pal-run-step--${step.status}`} key={step.id}>
-            <span aria-hidden="true">{step.status === 'done' ? '✓' : step.status === 'active' ? '●' : '○'}</span>
-            <div>
-              <strong>{step.label}</strong>
-              {isExpanded ? <small>{step.elapsed}</small> : null}
-            </div>
-          </article>
-        ))}
-      </div>
-
-      {isExpanded ? (
-        <div className="pd-pal-run-panel__details">
-          <p>{runStateDefinition.summary}</p>
-          <p>Artefakt: papa://reports/A-2025-05-18-1042</p>
-        </div>
-      ) : null}
-    </section>
   );
 }
 

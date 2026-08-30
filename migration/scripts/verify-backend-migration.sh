@@ -29,19 +29,15 @@ required=(
   apps/worker/src/production/ingestion-pipeline.ts
   config/backend-release-scope.json
   migration/MIGRATION-MANIFEST.json
+  tools/verify-backend-gate.mjs
+  tools/generate-backend-evidence.mjs
 )
 for path in "${required[@]}"; do
   [[ -f "$path" ]] || { echo "BŁĄD: brak $path" >&2; exit 1; }
 done
 
 pnpm install --frozen-lockfile
-pnpm docs:backend
-pnpm verify:backend-contract-runtime
-pnpm verify:backend-capabilities
-pnpm verify:backend-release
-pnpm verify:backend-security
-pnpm typecheck
-pnpm test
-pnpm build
+pnpm verify:backend
+pnpm evidence:backend
 
 echo "BACKEND_MIGRATION_PACKAGE=PASS"

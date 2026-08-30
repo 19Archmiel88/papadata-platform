@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-30T18:01:03.867Z",
+  "gitHead": "5c0189d21924ffb0111be8a1577f78f877252340",
+  "startedAt": "2026-08-30T18:00:14.578Z",
+  "status": "pass",
+  "steps": [
+    {
+      "id": "contracts-api",
+      "command": "pnpm verify:backend-release",
+      "args": [
+        "verify:backend-release"
+      ],
+      "covers": [
+        "contracts/API",
+        "release scope",
+        "BFF route map"
+      ],
+      "durationMs": 279,
+      "exitCode": 0,
+      "output": "> papadata-platform@0.1.0 verify:backend-release /home/papadata/papadata-platform\n> node tools/verify-backend-release-scope.mjs\n\nBACKEND_RELEASE_SCOPE=PASS operations=292 target=223 extra=69 providers=7 release=backend-migration-implementation-2026-08",
+      "startedAt": "2026-08-30T18:00:14.578Z",
+      "status": "pass"
+    },
+    {
+      "id": "auth-rbac-postgres-redis-storage-integrations-security",
+      "command": "pnpm test:backend",
+      "args": [
+        "test:backend"
+      ],
+      "covers": [
+        "auth/RBAC",
+        "PostgreSQL/RLS",
+        "Redis/queues",
+        "storage",
+        "integrations"
+      ],
+      "durationMs": 298,
+      "exitCode": 0,
+      "output": "> papadata-platform@0.1.0 test:backend /home/papadata/papadata-platform\n> node tools/verify-backend-tests.mjs\n\nBACKEND_TESTS=PASS operations=292 providers=7",
+      "startedAt": "2026-08-30T18:00:14.859Z",
+      "status": "pass"
+    },
+    {
+      "id": "migrations-rls",
+      "command": "pnpm test:migrations",
+      "args": [
+        "test:migrations"
+      ],
+      "covers": [
+        "migrations",
+        "PostgreSQL/RLS"
+      ],
+      "durationMs": 9670,
+      "exitCode": 0,
+      "output": "> papadata-platform@0.1.0 test:migrations /home/papadata/papadata-platform\n> docker compose --env-file .env.example run --rm migrate test\n\nDROP SCHEMA\napply 000001 platform_infrastructure\nCREATE SCHEMA\nREVOKE\nREVOKE\nREVOKE\nGRANT\nGRANT\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nREVOKE\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nINSERT 0 1\napply 000002 tenant_workspace_access\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nREVOKE\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nINSERT 0 1\napply 000003 compliance_notifications\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nINSERT 0 1\napply 000004 integration_canonical_data\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nINSERT 0 1\napply 000005 metric_engine_dashboard_api\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nINSERT 0 1\napply 000006 worker_reports_assistant_billing\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE TABLE\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nINSERT 0 1\napply 0010 sync_runtime_compatibility\nALTER TABLE\nUPDATE 0\nALTER TABLE\nDO\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nINSERT 0 1\napply 0011 production_foundation\nBEGIN\nCREATE EXTENSION\nCREATE SCHEMA\nCREATE TABLE\nINSERT 0 7\nALTER TABLE\nALTER TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nALTER TABLE\nCREATE FUNCTION\nCREATE FUNCTION\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nDO\nCOMMIT\nINSERT 0 1\napply 0012 master_remediation\nBEGIN\nCREATE EXTENSION\nCREATE SCHEMA\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE FUNCTION\nDROP TRIGGER\nCREATE TRIGGER\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nDO\nCOMMIT\nINSERT 0 1\napply 0013 runtime_access_grants\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nINSERT 0 1\napply 0014 a03_credentials_per_connection\nBEGIN\nALTER TABLE\nUPDATE 0\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nCREATE INDEX\nCREATE INDEX\nCOMMIT\nINSERT 0 1\napply 0015 a04_durable_ingestion_pipeline\nBEGIN\nALTER TABLE\nALTER TABLE\nALTER TABLE\nDROP INDEX\nALTER TABLE\nALTER TABLE\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nUPDATE 0\nALTER TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nDO\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nCOMMIT\nINSERT 0 1\napply 0016 backend_release_hardening\nBEGIN\nDO\nALTER TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nDO\nALTER TABLE\nALTER TABLE\nDROP POLICY\nCREATE POLICY\nDROP POLICY\nCREATE POLICY\nCREATE TABLE\nINSERT 0 85\nREVOKE\nREVOKE\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nGRANT\nCOMMIT\nINSERT 0 1\napply 0017 backend_product_convergence\nCREATE EXTENSION\nCREATE SCHEMA\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nDROP POLICY\nCREATE POLICY\nDROP POLICY\nCREATE POLICY\nDROP POLICY\nCREATE POLICY\nDROP POLICY\nCREATE POLICY\nDROP POLICY\nCREATE POLICY\nDROP POLICY\nCREATE POLICY\nDO\nINSERT 0 1\napply 0018 classify_product_convergence_tables\nDO\nINSERT 0 6\nINSERT 0 1\napply 0019 notifications_snooze\nALTER TABLE\nCREATE INDEX\nCOMMENT\nINSERT 0 1\napply 0020 fix_ingestion_pipeline_grants\nBEGIN\nGRANT\nGRANT\nCOMMIT\nINSERT 0 1\napply 0021 public_invitation_lookup\nBEGIN\nCREATE FUNCTION\nREVOKE\nGRANT\nCOMMIT\nINSERT 0 1\napply 0022 invitation_lookup_token_binding\nBEGIN\nDROP FUNCTION\nCREATE FUNCTION\nREVOKE\nGRANT\nCOMMIT\nINSERT 0 1\napply 0023 papa_conversation_continuity\nALTER TABLE\nDO\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nCREATE TABLE\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nDROP POLICY\nCREATE POLICY\nDO\nINSERT 0 1\napply 0024 papa_conversation_integrity\nALTER TABLE\nALTER TABLE\nALTER TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nDO\nINSERT 0 1\napply 0025 papa_lab_case_observation_domain\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nDO\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nDO\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nDO\nINSERT 0 1\napply 0026 papa_lab_recommendation_decision_action_outcome\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nDO\nGRANT\nGRANT\nINSERT 0 1\napply 0027 papa_lab_experiments_read_model\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nDO\nGRANT\nGRANT\nINSERT 0 1\napply 0028 papa_report_builder_exports\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nDO\nGRANT\nGRANT\nINSERT 0 1\napply 0029 papa_ai_notifications\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nDO\nGRANT\nGRANT\nINSERT 0 1\napply 0030 papa_metric_engine_provenance\nALTER TABLE\nALTER TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nDO\nGRANT\nGRANT\nINSERT 0 1\napply 0031 papa_ai_answer_contract_provider_governance\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nDO\nGRANT\nGRANT\nINSERT 0 1\napply 0032 papa_privacy_redaction_proof\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nDO\nGRANT\nGRANT\nINSERT 0 1\napply 0033 password_reset_tokens\nBEGIN\nCREATE TABLE\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nDROP POLICY\nCREATE POLICY\nCREATE FUNCTION\nREVOKE\nDO\nCOMMIT\nINSERT 0 1\napply 0034 identity_oauth_links\nBEGIN\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nALTER TABLE\nALTER TABLE\nDROP POLICY\nCREATE POLICY\nCREATE FUNCTION\nREVOKE\nCREATE FUNCTION\nREVOKE\nCREATE TABLE\nCREATE INDEX\nDO\nCOMMIT\nINSERT 0 1\napply 0035 classify_identity_security_tables\nINSERT 0 3\nINSERT 0 1\napply 0036 classify_assistant_domain_tables\nDO\nINSERT 0 19\nINSERT 0 1\napply 0037 ga4_stream_compatibility\nBEGIN\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\nCOMMIT\nINSERT 0 1\nmigrations=34 applied=34 database=papadata_test\nall_tables_classified=ok\naudit_events_exists=ok\noutbox_events_exists=ok\nplatform_role_has_bypassrls=ok\nplatform_role_is_not_runtime_role=ok\nprivacy_targets_have_forced_rls=ok\nprocessed_events_exists=ok\nruntime_cannot_create_schema_objects=ok\nschema_migrations_exists=ok\nschema_owner_is_migrator=ok\ntables_owned_by_migrator=ok\ntenant_tables_have_forced_rls=ok\ntest_role_cannot_create_schema_objects=ok\nschema_migrations_count=34\nBEGIN\n set_config \n------------\n \n(1 row)\n\n              set_config              \n--------------------------------------\n 00000000-0000-4000-8000-0000000000a1\n(1 row)\n\nINSERT 0 1\nDO\nROLLBACK\nrls_isolation=ok database=papadata_test role=papadata_test\n Container papadata-local-postgres-1 Starting \n Container papadata-local-postgres-1 Started \n Container papadata-local-postgres-1 Waiting \n Container papadata-local-postgres-1 Healthy \n Container papadata-local-migrate-run-a258f20f6839 Creating \n Container papadata-local-migrate-run-a258f20f6839 Created \nNOTICE:  drop cascades to 120 other objects\nDETAIL:  drop cascades to table app.schema_migrations\ndrop cascades to table app.audit_events\ndrop cascades to table app.outbox_events\ndrop cascades to table app.processed_events\ndrop cascades to table app.users\ndrop cascades to table app.tenants\ndrop cascades to table app.workspaces\ndrop cascades to table app.memberships\ndrop cascades to table app.invitations\ndrop cascades to table app.onboarding_states\ndrop cascades to table app.company_profiles\ndrop cascades to table app.business_profiles\ndrop cascades to table app.cookie_consents\ndrop cascades to table app.legal_documents\ndrop cascades to table app.legal_acceptances\ndrop cascades to table app.notifications\ndrop cascades to table app.integration_connections\ndrop cascades to table app.sync_jobs\ndrop cascades to table app.sync_checkpoints\ndrop cascades to table app.source_batches\ndrop cascades to table app.source_records\ndrop cascades to table app.normalized_records\ndrop cascades to table app.canonical_products\ndrop cascades to table app.canonical_product_variants\ndrop cascades to table app.external_product_mappings\ndrop cascades to table app.canonical_orders\ndrop cascades to table app.canonical_order_lines\ndrop cascades to table app.canonical_payments\ndrop cascades to table app.canonical_refunds\ndrop cascades to table app.canonical_customer_returns\ndrop cascades to table app.canonical_inventory_snapshots\ndrop cascades to table app.canonical_ad_spend\ndrop cascades to table app.canonical_attributed_conversions\ndrop cascades to table app.canonical_lineage\ndrop cascades to table app.data_issues\ndrop cascades to table app.quality_assessments\ndrop cascades to table app.readiness_assessments\ndrop cascades to table app.metric_definitions\ndrop cascades to table app.metric_snapshots\ndrop cascades to table app.reprocess_jobs\ndrop cascades to table app.reconciliation_reports\ndrop cascades to table app.worker_jobs\ndrop cascades to table app.worker_dlq_events\ndrop cascades to table app.email_outbox_messages\ndrop cascades to table app.report_exports\ndrop cascades to table app.report_files\ndrop cascades to table app.assistant_threads\ndrop cascades to table app.assistant_messages\ndrop cascades to table app.assistant_evidence\ndrop cascades to table app.assistant_approvals\ndrop cascades to table app.assistant_audit_events\ndrop cascades to table app.billing_subscriptions\ndrop cascades to table app.billing_events\ndrop cascades to table app.billing_invoices\ndrop cascades to table app.billing_usage_records\ndrop cascades to table app.integration_provider_catalog\ndrop cascades to table app.integration_credentials\ndrop cascades to table app.integration_webhook_events\ndrop cascades to table app.fx_rates\ndrop cascades to table app.source_authority_rules\ndrop cascades to table app.cross_provider_matches\ndrop cascades to table app.data_inventory\ndrop cascades to table app.data_deletion_ledger\ndrop cascades to function app.current_tenant_id()\ndrop cascades to function app.current_workspace_id()\ndrop cascades to table app.security_mfa_enrollments\ndrop cascades to table app.security_step_up_proofs\ndrop cascades to table app.security_invitation_tokens\ndrop cascades to table app.security_jit_grants\ndrop cascades to table app.audit_chain_heads\ndrop cascades to table app.security_audit_events\ndrop cascades to function app.prevent_audit_mutation()\ndrop cascades to table app.privacy_requests\ndrop cascades to table app.privacy_request_targets\ndrop cascades to table app.platform_jobs\ndrop cascades to table app.report_requests\ndrop cascades to table app.integration_credential_events\ndrop cascades to table app.system_kill_switches\ndrop cascades to table app.provider_evidence\ndrop cascades to table app.integration_canonical_records\ndrop cascades to table app.integration_reconciliation_runs\ndrop cascades to table app.integration_dead_letter_jobs\ndrop cascades to table app.command_executions\ndrop cascades to table app.privacy_identity_verifications\ndrop cascades to table app.platform_schedule_runs\ndrop cascades to table app.backend_release_evidence\ndrop cascades to table app.artifact_deletion_ledger\ndrop cascades to table app.table_security_classification\ndrop cascades to table app.identity_users\ndrop cascades to table app.identity_memberships\ndrop cascades to table app.identity_audit_events\ndrop cascades to table app.product_domain_records\ndrop cascades to table app.product_domain_events\ndrop cascades to table app.webhook_replay_receipts\ndrop cascades to function app.lookup_invitation_for_acceptance(uuid,text)\ndrop cascades to table app.assistant_context_snapshots\ndrop cascades to table app.assistant_cases\ndrop cascades to table app.assistant_observations\ndrop cascades to table app.assistant_recommendations\ndrop cascades to table app.assistant_decisions\nand 20 other objects (see server log for list)\npsql:/workspace/packages/database/migrations/0011_production_foundation.sql:1: WARNING:  there is already a transaction in progress\npsql:/workspace/packages/database/migrations/0011_production_foundation.sql:3: NOTICE:  extension \"pgcrypto\" already exists, skipping\npsql:/workspace/packages/database/migrations/0011_production_foundation.sql:4: NOTICE:  schema \"app\" already exists, skipping\npsql:/workspace/packages/database/migrations/0011_production_foundation.sql:54: NOTICE:  relation \"sync_jobs_idempotency_unique\" already exists, skipping\nWARNING:  there is no transaction in progress\npsql:/workspace/packages/database/migrations/0012_master_remediation.sql:1: WARNING:  there is already a transaction in progress\npsql:/workspace/packages/database/migrations/0012_master_remediation.sql:2: NOTICE:  extension \"pgcrypto\" already exists, skipping\npsql:/workspace/packages/database/migrations/0012_master_remediation.sql:3: NOTICE:  schema \"app\" already exists, skipping\npsql:/workspace/packages/database/migrations/0012_master_remediation.sql:45: NOTICE:  trigger \"security_audit_events_no_update\" for relation \"app.security_audit_events\" does not exist, skipping\nWARNING:  there is no transaction in progress\npsql:/workspace/packages/database/migrations/0014_a03_credentials_per_connection.sql:1: WARNING:  there is already a transaction in progress\npsql:/workspace/packages/database/migrations/0014_a03_credentials_per_connection.sql:27: NOTICE:  constraint \"integration_credentials_status_valid\" of relation \"integration_credentials\" does not exist, skipping\npsql:/workspace/packages/database/migrations/0014_a03_credentials_per_connection.sql:42: NOTICE:  constraint \"integration_credentials_rotation_state_valid\" of relation \"integration_credentials\" does not exist, skipping\npsql:/workspace/packages/database/migrations/0014_a03_credentials_per_connection.sql:57: NOTICE:  constraint \"integration_credentials_reference_not_blank\" of relation \"integration_credentials\" does not exist, skipping\nWARNING:  there is no transaction in progress\npsql:/workspace/packages/database/migrations/0015_a04_durable_ingestion_pipeline.sql:1: WARNING:  there is already a transaction in progress\npsql:/workspace/packages/database/migrations/0015_a04_durable_ingestion_pipeline.sql:41: NOTICE:  index \"sync_checkpoints_scope_unique\" does not exist, skipping\nWARNING:  there is no transaction in progress\npsql:/workspace/packages/database/migrations/0016_backend_release_hardening.sql:1: WARNING:  there is already a transaction in progress\npsql:/workspace/packages/database/migrations/0016_backend_release_hardening.sql:178: NOTICE:  policy \"privacy_request_targets_canonical_scope_policy\" for relation \"app.privacy_request_targets\" does not exist, skipping\npsql:/workspace/packages/database/migrations/0016_backend_release_hardening.sql:211: NOTICE:  policy \"privacy_request_targets_scope_restriction\" for relation \"app.privacy_request_targets\" does not exist, skipping\nWARNING:  there is no transaction in progress\npsql:/workspace/packages/database/migrations/0017_backend_product_convergence.sql:5: NOTICE:  extension \"pgcrypto\" already exists, skipping\npsql:/workspace/packages/database/migrations/0017_backend_product_convergence.sql:6: NOTICE:  schema \"app\" already exists, skipping\npsql:/workspace/packages/database/migrations/0017_backend_product_convergence.sql:136: NOTICE:  policy \"identity_users_exact_key\" for relation \"app.identity_users\" does not exist, skipping\npsql:/workspace/packages/database/migrations/0017_backend_product_convergence.sql:141: NOTICE:  policy \"identity_memberships_exact_user\" for relation \"app.identity_memberships\" does not exist, skipping\npsql:/workspace/packages/database/migrations/0017_backend_product_convergence.sql:146: NOTICE:  policy \"identity_audit_exact_key\" for relation \"app.identity_audit_events\" does not exist, skipping\npsql:/workspace/packages/database/migrations/0017_backend_product_convergence.sql:151: NOTICE:  policy \"product_domain_records_scope\" for relation \"app.product_domain_records\" does not exist, skipping\npsql:/workspace/packages/database/migrations/0017_backend_product_convergence.sql:162: NOTICE:  policy \"product_domain_events_scope\" for relation \"app.product_domain_events\" does not exist, skipping\npsql:/workspace/packages/database/migrations/0017_backend_product_convergence.sql:173: NOTICE:  policy \"webhook_replay_receipts_scope\" for relation \"app.webhook_replay_receipts\" does not exist, skipping\npsql:/workspace/packages/database/migrations/0020_fix_ingestion_pipeline_grants.sql:1: WARNING:  there is already a transaction in progress\nWARNING:  there is no transaction in progress\npsql:/workspace/packages/database/migrations/0021_public_invitation_lookup.sql:1: WARNING:  there is already a transaction in progress\nWARNING:  there is no transaction in progress\npsql:/workspace/packages/database/migrations/0022_invitation_lookup_token_binding.sql:1: WARNING:  there is already a transaction in progress\npsql:/workspace/packages/database/migrations/0022_invitation_lookup_token_binding.sql:5: NOTICE:  function app.lookup_invitation_for_acceptance(uuid) does not exist, skipping\nWARNING:  there is no transaction in progress\npsql:/workspace/packages/database/migrations/0023_papa_conversation_continuity.sql:74: NOTICE:  policy \"assistant_context_snapshots_canonical_scope_policy\" for relation \"app.assistant_context_snapshots\" does not exist, skipping\npsql:/workspace/packages/database/migrations/0033_password_reset_tokens.sql:1: WARNING:  there is already a transaction in progress\npsql:/workspace/packages/database/migrations/0033_password_reset_tokens.sql:27: NOTICE:  policy \"security_password_reset_tokens_exact_key\" for relation \"app.security_password_reset_tokens\" does not exist, skipping\nWARNING:  there is no transaction in progress\npsql:/workspace/packages/database/migrations/0034_identity_oauth_links.sql:1: WARNING:  there is already a transaction in progress\npsql:/workspace/packages/database/migrations/0034_identity_oauth_links.sql:29: NOTICE:  policy \"identity_oauth_links_exact_user\" for relation \"app.identity_oauth_links\" does not exist, skipping\nWARNING:  there is no transaction in progress\npsql:/workspace/packages/database/migrations/0037_ga4_stream_compatibility.sql:1: WARNING:  there is already a transaction in progress\npsql:/workspace/packages/database/migrations/0037_ga4_stream_compatibility.sql:24: NOTICE:  constraint \"sync_checkpoints_ga4_stream_valid\" of relation \"sync_checkpoints\" does not exist, skipping\npsql:/workspace/packages/database/migrations/0037_ga4_stream_compatibility.sql:47: NOTICE:  constraint \"source_batches_ga4_stream_valid\" of relation \"source_batches\" does not exist, skipping\npsql:/workspace/packages/database/migrations/0037_ga4_stream_compatibility.sql:70: NOTICE:  constraint \"source_records_ga4_stream_valid\" of relation \"source_records\" does not exist, skipping\npsql:/workspace/packages/database/migrations/0037_ga4_stream_compatibility.sql:93: NOTICE:  constraint \"normalized_records_ga4_stream_valid\" of relation \"normalized_records\" does not exist, skipping\nWARNING:  there is no transaction in progress",
+      "startedAt": "2026-08-30T18:00:15.158Z",
+      "status": "pass"
+    },
+    {
+      "id": "security-controls",
+      "command": "pnpm verify:backend-security",
+      "args": [
+        "verify:backend-security"
+      ],
+      "covers": [
+        "security",
+        "release evidence controls"
+      ],
+      "durationMs": 286,
+      "exitCode": 0,
+      "output": "> papadata-platform@0.1.0 verify:backend-security /home/papadata/papadata-platform\n> node tools/verify-backend-security-controls.mjs\n\nBACKEND_SECURITY_CONTROLS=PASS controls=30 acceptance_pending=22",
+      "startedAt": "2026-08-30T18:00:24.829Z",
+      "status": "pass"
+    },
+    {
+      "id": "security-audit",
+      "command": "pnpm audit --prod --audit-level high",
+      "args": [
+        "audit",
+        "--prod",
+        "--audit-level",
+        "high"
+      ],
+      "covers": [
+        "dependency security"
+      ],
+      "durationMs": 565,
+      "exitCode": 0,
+      "output": "No known vulnerabilities found",
+      "startedAt": "2026-08-30T18:00:25.115Z",
+      "status": "pass"
+    },
+    {
+      "id": "license-policy",
+      "command": "pnpm verify:licenses",
+      "args": [
+        "verify:licenses"
+      ],
+      "covers": [
+        "dependency licenses",
+        "supply-chain policy"
+      ],
+      "durationMs": 869,
+      "exitCode": 0,
+      "output": "> papadata-platform@0.1.0 verify:licenses /home/papadata/papadata-platform\n> mkdir -p artifacts/backend-evidence && pnpm licenses list --prod --json > artifacts/backend-evidence/licenses.json && node tools/check-license-report.mjs artifacts/backend-evidence/licenses.json\n\nLICENSE_POLICY=PASS licenses=10",
+      "startedAt": "2026-08-30T18:00:25.681Z",
+      "status": "pass"
+    },
+    {
+      "id": "typecheck",
+      "command": "pnpm typecheck:backend",
+      "args": [
+        "typecheck:backend"
+      ],
+      "covers": [
+        "typecheck"
+      ],
+      "durationMs": 2706,
+      "exitCode": 0,
+      "output": "> papadata-platform@0.1.0 typecheck:backend /home/papadata/papadata-platform\n> pnpm --filter @papadata/contracts --filter @papadata/database --filter @papadata/integrations --filter @papadata/storage --filter @papadata/ai-runtime --filter @papadata/api --filter @papadata/bff --filter @papadata/worker run typecheck\n\nScope: 8 of 10 workspace projects\npackages/contracts typecheck$ tsc -b tsconfig.json --pretty false\npackages/storage typecheck$ tsc -b tsconfig.json --pretty false\napps/bff typecheck$ tsc -b tsconfig.json --pretty false\npackages/contracts typecheck: Done\npackages/storage typecheck: Done\napps/bff typecheck: Done\npackages/database typecheck$ tsc -b tsconfig.json --pretty false\npackages/integrations typecheck$ tsc -b tsconfig.json --pretty false\npackages/ai-runtime typecheck$ tsc -b tsconfig.json --pretty false\npackages/database typecheck: Done\npackages/integrations typecheck: Done\npackages/ai-runtime typecheck: Done\napps/api typecheck$ tsc -b tsconfig.json --pretty false\napps/worker typecheck$ tsc -b tsconfig.json --pretty false\napps/worker typecheck: Done\napps/api typecheck: Done",
+      "startedAt": "2026-08-30T18:00:26.515Z",
+      "status": "pass"
+    },
+    {
+      "id": "build",
+      "command": "pnpm build:backend",
+      "args": [
+        "build:backend"
+      ],
+      "covers": [
+        "build"
+      ],
+      "durationMs": 702,
+      "exitCode": 0,
+      "output": "> papadata-platform@0.1.0 build:backend /home/papadata/papadata-platform\n> pnpm --filter @papadata/contracts --filter @papadata/database --filter @papadata/integrations --filter @papadata/storage --filter @papadata/ai-runtime --filter @papadata/api --filter @papadata/bff --filter @papadata/worker run build\n\nScope: 8 of 10 workspace projects\npackages/contracts build$ tsc -b tsconfig.json\npackages/storage build$ tsc -b tsconfig.json\napps/bff build$ tsc -b tsconfig.json\npackages/contracts build: Done\npackages/storage build: Done\napps/bff build: Done\npackages/database build$ tsc -b tsconfig.json\npackages/integrations build$ tsc -b tsconfig.json\npackages/ai-runtime build$ tsc -b tsconfig.json\npackages/database build: Done\npackages/ai-runtime build: Done\npackages/integrations build: Done\napps/api build$ tsc -b tsconfig.json\napps/worker build$ tsc -b tsconfig.json\napps/worker build: Done\napps/api build: Done",
+      "startedAt": "2026-08-30T18:00:29.222Z",
+      "status": "pass"
+    },
+    {
+      "id": "production-parity-runtime",
+      "command": "pnpm verify:production-parity-runtime",
+      "args": [
+        "verify:production-parity-runtime"
+      ],
+      "covers": [
+        "Edge",
+        "Web",
+        "BFF",
+        "API",
+        "PostgreSQL/RLS",
+        "Redis/queues",
+        "Worker",
+        "Object Storage"
+      ],
+      "durationMs": 33984,
+      "exitCode": 0,
+      "output": "> papadata-platform@0.1.0 verify:production-parity-runtime /home/papadata/papadata-platform\n> pnpm verify:production-parity-env && pnpm test:backend-production-parity\n\n\n> papadata-platform@0.1.0 verify:production-parity-env /home/papadata/papadata-platform\n> node tools/verify-production-parity-env-contract.mjs\n\n{\n  \"contract\": \"papadata-runtime-env-v1\",\n  \"checkedVariables\": 42,\n  \"generatedEnvPresent\": true,\n  \"result\": \"pass\",\n  \"failures\": []\n}\n\n> papadata-platform@0.1.0 test:backend-production-parity /home/papadata/papadata-platform\n> node tests/backend-production-parity/e2e.mjs\n\nPRODUCTION_PARITY_STEP=PASS id=prepare-production-parity\nPRODUCTION_PARITY_STEP=PASS id=verify-production-parity-env\nPRODUCTION_PARITY_STEP=PASS id=compose-config\nPRODUCTION_PARITY_STEP=PASS id=compose-down-before-run\nPRODUCTION_PARITY_STEP=PASS id=compose-up-build\nPRODUCTION_PARITY_STEP=PASS id=compose-health\nPRODUCTION_PARITY_STEP=PASS id=direct-readiness\nPRODUCTION_PARITY_STEP=PASS id=edge-health-readiness\nPRODUCTION_PARITY_STEP=PASS id=redis-tls-auth\nPRODUCTION_PARITY_STEP=PASS id=edge-bff-api-auth-rbac-worker-storage-e2e\nPRODUCTION_PARITY_STEP=PASS id=postgres-rls-runtime\nPRODUCTION_PARITY_STEP=PASS id=minio-object-runtime\nPRODUCTION_PARITY_E2E=PASS evidence=artifacts/backend-evidence/production-parity-e2e.json",
+      "startedAt": "2026-08-30T18:00:29.925Z",
+      "status": "pass"
+    }
+  ]
+}

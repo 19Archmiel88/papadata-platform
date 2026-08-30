@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "build": "vite build",
     "typecheck": "tsc -b --pretty false",
     "storybook": "storybook dev -p 6010 --host 0.0.0.0 --exact-port --no-open --disable-telemetry --ci",
     "build-storybook": "storybook build --output-dir storybook-static --disable-telemetry"

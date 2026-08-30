@@ -13,7 +13,8 @@
   },
   "scripts": {
     "build": "tsc -b tsconfig.json",
-    "typecheck": "tsc -b tsconfig.json --pretty false"
+    "typecheck": "tsc -b tsconfig.json --pretty false",
+    "test": "vitest run"
   },
   "dependencies": {
     "@papadata/contracts": "workspace:*",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.13.3",
-    "@types/pg": "^8.15.5"
+    "@types/pg": "^8.15.5",
+    "vitest": "^4.1.11"
   }
 }

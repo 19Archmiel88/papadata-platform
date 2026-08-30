@@ -22,6 +22,12 @@ const steps = [
     covers: ["auth/RBAC", "PostgreSQL/RLS", "Redis/queues", "storage", "integrations"],
   },
   {
+    id: "unit-integration-tests",
+    command: "pnpm",
+    args: ["test:unit"],
+    covers: ["auth guards", "principal/session verification", "RBAC capability resolution", "TOTP/argon2/CSRF/rate-limit", "OAuth flow", "refresh-token rotation"],
+  },
+  {
     id: "migrations-rls",
     command: "pnpm",
     args: ["test:migrations"],

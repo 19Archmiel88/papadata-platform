@@ -38,7 +38,7 @@
     "bullmq": "^5.58.5",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.4",
-    "fastify": "^5.10.0",
+    "fastify": "^5.12.1",
     "ioredis": "^5.11.1",
     "jose": "^6.2.10",
     "prom-client": "^15.1.3",

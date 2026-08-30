@@ -1,0 +1,20 @@
+.pd-runtime-loading {
+  display: grid;
+  min-block-size: 100vh;
+  place-items: center;
+  color: var(--pd-text-muted);
+  font: var(--pd-font-weight-semibold) var(--pd-type-size-body) / var(--pd-line-height-normal) var(--pd-font-sans);
+}
+
+.pd-runtime-dashboard {
+  display: grid;
+  gap: var(--pd-space-3);
+  max-inline-size: 920px;
+}
+
+.pd-runtime-dashboard__eyebrow {
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-caption);
+  font-weight: var(--pd-font-weight-semibold);
+  text-transform: uppercase;
+}

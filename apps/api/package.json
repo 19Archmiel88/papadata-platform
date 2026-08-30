@@ -14,7 +14,6 @@
   "scripts": {
     "build": "tsc -b tsconfig.json",
     "typecheck": "tsc -b tsconfig.json --pretty false",
-    "start:local": "node local-runtime.mjs",
     "healthcheck": "node healthcheck.mjs",
     "start:production": "node dist/production/main.js",
     "dev:production": "tsx src/production/main.ts"
@@ -47,7 +46,7 @@
     "rxjs": "^7.8.2"
   },
   "engines": {
-    "node": "24.18.1",
+    "node": "24.18.0",
     "pnpm": "10.29.3"
   },
   "devDependencies": {

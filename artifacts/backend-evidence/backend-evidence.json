@@ -1,20 +1,25 @@
 {
-  "schemaVersion": 1,
-  "generatedAt": "2026-08-26T12:53:33.550Z",
-  "gitHead": "c8d8c49792e36c17a2eadd8279df50ee1c0aab6f",
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-30T18:01:11.907Z",
+  "gitHead": "5c0189d21924ffb0111be8a1577f78f877252340",
   "releaseName": "backend-migration-implementation-2026-08",
   "targetReleaseClaimed": false,
-  "checks": {
-    "release": {
-      "status": "pass",
-      "output": "BACKEND_RELEASE_SCOPE=PASS operations=281 target=218 providers=7 release=backend-migration-implementation-2026-08"
-    },
-    "security": {
-      "status": "pass",
-      "output": "BACKEND_SECURITY_CONTROLS=PASS controls=30 acceptance_pending=22"
-    }
+  "validationStatus": "pass",
+  "checkSummary": {
+    "contracts-api": "pass",
+    "auth-rbac-postgres-redis-storage-integrations-security": "pass",
+    "migrations-rls": "pass",
+    "security-controls": "pass",
+    "security-audit": "pass",
+    "license-policy": "pass",
+    "typecheck": "pass",
+    "build": "pass",
+    "production-parity-runtime": "pass"
   },
-  "operationCount": 281,
+  "operationCount": 292,
+  "targetOperationCount": 223,
+  "exactTargetOperations": 223,
+  "extraHardeningOperations": 69,
   "controlCount": 30,
   "acceptancePending": [
     "AUD-002",
@@ -41,7 +46,9 @@
     "AUD-030"
   ],
   "hashes": {
-    "releaseScope": "d2490e004b7e525c61fb833f953c2400e37b9857fffa91b400107d76eade2556",
-    "securityControls": "8b2ed6cd312c9d06776b5d2553e895c2bb41b7d4c3040a8c337a39dd50940ae5"
+    "backendReleaseScope": "8e348ad1bce3fd148b6024aaa9f70666c4f48f6089abb4fc60e2e41629a362ff",
+    "backendSecurityControls": "02b03ead936db322f24127511a3abe3d3bf6b9e1e1fe0151767ba259a93155a1",
+    "openApi": "18b4aa25bab419f6fc72fe1f4484e361afca1e0edc9e960d6c79f306b62b743e",
+    "validationResults": "9602e71d456701c389738e72f9c3c375761889333c4dadef9bff126e5ee35661"
   }
 }

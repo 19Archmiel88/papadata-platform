@@ -102,9 +102,6 @@ export const Workbench: Story = {
     await userEvent.click(await canvas.findByRole('button', { name: 'Wygeneruj wykres AI' }));
     await expect(await canvas.findByText(/Wykres AI: pokaż wariant cache/u)).toBeInTheDocument();
 
-    await userEvent.click(await canvas.findByRole('button', { name: /Przebieg analizy/u }));
-    await expect(await canvas.findByText('Walidacja kontekstu')).toBeInTheDocument();
-
     await userEvent.click(await canvas.findByRole('button', { name: 'Tryb skupienia' }));
     await expect(canvas.queryByRole('complementary', { name: 'Inspektor analizy' })).not.toBeInTheDocument();
   },
@@ -126,7 +123,6 @@ export const AnalizaWToku: Story = {
   render: () => (
     <WorkbenchFrame
       initialCanvasTab="result"
-      initialRunPanelExpanded
       initialRunState="running"
     />
   ),
@@ -195,7 +191,6 @@ export const DaneCzesciowe: Story = {
   render: () => (
     <WorkbenchFrame
       initialInspectorTab="quality"
-      initialRunPanelExpanded
       initialRunState="partial"
     />
   ),
@@ -226,7 +221,6 @@ export const BladAnalizy: Story = {
   render: () => (
     <WorkbenchFrame
       initialInspectorTab="quality"
-      initialRunPanelExpanded
       initialRunState="failed"
     />
   ),

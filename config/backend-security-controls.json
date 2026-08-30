@@ -32,7 +32,7 @@
       "evidencePaths": [
         "infra/terraform/main.tf",
         "infra/terraform/README.md",
-        "tests/backend-production-parity/smoke.mjs"
+        "tests/backend-production-parity/e2e.mjs"
       ],
       "owner": "platform-security",
       "acceptance": "repository verifier plus environment-specific evidence",
@@ -82,8 +82,7 @@
       "evidencePaths": [
         "packages/integrations/src/provider-registry.ts",
         "packages/integrations/src/provider-factory.ts",
-        "packages/integrations/src/provider-conformance.test.ts",
-        "packages/integrations/src/provider-webhook.test.ts",
+        "tools/verify-backend-tests.mjs",
         "apps/api/src/production/integrations/webhook.service.ts",
         "packages/database/migrations/0017_backend_product_convergence.sql",
         "docs/backend-remediation/INTEGRATION-RUNTIME.md"
@@ -121,7 +120,7 @@
         "apps/bff/src/session-store.ts",
         "apps/bff/src/rate-limit.service.ts",
         "apps/bff/src/config.ts",
-        "apps/bff/src/config-hardening.test.ts",
+        "tools/verify-backend-tests.mjs",
         "tools/prepare-production-parity.sh"
       ],
       "owner": "backend-platform",
@@ -179,7 +178,7 @@
       "evidencePaths": [
         "apps/api/src/production/readiness.controller.ts",
         "apps/api/src/production/observability/metrics.controller.ts",
-        "tests/backend-production-parity/smoke.mjs"
+        "tests/backend-production-parity/e2e.mjs"
       ],
       "owner": "backend-platform",
       "acceptance": "repository verifier plus environment-specific evidence",
@@ -201,7 +200,7 @@
       "findingId": "AUD-016",
       "status": "implemented_requires_live_test",
       "evidencePaths": [
-        "tests/backend-production-parity/smoke.mjs",
+        "tests/backend-production-parity/e2e.mjs",
         "docs/backend-remediation/PRODUCTION-ACCEPTANCE.md"
       ],
       "owner": "backend-platform",
@@ -271,7 +270,7 @@
       "evidencePaths": [
         "apps/bff/src/rate-limit.service.ts",
         "infra/terraform/main.tf",
-        "tests/backend-production-parity/smoke.mjs"
+        "tests/backend-production-parity/e2e.mjs"
       ],
       "owner": "platform-security",
       "acceptance": "repository verifier plus environment-specific evidence",
@@ -306,7 +305,7 @@
       "status": "implemented",
       "evidencePaths": [
         "apps/api/src/production/config.ts",
-        "apps/api/src/production/config-hardening.test.ts",
+        "tools/verify-backend-tests.mjs",
         "apps/api/src/production/database.module.ts",
         "apps/api/src/production/main.ts"
       ],
@@ -352,7 +351,7 @@
       "evidencePaths": [
         "apps/bff/src/proxy.controller.ts",
         "apps/bff/src/app.factory.ts",
-        "tests/backend-production-parity/smoke.mjs"
+        "tests/backend-production-parity/e2e.mjs"
       ],
       "owner": "backend-platform",
       "acceptance": "repository verifier plus environment-specific evidence",

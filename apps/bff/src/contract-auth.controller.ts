@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Options, Post, Req, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Inject, Options, Param, Post, Req, Res } from "@nestjs/common";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { BffIdentitySessionService } from "./identity-session.service.js";
 import { BffOAuthService } from "./oauth.service.js";
@@ -104,6 +104,14 @@ export class ContractAuthController {
     return this.oauth.callback(request, reply, body);
   }
 
+  @Post("refresh")
+  refresh(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ): Promise<void> {
+    return this.identitySession.refresh(request, reply);
+  }
+
   @Post("logout")
   logout(
     @Req() request: FastifyRequest,
@@ -112,11 +120,36 @@ export class ContractAuthController {
     return this.identitySession.logout(request, reply);
   }
 
+  @Post("logout-all")
+  logoutAll(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ): Promise<void> {
+    return this.identitySession.logoutAll(request, reply);
+  }
+
   @Get("session")
   session(
     @Req() request: FastifyRequest,
     @Res() reply: FastifyReply,
   ): Promise<void> {
     return this.identitySession.readSession(request, reply);
+  }
+
+  @Get("sessions")
+  sessions(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ): Promise<void> {
+    return this.identitySession.listSessions(request, reply);
+  }
+
+  @Delete("sessions/:sessionId")
+  revokeSession(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Param("sessionId") sessionId: string,
+  ): Promise<void> {
+    return this.identitySession.revokeSessionById(request, reply, sessionId);
   }
 }

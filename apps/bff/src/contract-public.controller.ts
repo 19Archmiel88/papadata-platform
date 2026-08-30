@@ -9,6 +9,7 @@ import {
   isStateChangingMethod,
   readHeader,
 } from "./security.service.js";
+import { BFF_SESSION_STORE, type BffSessionStore } from "./session-store.js";
 import { BFF_CONFIG } from "./tokens.js";
 
 // api/v1/auth/oauth/start and .../callback are deliberately NOT here —
@@ -44,6 +45,9 @@ export class ContractPublicController {
 
     @Inject(CloudRunIdentityService)
     private readonly cloudRunIdentity: CloudRunIdentityService,
+
+    @Inject(BFF_SESSION_STORE)
+    private readonly sessions: BffSessionStore,
   ) {}
 
   @All([...publicContractPaths])
@@ -90,6 +94,10 @@ export class ContractPublicController {
       reply.status(response.status);
       const payload = await response.text();
       reply.send(payload.length > 0 ? payload : undefined);
+
+      if (response.ok && request.url.startsWith("/api/v1/auth/password/reset")) {
+        await this.revokeSessionsAfterPasswordReset(payload);
+      }
     } catch {
       reply.status(502).send({
         error: {
@@ -99,4 +107,30 @@ export class ContractPublicController {
       });
     }
   }
+
+  // A password reset means the credential an attacker might already have
+  // is no longer valid, but any session opened with it still would be --
+  // this closes that gap by revoking every session for the account. Best
+  // effort and deliberately after the reply has already been sent: the
+  // reset itself already fully succeeded on the API side, and this must
+  // never turn a real success into a client-visible failure or throw
+  // after the response is already on the wire.
+  private async revokeSessionsAfterPasswordReset(rawPayload: string): Promise<void> {
+    try {
+      const parsed = JSON.parse(rawPayload) as unknown;
+      const data = isRecord(parsed) && isRecord(parsed.data) ? parsed.data : null;
+      const userId = data && typeof data.userId === "string" ? data.userId : null;
+      if (data?.accepted === true && userId) {
+        await this.sessions.revokeAllSessionsForUser(userId, new Date().toISOString());
+      }
+    } catch (error) {
+      console.error("Failed to revoke sessions after password reset", {
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }

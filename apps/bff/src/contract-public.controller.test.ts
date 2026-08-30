@@ -7,6 +7,7 @@ import { ContractPublicController } from "./contract-public.controller.js";
 import { CloudRunIdentityService } from "./cloud-run-identity.service.js";
 import { BffRateLimitService } from "./rate-limit.service.js";
 import { BffSecurityService } from "./security.service.js";
+import { BFF_SESSION_STORE } from "./session-store.js";
 import { BFF_CONFIG } from "./tokens.js";
 
 // Regression coverage for a real bug found during the P0 Faza 3 audit:
@@ -54,6 +55,7 @@ describe("ContractPublicController", () => {
     const fakeSecurity = { validateHost: vi.fn(), validateOrigin: vi.fn(), corsHeaders: vi.fn(() => ({})) };
     const fakeRateLimit = { consumePublic: vi.fn(async () => undefined) };
     const fakeCloudRunIdentity = { authorizationHeader: vi.fn(async () => null) };
+    const fakeSessions = { revokeAllSessionsForUser: vi.fn(async () => undefined) };
 
     const moduleRef = await Test.createTestingModule({
       controllers: [ContractPublicController],
@@ -62,6 +64,7 @@ describe("ContractPublicController", () => {
         { provide: BffSecurityService, useValue: fakeSecurity },
         { provide: BffRateLimitService, useValue: fakeRateLimit },
         { provide: CloudRunIdentityService, useValue: fakeCloudRunIdentity },
+        { provide: BFF_SESSION_STORE, useValue: fakeSessions },
       ],
     }).compile();
 
@@ -76,5 +79,6 @@ describe("ContractPublicController", () => {
     expect((controller as unknown as { security: unknown }).security).toBe(fakeSecurity);
     expect((controller as unknown as { rateLimit: unknown }).rateLimit).toBe(fakeRateLimit);
     expect((controller as unknown as { cloudRunIdentity: unknown }).cloudRunIdentity).toBe(fakeCloudRunIdentity);
+    expect((controller as unknown as { sessions: unknown }).sessions).toBe(fakeSessions);
   });
 });

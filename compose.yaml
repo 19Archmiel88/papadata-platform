@@ -161,6 +161,7 @@ services:
       # Local-only placeholders -- see the matching note on the api service above.
       BFF_COOKIE_SECRET: ${BFF_COOKIE_SECRET:-papadata-local-dev-bff-session-cookie-secret-please-rotate-x}
       BFF_CSRF_SECRET: ${BFF_CSRF_SECRET:-papadata-local-dev-bff-csrf-signing-secret-please-rotate-xyz}
+      BFF_REFRESH_COOKIE_SECRET: ${BFF_REFRESH_COOKIE_SECRET:-papadata-local-dev-bff-refresh-cookie-secret-please-rotate}
       BFF_INTERNAL_AUTH_ACTIVE_SECRET: ${PAPADATA_API_AUTH_ACTIVE_SECRET:-papadata-local-dev-shared-internal-auth-secret-please-rotate}
       BFF_INTERNAL_AUTH_ISSUER: ${PAPADATA_API_AUTH_ISSUER:-papadata-local}
       BFF_INTERNAL_AUTH_AUDIENCE: ${PAPADATA_API_AUTH_AUDIENCE:-papadata-local-api}

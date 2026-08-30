@@ -78,6 +78,19 @@ export class BffSessionAssuranceService {
     };
 
     await this.sessions.saveSession(updatedSession);
+    // mfa/confirm only ever fires while confirming a pending TOTP
+    // enrollment (first-time or a rotated secret) -- see
+    // TotpService's pending -> active state machine -- never as a
+    // recurring per-login check against an already-active enrollment. A
+    // newly confirmed factor is exactly the "security changed" event that
+    // should invalidate any other session that was authenticated under
+    // the old one; the session that just proved the new factor stays
+    // signed in.
+    await this.sessions.revokeAllSessionsForUser(
+      session.userId,
+      new Date().toISOString(),
+      session.sessionId,
+    );
 
     reply.status(200).send({
       data: {

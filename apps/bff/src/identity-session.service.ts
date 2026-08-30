@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
-import { randomUUID } from "node:crypto";
+import { createHash, randomBytes, randomUUID } from "node:crypto";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { signCookieValue } from "./cookie-signing.js";
+import { signCookieValue, verifySignedCookieValue } from "./cookie-signing.js";
 import type { BffConfig } from "./config.js";
 import { CloudRunIdentityService } from "./cloud-run-identity.service.js";
 import { BffRateLimitService } from "./rate-limit.service.js";
@@ -72,7 +72,7 @@ export class BffIdentitySessionService {
     const email = readRequiredString(payload.data.email);
     const displayName = readRequiredString(payload.data.displayName);
     const memberships = readMemberships(payload.data.memberships);
-    await this.establishSession(reply, { displayName, email, memberships, userId });
+    await this.establishSession(request, reply, { displayName, email, memberships, userId });
   }
 
   // Shared by password login/register and OAuth login/register/
@@ -81,6 +81,7 @@ export class BffIdentitySessionService {
   // must issue the session cookie identically — one real mechanism, not a
   // parallel one for OAuth.
   async establishSession(
+    request: FastifyRequest,
     reply: FastifyReply,
     bootstrap: {
       readonly userId: string;
@@ -92,21 +93,30 @@ export class BffIdentitySessionService {
   ): Promise<BffSessionRecord> {
     const active = bootstrap.memberships[0];
     if (!active) throw new UnauthorizedException("No active membership.");
-    const expiresAt = new Date(Date.now() + this.config.cookieMaxAgeSeconds * 1_000).toISOString();
+    const now = new Date();
+    const issuedAt = now.toISOString();
+    const expiresAt = new Date(now.getTime() + this.config.cookieMaxAgeSeconds * 1_000).toISOString();
+    const absoluteExpiresAt = new Date(
+      now.getTime() + this.config.sessionAbsoluteTtlSeconds * 1_000,
+    ).toISOString();
     const session: BffSessionRecord = {
+      absoluteExpiresAt,
       activeTenantId: active.tenantId,
       activeWorkspaceId: active.workspaceId,
       authLevel: "session",
       capabilities: active.capabilities,
       expiresAt,
+      issuedAt,
       memberships: bootstrap.memberships,
       revokedAt: null,
       sessionId: randomUUID(),
       stepUpExpiresAt: null,
       user: { displayName: bootstrap.displayName, email: bootstrap.email },
+      userAgent: readHeader(request.headers, "user-agent"),
       userId: bootstrap.userId,
     };
     await this.sessions.saveSession(session);
+    const refreshToken = await this.issueRefreshToken(session);
     reply
       .setCookie(
         this.config.sessionCookieName,
@@ -115,6 +125,17 @@ export class BffIdentitySessionService {
           httpOnly: true,
           maxAge: this.config.cookieMaxAgeSeconds,
           path: this.config.cookiePath,
+          sameSite: this.config.cookieSameSite,
+          secure: this.config.cookieSecure,
+        },
+      )
+      .setCookie(
+        this.config.refreshCookieName,
+        signCookieValue(refreshToken, this.config.refreshCookieSecret),
+        {
+          httpOnly: true,
+          maxAge: ttlSecondsUntil(absoluteExpiresAt),
+          path: this.config.refreshCookiePath,
           sameSite: this.config.cookieSameSite,
           secure: this.config.cookieSecure,
         },
@@ -133,6 +154,111 @@ export class BffIdentitySessionService {
     return session;
   }
 
+  // Rotates the session's session-cookie and refresh-cookie pair. Deliberately
+  // does not go through security.requireSession(): that rejects on a lapsed
+  // expiresAt, which is exactly the state a legitimate refresh call arrives
+  // in (the sliding window elapsed, the absolute ceiling hasn't) -- refresh
+  // has its own, looser validity check against absoluteExpiresAt instead.
+  async refresh(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    this.security.validateHost(request);
+    this.security.applyCorsHeaders(request, reply);
+    this.security.validateOrigin(request);
+    await this.rateLimit.consumePublic({ ipAddress: request.ip, route: "refresh" });
+
+    const cookies = request.cookies as Record<string, string | undefined>;
+    const sessionId = verifySignedCookieValue(
+      cookies[this.config.sessionCookieName],
+      this.cookieSecrets(this.config.cookieSecret, this.config.cookiePreviousSecret),
+    );
+    const presentedRefreshToken = verifySignedCookieValue(
+      cookies[this.config.refreshCookieName],
+      this.cookieSecrets(this.config.refreshCookieSecret, this.config.refreshCookiePreviousSecret),
+    );
+
+    if (!sessionId || !presentedRefreshToken) {
+      this.clearAuthCookies(reply);
+      throw new UnauthorizedException("Valid session and refresh cookies are required.");
+    }
+
+    const session = await this.sessions.findSession(sessionId);
+    const now = Date.now();
+
+    if (
+      !session
+      || session.sessionId !== sessionId
+      || session.revokedAt !== null
+      || Date.parse(session.absoluteExpiresAt) <= now
+    ) {
+      this.clearAuthCookies(reply);
+      throw new UnauthorizedException("Session cannot be refreshed.");
+    }
+
+    // CSRF is still required here: refresh is a state-changing POST, and
+    // session.sessionId (needed to check it) is already known at this
+    // point even though the session's own sliding expiresAt may have
+    // lapsed.
+    this.security.validateCsrf(request, session);
+
+    const nextToken = randomBytes(32).toString("base64url");
+    const rotation = await this.sessions.compareAndRotateRefreshTokenHash(
+      sessionId,
+      hashRefreshToken(presentedRefreshToken),
+      hashRefreshToken(nextToken),
+      ttlSecondsUntil(session.absoluteExpiresAt),
+    );
+
+    if (rotation === "mismatch") {
+      // The presented token doesn't match the current one on record, which
+      // under normal use should never happen (rotation always advances the
+      // stored hash together with the cookie) -- this is the reuse signal:
+      // either a stolen, already-superseded token is being replayed, or a
+      // genuine client bug resent a stale cookie. Either way, the whole
+      // session family for this user is revoked rather than trying to
+      // guess which of the two is which.
+      await this.sessions.revokeAllSessionsForUser(session.userId, new Date().toISOString());
+      console.warn("Refresh token reuse detected; revoked all sessions for user.", {
+        sessionId,
+        userId: session.userId,
+      });
+      this.clearAuthCookies(reply);
+      throw new UnauthorizedException("Refresh token has already been used.");
+    }
+
+    if (rotation === "missing") {
+      this.clearAuthCookies(reply);
+      throw new UnauthorizedException("Session cannot be refreshed.");
+    }
+
+    const nextExpiresAt = new Date(now + this.config.cookieMaxAgeSeconds * 1_000).toISOString();
+    const nextSession: BffSessionRecord = { ...session, expiresAt: nextExpiresAt };
+    await this.sessions.saveSession(nextSession);
+
+    reply
+      .setCookie(
+        this.config.sessionCookieName,
+        signCookieValue(sessionId, this.config.cookieSecret),
+        {
+          httpOnly: true,
+          maxAge: this.config.cookieMaxAgeSeconds,
+          path: this.config.cookiePath,
+          sameSite: this.config.cookieSameSite,
+          secure: this.config.cookieSecure,
+        },
+      )
+      .setCookie(
+        this.config.refreshCookieName,
+        signCookieValue(nextToken, this.config.refreshCookieSecret),
+        {
+          httpOnly: true,
+          maxAge: ttlSecondsUntil(session.absoluteExpiresAt),
+          path: this.config.refreshCookiePath,
+          sameSite: this.config.cookieSameSite,
+          secure: this.config.cookieSecure,
+        },
+      )
+      .send({ data: { session: publicSession(nextSession) } });
+  }
+
   async logout(request: FastifyRequest, reply: FastifyReply): Promise<void> {
     this.security.validateHost(request);
     this.security.applyCorsHeaders(request, reply);
@@ -140,11 +266,93 @@ export class BffIdentitySessionService {
     const session = await this.security.requireSession(request);
     this.security.validateCsrf(request, session);
     await this.sessions.revokeSession(session.sessionId, new Date().toISOString());
-    reply
-      .status(200)
+    this.clearAuthCookies(reply).status(200).send({ data: { loggedOut: true } });
+  }
+
+  // Revokes every session for the caller's account, including the current
+  // one -- "sign out everywhere". See revokeSessionById for revoking a
+  // single other session while staying signed in on this one.
+  async logoutAll(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    this.security.validateHost(request);
+    this.security.applyCorsHeaders(request, reply);
+    this.security.validateOrigin(request);
+    const session = await this.security.requireSession(request);
+    this.security.validateCsrf(request, session);
+    await this.sessions.revokeAllSessionsForUser(session.userId, new Date().toISOString());
+    this.clearAuthCookies(reply).status(200).send({ data: { loggedOut: true, revokedAllSessions: true } });
+  }
+
+  // Lists every active session for the caller's account (multi-device
+  // visibility), marking which one issued this request.
+  async listSessions(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    this.security.validateHost(request);
+    this.security.applyCorsHeaders(request, reply);
+    const session = await this.security.requireSession(request);
+    const sessions = await this.sessions.listSessionsForUser(session.userId);
+    reply.send({
+      data: {
+        sessions: sessions
+          .slice()
+          .sort((left, right) => Date.parse(right.issuedAt) - Date.parse(left.issuedAt))
+          .map((candidate) => publicSessionSummary(candidate, session.sessionId)),
+      },
+    });
+  }
+
+  // Revokes one specific OTHER session belonging to the caller's own
+  // account. Never accepts a sessionId beyond scoping to session.userId,
+  // so a caller can never revoke another user's session by guessing an id.
+  async revokeSessionById(
+    request: FastifyRequest,
+    reply: FastifyReply,
+    targetSessionId: string,
+  ): Promise<void> {
+    this.security.validateHost(request);
+    this.security.applyCorsHeaders(request, reply);
+    this.security.validateOrigin(request);
+    const session = await this.security.requireSession(request);
+    this.security.validateCsrf(request, session);
+
+    if (!targetSessionId) {
+      throw new BadRequestException("A session id is required.");
+    }
+
+    const target = await this.sessions.findSession(targetSessionId);
+    if (!target || target.userId !== session.userId) {
+      // Disclosure-safe: identical response whether the id doesn't exist
+      // or belongs to someone else, so this can't be used to enumerate
+      // other users' session ids.
+      throw new ForbiddenException("Session is not available for this account.");
+    }
+
+    await this.sessions.revokeSession(targetSessionId, new Date().toISOString());
+    reply.status(200).send({ data: { revoked: true, sessionId: targetSessionId } });
+  }
+
+  // Mints and persists a fresh refresh token for a session that already
+  // exists (initial issuance at establishSession time). Kept separate from
+  // the rotation path in refresh() -- that one is a compare-and-swap
+  // against an existing hash, this one has no prior hash to compare
+  // against yet.
+  private async issueRefreshToken(session: BffSessionRecord): Promise<string> {
+    const token = randomBytes(32).toString("base64url");
+    await this.sessions.setRefreshTokenHash(
+      session.sessionId,
+      hashRefreshToken(token),
+      ttlSecondsUntil(session.absoluteExpiresAt),
+    );
+    return token;
+  }
+
+  private cookieSecrets(active: string, previous: string | null): readonly string[] {
+    return previous ? [active, previous] : [active];
+  }
+
+  private clearAuthCookies(reply: FastifyReply): FastifyReply {
+    return reply
       .clearCookie(this.config.sessionCookieName, { path: this.config.cookiePath })
       .clearCookie(this.config.csrfCookieName, { path: this.config.cookiePath })
-      .send({ data: { loggedOut: true } });
+      .clearCookie(this.config.refreshCookieName, { path: this.config.refreshCookiePath });
   }
 
   async readSession(request: FastifyRequest, reply: FastifyReply): Promise<void> {
@@ -252,11 +460,33 @@ function publicSession(session: BffSessionRecord): object {
     authLevel: session.authLevel,
     capabilities: session.capabilities,
     expiresAt: session.expiresAt,
+    issuedAt: session.issuedAt,
     memberships: session.memberships,
     sessionId: session.sessionId,
     ...(session.user ? { user: { ...session.user, userId: session.userId } } : {}),
     userId: session.userId,
   };
+}
+
+// Deliberately narrower than publicSession: a "your other devices" listing
+// has no business disclosing capabilities/memberships/step-up state for
+// sessions other than the caller's own current one.
+function publicSessionSummary(session: BffSessionRecord, currentSessionId: string): object {
+  return {
+    current: session.sessionId === currentSessionId,
+    expiresAt: session.expiresAt,
+    issuedAt: session.issuedAt,
+    sessionId: session.sessionId,
+    userAgent: session.userAgent,
+  };
+}
+
+function hashRefreshToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
+}
+
+function ttlSecondsUntil(isoDate: string): number {
+  return Math.max(1, Math.floor((Date.parse(isoDate) - Date.now()) / 1_000));
 }
 
 function readRequiredString(value: unknown): string {

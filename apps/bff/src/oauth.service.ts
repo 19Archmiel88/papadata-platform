@@ -125,6 +125,7 @@ export class BffOAuthService {
         return;
       }
       await this.identitySession.establishSession(
+        request,
         reply,
         { displayName, email, memberships, userId },
         { outcome: "authenticated", returnTo },

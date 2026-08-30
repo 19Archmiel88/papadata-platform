@@ -21,6 +21,8 @@ locals {
     "bff_cookie_secret",
     "bff_cookie_previous_secret",
     "bff_csrf_secret",
+    "bff_refresh_cookie_secret",
+    "bff_refresh_cookie_previous_secret",
   ])
 
   generated_secret_values = {
@@ -49,6 +51,8 @@ locals {
     "bff_cookie_secret",
     "bff_cookie_previous_secret",
     "bff_csrf_secret",
+    "bff_refresh_cookie_secret",
+    "bff_refresh_cookie_previous_secret",
     "redis_url",
     "redis_ca_base64",
   ])
@@ -474,13 +478,15 @@ resource "google_cloud_run_v2_service" "bff" {
 
       dynamic "env" {
         for_each = {
-          REDIS_URL                         = "redis_url"
-          REDIS_CA_BASE64                   = "redis_ca_base64"
-          BFF_COOKIE_SECRET                 = "bff_cookie_secret"
-          BFF_COOKIE_PREVIOUS_SECRET        = "bff_cookie_previous_secret"
-          BFF_CSRF_SECRET                   = "bff_csrf_secret"
-          BFF_INTERNAL_AUTH_ACTIVE_SECRET   = "api_auth_active_secret"
-          BFF_INTERNAL_AUTH_PREVIOUS_SECRET = "api_auth_previous_secret"
+          REDIS_URL                          = "redis_url"
+          REDIS_CA_BASE64                    = "redis_ca_base64"
+          BFF_COOKIE_SECRET                  = "bff_cookie_secret"
+          BFF_COOKIE_PREVIOUS_SECRET         = "bff_cookie_previous_secret"
+          BFF_CSRF_SECRET                    = "bff_csrf_secret"
+          BFF_REFRESH_COOKIE_SECRET          = "bff_refresh_cookie_secret"
+          BFF_REFRESH_COOKIE_PREVIOUS_SECRET = "bff_refresh_cookie_previous_secret"
+          BFF_INTERNAL_AUTH_ACTIVE_SECRET    = "api_auth_active_secret"
+          BFF_INTERNAL_AUTH_PREVIOUS_SECRET  = "api_auth_previous_secret"
         }
         content {
           name = env.key

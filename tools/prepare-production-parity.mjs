@@ -1,7 +1,8 @@
-import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
+import { chmod, mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { resolve } from "node:path";
 import { spawnSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import {
   parseEnv,
   readJson,
@@ -25,9 +26,7 @@ await chmod(runtimeDir, 0o700);
 await chmod(tlsDir, 0o700);
 await chmod(edgeTlsDir, 0o755);
 
-const existing = existsSync(envPath)
-  ? parseEnv(await readFile(envPath, "utf8"))
-  : new Map();
+const existing = await readEnvIfPresent(envPath);
 
 const requiredTlsFiles = ["ca.crt", "ca.key", "server.crt", "server.key"]
   .map((name) => resolve(tlsDir, name));
@@ -50,8 +49,7 @@ if (
 }
 
 const values = await resolveEnvironment(contract, localContract, existing, { regenerate });
-await writeFile(envPath, renderEnvironment(contract, values), { encoding: "utf8", mode: 0o600 });
-await chmod(envPath, 0o600);
+await writeEnvAtomic(envPath, renderEnvironment(contract, values));
 await chmod(resolve(tlsDir, "ca.key"), 0o600);
 await chmod(resolve(tlsDir, "server.key"), 0o600);
 await chmod(resolve(tlsDir, "ca.crt"), 0o644);
@@ -71,6 +69,26 @@ console.log(`Then: pnpm start:production-parity`);
 if (regenerate) {
   console.warn("WARNING: secrets were rotated. Persistent parity volumes may still contain previous credentials.");
   console.warn("For a clean rotation use: docker compose -f compose.production-parity.yml --env-file .env.production-parity down -v");
+}
+
+async function readEnvIfPresent(path) {
+  try {
+    return parseEnv(await readFile(path, "utf8"));
+  } catch (error) {
+    if (error && error.code === "ENOENT") return new Map();
+    throw error;
+  }
+}
+
+// Writes via a uniquely-named temp file in the same directory, then rename()s
+// it into place. rename() atomically replaces whatever is at `path` -- even a
+// symlink -- without ever opening/writing through it, which closes the
+// check-then-write race a plain writeFile(path, ...) after an existsSync/read
+// would have.
+async function writeEnvAtomic(path, content) {
+  const tempPath = `${path}.${process.pid}.${randomUUID()}.tmp`;
+  await writeFile(tempPath, content, { encoding: "utf8", mode: 0o600, flag: "wx" });
+  await rename(tempPath, path);
 }
 
 async function ensureRuntimeDirectory(path, mode) {

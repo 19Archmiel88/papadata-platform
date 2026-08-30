@@ -7,6 +7,7 @@ import type {
   CustomersSummary,
   DiagnosticFinding,
   FunnelStepView,
+  Money,
   OrdersRecord,
   OrdersSummary,
   PageInfo,
@@ -125,9 +126,22 @@ export type CampaignsApiData = {
 
 export type OrdersApiData = {
   readonly pageInfo?: PageInfo;
+  readonly reconciliation?: { readonly reason: string; readonly supported: boolean };
   readonly record?: OrdersRecord;
   readonly records?: readonly OrdersRecord[];
+  readonly sourceComparison?: readonly {
+    readonly amount: Money;
+    readonly orders: number;
+    readonly source: string;
+  }[];
   readonly summary?: OrdersSummary;
+  readonly timeline?: readonly {
+    readonly amount: Money;
+    readonly occurredAt: string;
+    readonly orderId: string;
+    readonly source: string;
+    readonly status: OrdersRecord['status'];
+  }[];
 };
 
 export type ProductsApiData = {
@@ -139,6 +153,11 @@ export type ProductsApiData = {
 
 export type CustomersApiData = {
   readonly cohorts?: readonly CohortView[];
+  readonly currencyCoverage?: {
+    readonly excludedOrders: number;
+    readonly observedCurrencies: readonly string[];
+    readonly reportingCurrency: string;
+  };
   readonly pageInfo?: PageInfo;
   readonly record?: CustomersRecord;
   readonly records?: readonly CustomersRecord[];
@@ -171,9 +190,12 @@ export type OrdersModuleData = {
   readonly group: 'orders';
   readonly operationId: string;
   readonly pageInfo: PageInfo;
+  readonly reconciliation: { readonly reason: string; readonly supported: boolean } | null;
   readonly record: OrdersRecord | null;
   readonly records: readonly OrdersRecord[];
+  readonly sourceComparison: NonNullable<OrdersApiData['sourceComparison']>;
   readonly summary: OrdersSummary;
+  readonly timeline: NonNullable<OrdersApiData['timeline']>;
 };
 
 export type ProductsModuleData = {
@@ -188,6 +210,7 @@ export type ProductsModuleData = {
 
 export type CustomersModuleData = {
   readonly cohorts: readonly CohortView[];
+  readonly currencyCoverage: NonNullable<CustomersApiData['currencyCoverage']> | null;
   readonly generatedAt: string;
   readonly group: 'customers';
   readonly operationId: string;
@@ -308,19 +331,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   variant: "recommendations",
 },
 {
-  apiPath: "/api/v1/campaigns/warianty-kampanii",
-  displayTitle: "Warianty kampanii",
-  group: "campaigns",
-  id: "31.08",
-  navigation: true,
-  operationId: "campaigns.variants.read",
-  requiresResourceId: false,
-  route: "/app/campaigns/warianty-kampanii",
-  routeBase: "/app/campaigns/warianty-kampanii",
-  summary: "Zbiorczy widok wariantów kampanii: ready, partial, empty, error, stale i ograniczenia dostępu.",
-  variant: "variants",
-},
-{
   apiPath: "/api/v1/orders/przeglad",
   displayTitle: "Przegląd",
   group: "orders",
@@ -410,19 +420,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   routeBase: "/app/orders/eksport",
   summary: "Stan danych przygotowanych do eksportu; pobranie wymaga osobnej operacji write/export.",
   variant: "export",
-},
-{
-  apiPath: "/api/v1/orders/warianty-zamowien",
-  displayTitle: "Warianty zamówień",
-  group: "orders",
-  id: "32.08",
-  navigation: true,
-  operationId: "orders.variants.read",
-  requiresResourceId: false,
-  route: "/app/orders/warianty-zamowien",
-  routeBase: "/app/orders/warianty-zamowien",
-  summary: "Zbiorczy widok stanów zamówień, źródeł i ograniczeń danych w jednym kontrakcie odczytu.",
-  variant: "variants",
 },
 {
   apiPath: "/api/v1/products/przeglad",
@@ -633,19 +630,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   variant: "impact",
 },
 {
-  apiPath: "/api/v1/customers/warianty-klientow",
-  displayTitle: "Warianty klientów",
-  group: "customers",
-  id: "34.08",
-  navigation: true,
-  operationId: "customers.variants.read",
-  requiresResourceId: false,
-  route: "/app/customers/warianty-klientow",
-  routeBase: "/app/customers/warianty-klientow",
-  summary: "Zbiorczy widok stanów klientów, zgód, pseudonimizacji, segmentów, kohort i konfliktów tożsamości.",
-  variant: "variants",
-},
-{
   apiPath: "/api/v1/traffic/przeglad-ruchu",
   displayTitle: "Przegląd ruchu",
   group: "traffic",
@@ -749,19 +733,6 @@ export const analyticsScreenDefinitions: readonly AnalyticsScreenDefinition[] = 
   summary: "Strony wejścia uszeregowane według ruchu, konwersji i przychodu.",
   variant: "landing-pages",
 },
-{
-  apiPath: "/api/v1/traffic/warianty-ruchu",
-  displayTitle: "Warianty ruchu",
-  group: "traffic",
-  id: "35.09",
-  navigation: true,
-  operationId: "traffic.variants.read",
-  requiresResourceId: false,
-  route: "/app/traffic/warianty-ruchu",
-  routeBase: "/app/traffic/warianty-ruchu",
-  summary: "Zbiorczy widok stanów ruchu, lejka, jakości eventów, GA4 vs zamówienia i stron wejścia.",
-  variant: "variants",
-},
 ];
 
 export const analyticsModuleTitles = {
@@ -849,9 +820,12 @@ export function createOrdersRuntimeData(
     group: 'orders',
     operationId: definition.operationId,
     pageInfo: normalizePageInfo(data.pageInfo, records.length),
+    reconciliation: data.reconciliation ?? null,
     record: data.record ?? records[0] ?? null,
     records,
+    sourceComparison: [...(data.sourceComparison ?? [])],
     summary,
+    timeline: [...(data.timeline ?? [])],
   };
 }
 
@@ -882,6 +856,7 @@ export function createCustomersRuntimeData(
 
   return {
     cohorts: [...(data.cohorts ?? [])],
+    currencyCoverage: data.currencyCoverage ?? null,
     generatedAt: summary.updatedAt,
     group: 'customers',
     operationId: definition.operationId,

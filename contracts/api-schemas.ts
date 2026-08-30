@@ -84,6 +84,7 @@ export interface CompanySummary { total: number; ready: number; warning: number;
 export interface CompanyForecast { horizonEnd: ISODateTime; expected: number; lowerBound: number; upperBound: number; confidence: number; }
 export interface CompanyTimelineEvent { eventId: UUID; occurredAt: ISODateTime; type: string; actorId: UUID | null; description: string; }
 export interface CustomersRecord { customerPseudonym: string; segmentId: UUID | null; cohortKey: string | null; ordersCount: number; revenue: Money; ltv: Money | null; consentStatus: ConsentStatus; segmentLabel?: string; rfmScore?: string; recencyDays?: number; aov?: Money; isNewCustomer?: boolean; }
+export interface CustomersCurrencyCoverage { excludedOrders: number; observedCurrencies: string[]; reportingCurrency: CurrencyCode; }
 export interface CustomersSegmentSummaryView { segmentId: UUID; segmentLabel: string; description: string; count: number; revenue: Money; }
 export interface CustomersParetoBucketView { bucket: 'A' | 'B' | 'C'; customers: number; revenue: Money; cumulativeRevenueShare: number; }
 export interface CustomersTrendPointView { date: string; newCustomers: number; returningCustomers: number; newRevenue: number; returningRevenue: number; }
@@ -124,6 +125,9 @@ export interface OnboardingSummary { total: number; ready: number; warning: numb
 export interface OnboardingForecast { horizonEnd: ISODateTime; expected: number; lowerBound: number; upperBound: number; confidence: number; }
 export interface OnboardingTimelineEvent { eventId: UUID; occurredAt: ISODateTime; type: string; actorId: UUID | null; description: string; }
 export interface OrdersRecord { orderId: UUID; externalOrderId: string; orderedAt: ISODateTime; status: OrderStatus; amount: Money; source: string; customerPseudonym: string | null; }
+export interface OrdersTimelineEventView { orderId: string; occurredAt: ISODateTime; status: OrderStatus; amount: Money; source: string; }
+export interface OrdersSourceComparisonView { source: string; orders: number; amount: Money; }
+export interface OrdersReconciliationAvailabilityView { supported: boolean; reason: string; }
 export interface OrdersSummary { total: number; ready: number; warning: number; critical: number; updatedAt: ISODateTime; }
 export interface OrdersForecast { horizonEnd: ISODateTime; expected: number; lowerBound: number; upperBound: number; confidence: number; }
 export interface OrdersTimelineEvent { eventId: UUID; occurredAt: ISODateTime; type: string; actorId: UUID | null; description: string; }
@@ -600,7 +604,7 @@ export interface CommandCenterPlanPerformanceReadInput { requestedBy: UUID; effe
 export interface CommandCenterPlanPerformanceReadNextAction { type: 'centerPlanPerformance'; label: string; route: string | null; }
 export interface CommandCenterPlanPerformanceReadResult { operationId: 'command-center.plan-performance.read'; completedAt: ISODateTime; domain: 'command-center'; }
 export interface CommandCenterPlanPerformanceReadRequest { context: ApiContext; dateRange: DateRangeRequest | null; page: PageRequest | null; filters: CommandCenterPlanPerformanceReadFilters | null; }
-export interface CommandCenterPlanPerformanceReadData { records: CommandCenterRecord[]; pageInfo: PageInfo; summary: CommandCenterSummary; trajectory: PlanTrajectoryPointView[]; planTotal: number; forecastTotal: number; forecastMethod: 'linear-run-rate'; centerPlanPerformanceResult: CommandCenterPlanPerformanceReadResult; }
+export interface CommandCenterPlanPerformanceReadData { records: CommandCenterRecord[]; pageInfo: PageInfo; summary: CommandCenterSummary; trajectory: PlanTrajectoryPointView[]; planTotal: number; forecastTotal: number; forecastMethod: 'linear-run-rate'; benchmarkSemantics: 'previous-period-run-rate'; centerPlanPerformanceResult: CommandCenterPlanPerformanceReadResult; }
 export interface CommandCenterPlanPerformanceReadResponse { operationId: 'command-center.plan-performance.read'; correlationId: string; generatedAt: ISODateTime; data: CommandCenterPlanPerformanceReadData; warnings: ApiProblem[]; }
 export interface CommandCenterProductsSummaryReadFilters { search: string | null; status: string[] | null; source: string[] | null; centerProductsSummaryFilter: string | number | boolean | null; }
 export interface CommandCenterProductsSummaryReadInput { requestedBy: UUID; effectiveAt: ISODateTime | null; centerProductsSummaryValue: string | number | boolean | null; }
@@ -670,35 +674,35 @@ export interface CustomersCohortsReadInput { requestedBy: UUID; effectiveAt: ISO
 export interface CustomersCohortsReadNextAction { type: 'cohorts'; label: string; route: string | null; }
 export interface CustomersCohortsReadResult { operationId: 'customers.cohorts.read'; completedAt: ISODateTime; domain: 'customers'; }
 export interface CustomersCohortsReadRequest { context: ApiContext; dateRange: DateRangeRequest | null; page: PageRequest | null; filters: CustomersCohortsReadFilters | null; }
-export interface CustomersCohortsReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; cohorts: CohortView[]; cohortsResult: CustomersCohortsReadResult; }
+export interface CustomersCohortsReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; cohorts: CohortView[]; cohortsResult: CustomersCohortsReadResult; currencyCoverage: CustomersCurrencyCoverage; }
 export interface CustomersCohortsReadResponse { operationId: 'customers.cohorts.read'; correlationId: string; generatedAt: ISODateTime; data: CustomersCohortsReadData; warnings: ApiProblem[]; }
 export interface CustomersIdentityConflictsReadFilters { search: string | null; status: string[] | null; source: string[] | null; identityConflictsFilter: string | number | boolean | null; }
 export interface CustomersIdentityConflictsReadInput { requestedBy: UUID; effectiveAt: ISODateTime | null; identityConflictsValue: string | number | boolean | null; }
 export interface CustomersIdentityConflictsReadNextAction { type: 'identityConflicts'; label: string; route: string | null; }
 export interface CustomersIdentityConflictsReadResult { operationId: 'customers.identity-conflicts.read'; completedAt: ISODateTime; domain: 'customers'; }
 export interface CustomersIdentityConflictsReadRequest { context: ApiContext; dateRange: DateRangeRequest | null; page: PageRequest | null; filters: CustomersIdentityConflictsReadFilters | null; }
-export interface CustomersIdentityConflictsReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; identityConflictsResult: CustomersIdentityConflictsReadResult; }
+export interface CustomersIdentityConflictsReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; identityConflictsResult: CustomersIdentityConflictsReadResult; currencyCoverage: CustomersCurrencyCoverage; }
 export interface CustomersIdentityConflictsReadResponse { operationId: 'customers.identity-conflicts.read'; correlationId: string; generatedAt: ISODateTime; data: CustomersIdentityConflictsReadData; warnings: ApiProblem[]; }
 export interface CustomersImpactReadFilters { search: string | null; status: string[] | null; source: string[] | null; impactFilter: string | number | boolean | null; }
 export interface CustomersImpactReadInput { requestedBy: UUID; effectiveAt: ISODateTime | null; impactValue: string | number | boolean | null; }
 export interface CustomersImpactReadNextAction { type: 'impact'; label: string; route: string | null; }
 export interface CustomersImpactReadResult { operationId: 'customers.impact.read'; completedAt: ISODateTime; domain: 'customers'; }
 export interface CustomersImpactReadRequest { context: ApiContext; dateRange: DateRangeRequest | null; page: PageRequest | null; filters: CustomersImpactReadFilters | null; }
-export interface CustomersImpactReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; impactResult: CustomersImpactReadResult; }
+export interface CustomersImpactReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; impactResult: CustomersImpactReadResult; currencyCoverage: CustomersCurrencyCoverage; }
 export interface CustomersImpactReadResponse { operationId: 'customers.impact.read'; correlationId: string; generatedAt: ISODateTime; data: CustomersImpactReadData; warnings: ApiProblem[]; }
 export interface CustomersOverviewReadFilters { search: string | null; status: string[] | null; source: string[] | null; overviewFilter: string | number | boolean | null; }
 export interface CustomersOverviewReadInput { requestedBy: UUID; effectiveAt: ISODateTime | null; overviewValue: string | number | boolean | null; }
 export interface CustomersOverviewReadNextAction { type: 'overview'; label: string; route: string | null; }
 export interface CustomersOverviewReadResult { operationId: 'customers.overview.read'; completedAt: ISODateTime; domain: 'customers'; }
 export interface CustomersOverviewReadRequest { context: ApiContext; dateRange: DateRangeRequest | null; page: PageRequest | null; filters: CustomersOverviewReadFilters | null; }
-export interface CustomersOverviewReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; overviewResult: CustomersOverviewReadResult; segments?: CustomersSegmentSummaryView[]; pareto?: CustomersParetoBucketView[]; trend?: CustomersTrendPointView[]; cac?: CustomersCacView | null; affinity?: CustomersAffinityView; priorityAlert?: CustomersPriorityAlertView | null; portfolioTotals?: CustomersPortfolioTotalsView; }
+export interface CustomersOverviewReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; overviewResult: CustomersOverviewReadResult; segments?: CustomersSegmentSummaryView[]; pareto?: CustomersParetoBucketView[]; trend?: CustomersTrendPointView[]; cac?: CustomersCacView | null; affinity?: CustomersAffinityView; priorityAlert?: CustomersPriorityAlertView | null; portfolioTotals?: CustomersPortfolioTotalsView; currencyCoverage: CustomersCurrencyCoverage; }
 export interface CustomersOverviewReadResponse { operationId: 'customers.overview.read'; correlationId: string; generatedAt: ISODateTime; data: CustomersOverviewReadData; warnings: ApiProblem[]; }
 export interface CustomersPrivacyReadFilters { search: string | null; status: string[] | null; source: string[] | null; privacyFilter: string | number | boolean | null; }
 export interface CustomersPrivacyReadInput { requestedBy: UUID; effectiveAt: ISODateTime | null; privacyValue: string | number | boolean | null; }
 export interface CustomersPrivacyReadNextAction { type: 'privacy'; label: string; route: string | null; }
 export interface CustomersPrivacyReadResult { operationId: 'customers.privacy.read'; completedAt: ISODateTime; domain: 'customers'; }
 export interface CustomersPrivacyReadRequest { context: ApiContext; dateRange: DateRangeRequest | null; page: PageRequest | null; filters: CustomersPrivacyReadFilters | null; }
-export interface CustomersPrivacyReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; privacyResult: CustomersPrivacyReadResult; }
+export interface CustomersPrivacyReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; privacyResult: CustomersPrivacyReadResult; currencyCoverage: CustomersCurrencyCoverage; }
 export interface CustomersPrivacyReadResponse { operationId: 'customers.privacy.read'; correlationId: string; generatedAt: ISODateTime; data: CustomersPrivacyReadData; warnings: ApiProblem[]; }
 export interface CustomersPseudonymizedDetailReadFilters { search: string | null; status: string[] | null; source: string[] | null; pseudonymizedDetailFilter: string | number | boolean | null; }
 export interface CustomersPseudonymizedDetailReadInput { requestedBy: UUID; effectiveAt: ISODateTime | null; pseudonymizedDetailValue: string | number | boolean | null; }
@@ -712,7 +716,7 @@ export interface CustomersReadInput { requestedBy: UUID; effectiveAt: ISODateTim
 export interface CustomersReadNextAction { type: 'result'; label: string; route: string | null; }
 export interface CustomersReadResult { operationId: 'customers.read'; completedAt: ISODateTime; domain: 'customers'; }
 export interface CustomersReadRequest { context: ApiContext; dateRange: DateRangeRequest | null; page: PageRequest | null; filters: CustomersReadFilters | null; }
-export interface CustomersReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; resultResult: CustomersReadResult; }
+export interface CustomersReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; resultResult: CustomersReadResult; currencyCoverage: CustomersCurrencyCoverage; }
 export interface CustomersReadResponse { operationId: 'customers.read'; correlationId: string; generatedAt: ISODateTime; data: CustomersReadData; warnings: ApiProblem[]; }
 export interface CustomersSegmentAnalyzeFilters { search: string | null; status: string[] | null; source: string[] | null; segmentAnalyzeFilter: string | number | boolean | null; }
 export interface CustomersSegmentAnalyzeInput { requestedBy: UUID; effectiveAt: ISODateTime | null; segmentAnalyzeValue: string | number | boolean | null; }
@@ -726,7 +730,7 @@ export interface CustomersSegmentsReadInput { requestedBy: UUID; effectiveAt: IS
 export interface CustomersSegmentsReadNextAction { type: 'segments'; label: string; route: string | null; }
 export interface CustomersSegmentsReadResult { operationId: 'customers.segments.read'; completedAt: ISODateTime; domain: 'customers'; }
 export interface CustomersSegmentsReadRequest { context: ApiContext; dateRange: DateRangeRequest | null; page: PageRequest | null; filters: CustomersSegmentsReadFilters | null; }
-export interface CustomersSegmentsReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; segmentsResult: CustomersSegmentsReadResult; }
+export interface CustomersSegmentsReadData { records: CustomersRecord[]; pageInfo: PageInfo; summary: CustomersSummary; segmentsResult: CustomersSegmentsReadResult; currencyCoverage: CustomersCurrencyCoverage; }
 export interface CustomersSegmentsReadResponse { operationId: 'customers.segments.read'; correlationId: string; generatedAt: ISODateTime; data: CustomersSegmentsReadData; warnings: ApiProblem[]; }
 export interface CustomersWriteFilters { search: string | null; status: string[] | null; source: string[] | null; resultFilter: string | number | boolean | null; }
 export interface CustomersWriteInput { requestedBy: UUID; effectiveAt: ISODateTime | null; resultValue: string | number | boolean | null; }
@@ -1188,7 +1192,7 @@ export interface OrdersOsZdarzenReadInput { requestedBy: UUID; effectiveAt: ISOD
 export interface OrdersOsZdarzenReadNextAction { type: 'osZdarzen'; label: string; route: string | null; }
 export interface OrdersOsZdarzenReadResult { operationId: 'orders.os-zdarzen.read'; completedAt: ISODateTime; domain: 'orders'; }
 export interface OrdersOsZdarzenReadRequest { context: ApiContext; dateRange: DateRangeRequest | null; page: PageRequest | null; filters: OrdersOsZdarzenReadFilters | null; }
-export interface OrdersOsZdarzenReadData { records: OrdersRecord[]; pageInfo: PageInfo; summary: OrdersSummary; osZdarzenResult: OrdersOsZdarzenReadResult; }
+export interface OrdersOsZdarzenReadData { records: OrdersRecord[]; pageInfo: PageInfo; summary: OrdersSummary; timeline: OrdersTimelineEventView[]; osZdarzenResult: OrdersOsZdarzenReadResult; }
 export interface OrdersOsZdarzenReadResponse { operationId: 'orders.os-zdarzen.read'; correlationId: string; generatedAt: ISODateTime; data: OrdersOsZdarzenReadData; warnings: ApiProblem[]; }
 export interface OrdersOverviewReadFilters { search: string | null; status: string[] | null; source: string[] | null; overviewFilter: string | number | boolean | null; }
 export interface OrdersOverviewReadInput { requestedBy: UUID; effectiveAt: ISODateTime | null; overviewValue: string | number | boolean | null; }
@@ -1202,7 +1206,7 @@ export interface OrdersPorownanieZrodelReadInput { requestedBy: UUID; effectiveA
 export interface OrdersPorownanieZrodelReadNextAction { type: 'porownanieZrodel'; label: string; route: string | null; }
 export interface OrdersPorownanieZrodelReadResult { operationId: 'orders.porownanie-zrodel.read'; completedAt: ISODateTime; domain: 'orders'; }
 export interface OrdersPorownanieZrodelReadRequest { context: ApiContext; dateRange: DateRangeRequest | null; page: PageRequest | null; filters: OrdersPorownanieZrodelReadFilters | null; }
-export interface OrdersPorownanieZrodelReadData { records: OrdersRecord[]; pageInfo: PageInfo; summary: OrdersSummary; porownanieZrodelResult: OrdersPorownanieZrodelReadResult; }
+export interface OrdersPorownanieZrodelReadData { records: OrdersRecord[]; pageInfo: PageInfo; summary: OrdersSummary; sourceComparison: OrdersSourceComparisonView[]; porownanieZrodelResult: OrdersPorownanieZrodelReadResult; }
 export interface OrdersPorownanieZrodelReadResponse { operationId: 'orders.porownanie-zrodel.read'; correlationId: string; generatedAt: ISODateTime; data: OrdersPorownanieZrodelReadData; warnings: ApiProblem[]; }
 export interface OrdersReadFilters { search: string | null; status: string[] | null; source: string[] | null; resultFilter: string | number | boolean | null; }
 export interface OrdersReadInput { requestedBy: UUID; effectiveAt: ISODateTime | null; resultValue: string | number | boolean | null; }
@@ -1216,7 +1220,7 @@ export interface OrdersRekoncyliacjaSkrotReadInput { requestedBy: UUID; effectiv
 export interface OrdersRekoncyliacjaSkrotReadNextAction { type: 'rekoncyliacjaSkrot'; label: string; route: string | null; }
 export interface OrdersRekoncyliacjaSkrotReadResult { operationId: 'orders.rekoncyliacja-skrot.read'; completedAt: ISODateTime; domain: 'orders'; }
 export interface OrdersRekoncyliacjaSkrotReadRequest { context: ApiContext; dateRange: DateRangeRequest | null; page: PageRequest | null; filters: OrdersRekoncyliacjaSkrotReadFilters | null; }
-export interface OrdersRekoncyliacjaSkrotReadData { records: OrdersRecord[]; pageInfo: PageInfo; summary: OrdersSummary; rekoncyliacjaSkrotResult: OrdersRekoncyliacjaSkrotReadResult; }
+export interface OrdersRekoncyliacjaSkrotReadData { records: OrdersRecord[]; pageInfo: PageInfo; summary: OrdersSummary; reconciliation: OrdersReconciliationAvailabilityView; rekoncyliacjaSkrotResult: OrdersRekoncyliacjaSkrotReadResult; }
 export interface OrdersRekoncyliacjaSkrotReadResponse { operationId: 'orders.rekoncyliacja-skrot.read'; correlationId: string; generatedAt: ISODateTime; data: OrdersRekoncyliacjaSkrotReadData; warnings: ApiProblem[]; }
 export interface OrdersWriteFilters { search: string | null; status: string[] | null; source: string[] | null; resultFilter: string | number | boolean | null; }
 export interface OrdersWriteInput { requestedBy: UUID; effectiveAt: ISODateTime | null; resultValue: string | number | boolean | null; }

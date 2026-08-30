@@ -59,9 +59,13 @@ const REVENUE_EXCLUDED_ORDER_STATUSES: ReadonlySet<string> = new Set([
  * `createMetricFacts` uses internally, instead of re-declaring a second,
  * driftable copy of `REVENUE_EXCLUDED_ORDER_STATUSES`.
  */
+export function isRevenueQualifyingStatus(status: string | null): boolean {
+  if (!status) return true;
+  return !REVENUE_EXCLUDED_ORDER_STATUSES.has(status.toLowerCase());
+}
+
 export function isRevenueQualifyingOrder(order: CanonicalOrderRecord): boolean {
-  if (!order.status) return true;
-  return !REVENUE_EXCLUDED_ORDER_STATUSES.has(order.status.toLowerCase());
+  return isRevenueQualifyingStatus(order.status);
 }
 
 export const METRIC_ENGINE_POLICY_VERSION = "metric-engine.2026-07.prompt7";
@@ -653,7 +657,7 @@ export const metricDefinitions = [
   definition("cpc", "money", "Sredni koszt klikniecia.", "ad_spend / clicks", ["canonical_ad_spend"], "1.56"),
   definition("cpm", "money", "Sredni koszt tysiaca wyswietlen.", "ad_spend / impressions * 1000", ["canonical_ad_spend"], "30.88"),
   definition("ctr", "ratio", "Click-through rate for ads.", "clicks / impressions", ["canonical_ad_spend"], "0.0199"),
-  definition("platform_attributed_conversions", "count", "Konwersje przypisane przez platformy reklamowe.", "COUNT(canonical_attributed_conversions)", ["canonical_attributed_conversions"], "2"),
+  definition("platform_attributed_conversions", "count", "Konwersje przypisane przez platformy reklamowe.", "SUM(canonical_attributed_conversions.conversions)", ["canonical_attributed_conversions"], "2"),
   definition("platform_attributed_revenue", "money", "Wartosc konwersji przypisana przez platformy reklamowe, oddzielna od przychodu sklepu.", "SUM(canonical_attributed_conversions.attributed_value_amount)", ["canonical_attributed_conversions"], "810.00"),
   definition("roas", "ratio", "ROAS platform reklamowych bez sumowania z przychodem sklepu.", "platform_attributed_revenue / ad_spend", ["canonical_ad_spend", "canonical_attributed_conversions"], "3.8571"),
   definition("cost_per_order", "money", "Koszt reklam przypadajacy na kanoniczne zamowienie sklepowe.", "ad_spend / orders", ["canonical_ad_spend", "canonical_orders"], "105.00"),
@@ -986,6 +990,7 @@ export function createMetricEngineSeriesInput(options: {
         ...conversion,
         attributedConversionId: `${conversion.attributedConversionId}_${suffix}`,
         attributedValueAmount: scaleMoney(conversion.attributedValueAmount, conversionWeight),
+        conversions: Math.max(0, conversion.conversions * conversionWeight),
         conversionTime: shiftIso(conversion.conversionTime, templateAnchorMs, dayStartMs),
         externalConversionId: `${conversion.externalConversionId}_${suffix}`,
       });
@@ -1176,11 +1181,25 @@ function calculateMetric(
   }
 
   return {
-    limitations: limitationsFor(baseReadiness),
+    limitations: [...limitationsFor(baseReadiness), ...currencyScopeLimitations(input)],
     readiness: baseReadiness,
     reasonCodes: reasonCodesFor(baseReadiness),
     value,
   };
+}
+
+function currencyScopeLimitations(input: MetricEngineInput): readonly string[] {
+  const currencies = new Set<string>();
+  for (const record of input.canonicalOrders) currencies.add(record.currency);
+  for (const record of input.canonicalRefunds) currencies.add(record.currency);
+  for (const record of input.canonicalAdSpend) currencies.add(record.currency);
+  for (const record of input.canonicalAttributedConversions) currencies.add(record.currency);
+  for (const record of input.productCosts) currencies.add(record.currency);
+  if (currencies.size <= 1) return [];
+  return [
+    `Multiple currencies detected (${[...currencies].sort().join(", ")}). `
+      + `Currency-sensitive facts are scoped to reporting currency ${input.currency}; no FX conversion is applied.`,
+  ];
 }
 
 function valueForMetric(
@@ -1237,7 +1256,7 @@ function valueForMetric(
     case "orders":
       return String(orderCount);
     case "platform_attributed_conversions":
-      return String(facts.attributedConversions.length);
+      return integerString(facts.attributedConversions.reduce((sum, conversion) => sum + conversion.conversions, 0));
     case "platform_attributed_revenue":
       return centsToDecimal(platformAttributedRevenue);
     case "product_contribution":
@@ -1346,7 +1365,8 @@ function hasRequiredData(metricCode: DashboardMetricCode, facts: MetricFacts): b
 function createMetricFacts(input: MetricEngineInput): MetricFacts {
   const commerceOrders = input.canonicalOrders.filter(
     (order) =>
-      isInPeriod(order.orderedAt, input.periodStart, input.periodEnd)
+      order.currency === input.currency
+      && isInPeriod(order.orderedAt, input.periodStart, input.periodEnd)
       && isRevenueQualifyingOrder(order),
   );
   const orderIds = new Set(commerceOrders.map((order) => order.canonicalOrderId));
@@ -1360,7 +1380,8 @@ function createMetricFacts(input: MetricEngineInput): MetricFacts {
   // against orders that got excluded by status (e.g. a full refund that
   // flipped the order to "refunded").
   const refunds = input.canonicalRefunds.filter((refund) =>
-    isInPeriod(refund.refundedAt, input.periodStart, input.periodEnd),
+    refund.currency === input.currency
+    && isInPeriod(refund.refundedAt, input.periodStart, input.periodEnd),
   );
   // Narrower subset used ONLY by revenue_after_refunds, to avoid
   // double-counting a loss: a refund against an order that itself got
@@ -1388,11 +1409,14 @@ function createMetricFacts(input: MetricEngineInput): MetricFacts {
   );
   const adSpend = adSpendDateRange
     ? input.canonicalAdSpend.filter(
-        (spend) => spend.date >= adSpendDateRange.firstDate && spend.date <= adSpendDateRange.lastDate,
+        (spend) => spend.currency === input.currency
+          && spend.date >= adSpendDateRange.firstDate
+          && spend.date <= adSpendDateRange.lastDate,
       )
     : [];
   const attributedConversions = input.canonicalAttributedConversions.filter((conversion) =>
-    isInPeriod(conversion.conversionTime, input.periodStart, input.periodEnd),
+    conversion.currency === input.currency
+    && isInPeriod(conversion.conversionTime, input.periodStart, input.periodEnd),
   );
 
   return {
@@ -1402,7 +1426,11 @@ function createMetricFacts(input: MetricEngineInput): MetricFacts {
     inventorySnapshots,
     orderLines,
     productById: new Map(input.canonicalProducts.map((product) => [product.canonicalProductId, product])),
-    productCostBySku: new Map(input.productCosts.map((cost) => [cost.sku, decimalToCents(cost.unitCostAmount)])),
+    productCostBySku: new Map(
+      input.productCosts
+        .filter((cost) => cost.currency === input.currency)
+        .map((cost) => [cost.sku, decimalToCents(cost.unitCostAmount)]),
+    ),
     refunds,
     revenueQualifyingRefunds,
     returns,
@@ -1666,7 +1694,9 @@ function definition(
 ): MetricDefinitionRecord {
   return {
     businessDefinition,
-    currencyPolicy: unit === "money" ? "PLN local/CI; no FX conversion in Prompt 7." : "not_applicable",
+    currencyPolicy: unit === "money"
+      ? "Single reporting-currency slice from input.currency; facts in other currencies are excluded and no FX conversion is inferred."
+      : "not_applicable",
     datePolicy: "Facts are included when their business timestamp is inside [periodStart, periodEnd).",
     definitionVersion: METRIC_DEFINITION_VERSION,
     // Mirrors `REVENUE_EXCLUDED_ORDER_STATUSES` exactly (single source of

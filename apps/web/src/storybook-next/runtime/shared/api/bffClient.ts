@@ -558,11 +558,13 @@ class BffClient {
     path: `/api/v1/${string}`,
     options: {
       readonly dateRange?: DateRange | null;
+      readonly query?: Readonly<Record<string, string | null | undefined>>;
     } = {},
   ): Promise<TData> {
-    const response = await this.fetch(withDateRangeQuery(
+    const response = await this.fetch(withReadQuery(
       path,
       options.dateRange ?? null,
+      options.query ?? null,
     ), {
       method: 'GET',
     });
@@ -1002,28 +1004,34 @@ class BffClient {
   }
 }
 
-function withDateRangeQuery(
+function withReadQuery(
   path: `/api/v1/${string}`,
   dateRange: DateRange | null,
+  queryValues: Readonly<Record<string, string | null | undefined>> | null,
 ): `/api/v1/${string}` {
-  if (!dateRange) {
-    return path;
-  }
-
   const [pathname = path, currentQuery = ''] = path.split('?');
   const params = new URLSearchParams(currentQuery);
 
-  params.set('from', dateRange.from);
-  params.set('to', dateRange.to);
-  params.set('timezone', dateRange.timezone);
+  if (dateRange) {
+    params.set('from', dateRange.from);
+    params.set('to', dateRange.to);
+    params.set('timezone', dateRange.timezone);
+    if (dateRange.preset) {
+      params.set('preset', dateRange.preset);
+    }
+  }
 
-  if (dateRange.preset) {
-    params.set('preset', dateRange.preset);
+  if (queryValues) {
+    for (const [key, value] of Object.entries(queryValues)) {
+      if (value === null || value === undefined || value.trim().length === 0) continue;
+      params.set(key, value);
+    }
   }
 
   const query = params.toString();
-
-  return `${pathname}?${query}` as `/api/v1/${string}`;
+  return query.length > 0
+    ? `${pathname}?${query}` as `/api/v1/${string}`
+    : pathname as `/api/v1/${string}`;
 }
 
 export const bffClient = new BffClient();

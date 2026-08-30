@@ -178,6 +178,7 @@ function normalizeAdSpend(payload: Readonly<Record<string, unknown>>, observedAt
       accountId: firstString(payload, "account_id", "customer.id", "customerId"),
       campaignId: firstString(payload, "campaign_id", "campaign.id", "campaignId"),
       campaignName: firstString(payload, "campaign_name", "campaign.name", "campaignName"),
+      campaignStatus: firstString(payload, "campaign_status", "campaign.status", "campaignStatus"),
       currency: normalizeCurrencyCode(firstString(payload,
         "account_currency", "customer.currency_code", "currency")),
       spend: firstNumber(payload, "spend", "cost", "metrics.cost_micros", "costMicros"),
@@ -188,6 +189,20 @@ function normalizeAdSpend(payload: Readonly<Record<string, unknown>>, observedAt
 }
 
 function normalizeAttributedConversion(payload: Readonly<Record<string, unknown>>, observedAt: string) {
+  // Google Ads exposes scalar metrics while Meta Ads exposes conversion counts
+  // and values as arrays of `{action_type, value}` records. Treating Meta's
+  // arrays as scalars silently produced null conversions/revenue. Prefer a
+  // single purchase action by deterministic priority so overlapping Meta
+  // action types are not summed and double-counted.
+  const conversions = firstNumber(payload, "conversions", "metrics.conversions")
+    ?? firstMetaPurchaseActionValue(payload, "actions");
+  const conversionValue = firstNumber(
+    payload,
+    "conversion_value",
+    "metrics.conversions_value",
+    "purchaseValue",
+  ) ?? firstMetaPurchaseActionValue(payload, "action_values");
+
   return {
     occurredAt: firstDate(payload, observedAt),
     entity: {
@@ -195,11 +210,39 @@ function normalizeAttributedConversion(payload: Readonly<Record<string, unknown>
       campaignId: firstString(payload, "campaign_id", "campaign.id", "campaignId"),
       currency: normalizeCurrencyCode(firstString(payload,
         "account_currency", "customer.currency_code", "currency")),
-      conversions: firstNumber(payload, "conversions", "metrics.conversions", "actions"),
-      conversionValue: firstNumber(payload,
-        "conversion_value", "metrics.conversions_value", "action_values", "purchaseValue"),
+      conversions,
+      conversionValue,
     },
   };
+}
+
+
+const META_PURCHASE_ACTION_PRIORITY = [
+  "purchase",
+  "omni_purchase",
+  "offsite_conversion.fb_pixel_purchase",
+  "onsite_conversion.purchase",
+  "offsite_conversion.purchase",
+  "web_in_store_purchase",
+] as const;
+
+function firstMetaPurchaseActionValue(
+  payload: Readonly<Record<string, unknown>>,
+  path: "actions" | "action_values",
+): number | null {
+  const rows = readPath(payload, path);
+  if (!Array.isArray(rows)) return null;
+
+  for (const actionType of META_PURCHASE_ACTION_PRIORITY) {
+    for (const row of rows) {
+      if (!isRecord(row)) continue;
+      const rowType = firstString(row, "action_type", "actionType");
+      if (rowType !== actionType) continue;
+      const value = firstNumber(row, "value");
+      if (value !== null) return Math.max(0, value);
+    }
+  }
+  return null;
 }
 
 function normalizeAnalytics(
@@ -214,13 +257,19 @@ function normalizeAnalytics(
       analyticsType: stream,
       date,
       source: firstString(payload,
-        "sessionSource", "source", "firstUserSource", "sessionDefaultChannelGroup", "sessionSourceMedium"),
+        "sessionSource", "source", "firstUserSource", "sessionSourceMedium"),
+      channel: firstString(payload, "sessionDefaultChannelGroup", "defaultChannelGroup"),
       medium: firstString(payload, "sessionMedium", "medium", "firstUserMedium"),
       campaign: firstString(payload, "sessionCampaignName", "campaign", "firstUserCampaignName"),
+      landingPage: firstString(payload, "landingPagePlusQueryString", "landingPage"),
+      eventName: firstString(payload, "eventName"),
       sessions: firstNumber(payload, "sessions"),
       users: firstNumber(payload, "totalUsers", "activeUsers", "users"),
+      newUsers: firstNumber(payload, "newUsers"),
+      engagedSessions: firstNumber(payload, "engagedSessions"),
       eventCount: firstNumber(payload, "eventCount", "events"),
       conversions: firstNumber(payload, "keyEvents", "conversions", "transactions"),
+      transactions: firstNumber(payload, "transactions"),
       revenue: firstNumber(payload, "purchaseRevenue", "totalRevenue", "revenue"),
       currency: normalizeCurrencyCode(firstString(payload, "currencyCode", "currency")),
     },
@@ -235,6 +284,9 @@ function requiredFields(stream: string): readonly string[] {
     case "refunds": return ["refundId"];
     case "ad_spend": return ["date", "campaignId"];
     case "attributed_conversions": return ["date", "campaignId"];
+    case "traffic": return ["date", "channel", "sessions", "users"];
+    case "events": return ["date", "eventName", "eventCount"];
+    case "conversions": return ["date", "conversions"];
     default: return [];
   }
 }

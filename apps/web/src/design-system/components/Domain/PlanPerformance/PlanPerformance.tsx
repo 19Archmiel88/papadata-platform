@@ -85,8 +85,8 @@ export const PlanPerformance = forwardRef<HTMLElement, PlanPerformanceProps>(
       >
         <header className="pd-plan-performance__header">
           <div>
-            <p>Plan vs wynik</p>
-            <h2 id={titleId}>Realizacja celu</h2>
+            <p>Benchmark vs wynik</p>
+            <h2 id={titleId}>Wynik względem benchmarku</h2>
           </div>
           <StatusBadge
             status="Tempo"
@@ -96,7 +96,7 @@ export const PlanPerformance = forwardRef<HTMLElement, PlanPerformanceProps>(
         </header>
         <dl className="pd-plan-performance__meta">
           <div>
-            <dt>Luka do celu</dt>
+            <dt>Odchylenie od benchmarku</dt>
             <dd>{formatSignedNumber(gapToTarget)}</dd>
           </div>
           <div>
@@ -106,7 +106,7 @@ export const PlanPerformance = forwardRef<HTMLElement, PlanPerformanceProps>(
         </dl>
         {data.length > 0 ? (
           <TrendChart
-            ariaLabel="Realizacja planu w czasie: wynik i plan"
+            ariaLabel="Wynik w czasie na tle benchmarku poprzedniego okresu"
             className="pd-plan-performance__chart"
             data={data}
             unit={actualSeries?.unit ?? planSeries?.unit ?? null}

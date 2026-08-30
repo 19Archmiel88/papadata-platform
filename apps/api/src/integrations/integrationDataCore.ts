@@ -291,6 +291,7 @@ export type CanonicalAttributedConversionRecord = {
   readonly attributedConversionId: string;
   readonly attributedValueAmount: string;
   readonly campaignId: string;
+  readonly conversions: number;
   readonly conversionTime: IsoDateTime;
   readonly currency: string;
   readonly externalConversionId: string;
@@ -410,6 +411,7 @@ export type AdSpendPayload = {
 export type AttributedConversionPayload = {
   readonly attributedValueAmount: string;
   readonly campaignId: string;
+  readonly conversions: number;
   readonly conversionTime: IsoDateTime;
   readonly currency: string;
   readonly externalConversionId: string;
@@ -1594,6 +1596,7 @@ export class SandboxIntegrationDataService {
       attributedConversionId: this.idSource.next("canonical_attributed_conversion"),
       attributedValueAmount: payload.attributedValueAmount,
       campaignId: payload.campaignId,
+      conversions: Math.max(0, payload.conversions),
       conversionTime: payload.conversionTime,
       currency: payload.currency,
       externalConversionId: payload.externalConversionId,
@@ -2141,6 +2144,7 @@ const sandboxItems = {
         payload: {
           attributedValueAmount: "500.00",
           campaignId: "gads-campaign-1",
+          conversions: 1,
           conversionTime: "2026-07-19T16:00:00.000Z" as IsoDateTime,
           currency: "PLN",
           externalConversionId: "gads-conversion-1",
@@ -2168,6 +2172,7 @@ const sandboxItems = {
         payload: {
           attributedValueAmount: "310.00",
           campaignId: "meta-campaign-1",
+          conversions: 1,
           conversionTime: "2026-07-19T18:30:00.000Z" as IsoDateTime,
           currency: "PLN",
           externalConversionId: "meta-conversion-1",

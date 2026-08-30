@@ -58,14 +58,19 @@ import {
   type CommandCenterRuntimeRecord,
 } from "./command-center-record.js";
 import {
+  buildCampaignDiagnostics,
+  buildCampaignRecommendations,
   fetchCampaignDetail,
   fetchCampaignsAttribution,
   fetchCampaignsList,
   type CampaignsFilters,
 } from "./campaigns-analytics.real-source.js";
 import {
+  buildOrdersSourceComparison,
+  buildOrdersTimeline,
   fetchOrderDetail,
   fetchOrdersList,
+  ordersReconciliationAvailability,
   type OrdersFilters,
 } from "./orders-analytics.real-source.js";
 import {
@@ -79,6 +84,10 @@ import {
   type CustomerSegment,
   type CustomersFilters,
 } from "./customers-analytics.real-source.js";
+import {
+  fetchTrafficAnalytics,
+  type TrafficFilters,
+} from "./traffic-analytics.real-source.js";
 import {
   capturePapaContext,
   generatePapaAnswer,
@@ -599,8 +608,16 @@ export class ContractRuntimeService {
         tenantId: principal.tenantId,
         workspaceId: principal.workspaceId,
       });
+      const operationExtras = request.operationId === "orders.os-zdarzen.read"
+        ? { timeline: buildOrdersTimeline(result.records) }
+        : request.operationId === "orders.porownanie-zrodel.read"
+          ? { sourceComparison: buildOrdersSourceComparison(result.records) }
+          : request.operationId === "orders.rekoncyliacja-skrot.read"
+            ? { reconciliation: ordersReconciliationAvailability() }
+            : {};
       return {
         data: {
+          ...operationExtras,
           pageInfo: result.pageInfo,
           records: result.records,
           [ordersResultKey(request.operationId)]: {
@@ -750,19 +767,17 @@ export class ContractRuntimeService {
       }
 
       const result = await fetchCampaignsList(shared);
-      // diagnostics/recommendations need creative-level ad data and a budget
-      // reallocation model that don't exist anywhere in the canonical
-      // pipeline today -- honestly empty rather than fabricated (see
-      // campaigns-analytics.real-source.ts and the plan this implements).
       const extra: Record<string, unknown> = {};
       if (request.operationId === "campaigns.diagnostics.read") {
-        extra.diagnostics = [];
+        extra.diagnostics = buildCampaignDiagnostics(result.records);
       }
       if (
         request.operationId === "campaigns.budget.recommendation.read"
         || request.operationId === "campaigns.recommendations.read"
       ) {
-        extra.recommendations = [];
+        // Deterministic decision-support rules backed by provider metrics.
+        // They explicitly do not claim to be AI or an executable budget plan.
+        extra.recommendations = buildCampaignRecommendations(result.records);
       }
 
       return {
@@ -838,6 +853,7 @@ export class ContractRuntimeService {
         affinity: portfolio.affinity,
         cac: portfolio.cac,
         cohorts: portfolio.cohorts,
+        currencyCoverage: portfolio.currencyCoverage,
         pareto: portfolio.pareto,
         portfolioTotals: portfolio.portfolioTotals,
         priorityAlert: portfolio.priorityAlert,
@@ -855,6 +871,58 @@ export class ContractRuntimeService {
             operationId: request.operationId,
           },
           summary: portfolio.summary,
+          ...extra,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (
+      request.operationId.startsWith("traffic.")
+      && request.operationId !== "traffic.write"
+    ) {
+      const query = safeObject(request.query);
+      const generatedAt = new Date().toISOString();
+      const stepId = request.operationId === "traffic.funnel-step.read"
+        ? optionalRecordString(query, "stepId")
+        : null;
+      if (request.operationId === "traffic.funnel-step.read" && !stepId) {
+        throw new BadRequestException("Query parameter 'stepId' is required.");
+      }
+
+      const result = await fetchTrafficAnalytics({
+        dataSource: this.integrationRepository,
+        dateRange: readRuntimeDateRange(request.query),
+        filters: readTrafficFilters(query),
+        generatedAt,
+        operationId: request.operationId,
+        page: readPageRequest(query),
+        stepId,
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+      });
+      const extra: Record<string, unknown> = {};
+      if (request.operationId === "traffic.event-quality.read") {
+        extra.diagnostics = result.diagnostics;
+      }
+      if (
+        request.operationId === "traffic.funnel-definitions.read"
+        || request.operationId === "traffic.funnel.read"
+        || request.operationId === "traffic.funnel-step.read"
+      ) {
+        extra.steps = result.steps;
+      }
+
+      return {
+        data: {
+          pageInfo: result.pageInfo,
+          records: result.records,
+          [trafficResultKey(request.operationId)]: {
+            completedAt: generatedAt,
+            domain: "traffic",
+            operationId: request.operationId,
+          },
+          summary: result.summary,
           ...extra,
         },
         operationId: request.operationId,
@@ -2137,7 +2205,6 @@ function commandCenterOperationNeedsKpiRecords(operationId: string): boolean {
     "command-center.overview.read",
     "command-center.read",
     "command-center.sales-signals.read",
-    "command-center.variants.read",
   ].includes(operationId);
 }
 
@@ -2173,7 +2240,6 @@ function commandCenterResultKey(operationId: string): string {
     "command-center.sales-signals.read": "centerSalesSignalsResult",
     "command-center.sales-sources.read": "centerSalesSourcesResult",
     "command-center.traffic-summary.read": "centerTrafficSummaryResult",
-    "command-center.variants.read": "centerVariantsResult",
     "command-center.waterfall.read": "centerWaterfallResult",
     "command-center.write": "centerResult",
   };
@@ -2291,6 +2357,31 @@ function readCustomersFilters(query: Readonly<Record<string, unknown>>): Custome
     riskStatus: riskStatus as readonly ("at_risk" | "active" | "lapsed")[] | null,
     search: optionalRecordString(query, "search"),
     segment: segment as readonly CustomerSegment[] | null,
+  };
+}
+
+
+function trafficResultKey(operationId: string): string {
+  const keys: Readonly<Record<string, string>> = {
+    "traffic.channels.read": "channelsResult",
+    "traffic.drop.diagnose": "dropDiagnoseResult",
+    "traffic.event-quality.read": "eventQualityResult",
+    "traffic.funnel-definitions.read": "funnelDefinitionsResult",
+    "traffic.funnel-step.read": "funnelStepResult",
+    "traffic.funnel.read": "funnelResult",
+    "traffic.ga4-orders.read": "ga4OrdersResult",
+    "traffic.landing-pages.read": "landingPagesResult",
+    "traffic.overview.read": "overviewResult",
+    "traffic.read": "resultResult",
+  };
+  return keys[operationId] ?? "resultResult";
+}
+
+function readTrafficFilters(query: Readonly<Record<string, unknown>>): TrafficFilters {
+  return {
+    search: optionalRecordString(query, "search"),
+    source: optionalRecordStringList(query, "source"),
+    status: optionalRecordStringList(query, "status"),
   };
 }
 

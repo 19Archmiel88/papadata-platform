@@ -524,7 +524,8 @@ function mapConversionRow(
   }
   const entity = readEntity(row.canonical_payload);
   const attributedValueAmount = readEntityNumber(entity, "conversionValue");
-  if (attributedValueAmount === null) {
+  const conversions = readEntityNumber(entity, "conversions");
+  if (attributedValueAmount === null && conversions === null) {
     return null;
   }
   const conversionTime = effectiveIso(row.effective_time);
@@ -534,8 +535,9 @@ function mapConversionRow(
 
   return {
     attributedConversionId: canonicalId(providerId, externalId),
-    attributedValueAmount: numberToDecimalString(attributedValueAmount),
+    attributedValueAmount: numberToDecimalString(attributedValueAmount ?? 0),
     campaignId: readEntityString(entity, "campaignId") ?? externalId,
+    conversions: Math.max(0, conversions ?? 0),
     conversionTime: conversionTime as IsoDateTime,
     currency: readEntityString(entity, "currency") ?? "PLN",
     externalConversionId: externalId,
@@ -661,18 +663,20 @@ function pickCurrency(
   orders: readonly CanonicalOrderRecord[],
   adSpend: readonly CanonicalAdSpendRecord[],
 ): string {
+  // Commerce is the source of truth for the workspace reporting currency when
+  // order facts exist. Ad-account currencies must not outvote the store and
+  // silently relabel commerce revenue. Only fall back to ad spend when there
+  // are no order facts at all.
+  const source = orders.length > 0 ? orders : adSpend;
   const counts = new Map<string, number>();
-  for (const order of orders) {
-    counts.set(order.currency, (counts.get(order.currency) ?? 0) + 1);
-  }
-  for (const spend of adSpend) {
-    counts.set(spend.currency, (counts.get(spend.currency) ?? 0) + 1);
+  for (const record of source) {
+    counts.set(record.currency, (counts.get(record.currency) ?? 0) + 1);
   }
 
   let best: string | null = null;
   let bestCount = 0;
   for (const [currency, count] of counts) {
-    if (count > bestCount) {
+    if (count > bestCount || (count === bestCount && currency < (best ?? currency))) {
       best = currency;
       bestCount = count;
     }
@@ -732,6 +736,81 @@ export function readEntityNumber(entity: Record<string, unknown>, field: string)
 }
 
 export { readString as readRowString };
+
+const GA4_STABLE_EXTERNAL_ID = /^(?:traffic|events|conversions):[0-9a-f]{24}$/u;
+
+/**
+ * Deduplicates GA4 canonical rows by their business grain. Older adapter
+ * versions generated a random UUID for every report row, so repeated
+ * backfills could persist the same logical GA4 row more than once. New
+ * deterministic external IDs are authoritative when present; otherwise the
+ * newest legacy row for the same logical grain wins.
+ */
+export function dedupeGa4CanonicalRows(
+  rows: readonly Record<string, unknown>[],
+  stream: "traffic" | "events" | "conversions",
+): readonly Record<string, unknown>[] {
+  const scoped = rows.filter((row) => (
+    readString(row.provider_id) === "ga4" && readString(row.stream) === stream
+  ));
+  const stableCoarseKeys = new Set(
+    scoped
+      .filter((row) => GA4_STABLE_EXTERNAL_ID.test(readString(row.external_id) ?? ""))
+      .map((row) => ga4CoarseIdentity(row, stream)),
+  );
+  const selected = new Map<string, Record<string, unknown>>();
+
+  for (const row of scoped) {
+    const externalId = readString(row.external_id) ?? "";
+    const stable = GA4_STABLE_EXTERNAL_ID.test(externalId);
+    const coarseKey = ga4CoarseIdentity(row, stream);
+    if (!stable && stableCoarseKeys.has(coarseKey)) {
+      continue;
+    }
+
+    const identity = stable
+      ? `stable:${externalId}`
+      : `legacy:${coarseKey}`;
+    const current = selected.get(identity);
+    if (!current || canonicalRowUpdatedAt(row) >= canonicalRowUpdatedAt(current)) {
+      selected.set(identity, row);
+    }
+  }
+
+  return [...selected.values()];
+}
+
+function ga4CoarseIdentity(
+  row: Record<string, unknown>,
+  stream: "traffic" | "events" | "conversions",
+): string {
+  const entity = readEntity(row.canonical_payload);
+  const date = readEntityString(entity, "date") ?? "unknown-date";
+  if (stream === "traffic") {
+    const channel = readEntityString(entity, "channel")
+      ?? readEntityString(entity, "source")
+      ?? "unknown-channel";
+    return `${stream}:${date}:${channel}`;
+  }
+  if (stream === "events") {
+    return `${stream}:${date}:${readEntityString(entity, "eventName") ?? "unknown-event"}`;
+  }
+  return `${stream}:${date}:${readEntityString(entity, "source") ?? "unknown-source"}`;
+}
+
+function canonicalRowUpdatedAt(row: Record<string, unknown>): number {
+  for (const field of ["updated_at", "ingested_at", "effective_time"] as const) {
+    const value = row[field];
+    if (value instanceof Date && Number.isFinite(value.getTime())) {
+      return value.getTime();
+    }
+    if (typeof value === "string") {
+      const timestamp = Date.parse(value);
+      if (Number.isFinite(timestamp)) return timestamp;
+    }
+  }
+  return 0;
+}
 
 function isCommerceProviderId(value: string): value is CommerceProviderId {
   return (COMMERCE_PROVIDER_IDS as readonly string[]).includes(value);

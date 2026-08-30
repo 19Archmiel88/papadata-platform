@@ -54,6 +54,25 @@ export type OrdersListResult = {
   readonly summary: OrdersSummaryRecord;
 };
 
+export type OrdersTimelineEvent = {
+  readonly amount: RealOrdersRecord["amount"];
+  readonly occurredAt: IsoDateTime;
+  readonly orderId: string;
+  readonly source: string;
+  readonly status: OrdersRecordStatus;
+};
+
+export type OrdersSourceComparison = {
+  readonly amount: { readonly amount: number; readonly currency: string };
+  readonly orders: number;
+  readonly source: string;
+};
+
+export type OrdersReconciliationAvailability = {
+  readonly reason: string;
+  readonly supported: false;
+};
+
 const DEFAULT_WINDOW_DAYS = 30;
 const DEFAULT_PAGE_LIMIT = 50;
 const MAX_PAGE_LIMIT = 200;
@@ -289,4 +308,51 @@ export async function fetchOrderDetail(options: {
   );
 
   return records.find((record) => record.orderId === orderId) ?? null;
+}
+
+export function buildOrdersTimeline(
+  records: readonly RealOrdersRecord[],
+): readonly OrdersTimelineEvent[] {
+  return records.map((record) => ({
+    amount: record.amount,
+    occurredAt: record.orderedAt,
+    orderId: record.orderId,
+    source: record.source,
+    status: record.status,
+  }));
+}
+
+export function buildOrdersSourceComparison(
+  records: readonly RealOrdersRecord[],
+): readonly OrdersSourceComparison[] {
+  const buckets = new Map<string, { amount: number; currency: string; orders: number; source: string }>();
+  for (const record of records) {
+    const key = `${record.source}:${record.amount.currency}`;
+    const bucket = buckets.get(key) ?? {
+      amount: 0,
+      currency: record.amount.currency,
+      orders: 0,
+      source: record.source,
+    };
+    bucket.amount += record.amount.amount;
+    bucket.orders += 1;
+    buckets.set(key, bucket);
+  }
+  return [...buckets.values()]
+    .map((bucket) => ({
+      amount: { amount: Math.round(bucket.amount * 100) / 100, currency: bucket.currency },
+      orders: bucket.orders,
+      source: bucket.source,
+    }))
+    .sort((left, right) => right.orders - left.orders || left.source.localeCompare(right.source));
+}
+
+export function ordersReconciliationAvailability(): OrdersReconciliationAvailability {
+  // The canonical order read model does not expose reconciliation conflicts.
+  // Returning an explicit unsupported state is safer than claiming there are
+  // no conflicts merely because none are visible in the order list.
+  return {
+    reason: "Reconciliation conflicts are not exposed by the canonical orders read model.",
+    supported: false,
+  };
 }

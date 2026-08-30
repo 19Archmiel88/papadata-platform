@@ -557,6 +557,8 @@ export class IntegrationRepository {
              stream,
              external_id,
              canonical_payload,
+             ingested_at,
+             updated_at,
              coalesce(
                nullif(canonical_payload ->> 'occurredAt', '')::timestamptz,
                business_time,

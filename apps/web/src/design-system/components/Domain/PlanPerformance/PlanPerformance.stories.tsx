@@ -33,7 +33,7 @@ export const Podglad: Story = {
     context: workspaceContext,
     gapToTarget: -7.4,
     pace: 'behind',
-    planSeries: { id: 'plan', label: 'Plan', points: [{ x: '2026-08-14', y: 94 }, { x: '2026-08-15', y: 98 }], unit: '%' },
+    planSeries: { id: 'plan', label: 'Benchmark', points: [{ x: '2026-08-14', y: 94 }, { x: '2026-08-15', y: 98 }], unit: '%' },
   } satisfies PlanPerformanceProps,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

@@ -4,12 +4,18 @@ import {
   useState,
 } from 'react';
 
+import type {
+  DateRange,
+} from '../../../../../../../contracts/ui-contract-types';
 import {
   InlineNotice,
 } from '../../../../design-system/index';
 import {
   bffClient,
 } from '../../shared/api/bffClient';
+import {
+  useShellDateRange,
+} from '../../shell/app-shell';
 import {
   AnalyticsModuleWorkspace,
 } from './AnalyticsModuleWorkspace';
@@ -48,6 +54,7 @@ export function AnalyticsModuleScreen({
   group,
   path,
 }: AnalyticsModuleScreenProps) {
+  const { dateRange, dateRangeKey } = useShellDateRange();
   const definition = useMemo(
     () => resolveDefinition(group, path),
     [group, path],
@@ -77,7 +84,7 @@ export function AnalyticsModuleScreen({
       problem: null,
     });
 
-    loadDefinition(definition)
+    loadDefinition(definition, path, dateRange)
       .then((data) => {
         if (!active) return;
 
@@ -102,7 +109,7 @@ export function AnalyticsModuleScreen({
     return () => {
       active = false;
     };
-  }, [definition, group, refreshKey]);
+  }, [dateRange, dateRangeKey, definition, group, path, refreshKey]);
 
   if (!definition || definition.group !== group) {
     return (
@@ -146,37 +153,72 @@ function resolveDefinition(
 
 async function loadDefinition(
   definition: AnalyticsScreenDefinition,
+  path: string,
+  dateRange: DateRange,
 ): Promise<AnalyticsModuleData> {
+  const query = resourceQueryForDefinition(definition, path);
+  const options = { dateRange, query };
+
   switch (definition.group) {
     case 'campaigns': {
       const response = await bffClient.readDomainScreen<CampaignsApiData>(
         definition.apiPath,
+        options,
       );
       return createCampaignsRuntimeData(definition, response);
     }
     case 'orders': {
       const response = await bffClient.readDomainScreen<OrdersApiData>(
         definition.apiPath,
+        options,
       );
       return createOrdersRuntimeData(definition, response);
     }
     case 'products': {
       const response = await bffClient.readDomainScreen<ProductsApiData>(
         definition.apiPath,
+        options,
       );
       return createProductsRuntimeData(definition, response);
     }
     case 'customers': {
       const response = await bffClient.readDomainScreen<CustomersApiData>(
         definition.apiPath,
+        options,
       );
       return createCustomersRuntimeData(definition, response);
     }
     case 'traffic': {
       const response = await bffClient.readDomainScreen<TrafficApiData>(
         definition.apiPath,
+        options,
       );
       return createTrafficRuntimeData(definition, response);
     }
   }
+}
+
+function resourceQueryForDefinition(
+  definition: AnalyticsScreenDefinition,
+  path: string,
+): Readonly<Record<string, string>> | undefined {
+  if (!definition.requiresResourceId) return undefined;
+
+  const pathname = path.split('?')[0] ?? path;
+  const prefix = `${definition.routeBase}/`;
+  if (!pathname.startsWith(prefix)) {
+    throw new Error('Brakuje identyfikatora zasobu w adresie widoku szczegółowego.');
+  }
+  const rawResourceId = pathname.slice(prefix.length).split('/')[0];
+  if (!rawResourceId) {
+    throw new Error('Brakuje identyfikatora zasobu w adresie widoku szczegółowego.');
+  }
+  const resourceId = decodeURIComponent(rawResourceId);
+
+  if (definition.group === 'campaigns') return { campaignId: resourceId };
+  if (definition.group === 'orders') return { orderId: resourceId };
+  if (definition.group === 'products') return { productId: resourceId };
+  if (definition.group === 'customers') return { customerPseudonym: resourceId };
+  if (definition.group === 'traffic') return { stepId: resourceId };
+  return undefined;
 }

@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import type { IsoDateTime } from "@papadata/contracts";
 import {
   readEntity,
@@ -42,7 +43,7 @@ export type RealCampaignsRecord = {
   readonly revenue: { readonly amount: number; readonly currency: string };
   readonly roas: number | null;
   readonly spend: { readonly amount: number; readonly currency: string };
-  readonly status: null;
+  readonly status: "active" | "draft" | "ended" | "paused" | null;
 };
 
 export type CampaignsAttributionRow = {
@@ -94,6 +95,7 @@ type CampaignBucket = {
   impressions: number;
   name: string | null;
   spend: number;
+  status: "active" | "draft" | "ended" | "paused" | null;
 };
 
 /**
@@ -147,7 +149,7 @@ function toRecord(bucket: CampaignBucket): RealCampaignsRecord {
     revenue: { amount: revenue, currency: bucket.currency },
     roas,
     spend: { amount: spend, currency: bucket.currency },
-    status: null,
+    status: bucket.status,
   };
 }
 
@@ -171,7 +173,7 @@ async function fetchCampaignAggregates(
   const buckets = new Map<string, CampaignBucket>();
 
   function bucketFor(providerId: string, campaignId: string, currency: string): CampaignBucket {
-    const key = `${providerId}:${campaignId}`;
+    const key = `${providerId}:${campaignId}:${currency}`;
     let bucket = buckets.get(key);
     if (!bucket) {
       bucket = {
@@ -184,6 +186,7 @@ async function fetchCampaignAggregates(
         impressions: 0,
         name: null,
         spend: 0,
+        status: null,
       };
       buckets.set(key, bucket);
     }
@@ -216,6 +219,8 @@ async function fetchCampaignAggregates(
       if (name && !bucket.name) {
         bucket.name = name;
       }
+      const status = normalizeCampaignStatus(readEntityString(entity, "campaignStatus"));
+      if (status) bucket.status = status;
     } else if (stream === "attributed_conversions") {
       const conversionValue = readEntityNumber(entity, "conversionValue");
       if (conversionValue === null) {
@@ -223,13 +228,153 @@ async function fetchCampaignAggregates(
       }
       const bucket = bucketFor(providerId, campaignId, currency);
       bucket.conversionValue += conversionValue;
-      bucket.conversions += Math.max(0, Math.round(readEntityNumber(entity, "conversions") ?? 0));
+      bucket.conversions += Math.max(0, readEntityNumber(entity, "conversions") ?? 0);
     }
   }
 
   return [...buckets.values()]
     .map(toRecord)
     .sort((a, b) => b.spend.amount - a.spend.amount);
+}
+
+export type CampaignDiagnosticFinding = {
+  readonly code: string;
+  readonly findingId: string;
+  readonly message: string;
+  readonly severity: "error" | "info" | "warning";
+  readonly sourceRef: string | null;
+};
+
+export type CampaignRecommendation = {
+  readonly confidence: number;
+  readonly impact: "high" | "low" | "medium";
+  readonly rationale: string;
+  readonly recommendationId: string;
+  readonly title: string;
+};
+
+export function buildCampaignDiagnostics(
+  records: readonly RealCampaignsRecord[],
+): readonly CampaignDiagnosticFinding[] {
+  const findings: CampaignDiagnosticFinding[] = [];
+  for (const record of records) {
+    if (record.spend.amount > 0 && record.conversions === 0) {
+      findings.push(campaignFinding(
+        record,
+        "PAID_SPEND_WITHOUT_CONVERSIONS",
+        "error",
+        `Kampania ${record.name} generuje koszt bez przypisanych konwersji w wybranym okresie.`,
+      ));
+    } else if (record.roas !== null && record.roas < 1) {
+      findings.push(campaignFinding(
+        record,
+        "PAID_ROAS_BELOW_ONE",
+        "warning",
+        `ROAS kampanii ${record.name} wynosi ${record.roas.toFixed(2)} i jest poniżej 1,00.`,
+      ));
+    }
+    if (record.impressions >= 1_000 && record.ctr !== null && record.ctr < 0.005) {
+      findings.push(campaignFinding(
+        record,
+        "PAID_LOW_CTR",
+        "warning",
+        `CTR kampanii ${record.name} wynosi ${(record.ctr * 100).toFixed(2)}% przy co najmniej 1000 wyświetleniach.`,
+      ));
+    }
+  }
+  return findings;
+}
+
+export function buildCampaignRecommendations(
+  records: readonly RealCampaignsRecord[],
+): readonly CampaignRecommendation[] {
+  const recommendations: CampaignRecommendation[] = [];
+  for (const record of records) {
+    const confidence = campaignEvidenceCompleteness(record);
+    if (record.spend.amount > 0 && record.conversions === 0) {
+      recommendations.push({
+        confidence,
+        impact: "high",
+        rationale: `Wydano ${record.spend.amount.toFixed(2)} ${record.spend.currency}, a provider nie raportuje konwersji. Pewność oznacza kompletność dostępnych pól kampanii, nie prognozę AI.`,
+        recommendationId: deterministicUuid(`campaign:no-conversions:${record.campaignId}`),
+        title: `Zweryfikuj pomiar konwersji: ${record.name}`,
+      });
+      continue;
+    }
+    if (record.roas !== null && record.roas < 1) {
+      recommendations.push({
+        confidence,
+        impact: "high",
+        rationale: `ROAS ${record.roas.toFixed(2)} jest poniżej 1,00 na danych raportowanych przez platformę. To reguła analityczna, nie wynik modelu AI.`,
+        recommendationId: deterministicUuid(`campaign:roas:${record.campaignId}`),
+        title: `Nie skaluj budżetu kampanii ${record.name} bez dodatkowej walidacji`,
+      });
+    } else if (record.roas !== null && record.roas >= 2 && record.conversions >= 3) {
+      recommendations.push({
+        confidence,
+        impact: "medium",
+        rationale: `ROAS ${record.roas.toFixed(2)} i ${record.conversions} konwersji uzasadniają test kontrolowany; brak modelu inkrementalności nie pozwala rekomendować konkretnej zmiany budżetu.`,
+        recommendationId: deterministicUuid(`campaign:scale-test:${record.campaignId}`),
+        title: `Rozważ kontrolowany test skalowania: ${record.name}`,
+      });
+    }
+    if (record.impressions >= 1_000 && record.ctr !== null && record.ctr < 0.005) {
+      recommendations.push({
+        confidence,
+        impact: "medium",
+        rationale: `CTR ${(record.ctr * 100).toFixed(2)}% przy ${record.impressions} wyświetleniach wskazuje na niski udział kliknięć; przyczyna wymaga analizy kreacji i targetowania.`,
+        recommendationId: deterministicUuid(`campaign:ctr:${record.campaignId}`),
+        title: `Przetestuj kreację lub targetowanie: ${record.name}`,
+      });
+    }
+  }
+  return recommendations;
+}
+
+function normalizeCampaignStatus(value: string | null): RealCampaignsRecord["status"] {
+  const normalized = value?.trim().toUpperCase();
+  if (!normalized) return null;
+  if (normalized === "ENABLED" || normalized === "ACTIVE") return "active";
+  if (normalized === "PAUSED") return "paused";
+  if (normalized === "REMOVED" || normalized === "ARCHIVED" || normalized === "DELETED" || normalized === "ENDED") return "ended";
+  if (normalized === "DRAFT") return "draft";
+  return null;
+}
+
+function campaignFinding(
+  record: RealCampaignsRecord,
+  code: string,
+  severity: CampaignDiagnosticFinding["severity"],
+  message: string,
+): CampaignDiagnosticFinding {
+  return {
+    code,
+    findingId: deterministicUuid(`${code}:${record.campaignId}`),
+    message,
+    severity,
+    sourceRef: record.campaignId,
+  };
+}
+
+function campaignEvidenceCompleteness(record: RealCampaignsRecord): number {
+  const checks = [
+    record.spend.amount >= 0,
+    record.revenue.amount >= 0,
+    record.impressions >= 0,
+    record.clicks >= 0,
+    record.conversions >= 0,
+    record.ctr !== null,
+    record.roas !== null,
+  ];
+  return Math.round((checks.filter(Boolean).length / checks.length) * 10_000) / 10_000;
+}
+
+function deterministicUuid(value: string): string {
+  const hex = createHash("sha256").update(value).digest("hex").slice(0, 32).split("");
+  hex[12] = "4";
+  hex[16] = ["8", "9", "a", "b"][Number.parseInt(hex[16] ?? "0", 16) % 4]!;
+  const joined = hex.join("");
+  return `${joined.slice(0, 8)}-${joined.slice(8, 12)}-${joined.slice(12, 16)}-${joined.slice(16, 20)}-${joined.slice(20)}`;
 }
 
 function matchesFilters(record: RealCampaignsRecord, filters: CampaignsFilters | null | undefined): boolean {
@@ -383,25 +528,32 @@ export async function fetchCampaignsAttribution(options: {
   );
   const filtered = allRecords.filter((record) => matchesFilters(record, filters));
 
-  const totalRevenue = filtered.reduce((sum, record) => sum + record.revenue.amount, 0);
-  const byChannel = new Map<string, { conversions: number; currency: string; revenue: number }>();
+  const totalsByCurrency = new Map<string, number>();
+  const byChannel = new Map<string, { channel: string; conversions: number; currency: string; revenue: number }>();
   for (const record of filtered) {
-    const bucket = byChannel.get(record.channel) ?? {
+    const currency = record.revenue.currency;
+    totalsByCurrency.set(currency, (totalsByCurrency.get(currency) ?? 0) + record.revenue.amount);
+    const key = `${record.channel}:${currency}`;
+    const bucket = byChannel.get(key) ?? {
+      channel: record.channel,
       conversions: 0,
-      currency: record.revenue.currency,
+      currency,
       revenue: 0,
     };
     bucket.revenue += record.revenue.amount;
     bucket.conversions += record.conversions;
-    byChannel.set(record.channel, bucket);
+    byChannel.set(key, bucket);
   }
-  const attribution: CampaignsAttributionRow[] = [...byChannel.entries()].map(([channel, bucket]) => ({
-    contribution: totalRevenue > 0 ? Math.round((bucket.revenue / totalRevenue) * 1000) / 1000 : 0,
-    model: "provider_reported",
-    orders: bucket.conversions,
-    revenue: { amount: roundMoney(bucket.revenue), currency: bucket.currency },
-    source: channel,
-  }));
+  const attribution: CampaignsAttributionRow[] = [...byChannel.values()].map((bucket) => {
+    const totalRevenue = totalsByCurrency.get(bucket.currency) ?? 0;
+    return {
+      contribution: totalRevenue > 0 ? Math.round((bucket.revenue / totalRevenue) * 1000) / 1000 : 0,
+      model: "provider_reported",
+      orders: bucket.conversions,
+      revenue: { amount: roundMoney(bucket.revenue), currency: bucket.currency },
+      source: bucket.channel,
+    };
+  });
 
   const limit = clampLimit(page?.limit);
   const offset = decodeCursor(page?.cursor);

@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHash } from "node:crypto";
 import type {
   IntegrationProviderAdapter,
   ProviderFetchRequest,
@@ -62,10 +62,9 @@ export class Ga4Adapter implements IntegrationProviderAdapter {
       const metrics = headerNames(report, "metricHeaders");
       for (const row of rows) {
         const payload = normalizeGa4Row(row, dimensions, metrics);
-        const date = readStringField(payload, "date") ?? to;
         records.push({
           stream,
-          externalId: `${stream}:${date}:${randomUUID()}`,
+          externalId: deterministicExternalId(stream, dimensions, payload),
           observedAt,
           payload,
         });
@@ -106,13 +105,48 @@ export class Ga4Adapter implements IntegrationProviderAdapter {
 
 function reportBody(stream: string, from: string, to: string): object {
   const base = { dateRanges: [{ startDate: from, endDate: to }], limit: "100000" };
+
   if (stream === "events") {
-    return { ...base, dimensions: [{ name: "date" }, { name: "eventName" }], metrics: [{ name: "eventCount" }, { name: "totalUsers" }] };
+    return {
+      ...base,
+      dimensions: [{ name: "date" }, { name: "eventName" }],
+      metrics: [{ name: "eventCount" }, { name: "totalUsers" }],
+    };
   }
+
   if (stream === "conversions") {
-    return { ...base, dimensions: [{ name: "date" }, { name: "sessionSourceMedium" }], metrics: [{ name: "keyEvents" }, { name: "purchaseRevenue" }, { name: "transactions" }] };
+    return {
+      ...base,
+      dimensions: [
+        { name: "date" },
+        { name: "sessionDefaultChannelGroup" },
+        { name: "sessionSourceMedium" },
+      ],
+      metrics: [
+        { name: "keyEvents" },
+        { name: "purchaseRevenue" },
+        { name: "transactions" },
+      ],
+    };
   }
-  return { ...base, dimensions: [{ name: "date" }, { name: "sessionDefaultChannelGroup" }], metrics: [{ name: "sessions" }, { name: "totalUsers" }, { name: "newUsers" }, { name: "engagedSessions" }] };
+
+  return {
+    ...base,
+    dimensions: [
+      { name: "date" },
+      { name: "sessionDefaultChannelGroup" },
+      { name: "landingPagePlusQueryString" },
+    ],
+    metrics: [
+      { name: "sessions" },
+      { name: "totalUsers" },
+      { name: "newUsers" },
+      { name: "engagedSessions" },
+      { name: "keyEvents" },
+      { name: "purchaseRevenue" },
+      { name: "transactions" },
+    ],
+  };
 }
 
 function headerNames(report: Record<string, unknown>, key: string): readonly string[] {
@@ -133,6 +167,37 @@ function normalizeGa4Row(
     result[metricNames[index] ?? `metric_${index}`] = readStringField(value, "value");
   });
   return result;
+}
+
+function deterministicExternalId(
+  stream: string,
+  dimensions: readonly string[],
+  payload: Readonly<Record<string, unknown>>,
+): string {
+  // Identity is defined by report dimensions, never by metrics. Late GA4
+  // updates can change sessions/revenue for the same dimensional row; using
+  // metric values in the id would insert a second canonical row instead of
+  // updating the existing source record.
+  const identity = Object.fromEntries(
+    dimensions.map((dimension) => [dimension, payload[dimension] ?? null]),
+  );
+  const fingerprint = createHash("sha256")
+    .update(stableJson(identity))
+    .digest("hex")
+    .slice(0, 24);
+  return `${stream}:${fingerprint}`;
+}
+
+function stableJson(value: unknown): string {
+  if (Array.isArray(value)) {
+    return `[${value.map(stableJson).join(",")}]`;
+  }
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .sort(([left], [right]) => left.localeCompare(right));
+    return `{${entries.map(([key, item]) => `${JSON.stringify(key)}:${stableJson(item)}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
 }
 
 function dateOnly(value: string | null): string | null {

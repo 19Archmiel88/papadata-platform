@@ -139,6 +139,7 @@ export type CommittedActionRow = {
 };
 
 export type CommandCenterApiData = {
+  readonly benchmarkSemantics?: 'previous-period-run-rate';
   readonly committedActions?: readonly CommittedActionRow[];
   readonly customerSegments?: readonly CustomerSegmentRow[];
   readonly driverRelationships?: DriverRelationships;
@@ -184,6 +185,7 @@ export type BusinessScreenData =
   | {
       readonly driverRelationships: DriverRelationships | null;
       readonly evidence: readonly EvidenceRef[];
+      readonly benchmarkSemantics: 'previous-period-run-rate' | null;
       readonly committedActions: readonly CommittedActionRow[];
       readonly customerSegments: readonly CustomerSegmentRow[];
       readonly forecastMethod: 'linear-run-rate' | null;
@@ -285,12 +287,12 @@ export const businessScreenDefinitions: readonly BusinessScreenDefinition[] = [
   },
   {
     apiPath: '/api/v1/command-center/plan-vs-wynik',
-    displayTitle: 'Plan vs wynik',
+    displayTitle: 'Benchmark vs wynik',
     group: 'command-center',
     id: '30.04',
     operationId: 'command-center.plan-performance.read',
     route: '/app/command-center/plan-vs-wynik',
-    summary: 'Porównuje wykonanie planu, tempo i prognozę końca okresu.',
+    summary: 'Porównuje wynik z tempem poprzedniego okresu i liniową prognozą końca zakresu; nie udaje zatwierdzonego planu biznesowego.',
     variant: 'plan',
   },
   {
@@ -382,16 +384,6 @@ export const businessScreenDefinitions: readonly BusinessScreenDefinition[] = [
     route: '/app/command-center/waterfall',
     summary: 'Rozbija zmianę wyniku na wkłady dodatnie, ujemne i sumę.',
     variant: 'waterfall',
-  },
-  {
-    apiPath: '/api/v1/command-center/warianty',
-    displayTitle: 'Analiza wariantów',
-    group: 'command-center',
-    id: '30.14',
-    operationId: 'command-center.variants.read',
-    route: '/app/command-center/warianty',
-    summary: 'Porównuje scenariusze wyniku, ryzyka i gotowości danych dla wybranego zakresu.',
-    variant: 'command-variants',
   },
   {
     apiPath: '/api/v1/campaigns/przeglad',
@@ -1389,6 +1381,7 @@ export function createStorybookBusinessData(
     ?? commandCenterRecords;
 
   return {
+    benchmarkSemantics: null,
     driverRelationships: null,
     evidence,
     committedActions: [],
@@ -1449,6 +1442,7 @@ export function mergeCommandCenterOnePageApiData(
 
   return {
     ...kpiData,
+    benchmarkSemantics: planData.benchmarkSemantics,
     committedActions: recommendationsData.committedActions ?? kpiData.committedActions,
     customerSegments: customersData.customerSegments ?? kpiData.customerSegments,
     driverRelationships: driversData.driverRelationships,
@@ -1494,6 +1488,7 @@ export function createCommandCenterBusinessData(
   data: CommandCenterApiData,
 ): BusinessScreenData {
   return {
+    benchmarkSemantics: data.benchmarkSemantics ?? null,
     committedActions: data.committedActions ?? [],
     customerSegments: data.customerSegments ?? [],
     driverRelationships: data.driverRelationships ?? null,

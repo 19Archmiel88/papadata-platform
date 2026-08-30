@@ -10,6 +10,7 @@ import {
 } from "../../metrics/metricEngineCore.ts";
 import {
   createRealMetricEngineInput,
+  dedupeGa4CanonicalRows,
   readEntity,
   readEntityNumber,
   readEntityString,
@@ -31,7 +32,6 @@ const DEFAULT_TIMEZONE = "Europe/Warsaw";
 const KPI_WINDOW_DAYS = 30;
 const SPARKLINE_DAYS = 10;
 const MIN_CORRELATION_SAMPLE_SIZE = 14;
-const PLAN_GROWTH_FACTOR = 1.08;
 const PLAN_ACTUAL_DAYS = 21;
 const PLAN_FORECAST_DAYS = 9;
 const MAX_WINDOW_DAYS = 366;
@@ -365,7 +365,7 @@ export async function buildCommandCenterKpiOverrides(
 }> {
   const { periodEnd, periodStart, timezone } = resolveMetricWindow(generatedAt, dateRange, KPI_WINDOW_DAYS);
   const planWindow = resolvePlanWindow(generatedAt, dateRange);
-  const [input, currentTrafficRows, previousTrafficRows] = await Promise.all([
+  const [input, currentTrafficRows, previousTrafficRows, currentEventRows, previousEventRows] = await Promise.all([
     createRealMetricEngineInput({
       dataSource,
       generatedAt: generatedAt as IsoDateTime,
@@ -385,14 +385,24 @@ export async function buildCommandCenterKpiOverrides(
       businessTimeTo: planWindow.priorPeriodEnd,
       streams: ["traffic"],
     }),
+    dataSource.listCanonicalRecords(tenantId, workspaceId, {
+      businessTimeFrom: periodStart,
+      businessTimeTo: periodEnd,
+      streams: ["events"],
+    }),
+    dataSource.listCanonicalRecords(tenantId, workspaceId, {
+      businessTimeFrom: planWindow.priorPeriodStart,
+      businessTimeTo: planWindow.priorPeriodEnd,
+      streams: ["events"],
+    }),
   ]);
   const { aggregate, daily, lastSuccessfulSyncAt, providers, readiness } = computeCommandCenterMetricSeries(input);
-  const currentFunnel = aggregateFunnelSteps(currentTrafficRows);
-  const previousFunnel = aggregateFunnelSteps(previousTrafficRows);
+  const currentFunnel = aggregateFunnelSteps(dedupeGa4CanonicalRows(currentEventRows, "events"));
+  const previousFunnel = aggregateFunnelSteps(dedupeGa4CanonicalRows(previousEventRows, "events"));
   const currentCartConversion = cartConversionRate(currentFunnel);
   const previousCartConversion = cartConversionRate(previousFunnel);
-  const currentGa4Freshness = averageTrafficCompleteness(currentTrafficRows);
-  const previousGa4Freshness = averageTrafficCompleteness(previousTrafficRows);
+  const currentGa4Freshness = averageTrafficCompleteness(dedupeGa4CanonicalRows(currentTrafficRows, "traffic"));
+  const previousGa4Freshness = averageTrafficCompleteness(dedupeGa4CanonicalRows(previousTrafficRows, "traffic"));
   const attributedConversions = numberOrNull(aggregate.platform_attributed_conversions);
   const adSpendValue = numberOrNull(aggregate.ad_spend);
   const grossMargin = grossMarginFromKnownProductCosts(input);
@@ -463,7 +473,7 @@ export async function buildCommandCenterKpiOverrides(
     ),
     ga4Freshness: commandCenterRecord(
       "11111111-1111-4111-8111-111111111104",
-      "Świeżość eventów GA4",
+      "Kompletność danych GA4",
       currentGa4Freshness ?? 0,
       "percent",
       relativeDelta(currentGa4Freshness, previousGa4Freshness),
@@ -528,10 +538,16 @@ function relativeDelta(current: number | null, previous: number | null): number 
 
 function grossMarginFromKnownProductCosts(input: MetricEngineInput): number | null {
   const qualifyingOrders = new Set(
-    input.canonicalOrders.filter(isRevenueQualifyingOrder).map((order) => order.canonicalOrderId),
+    input.canonicalOrders
+      .filter((order) => order.currency === input.currency && isRevenueQualifyingOrder(order))
+      .map((order) => order.canonicalOrderId),
   );
   const productById = new Map(input.canonicalProducts.map((product) => [product.canonicalProductId, product] as const));
-  const costBySku = new Map(input.productCosts.map((cost) => [cost.sku, Number(cost.unitCostAmount)] as const));
+  const costBySku = new Map(
+    input.productCosts
+      .filter((cost) => cost.currency === input.currency)
+      .map((cost) => [cost.sku, Number(cost.unitCostAmount)] as const),
+  );
   let revenue = 0;
   let cost = 0;
 
@@ -573,8 +589,8 @@ function dailySparkline(
  * canonical metric engine over the selected date range's elapsed days, a
  * benchmark line spread evenly across the whole range (no real
  * budgeting/planning subsystem exists yet, so this is deliberately a
- * transparent run-rate benchmark — previous daily average x
- * PLAN_GROWTH_FACTOR — never a fabricated, approved business target), and a
+ * transparent previous-period run-rate benchmark — previous daily average,
+ * never a fabricated, approved business target — and a
  * deterministic linear run-rate forecast for the range's remaining days. No
  * ML, no curve-fitting: forecastMethod documents exactly what was computed.
  * The frontend must present `planTotal`/`trajectory.plan` as a benchmark or
@@ -592,6 +608,7 @@ export async function buildCommandCenterPlanPerformanceData(
   readonly planTotal: number;
   readonly forecastTotal: number;
   readonly forecastMethod: "linear-run-rate";
+  readonly benchmarkSemantics: "previous-period-run-rate";
 }> {
   const {
     actualToDateOnly,
@@ -654,7 +671,7 @@ export async function buildCommandCenterPlanPerformanceData(
     && current.daily.length > 0
     ? previousTotalValue / current.daily.length
     : 0;
-  const dailyBenchmark = previousAverage > 0 ? previousAverage * PLAN_GROWTH_FACTOR : 0;
+  const dailyBenchmark = previousAverage > 0 ? previousAverage : 0;
   const totalDays = current.daily.length + forecastDays;
   const planTotal = round2(dailyBenchmark * totalDays);
   const forecastTotal = round2(actualTotal + dailyAverage * forecastDays);
@@ -675,6 +692,7 @@ export async function buildCommandCenterPlanPerformanceData(
   ];
 
   return {
+    benchmarkSemantics: "previous-period-run-rate" as const,
     forecastMethod: "linear-run-rate" as const,
     forecastTotal,
     planTotal,
@@ -915,35 +933,42 @@ export type CommittedActionRow = {
   readonly title: string;
 };
 
+const COMMAND_CENTER_FUNNEL_STAGES = [
+  { eventName: "session_start", label: "Sesja → widok produktu", stepId: "session_start" },
+  { eventName: "view_item", label: "Widok produktu → dodanie do koszyka", stepId: "view_item" },
+  { eventName: "add_to_cart", label: "Koszyk → rozpoczęcie checkoutu", stepId: "add_to_cart" },
+  { eventName: "begin_checkout", label: "Checkout → zakup", stepId: "begin_checkout" },
+  { eventName: "purchase", label: "Zakup", stepId: "purchase" },
+] as const;
+
 function aggregateFunnelSteps(rows: readonly Record<string, unknown>[]): readonly FunnelStepAggregate[] {
-  const byStep = new Map<string, FunnelStepAggregate>();
+  const usersByEvent = new Map<string, number>();
 
   for (const row of rows) {
-    if (readRowString(row.provider_id) !== "ga4") {
+    if (readRowString(row.provider_id) !== "ga4" || readRowString(row.stream) !== "events") {
       continue;
     }
 
     const entity = readEntity(row.canonical_payload);
-    const stepId = readEntityString(entity, "funnelStepId");
-    const label = readEntityString(entity, "funnelStepLabel");
-    const entrants = readEntityNumber(entity, "entrants");
-    const completions = readEntityNumber(entity, "completions");
-
-    if (!stepId || !label || entrants === null || completions === null) {
+    const eventName = readEntityString(entity, "eventName");
+    if (!eventName) {
       continue;
     }
 
-    const current = byStep.get(stepId);
-    byStep.set(stepId, {
-      completions: (current?.completions ?? 0) + completions,
-      entrants: (current?.entrants ?? 0) + entrants,
-      label,
-      order: readEntityNumber(entity, "stageOrder") ?? current?.order ?? 999,
-      stepId,
-    });
+    const users = readEntityNumber(entity, "users") ?? readEntityNumber(entity, "eventCount") ?? 0;
+    usersByEvent.set(eventName, (usersByEvent.get(eventName) ?? 0) + Math.max(0, users));
   }
 
-  return [...byStep.values()].sort((left, right) => left.order - right.order);
+  return COMMAND_CENTER_FUNNEL_STAGES.slice(0, -1).map((stage, index) => {
+    const next = COMMAND_CENTER_FUNNEL_STAGES[index + 1]!;
+    return {
+      completions: usersByEvent.get(next.eventName) ?? 0,
+      entrants: usersByEvent.get(stage.eventName) ?? 0,
+      label: stage.label,
+      order: index,
+      stepId: stage.stepId,
+    };
+  });
 }
 
 function cartConversionRate(steps: readonly FunnelStepAggregate[]): number | null {
@@ -974,15 +999,32 @@ function cartConversionRate(steps: readonly FunnelStepAggregate[]): number | nul
 
 function averageTrafficCompleteness(rows: readonly Record<string, unknown>[]): number | null {
   const values = rows.flatMap((row) => {
-    if (readRowString(row.provider_id) !== "ga4") {
+    if (readRowString(row.provider_id) !== "ga4" || readRowString(row.stream) !== "traffic") {
       return [];
     }
 
-    const value = readEntityNumber(readEntity(row.canonical_payload), "eventCompleteness");
-    return value === null ? [] : [value];
+    const payload = row.canonical_payload;
+    if (!isRecord(payload) || !isRecord(payload.quality)) {
+      return [];
+    }
+    const status = payload.quality.status;
+    if (status === "valid") {
+      return [1];
+    }
+    if (status !== "partial") {
+      return [];
+    }
+    const missingCount = Array.isArray(payload.quality.missingFields)
+      ? payload.quality.missingFields.length
+      : 1;
+    return [Math.max(0, 1 - missingCount * 0.25)];
   });
 
   return values.length > 0 ? round4(average(values)) : null;
+}
+
+function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 /**
@@ -1010,12 +1052,9 @@ export async function buildCommandCenterTrafficSourcesData(
   });
 
   const byChannel = new Map<string, { sessions: number; users: number }>();
-  for (const row of rows) {
-    if (readRowString(row.provider_id) !== "ga4") {
-      continue;
-    }
+  for (const row of dedupeGa4CanonicalRows(rows, "traffic")) {
     const entity = readEntity(row.canonical_payload);
-    const source = readEntityString(entity, "source");
+    const source = readEntityString(entity, "channel") ?? readEntityString(entity, "source");
     if (!source) {
       continue;
     }
@@ -1045,11 +1084,11 @@ export async function buildCommandCenterFunnelData(
   const rows = await dataSource.listCanonicalRecords(tenantId, workspaceId, {
     businessTimeFrom: periodStart,
     businessTimeTo: periodEnd,
-    streams: ["traffic"],
+    streams: ["events"],
   });
 
   return {
-    steps: aggregateFunnelSteps(rows).map((step) => ({
+    steps: aggregateFunnelSteps(dedupeGa4CanonicalRows(rows, "events")).map((step) => ({
       completions: Math.round(step.completions),
       conversionRate: step.entrants > 0 ? round4(step.completions / step.entrants) : 0,
       entrants: Math.round(step.entrants),
@@ -1086,7 +1125,9 @@ export async function buildCommandCenterCustomerSegmentsData(
       streams: ["orders"],
     }),
   ]);
-  const qualifyingOrders = allTimeInput.canonicalOrders.filter(isRevenueQualifyingOrder);
+  const qualifyingOrders = allTimeInput.canonicalOrders.filter(
+    (order) => order.currency === allTimeInput.currency && isRevenueQualifyingOrder(order),
+  );
   const classified = classifyCustomerOrders(qualifyingOrders, rows);
   const entityByOrderId = new Map<string, Record<string, unknown>>();
   for (const row of rows) {
@@ -1188,7 +1229,9 @@ type ProductLineTotals = { revenueCents: bigint; quantity: number };
  */
 function aggregateRevenueQualifyingProductLines(input: MetricEngineInput): Map<string, ProductLineTotals> {
   const revenueQualifyingOrderIds = new Set(
-    input.canonicalOrders.filter(isRevenueQualifyingOrder).map((order) => order.canonicalOrderId),
+    input.canonicalOrders
+      .filter((order) => order.currency === input.currency && isRevenueQualifyingOrder(order))
+      .map((order) => order.canonicalOrderId),
   );
   const totals = new Map<string, ProductLineTotals>();
 
@@ -1270,7 +1313,7 @@ export async function buildCommandCenterProductSalesData(
 }
 
 export function buildCommandCenterRecommendationsData(
-  records: readonly CommandCenterRuntimeRecord[],
+  _records: readonly CommandCenterRuntimeRecord[],
 ): {
   readonly recommendations: readonly {
     readonly confidence: number;
@@ -1280,103 +1323,19 @@ export function buildCommandCenterRecommendationsData(
     readonly title: string;
   }[];
 } {
-  const byLabel = new Map(records.map((record) => [normalizeLabel(record.label), record] as const));
-  const recommendations: {
-    readonly confidence: number;
-    readonly impact: "high" | "low" | "medium";
-    readonly rationale: string;
-    readonly recommendationId: string;
-    readonly title: string;
-  }[] = [];
-  const conversion = byLabel.get(normalizeLabel("Konwersja koszyka"));
-  const cpa = byLabel.get(normalizeLabel("CPA"));
-  const margin = byLabel.get(normalizeLabel("Marża brutto"));
-
-  if (conversion && (conversion.readiness !== "ready" || conversion.value < (conversion.target ?? 1))) {
-    recommendations.push({
-      confidence: 0.86,
-      impact: "high",
-      rationale: "Konwersja koszyka jest poniżej celu albo pogorszyła się względem poprzedniego okresu. Największy wpływ ma poprawa kroku koszyk -> checkout.",
-      recommendationId: "33333333-3333-4333-8333-333333333401",
-      title: "Konwersja koszyka: usuń tarcie w koszyku i checkout",
-    });
-  }
-
-  if (cpa && cpa.readiness === "ready") {
-    recommendations.push({
-      confidence: 0.81,
-      impact: cpa.value > (cpa.target ?? Number.POSITIVE_INFINITY) ? "high" : "medium",
-      rationale: "CPA i koszt reklamy trzeba kontrolować razem z przychodem przypisanym reklamom, aby nie skalować kampanii o słabej odpowiedzi.",
-      recommendationId: "33333333-3333-4333-8333-333333333402",
-      title: "CPA: przesuń budżet do kampanii o lepszej odpowiedzi",
-    });
-  }
-
-  if (margin && margin.readiness === "ready") {
-    recommendations.push({
-      confidence: 0.78,
-      impact: "medium",
-      rationale: "Marża brutto pozwala wskazać produkty, które poprawiają wynik bez zwiększania presji reklamowej.",
-      recommendationId: "33333333-3333-4333-8333-333333333403",
-      title: "Marża brutto: zwiększ ekspozycję produktów wysokomarżowych",
-    });
-  }
-
-  return { recommendations };
+  // Command Center does not yet have a persisted recommendation/AI inference
+  // source. Returning an empty collection is deliberate: deterministic rules
+  // must not be presented as AI output with fabricated confidence scores.
+  return { recommendations: [] };
 }
 
 export function buildCommandCenterCommittedActionsData(
-  records: readonly CommandCenterRuntimeRecord[],
+  _records: readonly CommandCenterRuntimeRecord[],
 ): { readonly committedActions: readonly CommittedActionRow[] } {
-  const conversion = records.find((record) => normalizeLabel(record.label).includes("konwersja"));
-  const cpa = records.find((record) => normalizeLabel(record.label) === "cpa");
-  const revenue = records.find((record) => normalizeLabel(record.label).includes("przychod"));
-
-  return {
-    committedActions: [
-      {
-        dueLabel: "dzisiaj 14:00",
-        expectedImpactLabel: conversion
-          ? `+${Math.max(1, Math.round(((conversion.target ?? conversion.value) - conversion.value) * 1000) / 10)} pp konwersji`
-          : "+0,4 pp konwersji",
-        goal: "Zmniejszyć odpływ między koszykiem i checkoutem w bieżącym zakresie.",
-        id: "action-checkout-friction",
-        measurement: null,
-        owner: "Growth / UX checkout",
-        progress: 0.35,
-        registryHref: "/app/decisions/rejestr-decyzji",
-        status: "executing",
-        title: "Audyt koszyka i checkout mobile",
-      },
-      {
-        dueLabel: "jutro 10:00",
-        expectedImpactLabel: cpa ? `CPA poniżej ${round2(cpa.target ?? cpa.value).toFixed(2)} PLN` : "CPA poniżej celu",
-        goal: "Przenieść budżet z kampanii o słabej odpowiedzi do wysokiej intencji.",
-        id: "action-paid-budget-shift",
-        measurement: null,
-        owner: "Performance marketing",
-        progress: 0.55,
-        registryHref: "/app/decisions/rejestr-decyzji",
-        status: "approved",
-        title: "Przegląd budżetu paid search i paid social",
-      },
-      {
-        dueLabel: "w tym tygodniu",
-        expectedImpactLabel: revenue ? `Utrzymać tempo ${round2(revenue.value).toFixed(0)} PLN` : "Utrzymać tempo przychodu",
-        goal: "Sprawdzić, czy top produkty mają dostępność i ekspozycję zgodną z popytem.",
-        id: "action-product-availability",
-        measurement: {
-          baselineLabel: "8 produktów z pełną dostępnością",
-          resultLabel: "10 produktów z pełną dostępnością",
-        },
-        owner: "Katalog produktów",
-        progress: 1,
-        registryHref: "/app/decisions/rejestr-decyzji",
-        status: "measured",
-        title: "Uzupełnienie dostępności bestsellerów",
-      },
-    ],
-  };
+  // Actions belong to the decisions/action registry. Until this endpoint is
+  // backed by that persisted source, do not manufacture owners, due dates,
+  // progress, statuses or measurements.
+  return { committedActions: [] };
 }
 
 export async function buildCommandCenterWaterfallData(
@@ -1523,12 +1482,4 @@ function round2(value: number): number {
 
 function round4(value: number): number {
   return Math.round(value * 10_000) / 10_000;
-}
-
-function normalizeLabel(value: string): string {
-  return value
-    .toLocaleLowerCase("pl-PL")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/ł/g, "l");
 }

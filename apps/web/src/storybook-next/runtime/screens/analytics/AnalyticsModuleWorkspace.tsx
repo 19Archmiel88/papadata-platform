@@ -387,12 +387,26 @@ function OrdersContent({
     case 'timeline':
       return <OrdersTimeline records={data.records} />;
     case 'source-comparison':
-      return <DistributionList items={aggregateOrderSources(data.records)} title="Porównanie źródeł" />;
+      return (
+        <DistributionList
+          items={data.sourceComparison.length > 0
+            ? data.sourceComparison.map((item) => ({
+                label: item.source,
+                secondary: `${formatInteger(item.orders)} zamówień · ${item.amount.currency}`,
+                value: item.amount.amount,
+                valueLabel: formatMoney(item.amount),
+              }))
+            : aggregateOrderSources(data.records)}
+          title="Porównanie źródeł"
+        />
+      );
     case 'reconciliation':
       return (
         <>
           <InlineNotice
-            message="W bieżącym zakresie nie ma otwartych konfliktów ani gotowych propozycji rozstrzygnięć. Widok pokazuje rekordy możliwe do porównania."
+            message={data.reconciliation?.supported === false
+              ? `Status konfliktów nie jest dostępny w kanonicznym read-modelu zamówień. ${data.reconciliation.reason}`
+              : 'Widok rekoncyliacji korzysta wyłącznie z danych jawnie udostępnionych przez API.'}
             title="Rekoncyliacja danych"
             tone="info"
           />
@@ -552,11 +566,19 @@ function CustomersContent({
   readonly path: string;
 }) {
   const detail = getAnalyticsDetailDefinition('customers');
+  const currencyNotice = data.currencyCoverage && data.currencyCoverage.excludedOrders > 0 ? (
+    <InlineNotice
+      message={`Metryki pieniężne są liczone w ${data.currencyCoverage.reportingCurrency}. Wykluczono ${formatInteger(data.currencyCoverage.excludedOrders)} zamówień w innych walutach (${data.currencyCoverage.observedCurrencies.join(', ')}); system nie wykonuje niejawnego FX.`}
+      title="Zakres walutowy"
+      tone="info"
+    />
+  ) : null;
 
   switch (definition.variant) {
     case 'overview':
       return (
         <>
+          {currencyNotice}
           <MetricLine items={customerOverviewMetrics(data.records)} label="Sygnały klientów" />
           <ModuleSection description="Wyłącznie pseudonimizowane rekordy dostępne w kontrakcie." title="Klienci w bieżącym zakresie">
             <ModuleTable
@@ -571,17 +593,17 @@ function CustomersContent({
         </>
       );
     case 'segments':
-      return <CustomerSegmentsView records={data.records} />;
+      return <>{currencyNotice}<CustomerSegmentsView records={data.records} /></>;
     case 'cohorts':
-      return <CohortMatrixView cohorts={data.cohorts} />;
+      return <>{currencyNotice}<CohortMatrixView cohorts={data.cohorts} /></>;
     case 'detail':
-      return <CustomerDetail record={data.record} />;
+      return <>{currencyNotice}<CustomerDetail record={data.record} /></>;
     case 'identity-conflicts':
       return <IdentityConflictsView records={data.records} />;
     case 'privacy':
       return <PrivacyView records={data.records} />;
     case 'impact':
-      return <CustomerImpact records={data.records} />;
+      return <>{currencyNotice}<CustomerImpact records={data.records} /></>;
     case 'variants':
       return (
         <>
@@ -639,8 +661,8 @@ function TrafficContent({
       return (
         <>
           <InlineNotice
-            message="W bieżącym zakresie dostępne są metryki ruchu. Dane zamówień nie są jeszcze spięte do pełnego porównania w tym widoku."
-            title="Porównanie ograniczone zakresem danych"
+            message="Widok zestawia kanoniczne metryki GA4 z kanonicznymi zamówieniami w tym samym zakresie. Kwoty zamówień pozostają rozdzielone według waluty; system nie wykonuje niejawnego FX."
+            title="GA4 i zamówienia"
             tone="info"
           />
           <ChannelBreakdown records={data.records} />
@@ -1581,47 +1603,51 @@ function trafficRows(records: readonly TrafficRecord[]): readonly DataRow[] {
 }
 
 function campaignOverviewMetrics(records: readonly CampaignsRecord[]) {
-  const spend = sumMoney(records.map((record) => record.spend));
-  const revenue = sumMoney(records.map((record) => record.revenue));
+  const spend = sumCompatibleMoney(records.map((record) => record.spend));
+  const revenue = sumCompatibleMoney(records.map((record) => record.revenue));
+  const sameCurrency = spend !== null && revenue !== null && spend.currency === revenue.currency;
   return [
     { label: 'Kampanie', value: formatInteger(records.length) },
-    { label: 'Koszt', value: formatMoneyAmount(spend, records[0]?.spend.currency ?? 'PLN') },
-    { label: 'Przychód', value: formatMoneyAmount(revenue, records[0]?.revenue.currency ?? 'PLN') },
-    { label: 'ROAS blended', value: spend > 0 ? formatNumber(revenue / spend) : '—' },
+    { label: 'Koszt', value: spend ? formatMoney(spend) : 'Wiele walut — bez FX' },
+    { label: 'Przychód', value: revenue ? formatMoney(revenue) : 'Wiele walut — bez FX' },
+    {
+      label: 'ROAS blended',
+      value: sameCurrency && spend.amount > 0 ? formatNumber(revenue.amount / spend.amount) : '—',
+    },
   ] as const;
 }
 
 function orderOverviewMetrics(records: readonly OrdersRecord[]) {
-  const revenue = sumMoney(records.map((record) => record.amount));
+  const revenue = sumCompatibleMoney(records.map((record) => record.amount));
   const sources = new Set(records.map((record) => record.source)).size;
   const attention = records.filter((record) => record.status === 'cancelled' || record.status === 'refunded').length;
   return [
     { label: 'Zamówienia', value: formatInteger(records.length) },
-    { label: 'Wartość', value: formatMoneyAmount(revenue, records[0]?.amount.currency ?? 'PLN') },
+    { label: 'Wartość', value: revenue ? formatMoney(revenue) : 'Wiele walut — bez FX' },
     { label: 'Źródła', value: formatInteger(sources) },
     { label: 'Anulowane / refund', value: formatInteger(attention) },
   ] as const;
 }
 
 function productOverviewMetrics(records: readonly ProductsRecord[]) {
-  const revenue = sumMoney(records.map((record) => record.revenue));
+  const revenue = sumCompatibleMoney(records.map((record) => record.revenue));
   const units = records.reduce((sum, record) => sum + record.units, 0);
   const gaps = records.filter((record) => record.status === 'missingMapping' || !record.category).length;
   return [
     { label: 'Produkty', value: formatInteger(records.length) },
-    { label: 'Przychód', value: formatMoneyAmount(revenue, records[0]?.revenue.currency ?? 'PLN') },
+    { label: 'Przychód', value: revenue ? formatMoney(revenue) : 'Wiele walut — bez FX' },
     { label: 'Sztuki', value: formatInteger(units) },
     { label: 'Braki mapowania', value: formatInteger(gaps) },
   ] as const;
 }
 
 function customerOverviewMetrics(records: readonly CustomersRecord[]) {
-  const revenue = sumMoney(records.map((record) => record.revenue));
+  const revenue = sumCompatibleMoney(records.map((record) => record.revenue));
   const orders = records.reduce((sum, record) => sum + record.ordersCount, 0);
   const consentAttention = records.filter((record) => record.consentStatus !== 'granted').length;
   return [
     { label: 'Pseudonimy', value: formatInteger(records.length) },
-    { label: 'Przychód', value: formatMoneyAmount(revenue, records[0]?.revenue.currency ?? 'PLN') },
+    { label: 'Przychód', value: revenue ? formatMoney(revenue) : 'Wiele walut — bez FX' },
     { label: 'Zamówienia', value: formatInteger(orders) },
     { label: 'Zgody do uwagi', value: formatInteger(consentAttention) },
   ] as const;
@@ -1631,47 +1657,49 @@ function trafficOverviewMetrics(records: readonly TrafficRecord[]) {
   const sessions = records.reduce((sum, record) => sum + record.sessions, 0);
   const users = records.reduce((sum, record) => sum + record.users, 0);
   const conversions = records.reduce((sum, record) => sum + record.conversions, 0);
-  const revenue = sumMoney(records.map((record) => record.revenue));
+  const revenue = sumCompatibleMoney(records.map((record) => record.revenue));
   return [
     { label: 'Sesje', value: formatInteger(sessions) },
     { label: 'Użytkownicy', value: formatInteger(users) },
     { label: 'Konwersje', value: formatInteger(conversions) },
-    { label: 'Przychód', value: formatMoneyAmount(revenue, records[0]?.revenue.currency ?? 'PLN') },
+    { label: 'Przychód', value: revenue ? formatMoney(revenue) : 'Wiele walut — bez FX' },
   ] as const;
 }
 
 function aggregateCampaignChannels(records: readonly CampaignsRecord[]) {
-  const groups = new Map<string, { count: number; revenue: number }>();
+  const groups = new Map<string, { count: number; currency: Money['currency']; label: string; revenue: number }>();
   for (const record of records) {
     const label = campaignChannelLabel(record.channel);
-    const current = groups.get(label) ?? { count: 0, revenue: 0 };
+    const key = `${label}:${record.revenue.currency}`;
+    const current = groups.get(key) ?? { count: 0, currency: record.revenue.currency, label, revenue: 0 };
     current.count += 1;
     current.revenue += record.revenue.amount;
-    groups.set(label, current);
+    groups.set(key, current);
   }
-  return [...groups.entries()].map(([label, value]) => ({
-    label,
-    secondary: `${formatInteger(value.count)} kampanii`,
+  return [...groups.values()].map((value) => ({
+    label: value.label,
+    secondary: `${formatInteger(value.count)} kampanii · ${value.currency}`,
     value: value.revenue,
-    valueLabel: formatMoneyAmount(value.revenue, records[0]?.revenue.currency ?? 'PLN'),
+    valueLabel: formatMoneyAmount(value.revenue, value.currency),
   }));
 }
 
 function aggregateOrderSources(records: readonly OrdersRecord[]) {
-  const groups = new Map<string, { count: number; revenue: number }>();
+  const groups = new Map<string, { count: number; currency: Money['currency']; revenue: number; source: string }>();
   for (const record of records) {
-    const current = groups.get(record.source) ?? { count: 0, revenue: 0 };
+    const key = `${record.source}:${record.amount.currency}`;
+    const current = groups.get(key) ?? { count: 0, currency: record.amount.currency, revenue: 0, source: record.source };
     current.count += 1;
     current.revenue += record.amount.amount;
-    groups.set(record.source, current);
+    groups.set(key, current);
   }
-  return [...groups.entries()]
-    .sort((a, b) => b[1].revenue - a[1].revenue)
-    .map(([label, value]) => ({
-      label,
-      secondary: `${formatInteger(value.count)} zamówień`,
+  return [...groups.values()]
+    .sort((a, b) => b.revenue - a.revenue)
+    .map((value) => ({
+      label: value.source,
+      secondary: `${formatInteger(value.count)} zamówień · ${value.currency}`,
       value: value.revenue,
-      valueLabel: formatMoneyAmount(value.revenue, records[0]?.amount.currency ?? 'PLN'),
+      valueLabel: formatMoneyAmount(value.revenue, value.currency),
     }));
 }
 
@@ -1698,20 +1726,27 @@ function aggregateCustomerSegments(records: readonly CustomersRecord[]) {
 }
 
 function aggregateTrafficChannels(records: readonly TrafficRecord[]) {
-  const groups = new Map<string, { conversions: number; revenue: number; sessions: number }>();
+  const groups = new Map<string, { channel: string; conversions: number; currency: Money['currency']; revenue: number; sessions: number }>();
   for (const record of records) {
-    const key = record.channel || record.dimensionKey;
-    const current = groups.get(key) ?? { conversions: 0, revenue: 0, sessions: 0 };
+    const channel = record.channel || record.dimensionKey;
+    const key = `${channel}:${record.revenue.currency}`;
+    const current = groups.get(key) ?? {
+      channel,
+      conversions: 0,
+      currency: record.revenue.currency,
+      revenue: 0,
+      sessions: 0,
+    };
     current.conversions += record.conversions;
     current.revenue += record.revenue.amount;
     current.sessions += record.sessions;
     groups.set(key, current);
   }
-  return [...groups.entries()]
-    .sort((a, b) => b[1].sessions - a[1].sessions)
-    .map(([label, value]) => ({
-      label,
-      secondary: `${formatInteger(value.conversions)} konwersji · ${formatMoneyAmount(value.revenue, records[0]?.revenue.currency ?? 'PLN')}`,
+  return [...groups.values()]
+    .sort((a, b) => b.sessions - a.sessions)
+    .map((value) => ({
+      label: value.channel,
+      secondary: `${formatInteger(value.conversions)} konwersji · ${formatMoneyAmount(value.revenue, value.currency)}`,
       value: value.sessions,
       valueLabel: `${formatInteger(value.sessions)} sesji`,
     }));
@@ -1754,8 +1789,14 @@ function resolveSummaryReadiness(summary: SummaryLike) {
   return { label: 'Gotowe', tone: 'success' as const };
 }
 
-function sumMoney(values: readonly Money[]) {
-  return values.reduce((sum, item) => sum + item.amount, 0);
+function sumCompatibleMoney(values: readonly Money[]): Money | null {
+  if (values.length === 0) return { amount: 0, currency: 'PLN' };
+  const currency = values[0]!.currency;
+  if (values.some((item) => item.currency !== currency)) return null;
+  return {
+    amount: values.reduce((sum, item) => sum + item.amount, 0),
+    currency,
+  };
 }
 
 function formatMoney(value: Money) {

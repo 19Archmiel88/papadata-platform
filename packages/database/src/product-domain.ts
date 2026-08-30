@@ -977,16 +977,36 @@ export class PasswordResetRepository {
   async findValidToken(token: string): Promise<PasswordResetTokenLookup | null> {
     const tokenHash = createHash("sha256").update(token).digest("hex");
     const rows = await this.database.queryGlobalReadonly<Record<string, unknown>>(
-      `select user_id::text, identity_key, normalized_email, expires_at
+      `select user_id::text, identity_key, expires_at
          from app.lookup_password_reset_token($1)`,
       [tokenHash],
     );
     const row = rows[0];
     if (!row) return null;
+    const userId = requiredString(row.user_id);
+    const identityKey = requiredString(row.identity_key);
+
+    // Second, properly identity-scoped hop for the email: the lookup
+    // function above deliberately doesn't join app.identity_users (see the
+    // comment on it in migration 0040), so now that identity_key is known,
+    // fetch it the normal, RLS-satisfying way.
+    const normalizedEmail = await this.database.withIdentity(
+      identityKey,
+      userId,
+      async (client) => {
+        const result = await client.query<{ readonly normalized_email: string }>(
+          `select normalized_email from app.identity_users where user_id = $1::uuid`,
+          [userId],
+        );
+        return result.rows[0]?.normalized_email ?? null;
+      },
+    );
+    if (!normalizedEmail) return null;
+
     return {
-      userId: requiredString(row.user_id),
-      identityKey: requiredString(row.identity_key),
-      normalizedEmail: requiredString(row.normalized_email),
+      userId,
+      identityKey,
+      normalizedEmail,
       expiresAt: requiredString(row.expires_at),
     };
   }
@@ -1041,6 +1061,145 @@ export class PasswordResetRepository {
                   updated_at = now()
             where user_id = $1::uuid`,
           [input.lookup.userId, input.newPasswordHash],
+        );
+
+        return true;
+      },
+    );
+  }
+}
+
+export type EmailVerificationTokenLookup = {
+  readonly userId: string;
+  readonly identityKey: string;
+  readonly normalizedEmail: string;
+  readonly expiresAt: string;
+};
+
+// Real email verification, mirroring PasswordResetRepository's token
+// pattern exactly (single-use, expiring, hashed at rest, SECURITY DEFINER
+// pre-auth lookup — see migration 0038).
+export class EmailVerificationRepository {
+  private readonly database: ProductionDatabase;
+
+  constructor(database: ProductionDatabase) {
+    this.database = database;
+  }
+
+  // Creates the verification token in the same identity-scoped transaction
+  // as the user it belongs to. The raw token is returned once and never
+  // persisted; only its SHA-256 hash is stored.
+  async createVerificationToken(input: {
+    readonly user: IdentityUserRow;
+    readonly ttlHours: number;
+  }): Promise<{ readonly token: string; readonly expiresAt: string }> {
+    const token = randomBytes(32).toString("base64url");
+    const tokenHash = createHash("sha256").update(token).digest("hex");
+    const expiresAt = new Date(Date.now() + input.ttlHours * 3_600_000).toISOString();
+
+    await this.database.withIdentity(
+      input.user.identityKey,
+      input.user.userId,
+      async (client) => {
+        await client.query(
+          `insert into app.security_email_verification_tokens (
+             user_id, identity_key, token_hash, expires_at
+           ) values ($1::uuid, $2, $3, $4::timestamptz)`,
+          [input.user.userId, input.user.identityKey, tokenHash, expiresAt],
+        );
+      },
+    );
+
+    return { token, expiresAt };
+  }
+
+  // Public/pre-auth lookup, mirrors findValidToken on PasswordResetRepository:
+  // the token hash is part of the SECURITY DEFINER lookup itself (migration
+  // 0038), so a bare guess never discloses whether an account exists.
+  async findValidToken(token: string): Promise<EmailVerificationTokenLookup | null> {
+    const tokenHash = createHash("sha256").update(token).digest("hex");
+    const rows = await this.database.queryGlobalReadonly<Record<string, unknown>>(
+      `select user_id::text, identity_key, expires_at
+         from app.lookup_email_verification_token($1)`,
+      [tokenHash],
+    );
+    const row = rows[0];
+    if (!row) return null;
+    const userId = requiredString(row.user_id);
+    const identityKey = requiredString(row.identity_key);
+
+    // Second, properly identity-scoped hop for the email: the lookup
+    // function above deliberately doesn't join app.identity_users (see the
+    // comment on it in migration 0038), so now that identity_key is known,
+    // fetch it the normal, RLS-satisfying way.
+    const normalizedEmail = await this.database.withIdentity(
+      identityKey,
+      userId,
+      async (client) => {
+        const result = await client.query<{ readonly normalized_email: string }>(
+          `select normalized_email from app.identity_users where user_id = $1::uuid`,
+          [userId],
+        );
+        return result.rows[0]?.normalized_email ?? null;
+      },
+    );
+    if (!normalizedEmail) return null;
+
+    return {
+      userId,
+      identityKey,
+      normalizedEmail,
+      expiresAt: requiredString(row.expires_at),
+    };
+  }
+
+  // Consumes the token and marks the email verified in ONE transaction,
+  // mirroring consumeAndResetPassword's lock-consume-mutate shape: re-locks
+  // the token row `for update` so a concurrent use of the same token can
+  // never succeed twice.
+  async consumeAndVerifyEmail(input: {
+    readonly lookup: EmailVerificationTokenLookup;
+    readonly token: string;
+  }): Promise<boolean> {
+    const tokenHash = createHash("sha256").update(input.token).digest("hex");
+
+    return this.database.withIdentity(
+      input.lookup.identityKey,
+      input.lookup.userId,
+      async (client) => {
+        const lockedToken = await client.query<{ readonly id: string }>(
+          `select id
+             from app.security_email_verification_tokens
+            where user_id = $1::uuid
+              and token_hash = $2
+              and used_at is null
+              and revoked_at is null
+              and expires_at > now()
+            for update`,
+          [input.lookup.userId, tokenHash],
+        );
+        const lockedTokenRow = lockedToken.rows[0];
+        if (!lockedTokenRow) return false;
+
+        const consumed = await client.query(
+          `update app.security_email_verification_tokens
+              set used_at = now()
+            where id = $1::uuid
+              and used_at is null
+              and revoked_at is null
+              and expires_at > now()
+            returning id`,
+          [lockedTokenRow.id],
+        );
+        if ((consumed.rowCount ?? 0) !== 1) return false;
+
+        await client.query(
+          `update app.identity_users
+              set email_verified_at = now(),
+                  updated_at = now()
+            where user_id = $1::uuid
+              and email_verified_at is null`,
+          [input.lookup.userId],
         );
 
         return true;
@@ -1211,13 +1370,13 @@ export class IdentityOAuthRepository {
       try {
         await client.query(
           `insert into app.identity_oauth_links (
-             user_id, provider, provider_subject_id, provider_email, last_login_at
-           ) values ($1::uuid, $2, $3, $4, now())
+             user_id, identity_key, provider, provider_subject_id, provider_email, last_login_at
+           ) values ($1::uuid, $2, $3, $4, $5, now())
            on conflict (user_id, provider)
            do update set provider_subject_id = excluded.provider_subject_id,
                           provider_email = excluded.provider_email,
                           last_login_at = now()`,
-          [input.userId, input.provider, input.providerSubjectId, input.providerEmail],
+          [input.userId, input.identityKey, input.provider, input.providerSubjectId, input.providerEmail],
         );
       } catch (error) {
         if (isUniqueViolation(error, "identity_oauth_links_provider_subject_uq")) {

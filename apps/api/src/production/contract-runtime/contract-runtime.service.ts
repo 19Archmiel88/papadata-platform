@@ -11,6 +11,7 @@ import type { AiProviderAdapter } from "@papadata/ai-runtime";
 import { LocalDeterministicProvider } from "@papadata/ai-runtime";
 import {
   AssistantConversationRepository,
+  EmailVerificationRepository,
   IdentityRepository,
   IntegrationRepository,
   InvitationRepository,
@@ -127,6 +128,8 @@ export class ContractRuntimeService {
 
   private readonly passwordResets: PasswordResetRepository;
 
+  private readonly emailVerifications: EmailVerificationRepository;
+
   private readonly assistantConversations: AssistantConversationRepository;
 
   private readonly assistantProvider: AiProviderAdapter;
@@ -146,6 +149,7 @@ export class ContractRuntimeService {
     this.invitations = new InvitationRepository(database);
     this.identities = new IdentityRepository(database);
     this.passwordResets = new PasswordResetRepository(database);
+    this.emailVerifications = new EmailVerificationRepository(database);
     this.assistantConversations = new AssistantConversationRepository(database);
     this.assistantProvider = new LocalDeterministicProvider();
   }
@@ -297,11 +301,36 @@ export class ContractRuntimeService {
     }
 
     if (request.operationId === "auth.email.resend") {
+      const email = requiredPayloadString(payload, "email");
+      const user = await this.identities.findByEmail(email);
+      // Disclosure-safe, mirroring auth.password.recovery.request: the same
+      // response shape whether the account doesn't exist, is already
+      // verified, or a fresh token was actually issued.
+      if (!user || user.emailVerifiedAt !== null) {
+        return {
+          data: {
+            accepted: true,
+            disclosureSafe: true,
+            deliveryStatus: "provider_configuration_required",
+          },
+          operationId: request.operationId,
+        };
+      }
+
+      const { token, expiresAt } = await this.emailVerifications.createVerificationToken({
+        user,
+        ttlHours: 24,
+      });
       return {
         data: {
           accepted: true,
-          disclosureSafe: true,
-          deliveryStatus: "provider_configuration_required",
+          disclosureSafe: false,
+          deliveryStatus: "token_issued",
+          expiresAt,
+          // No email delivery pathway exists yet — the verification link is
+          // surfaced directly, the same way password-recovery links are
+          // surfaced today, instead of being auto-emailed.
+          verificationToken: token,
         },
         operationId: request.operationId,
       };
@@ -313,13 +342,58 @@ export class ContractRuntimeService {
       );
     }
 
-    if (
-      request.operationId === "auth.registration.finalize"
-      || request.operationId === "auth.email.verify"
-    ) {
-      throw new ForbiddenException(
-        `Not implemented — no email delivery pathway exists yet for ${request.operationId}.`,
-      );
+    if (request.operationId === "auth.email.verify") {
+      const token = requiredPayloadString(payload, "token");
+      const lookup = await this.emailVerifications.findValidToken(token);
+      if (!lookup) {
+        return {
+          data: { status: "invalid_or_expired_token", verified: false },
+          operationId: request.operationId,
+        };
+      }
+
+      const verified = await this.emailVerifications.consumeAndVerifyEmail({ lookup, token });
+      if (!verified) {
+        return {
+          data: { status: "invalid_or_expired_token", verified: false },
+          operationId: request.operationId,
+        };
+      }
+
+      return {
+        data: { email: lookup.normalizedEmail, status: "verified", verified: true },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "auth.registration.finalize") {
+      // The current registration flow (auth.register.email -> IdentityService.register)
+      // creates the user, tenant, workspace and membership synchronously in a
+      // single step -- there is no separate "pending draft" state for this
+      // operation to advance. Nothing in the web client calls it today. Kept
+      // as a real, idempotent confirmation (rather than a thrown exception)
+      // so a caller can safely check that a just-submitted registration is
+      // complete, without inventing a draft/job system that doesn't exist.
+      // Disclosure-safe: the same shape whether the email is unregistered or
+      // simply not yet finalized (there is no third state today).
+      const email = requiredPayloadString(payload, "email");
+      const user = await this.identities.findByEmail(email);
+      if (!user) {
+        return {
+          data: { finalized: false, status: "not_registered" },
+          operationId: request.operationId,
+        };
+      }
+
+      return {
+        data: {
+          email: user.normalizedEmail,
+          emailVerified: user.emailVerifiedAt !== null,
+          finalized: true,
+          userId: user.userId,
+        },
+        operationId: request.operationId,
+      };
     }
 
     if (request.operationId === "invitation.validate") {

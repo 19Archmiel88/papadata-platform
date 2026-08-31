@@ -16,6 +16,7 @@ import {
 } from "./session-store.js";
 import {
   BffSecurityService,
+  clearAuthCookies,
   readHeader,
 } from "./security.service.js";
 import { BFF_CONFIG } from "./tokens.js";
@@ -100,6 +101,161 @@ export class BffSessionAssuranceService {
     });
   }
 
+  // Per-login MFA challenge: elevates a session from authLevel="session" to
+  // "mfa" by proving an already-active TOTP factor. Unlike confirmMfa, this
+  // is not a "security changed" event (no new/rotated factor, no
+  // enrollment state change) so sibling sessions are left alone -- it is
+  // simply how every ordinary login proves its second factor.
+  async verifyMfa(
+    request: FastifyRequest,
+    reply: FastifyReply,
+    body: unknown,
+  ): Promise<void> {
+    this.security.applyCorsHeaders(request, reply);
+    const session = await this.requireMutableSession(request);
+    await this.rateLimit.consumeMfaAttempt({
+      accountId: session.userId,
+      ipAddress: request.ip,
+      route: "mfa-verify",
+    });
+
+    const response = await this.callApi({
+      body: normalizeBody(body),
+      path: "/v1/security/mfa/verify",
+      request,
+      session,
+    });
+
+    const payload = await readJson(response);
+    const data = unwrapData(payload);
+
+    if (!response.ok) {
+      sendUpstreamFailure(reply, response, "MFA_VERIFY_FAILED");
+      return;
+    }
+
+    if (!isRecord(data) || data.verified !== true) {
+      reply.status(403).send({
+        error: {
+          code: "MFA_VERIFY_FAILED",
+          message: "MFA verification failed.",
+        },
+      });
+      return;
+    }
+
+    const updatedSession: BffSessionRecord = {
+      ...session,
+      authLevel: session.authLevel === "session" ? "mfa" : session.authLevel,
+    };
+
+    await this.sessions.saveSession(updatedSession);
+
+    reply.status(200).send({
+      data: {
+        session: publicSession(updatedSession),
+        verified: true,
+      },
+    });
+  }
+
+  // Alternate path to the same outcome as verifyMfa when the TOTP device is
+  // unavailable -- redeems one of the ten single-use recovery codes issued
+  // at enroll time. Also not a "security changed" event on its own (the
+  // enrollment itself is untouched), so sibling sessions are left alone;
+  // the code's single-use enforcement lives in the database.
+  async redeemMfaRecoveryCode(
+    request: FastifyRequest,
+    reply: FastifyReply,
+    body: unknown,
+  ): Promise<void> {
+    this.security.applyCorsHeaders(request, reply);
+    const session = await this.requireMutableSession(request);
+    await this.rateLimit.consumeMfaAttempt({
+      accountId: session.userId,
+      ipAddress: request.ip,
+      route: "recovery-redeem",
+    });
+
+    const response = await this.callApi({
+      body: normalizeBody(body),
+      path: "/v1/security/mfa/recovery-code/redeem",
+      request,
+      session,
+    });
+
+    const payload = await readJson(response);
+    const data = unwrapData(payload);
+
+    if (!response.ok) {
+      sendUpstreamFailure(reply, response, "MFA_RECOVERY_REDEEM_FAILED");
+      return;
+    }
+
+    if (!isRecord(data) || data.verified !== true) {
+      reply.status(403).send({
+        error: {
+          code: "MFA_RECOVERY_REDEEM_FAILED",
+          message: "Recovery code is invalid or already used.",
+        },
+      });
+      return;
+    }
+
+    const updatedSession: BffSessionRecord = {
+      ...session,
+      authLevel: session.authLevel === "session" ? "mfa" : session.authLevel,
+    };
+
+    await this.sessions.saveSession(updatedSession);
+
+    reply.status(200).send({
+      data: {
+        session: publicSession(updatedSession),
+        verified: true,
+      },
+    });
+  }
+
+  // Disables/revokes the account's MFA enrollment. Requires genuine
+  // step-up assurance (not just "mfa"), matching the API's own
+  // @RequireAuthLevel("step_up") guard -- checked here too as a fast-fail
+  // so an obviously-doomed request never reaches the API. On success,
+  // revokes every session for the account INCLUDING the current one and
+  // clears cookies: removing the account's only second factor is the most
+  // severe self-service security downgrade available, so the safest
+  // response is to force a completely fresh login afterward rather than
+  // leaving any session's prior elevated trust in place.
+  async disableMfa(
+    request: FastifyRequest,
+    reply: FastifyReply,
+  ): Promise<void> {
+    this.security.applyCorsHeaders(request, reply);
+    const session = await this.requireMutableSession(request);
+
+    if (!hasStepUpAssurance(session)) {
+      throw new ForbiddenException("Step-up assurance is required.");
+    }
+
+    const response = await this.callApi({
+      body: {},
+      path: "/v1/security/mfa",
+      request,
+      session,
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      sendUpstreamFailure(reply, response, "MFA_DISABLE_FAILED");
+      return;
+    }
+
+    await this.sessions.revokeAllSessionsForUser(session.userId, new Date().toISOString());
+    clearAuthCookies(reply, this.config)
+      .status(200)
+      .send({ data: { disabled: true, loggedOut: true, revokedAllSessions: true } });
+  }
+
   async issueStepUp(
     request: FastifyRequest,
     reply: FastifyReply,
@@ -111,6 +267,12 @@ export class BffSessionAssuranceService {
     if (!hasMfaAssurance(session)) {
       throw new ForbiddenException("MFA assurance is required.");
     }
+
+    await this.rateLimit.consumeMfaAttempt({
+      accountId: session.userId,
+      ipAddress: request.ip,
+      route: "step-up",
+    });
 
     const response = await this.callApi({
       body: normalizeBody(body),
@@ -178,6 +340,7 @@ export class BffSessionAssuranceService {
 
   private async callApi(input: {
     readonly body: Readonly<Record<string, unknown>>;
+    readonly method?: "DELETE" | "POST";
     readonly path: string;
     readonly request: FastifyRequest;
     readonly session: BffSessionRecord;
@@ -215,7 +378,7 @@ export class BffSessionAssuranceService {
     return fetch(`${this.config.apiOrigin}${input.path}`, {
       body: JSON.stringify(input.body),
       headers,
-      method: "POST",
+      method: input.method ?? "POST",
       redirect: "manual",
       signal: AbortSignal.timeout(this.config.upstreamTimeoutMs),
     });
@@ -227,6 +390,14 @@ function hasMfaAssurance(session: BffSessionRecord): boolean {
     return true;
   }
 
+  return Boolean(
+    session.authLevel === "step_up"
+    && session.stepUpExpiresAt
+    && Date.parse(session.stepUpExpiresAt) > Date.now(),
+  );
+}
+
+function hasStepUpAssurance(session: BffSessionRecord): boolean {
   return Boolean(
     session.authLevel === "step_up"
     && session.stepUpExpiresAt

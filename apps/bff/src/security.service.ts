@@ -154,6 +154,16 @@ export function isStateChangingMethod(method: string): boolean {
   return ["DELETE", "PATCH", "POST", "PUT"].includes(method);
 }
 
+// Shared by every code path that ends a session's auth cookies (logout,
+// logout-all, refresh failures, MFA disable) so the exact set of cookies
+// cleared can never drift between them.
+export function clearAuthCookies(reply: FastifyReply, config: BffConfig): FastifyReply {
+  return reply
+    .clearCookie(config.sessionCookieName, { path: config.cookiePath })
+    .clearCookie(config.csrfCookieName, { path: config.cookiePath })
+    .clearCookie(config.refreshCookieName, { path: config.refreshCookiePath });
+}
+
 export function readHeader(
   headers: FastifyRequest["headers"],
   name: string,

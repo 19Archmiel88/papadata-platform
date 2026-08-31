@@ -5,7 +5,7 @@ import { signCookieValue, verifySignedCookieValue } from "./cookie-signing.js";
 import type { BffConfig } from "./config.js";
 import { CloudRunIdentityService } from "./cloud-run-identity.service.js";
 import { BffRateLimitService } from "./rate-limit.service.js";
-import { BffSecurityService, readHeader } from "./security.service.js";
+import { BffSecurityService, clearAuthCookies, readHeader } from "./security.service.js";
 import {
   BFF_SESSION_STORE,
   type BffSessionMembership,
@@ -176,7 +176,7 @@ export class BffIdentitySessionService {
     );
 
     if (!sessionId || !presentedRefreshToken) {
-      this.clearAuthCookies(reply);
+      clearAuthCookies(reply, this.config);
       throw new UnauthorizedException("Valid session and refresh cookies are required.");
     }
 
@@ -189,7 +189,7 @@ export class BffIdentitySessionService {
       || session.revokedAt !== null
       || Date.parse(session.absoluteExpiresAt) <= now
     ) {
-      this.clearAuthCookies(reply);
+      clearAuthCookies(reply, this.config);
       throw new UnauthorizedException("Session cannot be refreshed.");
     }
 
@@ -220,12 +220,12 @@ export class BffIdentitySessionService {
         sessionId,
         userId: session.userId,
       });
-      this.clearAuthCookies(reply);
+      clearAuthCookies(reply, this.config);
       throw new UnauthorizedException("Refresh token has already been used.");
     }
 
     if (rotation === "missing") {
-      this.clearAuthCookies(reply);
+      clearAuthCookies(reply, this.config);
       throw new UnauthorizedException("Session cannot be refreshed.");
     }
 
@@ -266,7 +266,7 @@ export class BffIdentitySessionService {
     const session = await this.security.requireSession(request);
     this.security.validateCsrf(request, session);
     await this.sessions.revokeSession(session.sessionId, new Date().toISOString());
-    this.clearAuthCookies(reply).status(200).send({ data: { loggedOut: true } });
+    clearAuthCookies(reply, this.config).status(200).send({ data: { loggedOut: true } });
   }
 
   // Revokes every session for the caller's account, including the current
@@ -279,7 +279,7 @@ export class BffIdentitySessionService {
     const session = await this.security.requireSession(request);
     this.security.validateCsrf(request, session);
     await this.sessions.revokeAllSessionsForUser(session.userId, new Date().toISOString());
-    this.clearAuthCookies(reply).status(200).send({ data: { loggedOut: true, revokedAllSessions: true } });
+    clearAuthCookies(reply, this.config).status(200).send({ data: { loggedOut: true, revokedAllSessions: true } });
   }
 
   // Lists every active session for the caller's account (multi-device
@@ -346,13 +346,6 @@ export class BffIdentitySessionService {
 
   private cookieSecrets(active: string, previous: string | null): readonly string[] {
     return previous ? [active, previous] : [active];
-  }
-
-  private clearAuthCookies(reply: FastifyReply): FastifyReply {
-    return reply
-      .clearCookie(this.config.sessionCookieName, { path: this.config.cookiePath })
-      .clearCookie(this.config.csrfCookieName, { path: this.config.cookiePath })
-      .clearCookie(this.config.refreshCookieName, { path: this.config.refreshCookiePath });
   }
 
   async readSession(request: FastifyRequest, reply: FastifyReply): Promise<void> {

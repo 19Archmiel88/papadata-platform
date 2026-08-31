@@ -48,13 +48,21 @@ check("mfa.enroll succeeds", enrollment.status === 200 || enrollment.status === 
 const enrollBody = JSON.parse(enrollment.bodyText) as { secret: string };
 const secret = enrollBody.secret;
 
+const confirmCodeIssuedAt = Date.now();
 const confirmResponse = await bffRequest("POST", "/api/v1/auth/mfa/confirm", {
   cookie: inviterCsrf.cookie,
   csrfToken: inviterCsrf.token,
-  body: { code: totpCode(secret) },
+  body: { code: totpCode(secret, confirmCodeIssuedAt) },
 });
 const confirmBody = JSON.parse(confirmResponse.bodyText) as { data?: { verified: boolean } };
 check("mfa.confirm verifies the real TOTP code", confirmBody.data?.verified === true);
+
+// Faza 5 added TOTP anti-replay (a code accepted once, by confirm or
+// verify or step-up, cannot be accepted again within its own 30s step --
+// see totp.service.ts's matchStep/advanceTotpStep). Without this wait,
+// step-up's totpCode(secret) call below can land in the same 30s step as
+// confirm's just above and be rejected as a replay.
+await waitForFreshTotpStep(confirmCodeIssuedAt);
 
 const stepUpResponse = await bffRequest("POST", "/api/v1/auth/step-up", {
   cookie: inviterCsrf.cookie,
@@ -248,6 +256,18 @@ function sessionCookieFromResponse(response: BffResponse): string {
   const pairs = cookies.map((entry) => entry.split(";")[0]).filter((entry): entry is string => Boolean(entry));
   if (pairs.length === 0) throw new Error("No session cookie returned by the auth endpoint.");
   return pairs.join("; ");
+}
+
+// Blocks until the current 30s TOTP step is strictly newer than the one
+// `previousCodeIssuedAtMs` fell in -- a no-op if enough real time has
+// already passed, otherwise waits out only the remainder. See the anti-
+// replay comment at this function's call site.
+async function waitForFreshTotpStep(previousCodeIssuedAtMs: number): Promise<void> {
+  const previousStep = Math.floor(previousCodeIssuedAtMs / 30_000);
+  const currentStep = Math.floor(Date.now() / 30_000);
+  if (currentStep > previousStep) return;
+  const waitMs = (previousStep + 1) * 30_000 - Date.now() + 250;
+  await new Promise((resolve) => setTimeout(resolve, Math.max(0, waitMs)));
 }
 
 // Same RFC 6238 TOTP algorithm as apps/api/src/production/security/totp.service.ts's

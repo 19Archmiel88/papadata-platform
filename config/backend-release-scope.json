@@ -7,7 +7,7 @@
     "targetContract": "contracts/openapi-1.0.json",
     "targetOperations": 223,
     "exactTargetOperations": 223,
-    "extraHardeningOperations": 69,
+    "extraHardeningOperations": 72,
     "routeMethodOperationIdParity": true,
     "targetReleaseClaimed": false,
     "semanticConformanceClaimed": false,
@@ -2572,6 +2572,36 @@
       "bffPath": "/api/v1/security/mfa/enroll",
       "controllerFile": "apps/api/src/production/security/security.controller.ts",
       "auth": "capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "security.mfa.verify",
+      "method": "POST",
+      "servicePath": "/v1/security/mfa/verify",
+      "bffPath": "/api/v1/security/mfa/verify",
+      "controllerFile": "apps/api/src/production/security/security.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "security.mfa.recovery-code.redeem",
+      "method": "POST",
+      "servicePath": "/v1/security/mfa/recovery-code/redeem",
+      "bffPath": "/api/v1/security/mfa/recovery-code/redeem",
+      "controllerFile": "apps/api/src/production/security/security.controller.ts",
+      "auth": "capability",
+      "releaseStatus": "enabled",
+      "implementation": "native-hardened-runtime"
+    },
+    {
+      "operationId": "security.mfa.disable",
+      "method": "DELETE",
+      "servicePath": "/v1/security/mfa",
+      "bffPath": "/api/v1/security/mfa",
+      "controllerFile": "apps/api/src/production/security/security.controller.ts",
+      "auth": "step-up+capability",
       "releaseStatus": "enabled",
       "implementation": "native-hardened-runtime"
     },

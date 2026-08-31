@@ -59,6 +59,32 @@ export class ContractAuthController {
     return this.sessionAssurance.confirmMfa(request, reply, body);
   }
 
+  @Post("mfa/verify")
+  verifyMfa(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Body() body: unknown,
+  ): Promise<void> {
+    return this.sessionAssurance.verifyMfa(request, reply, body);
+  }
+
+  @Post("mfa/recovery-code/redeem")
+  redeemMfaRecoveryCode(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Body() body: unknown,
+  ): Promise<void> {
+    return this.sessionAssurance.redeemMfaRecoveryCode(request, reply, body);
+  }
+
+  @Delete("mfa")
+  disableMfa(
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ): Promise<void> {
+    return this.sessionAssurance.disableMfa(request, reply);
+  }
+
   @Post("step-up")
   issueStepUp(
     @Req() request: FastifyRequest,

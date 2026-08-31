@@ -60,6 +60,7 @@ try {
   await record("redis-tls-auth", redisTlsAuth);
 
   const runtime = await record("edge-bff-api-auth-rbac-worker-storage-e2e", authReportFlow);
+  await record("rbac-role-matrix-runtime", () => rbacRoleMatrixRuntime(runtime));
   await record("postgres-rls-runtime", () => postgresRlsRuntime(runtime));
   await record("minio-object-runtime", () => minioObjectRuntime(runtime.objectKey));
 
@@ -272,6 +273,7 @@ async function authReportFlow() {
   });
   assertStatus(registration, [200, 201], "register");
   const session = unwrap(registration.json).session;
+  const userId = requiredString(session?.userId, "session.userId");
   const tenantId = requiredString(session?.activeTenantId, "session.activeTenantId");
   const workspaceId = requiredString(session?.activeWorkspaceId, "session.activeWorkspaceId");
 
@@ -350,11 +352,151 @@ async function authReportFlow() {
 
   return {
     tenantId,
+    userId,
     workspaceId,
     reportId,
     objectKey,
-    output: JSON.stringify({ tenantId, workspaceId, reportId, objectKey }),
+    output: JSON.stringify({ tenantId, userId, workspaceId, reportId, objectKey }),
   };
+}
+
+async function rbacRoleMatrixRuntime(runtime) {
+  assertUuid(runtime.tenantId, "tenantId");
+  assertUuid(runtime.userId, "userId");
+  assertUuid(runtime.workspaceId, "workspaceId");
+
+  const fixture = seedRbacFixture(runtime);
+  const checks = [];
+
+  await expectApiStatus("tenant-owner.same-tenant.allow", await apiAs({
+    tenantId: runtime.tenantId,
+    userId: runtime.userId,
+    workspaceId: runtime.workspaceId,
+  }, "/v1/metrics", { method: "GET" }), [200], checks);
+  await expectApiStatus("tenant-owner.other-tenant.deny", await apiAs({
+    tenantId: fixture.victimTenantId,
+    userId: runtime.userId,
+    workspaceId: fixture.victimWorkspaceId,
+  }, "/v1/metrics", { method: "GET" }), [403], checks);
+
+  await expectApiStatus("workspace-admin.own-workspace.allow", await apiAs(
+    fixture.users.workspaceAdmin,
+    "/v1/workspaces",
+    { method: "GET" },
+  ), [200], checks);
+  await expectApiStatus("workspace-admin.other-workspace.deny", await apiAs({
+    ...fixture.users.workspaceAdmin,
+    workspaceId: fixture.workspaceBId,
+  }, "/v1/workspaces", { method: "GET" }), [403], checks);
+
+  await expectApiStatus("analyst.analytics-read.allow", await apiAs(
+    fixture.users.analyst,
+    "/v1/metrics",
+    { method: "GET" },
+  ), [200], checks);
+  await expectApiStatus("analyst.integration-credentials.deny", await apiAs(
+    fixture.users.analyst,
+    "/v1/integrations/google-ads/test",
+    { body: {}, method: "POST" },
+  ), [403], checks);
+
+  await expectApiStatus("marketing.integration-write.allow", await apiAs(
+    fixture.users.marketingOperator,
+    "/v1/data-quality/issues",
+    { body: mutationBody("marketing-integration-write"), method: "POST" },
+  ), [200, 201], checks);
+  await expectApiStatus("marketing.tenant-admin.deny", await apiAs(
+    fixture.users.marketingOperator,
+    "/v1/security/invitations/token",
+    { body: { invitationId: randomUUID(), tokenVersion: 1 }, method: "POST" },
+  ), [403], checks);
+
+  await expectApiStatus("viewer.read.allow", await apiAs(
+    fixture.users.viewer,
+    "/v1/metrics",
+    { method: "GET" },
+  ), [200], checks);
+  await expectApiStatus("viewer.write.deny", await apiAs(
+    fixture.users.viewer,
+    "/v1/data-quality/issues",
+    { body: mutationBody("viewer-write-deny"), method: "POST" },
+  ), [403], checks);
+
+  await expectApiStatus("billing.billing.allow", await apiAs(
+    fixture.users.billingAdmin,
+    "/v1/billing/subscription",
+    { method: "GET" },
+  ), [200], checks);
+  await expectApiStatus("billing.analytics-integration-write.deny", await apiAs(
+    fixture.users.billingAdmin,
+    "/v1/data-quality/issues",
+    { body: mutationBody("billing-write-deny"), method: "POST" },
+  ), [403], checks);
+
+  await expectApiStatus("auditor.audit.allow", await apiAs(
+    fixture.users.auditor,
+    "/v1/settings/audyt",
+    { method: "GET" },
+  ), [200], checks);
+  await expectApiStatus("auditor.business-write.deny", await apiAs(
+    fixture.users.auditor,
+    "/v1/data-quality/issues",
+    { body: mutationBody("auditor-write-deny"), method: "POST" },
+  ), [403], checks);
+
+  await expectApiStatus("support-jit.active.allow", await apiAs(
+    fixture.users.supportActive,
+    "/v1/settings/audyt",
+    { method: "GET" },
+  ), [200], checks);
+  await expectApiStatus("support-jit.expired.deny", await apiAs(
+    fixture.users.supportExpired,
+    "/v1/settings/audyt",
+    { method: "GET" },
+  ), [403], checks);
+
+  await expectApiStatus("cross-workspace.body.deny", await apiAs(
+    fixture.users.marketingOperator,
+    "/v1/data-quality/issues",
+    {
+      body: {
+        ...mutationBody("cross-workspace-deny"),
+        workspaceId: fixture.workspaceBId,
+      },
+      method: "POST",
+    },
+  ), [403], checks);
+  await expectApiStatus("cross-tenant.body.deny", await apiAs(
+    fixture.users.marketingOperator,
+    "/v1/data-quality/issues",
+    {
+      body: {
+        ...mutationBody("cross-tenant-deny"),
+        tenantId: fixture.victimTenantId,
+      },
+      method: "POST",
+    },
+  ), [403], checks);
+
+  await expectApiStatus("live-change.viewer-before.deny", await apiAs(
+    fixture.users.liveChange,
+    "/v1/data-quality/issues",
+    { body: mutationBody("live-change-before"), method: "POST" },
+  ), [403], checks);
+  updateMembershipRole({
+    dataScope: "workspace",
+    role: "Workspace Admin",
+    tenantId: runtime.tenantId,
+    userId: fixture.users.liveChange.userId,
+    workspaceId: runtime.workspaceId,
+  });
+  await expectApiStatus("live-change.workspace-admin-after.allow", await apiAs(
+    fixture.users.liveChange,
+    "/v1/data-quality/issues",
+    { body: mutationBody("live-change-after"), method: "POST" },
+  ), [200, 201], checks);
+
+  return { output: checks.join(" ") };
 }
 
 async function issueCsrf(jar) {
@@ -459,6 +601,237 @@ from definition;
     `PGPASSWORD="$POSTGRES_PASSWORD" psql -h 127.0.0.1 -U papadata_migrator -d papadata -v ON_ERROR_STOP=1 -c ${shellQuote(sql)}`,
   ], { timeout: 60_000 });
   if (!/INSERT 0 1/u.test(result.output)) throw new Error(`Metric fixture was not inserted.\n${result.output}`);
+}
+
+function seedRbacFixture(runtime) {
+  const workspaceBId = randomUUID();
+  const victimUserId = randomUUID();
+  const victimTenantId = randomUUID();
+  const victimWorkspaceId = randomUUID();
+  const users = {
+    analyst: rbacUser(runtime, "Analyst"),
+    auditor: rbacUser(runtime, "Auditor/Security"),
+    billingAdmin: rbacUser(runtime, "Billing Admin"),
+    liveChange: rbacUser(runtime, "Viewer"),
+    marketingOperator: rbacUser(runtime, "Marketing Operator"),
+    supportActive: rbacUser(runtime, "Internal Support/Operations"),
+    supportExpired: rbacUser(runtime, "Internal Support/Operations"),
+    viewer: rbacUser(runtime, "Viewer"),
+    workspaceAdmin: rbacUser(runtime, "Workspace Admin"),
+  };
+  const allUserIds = [
+    victimUserId,
+    ...Object.values(users).map((user) => user.userId),
+  ];
+
+  const userValues = allUserIds.map((userId, index) =>
+    `('${userId}'::uuid, 'rbac-${index}-${userId}@example.test', 'RBAC ${index}', 'active', true)`,
+  ).join(",\n");
+
+  const membershipValues = [
+    membershipValue(runtime.tenantId, runtime.workspaceId, users.workspaceAdmin.userId, "Workspace Admin", "active", "workspace", null),
+    membershipValue(runtime.tenantId, runtime.workspaceId, users.analyst.userId, "Analyst", "active", "workspace", null),
+    membershipValue(runtime.tenantId, runtime.workspaceId, users.marketingOperator.userId, "Marketing Operator", "active", "workspace", null),
+    membershipValue(runtime.tenantId, runtime.workspaceId, users.viewer.userId, "Viewer", "active", "workspace", null),
+    membershipValue(runtime.tenantId, runtime.workspaceId, users.billingAdmin.userId, "Billing Admin", "active", "billing", null),
+    membershipValue(runtime.tenantId, runtime.workspaceId, users.auditor.userId, "Auditor/Security", "active", "audit", null),
+    membershipValue(runtime.tenantId, runtime.workspaceId, users.supportActive.userId, "Internal Support/Operations", "active", "support_jit", "2099-01-01T00:00:00.000Z"),
+    membershipValue(runtime.tenantId, runtime.workspaceId, users.supportExpired.userId, "Internal Support/Operations", "active", "support_jit", "2020-01-01T00:00:00.000Z"),
+    membershipValue(runtime.tenantId, runtime.workspaceId, users.liveChange.userId, "Viewer", "active", "workspace", null),
+  ].join(",\n");
+
+  const sql = `
+insert into app.users (user_id, email, full_name, status, email_verified)
+values ${userValues}
+on conflict (user_id) do nothing;
+
+insert into app.tenants (tenant_id, created_by_user_id, name, status)
+values ('${victimTenantId}'::uuid, '${victimUserId}'::uuid, 'RBAC Victim Tenant', 'active')
+on conflict (tenant_id) do nothing;
+
+insert into app.workspaces (workspace_id, tenant_id, created_by_user_id, name, status)
+values
+  ('${workspaceBId}'::uuid, '${runtime.tenantId}'::uuid, '${runtime.userId}'::uuid, 'RBAC Workspace B', 'active'),
+  ('${victimWorkspaceId}'::uuid, '${victimTenantId}'::uuid, '${victimUserId}'::uuid, 'RBAC Victim Workspace', 'active')
+on conflict (tenant_id, workspace_id) do nothing;
+
+insert into app.memberships (
+  membership_id, tenant_id, workspace_id, user_id, role, status, data_scope, jit_expires_at
+)
+values ${membershipValues}
+on conflict (tenant_id, workspace_id, user_id) do update
+set role = excluded.role,
+    status = excluded.status,
+    data_scope = excluded.data_scope,
+    jit_expires_at = excluded.jit_expires_at,
+    updated_at = now();
+`;
+
+  run("docker", [
+    ...compose,
+    "exec",
+    "-T",
+    "postgres-production",
+    "sh",
+    "-c",
+    `PGPASSWORD="$POSTGRES_PASSWORD" psql -h 127.0.0.1 -U papadata_migrator -d papadata -v ON_ERROR_STOP=1 -c ${shellQuote(sql)}`,
+  ], { timeout: 60_000 });
+
+  return {
+    users,
+    victimTenantId,
+    victimWorkspaceId,
+    workspaceBId,
+  };
+}
+
+function rbacUser(runtime, role) {
+  return {
+    role,
+    tenantId: runtime.tenantId,
+    userId: randomUUID(),
+    workspaceId: runtime.workspaceId,
+  };
+}
+
+function membershipValue(
+  tenantId,
+  workspaceId,
+  userId,
+  role,
+  status,
+  dataScope,
+  jitExpiresAt,
+) {
+  return `('${randomUUID()}'::uuid, '${tenantId}'::uuid, '${workspaceId}'::uuid, '${userId}'::uuid, '${role}', '${status}', '${dataScope}', ${jitExpiresAt ? `'${jitExpiresAt}'::timestamptz` : "null"})`;
+}
+
+function updateMembershipRole(input) {
+  const sql = `
+update app.memberships
+   set role = '${input.role}',
+       data_scope = '${input.dataScope}',
+       updated_at = now()
+ where tenant_id = '${input.tenantId}'::uuid
+   and workspace_id = '${input.workspaceId}'::uuid
+   and user_id = '${input.userId}'::uuid;
+`;
+  const result = run("docker", [
+    ...compose,
+    "exec",
+    "-T",
+    "postgres-production",
+    "sh",
+    "-c",
+    `PGPASSWORD="$POSTGRES_PASSWORD" psql -h 127.0.0.1 -U papadata_migrator -d papadata -v ON_ERROR_STOP=1 -c ${shellQuote(sql)}`,
+  ], { timeout: 60_000 });
+  if (!/UPDATE 1/u.test(result.output)) {
+    throw new Error(`Membership role update did not affect one row.\n${result.output}`);
+  }
+}
+
+async function apiAs(principal, path, options) {
+  const sessionId = randomUUID();
+  const nowSeconds = Math.floor(Date.now() / 1_000);
+  const expiresAt = new Date((nowSeconds + 600) * 1_000).toISOString();
+  await saveApiSession({
+    activeTenantId: principal.tenantId,
+    activeWorkspaceId: principal.workspaceId,
+    expiresAt,
+    revokedAt: null,
+    sessionId,
+    userId: principal.userId,
+  });
+
+  return fetchJson(`http://127.0.0.1:54100${path}`, {
+    body: options.body ? JSON.stringify(options.body) : undefined,
+    headers: {
+      accept: "application/json",
+      ...(options.body ? { "content-type": "application/json" } : {}),
+      ...(!["GET", "HEAD"].includes(options.method) ? { "idempotency-key": randomUUID() } : {}),
+      "x-correlation-id": randomUUID(),
+      "x-papadata-internal-principal": signPrincipalToken({
+        aud: "papadata-api",
+        auth_level: options.authLevel ?? "step_up",
+        caps: [],
+        exp: nowSeconds + 300,
+        iat: nowSeconds,
+        iss: "papadata-bff",
+        memberships: [{
+          capabilities: [],
+          roles: [principal.role ?? "Workspace Admin"],
+          tenantId: principal.tenantId,
+          workspaceId: principal.workspaceId,
+        }],
+        sid: sessionId,
+        step_up_expires_at: new Date((nowSeconds + 300) * 1_000).toISOString(),
+        sub: principal.userId,
+        tid: principal.tenantId,
+        wid: principal.workspaceId,
+      }),
+    },
+    method: options.method,
+  });
+}
+
+async function saveApiSession(session) {
+  run("docker", [
+    ...compose,
+    "exec",
+    "-T",
+    "-e",
+    `SESSION_KEY=papadata:auth:session:${session.sessionId}`,
+    "-e",
+    `SESSION_VALUE=${JSON.stringify(session)}`,
+    "redis-production",
+    "sh",
+    "-c",
+    'redis-cli --tls --cacert /run/papadata-redis-tls/ca.crt -a "$REDIS_PASSWORD" set "$SESSION_KEY" "$SESSION_VALUE" EX 600 >/dev/null',
+  ], { timeout: 30_000 });
+}
+
+function signPrincipalToken(claims) {
+  const header = base64urlJson({ alg: "HS256", typ: "JWT" });
+  const payload = base64urlJson(claims);
+  const signature = createHmac(
+    "sha256",
+    productionParityEnv("PAPADATA_API_AUTH_ACTIVE_SECRET"),
+  ).update(`${header}.${payload}`).digest("base64url");
+  return `${header}.${payload}.${signature}`;
+}
+
+function base64urlJson(value) {
+  return Buffer.from(JSON.stringify(value), "utf8").toString("base64url");
+}
+
+function productionParityEnv(name) {
+  const entries = productionParityEnv.entries ??= new Map(
+    readFileSync(resolve(root, ".env.production-parity"), "utf8")
+      .split(/\r?\n/u)
+      .flatMap((line) => {
+        const separator = line.indexOf("=");
+        return separator > 0
+          ? [[line.slice(0, separator), line.slice(separator + 1)]]
+          : [];
+      }),
+  );
+  const value = entries.get(name);
+  if (!value) throw new Error(`${name} is missing from .env.production-parity.`);
+  return value;
+}
+
+async function expectApiStatus(label, response, allowed, checks) {
+  if (!allowed.includes(response.response.status)) {
+    throw new Error(`${label} returned ${response.response.status}: ${JSON.stringify(response.body)}`);
+  }
+  checks.push(`${label}:${response.response.status}`);
+}
+
+function mutationBody(label) {
+  return {
+    data: { source: "rbac-role-matrix-runtime" },
+    externalKey: `${label}-${randomUUID()}`,
+  };
 }
 
 async function waitForReportReady(jar, reportId) {

@@ -38,7 +38,7 @@ export const capabilityCatalog:readonly CapabilityDescriptor[]=[
   descriptor("workspace.manage","workspace","high",["PATCH /v1/workspaces/:id"]),
   descriptor("analytics.metrics.read","workspace","low",["GET /v1/metrics"]),
   descriptor("analytics.metrics.compare","workspace","medium",["POST /v1/metrics/compare"]),
-  descriptor("analytics.metrics.export","workspace","high",["POST /v1/reports"],{reauthenticationRequired:true}),
+  descriptor("analytics.metrics.export","workspace","high",[],{reauthenticationRequired:true}),
   descriptor("analytics.command_center.read","workspace","low",["GET /v1/dashboard/command-center"]),
   descriptor("integrations.catalog.read","workspace","low",["GET /v1/integrations/providers"]),
   descriptor("integrations.connection.read","workspace","medium",["GET /v1/integrations/connections"]),

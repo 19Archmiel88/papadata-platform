@@ -11,6 +11,7 @@ import { DeniedAccessAuditService } from "./denied-access-audit.service.js";
 import { LivePrincipalAuthorizationService } from "./live-principal-authorization.service.js";
 import {
   meetsAuthenticationLevel,
+  type RequestPrincipal,
   type RequestWithPrincipal,
 } from "./request-principal.js";
 import { readRoutePolicy } from "./route-policy-reader.js";
@@ -48,6 +49,19 @@ export class CapabilityGuard implements CanActivate {
 
     if (!principal) {
       throw new UnauthorizedException("Request principal is required.");
+    }
+
+    const scopeMismatch = findRequestScopeMismatch(request, principal);
+    if (scopeMismatch) {
+      await this.deniedAccessAudit.record({
+        auditDeniedAccess: policy.policy.auditDeniedAccess,
+        principal,
+        reason: scopeMismatch,
+        request,
+        requiredAuthLevel: policy.policy.authLevel,
+        requiredCapabilities: policy.policy.capabilities,
+      });
+      throw new ForbiddenException("Request scope is outside the principal.");
     }
 
     const now = new Date();
@@ -91,5 +105,77 @@ export class CapabilityGuard implements CanActivate {
     }
 
     return true;
+  }
+}
+
+function findRequestScopeMismatch(
+  request: RequestWithPrincipal,
+  principal: RequestPrincipal,
+): "request_tenant_scope_mismatch" | "request_workspace_scope_mismatch" | null {
+  const tenantIds = collectScopeValues(request, [
+    "tenantId",
+    "activeTenantId",
+  ]);
+  if (tenantIds.some((tenantId) => tenantId !== principal.tenantId)) {
+    return "request_tenant_scope_mismatch";
+  }
+
+  const workspaceIds = collectScopeValues(request, [
+    "workspaceId",
+    "activeWorkspaceId",
+  ]);
+  if (
+    workspaceIds.some((workspaceId) => workspaceId !== principal.workspaceId)
+  ) {
+    return "request_workspace_scope_mismatch";
+  }
+
+  return null;
+}
+
+function collectScopeValues(
+  request: RequestWithPrincipal,
+  keys: readonly string[],
+): readonly string[] {
+  const values = new Set<string>();
+  const visited = new Set<unknown>();
+
+  for (const source of [request.params, request.query, request.body]) {
+    collectScopeValuesFromUnknown(source, keys, values, visited);
+  }
+
+  return [...values];
+}
+
+function collectScopeValuesFromUnknown(
+  value: unknown,
+  keys: readonly string[],
+  values: Set<string>,
+  visited: Set<unknown>,
+): void {
+  if (!value || typeof value !== "object" || visited.has(value)) {
+    return;
+  }
+
+  visited.add(value);
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      collectScopeValuesFromUnknown(item, keys, values, visited);
+    }
+    return;
+  }
+
+  for (const [entryKey, entryValue] of Object.entries(value)) {
+    if (
+      keys.includes(entryKey)
+      && typeof entryValue === "string"
+      && entryValue.length > 0
+    ) {
+      values.add(entryValue);
+      continue;
+    }
+
+    collectScopeValuesFromUnknown(entryValue, keys, values, visited);
   }
 }

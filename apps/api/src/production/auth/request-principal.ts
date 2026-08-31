@@ -27,9 +27,12 @@ export type RequestPrincipal = {
 };
 
 export type RequestWithPrincipal = {
+  readonly body?: unknown;
   readonly headers?: Record<string, string | readonly string[] | undefined>;
   readonly method?: string;
+  readonly params?: Record<string, unknown>;
   principal?: RequestPrincipal;
+  readonly query?: Record<string, unknown>;
   readonly url?: string;
 };
 

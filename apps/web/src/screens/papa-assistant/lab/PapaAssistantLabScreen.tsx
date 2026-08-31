@@ -61,7 +61,7 @@ import {
   papaLabWorkbenchAnalyses,
   papaLabWorkbenchModes,
   papaLabWorkModes,
-} from './PapaAssistantLabPage.data';
+} from '../../../fixtures/papa-assistant/lab/papaAssistantLabDemoSeed';
 import type {
   PapaLabBusinessDatasetId,
   PapaLabCanvasTabId,
@@ -76,8 +76,8 @@ import type {
   PapaLabTone,
   PapaLabWorkbenchModeId,
   PapaLabWorkModeId,
-} from './PapaAssistantLabPage.data';
-import './PapaAssistantLabPage.css';
+} from '../../../fixtures/papa-assistant/lab/papaAssistantLabDemoSeed';
+import './PapaAssistantLabScreen.css';
 
 type PapaLabCanvasToolId =
   | 'brief'
@@ -85,7 +85,7 @@ type PapaLabCanvasToolId =
   | 'reports'
   | 'whatIf';
 
-export type PapaAssistantLabPageProps = {
+export type PapaAssistantLabScreenProps = {
   readonly initialCanvasTab?: PapaLabCanvasTabId;
   readonly initialCanvasTool?: PapaLabCanvasToolId;
   readonly initialFocusMode?: boolean;
@@ -95,14 +95,14 @@ export type PapaAssistantLabPageProps = {
   readonly initialTab?: PapaLabTabId;
 };
 
-export function PapaAssistantLabPage({
+export function PapaAssistantLabScreen({
   initialCanvasTab = 'result',
   initialCanvasTool = 'brief',
   initialFocusMode = false,
   initialInspectorTab = 'context',
   initialMode = 'diagnosis',
   initialRunState = 'completed',
-}: PapaAssistantLabPageProps) {
+}: PapaAssistantLabScreenProps) {
   return (
     <PapaLabWorkbench
       initialCanvasTab={initialCanvasTab}
@@ -122,7 +122,7 @@ export function PapaLabWorkbench({
   initialInspectorTab = 'context',
   initialMode = 'diagnosis',
   initialRunState = 'completed',
-}: Omit<PapaAssistantLabPageProps, 'initialTab'>) {
+}: Omit<PapaAssistantLabScreenProps, 'initialTab'>) {
   const [activeMode, setActiveMode] = useState<PapaLabWorkbenchModeId>(initialMode);
   const [activeCanvasTab, setActiveCanvasTab] = useState<PapaLabCanvasTabId>(initialCanvasTab);
   const [activeInspectorTab, setActiveInspectorTab] = useState<PapaLabInspectorTabId>(initialInspectorTab);

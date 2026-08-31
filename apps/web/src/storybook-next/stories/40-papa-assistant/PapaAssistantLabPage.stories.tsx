@@ -18,36 +18,36 @@ import {
   ContextBasketPanel,
   DecisionQueueSimulator,
   EvidenceAndRefusalsPanel,
-  PapaAssistantLabPage,
+  PapaAssistantLabScreen,
   PapaLabOverview,
   PapaLabReports,
-} from './PapaAssistantLabPage';
+} from '../../../screens/papa-assistant/lab/PapaAssistantLabScreen';
 import type {
-  PapaAssistantLabPageProps,
-} from './PapaAssistantLabPage';
+  PapaAssistantLabScreenProps,
+} from '../../../screens/papa-assistant/lab/PapaAssistantLabScreen';
 import {
   StorybookProductShellFrame,
 } from '../shared/StorybookProductShellFrame';
 
 const meta = {
   title: '40 Laboratorium Papa Asystenta',
-  component: PapaAssistantLabPage,
+  component: PapaAssistantLabScreen,
   parameters: {
     a11y: {
       test: 'error',
     },
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof PapaAssistantLabPage>;
+} satisfies Meta<typeof PapaAssistantLabScreen>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-function WorkbenchFrame(props: PapaAssistantLabPageProps) {
+function WorkbenchFrame(props: PapaAssistantLabScreenProps) {
   return (
     <StorybookProductShellFrame activePath="/app/papa">
-      <PapaAssistantLabPage {...props} />
+      <PapaAssistantLabScreen {...props} />
     </StorybookProductShellFrame>
   );
 }

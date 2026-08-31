@@ -1,4 +1,4 @@
-import { StrictMode, useEffect, useMemo, useState } from 'react';
+import { StrictMode, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import '../design-system/foundations/foundations.css';
@@ -14,6 +14,8 @@ import {
   type AuthRecoveryRequestInput,
   type AuthRegisterInput,
   type AuthStepUpInput,
+  type AuthSurfaceMode,
+  type AuthSurfaceState,
 } from '../storybook-next/runtime/features/auth/AuthSurface';
 import {
   navigate,
@@ -29,9 +31,12 @@ import {
 } from '../storybook-next/runtime/shell/index';
 import {
   bffClient,
-  BffProblem,
   type BffSession,
 } from '../storybook-next/runtime/shared/api/bffClient';
+import {
+  type AuthSessionRuntime,
+  useAuthSessionRuntime,
+} from '../storybook-next/runtime/shared/auth/authSessionRuntime';
 import './runtime-app.css';
 
 applyPapaDataRuntimeGlobals(document.documentElement, {
@@ -43,110 +48,143 @@ applyPapaDataRuntimeGlobals(document.documentElement, {
 
 function RuntimeApp() {
   const locationPath = useLocationPath();
-  const [session, setSession] = useState<BffSession | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [problem, setProblem] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    bffClient.readSession()
-      .then((nextSession) => {
-        if (cancelled) return;
-        setSession(nextSession);
-        setProblem(null);
-      })
-      .catch((cause: unknown) => {
-        if (cancelled) return;
-        setSession(null);
-        setProblem(readProblemMessage(cause));
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
+  const runtime = useAuthSessionRuntime(bffClient);
   const authMode = resolveAuthMode(locationPath);
-  if (authMode || (!loading && !session)) {
-    return (
-      <AuthSurface
-        mode={authMode ?? 'login'}
-        onAcceptInvitation={async (_input: AuthAcceptInvitationInput) => {
-          throw new Error('Invitation acceptance is not enabled in this runtime shell.');
-        }}
-        onLogin={async (input: AuthLoginInput) => {
-          const result = await bffClient.login(input);
-          setSession(result.session);
-          navigate(safeReturnTo(new URLSearchParams(window.location.search).get('returnTo')));
-        }}
-        onMfaConfirm={async (input: AuthMfaInput) => {
-          const result = await bffClient.confirmMfa(input);
-          setSession(result.session);
-          navigate('/app');
-        }}
-        onNavigate={navigate}
-        onOAuthContinue={async () => {
-          throw new Error('OAuth is not configured for this production-parity shell.');
-        }}
-        onPasswordRecoveryRequest={async (_input: AuthRecoveryRequestInput) => {
-          throw new Error('Password recovery is not enabled in this runtime shell.');
-        }}
-        onPasswordReset={async (_input: AuthPasswordResetInput) => {
-          throw new Error('Password reset is not enabled in this runtime shell.');
-        }}
-        onRegister={async (input: AuthRegisterInput) => {
-          const result = await bffClient.register(input);
-          setSession(result.session);
-          navigate('/app');
-        }}
-        onRetry={async () => {
-          const nextSession = await bffClient.readSession();
-          setSession(nextSession);
-          setProblem(null);
-        }}
-        onSelectWorkspace={async (workspaceId: string) => {
-          const nextSession = await bffClient.selectWorkspace(workspaceId);
-          setSession(nextSession);
-          navigate('/app');
-        }}
-        onStepUpConfirm={async (input: AuthStepUpInput) => {
-          const result = await bffClient.stepUp({
-            code: input.code,
-            operationScope: 'runtime.shell',
-          });
-          setSession(result.session);
-          navigate('/app');
-        }}
-        state={problem ? 'serviceUnavailable' : 'ready'}
-        workspaceOptions={sessionToWorkspaceOptions(session)}
-      />
-    );
-  }
 
-  if (loading) {
+  if (runtime.status === 'initializing') {
     return <main className="pd-runtime-loading">Ładowanie PapaData...</main>;
   }
 
-  return session ? (
+  const showAuthSurface = runtime.status === 'service_unavailable'
+    || runtime.status === 'reauth_required'
+    || authMode !== null
+    || runtime.status === 'anonymous';
+
+  if (showAuthSurface) {
+    return <RuntimeAuthSurface authMode={authMode} locationPath={locationPath} runtime={runtime} />;
+  }
+
+  return runtime.session ? (
     <AuthenticatedRuntimeShell
       activePath={locationPath.startsWith('/app') ? locationPath : '/app'}
-      session={session}
-      setSession={setSession}
+      runtime={runtime}
+      session={runtime.session}
     />
   ) : null;
 }
 
+function RuntimeAuthSurface({
+  authMode,
+  locationPath,
+  runtime,
+}: {
+  readonly authMode: AuthSurfaceMode | null;
+  readonly locationPath: string;
+  readonly runtime: AuthSessionRuntime;
+}) {
+  const mode: AuthSurfaceMode = runtime.status === 'reauth_required'
+    ? (runtime.reauth?.level === 'mfa' ? 'mfa' : 'reauth')
+    : (authMode ?? 'login');
+  const state: AuthSurfaceState = runtime.status === 'service_unavailable' ? 'serviceUnavailable' : 'ready';
+
+  function postReauthReturnTo(): string {
+    return safeReturnTo(runtime.reauth?.returnTo ?? queryParam('returnTo'));
+  }
+
+  return (
+    <AuthSurface
+      initialEmail={queryParam('email') ?? ''}
+      initialInvitationId={queryParam('invitationId')}
+      initialInvitationToken={queryParam('token')}
+      initialResetToken={queryParam('resetToken')}
+      mode={mode}
+      onAcceptInvitation={async (input: AuthAcceptInvitationInput) => {
+        await bffClient.acceptInvitation({
+          displayName: input.displayName,
+          invitationId: input.invitationId,
+          password: input.password,
+          token: input.token,
+        });
+        navigate('/login');
+      }}
+      onLogin={async (input: AuthLoginInput) => {
+        const result = await bffClient.login(input);
+        runtime.applySession(result.session);
+        navigate(safeReturnTo(queryParam('returnTo')));
+      }}
+      onMfaConfirm={async (input: AuthMfaInput) => {
+        // Elevates the current (already-authenticated) session's authLevel
+        // by proving an already-enrolled TOTP factor -- this is the
+        // ordinary per-login/per-reauth check, so it must call
+        // POST /api/v1/auth/mfa/verify, never mfa/confirm (that endpoint
+        // is reserved for confirming a brand-new enrollment and, on
+        // success, revokes every sibling session for the account -- the
+        // wrong side effect for a routine login).
+        const result = await bffClient.verifyMfa(input);
+        runtime.applySession(result.session);
+        navigate(postReauthReturnTo());
+      }}
+      onNavigate={navigate}
+      onOAuthContinue={async () => {
+        // No dedicated OAuth callback landing route exists in this
+        // runtime shell yet (the BffClient contract -- startOAuth /
+        // completeOAuthCallback -- is ready, but wiring the redirect
+        // button without a way to complete the return trip would strand
+        // the user mid-flow). Tracked as an explicit Phase 8 follow-up;
+        // oauthAvailability is intentionally left unset above so the
+        // buttons render as disabled/"configuration required" rather
+        // than reaching this handler.
+        throw new Error('OAuth is not configured for this production-parity shell.');
+      }}
+      onPasswordRecoveryRequest={async (input: AuthRecoveryRequestInput) => {
+        await bffClient.requestPasswordRecovery(input);
+      }}
+      onPasswordReset={async (input: AuthPasswordResetInput) => {
+        await bffClient.resetPassword({
+          email: input.email,
+          newPassword: input.newPassword,
+          otp: input.otp,
+          resetToken: input.resetToken,
+        });
+        navigate('/login');
+      }}
+      onRegister={async (input: AuthRegisterInput) => {
+        const result = await bffClient.register(input);
+        runtime.applySession(result.session);
+        navigate('/app');
+      }}
+      onRetry={runtime.retryBootstrap}
+      onSelectWorkspace={async (workspaceId: string) => {
+        const nextSession = await runtime.runAuthenticatedCommand(
+          () => bffClient.selectWorkspace(workspaceId),
+          locationPath,
+        );
+        runtime.applySession(nextSession);
+        navigate('/app');
+      }}
+      onStepUpConfirm={async (input: AuthStepUpInput) => {
+        const result = await bffClient.stepUp({
+          code: input.code,
+          operationScope: 'runtime.shell',
+        });
+        runtime.applySession(result.session);
+        navigate(postReauthReturnTo());
+      }}
+      onValidateInvitation={(input) => bffClient.validateInvitation(input)}
+      state={state}
+      workspaceOptions={sessionToWorkspaceOptions(runtime.session)}
+    />
+  );
+}
+
 function AuthenticatedRuntimeShell({
   activePath,
+  runtime,
   session,
-  setSession,
 }: {
   readonly activePath: string;
+  readonly runtime: AuthSessionRuntime;
   readonly session: BffSession;
-  readonly setSession: (session: BffSession | null) => void;
 }) {
   const navigationGroups = useMemo(
     () => createRuntimeShellNavigation(session.capabilities),
@@ -166,13 +204,21 @@ function AuthenticatedRuntimeShell({
       commands={commands}
       navigationGroups={navigationGroups}
       onLogout={async () => {
+        // bffClient.logout() ends the local session (and, for an
+        // already-expired one, swallows the resulting 401) by publishing
+        // a 'logout' event -- the session runtime's subscription reacts
+        // to that and transitions to anonymous, including in every other
+        // open tab, so no local state needs clearing here.
         await bffClient.logout();
-        setSession(null);
         navigate('/auth');
       }}
       onNavigate={navigate}
       onSelectWorkspace={async (workspaceId) => {
-        setSession(await bffClient.selectWorkspace(workspaceId));
+        const nextSession = await runtime.runAuthenticatedCommand(
+          () => bffClient.selectWorkspace(workspaceId),
+          activePath,
+        );
+        runtime.applySession(nextSession);
       }}
       user={sessionToShellUser(session)}
       workspaces={sessionToShellWorkspaces(session)}
@@ -188,7 +234,7 @@ function AuthenticatedRuntimeShell({
   );
 }
 
-function resolveAuthMode(path: string) {
+function resolveAuthMode(path: string): AuthSurfaceMode | null {
   const pathname = path.split('?', 1)[0] ?? '/';
   if (pathname === '/' || pathname === '/auth') return 'entry';
   if (pathname === '/login' || pathname === '/auth/login') return 'login';
@@ -199,6 +245,10 @@ function resolveAuthMode(path: string) {
   if (pathname === '/workspace' || pathname === '/auth/workspace') return 'workspace';
   if (pathname === '/accept-invite' || pathname === '/auth/accept-invite') return 'accept-invite';
   return null;
+}
+
+function queryParam(name: string): string | null {
+  return new URLSearchParams(window.location.search).get(name);
 }
 
 function sessionToShellUser(session: BffSession): ShellUser {
@@ -231,11 +281,6 @@ function sessionToWorkspaceOptions(session: BffSession | null) {
     workspaceId: membership.workspaceId,
     workspaceName: membership.workspaceName,
   })) ?? [];
-}
-
-function readProblemMessage(cause: unknown): string {
-  if (cause instanceof BffProblem) return cause.message;
-  return cause instanceof Error ? cause.message : 'Runtime BFF is unavailable.';
 }
 
 const root = document.getElementById('root');

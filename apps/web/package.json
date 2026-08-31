@@ -6,6 +6,7 @@
   "scripts": {
     "build": "vite build",
     "typecheck": "tsc -b --pretty false",
+    "test": "vitest run",
     "storybook": "storybook dev -p 6010 --host 0.0.0.0 --exact-port --no-open --disable-telemetry --ci",
     "build-storybook": "storybook build --output-dir storybook-static --disable-telemetry"
   },
@@ -32,6 +33,7 @@
     "storybook": "^10.5.3",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.3",
-    "vite": "^8.1.5"
+    "vite": "^8.1.5",
+    "vitest": "^4.1.11"
   }
 }

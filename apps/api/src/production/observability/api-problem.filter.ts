@@ -16,6 +16,11 @@ export type ApiProblem = {
   readonly detail: string;
   readonly correlationId: string;
   readonly recoverable: boolean;
+  // Present only for a 403 raised because the caller's session authLevel is
+  // below what the route policy requires (CapabilityGuard's auth-level
+  // check) -- never for a plain capability/scope denial. Read from a
+  // structured field on the thrown exception, not parsed out of `detail`.
+  readonly requiredAuthLevel?: "mfa" | "step_up";
   readonly fieldErrors?: readonly {
     readonly field: string;
     readonly code: string;
@@ -49,6 +54,10 @@ export class ApiProblemFilter implements ExceptionFilter {
               ? "INTERNAL_ERROR"
               : "REQUEST_REJECTED";
 
+    const requiredAuthLevel = status === HttpStatus.FORBIDDEN
+      ? readRequiredAuthLevel(payload)
+      : null;
+
     const problem: ApiProblem = {
       type: `https://papadata.pl/problems/${code.toLowerCase().replaceAll("_", "-")}`,
       title: titleForStatus(status),
@@ -59,6 +68,7 @@ export class ApiProblemFilter implements ExceptionFilter {
         : safeDetail(payload, exception),
       correlationId,
       recoverable: status === 408 || status === 429 || status >= 500,
+      ...(requiredAuthLevel ? { requiredAuthLevel } : {}),
       ...(validationMessages.length > 0
         ? {
             fieldErrors: validationMessages.map((message) => ({
@@ -95,6 +105,12 @@ function readValidationMessages(payload: unknown): readonly string[] {
     );
   }
   return [];
+}
+
+function readRequiredAuthLevel(payload: unknown): "mfa" | "step_up" | null {
+  if (payload === null || typeof payload !== "object") return null;
+  const value = (payload as { requiredAuthLevel?: unknown }).requiredAuthLevel;
+  return value === "mfa" || value === "step_up" ? value : null;
 }
 
 function safeDetail(payload: unknown, exception: unknown): string {

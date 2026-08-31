@@ -234,7 +234,14 @@ export class BffSessionAssuranceService {
     const session = await this.requireMutableSession(request);
 
     if (!hasStepUpAssurance(session)) {
-      throw new ForbiddenException("Step-up assurance is required.");
+      // Structured (not text-parsed): mirrors the {error:{code,message}}
+      // shape this file uses elsewhere, plus the canonical requiredAuthLevel
+      // field BffClient reads directly -- see requiredAuthLevelFromProblem
+      // removal in bffClient.ts.
+      throw new ForbiddenException({
+        error: { code: "STEP_UP_ASSURANCE_REQUIRED", message: "Step-up assurance is required." },
+        requiredAuthLevel: "step_up",
+      });
     }
 
     const response = await this.callApi({
@@ -265,7 +272,10 @@ export class BffSessionAssuranceService {
     const session = await this.requireMutableSession(request);
 
     if (!hasMfaAssurance(session)) {
-      throw new ForbiddenException("MFA assurance is required.");
+      throw new ForbiddenException({
+        error: { code: "MFA_ASSURANCE_REQUIRED", message: "MFA assurance is required." },
+        requiredAuthLevel: "mfa",
+      });
     }
 
     await this.rateLimit.consumeMfaAttempt({

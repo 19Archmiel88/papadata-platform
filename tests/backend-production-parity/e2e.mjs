@@ -64,6 +64,19 @@ try {
   await record("postgres-rls-runtime", () => postgresRlsRuntime(runtime));
   await record("minio-object-runtime", () => minioObjectRuntime(runtime.objectKey));
 
+  // Phase 8 -- browser auth/session runtime: real backend contract checks
+  // the frontend's single-flight refresh / logout / session-revoke logic
+  // depends on (see the flow functions above for what each proves).
+  // client-runtime-parallel-refresh drives the actual production BffClient/
+  // AuthRefreshCoordinator code (Blocker 1); auth-concurrent-refresh-race
+  // stays as the complementary negative test that bypasses client
+  // coordination entirely to confirm backend reuse detection still fires.
+  await record("client-runtime-parallel-refresh", clientRuntimeParallelRefreshFlow);
+  await record("auth-concurrent-refresh-race-runtime", concurrentRefreshRaceFlow);
+  await record("auth-logout-runtime", logoutFlow);
+  await record("auth-logout-all-runtime", logoutAllFlow);
+  await record("auth-session-revoke-runtime", sessionRevokeFlow);
+
   await writeEvidence("pass");
   console.log(`PRODUCTION_PARITY_E2E=PASS evidence=${relativeEvidencePath()}`);
 } catch (error) {
@@ -146,8 +159,23 @@ function assertNoDevRuntimeFallbacks() {
   if (!workerDockerfile.includes('CMD ["node", "dist/production/main.js"]')) {
     throw new Error("Worker production Dockerfile does not use dist/production/main.js.");
   }
-  if (!webClient.includes("if (!import.meta.env.DEV) return false;")) {
-    throw new Error("Web local auth fallback is not gated behind import.meta.env.DEV.");
+  // Phase 8 removed the frontend's local auth fallback entirely -- assert
+  // it stays removed (this used to instead require it be DEV-gated, back
+  // when one still existed).
+  const forbiddenLocalAuthFallbackTokens = [
+    "LocalClientAccount",
+    "loginWithLocalClient",
+    "registerWithLocalClient",
+    "readLocalClientSession",
+    "writeLocalClientState",
+    "canUseLocalAuthFallback",
+    "isLocalClientRuntimeAvailable",
+    "localClientCapabilities",
+  ];
+  for (const token of forbiddenLocalAuthFallbackTokens) {
+    if (webClient.includes(token)) {
+      throw new Error(`Web BFF client must not contain a local auth fallback (found "${token}").`);
+    }
   }
   return { output: "runtime fallbacks: none" };
 }
@@ -358,6 +386,322 @@ async function authReportFlow() {
     objectKey,
     output: JSON.stringify({ tenantId, userId, workspaceId, reportId, objectKey }),
   };
+}
+
+// Phase 8 (browser auth/session runtime) additions below: these exercise
+// the real BFF/Redis/API stack directly (bypassing BffClient) to prove the
+// backend contracts the frontend's single-flight refresh, logout, and
+// session-revoke logic depend on actually hold under concurrency -- not
+// just that the frontend calls the right endpoints.
+
+async function registerParityUser(prefix) {
+  const jar = new CookieJar();
+  const email = `${prefix}-${Date.now()}-${randomUUID().slice(0, 8)}@example.test`;
+  const password = "ParityPassword2026!";
+  const registration = await edgeJson("/api/v1/auth/register/email", {
+    body: {
+      displayName: "Production Parity User",
+      email,
+      organizationName: `PapaData Parity ${prefix}`,
+      password,
+      workspaceName: "Parity Workspace",
+    },
+    jar,
+    method: "POST",
+  });
+  assertStatus(registration, [200, 201], `${prefix} register`);
+  return { email, jar, password };
+}
+
+async function loginParityUser(email, password) {
+  const jar = new CookieJar();
+  const login = await edgeJson("/api/v1/auth/login", { body: { email, password }, jar, method: "POST" });
+  assertStatus(login, [200, 201], "login");
+  return jar;
+}
+
+// Runs a redis-cli command inside the redis-production container over its
+// TLS listener -- the exact same mechanism proven by redisTlsAuth() above,
+// reused here to read/rewrite one session record directly.
+function redisCli(command) {
+  const result = run("docker", [
+    ...compose,
+    "exec",
+    "-T",
+    "redis-production",
+    "sh",
+    "-c",
+    `redis-cli --tls --cacert /run/papadata-redis-tls/ca.crt -h 127.0.0.1 -p 6379 --no-auth-warning -a "$REDIS_PASSWORD" ${command}`,
+  ]);
+  return result.output.trim();
+}
+
+// Forces sessionId's sliding `expiresAt` into the past while leaving
+// `absoluteExpiresAt` untouched, directly in Redis -- BffSecurityService's
+// requireSession() (used by every ordinary authenticated BFF request,
+// including the proxied one the real client hits) rejects on `expiresAt`
+// alone, while identity-session.service.ts's refresh() only checks
+// `absoluteExpiresAt` (see the comment on RedisBffSessionStore.saveSession).
+// This is the controlled way to reach "needs refresh" deterministically,
+// instead of waiting out the real ~30 minute sliding TTL. SET ... KEEPTTL
+// preserves the key's existing Redis expiry (the absolute ceiling) so this
+// doesn't accidentally make the record immortal.
+function expireSessionSlidingWindow(sessionId) {
+  const key = `papadata:auth:session:${sessionId}`;
+  const raw = redisCli(`GET ${shellQuote(key)}`);
+  if (!raw) throw new Error(`Session record not found in Redis for sessionId=${sessionId}`);
+  const session = JSON.parse(raw);
+  session.expiresAt = new Date(Date.now() - 60_000).toISOString();
+  const rewritten = JSON.stringify(session);
+  redisCli(`SET ${shellQuote(key)} ${shellQuote(rewritten)} KEEPTTL`);
+
+  const verify = JSON.parse(redisCli(`GET ${shellQuote(key)}`));
+  if (verify.expiresAt !== session.expiresAt) {
+    throw new Error("Failed to rewrite session expiresAt in Redis.");
+  }
+}
+
+// Section 32 (Blocker 1): drives the *real* production browser-auth-runtime
+// code -- BffClient/AuthRefreshCoordinator, imported unmodified from
+// apps/web -- against this live stack, via a child process
+// (client-runtime/parallel-refresh-client.ts, run with `pnpm exec tsx`).
+// This harness only does the setup a real browser can't do to itself
+// (forcing the session stale in one controlled step instead of waiting
+// ~30 minutes) and the final assertions; the single-flight behavior under
+// test lives entirely inside the real client code, not reimplemented here.
+async function clientRuntimeParallelRefreshFlow() {
+  const { email, jar, password } = await registerParityUser("client-race");
+
+  const sessionRead = await edgeJson("/api/v1/auth/session", { jar, method: "GET" });
+  assertStatus(sessionRead, [200], "client-race: pre-race session read");
+  const sessionId = requiredString(unwrap(sessionRead.json).sessionId, "sessionId");
+
+  // Fetched while the session is still fresh -- requireSession() (which
+  // GET /api/csrf also goes through) would itself reject once expiresAt is
+  // in the past, exactly like a real browser tab that cached its CSRF
+  // token from earlier in the session rather than fetching a new one after
+  // going stale.
+  const csrfToken = await issueCsrf(jar);
+
+  expireSessionSlidingWindow(sessionId);
+
+  const scriptPath = resolve(root, "tests/backend-production-parity/client-runtime/parallel-refresh-client.ts");
+  const child = run("pnpm", ["exec", "tsx", scriptPath], {
+    env: {
+      PARITY_CA_PATH: caPath,
+      PARITY_COOKIE_HEADER: jar.header(),
+      PARITY_CSRF_TOKEN: csrfToken,
+      PARITY_HOST: host,
+      PARITY_ORIGIN: origin,
+    },
+    timeout: 60_000,
+  });
+
+  const lastLine = child.output.trim().split(/\r?\n/u).filter(Boolean).pop();
+  let result;
+  try {
+    result = JSON.parse(lastLine ?? "");
+  } catch {
+    throw new Error(`Real client runtime harness did not print a JSON result line.\n${tail(child.output, 40)}`);
+  }
+
+  if (result.clientParallelRequests !== 8) {
+    throw new Error(`Expected 8 parallel client requests, got ${result.clientParallelRequests}`);
+  }
+  if (result.clientRefreshCalls !== 1) {
+    throw new Error(`Expected exactly 1 POST /api/v1/auth/refresh from the real client runtime, got ${result.clientRefreshCalls}`);
+  }
+  if (result.clientRequestsSucceeded !== 8) {
+    throw new Error(`Expected all 8 real client requests to succeed after the single refresh, got ${result.clientRequestsSucceeded}`);
+  }
+  if (result.sessionStillValid !== true) {
+    throw new Error("Expected the session to still be valid after the real client's single-flight refresh (reuse detection must not have fired).");
+  }
+
+  // registerParityUser's password is only known to this scope; confirm the
+  // account itself (not just this one session) is unaffected -- a second,
+  // completely independent login must also still work.
+  const independentJar = await loginParityUser(email, password);
+  assertStatus(
+    await edgeJson("/api/v1/auth/session", { jar: independentJar, method: "GET" }),
+    [200],
+    "client-race: independent login after the real-client single-flight test still works",
+  );
+
+  console.log(`CLIENT_PARALLEL_REQUESTS=${result.clientParallelRequests}`);
+  console.log(`CLIENT_REFRESH_CALLS=${result.clientRefreshCalls}`);
+  console.log(`CLIENT_REQUESTS_SUCCEEDED=${result.clientRequestsSucceeded}`);
+  console.log(`SESSION_STILL_VALID=${result.sessionStillValid}`);
+
+  return {
+    output: JSON.stringify(result),
+  };
+}
+
+// Section 32: fires several concurrent POST /auth/refresh calls presenting
+// the *same* refresh token -- exactly what would reach the backend if a
+// browser runtime's single-flight guarantee were ever bypassed. This does
+// not assume which specific safe outcome the CAS rotation resolves to
+// (a lone winner with benign 401 losers, vs. the documented "any reuse
+// looks like theft" policy nuking the whole session family) -- it asserts
+// the invariants that must hold either way: no 5xx, never more than one
+// live winner, and -- the property that actually matters -- the account
+// remains usable afterward via an ordinary fresh login.
+async function concurrentRefreshRaceFlow() {
+  const { email, jar, password } = await registerParityUser("race");
+
+  const sessionRead = await edgeJson("/api/v1/auth/session", { jar, method: "GET" });
+  assertStatus(sessionRead, [200], "race: pre-race session read");
+
+  const csrf = await issueCsrf(jar);
+  const raceCookieHeader = jar.header();
+
+  const concurrency = 6;
+  const raceResponses = await Promise.all(
+    Array.from({ length: concurrency }, () => edgeJson("/api/v1/auth/refresh", {
+      headers: { cookie: raceCookieHeader, "x-papadata-csrf": csrf },
+      method: "POST",
+    })),
+  );
+  const statuses = raceResponses.map((response) => response.status);
+  // The BFF's refresh route is a bare NestJS @Post() with no @HttpCode()
+  // override, so its default success status is 201 (Nest's POST default),
+  // not 200 -- confirmed against identity-session.service.ts's refresh().
+  const isSuccess = (status) => status === 200 || status === 201;
+
+  if (statuses.some((status) => status >= 500)) {
+    throw new Error(`Concurrent refresh using the same token must never 5xx, got: ${statuses.join(",")}`);
+  }
+  const succeeded = raceResponses.filter((response) => isSuccess(response.status));
+  if (succeeded.length > 1) {
+    throw new Error(`At most one concurrent refresh using the same token may succeed, got ${succeeded.length} (statuses: ${statuses.join(",")})`);
+  }
+  if (statuses.some((status) => !isSuccess(status) && status !== 401)) {
+    throw new Error(`Expected every losing concurrent refresh to be 401, got: ${statuses.join(",")}`);
+  }
+
+  if (succeeded.length === 1) jar.store(succeeded[0].headers["set-cookie"]);
+  const postRaceRead = await edgeJson("/api/v1/auth/session", { jar, method: "GET" });
+  if (postRaceRead.status !== 200 && postRaceRead.status !== 401) {
+    throw new Error(`Unexpected post-race session read status ${postRaceRead.status}: ${postRaceRead.body}`);
+  }
+  const outcome = postRaceRead.status === 200
+    ? "single-winner-session-survives"
+    : "reuse-detection-revoked-entire-family";
+
+  const recoveryJar = await loginParityUser(email, password);
+  const recoveryRead = await edgeJson("/api/v1/auth/session", { jar: recoveryJar, method: "GET" });
+  assertStatus(recoveryRead, [200], "race: fresh login after race still works");
+
+  return { output: JSON.stringify({ concurrency, outcome, statuses }) };
+}
+
+// Section 33 (first half): logout ends the session; refresh must not
+// resurrect it.
+async function logoutFlow() {
+  const { jar } = await registerParityUser("logout");
+
+  assertStatus(await edgeJson("/api/v1/auth/session", { jar, method: "GET" }), [200], "logout: pre-logout read");
+
+  const csrf = await issueCsrf(jar);
+  assertStatus(
+    await edgeJson("/api/v1/auth/logout", { headers: { "x-papadata-csrf": csrf }, jar, method: "POST" }),
+    [200],
+    "logout",
+  );
+
+  const afterLogout = await edgeJson("/api/v1/auth/session", { jar, method: "GET" });
+  if (afterLogout.status !== 401) throw new Error(`Expected 401 after logout, got ${afterLogout.status}: ${afterLogout.body}`);
+
+  const refreshAfterLogout = await edgeJson("/api/v1/auth/refresh", {
+    headers: { "x-papadata-csrf": "no-session-remains" },
+    jar,
+    method: "POST",
+  });
+  if (refreshAfterLogout.status !== 401) {
+    throw new Error(`Expected refresh after logout to fail with 401 (not resurrect the session), got ${refreshAfterLogout.status}: ${refreshAfterLogout.body}`);
+  }
+
+  return { output: "logout: authenticated request -> 401 after logout; refresh does not restore access" };
+}
+
+// Section 33 (second half): two devices/sessions for one account;
+// logout-all invalidates both.
+async function logoutAllFlow() {
+  const { email, jar: deviceA, password } = await registerParityUser("logout-all");
+  const deviceB = await loginParityUser(email, password);
+
+  assertStatus(await edgeJson("/api/v1/auth/session", { jar: deviceA, method: "GET" }), [200], "logout-all: device A precheck");
+  assertStatus(await edgeJson("/api/v1/auth/session", { jar: deviceB, method: "GET" }), [200], "logout-all: device B precheck");
+
+  const csrfA = await issueCsrf(deviceA);
+  assertStatus(
+    await edgeJson("/api/v1/auth/logout-all", { headers: { "x-papadata-csrf": csrfA }, jar: deviceA, method: "POST" }),
+    [200],
+    "logout-all",
+  );
+
+  const afterA = await edgeJson("/api/v1/auth/session", { jar: deviceA, method: "GET" });
+  if (afterA.status !== 401) throw new Error(`Expected device A to be 401 after logout-all, got ${afterA.status}`);
+  const afterB = await edgeJson("/api/v1/auth/session", { jar: deviceB, method: "GET" });
+  if (afterB.status !== 401) throw new Error(`Expected device B to be 401 after logout-all, got ${afterB.status}`);
+
+  return { output: "logout-all: both devices' sessions invalidated" };
+}
+
+// Section 34: device A revokes device B's session (A keeps working, B is
+// cut off immediately and cannot refresh back in); revoking A's own
+// current session then ends A's own access too.
+async function sessionRevokeFlow() {
+  const { email, jar: deviceA, password } = await registerParityUser("revoke");
+  const deviceB = await loginParityUser(email, password);
+
+  const sessionA = unwrap((await edgeJson("/api/v1/auth/session", { jar: deviceA, method: "GET" })).json);
+  const sessionB = unwrap((await edgeJson("/api/v1/auth/session", { jar: deviceB, method: "GET" })).json);
+  const sessionIdA = requiredString(sessionA?.sessionId, "device A sessionId");
+  const sessionIdB = requiredString(sessionB?.sessionId, "device B sessionId");
+  if (sessionIdA === sessionIdB) throw new Error("Expected device A and device B to have distinct sessionIds.");
+
+  const csrfA = await issueCsrf(deviceA);
+  assertStatus(
+    await edgeJson(`/api/v1/auth/sessions/${encodeURIComponent(sessionIdB)}`, {
+      headers: { "x-papadata-csrf": csrfA },
+      jar: deviceA,
+      method: "DELETE",
+    }),
+    [200],
+    "revoke device B session",
+  );
+
+  assertStatus(await edgeJson("/api/v1/auth/session", { jar: deviceA, method: "GET" }), [200], "device A still works after revoking B");
+  const afterRevokeB = await edgeJson("/api/v1/auth/session", { jar: deviceB, method: "GET" });
+  if (afterRevokeB.status !== 401) throw new Error(`Expected device B to be 401 after being revoked, got ${afterRevokeB.status}`);
+
+  const refreshB = await edgeJson("/api/v1/auth/refresh", {
+    headers: { "x-papadata-csrf": "revoked-session" },
+    jar: deviceB,
+    method: "POST",
+  });
+  if (refreshB.status !== 401) {
+    throw new Error(`Expected device B refresh to fail with 401 after revoke (not restore access), got ${refreshB.status}`);
+  }
+
+  const csrfA2 = await issueCsrf(deviceA);
+  assertStatus(
+    await edgeJson(`/api/v1/auth/sessions/${encodeURIComponent(sessionIdA)}`, {
+      headers: { "x-papadata-csrf": csrfA2 },
+      jar: deviceA,
+      method: "DELETE",
+    }),
+    [200],
+    "revoke own current session",
+  );
+  const afterSelfRevoke = await edgeJson("/api/v1/auth/session", { jar: deviceA, method: "GET" });
+  if (afterSelfRevoke.status !== 401) {
+    throw new Error(`Expected device A to be 401 after revoking its own current session, got ${afterSelfRevoke.status}`);
+  }
+
+  return { output: "session-revoke: A unaffected by revoking B, B loses access immediately and cannot refresh back in; revoking A's own current session ends A's own access" };
 }
 
 async function rbacRoleMatrixRuntime(runtime) {

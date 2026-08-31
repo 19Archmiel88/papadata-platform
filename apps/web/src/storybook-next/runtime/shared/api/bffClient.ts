@@ -1,6 +1,11 @@
 import type {
   DateRange,
 } from '../../../../../../../contracts/ui-contract-types';
+import {
+  BrowserAuthRefreshCoordinator,
+  type AuthRefreshCoordinator,
+  type AuthRuntimeEvent,
+} from './authRefreshCoordinator';
 
 export type BffSessionMembership = {
   readonly tenantId: string;
@@ -234,42 +239,205 @@ type ErrorPayload = {
     readonly code?: unknown;
     readonly message?: unknown;
   };
+  readonly code?: unknown;
+  readonly correlationId?: unknown;
+  readonly detail?: unknown;
+  // NestJS's default (unfiltered) exception body shape is
+  // `{ statusCode, message, error }` with `error` as a plain string (e.g.
+  // "Forbidden") -- not the `{ error: { code, message } }` envelope the
+  // rest of this type models. Used only as a last-resort human-readable
+  // message fallback; never parsed for auth-level detection (see
+  // requiredAuthLevel below).
+  readonly message?: unknown;
+  // Canonical, structural signal for "this 403 means the caller needs to
+  // reach a higher authLevel" -- set by CapabilityGuard (API, forwarded
+  // verbatim by the BFF's proxy) and by the BFF's own two auth-level guards
+  // (session-assurance's issueStepUp/disableMfa). Deliberately never
+  // inferred from message/detail text: an unrecognized or absent value
+  // must resolve to `null`, not a guessed level.
+  readonly requiredAuthLevel?: unknown;
 };
 
 export class BffProblem extends Error {
   readonly status: number;
   readonly code: string;
+  readonly correlationId: string | null;
+  readonly requestId: string | null;
+  readonly requiredAuthLevel: 'mfa' | 'step_up' | null;
 
-  constructor(status: number, code: string, message: string) {
+  constructor(
+    status: number,
+    code: string,
+    message: string,
+    options: {
+      readonly correlationId?: string | null;
+      readonly requestId?: string | null;
+      readonly requiredAuthLevel?: 'mfa' | 'step_up' | null;
+    } = {},
+  ) {
     super(message);
     this.name = 'BffProblem';
     this.status = status;
     this.code = code;
+    this.correlationId = options.correlationId ?? null;
+    this.requestId = options.requestId ?? null;
+    this.requiredAuthLevel = options.requiredAuthLevel ?? null;
   }
 }
 
-class BffClient {
+type BffFetch = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+type BffRequestMode =
+  | 'auth-bootstrap'
+  | 'authenticated-command'
+  | 'authenticated-read'
+  | 'csrf'
+  | 'public'
+  | 'refresh';
+
+type BffRequestMetadata = {
+  readonly allowRefresh?: boolean;
+  readonly mode: BffRequestMode;
+  readonly retriedAfterRefresh?: boolean;
+};
+
+export type BffSessionSummary = {
+  readonly current: boolean;
+  readonly expiresAt: string;
+  readonly issuedAt: string;
+  readonly sessionId: string;
+  readonly userAgent?: string | null;
+};
+
+export type BffClientOptions = {
+  readonly baseUrl?: string;
+  readonly coordinator?: AuthRefreshCoordinator;
+  readonly csrfCookieName?: string;
+  readonly csrfToken?: string | null;
+  readonly fetchImpl?: BffFetch;
+};
+
+export class BffClient {
   private csrfToken: string | null = null;
   private readonly baseUrl: string;
+  private readonly coordinator: AuthRefreshCoordinator;
+  private readonly csrfCookieName: string;
+  private readonly fetchImpl: BffFetch;
+  private readonly listeners = new Set<(event: AuthRuntimeEvent) => void>();
+  private refreshPromise: Promise<BffSession> | null = null;
 
-  constructor(baseUrl = import.meta.env.VITE_BFF_BASE_URL?.trim() ?? '') {
-    this.baseUrl = baseUrl.replace(/\/+$/u, '');
+  constructor(options: BffClientOptions | string = {}) {
+    const normalized = typeof options === 'string' ? { baseUrl: options } : options;
+    this.baseUrl = (
+      normalized.baseUrl
+      // `?.` after `.env` too, not just after the variable name: this
+      // module's `bffClient` singleton export runs this constructor at
+      // import time, and `import.meta.env` is a Vite-only global -- it is
+      // `undefined` when this file is imported outside a Vite build (e.g.
+      // by a real-client-runtime test harness running under plain
+      // Node/tsx), where a bare `import.meta.env.VITE_BFF_BASE_URL` would
+      // throw before an explicit `baseUrl` option ever got a chance to
+      // short-circuit it via `??`.
+      ?? import.meta.env?.VITE_BFF_BASE_URL?.trim()
+      ?? ''
+    ).replace(/\/+$/u, '');
+    this.coordinator = normalized.coordinator ?? new BrowserAuthRefreshCoordinator();
+    this.csrfCookieName = normalized.csrfCookieName ?? 'papadata_csrf';
+    this.csrfToken = normalized.csrfToken ?? null;
+    this.fetchImpl = normalized.fetchImpl ?? ((input, init) => fetch(input, init));
+    this.coordinator.subscribe((event) => {
+      if (event.type === 'logout' || event.type === 'refresh-failed') {
+        this.csrfToken = null;
+      }
+      this.emit(event);
+    });
+  }
+
+  subscribeAuthEvents(listener: (event: AuthRuntimeEvent) => void): () => void {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
   }
 
   async readSession(): Promise<BffSession | null> {
     try {
-      const response = await this.fetch('/api/v1/auth/session', { method: 'GET' });
-      const localSession = readLocalClientSession();
-      if (response.status === 401 || response.status === 403) {
-        return localSession;
-      }
-      const payload = await readJson<{ readonly data: BffSession }>(response);
-      assertOk(response, payload);
-      return payload.data;
+      return await this.readSessionAfterRefresh();
     } catch (cause) {
-      const localSession = readLocalClientSession();
-      if (canUseLocalAuthFallback(cause) || localSession) {
-        return localSession;
+      if (cause instanceof BffProblem && cause.status === 401) {
+        this.endLocalSession('session-revoked');
+        return null;
+      }
+      throw cause;
+    }
+  }
+
+  private async readSessionAfterRefresh(): Promise<BffSession> {
+    const response = await this.fetch(
+      '/api/v1/auth/session',
+      { method: 'GET' },
+      { allowRefresh: true, mode: 'auth-bootstrap' },
+    );
+    const payload = await readJson<{ readonly data: BffSession }>(response);
+    assertOk(response, payload);
+    return payload.data;
+  }
+
+  private async readSessionWithoutRefresh(): Promise<BffSession> {
+    const response = await this.fetch(
+      '/api/v1/auth/session',
+      { method: 'GET' },
+      { allowRefresh: false, mode: 'auth-bootstrap' },
+    );
+    const payload = await readJson<{ readonly data: BffSession }>(response);
+    assertOk(response, payload);
+    return payload.data;
+  }
+
+  private async refreshSession(): Promise<BffSession> {
+    if (this.refreshPromise) return this.refreshPromise;
+
+    this.refreshPromise = this.coordinator.coordinateRefresh({
+      afterExternal: () => this.readSessionWithoutRefresh(),
+      perform: async () => {
+        const csrfToken = await this.getCsrfTokenForRefresh();
+        const response = await this.fetch(
+          '/api/v1/auth/refresh',
+          {
+            method: 'POST',
+            headers: {
+              'x-papadata-csrf': csrfToken,
+            },
+          },
+          { allowRefresh: false, mode: 'refresh' },
+        );
+        const payload = await readJson<{ readonly data: { readonly session: BffSession } }>(response);
+        assertOk(response, payload);
+        return payload.data.session;
+      },
+    }).then((session) => {
+      this.coordinator.publish({ type: 'session-updated' });
+      return session;
+    }).catch((cause: unknown) => {
+      this.endLocalSession('refresh-failed');
+      throw cause;
+    }).finally(() => {
+      this.refreshPromise = null;
+    });
+
+    return this.refreshPromise;
+  }
+
+  private async getCsrfTokenForRefresh(): Promise<string> {
+    const token = this.csrfToken ?? this.readCsrfTokenCookie();
+    if (token) {
+      this.csrfToken = token;
+      return token;
+    }
+    try {
+      return await this.getCsrfToken();
+    } catch (cause) {
+      if (cause instanceof BffProblem && cause.status === 401) {
+        throw new BffProblem(401, 'SESSION_REFRESH_CSRF_UNAVAILABLE', 'Session refresh requires a valid CSRF token.');
       }
       throw cause;
     }
@@ -281,27 +449,17 @@ class BffClient {
     readonly rememberDevice?: boolean;
   }): Promise<AuthenticationResult> {
     this.csrfToken = null;
-    try {
-      return await this.authenticate('/api/v1/auth/login', input);
-    } catch (cause) {
-      if (canUseLocalAuthFallback(cause)) {
-        return loginWithLocalClient(input);
-      }
-      throw cause;
-    }
+    const result = await this.authenticate('/api/v1/auth/login', input);
+    this.coordinator.publish({ type: 'session-updated' });
+    return result;
   }
 
   async register(input: RegisterInput): Promise<AuthenticationResult> {
     this.csrfToken = null;
     const body = normalizeRegistrationInput(input);
-    try {
-      return await this.authenticate('/api/v1/auth/register/email', body);
-    } catch (cause) {
-      if (canUseLocalAuthFallback(cause)) {
-        return registerWithLocalClient(body);
-      }
-      throw cause;
-    }
+    const result = await this.authenticate('/api/v1/auth/register/email', body);
+    this.coordinator.publish({ type: 'session-updated' });
+    return result;
   }
 
   async confirmMfa(input: {
@@ -311,13 +469,17 @@ class BffClient {
     readonly verified: boolean;
   }> {
     const csrfToken = await this.getCsrfToken();
-    const response = await this.fetch('/api/v1/auth/mfa/confirm', {
-      method: 'POST',
-      headers: {
-        'x-papadata-csrf': csrfToken,
+    const response = await this.fetch(
+      '/api/v1/auth/mfa/confirm',
+      {
+        method: 'POST',
+        headers: {
+          'x-papadata-csrf': csrfToken,
+        },
+        body: JSON.stringify(input),
       },
-      body: JSON.stringify(input),
-    });
+      { allowRefresh: true, mode: 'authenticated-command' },
+    );
     const payload = await readJson<{
       readonly data: {
         readonly session: BffSession;
@@ -325,6 +487,36 @@ class BffClient {
       };
     }>(response);
     assertOk(response, payload);
+    this.coordinator.publish({ type: 'session-updated' });
+    return payload.data;
+  }
+
+  async verifyMfa(input: {
+    readonly code: string;
+  }): Promise<{
+    readonly session: BffSession;
+    readonly verified: boolean;
+  }> {
+    const csrfToken = await this.getCsrfToken();
+    const response = await this.fetch(
+      '/api/v1/auth/mfa/verify',
+      {
+        method: 'POST',
+        headers: {
+          'x-papadata-csrf': csrfToken,
+        },
+        body: JSON.stringify(input),
+      },
+      { allowRefresh: true, mode: 'authenticated-command' },
+    );
+    const payload = await readJson<{
+      readonly data: {
+        readonly session: BffSession;
+        readonly verified: boolean;
+      };
+    }>(response);
+    assertOk(response, payload);
+    this.coordinator.publish({ type: 'session-updated' });
     return payload.data;
   }
 
@@ -336,13 +528,17 @@ class BffClient {
     readonly stepUpExpiresAt: string;
   }> {
     const csrfToken = await this.getCsrfToken();
-    const response = await this.fetch('/api/v1/auth/step-up', {
-      method: 'POST',
-      headers: {
-        'x-papadata-csrf': csrfToken,
+    const response = await this.fetch(
+      '/api/v1/auth/step-up',
+      {
+        method: 'POST',
+        headers: {
+          'x-papadata-csrf': csrfToken,
+        },
+        body: JSON.stringify(input),
       },
-      body: JSON.stringify(input),
-    });
+      { allowRefresh: true, mode: 'authenticated-command' },
+    );
     const payload = await readJson<{
       readonly data: {
         readonly session: BffSession;
@@ -350,6 +546,7 @@ class BffClient {
       };
     }>(response);
     assertOk(response, payload);
+    this.coordinator.publish({ type: 'session-updated' });
     return payload.data;
   }
 
@@ -368,14 +565,18 @@ class BffClient {
     // running response (apps/worker/scripts/verify-invitations-flow.ts) --
     // authenticatedCommand()'s payload.data would be undefined here.
     const csrfToken = await this.getCsrfToken();
-    const response = await this.fetch('/api/v1/security/mfa/enroll', {
-      method: 'POST',
-      headers: {
-        'idempotency-key': createCorrelationId(),
-        'x-papadata-csrf': csrfToken,
+    const response = await this.fetch(
+      '/api/v1/security/mfa/enroll',
+      {
+        method: 'POST',
+        headers: {
+          'idempotency-key': createCorrelationId(),
+          'x-papadata-csrf': csrfToken,
+        },
+        body: JSON.stringify(input),
       },
-      body: JSON.stringify(input),
-    });
+      { allowRefresh: true, mode: 'authenticated-command' },
+    );
     const payload = await readJson<{
       readonly otpauthUri: string;
       readonly recoveryCodes: readonly string[];
@@ -409,10 +610,14 @@ class BffClient {
     readonly invitationId: string;
     readonly token: string;
   }): Promise<InvitationPreview> {
-    const response = await this.fetch('/api/v1/auth/invitations/validate', {
-      method: 'POST',
-      body: JSON.stringify(input),
-    });
+    const response = await this.fetch(
+      '/api/v1/auth/invitations/validate',
+      {
+        method: 'POST',
+        body: JSON.stringify(input),
+      },
+      { allowRefresh: false, mode: 'public' },
+    );
     const payload = await readJson<{ readonly data: InvitationPreview }>(response);
     assertOk(response, payload);
     return payload.data;
@@ -427,10 +632,14 @@ class BffClient {
     readonly accepted: boolean;
     readonly email?: string;
   }> {
-    const response = await this.fetch('/api/v1/auth/invitations/accept', {
-      method: 'POST',
-      body: JSON.stringify(input),
-    });
+    const response = await this.fetch(
+      '/api/v1/auth/invitations/accept',
+      {
+        method: 'POST',
+        body: JSON.stringify(input),
+      },
+      { allowRefresh: false, mode: 'public' },
+    );
     const payload = await readJson<{
       readonly data: { readonly accepted: boolean; readonly email?: string };
     }>(response);
@@ -457,7 +666,11 @@ class BffClient {
   }
 
   async readAuthStatus(): Promise<{ readonly oauth: OAuthAvailability }> {
-    const response = await this.fetch('/api/v1/auth/status', { method: 'GET' });
+    const response = await this.fetch(
+      '/api/v1/auth/status',
+      { method: 'GET' },
+      { allowRefresh: false, mode: 'public' },
+    );
     const payload = await readJson<{
       readonly data: { readonly oauth: OAuthAvailability };
     }>(response);
@@ -472,10 +685,14 @@ class BffClient {
     readonly invitationToken?: string;
     readonly returnTo?: string;
   }): Promise<OAuthStartResult> {
-    const response = await this.fetch('/api/v1/auth/oauth/start', {
-      method: 'POST',
-      body: JSON.stringify(input),
-    });
+    const response = await this.fetch(
+      '/api/v1/auth/oauth/start',
+      {
+        method: 'POST',
+        body: JSON.stringify(input),
+      },
+      { allowRefresh: false, mode: 'public' },
+    );
     const payload = await readJson<{ readonly data: OAuthStartResult }>(response);
     assertOk(response, payload);
     return payload.data;
@@ -508,34 +725,96 @@ class BffClient {
     readonly code: string;
     readonly state: string;
   }): Promise<OAuthCallbackResult> {
-    const response = await this.fetch('/api/v1/auth/oauth/callback', {
-      method: 'POST',
-      body: JSON.stringify(input),
-    });
+    const response = await this.fetch(
+      '/api/v1/auth/oauth/callback',
+      {
+        method: 'POST',
+        body: JSON.stringify(input),
+      },
+      { allowRefresh: false, mode: 'public' },
+    );
     const payload = await readJson<{ readonly data: OAuthCallbackResult }>(response);
     assertOk(response, payload);
     return payload.data;
   }
 
   async logout(): Promise<void> {
-    const hadLocalSession = Boolean(readLocalClientSession());
     try {
       const csrfToken = await this.getCsrfToken();
-      const response = await this.fetch('/api/v1/auth/logout', {
-        method: 'POST',
-        headers: {
-          'x-papadata-csrf': csrfToken,
+      const response = await this.fetch(
+        '/api/v1/auth/logout',
+        {
+          method: 'POST',
+          headers: {
+            'x-papadata-csrf': csrfToken,
+          },
         },
-      });
+        { allowRefresh: false, mode: 'authenticated-command' },
+      );
       const payload = await readJson<unknown>(response);
       assertOk(response, payload);
     } catch (cause) {
-      if (!hadLocalSession || !canUseLocalAuthFallback(cause)) {
+      if (!(cause instanceof BffProblem) || cause.status !== 401) {
         throw cause;
       }
     } finally {
-      clearLocalClientSession();
-      this.csrfToken = null;
+      this.endLocalSession('logout');
+    }
+  }
+
+  async logoutAll(): Promise<void> {
+    try {
+      const csrfToken = await this.getCsrfToken();
+      const response = await this.fetch(
+        '/api/v1/auth/logout-all',
+        {
+          method: 'POST',
+          headers: {
+            'x-papadata-csrf': csrfToken,
+          },
+        },
+        { allowRefresh: false, mode: 'authenticated-command' },
+      );
+      const payload = await readJson<unknown>(response);
+      assertOk(response, payload);
+    } catch (cause) {
+      if (!(cause instanceof BffProblem) || cause.status !== 401) {
+        throw cause;
+      }
+    } finally {
+      this.endLocalSession('logout-all');
+    }
+  }
+
+  async listSessions(): Promise<readonly BffSessionSummary[]> {
+    const response = await this.fetch(
+      '/api/v1/auth/sessions',
+      { method: 'GET' },
+      { allowRefresh: true, mode: 'authenticated-read' },
+    );
+    const payload = await readJson<{
+      readonly data: { readonly sessions: readonly BffSessionSummary[] };
+    }>(response);
+    assertOk(response, payload);
+    return payload.data.sessions;
+  }
+
+  async revokeSession(sessionId: string, currentSessionId?: string): Promise<void> {
+    const csrfToken = await this.getCsrfToken();
+    const response = await this.fetch(
+      `/api/v1/auth/sessions/${encodeURIComponent(sessionId)}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'x-papadata-csrf': csrfToken,
+        },
+      },
+      { allowRefresh: true, mode: 'authenticated-command' },
+    );
+    const payload = await readJson<unknown>(response);
+    assertOk(response, payload);
+    if (currentSessionId && currentSessionId === sessionId) {
+      this.endLocalSession('session-revoked');
     }
   }
 
@@ -544,9 +823,11 @@ class BffClient {
     readonly status: number;
     readonly requestId: string | null;
   }> {
-    const response = await this.fetch('/api/v1/integrations/providers', {
-      method: 'GET',
-    });
+    const response = await this.fetch(
+      '/api/v1/integrations/providers',
+      { method: 'GET' },
+      { allowRefresh: true, mode: 'authenticated-read' },
+    );
     return {
       ok: response.ok,
       status: response.status,
@@ -561,13 +842,15 @@ class BffClient {
       readonly query?: Readonly<Record<string, string | null | undefined>>;
     } = {},
   ): Promise<TData> {
-    const response = await this.fetch(withReadQuery(
-      path,
-      options.dateRange ?? null,
-      options.query ?? null,
-    ), {
-      method: 'GET',
-    });
+    const response = await this.fetch(
+      withReadQuery(
+        path,
+        options.dateRange ?? null,
+        options.query ?? null,
+      ),
+      { method: 'GET' },
+      { allowRefresh: true, mode: 'authenticated-read' },
+    );
     const payload = await readJson<{
       readonly data: TData;
     }>(response);
@@ -576,41 +859,22 @@ class BffClient {
   }
 
   async selectWorkspace(workspaceId: string): Promise<BffSession> {
-    try {
-      const session = await this.authenticatedCommand<BffSession>(
-        '/api/v1/access/workspace/select',
-        { workspaceId },
-      );
-      return session;
-    } catch (cause) {
-      const localSession = readLocalClientSession();
-      if (!localSession || !canUseLocalAuthFallback(cause)) {
-        throw cause;
-      }
-      const membership = localSession.memberships.find((item) => (
-        item.workspaceId === workspaceId
-      ));
-      if (!membership) {
-        throw new BffProblem(403, 'WORKSPACE_NOT_AVAILABLE', 'Workspace nie jest dostępny dla tej sesji.');
-      }
-      const nextSession: BffSession = {
-        ...localSession,
-        activeTenantId: membership.tenantId,
-        activeWorkspaceId: membership.workspaceId,
-        capabilities: membership.capabilities,
-      };
-      const state = readLocalClientState();
-      writeLocalClientState({ accounts: state.accounts, session: nextSession });
-      return nextSession;
-    }
+    const session = await this.authenticatedCommand<BffSession>(
+      '/api/v1/access/workspace/select',
+      { workspaceId },
+    );
+    this.coordinator.publish({ type: 'session-updated' });
+    return session;
   }
 
   async readNotifications(
     view: 'active' | 'all' | 'snoozed' = 'active',
   ): Promise<BffNotificationList> {
-    const response = await this.fetch(`/api/v1/notifications?view=${encodeURIComponent(view)}`, {
-      method: 'GET',
-    });
+    const response = await this.fetch(
+      `/api/v1/notifications?view=${encodeURIComponent(view)}`,
+      { method: 'GET' },
+      { allowRefresh: true, mode: 'authenticated-read' },
+    );
     const payload = await readJson<{ readonly data: BffNotificationList }>(response);
     assertOk(response, payload);
     return payload.data;
@@ -798,6 +1062,7 @@ class BffClient {
     const response = await this.fetch(
       `/api/v1/reports/${encodeURIComponent(reportId)}`,
       { method: 'GET' },
+      { allowRefresh: true, mode: 'authenticated-read' },
     );
     const payload = await readJson<{ readonly data: BffReportRecord }>(response);
     assertOk(response, payload);
@@ -811,6 +1076,7 @@ class BffClient {
     const response = await this.fetch(
       `/api/v1/reports/${encodeURIComponent(reportId)}/download`,
       { method: 'GET' },
+      { allowRefresh: true, mode: 'authenticated-read' },
     );
     const payload = await readJson<{
       readonly data: { readonly url: string; readonly expiresInSeconds: number };
@@ -820,7 +1086,11 @@ class BffClient {
   }
 
   async readIntegrationJobs(): Promise<readonly BffIntegrationJob[]> {
-    const response = await this.fetch('/api/v1/integrations/jobs', { method: 'GET' });
+    const response = await this.fetch(
+      '/api/v1/integrations/jobs',
+      { method: 'GET' },
+      { allowRefresh: true, mode: 'authenticated-read' },
+    );
     const payload = await readJson<{ readonly data: readonly BffIntegrationJob[] }>(response);
     assertOk(response, payload);
     return payload.data;
@@ -917,6 +1187,7 @@ class BffClient {
           'x-papadata-csrf': csrfToken,
         },
       },
+      { allowRefresh: true, mode: 'authenticated-command' },
     );
     const payload = await readJson<unknown>(response);
     assertOk(response, payload);
@@ -928,14 +1199,18 @@ class BffClient {
     options: { readonly idempotencyKey?: string } = {},
   ): Promise<TData> {
     const csrfToken = await this.getCsrfToken();
-    const response = await this.fetch(path, {
-      method: 'POST',
-      headers: {
-        'idempotency-key': options.idempotencyKey ?? createCorrelationId(),
-        'x-papadata-csrf': csrfToken,
+    const response = await this.fetch(
+      path,
+      {
+        method: 'POST',
+        headers: {
+          'idempotency-key': options.idempotencyKey ?? createCorrelationId(),
+          'x-papadata-csrf': csrfToken,
+        },
+        ...(body ? { body: JSON.stringify(body) } : {}),
       },
-      ...(body ? { body: JSON.stringify(body) } : {}),
-    });
+      { allowRefresh: true, mode: 'authenticated-command' },
+    );
     const payload = await readJson<{ readonly data: TData }>(response);
     assertOk(response, payload);
     return payload.data;
@@ -945,10 +1220,14 @@ class BffClient {
     path: string,
     body: Readonly<Record<string, unknown>>,
   ): Promise<AuthenticationResult> {
-    const response = await this.fetch(path, {
-      method: 'POST',
-      body: JSON.stringify(body),
-    });
+    const response = await this.fetch(
+      path,
+      {
+        method: 'POST',
+        body: JSON.stringify(body),
+      },
+      { allowRefresh: false, mode: 'public' },
+    );
     const payload = await readJson<{
       readonly data: AuthenticationResult;
     }>(response);
@@ -960,20 +1239,28 @@ class BffClient {
     path: string,
     body: Readonly<Record<string, string>>,
   ): Promise<void> {
-    const response = await this.fetch(path, {
-      method: 'POST',
-      headers: {
-        'idempotency-key': createCorrelationId(),
+    const response = await this.fetch(
+      path,
+      {
+        method: 'POST',
+        headers: {
+          'idempotency-key': createCorrelationId(),
+        },
+        body: JSON.stringify(body),
       },
-      body: JSON.stringify(body),
-    });
+      { allowRefresh: false, mode: 'public' },
+    );
     const payload = await readJson<unknown>(response);
     assertOk(response, payload);
   }
 
   private async getCsrfToken(): Promise<string> {
     if (this.csrfToken) return this.csrfToken;
-    const response = await this.fetch('/api/csrf', { method: 'GET' });
+    const response = await this.fetch(
+      '/api/csrf',
+      { method: 'GET' },
+      { allowRefresh: false, mode: 'csrf' },
+    );
     const payload = await readJson<{
       readonly data: {
         readonly csrfToken: string;
@@ -987,6 +1274,39 @@ class BffClient {
   private fetch(
     path: string,
     init: RequestInit,
+    metadata: BffRequestMetadata,
+  ): Promise<Response> {
+    return this.fetchWithRetry(path, init, metadata);
+  }
+
+  private async fetchWithRetry(
+    path: string,
+    init: RequestInit,
+    metadata: BffRequestMetadata,
+  ): Promise<Response> {
+    const response = await this.performFetch(path, init);
+
+    if (
+      response.status !== 401
+      || metadata.retriedAfterRefresh
+      || metadata.allowRefresh === false
+      || metadata.mode === 'public'
+      || metadata.mode === 'csrf'
+      || metadata.mode === 'refresh'
+    ) {
+      return response;
+    }
+
+    await this.refreshSession();
+    return this.fetchWithRetry(path, init, {
+      ...metadata,
+      retriedAfterRefresh: true,
+    });
+  }
+
+  private async performFetch(
+    path: string,
+    init: RequestInit,
   ): Promise<Response> {
     const headers = new Headers(init.headers);
     headers.set('accept', 'application/json');
@@ -995,12 +1315,42 @@ class BffClient {
       headers.set('content-type', 'application/json');
     }
 
-    return fetch(`${this.baseUrl}${path}`, {
-      ...init,
-      credentials: 'include',
-      headers,
-      redirect: 'manual',
-    });
+    try {
+      return await this.fetchImpl(`${this.baseUrl}${path}`, {
+        ...init,
+        credentials: 'include',
+        headers,
+        redirect: 'manual',
+      });
+    } catch (cause) {
+      throw new BffProblem(
+        0,
+        'NETWORK_UNAVAILABLE',
+        'BFF is unavailable.',
+        { correlationId: headers.get('x-correlation-id') },
+      );
+    }
+  }
+
+  private readCsrfTokenCookie(): string | null {
+    if (typeof document === 'undefined') return null;
+    const prefix = `${encodeURIComponent(this.csrfCookieName)}=`;
+    const cookie = document.cookie
+      .split(';')
+      .map((item) => item.trim())
+      .find((item) => item.startsWith(prefix));
+    return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : null;
+  }
+
+  private endLocalSession(reason: 'logout' | 'logout-all' | 'refresh-failed' | 'session-revoked'): void {
+    this.csrfToken = null;
+    this.coordinator.publish({ type: 'logout', reason });
+  }
+
+  private emit(event: AuthRuntimeEvent): void {
+    for (const listener of this.listeners) {
+      listener(event);
+    }
   }
 }
 
@@ -1044,64 +1394,6 @@ type NormalizedRegisterInput = {
   readonly workspaceName: string;
 };
 
-type LocalClientAccount = NormalizedRegisterInput & {
-  readonly tenantId: string;
-  readonly userId: string;
-  readonly workspaceId: string;
-};
-
-type LocalClientState = {
-  readonly accounts: readonly LocalClientAccount[];
-  readonly session: BffSession | null;
-};
-
-const localClientStateKey = 'papadata.local-client-runtime.v1';
-
-const localClientCapabilities = [
-  'analytics.read',
-  'analytics.command_center.read',
-  'analytics.metrics.read',
-  'analytics.metrics.compare',
-  'ai.action_proposal.approve',
-  'ai.action_proposal.create',
-  'ai.assistant.run',
-  'ai.history.read',
-  'billing.manage',
-  'billing.read',
-  'data_quality.read',
-  'decisions.manage',
-  'decisions.read',
-  'integrations.catalog.read',
-  'integrations.connection.manage',
-  'integrations.connection.read',
-  'integrations.credentials.manage',
-  'integrations.jobs.manage',
-  'integrations.jobs.read',
-  'integrations.manage',
-  'integrations.read',
-  'integrations.sync.run',
-  'reports.create',
-  'reports.read',
-  'settings.manage',
-  'workspace.manage',
-  'workspace.read',
-] as const;
-
-export function isLocalClientRuntimeAvailable(): boolean {
-  if (!import.meta.env.DEV) return false;
-  if (typeof window === 'undefined') return false;
-  try {
-    if (!window.localStorage) return false;
-  } catch {
-    return false;
-  }
-  const hostname = window.location.hostname.toLocaleLowerCase('en-US');
-  return hostname === 'localhost'
-    || hostname === '127.0.0.1'
-    || hostname === 'papadata.localhost'
-    || hostname.endsWith('.localhost');
-}
-
 function normalizeRegistrationInput(input: RegisterInput): NormalizedRegisterInput {
   const displayName = (input.displayName ?? input.fullName ?? '').trim();
   return {
@@ -1113,270 +1405,6 @@ function normalizeRegistrationInput(input: RegisterInput): NormalizedRegisterInp
   };
 }
 
-function canUseLocalAuthFallback(cause: unknown): boolean {
-  if (!isLocalClientRuntimeAvailable()) return false;
-  if (cause instanceof BffProblem) {
-    return cause.status >= 500 || cause.code === 'LOGIN_FAILED';
-  }
-  return true;
-}
-
-function registerWithLocalClient(
-  input: NormalizedRegisterInput,
-): AuthenticationResult {
-  const state = readLocalClientState();
-  const email = normalizeEmail(input.email);
-  const existing = state.accounts.find((account) => (
-    normalizeEmail(account.email) === email
-  ));
-
-  if (existing) {
-    throw new BffProblem(
-      409,
-      'REGISTRATION_FAILED',
-      'Konto lokalne o tym adresie już istnieje. Zaloguj się lokalnie.',
-    );
-  }
-
-  const account: LocalClientAccount = {
-    ...input,
-    email,
-    tenantId: createLocalId('tenant'),
-    userId: createLocalId('user'),
-    workspaceId: createLocalId('workspace'),
-  };
-  const session = createLocalClientSession(account);
-  writeLocalClientState({
-    accounts: [...state.accounts, account],
-    session,
-  });
-  return {
-    session,
-    user: localAuthenticatedUser(account),
-  };
-}
-
-function loginWithLocalClient(input: {
-  readonly email: string;
-  readonly password: string;
-}): AuthenticationResult {
-  const state = readLocalClientState();
-  const email = normalizeEmail(input.email);
-  const account = state.accounts.find((candidate) => (
-    normalizeEmail(candidate.email) === email
-  ));
-
-  if (!account || account.password !== input.password) {
-    throw new BffProblem(
-      401,
-      'LOGIN_FAILED',
-      'Nie udało się zalogować. Sprawdź dane i spróbuj ponownie.',
-    );
-  }
-
-  const session = createLocalClientSession(account);
-  writeLocalClientState({
-    accounts: state.accounts,
-    session,
-  });
-  return {
-    session,
-    user: localAuthenticatedUser(account),
-  };
-}
-
-function readLocalClientSession(): BffSession | null {
-  const state = readLocalClientState();
-  if (!state.session) return null;
-  if (Date.parse(state.session.expiresAt) <= Date.now()) {
-    writeLocalClientState({
-      accounts: state.accounts,
-      session: null,
-    });
-    return null;
-  }
-  return state.session;
-}
-
-function clearLocalClientSession(): void {
-  if (!isLocalClientRuntimeAvailable()) return;
-  const state = readLocalClientState();
-  writeLocalClientState({
-    accounts: state.accounts,
-    session: null,
-  });
-}
-
-function createLocalClientSession(account: LocalClientAccount): BffSession {
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1_000).toISOString();
-  return {
-    activeTenantId: account.tenantId,
-    activeWorkspaceId: account.workspaceId,
-    authLevel: 'session',
-    capabilities: localClientCapabilities,
-    expiresAt,
-    memberships: [
-      {
-        capabilities: localClientCapabilities,
-        roles: ['Tenant Owner'],
-        tenantId: account.tenantId,
-        tenantName: account.organizationName,
-        workspaceId: account.workspaceId,
-        workspaceName: account.workspaceName,
-      },
-    ],
-    sessionId: createLocalId('session'),
-    user: localAuthenticatedUser(account),
-    userId: account.userId,
-  };
-}
-
-function localAuthenticatedUser(
-  account: LocalClientAccount,
-): AuthenticatedUser {
-  return {
-    displayName: account.displayName,
-    email: account.email,
-    userId: account.userId,
-  };
-}
-
-function readLocalClientState(): LocalClientState {
-  if (!isLocalClientRuntimeAvailable()) {
-    return { accounts: [], session: null };
-  }
-
-  try {
-    const raw = window.localStorage.getItem(localClientStateKey);
-    if (!raw) return { accounts: [], session: null };
-    const parsed = JSON.parse(raw) as unknown;
-    if (!isRecord(parsed)) return { accounts: [], session: null };
-    return {
-      accounts: readLocalClientAccounts(parsed.accounts),
-      session: readLocalClientSessionValue(parsed.session),
-    };
-  } catch {
-    return { accounts: [], session: null };
-  }
-}
-
-function writeLocalClientState(state: LocalClientState): void {
-  if (!isLocalClientRuntimeAvailable()) return;
-  window.localStorage.setItem(localClientStateKey, JSON.stringify(state));
-}
-
-function readLocalClientAccounts(value: unknown): readonly LocalClientAccount[] {
-  if (!Array.isArray(value)) return [];
-  return value.flatMap((item): readonly LocalClientAccount[] => {
-    if (!isRecord(item)) return [];
-    const displayName = optionalString(item.displayName);
-    const email = optionalString(item.email);
-    const organizationName = optionalString(item.organizationName);
-    const password = optionalString(item.password);
-    const tenantId = optionalString(item.tenantId);
-    const userId = optionalString(item.userId);
-    const workspaceId = optionalString(item.workspaceId);
-    const workspaceName = optionalString(item.workspaceName);
-    if (
-      !displayName
-      || !email
-      || !organizationName
-      || !password
-      || !tenantId
-      || !userId
-      || !workspaceId
-      || !workspaceName
-    ) {
-      return [];
-    }
-    return [{
-      displayName,
-      email,
-      organizationName,
-      password,
-      tenantId,
-      userId,
-      workspaceId,
-      workspaceName,
-    }];
-  });
-}
-
-function readLocalClientSessionValue(value: unknown): BffSession | null {
-  if (!isRecord(value)) return null;
-  const activeTenantId = optionalString(value.activeTenantId);
-  const activeWorkspaceId = optionalString(value.activeWorkspaceId);
-  const authLevel = optionalString(value.authLevel);
-  const expiresAt = optionalString(value.expiresAt);
-  const sessionId = optionalString(value.sessionId);
-  const userId = optionalString(value.userId);
-  const capabilities = stringArray(value.capabilities);
-  const memberships = readLocalClientMemberships(value.memberships);
-  const user = readLocalAuthenticatedUser(value.user);
-  if (
-    !activeTenantId
-    || !activeWorkspaceId
-    || !authLevel
-    || capabilities.length === 0
-    || !expiresAt
-    || memberships.length === 0
-    || !sessionId
-    || !userId
-  ) {
-    return null;
-  }
-  return {
-    activeTenantId,
-    activeWorkspaceId,
-    authLevel,
-    capabilities,
-    expiresAt,
-    memberships,
-    sessionId,
-    ...(user ? { user } : {}),
-    userId,
-  };
-}
-
-function readLocalClientMemberships(
-  value: unknown,
-): readonly BffSessionMembership[] {
-  if (!Array.isArray(value)) return [];
-  return value.flatMap((item): readonly BffSessionMembership[] => {
-    if (!isRecord(item)) return [];
-    const tenantId = optionalString(item.tenantId);
-    const tenantName = optionalString(item.tenantName);
-    const workspaceId = optionalString(item.workspaceId);
-    const workspaceName = optionalString(item.workspaceName);
-    const capabilities = stringArray(item.capabilities);
-    const roles = stringArray(item.roles);
-    return tenantId && workspaceId && capabilities.length > 0
-      ? [{
-          capabilities,
-          roles,
-          tenantId,
-          ...(tenantName ? { tenantName } : {}),
-          workspaceId,
-          ...(workspaceName ? { workspaceName } : {}),
-        }]
-      : [];
-  });
-}
-
-function readLocalAuthenticatedUser(value: unknown): AuthenticatedUser | null {
-  if (!isRecord(value)) return null;
-  const displayName = optionalString(value.displayName);
-  const email = optionalString(value.email);
-  const userId = optionalString(value.userId);
-  return displayName && email && userId
-    ? { displayName, email, userId }
-    : null;
-}
-
-function normalizeEmail(email: string): string {
-  return email.trim().toLocaleLowerCase('en-US');
-}
-
 function optionalString(value: unknown): string | null {
   return typeof value === 'string' && value.length > 0 ? value : null;
 }
@@ -1385,10 +1413,6 @@ function stringArray(value: unknown): readonly string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string')
     ? value
     : [];
-}
-
-function createLocalId(prefix: string): string {
-  return `${prefix}_${createCorrelationId()}`;
 }
 
 async function readJson<T>(response: Response): Promise<T> {
@@ -1410,22 +1434,60 @@ function assertOk(response: Response, payload: unknown): void {
   const errorPayload: ErrorPayload = isRecord(payload)
     ? payload as ErrorPayload
     : {};
-  const code = typeof errorPayload.error?.code === 'string'
-    ? errorPayload.error.code
-    : `HTTP_${response.status}`;
+  const code = readProblemCode(errorPayload, response.status);
+  const detail = typeof errorPayload.detail === 'string' ? errorPayload.detail : null;
+  const topLevelMessage = typeof errorPayload.message === 'string' ? errorPayload.message : null;
   const message = typeof errorPayload.error?.message === 'string'
     ? errorPayload.error.message
-    : friendlyMessage(code, response.status);
-  throw new BffProblem(response.status, code, message);
+    : detail ?? topLevelMessage ?? friendlyMessage(code, response.status);
+  throw new BffProblem(response.status, code, message, {
+    correlationId: readResponseIdentifier(response, payload, 'x-correlation-id'),
+    requestId: readResponseIdentifier(response, payload, 'x-request-id'),
+    requiredAuthLevel: response.status === 403 ? readRequiredAuthLevel(errorPayload) : null,
+  });
 }
 
 function friendlyMessage(code: string, status: number): string {
   if (code === 'LOGIN_FAILED') return 'Nie udało się zalogować. Sprawdź dane i spróbuj ponownie.';
   if (code === 'REGISTRATION_FAILED') return 'Nie udało się utworzyć konta.';
+  if (code === 'NETWORK_UNAVAILABLE') return 'Usługa jest chwilowo niedostępna.';
+  if (status === 400) return 'Żądanie zawiera nieprawidłowe dane.';
   if (status === 401) return 'Sesja wygasła lub nie jest aktywna.';
   if (status === 403) return 'Żądanie zostało odrzucone przez zabezpieczenia aplikacji.';
+  if (status === 409) return 'Żądanie jest w konflikcie z aktualnym stanem.';
+  if (status === 429) return 'Przekroczono limit żądań. Spróbuj ponownie później.';
   if (status >= 500) return 'Usługa jest chwilowo niedostępna.';
   return 'Żądanie nie mogło zostać wykonane.';
+}
+
+function readProblemCode(payload: ErrorPayload, status: number): string {
+  if (typeof payload.error?.code === 'string') return payload.error.code;
+  if (typeof payload.code === 'string') return payload.code;
+  return `HTTP_${status}`;
+}
+
+function readResponseIdentifier(
+  response: Response,
+  payload: unknown,
+  headerName: 'x-correlation-id' | 'x-request-id',
+): string | null {
+  const header = response.headers.get(headerName);
+  if (header) return header;
+  if (headerName === 'x-correlation-id' && isRecord(payload) && typeof payload.correlationId === 'string') {
+    return payload.correlationId;
+  }
+  return null;
+}
+
+// Structural only -- deliberately does not scan message/detail/code text.
+// An absent or unrecognized value must resolve to `null`, never a guessed
+// level (in particular, an unrecognized 403 must never default to
+// 'step_up'). See ErrorPayload.requiredAuthLevel for where this field
+// comes from on the wire.
+function readRequiredAuthLevel(payload: ErrorPayload): 'mfa' | 'step_up' | null {
+  return payload.requiredAuthLevel === 'mfa' || payload.requiredAuthLevel === 'step_up'
+    ? payload.requiredAuthLevel
+    : null;
 }
 
 function createCorrelationId(): string {

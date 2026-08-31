@@ -8,6 +8,17 @@ import {
   repoRoot,
 } from "./lib/production-parity-env.mjs";
 
+const FORBIDDEN_LOCAL_AUTH_FALLBACK_TOKENS = [
+  "LocalClientAccount",
+  "loginWithLocalClient",
+  "registerWithLocalClient",
+  "readLocalClientSession",
+  "writeLocalClientState",
+  "canUseLocalAuthFallback",
+  "isLocalClientRuntimeAvailable",
+  "localClientCapabilities",
+];
+
 const failures = [];
 const contract = await readJson("config/production-parity-env.contract.json");
 const localContract = await readJson(contract.localContract);
@@ -59,8 +70,15 @@ const webClient = await readFrontendBffClient();
 if (!webClient.includes(contract.frontend.baseUrlVariable)) {
   failures.push(`Frontend does not reference ${contract.frontend.baseUrlVariable}.`);
 }
-if (!webClient.includes("import.meta.env.DEV")) {
-  failures.push("Frontend local auth fallback must be gated by import.meta.env.DEV.");
+// Phase 8 (browser auth/session runtime hardening) removed the frontend's
+// local auth fallback entirely -- production BffClient must never create,
+// persist, or serve a client-side-fabricated session. This asserts the
+// removal stays removed, rather than (as before) requiring it to merely be
+// DEV-gated.
+for (const token of FORBIDDEN_LOCAL_AUTH_FALLBACK_TOKENS) {
+  if (webClient.includes(token)) {
+    failures.push(`Frontend BFF client must not contain a local auth fallback (found "${token}").`);
+  }
 }
 
 const envPath = resolve(repoRoot, contract.generatedEnvFile);

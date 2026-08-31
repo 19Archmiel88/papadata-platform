@@ -21,7 +21,7 @@ import {
   navigate,
   safeReturnTo,
   useLocationPath,
-} from '../storybook-next/runtime/app/routing/navigation';
+} from '../runtime/app/routing/navigation';
 import {
   createRuntimeShellCommands,
   createRuntimeShellNavigation,

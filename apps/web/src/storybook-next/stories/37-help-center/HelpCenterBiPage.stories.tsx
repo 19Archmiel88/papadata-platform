@@ -16,7 +16,7 @@ import {
 
 import {
   HelpAnalyticsCharts,
-  HelpCenterBiPage,
+  HelpCenterScreen,
   HelpCenterTabNav,
   HelpContextAndEscalation,
   HelpContextSignal,
@@ -25,30 +25,30 @@ import {
   HelpKnowledgeBase,
   HelpTruthEngine,
   HelpTruthMatrix,
-} from './HelpCenterBiPage';
+} from '../../../screens/help-center/HelpCenterScreen';
 import {
   defaultHelpRuntimeState,
-} from './HelpCenterBiPage.data';
+} from '../../../fixtures/help-center/helpCenterDemoSeed';
 import type {
   HelpCategoryId,
   HelpCenterTabId,
   HelpRole,
   HelpRuntimeState,
-} from './HelpCenterBiPage.data';
+} from '../../../fixtures/help-center/helpCenterDemoSeed';
 import {
   StorybookProductShellFrame,
 } from '../shared/StorybookProductShellFrame';
 
 const meta = {
   title: '37 Centrum pomocy/Strona z dostarczonego HTML',
-  component: HelpCenterBiPage,
+  component: HelpCenterScreen,
   parameters: {
     a11y: {
       test: 'error',
     },
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof HelpCenterBiPage>;
+} satisfies Meta<typeof HelpCenterScreen>;
 
 export default meta;
 
@@ -130,7 +130,7 @@ export const FullPage: Story = {
   name: 'Pełna kompozycja strony',
   render: () => (
     <StorybookProductShellFrame activePath="/app/help/strona-glowna-pomocy">
-      <HelpCenterBiPage />
+      <HelpCenterScreen />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {
@@ -247,7 +247,7 @@ export const ProcedureEscalationAndIncidents: Story = {
   name: '7. Procedura i eskalacja',
   render: () => (
     <StorybookProductShellFrame activePath="/app/help/strona-glowna-pomocy">
-      <HelpCenterBiPage />
+      <HelpCenterScreen />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {

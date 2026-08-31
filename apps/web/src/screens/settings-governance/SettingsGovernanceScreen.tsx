@@ -21,12 +21,12 @@ import {
 
 import {
   Button,
-} from '../../../design-system';
+} from '../../design-system';
 import type {
   SettingsRoleScopeMap,
   SettingsTabId,
   SettingsTarget,
-} from './SettingsGovernanceBiPage.data';
+} from '../../fixtures/settings-governance/settingsGovernanceDemoSeed';
 import {
   settingsAiMemory,
   settingsAuditPostureBreakdown,
@@ -42,9 +42,9 @@ import {
   settingsSubprocessors,
   settingsTargets,
   settingsTeamMembers,
-} from './SettingsGovernanceBiPage.data';
+} from '../../fixtures/settings-governance/settingsGovernanceDemoSeed';
 
-import './SettingsGovernanceBiPage.css';
+import './SettingsGovernanceScreen.css';
 
 const chartColors = {
   amber: 'rgb(var(--pd-set-amber-600))',
@@ -62,7 +62,7 @@ type ToastState = {
   readonly tone: ToastTone;
 } | null;
 
-export function SettingsGovernanceBiPage() {
+export function SettingsGovernanceScreen() {
   const [activeTab, setActiveTab] = useState<SettingsTabId>('account-profile');
   const [revision, setRevision] = useState(124);
   const [toast, setToast] = useState<ToastState>(null);

@@ -22,7 +22,7 @@ import {
 import {
   Button,
   Icon,
-} from '../../../design-system';
+} from '../../design-system';
 import {
   defaultHelpRuntimeState,
   helpArticles,
@@ -37,7 +37,7 @@ import {
   quickSearchPhrases,
   resolutionSegments,
   searchGapCandidates,
-} from './HelpCenterBiPage.data';
+} from '../../fixtures/help-center/helpCenterDemoSeed';
 import type {
   HelpArticle,
   HelpCategoryId,
@@ -47,8 +47,8 @@ import type {
   HelpProviderStatus,
   HelpRole,
   HelpRuntimeState,
-} from './HelpCenterBiPage.data';
-import './HelpCenterBiPage.css';
+} from '../../fixtures/help-center/helpCenterDemoSeed';
+import './HelpCenterScreen.css';
 
 const noop = () => undefined;
 
@@ -71,7 +71,7 @@ type RuntimeArticleState = {
   readonly status: 'available' | 'capability-pending' | 'provider-disabled' | 'role-missing';
 };
 
-export function HelpCenterBiPage() {
+export function HelpCenterScreen() {
   const [activeTab, setActiveTab] = useState<HelpCenterTabId>('kb');
   const [selectedCategory, setSelectedCategory] = useState<HelpCategoryId>('ALL');
   const [roleFilter, setRoleFilter] = useState<HelpRole | 'ALL'>('ADMIN');

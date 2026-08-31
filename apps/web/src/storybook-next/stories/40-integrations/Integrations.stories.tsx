@@ -9,11 +9,11 @@ import {
 
 import {
   IntegrationsWorkspace,
-} from '../../runtime/screens/integrations/index';
+} from '../../../runtime/integrations/index';
 import {
   createIntegrationsRuntimeFallbackData,
   integrationScreenDefinitions,
-} from '../../runtime/screens/integrations/integrationsData';
+} from '../../../runtime/integrations/integrationsData';
 
 const meta = {
   title: '40 Integracje i synchronizacja/Ekrany produkcyjne',

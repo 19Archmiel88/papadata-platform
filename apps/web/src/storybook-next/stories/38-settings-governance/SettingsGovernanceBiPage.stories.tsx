@@ -15,28 +15,28 @@ import {
   SettingsAccountProfile,
   SettingsAccountSecurity,
   SettingsAuditP0,
-  SettingsGovernanceBiPage,
+  SettingsGovernanceScreen,
   SettingsWorkspaceAi,
   SettingsWorkspaceAnalytics,
   SettingsWorkspaceCompany,
   SettingsWorkspaceCompliance,
   SettingsWorkspaceNotifications,
   SettingsWorkspaceTeam,
-} from './SettingsGovernanceBiPage';
+} from '../../../screens/settings-governance/SettingsGovernanceScreen';
 import {
   StorybookProductShellFrame,
 } from '../shared/StorybookProductShellFrame';
 
 const meta = {
   title: '38 Ustawienia i governance/Strona z dostarczonego HTML',
-  component: SettingsGovernanceBiPage,
+  component: SettingsGovernanceScreen,
   parameters: {
     a11y: {
       test: 'error',
     },
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof SettingsGovernanceBiPage>;
+} satisfies Meta<typeof SettingsGovernanceScreen>;
 
 export default meta;
 
@@ -62,7 +62,7 @@ export const FullPage: Story = {
   name: 'Pełna kompozycja strony',
   render: () => (
     <StorybookProductShellFrame activePath="/app/settings/organizacja">
-      <SettingsGovernanceBiPage />
+      <SettingsGovernanceScreen />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {
@@ -217,7 +217,7 @@ export const ModalsAndSearch: Story = {
   name: '10. Modale (TOTP, zaproszenie, cel, Ctrl+K)',
   render: () => (
     <StorybookProductShellFrame activePath="/app/settings/organizacja">
-      <SettingsGovernanceBiPage />
+      <SettingsGovernanceScreen />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {

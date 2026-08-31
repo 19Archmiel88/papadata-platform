@@ -12,7 +12,7 @@ import {
 
 import {
   navigate,
-} from '../../app/routing/navigation';
+} from '../app/routing/navigation';
 import {
   createIntegrationsRuntimeFallbackData,
   filterIntegrationCatalog,

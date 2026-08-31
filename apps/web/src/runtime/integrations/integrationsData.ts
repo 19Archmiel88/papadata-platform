@@ -1,7 +1,7 @@
 import type {
   DataColumn,
   DataRow,
-} from '../../../../../../../contracts/component-shared';
+} from '../../../../../contracts/component-shared';
 
 export type IntegrationScreenId =
   | '40.01'

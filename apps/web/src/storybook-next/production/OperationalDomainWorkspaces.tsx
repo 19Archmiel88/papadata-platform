@@ -34,13 +34,13 @@ import {
 import type {
   IntegrationScreenDefinition,
   IntegrationsData,
-} from '../runtime/screens/integrations/integrationsData';
+} from '../../runtime/integrations/integrationsData';
 import {
   integrationColumns,
   integrationScreenDefinitions,
   integrationRows,
   resolveIntegrationStatusLabel,
-} from '../runtime/screens/integrations/integrationsData';
+} from '../../runtime/integrations/integrationsData';
 import type {
   PapaScreenDefinition,
   PapaWorkspaceData,

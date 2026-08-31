@@ -15,7 +15,7 @@ import {
 } from 'storybook/test';
 
 import {
-  CommandCenterBiPage,
+  CommandCenterScreen,
   CommandCustomersSection,
   CommandDataHealthSection,
   CommandDriversSection,
@@ -26,31 +26,31 @@ import {
   CommandPulseSection,
   CommandRisksSection,
   CommandSourcesSection,
-} from './CommandCenterBiPage';
+} from '../../../screens/command-center/CommandCenterScreen';
 import {
-  commandCenterSectionsById,
-  commandProducts,
-  commandRisks,
-} from './CommandCenterBiPage.data';
+  commandCenterOverviewFixture,
+} from '../../fixtures/command-center/commandCenterOverviewFixture';
 import type {
+  CommandCenterSection,
+  CommandProductData,
   CommandProductSort,
   CommandRisk,
   CommandRiskStatus,
-} from './CommandCenterBiPage.data';
+} from '../../../screens/command-center/CommandCenterScreen.model';
 import {
   StorybookProductShellFrame,
 } from '../shared/StorybookProductShellFrame';
 
 const meta = {
   title: '30 Centrum Dowodzenia',
-  component: CommandCenterBiPage,
+  component: CommandCenterScreen,
   parameters: {
     a11y: {
       test: 'error',
     },
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof CommandCenterBiPage>;
+} satisfies Meta<typeof CommandCenterScreen>;
 
 export default meta;
 
@@ -70,28 +70,35 @@ function StoryFrame({
   );
 }
 
+const storyData = commandCenterOverviewFixture;
+
+function section(id: CommandCenterSection['id']) {
+  return storyData.sections.find((item) => item.id === id) ?? storyData.sections[0];
+}
+
 function ProductsHarness() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<CommandProductSort>('gmv');
-  const products = commandProducts
+  const products = storyData.products
     .filter((product) => product.name.toLowerCase().includes(search.toLowerCase()))
     .sort((left, right) => (sort === 'margin' ? right.margin - left.margin : right.gmv - left.gmv));
 
   return (
     <StoryFrame>
       <CommandProductsSection
+        products={products}
+        section={section('products')}
         onProductSearchChange={setSearch}
         onProductSortChange={setSort}
         productSearch={search}
         productSort={sort}
-        products={products}
       />
     </StoryFrame>
   );
 }
 
 function RisksHarness() {
-  const [risks, setRisks] = useState<CommandRisk[]>(() => commandRisks.map((risk) => ({ ...risk })));
+  const [risks, setRisks] = useState<CommandRisk[]>(() => storyData.risks.map((risk) => ({ ...risk })));
 
   function updateRisk(id: string, status: CommandRiskStatus) {
     setRisks((prevRisks) => prevRisks.map((risk) => (risk.id === id ? { ...risk, status } : risk)));
@@ -100,8 +107,9 @@ function RisksHarness() {
   return (
     <StoryFrame>
       <CommandRisksSection
-        onRiskStatusChange={updateRisk}
         risks={risks}
+        section={section('alerts')}
+        onRiskStatusChange={updateRisk}
       />
     </StoryFrame>
   );
@@ -111,16 +119,16 @@ export const Overview: Story = {
   name: 'Całość',
   render: () => (
     <StorybookProductShellFrame activePath="/app/command-center">
-      <CommandCenterBiPage />
+      <CommandCenterScreen data={storyData} />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: commandCenterSectionsById.pulse.title })).toBeInTheDocument();
-    await expect(await canvas.findByRole('heading', { name: commandCenterSectionsById.guardian.title })).toBeInTheDocument();
-    await expect(await canvas.findByRole('heading', { name: commandCenterSectionsById.funnel.title })).toBeInTheDocument();
-    await expect(await canvas.findByRole('heading', { name: commandCenterSectionsById['data-health'].title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: section('pulse').title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: section('guardian').title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: section('funnel').title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: section('data-health').title })).toBeInTheDocument();
 
     const analyzeButtons = await canvas.findAllByRole('button', { name: 'Analizuj →' });
     await userEvent.click(analyzeButtons[0]);
@@ -132,13 +140,20 @@ export const Kpi: Story = {
   name: 'KPI',
   render: () => (
     <StoryFrame>
-      <CommandPulseSection />
+      <CommandPulseSection
+        compareMode={storyData.compareMode}
+        dateRange="30d"
+        kpis={storyData.kpis}
+        section={section('pulse')}
+        timeSeries={storyData.timeSeries}
+        trendMetrics={storyData.trendMetrics}
+      />
     </StoryFrame>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: commandCenterSectionsById.pulse.title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: section('pulse').title })).toBeInTheDocument();
     await expect(await canvas.findByText('128 450')).toBeInTheDocument();
     await userEvent.click(await canvas.findByRole('button', { name: 'Koszt Reklamy' }));
     await expect(await canvas.findByRole('img', { name: 'Dynamika Czasowa: Koszt Reklamy' })).toBeInTheDocument();
@@ -149,13 +164,17 @@ export const Guardian: Story = {
   name: 'Guardian',
   render: () => (
     <StoryFrame>
-      <CommandGuardianSection />
+      <CommandGuardianSection
+        decisions={storyData.decisions}
+        guardian={storyData.guardian}
+        section={section('guardian')}
+      />
     </StoryFrame>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: commandCenterSectionsById.guardian.title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: section('guardian').title })).toBeInTheDocument();
     await expect(await canvas.findByText('Syntetyczna Narracja Papa Guardian')).toBeInTheDocument();
     await expect(await canvas.findByText('Rekomendacje z priorytetem ("Decyzje na teraz")')).toBeInTheDocument();
   },
@@ -165,13 +184,13 @@ export const Plan: Story = {
   name: 'Plan vs Wynik',
   render: () => (
     <StoryFrame>
-      <CommandPlanSection />
+      <CommandPlanSection plan={storyData.plan} section={section('plan')} />
     </StoryFrame>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: commandCenterSectionsById.plan.title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: section('plan').title })).toBeInTheDocument();
     await expect(await canvas.findByText('97.9%')).toBeInTheDocument();
   },
 };
@@ -180,13 +199,13 @@ export const Drivers: Story = {
   name: 'Drivery wyniku',
   render: () => (
     <StoryFrame>
-      <CommandDriversSection />
+      <CommandDriversSection driversWaterfall={storyData.driversWaterfall} section={section('drivers')} />
     </StoryFrame>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: commandCenterSectionsById.drivers.title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: section('drivers').title })).toBeInTheDocument();
     await expect(await canvas.findByRole('img', { name: 'Kaskada Zmiany Wyniku' })).toBeInTheDocument();
   },
 };
@@ -197,7 +216,7 @@ export const Risks: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: commandCenterSectionsById.alerts.title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: section('alerts').title })).toBeInTheDocument();
     await expect(await canvas.findByText('Konwersja na krok Checkout spadła o 14%')).toBeInTheDocument();
     await userEvent.click(await canvas.findAllByRole('button', { name: 'Przyjmij' }).then((buttons) => buttons[0]));
     await expect((await canvas.findAllByText('Przyjęte do wiadomości')).length).toBeGreaterThan(0);
@@ -208,13 +227,13 @@ export const Funnel: Story = {
   name: 'Lejek konwersji',
   render: () => (
     <StoryFrame>
-      <CommandFunnelSection />
+      <CommandFunnelSection funnel={storyData.funnel} section={section('funnel')} />
     </StoryFrame>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: commandCenterSectionsById.funnel.title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: section('funnel').title })).toBeInTheDocument();
     await expect(await canvas.findByText('4. Zakup')).toBeInTheDocument();
   },
 };
@@ -223,13 +242,13 @@ export const Sources: Story = {
   name: 'Źródła przychodu',
   render: () => (
     <StoryFrame>
-      <CommandSourcesSection />
+      <CommandSourcesSection section={section('sources')} sources={storyData.sources} />
     </StoryFrame>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: commandCenterSectionsById.sources.title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: section('sources').title })).toBeInTheDocument();
     await expect((await canvas.findAllByText('Paid Ads (Meta/Google)')).length).toBeGreaterThan(0);
   },
 };
@@ -240,7 +259,7 @@ export const Products: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: commandCenterSectionsById.products.title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: section('products').title })).toBeInTheDocument();
     await expect(await canvas.findByRole('img', { name: 'Macierz Marża vs Przychód' })).toBeInTheDocument();
     await userEvent.type(await canvas.findByRole('searchbox', { name: 'Szukaj produktu' }), 'SmartBand');
     await expect(await canvas.findByText('Akcesorium SmartBand X')).toBeInTheDocument();
@@ -252,13 +271,17 @@ export const Customers: Story = {
   name: 'Struktura klientów',
   render: () => (
     <StoryFrame>
-      <CommandCustomersSection />
+      <CommandCustomersSection
+        customerCohorts={storyData.customerCohorts}
+        customers={storyData.customers}
+        section={section('customers')}
+      />
     </StoryFrame>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: commandCenterSectionsById.customers.title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: section('customers').title })).toBeInTheDocument();
     await expect(await canvas.findByText('Powracający klienci')).toBeInTheDocument();
   },
 };
@@ -267,13 +290,13 @@ export const DataHealth: Story = {
   name: 'Stan integracji i pochodzenie danych',
   render: () => (
     <StoryFrame>
-      <CommandDataHealthSection />
+      <CommandDataHealthSection integrations={storyData.integrations} meta={storyData.meta} section={section('data-health')} />
     </StoryFrame>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: commandCenterSectionsById['data-health'].title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: section('data-health').title })).toBeInTheDocument();
     await expect(await canvas.findByText('Shopify Storefront')).toBeInTheDocument();
   },
 };
@@ -282,7 +305,7 @@ export const PapaAiInteractions: Story = {
   name: 'Interakcje Papa AI',
   render: () => (
     <StorybookProductShellFrame activePath="/app/command-center">
-      <CommandCenterBiPage />
+      <CommandCenterScreen data={storyData} />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {

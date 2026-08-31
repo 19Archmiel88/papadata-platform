@@ -30,6 +30,12 @@ import {
   type ShellWorkspace,
 } from '../storybook-next/runtime/shell/index';
 import {
+  CommandCenterScreen,
+} from '../screens/command-center/CommandCenterScreen';
+import {
+  createCommandCenterRuntimeData,
+} from './command-center/commandCenterRuntimeAdapter';
+import {
   bffClient,
   type BffSession,
 } from '../storybook-next/runtime/shared/api/bffClient';
@@ -223,13 +229,7 @@ function AuthenticatedRuntimeShell({
       user={sessionToShellUser(session)}
       workspaces={sessionToShellWorkspaces(session)}
     >
-      <section className="pd-runtime-dashboard" aria-labelledby="pd-runtime-dashboard-title">
-        <p className="pd-runtime-dashboard__eyebrow">Production runtime</p>
-        <h1 id="pd-runtime-dashboard-title">Centrum Dowodzenia</h1>
-        <p>
-          PapaData działa na produkcyjnych entrypointach BFF i API przez kanoniczny edge.
-        </p>
-      </section>
+      <CommandCenterScreen data={createCommandCenterRuntimeData()} />
     </ProductShellFrame>
   );
 }

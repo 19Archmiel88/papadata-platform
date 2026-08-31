@@ -23,44 +23,41 @@ import {
   MetricCard,
   ProductSectionFrame,
   ProductSectionTopbar,
-} from '../../../design-system';
+} from '../../design-system';
 import type {
   AnalyticsDataState,
-} from '../../../design-system';
-import {
-  commandCenterSections,
-  commandCenterSectionsById,
-  commandCustomerCohorts,
-  commandCustomers,
-  commandDecisions,
-  commandDriversWaterfall,
-  commandFunnel,
-  commandGuardian,
-  commandIntegrations,
-  commandKpis,
-  commandMeta,
-  commandPlan,
-  commandProducts,
-  commandRisks,
-  commandSources,
-  commandTimeSeries,
-  commandTrendMetrics,
-} from './CommandCenterBiPage.data';
+} from '../../design-system';
 import type {
+  CommandCenterScreenData,
+  CommandCenterSection,
   CommandCenterSectionId,
   CommandCenterTone,
   CommandCompareMode,
   CommandDateRange,
   CommandDecision,
+  CommandDecisionData,
+  CommandDriverData,
+  CommandFunnelStep,
+  CommandGuardianData,
+  CommandIntegrationData,
+  CommandKpiData,
   CommandKpi,
   CommandKpiKey,
   CommandKpiStatus,
+  CommandMetaData,
+  CommandPlanData,
+  CommandProductData,
   CommandProductSort,
+  CommandRiskData,
   CommandRisk,
   CommandRiskStatus,
+  CommandSourceData,
+  CommandCustomerCohort,
+  CommandCustomersData,
+  CommandTrendMetricConfig,
   CommandTrendMetric,
-} from './CommandCenterBiPage.data';
-import './CommandCenterBiPage.css';
+} from './CommandCenterScreen.model';
+import './CommandCenterScreen.css';
 
 type CommandModal =
   | 'custom_date'
@@ -101,15 +98,19 @@ const tooltipStyle: CSSProperties = {
   fontSize: 12,
 };
 
-export function CommandCenterBiPage() {
+export function CommandCenterScreen({
+  data,
+}: {
+  readonly data: CommandCenterScreenData;
+}) {
   const [dateRange, setDateRange] = useState<CommandDateRange>('30d');
-  const [compareMode] = useState<CommandCompareMode>('previous_period');
-  const [activeSection, setActiveSection] = useState<CommandCenterSectionId>('pulse');
+  const [compareMode] = useState<CommandCompareMode>(data.compareMode);
+  const [activeSection, setActiveSection] = useState<CommandCenterSectionId>(data.sections[0]?.id ?? 'pulse');
   const [modal, setModal] = useState<CommandModal | null>(null);
   const [drawerContext, setDrawerContext] = useState<CommandAnalysisContext | null>(null);
   const [simulationDecision, setSimulationDecision] = useState<CommandDecision | null>(null);
   const [simulationParam, setSimulationParam] = useState(15);
-  const [risks, setRisks] = useState<CommandRisk[]>(() => commandRisks.map((risk) => ({ ...risk })));
+  const [risks, setRisks] = useState<CommandRisk[]>(() => data.risks.map((risk) => ({ ...risk })));
   const [productSearch, setProductSearch] = useState('');
   const [productSort, setProductSort] = useState<CommandProductSort>('gmv');
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -120,8 +121,8 @@ export function CommandCenterBiPage() {
 
     const multiplier = simulationParam / 15;
     const marginGain = Math.round(simulationDecision.impactValue * multiplier);
-    const newGmvForecast = commandPlan.forecast + marginGain;
-    const newGoalCompletion = ((newGmvForecast / commandPlan.target) * 100).toFixed(1);
+    const newGmvForecast = data.plan.forecast + marginGain;
+    const newGoalCompletion = ((newGmvForecast / data.plan.target) * 100).toFixed(1);
     const estimatedRoas = (4.15 + (0.15 * multiplier)).toFixed(2);
 
     return {
@@ -132,7 +133,7 @@ export function CommandCenterBiPage() {
     };
   }, [simulationDecision, simulationParam]);
 
-  const filteredProducts = useMemo(() => commandProducts
+  const filteredProducts = useMemo(() => data.products
     .filter((product) => product.name.toLowerCase().includes(productSearch.toLowerCase()))
     .sort((left, right) => (productSort === 'margin' ? right.margin - left.margin : right.gmv - left.gmv)), [productSearch, productSort]);
 
@@ -179,34 +180,47 @@ export function CommandCenterBiPage() {
       <CommandCenterAnchorNav
         activeSection={activeSection}
         onSectionChange={setActiveSection}
+        sections={data.sections}
       />
 
       <div className="pd-ccbi__content">
         <CommandPulseSection
           compareMode={compareMode}
           dateRange={dateRange}
-          kpis={commandKpis}
+          kpis={data.kpis}
           onAnalyze={openAiDrawer}
+          section={sectionById(data.sections, 'pulse')}
+          trendMetrics={data.trendMetrics}
+          timeSeries={data.timeSeries}
         />
         <CommandGuardianSection
-          decisions={commandDecisions}
-          guardian={commandGuardian}
+          decisions={data.decisions}
+          guardian={data.guardian}
           onAnalyze={openAiDrawer}
           onSimulate={openSimulation}
+          section={sectionById(data.sections, 'guardian')}
         />
-        <CommandPlanSection />
-        <CommandDriversSection />
+        <CommandPlanSection plan={data.plan} section={sectionById(data.sections, 'plan')} />
+        <CommandDriversSection driversWaterfall={data.driversWaterfall} section={sectionById(data.sections, 'drivers')} />
         <CommandRisksSection
           onAnalyze={openAiDrawer}
           onRiskStatusChange={updateRiskStatus}
           risks={risks}
+          section={sectionById(data.sections, 'alerts')}
         />
         <CommandEvidenceLayer
+          customerCohorts={data.customerCohorts}
+          customers={data.customers}
           filteredProducts={filteredProducts}
+          funnel={data.funnel}
+          integrations={data.integrations}
+          meta={data.meta}
           onProductSearchChange={setProductSearch}
           onProductSortChange={setProductSort}
           productSearch={productSearch}
           productSort={productSort}
+          sections={data.sections}
+          sources={data.sources}
         />
       </div>
 
@@ -247,22 +261,28 @@ export function CommandCenterBiPage() {
   );
 }
 
+function sectionById(sections: readonly CommandCenterSection[], id: CommandCenterSectionId) {
+  return sections.find((section) => section.id === id) ?? sections[0];
+}
+
 export function CommandCenterAnchorNav({
   activeSection = 'pulse',
+  sections,
   onSectionChange = noop,
 }: {
   readonly activeSection?: CommandCenterSectionId;
+  readonly sections: readonly CommandCenterSection[];
   readonly onSectionChange?: (section: CommandCenterSectionId) => void;
 }) {
   return (
     <ProductSectionTopbar
       activeId={activeSection}
       ariaLabel="Sekcje Centrum Dowodzenia"
-      items={commandCenterSections.map((section) => ({
+      items={sections.map((section) => ({
         id: section.id,
         label: section.navLabel,
       }))}
-      onActiveIdChange={(id) => onSectionChange(id as CommandCenterSectionId)}
+      onActiveIdChange={(id: string) => onSectionChange(id as CommandCenterSectionId)}
     />
   );
 }
@@ -270,21 +290,27 @@ export function CommandCenterAnchorNav({
 export function CommandPulseSection({
   compareMode = 'previous_period',
   dateRange = '30d',
-  kpis = commandKpis,
+  section,
+  kpis,
+  timeSeries,
+  trendMetrics,
   onAnalyze = noop,
 }: {
   readonly compareMode?: CommandCompareMode;
   readonly dateRange?: CommandDateRange;
-  readonly kpis?: readonly CommandKpi[];
+  readonly section: CommandCenterSection;
+  readonly kpis: readonly CommandKpi[];
+  readonly timeSeries: readonly { readonly adSpend: number; readonly date: string; readonly gmv: number; readonly orders: number; readonly roas: number }[];
+  readonly trendMetrics: readonly { readonly label: string; readonly tone: CommandCenterTone; readonly unit: string; readonly value: CommandTrendMetric }[];
   readonly onAnalyze?: (context: CommandAnalysisContext) => void;
 }) {
   return (
     <ProductSectionFrame
       accentClassName="pd-ccbi-text-blue"
       description={`Jaki jest wynik biznesowy w wybranym okresie (${dateRange})?`}
-      icon={commandCenterSectionsById.pulse.icon}
-      id={commandCenterSectionsById.pulse.id}
-      title={commandCenterSectionsById.pulse.title}
+      icon={section.icon}
+      id={section.id}
+      title={section.title}
     >
       <div className="pd-ccbi-kpi-grid">
         {kpis.map((kpi) => {
@@ -313,7 +339,7 @@ export function CommandPulseSection({
         })}
       </div>
 
-      <CommandTrendAreaChart />
+      <CommandTrendAreaChart timeSeries={timeSeries} trendMetrics={trendMetrics} />
     </ProductSectionFrame>
   );
 }
@@ -357,11 +383,15 @@ function InfoTip({
 
 export function CommandTrendAreaChart({
   initialMetric = 'gmv',
+  timeSeries = [],
+  trendMetrics = [],
 }: {
   readonly initialMetric?: CommandTrendMetric;
+  readonly timeSeries?: readonly { readonly adSpend: number; readonly date: string; readonly gmv: number; readonly orders: number; readonly roas: number }[];
+  readonly trendMetrics?: readonly { readonly label: string; readonly tone: CommandCenterTone; readonly unit: string; readonly value: CommandTrendMetric }[];
 }) {
   const [activeMetric, setActiveMetric] = useState<CommandTrendMetric>(initialMetric);
-  const metricConfig = commandTrendMetrics.find((metric) => metric.value === activeMetric) ?? commandTrendMetrics[0];
+  const metricConfig = trendMetrics.find((metric) => metric.value === activeMetric) ?? trendMetrics[0];
 
   return (
     <section className="pd-ccbi-chart-panel">
@@ -372,7 +402,7 @@ export function CommandTrendAreaChart({
         </div>
 
         <div className="pd-ccbi-chart-toggle" role="group" aria-label="Metryka trendu Centrum Dowodzenia">
-          {commandTrendMetrics.map((metric) => (
+          {trendMetrics.map((metric) => (
             <button
               className={metric.value === activeMetric ? 'is-active' : ''}
               key={metric.value}
@@ -391,7 +421,7 @@ export function CommandTrendAreaChart({
         role="img"
       >
         <ResponsiveContainer height="100%" width="100%">
-          <AreaChart data={commandTimeSeries} margin={{ bottom: 8, left: 0, right: 14, top: 12 }}>
+          <AreaChart data={timeSeries} margin={{ bottom: 8, left: 0, right: 14, top: 12 }}>
             <defs>
               <linearGradient id={`pd-ccbi-trend-${activeMetric}`} x1="0" x2="0" y1="0" y2="1">
                 <stop offset="0%" stopColor={toneColors[metricConfig.tone]} stopOpacity={0.36} />
@@ -429,22 +459,24 @@ export function CommandTrendAreaChart({
       </div>
 
       <div className="pd-ccbi-chart-panel__footer">
-        <span>{commandTimeSeries[0].date}</span>
+        <span>{timeSeries[0]?.date}</span>
         <span>Kontekst dzienny w wybranym okresie</span>
-        <span>{commandTimeSeries[commandTimeSeries.length - 1].date}</span>
+        <span>{timeSeries[timeSeries.length - 1]?.date}</span>
       </div>
     </section>
   );
 }
 
 export function CommandGuardianSection({
-  decisions = commandDecisions,
-  guardian = commandGuardian,
+  decisions,
+  guardian,
+  section,
   onAnalyze = noop,
   onSimulate = noop,
 }: {
-  readonly decisions?: readonly CommandDecision[];
-  readonly guardian?: typeof commandGuardian;
+  readonly decisions: readonly CommandDecision[];
+  readonly guardian: CommandGuardianData;
+  readonly section: CommandCenterSection;
   readonly onAnalyze?: (context: CommandAnalysisContext) => void;
   readonly onSimulate?: (decision: CommandDecision) => void;
 }) {
@@ -452,9 +484,9 @@ export function CommandGuardianSection({
     <ProductSectionFrame
       accentClassName="pd-ccbi-text-indigo"
       description="Syntetyczna diagnoza AI oraz sugerowane kroki optymalizacyjne"
-      icon={commandCenterSectionsById.guardian.icon}
-      id={commandCenterSectionsById.guardian.id}
-      title={commandCenterSectionsById.guardian.title}
+      icon={section.icon}
+      id={section.id}
+      title={section.title}
     >
       <div className="pd-ccbi-guardian">
         <div className="pd-ccbi-guardian__label">
@@ -504,53 +536,65 @@ export function CommandGuardianSection({
   );
 }
 
-export function CommandPlanSection() {
+export function CommandPlanSection({
+  plan,
+  section,
+}: {
+  readonly plan: CommandPlanData;
+  readonly section: CommandCenterSection;
+}) {
   return (
     <ProductSectionFrame
       accentClassName="pd-ccbi-text-emerald"
       actions={(
         <div className="pd-ccbi-plan-stat">
           <span>Prognozowana realizacja celu</span>
-          <strong>{commandPlan.forecastCompletion}%</strong>
+          <strong>{plan.forecastCompletion}%</strong>
         </div>
       )}
       description="Czy dowieziemy cel biznesowy przy obecnym tempie (Pace Projection)?"
-      icon={commandCenterSectionsById.plan.icon}
-      id={commandCenterSectionsById.plan.id}
-      title={commandCenterSectionsById.plan.title}
+      icon={section.icon}
+      id={section.id}
+      title={section.title}
     >
       <div className="pd-ccbi-plan-progress">
         <div>
-          <span>Aktualny wynik: {formatMoney(commandPlan.actual)} ({commandPlan.completion}%)</span>
-          <span>Cel: {formatMoney(commandPlan.target)}</span>
+          <span>Aktualny wynik: {formatMoney(plan.actual)} ({plan.completion}%)</span>
+          <span>Cel: {formatMoney(plan.target)}</span>
         </div>
         <div className="pd-ccbi-plan-track">
-          <i style={{ width: `${commandPlan.completion}%` }} />
-          <b style={{ left: `${commandPlan.forecastCompletion}%` }} />
+          <i style={{ width: `${plan.completion}%` }} />
+          <b style={{ left: `${plan.forecastCompletion}%` }} />
         </div>
         <div>
           <span>Początek okresu</span>
-          <span>Prognoza na koniec: <strong>{formatMoney(commandPlan.forecast)}</strong></span>
+          <span>Prognoza na koniec: <strong>{formatMoney(plan.forecast)}</strong></span>
           <span>100% Cel</span>
         </div>
       </div>
 
       <div className="pd-ccbi-warning-note">
         <Icon decorative name="warning" size={16} />
-        <span>{commandPlan.statusText}</span>
+        <span>{plan.statusText}</span>
       </div>
     </ProductSectionFrame>
   );
 }
 
-export function CommandDriversSection() {
+export function CommandDriversSection({
+  driversWaterfall,
+  section,
+}: {
+  readonly driversWaterfall: readonly CommandDriverData[];
+  readonly section: CommandCenterSection;
+}) {
   return (
     <ProductSectionFrame
       accentClassName="pd-ccbi-text-cyan"
       description="Co spowodowało zmianę wyniku względem poprzedniego okresu (+14 170 zł netto)?"
-      icon={commandCenterSectionsById.drivers.icon}
-      id={commandCenterSectionsById.drivers.id}
-      title={commandCenterSectionsById.drivers.title}
+      icon={section.icon}
+      id={section.id}
+      title={section.title}
     >
       <div className="pd-ccbi-driver-summary">
         <InsightTile label="Największy hamulec:" tone="rose" value="Spadek AOV (-4 240 zł)" />
@@ -558,19 +602,21 @@ export function CommandDriversSection() {
         <InsightTile label="Wpływ netto delta:" tone="blue" value="+14 170 PLN" />
       </div>
 
-      <CommandWaterfallChart />
+      <CommandWaterfallChart driversWaterfall={driversWaterfall} />
     </ProductSectionFrame>
   );
 }
 
 export function CommandRisksSection({
+  section,
   onAnalyze = noop,
   onRiskStatusChange = noop,
-  risks = commandRisks,
+  risks,
 }: {
+  readonly section: CommandCenterSection;
   readonly onAnalyze?: (context: CommandAnalysisContext) => void;
   readonly onRiskStatusChange?: (id: string, status: CommandRiskStatus) => void;
-  readonly risks?: readonly CommandRisk[];
+  readonly risks: readonly CommandRisk[];
 }) {
   const visibleRisks = risks.filter((risk) => risk.status !== 'dismissed');
 
@@ -584,9 +630,9 @@ export function CommandRisksSection({
         </div>
       )}
       description="Zarządzanie operacyjnymi zagrożeniami wyniku biznesowego"
-      icon={commandCenterSectionsById.alerts.icon}
-      id={commandCenterSectionsById.alerts.id}
-      title={commandCenterSectionsById.alerts.title}
+      icon={section.icon}
+      id={section.id}
+      title={section.title}
     >
       <div className="pd-ccbi-risk-list">
         {visibleRisks.map((risk) => (
@@ -624,24 +670,38 @@ export function CommandRisksSection({
 }
 
 export function CommandEvidenceLayer({
-  filteredProducts = commandProducts,
+  customerCohorts,
+  customers,
+  filteredProducts,
+  funnel,
+  integrations,
+  meta,
   onExport = noop,
   onProductSearchChange = noop,
   onProductSortChange = noop,
-  productSearch = '',
-  productSort = 'gmv',
+  productSearch,
+  productSort,
+  sections,
+  sources,
 }: {
-  readonly filteredProducts?: readonly typeof commandProducts[number][];
+  readonly customerCohorts: readonly CommandCustomerCohort[];
+  readonly customers: CommandCustomersData;
+  readonly filteredProducts: readonly CommandProductData[];
+  readonly funnel: readonly CommandFunnelStep[];
+  readonly integrations: readonly CommandIntegrationData[];
+  readonly meta: CommandMetaData;
   readonly onExport?: (type: 'products' | 'sources') => void;
   readonly onProductSearchChange?: (value: string) => void;
   readonly onProductSortChange?: (sort: CommandProductSort) => void;
-  readonly productSearch?: string;
-  readonly productSort?: CommandProductSort;
+  readonly productSearch: string;
+  readonly productSort: CommandProductSort;
+  readonly sections: readonly CommandCenterSection[];
+  readonly sources: readonly CommandSourceData[];
 }) {
   return (
     <div className="pd-ccbi-evidence-layer">
-      <CommandFunnelSection />
-      <CommandSourcesSection onExport={() => onExport('sources')} />
+      <CommandFunnelSection funnel={funnel} section={sectionById(sections, 'funnel')} />
+      <CommandSourcesSection onExport={() => onExport('sources')} section={sectionById(sections, 'sources')} sources={sources} />
       <CommandProductsSection
         onExport={() => onExport('products')}
         onProductSearchChange={onProductSearchChange}
@@ -649,24 +709,31 @@ export function CommandEvidenceLayer({
         productSearch={productSearch}
         productSort={productSort}
         products={filteredProducts}
+        section={sectionById(sections, 'products')}
       />
-      <CommandCustomersSection />
-      <CommandDataHealthSection />
+      <CommandCustomersSection customerCohorts={customerCohorts} customers={customers} section={sectionById(sections, 'customers')} />
+      <CommandDataHealthSection integrations={integrations} meta={meta} section={sectionById(sections, 'data-health')} />
     </div>
   );
 }
 
-export function CommandFunnelSection() {
+export function CommandFunnelSection({
+  funnel,
+  section,
+}: {
+  readonly funnel: readonly CommandFunnelStep[];
+  readonly section: CommandCenterSection;
+}) {
   return (
     <ProductSectionFrame
       accentClassName="pd-ccbi-text-violet"
       description="W którym miejscu proces zakupu traci najwięcej klientów?"
-      icon={commandCenterSectionsById.funnel.icon}
-      id={commandCenterSectionsById.funnel.id}
-      title={commandCenterSectionsById.funnel.title}
+      icon={section.icon}
+      id={section.id}
+      title={section.title}
     >
       <div className="pd-ccbi-funnel-grid">
-        {commandFunnel.map((step) => (
+        {funnel.map((step) => (
           <article className="pd-ccbi-funnel-card" key={step.stage}>
             <span className="pd-ccbi-funnel-card__title">
               <span>{step.stage}</span>
@@ -693,9 +760,13 @@ export function CommandFunnelSection() {
 }
 
 export function CommandSourcesSection({
+  section,
   onExport = noop,
+  sources,
 }: {
+  readonly section: CommandCenterSection;
   readonly onExport?: () => void;
+  readonly sources: readonly CommandSourceData[];
 }) {
   return (
     <ProductSectionFrame
@@ -707,15 +778,15 @@ export function CommandSourcesSection({
         </button>
       )}
       description="Podział GMV i udziału według kanałów pozyskania ruchu"
-      icon={commandCenterSectionsById.sources.icon}
-      id={commandCenterSectionsById.sources.id}
-      title={commandCenterSectionsById.sources.title}
+      icon={section.icon}
+      id={section.id}
+      title={section.title}
     >
-      <RevenueDonutChart />
+      <RevenueDonutChart sources={sources} />
 
       <CommandDataTable
         columns={['Kanał', 'GMV', 'Udział w sprzedaży', 'Zmiana', 'Współczynnik Konwersji']}
-        rows={commandSources.map((source) => [
+        rows={sources.map((source) => [
           source.name,
           `${formatNumber(source.gmv)} PLN`,
           <ShareCell key={`${source.name}-share`} share={source.share} tone={source.tone} />,
@@ -728,19 +799,21 @@ export function CommandSourcesSection({
 }
 
 export function CommandProductsSection({
+  section,
   onExport = noop,
   onProductSearchChange = noop,
   onProductSortChange = noop,
   productSearch = '',
   productSort = 'gmv',
-  products = commandProducts,
+  products,
 }: {
+  readonly section: CommandCenterSection;
   readonly onExport?: () => void;
   readonly onProductSearchChange?: (value: string) => void;
   readonly onProductSortChange?: (sort: CommandProductSort) => void;
   readonly productSearch?: string;
   readonly productSort?: CommandProductSort;
-  readonly products?: readonly typeof commandProducts[number][];
+  readonly products: readonly CommandProductData[];
 }) {
   return (
     <ProductSectionFrame
@@ -762,9 +835,9 @@ export function CommandProductsSection({
         </div>
       )}
       description="Co najmocniej sprzedaje i generuje marżę?"
-      icon={commandCenterSectionsById.products.icon}
-      id={commandCenterSectionsById.products.id}
-      title={commandCenterSectionsById.products.title}
+      icon={section.icon}
+      id={section.id}
+      title={section.title}
     >
       <ProductScatterMatrix products={products} />
 
@@ -861,64 +934,80 @@ function CommandSortMenu({
   );
 }
 
-export function CommandCustomersSection() {
+export function CommandCustomersSection({
+  customerCohorts,
+  customers,
+  section,
+}: {
+  readonly customerCohorts: readonly CommandCustomerCohort[];
+  readonly customers: CommandCustomersData;
+  readonly section: CommandCenterSection;
+}) {
   return (
     <ProductSectionFrame
       accentClassName="pd-ccbi-text-indigo"
       description="Nowi vs Powracający kupujący w wybranym okresie"
-      icon={commandCenterSectionsById.customers.icon}
-      id={commandCenterSectionsById.customers.id}
-      title={commandCenterSectionsById.customers.title}
+      icon={section.icon}
+      id={section.id}
+      title={section.title}
     >
-      <CohortsStackedChart />
+      <CohortsStackedChart customerCohorts={customerCohorts} />
 
       <div className="pd-ccbi-customer-grid">
         <MetricBox
           description="Klienci, którzy złożyli pierwsze zamówienie w wybranym okresie."
           label="Nowi klienci"
-          meta={`AOV: ${commandCustomers.newAov}`}
+          meta={`AOV: ${customers.newAov}`}
           tone="slate"
-          value={String(commandCustomers.newCount)}
+          value={String(customers.newCount)}
         />
         <MetricBox
           description="Klienci z co najmniej jednym wcześniejszym zamówieniem sprzed wybranego okresu."
           label="Powracający klienci"
-          meta={`AOV: ${commandCustomers.retAov}`}
+          meta={`AOV: ${customers.retAov}`}
           tone="slate"
-          value={String(commandCustomers.retCount)}
+          value={String(customers.retCount)}
         />
         <MetricBox
           description="Udział przychodu wygenerowanego przez klientów powracających w całkowitym GMV okresu."
           label="Udział powracających"
           tone="blue"
-          value={commandCustomers.returningShare}
+          value={customers.returningShare}
         />
         <MetricBox
           description="Odsetek klientów z co najmniej dwoma zamówieniami w analizowanym okresie."
           label="Repeat Purchase Rate"
           tone="emerald"
-          value={commandCustomers.repeatPurchaseRate}
+          value={customers.repeatPurchaseRate}
         />
       </div>
 
       <div className="pd-ccbi-insight-note">
         <strong>Wniosek dotyczący LTV:</strong>
-        <span>{commandCustomers.takeaway}</span>
+        <span>{customers.takeaway}</span>
       </div>
     </ProductSectionFrame>
   );
 }
 
-export function CommandDataHealthSection() {
+export function CommandDataHealthSection({
+  integrations,
+  meta,
+  section,
+}: {
+  readonly integrations: readonly CommandIntegrationData[];
+  readonly meta: CommandMetaData;
+  readonly section: CommandCenterSection;
+}) {
   return (
     <ProductSectionFrame
       accentClassName="pd-ccbi-text-blue"
       description="Spójność oraz opóźnienia źródeł zasilających raport"
-      icon={commandCenterSectionsById['data-health'].icon}
-      id={commandCenterSectionsById['data-health'].id}
-      title={commandCenterSectionsById['data-health'].title}
+      icon={section.icon}
+      id={section.id}
+      title={section.title}
     >
-      <DataQualityGauge />
+      <DataQualityGauge integrations={integrations} meta={meta} />
     </ProductSectionFrame>
   );
 }
@@ -940,14 +1029,18 @@ function InsightTile({
   );
 }
 
-function CommandWaterfallChart() {
-  const maxAmount = Math.max(...commandDriversWaterfall.map((driver) => Math.abs(driver.amount)));
+function CommandWaterfallChart({
+  driversWaterfall,
+}: {
+  readonly driversWaterfall: readonly CommandDriverData[];
+}) {
+  const maxAmount = Math.max(...driversWaterfall.map((driver) => Math.abs(driver.amount)));
 
   return (
     <section className="pd-ccbi-chart-panel">
       <h3>Kaskada Zmiany Wyniku (Waterfall Drivers)</h3>
       <div className="pd-ccbi-waterfall" role="img" aria-label="Kaskada Zmiany Wyniku">
-        {commandDriversWaterfall.map((driver) => {
+        {driversWaterfall.map((driver) => {
           const tone = driver.type === 'positive'
             ? 'emerald'
             : driver.type === 'negative'
@@ -972,10 +1065,14 @@ function CommandWaterfallChart() {
   );
 }
 
-function RevenueDonutChart() {
-  const totalGmv = commandSources.reduce((sum, source) => sum + source.gmv, 0);
+function RevenueDonutChart({
+  sources,
+}: {
+  readonly sources: readonly CommandSourceData[];
+}) {
+  const totalGmv = sources.reduce((sum, source) => sum + source.gmv, 0);
   let cursor = 0;
-  const gradientStops = commandSources.map((source) => {
+  const gradientStops = sources.map((source) => {
     const start = cursor;
     cursor += source.share;
     return `${toneColors[source.tone]} ${start}% ${cursor}%`;
@@ -990,7 +1087,7 @@ function RevenueDonutChart() {
         </div>
       </div>
       <div className="pd-ccbi-donut-legend">
-        {commandSources.map((source) => (
+        {sources.map((source) => (
           <div key={source.name}>
             <span className={`pd-ccbi-dot pd-ccbi-dot--${source.tone}`} />
             <strong>{source.name}</strong>
@@ -1006,7 +1103,7 @@ function RevenueDonutChart() {
 function ProductScatterMatrix({
   products,
 }: {
-  readonly products: readonly typeof commandProducts[number][];
+  readonly products: readonly CommandProductData[];
 }) {
   return (
     <section className="pd-ccbi-chart-panel">
@@ -1045,7 +1142,11 @@ function ProductScatterMatrix({
   );
 }
 
-function CohortsStackedChart() {
+function CohortsStackedChart({
+  customerCohorts,
+}: {
+  readonly customerCohorts: readonly CommandCustomerCohort[];
+}) {
   return (
     <section className="pd-ccbi-chart-panel">
       <div className="pd-ccbi-chart-panel__head">
@@ -1059,7 +1160,7 @@ function CohortsStackedChart() {
       </div>
 
       <div className="pd-ccbi-cohort-bars">
-        {commandCustomerCohorts.map((cohort) => {
+        {customerCohorts.map((cohort) => {
           const totalGmv = cohort.newGmv + cohort.retGmv;
           const newPct = (cohort.newGmv / totalGmv) * 100;
           const retPct = (cohort.retGmv / totalGmv) * 100;
@@ -1080,19 +1181,25 @@ function CohortsStackedChart() {
   );
 }
 
-function DataQualityGauge() {
+function DataQualityGauge({
+  integrations,
+  meta,
+}: {
+  readonly integrations: readonly CommandIntegrationData[];
+  readonly meta: CommandMetaData;
+}) {
   return (
     <section className="pd-ccbi-chart-panel pd-ccbi-health-panel">
-      <div className="pd-ccbi-gauge" style={{ background: `conic-gradient(${toneColors.indigo} ${commandMeta.dataQualityScore}%, rgb(var(--pd-ccbi-slate-800)) 0)` }}>
+      <div className="pd-ccbi-gauge" style={{ background: `conic-gradient(${toneColors.indigo} ${meta.dataQualityScore}%, rgb(var(--pd-ccbi-slate-800)) 0)` }}>
         <div>
-          <strong>{commandMeta.dataQualityScore}</strong>
+          <strong>{meta.dataQualityScore}</strong>
           <span>Score</span>
         </div>
       </div>
 
       <div className="pd-ccbi-latency-list">
         <strong>Opóźnienia API i Status Synchronizacji:</strong>
-        {commandIntegrations.map((integration) => (
+        {integrations.map((integration) => (
           <div key={integration.name}>
             <div>
               <span>{integration.name}</span>

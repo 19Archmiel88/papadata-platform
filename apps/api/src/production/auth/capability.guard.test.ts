@@ -8,8 +8,9 @@ import type { ExecutionContext } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import type { CanonicalCapability } from "@papadata/contracts";
 import { describe, expect, it, vi } from "vitest";
+import type { AuditService } from "../audit/audit.service.js";
 import { CapabilityGuard } from "./capability.guard.js";
-import type { DeniedAccessAuditService } from "./denied-access-audit.service.js";
+import { DeniedAccessAuditService } from "./denied-access-audit.service.js";
 import type {
   LiveAuthorizationDecision,
   LivePrincipalAuthorizationService,
@@ -44,16 +45,67 @@ describe("CapabilityGuard", () => {
     expect(deniedAccessAudit.record).not.toHaveBeenCalled();
   });
 
-  it("denies when the request has no principal", async () => {
+  it("denies when the request has no principal, and never calls the denied-access audit (§15: anonymous authentication denial is distinct from authenticated authorization denial)", async () => {
     class ExampleController {
       @RequireCapabilities("workspace.read")
+      @AuditDeniedAccess()
       handler(): void {}
     }
 
-    const guard = createGuard(liveAuthorizationMock(), deniedAccessAuditMock());
+    const deniedAccessAudit = deniedAccessAuditMock();
+    const guard = createGuard(liveAuthorizationMock(), deniedAccessAudit);
 
     await expect(guard.canActivate(context(ExampleController, "handler", {})))
       .rejects.toBeInstanceOf(UnauthorizedException);
+    expect(deniedAccessAudit.record).not.toHaveBeenCalled();
+  });
+
+  // §11 regression: a denial must still be a DENY even when the audit write
+  // itself throws. Uses the *real* DeniedAccessAuditService (not the mock
+  // used everywhere else in this file) wrapping a failing AuditService, so
+  // this exercises the actual try/catch in denied-access-audit.service.ts,
+  // not just the guard's own control flow.
+  it("§11: authorization denial still results in DENY even when the audit write fails", async () => {
+    class ExampleController {
+      @RequireCapabilities("workspace.manage")
+      @AuditDeniedAccess()
+      handler(): void {}
+    }
+
+    const failingAppend = vi.fn().mockRejectedValue(new Error("audit store unavailable"));
+    const realDeniedAccessAudit = new DeniedAccessAuditService({ append: failingAppend } as unknown as AuditService);
+    const liveAuthorization = liveAuthorizationMock({
+      allowed: false,
+      grantedCapabilities: [],
+      reason: "live_capability_missing",
+      source: "live_database",
+    });
+    const guard = createGuard(liveAuthorization, realDeniedAccessAudit);
+
+    await expect(
+      guard.canActivate(context(ExampleController, "handler", { principal: principal() })),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    expect(failingAppend).toHaveBeenCalledOnce();
+  });
+
+  it("§11: a scope-mismatch denial also still results in DENY even when the audit write fails", async () => {
+    class ExampleController {
+      @RequireCapabilities("workspace.read")
+      @AuditDeniedAccess()
+      handler(): void {}
+    }
+
+    const failingAppend = vi.fn().mockRejectedValue(new Error("audit store unavailable"));
+    const realDeniedAccessAudit = new DeniedAccessAuditService({ append: failingAppend } as unknown as AuditService);
+    const guard = createGuard(liveAuthorizationMock(), realDeniedAccessAudit);
+
+    await expect(
+      guard.canActivate(context(ExampleController, "handler", {
+        body: { workspaceId: "workspace-b" },
+        principal: principal({ workspaceId: "workspace-a" }),
+      })),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    expect(failingAppend).toHaveBeenCalledOnce();
   });
 
   it("fails closed on live authorization lookup errors", async () => {

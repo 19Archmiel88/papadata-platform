@@ -17,6 +17,7 @@
     "test:unit": "pnpm --filter @papadata/contracts --filter @papadata/database --filter @papadata/api --filter @papadata/bff --filter @papadata/web run test",
     "verify": "pnpm verify:backend",
     "verify:backend": "node tools/verify-backend-gate.mjs",
+    "verify:authorization-audit": "pnpm --filter @papadata/api exec vitest run src/production/auth/route-policy-reader.test.ts src/production/auth/audit-coverage-registry.test.ts src/production/auth/capability.guard.test.ts src/production/auth/denied-access-audit.service.test.ts src/production/audit/audit.service.test.ts src/production/audit/audit.controller.test.ts src/production/audit/audit-metadata-safety.test.ts src/production/reports/report.controller.audit.test.ts",
     "verify:backend-release": "node tools/verify-backend-release-scope.mjs",
     "verify:backend-security": "node tools/verify-backend-security-controls.mjs",
     "verify:migration-parity": "sh tools/verify-migration-parity.sh",

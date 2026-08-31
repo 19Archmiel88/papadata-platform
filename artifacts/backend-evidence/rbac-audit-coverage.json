@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-31T13:34:33.736Z",
+  "gitHead": "86433de3a4e92c1a4c9ff21bb875026341c5614d",
+  "authenticatedRoutes": 270,
+  "criticalRiskRoutes": 20,
+  "deniedAuditCovered": 98,
+  "deniedAuditRequired": 98,
+  "externalProviderRoutes": 1,
+  "highRiskRoutes": 70,
+  "infrastructureRoutes": 1,
+  "lowRiskRoutes": 121,
+  "mediumRiskRoutes": 59,
+  "publicRoutes": 23,
+  "missingSuccessAudits": 0,
+  "successAuditCovered": 102,
+  "successAuditRequired": 102,
+  "totalRoutes": 295,
+  "unclassified": 0,
+  "violations": 0,
+  "violationDetails": []
+}

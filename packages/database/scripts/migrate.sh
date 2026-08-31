@@ -8,6 +8,7 @@ postgres_port="${POSTGRES_PORT:-5432}"
 migrator_user="${PAPADATA_MIGRATOR_USER:-papadata_migrator}"
 migrator_password="${PAPADATA_MIGRATOR_PASSWORD:-change-me-local-only}"
 app_user="${PAPADATA_APP_USER:-papadata_app}"
+app_password="${PAPADATA_APP_PASSWORD:-change-me-local-only}"
 platform_user="${PAPADATA_PLATFORM_USER:-papadata_platform}"
 test_user="${PAPADATA_TEST_USER:-papadata_test}"
 test_password="${PAPADATA_TEST_PASSWORD:-change-me-local-only}"
@@ -41,6 +42,19 @@ run_test_psql() {
     -h "$postgres_host" \
     -p "$postgres_port" \
     -U "$test_user" \
+    -d "$target_database" \
+    -v ON_ERROR_STOP=1 \
+    "$@"
+}
+
+run_app_psql() {
+  target_database="$1"
+  shift
+
+  PGPASSWORD="$app_password" psql \
+    -h "$postgres_host" \
+    -p "$postgres_port" \
+    -U "$app_user" \
     -d "$target_database" \
     -v ON_ERROR_STOP=1 \
     "$@"
@@ -300,8 +314,10 @@ assert_rls_isolation() {
     return 1
   fi
 
-  run_test_psql "$target_database" -f "$test_file" || return 1
-  echo "rls_isolation=ok database=${target_database} role=${test_user}"
+  run_psql "$target_database" \
+    -c "GRANT CONNECT ON DATABASE ${target_database} TO ${app_user};" || return 1
+  run_app_psql "$target_database" -f "$test_file" || return 1
+  echo "rls_isolation=ok database=${target_database} role=${app_user}"
 }
 
 case "$command_name" in

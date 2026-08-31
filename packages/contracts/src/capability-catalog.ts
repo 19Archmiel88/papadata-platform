@@ -29,7 +29,7 @@ const descriptor=(capability:CanonicalCapability,dataScope:CapabilityDescriptor[
 export const capabilityCatalog:readonly CapabilityDescriptor[]=[
   descriptor("auth.session.read","self","low",["GET /v1/auth/sessions"]),
   descriptor("auth.session.revoke","self","high",["DELETE /v1/auth/sessions/:id"],{reauthenticationRequired:true}),
-  descriptor("auth.mfa.enroll","self","high",["POST /v1/security/mfa/enroll","POST /v1/security/mfa/confirm"]),
+  descriptor("auth.mfa.enroll","self","high",["POST /v1/security/mfa/enroll","POST /v1/security/mfa/confirm","POST /v1/security/mfa/verify","POST /v1/security/mfa/recovery-code/redeem"]),
   descriptor("auth.mfa.manage","self","critical",["DELETE /v1/security/mfa"]),
   descriptor("auth.step_up.issue","self","high",["POST /v1/security/step-up"]),
   descriptor("tenant.membership.read","tenant","medium",["GET /v1/memberships"]),

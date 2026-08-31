@@ -147,6 +147,12 @@ export class StepUpDto extends MfaCodeDto {
   targetReference?: string | null;
 }
 
+export class RecoveryCodeDto {
+  @IsString()
+  @Matches(/^[0-9a-fA-F]{16}$/u)
+  code!: string;
+}
+
 export class InvitationTokenDto {
   @IsUUID()
   invitationId!: string;

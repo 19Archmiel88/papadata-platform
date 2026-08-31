@@ -299,6 +299,7 @@ async function authReportFlow() {
   });
   assertStatus(confirm, [200], "mfa confirm");
   if (unwrap(confirm.json).verified !== true) throw new Error("MFA confirmation returned verified != true.");
+  const mfaCodeIssuedAt = Date.now();
 
   await seedMetricSnapshot({ tenantId, workspaceId });
 
@@ -325,6 +326,13 @@ async function authReportFlow() {
   const readyReport = await waitForReportReady(jar, reportId);
   const objectKey = requiredString(readyReport.object_key ?? readyReport.objectKey, "report object_key");
 
+  // Faza 5 added TOTP anti-replay (a code accepted once, by confirm or
+  // verify or step-up, cannot be accepted again within its own 30s step --
+  // see totp.service.ts's matchStep/advanceTotpStep). The report
+  // create+seed+ready-poll above usually takes long enough on its own to
+  // land in a later step than mfaCode's, but that's not guaranteed, so
+  // wait out any remainder deterministically rather than relying on it.
+  await waitForFreshTotpStep(mfaCodeIssuedAt);
   const stepUp = await edgeJson("/api/v1/auth/step-up", {
     body: { code: totp(mfaSecret), operationScope: "reports.download" },
     headers: { "x-papadata-csrf": csrf },
@@ -619,6 +627,18 @@ function assertUuid(value, label) {
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(value)) {
     throw new Error(`${label} must be a UUID.`);
   }
+}
+
+// Blocks until the current 30s TOTP step is strictly newer than the one
+// `previousCodeIssuedAtMs` fell in -- a no-op if enough real time has
+// already passed, otherwise waits out only the remainder. See the anti-
+// replay comment at this function's call site.
+async function waitForFreshTotpStep(previousCodeIssuedAtMs) {
+  const previousStep = Math.floor(previousCodeIssuedAtMs / 30_000);
+  const currentStep = Math.floor(Date.now() / 30_000);
+  if (currentStep > previousStep) return;
+  const waitMs = (previousStep + 1) * 30_000 - Date.now() + 250;
+  await new Promise((resolve) => setTimeout(resolve, Math.max(0, waitMs)));
 }
 
 function totp(secret) {

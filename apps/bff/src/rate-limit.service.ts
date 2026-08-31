@@ -84,6 +84,23 @@ export class BffRateLimitService implements OnModuleDestroy {
     ]);
   }
 
+  // Deliberately much tighter than consumeRequest's generic per-account
+  // budget (default 300/window): a 6-digit TOTP code has only 1,000,000
+  // possibilities, and the generic budget alone would let an attacker
+  // spend hundreds of guesses per window indefinitely. Scoped by BOTH
+  // account (an attacker guessing one victim's code from many IPs) and IP
+  // (an attacker guessing many accounts' codes from one IP).
+  async consumeMfaAttempt(input: {
+    readonly accountId: string;
+    readonly ipAddress: string;
+    readonly route: "mfa-verify" | "step-up" | "recovery-redeem";
+  }): Promise<void> {
+    await Promise.all([
+      this.consume("account", `mfa:${input.route}:${input.accountId}`, 8),
+      this.consume("ip", `mfa:${input.route}:${input.ipAddress}`, 15),
+    ]);
+  }
+
   async onModuleDestroy(): Promise<void> {
     if (this.redis?.isOpen) {
       await this.redis.quit().catch(() => this.redis?.disconnect());

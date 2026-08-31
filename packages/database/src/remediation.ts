@@ -42,6 +42,7 @@ export class SecurityRepository {
            on conflict (tenant_id, user_id, method) do update
            set encrypted_secret = excluded.encrypted_secret,
                recovery_code_hashes = excluded.recovery_code_hashes,
+               used_recovery_code_hashes = '[]'::jsonb,
                status = 'pending', confirmed_at = null, revoked_at = null
            returning *`,
           [
@@ -86,6 +87,72 @@ export class SecurityRepository {
           [tenantId, userId],
         );
       },
+    );
+  }
+
+  async revokeMfaEnrollment(tenantId: string, userId: string): Promise<void> {
+    await this.database.withTenantWorkspace(
+      tenantId,
+      "security",
+      async (client) => {
+        await client.query(
+          `update app.security_mfa_enrollments
+           set status = 'revoked', revoked_at = now()
+           where tenant_id = $1 and user_id = $2 and method = 'totp'`,
+          [tenantId, userId],
+        );
+      },
+    );
+  }
+
+  // Atomically advances the last-accepted TOTP time-step for an
+  // enrollment, and only that far -- the WHERE clause both enforces
+  // one-time acceptance per step (a captured code cannot be replayed
+  // within its own acceptance window) and rejects a step older than one
+  // already accepted (no rolling backward). Returns false on either
+  // violation, in which case the caller must treat the code as invalid.
+  advanceTotpStep(input: {
+    tenantId: string;
+    userId: string;
+    step: number;
+  }): Promise<boolean> {
+    return this.database.withTenantWorkspace(
+      input.tenantId,
+      "security",
+      async (client) => (await client.query(
+        `update app.security_mfa_enrollments
+         set last_totp_step = $3
+         where tenant_id = $1 and user_id = $2 and method = 'totp'
+           and (last_totp_step is null or last_totp_step < $3)
+         returning id`,
+        [input.tenantId, input.userId, input.step],
+      )).rowCount === 1,
+    );
+  }
+
+  // Atomically marks one recovery code hash as used -- the WHERE clause
+  // requires the hash to be one of the ten issued at enroll time AND not
+  // already present in used_recovery_code_hashes, so concurrent redemption
+  // attempts with the same code can only ever succeed once (Postgres's
+  // row-level lock on UPDATE re-evaluates this WHERE clause against
+  // already-committed data for a second, blocked writer).
+  redeemRecoveryCode(input: {
+    tenantId: string;
+    userId: string;
+    codeHash: string;
+  }): Promise<boolean> {
+    return this.database.withTenantWorkspace(
+      input.tenantId,
+      "security",
+      async (client) => (await client.query(
+        `update app.security_mfa_enrollments
+         set used_recovery_code_hashes = used_recovery_code_hashes || $3::jsonb
+         where tenant_id = $1 and user_id = $2 and method = 'totp' and status = 'active'
+           and recovery_code_hashes @> $3::jsonb
+           and not (used_recovery_code_hashes @> $3::jsonb)
+         returning id`,
+        [input.tenantId, input.userId, JSON.stringify([input.codeHash])],
+      )).rowCount === 1,
     );
   }
 

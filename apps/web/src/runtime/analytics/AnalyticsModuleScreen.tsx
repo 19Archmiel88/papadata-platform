@@ -12,10 +12,10 @@ import {
 } from '../../design-system';
 import {
   bffClient,
-} from '../../storybook-next/runtime/shared/api/bffClient';
+} from '../shared/api/bffClient';
 import {
   useShellDateRange,
-} from '../../storybook-next/runtime/shell/app-shell';
+} from '../shell/app-shell';
 import {
   AnalyticsModuleWorkspace,
 } from './AnalyticsModuleWorkspace';

@@ -30,7 +30,7 @@ import {
   ShellLayerDemo,
   Sidebar,
   WorkspaceSwitcher,
-} from '../../runtime/shell/index';
+} from '../../../runtime/shell/index';
 import '../../../storybook-next/presentation/story-presentation.css';
 import {
   StoryPresentationMeta,

@@ -11,7 +11,7 @@ import {
   defaultShellWorkspaces,
   ProductShellFrame,
   type ShellNavigationGroup,
-} from '../../runtime/shell/index';
+} from '../../../runtime/shell/index';
 import './storybook-visual-language.css';
 
 type StorybookProductShellFrameProps = {

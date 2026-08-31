@@ -16,7 +16,7 @@ import type {
 import type {
   DataQualityScreenDefinition,
   DataQualityWorkspaceData,
-} from '../runtime/screens/data-quality/dataQualityData';
+} from '../../runtime/screens/data-quality/dataQualityData';
 import {
   conflictColumns,
   conflictRows,
@@ -30,7 +30,7 @@ import {
   sourceQualityRows,
   variantColumns,
   variantRows,
-} from '../runtime/screens/data-quality/dataQualityData';
+} from '../../runtime/screens/data-quality/dataQualityData';
 import type {
   IntegrationScreenDefinition,
   IntegrationsData,
@@ -44,7 +44,7 @@ import {
 import type {
   PapaScreenDefinition,
   PapaWorkspaceData,
-} from '../runtime/screens/papa/papaData';
+} from '../../runtime/screens/papa/papaData';
 import {
   getPapaNavigation,
   papaActionColumns,
@@ -57,11 +57,11 @@ import {
   papaMemoryRows,
   papaModeColumns,
   papaModeRows,
-} from '../runtime/screens/papa/papaData';
+} from '../../runtime/screens/papa/papaData';
 import type {
   SettingsScreenDefinition,
   SettingsWorkspaceData,
-} from '../runtime/screens/settings/settingsData';
+} from '../../runtime/screens/settings/settingsData';
 import {
   getSettingsNavigation,
   settingsAuditColumns,
@@ -76,7 +76,7 @@ import {
   settingsSupportAccessRows,
   settingsVariantColumns,
   settingsVariantRows,
-} from '../runtime/screens/settings/settingsData';
+} from '../../runtime/screens/settings/settingsData';
 import {
   ProductionScreenCanvas,
 } from './ProductionStoryShell';

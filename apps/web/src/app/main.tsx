@@ -16,7 +16,7 @@ import {
   type AuthStepUpInput,
   type AuthSurfaceMode,
   type AuthSurfaceState,
-} from '../storybook-next/runtime/features/auth/AuthSurface';
+} from '../runtime/features/auth/AuthSurface';
 import {
   navigate,
   safeReturnTo,
@@ -28,7 +28,7 @@ import {
   ProductShellFrame,
   type ShellUser,
   type ShellWorkspace,
-} from '../storybook-next/runtime/shell/index';
+} from '../runtime/shell/index';
 import {
   CommandCenterScreen,
 } from '../screens/command-center/CommandCenterScreen';
@@ -38,11 +38,11 @@ import {
 import {
   bffClient,
   type BffSession,
-} from '../storybook-next/runtime/shared/api/bffClient';
+} from '../runtime/shared/api/bffClient';
 import {
   type AuthSessionRuntime,
   useAuthSessionRuntime,
-} from '../storybook-next/runtime/shared/auth/authSessionRuntime';
+} from '../runtime/shared/auth/authSessionRuntime';
 import './runtime-app.css';
 
 applyPapaDataRuntimeGlobals(document.documentElement, {

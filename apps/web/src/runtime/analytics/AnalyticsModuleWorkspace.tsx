@@ -10,11 +10,11 @@ import type {
   ProductsRecord,
   RecommendationView,
   TrafficRecord,
-} from '../../../../../../../contracts/api-schemas';
+} from '../../../../../contracts/api-schemas';
 import type {
   DataColumn,
   DataRow,
-} from '../../../../../../../contracts/component-shared';
+} from '../../../../../contracts/component-shared';
 import {
   Button,
   DataTable,
@@ -24,7 +24,7 @@ import {
   SearchField,
   SectionNavigation,
   StatusBadge,
-} from '../../../../design-system/index';
+} from '../../design-system';
 import {
   analyticsModuleRootRoutes,
   analyticsModuleTitles,

@@ -14,7 +14,6 @@ import {
 
 import {
   PaidCampaignsAttribution,
-  PaidCampaignsBiPage,
   PaidCampaignsBudgetPacing,
   PaidCampaignsBudgetSimulator,
   PaidCampaignsCampaignTable,
@@ -22,21 +21,22 @@ import {
   PaidCampaignsPlatformsSection,
   PaidCampaignsResultSection,
   PaidCampaignsRisksSection,
-} from './PaidCampaignsBiPage';
+  PaidCampaignsScreen,
+} from '../../../screens/paid-campaigns/PaidCampaignsScreen';
 import {
   StorybookProductShellFrame,
 } from '../shared/StorybookProductShellFrame';
 
 const meta = {
   title: '31 Kampanie Płatne',
-  component: PaidCampaignsBiPage,
+  component: PaidCampaignsScreen,
   parameters: {
     a11y: {
       test: 'error',
     },
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof PaidCampaignsBiPage>;
+} satisfies Meta<typeof PaidCampaignsScreen>;
 
 export default meta;
 
@@ -60,7 +60,7 @@ export const Overview: Story = {
   name: 'Całość',
   render: () => (
     <StorybookProductShellFrame activePath="/app/campaigns">
-      <PaidCampaignsBiPage />
+      <PaidCampaignsScreen />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {
@@ -204,7 +204,7 @@ export const PapaAiInteractions: Story = {
   name: 'Interakcje Papa AI',
   render: () => (
     <StorybookProductShellFrame activePath="/app/campaigns">
-      <PaidCampaignsBiPage />
+      <PaidCampaignsScreen />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {

@@ -27,7 +27,7 @@ import {
   PriorityBand,
   ProductSectionFrame,
   ProductSectionTopbar,
-} from '../../../design-system';
+} from '../../design-system';
 import {
   paidCampaignsAiResponses,
   paidCampaignsAlerts,
@@ -50,7 +50,7 @@ import {
   paidCampaignsTrendLabels,
   paidCampaignsTrendModes,
   paidCampaignsTrendSeries,
-} from './PaidCampaignsBiPage.data';
+} from '../../fixtures/paid-campaigns/paidCampaignsDemoSeed';
 import type {
   PaidCampaign,
   PaidCampaignsAiContextKey,
@@ -62,10 +62,10 @@ import type {
   PaidCampaignsSectionId,
   PaidCampaignsTone,
   PaidCampaignsTrendMode,
-} from './PaidCampaignsBiPage.data';
-import './PaidCampaignsBiPage.css';
+} from '../../fixtures/paid-campaigns/paidCampaignsDemoSeed';
+import './PaidCampaignsScreen.css';
 
-export type PaidCampaignsBiPageProps = {
+export type PaidCampaignsScreenProps = {
   readonly initialSection?: PaidCampaignsSectionId;
 };
 
@@ -95,9 +95,9 @@ const chartColors = {
 
 const noop = () => undefined;
 
-export function PaidCampaignsBiPage({
+export function PaidCampaignsScreen({
   initialSection = 'wynik',
-}: PaidCampaignsBiPageProps) {
+}: PaidCampaignsScreenProps) {
   const [activeSection, setActiveSection] = useState<PaidCampaignsSectionId>(initialSection);
   const [selectedProvenance, setSelectedProvenance] = useState<PaidCampaignsProvenanceKey | null>(null);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);

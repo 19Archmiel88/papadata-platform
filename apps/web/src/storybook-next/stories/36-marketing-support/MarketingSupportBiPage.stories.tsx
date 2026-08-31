@@ -20,33 +20,33 @@ import {
   MarketingCaseTypeChart,
   MarketingCaseWorkspace,
   MarketingOutcomes,
-  MarketingSupportBiPage,
   MarketingSupportOverview,
-} from './MarketingSupportBiPage';
+  MarketingSupportScreen,
+} from '../../../screens/marketing-support/MarketingSupportScreen';
 import {
   marketingBriefDefault,
   marketingCases,
-} from './MarketingSupportBiPage.data';
+} from '../../../fixtures/marketing-support/marketingSupportDemoSeed';
 import type {
   ImpactWindow,
   MarketingBriefDraft,
   MarketingCaseFilter,
   MarketingSupportCase,
-} from './MarketingSupportBiPage.data';
+} from '../../../fixtures/marketing-support/marketingSupportDemoSeed';
 import {
   StorybookProductShellFrame,
 } from '../shared/StorybookProductShellFrame';
 
 const meta = {
   title: '36 Wsparcie w marketingu/Strona z dostarczonego HTML',
-  component: MarketingSupportBiPage,
+  component: MarketingSupportScreen,
   parameters: {
     a11y: {
       test: 'error',
     },
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof MarketingSupportBiPage>;
+} satisfies Meta<typeof MarketingSupportScreen>;
 
 export default meta;
 
@@ -128,7 +128,7 @@ export const FullPage: Story = {
   name: 'Pełna kompozycja strony',
   render: () => (
     <StorybookProductShellFrame activePath="/app/decisions/centrum-decyzji">
-      <MarketingSupportBiPage />
+      <MarketingSupportScreen />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {
@@ -224,7 +224,7 @@ export const QuoteWorkflow: Story = {
   name: '6. Modal wyceny i role',
   render: () => (
     <StorybookProductShellFrame activePath="/app/decisions/centrum-decyzji">
-      <MarketingSupportBiPage />
+      <MarketingSupportScreen />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {

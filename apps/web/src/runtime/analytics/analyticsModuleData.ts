@@ -16,7 +16,7 @@ import type {
   RecommendationView,
   TrafficRecord,
   TrafficSummary,
-} from '../../../../../../../contracts/api-schemas';
+} from '../../../../../contracts/api-schemas';
 
 export type AnalyticsModuleGroup =
   | 'campaigns'

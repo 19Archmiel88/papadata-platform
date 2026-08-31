@@ -27,7 +27,7 @@ import {
   Panel,
   PriorityBand,
   StatusBadge,
-} from '../../../design-system';
+} from '../../design-system';
 import {
   architectureDomains,
   briefAreaOptions,
@@ -46,7 +46,7 @@ import {
   rbacColumns,
   recommendationHistory,
   roadmapItems,
-} from './MarketingSupportBiPage.data';
+} from '../../fixtures/marketing-support/marketingSupportDemoSeed';
 import type {
   ImpactWindow,
   MarketingBriefDraft,
@@ -57,8 +57,8 @@ import type {
   MarketingSupportRole,
   MarketingSupportTabId,
   MarketingSupportTone,
-} from './MarketingSupportBiPage.data';
-import './MarketingSupportBiPage.css';
+} from '../../fixtures/marketing-support/marketingSupportDemoSeed';
+import './MarketingSupportScreen.css';
 
 const noop = () => undefined;
 
@@ -102,7 +102,7 @@ function cloneMarketingCase(supportCase: MarketingSupportCase): MarketingSupport
   };
 }
 
-export function MarketingSupportBiPage() {
+export function MarketingSupportScreen() {
   const [activeTab, setActiveTab] = useState<MarketingSupportTabId>('overview');
   const [role, setRole] = useState<MarketingSupportRole>('client');
   const [selectedCaseId, setSelectedCaseId] = useState('MS-2026-0182');

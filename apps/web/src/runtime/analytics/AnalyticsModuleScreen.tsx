@@ -6,16 +6,16 @@ import {
 
 import type {
   DateRange,
-} from '../../../../../../../contracts/ui-contract-types';
+} from '../../../../../contracts/ui-contract-types';
 import {
   InlineNotice,
-} from '../../../../design-system/index';
+} from '../../design-system';
 import {
   bffClient,
-} from '../../shared/api/bffClient';
+} from '../../storybook-next/runtime/shared/api/bffClient';
 import {
   useShellDateRange,
-} from '../../shell/app-shell';
+} from '../../storybook-next/runtime/shell/app-shell';
 import {
   AnalyticsModuleWorkspace,
 } from './AnalyticsModuleWorkspace';

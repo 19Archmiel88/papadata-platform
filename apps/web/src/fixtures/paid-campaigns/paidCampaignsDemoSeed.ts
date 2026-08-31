@@ -1,6 +1,6 @@
 import type {
   PapaDataIconName,
-} from '../../../design-system';
+} from '../../design-system';
 
 /**
  * Single source of truth for every business section this module renders:

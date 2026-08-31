@@ -30,7 +30,7 @@ export class DeniedAccessAuditService {
       readHeader(input.request.headers, "x-correlation-id") ?? "unknown";
     const resourceId = [
       input.request.method ?? "UNKNOWN",
-      input.request.url ?? "unknown",
+      sanitizeUrlPath(input.request.url),
     ].join(" ");
 
     if (!input.principal) {
@@ -64,6 +64,18 @@ export class DeniedAccessAuditService {
         error: error instanceof Error ? error.message : "unknown",
       });
     }
+  }
+}
+
+function sanitizeUrlPath(url: string | undefined): string {
+  if (!url) {
+    return "unknown";
+  }
+
+  try {
+    return new URL(url, "http://localhost").pathname;
+  } catch {
+    return url.split("?", 1)[0] || "unknown";
   }
 }
 

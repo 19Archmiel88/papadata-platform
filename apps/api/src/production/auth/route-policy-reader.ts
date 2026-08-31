@@ -1,5 +1,8 @@
 import type { Reflector } from "@nestjs/core";
-import type { CanonicalCapability } from "@papadata/contracts";
+import {
+  capabilityCatalog,
+  type CanonicalCapability,
+} from "@papadata/contracts";
 import type { AuthenticationLevel } from "./request-principal.js";
 import {
   auditDeniedAccessMetadataKey,
@@ -10,6 +13,16 @@ import {
   requiredAuthLevelMetadataKey,
   requiredCapabilitiesMetadataKey,
 } from "./route-policy.js";
+
+const capabilityDescriptorByCapability = new Map(
+  capabilityCatalog.map((descriptor) => [descriptor.capability, descriptor]),
+);
+
+const authLevelRank: Record<AuthenticationLevel, number> = {
+  session: 1,
+  mfa: 2,
+  step_up: 3,
+};
 
 export type EndpointClassification =
   | "authenticated"
@@ -104,6 +117,23 @@ export function readRoutePolicy(
       };
     }
 
+    if (
+      capabilities.some(
+        (capability) => !capabilityDescriptorByCapability.has(capability),
+      )
+    ) {
+      return {
+        reason: "endpoint_capability_catalog_entry_required",
+        valid: false,
+      };
+    }
+
+    const declaredAuthLevel =
+      reflector.getAllAndOverride<AuthenticationLevel>(
+        requiredAuthLevelMetadataKey,
+        targets,
+      ) ?? "session";
+
     return {
       policy: {
         auditDeniedAccess:
@@ -111,11 +141,10 @@ export function readRoutePolicy(
             auditDeniedAccessMetadataKey,
             targets,
           ) ?? false,
-        authLevel:
-          reflector.getAllAndOverride<AuthenticationLevel>(
-            requiredAuthLevelMetadataKey,
-            targets,
-          ) ?? "session",
+        authLevel: strongestAuthenticationLevel(
+          declaredAuthLevel,
+          requiredAuthenticationLevelForCapabilities(capabilities),
+        ),
         capabilities,
         capabilitySemantics: "all",
         classification,
@@ -141,4 +170,35 @@ export function readRoutePolicy(
     },
     valid: true,
   };
+}
+
+function requiredAuthenticationLevelForCapabilities(
+  capabilities: readonly CanonicalCapability[],
+): AuthenticationLevel {
+  let required: AuthenticationLevel = "session";
+
+  for (const capability of capabilities) {
+    const descriptor = capabilityDescriptorByCapability.get(capability);
+    if (!descriptor) {
+      continue;
+    }
+
+    if (descriptor.reauthenticationRequired) {
+      required = strongestAuthenticationLevel(required, "step_up");
+      continue;
+    }
+
+    if (descriptor.mfaRequired) {
+      required = strongestAuthenticationLevel(required, "mfa");
+    }
+  }
+
+  return required;
+}
+
+function strongestAuthenticationLevel(
+  left: AuthenticationLevel,
+  right: AuthenticationLevel,
+): AuthenticationLevel {
+  return authLevelRank[left] >= authLevelRank[right] ? left : right;
 }

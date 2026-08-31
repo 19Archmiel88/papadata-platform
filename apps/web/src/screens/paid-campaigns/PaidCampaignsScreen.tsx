@@ -2,9 +2,7 @@ import type {
   FormEvent,
 } from 'react';
 import {
-  useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import {
@@ -27,6 +25,7 @@ import {
   PriorityBand,
   ProductSectionFrame,
   ProductSectionTopbar,
+  Select,
 } from '../../design-system';
 import {
   paidCampaignsAiResponses,
@@ -209,68 +208,15 @@ function Dropdown({
   }[];
   readonly value: string;
 }) {
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const activeOption = options.find((option) => option.value === value) ?? options[0];
-
-  useEffect(() => {
-    if (!open) return undefined;
-
-    function handlePointerDown(event: PointerEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
-    }
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') setOpen(false);
-    }
-
-    document.addEventListener('pointerdown', handlePointerDown);
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('pointerdown', handlePointerDown);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [open]);
-
   return (
-    <div className="pd-pcbi-dropdown" ref={rootRef}>
-      <button
-        aria-expanded={open}
-        aria-haspopup="listbox"
-        aria-label={ariaLabel}
-        className="pd-pcbi-dropdown__trigger"
-        onClick={() => setOpen((prevOpen) => !prevOpen)}
-        type="button"
-      >
-        {activeOption?.label}
-        <svg aria-hidden="true" height="14" viewBox="0 0 24 24" width="14">
-          <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-        </svg>
-      </button>
-      {open ? (
-        <ul aria-label={ariaLabel} className="pd-pcbi-dropdown__list" role="listbox">
-          {options.map((option) => (
-            <li
-              aria-selected={option.value === value}
-              className={option.value === value ? 'is-selected' : ''}
-              key={option.value}
-              onClick={() => {
-                onChange(option.value);
-                setOpen(false);
-              }}
-              role="option"
-            >
-              {option.label}
-              {option.value === value ? (
-                <svg aria-hidden="true" height="14" viewBox="0 0 24 24" width="14">
-                  <path d="m5 13 4 4L19 7" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-                </svg>
-              ) : null}
-            </li>
-          ))}
-        </ul>
-      ) : null}
-    </div>
+    <Select
+      className="pd-pcbi-dropdown"
+      label={ariaLabel}
+      onChange={(event) => onChange(event.currentTarget.value)}
+      options={options}
+      placeholder={ariaLabel}
+      value={value}
+    />
   );
 }
 

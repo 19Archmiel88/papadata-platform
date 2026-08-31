@@ -235,19 +235,24 @@
   padding: 6px 10px;
 }
 
-.pd-tbi-select-filter span {
+.pd-tbi-select-filter .pd-form-field__label-row {
   color: rgb(var(--pd-tbi-slate-500));
   font-size: var(--pd-type-size-caption);
   font-weight: 600;
 }
 
-.pd-tbi-select-filter select {
+.pd-tbi-select-filter .pd-select__trigger-shell {
   background: transparent;
   border: 0;
   color: rgb(var(--pd-tbi-slate-700));
   font-size: var(--pd-type-size-caption);
   font-weight: 600;
-  outline: none;
+  min-block-size: 0;
+}
+
+.pd-tbi-select-filter .pd-select__trigger {
+  min-height: 20px;
+  padding: 0;
 }
 
 .pd-tbi-scope-notice {
@@ -625,7 +630,7 @@
 }
 
 .pd-tbi-search:focus,
-.pd-tbi-select-filter select:focus {
+.pd-tbi-select-filter .pd-select__trigger-shell:focus-within {
   box-shadow: 0 0 0 3px rgb(var(--pd-tbi-indigo-200));
 }
 

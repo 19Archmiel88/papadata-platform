@@ -573,7 +573,8 @@
 
 .pd-cbi-mini-select select,
 .pd-cbi-explorer-controls input,
-.pd-cbi-explorer-controls select {
+.pd-cbi-explorer-controls select,
+.pd-cbi-select-control .pd-select__trigger-shell {
   background: rgb(var(--pd-cbi-slate-100));
   border: 1px solid rgb(var(--pd-cbi-slate-300));
   border-radius: var(--pd-radius-small);
@@ -586,10 +587,26 @@
 
 .pd-cbi-mini-select select:focus,
 .pd-cbi-explorer-controls input:focus,
-.pd-cbi-explorer-controls select:focus {
+.pd-cbi-explorer-controls select:focus,
+.pd-cbi-select-control .pd-select__trigger-shell:focus-within {
   border-color: rgb(var(--pd-cbi-indigo-500));
   box-shadow: 0 0 0 3px rgb(var(--pd-cbi-indigo-100));
   outline: 0;
+}
+
+.pd-cbi-select-control .pd-form-field__label-row {
+  clip: rect(0 0 0 0);
+  block-size: 1px;
+  inline-size: 1px;
+  margin: -1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+}
+
+.pd-cbi-select-control .pd-select__trigger {
+  min-height: 18px;
+  padding: 0;
 }
 
 .pd-cbi-table-scroll {
@@ -1203,7 +1220,8 @@
   .pd-cbi-warning-button,
   .pd-cbi-muted-button,
   .pd-cbi-explorer-controls input,
-  .pd-cbi-explorer-controls select {
+  .pd-cbi-explorer-controls select,
+  .pd-cbi-select-control {
     width: 100%;
   }
 

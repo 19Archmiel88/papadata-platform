@@ -30,6 +30,7 @@ import {
   PriorityBand,
   ProductSectionFrame,
   ProductSectionTopbar,
+  Select,
 } from '../../design-system';
 import {
   customerAcquisitionRows,
@@ -823,13 +824,14 @@ function SelectControl({
   readonly value: string;
 }) {
   return (
-    <select aria-label={ariaLabel} onChange={onChange} value={value}>
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
+    <Select
+      className="pd-cbi-select-control"
+      label={ariaLabel}
+      onChange={onChange}
+      options={options}
+      placeholder={ariaLabel}
+      value={value}
+    />
   );
 }
 

@@ -25,6 +25,7 @@
 .pd-shell-date-range-overlay__summary span,
 .pd-shell-date-range-overlay__summary small,
 .pd-shell-date-range-overlay label > span,
+.pd-shell-date-range-overlay .pd-form-field__label-row,
 .pd-shell-date-range-overlay__helper {
   color: var(--pd-shell-text-muted);
   font-size: 10px;
@@ -84,6 +85,7 @@
 }
 
 .pd-shell-date-range-overlay__preset select,
+.pd-shell-date-range-overlay__preset .pd-select__trigger-shell,
 .pd-shell-date-range-overlay__custom-range input {
   min-width: 0;
   width: 100%;
@@ -101,14 +103,21 @@
 }
 
 .pd-shell-date-range-overlay__preset select:hover,
+.pd-shell-date-range-overlay__preset .pd-select__trigger-shell:hover,
 .pd-shell-date-range-overlay__custom-range input:hover {
   border-color: color-mix(in srgb, var(--pd-shell-brand) 36%, var(--pd-shell-separator-strong));
   background: var(--pd-shell-surface-subtle);
 }
 
 .pd-shell-date-range-overlay__preset select:focus-visible,
+.pd-shell-date-range-overlay__preset .pd-select__trigger-shell:focus-within,
 .pd-shell-date-range-overlay__custom-range input:focus-visible {
   box-shadow: 0 0 0 3px var(--pd-shell-brand-ambient);
+}
+
+.pd-shell-date-range-overlay__preset .pd-select__trigger {
+  min-height: 32px;
+  padding-inline: 10px 4px;
 }
 
 .pd-shell-date-range-overlay__custom-range {

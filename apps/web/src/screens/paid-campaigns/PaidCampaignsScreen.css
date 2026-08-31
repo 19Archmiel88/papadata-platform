@@ -127,73 +127,31 @@
 }
 
 .pd-pcbi-dropdown {
-  position: relative;
-}
-
-.pd-pcbi-dropdown__trigger {
-  align-items: center;
-  border-radius: var(--pd-radius-control);
-  color: rgb(var(--pd-pcbi-slate-800));
-  display: flex;
-  font-size: var(--pd-type-size-caption);
-  font-weight: 600;
-  gap: 8px;
-  justify-content: space-between;
   min-width: 150px;
 }
 
-.pd-pcbi-dropdown__trigger svg {
-  color: rgb(var(--pd-pcbi-slate-500));
-  flex: 0 0 auto;
-  transition: transform 160ms ease;
-}
-
-.pd-pcbi-dropdown__trigger[aria-expanded="true"] svg {
-  transform: rotate(180deg);
-}
-
-.pd-pcbi-dropdown__list {
-  background: rgb(var(--pd-pcbi-surface-card));
-  border: 1px solid rgb(var(--pd-pcbi-slate-200));
-  border-radius: var(--pd-radius-control);
-  box-shadow: var(--pd-shadow-raised);
-  display: grid;
-  gap: 2px;
-  left: 0;
-  margin: 6px 0 0;
-  min-width: 100%;
-  padding: 6px;
+.pd-pcbi-dropdown .pd-form-field__label-row {
+  clip: rect(0 0 0 0);
+  block-size: 1px;
+  inline-size: 1px;
+  margin: -1px;
+  overflow: hidden;
   position: absolute;
-  top: 100%;
-  z-index: 20;
-}
-
-.pd-pcbi-dropdown__list li {
-  align-items: center;
-  border-radius: var(--pd-radius-subtle);
-  color: rgb(var(--pd-pcbi-slate-700));
-  cursor: pointer;
-  display: flex;
-  font-size: var(--pd-type-size-caption);
-  font-weight: 600;
-  gap: 8px;
-  justify-content: space-between;
-  padding: 7px 9px;
   white-space: nowrap;
 }
 
-.pd-pcbi-dropdown__list li:hover {
-  background: rgb(var(--pd-pcbi-slate-100));
+.pd-pcbi-dropdown .pd-select__trigger-shell {
+  background: rgb(var(--pd-pcbi-slate-50));
+  border-color: rgb(var(--pd-pcbi-slate-300));
+  color: rgb(var(--pd-pcbi-slate-800));
+  font-size: var(--pd-type-size-caption);
+  font-weight: 600;
+  min-height: 38px;
 }
 
-.pd-pcbi-dropdown__list li.is-selected {
-  background: rgb(var(--pd-pcbi-indigo-500) / 0.14);
-  color: rgb(var(--pd-pcbi-indigo-600));
-}
-
-.pd-pcbi-dropdown__list li svg {
-  color: rgb(var(--pd-pcbi-indigo-600));
-  flex: 0 0 auto;
+.pd-pcbi-dropdown .pd-select__trigger {
+  min-height: 36px;
+  padding-inline: 10px 4px;
 }
 
 .pd-pcbi-panel,
@@ -686,7 +644,6 @@
 }
 
 .pd-pcbi-table-toolbar__controls input,
-.pd-pcbi-table-toolbar__controls .pd-pcbi-dropdown__trigger,
 .pd-pcbi-ai-drawer__form input {
   background: rgb(var(--pd-pcbi-slate-50));
   border: 1px solid rgb(var(--pd-pcbi-slate-300));
@@ -1739,7 +1696,7 @@
   }
 
   .pd-pcbi-table-toolbar__controls input,
-  .pd-pcbi-table-toolbar__controls .pd-pcbi-dropdown__trigger {
+  .pd-pcbi-table-toolbar__controls .pd-pcbi-dropdown {
     min-width: 0;
     width: 100%;
   }

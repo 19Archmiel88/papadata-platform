@@ -9,6 +9,9 @@ import type {
 import type {
   DateRangePickerPreset,
 } from '../../../design-system/index';
+import {
+  Select,
+} from '../../../design-system/index';
 import type {
   PapaDataRuntimeLocale,
 } from '../../../design-system/foundations/runtime/index';
@@ -111,19 +114,14 @@ export function DateRangeOverlay({
           ))}
         </div>
 
-        <label className="pd-shell-date-range-overlay__preset">
-          <span>{copy.datePreset}</span>
-          <select
-            onChange={(event) => applyPreset(event.currentTarget.value as DatePreset)}
-            value={activePreset}
-          >
-            {presets.map((preset) => (
-              <option key={preset.value} value={preset.value}>
-                {preset.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <Select
+          className="pd-shell-date-range-overlay__preset"
+          label={copy.datePreset}
+          onChange={(event) => applyPreset(event.currentTarget.value as DatePreset)}
+          options={presets}
+          placeholder={copy.datePreset}
+          value={activePreset}
+        />
 
         <div className="pd-shell-date-range-overlay__custom-range">
           <label>

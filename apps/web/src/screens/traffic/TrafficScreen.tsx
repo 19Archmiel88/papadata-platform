@@ -24,6 +24,7 @@ import {
   PriorityBand,
   ProductSectionFrame,
   ProductSectionTopbar,
+  Select,
 } from '../../design-system';
 import {
   backlogFilterOptions,
@@ -303,16 +304,14 @@ function SelectFilter<TValue extends string>({
   readonly value: TValue;
 }) {
   return (
-    <label className="pd-tbi-select-filter">
-      <span>{label}</span>
-      <select onChange={onChange} value={value}>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </label>
+    <Select
+      className="pd-tbi-select-filter"
+      label={label}
+      onChange={onChange}
+      options={options}
+      placeholder={label}
+      value={value}
+    />
   );
 }
 

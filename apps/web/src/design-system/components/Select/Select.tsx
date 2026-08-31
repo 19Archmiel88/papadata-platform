@@ -807,7 +807,6 @@ export const Select = forwardRef<
       <select
         {...props}
         aria-hidden="true"
-        aria-labelledby={labelId}
         className="pd-select__native"
         disabled={disabled}
         id={nativeSelectId}

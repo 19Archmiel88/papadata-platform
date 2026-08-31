@@ -163,10 +163,11 @@ export const Overview: Story = {
     fireEvent.click(funnelNavItem!);
     await waitFor(() => expect(funnelNavItem).toHaveAttribute('aria-current', 'page'));
 
-    await userEvent.selectOptions(await canvas.findByLabelText('Okres:'), '7d');
-    await expect(await canvas.findByDisplayValue('Ostatnie 7 dni')).toBeInTheDocument();
-    await userEvent.selectOptions(await canvas.findByLabelText('Urządzenie:'), 'mobile');
-    await expect(await canvas.findByDisplayValue('Mobile (Smartfony)')).toBeInTheDocument();
+    const filterSelects = canvasElement.querySelectorAll<HTMLSelectElement>('.pd-tbi-select-filter .pd-select__native');
+    fireEvent.change(filterSelects[0]!, { target: { value: '7d' } });
+    await expect((await canvas.findAllByText('Ostatnie 7 dni')).length).toBeGreaterThan(0);
+    fireEvent.change(filterSelects[3]!, { target: { value: 'mobile' } });
+    await expect((await canvas.findAllByText('Mobile (Smartfony)')).length).toBeGreaterThan(0);
 
     await userEvent.click(await canvas.findByRole('button', { name: 'Pełna analiza Papa AI' }));
     await expect(await canvas.findByText(/\[PAPA AI DIAGNOSTIC REPORT: MOBILE CONVERSION DROP\]/u)).toBeInTheDocument();

@@ -14,7 +14,7 @@
     "build:backend": "pnpm --filter @papadata/contracts --filter @papadata/database --filter @papadata/integrations --filter @papadata/storage --filter @papadata/ai-runtime --filter @papadata/api --filter @papadata/bff --filter @papadata/worker run build",
     "test": "pnpm test:backend",
     "test:backend": "node tools/verify-backend-tests.mjs",
-    "test:unit": "pnpm --filter @papadata/contracts --filter @papadata/database --filter @papadata/api --filter @papadata/bff run test",
+    "test:unit": "pnpm --filter @papadata/contracts --filter @papadata/database --filter @papadata/api --filter @papadata/bff --filter @papadata/web run test",
     "verify": "pnpm verify:backend",
     "verify:backend": "node tools/verify-backend-gate.mjs",
     "verify:backend-release": "node tools/verify-backend-release-scope.mjs",

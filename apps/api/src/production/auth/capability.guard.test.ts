@@ -100,7 +100,7 @@ describe("CapabilityGuard", () => {
     }));
   });
 
-  it("uses catalog-derived authLevel even when the route omits RequireAuthLevel", async () => {
+  it("uses catalog-derived authLevel even when the route omits RequireAuthLevel, and the 403 carries a structured requiredAuthLevel=step_up", async () => {
     class ExampleController {
       @RequireCapabilities("billing.manage")
       @AuditDeniedAccess()
@@ -118,19 +118,74 @@ describe("CapabilityGuard", () => {
       deniedAccessAudit,
     );
 
-    await expect(
-      guard.canActivate(context(ExampleController, "handler", {
-        principal: principal({
-          authLevel: "mfa",
-          capabilities: ["billing.manage"],
-        }),
-      })),
-    ).rejects.toBeInstanceOf(ForbiddenException);
+    const rejection = await guard.canActivate(context(ExampleController, "handler", {
+      principal: principal({
+        authLevel: "mfa",
+        capabilities: ["billing.manage"],
+      }),
+    })).catch((error: unknown) => error);
+
+    expect(rejection).toBeInstanceOf(ForbiddenException);
+    expect((rejection as ForbiddenException).getResponse()).toMatchObject({
+      requiredAuthLevel: "step_up",
+    });
 
     expect(deniedAccessAudit.record).toHaveBeenCalledWith(expect.objectContaining({
       reason: "auth_level_required",
       requiredAuthLevel: "step_up",
     }));
+  });
+
+  it("carries a structured requiredAuthLevel=mfa on the 403 for a route requiring only MFA", async () => {
+    class ExampleController {
+      @RequireCapabilities("workspace.manage")
+      @RequireAuthLevel("mfa")
+      handler(): void {}
+    }
+
+    const guard = createGuard(
+      liveAuthorizationMock({
+        allowed: true,
+        grantedCapabilities: ["workspace.manage"],
+        reason: null,
+        source: "live_database",
+      }),
+      deniedAccessAuditMock(),
+    );
+
+    const rejection = await guard.canActivate(context(ExampleController, "handler", {
+      principal: principal({ authLevel: "session", capabilities: ["workspace.manage"] }),
+    })).catch((error: unknown) => error);
+
+    expect(rejection).toBeInstanceOf(ForbiddenException);
+    expect((rejection as ForbiddenException).getResponse()).toMatchObject({
+      requiredAuthLevel: "mfa",
+    });
+  });
+
+  it("does not attach a requiredAuthLevel to a plain capability-denied 403", async () => {
+    class ExampleController {
+      @RequireCapabilities("workspace.manage")
+      handler(): void {}
+    }
+
+    const liveAuthorization = liveAuthorizationMock({
+      allowed: false,
+      grantedCapabilities: ["workspace.read"],
+      reason: "live_capability_missing",
+      source: "live_database",
+    });
+    const guard = createGuard(liveAuthorization, deniedAccessAuditMock());
+
+    const rejection = await guard.canActivate(context(ExampleController, "handler", {
+      principal: principal(),
+    })).catch((error: unknown) => error);
+
+    expect(rejection).toBeInstanceOf(ForbiddenException);
+    const response = (rejection as ForbiddenException).getResponse();
+    expect(
+      typeof response === "object" && response !== null && "requiredAuthLevel" in response,
+    ).toBe(false);
   });
 
   it("denies cross-workspace request payloads before live authorization", async () => {

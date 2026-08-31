@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import { ForbiddenException } from "@nestjs/common";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { BffConfig } from "./config.js";
@@ -251,12 +252,34 @@ describe("BffSessionAssuranceService", () => {
     const { sessionCookie, sessionId } = await establish(identitySession);
     const csrf = withCsrf(security, sessionId, { [config.sessionCookieName]: sessionCookie });
 
-    await expect(
-      assurance.disableMfa(fakeRequest(csrf.cookies, csrf.headers), fakeReply()),
-    ).rejects.toThrow();
+    const rejection = await assurance
+      .disableMfa(fakeRequest(csrf.cookies, csrf.headers), fakeReply())
+      .catch((error: unknown) => error);
+
+    // Structured, not text-parsed: BffClient reads this field directly
+    // (Blocker 2 / Faza 8) instead of scanning the message for "step-up".
+    expect(rejection).toBeInstanceOf(ForbiddenException);
+    expect((rejection as ForbiddenException).getResponse()).toMatchObject({
+      requiredAuthLevel: "step_up",
+    });
     expect(fetchMock).not.toHaveBeenCalled();
     const stored = await sessions.findSession(sessionId);
     expect(stored?.revokedAt).toBeNull();
+  });
+
+  it("issueStepUp is refused locally without valid MFA assurance, with a structured requiredAuthLevel=mfa, and never calls the API", async () => {
+    const { sessionCookie, sessionId } = await establish(identitySession);
+    const csrf = withCsrf(security, sessionId, { [config.sessionCookieName]: sessionCookie });
+
+    const rejection = await assurance
+      .issueStepUp(fakeRequest(csrf.cookies, csrf.headers), fakeReply(), { code: "000000", operationScope: "reports.download" })
+      .catch((error: unknown) => error);
+
+    expect(rejection).toBeInstanceOf(ForbiddenException);
+    expect((rejection as ForbiddenException).getResponse()).toMatchObject({
+      requiredAuthLevel: "mfa",
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("disableMfa with valid step-up assurance revokes every session for the account, including the current one", async () => {

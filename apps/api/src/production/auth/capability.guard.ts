@@ -99,9 +99,16 @@ export class CapabilityGuard implements CanActivate {
         requiredAuthLevel: policy.policy.authLevel,
         requiredCapabilities: policy.policy.capabilities,
       });
-      throw new ForbiddenException(
-        "Required authentication level is missing.",
-      );
+      // policy.policy.authLevel is guaranteed "mfa" or "step_up" here:
+      // meetsAuthenticationLevel only fails a principal that is at least
+      // "session" (the guard already required a principal above) against a
+      // required level of "session", which always passes trivially.
+      // Structured (not text-parsed) so ApiProblemFilter can forward a
+      // canonical requiredAuthLevel to callers -- see api-problem.filter.ts.
+      throw new ForbiddenException({
+        message: "Required authentication level is missing.",
+        requiredAuthLevel: policy.policy.authLevel,
+      });
     }
 
     return true;

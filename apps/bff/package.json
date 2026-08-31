@@ -24,7 +24,7 @@
   "devDependencies": {
     "@nestjs/testing": "^11.1.28",
     "@types/node": "^24.13.3",
-    "tsx": "^4.20.6",
+    "tsx": "^4.23.12",
     "vitest": "^4.1.11"
   },
   "engines": {

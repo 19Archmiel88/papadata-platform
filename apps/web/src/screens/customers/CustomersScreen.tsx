@@ -30,7 +30,7 @@ import {
   PriorityBand,
   ProductSectionFrame,
   ProductSectionTopbar,
-} from '../../../design-system';
+} from '../../design-system';
 import {
   customerAcquisitionRows,
   customerAffinity,
@@ -54,7 +54,7 @@ import {
   customerTrendLabels,
   customerTrendModes,
   customerTrendSeries,
-} from './CustomersBiPage.data';
+} from './CustomersScreen.data';
 import type {
   CustomerCohortSelection,
   CustomerExplorerRow,
@@ -64,8 +64,8 @@ import type {
   CustomerSectionId,
   CustomerTrendMode,
   CustomersTone,
-} from './CustomersBiPage.data';
-import './CustomersBiPage.css';
+} from './CustomersScreen.data';
+import './CustomersScreen.css';
 
 type CustomerSegmentFilter = typeof customerSegmentFilterOptions[number]['value'];
 type CustomerRiskFilter = typeof customerRiskFilterOptions[number]['value'];
@@ -84,7 +84,7 @@ const chartColors = {
   violet: 'rgb(var(--pd-cbi-violet-600))',
 } as const satisfies Record<CustomersTone, string>;
 
-export function CustomersBiPage() {
+export function CustomersScreen() {
   const [activeSection, setActiveSection] = useState<CustomerSectionId>(customerSections[0]!.id);
   const [segmentFilter, setSegmentFilter] = useState<CustomerSegmentFilter>('all');
   const [riskFilter, setRiskFilter] = useState<CustomerRiskFilter>('all');

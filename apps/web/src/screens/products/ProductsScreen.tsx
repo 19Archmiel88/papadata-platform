@@ -22,7 +22,7 @@ import {
   PriorityBand,
   ProductSectionFrame,
   ProductSectionTopbar,
-} from '../../../design-system';
+} from '../../design-system';
 import {
   productAccessibleMatrixRows,
   productBasketInsight,
@@ -45,7 +45,7 @@ import {
   productTrendLabels,
   productTrendModes,
   productTrendSeries,
-} from './ProductsBiPage.data';
+} from './ProductsScreen.data';
 import type {
   ProductFilterState,
   ProductMatrixCode,
@@ -55,8 +55,8 @@ import type {
   ProductTrendMode,
   ProductsProvenanceKey,
   ProductsTone,
-} from './ProductsBiPage.data';
-import './ProductsBiPage.css';
+} from './ProductsScreen.data';
+import './ProductsScreen.css';
 
 type ProductSortKey =
   | 'cover'
@@ -128,7 +128,7 @@ const productColumnOptions = [
   readonly value: ProductExplorerColumn;
 }[];
 
-export function ProductsBiPage() {
+export function ProductsScreen() {
   const [activeSection, setActiveSection] = useState<ProductSectionId>(productSections[0]!.id);
   const [filters, setFilters] = useState<ProductFilterState>(productDefaultFilters);
   const [selectedMatrixCode, setSelectedMatrixCode] = useState<ProductMatrixCode | null>(null);

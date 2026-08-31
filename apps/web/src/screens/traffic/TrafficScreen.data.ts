@@ -1,6 +1,6 @@
 import type {
   PapaDataIconName,
-} from '../../../design-system';
+} from '../../design-system';
 
 export type TrafficTone =
   | 'amber'

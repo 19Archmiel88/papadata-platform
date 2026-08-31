@@ -24,7 +24,7 @@ import {
   PriorityBand,
   ProductSectionFrame,
   ProductSectionTopbar,
-} from '../../../design-system';
+} from '../../design-system';
 import {
   backlogFilterOptions,
   funnelScenario,
@@ -50,7 +50,7 @@ import {
   trafficTrendLabels,
   trafficTrendModes,
   trafficTrendSeries,
-} from './TrafficBiPage.data';
+} from './TrafficScreen.data';
 import type {
   LandingPageRow,
   LandingPageTone,
@@ -61,8 +61,8 @@ import type {
   TrafficSectionId,
   TrafficTone,
   TrafficTrendMode,
-} from './TrafficBiPage.data';
-import './TrafficBiPage.css';
+} from './TrafficScreen.data';
+import './TrafficScreen.css';
 
 type TrafficChartPoint = {
   readonly current: number;
@@ -89,7 +89,7 @@ const tooltipStyle: CSSProperties = {
   fontSize: 12,
 };
 
-export function TrafficBiPage() {
+export function TrafficScreen() {
   const [activeSection, setActiveSection] = useState<TrafficSectionId>(trafficSections[0]!.id);
   const [filters, setFilters] = useState<TrafficGlobalFilters>(trafficDefaultFilters);
   const [chartMetric, setChartMetric] = useState<TrafficTrendMode>('sessions');

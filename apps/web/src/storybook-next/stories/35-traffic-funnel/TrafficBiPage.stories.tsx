@@ -17,7 +17,6 @@ import {
 } from 'storybook/test';
 
 import {
-  TrafficBiPage,
   TrafficChannelExplorer,
   TrafficDeviceGeoPerformance,
   TrafficFunnelSimulation,
@@ -26,32 +25,33 @@ import {
   TrafficPapaTerminal,
   TrafficResultSection,
   TrafficTrackingQuality,
-} from './TrafficBiPage';
+  TrafficScreen,
+} from '../../../screens/traffic/TrafficScreen';
 import {
   funnelScenario,
   trafficSections,
   trafficSectionsById,
-} from './TrafficBiPage.data';
+} from '../../../screens/traffic/TrafficScreen.data';
 import type {
   LandingPageTone,
   PapaTerminalType,
   TrafficBacklogFilter,
   TrafficTrendMode,
-} from './TrafficBiPage.data';
+} from '../../../screens/traffic/TrafficScreen.data';
 import {
   StorybookProductShellFrame,
 } from '../shared/StorybookProductShellFrame';
 
 const meta = {
   title: '35 Ruch na stronie',
-  component: TrafficBiPage,
+  component: TrafficScreen,
   parameters: {
     a11y: {
       test: 'error',
     },
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof TrafficBiPage>;
+} satisfies Meta<typeof TrafficScreen>;
 
 export default meta;
 
@@ -141,7 +141,7 @@ export const Overview: Story = {
   name: 'Całość',
   render: () => (
     <StorybookProductShellFrame activePath="/app/traffic">
-      <TrafficBiPage />
+      <TrafficScreen />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {

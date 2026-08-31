@@ -24,29 +24,29 @@ import {
   CustomerProductAffinity,
   CustomerResultSection,
   CustomerRfmSegmentation,
-  CustomersBiPage,
   CustomerValuePareto,
-} from './CustomersBiPage';
+  CustomersScreen,
+} from '../../../screens/customers/CustomersScreen';
 import {
   customerAiInsights,
   customerFreshInsight,
   customerSections,
   customerSectionsById,
-} from './CustomersBiPage.data';
+} from '../../../screens/customers/CustomersScreen.data';
 import {
   StorybookProductShellFrame,
 } from '../shared/StorybookProductShellFrame';
 
 const meta = {
   title: '34 Klienci',
-  component: CustomersBiPage,
+  component: CustomersScreen,
   parameters: {
     a11y: {
       test: 'error',
     },
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof CustomersBiPage>;
+} satisfies Meta<typeof CustomersScreen>;
 
 export default meta;
 
@@ -85,7 +85,7 @@ export const Overview: Story = {
   name: 'Całość',
   render: () => (
     <StorybookProductShellFrame activePath="/app/customers">
-      <CustomersBiPage />
+      <CustomersScreen />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {

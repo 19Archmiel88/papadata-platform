@@ -30,7 +30,7 @@ import {
   PriorityBand,
   ProductSectionFrame,
   ProductSectionTopbar,
-} from '../../../design-system';
+} from '../../design-system';
 import {
   ordersDiscountCodes,
   ordersDiscountSegments,
@@ -50,7 +50,7 @@ import {
   ordersTrendModes,
   ordersTrendSeries,
   sampleOrders,
-} from './OrdersBiPage.data';
+} from './OrdersScreen.data';
 import type {
   OrdersDataBadgeLevel,
   OrdersLifecycleFilter,
@@ -59,8 +59,8 @@ import type {
   OrdersTone,
   OrdersTrendMode,
   SampleOrder,
-} from './OrdersBiPage.data';
-import './OrdersBiPage.css';
+} from './OrdersScreen.data';
+import './OrdersScreen.css';
 
 type ExplorerFilter =
   | {
@@ -88,7 +88,7 @@ const chartColors = {
 
 const noop = () => undefined;
 
-export function OrdersBiPage() {
+export function OrdersScreen() {
   const [activeSection, setActiveSection] = useState<OrdersSectionId>(ordersSections[0]!.id);
   const [explorerFilter, setExplorerFilter] = useState<ExplorerFilter>({ kind: 'all' });
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);

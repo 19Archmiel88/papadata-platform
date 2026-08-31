@@ -13,28 +13,27 @@ import {
 
 import {
   OrderExplorer,
-  OrdersBiPage,
   OrdersDiscountsAndReturns,
   OrdersExecutiveInsight,
   OrdersLifecycleFlow,
   OrdersPaymentsAndShipping,
   OrdersPurchaseFunnel,
   OrdersResultSection,
-} from './OrdersBiPage';
+} from '../../../screens/orders/OrdersScreen';
 import {
   StorybookProductShellFrame,
 } from '../shared/StorybookProductShellFrame';
 
 const meta = {
   title: '32 Zamówienia',
-  component: OrdersBiPage,
+  component: OrdersResultSection,
   parameters: {
     a11y: {
       test: 'error',
     },
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof OrdersBiPage>;
+} satisfies Meta<typeof OrdersResultSection>;
 
 export default meta;
 
@@ -58,7 +57,7 @@ export const Overview: Story = {
   name: 'Całość',
   render: () => (
     <StorybookProductShellFrame activePath="/app/orders">
-      <OrdersBiPage />
+      <OrdersResultSection />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {
@@ -191,7 +190,7 @@ export const PapaAiInteractions: Story = {
   name: 'Interakcje Papa AI',
   render: () => (
     <StorybookProductShellFrame activePath="/app/orders">
-      <OrdersBiPage />
+      <OrdersResultSection />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {

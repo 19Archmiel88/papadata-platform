@@ -21,22 +21,22 @@ import {
   ProductLifecyclePortfolio,
   ProductPromotionsAndBasket,
   ProductResultSection,
-  ProductsBiPage,
-} from './ProductsBiPage';
+  ProductsScreen,
+} from '../../../screens/products/ProductsScreen';
 import {
   StorybookProductShellFrame,
 } from '../shared/StorybookProductShellFrame';
 
 const meta = {
   title: '33 Produkty',
-  component: ProductsBiPage,
+  component: ProductsScreen,
   parameters: {
     a11y: {
       test: 'error',
     },
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof ProductsBiPage>;
+} satisfies Meta<typeof ProductsScreen>;
 
 export default meta;
 
@@ -60,7 +60,7 @@ export const Overview: Story = {
   name: 'Całość',
   render: () => (
     <StorybookProductShellFrame activePath="/app/products">
-      <ProductsBiPage />
+      <ProductsScreen />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {
@@ -212,7 +212,7 @@ export const PapaAiInteractions: Story = {
   name: 'Interakcje Papa AI',
   render: () => (
     <StorybookProductShellFrame activePath="/app/products">
-      <ProductsBiPage />
+      <ProductsScreen />
     </StorybookProductShellFrame>
   ),
   play: async ({ canvasElement }) => {

@@ -4,8 +4,6 @@ Ten katalog jest lokalnym miejscem na dokumentację wykonawczą Storybooka dla `
 
 Źródłem prawdy dla zakresu i statusów pozostają:
 
-- `apps/web/src/storybook-next/storybook-contract.json`;
-- `apps/web/src/storybook-next/storybook-taxonomy-map.json`;
 - `rejestry/storybook.csv`;
 - dokumenty w `docs/specyfikacja-docelowa/`.
 

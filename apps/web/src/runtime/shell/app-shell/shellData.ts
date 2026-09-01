@@ -10,7 +10,6 @@ import type {
 export const defaultShellUser: ShellUser = {
   displayName: 'Artur Wiśniewski',
   email: 'artur@papadata.local',
-  role: 'Owner workspace',
 };
 
 export const defaultShellWorkspaces = [

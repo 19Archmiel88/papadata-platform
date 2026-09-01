@@ -1,0 +1,271 @@
+.pd-sub-billing {
+  min-height: 100%;
+  padding: var(--pd-layout-page-padding);
+  background: var(--pd-canvas-gradient);
+  color: var(--pd-text);
+  font-family: var(--pd-font-sans);
+}
+
+.pd-sub-billing *,
+.pd-sub-billing *::before,
+.pd-sub-billing *::after {
+  box-sizing: border-box;
+}
+
+.pd-sub-billing__inner {
+  display: grid;
+  gap: var(--pd-space-6);
+  width: min(100%, 1180px);
+  margin: 0 auto;
+}
+
+.pd-sub-billing__content {
+  display: grid;
+  gap: var(--pd-space-6);
+}
+
+.pd-sub-billing__primary-grid,
+.pd-sub-billing__loading-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: var(--pd-grid-gutter);
+}
+
+.pd-sub-billing__plan-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--pd-space-4);
+}
+
+.pd-sub-billing__plan-heading > div {
+  display: grid;
+  gap: var(--pd-space-2);
+}
+
+.pd-sub-billing__plan-heading strong {
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  font-weight: var(--pd-font-weight-semibold);
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+.pd-sub-billing__plan-heading code {
+  width: fit-content;
+  padding: 2px 7px;
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-subtle);
+  background: var(--pd-surface-subtle);
+  color: var(--pd-text-secondary);
+  font-family: var(--pd-font-mono);
+  font-size: 0.7rem;
+}
+
+.pd-sub-billing__eyebrow {
+  color: var(--pd-text-muted);
+  font-family: var(--pd-font-mono);
+  font-size: 0.65rem;
+  font-weight: var(--pd-font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pd-sub-billing__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pd-space-4);
+  margin: var(--pd-space-6) 0 0;
+}
+
+.pd-sub-billing__facts > div {
+  display: grid;
+  gap: var(--pd-space-1);
+  min-width: 0;
+  padding-top: var(--pd-space-3);
+  border-top: 1px solid var(--pd-separator-subtle);
+}
+
+.pd-sub-billing__facts dt,
+.pd-sub-billing__document-summary span,
+.pd-sub-billing__usage-copy span {
+  color: var(--pd-text-muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.pd-sub-billing__facts dd {
+  margin: 0;
+  color: var(--pd-text);
+  font-size: 0.86rem;
+  font-weight: var(--pd-font-weight-semibold);
+  line-height: 1.4;
+}
+
+.pd-sub-billing__usage {
+  display: grid;
+  gap: var(--pd-space-3);
+}
+
+.pd-sub-billing__usage-copy,
+.pd-sub-billing__usage-copy > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--pd-space-3);
+}
+
+.pd-sub-billing__usage-copy > div {
+  justify-content: flex-start;
+}
+
+.pd-sub-billing__usage-copy strong {
+  font-size: 1.05rem;
+}
+
+.pd-sub-billing__progress {
+  overflow: hidden;
+  height: 8px;
+  border-radius: var(--pd-radius-pill);
+  background: var(--pd-progress-track);
+}
+
+.pd-sub-billing__progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--pd-brand-action);
+  transition: inline-size 180ms ease;
+}
+
+.pd-sub-billing__entitlements {
+  display: grid;
+  gap: var(--pd-space-2);
+  margin: var(--pd-space-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-sub-billing__empty-copy {
+  margin: var(--pd-space-6) 0 0;
+  color: var(--pd-text-muted);
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
+.pd-sub-billing__entitlements li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--pd-space-2);
+  align-items: center;
+  min-height: 36px;
+  padding: var(--pd-space-2) var(--pd-space-3);
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-control);
+  background: var(--pd-surface-soft);
+  color: var(--pd-text-secondary);
+  font-size: 0.76rem;
+}
+
+.pd-sub-billing__entitlements li[data-enabled='false'] svg,
+.pd-sub-billing__entitlements li[data-enabled='false'] strong {
+  color: var(--pd-status-warning);
+}
+
+.pd-sub-billing__entitlements li[data-enabled='true'] svg,
+.pd-sub-billing__entitlements li[data-enabled='true'] strong {
+  color: var(--pd-status-success);
+}
+
+.pd-sub-billing__entitlements strong {
+  font-size: 0.7rem;
+  font-weight: var(--pd-font-weight-semibold);
+}
+
+.pd-sub-billing__document-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--pd-space-4);
+}
+
+.pd-sub-billing__document-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--pd-space-3);
+  min-width: 0;
+  padding: var(--pd-space-4);
+  border: 1px solid var(--pd-separator-subtle);
+  border-radius: var(--pd-radius-control);
+  background: var(--pd-surface-soft);
+}
+
+.pd-sub-billing__document-summary > span {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--pd-radius-control);
+  background: var(--pd-brand-ambient);
+  color: var(--pd-brand-strong);
+}
+
+.pd-sub-billing__document-summary > div {
+  display: grid;
+  gap: var(--pd-space-1);
+  min-width: 0;
+}
+
+.pd-sub-billing__document-summary strong {
+  overflow-wrap: anywhere;
+  font-size: 0.88rem;
+}
+
+.pd-sub-billing__loading {
+  display: grid;
+  gap: var(--pd-space-6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-sub-billing__progress span {
+    transition: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .pd-sub-billing__primary-grid,
+  .pd-sub-billing__loading-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-sub-billing__document-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .pd-sub-billing {
+    padding: var(--pd-space-4);
+  }
+
+  .pd-sub-billing__facts,
+  .pd-sub-billing__document-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-sub-billing__usage-copy,
+  .pd-sub-billing__usage-copy > div {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--pd-space-1);
+  }
+
+  .pd-sub-billing__entitlements li {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .pd-sub-billing__entitlements strong {
+    grid-column: 2;
+  }
+}

@@ -21,7 +21,9 @@ import {
   Button,
   Checkbox,
   DataTable,
+  Drawer,
   FilterBar,
+  KeyValueList,
   SearchField,
   SegmentedControl,
   Select,
@@ -62,11 +64,6 @@ type RangeFilter =
   | '7d'
   | '30d'
   | '90d';
-
-type DataMode =
-  | 'ready'
-  | 'loading'
-  | 'error';
 
 type SortId =
   | 'campaign'
@@ -494,12 +491,6 @@ const rangeLabels: Record<RangeFilter, string> = {
   '90d': 'Ostatnie 90 dni',
 };
 
-const dataModeLabels: Record<DataMode, string> = {
-  error: 'Błąd odświeżenia',
-  loading: 'Ładowanie danych',
-  ready: 'Dane gotowe',
-};
-
 function formatCurrency(
   value: number,
 ) {
@@ -606,20 +597,6 @@ function formatPageRange(
   }
 
   return `${start}–${end} z ${total}`;
-}
-
-function resolveDataModeTone(
-  dataMode: DataMode,
-) {
-  switch (dataMode) {
-    case 'error':
-      return 'critical';
-    case 'loading':
-      return 'info';
-    case 'ready':
-    default:
-      return 'success';
-  }
 }
 
 function resolveSortValue(
@@ -810,8 +787,6 @@ function FilteredTablePattern() {
     useState<StatusFilter>('all');
   const [rangeFilter, setRangeFilter] =
     useState<RangeFilter>('30d');
-  const [dataMode, setDataMode] =
-    useState<DataMode>('ready');
   const [sortId, setSortId] =
     useState<SortId>('revenue');
   const [sortDirection, setSortDirection] =
@@ -1221,7 +1196,6 @@ function FilteredTablePattern() {
     setChannelFilter('all');
     setStatusFilter('all');
     setRangeFilter('30d');
-    setDataMode('ready');
     setSortId('revenue');
     setSortDirection('desc');
     setDensity('comfortable');
@@ -1631,128 +1605,81 @@ function FilteredTablePattern() {
           }}
         />
 
-        {settingsOpen ? (
-          <aside
-            aria-label="Ustawienia widoku tabeli"
-            className="pd-x18-analytics-settings"
-          >
-            <div className="pd-x18-analytics-settings__header">
-              <div>
-                <p className="pd-x18-region__eyebrow">
-                  Widok tabeli
-                </p>
-                <h4 className="pd-x18-analytics-settings__title">
-                  Kolumny i gęstość
-                </h4>
-              </div>
+        <Drawer
+          dismissible
+          open={settingsOpen}
+          side="right"
+          title="Kolumny i gęstość"
+          width={360}
+          onOpenChange={(nextOpen) => {
+            setSettingsOpen(nextOpen);
+          }}
+        >
+          <fieldset className="pd-x18-analytics-column-picker">
+            <legend>
+              Widoczne kolumny
+            </legend>
 
-              <Button
-                size="small"
-                variant="ghost"
-                onClick={() => {
-                  setSettingsOpen(false);
-                }}
-              >
-                Zamknij
-              </Button>
+            <p>
+              Kampania i sygnał pozostają widoczne.
+            </p>
+
+            <div className="pd-x18-analytics-column-list">
+              {optionalColumnIds.map(
+                (columnId) => (
+                  <Checkbox
+                    checked={
+                      visibleColumnIds.includes(
+                        columnId,
+                      )
+                    }
+                    key={columnId}
+                    label={
+                      columnCatalog[
+                        columnId
+                      ].label
+                    }
+                    value={columnId}
+                    onChange={() => {
+                      handleColumnToggle(
+                        columnId,
+                      );
+                    }}
+                  />
+                ),
+              )}
             </div>
+          </fieldset>
 
-            <fieldset className="pd-x18-analytics-column-picker">
-              <legend>
-                Widoczne kolumny
-              </legend>
+          <div className="pd-x18-analytics-setting">
+            <span>
+              Gęstość
+            </span>
 
-              <p>
-                Kampania i sygnał pozostają widoczne.
-              </p>
-
-              <div className="pd-x18-analytics-column-list">
-                {optionalColumnIds.map(
-                  (columnId) => (
-                    <Checkbox
-                      checked={
-                        visibleColumnIds.includes(
-                          columnId,
-                        )
-                      }
-                      key={columnId}
-                      label={
-                        columnCatalog[
-                          columnId
-                        ].label
-                      }
-                      value={columnId}
-                      onChange={() => {
-                        handleColumnToggle(
-                          columnId,
-                        );
-                      }}
-                    />
-                  ),
-                )}
-              </div>
-            </fieldset>
-
-            <div className="pd-x18-analytics-settings__row">
-              <div className="pd-x18-analytics-setting">
-                <span>
-                  Gęstość
-                </span>
-
-                <SegmentedControl
-                  ariaLabel="Gęstość tabeli"
-                  items={[
-                    {
-                      label: 'Wygodna',
-                      value: 'comfortable',
-                    },
-                    {
-                      label: 'Kompaktowa',
-                      value: 'compact',
-                    },
-                  ]}
-                  size="compact"
-                  value={density}
-                  onValueChange={(nextValue) => {
-                    setDensity(
-                      nextValue as
-                        | 'comfortable'
-                        | 'compact',
-                    );
-                  }}
-                />
-              </div>
-
-              <div className="pd-x18-analytics-setting">
-                <Select
-                  label="Stan demonstracyjny"
-                  options={[
-                    {
-                      label: 'Dane gotowe',
-                      value: 'ready',
-                    },
-                    {
-                      label: 'Ładowanie danych',
-                      value: 'loading',
-                    },
-                    {
-                      label: 'Błąd odświeżenia',
-                      value: 'error',
-                    },
-                  ]}
-                  placeholder={copy({ en: 'Select state', pl: 'Wybierz stan' })}
-                  value={dataMode}
-                  onChange={(event) => {
-                    setDataMode(
-                      event.currentTarget
-                        .value as DataMode,
-                    );
-                  }}
-                />
-              </div>
-            </div>
-          </aside>
-        ) : null}
+            <SegmentedControl
+              ariaLabel="Gęstość tabeli"
+              items={[
+                {
+                  label: 'Wygodna',
+                  value: 'comfortable',
+                },
+                {
+                  label: 'Kompaktowa',
+                  value: 'compact',
+                },
+              ]}
+              size="compact"
+              value={density}
+              onValueChange={(nextValue) => {
+                setDensity(
+                  nextValue as
+                    | 'comfortable'
+                    | 'compact',
+                );
+              }}
+            />
+          </div>
+        </Drawer>
 
         {selectedRowIds.length > 0 ? (
           <div
@@ -1813,8 +1740,8 @@ function FilteredTablePattern() {
 
           <StatusBadge
             status="Stan danych"
-            text={dataModeLabels[dataMode]}
-            tone={resolveDataModeTone(dataMode)}
+            text="Dane gotowe"
+            tone="success"
           />
         </div>
 
@@ -1853,14 +1780,8 @@ function FilteredTablePattern() {
             columns={visibleColumns}
             density={density}
             emptyMessage="Brak kampanii w bieżącym zakresie."
-            errorMessage={
-              dataMode === 'error'
-                ? 'Nie udało się odświeżyć części danych. Bieżące filtry, sortowanie i zaznaczenie zostały zachowane.'
-                : null
-            }
-            loading={
-              dataMode === 'loading'
-            }
+            errorMessage={null}
+            loading={false}
             minWidth="82rem"
             noResults={
               filteredRows.length === 0
@@ -1871,8 +1792,7 @@ function FilteredTablePattern() {
                 filteredRows.length === 0
                   ? null
                   : `page-${resolvedPageIndex + 1}`,
-              loading:
-                dataMode === 'loading',
+              loading: false,
               nextCursor:
                 resolvedPageIndex
                   < pageCount - 1
@@ -1978,167 +1898,119 @@ function FilteredTablePattern() {
             }}
           />
 
-          {detailRecord ? (
-            <aside
-              aria-labelledby="pd-x18-analytics-detail-title"
-              className="pd-x18-analytics-detail"
-            >
-              <div className="pd-x18-analytics-detail__header">
-                <div>
-                  <p className="pd-x18-region__eyebrow">
-                    Szczegół kampanii
-                  </p>
+          <Drawer
+            description={
+              detailRecord
+                ? `${detailRecord.channelLabel} · ${detailRecord.owner}`
+                : ''
+            }
+            dismissible
+            open={Boolean(detailRecord)}
+            side="right"
+            title={detailRecord?.campaign ?? ''}
+            width={420}
+            onOpenChange={(nextOpen) => {
+              if (!nextOpen) {
+                setDetailRecordId(null);
 
-                  <h4
-                    className="pd-x18-analytics-detail__title"
-                    id="pd-x18-analytics-detail-title"
-                  >
-                    {detailRecord.campaign}
-                  </h4>
+                setActionMessage(
+                  'Zamknięto szczegół kampanii.',
+                );
+              }
+            }}
+          >
+            {detailRecord ? (
+              <>
+                <StatusBadge
+                  status="Sygnał analityczny"
+                  text={detailRecord.status}
+                  tone={
+                    detailRecord.statusId
+                      === 'opportunity'
+                      ? 'success'
+                      : detailRecord.statusId
+                        === 'risk'
+                        ? 'critical'
+                        : detailRecord.statusId
+                          === 'watch'
+                          ? 'warning'
+                          : 'neutral'
+                  }
+                />
 
-                  <p className="pd-x18-analytics-detail__meta">
-                    {detailRecord.channelLabel}
-                    {' · '}
-                    {detailRecord.owner}
+                <p className="pd-x18-analytics-detail__note">
+                  {detailRecord.note}
+                </p>
+
+                <KeyValueList
+                  density="compact"
+                  groups={[
+                    {
+                      id: 'metrics',
+                      items: [
+                        { id: 'revenue', label: 'Przychód', value: formatCurrency(detailRecord.revenue) },
+                        {
+                          id: 'change',
+                          label: 'Zmiana',
+                          value: (
+                            <span
+                              style={{
+                                color:
+                                  resolveDeltaTone(detailRecord.revenueChange) === 'positive'
+                                    ? 'var(--pd-status-success)'
+                                    : resolveDeltaTone(detailRecord.revenueChange) === 'negative'
+                                      ? 'var(--pd-status-danger)'
+                                      : undefined,
+                              }}
+                            >
+                              {formatSignedPercentage(detailRecord.revenueChange)}
+                            </span>
+                          ),
+                        },
+                        { id: 'roas', label: 'ROAS', value: formatRoas(detailRecord.roas) },
+                        { id: 'cvr', label: 'CVR', value: formatPercentage(detailRecord.cvr) },
+                        { id: 'margin', label: 'Marża', value: formatPercentage(detailRecord.margin) },
+                        { id: 'orders', label: 'Zamówienia', value: formatInteger(detailRecord.orders) },
+                      ],
+                    },
+                  ]}
+                />
+
+                <div className="pd-x18-analytics-detail__trend">
+                  <span>
+                    Trend
+                  </span>
+
+                  <MiniTrend
+                    points={
+                      detailRecord.trend
+                    }
+                  />
+                </div>
+
+                <div className="pd-x18-analytics-detail__decision">
+                  <span>
+                    Następny krok
+                  </span>
+                  <p>
+                    {detailRecord.nextStep}
                   </p>
                 </div>
 
                 <Button
                   size="small"
-                  variant="ghost"
+                  variant="secondary"
                   onClick={() => {
-                    setDetailRecordId(
-                      null,
-                    );
-
                     setActionMessage(
-                      'Zamknięto szczegół kampanii.',
+                      `Przekazano kampanię ${detailRecord.campaign} do pełnej analizy.`,
                     );
                   }}
                 >
-                  Zamknij
+                  Analizuj kampanię
                 </Button>
-              </div>
-
-              <StatusBadge
-                status="Sygnał analityczny"
-                text={detailRecord.status}
-                tone={
-                  detailRecord.statusId
-                    === 'opportunity'
-                    ? 'success'
-                    : detailRecord.statusId
-                      === 'risk'
-                      ? 'critical'
-                      : detailRecord.statusId
-                        === 'watch'
-                        ? 'warning'
-                        : 'neutral'
-                }
-              />
-
-              <p className="pd-x18-analytics-detail__note">
-                {detailRecord.note}
-              </p>
-
-              <dl className="pd-x18-analytics-detail__metrics">
-                <div>
-                  <dt>Przychód</dt>
-                  <dd>
-                    {formatCurrency(
-                      detailRecord.revenue,
-                    )}
-                  </dd>
-                </div>
-
-                <div>
-                  <dt>Zmiana</dt>
-                  <dd
-                    data-tone={
-                      resolveDeltaTone(
-                        detailRecord
-                          .revenueChange,
-                      )
-                    }
-                  >
-                    {formatSignedPercentage(
-                      detailRecord
-                        .revenueChange,
-                    )}
-                  </dd>
-                </div>
-
-                <div>
-                  <dt>ROAS</dt>
-                  <dd>
-                    {formatRoas(
-                      detailRecord.roas,
-                    )}
-                  </dd>
-                </div>
-
-                <div>
-                  <dt>CVR</dt>
-                  <dd>
-                    {formatPercentage(
-                      detailRecord.cvr,
-                    )}
-                  </dd>
-                </div>
-
-                <div>
-                  <dt>Marża</dt>
-                  <dd>
-                    {formatPercentage(
-                      detailRecord.margin,
-                    )}
-                  </dd>
-                </div>
-
-                <div>
-                  <dt>Zamówienia</dt>
-                  <dd>
-                    {formatInteger(
-                      detailRecord.orders,
-                    )}
-                  </dd>
-                </div>
-              </dl>
-
-              <div className="pd-x18-analytics-detail__trend">
-                <span>
-                  Trend
-                </span>
-
-                <MiniTrend
-                  points={
-                    detailRecord.trend
-                  }
-                />
-              </div>
-
-              <div className="pd-x18-analytics-detail__decision">
-                <span>
-                  Następny krok
-                </span>
-                <p>
-                  {detailRecord.nextStep}
-                </p>
-              </div>
-
-              <Button
-                size="small"
-                variant="secondary"
-                onClick={() => {
-                  setActionMessage(
-                    `Przekazano kampanię ${detailRecord.campaign} do pełnej analizy.`,
-                  );
-                }}
-              >
-                Analizuj kampanię
-              </Button>
-            </aside>
-          ) : null}
+              </>
+            ) : null}
+          </Drawer>
         </div>
 
         <div
@@ -2166,7 +2038,7 @@ function FilteredTablePattern() {
 
 const meta = {
   title:
-    '18 Wzorce interfejsu/Tabela z filtrami i akcjami',
+    'DESIGN SYSTEM/Wzorce interfejsu/Tabela z filtrami i akcjami',
   parameters: {
     layout: 'fullscreen',
     a11y: {
@@ -2189,8 +2061,8 @@ export const FilteredTableActionsStory: Story = {
           ariaLabel="Parametry wzorca tabeli"
           items={[
             {
-              label: <Localized en="Contract" pl="Kontrakt" />,
-              value: '18.04',
+              label: <Localized en="Owner" pl="Właściciel" />,
+              value: 'DataTable / FilterBar',
             },
             {
               label: <Localized en="Surface" pl="Powierzchnia" />,
@@ -2198,14 +2070,14 @@ export const FilteredTableActionsStory: Story = {
             },
             {
               label: <Localized en="Status" pl="Status" />,
-              value: <Localized en="In review" pl="W przeglądzie" />,
+              value: <Localized en="Canonical pattern" pl="Kanoniczny wzorzec" />,
             },
           ]}
         />
       )}
-      sectionCode="18"
+      sectionCode="DS"
       sectionLabel={<Localized en="Interface patterns" pl="Wzorce interfejsu" />}
-      storyId="18.04"
+      storyId="filtered-table-actions"
       summary={<Localized
         en="The analytics table combines filtering, sorting, selection, column configuration, export and record details with business metrics, momentum and trend."
         pl="Analityczna tabela łączy filtrowanie, sortowanie, selekcję, konfigurację kolumn, eksport i szczegół rekordu z metrykami biznesowymi, dynamiką oraz trendem."
@@ -2229,6 +2101,8 @@ export const FilteredTableActionsStory: Story = {
   }) => {
     const canvas =
       within(canvasElement);
+    const body =
+      within(document.body);
 
     await expect(
       canvas.getByRole(
@@ -2377,7 +2251,7 @@ export const FilteredTableActionsStory: Story = {
     );
 
     await expect(
-      canvas.getByRole(
+      body.getByRole(
         'heading',
         {
           name: 'Meta Prospecting',
@@ -2386,7 +2260,7 @@ export const FilteredTableActionsStory: Story = {
     ).toBeInTheDocument();
 
     await userEvent.click(
-      canvas.getByRole(
+      body.getByRole(
         'button',
         {
           name: 'Zamknij',
@@ -2438,7 +2312,7 @@ export const FilteredTableActionsStory: Story = {
     );
 
     await userEvent.click(
-      canvas.getByRole(
+      body.getByRole(
         'radio',
         {
           name: 'Kompaktowa',
@@ -2447,7 +2321,7 @@ export const FilteredTableActionsStory: Story = {
     );
 
     await expect(
-      canvas.getByRole(
+      body.getByRole(
         'radio',
         {
           name: 'Kompaktowa',
@@ -2456,7 +2330,7 @@ export const FilteredTableActionsStory: Story = {
     ).toBeChecked();
 
     const trendColumnToggle =
-      canvas.getByRole(
+      body.getByRole(
         'checkbox',
         {
           name: 'Trend',

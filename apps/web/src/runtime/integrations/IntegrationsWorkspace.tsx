@@ -117,7 +117,7 @@ const recommendedFlow = [
   },
   {
     detail: 'Google Analytics 4',
-    status: 'Backfill w toku',
+    status: 'Pobieranie historii w toku',
     tone: 'processing',
     title: '2. Analityka Ruchu',
   },
@@ -203,7 +203,7 @@ export function IntegrationsWorkspace({
         <main className="pd-id8-main">
           <section className="pd-id8-notice" data-tone="critical">
             <strong>Integracje nie są dostępne</strong>
-            <span>{problem ?? 'Nie udało się pobrać runtime Integracji.'}</span>
+            <span>{problem ?? 'Nie udało się pobrać danych o integracjach.'}</span>
             {onReload ? (
               <button onClick={onReload} type="button">Spróbuj ponownie</button>
             ) : null}
@@ -244,7 +244,7 @@ export function IntegrationsWorkspace({
     }
     try {
       await onSourceCommand?.(source, actionId);
-      showToast(`${source.providerDisplayName}: operacja została przekazana do runtime.`, 'success');
+          showToast(`${source.providerDisplayName}: rozpoczęto operację.`, 'success');
     } catch (cause) {
       setOperationNotice({
         message: cause instanceof Error ? cause.message : 'Nie udało się wykonać operacji.',
@@ -264,24 +264,6 @@ export function IntegrationsWorkspace({
       data-tab={activeTab}
     >
       <ToastStack toasts={toasts} />
-      <PrototypeHeader
-        loading={loading}
-        onReload={() => {
-          showToast('Odświeżanie stanu integracji...');
-          onReload?.();
-        }}
-        onSseOpen={() => setSseOpen(true)}
-        planLabel={`${resolvedRuntime.status.plan.dataSourcesUsed} / ${resolvedRuntime.status.plan.dataSourcesLimit} źródeł`}
-      />
-
-      <GlobalHealthBar
-        onFix={() => {
-          navigate('/app/integrations/sources');
-          setSourceFilters((filters) => ({ ...filters, status: 'action_required' }));
-        }}
-        runtime={resolvedRuntime}
-        tone={healthTone}
-      />
 
       <main className="pd-id8-main">
         <section className="pd-id8-title-row">
@@ -289,16 +271,40 @@ export function IntegrationsWorkspace({
             <h1>Integracje i Jakość Danych</h1>
             <p>Zarządzaj połączeniami, monitoruj kompletność i sprawdzaj gotowość danych dla analiz oraz Papa Asystenta.</p>
           </div>
+          <div className="pd-id8-page-actions">
+            <span className="pd-id8-plan-summary">
+              {resolvedRuntime.status.plan.dataSourcesUsed} z {resolvedRuntime.status.plan.dataSourcesLimit} źródeł
+            </span>
+            <button className="pd-id8-button pd-id8-button--secondary" onClick={() => setSseOpen(true)} type="button">
+              Aktywność
+            </button>
+            <button
+              className="pd-id8-button pd-id8-button--secondary"
+              disabled={loading}
+              onClick={() => {
+                showToast('Odświeżanie stanu integracji...');
+                onReload?.();
+              }}
+              type="button"
+            >
+              {loading ? 'Odświeżanie…' : 'Odśwież'}
+            </button>
+            <button className="pd-id8-button pd-id8-button--primary" onClick={() => navigate('/app/integrations/add')} type="button">
+              Dodaj źródło
+            </button>
+          </div>
         </section>
 
-        <KpiDashboard runtime={resolvedRuntime} />
+        <GlobalHealthBar
+          onFix={() => {
+            navigate('/app/integrations/sources');
+            setSourceFilters((filters) => ({ ...filters, status: 'action_required' }));
+          }}
+          runtime={resolvedRuntime}
+          tone={healthTone}
+        />
 
-        {resolvedRuntime.demo ? (
-          <section className="pd-id8-notice" data-tone="info">
-            <strong>Tryb demonstracyjny</strong>
-            <span>Pokazujemy lokalne dane demonstracyjne, ponieważ runtime BFF nie zwrócił pełnego snapshotu. W produkcji ten fallback jest wyłączony.</span>
-          </section>
-        ) : null}
+        <KpiDashboard runtime={resolvedRuntime} />
 
         {problem ? (
           <section className="pd-id8-notice" data-tone="warning">
@@ -351,8 +357,6 @@ export function IntegrationsWorkspace({
         />
       </main>
 
-      <PrototypeFooter />
-
       <SourceInspector
         onClose={() => setSelectedSourceId(null)}
         onDisconnect={setDisconnectSource}
@@ -366,7 +370,7 @@ export function IntegrationsWorkspace({
         onProviderTest={onProviderTest}
         onSaved={() => {
           setConnectProviderId(null);
-          showToast('Połączenie zapisane. Uruchamianie pierwszego backfillu...', 'success');
+          showToast('Połączenie zapisane. Rozpoczynamy pobieranie danych.', 'success');
           navigate('/app/integrations/sources');
         }}
         provider={connectProvider}
@@ -427,7 +431,7 @@ function PrototypeHeader({
         <div className="pd-id8-topbar__actions">
           <button className="pd-id8-sse-button" onClick={onSseOpen} type="button">
             <span />
-            Konsola SSE Stream
+            Aktywność synchronizacji
           </button>
           <div className="pd-id8-plan-chip">
             <span>Limit planu:</span>
@@ -481,10 +485,6 @@ function KpiDashboard({
 }: {
   readonly runtime: IntegrationsRuntimeView;
 }) {
-  const confidence = Math.max(0, Math.min(100, Math.round(
-    (runtime.status.summary.completenessPercentage * 0.72)
-    + (averageDomainReadiness(runtime.completeness) * 0.28),
-  )));
   const syncing = runtime.status.summary.syncingSources
     + runtime.status.summary.runningBackfills
     + runtime.status.summary.queuedBackfills;
@@ -510,9 +510,9 @@ function KpiDashboard({
         <p>{runtime.status.alerts[0]?.title ?? 'Brak blokad operacyjnych'}</p>
       </div>
       <div>
-        <dt>Globalna kompletność</dt>
+        <dt>Gotowość danych</dt>
         <dd>{runtime.status.summary.completenessPercentage}%</dd>
-        <p>Średnia waży domeny</p>
+        <p>Kompletność wszystkich źródeł</p>
       </div>
       <div>
         <dt>Zadania synchronizacji</dt>
@@ -521,17 +521,7 @@ function KpiDashboard({
           {' '}
           <span>W toku</span>
         </dd>
-        <p>{runtime.status.summary.runningBackfills} backfill w toku</p>
-      </div>
-      <div>
-        <dt>Papa Asystent Confidence</dt>
-        <dd>
-          {confidence}
-          %
-          {' '}
-          <span>Pewności</span>
-        </dd>
-        <p>{runtime.completeness.blockers[0]?.blockedKpis[0] ?? 'Kontekst danych dostępny'}</p>
+        <p>{runtime.status.summary.runningBackfills} aktywne pobieranie historyczne</p>
       </div>
     </dl>
   );
@@ -575,18 +565,16 @@ function RuntimeTabs({
 }) {
   return (
     <section className="pd-id8-runtime">
-      <nav aria-label="Tabs" className="pd-id8-tabs">
+      <nav aria-label="Sekcje integracji" className="pd-id8-tabs">
         <TabLink active={activeTab === 'sources'} href="/app/integrations/sources">
-          <span>Źródła danych</span>
+          <span>Źródła</span>
           <em>{sources.length}</em>
         </TabLink>
         <TabLink active={activeTab === 'add'} href="/app/integrations/add">
-          <span>Dodaj źródło</span>
-          <em>Katalog</em>
+          <span>Katalog integracji</span>
         </TabLink>
         <TabLink active={activeTab === 'data-health'} href="/app/integrations/data-health">
-          <span>Stan danych & Diagnostyka</span>
-          <em>Ready</em>
+          <span>Jakość danych</span>
         </TabLink>
       </nav>
 
@@ -676,11 +664,6 @@ function SourcesView({
   return (
     <div className="pd-id8-tab-content">
       <section className="pd-id8-info-card">
-        <p>
-          <strong>Konstrukcja operacyjna ID-8:</strong>
-          {' '}
-          Widok prezentuje podłączone integracje, ich stan połączenia technicznego, poziom kompletności oraz opóźnienie freshness. Pozwala odróżnić awarię połączenia od przetwarzania danych.
-        </p>
         <div className="pd-id8-source-toolbar">
           <label>
             <span>Szukaj źródła</span>
@@ -714,17 +697,16 @@ function SourcesView({
         </div>
       </section>
 
-      <section className="pd-id8-table-card">
+      <section className="pd-id8-table-card pd-id8-sources-table">
         <div className="pd-id8-table-wrap">
           <table aria-label="Źródła danych i jakość danych">
             <thead>
               <tr>
                 <th>Źródło danych / Konto</th>
-                <th>Połączenie</th>
-                <th>Kompletność danych</th>
-                <th>Aktualność (Freshness)</th>
-                <th>Rekomendowana akcja</th>
-                <th>Zarządzanie</th>
+                <th>Status</th>
+                <th>Jakość danych</th>
+                <th>Następny krok</th>
+                <th>Akcje</th>
               </tr>
             </thead>
             <tbody>
@@ -738,7 +720,7 @@ function SourcesView({
                 />
               )) : (
                 <tr>
-                  <td colSpan={6}>
+                  <td colSpan={5}>
                     <div className="pd-id8-empty">Nie znaleźliśmy pasującego źródła.</div>
                   </td>
                 </tr>
@@ -767,7 +749,7 @@ function SourceRow({
 }) {
   return (
     <tr>
-      <td>
+      <td data-label="Źródło">
         <button className="pd-id8-source-cell" onClick={() => onOpenDetails(source.integrationId)} type="button">
           <ProviderMark label={source.providerDisplayName} provider={source.provider} />
           <span>
@@ -779,26 +761,35 @@ function SourceRow({
           </span>
         </button>
       </td>
-      <td><StatusPill status={source.businessStatus} /></td>
-      <td>
-        <div className="pd-id8-progress-cell">
-          <span><b style={{ inlineSize: `${source.completeness.percentage}%` }} data-status={source.completeness.status} /></span>
-          <strong>{source.completeness.percentage}%</strong>
+      <td data-label="Status"><StatusPill status={source.businessStatus} /></td>
+      <td data-label="Jakość danych">
+        <div className="pd-id8-quality-cell">
+          <div className="pd-id8-progress-cell">
+            <span><b style={{ inlineSize: `${source.completeness.percentage}%` }} data-status={source.completeness.status} /></span>
+            <strong>{source.completeness.percentage}%</strong>
+          </div>
+          <small>Aktualność: {source.freshness.label}</small>
         </div>
       </td>
-      <td>{source.freshness.label}</td>
-      <td><strong className="pd-id8-next-action">{source.nextStep}</strong></td>
-      <td>
-        <div className="pd-id8-row-actions">
-          <button
-            data-primary={source.businessStatus === 'action_required' ? true : undefined}
-            onClick={() => void onSourceCommand(source, source.primaryAction.id)}
-            type="button"
-          >
-            {source.businessStatus === 'action_required' ? 'Napraw' : source.primaryAction.label}
-          </button>
+      <td data-label="Następny krok"><strong className="pd-id8-next-action">{source.nextStep}</strong></td>
+      <td data-label="Akcje">
+        <div className="pd-id8-row-actions" role="group" aria-label={`Akcje dla ${source.providerDisplayName}`}>
+          {source.primaryAction.id !== 'details' ? (
+            <button
+              data-primary={source.businessStatus === 'action_required' ? true : undefined}
+              onClick={() => void onSourceCommand(source, source.primaryAction.id)}
+              type="button"
+            >
+              {source.businessStatus === 'action_required' ? 'Napraw' : source.primaryAction.label}
+            </button>
+          ) : null}
           <button onClick={() => onOpenDetails(source.integrationId)} type="button">Szczegóły</button>
-          <button onClick={() => onDisconnect(source)} type="button">Rozłącz</button>
+          <details className="pd-id8-row-menu">
+            <summary aria-label={`Więcej akcji dla ${source.providerDisplayName}`}>•••</summary>
+            <div>
+              <button className="pd-id8-row-action--danger" onClick={() => onDisconnect(source)} type="button">Rozłącz źródło</button>
+            </div>
+          </details>
         </div>
       </td>
     </tr>
@@ -819,9 +810,9 @@ function CatalogView({
   return (
     <div className="pd-id8-tab-content">
       <section className="pd-id8-recommended">
-        <span>Rekomendowana Ścieżka Integracji PapaData</span>
-        <h2>Zbuduj PEŁNY obraz analityczny w 4 krokach</h2>
-        <p>Aby PapaData mogła precyzyjnie wyliczyć ROAS, CAC oraz dostarczać wiarygodne rekomendacje AI, podłącz źródła według poniższej hierarchii priorytetów.</p>
+        <span>Rekomendowana kolejność</span>
+        <h2>Zacznij od źródeł, które dają pełny obraz sprzedaży</h2>
+        <p>Połącz sklep, analitykę i kanały reklamowe, aby poprawnie obliczać ROAS, CAC oraz rekomendacje Papa Asystenta.</p>
         <div>
           {recommendedFlow.map((item) => (
             <article data-tone={item.tone} key={item.title}>
@@ -926,17 +917,17 @@ function HealthView({
     <div className="pd-id8-tab-content">
       <section className="pd-id8-health-intro">
         <div>
-          <h2>Diagnostyka Gotowości Biznesowej i Pipeline Danych (ID-8 Sekcja 31-38)</h2>
+          <h2>Jakość danych</h2>
           <p>Ten widok odpowiada na kluczowe pytanie biznesowe: „Czy dane w PapaData są wystarczająco kompletne i aktualne, żeby podejmować decyzje?”.</p>
         </div>
-        <span>Backend Source of Truth</span>
+        <span>Aktualizacja: {formatIntegrationDateTime(completeness.generatedAt)}</span>
       </section>
 
       <section className="pd-id8-health-grid">
         <article className="pd-id8-domain-list">
           <header>
-            <h3>Gotowość Obszarów Biznesowych</h3>
-            <button onClick={onReadinessOpen} type="button">Wyjaśnij Wzór</button>
+            <h3>Gotowość obszarów biznesowych</h3>
+            <button onClick={onReadinessOpen} type="button">Jak to liczymy?</button>
           </header>
           <div>
             {completeness.domains.map((domain) => (
@@ -947,22 +938,22 @@ function HealthView({
                     ? `${domain.missingRequiredSources.join(', ')} wymagany`
                     : domain.connectedRequiredSources.join(', ') || 'Źródła wspierające'}</small>
                 </span>
-                <b>{domain.status === 'COMPLETE' ? `${domain.readiness}% READY` : domain.status === 'MISSING' ? 'NIEGOTOWY' : `${domain.readiness}% PARTIAL`}</b>
+                <b>{domain.status === 'COMPLETE' ? `${domain.readiness}% · Gotowe` : domain.status === 'MISSING' ? 'Brak danych' : `${domain.readiness}% · Częściowe`}</b>
               </article>
             ))}
           </div>
           <p>
-            Logika ID-8: ogólna średnia arytmetyczna nie maskuje braku w wymaganym źródle. Required source blokuje domenę przy krytycznej luce.
+            Brak wymaganego źródła oznacza, że dany obszar nie jest jeszcze gotowy do wiarygodnej analizy.
           </p>
         </article>
 
         <article className="pd-id8-chart-card">
           <header>
             <div>
-              <h3>Trend Kompletności Danych (Ostatnie 7 Dni)</h3>
+              <h3>Kompletność danych — ostatnie 7 dni</h3>
               <p>Wykres prezentuje dzienny wskaźnik dostępności rekordów w podziale na kluczowe źródła danych.</p>
             </div>
-            <span>Data Watermark: {formatIntegrationDateTime(completeness.generatedAt)}</span>
+            <span>Ostatnia aktualizacja: {formatIntegrationDateTime(completeness.generatedAt)}</span>
           </header>
           <CompletenessCanvas completeness={completeness} />
         </article>
@@ -970,8 +961,8 @@ function HealthView({
 
       <section className="pd-id8-daily-grid">
         <header>
-          <h3>Dzienny Kalendarz Pokrycia Danych (Drill-down)</h3>
-          <span>Automatyczny audyt ciągłości danych</span>
+          <h3>Pokrycie danych według dnia</h3>
+          <span>Kontrola ciągłości danych</span>
         </header>
         <div className="pd-id8-table-wrap">
           <table aria-label="Dzienny kalendarz pokrycia danych">
@@ -1007,7 +998,7 @@ function HealthView({
       <section className="pd-id8-logs-card">
         <header>
           <div>
-            <h3>Historia Pobrań i Zadań Pipeline (`/integrations/logs`)</h3>
+            <h3>Historia synchronizacji</h3>
             <p>Ostatnie wykonania synchronizacji cyklicznej i zadań historycznych.</p>
           </div>
         </header>
@@ -1016,12 +1007,12 @@ function HealthView({
             <thead>
               <tr>
                 <th>Źródło</th>
-                <th>Typ Zadania</th>
+                <th>Typ zadania</th>
                 <th>Rozpoczęto</th>
                 <th>Czas trwania</th>
                 <th>Rekordy</th>
                 <th>Status</th>
-                <th>Szczegóły / Błąd</th>
+                <th>Szczegóły</th>
               </tr>
             </thead>
             <tbody>
@@ -1076,7 +1067,7 @@ function LogRow({
       <td>{formatDuration(log.durationMs)}</td>
       <td>{formatNumber(log.recordsWritten ?? log.recordsRead)}</td>
       <td><LogStatus status={log.status} /></td>
-      <td>{log.safeErrorMessage ?? log.errorCode ?? 'OK (200)'}</td>
+      <td>{log.safeErrorMessage ?? (log.errorCode ? 'Wymaga sprawdzenia' : 'Bez błędów')}</td>
     </tr>
   );
 }
@@ -1105,29 +1096,29 @@ function SourceInspector({
               <ProviderMark label={source.providerDisplayName} provider={source.provider} />
               <span>
                 <h2>{source.providerDisplayName}</h2>
-                <small>{source.accountName ?? source.displayName} — ID: {source.externalAccountIdMasked ?? 'zamaskowane'}</small>
+                <small>{source.accountName ?? source.displayName}</small>
               </span>
             </div>
             <button onClick={onClose} type="button">✕</button>
           </header>
           {source.issue || source.businessStatus === 'action_required' ? (
             <section className="pd-id8-problem-box">
-              <strong>Problem z Połączeniem</strong>
+              <strong>Połączenie wymaga uwagi</strong>
               <p>{source.issue?.message ?? source.nextStep}</p>
-              <button onClick={() => void onSourceCommand(source, 'reauth')} type="button">Połącz ponownie (Reauth OAuth)</button>
+              <button onClick={() => void onSourceCommand(source, 'reauth')} type="button">Połącz ponownie</button>
             </section>
           ) : null}
           <section>
-            <h3>Stan Techniczny & Lifecycle</h3>
+            <h3>Stan źródła</h3>
             <dl className="pd-id8-key-grid">
-              <div><dt>Status Połączenia</dt><dd>{source.connectionStatus}</dd></div>
-              <div><dt>Kompletność Danych</dt><dd>{source.completeness.percentage}%</dd></div>
-              <div><dt>Aktualność (Freshness)</dt><dd>{source.freshness.label}</dd></div>
-              <div><dt>Pierwsze Pobranie (Backfill)</dt><dd>{source.initialBackfill.status} ({source.initialBackfill.coverageDays} dni)</dd></div>
+              <div><dt>Połączenie</dt><dd>{source.businessStatusLabel}</dd></div>
+              <div><dt>Kompletność danych</dt><dd>{source.completeness.percentage}%</dd></div>
+              <div><dt>Aktualność</dt><dd>{source.freshness.label}</dd></div>
+              <div><dt>Dane historyczne</dt><dd>{source.initialBackfill.coverageDays} dni zakresu</dd></div>
             </dl>
           </section>
           <section className="pd-id8-impact-box">
-            <h3>Wpływ na Moduły Analityczne PapaData</h3>
+            <h3>Wpływ na analizy</h3>
             <p>To źródło zasila następujące wskaźniki i funkcjonalności:</p>
             <div>
               {uniqueLabels([
@@ -1202,12 +1193,12 @@ function ConnectModal({
           canSave: false,
           formValidation: {
             fieldErrors: {},
-            message: 'Frontend nie ma podłączonego endpointu testu providera.',
+            message: 'Weryfikacja połączenia jest teraz niedostępna.',
             status: 'failed',
           },
           provider: activeProvider.provider,
           providerTest: {
-            message: 'Zapis pozostaje zablokowany, bo nie wykonano realnego testu providera.',
+            message: 'Spróbuj ponownie później. Do tego czasu zapis pozostaje zablokowany.',
             status: 'failed',
           },
         });
@@ -1217,8 +1208,8 @@ function ConnectModal({
       setTestResult(result);
       showToast(
         result.canSave
-          ? 'Test P0 zaliczony — poświadczenia aktywne.'
-          : 'Test providera nie odblokował zapisu.',
+          ? 'Połączenie zostało zweryfikowane.'
+          : 'Nie udało się potwierdzić połączenia.',
         result.canSave ? 'success' : 'error',
       );
     } catch (cause) {
@@ -1233,11 +1224,11 @@ function ConnectModal({
         providerTest: {
           message: cause instanceof Error
             ? cause.message
-            : 'Test providera zakończył się błędem. Zapis pozostaje zablokowany.',
+            : 'Nie udało się zweryfikować połączenia. Zapis pozostaje zablokowany.',
           status: 'failed',
         },
       });
-      showToast('Test providera zakończył się błędem.', 'error');
+      showToast('Nie udało się zweryfikować połączenia.', 'error');
     } finally {
       setTesting(false);
     }
@@ -1245,14 +1236,14 @@ function ConnectModal({
 
   async function handleSave() {
     if (!canSave) {
-      showToast('Brak testu połączenia u dostawcy.', 'error');
+      showToast('Najpierw zweryfikuj połączenie.', 'error');
       return;
     }
     setSaving(true);
     try {
       if (!onCreateConnection) {
         setOperationNotice({
-          message: 'Test przeszedł, ale bieżący runtime nie wystawił zapisu secret reference.',
+          message: 'Połączenie jest poprawne, ale jego zapis jest teraz niedostępny.',
           title: 'Zapis połączenia niedostępny',
           tone: 'warning',
         });
@@ -1310,7 +1301,7 @@ function ConnectModal({
             ))}
             <section className="pd-id8-live-test">
               <div>
-                <strong>Weryfikacja Połączenia (P0 Live Test)</strong>
+                <strong>Weryfikacja połączenia</strong>
                 <button disabled={testing} type="submit">
                   {testing ? 'Testowanie...' : 'Testuj połączenie'}
                 </button>
@@ -1318,7 +1309,7 @@ function ConnectModal({
               <p data-status={testResult?.providerTest.status ?? 'not_run'}>
                 {testResult
                   ? `${testResult.formValidation.message} ${testResult.providerTest.message}`
-                  : 'Status: Nieprzeprowadzono żywego testu u dostawcy.'}
+                  : 'Sprawdź połączenie, zanim je zapiszesz.'}
               </p>
             </section>
           </form>
@@ -1326,7 +1317,7 @@ function ConnectModal({
         <footer>
           <button onClick={onClose} type="button">Anuluj</button>
           <button disabled={!canSave || saving} onClick={() => void handleSave()} type="button">
-            {saving ? 'Zapisywanie...' : 'Zapisz i Pobierz Dane'}
+            {saving ? 'Zapisywanie…' : 'Zapisz i pobierz dane'}
           </button>
         </footer>
       </section>
@@ -1350,27 +1341,28 @@ function SseConsole({
   if (!open) return null;
   const next = Math.min(100, progress + 5);
   return (
-    <div className="pd-id8-modal" role="dialog" aria-modal="true" aria-label="SSE Live Stream Viewer">
+    <div className="pd-id8-modal" role="dialog" aria-modal="true" aria-label="Aktywność synchronizacji">
       <section className="pd-id8-sse-modal">
         <header>
-          <div><span /> <strong>Server-Sent Events (SSE) Live Stream Viewer</strong></div>
+          <div><span /> <strong>Aktywność synchronizacji</strong></div>
           <button onClick={onClose} type="button">✕</button>
         </header>
-        <p>Na żywo podglądaj zdarzenia backfill_progress przesyłane przez backend bez agresywnego pollingu HTTP.</p>
-        <pre>{`[15:10:01] SSE Connection established to /api/v1/integrations/stream...
-[15:10:02] event: backfill_progress
-data: {"integrationId":"src_ga4_03", "provider":"ga4", "progressPercentage":${progress}.0, "status":"RUNNING"}`}</pre>
+        <p>Google Analytics 4 pobiera dane historyczne. Możesz zamknąć to okno — operacja będzie kontynuowana w tle.</p>
+        <div className="pd-id8-operation-progress" aria-label={`Postęp pobierania ${progress}%`} role="progressbar" aria-valuemax={100} aria-valuemin={0} aria-valuenow={progress}>
+          <span><b style={{ inlineSize: `${progress}%` }} /></span>
+          <strong>{progress}%</strong>
+        </div>
         <footer>
           <button
             onClick={() => {
               setProgress(next);
-              showToast(`SSE Event Received: GA4 Backfill ${next}%`);
+              showToast(`Zaktualizowano postęp pobierania: ${next}%`);
             }}
             type="button"
           >
-            Wygeneruj zdarzenie SSE (+5%)
+            Odśwież postęp
           </button>
-          <span>Endpoint: /api/v1/integrations/stream</span>
+          <span>Ostatnia aktualizacja: przed chwilą</span>
         </footer>
       </section>
     </div>
@@ -1386,14 +1378,18 @@ function ReadinessModal({
 }) {
   if (!open) return null;
   return (
-    <div className="pd-id8-modal" role="dialog" aria-modal="true" aria-label="Formuła Gotowości Biznesowej">
+    <div className="pd-id8-modal" role="dialog" aria-modal="true" aria-label="Sposób obliczania gotowości danych">
       <section className="pd-id8-readiness-modal">
         <header>
-          <h2>Formuła Gotowości Biznesowej (Domain Readiness)</h2>
+          <h2>Jak liczymy gotowość danych?</h2>
           <button onClick={onClose} type="button">✕</button>
         </header>
-        <p>PapaData odrzuca proste średnie arytmetyczne kompletności. Wskaźnik gotowości domeny jest zerowany, jeśli źródło wymagane nie spełnia progu kompletności.</p>
-        <code>Readiness(Domain) = Product[Completeness(Required) &gt;= 0.95] × Mean(Supporting)</code>
+        <p>Obszar jest gotowy, gdy wszystkie wymagane źródła są połączone, aktualne i mają wystarczająco kompletne dane. Braku ważnego źródła nie ukrywamy w średniej.</p>
+        <ul className="pd-id8-readiness-list">
+          <li><strong>Gotowe</strong> — możesz bezpiecznie korzystać z analiz.</li>
+          <li><strong>Częściowe</strong> — wyniki mogą nie obejmować pełnego okresu lub kanału.</li>
+          <li><strong>Brak danych</strong> — połącz wymagane źródło albo napraw jego dostęp.</li>
+        </ul>
         <button onClick={onClose} type="button">Rozumiem</button>
       </section>
     </div>
@@ -1424,17 +1420,6 @@ function DisconnectModal({
         </div>
       </section>
     </div>
-  );
-}
-
-function PrototypeFooter() {
-  return (
-    <footer className="pd-id8-footer">
-      <div>
-        <span>PapaData Platform — Specyfikacja Integracji ID-8 target-state • Wersja 1.0</span>
-        <span>Architektura API: OAuth 2.0 / SSE Stream / Multi-tenant SaaS</span>
-      </div>
-    </footer>
   );
 }
 
@@ -1553,19 +1538,11 @@ function providerFields(provider: IntegrationRuntimeCatalogProvider): readonly {
         secret: false,
         type: 'text',
       },
-      {
-        label: 'Secret reference po OAuth callback',
-        name: 'credentialReference',
-        placeholder: `secret://${provider.provider}`,
-        required: false,
-        secret: true,
-        type: 'text',
-      },
     ];
   }
   return [
     {
-      label: 'Nazwa Źródła (Własna)',
+      label: 'Nazwa źródła',
       name: 'displayName',
       placeholder: `Sklep produkcyjny ${provider.displayName}`,
       required: true,
@@ -1573,7 +1550,7 @@ function providerFields(provider: IntegrationRuntimeCatalogProvider): readonly {
       type: 'text',
     },
     {
-      label: 'Adres URL Sklepu / Host API',
+      label: 'Adres sklepu',
       name: 'storeUrl',
       placeholder: 'https://sklep.example.com',
       required: provider.provider === 'woocommerce',
@@ -1581,7 +1558,7 @@ function providerFields(provider: IntegrationRuntimeCatalogProvider): readonly {
       type: provider.provider === 'woocommerce' ? 'url' : 'text',
     },
     {
-      label: provider.provider === 'baselinker' ? 'API Token' : 'Consumer Key',
+      label: provider.provider === 'baselinker' ? 'Token dostępu' : 'Klucz dostępu',
       name: 'consumerKey',
       placeholder: provider.provider === 'baselinker' ? 'token_live_...' : 'ck_live_...',
       required: true,
@@ -1589,7 +1566,7 @@ function providerFields(provider: IntegrationRuntimeCatalogProvider): readonly {
       type: 'text',
     },
     {
-      label: 'Consumer Secret',
+      label: 'Sekret dostępu',
       name: 'consumerSecret',
       placeholder: 'cs_live_...',
       required: provider.provider === 'woocommerce',
@@ -1601,12 +1578,6 @@ function providerFields(provider: IntegrationRuntimeCatalogProvider): readonly {
 
 function uniqueLabels(labels: readonly (string | undefined)[]) {
   return Array.from(new Set(labels.filter((label): label is string => Boolean(label))));
-}
-
-function averageDomainReadiness(completeness: IntegrationCompletenessRuntime) {
-  if (completeness.domains.length === 0) return completeness.global.percentage;
-  const total = completeness.domains.reduce((sum, domain) => sum + domain.readiness, 0);
-  return total / completeness.domains.length;
 }
 
 function dateColumns(completeness: IntegrationCompletenessRuntime): readonly string[] {

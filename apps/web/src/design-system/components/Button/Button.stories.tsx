@@ -18,8 +18,14 @@ import type {
   PapaDataIconName,
 } from '../../icons';
 import type {
-  PapaDataRuntimeLocale,
-} from '../../foundations';
+  LocalizedCopy,
+} from '../../../storybook-next/presentation/storyLocalization';
+import {
+  Localized,
+  copy,
+  readLocale,
+  readTheme,
+} from '../../../storybook-next/presentation/storyLocalization';
 import {
   Button,
 } from './Button';
@@ -41,10 +47,10 @@ import {
 
 import '../../../storybook-next/presentation/story-presentation.css';
 import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../../storybook-next/presentation/StoryPresentation';
-import './action-showcase.css';
+import './button.stories.css';
 
 const meta = {
-  title: '00 Fundamenty/05 Akcje i wejścia/Przyciski i akcje',
+  title: 'DESIGN SYSTEM/Komponenty/Akcje/Przyciski i akcje',
   component: Button,
   parameters: {
     layout: 'fullscreen',
@@ -64,11 +70,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-type LocalizedCopy = {
-  readonly pl: string;
-  readonly en: string;
-};
-
 type ActionVariantDefinition = {
   readonly variant: ButtonVariant;
   readonly label: LocalizedCopy;
@@ -84,37 +85,6 @@ type ActionUsageRuleDefinition = {
   readonly useWhen: LocalizedCopy;
   readonly notFor: LocalizedCopy;
 };
-
-function readLocale(): PapaDataRuntimeLocale {
-  if (typeof document === 'undefined') {
-    return 'pl';
-  }
-
-  return document.documentElement.dataset.locale === 'en'
-    ? 'en'
-    : 'pl';
-}
-
-function readTheme(): 'light' | 'dark' {
-  if (typeof document === 'undefined') {
-    return 'light';
-  }
-
-  return document.documentElement.dataset.theme === 'dark'
-    ? 'dark'
-    : 'light';
-}
-
-function copy(value: LocalizedCopy) {
-  return readLocale() === 'en' ? value.en : value.pl;
-}
-
-function Localized({
-  pl,
-  en,
-}: LocalizedCopy) {
-  return <>{copy({ pl, en })}</>;
-}
 
 const actionVariants = [
   {
@@ -285,7 +255,7 @@ function StorySection({
   );
 }
 
-function ActionsShowcase() {
+function ButtonDocumentation() {
   const applyChangesLabel = copy({ pl: 'Zastosuj zmiany', en: 'Apply changes' });
   const approveConfigLabel = copy({ pl: 'Zatwierdź konfigurację', en: 'Approve configuration' });
   const syncIntegrationsBusyLabel = copy({
@@ -303,16 +273,16 @@ function ActionsShowcase() {
             en: 'Button contract parameters',
           })}
           items={[
-            { label: <Localized pl="Kontrakt" en="Contract" />, value: '00.14' },
+            { label: <Localized pl="Właściciel" en="Owner" />, value: 'design-system/components/Button' },
             { label: <Localized pl="Motyw" en="Theme" />, value: readTheme() === 'dark' ? <Localized pl="Ciemny" en="Dark" /> : <Localized pl="Jasny" en="Light" /> },
             { label: <Localized pl="Język" en="Language" />, value: readLocale().toUpperCase() },
             { label: 'Status', value: 'accepted' },
           ]}
         />
       )}
-      sectionCode="00"
-      sectionLabel={<Localized pl="Fundamenty" en="Foundations" />}
-      storyId="00.14"
+      sectionCode="DS"
+      sectionLabel={<Localized pl="Komponenty" en="Components" />}
+      storyId="button-actions"
       summary={
         <Localized
           pl="Przycisk wykonuje komendę, TextAction lekką komendę, LinkAction nawigację, a IconButton komendę ikonową. Każda semantyka ma jednego właściciela."
@@ -329,7 +299,7 @@ function ActionsShowcase() {
               en="The same visual contract works in headers, tables, forms and flows without local visual variants."
             />
           }
-          eyebrow="00"
+          eyebrow="01"
           title={<Localized pl="Podgląd systemu akcji" en="Action system preview" />}
         >
           <div className="pd-action-hero__actions">
@@ -356,8 +326,8 @@ function ActionsShowcase() {
         <StorySection
           description={
             <Localized
-              pl="Ten fragment jest kontraktem dla 15 i 18: wybór komponentu wynika z semantyki akcji, nie z tego, który wariant wygląda mocniej."
-              en="This fragment is the contract for 15 and 18: component choice follows action semantics, not which variant looks stronger."
+              pl="Wybór komponentu wynika z semantyki akcji, nie z tego, który wariant wygląda mocniej."
+              en="Component choice follows action semantics, not which variant looks stronger."
             />
           }
           eyebrow="01"
@@ -526,7 +496,7 @@ function ActionsShowcase() {
             <article className="pd-action-context-item">
               <header className="pd-action-context-item__header">
                 <h3>DataTable</h3>
-                <p>owner: DataTable runtime / 18.04</p>
+                <p>owner: DataTable</p>
               </header>
               <div className="pd-action-context-item__actions">
                 <IconButton icon="search" label={copy({ pl: 'Szukaj w tabeli', en: 'Search table' })} />
@@ -545,7 +515,7 @@ function ActionsShowcase() {
             <article className="pd-action-context-item">
               <header className="pd-action-context-item__header">
                 <h3><Localized pl="Formularz" en="Form" /></h3>
-                <p>owner: 00.15</p>
+                <p>owner: Field</p>
               </header>
               <div className="pd-action-context-item__actions">
                 <Button>
@@ -792,7 +762,7 @@ export const Przyciski: Story = {
   args: {
     children: 'Zastosuj zmiany',
   },
-  render: () => <ActionsShowcase />,
+  render: () => <ButtonDocumentation />,
   play: async ({
     canvasElement,
   }) => {

@@ -156,44 +156,76 @@ const preview: Preview = {
     },
 
     options: {
-      storySort: {
-        order: [
-          '00 Fundamenty',
-          [
-            '01 Fundamenty wizualne',
-            [
-              'Kierunek wizualny',
-              'Kolory semantyczne',
-              'Typografia',
-              'Role semantyczne statusów',
-              'Odstępy i siatka',
-              'Promienie i geometria',
-              'Linie i separacja',
-              'Głębia i warstwy',
-              'Ikonografia',
-              'Animacje',
-              'Dostępność',
-            ],
-            '02 Powierzchnie i komunikaty',
-            [
-              'Canvas, tło i powierzchnie',
-              'Komunikat w kontekście',
-              'Status obiektu',
-              'Toast operacyjny',
-              'Stany puste, błędy i blokady',
-            ],
-            '03 Marka',
-            '04 Ikony',
-            '05 Akcje i wejścia',
-            [
-              'Przyciski i akcje',
-              'Pola tekstowe i formularzowe',
-            ],
+      // storySort must be written inline here as a fully self-contained
+      // function: Storybook statically extracts just this AST node and
+      // eval()s it in isolation to build the sidebar order, so it cannot
+      // reference any identifier declared elsewhere in this module.
+      storySort: (leftEntry, rightEntry) => {
+        const rootOrder = [
+          'ANALIZA',
+          'AI',
+          'DANE I INTEGRACJE',
+          'ADMINISTRACJA',
+          'WSPARCIE',
+          'DESIGN SYSTEM',
+          'PLATFORMA',
+        ];
+
+        const sectionOrder = {
+          ANALIZA: [
+            'Centrum Dowodzenia',
+            'Kampanie płatne',
+            'Zamówienia',
+            'Produkty',
+            'Klienci',
+            'Ruch na stronie',
           ],
-          '05 Laboratorium decyzji',
-          '15 Wykresy i dane',
-          '18 Wzorce interfejsu',
-        ],
+          AI: ['Laboratorium Papa Asystenta'],
+          'DANE I INTEGRACJE': ['Integracje'],
+          ADMINISTRACJA: ['Ustawienia', 'Subskrypcja i płatności'],
+          WSPARCIE: ['Wsparcie w marketingu', 'Centrum Pomocy'],
+          'DESIGN SYSTEM': ['Fundamenty', 'Komponenty', 'Wzorce interfejsu'],
+          PLATFORMA: ['Powłoka produktu', 'Dostęp i onboarding'],
+        };
+
+        const storyCategoryOrder = ['Całość', 'Sekcje', 'Stany', 'Interakcje', 'Responsive'];
+
+        const polishCollator = new Intl.Collator('pl', {
+          numeric: true,
+          sensitivity: 'base',
+        });
+
+        const normalizeStorySortEntry = (entry) => (Array.isArray(entry) ? entry[1] : entry);
+
+        const configuredIndex = (value, order) => {
+          const index = value ? order.indexOf(value) : -1;
+          return index === -1 ? order.length : index;
+        };
+
+        const left = normalizeStorySortEntry(leftEntry);
+        const right = normalizeStorySortEntry(rightEntry);
+        const leftPath = (left.title ?? '').split('/');
+        const rightPath = (right.title ?? '').split('/');
+        const leftRoot = leftPath[0];
+        const rightRoot = rightPath[0];
+
+        const rootDifference = configuredIndex(leftRoot, rootOrder) - configuredIndex(rightRoot, rootOrder);
+        if (rootDifference !== 0) return rootDifference;
+
+        if (leftRoot === rightRoot && leftRoot) {
+          const domainOrder = sectionOrder[leftRoot] ?? [];
+          const domainDifference = configuredIndex(leftPath[1], domainOrder) - configuredIndex(rightPath[1], domainOrder);
+          if (domainDifference !== 0) return domainDifference;
+        }
+
+        const categoryDifference = configuredIndex(leftPath[2], storyCategoryOrder)
+          - configuredIndex(rightPath[2], storyCategoryOrder);
+        if (categoryDifference !== 0) return categoryDifference;
+
+        const titleDifference = polishCollator.compare(left.title ?? '', right.title ?? '');
+        if (titleDifference !== 0) return titleDifference;
+
+        return polishCollator.compare(left.name ?? '', right.name ?? '');
       },
     },
 

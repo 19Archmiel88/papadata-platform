@@ -510,7 +510,7 @@ function ComplexFormPattern() {
 }
 
 const meta = {
-  title: '18 Wzorce interfejsu/Formularze złożone i kreatory',
+  title: 'DESIGN SYSTEM/Wzorce interfejsu/Formularze złożone i kreatory',
   parameters: {
     layout: 'fullscreen',
     a11y: {
@@ -532,15 +532,15 @@ export const ComplexFormsWizardsStory: Story = {
         <StoryPresentationMeta
           ariaLabel="Parametry wzorca formularza"
           items={[
-            { label: <Localized en="Contract" pl="Kontrakt" />, value: '18.09' },
+            { label: <Localized en="Owner" pl="Właściciel" />, value: 'Field / Select / Dialog' },
             { label: <Localized en="Components" pl="Komponenty" />, value: 'TextField / Select / Dialog' },
-            { label: <Localized en="Status" pl="Status" />, value: <Localized en="In review" pl="W przeglądzie" /> },
+            { label: <Localized en="Status" pl="Status" />, value: <Localized en="Canonical pattern" pl="Kanoniczny wzorzec" /> },
           ]}
         />
       )}
-      sectionCode="18"
+      sectionCode="DS"
       sectionLabel={<Localized en="Interface patterns" pl="Wzorce interfejsu" />}
-      storyId="18.09"
+      storyId="complex-forms"
       summary={<Localized
         en="A complex form composes existing fields, controls and Dialog for unsaved changes without creating a public Wizard component."
         pl="Złożony formularz składa istniejące pola, kontrolki i Dialog dla zmian niezapisanych bez tworzenia publicznego komponentu Wizard."

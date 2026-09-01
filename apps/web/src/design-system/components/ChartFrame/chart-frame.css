@@ -208,7 +208,7 @@
 .pd-chart-frame-canvas__assistant {
   display: grid;
   gap: var(--pd-space-3);
-  border-inline-start: 2px solid var(--pd-action-primary);
+  border-inline-start: 2px solid var(--pd-brand-action);
 }
 
 .pd-chart-frame-canvas__recommendation {
@@ -227,7 +227,7 @@
   display: flex;
   gap: var(--pd-space-2);
   align-items: center;
-  color: var(--pd-action-primary);
+  color: var(--pd-brand-action);
 }
 
 .pd-f0-depth-stage__assistant-header > div {

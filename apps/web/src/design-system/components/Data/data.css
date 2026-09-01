@@ -94,7 +94,7 @@
 }
 
 .pd-table__sort-indicator {
-  color: var(--pd-action-primary);
+  color: var(--pd-brand-action);
   font-size: 0.62rem;
 }
 

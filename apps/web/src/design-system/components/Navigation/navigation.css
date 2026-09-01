@@ -70,7 +70,7 @@
   inset: auto 0.55rem -0.24rem;
   block-size: 2px;
   border-radius: var(--pd-radius-pill);
-  background: var(--pd-action-primary);
+  background: var(--pd-brand-action);
 }
 
 .pd-tabs__tab:focus-visible,
@@ -206,8 +206,8 @@
 
 .pd-pagination__page[aria-current='page'],
 .pd-pagination-nav__button[aria-current='page'] {
-  border-color: color-mix(in srgb, var(--pd-action-primary) 42%, var(--pd-separator));
-  background: color-mix(in srgb, var(--pd-action-primary) 10%, var(--pd-surface));
+  border-color: color-mix(in srgb, var(--pd-brand-action) 42%, var(--pd-separator));
+  background: color-mix(in srgb, var(--pd-brand-action) 10%, var(--pd-surface));
   color: var(--pd-text);
 }
 

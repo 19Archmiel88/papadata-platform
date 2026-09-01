@@ -160,7 +160,7 @@ function DestructiveConfirmationPattern() {
 }
 
 const meta = {
-  title: '18 Wzorce interfejsu/Potwierdzenia i operacje destrukcyjne',
+  title: 'DESIGN SYSTEM/Wzorce interfejsu/Potwierdzenia i operacje destrukcyjne',
   parameters: {
     layout: 'fullscreen',
     a11y: {
@@ -182,15 +182,15 @@ export const DestructiveConfirmationsStory: Story = {
         <StoryPresentationMeta
           ariaLabel="Parametry wzorca potwierdzeń"
           items={[
-            { label: 'Kontrakt', value: '18.05' },
+            { label: 'Właściciel', value: 'AlertDialog / Button' },
             { label: 'Komponenty', value: 'AlertDialog / Button' },
-            { label: 'Status', value: 'W przeglądzie' },
+            { label: 'Status', value: 'Kanoniczny wzorzec' },
           ]}
         />
       )}
-      sectionCode="18"
+      sectionCode="DS"
       sectionLabel="Wzorce interfejsu"
-      storyId="18.05"
+      storyId="destructive-confirmation"
       summary="Potwierdzenie destrukcyjnej operacji używa AlertDialog, opisuje skutek i pozwala anulować komendę przed wykonaniem."
       title="Potwierdzenia i operacje destrukcyjne"
     >

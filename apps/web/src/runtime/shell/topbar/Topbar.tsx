@@ -32,6 +32,7 @@ import type {
   ShellNotification,
   ShellOverlay,
   ShellUser,
+  ShellWorkspace,
 } from '../app-shell/shellTypes';
 import {
   NotificationCenter,
@@ -275,6 +276,7 @@ export type AuthenticatedTopbarProps = {
   readonly operationCount: number;
   readonly papaAssistantOpen: boolean;
   readonly user: ShellUser;
+  readonly workspace: ShellWorkspace | null;
 };
 
 export function AuthenticatedTopbar({
@@ -298,6 +300,7 @@ export function AuthenticatedTopbar({
   operationCount,
   papaAssistantOpen,
   user,
+  workspace,
 }: AuthenticatedTopbarProps) {
   const [locale, setLocale] = useState<RuntimeLocale>(readRuntimeLocale);
   const [theme, setTheme] = useState<RuntimeTheme>(readRuntimeTheme);
@@ -455,6 +458,7 @@ export function AuthenticatedTopbar({
             </button>
           )}
           user={user}
+          workspace={workspace}
         />
       </div>
     </header>

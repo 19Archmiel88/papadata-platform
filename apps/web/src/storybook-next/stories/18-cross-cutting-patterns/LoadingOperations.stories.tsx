@@ -218,7 +218,7 @@ function LoadingExamples() {
 }
 
 const meta = {
-  title: '18 Wzorce interfejsu/Ładowanie danych i operacje w tle',
+  title: 'DESIGN SYSTEM/Wzorce interfejsu/Ładowanie danych i operacje w tle',
   parameters: {
     layout: 'fullscreen',
     a11y: {
@@ -240,15 +240,15 @@ export const LoadingOperationsStory: Story = {
         <StoryPresentationMeta
           ariaLabel="Parametry wzorca operacji w tle"
           items={[
-            { label: 'Kontrakt', value: '18.03' },
+            { label: 'Właściciel', value: 'Loading / BackgroundOperationItem' },
             { label: 'Komponenty', value: 'Skeleton / Spinner' },
-            { label: 'Status', value: 'W przeglądzie' },
+            { label: 'Status', value: 'Kanoniczny wzorzec' },
           ]}
         />
       )}
-      sectionCode="18"
+      sectionCode="DS"
       sectionLabel="Wzorce interfejsu"
-      storyId="18.03"
+      storyId="loading-operations"
       summary="Ładowanie danych i operacje w tle używają istniejących komponentów dla ładowania, postępu i operacji w tle. Story nie deklaruje fikcyjnych live regionów."
       title="Ładowanie danych i operacje w tle"
     >

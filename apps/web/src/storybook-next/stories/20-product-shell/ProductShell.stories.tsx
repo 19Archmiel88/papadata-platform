@@ -11,6 +11,7 @@ import {
 
 import {
   Button,
+  Dialog,
   InlineNotice,
   StatusBadge,
 } from '../../../design-system';
@@ -27,7 +28,6 @@ import {
   ProductShellFrame,
   PublicTopbar,
   type ShellOperation,
-  ShellLayerDemo,
   Sidebar,
   WorkspaceSwitcher,
 } from '../../../runtime/shell/index';
@@ -47,7 +47,7 @@ const notificationMutationAction = fn();
 const operationItemAction = fn();
 
 const meta = {
-  title: '20 Powłoka produktu/Powłoka i nawigacja',
+  title: 'PLATFORMA/Powłoka produktu/Elementy powłoki',
   parameters: {
     layout: 'fullscreen',
     a11y: {
@@ -60,7 +60,29 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-function ShellPage({
+function ShellLayerPreview() {
+  return (
+    <Dialog
+      closeOnBackdrop
+      closeOnEscape
+      description="Dialog korzysta z tego samego OverlayRoot co pozostałe warstwy powłoki."
+      modal
+      onOpenChange={openChangeAction}
+      open
+      primaryActionLabel="Potwierdź"
+      secondaryActionLabel="Anuluj"
+      title="Globalna warstwa dialogu"
+    >
+      <InlineNotice
+        message="Dialog, drawer, paleta poleceń i powłoka mobilna współdzielą kolejność warstw oraz zasady przywracania fokusu."
+        title="Jeden system overlayów"
+        tone="info"
+      />
+    </Dialog>
+  );
+}
+
+function ShellDocumentationPage({
   children,
   status = 'accepted',
   storyId,
@@ -81,21 +103,21 @@ function ShellPage({
           ariaLabel="Status powłoki"
           items={[
             {
-              label: 'Owner',
-              value: 'Product Shell',
+              label: 'Właściciel',
+              value: 'runtime/shell',
             },
             {
               label: 'Status',
-              value: status,
+              value: status === 'accepted' ? 'Kanoniczny runtime' : status,
             },
             {
-              label: 'Dokument',
-              value: `docs/specyfikacja-docelowa/06-powloka-produktu-i-nawigacja/${storyId.replace('.', '-')}`,
+              label: 'Źródło UI',
+              value: 'ProductShellFrame',
             },
           ]}
         />
       )}
-      sectionCode="20"
+      sectionCode="PF"
       sectionLabel="Powłoka produktu"
       storyId={storyId}
       summary={summary}
@@ -106,15 +128,15 @@ function ShellPage({
   );
 }
 
-function CommandCenterPreview() {
+function ProductContentPreview() {
   return (
     <section className="pd-s20-isolated" aria-labelledby="s20-runtime-title">
       <div className="pd-s20-panel">
         <p>Chroniona powierzchnia</p>
         <h3 id="s20-runtime-title">Centrum Dowodzenia</h3>
         <p>
-          Ten widok jest osadzony w realnej powłoce. Prawdziwe ekrany domenowe
-          zaczynają się po zamknięciu P0.20 i nie zastępują tej warstwy shell.
+          Ten widok jest osadzony w realnej powłoce. Ekrany domenowe pozostają
+          konsumentami nawigacji, sesji i globalnych operacji.
         </p>
       </div>
       <div className="pd-s20-isolated__row">
@@ -127,7 +149,7 @@ function CommandCenterPreview() {
           <h3>Operacje</h3>
           <p>Globalne operacje pozostają dostępne bez przeładowania trasy.</p>
           <Button onClick={overlayAction} variant="secondary">
-            Akcja testowa
+            Sprawdź działanie
           </Button>
         </div>
       </div>
@@ -171,7 +193,7 @@ function ShellFrameDemo({
         workspaceError={workspaceError}
         workspaces={workspaces}
       >
-        <CommandCenterPreview />
+        <ProductContentPreview />
       </ProductShellFrame>
     </div>
   );
@@ -208,9 +230,9 @@ const footerDemoOperationsSyncing: readonly ShellOperation[] = [
 ];
 
 export const AppShellStory: Story = {
-  name: '20.01 AppShell',
+  name: 'Powłoka aplikacji',
   render: () => (
-    <ShellPage
+    <ShellDocumentationPage
       storyId="20.01"
       summary="Pełna powłoka aplikacji z topbarem, sidebarem, workspace i globalnymi overlayami."
       title="AppShell"
@@ -223,7 +245,7 @@ export const AppShellStory: Story = {
       >
         <ShellFrameDemo />
       </StoryPresentationSection>
-    </ShellPage>
+    </ShellDocumentationPage>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -238,9 +260,9 @@ export const AppShellStory: Story = {
 };
 
 export const PublicTopbarStory: Story = {
-  name: '20.02 Topbar publiczny',
+  name: 'Górny pasek publiczny',
   render: () => (
-    <ShellPage
+    <ShellDocumentationPage
       storyId="20.02"
       summary="Publiczny topbar Auth utrzymuje kanoniczną markę PapaData oraz globalne kontrolki języka i motywu."
       title="Topbar publiczny"
@@ -250,7 +272,7 @@ export const PublicTopbarStory: Story = {
           <PublicTopbar onNavigate={navigateAction} />
         </div>
       </StoryPresentationSection>
-    </ShellPage>
+    </ShellDocumentationPage>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -267,9 +289,9 @@ export const PublicTopbarStory: Story = {
 };
 
 export const AuthenticatedTopbarStory: Story = {
-  name: '20.03 Topbar zalogowany',
+  name: 'Górny pasek użytkownika',
   render: () => (
-    <ShellPage
+    <ShellDocumentationPage
       storyId="20.03"
       summary="Topbar zalogowany skupia globalne akcje robocze; język i motyw są dostępne w panelu konta."
       title="Topbar zalogowany"
@@ -277,7 +299,7 @@ export const AuthenticatedTopbarStory: Story = {
       <StoryPresentationSection index="01" layout="full" title="Globalne akcje">
         <ShellFrameDemo />
       </StoryPresentationSection>
-    </ShellPage>
+    </ShellDocumentationPage>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -305,9 +327,9 @@ export const AuthenticatedTopbarStory: Story = {
 };
 
 export const SidebarStory: Story = {
-  name: '20.04 Sidebar',
+  name: 'Nawigacja boczna',
   render: () => (
-    <ShellPage
+    <ShellDocumentationPage
       storyId="20.04"
       summary="Sidebar utrzymuje aktywny stan, role semantyczne i czytelny focus."
       title="Sidebar"
@@ -321,7 +343,7 @@ export const SidebarStory: Story = {
           />
         </div>
       </StoryPresentationSection>
-    </ShellPage>
+    </ShellDocumentationPage>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -331,9 +353,9 @@ export const SidebarStory: Story = {
 };
 
 export const SidebarVariantsStory: Story = {
-  name: '20.05 Sidebar warianty',
+  name: 'Warianty nawigacji bocznej',
   render: () => (
-    <ShellPage
+    <ShellDocumentationPage
       storyId="20.05"
       summary="Collapsed, dense i error-safe bez poziomego overflow."
       title="Sidebar warianty"
@@ -358,14 +380,14 @@ export const SidebarVariantsStory: Story = {
           </div>
         </div>
       </StoryPresentationSection>
-    </ShellPage>
+    </ShellDocumentationPage>
   ),
 };
 
 export const WorkspaceSwitcherStory: Story = {
-  name: '20.06 Workspace switcher',
+  name: 'Wybór workspace',
   render: () => (
-    <ShellPage
+    <ShellDocumentationPage
       storyId="20.06"
       summary="Workspace switcher obsługuje role, brak dostępu, empty state i error state."
       title="Workspace switcher"
@@ -395,7 +417,7 @@ export const WorkspaceSwitcherStory: Story = {
           </div>
         </div>
       </StoryPresentationSection>
-    </ShellPage>
+    </ShellDocumentationPage>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -407,9 +429,9 @@ export const WorkspaceSwitcherStory: Story = {
 };
 
 export const GlobalSearchCommandPaletteStory: Story = {
-  name: '20.07 Global search / command palette',
+  name: 'Wyszukiwanie i paleta poleceń',
   render: () => (
-    <ShellPage
+    <ShellDocumentationPage
       storyId="20.07"
       summary="Command palette działa w dialogu, ma wyszukiwarkę i empty state."
       title="Global search i command palette"
@@ -424,7 +446,7 @@ export const GlobalSearchCommandPaletteStory: Story = {
           />
         </div>
       </StoryPresentationSection>
-    </ShellPage>
+    </ShellDocumentationPage>
   ),
   play: async ({ canvasElement }) => {
     const page = within(canvasElement.ownerDocument.body);
@@ -436,9 +458,9 @@ export const GlobalSearchCommandPaletteStory: Story = {
 };
 
 export const NotificationsStory: Story = {
-  name: '20.08 Powiadomienia',
+  name: 'Powiadomienia',
   render: () => (
-    <ShellPage
+    <ShellDocumentationPage
       storyId="20.08"
       summary="Powiadomienia są niemodalnym popoverem z filtrami, listą, empty state i error state."
       title="Powiadomienia"
@@ -474,7 +496,7 @@ export const NotificationsStory: Story = {
           </div>
         </div>
       </StoryPresentationSection>
-    </ShellPage>
+    </ShellDocumentationPage>
   ),
   play: async ({ canvasElement }) => {
     notificationMutationAction.mockClear();
@@ -492,9 +514,9 @@ export const NotificationsStory: Story = {
   },
 };
 export const BackgroundOperationsStory: Story = {
-  name: '20.09 Operacje w tle',
+  name: 'Operacje w tle',
   render: () => (
-    <ShellPage
+    <ShellDocumentationPage
       storyId="20.09"
       summary="Centrum operacji pokazuje progress, retry, cancel i statusy końcowe."
       title="Operacje w tle"
@@ -509,7 +531,7 @@ export const BackgroundOperationsStory: Story = {
           />
         </div>
       </StoryPresentationSection>
-    </ShellPage>
+    </ShellDocumentationPage>
   ),
   play: async ({ canvasElement }) => {
     operationItemAction.mockClear();
@@ -521,16 +543,16 @@ export const BackgroundOperationsStory: Story = {
 };
 
 export const OverlayRootStory: Story = {
-  name: '20.10 OverlayRoot i system warstw',
+  name: 'System warstw i nakładek',
   render: () => (
-    <ShellPage
+    <ShellDocumentationPage
       storyId="20.10"
       summary="Dialog, drawer, command palette i mobile shell korzystają ze wspólnego systemu warstw."
       title="OverlayRoot"
     >
       <StoryPresentationSection index="01" layout="wide" title="Warstwa dialogu">
         <div className="pd-s20-stage pd-s20-command-preview">
-          <ShellLayerDemo onOpenChange={openChangeAction} open />
+          <ShellLayerPreview />
         </div>
       </StoryPresentationSection>
       <StoryPresentationSection index="02" layout="narrow" title="Status">
@@ -540,19 +562,19 @@ export const OverlayRootStory: Story = {
           tone="success"
         />
       </StoryPresentationSection>
-    </ShellPage>
+    </ShellDocumentationPage>
   ),
 };
 
 export const MobileShellStory: Story = {
-  name: '20.11 Powłoka mobilna',
+  name: 'Powłoka mobilna',
   parameters: {
     viewport: {
       defaultViewport: 'mobile1',
     },
   },
   render: () => (
-    <ShellPage
+    <ShellDocumentationPage
       storyId="20.11"
       summary="Mobilna powłoka zachowuje menu, command palette i brak poziomego overflow."
       title="Powłoka mobilna"
@@ -573,11 +595,11 @@ export const MobileShellStory: Story = {
             user={defaultShellUser}
             workspaces={defaultShellWorkspaces}
           >
-            <CommandCenterPreview />
+            <ProductContentPreview />
           </ProductShellFrame>
         </div>
       </StoryPresentationSection>
-    </ShellPage>
+    </ShellDocumentationPage>
   ),
   play: async ({ canvasElement }) => {
     const page = within(canvasElement.ownerDocument.body);
@@ -586,9 +608,9 @@ export const MobileShellStory: Story = {
 };
 
 export const FooterStatusBarStory: Story = {
-  name: '20.12 Pasek stopki',
+  name: 'Pasek stopki',
   render: () => (
-    <ShellPage
+    <ShellDocumentationPage
       storyId="20.12"
       summary="Stały, cienki pasek stopki na dole powłoki. Status pochodzi z tej samej listy operacji integracji co Operation Center — nie z osobnego, wymyślonego źródła. Niezależny od zwijania/rozwijania sidebara, tak jak topbar."
       title="Pasek stopki"
@@ -617,7 +639,7 @@ export const FooterStatusBarStory: Story = {
       >
         <ShellFrameDemo operations={defaultShellOperations} />
       </StoryPresentationSection>
-    </ShellPage>
+    </ShellDocumentationPage>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

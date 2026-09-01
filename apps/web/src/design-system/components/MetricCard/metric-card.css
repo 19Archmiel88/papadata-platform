@@ -51,7 +51,7 @@
 }
 
 .pd-metric-card[data-emphasis='recommendation'] {
-  border-inline-start: 3px solid var(--pd-action-primary);
+  border-inline-start: 3px solid var(--pd-brand-action);
 }
 
 .pd-metric-card[data-signal='positive'] {

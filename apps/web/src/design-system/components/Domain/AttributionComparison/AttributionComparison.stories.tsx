@@ -21,7 +21,7 @@ const workspaceContext = {
 } as const;
 
 const meta = {
-  title: '15 Wykresy i dane/05 Katalog komponentów/Komponenty domenowe/AttributionComparison',
+  title: 'DESIGN SYSTEM/Komponenty/Domenowe/AttributionComparison',
   component: AttributionComparison,
   parameters: { layout: 'padded', a11y: { test: 'error' } },
 } satisfies Meta<typeof AttributionComparison>;

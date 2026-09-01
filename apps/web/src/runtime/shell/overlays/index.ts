@@ -4,6 +4,3 @@ export {
 export type {
   AnchoredShellOverlayProps,
 } from './AnchoredShellOverlay';
-export {
-  ShellLayerDemo,
-} from './ShellLayerDemo';

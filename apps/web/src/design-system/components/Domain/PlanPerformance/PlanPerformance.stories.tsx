@@ -17,7 +17,7 @@ import type {
 const workspaceContext = { locale: 'pl', tenantId: 'tenant-papadata', workspaceId: 'workspace_plan' } as const;
 
 const meta = {
-  title: '15 Wykresy i dane/05 Katalog komponentów/Komponenty domenowe/PlanPerformance',
+  title: 'DESIGN SYSTEM/Komponenty/Domenowe/PlanPerformance',
   component: PlanPerformance,
   parameters: { layout: 'padded', a11y: { test: 'error' } },
 } satisfies Meta<typeof PlanPerformance>;

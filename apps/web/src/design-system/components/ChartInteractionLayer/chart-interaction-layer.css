@@ -79,8 +79,8 @@
 }
 
 .pd-chart-interaction-layer__filter-button[data-active='true'] {
-  border-color: color-mix(in srgb, var(--pd-action-primary) 35%, var(--pd-separator));
-  background: color-mix(in srgb, var(--pd-action-primary) 10%, var(--pd-surface));
+  border-color: color-mix(in srgb, var(--pd-brand-action) 35%, var(--pd-separator));
+  background: color-mix(in srgb, var(--pd-brand-action) 10%, var(--pd-surface));
   color: var(--pd-text);
 }
 
@@ -111,7 +111,7 @@
 }
 
 .pd-chart-interaction-layer__panel[data-status='ready'] {
-  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--pd-action-primary) 72%, transparent);
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--pd-brand-action) 72%, transparent);
 }
 
 .pd-chart-interaction-layer__tooltip {
@@ -174,8 +174,8 @@
 }
 
 .pd-chart-interaction-layer__point-button[data-active='true'] {
-  border-color: color-mix(in srgb, var(--pd-action-primary) 34%, var(--pd-separator));
-  background: color-mix(in srgb, var(--pd-action-primary) 9%, var(--pd-surface));
+  border-color: color-mix(in srgb, var(--pd-brand-action) 34%, var(--pd-separator));
+  background: color-mix(in srgb, var(--pd-brand-action) 9%, var(--pd-surface));
   color: var(--pd-text);
 }
 

@@ -26,9 +26,12 @@ import {
 import {
   Select,
 } from '../Select';
-import type {
-  PapaDataRuntimeLocale,
-} from '../../foundations';
+import {
+  Localized,
+  copy,
+  readLocale,
+  readTheme,
+} from '../../../storybook-next/presentation/storyLocalization';
 import {
   FileInput,
 } from './FileInput';
@@ -44,10 +47,10 @@ import {
 
 import '../../../storybook-next/presentation/story-presentation.css';
 import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../../storybook-next/presentation/StoryPresentation';
-import './field-family-showcase.css';
+import './form-fields.stories.css';
 
 const meta = {
-  title: '00 Fundamenty/05 Akcje i wejścia/Pola tekstowe i formularzowe',
+  title: 'DESIGN SYSTEM/Komponenty/Formularze i wybór/Pola formularzowe',
   component: TextField,
   parameters: {
     layout: 'fullscreen',
@@ -61,44 +64,8 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-type LocalizedCopy = {
-  readonly pl: string;
-  readonly en: string;
-};
-
-function readLocale(): PapaDataRuntimeLocale {
-  if (typeof document === 'undefined') {
-    return 'pl';
-  }
-
-  return document.documentElement.dataset.locale === 'en'
-    ? 'en'
-    : 'pl';
-}
-
-function readTheme(): 'light' | 'dark' {
-  if (typeof document === 'undefined') {
-    return 'light';
-  }
-
-  return document.documentElement.dataset.theme === 'dark'
-    ? 'dark'
-    : 'light';
-}
-
-function copy(value: LocalizedCopy) {
-  return readLocale() === 'en' ? value.en : value.pl;
-}
-
 function startsWithAccessibleName(value: string) {
   return new RegExp(`^${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`);
-}
-
-function Localized({
-  pl,
-  en,
-}: LocalizedCopy) {
-  return <>{copy({ pl, en })}</>;
 }
 
 function StorySection({
@@ -136,7 +103,7 @@ function StoryVariant({
   readonly token: string;
 }) {
   return (
-    <article className="pd-f0-variant" data-reference="demo-only">
+    <article className="pd-f0-variant" data-reference="component-state">
       <header className="pd-f0-variant__header">
         <h3>{title}</h3>
         <p>{description}</p>
@@ -147,7 +114,7 @@ function StoryVariant({
   );
 }
 
-function FormFieldsShowcase() {
+function FormFieldsDocumentation() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [verificationCode, setVerificationCode] = useState('12');
   const [summaryConsent, setSummaryConsent] = useState(true);
@@ -175,16 +142,16 @@ function FormFieldsShowcase() {
             en: 'Form field contract parameters',
           })}
           items={[
-            { label: <Localized pl="Kontrakt" en="Contract" />, value: '00.15' },
+            { label: <Localized pl="Właściciel" en="Owner" />, value: 'design-system/components/Field' },
             { label: <Localized pl="Motyw" en="Theme" />, value: readTheme() === 'dark' ? <Localized pl="Ciemny" en="Dark" /> : <Localized pl="Jasny" en="Light" /> },
             { label: <Localized pl="Język" en="Language" />, value: readLocale().toUpperCase() },
             { label: 'Status', value: 'accepted' },
           ]}
         />
       )}
-      sectionCode="00"
-      sectionLabel={<Localized pl="Fundamenty" en="Foundations" />}
-      storyId="00.15"
+      sectionCode="DS"
+      sectionLabel={<Localized pl="Komponenty" en="Components" />}
+      storyId="form-fields"
       summary={
         <Localized
           pl="Każde wejście danych korzysta z tej samej etykiety, powierzchni, geometrii, informacji pomocniczej i walidacji. Przyszłe formularze złożone, selektory dat i biblioteki kalendarzy mają dziedziczyć ten kontrakt."
@@ -255,7 +222,7 @@ function FormFieldsShowcase() {
           >
             <PasswordField
               autocomplete="new-password"
-              helperText={copy({ pl: 'Hasło pozostaje lokalnym stanem demonstracyjnym.', en: 'The password remains local demo state.' })}
+              helperText={copy({ pl: 'Widoczność hasła pozostaje lokalnym stanem kontrolki.', en: 'Password visibility remains local control state.' })}
               label={passwordLabel}
               name="password"
               onChange={() => undefined}
@@ -470,7 +437,7 @@ export const PolaFormularzy: Story = {
     value: 'Raport dzienny',
   },
   name: 'Pola tekstowe i formularzowe',
-  render: () => <FormFieldsShowcase />,
+  render: () => <FormFieldsDocumentation />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const reportName = canvas.getByRole('textbox', {

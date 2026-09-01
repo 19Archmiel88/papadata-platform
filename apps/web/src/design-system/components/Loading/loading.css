@@ -17,7 +17,7 @@
   inline-size: 100%;
   block-size: 100%;
   border: 2px solid var(--pd-separator);
-  border-block-start-color: var(--pd-action-primary);
+  border-block-start-color: var(--pd-brand-action);
   border-radius: 50%;
   animation: pd-spinner-turn 760ms linear infinite;
 }
@@ -69,9 +69,23 @@
 }
 
 .pd-progress-indicator {
+  --pd-progress-tone: var(--pd-brand-action);
+
   display: grid;
   gap: var(--pd-space-2);
   min-inline-size: 0;
+}
+
+.pd-progress-indicator[data-tone='success'] {
+  --pd-progress-tone: var(--pd-status-success);
+}
+
+.pd-progress-indicator[data-tone='warning'] {
+  --pd-progress-tone: var(--pd-status-warning);
+}
+
+.pd-progress-indicator[data-tone='critical'] {
+  --pd-progress-tone: var(--pd-status-danger);
 }
 
 .pd-progress-indicator__header {
@@ -101,12 +115,19 @@
   background: var(--pd-surface-subtle);
 }
 
-.pd-progress-indicator__fill,
+.pd-progress-indicator__fill {
+  display: block;
+  block-size: 100%;
+  border-radius: inherit;
+  background: var(--pd-progress-tone);
+  transition: inline-size 180ms ease;
+}
+
 .pd-background-operation__progress-indicator {
   display: block;
   block-size: 100%;
   border-radius: inherit;
-  background: var(--pd-action-primary);
+  background: var(--pd-brand-action);
   transition: inline-size 180ms ease;
 }
 

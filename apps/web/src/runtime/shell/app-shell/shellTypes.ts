@@ -20,7 +20,6 @@ export type ShellTone =
 export type ShellUser = {
   readonly displayName: string;
   readonly email: string;
-  readonly role: string;
 };
 
 export type ShellWorkspace = {

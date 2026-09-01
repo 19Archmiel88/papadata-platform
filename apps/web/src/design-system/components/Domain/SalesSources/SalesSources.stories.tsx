@@ -17,7 +17,7 @@ import type {
 const workspaceContext = { locale: 'pl', tenantId: 'tenant-papadata', workspaceId: 'workspace_sales_sources' } as const;
 
 const meta = {
-  title: '15 Wykresy i dane/05 Katalog komponentów/Komponenty domenowe/SalesSources',
+  title: 'DESIGN SYSTEM/Komponenty/Domenowe/SalesSources',
   component: SalesSources,
   parameters: { layout: 'padded', a11y: { test: 'error' } },
 } satisfies Meta<typeof SalesSources>;

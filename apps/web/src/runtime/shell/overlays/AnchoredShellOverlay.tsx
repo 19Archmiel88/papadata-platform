@@ -22,6 +22,7 @@ export type AnchoredShellOverlayProps = {
   readonly align?: 'start' | 'end';
   readonly children: ReactNode;
   readonly className?: string;
+  readonly closeLabel?: string;
   readonly description?: string | null;
   readonly onOpenChange: (open: boolean) => void;
   readonly open: boolean;
@@ -34,6 +35,7 @@ export function AnchoredShellOverlay({
   align = 'end',
   children,
   className,
+  closeLabel = 'Zamknij',
   description = null,
   onOpenChange,
   open,
@@ -162,7 +164,7 @@ export function AnchoredShellOverlay({
               {description ? <p id={descriptionId}>{description}</p> : null}
             </div>
             <button
-              aria-label="Zamknij"
+              aria-label={closeLabel}
               className="pd-shell-anchored-overlay__close"
               onClick={() => onOpenChange(false)}
               type="button"

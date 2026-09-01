@@ -1,6 +1,12 @@
 import type {
   PapaDataIconName,
 } from '../../../design-system';
+import {
+  papaAssistantLabStages,
+} from '../../../screens/papa-assistant/lab/PapaAssistantLabScreen.model';
+import type {
+  PapaAssistantLabScreenData,
+} from '../../../screens/papa-assistant/lab/PapaAssistantLabScreen.model';
 
 export const papaLabTabs = [
   {
@@ -911,6 +917,152 @@ export const papaLabArtifactRows = [
     version: 'v2.0',
   },
 ] as const;
+
+export const papaAssistantLabScreenFixture: PapaAssistantLabScreenData = {
+  analyses: papaLabWorkbenchAnalyses.map((analysis, index) => ({
+    id: analysis.id,
+    meta: analysis.meta,
+    name: analysis.name,
+    status: index === 0 ? 'completed' : index === 1 ? 'running' : 'draft',
+  })),
+  artifacts: papaLabArtifactRows.map((artifact, index) => ({
+    actionLabel: artifact.action,
+    id: `artifact-${index + 1}`,
+    name: artifact.name,
+    status: artifact.status,
+    type: artifact.type,
+    version: artifact.version,
+  })),
+  chart: {
+    description: 'Porównanie scenariusza prawdopodobnego z wariantami granicznymi.',
+    points: papaLabCausalBasePoints.map((point, index) => ({
+      label: point.month,
+      optimistic: Math.round(point.base * (1.18 + index * 0.004)),
+      pessimistic: Math.round(point.base * (0.88 - index * 0.003)),
+      probable: Math.round(point.base * (1.08 + index * 0.002)),
+    })),
+    status: 'ready',
+    statusLabel: 'Dane kompletne',
+    title: 'Trajektoria konwersji checkout',
+  },
+  confidenceLabel: 'Wysoka',
+  contextItems: papaLabContextBasketSeed.map((item) => ({
+    detail: `${item.scope} · ${item.freshness}`,
+    id: item.id,
+    label: item.name,
+    type: item.type,
+  })),
+  decision: {
+    audit: [
+      '10:42 · Papa utworzył propozycję.',
+      '10:43 · Propozycja została skierowana do przeglądu.',
+    ],
+    id: 'DQ-2026-8891',
+    label: 'Alokacja budżetu Google Ads (+15%)',
+    owner: 'Growth Team',
+    status: 'Do przeglądu',
+  },
+  evidence: [
+    {
+      detail: 'Filtr: payment_status=failed',
+      id: 'evidence-orders',
+      label: 'Zdarzenia checkout',
+      source: 'orders.checkout_events',
+    },
+    {
+      detail: 'Zakres: ostatnie 7 dni',
+      id: 'evidence-payments',
+      label: 'Logi operatora płatności',
+      source: 'payments.gateway_logs',
+    },
+    {
+      detail: 'Retry policy aktywne',
+      id: 'evidence-erp',
+      label: 'Aktualizacje stanów magazynowych',
+      source: 'erp.stock_updates',
+    },
+    {
+      detail: 'Dokumentacja v2.4',
+      id: 'evidence-sop',
+      label: 'Procedura reklamacji',
+      source: 'SOP-09',
+    },
+  ],
+  id: 'checkout-conversion',
+  initialStage: 'diagnosis',
+  initialView: 'result',
+  loading: false,
+  project: {
+    datasets: 'sales',
+    datasetOptions: [
+      { label: 'orders, sessions, payments, erp_stock', value: 'sales' },
+      { label: 'google_ads, meta_ads, attribution', value: 'ads' },
+      { label: 'returns, complaints, procedures', value: 'support' },
+    ],
+    filters: 'device=mobile, payment_status=failed',
+    goal: 'Wyjaśnić spadek CR w checkout mobile',
+    instruction: 'Zdiagnozuj spadek konwersji checkout i przygotuj rekomendację możliwą do zatwierdzenia przez człowieka.',
+    kpi: 'conversion',
+    kpiOptions: [
+      { label: 'CR, checkout drop-off, płatności nieudane', value: 'conversion' },
+      { label: 'AOV, marża, CAC', value: 'margin' },
+      { label: 'Zwroty, reklamacje, SLA', value: 'returns' },
+    ],
+    limit: 42,
+    period: '7d',
+    periodOptions: [
+      { label: 'Ostatnie 7 dni', value: '7d' },
+      { label: 'Ostatnie 30 dni', value: '30d' },
+      { label: 'Ostatnie 90 dni', value: '90d' },
+    ],
+  },
+  quality: {
+    completeness: '92%',
+    freshness: '0–5 min',
+    issues: [
+      'Brak pełnych logów VPS dla ścieżki błędu ERP.',
+      '8% sesji jest częściowo blokowanych przez mechanizmy prywatności.',
+    ],
+    readiness: 'Gotowe do rekomendacji',
+    score: '92%',
+  },
+  response: {
+    diagnosis: {
+      facts: ['Spadek dotyczy przede wszystkim checkoutu mobilnego.', 'Wzrost błędów płatności koreluje ze spadkiem konwersji.'],
+      hypotheses: ['Timeout ERP wydłuża potwierdzenie dostępności.', 'Brak ponowienia płatności zwiększa porzucenia.'],
+      interpretation: ['Problem ma charakter operacyjny i UX, nie popytowy.', 'Największy wpływ mają płatności i synchronizacja stanów.'],
+      nextSteps: ['Włączyć cache dostępności produktu.', 'Dodać bezpieczne ponowienie płatności.', 'Monitorować konwersję przez 7 dni.'],
+      recommendation: 'Najpierw ogranicz timeouty ERP i dodaj bezpieczne ponowienie płatności.',
+    },
+    decision: {
+      facts: ['Dostępne są trzy warianty o różnym koszcie i ryzyku.'],
+      hypotheses: ['Połączenie cache i retry przyniesie największy efekt.'],
+      interpretation: ['Wariant prawdopodobny równoważy wpływ i ryzyko.'],
+      nextSteps: ['Skierować wariant prawdopodobny do akceptacji.', 'Przypisać właściciela technicznego.'],
+      recommendation: 'Wybierz wariant prawdopodobny: cache stanów i ponowienie płatności.',
+    },
+    report: {
+      facts: ['Wynik opiera się na czterech jawnych źródłach.'],
+      hypotheses: ['Raport tygodniowy ułatwi ocenę trwałości poprawy.'],
+      interpretation: ['Najważniejszy jest trend CR wraz z błędami płatności.'],
+      nextSteps: ['Zapisać definicję raportu.', 'Udostępnić raport właścicielom procesu.'],
+      recommendation: 'Zapisz raport z trendem CR, błędami płatności i stanem ERP.',
+    },
+    plan: {
+      facts: ['Plan zawiera trzy kroki i wymaga kontroli po wdrożeniu.'],
+      hypotheses: ['Efekt powinien być widoczny w ciągu siedmiu dni.'],
+      interpretation: ['Kolejność prac ogranicza ryzyko i ułatwia walidację.'],
+      nextSteps: ['Wdrożyć cache.', 'Uruchomić retry płatności.', 'Zweryfikować wynik po 7 dniach.'],
+      recommendation: 'Krok 3: zweryfikuj wynik po siedmiu dniach i zamknij decyzję.',
+    },
+  },
+  runState: 'completed',
+  sources: ['orders', 'sessions', 'payments', 'erp_stock'],
+  stages: papaAssistantLabStages,
+  timeframeLabel: 'Ostatnie 7 dni',
+  title: 'Dlaczego konwersja checkout mobile spadła?',
+  updatedAtLabel: 'Dzisiaj, 10:42',
+};
 
 export type PapaLabTone =
   | 'amber'

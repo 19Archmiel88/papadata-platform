@@ -210,7 +210,7 @@
 }
 
 .pd-decision-card[data-impact='high'] {
-  border-block-start-color: color-mix(in srgb, var(--pd-action-primary) 42%, var(--pd-separator-subtle));
+  border-block-start-color: color-mix(in srgb, var(--pd-brand-action) 42%, var(--pd-separator-subtle));
 }
 
 .pd-decision-card__action {
@@ -277,8 +277,8 @@
 }
 
 .pd-customer-segments__list li[data-selected='true'] {
-  background: color-mix(in srgb, var(--pd-action-primary) 8%, var(--pd-surface));
-  box-shadow: inset 2px 0 0 var(--pd-action-primary);
+  background: color-mix(in srgb, var(--pd-brand-action) 8%, var(--pd-surface));
+  box-shadow: inset 2px 0 0 var(--pd-brand-action);
 }
 
 .pd-result-drivers__list li[data-direction='positive'] {
@@ -532,7 +532,7 @@
 }
 
 .pd-cohort-matrix tr[data-selected='true'] td {
-  background: color-mix(in srgb, var(--pd-action-primary) 7%, var(--pd-surface));
+  background: color-mix(in srgb, var(--pd-brand-action) 7%, var(--pd-surface));
 }
 
 .pd-assistant-composer {

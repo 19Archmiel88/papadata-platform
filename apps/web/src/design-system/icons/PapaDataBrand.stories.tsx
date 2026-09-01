@@ -17,14 +17,19 @@ import type {
   PapaDataBrandProps,
 } from './PapaDataBrand';
 import type {
-  PapaDataRuntimeLocale,
-} from '../foundations';
-
+  LocalizedCopy,
+} from '../../storybook-next/presentation/storyLocalization';
+import {
+  Localized,
+  copy,
+  readLocale,
+  readTheme,
+} from '../../storybook-next/presentation/storyLocalization';
 import '../../storybook-next/presentation/story-presentation.css';
 import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../storybook-next/presentation/StoryPresentation';
 
 const meta = {
-  title: '00 Fundamenty/03 Marka',
+  title: 'DESIGN SYSTEM/Fundamenty/Marka',
   component: PapaDataBrand,
   parameters: {
     layout: 'fullscreen',
@@ -74,11 +79,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-type LocalizedCopy = {
-  readonly pl: string;
-  readonly en: string;
-};
-
 type VariantDefinition = {
   readonly description: LocalizedCopy;
   readonly id: string;
@@ -86,37 +86,6 @@ type VariantDefinition = {
   readonly props: PapaDataBrandProps;
   readonly token: string;
 };
-
-function readLocale(): PapaDataRuntimeLocale {
-  if (typeof document === 'undefined') {
-    return 'pl';
-  }
-
-  return document.documentElement.dataset.locale === 'en'
-    ? 'en'
-    : 'pl';
-}
-
-function readTheme(): 'light' | 'dark' {
-  if (typeof document === 'undefined') {
-    return 'light';
-  }
-
-  return document.documentElement.dataset.theme === 'dark'
-    ? 'dark'
-    : 'light';
-}
-
-function copy(value: LocalizedCopy) {
-  return readLocale() === 'en' ? value.en : value.pl;
-}
-
-function Localized({
-  pl,
-  en,
-}: LocalizedCopy) {
-  return <>{copy({ pl, en })}</>;
-}
 
 const semanticVariants = [
   {
@@ -345,9 +314,9 @@ export const Marka: Story = {
           </div>
         </div>
       )}
-      sectionCode="00"
+      sectionCode="DS"
       sectionLabel={<Localized pl="Fundamenty" en="Foundations" />}
-      storyId="00.12"
+      storyId="brand"
       summary={
         <Localized
           pl="Marka identyfikuje produkt i miejsca wysokiego poziomu. Nie definiuje palety danych, powierzchni, ikon ani lokalnego stylu ekranów."

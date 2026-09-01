@@ -15,7 +15,7 @@ import type {
 } from './WaterfallChart';
 
 const meta = {
-  title: '15 Wykresy i dane/05 Katalog komponentów/Komponenty domenowe/WaterfallChart',
+  title: 'DESIGN SYSTEM/Komponenty/Domenowe/WaterfallChart',
   component: WaterfallChart,
   parameters: { layout: 'padded', a11y: { test: 'error' } },
 } satisfies Meta<typeof WaterfallChart>;

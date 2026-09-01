@@ -15,7 +15,7 @@ import type {
 } from './FunnelChart';
 
 const meta = {
-  title: '15 Wykresy i dane/05 Katalog komponentów/Komponenty domenowe/FunnelChart',
+  title: 'DESIGN SYSTEM/Komponenty/Domenowe/FunnelChart',
   component: FunnelChart,
   parameters: { layout: 'padded', a11y: { test: 'error' } },
 } satisfies Meta<typeof FunnelChart>;

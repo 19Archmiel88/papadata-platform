@@ -72,7 +72,6 @@ const shellFooterLinks = [
 const fallbackShellUser: ShellUser = {
   displayName: 'Użytkownik PapaData',
   email: 'Aktywna sesja',
-  role: 'Użytkownik',
 };
 
 type NotificationMutation = (
@@ -298,6 +297,7 @@ export function ProductShellFrame({
               operationCount={activeOperationCount}
               papaAssistantOpen={overlay === 'papa-assistant'}
               user={user}
+              workspace={selectedWorkspace}
             />
 
             <div

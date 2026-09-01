@@ -36,6 +36,12 @@ import {
   createCommandCenterRuntimeData,
 } from './command-center/commandCenterRuntimeAdapter';
 import {
+  PapaAssistantLabPage,
+} from './papa-assistant/PapaAssistantLabPage';
+import {
+  SubscriptionBillingPage,
+} from './subscription-billing/SubscriptionBillingPage';
+import {
   bffClient,
   type BffSession,
 } from '../runtime/shared/api/bffClient';
@@ -229,9 +235,27 @@ function AuthenticatedRuntimeShell({
       user={sessionToShellUser(session)}
       workspaces={sessionToShellWorkspaces(session)}
     >
-      <CommandCenterScreen data={createCommandCenterRuntimeData()} />
+      {isPapaAssistantLabPath(activePath) ? (
+        <PapaAssistantLabPage />
+      ) : isSubscriptionBillingPath(activePath) ? (
+        <SubscriptionBillingPage />
+      ) : (
+        <CommandCenterScreen data={createCommandCenterRuntimeData()} />
+      )}
     </ProductShellFrame>
   );
+}
+
+function isPapaAssistantLabPath(path: string): boolean {
+  const pathname = path.split('?', 1)[0] ?? path;
+  return pathname === '/app/papa'
+    || pathname === '/app/papa/laboratorium-ai';
+}
+
+function isSubscriptionBillingPath(path: string): boolean {
+  const pathname = path.split('?', 1)[0] ?? path;
+  return pathname === '/app/billing'
+    || pathname.startsWith('/app/billing/');
 }
 
 function resolveAuthMode(path: string): AuthSurfaceMode | null {
@@ -252,14 +276,9 @@ function queryParam(name: string): string | null {
 }
 
 function sessionToShellUser(session: BffSession): ShellUser {
-  const activeMembership = session.memberships.find((membership) => (
-    membership.tenantId === session.activeTenantId
-    && membership.workspaceId === session.activeWorkspaceId
-  ));
   return {
     displayName: session.user?.displayName ?? 'Użytkownik PapaData',
     email: session.user?.email ?? session.userId,
-    role: activeMembership?.roles[0] ?? 'Użytkownik',
   };
 }
 

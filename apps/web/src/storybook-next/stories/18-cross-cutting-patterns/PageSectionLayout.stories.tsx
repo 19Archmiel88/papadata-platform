@@ -202,7 +202,7 @@ function PageSectionPattern() {
 }
 
 const meta = {
-  title: '18 Wzorce interfejsu/Układ strony i sekcji',
+  title: 'DESIGN SYSTEM/Wzorce interfejsu/Układ strony i sekcji',
   parameters: {
     layout: 'fullscreen',
     a11y: {
@@ -224,15 +224,15 @@ export const PageSectionLayoutStory: Story = {
         <StoryPresentationMeta
           ariaLabel="Parametry wzorca układu"
           items={[
-            { label: 'Kontrakt', value: '18.01' },
+            { label: 'Właściciel', value: 'Foundations / SectionNavigation' },
             { label: 'Zakres', value: 'Tylko wzorzec' },
-            { label: 'Status', value: 'W przeglądzie' },
+            { label: 'Status', value: 'Kanoniczny wzorzec' },
           ]}
         />
       )}
-      sectionCode="18"
+      sectionCode="DS"
       sectionLabel="Wzorce interfejsu"
-      storyId="18.01"
+      storyId="page-section-layout"
       summary="Układ strony i sekcji korzysta z semantycznych regionów, typografii, separatorów i istniejących akcji. Nie buduje ekranu jako siatki zamkniętych kontenerów."
       title="Układ strony i sekcji"
     >

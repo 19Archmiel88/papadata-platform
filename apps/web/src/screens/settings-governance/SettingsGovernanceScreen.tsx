@@ -19,9 +19,6 @@ import {
   YAxis,
 } from 'recharts';
 
-import {
-  Button,
-} from '../../design-system';
 import type {
   SettingsRoleScopeMap,
   SettingsTabId,
@@ -99,11 +96,6 @@ export function SettingsGovernanceScreen() {
     setToast({ message, tone });
   }
 
-  function handleConcurrencyConflict() {
-    setRevision(125);
-    announce('Przeładowano najnowszą wersję ustawień z serwera (#125)', 'info');
-  }
-
   function handleCompanySave() {
     setRevision((value) => value + 1);
     announce('Ustawienia Workspace zapisane.', 'success');
@@ -112,19 +104,31 @@ export function SettingsGovernanceScreen() {
   function handleCreateTarget(target: SettingsTarget) {
     setTargets((current) => [...current, target]);
     setTargetModalOpen(false);
-    announce('Zapisano nowy cel w API /targets', 'success');
+    announce('Dodano nowy cel biznesowy.', 'success');
   }
 
   return (
     <div className="pd-set">
-      <SettingsHeader onOpenSearch={() => setSearchOpen(true)} revision={revision} />
-      <SettingsP0Banner onViewAudit={() => setActiveTab('audit-p0')} />
-      <SettingsNav activeTab={activeTab} onSelect={setActiveTab} />
-
       <main className="pd-set-content">
         <div className="pd-set-view">
+          <header className="pd-set-page-header">
+            <div>
+              <span className="pd-set-page-header__eyebrow">Casa di Orfeo Sp. z o.o.</span>
+              <h1>Ustawienia</h1>
+              <p>Zarządzaj swoim kontem oraz konfiguracją workspace.</p>
+            </div>
+            <button className="pd-set-search-trigger" onClick={() => setSearchOpen(true)} type="button">
+              <span aria-hidden="true">⌕</span>
+              <span>Szukaj ustawień</span>
+              <kbd>Ctrl K</kbd>
+            </button>
+          </header>
+          <SettingsNav activeTab={activeTab} onSelect={setActiveTab} />
           {activeTab === 'account-profile' && (
-            <SettingsAccountProfile onSave={() => announce('Zapisano preferencje profilu w /settings/account/profile', 'success')} />
+            <SettingsAccountProfile
+              onOpenSecurity={() => setActiveTab('account-security')}
+              onSave={() => announce('Zapisano preferencje profilu.', 'success')}
+            />
           )}
           {activeTab === 'account-security' && (
             <SettingsAccountSecurity
@@ -135,7 +139,6 @@ export function SettingsGovernanceScreen() {
           {activeTab === 'ws-company' && (
             <SettingsWorkspaceCompany
               onSave={handleCompanySave}
-              onSimulateConflict={handleConcurrencyConflict}
               revision={revision}
             />
           )}
@@ -148,14 +151,13 @@ export function SettingsGovernanceScreen() {
           {activeTab === 'ws-ai' && <SettingsWorkspaceAi onSave={() => announce('Zapisano ustawienia zachowania Papa AI', 'success')} />}
           {activeTab === 'ws-notifications' && (
             <SettingsWorkspaceNotifications
-              onSave={() => announce('Zapisano reguły Quiet Hours i harmonogramy dostarczania', 'success')}
-              onTestDelivery={() => announce('Wysłano prawdziwy testowy email z podsumowaniem na: anna@casadiorfeo.pl', 'info')}
+              onSave={() => announce('Zapisano ustawienia powiadomień.', 'success')}
+              onTestDelivery={() => announce('Wysłano wiadomość testową na anna@casadiorfeo.pl.', 'info')}
             />
           )}
           {activeTab === 'ws-compliance' && (
             <SettingsWorkspaceCompliance onDownload={(title) => announce(`Pobieranie dokumentu: ${title}`, 'info')} />
           )}
-          {activeTab === 'audit-p0' && <SettingsAuditP0 />}
         </div>
       </main>
 
@@ -167,7 +169,7 @@ export function SettingsGovernanceScreen() {
           onClose={() => setTotpOpen(false)}
           onVerified={() => {
             setTotpOpen(false);
-            announce('TOTP 2FA zweryfikowane i aktywowane pomyślnie!', 'success');
+            announce('Weryfikacja dwuetapowa została aktywowana.', 'success');
           }}
         />
       )}
@@ -187,66 +189,6 @@ export function SettingsGovernanceScreen() {
   );
 }
 
-function SettingsHeader({
-  onOpenSearch = noop,
-  revision,
-}: {
-  readonly onOpenSearch?: () => void;
-  readonly revision: number;
-}) {
-  return (
-    <header className="pd-set-header">
-      <div className="pd-set-brand">
-        <span className="pd-set-brand__mark">PapaData</span>
-        <div>
-          <h1 className="pd-set-brand__title">
-            <span>Ustawienia Workspace &amp; Governance Center</span>
-            <span className="pd-set-brand__tag">ID-9 Canonical</span>
-          </h1>
-          <p className="pd-set-brand__subtitle">Centrum zarządzania bezpieczeństwem, uprawnieniami i analityką organizacyjną</p>
-        </div>
-      </div>
-      <div className="pd-set-header__actions">
-        <button className="pd-set-search-trigger" onClick={onOpenSearch} type="button">
-          <span>🔍</span>
-          <span>Szukaj ustawień...</span>
-          <kbd>Ctrl + K</kbd>
-        </button>
-        <div className="pd-set-workspace-badge">
-          <span className="pd-set-workspace-badge__label">Workspace:</span>
-          <span className="pd-set-workspace-badge__name">Casa di Orfeo Sp. z o.o.</span>
-          <span className="pd-set-workspace-badge__role">Właściciel</span>
-        </div>
-        <div className="pd-set-revision" title="Optimistic Concurrency Control">
-          <span className="pd-set-revision__dot" />
-          <span>rev: <strong>{revision}</strong></span>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-function SettingsP0Banner({
-  onViewAudit = noop,
-}: {
-  readonly onViewAudit?: () => void;
-}) {
-  return (
-    <div className="pd-set-p0-banner">
-      <div className="pd-set-p0-banner__lede">
-        <span className="pd-set-p0-banner__tag">AUDYT AUD-2026</span>
-        <span>Stan Architektury: <strong>Przejście z lokalnych symulacji na Canonical Backend API</strong></span>
-      </div>
-      <div className="pd-set-p0-banner__status">
-        <span className="pd-set-p0-banner__ok"><span>✓</span> <span>Ground Truth Policy Active</span></span>
-        <span className="pd-set-p0-banner__warn"><span>⚠️</span> 8 Poprawek Krytycznych P0</span>
-        <Button onClick={onViewAudit} size="small" variant="ghost">Zobacz Raport Audytu →</Button>
-      </div>
-    </div>
-  );
-}
-
-/** Floating pill nav that appears on scroll -- same pattern as every other BI mockup (Command Center/Campaigns/Orders/Products/Customers/Traffic/Wsparcie w marketingu), replacing the header-embedded nav bar. */
 function SettingsNav({
   activeTab,
   onSelect = noop,
@@ -254,28 +196,13 @@ function SettingsNav({
   readonly activeTab: SettingsTabId;
   readonly onSelect?: (tab: SettingsTabId) => void;
 }) {
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const scrollContainer = document.querySelector('.pd-set-content');
-    if (!scrollContainer) return undefined;
-
-    function handleScroll() {
-      setIsScrolled(scrollContainer!.scrollTop > 24);
-    }
-
-    handleScroll();
-    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
-    return () => scrollContainer.removeEventListener('scroll', handleScroll);
-  }, []);
-
   function selectAndScrollToTop(tab: SettingsTabId) {
     onSelect(tab);
     document.querySelector('.pd-set-content')?.scrollTo({ behavior: 'smooth', top: 0 });
   }
 
   return (
-    <nav aria-label="Nawigacja ustawień" className={isScrolled ? 'pd-set-nav is-visible' : 'pd-set-nav'}>
+    <nav aria-label="Sekcje ustawień" className="pd-set-nav">
       {settingsRailGroups.map((group) => (
         <div className="pd-set-nav-group" key={group.label}>
           <span className="pd-set-nav-group__label">{group.label}:</span>
@@ -293,24 +220,15 @@ function SettingsNav({
           ))}
         </div>
       ))}
-      <div className="pd-set-nav-group">
-        <button
-          className="pd-set-nav-button pd-set-nav-button--audit"
-          data-active={activeTab === 'audit-p0'}
-          onClick={() => selectAndScrollToTop('audit-p0')}
-          type="button"
-        >
-          <span>🚨</span>
-          <span>Audyt P0</span>
-        </button>
-      </div>
     </nav>
   );
 }
 
 export function SettingsAccountProfile({
+  onOpenSecurity = noop,
   onSave = noop,
 }: {
+  readonly onOpenSecurity?: () => void;
   readonly onSave?: () => void;
 }) {
   function handleSubmit(event: FormEvent) {
@@ -324,57 +242,55 @@ export function SettingsAccountProfile({
         <div>
           <div className="pd-set-intro__heading">
             <h2>Moje konto</h2>
-            <span className="pd-set-scope-badge pd-set-scope-badge--personal">Zakres: Tylko moje konto</span>
+            <span className="pd-set-scope-badge pd-set-scope-badge--personal">Ustawienia osobiste</span>
           </div>
           <p className="pd-set-intro__body">
-            Ta sekcja odpowiada za Twoją indywidualną tożsamość w systemie PapaData, preferencje językowe oraz formatowanie liczb.
-            Zmiany wprowadzone w tym miejscu wpływają wyłącznie na Twój profil i nie zmieniają widoku pozostałych członków organizacji.
+            Zaktualizuj dane profilu i sposób prezentacji informacji w PapaData.
           </p>
         </div>
-        <span className="pd-set-scope-badge pd-set-scope-badge--success">Email Zweryfikowany ✓</span>
       </div>
 
-      <div className="pd-set-grid">
-        <div className="pd-set-card pd-set-grid--span2">
+      <div className="pd-set-grid pd-set-account-layout">
+        <div className="pd-set-card pd-set-account-profile">
           <div className="pd-set-card__head">
-            <h3>Dane Osobowe i Profil</h3>
-            <span className="pd-set-card__meta">Identyfikator użytkownika: usr_9942a78</span>
+            <div className="pd-set-identity">
+              <span className="pd-set-avatar" aria-hidden="true">AK</span>
+              <div>
+                <h3>Anna Kowalska</h3>
+                <p>anna@casadiorfeo.pl</p>
+              </div>
+            </div>
+            <span className="pd-set-scope-badge pd-set-scope-badge--success"><span aria-hidden="true">✓</span> E-mail zweryfikowany</span>
           </div>
 
-          <form className="pd-set-view" onSubmit={handleSubmit} style={{ gap: 16 }}>
+          <form className="pd-set-account-form" onSubmit={handleSubmit}>
+            <fieldset className="pd-set-fieldset">
+              <legend>Dane profilu</legend>
             <div className="pd-set-field-row">
               <div className="pd-set-field">
-                <label htmlFor="set-prof-name">Imię i Nazwisko Wyświetlane</label>
+                  <label htmlFor="set-prof-name">Nazwa wyświetlana</label>
                 <input className="pd-set-input" defaultValue="Anna Kowalska" id="set-prof-name" type="text" />
               </div>
               <div className="pd-set-field">
-                <label htmlFor="set-prof-title">Stanowisko / Rola Operacyjna</label>
+                  <label htmlFor="set-prof-title">Stanowisko</label>
                 <input className="pd-set-input" defaultValue="Head of Ecommerce & Growth" id="set-prof-title" type="text" />
               </div>
             </div>
+            </fieldset>
 
-            <div className="pd-set-panel-note pd-set-panel-note--amber">
-              <div className="pd-set-panel-note__title"><span>🔒</span><span>Adres Email Tożsamości: anna@casadiorfeo.pl</span></div>
-              <p>
-                Zgodnie z wymogami audytu bezpieczeństwa, zmiana adresu email wymaga podania aktualnego hasła, weryfikacji tokenem
-                wysłanym na nowy adres oraz unieważnienia aktywnych sesji tokenowych.
-              </p>
-              <button className="pd-set-button pd-set-button--muted" style={{ justifySelf: 'start' }} type="button">
-                Rozpocznij Procedurę Zmiany Emaila
-              </button>
-            </div>
-
+            <fieldset className="pd-set-fieldset">
+              <legend>Język i format danych</legend>
             <div className="pd-set-field-row">
               <div className="pd-set-field">
-                <label htmlFor="set-prof-lang">Język Interfejsu (UI Language)</label>
+                  <label htmlFor="set-prof-lang">Język interfejsu</label>
                 <select className="pd-set-select" defaultValue="pl-PL" id="set-prof-lang">
-                  <option value="pl-PL">Polski (pl-PL)</option>
-                  <option value="en-US">English (en-US)</option>
-                  <option value="de-DE">Deutsch (de-DE)</option>
+                    <option value="pl-PL">Polski</option>
+                    <option value="en-US">English</option>
+                    <option value="de-DE">Deutsch</option>
                 </select>
               </div>
               <div className="pd-set-field">
-                <label htmlFor="set-prof-format">Format Liczb i Dat</label>
+                  <label htmlFor="set-prof-format">Format liczb i dat</label>
                 <select className="pd-set-select" defaultValue="PL" id="set-prof-format">
                   <option value="PL">1 234,56 PLN / DD.MM.YYYY</option>
                   <option value="US">$1,234.56 / MM/DD/YYYY</option>
@@ -382,27 +298,38 @@ export function SettingsAccountProfile({
                 </select>
               </div>
             </div>
+            </fieldset>
 
             <div className="pd-set-form-footer">
-              <span className="pd-set-form-footer__hint">Zapis wysyła request do: <code>PATCH /settings/account/profile</code></span>
-              <button className="pd-set-button pd-set-button--primary" type="submit">Zapisz Preferencje Profilu</button>
+              <span className="pd-set-form-footer__hint">Zmiany dotyczą tylko Twojego konta.</span>
+              <button className="pd-set-button pd-set-button--primary" type="submit">Zapisz zmiany</button>
             </div>
           </form>
         </div>
 
-        <div className="pd-set-card">
-          <div className="pd-set-card__head"><h3>Status Konta i Autentykacja</h3></div>
-          <dl className="pd-set-kv-list">
-            <div className="pd-set-kv-row"><dt>Metoda Logowania:</dt><dd>Hasło + TOTP 2FA</dd></div>
-            <div className="pd-set-kv-row"><dt>Dostawca SSO:</dt><dd className="pd-set-mono">Brak (Konto Lokalne)</dd></div>
-            <div className="pd-set-kv-row"><dt>Ostatnie Udane Logowanie:</dt><dd className="pd-set-mono">Dzisiaj, 09:42 CEST</dd></div>
-            <div className="pd-set-kv-row"><dt>Rola w Workspace:</dt><dd><span className="pd-set-pill pd-set-pill--indigo">Właściciel (OWNER)</span></dd></div>
-          </dl>
-          <div className="pd-set-panel-note pd-set-panel-note--slate">
-            <div className="pd-set-panel-note__title" style={{ color: 'rgb(var(--pd-set-slate-800))' }}>Personal Notification Scope:</div>
-            <p>Powiadomienia o Twoich przypisaniach zadań oraz podsumowaniach będą wysyłane na powyższy e-mail.</p>
+        <aside className="pd-set-card pd-set-account-security">
+          <div className="pd-set-card__head">
+            <div>
+              <h3>Bezpieczeństwo konta</h3>
+              <p>Logowanie i dostęp do workspace</p>
+            </div>
+            <span className="pd-set-security-state" aria-label="Konto dobrze zabezpieczone">Dobrze zabezpieczone</span>
           </div>
-        </div>
+          <dl className="pd-set-kv-list">
+            <div className="pd-set-kv-row"><dt>Logowanie</dt><dd>Hasło + kod 2FA</dd></div>
+            <div className="pd-set-kv-row"><dt>Ostatnia aktywność</dt><dd>Dzisiaj, 09:42</dd></div>
+            <div className="pd-set-kv-row"><dt>Workspace</dt><dd>Casa di Orfeo</dd></div>
+            <div className="pd-set-kv-row"><dt>Rola</dt><dd><span className="pd-set-pill pd-set-pill--indigo">Właściciel</span></dd></div>
+          </dl>
+          <button className="pd-set-button pd-set-button--muted pd-set-button--block" onClick={onOpenSecurity} type="button">
+            Zarządzaj bezpieczeństwem
+          </button>
+          <div className="pd-set-email-change">
+            <strong>Zmiana adresu e-mail</strong>
+            <p>Ze względów bezpieczeństwa wymaga ponownego potwierdzenia tożsamości.</p>
+            <button className="pd-set-linklike pd-set-linklike--indigo" type="button">Zmień adres e-mail</button>
+          </div>
+        </aside>
       </div>
     </>
   );
@@ -420,23 +347,22 @@ export function SettingsAccountSecurity({
       <div className="pd-set-intro">
         <div>
           <div className="pd-set-intro__heading">
-            <h2>Bezpieczeństwo i Dostęp</h2>
-            <span className="pd-set-scope-badge pd-set-scope-badge--domain">Domain: Security &amp; Auth</span>
+            <h2>Bezpieczeństwo i dostęp</h2>
+            <span className="pd-set-scope-badge pd-set-scope-badge--personal">Ustawienia osobiste</span>
           </div>
           <p className="pd-set-intro__body">
-            Dedykowany moduł bezpieczeństwa konta i organizacyjnych zasad dostępu. System wspiera wyłącznie prawdziwy backendowy flow
-            TOTP (Google/Microsoft Authenticator/1Password) oraz zarządzanie aktywnymi sesjami — bez pozornego SMS 2FA.
+            Chroń konto dodatkowym kodem, kluczem dostępu i kontroluj urządzenia, na których jesteś zalogowany.
           </p>
         </div>
-        <span className="pd-set-scope-badge pd-set-scope-badge--success"><span>🛡️</span> 2FA TOTP Aktywne</span>
+        <span className="pd-set-scope-badge pd-set-scope-badge--success"><span aria-hidden="true">✓</span> Weryfikacja dwuetapowa aktywna</span>
       </div>
 
       <div className="pd-set-grid pd-set-grid--halves">
         <div className="pd-set-card">
           <div className="pd-set-card__head">
             <div>
-              <h3>Uwierzytelnianie Dwuskładnikowe (2FA / TOTP)</h3>
-              <p>Zgodność z API: <code>/auth/2fa/totp/*</code></p>
+              <h3>Weryfikacja dwuetapowa</h3>
+              <p>Dodatkowy kod z aplikacji podczas logowania</p>
             </div>
             <span className="pd-set-pill pd-set-pill--emerald">AKTYWNE</span>
           </div>
@@ -445,7 +371,7 @@ export function SettingsAccountSecurity({
             <div className="pd-set-info-block__row">
               <div className="pd-set-info-block__icon">🔑</div>
               <div>
-                <div className="pd-set-info-block__title">Aplikacja Uwierzytelniająca (TOTP)</div>
+                <div className="pd-set-info-block__title">Aplikacja uwierzytelniająca</div>
                 <p className="pd-set-info-block__text">
                   Konto jest zabezpieczone czasowym kodem jednorazowym. Wszystkie próby zalogowania z nowych urządzeń wymagają
                   podania 6-cyfrowego kodu.
@@ -454,11 +380,11 @@ export function SettingsAccountSecurity({
             </div>
             <div className="pd-set-status-grid">
               <div className="pd-set-status-tile">
-                <span className="pd-set-status-tile__label">Dostawca:</span>
-                <span className="pd-set-status-tile__value">Standard RFC 6238 TOTP</span>
+                <span className="pd-set-status-tile__label">Metoda</span>
+                <span className="pd-set-status-tile__value">Kod jednorazowy</span>
               </div>
               <div className="pd-set-status-tile">
-                <span className="pd-set-status-tile__label">Backup Codes:</span>
+                <span className="pd-set-status-tile__label">Kody zapasowe</span>
                 <span className="pd-set-status-tile__value">8 z 10 pozostało</span>
               </div>
             </div>
@@ -466,17 +392,17 @@ export function SettingsAccountSecurity({
 
           <div className="pd-set-form-footer">
             <button className="pd-set-button pd-set-button--primary" onClick={onOpenTotpWizard} type="button">
-              <span>🔄</span> Ponownie Skonfiguruj TOTP / Wygeneruj QR
+              Skonfiguruj ponownie
             </button>
-            <button className="pd-set-linklike" type="button">Wyłącz 2FA (Wymaga Step-up)</button>
+            <button className="pd-set-linklike" type="button">Wyłącz weryfikację dwuetapową</button>
           </div>
         </div>
 
         <div className="pd-set-card">
           <div className="pd-set-card__head">
             <div>
-              <h3>Klucze Dostępu (Passkeys / WebAuthn)</h3>
-              <p>Logowanie biometryczne (TouchID, FaceID, Windows Hello)</p>
+              <h3>Klucze dostępu</h3>
+              <p>Logowanie odciskiem palca, twarzą lub kodem urządzenia</p>
             </div>
             <span className="pd-set-pill pd-set-pill--slate">FIDO2</span>
           </div>
@@ -495,27 +421,27 @@ export function SettingsAccountSecurity({
             ))}
           </div>
           <button className="pd-set-button pd-set-button--dark pd-set-button--block" type="button">
-            <span>➕</span> Dodaj Nowy Klucz Dostępu (Passkey)
+            Dodaj klucz dostępu
           </button>
         </div>
 
         <div className="pd-set-card pd-set-grid--span2">
           <div className="pd-set-card__head">
             <div>
-              <h3>Aktywne Sesje i Urządzenia</h3>
-              <p>Endpoint: <code>GET /settings/security/sessions</code></p>
+              <h3>Sesje i urządzenia</h3>
+              <p>Sprawdź, gdzie Twoje konto jest obecnie zalogowane</p>
             </div>
             <button className="pd-set-button pd-set-button--danger-outline" onClick={() => onRevokeSession('all')} type="button">
-              Wyloguj Wszystkie Inne Sesje
+              Wyloguj na innych urządzeniach
             </button>
           </div>
           <div className="pd-set-table-wrap">
             <table className="pd-set-table">
               <thead>
                 <tr>
-                  <th>Urządzenie / Przeglądarka</th>
+                  <th>Urządzenie i przeglądarka</th>
                   <th>Adres IP</th>
-                  <th>Ostatnia Aktywność</th>
+                  <th>Ostatnia aktywność</th>
                   <th>Status</th>
                   <th className="pd-set-cell-right">Akcja</th>
                 </tr>
@@ -549,11 +475,9 @@ export function SettingsAccountSecurity({
 
 export function SettingsWorkspaceCompany({
   onSave = noop,
-  onSimulateConflict = noop,
   revision = 124,
 }: {
   readonly onSave?: () => void;
-  readonly onSimulateConflict?: () => void;
   readonly revision?: number;
 }) {
   function handleSubmit(event: FormEvent) {
@@ -563,42 +487,41 @@ export function SettingsWorkspaceCompany({
 
   return (
     <>
-      <div className="pd-set-intro">
+      <div className="pd-set-intro" data-revision={revision}>
         <div>
           <div className="pd-set-intro__heading">
-            <h2>Firma i Workspace</h2>
-            <span className="pd-set-scope-badge pd-set-scope-badge--workspace">Zakres: Cały Workspace</span>
+            <h2>Firma i workspace</h2>
+            <span className="pd-set-scope-badge pd-set-scope-badge--workspace">Dotyczy całego workspace</span>
           </div>
           <p className="pd-set-intro__body">
             Konfiguracja tożsamości prawnej organizacji, strefy czasowej oraz waluty raportowania. Zmiany w tej sekcji wpływają na
             agregacje danych, granice dni w raportach oraz reguły alertów w całej organizacji.
           </p>
         </div>
-        <span className="pd-set-pill pd-set-pill--slate" style={{ fontFamily: 'var(--pd-font-mono)' }}>Revision: #{revision}</span>
+        <span className="pd-set-scope-badge pd-set-scope-badge--success"><span aria-hidden="true">✓</span> Dane firmy zweryfikowane</span>
       </div>
 
       <div className="pd-set-grid">
         <div className="pd-set-card pd-set-grid--span2">
           <div className="pd-set-card__head">
-            <h3>Dane Prawne Organizacji</h3>
-            <span className="pd-set-scope-badge pd-set-scope-badge--success">✓ Zweryfikowano w GUS</span>
+            <h3>Dane organizacji</h3>
           </div>
 
           <form className="pd-set-view" onSubmit={handleSubmit} style={{ gap: 16 }}>
             <div className="pd-set-field-row">
               <div className="pd-set-field">
-                <label htmlFor="set-comp-trade">Nazwa Handlowa / Trade Name</label>
+                <label htmlFor="set-comp-trade">Nazwa handlowa</label>
                 <input className="pd-set-input" defaultValue="Casa di Orfeo" id="set-comp-trade" type="text" />
               </div>
               <div className="pd-set-field">
-                <label htmlFor="set-comp-legal">Pełna Nazwa Rejestrowa (Prawna)</label>
+                <label htmlFor="set-comp-legal">Pełna nazwa rejestrowa</label>
                 <input className="pd-set-input" defaultValue="Casa di Orfeo Spółka z o.o." id="set-comp-legal" type="text" />
               </div>
             </div>
 
             <div className="pd-set-field-row pd-set-field-row--thirds">
               <div className="pd-set-field">
-                <label htmlFor="set-comp-nip">NIP / Tax ID</label>
+                <label htmlFor="set-comp-nip">NIP</label>
                 <input className="pd-set-input" defaultValue="7312049912" disabled id="set-comp-nip" type="text" />
               </div>
               <div className="pd-set-field">
@@ -606,7 +529,7 @@ export function SettingsWorkspaceCompany({
                 <input className="pd-set-input" defaultValue="381902441" disabled id="set-comp-regon" type="text" />
               </div>
               <div className="pd-set-field">
-                <label htmlFor="set-comp-industry">Branża Analityczna</label>
+                <label htmlFor="set-comp-industry">Branża</label>
                 <select className="pd-set-select" defaultValue="ecommerce_fashion" id="set-comp-industry">
                   <option value="ecommerce_fashion">E-commerce (Odzież &amp; Obuwie)</option>
                   <option value="ecommerce_electronics">E-commerce (Elektronika)</option>
@@ -617,12 +540,11 @@ export function SettingsWorkspaceCompany({
 
             <div className="pd-set-panel-note pd-set-panel-note--slate">
               <div className="pd-set-panel-note__title" style={{ color: 'rgb(var(--pd-set-slate-900))', justifyContent: 'space-between' }}>
-                <span>Konfiguracja Raportowania &amp; FX</span>
-                <span className="pd-set-pill pd-set-pill--slate">Zasada Semantyczna</span>
+                <span>Raportowanie</span>
               </div>
               <div className="pd-set-field-row">
                 <div className="pd-set-field">
-                  <label htmlFor="set-comp-currency">Waluta Raportowania Workspace</label>
+                  <label htmlFor="set-comp-currency">Waluta raportowania</label>
                   <select className="pd-set-select" defaultValue="PLN" id="set-comp-currency">
                     <option value="PLN">PLN — Polski Złoty</option>
                     <option value="EUR">EUR — Euro</option>
@@ -630,7 +552,7 @@ export function SettingsWorkspaceCompany({
                   </select>
                 </div>
                 <div className="pd-set-field">
-                  <label htmlFor="set-comp-tz">Strefa Czasowa Workspace</label>
+                  <label htmlFor="set-comp-tz">Strefa czasowa</label>
                   <select className="pd-set-select" defaultValue="Europe/Warsaw" id="set-comp-tz">
                     <option value="Europe/Warsaw">Europe/Warsaw (UTC+02:00)</option>
                     <option value="UTC">UTC (Coordinated Universal Time)</option>
@@ -639,49 +561,45 @@ export function SettingsWorkspaceCompany({
                 </div>
               </div>
               <p style={{ borderTop: '1px solid rgb(var(--pd-set-slate-200))', paddingTop: 8 }}>
-                ⚠️ <strong>Ważne:</strong> Dane źródłowe (zamówienia, koszty reklamowe) pozostają w walutach transakcyjnych. Zmiana
-                waluty raportowania przelicza agregaty według dziennych kursów NBP/ECB. Zmiana strefy czasowej przesuwa granice dni
-                w agregatach analitycznych.
+                <strong>Wpływ zmiany:</strong> waluta przelicza wartości w raportach, a strefa czasowa zmienia granice dni w analizach.
               </p>
             </div>
 
             <div className="pd-set-form-footer">
-              <button className="pd-set-linklike pd-set-linklike--amber" onClick={onSimulateConflict} type="button">
-                🧪 Symuluj Konflikt Edycji (409 Revision Conflict)
-              </button>
-              <button className="pd-set-button pd-set-button--primary" type="submit">Zapisz Zmiany Workspace</button>
+              <span className="pd-set-form-footer__hint">Zmiany będą widoczne dla całego zespołu.</span>
+              <button className="pd-set-button pd-set-button--primary" type="submit">Zapisz zmiany</button>
             </div>
           </form>
         </div>
 
         <div className="pd-set-view" style={{ gap: 20 }}>
           <div className="pd-set-card">
-            <div className="pd-set-card__head"><h3>Logo Workspace (Object Storage)</h3></div>
+            <div className="pd-set-card__head"><h3>Logo workspace</h3></div>
             <p className="pd-set-info-block__text" style={{ marginTop: 0 }}>
-              Assety nie są zapisywane jako Base64 w rekordzie settings, lecz przetwarzane do CDN S3.
+              Używane w nagłówku, raportach i materiałach eksportowanych z PapaData.
             </p>
             <div className="pd-set-logo-row">
               <div className="pd-set-logo-tile">CdO</div>
               <div className="pd-set-logo-meta">
-                <span className="pd-set-logo-meta__name">logo_v4_cdn.webp</span>
-                <span className="pd-set-logo-meta__dims">Wymiary: 512×512 • Object Storage S3</span>
+                <span className="pd-set-logo-meta__name">Logo Casa di Orfeo</span>
+                <span className="pd-set-logo-meta__dims">512 × 512 px • WEBP</span>
                 <button className="pd-set-button pd-set-button--muted" style={{ justifySelf: 'start', marginTop: 4 }} type="button">
-                  Wgraj Nowe Logo
+                  Zmień logo
                 </button>
               </div>
             </div>
           </div>
 
           <div className="pd-set-danger-zone">
-            <div className="pd-set-danger-zone__title"><span>⚠️</span><span>Strefa Krytyczna (Danger Zone)</span></div>
+            <div className="pd-set-danger-zone__title"><span aria-hidden="true">⚠</span><span>Operacje zaawansowane</span></div>
             <p className="pd-set-danger-zone__body">
-              Operacje nieodwracalne lub wymagające pełnego uprawnienia Właściciela (OWNER). Wymagają uwierzytelnienia step-up.
+              Eksport lub usunięcie danych wymaga potwierdzenia przez właściciela workspace.
             </p>
             <button className="pd-set-danger-row pd-set-danger-row--outline" type="button">
-              <span>Eksportuj Wszystkie Dane (ZIP/CSV)</span><span>📥</span>
+              <span>Eksportuj wszystkie dane</span><span aria-hidden="true">↓</span>
             </button>
             <button className="pd-set-danger-row pd-set-danger-row--solid" type="button">
-              <span>Usuń Workspace Permanentnie</span><span>💣</span>
+              <span>Usuń workspace</span><span aria-hidden="true">→</span>
             </button>
           </div>
         </div>
@@ -700,33 +618,30 @@ export function SettingsWorkspaceTeam({
       <div className="pd-set-intro">
         <div>
           <div className="pd-set-intro__heading">
-            <h2>Zespół i Uprawnienia (RBAC)</h2>
-            <span className="pd-set-scope-badge pd-set-scope-badge--domain">RBAC Ground Truth</span>
+            <h2>Zespół i uprawnienia</h2>
+            <span className="pd-set-scope-badge pd-set-scope-badge--workspace">Dotyczy całego workspace</span>
           </div>
           <p className="pd-set-intro__body">
-            Zarządzanie członkami organizacji, rolami systemowymi oraz zaproszeniami. Backend jest wyłącznym źródłem prawdy dla
-            katalogu ról (<code>OWNER</code>, <code>ADMIN</code>, <code>MEMBER</code>, <code>ANALYST</code>,{' '}
-            <code>GROWTH_OPERATOR</code>, <code>VIEWER</code>).
+            Zapraszaj osoby do zespołu i przypisuj im role odpowiednie do zakresu pracy.
           </p>
         </div>
         <button className="pd-set-button pd-set-button--primary" onClick={onOpenInvite} type="button">
-          <span>➕</span> Zaproś Nowego Użytkownika
+          Zaproś osobę
         </button>
       </div>
 
       <div className="pd-set-card">
         <div className="pd-set-card__head">
-          <h3>Aktywni Członkowie Zespołu ({settingsTeamMembers.length})</h3>
-          <span className="pd-set-card__meta">Endpoint API: <code>GET /settings/team/members</code></span>
+          <h3>Członkowie zespołu ({settingsTeamMembers.length})</h3>
         </div>
         <div className="pd-set-table-wrap">
           <table className="pd-set-table">
             <thead>
               <tr>
                 <th>Użytkownik</th>
-                <th>Rola Systemowa</th>
+                <th>Rola</th>
                 <th>Status 2FA</th>
-                <th>Ostatnia Aktywność</th>
+                <th>Ostatnia aktywność</th>
                 <th className="pd-set-cell-right">Akcje</th>
               </tr>
             </thead>
@@ -740,7 +655,7 @@ export function SettingsWorkspaceTeam({
                   <td><span className="pd-set-pill pd-set-pill--slate" style={{ fontFamily: 'var(--pd-font-mono)' }}>{member.role}</span></td>
                   <td>
                     {member.mfa
-                      ? <span className="pd-set-pill pd-set-pill--emerald">✓ TOTP Aktywne</span>
+                      ? <span className="pd-set-pill pd-set-pill--emerald">✓ Aktywne</span>
                       : <span className="pd-set-pill pd-set-pill--amber">Wymaga aktywacji</span>}
                   </td>
                   <td className="pd-set-cell-muted">{member.lastSeen}</td>
@@ -758,15 +673,15 @@ export function SettingsWorkspaceTeam({
 
       <div className="pd-set-card">
         <div className="pd-set-card__head">
-          <h3>Oczekujące Zaproszenia ({settingsInvitations.length})</h3>
+          <h3>Oczekujące zaproszenia ({settingsInvitations.length})</h3>
           <span className="pd-set-pill pd-set-pill--amber">Wygasają po 7 dniach</span>
         </div>
         <div className="pd-set-table-wrap">
           <table className="pd-set-table">
             <thead>
               <tr>
-                <th>Email Zaproszonego</th>
-                <th>Przypisana Rola</th>
+                <th>Adres e-mail</th>
+                <th>Rola</th>
                 <th>Wysłano</th>
                 <th>Wygasa</th>
                 <th className="pd-set-cell-right">Akcje</th>
@@ -811,23 +726,22 @@ export function SettingsWorkspaceAnalytics({
       <div className="pd-set-intro">
         <div>
           <div className="pd-set-intro__heading">
-            <h2>Analityka i Cele Biznesowe</h2>
-            <span className="pd-set-scope-badge pd-set-scope-badge--success">API: /targets CRUD</span>
+            <h2>Analityka i cele biznesowe</h2>
+            <span className="pd-set-scope-badge pd-set-scope-badge--workspace">Dotyczy całego workspace</span>
           </div>
           <p className="pd-set-intro__body">
-            Konfiguracja wskaźników targetowych oraz parametrów atrybucji. Wszystkie cele operują na prawdziwym backendowym
-            endpoincie <code>/targets</code> — bez lokalnego zapisu w <code>localStorage</code>.
+            Ustal cele, progi alertów i sposób przypisywania konwersji do kanałów marketingowych.
           </p>
         </div>
         <button className="pd-set-button pd-set-button--primary" onClick={onOpenCreateTarget} type="button">
-          <span>🎯</span> Dodaj Nowy Cel Biznesowy
+          Dodaj cel
         </button>
       </div>
 
       <div className="pd-set-grid">
         <div className="pd-set-card pd-set-grid--span2">
           <div className="pd-set-card__head">
-            <h3>Postęp Realizacji Celów (Sierpień 2026)</h3>
+            <h3>Postęp realizacji celów — sierpień 2026</h3>
           </div>
           <div className="pd-set-chart">
             <ResponsiveContainer height="100%" width="100%">
@@ -845,9 +759,9 @@ export function SettingsWorkspaceAnalytics({
         </div>
 
         <div className="pd-set-card">
-          <div className="pd-set-card__head"><h3>Konfiguracja Atrybucji</h3></div>
+          <div className="pd-set-card__head"><h3>Atrybucja konwersji</h3></div>
           <div className="pd-set-field">
-            <label htmlFor="set-attr-model">Model Atrybucji Raportowej</label>
+            <label htmlFor="set-attr-model">Model atrybucji</label>
             <select className="pd-set-select" defaultValue="data-driven" id="set-attr-model">
               <option value="data-driven">Data-Driven (Algorytmiczny Papa AI)</option>
               <option value="last-touch">Last Interaction (Ostatnie kliknięcie)</option>
@@ -855,7 +769,7 @@ export function SettingsWorkspaceAnalytics({
             </select>
           </div>
           <div className="pd-set-field">
-            <label htmlFor="set-attr-window">Okno Atrybucji Konwersji</label>
+            <label htmlFor="set-attr-window">Okno atrybucji</label>
             <select className="pd-set-select" defaultValue="30" id="set-attr-window">
               <option value="30">30 Dni (Domyślne E-commerce)</option>
               <option value="14">14 Dni (Krótki cykl)</option>
@@ -865,19 +779,19 @@ export function SettingsWorkspaceAnalytics({
           <div className="pd-set-panel-note pd-set-panel-note--slate">
             <p>⚠️ Zmiana metodyki atrybucji wymaga ponownej kalkulacji agregatów przychodu w tle.</p>
           </div>
-          <button className="pd-set-button pd-set-button--dark pd-set-button--block" type="button">Zapisz Parametry Atrybucji</button>
+          <button className="pd-set-button pd-set-button--dark pd-set-button--block" type="button">Zapisz atrybucję</button>
         </div>
 
         <div className="pd-set-card pd-set-grid--span3">
-          <div className="pd-set-card__head"><h3>Zdefiniowane Cele Biznesowe (/targets)</h3></div>
+          <div className="pd-set-card__head"><h3>Cele biznesowe</h3></div>
           <div className="pd-set-table-wrap">
             <table className="pd-set-table">
               <thead>
                 <tr>
-                  <th>Nazwa Celu</th>
-                  <th>Klucz Metryki</th>
-                  <th>Wartość Docelowa</th>
-                  <th>Próg Alertu</th>
+                  <th>Nazwa celu</th>
+                  <th>Metryka</th>
+                  <th>Wartość docelowa</th>
+                  <th>Próg alertu</th>
                   <th>Kadencja</th>
                   <th className="pd-set-cell-right">Akcje</th>
                 </tr>
@@ -892,7 +806,7 @@ export function SettingsWorkspaceAnalytics({
                     </td>
                     <td><span className="pd-set-pill pd-set-pill--amber" style={{ fontFamily: 'var(--pd-font-mono)' }}>{target.threshold}%</span></td>
                     <td className="pd-set-cell-muted">{target.cadence}</td>
-                    <td className="pd-set-cell-right"><button className="pd-set-linklike pd-set-linklike--indigo" type="button">Edytuj w API</button></td>
+                    <td className="pd-set-cell-right"><button className="pd-set-linklike pd-set-linklike--indigo" type="button">Edytuj</button></td>
                   </tr>
                 ))}
               </tbody>
@@ -916,22 +830,20 @@ export function SettingsWorkspaceAi({
       <div className="pd-set-intro">
         <div>
           <div className="pd-set-intro__heading">
-            <h2>Papa Asystent AI — Konfiguracja i Pamięć</h2>
-            <span className="pd-set-scope-badge pd-set-scope-badge--ai">Domain: AI Governance</span>
+            <h2>Papa Asystent</h2>
+            <span className="pd-set-scope-badge pd-set-scope-badge--workspace">Dotyczy całego workspace</span>
           </div>
           <p className="pd-set-intro__body">
-            Zarządzanie zachowaniem asystenta, proaktywnością rekomendacji oraz słownikiem pamięci workspace. Asystent respektuje
-            uprawnienia RBAC zalogowanego użytkownika (<code>User Scopes ∩ AI Scope</code>).
+            Dostosuj styl odpowiedzi, proaktywne alerty i definicje biznesowe używane przez Asystenta.
           </p>
         </div>
-        <span className="pd-set-scope-badge pd-set-scope-badge--ai" style={{ fontWeight: 600 }}>Model: Papa-Analytics-v4</span>
       </div>
 
       <div className="pd-set-grid pd-set-grid--halves">
         <div className="pd-set-card">
-          <div className="pd-set-card__head"><h3>Ton i Proaktywność Odpowiedzi</h3></div>
+          <div className="pd-set-card__head"><h3>Styl odpowiedzi</h3></div>
           <div className="pd-set-field">
-            <label>Styl Komunikacji Rekomendacji</label>
+            <label>Poziom szczegółowości</label>
             <div className="pd-set-style-picker">
               {(['concise', 'standard', 'detailed'] as const).map((option) => (
                 <label className="pd-set-style-option" data-selected={style === option} key={option}>
@@ -946,21 +858,21 @@ export function SettingsWorkspaceAi({
             <span>Pozwól Asystentowi Papa wysyłać powiadomienia o anomaliach bez bezpośredniego zapytania</span>
           </label>
           <div className="pd-set-panel-note pd-set-panel-note--rose">
-            <div className="pd-set-panel-note__title"><span>🔒</span><span>AI Security Guardrail:</span></div>
-            <p>Secrets TOTP, podgląd haseł, tokeny API oraz klucze sesji są technicznie wykluczone z kontekstu promptów Papa AI.</p>
+            <div className="pd-set-panel-note__title"><span aria-hidden="true">🔒</span><span>Ochrona danych logowania</span></div>
+            <p>Hasła, kody zabezpieczające i klucze dostępu nigdy nie są udostępniane Asystentowi.</p>
           </div>
           <button className="pd-set-button pd-set-button--ai pd-set-button--block" onClick={onSave} type="button">
-            Zapisz Ustawienia Zachowania AI
+            Zapisz ustawienia Asystenta
           </button>
         </div>
 
         <div className="pd-set-card">
           <div className="pd-set-card__head">
             <div>
-              <h3>Słownik Pamięci Workspace (Context Memory)</h3>
-              <p>Własne definicje biznesowe dla modeli AI</p>
+              <h3>Słownik pojęć</h3>
+              <p>Definicje biznesowe używane w odpowiedziach</p>
             </div>
-            <button className="pd-set-button pd-set-button--dark" type="button">Dodaj Pojęcie</button>
+            <button className="pd-set-button pd-set-button--dark" type="button">Dodaj pojęcie</button>
           </div>
           <div className="pd-set-view" style={{ gap: 8 }}>
             {settingsAiMemory.map((entry) => (
@@ -968,7 +880,7 @@ export function SettingsWorkspaceAi({
                 <div>
                   <div className="pd-set-memory-item__head">
                     <span className="pd-set-memory-item__term">{entry.term}</span>
-                    <span className="pd-set-memory-item__kind">{entry.kind === 'custom' ? 'Workspace Custom' : 'Definicja Systemowa'}</span>
+                    <span className="pd-set-memory-item__kind">{entry.kind === 'custom' ? 'Własna' : 'Systemowa'}</span>
                   </div>
                   <p className="pd-set-memory-item__definition">{entry.definition}</p>
                 </div>
@@ -994,30 +906,29 @@ export function SettingsWorkspaceNotifications({
       <div className="pd-set-intro">
         <div>
           <div className="pd-set-intro__heading">
-            <h2>Powiadomienia i Harmonogramy Raportów</h2>
-            <span className="pd-set-scope-badge pd-set-scope-badge--domain">Model ReportSchedule</span>
+            <h2>Powiadomienia i raporty</h2>
+            <span className="pd-set-scope-badge pd-set-scope-badge--workspace">Dotyczy całego workspace</span>
           </div>
           <p className="pd-set-intro__body">
-            Zarządzanie kanałami dostarczania alertów oraz automatyczną wysyłką cyklicznych raportów PDF. Model{' '}
-            <code>ReportSchedule</code> zastąpił wcześniejsze wyliczanie harmonogramów z indeksu w podglądzie.
+            Ustal, kiedy zespół otrzymuje alerty i cykliczne podsumowania.
           </p>
         </div>
         <button className="pd-set-button pd-set-button--primary" onClick={onTestDelivery} type="button">
-          <span>✉️</span> Wykonaj Prawdziwy Test Wysyłki Email
+          Wyślij wiadomość testową
         </button>
       </div>
 
       <div className="pd-set-grid pd-set-grid--halves">
         <div className="pd-set-card">
-          <div className="pd-set-card__head"><h3>Harmonogramy Raportów (ReportSchedule)</h3></div>
+          <div className="pd-set-card__head"><h3>Harmonogram raportu</h3></div>
           <div className="pd-set-info-block">
             <div className="pd-set-info-block__row" style={{ justifyContent: 'space-between', width: '100%' }}>
-              <strong style={{ color: 'rgb(var(--pd-set-slate-900))' }}>Weekly Executive Brief</strong>
+              <strong style={{ color: 'rgb(var(--pd-set-slate-900))' }}>Cotygodniowe podsumowanie</strong>
               <span className="pd-set-pill pd-set-pill--emerald">AKTYWNY</span>
             </div>
             <div className="pd-set-status-grid">
               <div>Kadencja: <strong>Poniedziałek 08:00</strong></div>
-              <div>Format: <strong>PDF + Email Summary</strong></div>
+              <div>Format: <strong>PDF + podsumowanie e-mail</strong></div>
               <div>Strefa: <strong>Europe/Warsaw</strong></div>
               <div>Odbiorcy: <strong>Właściciele &amp; Admini</strong></div>
             </div>
@@ -1025,14 +936,14 @@ export function SettingsWorkspaceNotifications({
         </div>
 
         <div className="pd-set-card">
-          <div className="pd-set-card__head"><h3>Godziny Ciszy (Quiet Hours)</h3></div>
+          <div className="pd-set-card__head"><h3>Godziny ciszy</h3></div>
           <div className="pd-set-field-row">
             <div className="pd-set-field">
-              <label htmlFor="set-quiet-start">Początek Ciszy</label>
+              <label htmlFor="set-quiet-start">Od</label>
               <input className="pd-set-input" defaultValue="22:00" id="set-quiet-start" type="time" />
             </div>
             <div className="pd-set-field">
-              <label htmlFor="set-quiet-end">Koniec Ciszy</label>
+              <label htmlFor="set-quiet-end">Do</label>
               <input className="pd-set-input" defaultValue="07:00" id="set-quiet-end" type="time" />
             </div>
           </div>
@@ -1041,7 +952,7 @@ export function SettingsWorkspaceNotifications({
             <span>Krytyczne alerty bezpieczeństwa mogą omijać godziny ciszy</span>
           </label>
           <button className="pd-set-button pd-set-button--dark pd-set-button--block" onClick={onSave} type="button">
-            Zapisz Reguły Dostarczania
+            Zapisz powiadomienia
           </button>
         </div>
       </div>
@@ -1059,20 +970,19 @@ export function SettingsWorkspaceCompliance({
       <div className="pd-set-intro">
         <div>
           <div className="pd-set-intro__heading">
-            <h2>Prywatność i Zgodność (Customer Legal Center)</h2>
-            <span className="pd-set-scope-badge pd-set-scope-badge--domain">B2B Customer Governance</span>
+            <h2>Prywatność i zgodność</h2>
+            <span className="pd-set-scope-badge pd-set-scope-badge--workspace">Dokumenty workspace</span>
           </div>
           <p className="pd-set-intro__body">
-            Dokumenty prawne, powierzenie przetwarzania danych (DPA), oficjalna lista podprocesorów oraz historia zgód —
-            bez wewnętrznej checklisty gotowości produkcyjnej, która nie należy do widoku klienta.
+            Sprawdź dokumenty prawne, umowę powierzenia danych oraz listę podmiotów przetwarzających dane.
           </p>
         </div>
-        <span className="pd-set-scope-badge pd-set-scope-badge--success">Status: RODO / GDPR Compliant</span>
+        <span className="pd-set-scope-badge pd-set-scope-badge--success"><span aria-hidden="true">✓</span> Zgodność z RODO</span>
       </div>
 
       <div className="pd-set-grid pd-set-grid--halves">
         <div className="pd-set-card">
-          <div className="pd-set-card__head"><h3>Obowiązujące Dokumenty Prawne</h3></div>
+          <div className="pd-set-card__head"><h3>Dokumenty prawne</h3></div>
           <div className="pd-set-view" style={{ gap: 8 }}>
             {settingsLegalDocs.map((doc) => (
               <div className="pd-set-list-item" key={doc.id}>
@@ -1089,7 +999,7 @@ export function SettingsWorkspaceCompliance({
         </div>
 
         <div className="pd-set-card">
-          <div className="pd-set-card__head"><h3>Lista Podprocesorów Danych</h3></div>
+          <div className="pd-set-card__head"><h3>Podmioty przetwarzające dane</h3></div>
           <div className="pd-set-view" style={{ gap: 8 }}>
             {settingsSubprocessors.map((sub) => (
               <div className="pd-set-list-item" key={sub.name}>
@@ -1255,27 +1165,27 @@ function SettingsTotpWizardModal({
 
   return (
     <div className="pd-set-modal-backdrop" onClick={onClose}>
-      <div className="pd-set-modal" onClick={(event) => event.stopPropagation()} role="dialog" aria-label="Konfiguracja TOTP 2FA" aria-modal="true">
+      <div className="pd-set-modal" onClick={(event) => event.stopPropagation()} role="dialog" aria-label="Konfiguracja weryfikacji dwuetapowej" aria-modal="true">
         <div className="pd-set-modal__head">
           <div>
-            <h3>Konfiguracja TOTP 2FA (Real API Flow)</h3>
-            <p>Endpoint: <code>/auth/2fa/totp/setup</code></p>
+            <h3>Skonfiguruj weryfikację dwuetapową</h3>
+            <p>Potrzebujesz aplikacji uwierzytelniającej.</p>
           </div>
           <button aria-label="Zamknij" className="pd-set-modal__close" onClick={onClose} type="button">✕</button>
         </div>
 
         <div className="pd-set-panel-note pd-set-panel-note--indigo" style={{ background: 'rgb(var(--pd-set-indigo-50))', border: '1px solid rgb(var(--pd-set-indigo-200))', color: 'rgb(var(--pd-set-indigo-950))' }}>
-          <div className="pd-set-panel-note__title">Step 1: Zeskanuj Kod QR w Aplikacji Authenticator</div>
+          <div className="pd-set-panel-note__title">1. Zeskanuj kod QR</div>
           <p>Użyj Google Authenticator, Microsoft Authenticator lub 1Password.</p>
         </div>
 
         <div className="pd-set-qr-block">
-          <div className="pd-set-qr-tile">SECRET: JBSWY3DPEHPK3PXP</div>
-          <span className="pd-set-qr-secret">Secret Key: JBSWY3DPEHPK3PXP</span>
+          <div className="pd-set-qr-tile" aria-label="Kod QR do konfiguracji aplikacji">Kod QR</div>
+          <button className="pd-set-linklike pd-set-linklike--indigo" type="button">Nie możesz zeskanować kodu?</button>
         </div>
 
         <div className="pd-set-field">
-          <label htmlFor="set-totp-code">Step 2: Wpisz 6-cyfrowy kod z aplikacji</label>
+          <label htmlFor="set-totp-code">2. Wpisz 6-cyfrowy kod z aplikacji</label>
           <input
             className="pd-set-input pd-set-totp-input"
             id="set-totp-code"
@@ -1288,7 +1198,7 @@ function SettingsTotpWizardModal({
 
         <div className="pd-set-modal__actions">
           <button className="pd-set-button pd-set-button--muted" onClick={onClose} type="button">Anuluj</button>
-          <button className="pd-set-button pd-set-button--primary" onClick={handleVerify} type="button">Potwierdź i Włącz 2FA</button>
+          <button className="pd-set-button pd-set-button--primary" disabled={code.length !== 6} onClick={handleVerify} type="button">Włącz zabezpieczenie</button>
         </div>
       </div>
     </div>
@@ -1316,15 +1226,15 @@ function SettingsInviteModal({
       <div className="pd-set-modal pd-set-modal--wide" onClick={(event) => event.stopPropagation()} role="dialog" aria-label="Zaproś członka zespołu" aria-modal="true">
         <div className="pd-set-modal__head">
           <div>
-            <h3>Zaproś Członka Zespołu</h3>
-            <p>Przypisanie roli systemowej oraz bezpośrednich uprawnień</p>
+            <h3>Zaproś osobę do zespołu</h3>
+            <p>Wybierz rolę odpowiednią do zakresu jej pracy.</p>
           </div>
           <button aria-label="Zamknij" className="pd-set-modal__close" onClick={onClose} type="button">✕</button>
         </div>
 
         <form className="pd-set-view" onSubmit={handleSubmit} style={{ gap: 14 }}>
           <div className="pd-set-field">
-            <label htmlFor="set-invite-email">Adres Email Użytkownika</label>
+            <label htmlFor="set-invite-email">Adres e-mail</label>
             <input
               className="pd-set-input"
               id="set-invite-email"
@@ -1337,7 +1247,7 @@ function SettingsInviteModal({
           </div>
 
           <div className="pd-set-field">
-            <label htmlFor="set-invite-role">Rola Systemowa (Backend Source of Truth)</label>
+            <label htmlFor="set-invite-role">Rola</label>
             <select
               className="pd-set-select"
               id="set-invite-role"
@@ -1352,7 +1262,7 @@ function SettingsInviteModal({
           </div>
 
           <div className="pd-set-scope-preview">
-            <div className="pd-set-scope-preview__title">Podsumowanie przyznawanych uprawnień (Capabilities):</div>
+            <div className="pd-set-scope-preview__title">Uprawnienia przypisane do tej roli</div>
             <div className="pd-set-scope-chips">
               {settingsRoleScopes[role].map((scope) => (
                 <span className="pd-set-scope-chip" key={scope}>{scope}</span>
@@ -1362,7 +1272,7 @@ function SettingsInviteModal({
 
           <div className="pd-set-modal__actions">
             <button className="pd-set-button pd-set-button--muted" onClick={onClose} type="button">Anuluj</button>
-            <button className="pd-set-button pd-set-button--primary" type="submit">Wyślij Zaproszenie Email</button>
+            <button className="pd-set-button pd-set-button--primary" type="submit">Wyślij zaproszenie</button>
           </div>
         </form>
       </div>
@@ -1402,31 +1312,31 @@ function SettingsTargetModal({
       <div className="pd-set-modal" onClick={(event) => event.stopPropagation()} role="dialog" aria-label="Edycja celu biznesowego" aria-modal="true">
         <div className="pd-set-modal__head">
           <div>
-            <h3>Edycja Celu Biznesowego (/targets)</h3>
-            <p>Zapis bezpośrednio do bazy backendowej</p>
+            <h3>Nowy cel biznesowy</h3>
+            <p>Ustaw wartość docelową i próg alertu.</p>
           </div>
           <button aria-label="Zamknij" className="pd-set-modal__close" onClick={onClose} type="button">✕</button>
         </div>
 
         <form className="pd-set-view" onSubmit={handleSubmit} style={{ gap: 12 }}>
           <div className="pd-set-field">
-            <label htmlFor="set-target-name">Nazwa Celu</label>
+            <label htmlFor="set-target-name">Nazwa celu</label>
             <input className="pd-set-input" id="set-target-name" onChange={(event) => setName(event.target.value)} required value={name} />
           </div>
           <div className="pd-set-field-row">
             <div className="pd-set-field">
-              <label htmlFor="set-target-value">Wartość Docelowa</label>
+              <label htmlFor="set-target-value">Wartość docelowa</label>
               <input className="pd-set-input" id="set-target-value" onChange={(event) => setValue(event.target.value)} required step="0.01" type="number" value={value} />
             </div>
             <div className="pd-set-field">
-              <label htmlFor="set-target-threshold">Próg Alertu (%)</label>
+              <label htmlFor="set-target-threshold">Próg alertu (%)</label>
               <input className="pd-set-input" id="set-target-threshold" onChange={(event) => setThreshold(event.target.value)} required type="number" value={threshold} />
             </div>
           </div>
 
           <div className="pd-set-modal__actions">
             <button className="pd-set-button pd-set-button--muted" onClick={onClose} type="button">Anuluj</button>
-            <button className="pd-set-button pd-set-button--primary" type="submit">Zapisz Cel w Backendzie</button>
+            <button className="pd-set-button pd-set-button--primary" type="submit">Dodaj cel</button>
           </div>
         </form>
       </div>

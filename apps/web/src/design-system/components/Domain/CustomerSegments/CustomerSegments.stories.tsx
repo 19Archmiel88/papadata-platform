@@ -17,7 +17,7 @@ import type {
 const workspaceContext = { locale: 'pl', tenantId: 'tenant-papadata', workspaceId: 'workspace_customers' } as const;
 
 const meta = {
-  title: '15 Wykresy i dane/05 Katalog komponentów/Komponenty domenowe/CustomerSegments',
+  title: 'DESIGN SYSTEM/Komponenty/Domenowe/CustomerSegments',
   component: CustomerSegments,
   parameters: { layout: 'padded', a11y: { test: 'error' } },
 } satisfies Meta<typeof CustomerSegments>;

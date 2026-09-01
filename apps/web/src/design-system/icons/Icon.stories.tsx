@@ -17,14 +17,19 @@ import {
   type PapaDataIconName,
 } from './Icon';
 import type {
-  PapaDataRuntimeLocale,
-} from '../foundations';
-
+  LocalizedCopy,
+} from '../../storybook-next/presentation/storyLocalization';
+import {
+  Localized,
+  copy,
+  readLocale,
+  readTheme,
+} from '../../storybook-next/presentation/storyLocalization';
 import '../../storybook-next/presentation/story-presentation.css';
 import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../storybook-next/presentation/StoryPresentation';
 
 const meta = {
-  title: '00 Fundamenty/04 Ikony',
+  title: 'DESIGN SYSTEM/Fundamenty/Ikony',
   component: Icon,
   parameters: {
     layout: 'fullscreen',
@@ -63,42 +68,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-type LocalizedCopy = {
-  readonly pl: string;
-  readonly en: string;
-};
-
-function readLocale(): PapaDataRuntimeLocale {
-  if (typeof document === 'undefined') {
-    return 'pl';
-  }
-
-  return document.documentElement.dataset.locale === 'en'
-    ? 'en'
-    : 'pl';
-}
-
-function readTheme(): 'light' | 'dark' {
-  if (typeof document === 'undefined') {
-    return 'light';
-  }
-
-  return document.documentElement.dataset.theme === 'dark'
-    ? 'dark'
-    : 'light';
-}
-
-function copy(value: LocalizedCopy) {
-  return readLocale() === 'en' ? value.en : value.pl;
-}
-
-function Localized({
-  pl,
-  en,
-}: LocalizedCopy) {
-  return <>{copy({ pl, en })}</>;
-}
 
 const sectionSummaryStyle = {
   margin: 0,
@@ -525,13 +494,13 @@ export const Ikony: Story = {
           ]}
         />
       )}
-      sectionCode="00"
+      sectionCode="DS"
       sectionLabel={<Localized pl="Fundamenty" en="Foundations" />}
-      storyId="00.13"
+      storyId="icons"
       summary={
         <Localized
-          pl="04 Ikony pokazuje publiczny komponent Icon, katalog nazw i realne zastosowania. 01 Fundamenty wizualne definiują tylko reguły geometrii, koloru i znaczenia."
-          en="04 Icons shows the public Icon component, name catalog and real usage. 01 Visual foundations define only geometry, color and meaning rules."
+          pl="Ikony dokumentują publiczny komponent Icon, katalog nazw i realne zastosowania. Fundamenty wizualne definiują geometrię, kolor i znaczenie."
+          en="Icons document the public Icon component, its name catalog and real usage. Visual foundations define geometry, color and meaning."
         />
       }
       title={<Localized pl="Icon jako katalog runtime." en="Icon as the runtime catalog." />}

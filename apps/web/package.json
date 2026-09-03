@@ -22,7 +22,7 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "^10.5.3",
+    "@storybook/addon-a11y": "^10.5.10",
     "@storybook/addon-docs": "^10.5.3",
     "@storybook/react-vite": "^10.5.3",
     "@tailwindcss/vite": "^4.3.3",

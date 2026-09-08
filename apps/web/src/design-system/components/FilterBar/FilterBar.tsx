@@ -113,6 +113,7 @@ export const FilterBar = forwardRef<
         </div>
       </div>
 
+      {filters.length > 0 ? (
       <div className="pd-filter-bar__active">
         <div className="pd-filter-bar__active-main">
           {activeFilters.length > 0 ? (
@@ -158,6 +159,7 @@ export const FilterBar = forwardRef<
           ) : null}
         </div>
       </div>
+      ) : null}
     </div>
   );
 });

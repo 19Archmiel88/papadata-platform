@@ -1,6 +1,8 @@
 import type {
   CSSProperties,
   HTMLAttributes,
+  KeyboardEvent,
+  MouseEvent,
   ReactNode,
 } from 'react';
 
@@ -79,6 +81,11 @@ export type TableProps = Omit<
     }
     | null;
   readonly stickyHeader?: boolean;
+  readonly onRowClick?:
+    | ((
+      row: TableRow,
+    ) => void)
+    | undefined;
   readonly onSort?:
     | ((
       columnId: string,
@@ -144,6 +151,32 @@ function resolveSortLabel(
   return `Sortuj po kolumnie ${columnLabel}.`;
 }
 
+function isInteractiveTableTarget(target: EventTarget | null) {
+  return target instanceof Element && Boolean(target.closest(
+    'a, button, input, select, textarea, [role="button"], [role="menuitem"], [data-table-interactive="true"]',
+  ));
+}
+
+function handleClickableRowMouse(
+  event: MouseEvent<HTMLTableRowElement>,
+  row: TableRow,
+  onRowClick: ((row: TableRow) => void) | undefined,
+) {
+  if (isInteractiveTableTarget(event.target)) return;
+  onRowClick?.(row);
+}
+
+function handleClickableRowKey(
+  event: KeyboardEvent<HTMLTableRowElement>,
+  row: TableRow,
+  onRowClick: ((row: TableRow) => void) | undefined,
+) {
+  if (event.target !== event.currentTarget) return;
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  event.preventDefault();
+  onRowClick?.(row);
+}
+
 export function Table({
   ariaLabel,
   caption = null,
@@ -156,6 +189,7 @@ export function Table({
   loading = false,
   loadingRows = 4,
   minWidth = '46rem',
+  onRowClick,
   onSort,
   rowHeaderColumnId = null,
   rows,
@@ -392,11 +426,19 @@ export function Table({
               ) => (
                 <tr
                   key={row.id}
+                  data-clickable={onRowClick ? true : undefined}
                   data-selected={
                     row.selected
                       ? true
                       : undefined
                   }
+                  tabIndex={onRowClick ? 0 : undefined}
+                  onClick={onRowClick ? (event) => {
+                    handleClickableRowMouse(event, row, onRowClick);
+                  } : undefined}
+                  onKeyDown={onRowClick ? (event) => {
+                    handleClickableRowKey(event, row, onRowClick);
+                  } : undefined}
                 >
                   {columns.map(
                     (

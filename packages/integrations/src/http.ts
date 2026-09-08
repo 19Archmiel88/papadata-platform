@@ -26,6 +26,7 @@ export type ProviderHttpClient = {
 export class FetchProviderHttpClient implements ProviderHttpClient {
   private readonly fetchImpl: typeof fetch;
   private readonly delayImpl: (ms: number) => Promise<void>;
+  private readonly acquireSlot: () => Promise<void>;
 
   constructor(
     fetchImpl: typeof fetch = fetch,
@@ -33,9 +34,19 @@ export class FetchProviderHttpClient implements ProviderHttpClient {
     // the old, now-removed 10-minute ceiling) is passed through unclamped
     // without a test actually having to wait that long.
     delayImpl: (ms: number) => Promise<void> = delay,
+    // Proactive rate-limit gate, called before every attempt (including
+    // retries). Resolves once a slot is available -- distinct from the
+    // reactive Retry-After/backoff handling below, which only reacts AFTER
+    // a provider has already rejected a request. Defaults to a no-op so
+    // every existing caller that doesn't supply one is unaffected; a real
+    // gate is bound per (provider, credential) by createProviderAdapter's
+    // caller (see packages/integrations/src/provider-factory.ts), not
+    // configured here.
+    acquireSlot: () => Promise<void> = async () => {},
   ) {
     this.fetchImpl = fetchImpl;
     this.delayImpl = delayImpl;
+    this.acquireSlot = acquireSlot;
   }
 
   async requestJson<T>(request: ProviderHttpRequest): Promise<ProviderHttpResult<T>> {
@@ -45,6 +56,7 @@ export class FetchProviderHttpClient implements ProviderHttpClient {
     let lastFailure: ProviderAdapterError | null = null;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      await this.acquireSlot();
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort("provider_timeout"), timeoutMs);
       // Only an actual `Retry-After` response header counts as the

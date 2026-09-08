@@ -1,0 +1,10 @@
+# CVE-2026-80256: trivy-db ships a malformed/rejected record for this ID that
+# crashes trivy's own vulnerability-detail lookup (FillInfo throws "no
+# vulnerability details" instead of skipping it) -- reproduced identically
+# across trivy v0.70.0 and v0.74.0 with two different trivy-db snapshots
+# (2025-12-22 and 2026-08-13), only on the nginx-alpine-based edge/web
+# images. This is not a real, assessable vulnerability in this repo's
+# dependencies -- Trivy cannot even describe it. Ignored here so the
+# container-scan job can complete instead of crashing before producing a
+# result; revisit (remove this line) once upstream trivy-db fixes the record.
+CVE-2026-80256

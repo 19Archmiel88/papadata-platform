@@ -29,7 +29,7 @@ import type {
 } from '../../design-system';
 import {
   analyticsScreenDefinitions,
-} from '../runtime/screens/analytics/index';
+} from '../../runtime/analytics/analyticsModuleData';
 import type {
   AnalyticsScreenDefinition,
   CampaignsModuleData,
@@ -37,7 +37,7 @@ import type {
   OrdersModuleData,
   ProductsModuleData,
   TrafficModuleData,
-} from '../runtime/screens/analytics/index';
+} from '../../runtime/analytics/analyticsModuleData';
 import {
   ProductionScreenCanvas,
 } from './ProductionStoryShell';

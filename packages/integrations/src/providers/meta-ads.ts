@@ -49,6 +49,15 @@ export class MetaAdsAdapter implements IntegrationProviderAdapter {
     );
   }
 
+  /**
+   * Real page-level resumability (see WooCommerceAdapter.fetch's doc
+   * comment for the full rationale). Unlike every other multi-stream
+   * provider here, ad_spend and attributed_conversions are not
+   * independently paginated at all -- both are just two projections of the
+   * same /insights page -- so there is no per-stream index to track, only
+   * Graph API's own `paging.next` URL, carried straight through as the
+   * resume cursor.
+   */
   async fetch(request: ProviderFetchRequest): Promise<ProviderFetchResult> {
     if (!this.config) {
       throw new ProviderAdapterError("Meta Ads is not configured", "authentication");
@@ -61,6 +70,7 @@ export class MetaAdsAdapter implements IntegrationProviderAdapter {
       return {
         records: [],
         nextCheckpoint: request.checkpoint,
+        nextPageCursor: null,
         partial: false,
         limitations: [],
       };
@@ -101,9 +111,10 @@ export class MetaAdsAdapter implements IntegrationProviderAdapter {
       time_range: JSON.stringify({ since: from, until: to }),
     });
 
-    const rows = await this.fetchAllPages(
-      `/act_${accountId}/insights?${query.toString()}`,
-    );
+    const url = request.pageCursor ?? `/act_${accountId}/insights?${query.toString()}`;
+    const response = await this.requestJson(url);
+    const rows = readArrayField(response, "data");
+    const nextPageCursor = readPagingNext(response);
     const observedAt = new Date().toISOString();
     const records: ProviderRecord[] = [];
 
@@ -133,24 +144,11 @@ export class MetaAdsAdapter implements IntegrationProviderAdapter {
 
     return {
       records,
-      nextCheckpoint: JSON.stringify({ date: to }),
+      nextCheckpoint: nextPageCursor === null ? JSON.stringify({ date: to }) : request.checkpoint,
+      nextPageCursor,
       partial: false,
       limitations: [],
     };
-  }
-
-  private async fetchAllPages(path: string): Promise<readonly unknown[]> {
-    const rows: unknown[] = [];
-    let next: string | null = path;
-    let pages = 0;
-
-    while (next && pages < 10_000) {
-      const response = await this.requestJson(next);
-      rows.push(...readArrayField(response, "data"));
-      next = readPagingNext(response);
-      pages += 1;
-    }
-    return rows;
   }
 
   private async requestJson(pathOrUrl: string): Promise<unknown> {

@@ -18,3 +18,5 @@
   font-weight: var(--pd-font-weight-semibold);
   text-transform: uppercase;
 }
+
+.pd-preview-notice { margin-bottom: 18px; padding: 8px 12px; border: 1px solid var(--pd-separator); border-radius: 6px; background: var(--pd-surface-soft); color: var(--pd-text-secondary); font-size: 12px; }

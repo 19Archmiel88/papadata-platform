@@ -241,7 +241,7 @@ function ApprovalProtectionPattern() {
 }
 
 const meta = {
-  title: '18 Wzorce interfejsu/Approval, step-up i ochrona zmian',
+  title: 'DESIGN SYSTEM/Wzorce interfejsu/Approval, step-up i ochrona zmian',
   parameters: {
     layout: 'fullscreen',
     a11y: {
@@ -263,15 +263,15 @@ export const ApprovalProtectionStory: Story = {
         <StoryPresentationMeta
           ariaLabel="Parametry wzorca approval"
           items={[
-            { label: 'Kontrakt', value: '18.06' },
+            { label: 'Właściciel', value: 'ApprovalPanel / Button' },
             { label: 'Komponenty', value: 'ApprovalPanel / Button' },
-            { label: 'Status', value: 'W przeglądzie' },
+            { label: 'Status', value: 'Kanoniczny wzorzec' },
           ]}
         />
       )}
-      sectionCode="18"
+      sectionCode="DS"
       sectionLabel="Wzorce interfejsu"
-      storyId="18.06"
+      storyId="approval-protection"
       summary="Approval i ochrona zmiany pokazują dodatkowy warunek autoryzacji przed dopuszczeniem akcji."
       title="Approval, step-up i ochrona zmian"
     >

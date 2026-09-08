@@ -57,15 +57,15 @@ const rows: readonly DataRow[] = [
     family: 'Uniwersalne',
     id: 'universal',
     owner: 'Design System',
-    readiness: 'W przeglądzie',
+    readiness: 'Udokumentowane',
     states: 'pusty, błąd, ładowanie, zablokowany',
     surface: 'Strona, sekcja, feedback',
   },
   {
     family: 'Dane analityczne',
     id: 'data',
-    owner: '15.08 / ChartDataState',
-    readiness: 'W przeglądzie',
+    owner: 'ChartDataState',
+    readiness: 'Udokumentowane',
     states: 'brak danych, częściowe, nieaktualne, opóźnione',
     surface: 'ChartFrame, wykres, tabela alternatywna',
   },
@@ -73,7 +73,7 @@ const rows: readonly DataRow[] = [
     family: 'Dostęp',
     id: 'access',
     owner: 'IAM',
-    readiness: 'W przeglądzie',
+    readiness: 'Udokumentowane',
     states: 'brak dostępu, blokada, brak uprawnienia',
     surface: 'EmptyState, ErrorState, komunikat',
   },
@@ -97,7 +97,7 @@ const rows: readonly DataRow[] = [
     family: 'Operacje',
     id: 'operations',
     owner: 'Operations',
-    readiness: 'W przeglądzie',
+    readiness: 'Udokumentowane',
     states: 'w kolejce, trwa, anulowane, ponów',
     surface: 'BackgroundOperationItem',
   },
@@ -105,7 +105,7 @@ const rows: readonly DataRow[] = [
     family: 'Integracje',
     id: 'integrations',
     owner: 'Integrations',
-    readiness: 'W przeglądzie',
+    readiness: 'Udokumentowane',
     states: 'synchronizacja, ponowne połączenie, opóźnienie providera',
     surface: 'Powierzchnie statusu integracji',
   },
@@ -167,7 +167,7 @@ function ResponsiveMatrixList() {
 }
 
 const meta = {
-  title: '18 Wzorce interfejsu/Macierz stanów przekrojowych',
+  title: 'DESIGN SYSTEM/Wzorce interfejsu/Macierz stanów przekrojowych',
   parameters: {
     layout: 'fullscreen',
     a11y: {
@@ -189,15 +189,15 @@ export const CrossStateMatrixStory: Story = {
         <StoryPresentationMeta
           ariaLabel="Parametry macierzy stanów"
           items={[
-            { label: 'Kontrakt', value: '18.10' },
+            { label: 'Właściciel', value: 'Design System / runtime domenowy' },
             { label: 'Powierzchnia', value: 'DataTable' },
-            { label: 'Status', value: 'W przeglądzie' },
+            { label: 'Status', value: 'Kanoniczna mapa stanów' },
           ]}
         />
       )}
-      sectionCode="18"
+      sectionCode="DS"
       sectionLabel="Wzorce interfejsu"
-      storyId="18.10"
+      storyId="cross-state-matrix"
       summary="Macierz stanów przekrojowych mapuje rodziny stanów na właścicieli i powierzchnie. DataTable jest kanoniczną powierzchnią danych, a zasady przypisania są listą z separatorami."
       title="Macierz stanów przekrojowych"
     >
@@ -208,7 +208,7 @@ export const CrossStateMatrixStory: Story = {
       >
         <div className="pd-x18-stack">
           <InlineNotice
-            message="18.10 porządkuje wybór stanu przekrojowego. Gotowość procesu danych pozostaje przy domenach, a analityczne stany prezentacyjne pozostają przy 15.08 ChartDataState."
+            message="Macierz porządkuje wybór stanu przekrojowego. Gotowość procesu danych pozostaje przy domenach, a analityczne stany prezentacyjne przy ChartDataState."
             title="Macierz jako decyzja przypisania"
             tone="info"
           />
@@ -230,7 +230,7 @@ export const CrossStateMatrixStory: Story = {
                 label: 'Gotowość',
                 mapTone: {
                   Planowane: 'neutral',
-                  'W przeglądzie': 'neutral',
+                  Udokumentowane: 'success',
                 },
               }}
               summary="Macierz rodzin stanów przekrojowych i przypisanych powierzchni."

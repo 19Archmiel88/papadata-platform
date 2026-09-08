@@ -14,16 +14,16 @@ import {
 
 import {
   AuthSurface,
-} from '../../runtime/features/auth/AuthSurface';
+} from '../../../runtime/features/auth/AuthSurface';
 import {
   AuthDataSourceMarquee,
-} from '../../runtime/features/auth/AuthDataSourceMarquee';
+} from '../../../runtime/features/auth/AuthDataSourceMarquee';
 import {
   AuthInsightChart,
-} from '../../runtime/features/auth/AuthInsightChart';
+} from '../../../runtime/features/auth/AuthInsightChart';
 import {
   AuthRuntimePreferences,
-} from '../../runtime/features/auth/AuthRuntimePreferences';
+} from '../../../runtime/features/auth/AuthRuntimePreferences';
 import {
   Button,
   InlineNotice,
@@ -31,11 +31,10 @@ import {
   StatusBadge,
 } from '../../../design-system/components';
 import {
+  StoryPresentationMeta,
+  StoryPresentationPage,
   StoryPresentationSection,
 } from '../../../storybook-next/presentation/StoryPresentation';
-import {
-  ProductionStoryShell,
-} from '../../production/ProductionStoryShell';
 import './auth-surfaces.stories.css';
 
 const navigateAction = fn();
@@ -65,7 +64,7 @@ const allAuthHandlerProps = {
   onStepUpConfirm: stepUpAction,
 };
 
-const demoWorkspaceOptions = [
+const workspaceOptions = [
   {
     tenantId: 'tenant_papadata',
     tenantName: 'PapaData Sp. z o.o.',
@@ -81,7 +80,7 @@ const demoWorkspaceOptions = [
 ];
 
 const meta = {
-  title: '25 Dostęp i onboarding/Auth runtime',
+  title: 'PLATFORMA/Dostęp i onboarding/Procesy dostępu',
   parameters: {
     layout: 'fullscreen',
     a11y: {
@@ -115,22 +114,25 @@ function AuthPageFrame({
   readonly title: string;
 }) {
   return (
-    <ProductionStoryShell
-      contract={{
-        displayTitle: title,
-        documentPath: '06-dostep-i-onboarding/auth-runtime.md',
-        id: storyId,
-        operationId: 'auth.runtime.storybook',
-        owner: 'Auth',
-        sectionId: '25',
-        sectionLabel: 'Dostęp i onboarding',
-        status: 'runtime + target states',
-        summary,
-      }}
-      wrapCanvas={false}
+    <StoryPresentationPage
+      headerAside={(
+        <StoryPresentationMeta
+          ariaLabel="Status procesu dostępu"
+          items={[
+            { label: 'Właściciel', value: 'runtime/features/auth' },
+            { label: 'Status', value: 'Kanoniczny runtime' },
+            { label: 'Zakres', value: 'Dostęp i onboarding' },
+          ]}
+        />
+      )}
+      sectionCode="AU"
+      sectionLabel="Dostęp i onboarding"
+      storyId={storyId}
+      summary={summary}
+      title={title}
     >
       {children}
-    </ProductionStoryShell>
+    </StoryPresentationPage>
   );
 }
 
@@ -147,7 +149,7 @@ function AuthFlowPanel({
     <div className="pd-s25-flow-panel">
       <header className="pd-s25-flow-panel__header">
         <div>
-          <h3>Flow dostępu</h3>
+          <h3>Proces dostępu</h3>
           <p>Aktualny krok, decyzje i blokery procesu są widoczne bez przechodzenia do dokumentacji.</p>
         </div>
         <ProgressIndicator
@@ -198,14 +200,14 @@ function AuthFlowPanel({
 }
 
 export const AuthEntryStory: Story = {
-  name: '25.01 Wejście do Auth',
+  name: 'Punkt wejścia',
   render: () => (
     <AuthPageFrame
       storyId="25.01"
       summary="Pierwszy ekran Auth działa w publicznym AuthShellu i prowadzi do właściwej ścieżki bez technicznych statusów w interfejsie."
       title="Wejście do Auth"
     >
-      <StoryPresentationSection index="01" layout="showcase" title="Widok docelowy">
+      <StoryPresentationSection index="01" layout="showcase" title="Punkt wejścia">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-entry-ready">
           <AuthSurface {...allAuthHandlerProps} mode="entry" onNavigate={navigateAction} />
         </div>
@@ -246,7 +248,7 @@ export const AuthEntryStory: Story = {
 };
 
 export const InvitationStory: Story = {
-  name: '25.04 Przegląd zaproszenia',
+  name: 'Przegląd zaproszenia',
   render: () => (
     <AuthPageFrame
       storyId="25.04"
@@ -289,7 +291,7 @@ export const InvitationStory: Story = {
 };
 
 export const EmailVerificationStory: Story = {
-  name: '25.05 Weryfikacja adresu e-mail',
+  name: 'Weryfikacja adresu e-mail',
   render: () => (
     <AuthPageFrame
       storyId="25.05"
@@ -332,7 +334,7 @@ export const EmailVerificationStory: Story = {
 };
 
 export const CompanyIdentificationStory: Story = {
-  name: '25.06 Identyfikacja firmy',
+  name: 'Identyfikacja firmy',
   render: () => (
     <AuthPageFrame
       storyId="25.06"
@@ -387,14 +389,14 @@ export const CompanyIdentificationStory: Story = {
 };
 
 export const LoginStory: Story = {
-  name: '25.02 Logowanie',
+  name: 'Logowanie',
   render: () => (
     <AuthPageFrame
       storyId="25.02"
       summary="Logowanie obejmuje remember device, walidację pól, rate limit i produktowy komunikat bez enumeracji kont."
       title="Logowanie"
     >
-      <StoryPresentationSection index="01" layout="showcase" title="Formularz docelowy">
+      <StoryPresentationSection index="01" layout="showcase" title="Dane logowania">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-login-ready">
           <AuthSurface {...allAuthHandlerProps}
             mode="login"
@@ -434,7 +436,7 @@ export const LoginStory: Story = {
 };
 
 export const AuthVisualComponentsStory: Story = {
-  name: '25.02 Komponenty wizualne Auth',
+  name: 'Elementy wizualne dostępu',
   render: () => (
     <AuthPageFrame
       storyId="25.02-components"
@@ -472,7 +474,7 @@ export const AuthVisualComponentsStory: Story = {
 };
 
 export const RegistrationStory: Story = {
-  name: '25.03 Rejestracja',
+  name: 'Rejestracja',
   render: () => (
     <AuthPageFrame
       storyId="25.03"
@@ -536,14 +538,14 @@ export const RegistrationStory: Story = {
 };
 
 export const MfaStory: Story = {
-  name: '25.07 MFA',
+  name: 'Weryfikacja dwuetapowa',
   render: () => (
     <AuthPageFrame
       storyId="25.07"
-      summary="MFA pokazuje challenge, błędy kodu, rate limit i wymagany enrollment bez udawania pełnego backendu."
+      summary="MFA pokazuje aktywną weryfikację, błędy kodu, limit prób i konfigurację metody bez udawania pełnego backendu."
       title="MFA"
     >
-      <StoryPresentationSection index="01" layout="showcase" title="Challenge aktywny">
+      <StoryPresentationSection index="01" layout="showcase" title="Aktywna weryfikacja">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-mfa-ready">
           <AuthSurface {...allAuthHandlerProps}
             mode="mfa"
@@ -553,7 +555,7 @@ export const MfaStory: Story = {
         </div>
       </StoryPresentationSection>
 
-      <StoryPresentationSection index="02" layout="showcase" title="Limit prób i enrollment">
+      <StoryPresentationSection index="02" layout="showcase" title="Limit prób i konfiguracja metody">
         <div className="pd-s25-grid pd-s25-grid--compact">
           <div className="pd-s25-stage" data-testid="auth-mfa-rate-limited">
             <AuthSurface {...allAuthHandlerProps}
@@ -589,14 +591,14 @@ export const MfaStory: Story = {
 };
 
 export const AccessRecoveryStory: Story = {
-  name: '25.08 Odzyskiwanie dostępu',
+  name: 'Odzyskiwanie dostępu',
   render: () => (
     <AuthPageFrame
       storyId="25.08"
       summary="Recovery rozdziela request, informację o wysłaniu i nowe hasło; token z linku pozostaje kontekstem procesu, nie edytowalnym polem."
       title="Odzyskiwanie dostępu"
     >
-      <StoryPresentationSection index="01" layout="showcase" title="Request odzyskania dostępu">
+      <StoryPresentationSection index="01" layout="showcase" title="Prośba o odzyskanie dostępu">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-recovery-request">
           <AuthSurface {...allAuthHandlerProps}
             mode="recover"
@@ -620,7 +622,7 @@ export const AccessRecoveryStory: Story = {
           <div className="pd-s25-stage" data-testid="auth-recovery-reset">
             <AuthSurface {...allAuthHandlerProps}
               initialEmail="user@example.com"
-              initialResetToken="rst_demo_token"
+              initialResetToken="rst_example_token"
               mode="recover"
               onNavigate={navigateAction}
               onPasswordReset={resetAction}
@@ -658,7 +660,7 @@ export const AccessRecoveryStory: Story = {
 };
 
 export const AccessContextResolutionStory: Story = {
-  name: '25.09 Rozpoznanie kontekstu dostępu',
+  name: 'Rozpoznanie kontekstu dostępu',
   render: () => (
     <AuthPageFrame
       storyId="25.09"
@@ -676,13 +678,13 @@ export const AccessContextResolutionStory: Story = {
         </div>
       </StoryPresentationSection>
 
-      <StoryPresentationSection index="02" layout="showcase" title="Ponowne uwierzytelnienie (auth-24)">
+      <StoryPresentationSection index="02" layout="showcase" title="Ponowne uwierzytelnienie">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-reauth-ready">
           <AuthSurface {...allAuthHandlerProps} mode="reauth" onNavigate={navigateAction} onStepUpConfirm={stepUpAction} />
         </div>
       </StoryPresentationSection>
 
-      <StoryPresentationSection index="03" layout="showcase" title="Ekran po wylogowaniu (auth-26)">
+      <StoryPresentationSection index="03" layout="showcase" title="Ekran po wylogowaniu">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-logged-out-ready">
           <AuthSurface {...allAuthHandlerProps} mode="login" onLogin={loginAction} onNavigate={navigateAction} state="loggedOut" />
         </div>
@@ -709,7 +711,7 @@ export const AccessContextResolutionStory: Story = {
 };
 
 export const OnboardingStory: Story = {
-  name: '25.10 Onboarding',
+  name: 'Wprowadzenie do produktu',
   render: () => (
     <AuthPageFrame
       storyId="25.10"
@@ -746,13 +748,13 @@ export const OnboardingStory: Story = {
         </div>
       </StoryPresentationSection>
 
-      <StoryPresentationSection index="02" layout="showcase" title="Wybór organizacji i workspace (auth-22/23)">
+      <StoryPresentationSection index="02" layout="showcase" title="Wybór organizacji i workspace">
         <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-workspace-ready">
           <AuthSurface {...allAuthHandlerProps}
             mode="workspace"
             onNavigate={navigateAction}
             onSelectWorkspace={selectWorkspaceAction}
-            workspaceOptions={demoWorkspaceOptions}
+            workspaceOptions={workspaceOptions}
           />
         </div>
       </StoryPresentationSection>

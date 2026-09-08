@@ -43,27 +43,8 @@ function PapaDataBrandMark() {
       focusable="false"
       viewBox="0 0 100 100"
     >
-      <path
-        className="svg-stroke-layer"
-        d="M50 55 L85 72.5 L50 90 L15 72.5 Z"
-        fill="var(--brand-logo-base-fill)"
-        stroke="var(--brand-logo-base-stroke)"
-        strokeLinejoin="round"
-      />
-      <path
-        className="svg-stroke-layer"
-        d="M50 35 L85 52.5 L50 70 L15 52.5 Z"
-        fill="var(--brand-logo-mid-fill)"
-        stroke="var(--pd-brand-line)"
-        strokeLinejoin="round"
-      />
-      <path
-        className="svg-stroke-layer"
-        d="M50 15 L85 32.5 L50 50 L15 32.5 Z"
-        fill="var(--pd-brand)"
-        stroke="var(--pd-brand)"
-        strokeLinejoin="round"
-      />
+      <path fill="var(--pd-interactive)" fillRule="evenodd" d="M18 12h34c20 0 32 11 32 29S72 70 52 70H38v18H18V12Zm20 18v22h14c9 0 13-4 13-11s-4-11-13-11H38Z" />
+      <path fill="var(--pd-brand-mark-detail)" d="m18 67 20-11v14L18 81V67Z" />
     </svg>
   );
 }

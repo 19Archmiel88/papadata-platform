@@ -15,7 +15,7 @@ import type {
 } from './DecisionCard';
 
 const meta = {
-  title: '15 Wykresy i dane/05 Katalog komponentów/Komponenty domenowe/DecisionCard',
+  title: 'DESIGN SYSTEM/Komponenty/Domenowe/DecisionCard',
   component: DecisionCard,
   parameters: { layout: 'padded', a11y: { test: 'error' } },
 } satisfies Meta<typeof DecisionCard>;

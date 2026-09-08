@@ -74,6 +74,7 @@ export class Ga4Adapter implements IntegrationProviderAdapter {
     return {
       records,
       nextCheckpoint: JSON.stringify({ date: to === "today" ? observedAt.slice(0, 10) : to }),
+      nextPageCursor: null,
       partial: false,
       limitations: [],
     };

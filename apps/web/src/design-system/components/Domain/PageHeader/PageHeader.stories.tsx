@@ -15,7 +15,7 @@ import type {
 } from './PageHeader';
 
 const meta = {
-  title: '15 Wykresy i dane/05 Katalog komponentów/Komponenty domenowe/PageHeader',
+  title: 'DESIGN SYSTEM/Komponenty/Domenowe/PageHeader',
   component: PageHeader,
   parameters: { layout: 'padded', a11y: { test: 'error' } },
 } satisfies Meta<typeof PageHeader>;

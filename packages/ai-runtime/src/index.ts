@@ -360,18 +360,42 @@ export class AiModelRouter {
   }
 }
 
+export class AiBudgetExceededError extends Error {
+  readonly scope: "plan" | "route" | "user" | "workspace";
+
+  constructor(scope: "plan" | "route" | "user" | "workspace", message: string) {
+    super(message);
+    this.name = "AiBudgetExceededError";
+    this.scope = scope;
+  }
+}
+
 export class AiBudgetGuard {
+  /**
+   * Checks three independent budgets, cheapest/narrowest first: the route's
+   * own per-call ceiling, then the workspace's rolling consumption, then the
+   * calling user's own rolling consumption within that same workspace. The
+   * user check exists so one user cannot spend an entire workspace's budget
+   * alone -- consumedCostMinorForUser/userBudgetMinor are a strict subset of
+   * consumedCostMinor/workspaceBudgetMinor (same window, same currency), not
+   * an independent pool.
+   */
   assertWithinBudget(input: {
     estimatedCostMinor: number;
     route: AiModelRoute;
     consumedCostMinor: number;
     workspaceBudgetMinor: number;
+    consumedCostMinorForUser: number;
+    userBudgetMinor: number;
   }): void {
     if (input.estimatedCostMinor > input.route.maxCostMinor) {
-      throw new Error("AI route cost limit exceeded");
+      throw new AiBudgetExceededError("route", "AI route cost limit exceeded");
     }
     if (input.consumedCostMinor + input.estimatedCostMinor > input.workspaceBudgetMinor) {
-      throw new Error("AI workspace budget exceeded");
+      throw new AiBudgetExceededError("workspace", "AI workspace budget exceeded");
+    }
+    if (input.consumedCostMinorForUser + input.estimatedCostMinor > input.userBudgetMinor) {
+      throw new AiBudgetExceededError("user", "AI per-user budget exceeded");
     }
   }
 }
@@ -413,10 +437,15 @@ function redactMessages(messages: readonly AiMessage[]): readonly AiMessage[] {
 }
 
 function redactText(value: string): string {
+  // Quantifiers are bounded (RFC 5321-ish max lengths) rather than
+  // unbounded `+`/`*` -- this content comes from AI conversation messages,
+  // untrusted input an attacker could shape to trigger catastrophic
+  // backtracking (CodeQL js/polynomial-redos) on an unbounded version of
+  // this pattern.
   return value
-    .replaceAll(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/giu, "[REDACTED_EMAIL]")
-    .replaceAll(/\b(?:\d[ -]*?){13,19}\b/gu, "[REDACTED_NUMBER]")
-    .replaceAll(/\b(?:sk|pk|api)[-_][A-Za-z0-9_-]{16,}\b/gu, "[REDACTED_SECRET]");
+    .replaceAll(/[A-Z0-9._%+-]{1,64}@[A-Z0-9.-]{1,255}\.[A-Z]{2,24}/giu, "[REDACTED_EMAIL]")
+    .replaceAll(/\b(?:\d[ -]{0,2}){13,19}\b/gu, "[REDACTED_NUMBER]")
+    .replaceAll(/\b(?:sk|pk|api)[-_][A-Za-z0-9_-]{16,64}\b/gu, "[REDACTED_SECRET]");
 }
 
 function estimateTokens(value: string): number {

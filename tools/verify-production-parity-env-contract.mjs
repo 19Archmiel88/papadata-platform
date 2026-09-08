@@ -123,6 +123,7 @@ if (failures.length > 0) process.exitCode = 1;
 
 async function readFrontendBffClient() {
   const candidates = [
+    "apps/web/src/runtime/shared/api/bffClient.ts",
     "apps/web/src/storybook-next/runtime/shared/api/bffClient.ts",
     "apps/web/src/shared/api/bffClient.ts",
   ];

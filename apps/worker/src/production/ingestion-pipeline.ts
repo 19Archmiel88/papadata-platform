@@ -68,6 +68,23 @@ export type DurableIngestionRepository = {
     readonly providerId: string;
     readonly stream: string;
   }): Promise<string | null>;
+  // Real page-level resume state for the fetch phase of ONE job attempt --
+  // distinct from readCheckpoint's stream-level date watermark. Read once
+  // at job start (null unless this is a retry of a job whose fetching
+  // loop got partway through), then written after each page a provider
+  // adapter reports more pages for (see ProviderFetchResult.nextPageCursor).
+  readResumePageCursor(input: {
+    readonly tenantId: string;
+    readonly workspaceId: string;
+    readonly syncJobId: string;
+  }): Promise<string | null>;
+  writeResumePageCursor(input: {
+    readonly tenantId: string;
+    readonly workspaceId: string;
+    readonly syncJobId: string;
+    readonly leaseOwner: string;
+    readonly resumePageCursor: string | null;
+  }): Promise<void>;
   persistFetchedPage(
     input: DurablePersistFetchedPageInput,
   ): Promise<DurablePersistFetchedPageResult>;
@@ -204,12 +221,6 @@ export class DurableIngestionPipeline {
 
       const adapter = await input.adapterFactory();
 
-      currentState = await this.transition(
-        context,
-        input.leaseOwner,
-        currentState,
-        "fetching",
-      );
       const checkpointStream = chooseCheckpointStream(input.payload.streams);
       const checkpoint = await this.repository.readCheckpoint({
         tenantId: input.payload.tenantId,
@@ -218,131 +229,185 @@ export class DurableIngestionPipeline {
         providerId: input.payload.providerId,
         stream: checkpointStream,
       });
-      const fetchStartedAt = this.clock().toISOString();
-      const fetchResult = await adapter.fetch({
-        streams: input.payload.streams,
-        from: input.payload.from,
-        to: input.payload.to,
-        checkpoint,
-      });
-      const fetchFinishedAt = this.clock().toISOString();
-      const fetchedRecords = fetchResult.records.map((record) => ({
-        ...record,
-        payload: {
-          canonical: normalizeProviderRecord({
-            providerId: input.payload.providerId,
-            stream: record.stream,
-            externalId: record.externalId,
-            observedAt: record.observedAt,
-            payload: record.payload,
-          }),
-          raw: record.payload,
-        },
-      }));
+      // Real page-level resume: null on a job's first attempt, or on any
+      // provider that doesn't paginate through this field (still most of
+      // them -- see ProviderFetchResult.nextPageCursor). Non-null means a
+      // prior attempt of THIS SAME job got partway through paging before
+      // failing; resuming here means the pages it already fetched, persisted,
+      // normalized, canonicalized and reconciled (all durable, see the loop
+      // below) do not need to be re-fetched.
+      let pageCursor = await this.repository.readResumePageCursor(context);
 
-      if (leaseLost) {
-        throw new DurableIngestionError("Integration job lease was lost", {
-          failureClass: "transient",
-          retryable: true,
-        });
-      }
+      let lastPersisted: DurablePersistFetchedPageResult | null = null;
+      let totalFetched = 0;
+      let totalPersistedSource = 0;
+      let totalNormalized = 0;
+      let totalCanonical = 0;
+      let totalDuplicate = 0;
+      let finalCheckpoint: string | null = checkpoint;
 
-      if (await this.cancelIfRequested(context, input.leaseOwner)) {
-        return emptyResult("cancelled", input.payload.jobId);
-      }
-
-      currentState = await this.transition(
-        context,
-        input.leaseOwner,
-        currentState,
-        "persisting_source",
-      );
-      const persisted = await this.repository.persistFetchedPage({
-        tenantId: input.payload.tenantId,
-        workspaceId: input.payload.workspaceId,
-        connectionId: input.payload.connectionId,
-        providerId: input.payload.providerId,
-        syncJobId: input.payload.jobId,
-        checkpointStream,
-        fetchedRecords,
-        nextCheckpoint: fetchResult.nextCheckpoint,
-        attempt: input.attempt,
-        correlationId: input.correlationId,
-        fetchStartedAt,
-        fetchFinishedAt,
-      });
-
-      if (await this.cancelIfRequested(context, input.leaseOwner)) {
-        return partialCancelledResult(input.payload.jobId, persisted);
-      }
-
-      const batchInput = {
-        tenantId: input.payload.tenantId,
-        workspaceId: input.payload.workspaceId,
-        connectionId: input.payload.connectionId,
-        providerId: input.payload.providerId,
-        syncJobId: input.payload.jobId,
-        sourceBatchId: persisted.sourceBatchId,
-      };
-
-      currentState = await this.transition(
-        context,
-        input.leaseOwner,
-        currentState,
-        "normalizing",
-      );
-      const normalized = await this.repository.normalizeBatch(batchInput);
-
-      if (await this.cancelIfRequested(context, input.leaseOwner)) {
-        return partialCancelledResult(input.payload.jobId, persisted, normalized.count);
-      }
-
-      currentState = await this.transition(
-        context,
-        input.leaseOwner,
-        currentState,
-        "writing_canonical",
-      );
-      const canonical = await this.repository.writeCanonicalRecords(batchInput);
-
-      if (await this.cancelIfRequested(context, input.leaseOwner)) {
-        return partialCancelledResult(
-          input.payload.jobId,
-          persisted,
-          normalized.count,
-          canonical.count,
+      for (;;) {
+        currentState = await this.transition(
+          context,
+          input.leaseOwner,
+          currentState,
+          "fetching",
         );
+        const fetchStartedAt = this.clock().toISOString();
+        const fetchResult = await adapter.fetch({
+          streams: input.payload.streams,
+          from: input.payload.from,
+          to: input.payload.to,
+          checkpoint,
+          pageCursor,
+        });
+        const fetchFinishedAt = this.clock().toISOString();
+        const fetchedRecords = fetchResult.records.map((record) => ({
+          ...record,
+          payload: {
+            canonical: normalizeProviderRecord({
+              providerId: input.payload.providerId,
+              stream: record.stream,
+              externalId: record.externalId,
+              observedAt: record.observedAt,
+              payload: record.payload,
+            }),
+            raw: record.payload,
+          },
+        }));
+        const isLastPage = fetchResult.nextPageCursor === null;
+        finalCheckpoint = fetchResult.nextCheckpoint;
+
+        if (leaseLost) {
+          throw new DurableIngestionError("Integration job lease was lost", {
+            failureClass: "transient",
+            retryable: true,
+          });
+        }
+
+        if (await this.cancelIfRequested(context, input.leaseOwner)) {
+          return emptyResult("cancelled", input.payload.jobId);
+        }
+
+        currentState = await this.transition(
+          context,
+          input.leaseOwner,
+          currentState,
+          "persisting_source",
+        );
+        const persisted = await this.repository.persistFetchedPage({
+          tenantId: input.payload.tenantId,
+          workspaceId: input.payload.workspaceId,
+          connectionId: input.payload.connectionId,
+          providerId: input.payload.providerId,
+          syncJobId: input.payload.jobId,
+          checkpointStream,
+          fetchedRecords,
+          // The stream watermark must only advance once every page of this
+          // fetch window has landed -- passing it early would let a job
+          // that fails on, say, page 3 of 5 still mark the whole window
+          // "synced," silently losing pages 4-5 on the next incremental
+          // sync. persistFetchedPage already no-ops the checkpoint write
+          // when this is null (see persistFetchedPageInTransaction).
+          nextCheckpoint: isLastPage ? fetchResult.nextCheckpoint : null,
+          attempt: input.attempt,
+          correlationId: input.correlationId,
+          fetchStartedAt,
+          fetchFinishedAt,
+        });
+
+        if (await this.cancelIfRequested(context, input.leaseOwner)) {
+          return partialCancelledResult(input.payload.jobId, persisted);
+        }
+
+        const batchInput = {
+          tenantId: input.payload.tenantId,
+          workspaceId: input.payload.workspaceId,
+          connectionId: input.payload.connectionId,
+          providerId: input.payload.providerId,
+          syncJobId: input.payload.jobId,
+          sourceBatchId: persisted.sourceBatchId,
+        };
+
+        currentState = await this.transition(
+          context,
+          input.leaseOwner,
+          currentState,
+          "normalizing",
+        );
+        const normalized = await this.repository.normalizeBatch(batchInput);
+
+        if (await this.cancelIfRequested(context, input.leaseOwner)) {
+          return partialCancelledResult(input.payload.jobId, persisted, normalized.count);
+        }
+
+        currentState = await this.transition(
+          context,
+          input.leaseOwner,
+          currentState,
+          "writing_canonical",
+        );
+        const canonical = await this.repository.writeCanonicalRecords(batchInput);
+
+        if (await this.cancelIfRequested(context, input.leaseOwner)) {
+          return partialCancelledResult(
+            input.payload.jobId,
+            persisted,
+            normalized.count,
+            canonical.count,
+          );
+        }
+
+        currentState = await this.transition(
+          context,
+          input.leaseOwner,
+          currentState,
+          "reconciling",
+        );
+        const reconciliation = await this.repository.writeReconciliation({
+          ...batchInput,
+          fetchedCount: persisted.fetchedCount,
+          persistedSourceCount: persisted.persistedSourceCount,
+          normalizedCount: normalized.count,
+          canonicalCount: canonical.count,
+          duplicateCount: persisted.duplicateCount,
+          rejectedCount: 0,
+          failedCount: 0,
+        });
+
+        assertSuccessfulReconciliation({
+          persisted,
+          normalizedCount: normalized.count,
+          canonicalCount: canonical.count,
+          reconciliation,
+          providerPartial: fetchResult.partial,
+        });
+
+        lastPersisted = persisted;
+        totalFetched += persisted.fetchedCount;
+        totalPersistedSource += persisted.persistedSourceCount;
+        totalNormalized += normalized.count;
+        totalCanonical += canonical.count;
+        totalDuplicate += persisted.duplicateCount;
+
+        if (isLastPage) {
+          break;
+        }
+
+        pageCursor = fetchResult.nextPageCursor;
+        await this.repository.writeResumePageCursor({
+          ...context,
+          leaseOwner: input.leaseOwner,
+          resumePageCursor: pageCursor,
+        });
+        // Loop back to the top, which transitions "reconciling" -> "fetching"
+        // for the next page.
       }
-
-      currentState = await this.transition(
-        context,
-        input.leaseOwner,
-        currentState,
-        "reconciling",
-      );
-      const reconciliation = await this.repository.writeReconciliation({
-        ...batchInput,
-        fetchedCount: persisted.fetchedCount,
-        persistedSourceCount: persisted.persistedSourceCount,
-        normalizedCount: normalized.count,
-        canonicalCount: canonical.count,
-        duplicateCount: persisted.duplicateCount,
-        rejectedCount: 0,
-        failedCount: 0,
-      });
-
-      assertSuccessfulReconciliation({
-        persisted,
-        normalizedCount: normalized.count,
-        canonicalCount: canonical.count,
-        reconciliation,
-        providerPartial: fetchResult.partial,
-      });
 
       const finalized = await this.repository.finalizeSucceeded({
         ...context,
         leaseOwner: input.leaseOwner,
-        nextCheckpoint: fetchResult.nextCheckpoint,
+        nextCheckpoint: finalCheckpoint,
       });
 
       if (!finalized) {
@@ -355,13 +420,13 @@ export class DurableIngestionPipeline {
       return {
         status: "succeeded",
         jobId: input.payload.jobId,
-        sourceBatchId: persisted.sourceBatchId,
-        fetchedCount: persisted.fetchedCount,
-        persistedSourceCount: persisted.persistedSourceCount,
-        normalizedCount: normalized.count,
-        canonicalCount: canonical.count,
-        duplicateCount: persisted.duplicateCount,
-        checkpoint: fetchResult.nextCheckpoint,
+        sourceBatchId: lastPersisted?.sourceBatchId ?? null,
+        fetchedCount: totalFetched,
+        persistedSourceCount: totalPersistedSource,
+        normalizedCount: totalNormalized,
+        canonicalCount: totalCanonical,
+        duplicateCount: totalDuplicate,
+        checkpoint: finalCheckpoint,
       };
     } catch (error) {
       const failure = classifyFailure(error, input.attempt, input.maxAttempts);
@@ -437,7 +502,12 @@ const allowedTransitions = new Map<
   ["persisting_source", new Set(["normalizing", "cancelled", "retryable_failed", "terminal_failed", "dead_lettered"])],
   ["normalizing", new Set(["writing_canonical", "cancelled", "retryable_failed", "terminal_failed", "dead_lettered"])],
   ["writing_canonical", new Set(["reconciling", "cancelled", "retryable_failed", "terminal_failed", "dead_lettered"])],
-  ["reconciling", new Set(["succeeded", "cancelled", "retryable_failed", "terminal_failed", "dead_lettered"])],
+  // "reconciling" -> "fetching" is the multi-page loopback: a provider
+  // fetch() result with a non-null nextPageCursor means another page is
+  // still owed, so once the just-fetched page is fully persisted,
+  // normalized, written and reconciled, the pipeline goes back to fetching
+  // for the next page rather than finalizing. See DurableIngestionPipeline.run.
+  ["reconciling", new Set(["fetching", "succeeded", "cancelled", "retryable_failed", "terminal_failed", "dead_lettered"])],
   ["retryable_failed", new Set(["leased", "dead_lettered"])],
   ["cancel_requested", new Set(["cancelled"])],
   ["succeeded", new Set()],

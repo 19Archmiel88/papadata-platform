@@ -38,89 +38,122 @@ export class BaseLinkerAdapter implements IntegrationProviderAdapter {
     await this.call("getInventories", {});
   }
 
+  /**
+   * Real page-level resumability (see WooCommerceAdapter.fetch's doc
+   * comment for the full rationale). BaseLinker's products/inventory
+   * streams have a genuinely nested pagination shape -- multiple
+   * inventories (warehouses), each with its own paginated product list --
+   * so the resume cursor carries both an inventory index and a page number
+   * within that inventory, advancing to the next inventory once the
+   * current one is exhausted. Orders use BaseLinker's own watermark-style
+   * pagination (date_confirmed_from advances to the latest timestamp seen
+   * in each page); the resume cursor just carries that timestamp forward.
+   */
   async fetch(request: ProviderFetchRequest): Promise<ProviderFetchResult> {
-    const records: ProviderRecord[] = [];
     const observedAt = new Date().toISOString();
-    const from = request.from ?? checkpointDate(request.checkpoint);
+    const cursor = parseBaseLinkerPageCursor(request.pageCursor);
+    const streamIndex = cursor?.streamIndex ?? 0;
+    const stream = request.streams[streamIndex];
 
-    for (const stream of request.streams) {
-      if (stream === "orders") {
-        const orders = await this.fetchOrders(from);
-        records.push(...orders.map((order) => ({
-          stream,
-          externalId: readStringField(order, "order_id") ?? randomUUID(),
-          observedAt,
-          payload: order,
-        })));
-        continue;
-      }
-      if (stream === "products" || stream === "inventory") {
-        const inventories = readArrayField(await this.call("getInventories", {}), "inventories");
-        for (const inventory of inventories) {
-          const inventoryId = readStringField(inventory, "inventory_id");
-          if (!inventoryId) continue;
-          const products = await this.fetchInventoryProducts(inventoryId);
-          for (const product of products) {
-            records.push({
-              stream,
-              externalId: `${inventoryId}:${readStringField(product, "id", "product_id", "sku") ?? randomUUID()}`,
-              observedAt,
-              payload: { inventoryId, product },
-            });
-          }
-        }
-      }
+    if (stream === undefined) {
+      return {
+        records: [],
+        nextCheckpoint: JSON.stringify({ dateConfirmedFrom: Math.floor(Date.now() / 1000) }),
+        nextPageCursor: null,
+        partial: false,
+        limitations: [],
+      };
     }
 
-    return {
-      records,
-      nextCheckpoint: JSON.stringify({ dateConfirmedFrom: Math.floor(Date.now() / 1000) }),
-      partial: false,
-      limitations: [],
-    };
-  }
+    const records: ProviderRecord[] = [];
+    let nextPageCursor: string | null = null;
 
-  private async fetchOrders(from: string | null): Promise<readonly unknown[]> {
-    const rows: unknown[] = [];
-    let dateFrom = toUnixSeconds(from);
-    let guard = 0;
-    while (guard < 10_000) {
+    if (stream === "orders") {
+      const dateFrom = cursor?.ordersDateFrom
+        ?? toUnixSeconds(request.from ?? checkpointDate(request.checkpoint));
       const payload = await this.call("getOrders", {
         date_confirmed_from: dateFrom,
         get_unconfirmed_orders: true,
       });
       const page = readArrayField(payload, "orders");
-      rows.push(...page);
-      if (page.length < 100) break;
-      const timestamps = page
-        .map((order) => Number(readStringField(order, "date_confirmed", "date_add") ?? "0"))
-        .filter((value) => Number.isFinite(value) && value > dateFrom);
-      if (timestamps.length === 0) break;
-      dateFrom = Math.max(...timestamps) + 1;
-      guard += 1;
+      records.push(...page.map((order) => ({
+        stream,
+        externalId: readStringField(order, "order_id") ?? randomUUID(),
+        observedAt,
+        payload: order,
+      })));
+
+      let nextDateFrom = dateFrom;
+      if (page.length >= 100) {
+        const timestamps = page
+          .map((order) => Number(readStringField(order, "date_confirmed", "date_add") ?? "0"))
+          .filter((value) => Number.isFinite(value) && value > dateFrom);
+        if (timestamps.length > 0) nextDateFrom = Math.max(...timestamps) + 1;
+      }
+      nextPageCursor = nextDateFrom > dateFrom
+        ? serializeBaseLinkerPageCursor({ streamIndex, ordersDateFrom: nextDateFrom })
+        : this.nextStreamCursor(streamIndex, request.streams.length);
+    } else if (stream === "products" || stream === "inventory") {
+      const inventories = readArrayField(await this.call("getInventories", {}), "inventories");
+      const inventoryIndex = cursor?.inventoryIndex ?? 0;
+      const productPage = cursor?.productPage ?? 1;
+      const inventory = inventories[inventoryIndex];
+      const inventoryId = inventory ? readStringField(inventory, "inventory_id") : null;
+
+      if (!inventory || !inventoryId) {
+        nextPageCursor = this.nextStreamCursor(streamIndex, request.streams.length);
+      } else {
+        const productPageResult = await this.fetchInventoryProductsPage(inventoryId, productPage);
+        for (const product of productPageResult.rows) {
+          records.push({
+            stream,
+            externalId: `${inventoryId}:${readStringField(product, "id", "product_id", "sku") ?? randomUUID()}`,
+            observedAt,
+            payload: { inventoryId, product },
+          });
+        }
+
+        nextPageCursor = productPageResult.hasMore
+          ? serializeBaseLinkerPageCursor({ streamIndex, inventoryIndex, productPage: productPage + 1 })
+          : inventoryIndex + 1 < inventories.length
+            ? serializeBaseLinkerPageCursor({ streamIndex, inventoryIndex: inventoryIndex + 1, productPage: 1 })
+            : this.nextStreamCursor(streamIndex, request.streams.length);
+      }
+    } else {
+      nextPageCursor = this.nextStreamCursor(streamIndex, request.streams.length);
     }
-    return rows;
+
+    return {
+      records,
+      nextCheckpoint: JSON.stringify({ dateConfirmedFrom: Math.floor(Date.now() / 1000) }),
+      nextPageCursor,
+      partial: false,
+      limitations: [],
+    };
   }
 
-  private async fetchInventoryProducts(inventoryId: string): Promise<readonly unknown[]> {
-    const rows: unknown[] = [];
-    let page = 1;
-    while (page <= 10_000) {
-      const payload = await this.call("getInventoryProductsData", {
-        inventory_id: Number(inventoryId),
-        page,
-      });
-      const products = isRecord(payload.products)
-        ? Object.entries(payload.products).map(([id, product]) => ({
-            ...(isRecord(product) ? product : { value: product }),
-            id,
-          }))
-        : readArrayField(payload, "products");
-      rows.push(...products);
-      if (products.length < 1000) break;
-      page += 1;
-    }
-    return rows;
+  private nextStreamCursor(streamIndex: number, streamCount: number): string | null {
+    const nextStreamIndex = streamIndex + 1;
+    return nextStreamIndex < streamCount
+      ? serializeBaseLinkerPageCursor({ streamIndex: nextStreamIndex })
+      : null;
+  }
+
+  private async fetchInventoryProductsPage(
+    inventoryId: string,
+    page: number,
+  ): Promise<{ readonly rows: readonly unknown[]; readonly hasMore: boolean }> {
+    const payload = await this.call("getInventoryProductsData", {
+      inventory_id: Number(inventoryId),
+      page,
+    });
+    const rows = isRecord(payload.products)
+      ? Object.entries(payload.products).map(([id, product]) => ({
+          ...(isRecord(product) ? product : { value: product }),
+          id,
+        }))
+      : readArrayField(payload, "products");
+    return { rows, hasMore: rows.length >= 1000 };
   }
 
   private async call(method: string, parameters: object): Promise<Record<string, unknown>> {
@@ -149,6 +182,40 @@ export class BaseLinkerAdapter implements IntegrationProviderAdapter {
     }
     return response.data;
   }
+}
+
+type BaseLinkerPageCursor = {
+  readonly streamIndex: number;
+  readonly ordersDateFrom?: number;
+  readonly inventoryIndex?: number;
+  readonly productPage?: number;
+};
+
+function parseBaseLinkerPageCursor(cursor: string | null): BaseLinkerPageCursor | null {
+  if (!cursor) return null;
+  try {
+    const value = JSON.parse(cursor) as unknown;
+    if (
+      isRecord(value)
+      && typeof value.streamIndex === "number"
+      && Number.isInteger(value.streamIndex)
+      && value.streamIndex >= 0
+    ) {
+      return {
+        streamIndex: value.streamIndex,
+        ordersDateFrom: typeof value.ordersDateFrom === "number" ? value.ordersDateFrom : undefined,
+        inventoryIndex: typeof value.inventoryIndex === "number" ? value.inventoryIndex : undefined,
+        productPage: typeof value.productPage === "number" ? value.productPage : undefined,
+      };
+    }
+  } catch {
+    // fall through to null
+  }
+  return null;
+}
+
+function serializeBaseLinkerPageCursor(cursor: BaseLinkerPageCursor): string {
+  return JSON.stringify(cursor);
 }
 
 function toUnixSeconds(value: string | null): number {

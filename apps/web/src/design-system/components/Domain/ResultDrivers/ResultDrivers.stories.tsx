@@ -17,7 +17,7 @@ import type {
 const workspaceContext = { locale: 'pl', tenantId: 'tenant-papadata', workspaceId: 'workspace_drivers' } as const;
 
 const meta = {
-  title: '15 Wykresy i dane/05 Katalog komponentów/Komponenty domenowe/ResultDrivers',
+  title: 'DESIGN SYSTEM/Komponenty/Domenowe/ResultDrivers',
   component: ResultDrivers,
   parameters: { layout: 'padded', a11y: { test: 'error' } },
 } satisfies Meta<typeof ResultDrivers>;

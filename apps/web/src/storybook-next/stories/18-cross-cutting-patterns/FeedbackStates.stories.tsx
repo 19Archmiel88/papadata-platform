@@ -53,7 +53,7 @@ const feedbackRoutes = [
     alert: 'nie',
     component: 'EmptyState',
     description:
-      'Operacyjny widok nie ma danych poza wykresem; analityczne stany danych pozostają w 15.08.',
+      'Operacyjny widok nie ma danych poza wykresem; analityczne stany danych pozostają w ChartDataState.',
     id: '03',
     label: 'Brak danych operacyjnych',
   },
@@ -327,7 +327,7 @@ function FeedbackStateMatrix() {
 }
 
 const meta = {
-  title: '18 Wzorce interfejsu/Routing feedbacku',
+  title: 'DESIGN SYSTEM/Wzorce interfejsu/Routing feedbacku',
   parameters: {
     layout: 'fullscreen',
     a11y: {
@@ -349,21 +349,21 @@ export const FeedbackStatesStory: Story = {
         <StoryPresentationMeta
           ariaLabel="Parametry routingu feedbacku"
           items={[
-            { label: 'Kontrakt', value: '18.02' },
+            { label: 'Właściciel', value: 'EmptyState / ErrorState / InlineNotice' },
             { label: 'Komponenty', value: 'EmptyState / ErrorState' },
-            { label: 'Status', value: 'W przeglądzie' },
+            { label: 'Status', value: 'Kanoniczny wzorzec' },
           ]}
         />
       )}
-      sectionCode="18"
+      sectionCode="DS"
       sectionLabel="Wzorce interfejsu"
-      storyId="18.02"
-      summary="Wzorzec wybiera właściwy element feedbacku z 00 / Powierzchnie i komunikaty. Analityczne stany danych pozostają przy 15.08 / ChartDataState."
+      storyId="feedback-routing"
+      summary="Wzorzec wybiera właściwy element feedbacku. Analityczne stany danych pozostają odpowiedzialnością ChartDataState."
       title="Routing feedbacku"
     >
       <StoryPresentationSection
         index="01"
-        summary="Macierz decyduje, kiedy użyć EmptyState, ErrorState albo InlineNotice. Kanoniczny wygląd pozostaje w 00, a stany wykresów w 15.08."
+        summary="Macierz decyduje, kiedy użyć EmptyState, ErrorState albo InlineNotice; stany wykresów pozostają w ChartDataState."
         title="Macierz routingu feedbacku"
       >
         <FeedbackStateMatrix />

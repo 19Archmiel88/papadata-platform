@@ -6,5 +6,10 @@ export type {
   OverlayRootProps,
 } from './OverlayRoot';
 export type {
+  AnchoredPlacement,
   OverlayCloseReason,
+} from './overlayUtils';
+export {
+  useAnchoredPosition,
+  useOverlayPortal,
 } from './overlayUtils';

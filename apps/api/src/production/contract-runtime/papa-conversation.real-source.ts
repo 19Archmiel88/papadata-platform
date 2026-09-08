@@ -1,8 +1,51 @@
-import type {
-  AiMessage,
-  AiProviderAdapter,
+import {
+  AiBudgetExceededError,
+  type AiBudgetGuard,
+  type AiMessage,
+  type AiProviderAdapter,
+  type AiProviderRequest,
 } from "@papadata/ai-runtime";
+import { entitlementsForMigratedPlan, type AiModelRoute } from "@papadata/contracts";
 import type { AssistantConversationRepository } from "@papadata/database";
+
+// Placeholder monthly budgets, expressed in whatever unit
+// AiProviderAdapter.estimateCost returns (each adapter defines its own cost
+// model; LocalDeterministicProvider always returns 0). Real entitlement-
+// driven limits (see billing.entitlements, which today only carries a
+// boolean aiEnabled -- no quota) are still open work; these env-overridable
+// defaults exist so a real budget check runs at all rather than none.
+const AI_WORKSPACE_BUDGET_MINOR_PER_MONTH = readPositiveNumberEnv(
+  "AI_WORKSPACE_BUDGET_MINOR_PER_MONTH",
+  20_000,
+);
+// Deliberately a strict fraction of the workspace budget, not an
+// independent pool -- see AiBudgetGuard's doc comment: one user must not be
+// able to spend the whole workspace's monthly budget alone.
+const AI_USER_BUDGET_MINOR_PER_MONTH = readPositiveNumberEnv(
+  "AI_USER_BUDGET_MINOR_PER_MONTH",
+  4_000,
+);
+const AI_PAPA_ANSWER_MAX_COST_MINOR_PER_CALL = readPositiveNumberEnv(
+  "AI_PAPA_ANSWER_MAX_COST_MINOR_PER_CALL",
+  50,
+);
+
+function readPositiveNumberEnv(name: string, fallback: number): number {
+  const parsed = Number(process.env[name]);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+/**
+ * Structural read surface this module needs from `BillingRepository`
+ * (@papadata/database) -- kept narrow and duck-typed, same convention as
+ * CommandCenterDataSource/MetricSnapshotWriter elsewhere in this codebase.
+ */
+export type PapaAnswerBillingReader = {
+  readonly readSubscription: (
+    tenantId: string,
+    workspaceId: string,
+  ) => Promise<{ readonly planId: string }>;
+};
 
 export type PapaConversationStatus =
   | "blocked"
@@ -220,6 +263,8 @@ export type PapaAnswerGenerationResult = {
 export async function generatePapaAnswer(options: {
   readonly repository: AssistantConversationRepository;
   readonly provider: AiProviderAdapter;
+  readonly budgetGuard: AiBudgetGuard;
+  readonly billing: PapaAnswerBillingReader;
   readonly tenantId: string;
   readonly workspaceId: string;
   readonly userId: string;
@@ -355,6 +400,7 @@ export async function generatePapaAnswer(options: {
 
   const usableGrounding = grounding && isGroundingUsable(grounding);
   let assistantMessage: Record<string, unknown>;
+  let providerCall: PapaProviderCallRecord | null = null;
 
   if (!usableGrounding) {
     const limitations = buildGroundingLimitations(grounding, options.provider.providerId);
@@ -389,43 +435,81 @@ export async function generatePapaAnswer(options: {
         .filter((message): message is AiMessage => message !== null),
       { role: "user", content: prompt },
     ];
-    const providerResponse = await options.provider.complete({
+    const providerRequest: AiProviderRequest = {
       maxOutputTokens: 512,
       messages: providerMessages,
       modelId: "local-deterministic",
       temperature: 0,
-    });
-    const providerOutput = parseDeterministicSummary(providerResponse.output);
-    const content = options.provider.providerId === "local-deterministic"
-      ? buildLocalGroundedAnswer(prompt, grounding, confidence, limitations)
-      : buildProviderGroundedAnswer(
-          providerOutput,
-          grounding,
-          confidence,
-          limitations,
-        );
-
-    assistantMessage = await options.repository.appendMessage({
-      auditReference,
-      confidence,
-      content,
-      limitations,
-      recommendations: grounding.recommendations.map((item) => item.label),
-      refusalCode: null,
-      role: "assistant",
-      tenantId: options.tenantId,
-      threadId: targetThreadId,
-      workspaceId: options.workspaceId,
-      idempotencyKey: options.idempotencyKey,
-    });
-
-    await persistGroundingEvidence({
-      grounding,
-      messageId: readRowString(assistantMessage, "assistant_message_id"),
+    };
+    const budgetError = await checkPapaAnswerBudget({
+      provider: options.provider,
+      providerRequest,
       repository: options.repository,
+      billing: options.billing,
       tenantId: options.tenantId,
+      userId: options.userId,
       workspaceId: options.workspaceId,
+      budgetGuard: options.budgetGuard,
     });
+
+    if (budgetError) {
+      assistantMessage = await options.repository.appendMessage({
+        auditReference,
+        confidence: 0,
+        content: buildBudgetExceededContent(budgetError),
+        limitations,
+        recommendations: [],
+        refusalCode: budgetError.scope === "plan" ? "AI_NOT_ENABLED" : "AI_BUDGET_EXCEEDED",
+        role: "assistant",
+        tenantId: options.tenantId,
+        threadId: targetThreadId,
+        workspaceId: options.workspaceId,
+        idempotencyKey: options.idempotencyKey,
+      });
+    } else {
+      const costEstimate = options.provider.estimateCost(providerRequest);
+      const providerResponse = await options.provider.complete(providerRequest);
+      const providerOutput = parseDeterministicSummary(providerResponse.output);
+      const content = options.provider.providerId === "local-deterministic"
+        ? buildLocalGroundedAnswer(prompt, grounding, confidence, limitations)
+        : buildProviderGroundedAnswer(
+            providerOutput,
+            grounding,
+            confidence,
+            limitations,
+          );
+
+      assistantMessage = await options.repository.appendMessage({
+        auditReference,
+        confidence,
+        content,
+        limitations,
+        recommendations: grounding.recommendations.map((item) => item.label),
+        refusalCode: null,
+        role: "assistant",
+        tenantId: options.tenantId,
+        threadId: targetThreadId,
+        workspaceId: options.workspaceId,
+        idempotencyKey: options.idempotencyKey,
+      });
+
+      await persistGroundingEvidence({
+        grounding,
+        messageId: readRowString(assistantMessage, "assistant_message_id"),
+        repository: options.repository,
+        tenantId: options.tenantId,
+        workspaceId: options.workspaceId,
+      });
+
+      providerCall = {
+        costMinor: costEstimate.costMinor,
+        currency: costEstimate.currency,
+        inputTokens: providerResponse.inputTokens,
+        modelId: providerRequest.modelId,
+        outputTokens: providerResponse.outputTokens,
+        providerId: options.provider.providerId,
+      };
+    }
   }
 
   await options.repository.touchThread(
@@ -451,6 +535,7 @@ export async function generatePapaAnswer(options: {
     answerMessage: assistantMessage,
     conversationId,
     idempotencyKey: options.idempotencyKey,
+    providerCall,
     repository: options.repository,
     tenantId: options.tenantId,
     userId: options.userId,
@@ -466,6 +551,108 @@ export async function generatePapaAnswer(options: {
       evidenceForMessage(evidenceRows, assistantMessage),
     ),
   };
+}
+
+type PapaProviderCallRecord = {
+  readonly providerId: string;
+  readonly modelId: string;
+  readonly inputTokens: number;
+  readonly outputTokens: number;
+  readonly costMinor: number;
+  readonly currency: string;
+};
+
+/**
+ * Runs the real three-tier AiBudgetGuard check (route ceiling, workspace
+ * rolling spend, calling user's own rolling spend within that workspace)
+ * before any provider call is made. Returns the thrown
+ * AiBudgetExceededError instead of letting it propagate, so the caller can
+ * turn it into a normal assistant refusal message rather than a 500 --
+ * being out of AI budget is an expected, user-facing outcome, not a server
+ * error.
+ */
+async function checkPapaAnswerBudget(options: {
+  readonly provider: AiProviderAdapter;
+  readonly providerRequest: AiProviderRequest;
+  readonly repository: AssistantConversationRepository;
+  readonly billing: PapaAnswerBillingReader;
+  readonly tenantId: string;
+  readonly userId: string;
+  readonly workspaceId: string;
+  readonly budgetGuard: AiBudgetGuard;
+}): Promise<AiBudgetExceededError | null> {
+  // Real, server-side enforcement of the plan's aiEnabled entitlement --
+  // until now this was checked only client-side (hiding the Papa nav item),
+  // which never actually stopped a direct API call from generating an
+  // answer on a plan that doesn't include AI at all.
+  const subscription = await options.billing.readSubscription(options.tenantId, options.workspaceId);
+  const entitlements = entitlementsForMigratedPlan(subscription.planId);
+  if (!entitlements.aiEnabled) {
+    return new AiBudgetExceededError("plan", "AI is not enabled on this workspace's plan");
+  }
+
+  const costEstimate = options.provider.estimateCost(options.providerRequest);
+  const sinceIso = startOfCurrentMonthIso();
+  const [consumedWorkspaceCostMinor, consumedUserCostMinor] = await Promise.all([
+    options.repository.sumAiCostMinorSince({
+      tenantId: options.tenantId,
+      workspaceId: options.workspaceId,
+      sinceIso,
+    }),
+    options.repository.sumAiCostMinorSince({
+      tenantId: options.tenantId,
+      workspaceId: options.workspaceId,
+      userId: options.userId,
+      sinceIso,
+    }),
+  ]);
+
+  try {
+    options.budgetGuard.assertWithinBudget({
+      consumedCostMinor: consumedWorkspaceCostMinor,
+      consumedCostMinorForUser: consumedUserCostMinor,
+      estimatedCostMinor: costEstimate.costMinor,
+      route: papaAnswerModelRoute(options.provider.providerId, costEstimate.currency),
+      userBudgetMinor: AI_USER_BUDGET_MINOR_PER_MONTH,
+      workspaceBudgetMinor: AI_WORKSPACE_BUDGET_MINOR_PER_MONTH,
+    });
+    return null;
+  } catch (error) {
+    if (error instanceof AiBudgetExceededError) return error;
+    throw error;
+  }
+}
+
+function papaAnswerModelRoute(providerId: string, currency: string): AiModelRoute {
+  return {
+    currency,
+    dataClasses: [],
+    enabled: true,
+    maxCostMinor: AI_PAPA_ANSWER_MAX_COST_MINOR_PER_CALL,
+    maxInputTokens: 8_000,
+    maxOutputTokens: 512,
+    modelId: "local-deterministic",
+    providerId,
+    useCase: "papa.answer.generate",
+  };
+}
+
+function startOfCurrentMonthIso(): string {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
+}
+
+function buildBudgetExceededContent(error: AiBudgetExceededError): string {
+  if (error.scope === "plan") {
+    return "Papa odmawia wygenerowania odpowiedzi: funkcja AI nie jest dostępna w obecnym planie tego workspace. Przejdź na wyższy plan, aby ją włączyć.";
+  }
+  if (error.scope === "user") {
+    return "Papa odmawia wygenerowania odpowiedzi: przekroczyłeś swój miesięczny limit kosztów AI dla tego workspace. Skontaktuj się z administratorem, aby zwiększyć limit, albo spróbuj ponownie w kolejnym okresie rozliczeniowym.";
+  }
+  if (error.scope === "workspace") {
+    return "Papa odmawia wygenerowania odpowiedzi: workspace przekroczył miesięczny budżet AI. Skontaktuj się z administratorem, aby zwiększyć budżet, albo spróbuj ponownie w kolejnym okresie rozliczeniowym.";
+  }
+  return "Papa odmawia wygenerowania odpowiedzi: to zapytanie przekracza dopuszczalny koszt pojedynczej odpowiedzi.";
 }
 
 export async function listPapaAnswerRecords(options: {
@@ -1295,6 +1482,7 @@ async function persistPapaAiAnswerContractAndGovernance(options: {
   readonly conversationId: string;
   readonly answerMessage: Record<string, unknown>;
   readonly idempotencyKey: string;
+  readonly providerCall: PapaProviderCallRecord | null;
 }): Promise<void> {
   const answerMessageId = readPapaContractOptionalRowString(
     options.answerMessage,
@@ -1331,9 +1519,17 @@ async function persistPapaAiAnswerContractAndGovernance(options: {
       circuitBreaker: {
         state: "unknown",
       },
-      cost: {
-        status: "not_reported",
-      },
+      cost: options.providerCall
+        ? {
+            costMinor: options.providerCall.costMinor,
+            currency: options.providerCall.currency,
+            inputTokens: options.providerCall.inputTokens,
+            outputTokens: options.providerCall.outputTokens,
+            status: "reported",
+          }
+        : {
+            status: "not_reported",
+          },
       redaction: {
         status: "not_reported",
       },
@@ -1347,11 +1543,17 @@ async function persistPapaAiAnswerContractAndGovernance(options: {
         status: "not_reported",
       },
     },
-    providerMetadata: {
-      provider: "unknown",
-      model: "unknown",
-      source: "runtime_persistence",
-    },
+    providerMetadata: options.providerCall
+      ? {
+          model: options.providerCall.modelId,
+          provider: options.providerCall.providerId,
+          source: "runtime_persistence",
+        }
+      : {
+          model: "unknown",
+          provider: "unknown",
+          source: "runtime_persistence",
+        },
     refusal,
     riskLevel,
     tenantId: options.tenantId,
@@ -1367,15 +1569,24 @@ async function persistPapaAiAnswerContractAndGovernance(options: {
       status: "not_reported",
     },
     circuitBreakerState: "unknown",
-    cost: {
-      status: "not_reported",
-    },
+    cost: options.providerCall
+      ? {
+          costMinor: options.providerCall.costMinor,
+          currency: options.providerCall.currency,
+          inputTokens: options.providerCall.inputTokens,
+          outputTokens: options.providerCall.outputTokens,
+          status: "reported",
+        }
+      : {
+          status: "not_reported",
+        },
+    createdByUserId: options.userId,
     errorCode: refusal.refused ? "AI_REFUSAL" : null,
     errorMessage: refusal.refused ? refusal.reason : null,
     idempotencyKey: `${options.idempotencyKey}:provider-governance`,
-    modelName: null,
+    modelName: options.providerCall?.modelId ?? null,
     operationId: "papa.answer.generate",
-    providerName: "unknown",
+    providerName: options.providerCall?.providerId ?? "unknown",
     redaction: {
       status: "not_reported",
     },

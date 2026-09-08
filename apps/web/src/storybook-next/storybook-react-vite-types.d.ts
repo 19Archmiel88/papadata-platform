@@ -15,6 +15,7 @@ declare module '@storybook/react-vite' {
   };
 
   export type Meta<TComponentOrArgs = unknown> = {
+    readonly id?: string;
     readonly title?: string;
     readonly component?: unknown;
     readonly args?: any;

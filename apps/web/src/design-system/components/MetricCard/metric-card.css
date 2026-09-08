@@ -51,7 +51,7 @@
 }
 
 .pd-metric-card[data-emphasis='recommendation'] {
-  border-inline-start: 3px solid var(--pd-action-primary);
+  border-inline-start: 3px solid var(--pd-brand-action);
 }
 
 .pd-metric-card[data-signal='positive'] {
@@ -71,19 +71,7 @@
 }
 
 .pd-metric-card[data-signal='neutral'] {
-  --pd-metric-signal: var(--pd-data-actual);
-}
-
-/*
- * The headline number itself carries the signal, not just the small trend
- * glyph next to it — a glance across a row of cards should surface which
- * ones need attention. Deliberately excludes 'info'/'neutral': tinting every
- * card regardless of whether anything moved would just be noise.
- */
-.pd-metric-card[data-signal='positive'] .pd-metric-card__value > span,
-.pd-metric-card[data-signal='negative'] .pd-metric-card__value > span,
-.pd-metric-card[data-signal='warning'] .pd-metric-card__value > span {
-  color: color-mix(in srgb, var(--pd-metric-signal) 62%, var(--pd-text));
+  --pd-metric-signal: var(--pd-text-secondary);
 }
 
 .pd-metric-card__header {
@@ -94,37 +82,69 @@
   min-inline-size: 0;
 }
 
+/* Status danych (W normie/Ryzyko/Anomalia/Obserwacja): bez kontenera --
+   tekst sam przyjmuje kolor statusu, kropka zostaje jako dodatkowy sygnał. */
+.pd-metric-card__header .pd-status-badge {
+  min-block-size: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--pd-status-tone);
+}
+
 .pd-metric-card__label-group {
-  display: inline-flex;
-  gap: var(--pd-space-2);
-  align-items: center;
+  /* Normal inline flow, not flex: a flex row sizes the label to a fixed
+     box and docks the help icon to that box's edge, so once a long label
+     wraps to two lines the icon strands itself at the end of the widest
+     line instead of the actual last word. Inline flow lets the icon ride
+     along in the text like a footnote marker, landing wherever the label
+     text actually wraps -- exactly like a single-line label already did. */
+  display: inline;
   min-inline-size: 0;
 }
 
 .pd-metric-card__label {
   min-inline-size: 0;
   color: var(--pd-text-secondary);
-  font-size: 0.72rem;
+  font-size: 13px;
   font-weight: var(--pd-font-weight-medium);
   line-height: 1.35;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .pd-metric-card__help {
   position: relative;
   display: inline-flex;
   flex: 0 0 auto;
+  margin-inline-start: 0.18rem;
+  vertical-align: 0.1em;
+}
+
+/* Default (data-align="center", or before JS has measured) uses the
+   centered values already set on .pd-metric-card. These two only apply
+   once MetricHelp's own measurement finds centering would overflow the
+   viewport on that side. */
+.pd-metric-card__help[data-align='start'] {
+  --pd-metric-help-popover-inline-start: 0;
+  --pd-metric-help-popover-inline-end: auto;
+  --pd-metric-help-popover-translate-x: 0;
+}
+
+.pd-metric-card__help[data-align='end'] {
+  --pd-metric-help-popover-inline-start: auto;
+  --pd-metric-help-popover-inline-end: 0;
+  --pd-metric-help-popover-translate-x: 0;
 }
 
 .pd-metric-card__help-trigger {
   display: inline-grid;
   place-items: center;
-  inline-size: 1.35rem;
-  block-size: 1.35rem;
+  inline-size: 1rem;
+  block-size: 1rem;
   padding: 0;
-  border: 1px solid var(--pd-separator);
-  border-radius: 50%;
+  border: 0;
+  border-radius: var(--pd-radius-subtle);
   background: transparent;
   color: var(--pd-text-muted);
   font: inherit;
@@ -132,8 +152,13 @@
 }
 
 .pd-metric-card__help-trigger:hover {
-  border-color: var(--pd-separator-strong);
   color: var(--pd-text-secondary);
+}
+
+.pd-metric-card__help-mark {
+  font-size: 12px;
+  font-weight: var(--pd-font-weight-semibold);
+  line-height: 1;
 }
 
 .pd-metric-card__help-trigger:focus-visible {
@@ -144,10 +169,7 @@
 .pd-metric-card__help-popover {
   position: absolute;
   z-index: var(--pd-z-tooltip, 900);
-  inset:
-    calc(100% + 0.45rem)
-    var(--pd-metric-help-popover-inline-end)
-    auto
+  inset: calc(100% + 0.45rem) var(--pd-metric-help-popover-inline-end) auto
     var(--pd-metric-help-popover-inline-start);
   inline-size: var(--pd-metric-help-popover-width);
   padding: 0.55rem 0.65rem;
@@ -156,13 +178,15 @@
   background: var(--pd-surface-overlay);
   color: var(--pd-text-secondary);
   box-shadow: var(--pd-shadow-floating);
-  font-size: 0.7rem;
+  font-size: 12px;
   line-height: 1.45;
   overflow-wrap: anywhere;
   opacity: 0;
   transform: translate(var(--pd-metric-help-popover-translate-x), -2px);
   pointer-events: none;
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
 }
 
 .pd-metric-card__help:hover .pd-metric-card__help-popover,
@@ -202,7 +226,7 @@
   min-inline-size: 0;
   overflow-wrap: anywhere;
   color: var(--pd-text);
-  font-family: var(--pd-font-mono);
+  font-family: var(--pd-font-sans);
   font-size: clamp(1.55rem, 2.4vw, 2.15rem);
   font-weight: var(--pd-font-weight-semibold);
   font-variant-numeric: tabular-nums;
@@ -216,8 +240,8 @@
 
 .pd-metric-card__value small {
   color: var(--pd-text-muted);
-  font-family: var(--pd-font-mono);
-  font-size: 0.68rem;
+  font-family: var(--pd-font-sans);
+  font-size: 12px;
   font-weight: var(--pd-font-weight-medium);
 }
 
@@ -227,7 +251,7 @@
   align-items: center;
   margin: 0;
   color: var(--pd-text-secondary);
-  font-size: 0.7rem;
+  font-size: 12px;
   line-height: 1.35;
 }
 
@@ -235,7 +259,7 @@
   display: inline-flex;
   align-items: center;
   color: var(--pd-metric-signal, var(--pd-text-muted));
-  font-family: var(--pd-font-mono);
+  font-family: var(--pd-font-sans);
   font-size: 0.78rem;
   font-weight: var(--pd-font-weight-semibold);
 }
@@ -248,14 +272,6 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.6;
-}
-
-.pd-metric-card__comparison[data-direction='up'] > span:first-child {
-  color: var(--pd-status-success);
-}
-
-.pd-metric-card__comparison[data-direction='down'] > span:first-child {
-  color: var(--pd-status-danger);
 }
 
 /* Glance-able companion to the Cel/Odchylenie numbers below — position vs.
@@ -337,8 +353,8 @@
 .pd-metric-card__benchmarks dd {
   margin: 0;
   color: var(--pd-text-secondary);
-  font-family: var(--pd-font-mono);
-  font-size: 0.68rem;
+  font-family: var(--pd-font-sans);
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -388,9 +404,15 @@
   background: var(--pd-text-muted);
 }
 
-.pd-metric-card__shadow-bars span:nth-child(1) { block-size: 8px; }
-.pd-metric-card__shadow-bars span:nth-child(2) { block-size: 13px; }
-.pd-metric-card__shadow-bars span:nth-child(3) { block-size: 18px; }
+.pd-metric-card__shadow-bars span:nth-child(1) {
+  block-size: 8px;
+}
+.pd-metric-card__shadow-bars span:nth-child(2) {
+  block-size: 13px;
+}
+.pd-metric-card__shadow-bars span:nth-child(3) {
+  block-size: 18px;
+}
 
 .pd-metric-card[data-layout='sparkline-aside'] {
   grid-template-columns: minmax(0, 1fr) minmax(7rem, 0.45fr);

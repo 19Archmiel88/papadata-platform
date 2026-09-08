@@ -15,7 +15,7 @@ import type {
 } from './AssistantComposer';
 
 const meta = {
-  title: '15 Wykresy i dane/05 Katalog komponentów/Komponenty domenowe/AssistantComposer',
+  title: 'DESIGN SYSTEM/Komponenty/Domenowe/AssistantComposer',
   component: AssistantComposer,
   parameters: {
     layout: 'padded',

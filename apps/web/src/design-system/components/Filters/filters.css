@@ -112,9 +112,7 @@
 
 .pd-search-field__control:focus-within {
   border-color: var(--pd-search-accent);
-  box-shadow:
-    0 0 0 var(--pd-focus-ring-size) var(--pd-search-ring),
-    0 0 0 1px var(--pd-search-accent);
+  box-shadow: 0 0 0 var(--pd-focus-ring-size) var(--pd-search-ring);
 }
 
 .pd-search-field[data-state='error'] .pd-search-field__control {
@@ -151,6 +149,11 @@
   background: transparent;
   color: var(--pd-text);
   font: inherit;
+}
+
+.pd-search-field__input:focus-visible {
+  outline: 0;
+  box-shadow: none;
 }
 
 .pd-search-field__input::placeholder {

@@ -33,17 +33,17 @@
 .pd-trend-chart__interaction-hint button {
   min-block-size: 1.75rem;
   padding-inline: 0.6rem;
-  border: 1px solid color-mix(in srgb, var(--pd-action-primary) 34%, var(--pd-separator));
+  border: 1px solid color-mix(in srgb, var(--pd-brand-action) 34%, var(--pd-separator));
   border-radius: var(--pd-radius-small);
-  background: color-mix(in srgb, var(--pd-action-primary) 10%, transparent);
-  color: var(--pd-action-primary);
+  background: color-mix(in srgb, var(--pd-brand-action) 10%, transparent);
+  color: var(--pd-brand-action);
   font: inherit;
   font-weight: var(--pd-font-weight-semibold);
   cursor: pointer;
 }
 
 .pd-trend-chart__interaction-hint button:hover {
-  background: color-mix(in srgb, var(--pd-action-primary) 15%, transparent);
+  background: color-mix(in srgb, var(--pd-brand-action) 15%, transparent);
 }
 
 .pd-trend-chart__interaction-hint button:focus-visible {

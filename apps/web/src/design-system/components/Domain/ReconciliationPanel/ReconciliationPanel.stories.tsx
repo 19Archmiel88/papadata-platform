@@ -17,7 +17,7 @@ import type {
 const workspaceContext = { locale: 'pl', tenantId: 'tenant-papadata', workspaceId: 'workspace_reconciliation' } as const;
 
 const meta = {
-  title: '15 Wykresy i dane/05 Katalog komponentów/Komponenty domenowe/ReconciliationPanel',
+  title: 'DESIGN SYSTEM/Komponenty/Domenowe/ReconciliationPanel',
   component: ReconciliationPanel,
   parameters: { layout: 'padded', a11y: { test: 'error' } },
 } satisfies Meta<typeof ReconciliationPanel>;

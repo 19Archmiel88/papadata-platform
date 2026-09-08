@@ -17,7 +17,7 @@ import type {
 const workspaceContext = { locale: 'pl', tenantId: 'tenant-papadata', workspaceId: 'workspace_decisions' } as const;
 
 const meta = {
-  title: '15 Wykresy i dane/05 Katalog komponentów/Komponenty domenowe/DecisionQueue',
+  title: 'DESIGN SYSTEM/Komponenty/Domenowe/DecisionQueue',
   component: DecisionQueue,
   parameters: { layout: 'padded', a11y: { test: 'error' } },
 } satisfies Meta<typeof DecisionQueue>;

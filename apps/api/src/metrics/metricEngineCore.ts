@@ -1,3 +1,4 @@
+import { createHash, randomUUID } from "node:crypto";
 import {
   type IsoDateTime,
 } from "@papadata/contracts";
@@ -88,6 +89,7 @@ export const dashboardMetricCodes = [
   "platform_attributed_revenue",
   "roas",
   "cost_per_order",
+  "cost_of_goods_sold",
 ] as const;
 
 export type DashboardMetricCode = (typeof dashboardMetricCodes)[number];
@@ -302,6 +304,7 @@ export const metricDefinitions = [
   definition("platform_attributed_revenue", "money", "Wartosc konwersji przypisana przez platformy reklamowe, oddzielna od przychodu sklepu.", "SUM(canonical_attributed_conversions.attributed_value_amount)", ["canonical_attributed_conversions"], "810.00"),
   definition("roas", "ratio", "ROAS platform reklamowych bez sumowania z przychodem sklepu.", "platform_attributed_revenue / ad_spend", ["canonical_ad_spend", "canonical_attributed_conversions"], "3.8571"),
   definition("cost_per_order", "money", "Koszt reklam przypadajacy na kanoniczne zamowienie sklepowe.", "ad_spend / orders", ["canonical_ad_spend", "canonical_orders"], "105.00"),
+  definition("cost_of_goods_sold", "money", "Koszt sprzedanych produktow po potwierdzonym koszcie jednostkowym.", "SUM(canonical_order_lines.quantity * product_unit_cost)", ["canonical_order_lines", "product_costs"], "140.00"),
 ] as const satisfies readonly MetricDefinitionRecord[];
 
 export function createMetricEngineInput(options: {
@@ -731,6 +734,75 @@ export function computeMetricEngineSeries(
   return { aggregate, daily, lastSuccessfulSyncAt, providers, readiness, reasonCodes };
 }
 
+const metricValueKindByCode: ReadonlyMap<DashboardMetricCode, MetricValueKind> = new Map(
+  metricDefinitions.map((definitionRecord) => [definitionRecord.metricCode, definitionRecord.unit] as const),
+);
+
+/**
+ * Builds real, persistable MetricSnapshotRecord rows for one (tenant,
+ * workspace, period) -- one row per requested metric code. Pure and
+ * DB-agnostic on purpose: callers own writing these into
+ * app.metric_snapshots (see MetricSnapshotRepository in @papadata/database).
+ */
+export function buildMetricSnapshotRecords(
+  input: MetricEngineInput,
+  metricCodes: readonly DashboardMetricCode[] = dashboardMetricCodes,
+): readonly MetricSnapshotRecord[] {
+  const facts = createMetricFacts(input);
+  const inputHash = computeSnapshotInputHash(input);
+
+  return metricCodes.map((metricCode) => {
+    const result = calculateMetric(metricCode, input, facts);
+    const providers = providersFor(metricCode, facts);
+    const valueKind = metricValueKindByCode.get(metricCode) ?? "count";
+
+    return {
+      currency: valueKind === "money" ? input.currency : null,
+      definitionVersion: METRIC_DEFINITION_VERSION,
+      evidence: providers,
+      generatedAt: input.generatedAt,
+      inputHash,
+      lastSuccessfulSyncAt: lastSuccessfulSyncAtFor(providers, input.syncCheckpoints),
+      limitations: result.limitations,
+      metricCode,
+      periodEnd: input.periodEnd,
+      periodStart: input.periodStart,
+      providers,
+      readiness: result.readiness,
+      reasonCodes: result.reasonCodes,
+      snapshotId: randomUUID(),
+      tenantId: input.tenantId,
+      value: result.value,
+      valueKind,
+      workspaceId: input.workspaceId,
+    };
+  });
+}
+
+/**
+ * Coarse fingerprint of the facts feeding a snapshot batch -- lets a future
+ * reprocess job notice "did the underlying canonical data change" without
+ * hashing every field. Deliberately cheap: fact counts + period + currency,
+ * not a content hash of every value.
+ */
+function computeSnapshotInputHash(input: MetricEngineInput): string {
+  const fingerprint = {
+    adSpend: input.canonicalAdSpend.length,
+    attributedConversions: input.canonicalAttributedConversions.length,
+    currency: input.currency,
+    customerReturns: input.canonicalCustomerReturns.length,
+    inventorySnapshots: input.canonicalInventorySnapshots.length,
+    orderLines: input.canonicalOrderLines.length,
+    orders: input.canonicalOrders.length,
+    periodEnd: input.periodEnd,
+    periodStart: input.periodStart,
+    productCosts: input.productCosts.length,
+    products: input.canonicalProducts.length,
+    refunds: input.canonicalRefunds.length,
+  };
+  return createHash("sha256").update(JSON.stringify(fingerprint)).digest("hex");
+}
+
 function seriesWeight(
   dayIndex: number,
   totalDays: number,
@@ -880,6 +952,8 @@ function valueForMetric(
       return divideCentsByInteger(grossOrderValue, orderCount);
     case "available_stock":
       return integerString(availableStock);
+    case "cost_of_goods_sold":
+      return centsToDecimal(productCost);
     case "cost_per_order":
       return divideCentsByInteger(adSpend, orderCount);
     case "cpc":
@@ -1089,7 +1163,11 @@ function missingCostFor(metricCode: DashboardMetricCode, facts: MetricFacts): bo
     });
   }
 
-  if (metricCode === "product_margin" || metricCode === "product_contribution") {
+  if (
+    metricCode === "product_margin"
+    || metricCode === "product_contribution"
+    || metricCode === "cost_of_goods_sold"
+  ) {
     return facts.orderLines.some((line) => {
       if (!line.canonicalProductId) {
         return true;
@@ -1600,6 +1678,7 @@ const commerceOrderMetricCodes: readonly DashboardMetricCode[] = [
 ] as const;
 
 const orderLineMetricCodes: readonly DashboardMetricCode[] = [
+  "cost_of_goods_sold",
   "days_of_inventory",
   "inventory_turnover",
   "product_contribution",
@@ -1646,6 +1725,7 @@ const conversionMetricCodes: readonly DashboardMetricCode[] = [
 ] as const;
 
 const productMappingMetricCodes: readonly DashboardMetricCode[] = [
+  "cost_of_goods_sold",
   "product_contribution",
   "product_margin",
   "product_revenue",
@@ -1653,6 +1733,7 @@ const productMappingMetricCodes: readonly DashboardMetricCode[] = [
 ] as const;
 
 const costMetricCodes: readonly DashboardMetricCode[] = [
+  "cost_of_goods_sold",
   "product_contribution",
   "product_margin",
   "stock_value",

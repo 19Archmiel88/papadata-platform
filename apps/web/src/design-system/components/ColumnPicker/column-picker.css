@@ -3,10 +3,9 @@
   gap: var(--pd-space-3);
   min-inline-size: 0;
   margin: 0;
-  padding: var(--pd-space-4);
-  border: var(--pd-border-width-subtle) solid var(--pd-separator-subtle);
-  border-radius: var(--pd-radius-surface);
-  background: var(--pd-surface-panel);
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--pd-text);
 }
 

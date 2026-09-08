@@ -14,9 +14,11 @@ import {
   ScopedCredentialProvider,
   SecretManagerCredentialSecretStore,
   type CredentialProvider,
+  type ProviderRateLimiterFactory,
 } from "@papadata/integrations";
 import { readWorkerConfig } from "./config.js";
 import { DurableIngestionPipeline } from "./ingestion-pipeline.js";
+import { RedisProviderRateLimiter } from "./provider-rate-limiter.js";
 
 export type IntegrationJobPayload = {
   readonly tenantId: string;
@@ -42,6 +44,7 @@ export async function createAdapterForIntegrationJob(input: {
   readonly payload: IntegrationJobPayload;
   readonly repository: IntegrationConnectionLookup;
   readonly credentialProvider: CredentialProvider;
+  readonly rateLimiterFactory?: ProviderRateLimiterFactory;
 }) {
   const connection = await input.repository.findConnection(
     input.payload.tenantId,
@@ -58,7 +61,7 @@ export async function createAdapterForIntegrationJob(input: {
     credentialReference: readConnectionCredentialReference(connection),
     provider: input.payload.providerId,
   });
-  return createProviderAdapter(credential);
+  return createProviderAdapter(credential, input.rateLimiterFactory);
 }
 
 @Injectable()
@@ -73,6 +76,19 @@ export class IntegrationWorkerService implements OnModuleDestroy {
       ? { tls: { ca: Buffer.from(this.config.redisCaBase64, "base64").toString("utf8") } }
       : {}),
   });
+  // Separate connection from the BullMQ one above -- rate-limiting issues
+  // plain command/eval calls on every provider HTTP attempt and must not
+  // compete with, or be blocked by, BullMQ's own command usage on its
+  // dedicated connection.
+  private readonly rateLimiterConnection = new IORedis(this.config.redisUrl, {
+    connectTimeout: 5_000,
+    enableReadyCheck: true,
+    maxRetriesPerRequest: null,
+    ...(this.config.redisCaBase64
+      ? { tls: { ca: Buffer.from(this.config.redisCaBase64, "base64").toString("utf8") } }
+      : {}),
+  });
+  private readonly rateLimiter = new RedisProviderRateLimiter(this.rateLimiterConnection);
   private readonly database = new ProductionDatabase({
     connectionString: this.config.databaseUrl,
     max: 8,
@@ -110,6 +126,7 @@ export class IntegrationWorkerService implements OnModuleDestroy {
           payload: job.data,
           repository: this.repository,
           credentialProvider: this.credentialProvider,
+          rateLimiterFactory: this.rateLimiter.factory,
         });
         await adapter.verifyConnection();
         return adapter;
@@ -124,6 +141,7 @@ export class IntegrationWorkerService implements OnModuleDestroy {
   async onModuleDestroy(): Promise<void> {
     await this.worker.close();
     await this.connection.quit();
+    await this.rateLimiterConnection.quit();
     await this.database.close();
   }
 }

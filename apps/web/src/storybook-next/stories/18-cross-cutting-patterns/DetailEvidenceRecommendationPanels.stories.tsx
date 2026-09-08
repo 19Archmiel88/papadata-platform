@@ -299,7 +299,7 @@ function DetailPanelPattern() {
             Panel jest warstwą roboczą, nie kartą listy
           </h3>
           <p className="pd-x18-region__text">
-            18.07 dopuszcza zamkniętą powierzchnię, bo Drawer jest realnym
+            Ten wzorzec dopuszcza zamkniętą powierzchnię, bo Drawer jest realnym
             panelem szczegółów, dowodów i rekomendacji.
           </p>
         </div>
@@ -396,7 +396,7 @@ function DetailPanelPattern() {
 }
 
 const meta = {
-  title: '18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji',
+  title: 'DESIGN SYSTEM/Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji',
   parameters: {
     layout: 'fullscreen',
     a11y: {
@@ -418,15 +418,15 @@ export const DetailEvidenceRecommendationPanelsStory: Story = {
         <StoryPresentationMeta
           ariaLabel="Parametry wzorca paneli"
           items={[
-            { label: 'Kontrakt', value: '18.07' },
+            { label: 'Właściciel', value: 'Drawer / Tabs' },
             { label: 'Warstwa', value: 'Drawer' },
-            { label: 'Status', value: 'W przeglądzie' },
+            { label: 'Status', value: 'Kanoniczny wzorzec' },
           ]}
         />
       )}
-      sectionCode="18"
+      sectionCode="DS"
       sectionLabel="Wzorce interfejsu"
-      storyId="18.07"
+      storyId="detail-evidence-panels"
       summary="Panele szczegółów, dowodów i rekomendacji korzystają z realnego Drawer oraz Tabs. To semantycznie uzasadniona powierzchnia robocza, nie wzór na listę kart."
       title="Panele szczegółów, dowodów i rekomendacji"
     >

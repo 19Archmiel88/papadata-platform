@@ -12,9 +12,6 @@
  */
 
 /* anchor-navigation-visible */
-.pd-msbi-nav.is-visible,
-.pd-ccbi-anchor-nav.is-visible,
-.pd-pbi-anchor-nav.is-visible,
 .pd-obi-anchor-nav.is-visible,
 .pd-pcbi-anchor-nav.is-visible,
 .pd-tbi-anchor-nav.is-visible,
@@ -27,11 +24,10 @@
 }
 
 /* product-page-content */
-.pd-ccbi__content,
-.pd-pbi__content,
 .pd-obi__content,
 .pd-tbi__content,
-.pd-cbi__content {
+.pd-cbi__content,
+.pd-pcbi__content {
   display: grid;
   gap: 32px;
   margin: 0 auto;
@@ -41,7 +37,6 @@
 }
 
 /* anchor-navigation-inner */
-.pd-pbi-anchor-nav > div,
 .pd-obi-anchor-nav > div,
 .pd-pcbi-anchor-nav > div,
 .pd-tbi-anchor-nav > div,
@@ -54,7 +49,6 @@
 }
 
 /* two-column-layout */
-.pd-pbi-two-col,
 .pd-obi-two-column,
 .pd-pcbi-two-column,
 .pd-tbi-split,
@@ -68,7 +62,8 @@
 
 /* three-column-compact */
 .pd-obi-return-summary,
-.pd-pcbi-alert-grid, .pd-pcbi-card-grid--thirds,
+.pd-pcbi-alert-grid,
+.pd-pcbi-card-grid--thirds,
 .pd-pcbi-simulator-metrics,
 .pd-cbi-rfm-cards {
   display: grid;
@@ -77,7 +72,6 @@
 }
 
 /* four-column-grid */
-.pd-pbi-lifecycle-grid,
 .pd-pcbi-creative-grid,
 .pd-tbi-quality-grid {
   display: grid;
@@ -86,7 +80,6 @@
 }
 
 /* two-column-compact-12 */
-.pd-pal-saved-chart-grid,
 .pd-obi-discount-segments,
 .pd-tbi-drawer-metrics {
   display: grid;
@@ -95,8 +88,6 @@
 }
 
 /* two-column-compact-14 */
-.pd-msbi-problem-grid,
-.pd-msbi-form-grid,
 .pd-set-field-row {
   display: grid;
   gap: 14px;
@@ -104,7 +95,6 @@
 }
 
 /* three-column-grid-with-margin */
-.pd-ccbi-kpi-grid,
 .pd-obi-insight-grid {
   display: grid;
   gap: 16px;
@@ -112,29 +102,81 @@
   margin-top: 16px;
 }
 
-/* six-column-compact */
-.pd-pbi-kpi-grid,
-.pd-obi-kpi-grid {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-}
-
-/* six-column-grid */
+/* three-column-kpi-grid: jeden wzorzec siatki KPI dla wszystkich modułów BI
+   -- 3 kolumny, nie 6, żeby etykiety KPI
+   miały dość miejsca i nie zawijały się na 3 linie kolidujące z plakietką
+   statusu. */
+.pd-obi-kpi-grid,
 .pd-pcbi-kpi-grid,
-.pd-tbi-kpi-grid {
+.pd-tbi-kpi-grid,
+.pd-cbi-kpi-grid {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Karta KPI wewnątrz siatki 3-kolumnowej: ten sam kompaktowy rozmiar we
+   przenoszonych modułach. Nie zmienia globalnego komponentu MetricCard poza tym
+   kontekstem (inne siatki KPI, jeśli powstaną, nie są objęte). */
+.pd-obi-kpi-grid > .pd-metric-card,
+.pd-pcbi-kpi-grid > .pd-metric-card,
+.pd-tbi-kpi-grid > .pd-metric-card,
+.pd-cbi-kpi-grid > .pd-metric-card {
+  background: transparent;
+  min-block-size: 0;
+  padding-block: 13px 11px;
+  padding-inline: 16px;
+  gap: 7px;
+}
+
+.pd-obi-kpi-grid > .pd-metric-card:hover,
+.pd-pcbi-kpi-grid > .pd-metric-card:hover,
+.pd-tbi-kpi-grid > .pd-metric-card:hover,
+.pd-cbi-kpi-grid > .pd-metric-card:hover {
+  background: transparent;
+}
+
+.pd-obi-kpi-grid > .pd-metric-card .pd-metric-card__header,
+.pd-pcbi-kpi-grid > .pd-metric-card .pd-metric-card__header,
+.pd-tbi-kpi-grid > .pd-metric-card .pd-metric-card__header,
+.pd-cbi-kpi-grid > .pd-metric-card .pd-metric-card__header {
+  min-block-size: 24px;
+}
+
+.pd-obi-kpi-grid > .pd-metric-card .pd-metric-card__value-region,
+.pd-pcbi-kpi-grid > .pd-metric-card .pd-metric-card__value-region,
+.pd-tbi-kpi-grid > .pd-metric-card .pd-metric-card__value-region,
+.pd-cbi-kpi-grid > .pd-metric-card .pd-metric-card__value-region {
+  gap: 4px;
+}
+
+.pd-obi-kpi-grid > .pd-metric-card .pd-metric-card__sparkline,
+.pd-pcbi-kpi-grid > .pd-metric-card .pd-metric-card__sparkline,
+.pd-tbi-kpi-grid > .pd-metric-card .pd-metric-card__sparkline,
+.pd-cbi-kpi-grid > .pd-metric-card .pd-metric-card__sparkline {
+  block-size: 2.15rem;
+  margin-block-start: 1px;
+}
+
+.pd-obi-kpi-grid > .pd-metric-card .pd-metric-card__actions,
+.pd-pcbi-kpi-grid > .pd-metric-card .pd-metric-card__actions,
+.pd-tbi-kpi-grid > .pd-metric-card .pd-metric-card__actions,
+.pd-cbi-kpi-grid > .pd-metric-card .pd-metric-card__actions {
+  padding-block-start: 6px;
+}
+
+.pd-obi-kpi-grid > .pd-metric-card .pd-metric-card__comparison,
+.pd-pcbi-kpi-grid > .pd-metric-card .pd-metric-card__comparison,
+.pd-tbi-kpi-grid > .pd-metric-card .pd-metric-card__comparison,
+.pd-cbi-kpi-grid > .pd-metric-card .pd-metric-card__comparison {
+  line-height: 1.25;
 }
 
 /* P1-3 shared flex / action / modal primitives */
 
 /* flex-center-space-between */
-.pd-msbi-price-box div,
-.pd-pal-recommendation-callout div,
-.pd-pal-slider > span,
-.pd-pcbi-kpi__head, .pd-pcbi-kpi__meta,
+.pd-pcbi-kpi__head,
+.pd-pcbi-kpi__meta,
 .pd-pcbi-creative-metric div,
 .pd-pcbi-creative-card__head,
 .pd-cbi-kpi-card > div,
@@ -146,9 +188,8 @@
 }
 
 /* flex-center-wrap-gap-8 */
-.pd-msbi-inspector__head > div:first-child > div,
-.pd-pal-brand__title-row,
-.pd-obi-priority__meta, .pd-obi-priority__actions,
+.pd-obi-priority__meta,
+.pd-obi-priority__actions,
 .pd-obi-explorer-actions,
 .pd-cbi-drawer__head > div > div {
   align-items: center;
@@ -158,10 +199,7 @@
 }
 
 /* flex-center-space-between-gap-10 */
-.pd-pbi-risk-card > div:first-child, .pd-pbi-risk-card footer, .pd-pbi-deadstock-alert > div, .pd-pbi-basket-card > div:first-child, .pd-pbi-lifecycle-card > div,
-.pd-pcbi-alert div,
-.pd-set-audit-item__head,
-.pd-cbi-ai-card > div:first-child, .pd-cbi-ai-card footer {
+.pd-pcbi-alert div, .pd-set-audit-item__head, .pd-cbi-ai-card > div:first-child, .pd-cbi-ai-card footer {
   align-items: center;
   display: flex;
   gap: 10px;
@@ -169,8 +207,6 @@
 }
 
 /* actions-wrap-end-gap-8 */
-.pd-ccbi-product-tools,
-.pd-pbi-table-tools,
 .pd-tbi-header-actions {
   flex-wrap: wrap;
   gap: 8px;
@@ -178,7 +214,6 @@
 }
 
 /* flex-center-space-between-gap-8 */
-.pd-pbi-kpi-card__top,
 .pd-obi-kpi-card > div,
 .pd-pcbi-platform-card div {
   align-items: center;
@@ -188,7 +223,6 @@
 }
 
 /* modal-head */
-.pd-pbi-modal__head,
 .pd-cbi-modal__head {
   align-items: flex-start;
   justify-content: space-between;
@@ -196,14 +230,12 @@
 }
 
 /* modal-heading */
-.pd-pbi-modal__head h2,
 .pd-cbi-modal h2 {
   font-size: var(--pd-type-size-heading-3);
   margin-top: 8px;
 }
 
 /* modal-actions */
-.pd-pbi-modal-actions,
 .pd-cbi-modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -211,7 +243,6 @@
 }
 
 /* drawer-backdrop-layout */
-.pd-pbi-drawer-backdrop,
 .pd-cbi-drawer-backdrop {
   align-items: stretch;
   display: flex;
@@ -230,36 +261,32 @@
 /* P1-4 shared typography / compact layout primitives */
 
 /* caption-semibold */
-.pd-pbi-kpi-card__trend span,
 .pd-obi-kpi-card p {
   font-size: var(--pd-type-size-caption);
   font-weight: 600;
 }
 
 /* flex-start-space-between */
-.pd-pbi-matrix-cell > span,
-.pd-pcbi-drawer__head, .pd-pcbi-ai-drawer__head {
+.pd-pcbi-drawer__head,
+.pd-pcbi-ai-drawer__head {
   align-items: flex-start;
   display: flex;
   justify-content: space-between;
 }
 
 /* micro-semibold */
-.pd-pbi-matrix-cell > span:last-child small,
 .pd-obi-lifecycle-stage small {
   font-size: var(--pd-type-size-micro);
   font-weight: 600;
 }
 
 /* mono-caption */
-.pd-pal-state-list__item strong,
 .pd-pcbi-budget-range b {
   font-family: var(--pd-font-mono);
   font-size: var(--pd-type-size-caption);
 }
 
 /* two-column-compact-8 */
-.pd-pal-chart-type-grid, .pd-pal-control-grid,
 .pd-set-status-grid {
   display: grid;
   gap: 8px;
@@ -282,8 +309,7 @@
 }
 
 /* vertical-stack-gap-8 */
-.pd-obi-refunded-product, .pd-obi-line-items article,
-.pd-pcbi-pacing > div:first-child, .pd-pcbi-table-footer, .pd-pcbi-drawer__footer {
+.pd-obi-refunded-product, .pd-obi-line-items article, .pd-pcbi-pacing > div:first-child, .pd-pcbi-table-footer, .pd-pcbi-drawer__footer {
   align-items: flex-start;
   flex-direction: column;
   gap: 8px;
@@ -297,8 +323,7 @@
 }
 
 /* two-column-gap-20 */
-.pd-hc-context-grid, .pd-hc-analytics,
-.pd-cbi-ai-grid {
+.pd-hc-context-grid, .pd-hc-analytics, .pd-cbi-ai-grid {
   display: grid;
   gap: 20px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -307,7 +332,6 @@
 /* P1-5 shared safe paired layouts */
 
 /* definition-list */
-.pd-pbi-definition-list,
 .pd-cbi-definition-list {
   display: grid;
   gap: 10px;
@@ -330,8 +354,7 @@
 }
 
 /* page-header-inner */
-.pd-tbi-header__inner,
-.pd-msbi-header__inner {
+.pd-tbi-header__inner {
   margin: 0 auto;
   max-width: 1280px;
   padding: 0 24px;
@@ -340,7 +363,6 @@
 /* P1-6 shared progress / wrapped controls */
 
 /* progress-fill-rounded */
-.pd-ccbi-share-cell b,
 .pd-cbi-progress__bar {
   border-radius: inherit;
   display: block;
@@ -348,24 +370,71 @@
 }
 
 /* progress-fill */
-.pd-ccbi-latency-list b i,
 .pd-pcbi-pacing__bar span {
   display: block;
   height: 100%;
 }
 
 /* wrapped-controls-gap-10 */
-.pd-pbi-hero-metrics,
-.pd-pal-palette-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
 
 /* wrapped-controls-gap-8 */
-.pd-pbi-segmented,
-.pd-pal-button-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+
+/* Embedded screens share the runtime shell layout during migration. */
+
+.pd-product-shell__content-region :is(
+  .pd-pcbi__content,
+  .pd-obi__content,
+  .pd-cbi__content,
+  .pd-tbi__content,
+  .pd-hc__content,
+  .pd-set__content) {
+  max-width: none;
+  padding: 0 0 var(--pd-space-12);
+}
+
+.pd-product-shell__content-region .pd-set {
+  height: auto;
+  min-height: auto;
+  overflow: visible;
+}
+
+.pd-product-shell__content-region .pd-tbi-header {
+  position: static;
+  top: auto;
+  z-index: auto;
+  border: 1px solid rgb(var(--pd-vl-border));
+  border-radius: var(--pd-radius-surface);
+  background: rgb(var(--pd-vl-surface));
+  box-shadow: var(--pd-shadow-raised);
+  color: rgb(var(--pd-vl-text));
+  margin-block-end: var(--pd-space-6);
+}
+
+.pd-product-shell__content-region .pd-tbi-header :is(h1, h2, h3, strong, p, span, small, em) {
+  color: inherit;
+}
+
+.pd-tbi,
+.pd-tbi__content,
+.pd-tbi-table-wrap {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.pd-tbi-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pd-tbi-table {
+  width: 100%;
+  min-width: min(920px, 100%);
+}
+
+/* Page identity remains visible when domain screens are embedded in the shell. */
+.pd-product-page-title {
+  margin: 0;
+  color: var(--pd-text);
+  font: 600 24px/32px var(--pd-font-sans);
+  letter-spacing: -.015em;
 }

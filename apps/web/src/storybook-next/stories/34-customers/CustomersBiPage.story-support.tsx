@@ -1,0 +1,273 @@
+import type {
+  Meta,
+  StoryObj,
+} from '@storybook/react-vite';
+import type {
+  ReactNode,
+} from 'react';
+import {
+  useState,
+} from 'react';
+import {
+  expect,
+  fireEvent,
+  userEvent,
+  waitFor,
+  within,
+} from 'storybook/test';
+
+import {
+  CustomerAcquisitionQuality,
+  CustomerAiRetentionModule,
+  CustomerCohortRetention,
+  CustomerExplorer,
+  CustomerProductAffinity,
+  CustomerResultSection,
+  CustomerRfmSegmentation,
+  CustomerValuePareto,
+  CustomersScreen,
+} from '../../../screens/customers/CustomersScreen';
+import {
+  customerAiInsights,
+  customerFreshInsight,
+  customerSections,
+  customerSectionsById,
+} from '../../../screens/customers/CustomersScreen.data';
+import {
+  StorybookProductShellFrame,
+} from '../shared/StorybookProductShellFrame';
+
+const meta = {
+  title: 'INTERNAL STORY SUPPORT/ANALIZA/Klienci',
+  component: CustomersScreen,
+  parameters: {
+    a11y: {
+      test: 'error',
+    },
+    layout: 'fullscreen',
+  },
+} satisfies Meta<typeof CustomersScreen>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+function StoryFrame({
+  children,
+}: {
+  readonly children: ReactNode;
+}) {
+  return (
+    <main className="pd-cbi">
+      <div className="pd-cbi__content">
+        {children}
+      </div>
+    </main>
+  );
+}
+
+type StoryCustomerAiInsight = typeof customerAiInsights[number] | typeof customerFreshInsight;
+
+function PapaSummaryHarness() {
+  const [insights, setInsights] = useState<StoryCustomerAiInsight[]>(() => [...customerAiInsights]);
+
+  return (
+    <StoryFrame>
+      <CustomerAiRetentionModule
+        insights={insights}
+        onGenerate={() => setInsights((prevInsights) => [customerFreshInsight, ...prevInsights])}
+      />
+    </StoryFrame>
+  );
+}
+
+export const Overview: Story = {
+  name: 'Całość',
+  render: () => (
+    <StorybookProductShellFrame activePath="/app/customers">
+      <CustomersScreen />
+    </StorybookProductShellFrame>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(canvasElement.querySelectorAll('.pd-section-frame')).toHaveLength(customerSections.length);
+    await expect(Array.from(canvasElement.querySelectorAll('.pd-section-frame')).map((section) => section.id)).toEqual(
+      customerSections.map((section) => section.id),
+    );
+
+    for (const section of customerSections) {
+      await expect(await canvas.findByRole('heading', { name: section.title })).toBeInTheDocument();
+      await expect(canvasElement.ownerDocument.querySelector(`a[href="#${section.id}"]`)).toHaveTextContent(section.navLabel);
+    }
+
+    const valueNavItem = canvasElement.ownerDocument.querySelector<HTMLAnchorElement>(`a[href="#${customerSectionsById.wartosc.id}"]`);
+    await expect(valueNavItem).toBeInTheDocument();
+    fireEvent.click(valueNavItem!);
+    await waitFor(() => expect(valueNavItem).toHaveAttribute('aria-current', 'page'));
+
+    // Dialog/Drawer/Menu all portal to #pd-overlay-root-host in
+    // document.body (see the identical pattern in
+    // Integrations.story-support.tsx), so anything rendered inside one of
+    // them must be queried via `body`, not `canvas`.
+    const body = within(canvasElement.ownerDocument.body);
+
+    const badges = await canvas.findAllByRole('button', { name: /Wyliczone/u });
+    await userEvent.click(badges[0]!);
+    await expect(await body.findByRole('dialog', { name: 'Provenance danych klientów' })).toBeInTheDocument();
+    await userEvent.click(await body.findByRole('button', { name: 'Zamknij provenance' }));
+
+    await userEvent.click(await canvas.findByRole('button', { name: 'Pokaż 318 klientów' }));
+    await expect(await canvas.findByText(/B18F92/u)).toBeInTheDocument();
+    await expect(await canvas.findByText(/C33190/u)).toBeInTheDocument();
+
+    // CustomerExplorer renders row actions through ExplorerTable's shared
+    // row-actions menu (DataTable's "<label> dla wiersza <id>" trigger),
+    // not a standalone "Szczegóły →" button.
+    await userEvent.click(await canvas.findAllByRole('button', { name: /Akcje dla wiersza/u }).then((buttons) => buttons[0]!));
+    await userEvent.click(await body.findByRole('menuitem', { name: 'Otwórz szczegóły' }));
+    await expect(await body.findByRole('dialog', { name: 'Customer Drawer' })).toBeInTheDocument();
+    await expect(await body.findByText('Privacy status: Hashed Identity (No PII Leaked)')).toBeInTheDocument();
+    await userEvent.click(await body.findByRole('button', { name: 'Zamknij Customer Drawer' }));
+
+    // Story musi kończyć interakcję w stanie startowym -- w przeciwnym razie
+    // ktoś oglądający "Widok pełny" ręcznie w Storybooku widzi stronę
+    // przewiniętą do sekcji "Wartość klienta" po automatycznym uruchomieniu
+    // play().
+    const topNavItem = canvasElement.ownerDocument.querySelector<HTMLAnchorElement>(`a[href="#${customerSectionsById.wynik.id}"]`);
+    await expect(topNavItem).toBeInTheDocument();
+    fireEvent.click(topNavItem!);
+    await waitFor(() => expect(topNavItem).toHaveAttribute('aria-current', 'page'));
+  },
+};
+
+export const Result: Story = {
+  name: 'Sekcje — Wynik klientów',
+  render: () => (
+    <StoryFrame>
+      <CustomerResultSection />
+    </StoryFrame>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(await canvas.findByRole('heading', { name: customerSectionsById.wynik.title })).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { name: '318 klientów wysokiej wartości (Champions/Loyal) przekroczyło cykl ponownego zakupu' })).toBeInTheDocument();
+    await expect(await canvas.findByText('3 842')).toBeInTheDocument();
+    await expect(await canvas.findByText('Wysoka Wartość w Ryzyku')).toBeInTheDocument();
+
+    await userEvent.click(await canvas.findByRole('button', { name: 'Przychód (zł)' }));
+    await expect(await canvas.findByRole('img', { name: 'Trend klientów: Przychód (zł)' })).toBeInTheDocument();
+  },
+};
+
+export const Retention: Story = {
+  name: 'Sekcje — Retencja klientów',
+  render: () => (
+    <StoryFrame>
+      <CustomerCohortRetention />
+    </StoryFrame>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(await canvas.findByRole('heading', { name: customerSectionsById.retencja.title })).toBeInTheDocument();
+    await userEvent.selectOptions(await canvas.findByLabelText('Wizualizuj kohortę:'), '2026-03');
+    await expect(await canvas.findByDisplayValue('Marzec 2026 (1 742 cust)')).toBeInTheDocument();
+    await expect(await canvas.findByText('M0 → M1 (spadek o 63.2 pp)')).toBeInTheDocument();
+  },
+};
+
+export const Segmentation: Story = {
+  name: 'Sekcje — Segmentacja klientów',
+  render: () => (
+    <StoryFrame>
+      <CustomerRfmSegmentation />
+    </StoryFrame>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(await canvas.findByRole('heading', { name: customerSectionsById.segmentacja.title })).toBeInTheDocument();
+    await expect((await canvas.findAllByText('Champions')).length).toBeGreaterThan(0);
+    await expect((await canvas.findAllByText('Hibernating')).length).toBeGreaterThan(0);
+  },
+};
+
+export const Value: Story = {
+  name: 'Sekcje — Wartość klienta',
+  render: () => (
+    <StoryFrame>
+      <CustomerValuePareto />
+    </StoryFrame>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(await canvas.findByRole('heading', { name: customerSectionsById.wartosc.title })).toBeInTheDocument();
+    await expect(await canvas.findByText(/812 zł/u)).toBeInTheDocument();
+  },
+};
+
+export const Acquisition: Story = {
+  name: 'Sekcje — Pozyskanie klientów',
+  render: () => (
+    <StoryFrame>
+      <CustomerAcquisitionQuality />
+    </StoryFrame>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(await canvas.findByRole('heading', { name: customerSectionsById.pozyskanie.title })).toBeInTheDocument();
+    await expect((await canvas.findAllByText('Google Ads')).length).toBeGreaterThan(0);
+    await expect(await canvas.findByText('98.0x')).toBeInTheDocument();
+  },
+};
+
+export const ProductPreferences: Story = {
+  name: 'Sekcje — Preferencje produktowe',
+  render: () => (
+    <StoryFrame>
+      <CustomerProductAffinity />
+    </StoryFrame>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(await canvas.findByRole('heading', { name: customerSectionsById.preferencje.title })).toBeInTheDocument();
+    await expect(await canvas.findByText('Serum Witamina C 30ml')).toBeInTheDocument();
+    await expect(await canvas.findByText('Refill Serum Witamina C 50ml')).toBeInTheDocument();
+  },
+};
+
+export const Explorer: Story = {
+  name: 'Sekcje — Eksplorator klientów',
+  render: () => (
+    <StoryFrame>
+      <CustomerExplorer />
+    </StoryFrame>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(await canvas.findByRole('heading', { name: customerSectionsById.eksplorator.title })).toBeInTheDocument();
+    await userEvent.type(await canvas.findByRole('searchbox', { name: 'Szukaj ID lub hashu' }), 'F22');
+    await expect(await canvas.findByText(/F22B88/u)).toBeInTheDocument();
+    await expect(canvas.queryByText(/A73F21/u)).not.toBeInTheDocument();
+  },
+};
+
+export const PapaSummary: Story = {
+  name: 'Sekcje — Podsumowanie Papa AI',
+  render: () => <PapaSummaryHarness />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(await canvas.findByRole('heading', { name: customerSectionsById.insight.title })).toBeInTheDocument();
+    await expect(await canvas.findByText('Spadek Retencji M1 Kohorty Majowej')).toBeInTheDocument();
+
+    await userEvent.click(await canvas.findByRole('button', { name: 'Wygeneruj Nowy Insight' }));
+    await expect(await canvas.findByText('Nowy Wnioski: Optymalizacja Interpurchase Cycle')).toBeInTheDocument();
+  },
+};

@@ -55,7 +55,9 @@ button.pd-icon-button:hover {
 
 .pd-icon-button:focus-visible,
 button.pd-icon-button:focus-visible {
-  box-shadow: 0 0 0 3px var(--pd-focus-ring);
+  box-shadow: none;
+  outline: var(--pd-focus-width, 2px) solid var(--pd-icon-button-focus-ring, var(--pd-focus-ring));
+  outline-offset: 2px;
 }
 
 .pd-icon-button:active,

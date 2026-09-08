@@ -129,7 +129,7 @@ export const Toast = forwardRef<
             size="small"
             tone="muted"
           >
-            Zamknij
+            <span aria-hidden="true">×</span>
           </TextAction>
         ) : null}
       </div>

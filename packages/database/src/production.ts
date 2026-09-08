@@ -1280,6 +1280,61 @@ export class DurableIntegrationIngestionRepository {
     );
   }
 
+  async readResumePageCursor(input: {
+    readonly tenantId: string;
+    readonly workspaceId: string;
+    readonly syncJobId: string;
+  }): Promise<string | null> {
+    return this.database.withTenantWorkspace(
+      input.tenantId,
+      input.workspaceId,
+      async (client) => {
+        const result = await client.query<{ resume_page_cursor: string | null }>(
+          `select resume_page_cursor
+           from app.sync_jobs
+           where tenant_id::text = $1
+             and workspace_id::text = $2
+             and sync_job_id = $3`,
+          [input.tenantId, input.workspaceId, input.syncJobId],
+        );
+
+        return result.rows[0]?.resume_page_cursor ?? null;
+      },
+    );
+  }
+
+  async writeResumePageCursor(input: {
+    readonly tenantId: string;
+    readonly workspaceId: string;
+    readonly syncJobId: string;
+    readonly leaseOwner: string;
+    readonly resumePageCursor: string | null;
+  }): Promise<void> {
+    await this.database.withTenantWorkspace(
+      input.tenantId,
+      input.workspaceId,
+      async (client) => {
+        await client.query(
+          `update app.sync_jobs
+           set resume_page_cursor = $4,
+               heartbeat_at = now(),
+               updated_at = now()
+           where tenant_id::text = $1
+             and workspace_id::text = $2
+             and sync_job_id = $3
+             and lease_owner = $5`,
+          [
+            input.tenantId,
+            input.workspaceId,
+            input.syncJobId,
+            input.resumePageCursor,
+            input.leaseOwner,
+          ],
+        );
+      },
+    );
+  }
+
   async persistFetchedPage(
     input: DurablePersistFetchedPageInput,
   ): Promise<DurablePersistFetchedPageResult> {
@@ -5054,6 +5109,7 @@ export class AssistantConversationRepository {
     workspaceId: string;
     threadId: string | null;
     answerMessageId: string | null;
+    createdByUserId: string | null;
     operationId: string;
     providerName: string;
     modelName: string | null;
@@ -5081,6 +5137,7 @@ export class AssistantConversationRepository {
              workspace_id,
              assistant_thread_id,
              assistant_message_id,
+             created_by_user_id,
              operation_id,
              provider_name,
              model_name,
@@ -5103,7 +5160,7 @@ export class AssistantConversationRepository {
              $2,
              $3::uuid,
              $4::uuid,
-             $5,
+             $5::uuid,
              $6,
              $7,
              $8,
@@ -5111,13 +5168,14 @@ export class AssistantConversationRepository {
              $10,
              $11,
              $12,
-             $13::jsonb,
+             $13,
              $14::jsonb,
              $15::jsonb,
              $16::jsonb,
-             $17,
+             $17::jsonb,
              $18,
              $19,
+             $20,
              now()
            )
            on conflict (tenant_id, workspace_id, idempotency_key)
@@ -5127,6 +5185,7 @@ export class AssistantConversationRepository {
              assistant_provider_governance_event_id::text as id,
              assistant_thread_id::text as "threadId",
              assistant_message_id::text as "answerMessageId",
+             created_by_user_id::text as "createdByUserId",
              operation_id as "operationId",
              provider_name as "providerName",
              model_name as "modelName",
@@ -5147,6 +5206,7 @@ export class AssistantConversationRepository {
             input.workspaceId,
             input.threadId,
             input.answerMessageId,
+            input.createdByUserId,
             input.operationId,
             input.providerName,
             input.modelName,
@@ -5171,6 +5231,38 @@ export class AssistantConversationRepository {
         }
 
         return row;
+      },
+    );
+  }
+
+  /**
+   * Sums real AI spend (cost->>'costMinor', in minor currency units) since
+   * `sinceIso`, scoped to a workspace or -- when `userId` is given -- to one
+   * user's calls within that workspace. Rows written before real cost
+   * tracking existed (cost = {"status":"not_reported"}) contribute 0, not an
+   * error -- COALESCE + a numeric cast on a jsonb field that may lack
+   * costMinor entirely returns null, which SUM already treats as 0.
+   */
+  async sumAiCostMinorSince(input: {
+    tenantId: string;
+    workspaceId: string;
+    userId?: string | null;
+    sinceIso: string;
+  }): Promise<number> {
+    return this.database.withTenantWorkspace(
+      input.tenantId,
+      input.workspaceId,
+      async (client) => {
+        const result = await client.query<{ readonly total: string | null }>(
+          `select coalesce(sum((cost->>'costMinor')::numeric), 0) as total
+             from app.assistant_provider_governance_events
+            where tenant_id = $1
+              and workspace_id = $2
+              and created_at >= $3::timestamptz
+              and ($4::uuid is null or created_by_user_id = $4::uuid)`,
+          [input.tenantId, input.workspaceId, input.sinceIso, input.userId ?? null],
+        );
+        return Number(result.rows[0]?.total ?? 0);
       },
     );
   }
@@ -5658,3 +5750,247 @@ type AssistantEvidenceSourceType =
   | "report"
   | "table"
   | "unknown";
+
+export type MetricDefinitionSeedRow = {
+  readonly businessDefinition: string;
+  readonly currencyPolicy: string;
+  readonly datePolicy: string;
+  readonly definitionVersion: string;
+  readonly excludedStatuses: readonly string[];
+  readonly formula: string;
+  readonly includedStatuses: readonly string[];
+  readonly metricCode: string;
+  readonly missingDataPolicy: string;
+  readonly readinessRule: string;
+  readonly refundPolicy: string;
+  readonly requiredCanonicalFacts: readonly string[];
+  readonly taxPolicy: string;
+  readonly testVectors: readonly unknown[];
+};
+
+export type MetricSnapshotInsertRow = {
+  readonly currency: string | null;
+  readonly definitionVersion: string;
+  readonly evidence: readonly string[];
+  readonly generatedAt: string;
+  readonly inputHash: string;
+  readonly lastSuccessfulSyncAt: string | null;
+  readonly limitations: readonly string[];
+  readonly metricCode: string;
+  readonly periodEnd: string;
+  readonly periodStart: string;
+  readonly readiness: string;
+  readonly reasonCodes: readonly string[];
+  readonly snapshotId: string;
+  readonly value: string | null;
+  readonly valueKind: string;
+};
+
+/**
+ * Real, durable writer for app.metric_snapshots -- until this repository
+ * existed, nothing in the codebase ever wrote to that table (only a dead
+ * report-export reader consumed it). `app.metric_snapshots` has a foreign
+ * key into `app.metric_definitions`, which nothing seeds either, so
+ * `ensureDefinitionsSeeded` must run (idempotently, safe to call every time)
+ * before `insertSnapshots` for a metric code that hasn't been seeded yet.
+ */
+export class MetricSnapshotRepository {
+  private readonly database: ProductionDatabase;
+
+  constructor(database: ProductionDatabase) {
+    this.database = database;
+  }
+
+  // app.metric_definitions carries no tenant_id -- it is a global catalog
+  // keyed by (metric_code, definition_version), so this deliberately uses
+  // withSystem rather than a tenant-scoped write (see ProductionDatabase's
+  // withSystem doc comment).
+  async ensureDefinitionsSeeded(definitions: readonly MetricDefinitionSeedRow[]): Promise<void> {
+    if (definitions.length === 0) {
+      return;
+    }
+
+    await this.database.withSystem(async (client) => {
+      for (const definitionRow of definitions) {
+        await client.query(
+          `insert into app.metric_definitions (
+             metric_definition_id, metric_code, definition_version, business_definition,
+             formula, required_canonical_facts, included_statuses, excluded_statuses,
+             date_policy, currency_policy, tax_policy, refund_policy, missing_data_policy,
+             readiness_rule, test_vectors
+           ) values (
+             gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14::jsonb
+           )
+           on conflict (metric_code, definition_version) do update set
+             business_definition = excluded.business_definition,
+             formula = excluded.formula,
+             required_canonical_facts = excluded.required_canonical_facts,
+             included_statuses = excluded.included_statuses,
+             excluded_statuses = excluded.excluded_statuses,
+             date_policy = excluded.date_policy,
+             currency_policy = excluded.currency_policy,
+             tax_policy = excluded.tax_policy,
+             refund_policy = excluded.refund_policy,
+             missing_data_policy = excluded.missing_data_policy,
+             readiness_rule = excluded.readiness_rule,
+             test_vectors = excluded.test_vectors,
+             updated_at = now()`,
+          [
+            definitionRow.metricCode,
+            definitionRow.definitionVersion,
+            definitionRow.businessDefinition,
+            definitionRow.formula,
+            definitionRow.requiredCanonicalFacts,
+            definitionRow.includedStatuses,
+            definitionRow.excludedStatuses,
+            definitionRow.datePolicy,
+            definitionRow.currencyPolicy,
+            definitionRow.taxPolicy,
+            definitionRow.refundPolicy,
+            definitionRow.missingDataPolicy,
+            definitionRow.readinessRule,
+            JSON.stringify(definitionRow.testVectors),
+          ],
+        );
+      }
+    });
+  }
+
+  async insertSnapshots(
+    tenantId: string,
+    workspaceId: string,
+    snapshots: readonly MetricSnapshotInsertRow[],
+  ): Promise<void> {
+    if (snapshots.length === 0) {
+      return;
+    }
+
+    await this.database.withTenantWorkspace(tenantId, workspaceId, async (client) => {
+      for (const snapshot of snapshots) {
+        await client.query(
+          `insert into app.metric_snapshots (
+             metric_snapshot_id, tenant_id, workspace_id, metric_code, definition_version,
+             period_start, period_end, currency, value, value_kind, readiness,
+             reason_codes, limitations, evidence, input_hash, generated_at
+           ) values (
+             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14::jsonb, $15, $16
+           )`,
+          [
+            snapshot.snapshotId,
+            tenantId,
+            workspaceId,
+            snapshot.metricCode,
+            snapshot.definitionVersion,
+            snapshot.periodStart,
+            snapshot.periodEnd,
+            snapshot.currency,
+            snapshot.value,
+            snapshot.valueKind,
+            snapshot.readiness,
+            snapshot.reasonCodes,
+            snapshot.limitations,
+            JSON.stringify(snapshot.evidence),
+            snapshot.inputHash,
+            snapshot.generatedAt,
+          ],
+        );
+      }
+    });
+  }
+}
+
+export type WorkspaceSubscriptionRow = {
+  readonly planId: "growth" | "scale" | "starter";
+  readonly status: "active" | "canceled" | "past_due" | "trialing";
+  readonly stripeCustomerId: string | null;
+  readonly stripeSubscriptionId: string | null;
+  readonly currentPeriodEnd: string | null;
+};
+
+/**
+ * Real, server-owned billing state -- until app.workspace_subscriptions
+ * existed, "current plan" for billing.* operations
+ * (contract-runtime.service.ts) was read from a caller-supplied `?plan=`
+ * query parameter with no server-side record backing it at all.
+ */
+export class BillingRepository {
+  private readonly database: ProductionDatabase;
+
+  constructor(database: ProductionDatabase) {
+    this.database = database;
+  }
+
+  /** Never returns null to callers that need a plan to check against -- a
+   * workspace with no row yet (no checkout ever completed) is exactly
+   * "starter/trialing", not an error. */
+  async readSubscription(
+    tenantId: string,
+    workspaceId: string,
+  ): Promise<WorkspaceSubscriptionRow> {
+    return this.database.withTenantWorkspace(
+      tenantId,
+      workspaceId,
+      async (client) => {
+        const result = await client.query<{
+          plan_id: WorkspaceSubscriptionRow["planId"];
+          status: WorkspaceSubscriptionRow["status"];
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          current_period_end: string | null;
+        }>(
+          `select plan_id, status, stripe_customer_id, stripe_subscription_id, current_period_end
+           from app.workspace_subscriptions
+           where tenant_id::text = $1
+             and workspace_id::text = $2`,
+          [tenantId, workspaceId],
+        );
+        const row = result.rows[0];
+        return {
+          planId: row?.plan_id ?? "starter",
+          status: row?.status ?? "trialing",
+          stripeCustomerId: row?.stripe_customer_id ?? null,
+          stripeSubscriptionId: row?.stripe_subscription_id ?? null,
+          currentPeriodEnd: row?.current_period_end ?? null,
+        };
+      },
+    );
+  }
+
+  /** Called only from checkout.session.completed, the one Stripe event that
+   * carries the workspace's own identity (via Checkout Session's
+   * client_reference_id) rather than only Stripe's own ids -- see
+   * PlatformWorkerService.processStripeWebhook. */
+  async upsertFromCheckout(input: {
+    tenantId: string;
+    workspaceId: string;
+    planId: string;
+    stripeCustomerId: string;
+    stripeSubscriptionId: string | null;
+  }): Promise<void> {
+    await this.database.withTenantWorkspace(
+      input.tenantId,
+      input.workspaceId,
+      async (client) => {
+        await client.query(
+          `insert into app.workspace_subscriptions (
+             tenant_id, workspace_id, plan_id, status,
+             stripe_customer_id, stripe_subscription_id, updated_at
+           ) values ($1, $2, $3, 'active', $4, $5, now())
+           on conflict (tenant_id, workspace_id) do update set
+             plan_id = excluded.plan_id,
+             status = 'active',
+             stripe_customer_id = excluded.stripe_customer_id,
+             stripe_subscription_id = excluded.stripe_subscription_id,
+             updated_at = now()`,
+          [
+            input.tenantId,
+            input.workspaceId,
+            input.planId,
+            input.stripeCustomerId,
+            input.stripeSubscriptionId,
+          ],
+        );
+      },
+    );
+  }
+}

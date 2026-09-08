@@ -62,8 +62,8 @@
 }
 
 .pd-form-control:focus-within {
-  border-color: var(--pd-form-focus-border, var(--pd-action-primary));
-  box-shadow: var(--pd-form-focus-shadow, 0 0 0 3px color-mix(in srgb, var(--pd-action-primary) 13%, transparent));
+  border-color: var(--pd-form-focus-border, var(--pd-brand-action));
+  box-shadow: var(--pd-form-focus-shadow, 0 0 0 3px color-mix(in srgb, var(--pd-brand-action) 13%, transparent));
 }
 
 .pd-form-field[data-invalid='true'] .pd-form-control,
@@ -203,7 +203,7 @@
   display: block;
   block-size: 100%;
   border-radius: inherit;
-  background: var(--pd-form-strength-color, var(--pd-action-primary));
+  background: var(--pd-form-strength-color, var(--pd-brand-action));
   transition:
     inline-size 180ms ease,
     background-color 180ms ease;
@@ -326,8 +326,29 @@
 }
 
 .pd-form-check__input:checked + .pd-form-check__control {
-  border-color: var(--pd-form-check-checked-border, var(--pd-action-primary));
-  background: var(--pd-form-check-checked-surface, var(--pd-action-primary));
+  border-color: var(--pd-form-check-checked-border, var(--pd-brand-action));
+  background: var(--pd-form-check-checked-surface, var(--pd-brand-action));
+}
+
+.pd-form-check__icon {
+  inline-size: 0.7rem;
+  block-size: 0.7rem;
+  opacity: 0;
+  color: var(--pd-form-check-checked-icon, var(--pd-interactive-on));
+  transition: opacity 100ms ease;
+}
+
+.pd-form-check__input:checked + .pd-form-check__control .pd-form-check__icon {
+  opacity: 1;
+}
+
+.pd-form-check__label[data-indeterminate='true'] .pd-form-check__control {
+  border-color: var(--pd-form-check-checked-border, var(--pd-brand-action));
+  background: var(--pd-form-check-checked-surface, var(--pd-brand-action));
+}
+
+.pd-form-check__label[data-indeterminate='true'] .pd-form-check__icon {
+  opacity: 1;
 }
 
 .pd-form-check__input:focus-visible + .pd-form-check__control,
@@ -362,8 +383,8 @@
 }
 
 .pd-form-switch__input:checked + .pd-form-switch__track {
-  border-color: var(--pd-action-primary);
-  background: var(--pd-action-primary);
+  border-color: var(--pd-brand-action);
+  background: var(--pd-brand-action);
 }
 
 .pd-form-switch__input:checked + .pd-form-switch__track::after {
@@ -425,7 +446,7 @@
 }
 
 .pd-verification-code:focus-within .pd-verification-code__slot {
-  border-color: var(--pd-verification-slot-focus-border, color-mix(in srgb, var(--pd-action-primary) 55%, var(--pd-separator)));
+  border-color: var(--pd-verification-slot-focus-border, color-mix(in srgb, var(--pd-brand-action) 55%, var(--pd-separator)));
 }
 
 .pd-verification-code__slot[data-filled='true'] {

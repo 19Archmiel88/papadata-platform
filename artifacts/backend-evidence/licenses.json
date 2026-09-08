@@ -3,10 +3,10 @@
     {
       "name": "@aws-sdk/checksums",
       "versions": [
-        "3.1000.19"
+        "3.1000.29"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+checksums@3.1000.19/node_modules/@aws-sdk/checksums"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+checksums@3.1000.29/node_modules/@aws-sdk/checksums"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -16,10 +16,10 @@
     {
       "name": "@aws-sdk/client-s3",
       "versions": [
-        "3.1094.0"
+        "3.1127.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+client-s3@3.1094.0/node_modules/@aws-sdk/client-s3"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+client-s3@3.1127.0/node_modules/@aws-sdk/client-s3"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -29,10 +29,10 @@
     {
       "name": "@aws-sdk/core",
       "versions": [
-        "3.976.0"
+        "3.977.9"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+core@3.976.0/node_modules/@aws-sdk/core"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+core@3.977.9/node_modules/@aws-sdk/core"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -42,10 +42,10 @@
     {
       "name": "@aws-sdk/credential-provider-env",
       "versions": [
-        "3.972.60"
+        "3.972.70"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-env@3.972.60/node_modules/@aws-sdk/credential-provider-env"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-env@3.972.70/node_modules/@aws-sdk/credential-provider-env"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -55,10 +55,10 @@
     {
       "name": "@aws-sdk/credential-provider-http",
       "versions": [
-        "3.972.62"
+        "3.972.72"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-http@3.972.62/node_modules/@aws-sdk/credential-provider-http"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-http@3.972.72/node_modules/@aws-sdk/credential-provider-http"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -68,10 +68,10 @@
     {
       "name": "@aws-sdk/credential-provider-ini",
       "versions": [
-        "3.973.5"
+        "3.973.15"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-ini@3.973.5/node_modules/@aws-sdk/credential-provider-ini"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-ini@3.973.15/node_modules/@aws-sdk/credential-provider-ini"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -81,10 +81,10 @@
     {
       "name": "@aws-sdk/credential-provider-login",
       "versions": [
-        "3.972.67"
+        "3.972.77"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-login@3.972.67/node_modules/@aws-sdk/credential-provider-login"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-login@3.972.77/node_modules/@aws-sdk/credential-provider-login"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -94,10 +94,10 @@
     {
       "name": "@aws-sdk/credential-provider-node",
       "versions": [
-        "3.972.71"
+        "3.972.82"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-node@3.972.71/node_modules/@aws-sdk/credential-provider-node"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-node@3.972.82/node_modules/@aws-sdk/credential-provider-node"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -107,10 +107,10 @@
     {
       "name": "@aws-sdk/credential-provider-process",
       "versions": [
-        "3.972.60"
+        "3.972.70"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-process@3.972.60/node_modules/@aws-sdk/credential-provider-process"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-process@3.972.70/node_modules/@aws-sdk/credential-provider-process"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -120,10 +120,10 @@
     {
       "name": "@aws-sdk/credential-provider-sso",
       "versions": [
-        "3.973.4"
+        "3.973.14"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-sso@3.973.4/node_modules/@aws-sdk/credential-provider-sso"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-sso@3.973.14/node_modules/@aws-sdk/credential-provider-sso"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -133,10 +133,10 @@
     {
       "name": "@aws-sdk/credential-provider-web-identity",
       "versions": [
-        "3.972.66"
+        "3.972.76"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-web-identity@3.972.66/node_modules/@aws-sdk/credential-provider-web-identity"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+credential-provider-web-identity@3.972.76/node_modules/@aws-sdk/credential-provider-web-identity"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -146,10 +146,10 @@
     {
       "name": "@aws-sdk/middleware-sdk-s3",
       "versions": [
-        "3.972.65"
+        "3.972.75"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+middleware-sdk-s3@3.972.65/node_modules/@aws-sdk/middleware-sdk-s3"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+middleware-sdk-s3@3.972.75/node_modules/@aws-sdk/middleware-sdk-s3"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -158,10 +158,10 @@
     {
       "name": "@aws-sdk/nested-clients",
       "versions": [
-        "3.997.34"
+        "3.997.44"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+nested-clients@3.997.34/node_modules/@aws-sdk/nested-clients"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+nested-clients@3.997.44/node_modules/@aws-sdk/nested-clients"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -171,10 +171,10 @@
     {
       "name": "@aws-sdk/s3-request-presigner",
       "versions": [
-        "3.1094.0"
+        "3.1127.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+s3-request-presigner@3.1094.0/node_modules/@aws-sdk/s3-request-presigner"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+s3-request-presigner@3.1127.0/node_modules/@aws-sdk/s3-request-presigner"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -183,10 +183,10 @@
     {
       "name": "@aws-sdk/signature-v4-multi-region",
       "versions": [
-        "3.996.41"
+        "3.996.46"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+signature-v4-multi-region@3.996.41/node_modules/@aws-sdk/signature-v4-multi-region"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+signature-v4-multi-region@3.996.46/node_modules/@aws-sdk/signature-v4-multi-region"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -195,10 +195,10 @@
     {
       "name": "@aws-sdk/token-providers",
       "versions": [
-        "3.1092.0"
+        "3.1116.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+token-providers@3.1092.0/node_modules/@aws-sdk/token-providers"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+token-providers@3.1116.0/node_modules/@aws-sdk/token-providers"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -208,10 +208,10 @@
     {
       "name": "@aws-sdk/types",
       "versions": [
-        "3.974.2"
+        "3.974.5"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+types@3.974.2/node_modules/@aws-sdk/types"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+types@3.974.5/node_modules/@aws-sdk/types"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -221,10 +221,10 @@
     {
       "name": "@aws-sdk/xml-builder",
       "versions": [
-        "3.972.36"
+        "3.972.40"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+xml-builder@3.972.36/node_modules/@aws-sdk/xml-builder"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@aws-sdk+xml-builder@3.972.40/node_modules/@aws-sdk/xml-builder"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -247,49 +247,49 @@
     {
       "name": "@google-cloud/paginator",
       "versions": [
-        "5.0.2"
+        "7.0.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@google-cloud+paginator@5.0.2/node_modules/@google-cloud/paginator"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@google-cloud+paginator@7.0.1/node_modules/@google-cloud/paginator"
       ],
       "license": "Apache-2.0",
       "author": "Google Inc.",
-      "homepage": "https://github.com/googleapis/nodejs-paginator#readme",
+      "homepage": "https://github.com/googleapis/google-cloud-node/tree/main/core/paginator",
       "description": "A result paging utility used by Google node.js modules"
     },
     {
       "name": "@google-cloud/projectify",
       "versions": [
-        "4.0.0"
+        "6.0.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@google-cloud+projectify@4.0.0/node_modules/@google-cloud/projectify"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@google-cloud+projectify@6.0.1/node_modules/@google-cloud/projectify"
       ],
       "license": "Apache-2.0",
       "author": "Google Inc.",
-      "homepage": "https://github.com/googleapis/nodejs-projectify#readme",
+      "homepage": "https://github.com/googleapis/google-cloud-node/tree/main/core/projectify",
       "description": "A simple utility for replacing the projectid token in objects."
     },
     {
       "name": "@google-cloud/promisify",
       "versions": [
-        "4.0.0"
+        "6.0.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@google-cloud+promisify@4.0.0/node_modules/@google-cloud/promisify"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@google-cloud+promisify@6.0.1/node_modules/@google-cloud/promisify"
       ],
       "license": "Apache-2.0",
       "author": "Google Inc.",
-      "homepage": "https://github.com/googleapis/nodejs-promisify#readme",
+      "homepage": "https://github.com/googleapis/google-cloud-node/tree/main/core/promisify",
       "description": "A simple utility for promisifying functions and classes."
     },
     {
       "name": "@google-cloud/storage",
       "versions": [
-        "7.21.0"
+        "8.1.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@google-cloud+storage@7.21.0/node_modules/@google-cloud/storage"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@google-cloud+storage@8.1.0/node_modules/@google-cloud/storage"
       ],
       "license": "Apache-2.0",
       "author": "Google Inc.",
@@ -338,10 +338,10 @@
     {
       "name": "@opentelemetry/api-logs",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+api-logs@0.220.0/node_modules/@opentelemetry/api-logs"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+api-logs@0.222.0/node_modules/@opentelemetry/api-logs"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -351,10 +351,10 @@
     {
       "name": "@opentelemetry/auto-instrumentations-node",
       "versions": [
-        "0.78.0"
+        "0.80.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+auto-instrumentations-node@0.78.0_@opentelemetry+api@1.9.1_@opentelemetr_c9a87b2d658943dd4e2aabcc7b293215/node_modules/@opentelemetry/auto-instrumentations-node"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+auto-instrumentations-node@0.80.0_@opentelemetry+api@1.9.1_@opentelemetr_4c6333cd3caa03895cea701e9aa46d8e/node_modules/@opentelemetry/auto-instrumentations-node"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -364,10 +364,10 @@
     {
       "name": "@opentelemetry/configuration",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+configuration@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/configuration"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+configuration@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/configuration"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -377,10 +377,10 @@
     {
       "name": "@opentelemetry/context-async-hooks",
       "versions": [
-        "2.9.0"
+        "2.11.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+context-async-hooks@2.9.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/context-async-hooks"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+context-async-hooks@2.11.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/context-async-hooks"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -390,12 +390,10 @@
     {
       "name": "@opentelemetry/core",
       "versions": [
-        "2.9.0",
-        "2.10.0"
+        "2.11.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+core@2.9.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/core",
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+core@2.10.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/core"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+core@2.11.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/core"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -405,10 +403,10 @@
     {
       "name": "@opentelemetry/exporter-logs-otlp-grpc",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-logs-otlp-grpc@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-logs-otlp-grpc"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-logs-otlp-grpc@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-logs-otlp-grpc"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -418,10 +416,10 @@
     {
       "name": "@opentelemetry/exporter-logs-otlp-http",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-logs-otlp-http@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-logs-otlp-http"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-logs-otlp-http@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-logs-otlp-http"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -431,10 +429,10 @@
     {
       "name": "@opentelemetry/exporter-logs-otlp-proto",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-logs-otlp-proto@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-logs-otlp-proto"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-logs-otlp-proto@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-logs-otlp-proto"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -444,10 +442,10 @@
     {
       "name": "@opentelemetry/exporter-metrics-otlp-grpc",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-metrics-otlp-grpc@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-metrics-otlp-grpc"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-metrics-otlp-grpc@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-metrics-otlp-grpc"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -457,10 +455,10 @@
     {
       "name": "@opentelemetry/exporter-metrics-otlp-http",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-metrics-otlp-http@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-metrics-otlp-http"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-metrics-otlp-http@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-metrics-otlp-http"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -470,10 +468,10 @@
     {
       "name": "@opentelemetry/exporter-metrics-otlp-proto",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-metrics-otlp-proto@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-metrics-otlp-proto"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-metrics-otlp-proto@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-metrics-otlp-proto"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -483,10 +481,10 @@
     {
       "name": "@opentelemetry/exporter-prometheus",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-prometheus@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-prometheus"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-prometheus@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-prometheus"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -496,10 +494,10 @@
     {
       "name": "@opentelemetry/exporter-trace-otlp-grpc",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-trace-otlp-grpc@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-trace-otlp-grpc"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-trace-otlp-grpc@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-trace-otlp-grpc"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -509,10 +507,10 @@
     {
       "name": "@opentelemetry/exporter-trace-otlp-http",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-trace-otlp-http@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-trace-otlp-http"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-trace-otlp-http@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-trace-otlp-http"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -522,10 +520,10 @@
     {
       "name": "@opentelemetry/exporter-trace-otlp-proto",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-trace-otlp-proto@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-trace-otlp-proto"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-trace-otlp-proto@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-trace-otlp-proto"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -535,10 +533,10 @@
     {
       "name": "@opentelemetry/exporter-zipkin",
       "versions": [
-        "2.9.0"
+        "2.11.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-zipkin@2.9.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-zipkin"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+exporter-zipkin@2.11.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/exporter-zipkin"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -548,10 +546,10 @@
     {
       "name": "@opentelemetry/instrumentation",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -561,10 +559,10 @@
     {
       "name": "@opentelemetry/instrumentation-amqplib",
       "versions": [
-        "0.67.0"
+        "0.69.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-amqplib@0.67.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-amqplib"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-amqplib@0.69.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-amqplib"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -574,10 +572,10 @@
     {
       "name": "@opentelemetry/instrumentation-aws-lambda",
       "versions": [
-        "0.72.0"
+        "0.74.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-aws-lambda@0.72.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-aws-lambda"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-aws-lambda@0.74.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-aws-lambda"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -587,10 +585,10 @@
     {
       "name": "@opentelemetry/instrumentation-aws-sdk",
       "versions": [
-        "0.75.0"
+        "0.77.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-aws-sdk@0.75.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-aws-sdk"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-aws-sdk@0.77.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-aws-sdk"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -600,10 +598,10 @@
     {
       "name": "@opentelemetry/instrumentation-bunyan",
       "versions": [
-        "0.65.0"
+        "0.67.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-bunyan@0.65.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-bunyan"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-bunyan@0.67.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-bunyan"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -613,10 +611,10 @@
     {
       "name": "@opentelemetry/instrumentation-cassandra-driver",
       "versions": [
-        "0.65.0"
+        "0.67.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-cassandra-driver@0.65.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-cassandra-driver"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-cassandra-driver@0.67.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-cassandra-driver"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -626,10 +624,10 @@
     {
       "name": "@opentelemetry/instrumentation-connect",
       "versions": [
-        "0.63.0"
+        "0.65.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-connect@0.63.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-connect"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-connect@0.65.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-connect"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -639,10 +637,10 @@
     {
       "name": "@opentelemetry/instrumentation-cucumber",
       "versions": [
-        "0.36.0"
+        "0.38.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-cucumber@0.36.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-cucumber"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-cucumber@0.38.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-cucumber"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -652,10 +650,10 @@
     {
       "name": "@opentelemetry/instrumentation-dataloader",
       "versions": [
-        "0.37.0"
+        "0.39.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-dataloader@0.37.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-dataloader"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-dataloader@0.39.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-dataloader"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -665,10 +663,10 @@
     {
       "name": "@opentelemetry/instrumentation-dns",
       "versions": [
-        "0.63.0"
+        "0.65.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-dns@0.63.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-dns"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-dns@0.65.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-dns"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -678,10 +676,10 @@
     {
       "name": "@opentelemetry/instrumentation-express",
       "versions": [
-        "0.68.0"
+        "0.70.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-express@0.68.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-express"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-express@0.70.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-express"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -691,10 +689,10 @@
     {
       "name": "@opentelemetry/instrumentation-fs",
       "versions": [
-        "0.39.0"
+        "0.41.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-fs@0.39.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-fs"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-fs@0.41.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-fs"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -704,10 +702,10 @@
     {
       "name": "@opentelemetry/instrumentation-generic-pool",
       "versions": [
-        "0.63.0"
+        "0.65.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-generic-pool@0.63.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-generic-pool"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-generic-pool@0.65.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-generic-pool"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -717,10 +715,10 @@
     {
       "name": "@opentelemetry/instrumentation-graphql",
       "versions": [
-        "0.68.0"
+        "0.70.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-graphql@0.68.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-graphql"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-graphql@0.70.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-graphql"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -730,10 +728,10 @@
     {
       "name": "@opentelemetry/instrumentation-grpc",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-grpc@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-grpc"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-grpc@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-grpc"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -743,10 +741,10 @@
     {
       "name": "@opentelemetry/instrumentation-hapi",
       "versions": [
-        "0.66.0"
+        "0.68.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-hapi@0.66.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-hapi"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-hapi@0.68.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-hapi"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -756,10 +754,10 @@
     {
       "name": "@opentelemetry/instrumentation-host-metrics",
       "versions": [
-        "0.3.0"
+        "0.5.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-host-metrics@0.3.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-host-metrics"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-host-metrics@0.5.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-host-metrics"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -769,10 +767,10 @@
     {
       "name": "@opentelemetry/instrumentation-http",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-http@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-http"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-http@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-http"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -782,10 +780,10 @@
     {
       "name": "@opentelemetry/instrumentation-ioredis",
       "versions": [
-        "0.68.0"
+        "0.70.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-ioredis@0.68.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-ioredis"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-ioredis@0.70.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-ioredis"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -795,10 +793,10 @@
     {
       "name": "@opentelemetry/instrumentation-kafkajs",
       "versions": [
-        "0.29.0"
+        "0.31.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-kafkajs@0.29.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-kafkajs"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-kafkajs@0.31.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-kafkajs"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -808,10 +806,10 @@
     {
       "name": "@opentelemetry/instrumentation-knex",
       "versions": [
-        "0.64.0"
+        "0.66.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-knex@0.64.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-knex"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-knex@0.66.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-knex"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -821,10 +819,10 @@
     {
       "name": "@opentelemetry/instrumentation-koa",
       "versions": [
-        "0.68.0"
+        "0.70.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-koa@0.68.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-koa"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-koa@0.70.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-koa"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -834,10 +832,10 @@
     {
       "name": "@opentelemetry/instrumentation-lru-memoizer",
       "versions": [
-        "0.64.0"
+        "0.66.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-lru-memoizer@0.64.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-lru-memoizer"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-lru-memoizer@0.66.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-lru-memoizer"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -847,10 +845,10 @@
     {
       "name": "@opentelemetry/instrumentation-memcached",
       "versions": [
-        "0.63.0"
+        "0.65.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-memcached@0.63.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-memcached"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-memcached@0.65.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-memcached"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -860,10 +858,10 @@
     {
       "name": "@opentelemetry/instrumentation-mongodb",
       "versions": [
-        "0.73.0"
+        "0.75.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-mongodb@0.73.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-mongodb"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-mongodb@0.75.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-mongodb"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -873,10 +871,10 @@
     {
       "name": "@opentelemetry/instrumentation-mongoose",
       "versions": [
-        "0.66.0"
+        "0.68.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-mongoose@0.66.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-mongoose"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-mongoose@0.68.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-mongoose"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -886,10 +884,10 @@
     {
       "name": "@opentelemetry/instrumentation-mysql",
       "versions": [
-        "0.66.0"
+        "0.68.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-mysql@0.66.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-mysql"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-mysql@0.68.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-mysql"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -899,10 +897,10 @@
     {
       "name": "@opentelemetry/instrumentation-mysql2",
       "versions": [
-        "0.66.0"
+        "0.68.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-mysql2@0.66.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-mysql2"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-mysql2@0.68.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-mysql2"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -912,10 +910,10 @@
     {
       "name": "@opentelemetry/instrumentation-nestjs-core",
       "versions": [
-        "0.66.0"
+        "0.68.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-nestjs-core@0.66.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-nestjs-core"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-nestjs-core@0.68.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-nestjs-core"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -925,10 +923,10 @@
     {
       "name": "@opentelemetry/instrumentation-net",
       "versions": [
-        "0.64.0"
+        "0.66.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-net@0.64.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-net"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-net@0.66.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-net"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -938,10 +936,10 @@
     {
       "name": "@opentelemetry/instrumentation-openai",
       "versions": [
-        "0.18.0"
+        "0.20.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-openai@0.18.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-openai"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-openai@0.20.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-openai"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -951,10 +949,10 @@
     {
       "name": "@opentelemetry/instrumentation-oracledb",
       "versions": [
-        "0.45.0"
+        "0.47.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-oracledb@0.45.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-oracledb"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-oracledb@0.47.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-oracledb"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -964,10 +962,10 @@
     {
       "name": "@opentelemetry/instrumentation-pg",
       "versions": [
-        "0.72.0"
+        "0.74.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-pg@0.72.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-pg"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-pg@0.74.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-pg"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -977,10 +975,10 @@
     {
       "name": "@opentelemetry/instrumentation-pino",
       "versions": [
-        "0.66.0"
+        "0.68.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-pino@0.66.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-pino"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-pino@0.68.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-pino"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -990,10 +988,10 @@
     {
       "name": "@opentelemetry/instrumentation-redis",
       "versions": [
-        "0.68.0"
+        "0.70.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-redis@0.68.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-redis"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-redis@0.70.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-redis"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1003,10 +1001,10 @@
     {
       "name": "@opentelemetry/instrumentation-restify",
       "versions": [
-        "0.65.0"
+        "0.67.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-restify@0.65.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-restify"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-restify@0.67.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-restify"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1016,10 +1014,10 @@
     {
       "name": "@opentelemetry/instrumentation-router",
       "versions": [
-        "0.64.0"
+        "0.66.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-router@0.64.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-router"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-router@0.66.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-router"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1029,10 +1027,10 @@
     {
       "name": "@opentelemetry/instrumentation-runtime-node",
       "versions": [
-        "0.33.0"
+        "0.35.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-runtime-node@0.33.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-runtime-node"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-runtime-node@0.35.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-runtime-node"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1042,10 +1040,10 @@
     {
       "name": "@opentelemetry/instrumentation-socket.io",
       "versions": [
-        "0.67.0"
+        "0.69.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-socket.io@0.67.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-socket.io"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-socket.io@0.69.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-socket.io"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1055,10 +1053,10 @@
     {
       "name": "@opentelemetry/instrumentation-tedious",
       "versions": [
-        "0.39.0"
+        "0.41.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-tedious@0.39.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-tedious"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-tedious@0.41.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-tedious"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1068,10 +1066,10 @@
     {
       "name": "@opentelemetry/instrumentation-undici",
       "versions": [
-        "0.30.0"
+        "0.32.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-undici@0.30.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-undici"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-undici@0.32.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-undici"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1081,10 +1079,10 @@
     {
       "name": "@opentelemetry/instrumentation-winston",
       "versions": [
-        "0.64.0"
+        "0.66.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-winston@0.64.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-winston"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+instrumentation-winston@0.66.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/instrumentation-winston"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1094,10 +1092,10 @@
     {
       "name": "@opentelemetry/otlp-exporter-base",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+otlp-exporter-base@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/otlp-exporter-base"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+otlp-exporter-base@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/otlp-exporter-base"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1107,10 +1105,10 @@
     {
       "name": "@opentelemetry/otlp-grpc-exporter-base",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+otlp-grpc-exporter-base@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/otlp-grpc-exporter-base"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+otlp-grpc-exporter-base@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/otlp-grpc-exporter-base"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1120,10 +1118,10 @@
     {
       "name": "@opentelemetry/otlp-transformer",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+otlp-transformer@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/otlp-transformer"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+otlp-transformer@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/otlp-transformer"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1146,10 +1144,10 @@
     {
       "name": "@opentelemetry/propagator-b3",
       "versions": [
-        "2.9.0"
+        "2.11.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+propagator-b3@2.9.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/propagator-b3"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+propagator-b3@2.11.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/propagator-b3"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1159,10 +1157,10 @@
     {
       "name": "@opentelemetry/propagator-jaeger",
       "versions": [
-        "2.9.0"
+        "2.11.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+propagator-jaeger@2.9.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/propagator-jaeger"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+propagator-jaeger@2.11.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/propagator-jaeger"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1185,10 +1183,10 @@
     {
       "name": "@opentelemetry/resource-detector-alibaba-cloud",
       "versions": [
-        "0.35.0"
+        "0.37.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+resource-detector-alibaba-cloud@0.35.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/resource-detector-alibaba-cloud"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+resource-detector-alibaba-cloud@0.37.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/resource-detector-alibaba-cloud"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1198,10 +1196,10 @@
     {
       "name": "@opentelemetry/resource-detector-aws",
       "versions": [
-        "2.21.0"
+        "2.22.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+resource-detector-aws@2.21.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/resource-detector-aws"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+resource-detector-aws@2.22.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/resource-detector-aws"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1211,10 +1209,10 @@
     {
       "name": "@opentelemetry/resource-detector-azure",
       "versions": [
-        "0.28.0"
+        "0.30.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+resource-detector-azure@0.28.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/resource-detector-azure"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+resource-detector-azure@0.30.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/resource-detector-azure"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1224,10 +1222,10 @@
     {
       "name": "@opentelemetry/resource-detector-container",
       "versions": [
-        "0.8.12"
+        "0.8.13"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+resource-detector-container@0.8.12_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/resource-detector-container"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+resource-detector-container@0.8.13_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/resource-detector-container"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1237,10 +1235,10 @@
     {
       "name": "@opentelemetry/resource-detector-gcp",
       "versions": [
-        "0.55.0"
+        "0.57.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+resource-detector-gcp@0.55.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/resource-detector-gcp"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+resource-detector-gcp@0.57.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/resource-detector-gcp"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1250,12 +1248,10 @@
     {
       "name": "@opentelemetry/resources",
       "versions": [
-        "2.9.0",
-        "2.10.0"
+        "2.11.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+resources@2.9.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/resources",
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+resources@2.10.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/resources"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+resources@2.11.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/resources"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1265,10 +1261,10 @@
     {
       "name": "@opentelemetry/sdk-logs",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+sdk-logs@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/sdk-logs"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+sdk-logs@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/sdk-logs"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1278,10 +1274,10 @@
     {
       "name": "@opentelemetry/sdk-metrics",
       "versions": [
-        "2.9.0"
+        "2.11.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+sdk-metrics@2.9.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/sdk-metrics"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+sdk-metrics@2.11.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/sdk-metrics"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1291,10 +1287,10 @@
     {
       "name": "@opentelemetry/sdk-node",
       "versions": [
-        "0.220.0"
+        "0.222.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+sdk-node@0.220.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/sdk-node"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+sdk-node@0.222.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/sdk-node"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1304,10 +1300,10 @@
     {
       "name": "@opentelemetry/sdk-trace",
       "versions": [
-        "2.9.0"
+        "2.11.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+sdk-trace@2.9.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/sdk-trace"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+sdk-trace@2.11.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/sdk-trace"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1317,10 +1313,10 @@
     {
       "name": "@opentelemetry/sdk-trace-base",
       "versions": [
-        "2.9.0"
+        "2.11.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+sdk-trace-base@2.9.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/sdk-trace-base"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+sdk-trace-base@2.11.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/sdk-trace-base"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1330,10 +1326,10 @@
     {
       "name": "@opentelemetry/sdk-trace-node",
       "versions": [
-        "2.9.0"
+        "2.11.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+sdk-trace-node@2.9.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/sdk-trace-node"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@opentelemetry+sdk-trace-node@2.11.0_@opentelemetry+api@1.9.1/node_modules/@opentelemetry/sdk-trace-node"
       ],
       "license": "Apache-2.0",
       "author": "OpenTelemetry Authors",
@@ -1369,10 +1365,10 @@
     {
       "name": "@smithy/core",
       "versions": [
-        "3.29.8"
+        "3.33.3"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@smithy+core@3.29.8/node_modules/@smithy/core"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@smithy+core@3.33.3/node_modules/@smithy/core"
       ],
       "license": "Apache-2.0",
       "author": "AWS Smithy Team",
@@ -1381,10 +1377,10 @@
     {
       "name": "@smithy/credential-provider-imds",
       "versions": [
-        "4.4.13"
+        "4.5.2"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@smithy+credential-provider-imds@4.4.13/node_modules/@smithy/credential-provider-imds"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@smithy+credential-provider-imds@4.5.2/node_modules/@smithy/credential-provider-imds"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -1394,10 +1390,10 @@
     {
       "name": "@smithy/fetch-http-handler",
       "versions": [
-        "5.6.10"
+        "5.8.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@smithy+fetch-http-handler@5.6.10/node_modules/@smithy/fetch-http-handler"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@smithy+fetch-http-handler@5.8.0/node_modules/@smithy/fetch-http-handler"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -1407,10 +1403,10 @@
     {
       "name": "@smithy/node-http-handler",
       "versions": [
-        "4.9.10"
+        "4.12.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@smithy+node-http-handler@4.9.10/node_modules/@smithy/node-http-handler"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@smithy+node-http-handler@4.12.1/node_modules/@smithy/node-http-handler"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -1420,10 +1416,10 @@
     {
       "name": "@smithy/signature-v4",
       "versions": [
-        "5.6.9"
+        "5.7.3"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@smithy+signature-v4@5.6.9/node_modules/@smithy/signature-v4"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@smithy+signature-v4@5.7.3/node_modules/@smithy/signature-v4"
       ],
       "license": "Apache-2.0",
       "author": "AWS SDK for JavaScript Team",
@@ -1433,10 +1429,10 @@
     {
       "name": "@smithy/types",
       "versions": [
-        "4.16.1"
+        "4.18.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@smithy+types@4.16.1/node_modules/@smithy/types"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@smithy+types@4.18.0/node_modules/@smithy/types"
       ],
       "license": "Apache-2.0",
       "author": "AWS Smithy Team",
@@ -1557,10 +1553,10 @@
     {
       "name": "import-in-the-middle",
       "versions": [
-        "3.3.2"
+        "3.4.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/import-in-the-middle@3.3.2/node_modules/import-in-the-middle"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/import-in-the-middle@3.4.0/node_modules/import-in-the-middle"
       ],
       "license": "Apache-2.0",
       "author": "Bryan English",
@@ -1622,14 +1618,14 @@
     {
       "name": "teeny-request",
       "versions": [
-        "9.0.0"
+        "11.0.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/teeny-request@9.0.0/node_modules/teeny-request"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/teeny-request@11.0.1/node_modules/teeny-request"
       ],
       "license": "Apache-2.0",
       "author": "fhinkel",
-      "homepage": "https://github.com/googleapis/teeny-request#readme",
+      "homepage": "https://github.com/googleapis/google-cloud-node/tree/main/core/packages/teeny-request",
       "description": "Like request, but smaller."
     }
   ],
@@ -1663,10 +1659,10 @@
     {
       "name": "@fastify/ajv-compiler",
       "versions": [
-        "4.0.5"
+        "4.0.6"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@fastify+ajv-compiler@4.0.5/node_modules/@fastify/ajv-compiler"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@fastify+ajv-compiler@4.0.6/node_modules/@fastify/ajv-compiler"
       ],
       "license": "MIT",
       "author": "Manuel Spigolon",
@@ -1689,10 +1685,10 @@
     {
       "name": "@fastify/cors",
       "versions": [
-        "11.2.0"
+        "11.3.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@fastify+cors@11.2.0/node_modules/@fastify/cors"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@fastify+cors@11.3.0/node_modules/@fastify/cors"
       ],
       "license": "MIT",
       "author": "Tomas Della Vedova - @delvedor",
@@ -1728,10 +1724,10 @@
     {
       "name": "@fastify/formbody",
       "versions": [
-        "8.0.2"
+        "9.0.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@fastify+formbody@8.0.2/node_modules/@fastify/formbody"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@fastify+formbody@9.0.0/node_modules/@fastify/formbody"
       ],
       "license": "MIT",
       "author": "James Sumners",
@@ -1741,10 +1737,10 @@
     {
       "name": "@fastify/forwarded",
       "versions": [
-        "3.0.1"
+        "3.0.2"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@fastify+forwarded@3.0.1/node_modules/@fastify/forwarded"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@fastify+forwarded@3.0.2/node_modules/@fastify/forwarded"
       ],
       "license": "MIT",
       "author": "Douglas Christopher Wilson",
@@ -1754,10 +1750,10 @@
     {
       "name": "@fastify/helmet",
       "versions": [
-        "13.1.0"
+        "13.1.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@fastify+helmet@13.1.0/node_modules/@fastify/helmet"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@fastify+helmet@13.1.1/node_modules/@fastify/helmet"
       ],
       "license": "MIT",
       "author": "Matteo Collina",
@@ -1793,10 +1789,10 @@
     {
       "name": "@ioredis/commands",
       "versions": [
-        "1.10.0"
+        "2.0.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@ioredis+commands@1.10.0/node_modules/@ioredis/commands"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@ioredis+commands@2.0.0/node_modules/@ioredis/commands"
       ],
       "license": "MIT",
       "author": "Zihua Li",
@@ -1845,10 +1841,10 @@
     {
       "name": "@nestjs/common",
       "versions": [
-        "11.1.28"
+        "12.0.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@nestjs+common@11.1.28_class-transformer@0.5.1_class-validator@0.14.4_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@nestjs+common@12.0.1_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common"
       ],
       "license": "MIT",
       "author": "Kamil Mysliwiec",
@@ -1858,10 +1854,10 @@
     {
       "name": "@nestjs/core",
       "versions": [
-        "11.1.28"
+        "12.0.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@nestjs+core@11.1.28_@nestjs+common@11.1.28_class-transformer@0.5.1_class-validator@0.1_ac492bd0289e78c3506c737727ae63fc/node_modules/@nestjs/core"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@nestjs+core@12.0.1_@nestjs+common@12.0.1_class-transformer@0.5.1_class-validator@0.15._a8900e35dbbc584354ed482ae57c46d6/node_modules/@nestjs/core"
       ],
       "license": "MIT",
       "author": "Kamil Mysliwiec",
@@ -1871,10 +1867,10 @@
     {
       "name": "@nestjs/platform-fastify",
       "versions": [
-        "11.1.28"
+        "12.0.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@nestjs+platform-fastify@11.1.28_@nestjs+common@11.1.28_class-transformer@0.5.1_class-v_5355e682e2525be01e4fb122ff4f1a78/node_modules/@nestjs/platform-fastify"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@nestjs+platform-fastify@12.0.1_@nestjs+common@12.0.1_class-transformer@0.5.1_class-val_3f423fa32b47fae2fdcd71a7d82cc1ce/node_modules/@nestjs/platform-fastify"
       ],
       "license": "MIT",
       "author": "Kamil Mysliwiec",
@@ -1884,10 +1880,10 @@
     {
       "name": "@nestjs/schedule",
       "versions": [
-        "6.1.3"
+        "12.0.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@nestjs+schedule@6.1.3_@nestjs+common@11.1.28_class-transformer@0.5.1_class-validator@0_03ffc82f650b88a0537dc5981c996f5b/node_modules/@nestjs/schedule"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@nestjs+schedule@12.0.1_@nestjs+common@12.0.1_class-transformer@0.5.1_class-validator@0_7918f96dcd38d3f7a601917d67ea50d7/node_modules/@nestjs/schedule"
       ],
       "license": "MIT",
       "author": "Kamil Mysliwiec",
@@ -1949,10 +1945,10 @@
     {
       "name": "@redis/bloom",
       "versions": [
-        "6.1.0"
+        "6.2.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@redis+bloom@6.1.0_@redis+client@6.1.0_@opentelemetry+api@1.9.1_/node_modules/@redis/bloom"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@redis+bloom@6.2.1_@redis+client@6.2.1_@opentelemetry+api@1.9.1_/node_modules/@redis/bloom"
       ],
       "license": "MIT",
       "homepage": "https://github.com/redis/node-redis/tree/master/packages/bloom"
@@ -1960,10 +1956,10 @@
     {
       "name": "@redis/client",
       "versions": [
-        "6.1.0"
+        "6.2.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@redis+client@6.1.0_@opentelemetry+api@1.9.1/node_modules/@redis/client"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@redis+client@6.2.1_@opentelemetry+api@1.9.1/node_modules/@redis/client"
       ],
       "license": "MIT",
       "homepage": "https://github.com/redis/node-redis/tree/master/packages/client"
@@ -1971,10 +1967,10 @@
     {
       "name": "@redis/json",
       "versions": [
-        "6.1.0"
+        "6.2.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@redis+json@6.1.0_@redis+client@6.1.0_@opentelemetry+api@1.9.1_/node_modules/@redis/json"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@redis+json@6.2.1_@redis+client@6.2.1_@opentelemetry+api@1.9.1_/node_modules/@redis/json"
       ],
       "license": "MIT",
       "homepage": "https://github.com/redis/node-redis/tree/master/packages/json"
@@ -1982,10 +1978,10 @@
     {
       "name": "@redis/search",
       "versions": [
-        "6.1.0"
+        "6.2.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@redis+search@6.1.0_@redis+client@6.1.0_@opentelemetry+api@1.9.1_/node_modules/@redis/search"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@redis+search@6.2.1_@redis+client@6.2.1_@opentelemetry+api@1.9.1_/node_modules/@redis/search"
       ],
       "license": "MIT",
       "homepage": "https://github.com/redis/node-redis/tree/master/packages/search"
@@ -1993,10 +1989,10 @@
     {
       "name": "@redis/time-series",
       "versions": [
-        "6.1.0"
+        "6.2.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@redis+time-series@6.1.0_@redis+client@6.1.0_@opentelemetry+api@1.9.1_/node_modules/@redis/time-series"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@redis+time-series@6.2.1_@redis+client@6.2.1_@opentelemetry+api@1.9.1_/node_modules/@redis/time-series"
       ],
       "license": "MIT",
       "homepage": "https://github.com/redis/node-redis/tree/master/packages/time-series"
@@ -2007,7 +2003,7 @@
         "2.12.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@reduxjs+toolkit@2.12.0_react-redux@9.3.0_@types+react@19.2.17_react@19.2.8_redux@5.0.1__react@19.2.8/node_modules/@reduxjs/toolkit"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@reduxjs+toolkit@2.12.0_react-redux@9.3.0_@types+react@19.2.18_react@19.2.8_redux@5.0.1__react@19.2.8/node_modules/@reduxjs/toolkit"
       ],
       "license": "MIT",
       "author": "Mark Erikson",
@@ -2067,53 +2063,16 @@
       "description": "TypeScript definition for strtok3 token"
     },
     {
-      "name": "@tootallnate/once",
-      "versions": [
-        "2.0.1"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@tootallnate+once@2.0.1/node_modules/@tootallnate/once"
-      ],
-      "license": "MIT",
-      "author": "Nathan Rajlich",
-      "homepage": "https://github.com/TooTallNate/once#readme",
-      "description": "Creates a Promise that waits for a single event"
-    },
-    {
       "name": "@types/aws-lambda",
       "versions": [
-        "8.10.162"
+        "8.10.163"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+aws-lambda@8.10.162/node_modules/@types/aws-lambda"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+aws-lambda@8.10.163/node_modules/@types/aws-lambda"
       ],
       "license": "MIT",
       "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/aws-lambda",
       "description": "TypeScript definitions for aws-lambda"
-    },
-    {
-      "name": "@types/bunyan",
-      "versions": [
-        "1.8.11"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+bunyan@1.8.11/node_modules/@types/bunyan"
-      ],
-      "license": "MIT",
-      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/bunyan",
-      "description": "TypeScript definitions for bunyan"
-    },
-    {
-      "name": "@types/caseless",
-      "versions": [
-        "0.12.5"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+caseless@0.12.5/node_modules/@types/caseless"
-      ],
-      "license": "MIT",
-      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/caseless",
-      "description": "TypeScript definitions for caseless"
     },
     {
       "name": "@types/connect",
@@ -2202,10 +2161,10 @@
     {
       "name": "@types/d3-shape",
       "versions": [
-        "3.1.8"
+        "3.2.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+d3-shape@3.1.8/node_modules/@types/d3-shape"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+d3-shape@3.2.0/node_modules/@types/d3-shape"
       ],
       "license": "MIT",
       "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3-shape",
@@ -2286,10 +2245,10 @@
     {
       "name": "@types/luxon",
       "versions": [
-        "3.7.2"
+        "3.7.5"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+luxon@3.7.2/node_modules/@types/luxon"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+luxon@3.7.5/node_modules/@types/luxon"
       ],
       "license": "MIT",
       "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/luxon",
@@ -2332,48 +2291,26 @@
       "description": "TypeScript definitions for ms"
     },
     {
-      "name": "@types/mysql",
-      "versions": [
-        "2.15.27"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+mysql@2.15.27/node_modules/@types/mysql"
-      ],
-      "license": "MIT",
-      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/mysql",
-      "description": "TypeScript definitions for mysql"
-    },
-    {
       "name": "@types/node",
       "versions": [
-        "24.13.3"
+        "26.5.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+node@24.13.3/node_modules/@types/node"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+node@26.5.0/node_modules/@types/node"
       ],
       "license": "MIT",
       "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/node",
       "description": "TypeScript definitions for node"
     },
     {
-      "name": "@types/oracledb",
-      "versions": [
-        "6.5.2"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+oracledb@6.5.2/node_modules/@types/oracledb"
-      ],
-      "license": "MIT",
-      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/oracledb",
-      "description": "TypeScript definitions for oracledb"
-    },
-    {
       "name": "@types/pg",
       "versions": [
-        "8.15.6"
+        "8.15.6",
+        "8.23.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+pg@8.15.6/node_modules/@types/pg"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+pg@8.15.6/node_modules/@types/pg",
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+pg@8.23.1/node_modules/@types/pg"
       ],
       "license": "MIT",
       "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/pg",
@@ -2394,50 +2331,14 @@
     {
       "name": "@types/react",
       "versions": [
-        "19.2.17"
+        "19.2.18"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+react@19.2.17/node_modules/@types/react"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+react@19.2.18/node_modules/@types/react"
       ],
       "license": "MIT",
       "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react",
       "description": "TypeScript definitions for react"
-    },
-    {
-      "name": "@types/request",
-      "versions": [
-        "2.48.13"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+request@2.48.13/node_modules/@types/request"
-      ],
-      "license": "MIT",
-      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/request",
-      "description": "TypeScript definitions for request"
-    },
-    {
-      "name": "@types/tedious",
-      "versions": [
-        "4.0.14"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+tedious@4.0.14/node_modules/@types/tedious"
-      ],
-      "license": "MIT",
-      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/tedious",
-      "description": "TypeScript definitions for tedious"
-    },
-    {
-      "name": "@types/tough-cookie",
-      "versions": [
-        "4.0.5"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@types+tough-cookie@4.0.5/node_modules/@types/tough-cookie"
-      ],
-      "license": "MIT",
-      "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/tough-cookie",
-      "description": "TypeScript definitions for tough-cookie"
     },
     {
       "name": "@types/unist",
@@ -2506,11 +2407,9 @@
     {
       "name": "agent-base",
       "versions": [
-        "6.0.2",
         "7.1.4"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/agent-base@6.0.2/node_modules/agent-base",
         "/home/papadata/papadata-platform/node_modules/.pnpm/agent-base@7.1.4/node_modules/agent-base"
       ],
       "license": "MIT",
@@ -2548,11 +2447,11 @@
       "name": "ansi-regex",
       "versions": [
         "5.0.1",
-        "6.2.2"
+        "6.3.0"
       ],
       "paths": [
         "/home/papadata/papadata-platform/node_modules/.pnpm/ansi-regex@5.0.1/node_modules/ansi-regex",
-        "/home/papadata/papadata-platform/node_modules/.pnpm/ansi-regex@6.2.2/node_modules/ansi-regex"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/ansi-regex@6.3.0/node_modules/ansi-regex"
       ],
       "license": "MIT",
       "author": "Sindre Sorhus",
@@ -2601,19 +2500,6 @@
       "description": "An Argon2 library for Node"
     },
     {
-      "name": "arrify",
-      "versions": [
-        "2.0.1"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/arrify@2.0.1/node_modules/arrify"
-      ],
-      "license": "MIT",
-      "author": "Sindre Sorhus",
-      "homepage": "https://github.com/sindresorhus/arrify#readme",
-      "description": "Convert a value to an array"
-    },
-    {
       "name": "async-retry",
       "versions": [
         "1.3.3"
@@ -2624,19 +2510,6 @@
       "license": "MIT",
       "homepage": "https://github.com/vercel/async-retry#readme",
       "description": "Retrying made simple, easy and async"
-    },
-    {
-      "name": "asynckit",
-      "versions": [
-        "0.4.0"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/asynckit@0.4.0/node_modules/asynckit"
-      ],
-      "license": "MIT",
-      "author": "Alex Indigo",
-      "homepage": "https://github.com/alexindigo/asynckit#readme",
-      "description": "Minimal async jobs utility library, with streams support"
     },
     {
       "name": "atomic-sleep",
@@ -2758,28 +2631,15 @@
     {
       "name": "bullmq",
       "versions": [
-        "5.81.1"
+        "6.3.4"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/bullmq@5.81.1_redis@6.1.0_@opentelemetry+api@1.9.1_/node_modules/bullmq"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/bullmq@6.3.4_ioredis@6.0.0_pg@8.23.0_redis@6.2.1_@opentelemetry+api@1.9.1_/node_modules/bullmq"
       ],
       "license": "MIT",
       "author": "Taskforce.sh Inc.",
       "homepage": "https://bullmq.io/",
       "description": "Queue for messages and jobs based on Redis"
-    },
-    {
-      "name": "call-bind-apply-helpers",
-      "versions": [
-        "1.0.2"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/call-bind-apply-helpers@1.0.2/node_modules/call-bind-apply-helpers"
-      ],
-      "license": "MIT",
-      "author": "Jordan Harband",
-      "homepage": "https://github.com/ljharb/call-bind-apply-helpers#readme",
-      "description": "Helper functions around Function call/apply/bind, for use in `call-bind`"
     },
     {
       "name": "ccount",
@@ -2849,10 +2709,10 @@
     {
       "name": "cjs-module-lexer",
       "versions": [
-        "2.2.0"
+        "2.2.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/cjs-module-lexer@2.2.0/node_modules/cjs-module-lexer"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/cjs-module-lexer@2.2.1/node_modules/cjs-module-lexer"
       ],
       "license": "MIT",
       "author": "Guy Bedford",
@@ -2875,10 +2735,10 @@
     {
       "name": "class-validator",
       "versions": [
-        "0.14.4"
+        "0.15.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/class-validator@0.14.4/node_modules/class-validator"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/class-validator@0.15.1/node_modules/class-validator"
       ],
       "license": "MIT",
       "author": "TypeStack contributors",
@@ -2923,19 +2783,6 @@
       "author": "DY",
       "homepage": "https://github.com/colorjs/color-name",
       "description": "A list of color names and its values"
-    },
-    {
-      "name": "combined-stream",
-      "versions": [
-        "1.0.8"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/combined-stream@1.0.8/node_modules/combined-stream"
-      ],
-      "license": "MIT",
-      "author": "Felix Geisendörfer",
-      "homepage": "https://github.com/felixge/node-combined-stream",
-      "description": "A stream that emits multiple other streams one after another."
     },
     {
       "name": "comma-separated-tokens",
@@ -2994,10 +2841,10 @@
     {
       "name": "cron-parser",
       "versions": [
-        "4.9.0"
+        "5.10.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/cron-parser@4.9.0/node_modules/cron-parser"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/cron-parser@5.10.0/node_modules/cron-parser"
       ],
       "license": "MIT",
       "author": "Harri Siirak",
@@ -3096,19 +2943,6 @@
       "description": "Decode named character references"
     },
     {
-      "name": "delayed-stream",
-      "versions": [
-        "1.0.0"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/delayed-stream@1.0.0/node_modules/delayed-stream"
-      ],
-      "license": "MIT",
-      "author": "Felix Geisendörfer",
-      "homepage": "https://github.com/felixge/node-delayed-stream",
-      "description": "Buffers events from a stream until you are ready to handle them."
-    },
-    {
       "name": "dequal",
       "versions": [
         "2.0.3"
@@ -3133,19 +2967,6 @@
       "author": "Titus Wormer",
       "homepage": "https://github.com/wooorm/devlop#readme",
       "description": "Do things in development and nothing otherwise"
-    },
-    {
-      "name": "dunder-proto",
-      "versions": [
-        "1.0.1"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/dunder-proto@1.0.1/node_modules/dunder-proto"
-      ],
-      "license": "MIT",
-      "author": "Jordan Harband",
-      "homepage": "https://github.com/es-shims/dunder-proto#readme",
-      "description": "If available, the `Object.prototype.__proto__` accessor and mutator, call-bound"
     },
     {
       "name": "duplexify",
@@ -3202,38 +3023,12 @@
       "description": "Call a callback when a readable/writable/duplex stream has completed or failed."
     },
     {
-      "name": "es-define-property",
-      "versions": [
-        "1.0.1"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/es-define-property@1.0.1/node_modules/es-define-property"
-      ],
-      "license": "MIT",
-      "author": "Jordan Harband",
-      "homepage": "https://github.com/ljharb/es-define-property#readme",
-      "description": "`Object.defineProperty`, but not IE 8's broken one."
-    },
-    {
-      "name": "es-errors",
-      "versions": [
-        "1.3.0"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/es-errors@1.3.0/node_modules/es-errors"
-      ],
-      "license": "MIT",
-      "author": "Jordan Harband",
-      "homepage": "https://github.com/ljharb/es-errors#readme",
-      "description": "A simple cache for a few of the JS Error constructors."
-    },
-    {
       "name": "es-module-lexer",
       "versions": [
-        "2.3.1"
+        "2.3.2"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/es-module-lexer@2.3.1/node_modules/es-module-lexer"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/es-module-lexer@2.3.2/node_modules/es-module-lexer"
       ],
       "license": "MIT",
       "author": "Guy Bedford",
@@ -3241,38 +3036,12 @@
       "description": "Lexes ES modules returning their import/export metadata"
     },
     {
-      "name": "es-object-atoms",
-      "versions": [
-        "1.1.2"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/es-object-atoms@1.1.2/node_modules/es-object-atoms"
-      ],
-      "license": "MIT",
-      "author": "Jordan Harband",
-      "homepage": "https://github.com/ljharb/es-object-atoms#readme",
-      "description": "ES Object-related atoms: Object, ToObject, RequireObjectCoercible"
-    },
-    {
-      "name": "es-set-tostringtag",
-      "versions": [
-        "2.1.0"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/es-set-tostringtag@2.1.0/node_modules/es-set-tostringtag"
-      ],
-      "license": "MIT",
-      "author": "Jordan Harband",
-      "homepage": "https://github.com/es-shims/es-set-tostringtag#readme",
-      "description": "A helper to optimistically set Symbol.toStringTag, when possible."
-    },
-    {
       "name": "es-toolkit",
       "versions": [
-        "1.50.0"
+        "1.52.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/es-toolkit@1.50.0/node_modules/es-toolkit"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/es-toolkit@1.52.0/node_modules/es-toolkit"
       ],
       "license": "MIT",
       "homepage": "https://es-toolkit.dev",
@@ -3424,10 +3193,10 @@
     {
       "name": "fast-xml-builder",
       "versions": [
-        "1.3.0"
+        "1.3.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/fast-xml-builder@1.3.0/node_modules/fast-xml-builder"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/fast-xml-builder@1.3.1/node_modules/fast-xml-builder"
       ],
       "license": "MIT",
       "author": "Amit Gupta",
@@ -3437,10 +3206,10 @@
     {
       "name": "fast-xml-parser",
       "versions": [
-        "5.10.1"
+        "5.11.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/fast-xml-parser@5.10.1/node_modules/fast-xml-parser"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/fast-xml-parser@5.11.1/node_modules/fast-xml-parser"
       ],
       "license": "MIT",
       "author": "Amit Gupta",
@@ -3450,10 +3219,10 @@
     {
       "name": "fastify",
       "versions": [
-        "5.10.0"
+        "5.12.3"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/fastify@5.10.0/node_modules/fastify"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/fastify@5.12.3/node_modules/fastify"
       ],
       "license": "MIT",
       "author": "Matteo Collina",
@@ -3463,11 +3232,9 @@
     {
       "name": "fastify-plugin",
       "versions": [
-        "5.1.0",
         "6.0.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/fastify-plugin@5.1.0/node_modules/fastify-plugin",
         "/home/papadata/papadata-platform/node_modules/.pnpm/fastify-plugin@6.0.0/node_modules/fastify-plugin"
       ],
       "license": "MIT",
@@ -3491,10 +3258,10 @@
     {
       "name": "file-type",
       "versions": [
-        "21.3.4"
+        "22.0.2"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/file-type@21.3.4/node_modules/file-type"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/file-type@22.0.2/node_modules/file-type"
       ],
       "license": "MIT",
       "author": "Sindre Sorhus",
@@ -3513,19 +3280,6 @@
       "author": "Tomas Della Vedova - @delvedor",
       "homepage": "https://github.com/delvedor/find-my-way#readme",
       "description": "Crazy fast http radix based router"
-    },
-    {
-      "name": "form-data",
-      "versions": [
-        "2.5.6"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/form-data@2.5.6/node_modules/form-data"
-      ],
-      "license": "MIT",
-      "author": "Felix Geisendörfer",
-      "homepage": "https://github.com/form-data/form-data#readme",
-      "description": "A library to create readable \"multipart/form-data\" streams. Can be used to submit forms and file uploads to other web applications."
     },
     {
       "name": "formdata-polyfill",
@@ -3556,67 +3310,15 @@
     {
       "name": "framer-motion",
       "versions": [
-        "13.1.1"
+        "13.2.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/framer-motion@13.1.1_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/framer-motion"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/framer-motion@13.2.0_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/framer-motion"
       ],
       "license": "MIT",
       "author": "Matt Perry",
       "homepage": "https://github.com/motiondivision/motion#readme",
       "description": "A simple and powerful JavaScript animation library"
-    },
-    {
-      "name": "function-bind",
-      "versions": [
-        "1.1.2"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind"
-      ],
-      "license": "MIT",
-      "author": "Raynos",
-      "homepage": "https://github.com/Raynos/function-bind",
-      "description": "Implementation of Function.prototype.bind"
-    },
-    {
-      "name": "get-intrinsic",
-      "versions": [
-        "1.3.0"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/get-intrinsic@1.3.0/node_modules/get-intrinsic"
-      ],
-      "license": "MIT",
-      "author": "Jordan Harband",
-      "homepage": "https://github.com/ljharb/get-intrinsic#readme",
-      "description": "Get and robustly cache all JS language-level intrinsics at first require time"
-    },
-    {
-      "name": "get-proto",
-      "versions": [
-        "1.0.1"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/get-proto@1.0.1/node_modules/get-proto"
-      ],
-      "license": "MIT",
-      "author": "Jordan Harband",
-      "homepage": "https://github.com/ljharb/get-proto#readme",
-      "description": "Robustly get the [[Prototype]] of an object"
-    },
-    {
-      "name": "gopd",
-      "versions": [
-        "1.2.0"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/gopd@1.2.0/node_modules/gopd"
-      ],
-      "license": "MIT",
-      "author": "Jordan Harband",
-      "homepage": "https://github.com/ljharb/gopd#readme",
-      "description": "`Object.getOwnPropertyDescriptor`, but accounts for IE's broken implementation."
     },
     {
       "name": "gtoken",
@@ -3630,45 +3332,6 @@
       "author": "Google, LLC",
       "homepage": "https://github.com/google/node-gtoken#readme",
       "description": "Node.js Google Authentication Service Account Tokens"
-    },
-    {
-      "name": "has-symbols",
-      "versions": [
-        "1.1.0"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/has-symbols@1.1.0/node_modules/has-symbols"
-      ],
-      "license": "MIT",
-      "author": "Jordan Harband",
-      "homepage": "https://github.com/ljharb/has-symbols#readme",
-      "description": "Determine if the JS environment has Symbol support. Supports spec, or shams."
-    },
-    {
-      "name": "has-tostringtag",
-      "versions": [
-        "1.0.2"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/has-tostringtag@1.0.2/node_modules/has-tostringtag"
-      ],
-      "license": "MIT",
-      "author": "Jordan Harband",
-      "homepage": "https://github.com/inspect-js/has-tostringtag#readme",
-      "description": "Determine if the JS environment has `Symbol.toStringTag` support. Supports spec, or shams."
-    },
-    {
-      "name": "hasown",
-      "versions": [
-        "2.0.4"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/hasown@2.0.4/node_modules/hasown"
-      ],
-      "license": "MIT",
-      "author": "Jordan Harband",
-      "homepage": "https://github.com/inspect-js/hasOwn#readme",
-      "description": "A robust, ES3 compatible, \"has own property\" predicate."
     },
     {
       "name": "hast-util-to-jsx-runtime",
@@ -3738,24 +3401,22 @@
     {
       "name": "http-proxy-agent",
       "versions": [
-        "5.0.0"
+        "7.0.2"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/http-proxy-agent@5.0.0/node_modules/http-proxy-agent"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/http-proxy-agent@7.0.2/node_modules/http-proxy-agent"
       ],
       "license": "MIT",
       "author": "Nathan Rajlich",
-      "homepage": "https://github.com/TooTallNate/node-http-proxy-agent#readme",
+      "homepage": "https://github.com/TooTallNate/proxy-agents#readme",
       "description": "An HTTP(s) proxy `http.Agent` implementation for HTTP"
     },
     {
       "name": "https-proxy-agent",
       "versions": [
-        "5.0.1",
         "7.0.6"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/https-proxy-agent@5.0.1/node_modules/https-proxy-agent",
         "/home/papadata/papadata-platform/node_modules/.pnpm/https-proxy-agent@7.0.6/node_modules/https-proxy-agent"
       ],
       "license": "MIT",
@@ -3779,10 +3440,10 @@
     {
       "name": "immer",
       "versions": [
-        "11.1.16"
+        "11.1.18"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/immer@11.1.16/node_modules/immer"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/immer@11.1.18/node_modules/immer"
       ],
       "license": "MIT",
       "author": "Michel Weststrate",
@@ -3804,23 +3465,23 @@
     {
       "name": "ioredis",
       "versions": [
-        "5.11.1"
+        "6.0.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/ioredis@5.11.1/node_modules/ioredis"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/ioredis@6.0.0/node_modules/ioredis"
       ],
       "license": "MIT",
       "author": "Zihua Li",
-      "homepage": "https://github.com/luin/ioredis#readme",
+      "homepage": "https://github.com/redis/ioredis#readme",
       "description": "A robust, performance-focused and full-featured Redis client for Node.js."
     },
     {
       "name": "ipaddr.js",
       "versions": [
-        "2.4.0"
+        "2.5.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/ipaddr.js@2.4.0/node_modules/ipaddr.js"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/ipaddr.js@2.5.0/node_modules/ipaddr.js"
       ],
       "license": "MIT",
       "author": "whitequark",
@@ -3921,10 +3582,10 @@
     {
       "name": "is-unsafe",
       "versions": [
-        "2.0.0"
+        "2.0.2"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/is-unsafe@2.0.0/node_modules/is-unsafe"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/is-unsafe@2.0.2/node_modules/is-unsafe"
       ],
       "license": "MIT",
       "author": "Amit Gupta",
@@ -3934,10 +3595,10 @@
     {
       "name": "jose",
       "versions": [
-        "6.2.10"
+        "6.2.12"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/jose@6.2.10/node_modules/jose"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/jose@6.2.12/node_modules/jose"
       ],
       "license": "MIT",
       "author": "Filip Skokan",
@@ -4012,10 +3673,10 @@
     {
       "name": "libphonenumber-js",
       "versions": [
-        "1.13.9"
+        "1.13.12"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/libphonenumber-js@1.13.9/node_modules/libphonenumber-js"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/libphonenumber-js@1.13.12/node_modules/libphonenumber-js"
       ],
       "license": "MIT",
       "author": "catamphetamine",
@@ -4086,19 +3747,6 @@
       "author": "Titus Wormer",
       "homepage": "https://github.com/wooorm/markdown-table#readme",
       "description": "Generate a markdown (GFM) table"
-    },
-    {
-      "name": "math-intrinsics",
-      "versions": [
-        "1.1.0"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/math-intrinsics@1.1.0/node_modules/math-intrinsics"
-      ],
-      "license": "MIT",
-      "author": "Jordan Harband",
-      "homepage": "https://github.com/es-shims/math-intrinsics#readme",
-      "description": "ES Math-related intrinsics and helpers, robustly cached."
     },
     {
       "name": "mdast-util-find-and-replace",
@@ -4673,30 +4321,6 @@
       "description": "A comprehensive library for mime-type mapping"
     },
     {
-      "name": "mime-db",
-      "versions": [
-        "1.52.0"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/mime-db@1.52.0/node_modules/mime-db"
-      ],
-      "license": "MIT",
-      "homepage": "https://github.com/jshttp/mime-db#readme",
-      "description": "Media Type Database"
-    },
-    {
-      "name": "mime-types",
-      "versions": [
-        "2.1.35"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/mime-types@2.1.35/node_modules/mime-types"
-      ],
-      "license": "MIT",
-      "homepage": "https://github.com/jshttp/mime-types#readme",
-      "description": "The ultimate javascript content-type utility."
-    },
-    {
       "name": "module-details-from-path",
       "versions": [
         "1.0.4"
@@ -4712,10 +4336,10 @@
     {
       "name": "motion-dom",
       "versions": [
-        "13.1.1"
+        "13.2.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/motion-dom@13.1.1/node_modules/motion-dom"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/motion-dom@13.2.0/node_modules/motion-dom"
       ],
       "license": "MIT",
       "author": "Matt Perry",
@@ -4748,10 +4372,10 @@
     {
       "name": "msgpackr",
       "versions": [
-        "2.0.4"
+        "2.1.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/msgpackr@2.0.4/node_modules/msgpackr"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/msgpackr@2.1.0/node_modules/msgpackr"
       ],
       "license": "MIT",
       "author": "Kris Zyp",
@@ -4787,10 +4411,10 @@
     {
       "name": "node-addon-api",
       "versions": [
-        "8.9.0"
+        "8.9.2"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/node-addon-api@8.9.0/node_modules/node-addon-api"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/node-addon-api@8.9.2/node_modules/node-addon-api"
       ],
       "license": "MIT",
       "homepage": "https://github.com/nodejs/node-addon-api",
@@ -4930,10 +4554,10 @@
     {
       "name": "pg",
       "versions": [
-        "8.22.0"
+        "8.23.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/pg@8.22.0/node_modules/pg"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/pg@8.23.0/node_modules/pg"
       ],
       "license": "MIT",
       "author": "Brian Carlson",
@@ -4971,7 +4595,7 @@
         "3.14.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/pg-pool@3.14.0_pg@8.22.0/node_modules/pg-pool"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/pg-pool@3.14.0_pg@8.23.0/node_modules/pg-pool"
       ],
       "license": "MIT",
       "author": "Brian M. Carlson",
@@ -4981,10 +4605,10 @@
     {
       "name": "pg-protocol",
       "versions": [
-        "1.15.0"
+        "1.16.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/pg-protocol@1.15.0/node_modules/pg-protocol"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/pg-protocol@1.16.0/node_modules/pg-protocol"
       ],
       "license": "MIT",
       "homepage": "https://github.com/brianc/node-postgres#readme",
@@ -5111,11 +4735,11 @@
       "name": "process-warning",
       "versions": [
         "4.0.1",
-        "5.0.0"
+        "5.1.0"
       ],
       "paths": [
         "/home/papadata/papadata-platform/node_modules/.pnpm/process-warning@4.0.1/node_modules/process-warning",
-        "/home/papadata/papadata-platform/node_modules/.pnpm/process-warning@5.0.0/node_modules/process-warning"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/process-warning@5.1.0/node_modules/process-warning"
       ],
       "license": "MIT",
       "author": "Tomas Della Vedova",
@@ -5190,7 +4814,7 @@
         "10.1.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/react-markdown@10.1.0_@types+react@19.2.17_react@19.2.8/node_modules/react-markdown"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/react-markdown@10.1.0_@types+react@19.2.18_react@19.2.8/node_modules/react-markdown"
       ],
       "license": "MIT",
       "author": "Espen Hovlandsdal",
@@ -5203,7 +4827,7 @@
         "9.3.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/react-redux@9.3.0_@types+react@19.2.17_react@19.2.8_redux@5.0.1/node_modules/react-redux"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/react-redux@9.3.0_@types+react@19.2.18_react@19.2.8_redux@5.0.1/node_modules/react-redux"
       ],
       "license": "MIT",
       "author": "Dan Abramov",
@@ -5243,7 +4867,7 @@
         "3.10.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/recharts@3.10.1_@types+react@19.2.17_react-dom@19.2.8_react@19.2.8__react-is@19.2.8_react@19.2.8_redux@5.0.1/node_modules/recharts"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/recharts@3.10.1_@types+react@19.2.18_react-dom@19.2.8_react@19.2.8__react-is@19.2.8_react@19.2.8_redux@5.0.1/node_modules/recharts"
       ],
       "license": "MIT",
       "author": "recharts group",
@@ -5253,10 +4877,10 @@
     {
       "name": "redis",
       "versions": [
-        "6.1.0"
+        "6.2.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/redis@6.1.0_@opentelemetry+api@1.9.1/node_modules/redis"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/redis@6.2.1_@opentelemetry+api@1.9.1/node_modules/redis"
       ],
       "license": "MIT",
       "homepage": "https://github.com/redis/node-redis",
@@ -5274,19 +4898,6 @@
       "author": "Ruben Bridgewater",
       "homepage": "https://github.com/NodeRedis/redis-errors#readme",
       "description": "Error classes used in node_redis"
-    },
-    {
-      "name": "redis-parser",
-      "versions": [
-        "3.0.0"
-      ],
-      "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/redis-parser@3.0.0/node_modules/redis-parser"
-      ],
-      "license": "MIT",
-      "author": "Ruben Bridgewater",
-      "homepage": "https://github.com/NodeRedis/node-redis-parser#readme",
-      "description": "Javascript Redis protocol (RESP) parser"
     },
     {
       "name": "redux",
@@ -5445,14 +5056,14 @@
     {
       "name": "retry-request",
       "versions": [
-        "7.0.2"
+        "9.0.1"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/retry-request@7.0.2/node_modules/retry-request"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/retry-request@9.0.1/node_modules/retry-request"
       ],
       "license": "MIT",
       "author": "Stephen Sawchuk",
-      "homepage": "https://github.com/stephenplusplus/retry-request#readme",
+      "homepage": "https://github.com/googleapis/google-cloud-node/tree/main/core/packages/retry-request",
       "description": "Retry a request."
     },
     {
@@ -5707,10 +5318,10 @@
     {
       "name": "strnum",
       "versions": [
-        "2.4.1"
+        "2.4.2"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/strnum@2.4.1/node_modules/strnum"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/strnum@2.4.2/node_modules/strnum"
       ],
       "license": "MIT",
       "author": "Amit Gupta",
@@ -5772,10 +5383,10 @@
     {
       "name": "systeminformation",
       "versions": [
-        "5.33.1"
+        "5.33.9"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/systeminformation@5.33.1/node_modules/systeminformation"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/systeminformation@5.33.9/node_modules/systeminformation"
       ],
       "license": "MIT",
       "author": "Sebastian Hildebrandt",
@@ -5785,10 +5396,10 @@
     {
       "name": "tdigest",
       "versions": [
-        "0.1.2"
+        "0.1.3"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/tdigest@0.1.2/node_modules/tdigest"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/tdigest@0.1.3/node_modules/tdigest"
       ],
       "license": "MIT",
       "author": "Will Welch",
@@ -5915,10 +5526,10 @@
     {
       "name": "undici-types",
       "versions": [
-        "7.18.2"
+        "8.9.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/undici-types@7.18.2/node_modules/undici-types"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/undici-types@8.9.0/node_modules/undici-types"
       ],
       "license": "MIT",
       "homepage": "https://undici.nodejs.org",
@@ -6229,10 +5840,10 @@
     {
       "name": "@ungap/structured-clone",
       "versions": [
-        "1.3.4"
+        "1.4.0"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/@ungap+structured-clone@1.3.4/node_modules/@ungap/structured-clone"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/@ungap+structured-clone@1.4.0/node_modules/@ungap/structured-clone"
       ],
       "license": "ISC",
       "author": "Andrea Giammarchi",
@@ -6658,10 +6269,10 @@
     {
       "name": "fastq",
       "versions": [
-        "1.20.1"
+        "1.20.3"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/fastq@1.20.1/node_modules/fastq"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/fastq@1.20.3/node_modules/fastq"
       ],
       "license": "ISC",
       "author": "Matteo Collina",
@@ -7074,12 +6685,12 @@
     {
       "name": "fast-uri",
       "versions": [
-        "3.1.5",
-        "4.1.2"
+        "3.1.6",
+        "4.1.3"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/fast-uri@3.1.5/node_modules/fast-uri",
-        "/home/papadata/papadata-platform/node_modules/.pnpm/fast-uri@4.1.2/node_modules/fast-uri"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/fast-uri@3.1.6/node_modules/fast-uri",
+        "/home/papadata/papadata-platform/node_modules/.pnpm/fast-uri@4.1.3/node_modules/fast-uri"
       ],
       "license": "BSD-3-Clause",
       "author": "Vincent Le Goff",
@@ -7115,10 +6726,10 @@
     {
       "name": "protobufjs",
       "versions": [
-        "7.6.5"
+        "7.6.6"
       ],
       "paths": [
-        "/home/papadata/papadata-platform/node_modules/.pnpm/protobufjs@7.6.5/node_modules/protobufjs"
+        "/home/papadata/papadata-platform/node_modules/.pnpm/protobufjs@7.6.6/node_modules/protobufjs"
       ],
       "license": "BSD-3-Clause",
       "author": "Daniel Wirtz",

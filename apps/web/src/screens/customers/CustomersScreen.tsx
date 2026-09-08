@@ -681,7 +681,7 @@ function cohortToneClassName(value: string): string {
   if (value === 'N/A') return 'pd-cbi-cohort-cell pd-cbi-cohort-cell--empty';
   if (value === '100%') return 'pd-cbi-cohort-cell pd-cbi-cohort-cell--base';
 
-  const parsed = Number(value.replace(',', '.').replace('%', ''));
+  const parsed = Number(value.replaceAll(',', '.').replaceAll('%', ''));
   const strength = parsed > 35 ? 'strong' : parsed > 25 ? 'mid' : 'soft';
   return `pd-cbi-cohort-cell pd-cbi-cohort-cell--${strength}`;
 }

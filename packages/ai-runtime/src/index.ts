@@ -437,10 +437,15 @@ function redactMessages(messages: readonly AiMessage[]): readonly AiMessage[] {
 }
 
 function redactText(value: string): string {
+  // Quantifiers are bounded (RFC 5321-ish max lengths) rather than
+  // unbounded `+`/`*` -- this content comes from AI conversation messages,
+  // untrusted input an attacker could shape to trigger catastrophic
+  // backtracking (CodeQL js/polynomial-redos) on an unbounded version of
+  // this pattern.
   return value
-    .replaceAll(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/giu, "[REDACTED_EMAIL]")
-    .replaceAll(/\b(?:\d[ -]*?){13,19}\b/gu, "[REDACTED_NUMBER]")
-    .replaceAll(/\b(?:sk|pk|api)[-_][A-Za-z0-9_-]{16,}\b/gu, "[REDACTED_SECRET]");
+    .replaceAll(/[A-Z0-9._%+-]{1,64}@[A-Z0-9.-]{1,255}\.[A-Z]{2,24}/giu, "[REDACTED_EMAIL]")
+    .replaceAll(/\b(?:\d[ -]{0,2}){13,19}\b/gu, "[REDACTED_NUMBER]")
+    .replaceAll(/\b(?:sk|pk|api)[-_][A-Za-z0-9_-]{16,64}\b/gu, "[REDACTED_SECRET]");
 }
 
 function estimateTokens(value: string): number {

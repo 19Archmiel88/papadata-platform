@@ -1,7 +1,10 @@
 import type { HTMLAttributes } from 'react';
 import {
   forwardRef,
+  useEffect,
   useId,
+  useRef,
+  useState,
 } from 'react';
 
 import { Icon } from '../../icons';
@@ -225,6 +228,87 @@ function MetricShadowBars() {
   );
 }
 
+// Matches --pd-metric-help-popover-width's 18rem cap (assuming the default
+// 16px root font size) -- used only to decide whether centering the popover
+// on the trigger would carry it past the viewport edge, not to size anything.
+const helpPopoverMaxWidthPx = 288;
+
+type MetricHelpAlign =
+  | 'center'
+  | 'end'
+  | 'start';
+
+function resolveHelpAlign(trigger: HTMLElement): MetricHelpAlign {
+  const rect = trigger.getBoundingClientRect();
+  const halfPopoverWidth = helpPopoverMaxWidthPx / 2;
+  const edgeMargin = 16;
+  const triggerCenter = rect.left + rect.width / 2;
+
+  if (triggerCenter - halfPopoverWidth < edgeMargin) {
+    return 'start';
+  }
+
+  if (triggerCenter + halfPopoverWidth > window.innerWidth - edgeMargin) {
+    return 'end';
+  }
+
+  return 'center';
+}
+
+function MetricHelp({
+  helpText,
+  helpTextId,
+  label,
+}: {
+  readonly helpText: string;
+  readonly helpTextId: string;
+  readonly label: string;
+}) {
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  // Popover is centered on the trigger by default (CSS handles that with no
+  // JS involved) -- this only measures whether centering would push it past
+  // a viewport edge and, if so, which edge to anchor against instead. A
+  // card near the edge of a tight grid (see Command Center's KPI row) can't
+  // know that from CSS alone since it depends on the trigger's real
+  // position on screen, which shifts with viewport width and column count.
+  const [align, setAlign] = useState<MetricHelpAlign>('center');
+
+  useEffect(() => {
+    function updateAlign() {
+      const trigger = triggerRef.current;
+      if (!trigger) return;
+
+      setAlign(resolveHelpAlign(trigger));
+    }
+
+    updateAlign();
+    window.addEventListener('resize', updateAlign);
+    return () => window.removeEventListener('resize', updateAlign);
+  }, []);
+
+  return (
+    <span className="pd-metric-card__help" data-align={align}>
+      <button
+        aria-describedby={helpTextId}
+        aria-label={`Wyjaśnienie metryki: ${label}`}
+        className="pd-metric-card__help-trigger"
+        ref={triggerRef}
+        type="button"
+      >
+        <span aria-hidden="true" className="pd-metric-card__help-mark">?</span>
+      </button>
+
+      <span
+        className="pd-metric-card__help-popover"
+        id={helpTextId}
+        role="tooltip"
+      >
+        {helpText}
+      </span>
+    </span>
+  );
+}
+
 export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
   function MetricCard(
     {
@@ -321,28 +405,7 @@ export const MetricCard = forwardRef<HTMLElement, MetricCardProps>(
             </span>
 
             {helpText ? (
-              <span className="pd-metric-card__help">
-                <button
-                  aria-describedby={helpTextId}
-                  aria-label={`Wyjaśnienie metryki: ${label}`}
-                  className="pd-metric-card__help-trigger"
-                  type="button"
-                >
-                  <Icon
-                    decorative
-                    name="help"
-                    size={16}
-                  />
-                </button>
-
-                <span
-                  className="pd-metric-card__help-popover"
-                  id={helpTextId}
-                  role="tooltip"
-                >
-                  {helpText}
-                </span>
-              </span>
+              <MetricHelp helpText={helpText} helpTextId={helpTextId} label={label} />
             ) : null}
           </span>
 

@@ -1,231 +1,139 @@
-import type {
-  Meta,
-  StoryObj,
-} from '@storybook/react-vite';
-import type {
-  ReactNode,
-} from 'react';
-import {
-  expect,
-  fireEvent,
-  userEvent,
-  within,
-} from 'storybook/test';
-
-import {
-  ProductAbcXyzMatrix,
-  ProductAiInsightAudit,
-  ProductBundleSimulator,
-  ProductExplorer,
-  ProductInventoryCapital,
-  ProductLifecyclePortfolio,
-  ProductPromotionsAndBasket,
-  ProductResultSection,
-  ProductsScreen,
-} from '../../../screens/products/ProductsScreen';
-import {
-  StorybookProductShellFrame,
-} from '../shared/StorybookProductShellFrame';
-
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, fireEvent, userEvent, within } from 'storybook/test';
+import { ProductsScreen } from '../../../screens/products/ProductsScreen';
+import { StorybookProductShellFrame } from '../shared/StorybookProductShellFrame';
 const meta = {
   title: 'INTERNAL STORY SUPPORT/ANALIZA/Produkty',
   component: ProductsScreen,
-  parameters: {
-    a11y: {
-      test: 'error',
-    },
-    layout: 'fullscreen',
-  },
+  parameters: { layout: 'fullscreen', a11y: { test: 'error' } },
 } satisfies Meta<typeof ProductsScreen>;
-
 export default meta;
-
 type Story = StoryObj<typeof meta>;
-
-function StoryFrame({
-  children,
-}: {
-  readonly children: ReactNode;
-}) {
-  return (
-    <main className="pd-pbi">
-      <div className="pd-pbi__content">
-        {children}
-      </div>
-    </main>
-  );
-}
-
+const render = (props: Parameters<typeof ProductsScreen>[0] = {}) => (
+  <StorybookProductShellFrame activePath="/app/products">
+    <ProductsScreen {...props} />
+  </StorybookProductShellFrame>
+);
 export const Overview: Story = {
-  name: 'Całość',
-  render: () => (
-    <StorybookProductShellFrame activePath="/app/products">
-      <ProductsScreen />
-    </StorybookProductShellFrame>
-  ),
+  render: () => render(),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    await expect(await canvas.findByRole('heading', { name: 'Wynik produktowy' })).toBeInTheDocument();
-    await expect(await canvas.findByRole('heading', { name: 'Eksplorator produktów' })).toBeInTheDocument();
-    await expect(await canvas.findByRole('heading', { name: 'Symulator zestawów' })).toBeInTheDocument();
-    await expect(await canvas.findByRole('heading', { name: 'Podsumowanie Papa AI' })).toBeInTheDocument();
-
-    await userEvent.click(await canvas.findByRole('button', { name: 'Pokaż 7 zagrożonych SKU' }));
-    await expect((await canvas.findAllByText('SER-C-30')).length).toBeGreaterThan(0);
-    await expect((await canvas.findAllByText('ZST-HC-REPAIR')).length).toBeGreaterThan(0);
+    await expect(
+      await canvas.findByRole('heading', { level: 1, name: 'Produkty' }),
+    ).toBeInTheDocument();
+    await expect(
+      await canvas.findByRole('heading', { name: 'Co buduje marżę' }),
+    ).toBeInTheDocument();
   },
 };
-
 export const Result: Story = {
-  name: 'Sekcje — Wynik produktowy',
-  render: () => (
-    <StoryFrame>
-      <ProductResultSection />
-    </StoryFrame>
-  ),
+  render: () => render({ initialView: 'profitability', section: 'result' }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    await expect(await canvas.findByRole('heading', { name: 'Wynik produktowy' })).toBeInTheDocument();
-    await expect(await canvas.findByRole('heading', { name: '3 strategiczne SKU klasy AX wyprzedadzą się przed dostawą dostawcy' })).toBeInTheDocument();
-    await expect(await canvas.findByText('1 450 200 zł')).toBeInTheDocument();
-    await userEvent.click(await canvas.findByRole('button', { name: 'Wolumen (szt.)' }));
-    await expect(await canvas.findByRole('img', { name: 'Wykres trendu: Wolumen (szt.)' })).toBeInTheDocument();
+    await expect(await canvas.findByText('Marża z rozliczonym kosztem')).toBeInTheDocument();
+    await expect(
+      await canvas.findByRole('button', { name: 'Sprawdź brak kosztu' }),
+    ).toBeInTheDocument();
   },
 };
-
 export const Explorer: Story = {
-  name: 'Sekcje — Eksplorator produktów',
-  render: () => (
-    <StoryFrame>
-      <ProductExplorer />
-    </StoryFrame>
-  ),
+  render: () => render({ initialView: 'profitability', section: 'explorer' }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    await expect(await canvas.findByRole('heading', { name: 'Eksplorator produktów' })).toBeInTheDocument();
-    await userEvent.type(await canvas.findByRole('searchbox', { name: 'Szukaj nazwy SKU lub kodu' }), 'RET');
-    await expect(await canvas.findByText('OLK-RET-30')).toBeInTheDocument();
-    await expect(canvas.queryByText('SER-C-30')).not.toBeInTheDocument();
+    await userEvent.type(
+      await canvas.findByRole('searchbox', { name: 'Szukaj produktu lub SKU' }),
+      'RET',
+    );
+    await expect(await canvas.findByRole('button', { name: /Olejek Retinol/ })).toBeInTheDocument();
+    await expect(canvas.queryByRole('button', { name: /Serum Glow/ })).not.toBeInTheDocument();
   },
 };
-
 export const Portfolio: Story = {
-  name: 'Sekcje — Portfolio produktów',
-  render: () => (
-    <StoryFrame>
-      <ProductAbcXyzMatrix />
-    </StoryFrame>
-  ),
+  render: () => render({ initialView: 'portfolio' }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    await expect(await canvas.findByRole('heading', { name: 'Portfolio produktów' })).toBeInTheDocument();
-    await expect(await canvas.findByRole('button', { name: /AX/i })).toBeInTheDocument();
-    await userEvent.click(await canvas.findByRole('button', { name: 'Przełącz na widok tabeli A11y' }));
-    await expect(await canvas.findByText('Tabela Dostępności (A11y) — Podsumowanie Segmentów ABC/XYZ')).toBeInTheDocument();
+    await userEvent.click(await canvas.findByRole('button', { name: /Bez klasyfikacji/ }));
+    await expect(await canvas.findByRole('button', { name: /Olejek Retinol/ })).toBeInTheDocument();
+    await userEvent.click(await canvas.findByText('Pokaż wartości i zasady klasyfikacji'));
+    await expect(
+      await canvas.findByRole('table', { name: 'Segmenty z tej samej tabeli produktów' }),
+    ).toBeInTheDocument();
   },
 };
-
 export const Inventory: Story = {
-  name: 'Sekcje — Zapasy i kapitał',
-  render: () => (
-    <StoryFrame>
-      <ProductInventoryCapital />
-    </StoryFrame>
-  ),
+  render: () => render({ initialView: 'inventory' }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    await expect(await canvas.findByRole('heading', { name: 'Zapasy i kapitał' })).toBeInTheDocument();
-    await expect(await canvas.findByText('38 400 zł zamrożonego kapitału')).toBeInTheDocument();
+    await expect(
+      await canvas.findByRole('heading', { name: 'Zapasy i kapitał' }),
+    ).toBeInTheDocument();
+    await userEvent.click(await canvas.findByRole('button', { name: /^Ryzyko braku / }));
+    await expect(await canvas.findByRole('table', { name: 'Tabela zapasów' })).toBeInTheDocument();
   },
 };
-
 export const PromotionsAndBasket: Story = {
-  name: 'Sekcje — Promocje i koszyk',
-  render: () => (
-    <StoryFrame>
-      <ProductPromotionsAndBasket />
-    </StoryFrame>
-  ),
+  render: () => render({ initialView: 'offers' }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    await expect(await canvas.findByRole('heading', { name: 'Promocje i koszyk' })).toBeInTheDocument();
-    await expect(await canvas.findByText("Serum Glow C 30ml (Oferta Lato '26)")).toBeInTheDocument();
-    await expect(await canvas.findByText('Lift: 2.3x')).toBeInTheDocument();
+    await expect(
+      await canvas.findByRole('heading', { name: 'Promocje i analiza koszyka' }),
+    ).toBeInTheDocument();
+    await expect(await canvas.findByText('842')).toBeInTheDocument();
   },
 };
-
 export const BundleSimulator: Story = {
-  name: 'Interakcje — Symulator zestawów',
-  render: () => (
-    <StoryFrame>
-      <ProductBundleSimulator />
-    </StoryFrame>
-  ),
+  render: () => render({ initialView: 'offers' }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    await expect(await canvas.findByRole('heading', { name: 'Symulator zestawów' })).toBeInTheDocument();
-    const discountSlider = await canvas.findByRole('slider');
-    fireEvent.change(discountSlider, { target: { value: '20' } });
-    await expect(await canvas.findByText('Rabat na zestaw bundle (%):')).toBeInTheDocument();
+    const slider = await canvas.findByRole('slider', { name: 'Rabat na zestaw' });
+    fireEvent.change(slider, { target: { value: '20' } });
     await expect(await canvas.findByText('20%')).toBeInTheDocument();
+    await userEvent.selectOptions(await canvas.findByLabelText('Produkt 2'), 'OLK-RET-30');
+    await expect(await canvas.findByRole('status')).toHaveTextContent('Wybierz dwa różne produkty');
   },
 };
-
 export const Lifecycle: Story = {
-  name: 'Sekcje — Cykl życia produktów',
-  render: () => (
-    <StoryFrame>
-      <ProductLifecyclePortfolio />
-    </StoryFrame>
-  ),
+  render: () => render({ initialView: 'lifecycle' }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    await expect(await canvas.findByRole('heading', { name: 'Cykl życia produktów' })).toBeInTheDocument();
-    await expect(await canvas.findByText('Olejek Retinol 0.5%')).toBeInTheDocument();
+    await expect(
+      await canvas.findByRole('heading', { name: 'Cykl życia produktów' }),
+    ).toBeInTheDocument();
+    await expect(
+      await canvas.findByRole('button', { name: 'Olejek Retinol 0.5% 30ml' }),
+    ).toBeInTheDocument();
   },
 };
-
 export const PapaSummary: Story = {
-  name: 'Sekcje — Podsumowanie Papa AI',
-  render: () => (
-    <StoryFrame>
-      <ProductAiInsightAudit />
-    </StoryFrame>
-  ),
+  render: () => render({ initialView: 'insights' }),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    await expect(await canvas.findByRole('heading', { name: 'Podsumowanie Papa AI' })).toBeInTheDocument();
-    await expect(await canvas.findByText('SKU SER-C-30 ma 8 dni pokrycia.')).toBeInTheDocument();
+    await expect(
+      await canvas.findByRole('heading', { name: 'Wnioski i dowody' }),
+    ).toBeInTheDocument();
+    await expect(
+      (await canvas.findAllByRole('button', { name: /^Sprawdź / })).length,
+    ).toBeGreaterThan(0);
   },
 };
-
-export const PapaAiInteractions: Story = {
-  name: 'Interakcje — Papa AI',
-  render: () => (
-    <StorybookProductShellFrame activePath="/app/products">
-      <ProductsScreen />
-    </StorybookProductShellFrame>
-  ),
+export const EvidenceAndRisk: Story = {
+  render: () => render({ initialView: 'profitability' }),
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    const badges = await canvas.findAllByRole('button', { name: /Pomiar/ });
-    await userEvent.click(badges[0]);
-    await expect(await canvas.findByRole('dialog', { name: 'Provenance danych produktów' })).toBeInTheDocument();
-    await userEvent.click(await canvas.findByRole('button', { name: 'Zamknij provenance' }));
-
-    const detailButtons = await canvas.findAllByRole('button', { name: 'Szczegóły' });
-    await userEvent.click(detailButtons[0]);
-    await expect(await canvas.findByRole('dialog', { name: 'SKU Detail Drawer' })).toBeInTheDocument();
-    await expect(await canvas.findByText('Historia Ceny Sprzedaży & Rabatu')).toBeInTheDocument();
+    const canvas = within(canvasElement),
+      body = within(canvasElement.ownerDocument.body);
+    await userEvent.click(await canvas.findByRole('button', { name: 'Sprawdź brak kosztu' }));
+    const dialog = await body.findByRole('dialog', { name: 'Olejek Retinol 0.5% 30ml' });
+    await expect(
+      within(dialog).getByText(/Nie przyjmujemy kosztu równego zero/),
+    ).toBeInTheDocument();
+    await userEvent.keyboard('{Escape}');
+    await userEvent.click(await canvas.findByRole('button', { name: /^Sprawdź zagrożone SKU/ }));
+    await expect(
+      await canvas.findByRole('heading', { name: 'Zapasy i kapitał' }),
+    ).toBeInTheDocument();
+    await expect(await canvas.findByRole('button', { name: /^Ryzyko braku / })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
   },
 };

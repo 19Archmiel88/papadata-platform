@@ -177,14 +177,10 @@ export function PapaScreenContextProvider({
     workspaceName,
   ]);
 
-  useEffect(() => {
-    setRegistration(null);
-  }, [
-    activePath,
-  ]);
+
 
   const currentContext = useMemo<PapaScreenContext>(() => {
-    if (!registration) {
+    if (!registration || !(activePath.split('?')[0] === registration.route || activePath.startsWith(registration.route + '/') || (registration.route === '/app/command-center' && activePath.split('?')[0] === '/app'))) {
       return baseContext;
     }
 
@@ -208,6 +204,7 @@ export function PapaScreenContextProvider({
       updatedAt: new Date().toISOString(),
     };
   }, [
+    activePath,
     baseContext,
     registration,
   ]);
@@ -236,7 +233,8 @@ export function PapaScreenContextProvider({
       ...currentContext,
       captureReason,
       capturedAt,
-      snapshotId: `papa-context-${Date.now()}`,
+      snapshotId: `papa-context-${crypto.randomUUID()}`,
+      route: currentContext.route + (typeof window !== "undefined" ? window.location.search : ""),
     };
   }, [
     currentContext,
@@ -270,10 +268,6 @@ export function useRegisterScreenContext(
     registerScreenContext,
   } = usePapaScreenContext();
 
-  useEffect(() => (
-    registerScreenContext(registration)
-  ), [
-    registerScreenContext,
-    registration,
-  ]);
+  const signature = JSON.stringify(registration);
+  useEffect(() => registerScreenContext(JSON.parse(signature) as PapaScreenContextRegistration), [registerScreenContext, signature]);
 }

@@ -2,7 +2,6 @@ export * from './account-panel/index';
 export * from './app-shell/index';
 export * from './command-palette/index';
 export * from './date-range-overlay/index';
-export * from './footer/index';
 export * from './notifications/index';
 export * from './operation-center/index';
 export * from './overlays/index';

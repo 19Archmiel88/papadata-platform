@@ -3,12 +3,12 @@
   --pd-shell-sidebar-width: 224px;
   --pd-shell-sidebar-collapsed-width: 64px;
   --pd-shell-rail-item-size: 38px;
-  --pd-shell-content-max-width: 1480px;
+  --pd-shell-content-max-width: 1560px;
 
   height: 100dvh;
   min-height: 100vh;
   display: grid;
-  grid-template-rows: var(--pd-shell-topbar-height) minmax(0, 1fr) auto;
+  grid-template-rows: var(--pd-shell-topbar-height) minmax(0, 1fr);
   overflow: hidden;
   color: var(--pd-text);
   background: var(--pd-canvas);
@@ -48,7 +48,7 @@ body.pd-product-shell-scroll-lock {
   --pd-brand-action-hover: var(--pd-shell-brand-strong);
   --pd-brand-action-on: var(--pd-shell-brand-on);
   --pd-interactive: var(--pd-shell-brand);
-  --pd-interactive-subtle: var(--pd-shell-surface-active);
+  --pd-interactive-subtle: var(--pd-shell-brand-ambient);
   --pd-refractive-border: var(--pd-shell-separator);
   --pd-refractive-border-hover: var(--pd-shell-separator-strong);
   --pd-refractive-control: transparent;
@@ -58,11 +58,11 @@ body.pd-product-shell-scroll-lock {
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   overflow: hidden;
   border-inline-end: 1px solid var(--pd-shell-separator);
   background: var(--pd-shell-canvas);
-  color-scheme: dark;
+  color-scheme: inherit;
 }
 
 .pd-product-shell__sidebar-column[data-collapsed='true'] {
@@ -95,7 +95,7 @@ body.pd-product-shell-scroll-lock {
   margin: 0;
   padding: 0 9px 2px;
   color: var(--pd-shell-text-muted);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.2;
   letter-spacing: 0.08em;
@@ -149,8 +149,8 @@ body.pd-product-shell-scroll-lock {
 }
 
 .pd-product-shell__nav-item[aria-current='page'] {
-  color: var(--pd-shell-text);
-  background: var(--pd-shell-brand-ambient);
+  color: var(--pd-shell-brand);
+  background: var(--pd-interactive-subtle);
   font-weight: 600;
 }
 
@@ -178,14 +178,18 @@ body.pd-product-shell-scroll-lock {
 
 .pd-product-shell__nav-copy > span {
   color: inherit;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   line-height: 1.25;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 .pd-product-shell__nav-copy small {
   color: var(--pd-shell-text-muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.25;
 }
 
@@ -199,7 +203,7 @@ body.pd-product-shell-scroll-lock {
   border-radius: 999px;
   color: var(--pd-shell-text-secondary);
   background: var(--pd-shell-surface-subtle);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -241,7 +245,7 @@ body.pd-product-shell-scroll-lock {
   color: var(--pd-shell-text-muted);
   background: transparent;
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -271,7 +275,7 @@ body.pd-product-shell-scroll-lock {
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: clamp(18px, 2.1vw, 32px);
-  background: var(--pd-workspace-canvas, var(--pd-canvas));
+  background: var(--pd-surface);
   scrollbar-gutter: stable;
 }
 
@@ -304,12 +308,12 @@ body.pd-product-shell-scroll-lock {
   --pd-brand-action: var(--pd-shell-brand);
   --pd-brand-action-hover: var(--pd-shell-brand-strong);
   --pd-interactive: var(--pd-shell-brand);
-  --pd-interactive-subtle: var(--pd-shell-surface-active);
+  --pd-interactive-subtle: var(--pd-shell-brand-ambient);
 
   border-color: var(--pd-shell-separator);
   background: var(--pd-shell-canvas);
   color: var(--pd-shell-text);
-  color-scheme: dark;
+  color-scheme: inherit;
 }
 
 .pd-product-shell__mobile-navigation-drawer .pd-overlay-surface__header {
@@ -369,7 +373,7 @@ body.pd-product-shell-scroll-lock {
   background: color-mix(in srgb, var(--pd-shell-surface-overlay) 94%, black);
   color: var(--pd-shell-text);
   box-shadow: var(--pd-shadow-overlay);
-  color-scheme: dark;
+  color-scheme: inherit;
 }
 
 .pd-product-shell__command-dialog .pd-overlay-surface__body {
@@ -404,7 +408,7 @@ body.pd-product-shell-scroll-lock {
 
 .pd-product-shell__command-field .pd-form-field__label {
   color: var(--pd-shell-text-secondary);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .pd-product-shell__command-field .pd-form-control {
@@ -432,7 +436,7 @@ body.pd-product-shell-scroll-lock {
   margin: 0;
   padding-inline: 6px;
   color: var(--pd-shell-text-muted);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1.2;
@@ -497,7 +501,7 @@ body.pd-product-shell-scroll-lock {
 .pd-product-shell__command-result small {
   overflow: hidden;
   color: var(--pd-shell-text-muted);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -518,8 +522,9 @@ body.pd-product-shell-scroll-lock {
 
 .pd-product-shell__nav-item:focus-visible,
 .pd-product-shell__sidebar-footer-toggle:focus-visible {
-  outline: 0;
-  box-shadow: 0 0 0 3px var(--pd-focus-ring);
+  box-shadow: none;
+  outline: var(--pd-focus-width, 2px) solid var(--pd-focus-ring);
+  outline-offset: 2px;
 }
 
 .pd-product-shell__sidebar-footer--mobile {
@@ -558,3 +563,14 @@ body.pd-product-shell-scroll-lock {
     padding: 12px;
   }
 }
+
+.pd-product-shell__workspace-header { padding: 20px 12px 12px; }
+.pd-product-shell__nav-group[data-group="administration"] { margin-block-start: auto; padding-block-start: 24px; }
+.pd-product-shell__sidebar { display: flex; flex-direction: column; gap: 16px; }
+.pd-product-shell__nav-group-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 36px; padding: 8px 10px; border: 0; border-radius: 6px; background: transparent; color: var(--pd-shell-text); font-size: 14px; font-weight: 500; cursor: pointer; }
+.pd-product-shell__nav-group-toggle:hover { background: var(--pd-shell-surface-subtle); }
+.pd-product-shell__nav-group[data-group="analytics"] .pd-product-shell__nav-item { padding-inline-start: 18px; }
+.pd-product-shell__nav-group[data-group="analytics"] .pd-product-shell__nav-copy > span { font-size: 13px; }
+.pd-product-shell__nav-item { text-decoration: none; min-height: 38px; }
+.pd-product-shell__nav-group[data-group="administration"] .pd-product-shell__nav-item { font-size: 13px; }
+@media (pointer: coarse) { .pd-product-shell__nav-item, .pd-product-shell__nav-group-toggle { min-height: 44px; } }

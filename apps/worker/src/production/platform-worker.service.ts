@@ -9,7 +9,7 @@ import { ObjectStorageClient } from "@papadata/storage";
 import { readWorkerConfig } from "./config.js";
 
 export type PlatformJobPayload = {
-  readonly jobType: "report" | "privacy_request" | "reconciliation" | "retention" | "ai_evaluation";
+  readonly jobType: "report" | "privacy_request" | "reconciliation" | "retention" | "ai_evaluation" | "stripe_webhook";
   readonly tenantId: string;
   readonly workspaceId: string | null;
   readonly payload: Readonly<Record<string, unknown>>;
@@ -69,6 +69,8 @@ export class PlatformWorkerService implements OnModuleDestroy {
         return this.processRetention(job.data);
       case "ai_evaluation":
         return this.processAiEvaluation(job.data);
+      case "stripe_webhook":
+        return this.processStripeWebhook(job.data);
     }
   }
 
@@ -334,6 +336,79 @@ export class PlatformWorkerService implements OnModuleDestroy {
     };
   }
 
+  /**
+   * Runs on systemDatabase (bypass-RLS PlatformDatabase), not the tenant-
+   * scoped ProductionDatabase -- see StripeWebhookService's doc comment for
+   * why: only checkout.session.completed carries the workspace's own
+   * identity (via Checkout Session's client_reference_id, expected to be
+   * "<tenantId>:<workspaceId>"); every later subscription event is only
+   * addressable by Stripe's own ids, which this table indexes uniquely.
+   *
+   * Untestable end-to-end without a real Stripe account (this whole
+   * platform has none configured yet -- see the scaling architecture
+   * audit), but every write here is a plain, real SQL statement exercised
+   * the same way any other repository method in this codebase would be.
+   */
+  private async processStripeWebhook(data: PlatformJobPayload): Promise<object> {
+    const eventType = requiredPayloadString(data.payload, "stripeEventType");
+    const stripeObject = data.payload.stripeObject;
+    const object = isRecord(stripeObject) ? stripeObject : {};
+
+    if (eventType === "checkout.session.completed") {
+      const clientReferenceId = readNestedString(object, "client_reference_id");
+      const [tenantId, workspaceId] = (clientReferenceId ?? "").split(":");
+      const customerId = readNestedString(object, "customer");
+      const subscriptionId = readNestedString(object, "subscription");
+      const planId = readNestedString(object, "metadata", "planId") ?? "starter";
+
+      if (!tenantId || !workspaceId || !customerId) {
+        return { status: "skipped", reason: "missing_workspace_or_customer_reference" };
+      }
+
+      await this.systemDatabase.query(
+        `insert into app.workspace_subscriptions (
+           tenant_id, workspace_id, plan_id, status,
+           stripe_customer_id, stripe_subscription_id, updated_at
+         ) values ($1::uuid, $2::uuid, $3, 'active', $4, $5, now())
+         on conflict (tenant_id, workspace_id) do update set
+           plan_id = excluded.plan_id,
+           status = 'active',
+           stripe_customer_id = excluded.stripe_customer_id,
+           stripe_subscription_id = excluded.stripe_subscription_id,
+           updated_at = now()`,
+        [tenantId, workspaceId, planId, customerId, subscriptionId],
+      );
+      return { status: "completed", event: eventType };
+    }
+
+    if (eventType === "customer.subscription.updated" || eventType === "customer.subscription.deleted") {
+      const subscriptionId = readNestedString(object, "id");
+      if (!subscriptionId) {
+        return { status: "skipped", reason: "missing_subscription_id" };
+      }
+
+      const status = mapStripeSubscriptionStatus(readNestedString(object, "status"), eventType);
+      const planId = readNestedString(object, "metadata", "planId");
+      const currentPeriodEndSeconds = readNestedNumber(object, "current_period_end");
+      const currentPeriodEnd = currentPeriodEndSeconds !== null
+        ? new Date(currentPeriodEndSeconds * 1_000).toISOString()
+        : null;
+
+      await this.systemDatabase.query(
+        `update app.workspace_subscriptions
+         set status = $2,
+             plan_id = coalesce($3, plan_id),
+             current_period_end = coalesce($4::timestamptz, current_period_end),
+             updated_at = now()
+         where stripe_subscription_id = $1`,
+        [subscriptionId, status, planId, currentPeriodEnd],
+      );
+      return { status: "completed", event: eventType };
+    }
+
+    return { status: "ignored", event: eventType };
+  }
+
   private async completeSchedule(
     scheduleKey: string,
     data: PlatformJobPayload,
@@ -365,6 +440,39 @@ function requiredPayloadString(payload: Readonly<Record<string, unknown>>, key: 
     throw new Error(`Platform job payload is missing ${key}`);
   }
   return value;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function readNestedString(object: Record<string, unknown>, ...path: readonly string[]): string | null {
+  let current: unknown = object;
+  for (const key of path) {
+    if (!isRecord(current)) return null;
+    current = current[key];
+  }
+  return typeof current === "string" && current.length > 0 ? current : null;
+}
+
+function readNestedNumber(object: Record<string, unknown>, ...path: readonly string[]): number | null {
+  let current: unknown = object;
+  for (const key of path) {
+    if (!isRecord(current)) return null;
+    current = current[key];
+  }
+  return typeof current === "number" && Number.isFinite(current) ? current : null;
+}
+
+function mapStripeSubscriptionStatus(
+  stripeStatus: string | null,
+  eventType: string,
+): "active" | "canceled" | "past_due" | "trialing" {
+  if (eventType === "customer.subscription.deleted") return "canceled";
+  if (stripeStatus === "trialing") return "trialing";
+  if (stripeStatus === "past_due" || stripeStatus === "unpaid") return "past_due";
+  if (stripeStatus === "canceled" || stripeStatus === "incomplete_expired") return "canceled";
+  return "active";
 }
 
 function renderReport(

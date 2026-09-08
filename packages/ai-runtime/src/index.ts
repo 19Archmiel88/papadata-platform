@@ -360,18 +360,42 @@ export class AiModelRouter {
   }
 }
 
+export class AiBudgetExceededError extends Error {
+  readonly scope: "plan" | "route" | "user" | "workspace";
+
+  constructor(scope: "plan" | "route" | "user" | "workspace", message: string) {
+    super(message);
+    this.name = "AiBudgetExceededError";
+    this.scope = scope;
+  }
+}
+
 export class AiBudgetGuard {
+  /**
+   * Checks three independent budgets, cheapest/narrowest first: the route's
+   * own per-call ceiling, then the workspace's rolling consumption, then the
+   * calling user's own rolling consumption within that same workspace. The
+   * user check exists so one user cannot spend an entire workspace's budget
+   * alone -- consumedCostMinorForUser/userBudgetMinor are a strict subset of
+   * consumedCostMinor/workspaceBudgetMinor (same window, same currency), not
+   * an independent pool.
+   */
   assertWithinBudget(input: {
     estimatedCostMinor: number;
     route: AiModelRoute;
     consumedCostMinor: number;
     workspaceBudgetMinor: number;
+    consumedCostMinorForUser: number;
+    userBudgetMinor: number;
   }): void {
     if (input.estimatedCostMinor > input.route.maxCostMinor) {
-      throw new Error("AI route cost limit exceeded");
+      throw new AiBudgetExceededError("route", "AI route cost limit exceeded");
     }
     if (input.consumedCostMinor + input.estimatedCostMinor > input.workspaceBudgetMinor) {
-      throw new Error("AI workspace budget exceeded");
+      throw new AiBudgetExceededError("workspace", "AI workspace budget exceeded");
+    }
+    if (input.consumedCostMinorForUser + input.estimatedCostMinor > input.userBudgetMinor) {
+      throw new AiBudgetExceededError("user", "AI per-user budget exceeded");
     }
   }
 }

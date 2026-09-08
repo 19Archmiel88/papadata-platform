@@ -1,11 +1,6 @@
 /// <reference types="vite/client" />
 
-import { StorybookProductViewCleanup } from './StorybookProductViewCleanup';
-
-import type {
-  Decorator,
-  Preview,
-} from '@storybook/react-vite';
+import type { Decorator, Preview } from '@storybook/react-vite';
 
 import {
   applyPapaDataRuntimeGlobals,
@@ -13,23 +8,16 @@ import {
 } from '../src/design-system/foundations/runtime';
 import '../src/design-system/foundations/foundations.css';
 
-const withPapaDataRuntime: Decorator = (
-  Story,
-  context,
-) => {
-  const runtimeGlobals =
-    normalizePapaDataRuntimeGlobals({
-      theme: context.globals.theme,
-      locale: context.globals.locale,
-      density: context.globals.density,
-      motion: context.globals.motion,
-    });
+const withPapaDataRuntime: Decorator = (Story, context) => {
+  const runtimeGlobals = normalizePapaDataRuntimeGlobals({
+    theme: context.globals.theme,
+    locale: context.globals.locale,
+    density: context.globals.density,
+    motion: context.globals.motion,
+  });
 
   if (typeof document !== 'undefined') {
-    applyPapaDataRuntimeGlobals(
-      document.documentElement,
-      runtimeGlobals,
-    );
+    applyPapaDataRuntimeGlobals(document.documentElement, runtimeGlobals);
   }
 
   const canvasKey = [
@@ -45,20 +33,15 @@ const withPapaDataRuntime: Decorator = (
       data-density={runtimeGlobals.density}
       data-locale={runtimeGlobals.locale}
       data-motion={runtimeGlobals.motion}
-      data-theme={runtimeGlobals.theme}
       key={canvasKey}
     >
-      <StorybookProductViewCleanup>
-        <Story />
-      </StorybookProductViewCleanup>
+      <Story />
     </div>
   );
 };
 
 const preview: Preview = {
-  decorators: [
-    withPapaDataRuntime,
-  ],
+  decorators: [withPapaDataRuntime],
 
   globalTypes: {
     theme: {
@@ -163,7 +146,8 @@ const preview: Preview = {
       storySort: (leftEntry, rightEntry) => {
         const rootOrder = [
           'ANALIZA',
-          'AI',
+          'DECYZJE',
+          'RAPORTY',
           'DANE I INTEGRACJE',
           'ADMINISTRACJA',
           'WSPARCIE',
@@ -173,17 +157,18 @@ const preview: Preview = {
 
         const sectionOrder = {
           ANALIZA: [
-            'Centrum Dowodzenia',
+            'Przegląd',
             'Kampanie płatne',
             'Zamówienia',
             'Produkty',
             'Klienci',
             'Ruch na stronie',
           ],
-          AI: ['Laboratorium Papa Asystenta'],
+          DECYZJE: ['Centrum decyzji'],
+          RAPORTY: ['Zapisane raporty'],
           'DANE I INTEGRACJE': ['Integracje'],
           ADMINISTRACJA: ['Ustawienia', 'Subskrypcja i płatności'],
-          WSPARCIE: ['Wsparcie w marketingu', 'Centrum Pomocy'],
+          WSPARCIE: ['Centrum Pomocy'],
           'DESIGN SYSTEM': ['Fundamenty', 'Komponenty', 'Wzorce interfejsu'],
           PLATFORMA: ['Powłoka produktu', 'Dostęp i onboarding'],
         };
@@ -209,17 +194,20 @@ const preview: Preview = {
         const leftRoot = leftPath[0];
         const rightRoot = rightPath[0];
 
-        const rootDifference = configuredIndex(leftRoot, rootOrder) - configuredIndex(rightRoot, rootOrder);
+        const rootDifference =
+          configuredIndex(leftRoot, rootOrder) - configuredIndex(rightRoot, rootOrder);
         if (rootDifference !== 0) return rootDifference;
 
         if (leftRoot === rightRoot && leftRoot) {
           const domainOrder = sectionOrder[leftRoot] ?? [];
-          const domainDifference = configuredIndex(leftPath[1], domainOrder) - configuredIndex(rightPath[1], domainOrder);
+          const domainDifference =
+            configuredIndex(leftPath[1], domainOrder) - configuredIndex(rightPath[1], domainOrder);
           if (domainDifference !== 0) return domainDifference;
         }
 
-        const categoryDifference = configuredIndex(leftPath[2], storyCategoryOrder)
-          - configuredIndex(rightPath[2], storyCategoryOrder);
+        const categoryDifference =
+          configuredIndex(leftPath[2], storyCategoryOrder) -
+          configuredIndex(rightPath[2], storyCategoryOrder);
         if (categoryDifference !== 0) return categoryDifference;
 
         const titleDifference = polishCollator.compare(left.title ?? '', right.title ?? '');

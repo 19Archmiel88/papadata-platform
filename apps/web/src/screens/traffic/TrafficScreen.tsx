@@ -1,8 +1,11 @@
+import { useAssistantAnalysisContext } from '../../runtime/shell/papa-assistant/useAssistantAnalysisContext';
 import type {
-  ChangeEvent,
   CSSProperties,
+  ReactNode,
 } from 'react';
+import type { DateRange } from '../../../../../contracts/ui-contract-types';
 import {
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -18,14 +21,22 @@ import {
 
 import {
   Button,
+  DateRangePicker,
+  Drawer,
+  ExplorerTable,
   Icon,
   MetricCard,
   Panel,
+  Popover,
   PriorityBand,
   ProductSectionFrame,
   ProductSectionTopbar,
-  Select,
 } from '../../design-system';
+import type {
+  ExplorerTableColumn,
+} from '../../design-system';
+import { useShellDateRange } from '../../runtime/shell/app-shell/ShellDateRangeContext';
+import { overviewRangeLabel } from '../command-center/CommandCenterScreen.data';
 import {
   backlogFilterOptions,
   funnelScenario,
@@ -36,21 +47,15 @@ import {
   papaTerminalReports,
   trackingQualityCards,
   trafficBacklogRows,
-  trafficChannelOptions,
   trafficChannelRows,
-  trafficCompareOptions,
   trafficDefaultFilters,
-  trafficDeviceOptions,
   trafficDeviceRows,
   trafficFunnelSteps,
   trafficGeoRows,
   trafficKpis,
   trafficSections,
   trafficSectionsById,
-  trafficTimeRangeOptions,
-  trafficTrendLabels,
   trafficTrendModes,
-  trafficTrendSeries,
 } from './TrafficScreen.data';
 import type {
   LandingPageRow,
@@ -58,18 +63,19 @@ import type {
   PapaTerminalType,
   TrafficBacklogFilter,
   TrafficChannelQuality,
+  TrafficChannelRow,
   TrafficGlobalFilters,
   TrafficSectionId,
   TrafficTone,
   TrafficTrendMode,
 } from './TrafficScreen.data';
+import {
+  defaultTrafficAnalysis,
+  deriveTrafficAnalysis,
+  trafficTrendChartData,
+  type TrafficAnalysis,
+} from './TrafficAnalysis.data';
 import './TrafficScreen.css';
-
-type TrafficChartPoint = {
-  readonly current: number;
-  readonly label: string;
-  readonly previous: number;
-};
 
 const noop = () => undefined;
 
@@ -92,17 +98,72 @@ const tooltipStyle: CSSProperties = {
 
 export function TrafficScreen() {
   const [activeSection, setActiveSection] = useState<TrafficSectionId>(trafficSections[0]!.id);
+  const [expandedSections, setExpandedSections] = useState<Set<TrafficSectionId>>(
+    () => new Set(trafficSections.map((section) => section.id)),
+  );
   const [filters, setFilters] = useState<TrafficGlobalFilters>(trafficDefaultFilters);
   const [chartMetric, setChartMetric] = useState<TrafficTrendMode>('sessions');
-  const [channelSearch, setChannelSearch] = useState('');
   const [landingFilter, setLandingFilter] = useState<LandingPageTone>('all');
   const [selectedLandingPath, setSelectedLandingPath] = useState<string | null>(null);
   const [funnelCompletionRate, setFunnelCompletionRate] = useState<number>(funnelScenario.baseCompletionRate);
   const [backlogFilter, setBacklogFilter] = useState<TrafficBacklogFilter>('all');
   const [terminalType, setTerminalType] = useState<PapaTerminalType>('ready');
   const [toast, setToast] = useState('Sekcja Ruch na stronie gotowa');
+  const { dateRange, setDateRange } = useShellDateRange();
+  const [dateOpen, setDateOpen] = useState(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
+  const analysis = deriveTrafficAnalysis(dateRange);
+  useAssistantAnalysisContext({ title: 'Ruch na stronie', route: '/app/traffic', readiness: analysis.valid ? 'partial' : 'empty', source: 'Model demonstracyjny ruchu',
+    metrics: { Sesje: analysis.sessions, Zakupy: analysis.purchases, 'Przychód (PLN)': analysis.revenue },
+    tables: ['Kanały', 'Strony wejścia', 'Geografia'], charts: ['Trend ruchu'] });
 
   const selectedLandingPage = landingPageRows.find((page) => page.path === selectedLandingPath) ?? null;
+  const allSectionsExpanded = trafficSections.every((section) => expandedSections.has(section.id));
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return undefined;
+
+    const observer = new IntersectionObserver((entries) => {
+      const visibleSection = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((left, right) => Math.abs(left.boundingClientRect.top) - Math.abs(right.boundingClientRect.top))[0];
+
+      if (visibleSection?.target.id) {
+        setActiveSection(visibleSection.target.id as TrafficSectionId);
+      }
+    }, {
+      rootMargin: '-112px 0px -62% 0px',
+      threshold: [0, 0.08],
+    });
+
+    trafficSections.forEach((section) => {
+      const element = document.getElementById(section.id);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  function setSectionExpanded(sectionId: TrafficSectionId, expanded: boolean) {
+    setExpandedSections((currentSections) => {
+      const nextSections = new Set(currentSections);
+      if (expanded) nextSections.add(sectionId);
+      else nextSections.delete(sectionId);
+      return nextSections;
+    });
+  }
+
+  function handleToggleAllSections() {
+    setExpandedSections(new Set(allSectionsExpanded
+      ? []
+      : trafficSections.map((section) => section.id)));
+  }
+
+  function handleSectionChange(sectionId: TrafficSectionId) {
+    setActiveSection(sectionId);
+    setSectionExpanded(sectionId, true);
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
   function showMobileFunnel() {
     setFilters({
@@ -110,6 +171,7 @@ export function TrafficScreen() {
       deviceFilter: 'mobile',
     });
     setToast('Wyświetlono kontekst mobile funnel');
+    setSectionExpanded('lejek', true);
     globalThis.document?.getElementById(trafficSectionsById.lejek.id)?.scrollIntoView({
       behavior: 'smooth',
       block: 'start',
@@ -120,30 +182,60 @@ export function TrafficScreen() {
     setToast('Moduł Kampanie Płatne (ID-2): spend, ROAS, CPC, CPM oraz atrybucja płatna');
   }
 
+  function exportTrafficCsv() {
+    const header = 'Data,Sesje,Zakupy GA4,Przychód GA4 (PLN)';
+    const rows = analysis.days.map((day) => `${day.date},${day.sessions},${day.purchases},${day.revenue}`);
+    downloadCsv(
+      [header, ...rows].join('\n'),
+      `ruch-na-stronie-${dateRange.from}-${dateRange.to}.csv`,
+    );
+    setToast(`Eksport CSV przygotowany: ${analysis.days.length} dni, ${overviewRangeLabel(dateRange)}`);
+  }
+
+  function refreshTrafficData() {
+    setLastSyncedAt(new Date());
+    setToast('Dane GA4 zostały odświeżone. Synchronizacja aktualna: przed chwilą');
+  }
+
   return (
-    <main className="pd-tbi" data-testid="traffic-bi-page">
+    <div className="pd-tbi" data-testid="traffic-bi-page">
       <ProductSectionTopbar
         activeId={activeSection}
+        actions={(
+          <button
+            className="pd-tbi-section-nav-toggle"
+            onClick={handleToggleAllSections}
+            type="button"
+          >
+            {allSectionsExpanded ? 'Zwiń szczegóły' : 'Rozwiń wszystkie'}
+          </button>
+        )}
         ariaLabel="Sekcje Ruchu"
         items={trafficSections.map((section) => ({ icon: section.icon, id: section.id, label: section.navLabel }))}
-        onActiveIdChange={(sectionId) => setActiveSection(sectionId as TrafficSectionId)}
+        onActiveIdChange={(sectionId) => handleSectionChange(sectionId as TrafficSectionId)}
       />
 
       <TrafficHeader
-        onExport={() => setToast('Eksport CSV przygotowany dla kanałów ruchu')}
-        onRefresh={() => setToast('Dane GA4 zostały odświeżone. Synchronizacja aktualna: 14 min temu')}
+        dateOpen={dateOpen}
+        dateRange={dateRange}
+        freshnessLabel={lastSyncedAt ? 'przed chwilą' : '14 min temu'}
+        onDateOpenChange={setDateOpen}
+        onDateRangeChange={setDateRange}
+        onExport={exportTrafficCsv}
+        onRefresh={refreshTrafficData}
+        rangeValid={analysis.valid}
       />
-      <TrafficGlobalControls
-        filters={filters}
-        onFilterChange={(nextFilters) => {
-          setFilters(nextFilters);
-          setToast('Zaktualizowano globalne filtry ruchu');
-        }}
-      />
-
+      {!analysis.valid && (
+        <p className="pd-tbi-inline-alert" role="alert">
+          Wybrany okres jest nieprawidłowy (od 1 do 366 dni). Metryki i trend poniżej pokazują ostatni poprawny zakres.
+        </p>
+      )}
       <div className="pd-tbi__content">
         <TrafficResultSection
+          analysis={analysis}
+          expanded={expandedSections.has('wynik')}
           metric={chartMetric}
+          onExpandedChange={(expanded) => setSectionExpanded('wynik', expanded)}
           onOpenAnalysis={() => {
             setTerminalType('mobile_drop');
             setToast('Wygenerowano pełną analizę Papa AI dla mobile drop');
@@ -153,26 +245,40 @@ export function TrafficScreen() {
         />
         <TrafficChannelExplorer
           channelFilter={filters.channelFilter}
+          expanded={expandedSections.has('kanaly')}
+          onExpandedChange={(expanded) => setSectionExpanded('kanaly', expanded)}
           onPaidCampaignsNotice={showPaidCampaignsNotice}
-          onSearchChange={setChannelSearch}
-          searchValue={channelSearch}
         />
         <TrafficLandingPageExplorer
+          expanded={expandedSections.has('strony')}
           filter={landingFilter}
+          onExpandedChange={(expanded) => setSectionExpanded('strony', expanded)}
           onFilterChange={setLandingFilter}
           onOpenLandingPage={setSelectedLandingPath}
         />
         <TrafficFunnelSimulation
           completionRate={funnelCompletionRate}
+          expanded={expandedSections.has('lejek')}
           onCompletionRateChange={setFunnelCompletionRate}
+          onExpandedChange={(expanded) => setSectionExpanded('lejek', expanded)}
         />
-        <TrafficDeviceGeoPerformance />
-        <TrafficTrackingQuality />
+        <TrafficDeviceGeoPerformance
+          expanded={expandedSections.has('urzadzenia')}
+          onExpandedChange={(expanded) => setSectionExpanded('urzadzenia', expanded)}
+        />
+        <TrafficTrackingQuality
+          expanded={expandedSections.has('jakosc')}
+          onExpandedChange={(expanded) => setSectionExpanded('jakosc', expanded)}
+        />
         <TrafficGovernanceBacklog
+          expanded={expandedSections.has('alerty')}
           filter={backlogFilter}
+          onExpandedChange={(expanded) => setSectionExpanded('alerty', expanded)}
           onFilterChange={setBacklogFilter}
         />
         <TrafficPapaTerminal
+          expanded={expandedSections.has('papa-ai')}
+          onExpandedChange={(expanded) => setSectionExpanded('papa-ai', expanded)}
           onTerminalTypeChange={(nextType) => {
             setTerminalType(nextType);
             setToast(`Terminal Papa AI: ${papaTerminalReports[nextType].title}`);
@@ -187,16 +293,28 @@ export function TrafficScreen() {
         onClose={() => setSelectedLandingPath(null)}
       />
       <TrafficToast message={toast} />
-    </main>
+    </div>
   );
 }
 
 function TrafficHeader({
+  dateOpen = false,
+  dateRange,
+  freshnessLabel = '14 min temu',
+  onDateOpenChange = noop,
+  onDateRangeChange = noop,
   onExport = noop,
   onRefresh = noop,
+  rangeValid = true,
 }: {
+  readonly dateOpen?: boolean;
+  readonly dateRange?: DateRange;
+  readonly freshnessLabel?: string;
+  readonly onDateOpenChange?: (open: boolean) => void;
+  readonly onDateRangeChange?: (range: DateRange) => void;
   readonly onExport?: () => void;
   readonly onRefresh?: () => void;
+  readonly rangeValid?: boolean;
 }) {
   return (
     <header className="pd-tbi-header">
@@ -216,11 +334,43 @@ function TrafficHeader({
           <div className="pd-tbi-header-actions">
             <span className="pd-tbi-header-pill pd-tbi-header-pill--fresh">
               <span className="pd-tbi-live-dot" />
-              GA4 Status: <strong>Świeże (14 min temu)</strong>
+              GA4 Status: <strong>Świeże ({freshnessLabel})</strong>
             </span>
             <span className="pd-tbi-header-pill">
               Pokrycie zakupów: <strong>94,3%</strong>
             </span>
+            {dateRange && (
+              <Popover
+                anchorId="traffic-date-trigger"
+                title="Okres ruchu"
+                modal={false}
+                placement="bottom-end"
+                open={dateOpen}
+                onOpenChange={onDateOpenChange}
+                trigger={(
+                  <Button variant="secondary" size="small">
+                    {overviewRangeLabel(dateRange)} <span aria-hidden="true">⌄</span>
+                  </Button>
+                )}
+              >
+                <DateRangePicker
+                  label="Okres ruchu"
+                  value={dateRange}
+                  timezone={dateRange.timezone}
+                  onChange={onDateRangeChange}
+                  presets={[
+                    { label: 'Ostatnie 7 dni', value: 'last7d' },
+                    { label: 'Ostatnie 30 dni', value: 'last30d' },
+                    { label: 'Ostatnie 90 dni', value: 'last90d' },
+                    { label: 'Własny okres', value: 'custom' },
+                  ]}
+                />
+                {!rangeValid && <p role="alert">Wybierz okres od 1 do 366 dni.</p>}
+                <Button size="small" disabled={!rangeValid} onClick={() => onDateOpenChange(false)}>
+                  Gotowe
+                </Button>
+              </Popover>
+            )}
             <button className="pd-tbi-primary-button" onClick={onRefresh} type="button">
               <Icon decorative name="trend" size={16} />
               Odśwież
@@ -236,92 +386,81 @@ function TrafficHeader({
   );
 }
 
-export function TrafficGlobalControls({
-  filters = trafficDefaultFilters,
-  onFilterChange = noop,
+function TrafficSectionFrame({
+  accentClassName,
+  actions = null,
+  children,
+  collapsedSummary,
+  description,
+  expanded = true,
+  onExpandedChange = noop,
+  section,
 }: {
-  readonly filters?: TrafficGlobalFilters;
-  readonly onFilterChange?: (filters: TrafficGlobalFilters) => void;
+  readonly accentClassName?: string;
+  readonly actions?: ReactNode;
+  readonly children: ReactNode;
+  readonly collapsedSummary: string;
+  readonly description?: ReactNode;
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
+  readonly section: typeof trafficSections[number];
 }) {
-  function update<K extends keyof TrafficGlobalFilters>(key: K, value: TrafficGlobalFilters[K]) {
-    onFilterChange({
-      ...filters,
-      [key]: value,
-    });
-  }
+  const bodyId = `pd-tbi-${section.id}-content`;
 
   return (
-    <section className="pd-tbi-control-bar" aria-label="Globalne filtry ruchu">
-      <div className="pd-tbi-control-bar__inner">
-        <div className="pd-tbi-filter-row">
-          <SelectFilter
-            label="Okres:"
-            onChange={(event) => update('timeRange', event.target.value as TrafficGlobalFilters['timeRange'])}
-            options={trafficTimeRangeOptions}
-            value={filters.timeRange}
-          />
-          <SelectFilter
-            label="Porównanie:"
-            onChange={(event) => update('compare', event.target.value as TrafficGlobalFilters['compare'])}
-            options={trafficCompareOptions}
-            value={filters.compare}
-          />
-          <SelectFilter
-            label="Kanał:"
-            onChange={(event) => update('channelFilter', event.target.value as TrafficGlobalFilters['channelFilter'])}
-            options={trafficChannelOptions}
-            value={filters.channelFilter}
-          />
-          <SelectFilter
-            label="Urządzenie:"
-            onChange={(event) => update('deviceFilter', event.target.value as TrafficGlobalFilters['deviceFilter'])}
-            options={trafficDeviceOptions}
-            value={filters.deviceFilter}
-          />
-        </div>
-
-        <div className="pd-tbi-scope-notice">
-          <strong>Zakres:</strong>
-          <span>Analiza zachowania Onsite (GA4). Wydatki i ROAS znajdziesz w module <strong>Kampanie Płatne (ID-2)</strong>.</span>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function SelectFilter<TValue extends string>({
-  label,
-  onChange,
-  options,
-  value,
-}: {
-  readonly label: string;
-  readonly onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
-  readonly options: readonly {
-    readonly label: string;
-    readonly value: TValue;
-  }[];
-  readonly value: TValue;
-}) {
-  return (
-    <Select
-      className="pd-tbi-select-filter"
-      label={label}
-      onChange={onChange}
-      options={options}
-      placeholder={label}
-      value={value}
-    />
+    <ProductSectionFrame
+      accentClassName={accentClassName}
+      actions={(
+        <>
+          {expanded ? actions : null}
+          <button
+            aria-controls={bodyId}
+            aria-expanded={expanded}
+            aria-label={`${expanded ? 'Zwiń' : 'Rozwiń'} sekcję ${section.title}`}
+            className="pd-tbi-section-toggle"
+            onClick={() => onExpandedChange(!expanded)}
+            type="button"
+          >
+            <span className="pd-tbi-section-toggle__label">{expanded ? 'Zwiń' : 'Rozwiń'}</span>
+            <span aria-hidden="true" className="pd-tbi-section-toggle__icon">
+              <svg height="14" viewBox="0 0 24 24" width="14">
+                <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+              </svg>
+            </span>
+          </button>
+        </>
+      )}
+      className="pd-tbi-section-frame"
+      data-collapsed={expanded ? undefined : 'true'}
+      description={expanded ? (
+        description ? <span>{description}</span> : null
+      ) : (
+        <span className="pd-tbi-section-summary">{collapsedSummary}</span>
+      )}
+      icon={section.icon}
+      id={section.id}
+      title={section.title}
+    >
+      {expanded ? (
+        <div className="pd-tbi-section-content" id={bodyId}>{children}</div>
+      ) : null}
+    </ProductSectionFrame>
   );
 }
 
 export function TrafficResultSection({
+  analysis = defaultTrafficAnalysis,
+  expanded = true,
   metric = 'sessions',
+  onExpandedChange = noop,
   onMetricChange = noop,
   onOpenAnalysis = noop,
   onShowMobileFunnel = noop,
 }: {
+  readonly analysis?: TrafficAnalysis;
+  readonly expanded?: boolean;
   readonly metric?: TrafficTrendMode;
+  readonly onExpandedChange?: (expanded: boolean) => void;
   readonly onMetricChange?: (metric: TrafficTrendMode) => void;
   readonly onOpenAnalysis?: () => void;
   readonly onShowMobileFunnel?: () => void;
@@ -329,19 +468,19 @@ export function TrafficResultSection({
   const section = trafficSectionsById.wynik;
 
   return (
-    <ProductSectionFrame
-      description="Czy ruch dowozi wynik, czy problem leży w konwersji i koszyku?"
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+    <TrafficSectionFrame
+      collapsedSummary="Sprawdź, czy ruch dowozi wynik, czy problem leży w konwersji"
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <TrafficPrioritySignal
         onOpenAnalysis={onOpenAnalysis}
         onShowMobileFunnel={onShowMobileFunnel}
       />
-      <TrafficKpiScorecard />
-      <TrafficTrendDynamics metric={metric} onMetricChange={onMetricChange} />
-    </ProductSectionFrame>
+      <TrafficKpiScorecard analysis={analysis} />
+      <TrafficTrendDynamics analysis={analysis} metric={metric} onMetricChange={onMetricChange} />
+    </TrafficSectionFrame>
   );
 }
 
@@ -357,22 +496,24 @@ export function TrafficPrioritySignal({
       actions={(
         <>
           <Button
+            className="pd-tbi-priority-action pd-tbi-priority-action--primary"
             onClick={onShowMobileFunnel}
             startIcon={<Icon decorative name="billing" size={16} />}
-            variant="primary"
+            variant="ghost"
           >
-            Pokaż mobile funnel
+            Pokaż lejek mobile
           </Button>
           <Button
+            className="pd-tbi-priority-action"
             onClick={onOpenAnalysis}
             startIcon={<Icon decorative name="assistant" size={16} />}
-            variant="secondary"
+            variant="ghost"
           >
             Pełna analiza Papa AI
           </Button>
         </>
       )}
-      badgeLabel="Papa AI Diagnostics"
+      badgeLabel="Diagnostyka Papa AI"
       timestampLabel="Sygnał Operacyjny #T-842"
       title="Urządzenia mobilne odpowiadają za 71.4% ruchu, ale CR jest o 38.2% niższy niż desktop"
     >
@@ -393,24 +534,83 @@ function trafficTrendDirection(trend: string): 'up' | 'down' | 'flat' {
   return 'flat';
 }
 
-export function TrafficKpiScorecard() {
+function trafficPlNumber(value: number) {
+  return value.toLocaleString('pl-PL', { useGrouping: true });
+}
+
+function trafficTrendPercent(current: number, previous: number) {
+  const pct = previous > 0 ? ((current - previous) / previous) * 100 : 0;
+  const arrow = pct > 0 ? '▲' : pct < 0 ? '▼' : '→';
+  return { arrow, text: `${arrow} ${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%` };
+}
+
+function trafficTrendPoints(current: number, previous: number) {
+  const delta = current - previous;
+  const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '→';
+  return { arrow, text: `${arrow} ${delta >= 0 ? '+' : ''}${delta.toFixed(2)} pp` };
+}
+
+function trafficKpiValue(
+  title: (typeof trafficKpis)[number]['title'],
+  analysis: TrafficAnalysis,
+): { readonly value: string; readonly trend: string; readonly note: string } {
+  const { previous } = analysis;
+  switch (title) {
+    case 'Sesje': {
+      const t = trafficTrendPercent(analysis.sessions, previous.sessions);
+      return { value: trafficPlNumber(analysis.sessions), trend: t.text, note: 'vs poprz. okres' };
+    }
+    case 'Aktywni Użytkownicy': {
+      const t = trafficTrendPercent(analysis.activeUsers, previous.activeUsers);
+      return { value: trafficPlNumber(analysis.activeUsers), trend: t.text, note: 'unikalni w okresie' };
+    }
+    case 'CR Zakupowy': {
+      const t = trafficTrendPoints(analysis.crPct, previous.crPct);
+      return { value: `${analysis.crPct.toFixed(2)}%`, trend: t.text, note: 'vs poprz. okres' };
+    }
+    case 'Zakupy (GA4)': {
+      const t = trafficTrendPercent(analysis.purchases, previous.purchases);
+      return { value: trafficPlNumber(analysis.purchases), trend: t.text, note: 'vs poprz. okres' };
+    }
+    case 'Przychód GA4': {
+      const t = trafficTrendPercent(analysis.revenue, previous.revenue);
+      return { value: `${trafficPlNumber(Math.round(analysis.revenue))} zł`, trend: t.text, note: 'vs poprz. okres' };
+    }
+    case 'Przychód / Sesję': {
+      const delta = analysis.revPerSession - previous.revPerSession;
+      const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '→';
+      return {
+        value: `${analysis.revPerSession.toFixed(2)} zł`,
+        trend: `${arrow} ${delta >= 0 ? '+' : ''}${delta.toFixed(2)} zł`,
+        note: 'vs poprz. okres',
+      };
+    }
+    default:
+      return { value: '—', trend: '→ 0', note: '' };
+  }
+}
+
+export function TrafficKpiScorecard({
+  analysis = defaultTrafficAnalysis,
+}: {
+  readonly analysis?: TrafficAnalysis;
+}) {
   return (
     <Panel
       bordered={false}
       collapsed={false}
       collapsible={false}
-      description="Kluczowe metryki diagnostyczne onsite. Każda metryka ma jawnie zdefiniowane źródło oraz agregację. Baza: GA4 + Commerce Reconciliation"
       padding="md"
-      title="Główny Wynik Ruchu & Konwersji (Executive KPI)"
+      title="Główny Wynik Ruchu i Konwersji (Kluczowe KPI)"
     >
       <div className="pd-tbi-kpi-grid">
         {trafficKpis.map((kpi) => {
-          const isFeatured = 'featured' in kpi && kpi.featured === true;
           const trendTone = kpi.trendTone;
+          const computed = trafficKpiValue(kpi.title, analysis);
           return (
             <MetricCard
-              comparison={{ direction: trafficTrendDirection(kpi.trend), label: `${kpi.trend.replace(/^[▲▼]\s*/, '')} ${kpi.note}` }}
-              depth={isFeatured ? 'hero' : 'default'}
+              comparison={{ direction: trafficTrendDirection(computed.trend), label: `${computed.trend.replace(/^[▲▼→]\s*/, '')} ${computed.note}` }}
+              helpText={kpi.description}
               key={kpi.title}
               label={kpi.title}
               metricId={`traffic-kpi-${kpi.title}`}
@@ -418,7 +618,7 @@ export function TrafficKpiScorecard() {
               sourceLabel={`${kpi.footerLeft} · ${kpi.footerRight}`}
               status="ready"
               statusLabel={kpi.badge}
-              value={kpi.value}
+              value={computed.value}
             />
           );
         })}
@@ -428,23 +628,26 @@ export function TrafficKpiScorecard() {
 }
 
 export function TrafficTrendDynamics({
+  analysis = defaultTrafficAnalysis,
   metric = 'sessions',
   onMetricChange = noop,
 }: {
+  readonly analysis?: TrafficAnalysis;
   readonly metric?: TrafficTrendMode;
   readonly onMetricChange?: (metric: TrafficTrendMode) => void;
 }) {
-  const chartData = useMemo(() => buildTrendData(metric), [metric]);
+  const chartData = useMemo(() => trafficTrendChartData(analysis, metric), [analysis, metric]);
+  const metricLabel = trafficTrendModes.find((mode) => mode.value === metric)?.label ?? metric;
 
   return (
     <section className="pd-tbi-panel">
       <div className="pd-tbi-panel__head">
         <div>
-          <h2>Trend Ruchu i Konwersji w Czasie (Traffic & Conversion Dynamics)</h2>
+          <h2>Trend Ruchu i Konwersji w Czasie</h2>
           <p>Wybierz metrykę, aby przeanalizować dzienną lub tygodniową dynamikę onsite oraz porównać z poprzednim okresem.</p>
         </div>
 
-        <div className="pd-tbi-segmented" role="group" aria-label="Metryka trendu">
+        <div className="pd-tbi-segmented pd-tbi-segmented--trend" role="group" aria-label="Metryka trendu">
           {trafficTrendModes.map((mode) => (
             <button
               className={mode.value === metric ? 'is-active' : ''}
@@ -459,7 +662,7 @@ export function TrafficTrendDynamics({
       </div>
 
       <div
-        aria-label={`Trend ruchu: ${trafficTrendLabels[metric]}`}
+        aria-label={`Trend ruchu: ${metricLabel}`}
         className="pd-tbi-chart"
         role="img"
       >
@@ -484,7 +687,7 @@ export function TrafficTrendDynamics({
               contentStyle={tooltipStyle}
               formatter={(value, name) => [
                 formatTrendValue(Number(value), metric),
-                name === 'current' ? 'Aktualny okres (30 dni)' : 'Poprzedni okres (30 dni)',
+                name === 'current' ? `Aktualny okres (${analysis.dayCount} dni)` : `Poprzedni okres (${analysis.dayCount} dni)`,
               ]}
               labelStyle={{ color: 'rgb(227 216 201)', fontWeight: 800 }}
             />
@@ -519,39 +722,99 @@ export function TrafficTrendDynamics({
   );
 }
 
+type TrafficChannelExplorerRow = TrafficChannelRow & { readonly id: string };
+
 export function TrafficChannelExplorer({
   channelFilter = 'all',
+  expanded = true,
+  onExpandedChange = noop,
   onPaidCampaignsNotice = noop,
-  onSearchChange = noop,
-  searchValue = '',
 }: {
   readonly channelFilter?: TrafficGlobalFilters['channelFilter'];
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
   readonly onPaidCampaignsNotice?: () => void;
-  readonly onSearchChange?: (value: string) => void;
-  readonly searchValue?: string;
 }) {
-  const filteredRows = useMemo(() => trafficChannelRows.filter((channel) => {
-    if (channelFilter !== 'all' && channel.group !== channelFilter) return false;
-    return channel.group.toLowerCase().includes(searchValue.trim().toLowerCase());
-  }), [channelFilter, searchValue]);
+  const filteredRows: readonly TrafficChannelExplorerRow[] = useMemo(() => trafficChannelRows
+    .filter((channel) => channelFilter === 'all' || channel.group === channelFilter)
+    .map((channel) => ({ ...channel, id: channel.group })), [channelFilter]);
   const section = trafficSectionsById.kanaly;
 
+  const columns: readonly ExplorerTableColumn<TrafficChannelExplorerRow>[] = [
+    {
+      id: 'group',
+      label: 'Grupa Kanałów / Source / Medium',
+      render: (row) => <strong>{row.group}</strong>,
+      required: true,
+      sortAccessor: (row) => row.group,
+    },
+    {
+      align: 'right',
+      csvValue: (row) => row.sessions,
+      id: 'sessions',
+      label: 'Sesje',
+      render: (row) => formatNumber(row.sessions),
+      sortAccessor: (row) => row.sessions,
+    },
+    {
+      align: 'right',
+      csvValue: (row) => row.users,
+      id: 'users',
+      label: 'Użytkownicy (Exact)',
+      render: (row) => formatNumber(row.users),
+      sortAccessor: (row) => row.users,
+    },
+    {
+      align: 'right',
+      csvValue: (row) => row.purchases,
+      id: 'purchases',
+      label: 'Zakupy GA4',
+      render: (row) => formatNumber(row.purchases),
+      sortAccessor: (row) => row.purchases,
+    },
+    {
+      align: 'right',
+      csvValue: (row) => formatPercent(row.cr),
+      id: 'cr',
+      label: 'CR Zakupu',
+      render: (row) => (
+        <span className={row.cr >= 3 ? 'pd-tbi-text-emerald' : row.cr < 1 ? 'pd-tbi-text-rose' : undefined}>
+          {formatPercent(row.cr)}
+        </span>
+      ),
+      sortAccessor: (row) => row.cr,
+    },
+    {
+      align: 'right',
+      csvValue: (row) => row.revenue,
+      id: 'revenue',
+      label: 'Przychód GA4',
+      render: (row) => formatMoney(row.revenue),
+      sortAccessor: (row) => row.revenue,
+    },
+    {
+      align: 'right',
+      csvValue: (row) => row.revPerSession,
+      id: 'revPerSession',
+      label: 'Przychód / Sesja',
+      render: (row) => <strong>{formatDecimalMoney(row.revPerSession)}</strong>,
+      sortAccessor: (row) => row.revPerSession,
+    },
+    {
+      csvValue: (row) => row.quality,
+      id: 'quality',
+      label: 'Jakość / Ocena',
+      render: (row) => <QualityBadge quality={row.quality} />,
+    },
+  ];
+
   return (
-    <ProductSectionFrame
-      actions={(
-        <input
-          aria-label="Szukaj kanału lub źródła"
-          className="pd-tbi-search"
-          onChange={(event) => onSearchChange(event.target.value)}
-          placeholder="Szukaj kanału / źródła..."
-          type="search"
-          value={searchValue}
-        />
-      )}
+    <TrafficSectionFrame
+      collapsedSummary={`${filteredRows.length} kanałów widocznych · sesje, zakupy i przychód bez mieszania spendu`}
       description="Które źródła ruchu dowożą sesje, zakupy i przychód bez mieszania spendu i ROAS?"
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <div className="pd-tbi-panel__head">
         <div>
@@ -560,36 +823,14 @@ export function TrafficChannelExplorer({
         </div>
       </div>
 
-      <div className="pd-tbi-table-wrap">
-        <table className="pd-tbi-table">
-          <thead>
-            <tr>
-              <th>Grupa Kanałów / Source / Medium</th>
-              <th>Sesje</th>
-              <th>Użytkownicy (Exact)</th>
-              <th>Zakupy GA4</th>
-              <th>Purchase CR</th>
-              <th>Przychód GA4</th>
-              <th>Przychód / Sesja</th>
-              <th>Jakość / Ocena</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRows.map((channel) => (
-              <tr key={channel.group}>
-                <td><strong>{channel.group}</strong></td>
-                <td>{formatNumber(channel.sessions)}</td>
-                <td>{formatNumber(channel.users)}</td>
-                <td>{formatNumber(channel.purchases)}</td>
-                <td className={channel.cr >= 3 ? 'pd-tbi-text-emerald' : channel.cr < 1 ? 'pd-tbi-text-rose' : undefined}>{formatPercent(channel.cr)}</td>
-                <td>{formatMoney(channel.revenue)}</td>
-                <td><strong>{formatDecimalMoney(channel.revPerSession)}</strong></td>
-                <td><QualityBadge quality={channel.quality} /></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <ExplorerTable
+        ariaLabel="Kanały ruchu"
+        columns={columns}
+        rows={filteredRows}
+        searchFields={['group']}
+        searchLabel="Szukaj kanału lub źródła"
+        searchPlaceholder="Szukaj kanału / źródła..."
+      />
 
       <div className="pd-tbi-semantic-note">
         <p><strong>Uwaga semantyczna:</strong> Wiersz <strong>Unassigned (3.2%)</strong> odzwierciedla ruch bez poprawnych parametrów UTM. Nagły wzrost tego wskaźnika generuje alert jakości danych.</p>
@@ -597,9 +838,93 @@ export function TrafficChannelExplorer({
           Przejdź do Kampanii Płatnych (Spend & ROAS) ➔
         </button>
       </div>
-    </ProductSectionFrame>
+    </TrafficSectionFrame>
   );
 }
+
+const landingPageColumns: readonly ExplorerTableColumn<(typeof landingPageRows)[number] & { readonly id: string }>[] = [
+  {
+    csvValue: (row) => row.path,
+    id: 'path',
+    label: 'Ścieżka Strony (Page Path)',
+    render: (row) => <code>{row.path}</code>,
+    required: true,
+    sortAccessor: (row) => row.path,
+  },
+  {
+    csvValue: (row) => row.sessions,
+    id: 'sessions',
+    label: 'Sesje',
+    render: (row) => formatNumber(row.sessions),
+    sortAccessor: (row) => row.sessions,
+  },
+  {
+    csvValue: (row) => row.users,
+    id: 'users',
+    label: 'Użytkownicy',
+    render: (row) => formatNumber(row.users),
+    sortAccessor: (row) => row.users,
+  },
+  {
+    csvValue: (row) => row.cr ?? '',
+    id: 'cr',
+    label: 'CR Zakupu',
+    render: (row) => formatNullablePercent(row.cr),
+    sortAccessor: (row) => row.cr ?? -1,
+  },
+  {
+    csvValue: (row) => row.revenue,
+    id: 'revenue',
+    label: 'Przychód GA4',
+    render: (row) => formatMoney(row.revenue),
+    sortAccessor: (row) => row.revenue,
+  },
+  {
+    csvValue: (row) => row.revPerSession ?? '',
+    id: 'revPerSession',
+    label: 'Przychód / Sesję',
+    render: (row) => (row.revPerSession === null ? 'N/A' : formatDecimalMoney(row.revPerSession)),
+    sortAccessor: (row) => row.revPerSession ?? -1,
+  },
+  {
+    csvValue: (row) => row.mobileRatio,
+    id: 'mobileRatio',
+    label: 'Udział Mobile',
+    render: (row) => <span className={row.mobileRatio > 70 ? 'pd-tbi-text-amber' : undefined}>{row.mobileRatio}% Mobile</span>,
+    sortAccessor: (row) => row.mobileRatio,
+  },
+];
+
+const landingPageRowActions = [{ id: 'details', label: 'Otwórz szczegóły' }];
+
+const trafficGeoColumns: readonly ExplorerTableColumn<(typeof trafficGeoRows)[number] & { readonly id: string }>[] = [
+  {
+    csvValue: (row) => row.country,
+    id: 'country',
+    label: 'Kraj (Country)',
+    render: (row) => <><span className="pd-tbi-flag">{row.flag}</span>{row.country}</>,
+    required: true,
+    sortAccessor: (row) => row.country,
+  },
+  {
+    csvValue: (row) => row.sessions,
+    id: 'sessions',
+    label: 'Sesje',
+    render: (row) => row.sessions,
+  },
+  {
+    csvValue: (row) => row.cr,
+    id: 'cr',
+    label: 'CR Zakupu',
+    render: (row) => <span className={`pd-tbi-text-${row.tone}`}>{row.cr}</span>,
+  },
+  {
+    csvValue: (row) => row.revenue,
+    id: 'revenue',
+    label: 'Przychód GA4',
+    render: (row) => row.revenue,
+  },
+];
 
 function QualityBadge({
   quality,
@@ -614,11 +939,15 @@ function QualityBadge({
 }
 
 export function TrafficLandingPageExplorer({
+  expanded = true,
   filter = 'all',
+  onExpandedChange = noop,
   onFilterChange = noop,
   onOpenLandingPage = noop,
 }: {
+  readonly expanded?: boolean;
   readonly filter?: LandingPageTone;
+  readonly onExpandedChange?: (expanded: boolean) => void;
   readonly onFilterChange?: (filter: LandingPageTone) => void;
   readonly onOpenLandingPage?: (path: string) => void;
 }) {
@@ -629,7 +958,7 @@ export function TrafficLandingPageExplorer({
   const section = trafficSectionsById.strony;
 
   return (
-    <ProductSectionFrame
+    <TrafficSectionFrame
       actions={(
         <div className="pd-tbi-segmented" role="group" aria-label="Filtr stron wejścia">
           {landingPageFilterOptions.map((option) => (
@@ -644,10 +973,11 @@ export function TrafficLandingPageExplorer({
           ))}
         </div>
       )}
+      collapsedSummary={`${filteredPages.length} stron wejścia widocznych · sprawdź tracking i mobile`}
       description="Jakie strony wejścia przyjmują ruch i gdzie widać problemy z trackingiem lub mobile?"
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <div className="pd-tbi-panel__head">
         <div>
@@ -656,61 +986,43 @@ export function TrafficLandingPageExplorer({
         </div>
       </div>
 
-      <div className="pd-tbi-table-wrap">
-        <table className="pd-tbi-table">
-          <thead>
-            <tr>
-              <th>Ścieżka Strony (Page Path)</th>
-              <th>Sesje</th>
-              <th>Użytkownicy</th>
-              <th>Purchase CR</th>
-              <th>Przychód GA4</th>
-              <th>Przychód / Sesję</th>
-              <th>Mobile Ratio</th>
-              <th>Akcja</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredPages.map((page) => (
-              <tr key={page.path}>
-                <td><code>{page.path}</code></td>
-                <td>{formatNumber(page.sessions)}</td>
-                <td>{formatNumber(page.users)}</td>
-                <td>{formatNullablePercent(page.cr)}</td>
-                <td>{formatMoney(page.revenue)}</td>
-                <td>{page.revPerSession === null ? 'N/A' : formatDecimalMoney(page.revPerSession)}</td>
-                <td><span className={page.mobileRatio > 70 ? 'pd-tbi-text-amber' : undefined}>{page.mobileRatio}% Mobile</span></td>
-                <td>
-                  <button className="pd-tbi-row-button" onClick={() => onOpenLandingPage(page.path)} type="button">
-                    Szczegóły ➔
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </ProductSectionFrame>
+      <ExplorerTable
+        ariaLabel="Eksplorator stron wejścia"
+        columns={landingPageColumns}
+        exportFilenameBase="strony-wejscia"
+        onRowAction={(rowId, actionId) => {
+          if (actionId === 'details') onOpenLandingPage(rowId);
+        }}
+        onRowClick={(page) => onOpenLandingPage(page.path)}
+        rowActions={() => landingPageRowActions}
+        rows={filteredPages.map((page) => ({ ...page, id: page.path }))}
+      />
+    </TrafficSectionFrame>
   );
 }
 
 export function TrafficFunnelSimulation({
   completionRate = funnelScenario.baseCompletionRate,
+  expanded = true,
   onCompletionRateChange = noop,
+  onExpandedChange = noop,
 }: {
   readonly completionRate?: number;
+  readonly expanded?: boolean;
   readonly onCompletionRateChange?: (rate: number) => void;
+  readonly onExpandedChange?: (expanded: boolean) => void;
 }) {
   const extraPurchases = Math.round(funnelScenario.checkoutSessions * ((completionRate - funnelScenario.baseCompletionRate) / 100));
   const extraRevenue = Math.round(extraPurchases * funnelScenario.aov);
   const section = trafficSectionsById.lejek;
 
   return (
-    <ProductSectionFrame
+    <TrafficSectionFrame
+      collapsedSummary="Symulacja odzyskiwania porzuconych koszyków · efekt finansowy poprawy checkoutu"
       description="Na którym etapie sesje tracą zakup i jaki jest finansowy efekt poprawy checkoutu?"
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <div className="pd-tbi-panel__head">
         <div>
@@ -767,19 +1079,26 @@ export function TrafficFunnelSimulation({
           />
         </div>
       </div>
-    </ProductSectionFrame>
+    </TrafficSectionFrame>
   );
 }
 
-export function TrafficDeviceGeoPerformance() {
+export function TrafficDeviceGeoPerformance({
+  expanded = true,
+  onExpandedChange = noop,
+}: {
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
+}) {
   const section = trafficSectionsById.urzadzenia;
 
   return (
-    <ProductSectionFrame
+    <TrafficSectionFrame
+      collapsedSummary="Wyniki wg urządzeń i rynków geograficznych"
       description="Jak zachowanie i przychód różnią się między urządzeniami oraz rynkami?"
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <div className="pd-tbi-split">
         <section className="pd-tbi-panel">
@@ -818,44 +1137,35 @@ export function TrafficDeviceGeoPerformance() {
             </div>
           </div>
 
-          <div className="pd-tbi-table-wrap">
-            <table className="pd-tbi-table">
-              <thead>
-                <tr>
-                  <th>Kraj (Country)</th>
-                  <th>Sesje</th>
-                  <th>Purchase CR</th>
-                  <th>Przychód GA4</th>
-                </tr>
-              </thead>
-              <tbody>
-                {trafficGeoRows.map((geo) => (
-                  <tr key={geo.country}>
-                    <td><span className="pd-tbi-flag">{geo.flag}</span>{geo.country}</td>
-                    <td>{geo.sessions}</td>
-                    <td className={`pd-tbi-text-${geo.tone}`}>{geo.cr}</td>
-                    <td>{geo.revenue}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ExplorerTable
+            ariaLabel="Geografia użytkowników"
+            columns={trafficGeoColumns}
+            exportFilenameBase="geografia-uzytkownikow"
+            rows={trafficGeoRows.map((geo) => ({ ...geo, id: geo.country }))}
+          />
         </section>
       </div>
-    </ProductSectionFrame>
+    </TrafficSectionFrame>
   );
 }
 
-export function TrafficTrackingQuality() {
+export function TrafficTrackingQuality({
+  expanded = true,
+  onExpandedChange = noop,
+}: {
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
+}) {
   const section = trafficSectionsById.jakosc;
 
   return (
-    <ProductSectionFrame
+    <TrafficSectionFrame
       actions={<span className="pd-tbi-status-pill pd-tbi-status-pill--emerald">Status Integracji: GA4 Production Ready</span>}
+      collapsedSummary="Status integracji GA4: Production Ready · uzgodnienie z commerce"
       description="Czy dane GA4 są spójne z commerce i gotowe do decyzji operacyjnych?"
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <div className="pd-tbi-panel__head">
         <div>
@@ -875,15 +1185,19 @@ export function TrafficTrackingQuality() {
           />
         ))}
       </div>
-    </ProductSectionFrame>
+    </TrafficSectionFrame>
   );
 }
 
 export function TrafficGovernanceBacklog({
+  expanded = true,
   filter = 'all',
+  onExpandedChange = noop,
   onFilterChange = noop,
 }: {
+  readonly expanded?: boolean;
   readonly filter?: TrafficBacklogFilter;
+  readonly onExpandedChange?: (expanded: boolean) => void;
   readonly onFilterChange?: (filter: TrafficBacklogFilter) => void;
 }) {
   const visibleRows = trafficBacklogRows.filter((row) => {
@@ -893,11 +1207,12 @@ export function TrafficGovernanceBacklog({
   const section = trafficSectionsById.alerty;
 
   return (
-    <ProductSectionFrame
+    <TrafficSectionFrame
+      collapsedSummary={`${visibleRows.length} pozycji backlogu P0/P1 wymaga działania`}
       description="Jakie anomalie, błędy semantyczne i backlog P0/P1 wymagają działania?"
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <section className="pd-tbi-governance">
         <div className="pd-tbi-governance__head">
@@ -934,14 +1249,18 @@ export function TrafficGovernanceBacklog({
           ))}
         </div>
       </section>
-    </ProductSectionFrame>
+    </TrafficSectionFrame>
   );
 }
 
 export function TrafficPapaTerminal({
+  expanded = true,
+  onExpandedChange = noop,
   onTerminalTypeChange = noop,
   terminalType = 'ready',
 }: {
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
   readonly onTerminalTypeChange?: (type: PapaTerminalType) => void;
   readonly terminalType?: PapaTerminalType;
 }) {
@@ -949,12 +1268,12 @@ export function TrafficPapaTerminal({
   const section = trafficSectionsById['papa-ai'];
 
   return (
-    <ProductSectionFrame
-      actions={<span className="pd-tbi-status-pill">Context: traffic.overview</span>}
+    <TrafficSectionFrame
+      collapsedSummary="Diagnostyka Papa AI: mobile drop, tracking gap, skoki direct"
       description="Jak Papa AI syntetyzuje diagnozy dla mobile, tracking gap i skoków direct?"
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <div className="pd-tbi-panel__head">
         <div>
@@ -988,7 +1307,7 @@ export function TrafficPapaTerminal({
           </p>
         ))}
       </div>
-    </ProductSectionFrame>
+    </TrafficSectionFrame>
   );
 }
 
@@ -999,23 +1318,30 @@ function TrafficLandingDrawer({
   readonly landingPage: LandingPageRow | null;
   readonly onClose: () => void;
 }) {
-  if (!landingPage) return null;
-
   return (
-    <div className="pd-tbi-drawer-overlay">
-      <aside aria-label="Landing Page Drawer" className="pd-tbi-drawer" role="dialog">
-        <div className="pd-tbi-drawer__body">
+    <Drawer
+      dismissible
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+      open={landingPage !== null}
+      primaryActionLabel="Zamknij Szczegóły Strony"
+      side="right"
+      title="Landing Page Drawer"
+      width={560}
+    >
+      {landingPage && (
+        <div className="pd-tbi-drawer-content">
           <div className="pd-tbi-drawer__head">
             <div>
               <span>Landing Page Drawer</span>
               <h3>{landingPage.path}</h3>
             </div>
-            <button aria-label="Zamknij drawer" onClick={onClose} type="button">×</button>
           </div>
 
           <div className="pd-tbi-drawer-metrics">
             <MetricTile label="Sesje wejściowe" tone="slate" value={formatNumber(landingPage.sessions)} />
-            <MetricTile label="Purchase CR" tone="emerald" value={formatNullablePercent(landingPage.cr)} />
+            <MetricTile label="CR Zakupu" tone="emerald" value={formatNullablePercent(landingPage.cr)} />
             <MetricTile label="Przychód GA4" tone="slate" value={formatMoney(landingPage.revenue)} />
             <MetricTile label="Przychód / Sesję" tone="indigo" value={landingPage.revPerSession === null ? 'N/A' : formatDecimalMoney(landingPage.revPerSession)} />
           </div>
@@ -1033,16 +1359,12 @@ function TrafficLandingDrawer({
           </div>
 
           <div className="pd-tbi-ai-insight">
-            <strong>Papa AI Insight dla tej strony:</strong>
+            <strong>Obserwacja Papa AI dla tej strony:</strong>
             <p>{landingDrawerInsight}</p>
           </div>
         </div>
-
-        <div className="pd-tbi-drawer__footer">
-          <button className="pd-tbi-dark-button" onClick={onClose} type="button">Zamknij Szczegóły Strony</button>
-        </div>
-      </aside>
-    </div>
+      )}
+    </Drawer>
   );
 }
 
@@ -1090,14 +1412,14 @@ function TrafficToast({
   );
 }
 
-function buildTrendData(metric: TrafficTrendMode): TrafficChartPoint[] {
-  const series = trafficTrendSeries[metric];
 
-  return series.current.map((current, index) => ({
-    current,
-    label: `Dzień ${index + 1}`,
-    previous: series.previous[index] ?? 0,
-  }));
+function downloadCsv(content: string, filename: string) {
+  const url = URL.createObjectURL(new Blob([content], { type: 'text/csv;charset=utf-8' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function formatNumber(value: number) {

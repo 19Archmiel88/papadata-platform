@@ -9,41 +9,15 @@ export type SettingsTabId =
   | 'ws-compliance'
   | 'audit-p0';
 
-export type SettingsRailGroup = {
-  readonly label: string;
-  readonly items: ReadonlyArray<{
-    readonly id: SettingsTabId;
-    readonly icon: string;
-    readonly label: string;
-  }>;
-};
-
-export const settingsRailGroups: readonly SettingsRailGroup[] = [
-  {
-    label: 'Konto',
-    items: [
-      { id: 'account-profile', icon: '👤', label: 'Moje konto' },
-      { id: 'account-security', icon: '🛡️', label: 'Bezpieczeństwo' },
-    ],
-  },
-  {
-    label: 'Workspace',
-    items: [
-      { id: 'ws-company', icon: '🏢', label: 'Firma i workspace' },
-      { id: 'ws-team', icon: '👥', label: 'Zespół i uprawnienia' },
-      { id: 'ws-analytics', icon: '🎯', label: 'Analityka i cele' },
-      { id: 'ws-ai', icon: '🤖', label: 'Papa AI' },
-      { id: 'ws-notifications', icon: '🔔', label: 'Powiadomienia' },
-      { id: 'ws-compliance', icon: '📜', label: 'Prywatność' },
-    ],
-  },
-];
-
+// `role` is a plain string, not the fixture's demo-only union, because a
+// runtime-backed member list (see SettingsPage/settingsRuntimeAdapter) uses
+// the real backend role names ("Tenant Owner", "Workspace Admin", ...),
+// which do not match the demo seed's ADMIN/ANALYST/... labels below.
 export type SettingsTeamMember = {
   readonly id: string;
   readonly name: string;
   readonly email: string;
-  readonly role: 'OWNER' | 'ADMIN' | 'ANALYST' | 'MEMBER' | 'GROWTH_OPERATOR' | 'VIEWER';
+  readonly role: string;
   readonly mfa: boolean;
   readonly lastSeen: string;
 };

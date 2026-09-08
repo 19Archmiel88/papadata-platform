@@ -106,8 +106,8 @@ const semanticVariants = [
     id: 'mark',
     label: { pl: 'Sygnet', en: 'Mark' },
     description: {
-      pl: 'Sam warstwowy znak. Bez kreski pod spodem, zgodnie z wariantem mark-only.',
-      en: 'The layered mark alone. No underline, aligned with the mark-only variant.',
+      pl: 'Sygnet P z ukośnym detalem w palecie wiśnia–pistacja–porcelana.',
+      en: 'The P mark with a diagonal detail in the cherry, pistachio and porcelain palette.',
     },
     props: {
       label: 'PapaData sygnet',
@@ -343,8 +343,8 @@ export const Marka: Story = {
               </div>
               <p>
                 <Localized
-                  pl="Warstwowy sygnet, dwuczęściowy wordmark i kreska hover pozostają częścią jednego komponentu. Kolor marki nie przejmuje roli statusu ani danych."
-                  en="The layered mark, two-part wordmark and hover line remain parts of one component. Brand color does not take over status or data roles."
+                  pl="Sygnet P i dwuczęściowy wordmark tworzą jeden komponent. Wiśnia i pistacja identyfikują markę; statusy zachowują osobne kolory semantyczne."
+                  en="The P mark and two-part wordmark form one component. Cherry and pistachio identify the brand; statuses keep their own semantic colors."
                 />
               </p>
             </article>

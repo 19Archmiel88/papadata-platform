@@ -1,4 +1,14 @@
 export {
+  ExplorerTable,
+} from './ExplorerTable';
+
+export type {
+  ExplorerTableColumn,
+  ExplorerTableExportFormat,
+  ExplorerTableProps,
+} from './ExplorerTable';
+
+export {
   PageHeader,
 } from './PageHeader';
 

@@ -330,6 +330,27 @@
   background: var(--pd-form-check-checked-surface, var(--pd-brand-action));
 }
 
+.pd-form-check__icon {
+  inline-size: 0.7rem;
+  block-size: 0.7rem;
+  opacity: 0;
+  color: var(--pd-form-check-checked-icon, var(--pd-interactive-on));
+  transition: opacity 100ms ease;
+}
+
+.pd-form-check__input:checked + .pd-form-check__control .pd-form-check__icon {
+  opacity: 1;
+}
+
+.pd-form-check__label[data-indeterminate='true'] .pd-form-check__control {
+  border-color: var(--pd-form-check-checked-border, var(--pd-brand-action));
+  background: var(--pd-form-check-checked-surface, var(--pd-brand-action));
+}
+
+.pd-form-check__label[data-indeterminate='true'] .pd-form-check__icon {
+  opacity: 1;
+}
+
 .pd-form-check__input:focus-visible + .pd-form-check__control,
 .pd-form-switch__input:focus-visible + .pd-form-switch__track {
   outline: var(--pd-focus-width) solid var(--pd-focus-visible);

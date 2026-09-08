@@ -1,5 +1,7 @@
 import {
+  createContext,
   useCallback,
+  useContext,
   useEffect,
   useReducer,
   useRef,
@@ -210,6 +212,19 @@ export function useAuthSessionRuntime(client: BffClient): AuthSessionRuntime {
     retryBootstrap: bootstrap,
     runAuthenticatedCommand,
   };
+}
+
+// Exposes the authenticated runtime (in particular runAuthenticatedCommand)
+// to pages mounted below AuthenticatedRuntimeShell, so a leaf page's own
+// command calls can route a 403 requiredAuthLevel into the same global
+// reauth surface that workspace-select already uses -- see main.tsx, which
+// is the sole Provider for this context.
+const AuthSessionRuntimeContext = createContext<AuthSessionRuntime | null>(null);
+export const AuthSessionRuntimeProvider = AuthSessionRuntimeContext.Provider;
+export function useAuthSessionRuntimeContext(): AuthSessionRuntime {
+  const runtime = useContext(AuthSessionRuntimeContext);
+  if (!runtime) throw new Error('useAuthSessionRuntimeContext used outside AuthSessionRuntimeProvider.');
+  return runtime;
 }
 
 function readProblemMessage(cause: unknown): string {

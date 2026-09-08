@@ -106,19 +106,38 @@ export const Overview: Story = {
     fireEvent.click(valueNavItem!);
     await waitFor(() => expect(valueNavItem).toHaveAttribute('aria-current', 'page'));
 
+    // Dialog/Drawer/Menu all portal to #pd-overlay-root-host in
+    // document.body (see the identical pattern in
+    // Integrations.story-support.tsx), so anything rendered inside one of
+    // them must be queried via `body`, not `canvas`.
+    const body = within(canvasElement.ownerDocument.body);
+
     const badges = await canvas.findAllByRole('button', { name: /Wyliczone/u });
     await userEvent.click(badges[0]!);
-    await expect(await canvas.findByRole('dialog', { name: 'Provenance danych klientów' })).toBeInTheDocument();
-    await userEvent.click(await canvas.findByRole('button', { name: 'Zamknij provenance' }));
+    await expect(await body.findByRole('dialog', { name: 'Provenance danych klientów' })).toBeInTheDocument();
+    await userEvent.click(await body.findByRole('button', { name: 'Zamknij provenance' }));
 
     await userEvent.click(await canvas.findByRole('button', { name: 'Pokaż 318 klientów' }));
     await expect(await canvas.findByText(/B18F92/u)).toBeInTheDocument();
     await expect(await canvas.findByText(/C33190/u)).toBeInTheDocument();
 
-    await userEvent.click(await canvas.findAllByRole('button', { name: 'Szczegóły →' }).then((buttons) => buttons[0]!));
-    await expect(await canvas.findByRole('dialog', { name: 'Customer Drawer' })).toBeInTheDocument();
-    await expect(await canvas.findByText('Privacy status: Hashed Identity (No PII Leaked)')).toBeInTheDocument();
-    await userEvent.click(await canvas.findByRole('button', { name: 'Zamknij Customer Drawer' }));
+    // CustomerExplorer renders row actions through ExplorerTable's shared
+    // row-actions menu (DataTable's "<label> dla wiersza <id>" trigger),
+    // not a standalone "Szczegóły →" button.
+    await userEvent.click(await canvas.findAllByRole('button', { name: /Akcje dla wiersza/u }).then((buttons) => buttons[0]!));
+    await userEvent.click(await body.findByRole('menuitem', { name: 'Otwórz szczegóły' }));
+    await expect(await body.findByRole('dialog', { name: 'Customer Drawer' })).toBeInTheDocument();
+    await expect(await body.findByText('Privacy status: Hashed Identity (No PII Leaked)')).toBeInTheDocument();
+    await userEvent.click(await body.findByRole('button', { name: 'Zamknij Customer Drawer' }));
+
+    // Story musi kończyć interakcję w stanie startowym -- w przeciwnym razie
+    // ktoś oglądający "Widok pełny" ręcznie w Storybooku widzi stronę
+    // przewiniętą do sekcji "Wartość klienta" po automatycznym uruchomieniu
+    // play().
+    const topNavItem = canvasElement.ownerDocument.querySelector<HTMLAnchorElement>(`a[href="#${customerSectionsById.wynik.id}"]`);
+    await expect(topNavItem).toBeInTheDocument();
+    fireEvent.click(topNavItem!);
+    await waitFor(() => expect(topNavItem).toHaveAttribute('aria-current', 'page'));
   },
 };
 
@@ -135,7 +154,7 @@ export const Result: Story = {
     await expect(await canvas.findByRole('heading', { name: customerSectionsById.wynik.title })).toBeInTheDocument();
     await expect(await canvas.findByRole('heading', { name: '318 klientów wysokiej wartości (Champions/Loyal) przekroczyło cykl ponownego zakupu' })).toBeInTheDocument();
     await expect(await canvas.findByText('3 842')).toBeInTheDocument();
-    await expect(await canvas.findByText('High-Value At-Risk')).toBeInTheDocument();
+    await expect(await canvas.findByText('Wysoka Wartość w Ryzyku')).toBeInTheDocument();
 
     await userEvent.click(await canvas.findByRole('button', { name: 'Przychód (zł)' }));
     await expect(await canvas.findByRole('img', { name: 'Trend klientów: Przychód (zł)' })).toBeInTheDocument();

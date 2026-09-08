@@ -33,6 +33,7 @@ export type ShellWorkspace = {
 };
 
 export type ShellNavigationItem = {
+  readonly href?: string;
   readonly badge?: string | null;
   readonly disabled?: boolean;
   readonly disabledReason?: string | null;

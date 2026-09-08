@@ -20,6 +20,13 @@ import type {
   PapaDataRuntimeLocale,
 } from '../../foundations';
 import '../Field/field.css';
+import {
+  Icon as SelectTriggerIcon,
+} from '../../icons';
+import type {
+  PapaDataIconName as SelectTriggerIconName,
+} from '../../icons';
+
 import './select.css';
 import {
   joinClassNames,
@@ -175,6 +182,8 @@ export type SelectProps = Omit<
   ) => void;
   readonly options: readonly SelectOption[];
   readonly placeholder: string;
+  readonly presentation?: 'field' | 'toolbar-icon';
+  readonly triggerIcon?: SelectTriggerIconName;
   readonly readOnly?: boolean;
   readonly required?: boolean;
   readonly searchable?: boolean;
@@ -207,6 +216,8 @@ export const Select = forwardRef<
     onChange,
     onFocus,
     options,
+    presentation = 'field',
+    triggerIcon = 'decisions',
     placeholder,
     readOnly = false,
     required = false,
@@ -780,6 +791,7 @@ export const Select = forwardRef<
     <div
       className={joinClassNames('pd-select', className)}
       data-component="Select"
+      data-presentation={presentation}
       data-state={state}
       onBlur={handleRootBlur}
       onFocus={handleRootFocus}
@@ -883,6 +895,17 @@ export const Select = forwardRef<
           type="button"
         >
           <span
+            aria-hidden="true"
+            className="pd-select__toolbar-icon"
+          >
+            <SelectTriggerIcon
+              decorative
+              name={triggerIcon}
+              size={16}
+            />
+          </span>
+
+          <span
             className={joinClassNames(
               'pd-select__trigger-label',
               selectedOption
@@ -905,6 +928,7 @@ export const Select = forwardRef<
         {isOpen && panelPosition ? (
           <div
             className="pd-select__panel"
+              data-presentation={presentation}
             data-open-upward={panelPosition.openUpward ? true : undefined}
             data-state={state}
             style={{

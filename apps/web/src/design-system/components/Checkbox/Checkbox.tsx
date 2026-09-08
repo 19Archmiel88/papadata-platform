@@ -123,7 +123,21 @@ export const Checkbox = forwardRef<
         <span
           aria-hidden="true"
           className="pd-form-check__control"
-        />
+        >
+          <svg
+            className="pd-form-check__icon"
+            fill="none"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d={indeterminate ? 'M3.5 8H12.5' : 'M3.5 8.5 6.5 11.5 12.5 5'}
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+            />
+          </svg>
+        </span>
         <span className="pd-form-check__text">
           <span className="pd-form-check__caption">
             {label}

@@ -144,6 +144,7 @@ export const customerKpis = [
     note: 'vs poprz. okres',
     footer: 'Kupujący z min. 1 zamówieniem w okresie',
     provenanceKey: 'active_customers',
+    description: 'Liczba unikalnych klientów z co najmniej jednym zamówieniem w wybranym okresie.',
   },
   {
     title: 'Nowi Klienci',
@@ -154,6 +155,7 @@ export const customerKpis = [
     note: '61,6% aktywnych',
     footer: 'Pierwsze kwalifikowane zamówienie',
     provenanceKey: 'new_customers',
+    description: 'Liczba klientów, dla których pierwsze kwalifikowane zamówienie przypada na wybrany okres.',
   },
   {
     title: 'Udział Powracających',
@@ -164,9 +166,10 @@ export const customerKpis = [
     note: '1 476 klientów',
     footer: '% aktywnych pozyskanych wcześniej',
     provenanceKey: 'returning_share',
+    description: 'Odsetek aktywnych klientów w okresie, którzy zostali pozyskani we wcześniejszym okresie.',
   },
   {
-    title: 'Repeat Purchase Rate',
+    title: 'Powtarzalność Zakupów',
     value: '41,1%',
     badge: 'Wyliczone',
     badgeTone: 'emerald',
@@ -174,19 +177,21 @@ export const customerKpis = [
     note: 'kohorta M1+',
     footer: '% klientów z min. 2. zakupy w kohorcie',
     provenanceKey: 'repeat_rate',
+    description: 'Odsetek klientów w kohorcie, którzy dokonali co najmniej drugiego zakupu.',
   },
   {
-    title: 'Observed Avg Value',
+    title: 'Zaobserwowana Śr. Wartość',
     value: '482 zł',
     badge: 'Wyliczone',
     badgeTone: 'emerald',
     trend: '↑ 12 zł',
-    note: 'historical sum/cust',
+    note: 'suma historyczna/klient',
     footer: 'Rzeczywista skumulowana wartość',
     provenanceKey: 'observed_ltv',
+    description: 'Średnia skumulowana wartość zamówień przypadająca na klienta, na podstawie rzeczywistej historii zakupów.',
   },
   {
-    title: 'High-Value At-Risk',
+    title: 'Wysoka Wartość w Ryzyku',
     value: '318',
     badge: 'Model',
     badgeTone: 'amber',
@@ -194,10 +199,12 @@ export const customerKpis = [
     note: 'przekroczony cykl',
     footer: 'Wymagają natychmiastowej akcji',
     provenanceKey: 'at_risk',
+    description: 'Liczba klientów o wysokiej wartości historycznej, których typowy cykl zakupowy został przekroczony — ryzyko odejścia.',
   },
 ] as const satisfies readonly {
   readonly badge: CustomerDataBadge;
   readonly badgeTone: CustomersTone;
+  readonly description: string;
   readonly footer: string;
   readonly note: string;
   readonly periodValues?: typeof customerPeriodActiveCustomers;
@@ -218,41 +225,41 @@ export const customerProvenanceDict: Record<CustomerProvenanceKey, {
     title: 'Aktywni Klienci',
     badge: 'Wyliczone',
     source: 'Kwalifikowane zamówienia w okresie',
-    coverage: 'Identity Coverage 94,3%',
+    coverage: 'Pokrycie tożsamości 94,3%',
     notes: 'Kupujący z minimum jednym zamówieniem w aktywnym zakresie czasu.',
   },
   new_customers: {
     title: 'Nowi Klienci',
     badge: 'Wyliczone',
     source: 'Pierwsze kwalifikowane zamówienie klienta',
-    coverage: 'Identity Coverage 94,3%',
+    coverage: 'Pokrycie tożsamości 94,3%',
     notes: 'Klient jest nowy, jeśli pierwsze kwalifikowane zamówienie przypada na badany okres.',
   },
   returning_share: {
     title: 'Udział Powracających',
     badge: 'Wyliczone',
     source: 'Aktywni klienci pozyskani wcześniej',
-    coverage: 'Identity Coverage 94,3%',
+    coverage: 'Pokrycie tożsamości 94,3%',
     notes: 'Nowi i powracający są rozłącznymi podzbiorami aktywnych kupujących.',
   },
   repeat_rate: {
-    title: 'Repeat Purchase Rate',
+    title: 'Powtarzalność Zakupów',
     badge: 'Wyliczone',
     source: 'Kohorty M1+',
-    coverage: 'Right-censoring obsługiwany jako N/A',
+    coverage: 'Cenzurowanie prawostronne obsługiwane jako N/A',
     notes: 'Nie zaniża przyszłych miesięcy przez wpisywanie 0% dla niezamkniętych kohort.',
   },
   observed_ltv: {
-    title: 'Observed Avg Value',
+    title: 'Zaobserwowana Śr. Wartość',
     badge: 'Wyliczone',
     source: 'Historyczna suma wartości klienta',
     coverage: 'Observed LTV',
     notes: 'Rzeczywista skumulowana wartość, bez predykcyjnego mnożnika.',
   },
   at_risk: {
-    title: 'High-Value At-Risk',
+    title: 'Wysoka Wartość w Ryzyku',
     badge: 'Model',
-    source: 'Observed LTV + RFM + interpurchase interval',
+    source: 'Observed LTV + RFM + interwał między zakupami',
     coverage: '318 klientów',
     notes: 'Klienci wysokiej wartości po przekroczeniu indywidualnego cyklu ponownego zakupu.',
   },

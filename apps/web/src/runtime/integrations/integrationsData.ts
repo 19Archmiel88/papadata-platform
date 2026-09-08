@@ -1,319 +1,50 @@
-import type {
-  DataColumn,
-  DataRow,
-} from '../../../../../contracts/component-shared';
-
-export type IntegrationScreenId =
-  | '40.01'
-  | '40.02'
-  | '40.03'
-  | '40.04'
-  | '40.05'
-  | '40.06'
-  | '40.07'
-  | '40.08'
-  | '40.09'
-  | '40.10';
-
-export type IntegrationScreenVariant =
-  | 'catalog'
-  | 'connect'
-  | 'detail'
-  | 'history'
-  | 'sync-run'
-  | 'scope'
-  | 'reconnect'
-  | 'disconnect'
-  | 'provider-outage'
-  | 'variants';
-
-export type IntegrationScreenDefinition = {
-  readonly apiPath: `/api/v1/${string}`;
-  readonly displayTitle: string;
-  readonly id: IntegrationScreenId;
-  readonly navigation: boolean;
-  readonly operationId: string;
-  readonly requiresResourceId: boolean;
-  readonly route: `/app/${string}`;
-  readonly routeBase: `/app/${string}`;
-  readonly summary: string;
-  readonly variant: IntegrationScreenVariant;
-};
-
-export type IntegrationRecord = {
-  readonly id: string;
-  readonly name: string;
-  readonly provider: string;
-  readonly status: 'connected' | 'degraded' | 'disconnected' | 'syncing';
-  readonly owner: string;
-  readonly lastSyncAt: string | null;
-  readonly objects: number;
-  readonly errors: number;
-};
-
-export type IntegrationEvent = {
-  readonly id: string;
-  readonly title: string;
-  readonly status: 'done' | 'failed' | 'running' | 'queued';
-  readonly timestamp: string;
-  readonly detail: string;
-};
-
-export type IntegrationsData = {
-  readonly generatedAt: string;
-  readonly integrations: readonly IntegrationRecord[];
-  readonly events: readonly IntegrationEvent[];
-  readonly selectedIntegration: IntegrationRecord | null;
-  readonly summary: {
-    readonly connected: number;
-    readonly degraded: number;
-    readonly disconnected: number;
-    readonly syncing: number;
-    readonly total: number;
-  };
-};
-
-export const integrationScreenDefinitions: readonly IntegrationScreenDefinition[] = [
-  {
-    apiPath: '/api/v1/integrations/catalog',
-    displayTitle: 'Katalog integracji',
-    id: '40.01',
-    navigation: true,
-    operationId: 'integrations.catalog.read',
-    requiresResourceId: false,
-    route: '/app/integrations/katalog',
-    routeBase: '/app/integrations/katalog',
-    summary: 'Lista dostępnych i połączonych integracji ze stanem gotowości, właścicielem i ostatnią synchronizacją.',
-    variant: 'catalog',
-  },
-  {
-    apiPath: '/api/v1/integrations/connect',
-    displayTitle: 'Kreator połączenia',
-    id: '40.02',
-    navigation: true,
-    operationId: 'integrations.connection.wizard.read',
-    requiresResourceId: false,
-    route: '/app/integrations/kreator-polaczenia',
-    routeBase: '/app/integrations/kreator-polaczenia',
-    summary: 'Kroki połączenia providera z zakresem uprawnień, autoryzacją i testem połączenia.',
-    variant: 'connect',
-  },
-  {
-    apiPath: '/api/v1/integrations/detail',
-    displayTitle: 'Szczegóły integracji',
-    id: '40.03',
-    navigation: false,
-    operationId: 'integrations.detail.read',
-    requiresResourceId: true,
-    route: '/app/integrations/szczegoly/:resourceId',
-    routeBase: '/app/integrations/szczegoly',
-    summary: 'Szczegół integracji z zakresem danych, statusem i historią ostatnich zdarzeń.',
-    variant: 'detail',
-  },
-  {
-    apiPath: '/api/v1/integrations/sync-history',
-    displayTitle: 'Historia synchronizacji',
-    id: '40.04',
-    navigation: true,
-    operationId: 'integrations.sync.history.read',
-    requiresResourceId: false,
-    route: '/app/integrations/historia-synchronizacji',
-    routeBase: '/app/integrations/historia-synchronizacji',
-    summary: 'Chronologiczny rejestr synchronizacji, błędów i ręcznych ponowień.',
-    variant: 'history',
-  },
-  {
-    apiPath: '/api/v1/integrations/sync-run',
-    displayTitle: 'Przebieg synchronizacji',
-    id: '40.05',
-    navigation: true,
-    operationId: 'integrations.sync.run.read',
-    requiresResourceId: false,
-    route: '/app/integrations/przebieg-synchronizacji',
-    routeBase: '/app/integrations/przebieg-synchronizacji',
-    summary: 'Aktualny przebieg synchronizacji z etapami, kolejką i błędami źródła.',
-    variant: 'sync-run',
-  },
-  {
-    apiPath: '/api/v1/integrations/scope',
-    displayTitle: 'Zakres synchronizacji',
-    id: '40.06',
-    navigation: true,
-    operationId: 'integrations.sync.scope.read',
-    requiresResourceId: false,
-    route: '/app/integrations/zakres-synchronizacji',
-    routeBase: '/app/integrations/zakres-synchronizacji',
-    summary: 'Zakres obiektów, uprawnień i zbiorów danych objętych synchronizacją.',
-    variant: 'scope',
-  },
-  {
-    apiPath: '/api/v1/integrations/reconnect',
-    displayTitle: 'Ponowne połączenie',
-    id: '40.07',
-    navigation: true,
-    operationId: 'integrations.reconnect.read',
-    requiresResourceId: false,
-    route: '/app/integrations/ponowne-polaczenie',
-    routeBase: '/app/integrations/ponowne-polaczenie',
-    summary: 'Kontekst ponownego połączenia z wpływem na dane i potrzebą odnowienia autoryzacji.',
-    variant: 'reconnect',
-  },
-  {
-    apiPath: '/api/v1/integrations/disconnect',
-    displayTitle: 'Odłączenie',
-    id: '40.08',
-    navigation: true,
-    operationId: 'integrations.disconnect.read',
-    requiresResourceId: false,
-    route: '/app/integrations/odlaczenie',
-    routeBase: '/app/integrations/odlaczenie',
-    summary: 'Bezpieczny przegląd skutków odłączenia integracji przed operacją destrukcyjną.',
-    variant: 'disconnect',
-  },
-  {
-    apiPath: '/api/v1/integrations/provider-outage',
-    displayTitle: 'Awaria providera',
-    id: '40.09',
-    navigation: true,
-    operationId: 'integrations.provider.outage.read',
-    requiresResourceId: false,
-    route: '/app/integrations/awaria-providera',
-    routeBase: '/app/integrations/awaria-providera',
-    summary: 'Stan awarii providera z wpływem na dane, retry i komunikatem dla operatora.',
-    variant: 'provider-outage',
-  },
-  {
-    apiPath: '/api/v1/integrations/variants',
-    displayTitle: 'Warianty integracji',
-    id: '40.10',
-    navigation: true,
-    operationId: 'integrations.variants.read',
-    requiresResourceId: false,
-    route: '/app/integrations/warianty-integracji',
-    routeBase: '/app/integrations/warianty-integracji',
-    summary: 'Zbiorczy widok stanów connected, syncing, degraded, disconnected, outage, empty i forbidden.',
-    variant: 'variants',
-  },
-] as const;
-
-export const integrationColumns: readonly DataColumn[] = [
-  { id: 'name', label: 'Integracja', sortable: true, width: 240 },
-  { id: 'provider', label: 'Provider', sortable: true },
-  { id: 'statusLabel', label: 'Status', sortable: true },
-  { id: 'owner', label: 'Właściciel', sortable: true },
-  { id: 'lastSyncAt', label: 'Ostatnia synchronizacja', sortable: true },
-  { align: 'right', id: 'objects', label: 'Obiekty', sortable: true },
-  { align: 'right', id: 'errors', label: 'Błędy', sortable: true },
-];
-
-const generatedAt = '2026-08-14T09:30:00+02:00';
-
-const integrationRecords: readonly IntegrationRecord[] = [
-  { errors: 0, id: 'shopify', lastSyncAt: '2026-08-14T08:56:00+02:00', name: 'Shopify Orders', objects: 18420, owner: 'Operacje przychodu', provider: 'Shopify', status: 'connected' },
-  { errors: 2, id: 'google-ads', lastSyncAt: '2026-08-14T08:40:00+02:00', name: 'Google Ads', objects: 1280, owner: 'Media płatne', provider: 'Google', status: 'degraded' },
-  { errors: 0, id: 'ga4', lastSyncAt: '2026-08-14T09:20:00+02:00', name: 'GA4 Events', objects: 420000, owner: 'Analityka', provider: 'Google', status: 'syncing' },
-  { errors: 0, id: 'meta-ads', lastSyncAt: '2026-08-13T22:10:00+02:00', name: 'Meta Ads', objects: 940, owner: 'Media płatne', provider: 'Meta', status: 'connected' },
-  { errors: 1, id: 'mailchimp', lastSyncAt: null, name: 'Mailchimp Audiences', objects: 0, owner: 'CRM i retencja', provider: 'Mailchimp', status: 'disconnected' },
-];
-
-const integrationEvents: readonly IntegrationEvent[] = [
-  { detail: 'Zamówienia i refundacje zsynchronizowane bez błędów.', id: 'evt-01', status: 'done', timestamp: '2026-08-14T08:56:00+02:00', title: 'Shopify Orders zakończone' },
-  { detail: 'Część kosztów kampanii wymaga ponowienia po stronie Google Ads.', id: 'evt-02', status: 'failed', timestamp: '2026-08-14T08:41:00+02:00', title: 'Google Ads częściowo niekompletne' },
-  { detail: 'Kompakcja eventów trwa; dane będą oznaczone jako częściowe do końca przebiegu.', id: 'evt-03', status: 'running', timestamp: '2026-08-14T09:20:00+02:00', title: 'GA4 Events w toku' },
-  { detail: 'Ponowne pobranie audiences czeka na odnowienie tokenu.', id: 'evt-04', status: 'queued', timestamp: '2026-08-14T09:24:00+02:00', title: 'Mailchimp w kolejce' },
-];
-
-export function findIntegrationScreenDefinition(
-  idOrRoute: string,
-): IntegrationScreenDefinition | null {
-  const normalized = idOrRoute.split('?')[0] ?? idOrRoute;
-  return integrationScreenDefinitions.find((definition) => (
-    definition.id === idOrRoute
-    || definition.routeBase === normalized
-    || (
-      definition.requiresResourceId
-      && normalized.startsWith(`${definition.routeBase}/`)
-    )
-  )) ?? null;
-}
-
-export function getIntegrationNavigation() {
-  return integrationScreenDefinitions
-    .filter((definition) => definition.navigation)
-    .map((definition) => ({
-      href: definition.routeBase,
-      id: definition.id,
-      label: definition.displayTitle,
-    }));
-}
-
-export function createIntegrationsStorybookData(
-  definition: IntegrationScreenDefinition,
-): IntegrationsData {
-  const selectedIntegration = definition.requiresResourceId
-    ? integrationRecords[0] ?? null
-    : null;
-  const summary = {
-    connected: integrationRecords.filter((item) => item.status === 'connected').length,
-    degraded: integrationRecords.filter((item) => item.status === 'degraded').length,
-    disconnected: integrationRecords.filter((item) => item.status === 'disconnected').length,
-    syncing: integrationRecords.filter((item) => item.status === 'syncing').length,
-    total: integrationRecords.length,
-  };
-
-  return {
-    events: integrationEvents,
-    generatedAt,
-    integrations: integrationRecords,
-    selectedIntegration,
-    summary,
-  };
-}
-
-export function integrationRows(
-  records: readonly IntegrationRecord[],
-): readonly DataRow[] {
-  return records.map((record) => ({
-    errors: record.errors,
-    id: record.id,
-    lastSyncAt: record.lastSyncAt ? formatDateTime(record.lastSyncAt) : 'Wymaga połączenia',
-    name: record.name,
-    objects: record.objects.toLocaleString('pl-PL'),
-    owner: record.owner,
-    provider: record.provider,
-    status: record.status,
-    statusLabel: resolveIntegrationStatusLabel(record.status),
-  }));
-}
-
-export function resolveIntegrationStatusLabel(
-  status: IntegrationRecord['status'],
-) {
-  switch (status) {
-    case 'connected':
-      return 'Połączona';
-    case 'degraded':
-      return 'Częściowa';
-    case 'disconnected':
-      return 'Odłączona';
-    case 'syncing':
-      return 'Synchronizacja';
-  }
-}
-
-function formatDateTime(value: string) {
-  return new Intl.DateTimeFormat('pl-PL', {
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    month: '2-digit',
-  }).format(new Date(value));
-}
-
 export type IntegrationRuntimeTabId =
   | 'sources'
   | 'add'
   | 'data-health';
+
+export type IntegrationWorkspaceTabId =
+  | 'overview'
+  | 'data'
+  | 'sync'
+  | 'config';
+
+export const integrationWorkspaceTabs: readonly {
+  readonly id: IntegrationWorkspaceTabId;
+  readonly label: string;
+}[] = [
+  { id: 'overview', label: 'Przegląd' },
+  { id: 'data', label: 'Dane' },
+  { id: 'sync', label: 'Synchronizacja' },
+  { id: 'config', label: 'Konfiguracja' },
+];
+
+export type IntegrationSyncStageId =
+  | 'fetch'
+  | 'normalize'
+  | 'validate'
+  | 'canonicalize';
+
+export type IntegrationSyncStage = {
+  readonly id: IntegrationSyncStageId;
+  readonly label: string;
+  readonly status: 'success' | 'warning' | 'error' | 'pending';
+  readonly recordCount: number | null;
+  readonly rejectedCount: number | null;
+  readonly detail: string | null;
+};
+
+/** Synthetic business status shown in the Źródła table — combines auth, sync, and data-integrity
+ * substates into the single vocabulary a non-technical user scans a list with. Technical detail
+ * (which of connectionStatus/lifecycleStatus/syncStatus actually caused it) stays in the workspace. */
+export type SourceSyntheticStatusId =
+  | 'ready'
+  | 'syncing'
+  | 'partial'
+  | 'action_required'
+  | 'provider_error'
+  | 'no_data'
+  | 'disconnected';
 
 export type IntegrationProviderId =
   | 'woocommerce'
@@ -363,6 +94,8 @@ export type IntegrationRuntimeLog = {
   readonly errorCode: string | null;
   readonly safeErrorMessage: string | null;
   readonly createdAt: string | null;
+  readonly stages: readonly IntegrationSyncStage[] | null;
+  readonly impactNote: string | null;
 };
 
 export type IntegrationCompletenessDay = {
@@ -437,6 +170,15 @@ export type IntegrationRuntimeSource = {
     readonly kpis: readonly string[];
     readonly ai: string;
   };
+  readonly objectReadiness: readonly {
+    readonly id: string;
+    readonly label: string;
+    readonly status: RuntimeCompletenessStatus;
+    readonly completeness: number;
+    readonly note: string | null;
+  }[];
+  readonly selectedStreams: readonly string[];
+  readonly schedule: string;
   readonly createdAt: string | null;
   readonly updatedAt: string | null;
 };
@@ -565,7 +307,7 @@ export type IntegrationsRuntimeView = {
 export type IntegrationSourceFilters = {
   readonly query: string;
   readonly provider: 'all' | IntegrationProviderId;
-  readonly status: 'all' | RuntimeSourceBusinessStatus;
+  readonly status: 'all' | SourceSyntheticStatusId;
 };
 
 export type IntegrationCatalogFilters = {
@@ -633,7 +375,7 @@ export function filterIntegrationSources(
   const normalizedQuery = normalizeSearch(filters.query);
   return sources.filter((source) => {
     if (filters.provider !== 'all' && source.provider !== filters.provider) return false;
-    if (filters.status !== 'all' && source.businessStatus !== filters.status) return false;
+    if (filters.status !== 'all' && resolveSourceSyntheticStatus(source).id !== filters.status) return false;
     if (!normalizedQuery) return true;
     return [
       source.displayName,
@@ -668,6 +410,52 @@ export function filterIntegrationCatalog(
       ...provider.unlocks,
     ].some((value) => normalizeSearch(value).includes(normalizedQuery));
   });
+}
+
+const syntheticStatusLabels: Record<SourceSyntheticStatusId, string> = {
+  action_required: 'Wymaga działania',
+  disconnected: 'Odłączone',
+  no_data: 'Brak danych',
+  partial: 'Częściowo gotowe',
+  provider_error: 'Problem providera',
+  ready: 'Gotowe',
+  syncing: 'Synchronizacja',
+};
+
+/** Collapses auth/sync/data-integrity substates into the single business vocabulary
+ * a source list is scanned with (see docs §7 "Status nie może być tylko połączono"). */
+export function resolveSourceSyntheticStatus(
+  source: IntegrationRuntimeSource,
+): { readonly id: SourceSyntheticStatusId; readonly label: string } {
+  const id = ((): SourceSyntheticStatusId => {
+    if (source.connectionStatus === 'DISCONNECTED') return 'disconnected';
+    if (source.lifecycleStatus === 'REAUTH_REQUIRED' || source.lifecycleStatus === 'BLOCKED_BY_PLAN') return 'action_required';
+    if (source.lifecycleStatus === 'FAILED') return 'provider_error';
+    if (source.completeness.status === 'MISSING') return 'no_data';
+    if (source.businessStatus === 'syncing') return 'syncing';
+    if (source.completeness.status === 'PARTIAL') return 'partial';
+    return 'ready';
+  })();
+  return { id, label: syntheticStatusLabels[id] };
+}
+
+export function syntheticStatusTone(
+  id: SourceSyntheticStatusId,
+): 'success' | 'processing' | 'warning' | 'critical' | 'neutral' {
+  switch (id) {
+    case 'ready':
+      return 'success';
+    case 'syncing':
+      return 'processing';
+    case 'partial':
+      return 'warning';
+    case 'action_required':
+    case 'provider_error':
+      return 'critical';
+    case 'no_data':
+    case 'disconnected':
+      return 'neutral';
+  }
 }
 
 export function sourceStatusTone(
@@ -892,6 +680,63 @@ export function createIntegrationsRuntimeFallbackData(
   };
 }
 
+/** Same base dataset as {@link createIntegrationsRuntimeFallbackData}, with Meta Ads swapped for a
+ * live provider outage (§18 "Awaria providera") — the provider itself is unreachable, not just
+ * unauthorized, so other sources must keep reporting `ready`/`syncing` to prove local degradation. */
+export function createIntegrationsProviderOutageFallbackData(
+  generatedAt = '2026-08-26T13:42:00.000Z',
+): IntegrationsRuntimeView {
+  const base = createIntegrationsRuntimeFallbackData(generatedAt);
+  const outageSource = createRuntimeSource({
+    account: 'Meta Ads · EU',
+    completeness: 74,
+    id: 'src-meta-ads',
+    issue: {
+      code: 'PROVIDER_UNAVAILABLE',
+      message: 'Meta API nie odpowiada. Nowe dane nie są pobierane od 13:42.',
+      severity: 'error',
+    },
+    lifecycle: 'FAILED',
+    provider: 'meta_ads',
+    status: 'action_required',
+  });
+  const sources = base.status.sources.map((source) => (
+    source.integrationId === 'src-meta-ads' ? outageSource : source
+  ));
+  const outageLog = createRuntimeLog('job-05', 'src-meta-ads', 'meta_ads', 'incremental_sync', 'attention', generatedAt, 'PROVIDER_UNAVAILABLE');
+
+  return {
+    ...base,
+    completeness: {
+      ...base.completeness,
+      sources: base.completeness.sources.map((source) => (
+        source.integrationId === 'src-meta-ads'
+          ? { ...source, businessStatus: outageSource.businessStatus, completeness: outageSource.completeness, freshness: outageSource.freshness, impact: outageSource.impact }
+          : source
+      )),
+    },
+    logs: {
+      ...base.logs,
+      logs: [outageLog, ...base.logs.logs.filter((log) => log.integrationId !== 'src-meta-ads')],
+    },
+    status: {
+      ...base.status,
+      alerts: [
+        {
+          actionLabel: 'Szczegóły',
+          id: 'src-meta-ads:outage',
+          message: 'Meta API nie odpowiada. Kampanie płatne / Meta są nieaktualne. Google Ads i dane sprzedażowe działają bez zakłóceń.',
+          sourceId: 'src-meta-ads',
+          title: 'Meta Ads: problem providera',
+          tone: 'critical',
+        },
+        ...base.status.alerts.filter((alert) => alert.sourceId !== 'src-meta-ads'),
+      ],
+      sources,
+    },
+  };
+}
+
 function createRuntimeSource(input: {
   readonly account: string;
   readonly completeness: number;
@@ -963,10 +808,22 @@ function createRuntimeSource(input: {
     latestSyncRun: null,
     lifecycleStatus: lifecycle,
     nextStep: nextStepForLifecycle(lifecycle, input.status),
+    objectReadiness: providerObjects(input.provider).map((object, index) => {
+      const degraded = input.status === 'action_required' && index === 0;
+      return {
+        completeness: degraded ? Math.max(0, input.completeness - 30) : input.completeness,
+        id: object.id,
+        label: object.label,
+        note: degraded ? object.degradedNote : null,
+        status: degraded ? 'PARTIAL' : completenessStatus,
+      };
+    }),
     primaryAction: primaryActionForLifecycle(lifecycle, input.status),
     provider: input.provider,
     providerDisplayName: provider,
     providerReadiness: input.provider === 'shopify' ? 'pilot_ready' : input.provider === 'allegro' ? 'internal_only' : 'production_ready',
+    schedule: 'Co godzinę, automatycznie po pierwszym pobraniu',
+    selectedStreams: providerStreams(input.provider),
     syncStatus,
     updatedAt: '2026-08-26T09:58:00.000Z',
   };
@@ -1027,18 +884,37 @@ function createRuntimeLog(
   generatedAt: string,
   errorCode: string | null = null,
 ): IntegrationRuntimeLog {
+  const recordsRead = status === 'attention' ? 1200 : 2480;
+  const recordsWritten = status === 'attention' ? 920 : 2478;
+  const rejected = status === 'attention' ? recordsRead - recordsWritten : 0;
   return {
     createdAt: generatedAt,
     durationMs: status === 'running' ? null : 184000,
     errorCode,
     finishedAt: status === 'running' ? null : generatedAt,
+    impactNote: status === 'attention'
+      ? `${providerNames[provider]}: część rekordów odrzucona na etapie walidacji — powiązane KPI mogą być częściowe.`
+      : null,
     integrationId,
     jobId,
     provider,
     providerDisplayName: providerNames[provider],
-    recordsRead: status === 'attention' ? 1200 : 2480,
-    recordsWritten: status === 'attention' ? 920 : 2478,
+    recordsRead,
+    recordsWritten,
     safeErrorMessage: errorCode ? 'Provider odrzucił zapisany dostęp.' : null,
+    stages: status === 'running' ? null : [
+      { detail: null, id: 'fetch', label: 'Pobranie', recordCount: recordsRead, rejectedCount: null, status: 'success' },
+      { detail: null, id: 'normalize', label: 'Normalizacja', recordCount: recordsRead, rejectedCount: null, status: 'success' },
+      {
+        detail: rejected > 0 ? `${formatNumber(rejected)} rekordów odrzuconych` : null,
+        id: 'validate',
+        label: 'Walidacja',
+        recordCount: recordsRead,
+        rejectedCount: rejected > 0 ? rejected : null,
+        status: rejected > 0 ? 'warning' : 'success',
+      },
+      { detail: null, id: 'canonicalize', label: 'Kanonicalizacja', recordCount: recordsWritten, rejectedCount: null, status: 'success' },
+    ],
     startedAt: '2026-08-26T09:54:00.000Z',
     status,
     statusLabel: status === 'completed' ? 'Zakończone' : status === 'running' ? 'W toku' : 'Wymaga uwagi',
@@ -1161,6 +1037,24 @@ function providerStreams(provider: IntegrationProviderId): readonly string[] {
   return ['orders', 'products', 'refunds', 'inventory'];
 }
 
+const streamLabels: Record<string, string> = {
+  ad_spend: 'Wydatki reklamowe',
+  attributed_conversions: 'Konwersje przypisane',
+  conversions: 'Konwersje',
+  events: 'Zdarzenia',
+  inventory: 'Stan magazynowy',
+  orders: 'Zamówienia',
+  products: 'Produkty',
+  refunds: 'Refundacje',
+  traffic: 'Ruch',
+};
+
+/** Translates a technical stream id (as returned by {@link providerStreams}) into the Polish label
+ * shown in the "Zakres danych" list — falls back to the raw id for any id not yet mapped above. */
+export function streamLabel(streamId: string): string {
+  return streamLabels[streamId] ?? streamId;
+}
+
 function providerData(provider: IntegrationProviderId): readonly string[] {
   if (provider === 'google_ads' || provider === 'meta_ads') {
     return ['koszt', 'kampanie', 'kliknięcia', 'wyświetlenia', 'konwersje'];
@@ -1169,6 +1063,32 @@ function providerData(provider: IntegrationProviderId): readonly string[] {
     return ['sesje', 'użytkownicy', 'źródła ruchu', 'zdarzenia', 'konwersje'];
   }
   return ['zamówienia', 'produkty', 'refundacje', 'inventory'];
+}
+
+function providerObjects(provider: IntegrationProviderId): readonly {
+  readonly id: string;
+  readonly label: string;
+  readonly degradedNote: string;
+}[] {
+  if (provider === 'google_ads' || provider === 'meta_ads') {
+    return [
+      { degradedNote: 'Koszty kampanii nie odświeżyły się od ostatniej udanej synchronizacji.', id: 'spend', label: 'Wydatki reklamowe' },
+      { degradedNote: '', id: 'campaigns', label: 'Kampanie' },
+      { degradedNote: '', id: 'conversions', label: 'Konwersje' },
+    ];
+  }
+  if (provider === 'ga4') {
+    return [
+      { degradedNote: 'Historia sesji sprzed 90 dni wciąż się dociąga.', id: 'sessions', label: 'Sesje' },
+      { degradedNote: '', id: 'traffic-sources', label: 'Źródła ruchu' },
+      { degradedNote: '', id: 'conversions', label: 'Konwersje' },
+    ];
+  }
+  return [
+    { degradedNote: 'Część zamówień sprzed awarii providera dotrze z opóźnieniem.', id: 'orders', label: 'Zamówienia' },
+    { degradedNote: '', id: 'products', label: 'Produkty' },
+    { degradedNote: '', id: 'customers', label: 'Klienci' },
+  ];
 }
 
 function providerUnlocks(provider: IntegrationProviderId): readonly string[] {

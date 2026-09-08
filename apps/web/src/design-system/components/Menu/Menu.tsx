@@ -1,31 +1,12 @@
-import type {
-  HTMLAttributes,
-  KeyboardEvent as ReactKeyboardEvent,
-  ReactElement,
-} from 'react';
-import {
-  cloneElement,
-  isValidElement,
-  useEffect,
-  useRef,
-} from 'react';
+import type { HTMLAttributes, KeyboardEvent as ReactKeyboardEvent, ReactElement } from 'react';
+import { cloneElement, isValidElement, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
-import type {
-  PapaDataIconName,
-} from '../../icons';
-import {
-  Icon,
-} from '../../icons';
-import {
-  joinClassNames,
-} from '../Field/fieldUtils';
-import {
-  findEnabledIndex,
-  findFirstEnabledIndex,
-} from '../Navigation/navigationUtils';
-import {
-  mergeRefs,
-} from '../OverlayRoot/overlayUtils';
+import type { PapaDataIconName } from '../../icons';
+import { Icon } from '../../icons';
+import { joinClassNames } from '../Field/fieldUtils';
+import { findEnabledIndex, findFirstEnabledIndex } from '../Navigation/navigationUtils';
+import { mergeRefs, useAnchoredPosition, useOverlayPortal } from '../OverlayRoot/overlayUtils';
 import '../Navigation/navigation.css';
 
 export type MenuItem =
@@ -44,49 +25,28 @@ export type MenuItem =
       readonly kind: 'separator';
     };
 
-export type MenuCloseReason =
-  | 'action'
-  | 'escape'
-  | 'outside'
-  | 'trigger';
+export type MenuCloseReason = 'action' | 'escape' | 'outside' | 'trigger';
 
-export type MenuProps = Omit<
-  HTMLAttributes<HTMLDivElement>,
-  | 'children'
-> & {
+export type MenuProps = Omit<HTMLAttributes<HTMLDivElement>, 'children'> & {
   readonly activeItemId: string | null;
   readonly emptyLabel?: string;
   readonly items: readonly MenuItem[];
-  readonly onAction?:
-    | ((
-        itemId: string,
-      ) => void)
-    | undefined;
-  readonly onActiveItemIdChange?:
-    | ((
-        itemId: string | null,
-      ) => void)
-    | undefined;
-  readonly onOpenChange?:
-    | ((
-        open: boolean,
-        reason: MenuCloseReason,
-      ) => void)
-    | undefined;
+  readonly onAction?: ((itemId: string) => void) | undefined;
+  readonly onActiveItemIdChange?: ((itemId: string | null) => void) | undefined;
+  readonly onOpenChange?: ((open: boolean, reason: MenuCloseReason) => void) | undefined;
   readonly open: boolean;
-  readonly placement:
-    | 'bottom-end'
-    | 'bottom-start'
-    | 'right-start';
+  readonly panelClassName?: string;
+  readonly placement: 'bottom-end' | 'bottom-start' | 'right-start';
   readonly trigger: ReactElement<any>;
 };
 
-function isInteractiveItem(
-  item: MenuItem,
-): item is Extract<MenuItem, {
-  readonly id: string;
-  readonly label: string;
-}> {
+function isInteractiveItem(item: MenuItem): item is Extract<
+  MenuItem,
+  {
+    readonly id: string;
+    readonly label: string;
+  }
+> {
   return item.kind !== 'separator';
 }
 
@@ -99,49 +59,31 @@ export function Menu({
   onActiveItemIdChange,
   onOpenChange,
   open,
+  panelClassName,
   placement,
   trigger,
   ...props
 }: MenuProps) {
-  const rootRef =
-    useRef<HTMLDivElement | null>(null);
-  const panelRef =
-    useRef<HTMLDivElement | null>(null);
-  const triggerRef =
-    useRef<HTMLElement | null>(null);
-  const itemRefs = useRef<
-    Record<string, HTMLButtonElement | null>
-  >({});
-  const triggerProps =
-    (trigger as ReactElement<any>).props as Record<
-      string,
-      unknown
-    >;
-  const interactiveItems = items.filter(
-    isInteractiveItem,
-  );
-  const firstEnabledIndex =
-    findFirstEnabledIndex(
-      interactiveItems,
-    );
-  const resolvedActiveId =
-    activeItemId
-    ?? interactiveItems[firstEnabledIndex]?.id
-    ?? null;
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+  const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const portalRoot = useOverlayPortal(open);
+  const anchoredStyle = useAnchoredPosition(triggerRef, open, placement, panelRef);
+  const triggerProps = (trigger as ReactElement<any>).props as Record<string, unknown>;
+  const interactiveItems = items.filter(isInteractiveItem);
+  const firstEnabledIndex = findFirstEnabledIndex(interactiveItems);
+  const resolvedActiveId = activeItemId ?? interactiveItems[firstEnabledIndex]?.id ?? null;
 
-  const focusItem = (
-    itemId: string | null,
-  ) => {
+  const focusItem = (itemId: string | null) => {
     if (!itemId) {
       return;
     }
 
-    itemRefs.current[itemId]?.focus();
+    itemRefs.current[itemId]?.focus({ preventScroll: true });
   };
 
-  const setActiveFromIndex = (
-    index: number,
-  ) => {
+  const setActiveFromIndex = (index: number) => {
     const item = interactiveItems[index];
 
     if (!item || item.disabled) {
@@ -153,44 +95,32 @@ export function Menu({
   };
 
   useEffect(() => {
-    if (
-      !open
-      || typeof document === 'undefined'
-    ) {
+    if (!open || typeof document === 'undefined') {
       return;
     }
 
-    const frame = window.requestAnimationFrame(() => {
+    let frame = 0;
+    const focusMountedMenu = () => {
+      if (!panelRef.current) {
+        frame = window.requestAnimationFrame(focusMountedMenu);
+        return;
+      }
       focusItem(resolvedActiveId);
-    });
+    };
+    frame = window.requestAnimationFrame(focusMountedMenu);
 
-    const handlePointerDown = (
-      event: PointerEvent,
-    ) => {
-      if (
-        rootRef.current
-        && !rootRef.current.contains(
-          event.target as Node,
-        )
-      ) {
-        onOpenChange?.(
-          false,
-          'outside',
-        );
+    const isInsideMenu = (target: Node) =>
+      Boolean(rootRef.current?.contains(target)) || Boolean(panelRef.current?.contains(target));
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!isInsideMenu(event.target as Node)) {
+        onOpenChange?.(false, 'outside');
       }
     };
 
     const handleFocusIn = (event: FocusEvent) => {
-      if (
-        rootRef.current
-        && !rootRef.current.contains(
-          event.target as Node,
-        )
-      ) {
-        onOpenChange?.(
-          false,
-          'outside',
-        );
+      if (!isInsideMenu(event.target as Node)) {
+        onOpenChange?.(false, 'outside');
       }
     };
 
@@ -200,331 +130,197 @@ export function Menu({
       }
 
       event.preventDefault();
-      onOpenChange?.(
-        false,
-        'escape',
-      );
+      onOpenChange?.(false, 'escape');
+      triggerRef.current?.focus({ preventScroll: true });
     };
 
-    document.addEventListener(
-      'pointerdown',
-      handlePointerDown,
-    );
-    document.addEventListener(
-      'focusin',
-      handleFocusIn,
-    );
-    document.addEventListener(
-      'keydown',
-      handleKeyDown,
-    );
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('focusin', handleFocusIn);
+    document.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.cancelAnimationFrame(frame);
-      document.removeEventListener(
-        'pointerdown',
-        handlePointerDown,
-      );
-      document.removeEventListener(
-        'focusin',
-        handleFocusIn,
-      );
-      document.removeEventListener(
-        'keydown',
-        handleKeyDown,
-      );
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('focusin', handleFocusIn);
+      document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [
-    onOpenChange,
-    open,
-    resolvedActiveId,
-  ]);
+  }, [onOpenChange, open, resolvedActiveId]);
 
   const triggerElement = isValidElement(trigger)
-    ? cloneElement(
-        trigger as ReactElement<any>,
-        {
-          'aria-expanded': open,
-          'aria-haspopup': 'menu',
-          onClick: (
-            event: React.MouseEvent<HTMLElement>,
-          ) => {
-            (
-              triggerProps.onClick as
-                | ((
-                    nextEvent: React.MouseEvent<HTMLElement>,
-                  ) => void)
-                | undefined
-            )?.(event);
+    ? cloneElement(trigger as ReactElement<any>, {
+        'aria-expanded': open,
+        'aria-haspopup': 'menu',
+        onClick: (event: React.MouseEvent<HTMLElement>) => {
+          (
+            triggerProps.onClick as ((nextEvent: React.MouseEvent<HTMLElement>) => void) | undefined
+          )?.(event);
 
-            if (event.defaultPrevented) {
-              return;
-            }
+          if (event.defaultPrevented) {
+            return;
+          }
 
-            onOpenChange?.(
-              !open,
-              'trigger',
-            );
-          },
-          onKeyDown: (
-            event: ReactKeyboardEvent<HTMLElement>,
-          ) => {
-            (
-              triggerProps.onKeyDown as
-                | ((
-                    nextEvent: ReactKeyboardEvent<HTMLElement>,
-                  ) => void)
-                | undefined
-            )?.(event);
-
-            if (event.defaultPrevented) {
-              return;
-            }
-
-            if (
-              event.key === 'ArrowDown'
-              || event.key === 'Enter'
-              || event.key === ' '
-            ) {
-              event.preventDefault();
-              onOpenChange?.(
-                true,
-                'trigger',
-              );
-            }
-          },
-          ref: mergeRefs(
-            triggerRef,
-          ),
+          onOpenChange?.(!open, 'trigger');
         },
-      )
+        onKeyDown: (event: ReactKeyboardEvent<HTMLElement>) => {
+          (
+            triggerProps.onKeyDown as
+              | ((nextEvent: ReactKeyboardEvent<HTMLElement>) => void)
+              | undefined
+          )?.(event);
+
+          if (event.defaultPrevented) {
+            return;
+          }
+
+          if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onOpenChange?.(true, 'trigger');
+          }
+        },
+        ref: mergeRefs(triggerRef),
+      })
     : trigger;
 
   return (
-    <div
-      {...props}
-      ref={rootRef}
-      className={joinClassNames(
-        'pd-menu',
-        className,
-      )}
-    >
-      <div className="pd-menu__trigger">
-        {triggerElement}
-      </div>
+    <div {...props} ref={rootRef} className={joinClassNames('pd-menu', className)}>
+      <div className="pd-menu__trigger">{triggerElement}</div>
 
-      {open ? (
-        <div
-          ref={panelRef}
-          className="pd-menu__panel"
-          data-placement={placement}
-        >
-          {interactiveItems.length === 0 ? (
-            <div className="pd-menu__empty">
-              {emptyLabel}
-            </div>
-          ) : (
-            <ul
-              aria-orientation="vertical"
-              className="pd-menu__list"
-              role="menu"
+      {open && portalRoot
+        ? createPortal(
+            <div
+              ref={panelRef}
+              className={joinClassNames('pd-menu__panel', panelClassName)}
+              data-placement={placement}
+              style={anchoredStyle ?? undefined}
             >
-              {items.map((item) => {
-                if (
-                  item.kind === 'separator'
-                ) {
-                  return (
-                    <li
-                      key={item.id}
-                      aria-hidden="true"
-                      className="pd-menu__separator"
-                      role="separator"
-                    />
-                  );
-                }
-
-                const isActive =
-                  item.id
-                  === resolvedActiveId;
-                const currentIndex =
-                  interactiveItems.findIndex(
-                    (candidate) =>
-                      candidate.id === item.id,
-                  );
-
-                return (
-                  <li
-                    key={item.id}
-                    role="none"
-                  >
-                    <button
-                      ref={(node) => {
-                        itemRefs.current[item.id] = node;
-                      }}
-                      aria-checked={
-                        item.checked === undefined
-                          ? undefined
-                          : item.checked
-                      }
-                      aria-disabled={
-                        item.disabled
-                          ? true
-                          : undefined
-                      }
-                      className="pd-menu__item"
-                      data-active={isActive}
-                      data-checked={
-                        item.checked ? true : undefined
-                      }
-                      data-destructive={
-                        item.destructive
-                          ? true
-                          : undefined
-                      }
-                      role={
-                        item.checked === undefined
-                          ? 'menuitem'
-                          : 'menuitemradio'
-                      }
-                      tabIndex={
-                        isActive
-                          ? 0
-                          : -1
-                      }
-                      type="button"
-                      onClick={() => {
-                        if (item.disabled) {
-                          return;
-                        }
-
-                        onAction?.(item.id);
-                        onOpenChange?.(
-                          false,
-                          'action',
-                        );
-                      }}
-                      onFocus={() => {
-                        if (item.disabled) {
-                          return;
-                        }
-
-                        onActiveItemIdChange?.(
-                          item.id,
-                        );
-                      }}
-                      onKeyDown={(event) => {
-                        if (item.disabled) {
-                          return;
-                        }
-
-                        if (
-                          event.key === 'ArrowDown'
-                        ) {
-                          event.preventDefault();
-
-                          const nextIndex =
-                            findEnabledIndex(
-                              interactiveItems,
-                              currentIndex,
-                              1,
-                            );
-
-                          if (nextIndex >= 0) {
-                            setActiveFromIndex(
-                              nextIndex,
-                            );
-                          }
-
-                          return;
-                        }
-
-                        if (
-                          event.key === 'ArrowUp'
-                        ) {
-                          event.preventDefault();
-
-                          const nextIndex =
-                            findEnabledIndex(
-                              interactiveItems,
-                              currentIndex,
-                              -1,
-                            );
-
-                          if (nextIndex >= 0) {
-                            setActiveFromIndex(
-                              nextIndex,
-                            );
-                          }
-
-                          return;
-                        }
-
-                        if (event.key === 'Home') {
-                          event.preventDefault();
-
-                          if (firstEnabledIndex >= 0) {
-                            setActiveFromIndex(
-                              firstEnabledIndex,
-                            );
-                          }
-
-                          return;
-                        }
-
-                        if (event.key === 'End') {
-                          event.preventDefault();
-
-                          const lastEnabledIndex = findEnabledIndex(
-                            interactiveItems,
-                            0,
-                            -1,
-                          );
-
-                          if (lastEnabledIndex >= 0) {
-                            setActiveFromIndex(
-                              lastEnabledIndex,
-                            );
-                          }
-
-                          return;
-                        }
-
-                        if (
-                          event.key === 'Enter'
-                          || event.key === ' '
-                        ) {
-                          event.preventDefault();
-                          onAction?.(item.id);
-                          onOpenChange?.(
-                            false,
-                            'action',
-                          );
-                        }
-                      }}
-                    >
-                      {item.icon ? (
-                        <Icon
-                          decorative
-                          name={item.icon}
-                          size={16}
+              {interactiveItems.length === 0 ? (
+                <div className="pd-menu__empty">{emptyLabel}</div>
+              ) : (
+                <ul aria-orientation="vertical" className="pd-menu__list" role="menu">
+                  {items.map((item) => {
+                    if (item.kind === 'separator') {
+                      return (
+                        <li
+                          key={item.id}
+                          aria-hidden="true"
+                          className="pd-menu__separator"
+                          role="separator"
                         />
-                      ) : null}
-                      <span className="pd-menu__item-label">
-                        {item.label}
-                      </span>
-                      {item.shortcut ? (
-                        <span className="pd-menu__item-shortcut">
-                          {item.shortcut}
-                        </span>
-                      ) : null}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      ) : null}
+                      );
+                    }
+
+                    const isActive = item.id === resolvedActiveId;
+                    const currentIndex = interactiveItems.findIndex(
+                      (candidate) => candidate.id === item.id,
+                    );
+
+                    return (
+                      <li key={item.id} role="none">
+                        <button
+                          ref={(node) => {
+                            itemRefs.current[item.id] = node;
+                          }}
+                          aria-checked={item.checked === undefined ? undefined : item.checked}
+                          aria-disabled={item.disabled ? true : undefined}
+                          className="pd-menu__item"
+                          data-active={isActive}
+                          data-checked={item.checked ? true : undefined}
+                          data-destructive={item.destructive ? true : undefined}
+                          role={item.checked === undefined ? 'menuitem' : 'menuitemradio'}
+                          tabIndex={isActive ? 0 : -1}
+                          type="button"
+                          onClick={() => {
+                            if (item.disabled) {
+                              return;
+                            }
+
+                            onAction?.(item.id);
+                            onOpenChange?.(false, 'action');
+                          }}
+                          onFocus={() => {
+                            if (item.disabled) {
+                              return;
+                            }
+
+                            onActiveItemIdChange?.(item.id);
+                          }}
+                          onKeyDown={(event) => {
+                            if (item.disabled) {
+                              return;
+                            }
+
+                            if (event.key === 'ArrowDown') {
+                              event.preventDefault();
+
+                              const nextIndex = findEnabledIndex(interactiveItems, currentIndex, 1);
+
+                              if (nextIndex >= 0) {
+                                setActiveFromIndex(nextIndex);
+                              }
+
+                              return;
+                            }
+
+                            if (event.key === 'ArrowUp') {
+                              event.preventDefault();
+
+                              const nextIndex = findEnabledIndex(
+                                interactiveItems,
+                                currentIndex,
+                                -1,
+                              );
+
+                              if (nextIndex >= 0) {
+                                setActiveFromIndex(nextIndex);
+                              }
+
+                              return;
+                            }
+
+                            if (event.key === 'Home') {
+                              event.preventDefault();
+
+                              if (firstEnabledIndex >= 0) {
+                                setActiveFromIndex(firstEnabledIndex);
+                              }
+
+                              return;
+                            }
+
+                            if (event.key === 'End') {
+                              event.preventDefault();
+
+                              const lastEnabledIndex = findEnabledIndex(interactiveItems, 0, -1);
+
+                              if (lastEnabledIndex >= 0) {
+                                setActiveFromIndex(lastEnabledIndex);
+                              }
+
+                              return;
+                            }
+
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault();
+                              onAction?.(item.id);
+                              onOpenChange?.(false, 'action');
+                            }
+                          }}
+                        >
+                          {item.icon ? <Icon decorative name={item.icon} size={16} /> : null}
+                          <span className="pd-menu__item-label">{item.label}</span>
+                          {item.shortcut ? (
+                            <span className="pd-menu__item-shortcut">{item.shortcut}</span>
+                          ) : null}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>,
+            portalRoot,
+          )
+        : null}
     </div>
   );
 }

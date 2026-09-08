@@ -8,7 +8,6 @@ import {
   TruthEngineRuntime as TruthEngineRuntimeStory,
   ContextPackAndEscalation as ContextPackAndEscalationStory,
   DomainRoadmapAndCharts as DomainRoadmapAndChartsStory,
-  NavigationStrip as NavigationStripStory,
   TruthMatrixStandalone as TruthMatrixStandaloneStory,
   AnalyticsChartsStandalone as AnalyticsChartsStandaloneStory,
 } from './HelpCenterBiPage.story-support';
@@ -42,11 +41,6 @@ export const ContextPackAndEscalation = {
 export const DomainRoadmapAndCharts = {
   ...DomainRoadmapAndChartsStory,
   name: 'Obszary pomocy i statystyki',
-};
-
-export const NavigationStrip = {
-  ...NavigationStripStory,
-  name: 'Nawigacja kontekstowa',
 };
 
 export const TruthMatrixStandalone = {

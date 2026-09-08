@@ -19,7 +19,7 @@
 import { readFileSync } from "node:fs";
 import https from "node:https";
 import type { LookupFunction } from "node:net";
-import { BffClient } from "../../../apps/web/src/storybook-next/runtime/shared/api/bffClient.ts";
+import { BffClient } from "../../../apps/web/src/runtime/shared/api/bffClient.ts";
 
 const host = requiredEnv("PARITY_HOST");
 const origin = requiredEnv("PARITY_ORIGIN");

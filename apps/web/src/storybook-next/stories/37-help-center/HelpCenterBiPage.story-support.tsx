@@ -10,14 +10,15 @@ import {
 } from 'react';
 import {
   expect,
+  fireEvent,
   userEvent,
+  waitFor,
   within,
 } from 'storybook/test';
 
 import {
   HelpAnalyticsCharts,
   HelpCenterScreen,
-  HelpCenterTabNav,
   HelpContextAndEscalation,
   HelpContextSignal,
   HelpDomainRoadmap,
@@ -27,11 +28,14 @@ import {
   HelpTruthMatrix,
 } from '../../../screens/help-center/HelpCenterScreen';
 import {
+  helpSections,
+  helpSectionsById,
+} from '../../../screens/help-center/HelpCenterScreen.data';
+import {
   defaultHelpRuntimeState,
 } from '../../../fixtures/help-center/helpCenterDemoSeed';
 import type {
   HelpCategoryId,
-  HelpCenterTabId,
   HelpRole,
   HelpRuntimeState,
 } from '../../../fixtures/help-center/helpCenterDemoSeed';
@@ -115,17 +119,6 @@ function TruthHarness() {
   );
 }
 
-function NavHarness() {
-  const [activeTab, setActiveTab] = useState<HelpCenterTabId>('kb');
-
-  return (
-    <StoryFrame>
-      <HelpCenterTabNav activeTab={activeTab} onTabChange={setActiveTab} />
-      <HelpContextSignal />
-    </StoryFrame>
-  );
-}
-
 export const FullPage: Story = {
   name: 'Całość',
   render: () => (
@@ -137,17 +130,46 @@ export const FullPage: Story = {
     const canvas = within(canvasElement);
 
     await expect(await canvas.findByRole('heading', { level: 1, name: 'W czym możemy Ci pomóc?' })).toBeInTheDocument();
-    await expect(await canvas.findByRole('navigation', { name: 'Zakładki Centrum Pomocy' })).toBeInTheDocument();
-    await expect(await canvas.findByText('Napraw brak danych i reautoryzuj Meta Ads')).toBeInTheDocument();
+
+    await expect(canvasElement.querySelectorAll('.pd-section-frame')).toHaveLength(helpSections.length);
+    await expect(Array.from(canvasElement.querySelectorAll('.pd-section-frame')).map((section) => section.id)).toEqual(
+      helpSections.map((section) => section.id),
+    );
+
+    for (const section of helpSections) {
+      await expect(await canvas.findByRole('heading', { name: section.title })).toBeInTheDocument();
+      await expect(canvasElement.ownerDocument.querySelector(`a[href="#${section.id}"]`)).toHaveTextContent(section.navLabel);
+    }
+
+    // 'Napraw brak danych...' also appears as a row in the Truth Engine's
+    // matrix table (all 4 sections are always mounted now, unlike the old
+    // tab-switch where only 'kb' was in the DOM by default) -- scope to the
+    // 'kb' section to avoid findByText's "multiple elements" ambiguity.
+    const kbSection = within(canvasElement.ownerDocument.getElementById('kb') as HTMLElement);
+    await expect(await kbSection.findByText('Napraw brak danych i reautoryzuj Meta Ads')).toBeInTheDocument();
 
     await userEvent.type(await canvas.findByRole('searchbox', { name: 'Opisz problem' }), 'PD-INT-401');
-    const resultTitle = await canvas.findByText('Napraw brak danych i reautoryzuj Meta Ads');
+    const results = within(await canvas.findByRole('listbox', { name: 'Wyniki wyszukiwania Centrum Pomocy' }));
+    // 'Napraw brak danych...' also appears as the always-visible static hero
+    // tip button, outside the results listbox -- scope to the listbox to
+    // avoid findByText's "multiple elements" ambiguity (same pattern as the
+    // SearchSuggestions story below).
+    const resultTitle = await results.findByText('Napraw brak danych i reautoryzuj Meta Ads');
     await userEvent.click(resultTitle.closest('button') as HTMLElement);
     await expect(await canvas.findByRole('dialog', { name: 'Napraw brak danych i reautoryzuj Meta Ads' })).toBeInTheDocument();
     await userEvent.click(await canvas.findByRole('button', { name: 'Zamknij procedurę' }));
 
-    await userEvent.click(await canvas.findByRole('button', { name: /Product Truth Engine/u }));
+    // All 4 sections are always mounted now (no more tab-switch), so the
+    // Truth Engine heading is already in the DOM without clicking anything.
     await expect(await canvas.findByRole('heading', { name: 'Product Truth Engine - Symulator Stanu Produktu' })).toBeInTheDocument();
+
+    // Story musi kończyć interakcję w stanie startowym -- w przeciwnym razie
+    // ktoś oglądający "Widok pełny" ręcznie w Storybooku widzi stronę
+    // przewiniętą po automatycznym uruchomieniu play().
+    const topNavItem = canvasElement.ownerDocument.querySelector<HTMLAnchorElement>(`a[href="#${helpSectionsById.kb.id}"]`);
+    await expect(topNavItem).toBeInTheDocument();
+    fireEvent.click(topNavItem!);
+    await waitFor(() => expect(topNavItem).toHaveAttribute('aria-current', 'page'));
   },
 };
 
@@ -174,8 +196,11 @@ export const SearchSuggestions: Story = {
     const canvas = within(canvasElement);
 
     await userEvent.type(await canvas.findByRole('searchbox', { name: 'Opisz problem' }), 'reautoryzacja');
-    await expect(await canvas.findByRole('listbox', { name: 'Wyniki wyszukiwania Centrum Pomocy' })).toBeInTheDocument();
-    await expect(await canvas.findByText('PD-INT-401')).toBeInTheDocument();
+    const results = within(await canvas.findByRole('listbox', { name: 'Wyniki wyszukiwania Centrum Pomocy' }));
+    // 'PD-INT-401' also appears as the always-visible static hero tip
+    // button, outside the results listbox -- scoping to the listbox avoids
+    // findByText's "multiple elements" ambiguity between the two.
+    await expect(await results.findByText('PD-INT-401')).toBeInTheDocument();
   },
 };
 
@@ -261,11 +286,6 @@ export const ProcedureEscalationAndIncidents: Story = {
     await expect(await canvas.findByRole('dialog', { name: 'Zgłoszenie do Wsparcia Technicznego' })).toBeInTheDocument();
     await userEvent.click(await canvas.findByRole('button', { name: 'Zamknij zgłoszenie' }));
   },
-};
-
-export const NavigationStrip: Story = {
-  name: 'Sekcje — Nawigacja kontekstowa',
-  render: () => <NavHarness />,
 };
 
 export const TruthMatrixStandalone: Story = {

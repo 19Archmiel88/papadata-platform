@@ -15,6 +15,7 @@ const alias = (
 export default defineConfig({
   resolve: {
     alias: [
+      alias("@papadata/contracts/saved-reports", "./packages/contracts/src/saved-reports.ts"),
       alias("@papadata/contracts", "./packages/contracts/src/index.ts"),
       alias("@papadata/database", "./packages/database/src/index.ts"),
       alias("@papadata/integrations", "./packages/integrations/src/index.ts"),

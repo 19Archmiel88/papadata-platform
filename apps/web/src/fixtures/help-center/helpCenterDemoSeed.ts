@@ -1,7 +1,3 @@
-import type {
-  PapaDataIconName,
-} from '../../design-system';
-
 export type HelpCenterTone =
   | 'amber'
   | 'blue'
@@ -10,44 +6,6 @@ export type HelpCenterTone =
   | 'red'
   | 'slate'
   | 'violet';
-
-export type HelpCenterTabId =
-  | 'context'
-  | 'domain'
-  | 'kb'
-  | 'truth';
-
-export const helpCenterTabs = [
-  {
-    badge: null,
-    icon: 'help',
-    id: 'kb',
-    label: 'Baza Wiedzy & Procedury',
-  },
-  {
-    badge: 'Runtime Check',
-    icon: 'security',
-    id: 'truth',
-    label: 'Product Truth Engine',
-  },
-  {
-    badge: null,
-    icon: 'data',
-    id: 'context',
-    label: 'Context Pack & Eskalacja',
-  },
-  {
-    badge: null,
-    icon: 'trend',
-    id: 'domain',
-    label: 'Podział Domenowy & Roadmapa',
-  },
-] as const satisfies readonly {
-  readonly badge: string | null;
-  readonly icon: PapaDataIconName;
-  readonly id: HelpCenterTabId;
-  readonly label: string;
-}[];
 
 export type HelpCategoryId =
   | 'ACCOUNT'

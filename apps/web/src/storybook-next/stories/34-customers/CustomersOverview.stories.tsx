@@ -1,3 +1,4 @@
+import { expect, within } from 'storybook/test';
 import type {
   Meta,
 } from '@storybook/react-vite';
@@ -15,4 +16,7 @@ export default meta;
 export const Overview = {
   ...OverviewStory,
   name: 'Widok pełny',
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await expect(within(canvasElement).getByRole('heading', { name: 'Klienci', level: 1 })).toBeInTheDocument();
+  },
 };

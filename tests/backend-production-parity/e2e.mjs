@@ -140,7 +140,7 @@ function assertNoDevRuntimeFallbacks() {
   const apiDockerfile = readFileSync(resolve(root, "infra/production/api.Dockerfile"), "utf8");
   const bffDockerfile = readFileSync(resolve(root, "infra/production/bff.Dockerfile"), "utf8");
   const workerDockerfile = readFileSync(resolve(root, "infra/production/worker.Dockerfile"), "utf8");
-  const webClient = readFileSync(resolve(root, "apps/web/src/storybook-next/runtime/shared/api/bffClient.ts"), "utf8");
+  const webClient = readFileSync(resolve(root, "apps/web/src/runtime/shared/api/bffClient.ts"), "utf8");
   const forbidden = [
     "PAPADATA_API_QUEUE_DRIVER: test-memory",
     "BFF_SESSION_STORE: test-memory",

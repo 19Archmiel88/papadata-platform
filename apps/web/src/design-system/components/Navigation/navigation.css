@@ -11,20 +11,15 @@
 .pd-tabs__list,
 .pd-section-navigation {
   display: flex;
-  gap: 0.18rem;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2) var(--pd-space-5);
   align-items: center;
   min-inline-size: 0;
-  padding: 0.22rem;
-  border: 1px solid var(--pd-separator-subtle);
-  border-radius: var(--pd-radius-control);
-  background: var(--pd-surface-subtle);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.pd-tabs__list::-webkit-scrollbar,
-.pd-section-navigation::-webkit-scrollbar {
-  display: none;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
 }
 
 .pd-tabs__tab,
@@ -35,9 +30,9 @@
   align-items: center;
   justify-content: center;
   min-block-size: 2rem;
-  padding: 0.38rem 0.68rem;
-  border: 1px solid transparent;
-  border-radius: calc(var(--pd-radius-control) - 2px);
+  padding: 0.48rem 0;
+  border: 0;
+  border-radius: 0;
   background: transparent;
   color: var(--pd-text-secondary);
   font: inherit;
@@ -45,7 +40,21 @@
   font-weight: var(--pd-font-weight-medium);
   white-space: nowrap;
   cursor: pointer;
-  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+  transition: color 140ms ease;
+}
+
+.pd-tabs__tab::after,
+.pd-section-navigation__item::after {
+  position: absolute;
+  inset: auto 0 0;
+  block-size: 2px;
+  border-radius: var(--pd-radius-pill);
+  background: currentColor;
+  content: '';
+  opacity: 0.72;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--pd-motion-duration-standard) var(--pd-motion-easing-emphasized);
 }
 
 .pd-tabs__tab:hover,
@@ -53,24 +62,25 @@
   color: var(--pd-text);
 }
 
+.pd-tabs__tab:hover::after,
+.pd-tabs__tab:focus-visible::after,
+.pd-section-navigation__item:hover::after,
+.pd-section-navigation__item:focus-visible::after {
+  transform: scaleX(1);
+}
+
 .pd-tabs__tab[aria-selected='true'],
 .pd-section-navigation__item[aria-current='page'],
 .pd-section-navigation__item[data-active='true'] {
-  border-color: var(--pd-separator-subtle);
-  background: var(--pd-surface);
-  color: var(--pd-text);
-  box-shadow: var(--pd-shadow-raised);
+  background: transparent;
+  color: var(--pd-brand-action);
+  box-shadow: none;
 }
 
 .pd-tabs__tab[aria-selected='true']::after,
 .pd-section-navigation__item[aria-current='page']::after,
 .pd-section-navigation__item[data-active='true']::after {
-  content: '';
-  position: absolute;
-  inset: auto 0.55rem -0.24rem;
-  block-size: 2px;
-  border-radius: var(--pd-radius-pill);
-  background: var(--pd-brand-action);
+  transform: scaleX(1);
 }
 
 .pd-tabs__tab:focus-visible,
@@ -102,6 +112,10 @@
 .pd-tabs__icon {
   display: inline-flex;
   color: var(--pd-text-muted);
+}
+
+.pd-tabs__tab[aria-selected='true'] .pd-tabs__icon {
+  color: currentColor;
 }
 
 .pd-tabs__panel {
@@ -227,14 +241,22 @@
   cursor: pointer;
 }
 
+/* Positioned via useAnchoredPosition (inline style: position/top/left/right)
+   and rendered through a body-level portal (useOverlayPortal) so it escapes
+   any ancestor with overflow:hidden/auto -- product shell scroll locks,
+   table-cell text-truncation wrappers, etc. The position/z-index below are
+   just a safe pre-measurement fallback for the portal's first paint. */
 .pd-menu__panel {
+  position: fixed;
   z-index: var(--pd-z-popover, 700);
-  min-inline-size: 13rem;
+  inline-size: max-content;
+  min-inline-size: 0;
+  max-inline-size: min(18rem, calc(100vw - 1rem));
   padding: 0.3rem;
   border: 1px solid var(--pd-separator);
   border-radius: var(--pd-radius-overlay);
   background: var(--pd-surface-overlay);
-  box-shadow: var(--pd-shadow-floating);
+  box-shadow: none;
 }
 
 .pd-menu__list {
@@ -246,6 +268,7 @@
 }
 
 .pd-menu__item {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--pd-space-3);
@@ -256,23 +279,63 @@
   border-radius: var(--pd-radius-small);
   background: transparent;
   color: var(--pd-text-secondary);
+  box-shadow: none;
   font: inherit;
   font-size: 0.73rem;
   text-align: start;
   cursor: pointer;
+  transition:
+    color var(--pd-motion-duration-fast) var(--pd-motion-easing-standard);
 }
 
 .pd-menu__item:hover,
-.pd-menu__item[data-highlighted='true'] {
-  background: var(--pd-surface-subtle);
-  color: var(--pd-text);
+.pd-menu__item[data-active='true'],
+.pd-menu__item:focus-visible {
+  background: transparent;
+  color: var(--pd-brand-action);
+  box-shadow: none;
 }
 
 .pd-menu__item-label {
+  position: relative;
+  display: inline-block;
+  justify-self: start;
+  width: fit-content;
+  max-width: 100%;
   min-inline-size: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.pd-menu__item-label::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  border-radius: var(--pd-radius-pill);
+  background: currentColor;
+  box-shadow: none;
+  content: '';
+  opacity: 0;
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition:
+    transform var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    opacity var(--pd-motion-duration-fast) var(--pd-motion-easing-standard);
+}
+
+.pd-menu__item:hover .pd-menu__item-label::after,
+.pd-menu__item[data-active='true'] .pd-menu__item-label::after,
+.pd-menu__item:focus-visible .pd-menu__item-label::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.pd-menu__item:disabled .pd-menu__item-label::after {
+  display: none;
 }
 
 .pd-menu__item-shortcut {

@@ -99,7 +99,7 @@
  * ale nie żyje wewnątrz .pd-product-shell__sidebar-column, więc nie
  * dziedziczy tamtejszego lokalnego remapu --pd-brand-accent -> --pd-shell-brand.
  * Bez tego nadpisania przyciski (np. X zamknięcia) łapały GLOBALNY,
- * bursztynowy pierścień fokusu z foundations/themes/refractive-prism.css
+ * bursztynowy pierścień fokusu z foundations/tokens.css
  * zamiast winnego akcentu chrome — realny błąd wizualny znaleziony live w
  * Storybooku (Konto, Workspace switcher), nie tylko teoretyczny.
  */

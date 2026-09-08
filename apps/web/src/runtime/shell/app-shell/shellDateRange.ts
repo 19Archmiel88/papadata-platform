@@ -1,11 +1,6 @@
-import type {
-  DatePreset,
-  DateRange,
-  Locale,
-} from '../../../../../../contracts/ui-contract-types';
+import type { DatePreset, DateRange, Locale } from '../../../../../../contracts/ui-contract-types';
 
-const shellDateRangeStorageKey =
-  'papadata.shell-date-range.v1';
+const shellDateRangeStorageKey = 'papadata.shell-date-range.v1';
 
 const presetDayCounts = {
   last7d: 7,
@@ -14,9 +9,16 @@ const presetDayCounts = {
   today: 1,
 } satisfies Partial<Record<DatePreset, number>>;
 
-export function createInitialShellDateRange(): DateRange {
-  return readStoredShellDateRange()
-    ?? createShellDateRangeForPreset('monthToDate');
+export function createInitialShellDateRange(fallback?: DateRange): DateRange {
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get('from'),
+      to = params.get('to');
+    if (from && to && isValidShellDateRange({ from, to })) {
+      return { from, to, preset: 'custom', timezone: fallback?.timezone ?? readRuntimeTimezone() };
+    }
+  }
+  return fallback ?? readStoredShellDateRange() ?? createShellDateRangeForPreset('monthToDate');
 }
 
 export function createShellDateRangeForPreset(
@@ -27,9 +29,7 @@ export function createShellDateRangeForPreset(
 
   if (preset === 'monthToDate') {
     return {
-      from: formatDateInput(
-        new Date(baseDate.getFullYear(), baseDate.getMonth(), 1),
-      ),
+      from: formatDateInput(new Date(baseDate.getFullYear(), baseDate.getMonth(), 1)),
       preset,
       timezone,
       to: formatDateInput(baseDate),
@@ -57,18 +57,12 @@ export function createShellDateRangeForPreset(
   };
 }
 
-export function formatShellDateRangeLabel(
-  range: DateRange,
-  locale: Locale = 'pl',
-): string {
-  const formatter = new Intl.DateTimeFormat(
-    locale === 'en' ? 'en-US' : 'pl-PL',
-    {
-      day: '2-digit',
-      month: 'short',
-      timeZone: range.timezone || readRuntimeTimezone(),
-    },
-  );
+export function formatShellDateRangeLabel(range: DateRange, locale: Locale = 'pl'): string {
+  const formatter = new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'pl-PL', {
+    day: '2-digit',
+    month: 'short',
+    timeZone: range.timezone || readRuntimeTimezone(),
+  });
   const fromDate = parseInputDate(range.from);
   const toDate = parseInputDate(range.to);
 
@@ -79,9 +73,7 @@ export function formatShellDateRangeLabel(
   return `${formatter.format(fromDate)} - ${formatter.format(toDate)}`;
 }
 
-export function getShellDateRangeDayCount(
-  range: DateRange,
-): number {
+export function getShellDateRangeDayCount(range: DateRange): number {
   const fromDate = parseInputDate(range.from);
   const toDate = parseInputDate(range.to);
 
@@ -90,9 +82,7 @@ export function getShellDateRangeDayCount(
   }
 
   const dayMs = 24 * 60 * 60 * 1_000;
-  const diff = Math.round(
-    (toDate.getTime() - fromDate.getTime()) / dayMs,
-  );
+  const diff = Math.round((toDate.getTime() - fromDate.getTime()) / dayMs);
 
   return Math.max(diff + 1, 1);
 }
@@ -114,29 +104,17 @@ function getPresetDayCount(preset: DatePreset): number {
   }
 }
 
-export function getShellDateRangeKey(
-  range: DateRange,
-): string {
-  return [
-    range.from,
-    range.to,
-    range.preset ?? 'custom',
-    range.timezone,
-  ].join(':');
+export function getShellDateRangeKey(range: DateRange): string {
+  return [range.from, range.to, range.preset ?? 'custom', range.timezone].join(':');
 }
 
-export function writeStoredShellDateRange(
-  range: DateRange,
-): void {
-  if (typeof window === 'undefined') {
+export function writeStoredShellDateRange(range: DateRange): void {
+  if (typeof window === 'undefined' || !isValidShellDateRange(range)) {
     return;
   }
 
   try {
-    window.localStorage.setItem(
-      shellDateRangeStorageKey,
-      JSON.stringify(range),
-    );
+    window.localStorage.setItem(shellDateRangeStorageKey, JSON.stringify(range));
   } catch {
     // Storage is optional; runtime state remains in memory.
   }
@@ -152,9 +130,7 @@ function readStoredShellDateRange(): DateRange | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as unknown;
 
-    return isDateRange(parsed)
-      ? parsed
-      : null;
+    return isDateRange(parsed) ? parsed : null;
   } catch {
     return null;
   }
@@ -167,31 +143,36 @@ function isDateRange(value: unknown): value is DateRange {
 
   const candidate = value as Partial<DateRange>;
 
-  return typeof candidate.from === 'string'
-    && typeof candidate.to === 'string'
-    && typeof candidate.timezone === 'string';
+  return (
+    typeof candidate.from === 'string' &&
+    typeof candidate.to === 'string' &&
+    typeof candidate.timezone === 'string' &&
+    isValidShellDateRange(candidate as DateRange)
+  );
+}
+
+export function isValidShellDateRange(range: Pick<DateRange, 'from' | 'to'>): boolean {
+  const from = parseInputDate(range.from),
+    to = parseInputDate(range.to);
+  if (!from || !to) return false;
+  const days = (to.getTime() - from.getTime()) / 86_400_000 + 1;
+  return days >= 1 && days <= 366;
 }
 
 function readRuntimeTimezone(): string {
-  return Intl.DateTimeFormat().resolvedOptions().timeZone
-    || 'Europe/Warsaw';
+  return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Warsaw';
 }
 
-function shiftDate(
-  value: Date,
-  days: number,
-): Date {
-  return new Date(
-    value.getFullYear(),
-    value.getMonth(),
-    value.getDate() + days,
-  );
+function shiftDate(value: Date, days: number): Date {
+  return new Date(value.getFullYear(), value.getMonth(), value.getDate() + days);
 }
 
 function parseInputDate(value: string): Date | null {
   const date = new Date(`${value}T00:00:00.000Z`);
 
-  return Number.isNaN(date.getTime())
+  return !/^\d{4}-\d{2}-\d{2}$/.test(value) ||
+    Number.isNaN(date.getTime()) ||
+    date.toISOString().slice(0, 10) !== value
     ? null
     : date;
 }

@@ -68,6 +68,7 @@ export class GoogleAdsAdapter implements IntegrationProviderAdapter {
       return {
         records: [],
         nextCheckpoint: request.checkpoint,
+        nextPageCursor: null,
         partial: false,
         limitations: [],
       };
@@ -131,6 +132,7 @@ export class GoogleAdsAdapter implements IntegrationProviderAdapter {
     return {
       records,
       nextCheckpoint: JSON.stringify({ date: to }),
+      nextPageCursor: null,
       partial: false,
       limitations: [],
     };

@@ -5,7 +5,7 @@
 @import "@fontsource/inter/700.css";
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
-@import "./themes/refractive-prism.css";
+@import "./tokens.css";
 @import "./dashboard-visual-unification.css";
 
 :root {
@@ -36,7 +36,7 @@ body,
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  background: var(--pd-canvas-gradient);
+  background: var(--pd-canvas);
   color: var(--pd-text);
   font-size: var(--pd-type-size-body);
   line-height: var(--pd-line-height-normal);

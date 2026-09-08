@@ -43,6 +43,7 @@ button.pd-button::before {
 }
 
 .pd-button__content {
+  position: relative;
   display: inline-flex;
   min-width: 0;
   max-width: 100%;
@@ -74,8 +75,42 @@ button.pd-button::before {
 }
 
 .pd-button__activity-line {
-  display: none;
+  position: absolute;
+  right: 0;
+  bottom: -0.12em;
+  left: 0;
+  display: block;
+  height: 1px;
+  border-radius: var(--pd-radius-pill);
+  background: currentColor;
+  box-shadow: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition:
+    transform var(--pd-motion-duration-fast) var(--pd-motion-easing-standard),
+    opacity var(--pd-motion-duration-fast) var(--pd-motion-easing-standard);
 }
+
+
+/* PDP canonical ghost activity line */
+.pd-button--ghost:hover .pd-button__activity-line,
+.pd-button[data-variant='ghost']:hover .pd-button__activity-line,
+.pd-button--ghost:focus-visible .pd-button__activity-line,
+.pd-button[data-variant='ghost']:focus-visible .pd-button__activity-line {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.pd-button--ghost[disabled] .pd-button__activity-line,
+.pd-button[data-variant='ghost'][disabled] .pd-button__activity-line,
+.pd-button--ghost[aria-disabled='true'] .pd-button__activity-line,
+.pd-button[data-variant='ghost'][aria-disabled='true'] .pd-button__activity-line {
+  opacity: 0;
+  transform: scaleX(0);
+}
+/* PDP canonical ghost activity line end */
 
 .pd-button:hover,
 button.pd-button:hover {
@@ -86,7 +121,9 @@ button.pd-button:hover {
 
 .pd-button:focus-visible,
 button.pd-button:focus-visible {
-  box-shadow: var(--pd-button-focus-shadow, 0 0 0 3px var(--pd-focus-ring));
+  box-shadow: none;
+  outline: var(--pd-focus-width, 2px) solid var(--pd-button-focus-ring, var(--pd-focus-ring));
+  outline-offset: 2px;
 }
 
 .pd-button:active,
@@ -119,7 +156,7 @@ button.pd-button:active {
   --pd-button-color: var(--pd-text-secondary);
   --pd-button-hover-color: var(--pd-text);
   --pd-button-surface: transparent;
-  --pd-button-surface-hover: var(--pd-surface-subtle);
+  --pd-button-surface-hover: transparent;
   --pd-button-border: transparent;
   --pd-button-border-hover: transparent;
 }

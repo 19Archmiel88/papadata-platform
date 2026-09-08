@@ -1,10 +1,8 @@
-import type {
-  Meta,
-} from '@storybook/react-vite';
+import type { Meta } from '@storybook/react-vite';
 
 import {
   BudgetSimulator as BudgetSimulatorStory,
-  PapaAiInteractions as PapaAiInteractionsStory,
+  EvidenceAndBudget as EvidenceAndBudgetStory,
 } from './PaidCampaignsBiPage.story-support';
 
 const meta = {
@@ -18,7 +16,7 @@ export const BudgetSimulator = {
   name: 'Symulator budżetu',
 };
 
-export const PapaAiInteractions = {
-  ...PapaAiInteractionsStory,
-  name: 'Papa AI',
+export const EvidenceAndBudget = {
+  ...EvidenceAndBudgetStory,
+  name: 'Dowody i wariant budżetu',
 };

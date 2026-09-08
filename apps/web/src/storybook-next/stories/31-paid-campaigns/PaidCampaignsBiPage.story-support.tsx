@@ -1,16 +1,6 @@
-import type {
-  Meta,
-  StoryObj,
-} from '@storybook/react-vite';
-import type {
-  ReactNode,
-} from 'react';
-import {
-  expect,
-  fireEvent,
-  userEvent,
-  within,
-} from 'storybook/test';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { ReactNode } from 'react';
+import { expect, fireEvent, userEvent, within } from 'storybook/test';
 
 import {
   PaidCampaignsAttribution,
@@ -23,9 +13,7 @@ import {
   PaidCampaignsRisksSection,
   PaidCampaignsScreen,
 } from '../../../screens/paid-campaigns/PaidCampaignsScreen';
-import {
-  StorybookProductShellFrame,
-} from '../shared/StorybookProductShellFrame';
+import { StorybookProductShellFrame } from '../shared/StorybookProductShellFrame';
 
 const meta = {
   title: 'INTERNAL STORY SUPPORT/ANALIZA/Kampanie płatne',
@@ -42,17 +30,11 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-function StoryFrame({
-  children,
-}: {
-  readonly children: ReactNode;
-}) {
+function StoryFrame({ children }: { readonly children: ReactNode }) {
   return (
-    <main className="pd-pcbi">
-      <div className="pd-pcbi__content">
-        {children}
-      </div>
-    </main>
+    <StorybookProductShellFrame activePath="/app/campaigns">
+      <div className="pd-pcbi">{children}</div>
+    </StorybookProductShellFrame>
   );
 }
 
@@ -66,10 +48,11 @@ export const Overview: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: 'Wynik kampanii' })).toBeInTheDocument();
-    await expect(await canvas.findByRole('heading', { name: 'Analiza kampanii' })).toBeInTheDocument();
-    await expect(await canvas.findByRole('heading', { name: 'Kreacje reklamowe' })).toBeInTheDocument();
-    await expect(await canvas.findByRole('heading', { name: 'Symulator budżetu' })).toBeInTheDocument();
+    await expect(
+      canvas.getByRole('heading', { name: 'Kampanie płatne', level: 1 }),
+    ).toBeInTheDocument();
+    await expect(canvas.getByRole('heading', { name: 'Kampanie', level: 2 })).toBeInTheDocument();
+    await expect(canvas.getByRole('navigation', { name: 'Widoki kampanii' })).toBeInTheDocument();
   },
 };
 
@@ -83,9 +66,12 @@ export const Result: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: 'Wynik kampanii' })).toBeInTheDocument();
-    await userEvent.click(await canvas.findByRole('button', { name: 'Efektywność (ROAS)' }));
-    await expect(await canvas.findByText('Target ROAS (3.80)')).toBeInTheDocument();
+    await expect(canvas.getByRole('region', { name: 'Efektywność kampanii' })).toBeInTheDocument();
+    await userEvent.selectOptions(
+      canvas.getByRole('combobox', { name: 'Miara trendu kampanii' }),
+      'roas',
+    );
+    await expect(canvas.getByText('Linia przerywana: cel 3,10×')).toBeInTheDocument();
   },
 };
 
@@ -99,7 +85,9 @@ export const Platforms: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: 'Platformy i kampanie' })).toBeInTheDocument();
+    await expect(
+      await canvas.findByRole('heading', { name: 'Platformy i kampanie' }),
+    ).toBeInTheDocument();
     await expect(await canvas.findByText('Liderzy i Wypalające się Kampanie')).toBeInTheDocument();
   },
 };
@@ -114,7 +102,9 @@ export const Risks: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: 'Ryzyka i alerty' })).toBeInTheDocument();
+    await expect(
+      await canvas.findByRole('heading', { name: 'Ryzyka i alerty' }),
+    ).toBeInTheDocument();
     await expect(await canvas.findByText('Creative Fatigue Spike')).toBeInTheDocument();
   },
 };
@@ -129,10 +119,15 @@ export const CampaignTable: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: 'Analiza kampanii' })).toBeInTheDocument();
-    await userEvent.type(await canvas.findByRole('searchbox', { name: 'Szukaj nazwy lub ID kampanii' }), 'retargeting');
-    await expect(await canvas.findByText('Meta — Retargeting Dynamic Catalog')).toBeInTheDocument();
-    await expect(canvas.queryByText('Google — Performance Max All-Products')).not.toBeInTheDocument();
+    await expect(
+      await canvas.findByRole('heading', { name: 'Kampanie', level: 2 }),
+    ).toBeInTheDocument();
+    await userEvent.type(
+      await canvas.findByRole('searchbox', { name: 'Szukaj nazwy lub ID kampanii' }),
+      'retargeting',
+    );
+    await expect(await canvas.findByText('Retargeting Dynamic Catalog')).toBeInTheDocument();
+    await expect(canvas.queryByText('Performance Max All-Products')).not.toBeInTheDocument();
   },
 };
 
@@ -146,7 +141,9 @@ export const CreativeIntelligence: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: 'Kreacje reklamowe' })).toBeInTheDocument();
+    await expect(
+      await canvas.findByRole('heading', { name: 'Kreacje reklamowe' }),
+    ).toBeInTheDocument();
     await expect(await canvas.findByText('WYPALENIE (FATIGUE)')).toBeInTheDocument();
     await expect(await canvas.findByText('Meta — Social Proof / UGC Reviews')).toBeInTheDocument();
   },
@@ -162,8 +159,12 @@ export const AttributionAndOverlap: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: 'Atrybucja i deduplikacja' })).toBeInTheDocument();
-    await expect(await canvas.findByText('Commerce Reality Gap (Deduplikacja Sprzedaży)')).toBeInTheDocument();
+    await expect(
+      await canvas.findByRole('heading', { name: 'Atrybucja i deduplikacja' }),
+    ).toBeInTheDocument();
+    await expect(
+      await canvas.findByText('Commerce Reality Gap (Deduplikacja Sprzedaży)'),
+    ).toBeInTheDocument();
     await expect(await canvas.findByText('+28.0% Overlap')).toBeInTheDocument();
   },
 };
@@ -178,8 +179,10 @@ export const BudgetPacing: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: 'Budżet i pacing' })).toBeInTheDocument();
-    await expect(await canvas.findByText(/Wydano:/u)).toBeInTheDocument();
+    await expect(
+      await canvas.findByRole('heading', { name: 'Budżet i pacing' }),
+    ).toBeInTheDocument();
+    await expect(await canvas.findByText('Wydano', { exact: true })).toBeInTheDocument();
   },
 };
 
@@ -193,15 +196,17 @@ export const BudgetSimulator: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: 'Symulator budżetu' })).toBeInTheDocument();
-    const googleSlider = await canvas.findByRole('slider', { name: '🔵 Google Ads Budżet' });
-    fireEvent.change(googleSlider, { target: { value: '45000' } });
-    await expect(await canvas.findByText('45 000 zł')).toBeInTheDocument();
+    await expect(
+      await canvas.findByRole('heading', { name: 'Symulator budżetu' }),
+    ).toBeInTheDocument();
+    const slider = canvas.getByRole('slider', { name: 'Zmiana wydatków w wariancie' });
+    fireEvent.change(slider, { target: { value: '-10' } });
+    await expect(canvas.getByText('228 578 zł', { exact: true })).toBeInTheDocument();
   },
 };
 
-export const PapaAiInteractions: Story = {
-  name: 'Interakcje — Papa AI',
+export const EvidenceAndBudget: Story = {
+  name: 'Dowody i wariant budżetu',
   render: () => (
     <StorybookProductShellFrame activePath="/app/campaigns">
       <PaidCampaignsScreen />
@@ -209,16 +214,16 @@ export const PapaAiInteractions: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    await userEvent.click(await canvas.findByRole('button', { name: /POMIAR/u }));
-    await expect(await canvas.findByRole('dialog', { name: 'Data Lineage' })).toBeInTheDocument();
-    await userEvent.click(await canvas.findByRole('button', { name: 'Zamknij provenance' }));
-
-    await userEvent.click(await canvas.findAllByRole('button', { name: 'Drill-down ➔' }).then((buttons) => buttons[0]));
-    await expect(await canvas.findByRole('dialog', { name: 'Campaign drill-down' })).toBeInTheDocument();
-
-    await userEvent.click(await canvas.findByRole('button', { name: /Zapytaj Papa Asystenta/u }));
-    await expect(await canvas.findByRole('dialog', { name: 'Papa Asystent Decyzyjny' })).toBeInTheDocument();
-    await expect(await canvas.findByText('1. OBSERWACJA')).toBeInTheDocument();
+    const body = within(canvasElement.ownerDocument.body);
+    await userEvent.click(canvas.getAllByRole('button', { name: 'Sprawdź dowody →' })[0]!);
+    const dialog = await body.findByRole('dialog', { name: 'Retargeting Dynamic Catalog' });
+    await expect(within(dialog).getByText('82%', { exact: true })).toBeInTheDocument();
+    const slider = within(dialog).getByRole('slider', { name: 'Zmiana wydatków w wariancie' });
+    fireEvent.change(slider, { target: { value: '-10' } });
+    await expect(within(dialog).getByText(/Wariant nie zmienia budżetu/)).toBeInTheDocument();
+    await userEvent.keyboard('{Escape}');
+    await expect(
+      body.queryByRole('dialog', { name: 'Retargeting Dynamic Catalog' }),
+    ).not.toBeInTheDocument();
   },
 };

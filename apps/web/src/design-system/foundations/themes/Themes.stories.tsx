@@ -82,7 +82,7 @@ export const Motyw: Story = {
           items={[
             { label: <Localized pl="Aktywny motyw" en="Active theme" />, value: readTheme() === 'dark' ? <Localized pl="Ciemny" en="Dark" /> : <Localized pl="Jasny" en="Light" /> },
             { label: <Localized pl="Dostępne motywy" en="Available themes" />, value: papaDataThemes.join(' / ') },
-            { label: <Localized pl="Plik canonical" en="Canonical file" />, value: 'refractive-prism.css' },
+            { label: <Localized pl="Plik canonical" en="Canonical file" />, value: 'tokens.css' },
           ]}
         />
       )}
@@ -135,8 +135,8 @@ export const Motyw: Story = {
       >
         <div className="pd-f0-note" data-testid="theme-note">
           <Localized
-            pl="Wcześniejszy motyw carbon-pearl.css został usunięty jako martwy kod — nie był importowany przez żaden plik i został zastąpiony przez refractive-prism.css."
-            en="The earlier carbon-pearl.css theme was removed as dead code — it was not imported anywhere and has been replaced by refractive-prism.css."
+            pl="Jeden zestaw tokenów marki: wiśnia, pistacja i porcelana. Jasny i ciemny wariant są współdzielone przez aplikację i Storybook."
+            en="One shared brand token system: cherry, pistachio and porcelain, with light and dark modes in the app and Storybook."
           />
         </div>
       </StorySection>

@@ -1,7 +1,9 @@
 import type {
   FormEvent,
+  ReactNode,
 } from 'react';
 import {
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -22,6 +24,9 @@ import {
 import {
   Button,
   Icon,
+  ProductSectionFrame,
+  ProductSectionTopbar,
+  Select,
 } from '../../design-system';
 import {
   defaultHelpRuntimeState,
@@ -33,7 +38,6 @@ import {
   helpIncludedMetadata,
   helpRoleOptions,
   helpRoadmapPhases,
-  helpCenterTabs,
   quickSearchPhrases,
   resolutionSegments,
   searchGapCandidates,
@@ -41,13 +45,18 @@ import {
 import type {
   HelpArticle,
   HelpCategoryId,
-  HelpCenterTabId,
   HelpCenterTone,
   HelpProcedureStep,
   HelpProviderStatus,
   HelpRole,
   HelpRuntimeState,
 } from '../../fixtures/help-center/helpCenterDemoSeed';
+import {
+  helpSections,
+} from './HelpCenterScreen.data';
+import type {
+  HelpSectionId,
+} from './HelpCenterScreen.data';
 import './HelpCenterScreen.css';
 
 const noop = () => undefined;
@@ -62,6 +71,61 @@ const chartColors = {
   violet: 'rgb(var(--pd-hc-violet-600))',
 } as const satisfies Record<HelpCenterTone, string>;
 
+function HelpSectionFrame({
+  actions = null,
+  children,
+  collapsedSummary,
+  expanded = true,
+  onExpandedChange = noop,
+  section,
+}: {
+  readonly actions?: ReactNode;
+  readonly children: ReactNode;
+  readonly collapsedSummary: string;
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
+  readonly section: typeof helpSections[number];
+}) {
+  const bodyId = `pd-hc-${section.id}-content`;
+
+  return (
+    <ProductSectionFrame
+      actions={(
+        <>
+          {expanded ? actions : null}
+          <button
+            aria-controls={bodyId}
+            aria-expanded={expanded}
+            aria-label={`${expanded ? 'Zwiń' : 'Rozwiń'} sekcję ${section.title}`}
+            className="pd-hc-section-toggle"
+            onClick={() => onExpandedChange(!expanded)}
+            type="button"
+          >
+            <span className="pd-hc-section-toggle__label">{expanded ? 'Zwiń' : 'Rozwiń'}</span>
+            <span aria-hidden="true" className="pd-hc-section-toggle__icon">
+              <svg height="14" viewBox="0 0 24 24" width="14">
+                <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+              </svg>
+            </span>
+          </button>
+        </>
+      )}
+      className="pd-hc-section-frame"
+      data-collapsed={expanded ? undefined : 'true'}
+      description={expanded ? null : (
+        <span className="pd-hc-section-summary">{collapsedSummary}</span>
+      )}
+      icon={section.icon}
+      id={section.id}
+      title={section.title}
+    >
+      {expanded ? (
+        <div className="pd-hc-section-content" id={bodyId}>{children}</div>
+      ) : null}
+    </ProductSectionFrame>
+  );
+}
+
 type RuntimeArticleState = {
   readonly backendState: string;
   readonly ctaLabel: string;
@@ -72,7 +136,10 @@ type RuntimeArticleState = {
 };
 
 export function HelpCenterScreen() {
-  const [activeTab, setActiveTab] = useState<HelpCenterTabId>('kb');
+  const [activeSection, setActiveSection] = useState<HelpSectionId>(helpSections[0]!.id);
+  const [expandedSections, setExpandedSections] = useState<Set<HelpSectionId>>(
+    () => new Set(helpSections.map((section) => section.id)),
+  );
   const [selectedCategory, setSelectedCategory] = useState<HelpCategoryId>('ALL');
   const [roleFilter, setRoleFilter] = useState<HelpRole | 'ALL'>('ADMIN');
   const [searchQuery, setSearchQuery] = useState('');
@@ -83,6 +150,53 @@ export function HelpCenterScreen() {
   const [toast, setToast] = useState('Centrum Pomocy gotowe');
   const [copilotAnswer, setCopilotAnswer] = useState<string | null>(null);
   const activeProcedure = helpArticles.find((article) => article.id === activeProcedureId) ?? null;
+
+  const allSectionsExpanded = helpSections.every((section) => expandedSections.has(section.id));
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return undefined;
+
+    const observer = new IntersectionObserver((entries) => {
+      const visibleSection = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((left, right) => Math.abs(left.boundingClientRect.top) - Math.abs(right.boundingClientRect.top))[0];
+
+      if (visibleSection?.target.id) {
+        setActiveSection(visibleSection.target.id as HelpSectionId);
+      }
+    }, {
+      rootMargin: '-112px 0px -62% 0px',
+      threshold: [0, 0.08],
+    });
+
+    helpSections.forEach((section) => {
+      const element = document.getElementById(section.id);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  function setSectionExpanded(sectionId: HelpSectionId, expanded: boolean) {
+    setExpandedSections((currentSections) => {
+      const nextSections = new Set(currentSections);
+      if (expanded) nextSections.add(sectionId);
+      else nextSections.delete(sectionId);
+      return nextSections;
+    });
+  }
+
+  function handleToggleAllSections() {
+    setExpandedSections(new Set(allSectionsExpanded
+      ? []
+      : helpSections.map((section) => section.id)));
+  }
+
+  function handleSectionChange(sectionId: HelpSectionId) {
+    setActiveSection(sectionId);
+    setSectionExpanded(sectionId, true);
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
   function openProcedure(articleId: string) {
     setActiveProcedureId(articleId);
@@ -97,7 +211,23 @@ export function HelpCenterScreen() {
   }
 
   return (
-    <main className="pd-hc" data-testid="help-center-bi-page">
+    <div className="pd-hc" data-testid="help-center-bi-page">
+      <ProductSectionTopbar
+        activeId={activeSection}
+        actions={(
+          <button
+            className="pd-hc-section-nav-toggle"
+            onClick={handleToggleAllSections}
+            type="button"
+          >
+            {allSectionsExpanded ? 'Zwiń szczegóły' : 'Rozwiń wszystkie'}
+          </button>
+        )}
+        ariaLabel="Sekcje Centrum Pomocy"
+        items={helpSections.map((section) => ({ icon: section.icon, id: section.id, label: section.navLabel }))}
+        onActiveIdChange={(sectionId) => handleSectionChange(sectionId as HelpSectionId)}
+      />
+
       <div className="pd-hc__content">
         <HelpHeroSearch
           onClearSearch={() => setSearchQuery('')}
@@ -112,41 +242,42 @@ export function HelpCenterScreen() {
           onOpenProcedure={() => openProcedure('help-int-meta-reauth')}
         />
 
-        <HelpCenterTabNav
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
+        <HelpKnowledgeBase
+          expanded={expandedSections.has('kb')}
+          onAskCopilot={(answer) => {
+            setCopilotAnswer(answer);
+            setToast('Papa Help Copilot przygotował odpowiedź');
+          }}
+          onCategoryChange={setSelectedCategory}
+          onExpandedChange={(expanded) => setSectionExpanded('kb', expanded)}
+          onOpenEscalation={openEscalation}
+          onOpenProcedure={openProcedure}
+          onRoleFilterChange={setRoleFilter}
+          onSearchChange={setSearchQuery}
+          roleFilter={roleFilter}
+          runtimeState={runtimeState}
+          searchQuery={searchQuery}
+          selectedCategory={selectedCategory}
         />
-
-        {activeTab === 'kb' ? (
-          <HelpKnowledgeBase
-            onAskCopilot={(answer) => {
-              setCopilotAnswer(answer);
-              setToast('Papa Help Copilot przygotował odpowiedź');
-            }}
-            onCategoryChange={setSelectedCategory}
-            onOpenEscalation={openEscalation}
-            onOpenProcedure={openProcedure}
-            onRoleFilterChange={setRoleFilter}
-            roleFilter={roleFilter}
-            runtimeState={runtimeState}
-            searchQuery={searchQuery}
-            selectedCategory={selectedCategory}
-          />
-        ) : null}
-        {activeTab === 'truth' ? (
-          <HelpTruthEngine
-            onRuntimeStateChange={(nextRuntimeState) => {
-              setRuntimeState(nextRuntimeState);
-              setRoleFilter(nextRuntimeState.activeRole);
-              setToast('Product Truth Engine zaktualizował stany artykułów');
-            }}
-            runtimeState={runtimeState}
-          />
-        ) : null}
-        {activeTab === 'context' ? (
-          <HelpContextAndEscalation onOpenEscalation={openEscalation} />
-        ) : null}
-        {activeTab === 'domain' ? <HelpDomainRoadmap /> : null}
+        <HelpTruthEngine
+          expanded={expandedSections.has('truth')}
+          onExpandedChange={(expanded) => setSectionExpanded('truth', expanded)}
+          onRuntimeStateChange={(nextRuntimeState) => {
+            setRuntimeState(nextRuntimeState);
+            setRoleFilter(nextRuntimeState.activeRole);
+            setToast('Product Truth Engine zaktualizował stany artykułów');
+          }}
+          runtimeState={runtimeState}
+        />
+        <HelpContextAndEscalation
+          expanded={expandedSections.has('context')}
+          onExpandedChange={(expanded) => setSectionExpanded('context', expanded)}
+          onOpenEscalation={openEscalation}
+        />
+        <HelpDomainRoadmap
+          expanded={expandedSections.has('domain')}
+          onExpandedChange={(expanded) => setSectionExpanded('domain', expanded)}
+        />
       </div>
 
       <HelpProcedureModal
@@ -170,7 +301,7 @@ export function HelpCenterScreen() {
         onClose={() => setCopilotAnswer(null)}
       />
       <HelpCenterToast message={toast} />
-    </main>
+    </div>
   );
 }
 
@@ -273,42 +404,28 @@ export function HelpContextSignal({
   );
 }
 
-export function HelpCenterTabNav({
-  activeTab = 'kb',
-  onTabChange = noop,
-}: {
-  readonly activeTab?: HelpCenterTabId;
-  readonly onTabChange?: (tabId: HelpCenterTabId) => void;
-}) {
-  return (
-    <nav aria-label="Zakładki Centrum Pomocy" className="pd-hc-tabs">
-      {helpCenterTabs.map((tab) => (
-        <button className={activeTab === tab.id ? 'is-active' : ''} key={tab.id} onClick={() => onTabChange(tab.id)} type="button">
-          <Icon decorative name={tab.icon} size={16} />
-          {tab.label}
-          {tab.badge ? <span>{tab.badge}</span> : null}
-        </button>
-      ))}
-    </nav>
-  );
-}
-
 export function HelpKnowledgeBase({
+  expanded = true,
   onAskCopilot = noop,
   onCategoryChange = noop,
+  onExpandedChange = noop,
   onOpenEscalation = noop,
   onOpenProcedure = noop,
   onRoleFilterChange = noop,
+  onSearchChange = noop,
   roleFilter = 'ADMIN',
   runtimeState = defaultHelpRuntimeState,
   searchQuery = '',
   selectedCategory = 'ALL',
 }: {
+  readonly expanded?: boolean;
   readonly onAskCopilot?: (answer: string) => void;
   readonly onCategoryChange?: (category: HelpCategoryId) => void;
+  readonly onExpandedChange?: (expanded: boolean) => void;
   readonly onOpenEscalation?: () => void;
   readonly onOpenProcedure?: (articleId: string) => void;
   readonly onRoleFilterChange?: (role: HelpRole | 'ALL') => void;
+  readonly onSearchChange?: (query: string) => void;
   readonly roleFilter?: HelpRole | 'ALL';
   readonly runtimeState?: HelpRuntimeState;
   readonly searchQuery?: string;
@@ -322,39 +439,48 @@ export function HelpKnowledgeBase({
   }), [roleFilter, runtimeState.activeRole, searchQuery, selectedCategory]);
 
   return (
-    <section className="pd-hc-kb">
-      <div className="pd-hc-kb__filters">
-        <div className="pd-hc-category-filters" role="group" aria-label="Kategorie Centrum Pomocy">
-          {helpCategories.map((category) => (
-            <button
-              className={selectedCategory === category.id ? 'is-active' : ''}
-              key={category.id}
-              onClick={() => onCategoryChange(category.id)}
-              type="button"
-            >
-              {category.label}
-            </button>
-          ))}
-        </div>
-        <label>
-          <span>Filtruj wg mojej roli:</span>
-          <select onChange={(event) => onRoleFilterChange(event.target.value as HelpRole | 'ALL')} value={roleFilter}>
-            {helpRoleOptions.map((roleOption) => (
-              <option key={roleOption.value} value={roleOption.value}>{roleOption.label}</option>
+    <HelpSectionFrame
+      collapsedSummary={`${filteredArticles.length} widocznych artykułów · rola: ${roleFilter}`}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={helpSections[0]!}
+    >
+      <section className="pd-hc-kb">
+        <div className="pd-hc-kb__filters">
+          <div className="pd-hc-category-filters" role="group" aria-label="Kategorie Centrum Pomocy">
+            {helpCategories.map((category) => (
+              <button
+                className={selectedCategory === category.id ? 'is-active' : ''}
+                key={category.id}
+                onClick={() => onCategoryChange(category.id)}
+                type="button"
+              >
+                {category.label}
+              </button>
             ))}
-          </select>
-        </label>
-      </div>
+          </div>
+          <div className="pd-hc-role-filter">
+            <Select
+              label="Filtruj wg mojej roli"
+              onChange={(event) => onRoleFilterChange(event.currentTarget.value as HelpRole | 'ALL')}
+              options={helpRoleOptions}
+              placeholder="Wybierz rolę"
+              value={roleFilter}
+            />
+          </div>
+        </div>
 
-      <HelpArticlesGrid
-        articles={filteredArticles}
-        onOpenEscalation={onOpenEscalation}
-        onOpenProcedure={onOpenProcedure}
-        runtimeState={runtimeState}
-      />
+        <HelpArticlesGrid
+          articles={filteredArticles}
+          onOpenEscalation={onOpenEscalation}
+          onOpenProcedure={onOpenProcedure}
+          onSearchChange={onSearchChange}
+          runtimeState={runtimeState}
+        />
 
-      <HelpCopilotBox onAskCopilot={onAskCopilot} />
-    </section>
+        <HelpCopilotBox onAskCopilot={onAskCopilot} />
+      </section>
+    </HelpSectionFrame>
   );
 }
 
@@ -362,11 +488,13 @@ export function HelpArticlesGrid({
   articles,
   onOpenEscalation = noop,
   onOpenProcedure = noop,
+  onSearchChange = noop,
   runtimeState = defaultHelpRuntimeState,
 }: {
   readonly articles: readonly HelpArticle[];
   readonly onOpenEscalation?: () => void;
   readonly onOpenProcedure?: (articleId: string) => void;
+  readonly onSearchChange?: (query: string) => void;
   readonly runtimeState?: HelpRuntimeState;
 }) {
   if (articles.length === 0) {
@@ -376,7 +504,7 @@ export function HelpArticlesGrid({
         <h4>Nie znaleźliśmy potwierdzonej procedury</h4>
         <p>Spróbuj wpisać inną frazę lub skonsultuj problem bezpośrednio.</p>
         <div>
-          <Button size="small" variant="secondary">Wyszukaj 'brak danych'</Button>
+          <Button onClick={() => onSearchChange('brak danych')} size="small" variant="secondary">Wyszukaj 'brak danych'</Button>
           <Button onClick={onOpenEscalation} size="small" variant="primary">Zgłoś problem techniczny</Button>
         </div>
       </section>
@@ -480,9 +608,13 @@ function HelpCopilotBox({
 }
 
 export function HelpTruthEngine({
+  expanded = true,
+  onExpandedChange = noop,
   onRuntimeStateChange = noop,
   runtimeState = defaultHelpRuntimeState,
 }: {
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
   readonly onRuntimeStateChange?: (runtimeState: HelpRuntimeState) => void;
   readonly runtimeState?: HelpRuntimeState;
 }) {
@@ -520,6 +652,12 @@ export function HelpTruthEngine({
   }
 
   return (
+    <HelpSectionFrame
+      collapsedSummary={`Aktywna rola: ${runtimeState.activeRole} · Shopify: ${runtimeState.providersReadiness.shopify}`}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={helpSections[1]!}
+    >
     <section className="pd-hc-truth">
       <div className="pd-hc-truth-console">
         <div className="pd-hc-truth-console__head">
@@ -558,20 +696,26 @@ export function HelpTruthEngine({
               </div>
               <p>Zmień rolę na VIEWER, aby sprawdzić jak przyciski akcji (CTA) zmieniają się na informację o braku uprawnień.</p>
             </div>
-            <label>
-              <span>Aktywna Rola:</span>
-              <select onChange={(event) => changeRole(event.target.value as HelpRole)} value={runtimeState.activeRole}>
-                <option value="ADMIN">ADMIN</option>
-                <option value="VIEWER">VIEWER</option>
-                <option value="ANALYST">ANALYST</option>
-              </select>
-            </label>
+            <div className="pd-hc-truth-role-select">
+              <Select
+                label="Aktywna rola"
+                onChange={(event) => changeRole(event.currentTarget.value as HelpRole)}
+                options={[
+                  { label: 'ADMIN', value: 'ADMIN' },
+                  { label: 'VIEWER', value: 'VIEWER' },
+                  { label: 'ANALYST', value: 'ANALYST' },
+                ]}
+                placeholder="Wybierz rolę"
+                value={runtimeState.activeRole}
+              />
+            </div>
           </article>
         </div>
       </div>
 
       <HelpTruthMatrix runtimeState={runtimeState} />
     </section>
+    </HelpSectionFrame>
   );
 }
 
@@ -650,11 +794,21 @@ export function HelpTruthMatrix({
 }
 
 export function HelpContextAndEscalation({
+  expanded = true,
+  onExpandedChange = noop,
   onOpenEscalation = noop,
 }: {
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
   readonly onOpenEscalation?: () => void;
 }) {
   return (
+    <HelpSectionFrame
+      collapsedSummary="Pakiet kontekstu diagnostycznego · kontrola prywatności zgłoszeń"
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={helpSections[2]!}
+    >
     <section className="pd-hc-context-grid">
       <article className="pd-hc-panel pd-hc-context-pack">
         <div className="pd-hc-panel__head">
@@ -682,6 +836,7 @@ export function HelpContextAndEscalation({
         <Button onClick={onOpenEscalation} variant="primary">Przetestuj Generowanie Zgłoszenia Technicznego →</Button>
       </article>
     </section>
+    </HelpSectionFrame>
   );
 }
 
@@ -706,8 +861,20 @@ function MetadataList({
   );
 }
 
-export function HelpDomainRoadmap() {
+export function HelpDomainRoadmap({
+  expanded = true,
+  onExpandedChange = noop,
+}: {
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
+} = {}) {
   return (
+    <HelpSectionFrame
+      collapsedSummary="3 obszary pomocy · plan wdrożenia P0–P2"
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={helpSections[3]!}
+    >
     <section className="pd-hc-domain">
       <article className="pd-hc-panel">
         <h3>Docelowy Podział Domenowy (Domain Separation)</h3>
@@ -750,6 +917,7 @@ export function HelpDomainRoadmap() {
         </div>
       </article>
     </section>
+    </HelpSectionFrame>
   );
 }
 
@@ -862,7 +1030,7 @@ function HelpProcedureModal({
             <i><span style={{ width: `${progress}%` }} /></i>
           </div>
 
-          <HelpProcedureStepCard index={activeStepIndex} step={currentStep} />
+          <HelpProcedureStepCard index={activeStepIndex} onAction={nextStep} step={currentStep} />
 
           {currentStep.hasBranching ? (
             <div className="pd-hc-branching">
@@ -891,9 +1059,11 @@ function HelpProcedureModal({
 
 function HelpProcedureStepCard({
   index,
+  onAction,
   step,
 }: {
   readonly index: number;
+  readonly onAction: () => void;
   readonly step: HelpProcedureStep;
 }) {
   return (
@@ -907,7 +1077,7 @@ function HelpProcedureStepCard({
         <strong>Oczekiwany Rezultat:</strong>
         <p>{step.expectedResult}</p>
       </section>
-      {step.actionBtnText ? <button className="pd-hc-muted-button" type="button">{step.actionBtnText}</button> : null}
+      {step.actionBtnText ? <button className="pd-hc-muted-button" onClick={onAction} type="button">{step.actionBtnText}</button> : null}
     </article>
   );
 }

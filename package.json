@@ -8,6 +8,7 @@
     "dev:api": "pnpm --filter @papadata/api dev:production",
     "dev:bff": "pnpm --filter @papadata/bff dev:production",
     "dev:worker": "pnpm --filter @papadata/worker dev:production",
+    "dev:web": "pnpm --filter @papadata/web exec vite --host 0.0.0.0 --port 5173 --strictPort",
     "typecheck": "turbo run typecheck",
     "typecheck:backend": "pnpm --filter @papadata/contracts --filter @papadata/database --filter @papadata/integrations --filter @papadata/storage --filter @papadata/ai-runtime --filter @papadata/api --filter @papadata/bff --filter @papadata/worker run typecheck",
     "build": "turbo run build",
@@ -40,10 +41,10 @@
     "generate:production-parity-env-example": "node tools/generate-production-parity-env-example.mjs"
   },
   "devDependencies": {
-    "tsx": "4.23.12",
-    "turbo": "2.10.9",
-    "typescript": "~6.0.3",
-    "vitest": "^4.1.11"
+    "tsx": "4.23.13",
+    "turbo": "2.10.12",
+    "typescript": "~7.0.2",
+    "vitest": "^5.0.0"
   },
   "packageManager": "pnpm@10.29.3",
   "pnpm": {
@@ -53,10 +54,11 @@
       "minimatch@9.0.9>brace-expansion": "2.1.4",
       "minimatch@10.2.5>brace-expansion": "5.0.9",
       "teeny-request>uuid": "11.1.1",
-      "fast-uri@3.1.4": "3.1.5",
-      "fast-uri@4.1.1": "4.1.2",
+      "fast-uri@3": "3.1.6",
+      "fast-uri@4": "4.1.3",
       "postcss": "8.5.26",
-      "nanoid": "3.3.18"
+      "nanoid": "3.3.18",
+      "fastify": "5.12.3"
     },
     "onlyBuiltDependencies": [
       "argon2",

@@ -1,7 +1,10 @@
+import { useAssistantAnalysisContext } from '../../runtime/shell/papa-assistant/useAssistantAnalysisContext';
 import type {
   ChangeEvent,
+  ReactNode,
 } from 'react';
 import {
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -24,21 +27,30 @@ import {
 
 import {
   Button,
+  DateRangePicker,
+  Dialog,
+  Drawer,
+  ExplorerTable,
   Icon,
   MetricCard,
   Panel,
+  Popover,
   PriorityBand,
   ProductSectionFrame,
   ProductSectionTopbar,
   Select,
 } from '../../design-system';
+import type {
+  ExplorerTableColumn,
+} from '../../design-system';
+import { useShellDateRange } from '../../runtime/shell/app-shell/ShellDateRangeContext';
+import { overviewRangeLabel } from '../command-center/CommandCenterScreen.data';
 import {
   customerAcquisitionRows,
   customerAffinity,
   customerAiInsights,
   customerCohortOptions,
   customerCohortRows,
-  customerDefaultFilters,
   customerExplorerRows,
   customerFreshInsight,
   customerKpis,
@@ -52,20 +64,25 @@ import {
   customerSections,
   customerSectionsById,
   customerSegmentFilterOptions,
-  customerTrendLabels,
   customerTrendModes,
-  customerTrendSeries,
 } from './CustomersScreen.data';
 import type {
   CustomerCohortSelection,
   CustomerExplorerRow,
-  CustomerGlobalFilters,
   CustomerProvenanceKey,
   CustomerRiskStatus,
   CustomerSectionId,
   CustomerTrendMode,
   CustomersTone,
 } from './CustomersScreen.data';
+import {
+  customerTrendChartData,
+  defaultCustomerAnalysis,
+  deriveCustomerAnalysis,
+  representativeNewAov,
+  representativeReturningAov,
+  type CustomerAnalysis,
+} from './CustomersAnalysis.data';
 import './CustomersScreen.css';
 
 type CustomerSegmentFilter = typeof customerSegmentFilterOptions[number]['value'];
@@ -87,14 +104,72 @@ const chartColors = {
 
 export function CustomersScreen() {
   const [activeSection, setActiveSection] = useState<CustomerSectionId>(customerSections[0]!.id);
+  const [expandedSections, setExpandedSections] = useState<Set<CustomerSectionId>>(
+    () => new Set(customerSections.map((section) => section.id)),
+  );
   const [segmentFilter, setSegmentFilter] = useState<CustomerSegmentFilter>('all');
   const [riskFilter, setRiskFilter] = useState<CustomerRiskFilter>('all');
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
   const [selectedProvenance, setSelectedProvenance] = useState<CustomerProvenanceKey | null>(null);
   const [aiContext, setAiContext] = useState<string | null>(null);
   const [insights, setInsights] = useState<CustomerAiInsight[]>([...customerAiInsights]);
+  const [preparedRetentionActions, setPreparedRetentionActions] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
+  const { dateRange, setDateRange } = useShellDateRange();
+  const [dateOpen, setDateOpen] = useState(false);
+  const analysis = deriveCustomerAnalysis(dateRange);
+  useAssistantAnalysisContext({ title: 'Klienci', route: '/app/customers', readiness: analysis.valid ? 'partial' : 'empty', source: 'Model demonstracyjny klientów',
+    metrics: { 'Aktywni klienci': analysis.activeCustomers, 'Klienci w ryzyku': analysis.atRiskCustomers, 'LTV (PLN)': analysis.observedLtv },
+    filters: { Segment: segmentFilter, Ryzyko: riskFilter }, tables: ['Eksplorator klientów'], charts: ['Trend klientów'] });
 
   const selectedCustomer = customerExplorerRows.find((customer) => customer.id === selectedCustomerId) ?? null;
+  const allSectionsExpanded = customerSections.every((section) => expandedSections.has(section.id));
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return undefined;
+
+    const observer = new IntersectionObserver((entries) => {
+      const visibleSection = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((left, right) => Math.abs(left.boundingClientRect.top) - Math.abs(right.boundingClientRect.top))[0];
+
+      if (visibleSection?.target.id) {
+        setActiveSection(visibleSection.target.id as CustomerSectionId);
+      }
+    }, {
+      rootMargin: '-112px 0px -62% 0px',
+      threshold: [0, 0.08],
+    });
+
+    customerSections.forEach((section) => {
+      const element = document.getElementById(section.id);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  function setSectionExpanded(sectionId: CustomerSectionId, expanded: boolean) {
+    setExpandedSections((currentSections) => {
+      const nextSections = new Set(currentSections);
+      if (expanded) nextSections.add(sectionId);
+      else nextSections.delete(sectionId);
+      return nextSections;
+    });
+  }
+
+  function handleToggleAllSections() {
+    setExpandedSections(new Set(allSectionsExpanded
+      ? []
+      : customerSections.map((section) => section.id)));
+  }
+
+  function handleSectionChange(sectionId: CustomerSectionId) {
+    setActiveSection(sectionId);
+    setSectionExpanded(sectionId, true);
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
   function filterAtRisk() {
     setRiskFilter('at_risk');
@@ -110,36 +185,112 @@ export function CustomersScreen() {
     setInsights([customerFreshInsight, ...insights]);
   }
 
+  function prepareRetentionAction(customerId: string) {
+    setPreparedRetentionActions((current) => new Set(current).add(customerId));
+  }
+
   return (
-    <main className="pd-cbi" data-testid="customers-bi-page">
+    <div className="pd-cbi" data-testid="customers-bi-page">
       <ProductSectionTopbar
         activeId={activeSection}
+        actions={(
+          <button
+            className="pd-cbi-section-nav-toggle"
+            onClick={handleToggleAllSections}
+            type="button"
+          >
+            {allSectionsExpanded ? 'Zwiń szczegóły' : 'Rozwiń wszystkie'}
+          </button>
+        )}
         ariaLabel="Sekcje Klientów"
         items={customerSections.map((section) => ({ icon: section.icon, id: section.id, label: section.navLabel }))}
-        onActiveIdChange={(sectionId) => setActiveSection(sectionId as CustomerSectionId)}
+        onActiveIdChange={(sectionId) => handleSectionChange(sectionId as CustomerSectionId)}
       />
 
       <div className="pd-cbi__content">
+        <div className="pd-cbi-page-head">
+          <h1 className="pd-product-page-title">Klienci</h1>
+          <Popover
+            anchorId="customers-date-trigger"
+            title="Okres klientów"
+            modal={false}
+            placement="bottom-end"
+            open={dateOpen}
+            onOpenChange={setDateOpen}
+            trigger={(
+              <Button variant="secondary" size="small">
+                {overviewRangeLabel(dateRange)} <span aria-hidden="true">⌄</span>
+              </Button>
+            )}
+          >
+            <DateRangePicker
+              label="Okres klientów"
+              value={dateRange}
+              timezone={dateRange.timezone}
+              onChange={setDateRange}
+              presets={[
+                { label: 'Ostatnie 7 dni', value: 'last7d' },
+                { label: 'Ostatnie 30 dni', value: 'last30d' },
+                { label: 'Ostatnie 90 dni', value: 'last90d' },
+                { label: 'Własny okres', value: 'custom' },
+              ]}
+            />
+            {!analysis.valid && <p role="alert">Wybierz okres od 1 do 366 dni.</p>}
+            <Button size="small" disabled={!analysis.valid} onClick={() => setDateOpen(false)}>
+              Gotowe
+            </Button>
+          </Popover>
+        </div>
+        {!analysis.valid && (
+          <p className="pd-cbi-inline-alert" role="alert">
+            Wybrany okres jest nieprawidłowy (od 1 do 366 dni). Metryki i eksplorator klientów poniżej pokazują ostatni poprawny zakres.
+          </p>
+        )}
         <CustomerResultSection
+          analysis={analysis}
+          expanded={expandedSections.has('wynik')}
           onAnalyze={() => setAiContext('at-risk-priority')}
+          onExpandedChange={(expanded) => setSectionExpanded('wynik', expanded)}
           onOpenProvenance={setSelectedProvenance}
           onShowCustomers={filterAtRisk}
         />
-        <CustomerCohortRetention />
-        <CustomerRfmSegmentation onSelectSegment={selectSegment} />
-        <CustomerValuePareto />
-        <CustomerAcquisitionQuality />
-        <CustomerProductAffinity />
+        <CustomerCohortRetention
+          expanded={expandedSections.has('retencja')}
+          onExpandedChange={(expanded) => setSectionExpanded('retencja', expanded)}
+        />
+        <CustomerRfmSegmentation
+          expanded={expandedSections.has('segmentacja')}
+          onExpandedChange={(expanded) => setSectionExpanded('segmentacja', expanded)}
+          onSelectSegment={selectSegment}
+        />
+        <CustomerValuePareto
+          expanded={expandedSections.has('wartosc')}
+          onExpandedChange={(expanded) => setSectionExpanded('wartosc', expanded)}
+        />
+        <CustomerAcquisitionQuality
+          expanded={expandedSections.has('pozyskanie')}
+          onExpandedChange={(expanded) => setSectionExpanded('pozyskanie', expanded)}
+        />
+        <CustomerProductAffinity
+          expanded={expandedSections.has('preferencje')}
+          onExpandedChange={(expanded) => setSectionExpanded('preferencje', expanded)}
+        />
         <CustomerExplorer
+          dateRangeValid={analysis.valid}
+          expanded={expandedSections.has('eksplorator')}
+          onExpandedChange={(expanded) => setSectionExpanded('eksplorator', expanded)}
           onOpenCustomer={setSelectedCustomerId}
           onRiskFilterChange={setRiskFilter}
           onSegmentFilterChange={setSegmentFilter}
           riskFilter={riskFilter}
+          rows={analysis.rows}
           segmentFilter={segmentFilter}
         />
         <CustomerAiRetentionModule
+          expanded={expandedSections.has('insight')}
           insights={insights}
           onAnalyze={() => setAiContext('vip-champions')}
+          onExpandedChange={(expanded) => setSectionExpanded('insight', expanded)}
           onGenerate={generateFreshInsight}
           onShowEvidence={filterAtRisk}
         />
@@ -152,50 +303,120 @@ export function CustomersScreen() {
       <CustomerDrawer
         customer={selectedCustomer}
         onClose={() => setSelectedCustomerId(null)}
-        onPrepareAction={() => undefined}
+        onPrepareAction={prepareRetentionAction}
+        prepared={selectedCustomer !== null && preparedRetentionActions.has(selectedCustomer.id)}
       />
       <CustomerPapaModal
         context={aiContext}
         onClose={() => setAiContext(null)}
       />
-    </main>
+    </div>
+  );
+}
+
+function CustomersSectionFrame({
+  accentClassName,
+  actions = null,
+  children,
+  collapsedSummary,
+  description,
+  expanded = true,
+  onExpandedChange = noop,
+  section,
+}: {
+  readonly accentClassName?: string;
+  readonly actions?: ReactNode;
+  readonly children: ReactNode;
+  readonly collapsedSummary: string;
+  readonly description?: ReactNode;
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
+  readonly section: typeof customerSections[number];
+}) {
+  const bodyId = `pd-cbi-${section.id}-content`;
+
+  return (
+    <ProductSectionFrame
+      accentClassName={accentClassName}
+      actions={(
+        <>
+          {expanded ? actions : null}
+          <button
+            aria-controls={bodyId}
+            aria-expanded={expanded}
+            aria-label={`${expanded ? 'Zwiń' : 'Rozwiń'} sekcję ${section.title}`}
+            className="pd-cbi-section-toggle"
+            onClick={() => onExpandedChange(!expanded)}
+            type="button"
+          >
+            <span className="pd-cbi-section-toggle__label">{expanded ? 'Zwiń' : 'Rozwiń'}</span>
+            <span aria-hidden="true" className="pd-cbi-section-toggle__icon">
+              <svg height="14" viewBox="0 0 24 24" width="14">
+                <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+              </svg>
+            </span>
+          </button>
+        </>
+      )}
+      className="pd-cbi-section-frame"
+      data-collapsed={expanded ? undefined : 'true'}
+      description={expanded ? (
+        description ? <span>{description}</span> : null
+      ) : (
+        <span className="pd-cbi-section-summary">{collapsedSummary}</span>
+      )}
+      icon={section.icon}
+      id={section.id}
+      title={section.title}
+    >
+      {expanded ? (
+        <div className="pd-cbi-section-content" id={bodyId}>{children}</div>
+      ) : null}
+    </ProductSectionFrame>
   );
 }
 
 export function CustomerResultSection({
-  filters = customerDefaultFilters,
+  analysis = defaultCustomerAnalysis,
+  expanded = true,
   onAnalyze = noop,
+  onExpandedChange = noop,
   onOpenProvenance = noop,
   onShowCustomers = noop,
 }: {
-  readonly filters?: CustomerGlobalFilters;
+  readonly analysis?: CustomerAnalysis;
+  readonly expanded?: boolean;
   readonly onAnalyze?: () => void;
+  readonly onExpandedChange?: (expanded: boolean) => void;
   readonly onOpenProvenance?: (key: CustomerProvenanceKey) => void;
   readonly onShowCustomers?: () => void;
 }) {
   const section = customerSectionsById.wynik;
+  const atRisk = analysis.atRiskCustomers;
 
   return (
-    <ProductSectionFrame
-      description="Jaki jest aktualny wynik i struktura aktywnej bazy klientów?"
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+    <CustomersSectionFrame
+      collapsedSummary={`${atRisk} klientów wysokiej wartości przekroczyło cykl ponownego zakupu`}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <PriorityBand
         actions={(
           <>
             <Button
+              className="pd-cbi-priority-action pd-cbi-priority-action--primary"
               onClick={onShowCustomers}
               startIcon={<Icon decorative name="customers" size={16} />}
-              variant="primary"
+              variant="ghost"
             >
-              Pokaż 318 klientów
+              Pokaż {atRisk} klientów
             </Button>
             <Button
+              className="pd-cbi-priority-action"
               onClick={onAnalyze}
               startIcon={<Icon decorative name="assistant" size={16} />}
-              variant="secondary"
+              variant="ghost"
             >
               Analizuj z Papa AI
             </Button>
@@ -203,10 +424,10 @@ export function CustomerResultSection({
         )}
         badgeLabel="Papa Priorytet Retencyjny"
         timestampLabel="Sprawdzono: dzisiaj, 23:14"
-        title="318 klientów wysokiej wartości (Champions/Loyal) przekroczyło cykl ponownego zakupu"
+        title={`${atRisk} klientów wysokiej wartości (Champions/Loyal) przekroczyło cykl ponownego zakupu`}
       >
         <p>
-          Klienci z tej grupy wygenerowali dotychczas <strong>462 000 zł</strong> przychodu (Observed LTV), a ich średni opóźniony czas zakupu wynosi obecnie <strong>19 dni</strong> powyżej ich indywidualnego interpurchase interval. Brak reakcji w ciągu 14 dni zwiększa prawdopodobieństwo definitywnego churnu o 42%.
+          Klienci z tej grupy wygenerowali dotychczas <strong>{formatMoney(analysis.observedLtv * atRisk)}</strong> przychodu (Observed LTV), a ich średni opóźniony czas zakupu wynosi obecnie <strong>19 dni</strong> powyżej ich indywidualnego interwału między zakupami. Brak reakcji w ciągu 14 dni zwiększa prawdopodobieństwo definitywnego churnu o 42%.
         </p>
       </PriorityBand>
 
@@ -219,31 +440,33 @@ export function CustomerResultSection({
         bordered={false}
         collapsed={false}
         collapsible={false}
-        description="Kluczowe wskaźniki retencji, aktywności i wartości z jawnym oznaczeniem statusu danych (Data Provenance)."
         padding="md"
         title="Główne Metryki Portfela Klientów"
       >
         <div className="pd-cbi-kpi-grid">
-          {customerKpis.map((kpi) => (
-            <MetricCard
-              comparison={{ direction: kpiTrendDirection(kpi.trend), label: `${kpi.trend} ${kpi.note}` }}
-              detailAction={{ label: `${kpi.badge} · Źródło i wzór`, onAction: () => onOpenProvenance(kpi.provenanceKey) }}
-              emphasis={kpi.provenanceKey === 'at_risk' ? 'alert' : 'default'}
-              key={kpi.title}
-              label={kpi.title}
-              metricId={`customers-kpi-${kpi.provenanceKey}`}
-              signal={kpi.badgeTone === 'emerald' ? 'positive' : kpi.badgeTone === 'amber' ? 'warning' : 'neutral'}
-              sourceLabel={kpi.footer}
-              status="ready"
-              statusLabel={kpi.badge}
-              value={'periodValues' in kpi ? kpi.periodValues[filters.period] : kpi.value}
-            />
-          ))}
+          {customerKpis.map((kpi) => {
+            const computed = customerKpiValue(kpi.provenanceKey, analysis);
+            return (
+              <MetricCard
+                comparison={{ direction: kpiTrendDirection(computed.trend), label: `${computed.trend} ${computed.note}` }}
+                detailAction={{ label: `${kpi.badge} · Źródło i wzór`, onAction: () => onOpenProvenance(kpi.provenanceKey) }}
+                emphasis={kpi.provenanceKey === 'at_risk' ? 'alert' : 'default'}
+                helpText={kpi.description}
+                key={kpi.title}
+                label={kpi.title}
+                metricId={`customers-kpi-${kpi.provenanceKey}`}
+                signal={kpi.badgeTone === 'emerald' ? 'positive' : kpi.badgeTone === 'amber' ? 'warning' : 'neutral'}
+                status="ready"
+                statusLabel={kpi.badge}
+                value={computed.value}
+              />
+            );
+          })}
         </div>
       </Panel>
 
-      <CustomerTrendDecompositionCard />
-    </ProductSectionFrame>
+      <CustomerTrendDecompositionCard analysis={analysis} />
+    </CustomersSectionFrame>
   );
 }
 
@@ -253,14 +476,124 @@ function kpiTrendDirection(change: string): 'up' | 'down' | 'flat' {
   return 'flat';
 }
 
-function CustomerTrendDecompositionCard() {
+// Node's Intl.NumberFormat "auto" grouping (the toLocaleString default)
+// leaves 4-digit numbers like 3842 ungrouped -- explicit useGrouping keeps
+// this consistent with the rest of the screen's always-grouped convention
+// (e.g. "24 860").
+function plNumber(value: number) {
+  return value.toLocaleString('pl-PL', { useGrouping: true });
+}
+
+function formatMoney(value: number) {
+  return `${plNumber(Math.round(value))} zł`;
+}
+
+function trendCount(current: number, previous: number) {
+  const delta = current - previous;
+  const arrow = delta > 0 ? '↑' : delta < 0 ? '↓' : '→';
+  return `${arrow} ${plNumber(Math.abs(Math.round(delta)))}`;
+}
+
+function trendPercentChange(current: number, previous: number) {
+  const pct = previous > 0 ? ((current - previous) / previous) * 100 : 0;
+  const arrow = pct > 0 ? '↑' : pct < 0 ? '↓' : '→';
+  return `${arrow} ${Math.abs(pct).toFixed(1)}%`;
+}
+
+function trendPoints(current: number, previous: number) {
+  const delta = current - previous;
+  const arrow = delta > 0 ? '↑' : delta < 0 ? '↓' : '→';
+  return `${arrow} ${Math.abs(delta).toFixed(1)} pp`;
+}
+
+function trendMoney(current: number, previous: number) {
+  const delta = current - previous;
+  const arrow = delta > 0 ? '↑' : delta < 0 ? '↓' : '→';
+  return `${arrow} ${plNumber(Math.abs(Math.round(delta)))} zł`;
+}
+
+function customerKpiValue(
+  provenanceKey: CustomerProvenanceKey,
+  analysis: CustomerAnalysis,
+): { readonly value: string; readonly trend: string; readonly note: string } {
+  const { previous } = analysis;
+  switch (provenanceKey) {
+    case 'active_customers':
+      return {
+        value: plNumber(analysis.activeCustomers),
+        trend: trendPercentChange(analysis.activeCustomers, previous.activeCustomers),
+        note: 'vs poprz. okres',
+      };
+    case 'new_customers': {
+      const activeSharePct = analysis.activeCustomers > 0 ? (analysis.newCustomers / analysis.activeCustomers) * 100 : 0;
+      return {
+        value: plNumber(analysis.newCustomers),
+        trend: trendPercentChange(analysis.newCustomers, previous.newCustomers),
+        note: `${activeSharePct.toFixed(1).replace('.', ',')}% aktywnych`,
+      };
+    }
+    case 'returning_share':
+      return {
+        value: `${analysis.returningSharePct.toFixed(1).replace('.', ',')}%`,
+        trend: trendPoints(analysis.returningSharePct, previous.returningSharePct),
+        note: `${plNumber(analysis.returningCustomers)} klientów`,
+      };
+    case 'repeat_rate':
+      return {
+        value: `${analysis.repeatRatePct.toFixed(1).replace('.', ',')}%`,
+        trend: trendPoints(analysis.repeatRatePct, previous.repeatRatePct),
+        note: 'kohorta M1+',
+      };
+    case 'observed_ltv':
+      return {
+        value: formatMoney(analysis.observedLtv),
+        trend: trendMoney(analysis.observedLtv, previous.observedLtv),
+        note: 'suma historyczna/klient',
+      };
+    case 'at_risk':
+      return {
+        value: plNumber(analysis.atRiskCustomers),
+        trend: trendCount(analysis.atRiskCustomers, previous.atRiskCustomers),
+        note: 'przekroczony cykl',
+      };
+    default:
+      return { value: '—', trend: '→ 0', note: '' };
+  }
+}
+
+function customerTrendSplit(analysis: CustomerAnalysis, mode: CustomerTrendMode) {
+  const chartData = customerTrendChartData(analysis, mode);
+  const isRateMode = mode === 'aov' || mode === 'margin';
+  const totals = chartData.reduce(
+    (sum, point) => ({
+      newCustomers: sum.newCustomers + point.newCustomers,
+      returningCustomers: sum.returningCustomers + point.returningCustomers,
+    }),
+    { newCustomers: 0, returningCustomers: 0 },
+  );
+  const newAmount = isRateMode ? (chartData[0]?.newCustomers ?? 0) : totals.newCustomers;
+  const returningAmount = isRateMode ? (chartData[0]?.returningCustomers ?? 0) : totals.returningCustomers;
+  const denominator = newAmount + returningAmount;
+  const newSharePct = denominator > 0 ? (newAmount / denominator) * 100 : 0;
+  const returningSharePct = 100 - newSharePct;
+  const suffix = mode === 'aov' ? '(Średni AOV)' : mode === 'margin' ? 'Średnia Marża' : `(${newSharePct.toFixed(1)}%)`;
+  const returningSuffix = mode === 'aov' ? '(Średni AOV)' : mode === 'margin' ? 'Średnia Marża' : `(${returningSharePct.toFixed(1)}%)`;
+  return {
+    chartData,
+    newValue: `${formatMetricValue(newAmount, mode)} ${suffix}`,
+    newSharePct,
+    returningValue: `${formatMetricValue(returningAmount, mode)} ${returningSuffix}`,
+    returningSharePct,
+  };
+}
+
+function CustomerTrendDecompositionCard({ analysis }: { readonly analysis: CustomerAnalysis }) {
   const [mode, setMode] = useState<CustomerTrendMode>('customers');
-  const activeSeries = customerTrendSeries[mode];
-  const chartData = useMemo(() => customerTrendLabels.map((label, index) => ({
-    label,
-    newCustomers: activeSeries.newCustomers[index],
-    returningCustomers: activeSeries.returningCustomers[index],
-  })), [activeSeries]);
+  const activeSeries = useMemo(() => customerTrendSplit(analysis, mode), [analysis, mode]);
+  const chartData = activeSeries.chartData;
+  const revenueSplit = useMemo(() => customerTrendSplit(analysis, 'revenue'), [analysis]);
+  const customersSplitForMode = useMemo(() => customerTrendSplit(analysis, 'customers'), [analysis]);
+  const customersSplit = mode === 'customers' ? activeSeries : customersSplitForMode;
 
   return (
     <section className="pd-cbi-panel">
@@ -306,10 +639,10 @@ function CustomerTrendDecompositionCard() {
 
         <aside className="pd-cbi-summary-card">
           <h3>Podsumowanie Podziału</h3>
-          <CustomerSplitRow label="Nowi Klienci:" tone="indigo" value={activeSeries.newValue} width="61.6%" />
-          <CustomerSplitRow label="Powracający Klienci:" tone="emerald" value={activeSeries.returningValue} width="38.4%" />
+          <CustomerSplitRow label="Nowi Klienci:" tone="indigo" value={activeSeries.newValue} width={`${activeSeries.newSharePct.toFixed(1)}%`} />
+          <CustomerSplitRow label="Powracający Klienci:" tone="emerald" value={activeSeries.returningValue} width={`${activeSeries.returningSharePct.toFixed(1)}%`} />
           <div className="pd-cbi-insight-box">
-            <strong>Kluczowy Wnioski:</strong> Powracający klienci stanowią 38,4% kupujących, ale generują aż <strong>54,2% całkowitego przychodu</strong> ze względu na wyższy AOV (312 zł vs 218 zł).
+            <strong>Kluczowy Wnioski:</strong> Powracający klienci stanowią {customersSplit.returningSharePct.toFixed(1)}% kupujących, ale generują aż <strong>{revenueSplit.returningSharePct.toFixed(1)}% całkowitego przychodu</strong> ze względu na wyższy AOV ({representativeReturningAov} zł vs {representativeNewAov} zł).
           </div>
         </aside>
       </div>
@@ -344,73 +677,102 @@ function CustomerSplitRow({
   );
 }
 
-export function CustomerCohortRetention() {
+function cohortToneClassName(value: string): string {
+  if (value === 'N/A') return 'pd-cbi-cohort-cell pd-cbi-cohort-cell--empty';
+  if (value === '100%') return 'pd-cbi-cohort-cell pd-cbi-cohort-cell--base';
+
+  const parsed = Number(value.replace(',', '.').replace('%', ''));
+  const strength = parsed > 35 ? 'strong' : parsed > 25 ? 'mid' : 'soft';
+  return `pd-cbi-cohort-cell pd-cbi-cohort-cell--${strength}`;
+}
+
+const cohortMonthColumns = [
+  { id: 'm0' as const, label: 'M0' },
+  { id: 'm1' as const, label: 'M1' },
+  { id: 'm2' as const, label: 'M2' },
+  { id: 'm3' as const, label: 'M3' },
+  { id: 'm4' as const, label: 'M4' },
+  { id: 'm6' as const, label: 'M6' },
+];
+
+const customerCohortColumns: readonly ExplorerTableColumn<(typeof customerCohortRows)[number] & { readonly id: string }>[] = [
+  {
+    csvValue: (row) => row.cohort,
+    id: 'cohort',
+    label: 'Kohorta (M0)',
+    render: (row) => <strong>{row.cohort}</strong>,
+    required: true,
+    sortAccessor: (row) => row.cohort,
+    width: 140,
+  },
+  {
+    align: 'right',
+    csvValue: (row) => row.base,
+    id: 'base',
+    label: 'Baza M0',
+    render: (row) => row.base.toLocaleString('pl-PL'),
+    required: true,
+    sortAccessor: (row) => row.base,
+    width: 100,
+  },
+  ...cohortMonthColumns.map(({ id, label }) => ({
+    align: 'right' as const,
+    csvValue: (row: (typeof customerCohortRows)[number]) => row[id],
+    id,
+    label,
+    render: (row: (typeof customerCohortRows)[number]) => (
+      <span className={cohortToneClassName(row[id])}>{row[id]}</span>
+    ),
+  })),
+];
+
+export function CustomerCohortRetention({
+  expanded = true,
+  onExpandedChange = noop,
+}: {
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
+}) {
   const [cohort, setCohort] = useState<CustomerCohortSelection>('all');
   const curveData = customerRetentionLabels.map((label, index) => ({
     label,
     value: customerRetentionCurve[cohort][index],
   }));
   const section = customerSectionsById.retencja;
+  const cohortRows = useMemo(
+    () => customerCohortRows.map((row) => ({ ...row, id: row.cohort })),
+    [],
+  );
 
   return (
-    <ProductSectionFrame
+    <CustomersSectionFrame
       actions={(
-        <label className="pd-cbi-mini-select">
-          <span>Wizualizuj kohortę:</span>
-          <select
-            onChange={(event) => setCohort(event.target.value as CustomerCohortSelection)}
+        <div className="pd-cbi-mini-select">
+          <Select
+            label="Wizualizuj kohortę"
+            onChange={(event) => setCohort(event.currentTarget.value as CustomerCohortSelection)}
+            options={customerCohortOptions}
+            placeholder="Wybierz kohortę"
             value={cohort}
-          >
-            {customerCohortOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+          />
+        </div>
       )}
       description={(
         <>
-          <span className="pd-cbi-context-pill">Cohort Heatmap &amp; Decay Curve</span>
-          <br />
           Miesiąc 1. kwalifikowanego zakupu ($M_0$). Komórki przyszłe wykazują status <span className="pd-cbi-inline-tag">N/A (Right Censored)</span> zamiast zafałszowanego 0%.
         </>
       )}
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+      collapsedSummary="Największy spadek retencji: M0 → M1 (-63,2 pp)"
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <div className="pd-cbi-cohort-layout">
-        <div className="pd-cbi-table-scroll">
-          <table className="pd-cbi-simple-table">
-            <thead>
-              <tr>
-                <th>Kohorta (M0)</th>
-                <th>Baza M0</th>
-                <th>M0</th>
-                <th>M1</th>
-                <th>M2</th>
-                <th>M3</th>
-                <th>M4</th>
-                <th>M6</th>
-              </tr>
-            </thead>
-            <tbody>
-              {customerCohortRows.map((row) => (
-                <tr key={row.cohort}>
-                  <td><strong>{row.cohort}</strong></td>
-                  <td>{row.base.toLocaleString('pl-PL')}</td>
-                  <CohortCell value={row.m0} />
-                  <CohortCell value={row.m1} />
-                  <CohortCell value={row.m2} />
-                  <CohortCell value={row.m3} />
-                  <CohortCell value={row.m4} />
-                  <CohortCell value={row.m6} />
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ExplorerTable
+          ariaLabel="Retencja klientów"
+          columns={customerCohortColumns}
+          rows={cohortRows}
+        />
 
         <div>
           <h3>Krzywa Odpływu Retencji (Retention Decay Curve)</h3>
@@ -434,48 +796,32 @@ export function CustomerCohortRetention() {
           <strong>Interpretacja Papa AI:</strong> Największa utrata klientów występuje w punkcie <strong>M0 → M1 (spadek o 63.2 pp)</strong>. Klienci przetrzymani do M2 wykazują bardzo wysoką retencję długoterminową (stabilizacja na poziomie 18-22%). Rekomendacja: Skieruj działania automatyzacji onboardingowej na pierwsze 30 dni od zakupu zakwalifikowanego.
         </p>
       </div>
-    </ProductSectionFrame>
+    </CustomersSectionFrame>
   );
 }
 
-function CohortCell({
-  value,
-}: {
-  readonly value: string;
-}) {
-  if (value === 'N/A') {
-    return <td className="pd-cbi-cohort-cell pd-cbi-cohort-cell--empty">N/A</td>;
-  }
-
-  if (value === '100%') {
-    return <td className="pd-cbi-cohort-cell pd-cbi-cohort-cell--base">100%</td>;
-  }
-
-  const parsed = Number(value.replace(',', '.').replace('%', ''));
-  const strength = parsed > 35 ? 'strong' : parsed > 25 ? 'mid' : 'soft';
-
-  return <td className={`pd-cbi-cohort-cell pd-cbi-cohort-cell--${strength}`}>{value}</td>;
-}
-
 export function CustomerRfmSegmentation({
+  expanded = true,
+  onExpandedChange = noop,
   onSelectSegment = noop,
 }: {
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
   readonly onSelectSegment?: (segment: string) => void;
 }) {
   const section = customerSectionsById.segmentacja;
 
   return (
-    <ProductSectionFrame
+    <CustomersSectionFrame
+      collapsedSummary="Segmentacja RFM: Recency × Frequency × Monetary, punktacja 1-5"
       description={(
         <>
-          <span className="pd-cbi-context-pill">RFM &amp; Behavioral Lifecycle</span>
-          <br />
           Klasyfikacja oparta o pełny model trójwymiarowy: <strong>R (Recency)</strong>, <strong>F (Frequency)</strong> oraz <strong>M (Monetary Gross Margin)</strong> z punktacją 1–5.
         </>
       )}
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <div className="pd-cbi-rfm-layout">
         <div className="pd-cbi-chart" role="img" aria-label="Rozkład segmentów RFM">
@@ -505,25 +851,30 @@ export function CustomerRfmSegmentation({
           ))}
         </div>
       </div>
-    </ProductSectionFrame>
+    </CustomersSectionFrame>
   );
 }
 
-export function CustomerValuePareto() {
+export function CustomerValuePareto({
+  expanded = true,
+  onExpandedChange = noop,
+}: {
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
+}) {
   const section = customerSectionsById.wartosc;
 
   return (
-    <ProductSectionFrame
+    <CustomersSectionFrame
+      collapsedSummary="Utrata 10% kluczowych odbiorców zredukuje marżę brutto o ponad połowę"
       description={(
         <>
-          <span className="pd-cbi-context-pill">Ekonomika Portfela · LTV Pareto</span>
-          <br />
           Rozkład rzeczywistej skumulowanej wartości klientów (<strong>Observed Customer Value</strong>) oraz analiza koncentracji przychodu.
         </>
       )}
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <div className="pd-cbi-value-layout">
         <div className="pd-cbi-chart" role="img" aria-label="Rozkład wartości klienta i kumulacyjny przychód">
@@ -560,25 +911,30 @@ export function CustomerValuePareto() {
           </article>
         </aside>
       </div>
-    </ProductSectionFrame>
+    </CustomersSectionFrame>
   );
 }
 
-export function CustomerAcquisitionQuality() {
+export function CustomerAcquisitionQuality({
+  expanded = true,
+  onExpandedChange = noop,
+}: {
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
+}) {
   const section = customerSectionsById.pozyskanie;
 
   return (
-    <ProductSectionFrame
+    <CustomersSectionFrame
+      collapsedSummary="Koszt pozyskania (CAC) vs rzeczywisty LTV wg kanału"
       description={(
         <>
-          <span className="pd-cbi-context-pill">Jakość Pozyskania · CAC vs LTV</span>
-          <br />
           Atrybucja pozyskania zamrożona na 1. zakupie (<strong>First-touch / Acquisition Cohort</strong>). Porównanie kosztu pozyskania z rzeczywistym LTV.
         </>
       )}
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <div className="pd-cbi-acq-layout">
         <div className="pd-cbi-chart" role="img" aria-label="CAC i Observed LTV według kanału">
@@ -595,50 +951,37 @@ export function CustomerAcquisitionQuality() {
           </ResponsiveContainer>
         </div>
 
-        <div className="pd-cbi-table-scroll">
-          <table className="pd-cbi-simple-table pd-cbi-simple-table--compact">
-            <thead>
-              <tr>
-                <th>Kanał</th>
-                <th>Nowi</th>
-                <th>CAC</th>
-                <th>LTV</th>
-                <th>LTV:CAC</th>
-              </tr>
-            </thead>
-            <tbody>
-              {customerAcquisitionRows.map((row) => (
-                <tr key={row.source}>
-                  <td><strong>{row.source}</strong></td>
-                  <td>{row.newCust}</td>
-                  <td className="pd-cbi-rose-text">{row.cacLabel}</td>
-                  <td className="pd-cbi-emerald-text">{row.ltvLabel}</td>
-                  <td className="pd-cbi-indigo-text"><strong>{row.ratio}</strong></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ExplorerTable
+          ariaLabel="Kanały pozyskania klientów"
+          columns={customerAcquisitionColumns}
+          exportFilenameBase="kanaly-pozyskania-klientow"
+          rows={customerAcquisitionRows.map((row) => ({ ...row, id: row.source }))}
+        />
       </div>
-    </ProductSectionFrame>
+    </CustomersSectionFrame>
   );
 }
 
-export function CustomerProductAffinity() {
+export function CustomerProductAffinity({
+  expanded = true,
+  onExpandedChange = noop,
+}: {
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
+}) {
   const section = customerSectionsById.preferencje;
 
   return (
-    <ProductSectionFrame
+    <CustomersSectionFrame
+      collapsedSummary="Afinitet produktowy: produkty inicjujące vs powtórne"
       description={(
         <>
-          <span className="pd-cbi-context-pill">Afinitet Produktowy: Nowi vs Powracający</span>
-          <br />
           Rzeczywiste pozycje zamówień z <strong>FactOrderLine</strong> rozdzielone według statusu klienta w momencie zakupu.
         </>
       )}
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <div className="pd-cbi-affinity-grid">
         <AffinityTable
@@ -654,7 +997,7 @@ export function CustomerProductAffinity() {
           tone="emerald"
         />
       </div>
-    </ProductSectionFrame>
+    </CustomersSectionFrame>
   );
 }
 
@@ -679,133 +1022,235 @@ function AffinityTable({
         <h3 className={`pd-cbi-${tone}-text`}>{title}</h3>
         <span className={`pd-cbi-data-badge pd-cbi-data-badge--${tone}`}>{badge}</span>
       </header>
-      <table className="pd-cbi-mini-table">
-        <thead>
-          <tr>
-            <th>Produkt</th>
-            <th>Zamówienia</th>
-            <th>Przychód</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.name}>
-              <td><strong>{row.name}</strong></td>
-              <td>{row.orders}</td>
-              <td>{row.revenue}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <ExplorerTable
+        ariaLabel={title}
+        columns={affinityColumns}
+        exportFilenameBase={title}
+        rows={rows.map((row) => ({ ...row, id: row.name }))}
+      />
     </article>
   );
 }
 
+const affinityColumns: readonly ExplorerTableColumn<{ readonly id: string; readonly name: string; readonly orders: number; readonly revenue: string }>[] = [
+  {
+    csvValue: (row) => row.name,
+    id: 'name',
+    label: 'Produkt',
+    render: (row) => <strong>{row.name}</strong>,
+    required: true,
+    sortAccessor: (row) => row.name,
+  },
+  {
+    csvValue: (row) => row.orders,
+    id: 'orders',
+    label: 'Zamówienia',
+    render: (row) => row.orders,
+    sortAccessor: (row) => row.orders,
+  },
+  {
+    csvValue: (row) => row.revenue,
+    id: 'revenue',
+    label: 'Przychód',
+    render: (row) => row.revenue,
+  },
+];
+
+const customerAcquisitionColumns: readonly ExplorerTableColumn<(typeof customerAcquisitionRows)[number] & { readonly id: string }>[] = [
+  {
+    csvValue: (row) => row.source,
+    id: 'source',
+    label: 'Kanał',
+    render: (row) => <strong>{row.source}</strong>,
+    required: true,
+    sortAccessor: (row) => row.source,
+  },
+  {
+    csvValue: (row) => row.newCust,
+    id: 'newCust',
+    label: 'Nowi',
+    render: (row) => row.newCust,
+    sortAccessor: (row) => row.newCust,
+  },
+  {
+    csvValue: (row) => row.cac,
+    id: 'cac',
+    label: 'CAC',
+    render: (row) => <span className="pd-cbi-rose-text">{row.cacLabel}</span>,
+    sortAccessor: (row) => row.cac,
+  },
+  {
+    csvValue: (row) => row.ltv,
+    id: 'ltv',
+    label: 'LTV',
+    render: (row) => <span className="pd-cbi-emerald-text">{row.ltvLabel}</span>,
+    sortAccessor: (row) => row.ltv,
+  },
+  {
+    csvValue: (row) => row.ratio,
+    id: 'ratio',
+    label: 'LTV:CAC',
+    render: (row) => <strong className="pd-cbi-indigo-text">{row.ratio}</strong>,
+  },
+];
+
+const customerExplorerColumns: readonly ExplorerTableColumn<CustomerExplorerRow>[] = [
+  {
+    csvValue: (row) => row.id,
+    id: 'id',
+    label: 'Tożsamość',
+    render: (row) => <strong className="pd-cbi-mono">{row.id}</strong>,
+    required: true,
+    sortAccessor: (row) => row.id,
+  },
+  {
+    csvValue: (row) => row.segment,
+    id: 'segment',
+    label: 'Segment RFM',
+    render: (row) => row.segment,
+    sortAccessor: (row) => row.segment,
+  },
+  {
+    csvValue: (row) => row.score,
+    id: 'score',
+    label: 'Wynik',
+    render: (row) => <span className="pd-cbi-mono">{row.score}</span>,
+    sortAccessor: (row) => row.score,
+  },
+  {
+    csvValue: (row) => row.recency,
+    id: 'recency',
+    label: 'Świeżość',
+    render: (row) => row.recency,
+  },
+  {
+    csvValue: (row) => row.orders,
+    id: 'orders',
+    label: 'Zamówienia',
+    render: (row) => row.orders,
+  },
+  {
+    csvValue: (row) => row.ltv,
+    id: 'ltv',
+    label: 'Observed LTV',
+    render: (row) => <strong>{row.ltv}</strong>,
+  },
+  {
+    csvValue: (row) => row.aov,
+    id: 'aov',
+    label: 'AOV',
+    render: (row) => row.aov,
+  },
+  {
+    csvValue: (row) => row.riskLabel,
+    id: 'risk',
+    label: 'Status Ryzyka',
+    render: (row) => <CustomerRiskBadge label={row.riskLabel} risk={row.risk} />,
+  },
+];
+
+const customerRowActions = [
+  { id: 'details', label: 'Otwórz szczegóły' },
+];
+
 export function CustomerExplorer({
+  dateRangeValid = true,
+  expanded = true,
+  onExpandedChange = noop,
   onOpenCustomer = noop,
   onRiskFilterChange = noop,
   onSegmentFilterChange = noop,
   riskFilter = 'all',
+  rows = customerExplorerRows,
   segmentFilter = 'all',
 }: {
+  readonly dateRangeValid?: boolean;
+  readonly expanded?: boolean;
+  readonly onExpandedChange?: (expanded: boolean) => void;
   readonly onOpenCustomer?: (customerId: string) => void;
   readonly onRiskFilterChange?: (risk: CustomerRiskFilter) => void;
   readonly onSegmentFilterChange?: (segment: CustomerSegmentFilter) => void;
   readonly riskFilter?: CustomerRiskFilter;
+  readonly rows?: readonly CustomerExplorerRow[];
   readonly segmentFilter?: CustomerSegmentFilter;
 }) {
-  const [query, setQuery] = useState('');
   const filteredRows = filterCustomers({
-    query,
     riskFilter,
+    rows,
     segmentFilter,
   });
 
   const section = customerSectionsById.eksplorator;
+  const filterState = [
+    segmentFilter !== 'all' ? {
+      id: 'segment',
+      label: 'Segment RFM',
+      removable: true,
+      type: 'select' as const,
+      value: customerSegmentFilterOptions.find((option) => option.value === segmentFilter)?.label ?? segmentFilter,
+    } : null,
+    riskFilter !== 'all' ? {
+      id: 'risk',
+      label: 'Ryzyko',
+      removable: true,
+      type: 'select' as const,
+      value: customerRiskFilterOptions.find((option) => option.value === riskFilter)?.label ?? riskFilter,
+    } : null,
+  ].filter((filter): filter is NonNullable<typeof filter> => filter !== null);
 
   return (
-    <ProductSectionFrame
-      actions={(
-        <div className="pd-cbi-explorer-controls">
-          <input
-            aria-label="Szukaj ID lub hashu"
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Szukaj ID lub hashu..."
-            type="search"
-            value={query}
-          />
-          <SelectControl
-            ariaLabel="Filtr segmentu RFM"
-            onChange={(event) => onSegmentFilterChange(event.target.value as CustomerSegmentFilter)}
-            options={customerSegmentFilterOptions}
-            value={segmentFilter}
-          />
-          <SelectControl
-            ariaLabel="Filtr statusu ryzyka"
-            onChange={(event) => onRiskFilterChange(event.target.value as CustomerRiskFilter)}
-            options={customerRiskFilterOptions}
-            value={riskFilter}
-          />
-        </div>
-      )}
+    <CustomersSectionFrame
       description={(
         <>
-          <span className="pd-cbi-context-pill">Server-Side Analytical View</span>
-          <br />
           Analityczna tabela klientów zgodna z Privacy-by-Design. Zanonimizowane pseudonimy, brak wycieku PII.
         </>
       )}
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+      collapsedSummary={`${filteredRows.length} z 24 860 klientów widocznych · kliknij, aby przeszukać`}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
-      <div className="pd-cbi-table-scroll">
-        <table className="pd-cbi-simple-table">
-          <thead>
-            <tr>
-              <th>Tożsamość</th>
-              <th>Segment RFM</th>
-              <th>Score</th>
-              <th>Recency</th>
-              <th>Orders</th>
-              <th>Observed LTV</th>
-              <th>AOV</th>
-              <th>Status Ryzyka</th>
-              <th>Akcja</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRows.map((row) => (
-              <tr key={row.id}>
-                <td><strong className="pd-cbi-mono">{row.id}</strong></td>
-                <td>{row.segment}</td>
-                <td className="pd-cbi-mono">{row.score}</td>
-                <td>{row.recency}</td>
-                <td>{row.orders}</td>
-                <td><strong>{row.ltv}</strong></td>
-                <td>{row.aov}</td>
-                <td><CustomerRiskBadge risk={row.risk} label={row.riskLabel} /></td>
-                <td>
-                  <button className="pd-cbi-row-button" onClick={() => onOpenCustomer(row.id)} type="button">
-                    Szczegóły →
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <footer className="pd-cbi-table-footer">
-        <span>Pokazano <strong>{filteredRows.length}</strong> z 24 860 klientów (Serwerowa paginacja)</span>
-        <div>
-          <button disabled type="button">Poprzednia</button>
-          <strong>1</strong>
-          <button type="button">2</button>
-          <button type="button">Następna</button>
-        </div>
-      </footer>
-    </ProductSectionFrame>
+      <ExplorerTable
+        ariaLabel="Eksplorator klientów"
+        columns={customerExplorerColumns}
+        emptyMessage={dateRangeValid ? undefined : 'Wybierz poprawny okres (od 1 do 366 dni) w nagłówku strony.'}
+        emptyTitle={dateRangeValid ? undefined : 'Nieprawidłowy okres'}
+        filterState={filterState}
+        filters={(
+          <>
+            <SelectControl
+              ariaLabel="Filtr segmentu RFM"
+              onChange={(event) => onSegmentFilterChange(event.target.value as CustomerSegmentFilter)}
+              options={customerSegmentFilterOptions}
+              value={segmentFilter}
+            />
+            <SelectControl
+              ariaLabel="Filtr statusu ryzyka"
+              onChange={(event) => onRiskFilterChange(event.target.value as CustomerRiskFilter)}
+              options={customerRiskFilterOptions}
+              value={riskFilter}
+            />
+          </>
+        )}
+        onClearFilters={() => {
+          onSegmentFilterChange('all');
+          onRiskFilterChange('all');
+        }}
+        onRemoveFilter={(filterId) => {
+          if (filterId === 'segment') onSegmentFilterChange('all');
+          if (filterId === 'risk') onRiskFilterChange('all');
+        }}
+        onRowAction={(rowId, actionId) => {
+          if (actionId === 'details') onOpenCustomer(rowId);
+        }}
+        onRowClick={(customer) => onOpenCustomer(customer.id)}
+        rowActions={() => customerRowActions}
+        rows={filteredRows}
+        searchFields={['id', 'score']}
+        searchLabel="Szukaj ID lub hashu"
+        searchPlaceholder="Szukaj ID lub hashu..."
+      />
+    </CustomersSectionFrame>
   );
 }
 
@@ -848,20 +1293,24 @@ function CustomerRiskBadge({
 }
 
 export function CustomerAiRetentionModule({
+  expanded = true,
   insights = customerAiInsights,
   onAnalyze = noop,
+  onExpandedChange = noop,
   onGenerate = noop,
   onShowEvidence = noop,
 }: {
+  readonly expanded?: boolean;
   readonly insights?: readonly CustomerAiInsight[];
   readonly onAnalyze?: () => void;
+  readonly onExpandedChange?: (expanded: boolean) => void;
   readonly onGenerate?: () => void;
   readonly onShowEvidence?: () => void;
 }) {
   const section = customerSectionsById.insight;
 
   return (
-    <ProductSectionFrame
+    <CustomersSectionFrame
       actions={(
         <>
           <div className="pd-cbi-ai-mark">
@@ -873,10 +1322,11 @@ export function CustomerAiRetentionModule({
           </button>
         </>
       )}
+      collapsedSummary={`${insights.length} rekomendacje Papa AI · standard Obserwacja → Dowód → Rekomendacja → Wpływ`}
       description="Rekomendacje oparte o standard Obserwacja → Dowód → Rekomendacja → Wpływ."
-      icon={section.icon}
-      id={section.id}
-      title={section.title}
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      section={section}
     >
       <div className="pd-cbi-ai-grid">
         {insights.map((insight) => (
@@ -904,7 +1354,7 @@ export function CustomerAiRetentionModule({
           </article>
         ))}
       </div>
-    </ProductSectionFrame>
+    </CustomersSectionFrame>
   );
 }
 
@@ -915,36 +1365,44 @@ function CustomerProvenanceModal({
   readonly metricKey: CustomerProvenanceKey | null;
   readonly onClose: () => void;
 }) {
-  if (!metricKey) return null;
-
-  const provenance = customerProvenanceDict[metricKey];
+  const provenance = metricKey ? customerProvenanceDict[metricKey] : null;
 
   return (
-    <div className="pd-cbi-modal-backdrop" role="presentation">
-      <section aria-label="Provenance danych klientów" aria-modal="true" className="pd-cbi-modal" role="dialog">
-        <div className="pd-cbi-modal__head">
-          <div>
+    <Dialog
+      closeOnEscape
+      description={null}
+      dismissible
+      modal
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+      open={provenance !== null}
+      secondaryActionLabel="Zamknij provenance"
+      title="Provenance danych klientów"
+    >
+      {provenance && (
+        <div className="pd-cbi-provenance-body">
+          <div className="pd-cbi-provenance-heading">
             <span className={`pd-cbi-data-badge pd-cbi-data-badge--${provenance.badge === 'Model' ? 'amber' : 'emerald'}`}>{provenance.badge}</span>
-            <h2>{provenance.title}</h2>
+            <h3>{provenance.title}</h3>
           </div>
-          <button aria-label="Zamknij provenance" className="pd-cbi-icon-button" onClick={onClose} type="button">×</button>
+          <dl className="pd-cbi-definition-list">
+            <div>
+              <dt>Źródło</dt>
+              <dd>{provenance.source}</dd>
+            </div>
+            <div>
+              <dt>Pokrycie</dt>
+              <dd>{provenance.coverage}</dd>
+            </div>
+            <div>
+              <dt>Uwagi</dt>
+              <dd>{provenance.notes}</dd>
+            </div>
+          </dl>
         </div>
-        <dl className="pd-cbi-definition-list">
-          <div>
-            <dt>Źródło</dt>
-            <dd>{provenance.source}</dd>
-          </div>
-          <div>
-            <dt>Pokrycie</dt>
-            <dd>{provenance.coverage}</dd>
-          </div>
-          <div>
-            <dt>Uwagi</dt>
-            <dd>{provenance.notes}</dd>
-          </div>
-        </dl>
-      </section>
-    </div>
+      )}
+    </Dialog>
   );
 }
 
@@ -952,17 +1410,27 @@ function CustomerDrawer({
   customer,
   onClose,
   onPrepareAction,
+  prepared,
 }: {
   readonly customer: CustomerExplorerRow | null;
   readonly onClose: () => void;
-  readonly onPrepareAction: () => void;
+  readonly onPrepareAction: (customerId: string) => void;
+  readonly prepared: boolean;
 }) {
-  if (!customer) return null;
-
   return (
-    <div className="pd-cbi-drawer-backdrop" role="presentation">
-      <section aria-label="Customer Drawer" aria-modal="true" className="pd-cbi-drawer" role="dialog">
-        <div className="pd-cbi-drawer__body">
+    <Drawer
+      dismissible
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+      open={customer !== null}
+      secondaryActionLabel="Zamknij Customer Drawer"
+      side="right"
+      title="Customer Drawer"
+      width={560}
+    >
+      {customer && (
+        <div className="pd-cbi-drawer-content">
           <header className="pd-cbi-drawer__head">
             <div>
               <div>
@@ -971,7 +1439,6 @@ function CustomerDrawer({
               </div>
               <p>Privacy status: Hashed Identity (No PII Leaked)</p>
             </div>
-            <button aria-label="Zamknij Customer Drawer" className="pd-cbi-icon-button" onClick={onClose} type="button">×</button>
           </header>
 
           <div className="pd-cbi-drawer-grid">
@@ -982,11 +1449,11 @@ function CustomerDrawer({
           </div>
 
           <section>
-            <h3>RFM Score Breakdown</h3>
+            <h3>Rozbicie Wyniku RFM</h3>
             <div className="pd-cbi-rfm-breakdown">
-              <MetricTile label="Recency Score" tone="indigo" value="5 / 5" />
-              <MetricTile label="Frequency Score" tone="indigo" value="4 / 5" />
-              <MetricTile label="Monetary Score" tone="indigo" value="5 / 5" />
+              <MetricTile label="Wynik Świeżości" tone="indigo" value="5 / 5" />
+              <MetricTile label="Wynik Częstotliwości" tone="indigo" value="4 / 5" />
+              <MetricTile label="Wynik Wartości" tone="indigo" value="5 / 5" />
             </div>
           </section>
 
@@ -1003,18 +1470,25 @@ function CustomerDrawer({
               </article>
             </div>
           </section>
-        </div>
 
-        <footer className="pd-cbi-drawer__footer">
-          <button className="pd-cbi-primary-button" onClick={onPrepareAction} type="button">
-            Przygotuj Działanie Retencyjne
-          </button>
-          <button className="pd-cbi-muted-button" onClick={onClose} type="button">
-            Zamknij
-          </button>
-        </footer>
-      </section>
-    </div>
+          <div className="pd-cbi-drawer-inline-actions">
+            <button
+              className="pd-cbi-primary-button"
+              disabled={prepared}
+              onClick={() => onPrepareAction(customer.id)}
+              type="button"
+            >
+              {prepared ? 'Działanie zaplanowane ✓' : 'Przygotuj Działanie Retencyjne'}
+            </button>
+            {prepared && (
+              <span className="pd-cbi-drawer__confirm" role="status">
+                Zapisano lokalnie dla {customer.id}.
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+    </Drawer>
   );
 }
 
@@ -1025,28 +1499,28 @@ function CustomerPapaModal({
   readonly context: string | null;
   readonly onClose: () => void;
 }) {
-  if (!context) return null;
-
   return (
-    <div className="pd-cbi-modal-backdrop" role="presentation">
-      <section aria-label="Papa AI dla Klientów" aria-modal="true" className="pd-cbi-modal" role="dialog">
-        <div className="pd-cbi-modal__head">
-          <div>
-            <span className="pd-cbi-data-badge pd-cbi-data-badge--indigo">Papa AI</span>
-            <h2>Retencyjny moduł rekomendacyjny</h2>
-          </div>
-          <button aria-label="Zamknij Papa AI" className="pd-cbi-icon-button" onClick={onClose} type="button">×</button>
-        </div>
-        <p className="pd-cbi-modal-copy">
-          Uruchomiono moduł rekomendacyjny Papa AI dla kontekstu: {context}. Analiza została zrejestrowana w audycie.
-        </p>
-        <div className="pd-cbi-modal-actions">
-          <button className="pd-cbi-primary-button" onClick={onClose} type="button">
-            Zamknij analizę
-          </button>
-        </div>
-      </section>
-    </div>
+    <Dialog
+      closeOnEscape
+      description={null}
+      dismissible
+      modal
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+      open={context !== null}
+      secondaryActionLabel="Zamknij analizę"
+      title="Retencyjny moduł rekomendacyjny"
+    >
+      {context && (
+        <>
+          <span className="pd-cbi-data-badge pd-cbi-data-badge--indigo">Papa AI</span>
+          <p className="pd-cbi-modal-copy">
+            Uruchomiono moduł rekomendacyjny Papa AI dla kontekstu: {context}. Analiza została zrejestrowana w audycie.
+          </p>
+        </>
+      )}
+    </Dialog>
   );
 }
 
@@ -1076,24 +1550,19 @@ const tooltipStyle = {
 };
 
 function filterCustomers({
-  query,
   riskFilter,
+  rows,
   segmentFilter,
 }: {
-  readonly query: string;
   readonly riskFilter: CustomerRiskFilter;
+  readonly rows: readonly CustomerExplorerRow[];
   readonly segmentFilter: CustomerSegmentFilter;
 }) {
-  const normalizedQuery = query.trim().toLowerCase();
-
-  return customerExplorerRows.filter((customer) => {
-    const queryMatches = !normalizedQuery
-      || customer.id.toLowerCase().includes(normalizedQuery)
-      || customer.score.includes(normalizedQuery);
+  return rows.filter((customer) => {
     const segmentMatches = segmentFilter === 'all' || customer.segment.includes(segmentFilter);
     const riskMatches = riskFilter === 'all' || customer.risk === riskFilter;
 
-    return queryMatches && segmentMatches && riskMatches;
+    return segmentMatches && riskMatches;
   });
 }
 

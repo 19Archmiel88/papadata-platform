@@ -3,7 +3,7 @@ import type {
 } from '@storybook/react-vite';
 
 import {
-  Screen40_01Story as Screen40_01StoryStory,
+  SourcesStory as SourcesStoryStory,
 } from './Integrations.story-support';
 
 const meta = {
@@ -12,7 +12,7 @@ const meta = {
 
 export default meta;
 
-export const Screen40_01Story = {
-  ...Screen40_01StoryStory,
-  name: 'Katalog integracji',
+export const SourcesStory = {
+  ...SourcesStoryStory,
+  name: 'Źródła',
 };

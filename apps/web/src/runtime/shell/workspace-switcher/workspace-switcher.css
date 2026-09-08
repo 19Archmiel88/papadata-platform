@@ -9,7 +9,7 @@
 .pd-workspace-switcher__title {
   padding-inline: 8px;
   color: var(--pd-shell-text-muted);
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -49,7 +49,7 @@
   border-radius: 7px;
   color: var(--pd-shell-brand-strong);
   background: var(--pd-shell-surface-raised);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -75,19 +75,15 @@
 .pd-product-shell__workspace-chevron {
   overflow: hidden;
   color: var(--pd-shell-text-muted);
-  font-size: 10px;
+  font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .pd-product-shell__workspace-overlay[role='dialog'] {
-  top: auto !important;
-  right: auto !important;
-  bottom: clamp(4.25rem, 8dvh, 5.5rem) !important;
-  left: var(--pd-shell-overlay-left) !important;
-  width: min(18rem, calc(100vw - var(--pd-shell-overlay-left) - 1rem)) !important;
-  max-height: min(21rem, calc(100dvh - 7rem)) !important;
-  overflow: hidden !important;
+  width: min(20rem, calc(100vw - 32px));
+  max-height: min(24rem, calc(100dvh - 100px));
+  overflow: auto;
 }
 
 .pd-product-shell__workspace-overlay > .pd-shell-anchored-overlay__body {
@@ -137,7 +133,7 @@
 
 .pd-product-shell__workspace-option-state {
   color: var(--pd-text-muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .pd-product-shell__workspace-actions {
@@ -149,7 +145,7 @@
 .pd-product-shell__workspace-selection-error {
   margin: 6px 0 0;
   color: var(--pd-status-danger);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .pd-product-shell__sidebar-column[data-collapsed='true'] .pd-workspace-switcher,
@@ -173,6 +169,7 @@
 .pd-workspace-switcher__trigger:focus-visible,
 .pd-product-shell__workspace-option:focus-visible,
 .pd-product-shell__workspace-create:focus-visible {
-  outline: 0;
-  box-shadow: 0 0 0 3px var(--pd-focus-ring);
+  box-shadow: none;
+  outline: var(--pd-focus-width, 2px) solid var(--pd-focus-ring);
+  outline-offset: 2px;
 }

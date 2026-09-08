@@ -1,10 +1,6 @@
-import {
-  Icon,
-} from '../../../design-system/index';
-import type {
-  ShellNavigationGroup,
-  ShellNavigate,
-} from '../app-shell/shellTypes';
+import { useState } from 'react';
+import { Icon } from '../../../design-system/index';
+import type { ShellNavigationGroup, ShellNavigate } from '../app-shell/shellTypes';
 import './sidebar.css';
 
 export function Sidebar({
@@ -20,94 +16,72 @@ export function Sidebar({
   readonly groups: readonly ShellNavigationGroup[];
   readonly onNavigate: ShellNavigate;
 }) {
+  const [analysesOpen, setAnalysesOpen] = useState(true);
   return (
-    <aside
+    <nav
       aria-label="Nawigacja główna"
       className="pd-product-shell__sidebar pd-sidebar-navigation"
-      data-collapsed={collapsed ? true : undefined}
+      data-collapsed={collapsed || undefined}
       data-density={dense ? 'dense' : 'comfortable'}
     >
-      {groups.map((group) => (
-        <section className="pd-product-shell__nav-group" key={group.id}>
-          <h2>{group.label}</h2>
-
-          <div className="pd-product-shell__nav-list">
-            {group.items.map((item) => {
-              const active =
-                activePath === item.path
-                || (
-                  item.path === '/app/command-center'
-                  && activePath.startsWith('/app/command-center/')
-                )
-                || (
-                  item.path !== '/app/command-center'
-                  && activePath.startsWith(`${item.path}/`)
-                );
-
-              const reasonId = item.disabledReason
-                ? `pd-nav-${item.id}-reason`
-                : undefined;
-
-              const title = (
-                collapsed || item.disabledReason
-              )
-                ? [
-                    item.label,
-                    item.disabledReason,
-                    item.badge,
-                  ].filter(Boolean).join(' — ')
-                : undefined;
-
-              return (
-                <button
-                  aria-current={active ? 'page' : undefined}
-                  aria-describedby={reasonId}
-                  aria-disabled={item.disabled ? true : undefined}
-                  className="pd-product-shell__nav-item"
-                  key={item.id}
-                  onClick={() => {
-                    if (!item.disabled) {
-                      onNavigate(item.path);
-                    }
-                  }}
-                  title={title}
-                  type="button"
-                >
-                  <Icon
-                    decorative
-                    name={item.icon}
-                    size={20}
-                  />
-
-                  <span className="pd-product-shell__nav-copy">
-                    <span>{item.label}</span>
-                    {item.status ? (
-                      <small>{item.status}</small>
-                    ) : null}
-                    {item.disabledReason ? (
-                      <span
-                        className="pd-product-shell__sr-only"
-                        id={reasonId}
-                      >
-                        {item.disabledReason}
-                      </span>
-                    ) : null}
-                  </span>
-
-                  {item.badge ? (
-                    <span
-                      aria-label={`Status: ${item.badge}`}
-                      className="pd-product-shell__nav-badge"
+      {groups.map((group) => {
+        const expandable = group.id === 'analytics' && !collapsed;
+        return (
+          <section className="pd-product-shell__nav-group" data-group={group.id} key={group.id}>
+            {expandable ? (
+              <button
+                className="pd-product-shell__nav-group-toggle"
+                type="button"
+                aria-expanded={analysesOpen}
+                onClick={() => setAnalysesOpen((open) => !open)}
+              >
+                Analizy <span aria-hidden="true">{analysesOpen ? '⌄' : '›'}</span>
+              </button>
+            ) : group.label && !collapsed ? (
+              <h2>{group.label}</h2>
+            ) : null}
+            {(!expandable || analysesOpen) && (
+              <div className="pd-product-shell__nav-list">
+                {group.items.map((item) => {
+                  const active = activePath === item.path || activePath.startsWith(`${item.path}/`);
+                  return (
+                    <a
+                      className="pd-product-shell__nav-item"
+                      key={item.id}
+                      href={item.href ?? item.path}
+                      aria-label={collapsed ? item.label : undefined}
+                      aria-current={active ? 'page' : undefined}
+                      aria-disabled={item.disabled || undefined}
+                      title={collapsed ? item.label : (item.disabledReason ?? undefined)}
+                      onClick={(event) => {
+                        if (item.disabled) {
+                          event.preventDefault();
+                          return;
+                        }
+                        if (
+                          !event.metaKey &&
+                          !event.ctrlKey &&
+                          !event.shiftKey &&
+                          !event.altKey &&
+                          event.button === 0
+                        ) {
+                          event.preventDefault();
+                          onNavigate(item.path);
+                        }
+                      }}
                     >
-                      {item.badge}
-                    </span>
-                  ) : null}
-                </button>
-              );
-            })}
-          </div>
-        </section>
-      ))}
-    </aside>
+                      <Icon decorative name={item.icon} size={16} />
+                      <span className="pd-product-shell__nav-copy">
+                        <span>{item.label}</span>
+                      </span>
+                    </a>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        );
+      })}
+    </nav>
   );
 }

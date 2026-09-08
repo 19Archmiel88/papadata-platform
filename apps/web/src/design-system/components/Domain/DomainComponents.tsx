@@ -1,4 +1,5 @@
 export {
+  ExplorerTable,
   PageHeader,
   Panel,
   PriorityBand,
@@ -30,6 +31,9 @@ export {
 } from './domainComponents.generated';
 
 export type {
+  ExplorerTableColumn,
+  ExplorerTableExportFormat,
+  ExplorerTableProps,
   PageHeaderProps,
   PanelProps,
   PriorityBandProps,

@@ -157,7 +157,14 @@
   display: inline-flex;
 }
 
+/* Positioned via useAnchoredPosition (inline style: position/top/left/right)
+   and rendered through a body-level portal (useOverlayPortal) so it escapes
+   any ancestor with overflow:hidden/auto -- product shell scroll locks,
+   table-cell text-truncation wrappers, etc. The position/z-index below are
+   just a safe pre-measurement fallback for the portal's first paint. */
 .pd-popover__panel {
+  position: fixed;
+  z-index: var(--pd-z-popover, 700);
   inline-size: max-content;
   max-inline-size: min(22rem, calc(100vw - 2rem));
   max-block-size: min(70vh, 32rem);
@@ -175,6 +182,7 @@
 }
 
 .pd-tooltip__bubble {
+  position: absolute;
   z-index: var(--pd-z-tooltip, 900);
   max-inline-size: min(18rem, calc(100vw - 2rem));
   padding: 0.42rem 0.56rem;
@@ -186,6 +194,26 @@
   font-size: 0.67rem;
   line-height: 1.4;
   pointer-events: none;
+}
+
+.pd-tooltip__bubble[data-placement='bottom'] {
+  inset-block-start: calc(100% + 0.35rem);
+  inset-inline-start: 0;
+}
+
+.pd-tooltip__bubble[data-placement='top'] {
+  inset-block-end: calc(100% + 0.35rem);
+  inset-inline-start: 0;
+}
+
+.pd-tooltip__bubble[data-placement='right'] {
+  inset-inline-start: calc(100% + 0.35rem);
+  inset-block-start: 0;
+}
+
+.pd-tooltip__bubble[data-placement='left'] {
+  inset-inline-end: calc(100% + 0.35rem);
+  inset-block-start: 0;
 }
 
 @media (max-width: 560px) {

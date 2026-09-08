@@ -1,43 +1,20 @@
-import type {
-  ReactNode,
-} from 'react';
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { ShellNavigationContext } from './ShellNavigationContext';
+import type { DateRange } from '../../../../../../contracts/ui-contract-types';
+import type { ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import {
-  Drawer,
-  Icon,
-  InlineNotice,
-} from '../../../design-system/index';
-import {
-  CommandPalette,
-} from '../command-palette/index';
-import {
-  deriveShellFooterStatus,
-  ShellFooter,
-} from '../footer/index';
-import {
-  OperationCenter,
-} from '../operation-center/index';
+import { Drawer, Icon, InlineNotice } from '../../../design-system/index';
+import { CommandPalette } from '../command-palette/index';
+import { OperationCenter } from '../operation-center/index';
 import {
   PapaAssistantRuntimeProvider,
   PapaAssistantSidecar,
   type PapaAssistantOpenRequest,
   PapaScreenContextProvider,
 } from '../papa-assistant/index';
-import {
-  Sidebar,
-} from '../sidebar/index';
-import {
-  AuthenticatedTopbar,
-} from '../topbar/index';
-import {
-  WorkspaceSwitcher,
-} from '../workspace-switcher/index';
+import { Sidebar } from '../sidebar/index';
+import { AuthenticatedTopbar } from '../topbar/index';
+import { WorkspaceSwitcher } from '../workspace-switcher/index';
 import type {
   ShellCommandAction,
   ShellCommandResult,
@@ -49,36 +26,29 @@ import type {
   ShellUser,
   ShellWorkspace,
 } from './shellTypes';
-import {
-  ShellDateRangeContext,
-} from './ShellDateRangeContext';
+import { ShellDateRangeContext } from './ShellDateRangeContext';
 import {
   createInitialShellDateRange,
+  isValidShellDateRange,
   formatShellDateRangeLabel,
   getShellDateRangeKey,
   writeStoredShellDateRange,
 } from './shellDateRange';
 import './product-shell.css';
+import type { RunPapaCommand } from '../papa-assistant/PapaAssistantRuntimeContext';
 
 const shellSidebarCollapsedStorageKey = 'papadata.shell-sidebar-collapsed.v1';
-
-const shellFooterLinks = [
-  {
-    label: 'Centrum pomocy',
-    path: '/app/help/strona-glowna-pomocy',
-  },
-];
 
 const fallbackShellUser: ShellUser = {
   displayName: 'Użytkownik PapaData',
   email: 'Aktywna sesja',
 };
 
-type NotificationMutation = (
-  notification: ShellNotification,
-) => void | Promise<void>;
+type NotificationMutation = (notification: ShellNotification) => void | Promise<void>;
 
 export type ProductShellFrameProps = {
+  readonly papaDemo?: boolean;
+  readonly runPapaCommand?: RunPapaCommand;
   readonly activePath: string;
   readonly activeTenantId?: string | null;
   readonly activeUserId?: string | null;
@@ -86,6 +56,7 @@ export type ProductShellFrameProps = {
   readonly children: ReactNode;
   readonly commands?: readonly ShellCommandResult[];
   readonly initialOverlay?: ShellOverlay;
+  readonly initialDateRange?: DateRange;
   readonly loggingOut?: boolean;
   readonly navigationGroups?: readonly ShellNavigationGroup[];
   readonly notificationError?: string | null;
@@ -98,7 +69,9 @@ export type ProductShellFrameProps = {
   readonly onNavigate?: ShellNavigate;
   readonly onOperationAction?: ((operation: ShellOperation) => void) | undefined;
   readonly onSelectWorkspace?: ((workspaceId: string) => void | Promise<void>) | undefined;
-  readonly onSnoozeNotification?: ((notification: ShellNotification, until: string) => void | Promise<void>) | undefined;
+  readonly onSnoozeNotification?:
+    | ((notification: ShellNotification, until: string) => void | Promise<void>)
+    | undefined;
   readonly onUnsnoozeNotification?: NotificationMutation | undefined;
   readonly operationError?: string | null;
   readonly operations?: readonly ShellOperation[];
@@ -113,12 +86,15 @@ export type ProductShellFrameProps = {
 
 export function ProductShellFrame({
   activePath,
+  papaDemo = false,
+  runPapaCommand,
   activeTenantId = null,
   activeUserId = null,
   activeWorkspaceId = null,
   children,
   commands = [],
   initialOverlay = null,
+  initialDateRange,
   loggingOut = false,
   navigationGroups = [],
   notificationError = null,
@@ -144,22 +120,30 @@ export function ProductShellFrame({
   workspaces = [],
 }: ProductShellFrameProps) {
   const [overlay, setOverlay] = useState<ShellOverlay>(initialOverlay);
-  const [papaAssistantRequest, setPapaAssistantRequest] = useState<PapaAssistantOpenRequest | null>(null);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(
-    () => readInitialSidebarCollapsed(sidebarCollapsed),
+  const [papaAssistantRequest, setPapaAssistantRequest] = useState<PapaAssistantOpenRequest | null>(
+    null,
   );
-  const [heightForcesRail, setHeightForcesRail] = useState(false);
-  const [dateRange, setDateRange] = useState(createInitialShellDateRange);
-  const effectiveSidebarCollapsed = isSidebarCollapsed || heightForcesRail;
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() =>
+    readInitialSidebarCollapsed(sidebarCollapsed),
+  );
+  const [dateRange, setDateRange] = useState(() => createInitialShellDateRange(initialDateRange));
+  const effectiveSidebarCollapsed = isSidebarCollapsed;
   const dateRangeKey = getShellDateRangeKey(dateRange);
-  const dateRangeContext = useMemo(() => ({
-    dateRange,
-    dateRangeKey,
-    setDateRange,
-  }), [dateRange, dateRangeKey]);
-  const papaAvailable = useMemo(() => navigationGroups.some((group) => (
-    group.items.some((item) => item.id === 'papa' && !item.disabled)
-  )), [navigationGroups]);
+  const dateRangeContext = useMemo(
+    () => ({
+      dateRange,
+      dateRangeKey,
+      setDateRange,
+    }),
+    [dateRange, dateRangeKey],
+  );
+  const papaAvailable = useMemo(
+    () =>
+      navigationGroups.some((group) =>
+        group.items.some((item) => item.id === 'papa' && !item.disabled),
+      ),
+    [navigationGroups],
+  );
 
   useEffect(() => {
     setOverlay(initialOverlay);
@@ -170,15 +154,6 @@ export function ProductShellFrame({
       setIsSidebarCollapsed(sidebarCollapsed);
     }
   }, [sidebarCollapsed]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const query = window.matchMedia('(max-height: 760px) and (min-width: 1101px)');
-    const update = () => setHeightForcesRail(query.matches);
-    update();
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
-  }, []);
 
   const updateSidebarCollapsed = useCallback((collapsed: boolean) => {
     setIsSidebarCollapsed(collapsed);
@@ -191,16 +166,24 @@ export function ProductShellFrame({
   }, []);
 
   useEffect(() => {
+    if (!isValidShellDateRange(dateRange)) return;
     writeStoredShellDateRange(dateRange);
+    const url = new URL(window.location.href);
+    url.searchParams.set('from', dateRange.from);
+    url.searchParams.set('to', dateRange.to);
+    window.history.replaceState(window.history.state, '', url);
   }, [dateRange]);
 
   useEffect(() => {
     function handleCommandShortcut(event: KeyboardEvent) {
       if (
-        event.key.toLowerCase() !== 'k'
-        || (!event.ctrlKey && !event.metaKey)
-        || isEditableTarget(event.target)
-      ) return;
+        event.key.toLowerCase() !== 'k' ||
+        (!event.ctrlKey && !event.metaKey) ||
+        event.defaultPrevented ||
+        isEditableTarget(event.target) ||
+        Boolean(document.querySelector('[role=dialog][aria-modal=true]'))
+      )
+        return;
 
       event.preventDefault();
       setOverlay('command');
@@ -241,201 +224,185 @@ export function ProductShellFrame({
     }
 
     if (action === 'analyze-screen') {
-      setPapaAssistantRequest(createPapaAssistantRequest({ action: 'analyze-screen', mode: 'screen' }));
+      setPapaAssistantRequest(
+        createPapaAssistantRequest({ action: 'analyze-screen', mode: 'screen' }),
+      );
       setOverlay('papa-assistant');
     }
   }
 
-  const activeOperationCount = operations.filter((item) => (
-    item.status === 'running'
-    || item.status === 'queued'
-    || item.status === 'failed'
-  )).length;
-  const selectedWorkspace = workspaces.find((workspace) => (
-    workspace.id === activeWorkspaceId
-  )) ?? workspaces[0] ?? null;
+  const activeOperationCount = operations.filter(
+    (item) => item.status === 'running' || item.status === 'queued' || item.status === 'failed',
+  ).length;
+  const selectedWorkspace =
+    workspaces.find((workspace) => workspace.id === activeWorkspaceId) ?? workspaces[0] ?? null;
   const sectionLabel = resolveShellSectionLabel(activePath, navigationGroups);
-  const footerStatus = useMemo(() => deriveShellFooterStatus(operations), [operations]);
 
   return (
-    <ShellDateRangeContext.Provider value={dateRangeContext}>
-      <PapaScreenContextProvider
-        activePath={activePath}
-        dateRange={dateRange}
-        dateRangeLabel={formatShellDateRangeLabel(dateRange)}
-        sectionLabel={sectionLabel}
-        userLabel={user.displayName}
-        workspaceId={selectedWorkspace?.id ?? activeWorkspaceId}
-        workspaceName={selectedWorkspace?.name ?? 'Workspace'}
-      >
-        <PapaAssistantRuntimeProvider
-          scope={{
-            tenantId: activeTenantId,
-            userId: activeUserId ?? user.email,
-            workspaceId: selectedWorkspace?.id ?? activeWorkspaceId,
-          }}
+    <ShellNavigationContext.Provider value={navigateInsideShell}>
+      <ShellDateRangeContext.Provider value={dateRangeContext}>
+        <PapaScreenContextProvider
+          key={`${activeTenantId}:${activeWorkspaceId}`}
+          activePath={activePath}
+          dateRange={dateRange}
+          dateRangeLabel={formatShellDateRangeLabel(dateRange)}
+          sectionLabel={sectionLabel}
+          userLabel={user.displayName}
+          workspaceId={selectedWorkspace?.id ?? activeWorkspaceId}
+          workspaceName={selectedWorkspace?.name ?? 'Workspace'}
         >
-          <div className="pd-product-shell">
-            <AuthenticatedTopbar
-              activeOverlay={overlay}
-              activePath={activePath}
-              dateRange={dateRange}
-              loggingOut={loggingOut}
-              navigationGroups={navigationGroups}
-              notificationError={notificationError}
-              notificationUnreadCount={notificationUnreadCount}
-              notifications={notifications}
-              onDateRangeChange={setDateRange}
-              onLogout={onLogout}
-              onMarkAllNotificationsRead={onMarkAllNotificationsRead}
-              onMarkNotificationRead={onMarkNotificationRead}
-              onMarkNotificationUnread={onMarkNotificationUnread}
-              onNavigate={navigateInsideShell}
-              onOpenOverlay={setOverlay}
-              onSnoozeNotification={onSnoozeNotification}
-              onUnsnoozeNotification={onUnsnoozeNotification}
-              operationCount={activeOperationCount}
-              papaAssistantOpen={overlay === 'papa-assistant'}
-              user={user}
-              workspace={selectedWorkspace}
-            />
+          <PapaAssistantRuntimeProvider
+            demo={papaDemo}
+            runCommand={runPapaCommand}
+            scope={{
+              tenantId: activeTenantId,
+              userId: activeUserId ?? user.email,
+              workspaceId: selectedWorkspace?.id ?? activeWorkspaceId,
+            }}
+          >
+            <div className="pd-product-shell">
+              <AuthenticatedTopbar
+                activeOverlay={overlay}
+                activePath={activePath}
+                dateRange={dateRange}
+                loggingOut={loggingOut}
+                navigationGroups={navigationGroups}
+                notificationError={notificationError}
+                notificationUnreadCount={notificationUnreadCount}
+                notifications={notifications}
+                onDateRangeChange={setDateRange}
+                onLogout={onLogout}
+                onMarkAllNotificationsRead={onMarkAllNotificationsRead}
+                onMarkNotificationRead={onMarkNotificationRead}
+                onMarkNotificationUnread={onMarkNotificationUnread}
+                onNavigate={navigateInsideShell}
+                onOpenOverlay={setOverlay}
+                onSnoozeNotification={onSnoozeNotification}
+                onUnsnoozeNotification={onUnsnoozeNotification}
+                operationCount={activeOperationCount}
+                papaAssistantOpen={overlay === 'papa-assistant'}
+                user={user}
+                workspace={selectedWorkspace}
+              />
 
-            <div
-              className="pd-product-shell__body"
-              data-sidebar-collapsed={effectiveSidebarCollapsed ? true : undefined}
-            >
               <div
-                className="pd-product-shell__sidebar-column"
-                data-collapsed={effectiveSidebarCollapsed ? true : undefined}
-                data-height-rail={heightForcesRail ? true : undefined}
+                className="pd-product-shell__body"
+                data-sidebar-collapsed={effectiveSidebarCollapsed ? true : undefined}
               >
-                <Sidebar
-                  activePath={activePath}
-                  collapsed={effectiveSidebarCollapsed}
-                  dense={sidebarDense || heightForcesRail}
-                  groups={navigationGroups}
-                  onNavigate={navigateInsideShell}
-                />
-
-                <section
-                  aria-label="Kontekst workspace"
-                  className="pd-product-shell__sidebar-footer"
+                <div
+                  className="pd-product-shell__sidebar-column"
+                  data-collapsed={effectiveSidebarCollapsed ? true : undefined}
                 >
-                  <WorkspaceSwitcher
-                    activeWorkspaceId={activeWorkspaceId}
+                  <div className="pd-product-shell__workspace-header">
+                    <WorkspaceSwitcher
+                      activeWorkspaceId={activeWorkspaceId}
+                      collapsed={effectiveSidebarCollapsed}
+                      error={workspaceError}
+                      onCreateWorkspace={() => navigateInsideShell('/app/settings/organizacja')}
+                      onSelectWorkspace={onSelectWorkspace}
+                      pending={workspacePending}
+                      workspaces={workspaces}
+                    />
+                  </div>
+                  <Sidebar
+                    activePath={activePath}
                     collapsed={effectiveSidebarCollapsed}
-                    error={workspaceError}
-                    onCreateWorkspace={() => navigateInsideShell('/app/settings/organizacja')}
-                    onSelectWorkspace={onSelectWorkspace}
-                    pending={workspacePending}
-                    workspaces={workspaces}
+                    dense={sidebarDense}
+                    groups={navigationGroups}
+                    onNavigate={navigateInsideShell}
                   />
 
-                  {!heightForcesRail ? (
+                  <section
+                    aria-label="Kontekst workspace"
+                    className="pd-product-shell__sidebar-footer"
+                  >
                     <button
-                      aria-label={
-                        effectiveSidebarCollapsed
-                          ? 'Rozwiń nawigację'
-                          : 'Zwiń nawigację'
-                      }
+                      aria-label={effectiveSidebarCollapsed ? 'Rozwiń nawigację' : 'Zwiń nawigację'}
                       aria-pressed={!effectiveSidebarCollapsed}
                       className="pd-product-shell__sidebar-footer-toggle"
                       onClick={() => updateSidebarCollapsed(!effectiveSidebarCollapsed)}
                       type="button"
                     >
                       <Icon decorative name="menu" size={20} />
-                      <span>
-                        {effectiveSidebarCollapsed ? 'Rozwiń' : 'Zwiń'}
-                      </span>
+                      <span>{effectiveSidebarCollapsed ? 'Rozwiń' : 'Zwiń'}</span>
                     </button>
-                  ) : null}
-                </section>
-              </div>
-
-              <main className="pd-product-shell__content">
-                {problem ? (
-                  <InlineNotice
-                    message={problem}
-                    title="Problem aplikacji"
-                    tone="warning"
-                  />
-                ) : null}
-
-                <div
-                  className="pd-product-shell__content-region"
-                  key={activeWorkspaceId ?? 'no-workspace'}
-                >
-                  {children}
+                  </section>
                 </div>
-              </main>
-            </div>
 
-            <ShellFooter
-              links={shellFooterLinks}
-              onNavigate={navigateInsideShell}
-              status={footerStatus}
-              versionLabel={selectedWorkspace?.name ?? null}
-            />
+                <main className="pd-product-shell__content">
+                  {problem ? (
+                    <InlineNotice message={problem} title="Problem aplikacji" tone="warning" />
+                  ) : null}
 
-            <CommandPalette
-              commands={commands}
-              onCommandAction={handleCommandAction}
-              onNavigate={navigateInsideShell}
-              onOpenChange={(open) => setOverlay(open ? 'command' : null)}
-              open={overlay === 'command'}
-            />
-
-            <OperationCenter
-              error={operationError}
-              onAction={onOperationAction}
-              onOpenChange={(open) => setOverlay(open ? 'operations' : null)}
-              open={overlay === 'operations'}
-              operations={operations}
-            />
-
-            <PapaAssistantSidecar
-              onNavigate={navigateInsideShell}
-              onOpenChange={(open) => setOverlay(open ? 'papa-assistant' : null)}
-              open={overlay === 'papa-assistant'}
-              request={papaAssistantRequest}
-            />
-
-            <Drawer
-              className="pd-product-shell__mobile-navigation-drawer"
-              description="Mobilna nawigacja produktu z focus restore i zamknięciem Escape."
-              dismissible
-              onOpenChange={(open) => setOverlay(open ? 'mobile-navigation' : null)}
-              open={overlay === 'mobile-navigation'}
-              side="left"
-              title="Nawigacja"
-              width={340}
-            >
-              <div className="pd-product-shell__mobile-drawer">
-                <Sidebar
-                  activePath={activePath}
-                  groups={navigationGroups}
-                  onNavigate={navigateInsideShell}
-                />
-
-                <section
-                  aria-label="Kontekst workspace"
-                  className="pd-product-shell__sidebar-footer pd-product-shell__sidebar-footer--mobile"
-                >
-                  <WorkspaceSwitcher
-                    activeWorkspaceId={activeWorkspaceId}
-                    error={workspaceError}
-                    onCreateWorkspace={() => navigateInsideShell('/app/settings/organizacja')}
-                    onSelectWorkspace={onSelectWorkspace}
-                    pending={workspacePending}
-                    workspaces={workspaces}
-                  />
-                </section>
+                  <div
+                    className="pd-product-shell__content-region"
+                    key={activeWorkspaceId ?? 'no-workspace'}
+                  >
+                    {children}
+                  </div>
+                </main>
               </div>
-            </Drawer>
-          </div>
-        </PapaAssistantRuntimeProvider>
-      </PapaScreenContextProvider>
-    </ShellDateRangeContext.Provider>
+
+              <CommandPalette
+                commands={commands}
+                onCommandAction={handleCommandAction}
+                onNavigate={navigateInsideShell}
+                onOpenChange={(open) => setOverlay(open ? 'command' : null)}
+                open={overlay === 'command'}
+              />
+
+              <OperationCenter
+                error={operationError}
+                onAction={onOperationAction}
+                onOpenChange={(open) => setOverlay(open ? 'operations' : null)}
+                open={overlay === 'operations'}
+                operations={operations}
+              />
+
+              <PapaAssistantSidecar
+                onNavigate={navigateInsideShell}
+                onOpenChange={(open) => setOverlay(open ? 'papa-assistant' : null)}
+                open={overlay === 'papa-assistant'}
+                request={papaAssistantRequest}
+              />
+
+              <Drawer
+                className="pd-product-shell__mobile-navigation-drawer"
+                description="Wybierz obszar pracy w PapaData."
+                dismissible
+                onOpenChange={(open) => setOverlay(open ? 'mobile-navigation' : null)}
+                open={overlay === 'mobile-navigation'}
+                side="left"
+                title="Nawigacja"
+                width={340}
+              >
+                <div className="pd-product-shell__mobile-drawer">
+                  <Sidebar
+                    activePath={activePath}
+                    groups={navigationGroups}
+                    onNavigate={navigateInsideShell}
+                  />
+
+                  <section
+                    aria-label="Kontekst workspace"
+                    className="pd-product-shell__sidebar-footer pd-product-shell__sidebar-footer--mobile"
+                  >
+                    <WorkspaceSwitcher
+                      activeWorkspaceId={activeWorkspaceId}
+                      error={workspaceError}
+                      onCreateWorkspace={() => navigateInsideShell('/app/settings/organizacja')}
+                      onSelectWorkspace={onSelectWorkspace}
+                      pending={workspacePending}
+                      workspaces={workspaces}
+                    />
+                  </section>
+                </div>
+              </Drawer>
+            </div>
+          </PapaAssistantRuntimeProvider>
+        </PapaScreenContextProvider>
+      </ShellDateRangeContext.Provider>
+    </ShellNavigationContext.Provider>
   );
 }
 
@@ -464,9 +431,7 @@ function buildPapaAssistantRequest(detail: unknown): PapaAssistantOpenRequest {
   });
 }
 
-function resolvePapaAssistantAction(
-  value: unknown,
-): PapaAssistantOpenRequest['action'] {
+function resolvePapaAssistantAction(value: unknown): PapaAssistantOpenRequest['action'] {
   switch (value) {
     case 'analyze-screen':
     case 'open-element':
@@ -478,9 +443,7 @@ function resolvePapaAssistantAction(
   }
 }
 
-function resolvePapaAssistantMode(
-  value: unknown,
-): PapaAssistantOpenRequest['mode'] {
+function resolvePapaAssistantMode(value: unknown): PapaAssistantOpenRequest['mode'] {
   switch (value) {
     case 'element':
     case 'report':
@@ -523,10 +486,7 @@ function readInitialSidebarCollapsed(controlledValue: boolean | undefined): bool
 function writeStoredSidebarCollapsed(collapsed: boolean): void {
   if (typeof window === 'undefined') return;
   try {
-    window.localStorage.setItem(
-      shellSidebarCollapsedStorageKey,
-      JSON.stringify({ collapsed }),
-    );
+    window.localStorage.setItem(shellSidebarCollapsedStorageKey, JSON.stringify({ collapsed }));
   } catch {
     // Sidebar preference is progressive enhancement only.
   }
@@ -534,10 +494,12 @@ function writeStoredSidebarCollapsed(collapsed: boolean): void {
 
 function isEditableTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) return false;
-  return target.isContentEditable
-    || target.tagName === 'INPUT'
-    || target.tagName === 'TEXTAREA'
-    || target.tagName === 'SELECT';
+  return (
+    target.isContentEditable ||
+    target.tagName === 'INPUT' ||
+    target.tagName === 'TEXTAREA' ||
+    target.tagName === 'SELECT'
+  );
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -550,10 +512,7 @@ function resolveShellSectionLabel(
 ) {
   const navigationItems = navigationGroups.flatMap((group) => group.items);
   const matches = navigationItems
-    .filter((item) => (
-      activePath === item.path
-      || activePath.startsWith(`${item.path}/`)
-    ))
+    .filter((item) => activePath === item.path || activePath.startsWith(`${item.path}/`))
     .sort((left, right) => right.path.length - left.path.length);
 
   return matches[0]?.label ?? navigationItems[0]?.label ?? 'PapaData';

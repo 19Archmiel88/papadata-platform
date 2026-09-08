@@ -89,6 +89,11 @@ export type DataTableProps = Omit<
       actionId: string,
     ) => void)
     | undefined;
+  readonly onRowClick?:
+    | ((
+      row: DataRow,
+    ) => void)
+    | undefined;
   readonly onSortChange?:
     | ((
       columnId: string,
@@ -133,6 +138,7 @@ export type DataTableProps = Omit<
     }
     | null;
   readonly stickyHeader?: boolean;
+  readonly hideSummary?: boolean;
   readonly summary?: string | null;
 };
 
@@ -206,10 +212,7 @@ function DataTableActionsCell({
       trigger={(
         <button
           aria-label={`${label} dla wiersza ${rowId}`}
-          className={joinClassNames(
-            'pd-pagination-nav__button',
-            'pd-data-table__action-trigger',
-          )}
+          className="pd-data-table__action-trigger"
           type="button"
         >
           <span aria-hidden="true">
@@ -447,6 +450,7 @@ export function DataTable({
   noResults = false,
   noResultsMessage = 'Filtry nie zwróciły żadnych wyników.',
   onAction,
+  onRowClick,
   onSortChange,
   pagination = null,
   rowCount,
@@ -457,6 +461,7 @@ export function DataTable({
   sort,
   statusColumn = null,
   stickyHeader = true,
+  hideSummary = false,
   summary = null,
   ...props
 }: DataTableProps) {
@@ -505,12 +510,14 @@ export function DataTable({
           : undefined
       }
     >
-      <p
-        aria-hidden="true"
-        className="pd-data-table__summary"
-      >
-        {captionText}
-      </p>
+      {hideSummary ? null : (
+        <p
+          aria-hidden="true"
+          className="pd-data-table__summary"
+        >
+          {captionText}
+        </p>
+      )}
 
       {errorMessage ? (
         <InlineNotice
@@ -543,6 +550,10 @@ export function DataTable({
         }
         rows={tableRows}
         sort={sort}
+        onRowClick={onRowClick ? (tableRow) => {
+          const dataRow = rows.find((row) => String(row.id) === String(tableRow.id));
+          if (dataRow) onRowClick(dataRow);
+        } : undefined}
         stickyHeader={
           stickyHeader
         }

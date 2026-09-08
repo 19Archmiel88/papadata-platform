@@ -1,9 +1,12 @@
-import { StrictMode, useMemo } from 'react';
+import { PapaAssistantExperience } from '../runtime/shell/papa-assistant/PapaAssistantExperience';
+import { isAssistantPath } from '../runtime/shell/papa-assistant/assistantModel';
+import { lazy, StrictMode, Suspense, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import '../design-system/foundations/foundations.css';
 import {
   applyPapaDataRuntimeGlobals,
+  getInitialPapaDataRuntimeGlobals,
 } from '../design-system/foundations/runtime/index';
 import {
   AuthSurface,
@@ -17,11 +20,7 @@ import {
   type AuthSurfaceMode,
   type AuthSurfaceState,
 } from '../runtime/features/auth/AuthSurface';
-import {
-  navigate,
-  safeReturnTo,
-  useLocationPath,
-} from '../runtime/app/routing/navigation';
+import { navigate, safeReturnTo, useLocationPath } from '../runtime/app/routing/navigation';
 import {
   createRuntimeShellCommands,
   createRuntimeShellNavigation,
@@ -29,34 +28,35 @@ import {
   type ShellUser,
   type ShellWorkspace,
 } from '../runtime/shell/index';
+import { CommandCenterPage } from './command-center/CommandCenterPage';
+import { AnalyticsModuleScreen } from '../runtime/analytics/AnalyticsModuleScreen';
+import type { AnalyticsModuleGroup } from '../runtime/analytics/analyticsModuleData';
+import { SavedReportsPage } from './saved-reports/SavedReportsPage';
+import { SubscriptionBillingPage } from './subscription-billing/SubscriptionBillingPage';
+import { IntegrationsPage } from './integrations/IntegrationsPage';
+import { SettingsPage } from './settings/SettingsPage';
+import { HelpCenterScreen } from '../screens/help-center/HelpCenterScreen';
+import { bffClient, type BffSession } from '../runtime/shared/api/bffClient';
 import {
-  CommandCenterScreen,
-} from '../screens/command-center/CommandCenterScreen';
-import {
-  createCommandCenterRuntimeData,
-} from './command-center/commandCenterRuntimeAdapter';
-import {
-  PapaAssistantLabPage,
-} from './papa-assistant/PapaAssistantLabPage';
-import {
-  SubscriptionBillingPage,
-} from './subscription-billing/SubscriptionBillingPage';
-import {
-  bffClient,
-  type BffSession,
-} from '../runtime/shared/api/bffClient';
-import {
+  AuthSessionRuntimeProvider,
   type AuthSessionRuntime,
   useAuthSessionRuntime,
 } from '../runtime/shared/auth/authSessionRuntime';
 import './runtime-app.css';
 
-applyPapaDataRuntimeGlobals(document.documentElement, {
-  density: 'comfortable',
-  locale: 'pl',
-  motion: 'standard',
-  theme: 'refractive-prism',
-});
+applyPapaDataRuntimeGlobals(document.documentElement, getInitialPapaDataRuntimeGlobals());
+
+const DemoWorkspace = import.meta.env.DEV ? lazy(() => import('./demo/DemoWorkspace')) : null;
+function AppEntry() {
+  const path = useLocationPath().split('?')[0];
+  return DemoWorkspace && (path === '/preview' || path.startsWith('/preview/')) ? (
+    <Suspense fallback={<main className="pd-runtime-loading">Wczytywanie podglądu…</main>}>
+      <DemoWorkspace />
+    </Suspense>
+  ) : (
+    <RuntimeApp />
+  );
+}
 
 function RuntimeApp() {
   const locationPath = useLocationPath();
@@ -67,10 +67,11 @@ function RuntimeApp() {
     return <main className="pd-runtime-loading">Ładowanie PapaData...</main>;
   }
 
-  const showAuthSurface = runtime.status === 'service_unavailable'
-    || runtime.status === 'reauth_required'
-    || authMode !== null
-    || runtime.status === 'anonymous';
+  const showAuthSurface =
+    runtime.status === 'service_unavailable' ||
+    runtime.status === 'reauth_required' ||
+    authMode !== null ||
+    runtime.status === 'anonymous';
 
   if (showAuthSurface) {
     return <RuntimeAuthSurface authMode={authMode} locationPath={locationPath} runtime={runtime} />;
@@ -94,10 +95,14 @@ function RuntimeAuthSurface({
   readonly locationPath: string;
   readonly runtime: AuthSessionRuntime;
 }) {
-  const mode: AuthSurfaceMode = runtime.status === 'reauth_required'
-    ? (runtime.reauth?.level === 'mfa' ? 'mfa' : 'reauth')
-    : (authMode ?? 'login');
-  const state: AuthSurfaceState = runtime.status === 'service_unavailable' ? 'serviceUnavailable' : 'ready';
+  const mode: AuthSurfaceMode =
+    runtime.status === 'reauth_required'
+      ? runtime.reauth?.level === 'mfa'
+        ? 'mfa'
+        : 'reauth'
+      : (authMode ?? 'login');
+  const state: AuthSurfaceState =
+    runtime.status === 'service_unavailable' ? 'serviceUnavailable' : 'ready';
 
   function postReauthReturnTo(): string {
     return safeReturnTo(runtime.reauth?.returnTo ?? queryParam('returnTo'));
@@ -202,13 +207,13 @@ function AuthenticatedRuntimeShell({
     () => createRuntimeShellNavigation(session.capabilities),
     [session.capabilities],
   );
-  const commands = useMemo(
-    () => createRuntimeShellCommands(navigationGroups),
-    [navigationGroups],
-  );
+  const commands = useMemo(() => createRuntimeShellCommands(navigationGroups), [navigationGroups]);
+  const analyticsGroup = resolveAnalyticsGroup(activePath);
+  const activePathname = activePath.split('?', 1)[0] ?? activePath;
 
   return (
     <ProductShellFrame
+      runPapaCommand={(operation) => runtime.runAuthenticatedCommand(operation, activePath)}
       activePath={activePath}
       activeTenantId={session.activeTenantId}
       activeUserId={session.userId}
@@ -235,27 +240,82 @@ function AuthenticatedRuntimeShell({
       user={sessionToShellUser(session)}
       workspaces={sessionToShellWorkspaces(session)}
     >
-      {isPapaAssistantLabPath(activePath) ? (
-        <PapaAssistantLabPage />
+      {isAssistantPath(activePath) ? (
+        <PapaAssistantExperience />
+      ) : isSavedReportsPath(activePath) ? (
+        <AuthSessionRuntimeProvider value={runtime}>
+          <SavedReportsPage />
+        </AuthSessionRuntimeProvider>
       ) : isSubscriptionBillingPath(activePath) ? (
         <SubscriptionBillingPage />
+      ) : isIntegrationsPath(activePath) ? (
+        <AuthSessionRuntimeProvider value={runtime}>
+          <IntegrationsPage />
+        </AuthSessionRuntimeProvider>
+      ) : isSettingsPath(activePath) ? (
+        <AuthSessionRuntimeProvider value={runtime}>
+          <SettingsPage />
+        </AuthSessionRuntimeProvider>
+      ) : isHelpPath(activePath) ? (
+        <HelpCenterScreen />
+      ) : activePathname === '/app' || activePathname === '/app/command-center' ? (
+        <CommandCenterPage />
+      ) : analyticsGroup ? (
+        <AnalyticsModuleScreen group={analyticsGroup} path={activePath} />
       ) : (
-        <CommandCenterScreen data={createCommandCenterRuntimeData()} />
+        <section>
+          <h1>
+            {navigationGroups
+              .flatMap((group) => group.items)
+              .find((item) => item.path === activePath)?.label ?? 'Nie znaleziono strony'}
+          </h1>
+          <p>Ten widok nie jest dostępny w bieżącym środowisku.</p>
+          <a href="/app/command-center">Wróć do przeglądu</a>
+        </section>
       )}
     </ProductShellFrame>
   );
 }
 
-function isPapaAssistantLabPath(path: string): boolean {
+function isSavedReportsPath(path: string): boolean {
   const pathname = path.split('?', 1)[0] ?? path;
-  return pathname === '/app/papa'
-    || pathname === '/app/papa/laboratorium-ai';
+  return pathname === '/app/papa' || pathname === '/app/reports' || pathname === '/app/papa/raporty';
 }
 
 function isSubscriptionBillingPath(path: string): boolean {
   const pathname = path.split('?', 1)[0] ?? path;
-  return pathname === '/app/billing'
-    || pathname.startsWith('/app/billing/');
+  return pathname === '/app/billing' || pathname.startsWith('/app/billing/');
+}
+
+function isIntegrationsPath(path: string): boolean {
+  const pathname = path.split('?', 1)[0] ?? path;
+  return pathname === '/app/integrations' || pathname.startsWith('/app/integrations/');
+}
+
+function isSettingsPath(path: string): boolean {
+  const pathname = path.split('?', 1)[0] ?? path;
+  return pathname === '/app/settings' || pathname.startsWith('/app/settings/');
+}
+
+function isHelpPath(path: string): boolean {
+  const pathname = path.split('?', 1)[0] ?? path;
+  return pathname === '/app/help' || pathname.startsWith('/app/help/');
+}
+
+const analyticsGroupRoutePrefixes = {
+  campaigns: '/app/campaigns',
+  customers: '/app/customers',
+  orders: '/app/orders',
+  products: '/app/products',
+  traffic: '/app/traffic',
+} satisfies Record<AnalyticsModuleGroup, `/app/${string}`>;
+
+function resolveAnalyticsGroup(path: string): AnalyticsModuleGroup | null {
+  const pathname = path.split('?', 1)[0] ?? path;
+  const entry = Object.entries(analyticsGroupRoutePrefixes).find(
+    ([, prefix]) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+  return entry ? (entry[0] as AnalyticsModuleGroup) : null;
 }
 
 function resolveAuthMode(path: string): AuthSurfaceMode | null {
@@ -294,12 +354,14 @@ function sessionToShellWorkspaces(session: BffSession): readonly ShellWorkspace[
 }
 
 function sessionToWorkspaceOptions(session: BffSession | null) {
-  return session?.memberships.map((membership) => ({
-    tenantId: membership.tenantId,
-    tenantName: membership.tenantName,
-    workspaceId: membership.workspaceId,
-    workspaceName: membership.workspaceName,
-  })) ?? [];
+  return (
+    session?.memberships.map((membership) => ({
+      tenantId: membership.tenantId,
+      tenantName: membership.tenantName,
+      workspaceId: membership.workspaceId,
+      workspaceName: membership.workspaceName,
+    })) ?? []
+  );
 }
 
 const root = document.getElementById('root');
@@ -307,6 +369,6 @@ if (!root) throw new Error('Missing #root mount point.');
 
 createRoot(root).render(
   <StrictMode>
-    <RuntimeApp />
+    <AppEntry />
   </StrictMode>,
 );

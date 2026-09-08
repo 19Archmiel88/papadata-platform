@@ -9,13 +9,12 @@
 .pd-table__scroll {
   max-inline-size: 100%;
   overflow: auto;
-  border: 1px solid var(--pd-separator-subtle);
-  border-radius: var(--pd-radius-surface);
-  background: var(--pd-surface);
 }
 
 .pd-table__element {
   inline-size: 100%;
+  min-inline-size: var(--pd-table-min-width, 46rem);
+  table-layout: fixed;
   border-collapse: collapse;
   border-spacing: 0;
   font-size: 0.74rem;
@@ -34,13 +33,15 @@
   inset-block-start: 0;
   padding: 0.64rem 0.75rem;
   border-block-end: 1px solid var(--pd-separator);
-  background: var(--pd-surface-subtle);
+  background: var(--pd-canvas);
   color: var(--pd-text-muted);
   font-size: 0.64rem;
   font-weight: var(--pd-font-weight-medium);
   letter-spacing: 0.015em;
   text-align: start;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pd-table__body td {
@@ -59,11 +60,36 @@
   color: var(--pd-text);
 }
 
+.pd-table__body tr[data-clickable='true'] {
+  cursor: pointer;
+}
+
+.pd-table__body tr[data-clickable='true']:focus-visible {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: calc(var(--pd-focus-width) * -1);
+}
+
+.pd-table__body tr[data-clickable='true']:focus-visible td {
+  background: var(--pd-surface-subtle);
+  color: var(--pd-text);
+}
+
 .pd-table__cell-wrap,
 .pd-table__cell-main {
   display: grid;
   gap: 0.15rem;
   min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Row-action cells hold a "…" trigger whose dropdown menu is absolutely
+   positioned relative to it (see navigation.css .pd-menu__panel) -- the
+   generic cell-wrap overflow:hidden above would otherwise clip that menu
+   the moment it extends past this cell's own small box. */
+td[data-column-id='__actions'] .pd-table__cell-wrap,
+th[data-column-id='__actions'] .pd-table__cell-wrap {
+  overflow: visible;
 }
 
 .pd-table__cell-title {
@@ -124,6 +150,26 @@
 .pd-data-table__summary {
   color: var(--pd-text-muted);
   font-size: 0.68rem;
+}
+
+.pd-data-table__action-trigger {
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: 1.6rem;
+  min-block-size: 1.6rem;
+  padding: 0.2rem 0.4rem;
+  border: 0;
+  border-radius: var(--pd-radius-small);
+  background: transparent;
+  color: var(--pd-text-secondary);
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.pd-data-table__action-trigger:hover {
+  background: transparent;
+  color: var(--pd-brand-action);
 }
 
 .pd-data-list {

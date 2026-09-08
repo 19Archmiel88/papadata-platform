@@ -4,17 +4,20 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from "@nestjs/common";
 import { createHash, randomUUID } from "node:crypto";
 import type { AiProviderAdapter } from "@papadata/ai-runtime";
-import { LocalDeterministicProvider } from "@papadata/ai-runtime";
+import { AiBudgetGuard, LocalDeterministicProvider } from "@papadata/ai-runtime";
 import {
   AssistantConversationRepository,
+  BillingRepository,
   EmailVerificationRepository,
   IdentityRepository,
   IntegrationRepository,
   InvitationRepository,
+  MetricSnapshotRepository,
   PasswordResetRepository,
   ProductDomainRepository,
   ProductionDatabase,
@@ -45,11 +48,14 @@ import {
   buildCommandCenterCustomerSegmentsData,
   buildCommandCenterFunnelData,
   buildCommandCenterKpiOverrides,
+  buildCommandCenterOverviewScreenData,
   buildCommandCenterPlanPerformanceData,
   buildCommandCenterProductSalesData,
   buildCommandCenterRecommendationsData,
   buildCommandCenterTrafficSourcesData,
   buildCommandCenterWaterfallData,
+  persistCommandCenterMetricSnapshots,
+  type MetricSnapshotWriter,
 } from "./command-center-metrics.contract-data.js";
 import { CommandCenterMetricInputDataSource } from "./command-center-metric-input-data-source.js";
 import type { CommandCenterDataSource } from "./command-center-metrics.real-source.js";
@@ -132,7 +138,13 @@ export class ContractRuntimeService {
 
   private readonly assistantConversations: AssistantConversationRepository;
 
+  private readonly metricSnapshots: MetricSnapshotRepository;
+
+  private readonly billing: BillingRepository;
+
   private readonly assistantProvider: AiProviderAdapter;
+
+  private readonly aiBudgetGuard: AiBudgetGuard;
 
   constructor(
     @Inject(ProductionDatabase) database: ProductionDatabase,
@@ -151,7 +163,10 @@ export class ContractRuntimeService {
     this.passwordResets = new PasswordResetRepository(database);
     this.emailVerifications = new EmailVerificationRepository(database);
     this.assistantConversations = new AssistantConversationRepository(database);
+    this.metricSnapshots = new MetricSnapshotRepository(database);
+    this.billing = new BillingRepository(database);
     this.assistantProvider = new LocalDeterministicProvider();
+    this.aiBudgetGuard = new AiBudgetGuard();
   }
 
   async executePublic(
@@ -635,6 +650,7 @@ export class ContractRuntimeService {
           principal.tenantId,
           principal.workspaceId,
           this.commandCenterDataSource,
+          this.metricSnapshots,
         ),
         operationId: request.operationId,
       };
@@ -1095,6 +1111,8 @@ export class ContractRuntimeService {
       const payload = readPayload(request.body);
       const prompt = requiredPayloadString(payload, "prompt");
       const result = await generatePapaAnswer({
+        budgetGuard: this.aiBudgetGuard,
+        billing: this.billing,
         caseThreadId: optionalPayloadString(payload, "caseThreadId"),
         conversationId: optionalPayloadString(payload, "conversationId"),
         idempotencyKey: requireIdempotencyKey(request),
@@ -1954,10 +1972,18 @@ export class ContractRuntimeService {
 
     if (request.operationId.startsWith("billing.")) {
       if (request.method !== "GET") return null;
-      const planId = optionalRecordString(safeObject(request.query), "plan") ?? "starter";
       const taxCountry = optionalRecordString(safeObject(request.query), "taxCountry");
       const vatId = optionalRecordString(safeObject(request.query), "vatId");
-      const currentPlan = migratedCommercialPlans.find((plan) => plan.id === planId)
+      // Real, server-owned subscription state -- see BillingRepository's doc
+      // comment. This used to read `?plan=` straight off the query string,
+      // meaning any authenticated caller could request `?plan=scale` and
+      // receive Scale-tier entitlements regardless of what the workspace
+      // actually pays for.
+      const subscription = await this.billing.readSubscription(
+        principal.tenantId,
+        principal.workspaceId,
+      );
+      const currentPlan = migratedCommercialPlans.find((plan) => plan.id === subscription.planId)
         ?? migratedCommercialPlans[0];
       const taxDecision = resolveBillingTaxDecision({
         taxCountry,
@@ -1965,21 +1991,24 @@ export class ContractRuntimeService {
         isBusinessCustomer: vatId !== null,
         vatValidationStatus: readVatValidationStatus(safeObject(request.query).vatValidationStatus),
       });
-      const stored = await this.repository.list({
-        tenantId: principal.tenantId,
-        workspaceId: principal.workspaceId,
-        domain: "billing",
-        entityType: "write",
-        limit: 20,
-      });
+      const [stored, connections] = await Promise.all([
+        this.repository.list({
+          tenantId: principal.tenantId,
+          workspaceId: principal.workspaceId,
+          domain: "billing",
+          entityType: "write",
+          limit: 20,
+        }),
+        this.integrations.listConnections(principal.tenantId, principal.workspaceId),
+      ]);
       return {
         data: {
           plans: request.operationId === "billing.plans.read" ? migratedCommercialPlans : undefined,
           currentPlan,
           entitlements: entitlementsForMigratedPlan(currentPlan.id),
-          billingStatus: stored[0]?.status ?? "TRIAL",
+          billingStatus: subscription.status.toUpperCase(),
           usage: {
-            connectedDataSources: 0,
+            connectedDataSources: connections.length,
             maxDataSources: currentPlan.entitlements.maxDataSources,
           },
           taxDecision,
@@ -2038,6 +2067,7 @@ export class ContractRuntimeService {
           principal.tenantId,
           principal.workspaceId,
           this.commandCenterDataSource,
+          this.metricSnapshots,
         ),
         operationId: request.operationId,
         implementation: "canonical-dashboard-view-model",
@@ -2136,6 +2166,8 @@ type RuntimeDateRange = {
   readonly to: string;
 };
 
+const metricSnapshotWriteLogger = new Logger("CommandCenterMetricSnapshots");
+
 export async function commandCenterContractData(
   operationId: string,
   repositorySummary: Readonly<Record<string, unknown>>,
@@ -2143,6 +2175,7 @@ export async function commandCenterContractData(
   tenantId: string,
   workspaceId: string,
   integrationRepository: CommandCenterDataSource,
+  metricSnapshotWriter: MetricSnapshotWriter | null = null,
 ): Promise<object> {
   const updatedAt = optionalRecordDateString(repositorySummary, "generatedAt")
     ?? new Date().toISOString();
@@ -2184,6 +2217,24 @@ export async function commandCenterContractData(
         metricDateRange,
       )
     : null;
+  // Best-effort, fire-and-forget: a KPI request is real traffic touching
+  // this tenant/workspace's real data, so it's a natural moment to refresh
+  // app.metric_snapshots. Never awaited -- a snapshot write must not add
+  // latency to, or fail, the KPI response it rides along with (errors are
+  // swallowed to a log line only). This is the request-time half of a real
+  // writer; a periodic, traffic-independent writer is still open work.
+  if (kpi && metricSnapshotWriter) {
+    void persistCommandCenterMetricSnapshots(
+      tenantId,
+      workspaceId,
+      updatedAt,
+      integrationRepository,
+      metricSnapshotWriter,
+      metricDateRange,
+    ).catch((error: unknown) => {
+      metricSnapshotWriteLogger.error("command-center-metric-snapshot-write-failed", error);
+    });
+  }
   const kpiRecords: readonly CommandCenterRuntimeRecord[] = kpi
     ? [
         kpi.revenue,
@@ -2237,6 +2288,13 @@ export async function commandCenterContractData(
   const waterfallExtras = operationId === "command-center.waterfall.read"
     ? await buildCommandCenterWaterfallData(tenantId, workspaceId, updatedAt, integrationRepository, metricDateRange)
     : null;
+  // apps/web's CommandCenterScreen is frozen to CommandCenterScreenData
+  // (days/decisions/sources/mode/currency/timezone/lastUpdated) -- this is
+  // additive to the generic envelope below, not a replacement, so nothing
+  // else reading command-center.overview.read's records/summary breaks.
+  const overviewScreenExtras = operationId === "command-center.overview.read"
+    ? await buildCommandCenterOverviewScreenData(tenantId, workspaceId, updatedAt, integrationRepository, metricDateRange)
+    : null;
 
   return {
     ...(planPerformanceExtras ?? {}),
@@ -2248,6 +2306,7 @@ export async function commandCenterContractData(
     ...(recommendationsExtras ?? {}),
     ...(committedActionsExtras ?? {}),
     ...(waterfallExtras ?? {}),
+    ...(overviewScreenExtras ?? {}),
     evidencePolicy: "canonical-and-reconciled-only",
     pageInfo: {
       nextCursor: null,

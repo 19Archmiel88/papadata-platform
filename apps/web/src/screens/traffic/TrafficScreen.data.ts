@@ -176,14 +176,14 @@ export const trafficDefaultFilters: TrafficGlobalFilters = {
 
 export type TrafficDataBadge =
   | 'Addytywne'
-  | 'Exact-Range'
+  | 'Zakres Dokładny'
   | 'GA4 E-commerce'
   | 'Jakość Ruchu'
   | 'Wyliczone';
 
 export const trafficKpis = [
   {
-    title: 'Sesje (Sessions)',
+    title: 'Sesje',
     value: '128 420',
     badge: 'Addytywne',
     badgeTone: 'slate',
@@ -192,17 +192,19 @@ export const trafficKpis = [
     note: 'vs poprz. 30d',
     footerLeft: 'Źródło: GA4',
     footerRight: 'Cel: 120k',
+    description: 'Liczba sesji w witrynie w wybranym okresie, wg GA4 — punkt wejścia lejka ruchu.',
   },
   {
     title: 'Aktywni Użytkownicy',
     value: '82 419',
-    badge: 'Exact-Range',
+    badge: 'Zakres Dokładny',
     badgeTone: 'amber',
     trend: '▲ +5.2%',
     trendTone: 'emerald',
     note: 'unikalni (30d)',
     footerLeft: 'Nie-addytywne',
-    footerRight: 'GA4 Active',
+    footerRight: 'GA4 Aktywne',
+    description: 'Liczba unikalnych aktywnych użytkowników w wybranym okresie wg GA4 — wartość nie sumuje się z sesjami.',
   },
   {
     title: 'CR Zakupowy',
@@ -213,7 +215,8 @@ export const trafficKpis = [
     trendTone: 'rose',
     note: 'vs poprz. 30d',
     footerLeft: 'Wzór: Zakupy/Sesje',
-    footerRight: 'Baseline: 3.46%',
+    footerRight: 'Wartość bazowa: 3,46%',
+    description: 'CR = liczba zakupów (GA4) ÷ liczba sesji w tym samym okresie.',
   },
   {
     title: 'Zakupy (GA4)',
@@ -224,7 +227,8 @@ export const trafficKpis = [
     trendTone: 'emerald',
     note: 'vs poprz. 30d',
     footerLeft: 'Commerce: 4 248',
-    footerRight: '94.3% Match',
+    footerRight: '94,3% Dopasowanie',
+    description: 'Liczba zdarzeń zakupu zarejestrowanych przez GA4 — porównana z liczbą zamówień z Commerce.',
   },
   {
     title: 'Przychód GA4',
@@ -236,6 +240,7 @@ export const trafficKpis = [
     note: 'vs poprz. 30d',
     footerLeft: 'Commerce: 1.26M zł',
     footerRight: 'Rozbieżność: -5.7%',
+    description: 'Przychód e-commerce zarejestrowany przez GA4 — porównany z rzeczywistym przychodem z Commerce.',
   },
   {
     title: 'Przychód / Sesję',
@@ -248,10 +253,12 @@ export const trafficKpis = [
     note: 'vs poprz. 30d',
     footerLeft: 'Liczony z GA4 Rev',
     footerRight: 'Średnia 90d: 9.60 zł',
+    description: 'Przychód GA4 ÷ liczba sesji w tym samym okresie — wskaźnik jakości pozyskiwanego ruchu.',
   },
 ] as const satisfies readonly {
   readonly badge: TrafficDataBadge;
   readonly badgeTone: TrafficTone;
+  readonly description: string;
   readonly featured?: boolean;
   readonly footerLeft: string;
   readonly footerRight: string;
@@ -272,7 +279,7 @@ export const trafficTrendModes = [
     value: 'users',
   },
   {
-    label: 'Conversion Rate %',
+    label: 'CR %',
     value: 'cr',
   },
   {
@@ -292,7 +299,7 @@ export const trafficTrendModes = [
 export type TrafficTrendMode = typeof trafficTrendModes[number]['value'];
 
 export const trafficTrendLabels: Record<TrafficTrendMode, string> = {
-  cr: 'Conversion Rate %',
+  cr: 'CR %',
   purchases: 'Zakupy GA4',
   revenue: 'Przychód GA4',
   revPerSession: 'Przychód/Sesję',

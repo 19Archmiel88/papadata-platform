@@ -365,6 +365,11 @@ export function AuthenticatedTopbar({
       </button>
 
       <div className="pd-shell-topbar__actions">
+        <button type="button" className="pd-shell-topbar__control pd-shell-topbar__icon-control"
+          aria-label={theme === 'dark' ? copy.themeToLight : copy.themeToDark}
+          onClick={() => changeTheme(theme === 'dark' ? 'light' : 'dark')}>
+          <Icon decorative name="theme" size={20} />
+        </button>
         <DateRangeOverlay
           copy={copy}
           locale={locale}

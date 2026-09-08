@@ -5,23 +5,18 @@ export type {
   IntegrationsWorkspaceProps,
 } from './IntegrationsWorkspace';
 export {
-  createIntegrationsStorybookData,
-  findIntegrationScreenDefinition,
-  getIntegrationNavigation,
-  integrationScreenDefinitions,
+  createIntegrationsProviderOutageFallbackData,
+  createIntegrationsRuntimeFallbackData,
+  integrationWorkspaceTabs,
 } from './integrationsData';
 export type {
-  IntegrationEvent,
-  IntegrationRecord,
   IntegrationCatalogRuntime,
   IntegrationCompletenessRuntime,
   IntegrationProviderTestResult,
   IntegrationRuntimeCatalogProvider,
   IntegrationRuntimeSource,
   IntegrationRuntimeStatus,
-  IntegrationScreenDefinition,
-  IntegrationScreenId,
-  IntegrationScreenVariant,
-  IntegrationsData,
+  IntegrationSyncStage,
+  IntegrationWorkspaceTabId,
   IntegrationsRuntimeView,
 } from './integrationsData';

@@ -1,9 +1,12 @@
 import type { IsoDateTime } from "@papadata/contracts";
 import {
+  buildMetricSnapshotRecords,
   centsToDecimal,
   computeMetricEngineSeries,
+  dashboardMetricCodes,
   decimalToCents,
   isRevenueQualifyingOrder,
+  metricDefinitions,
   type DashboardMetricCode,
   type MetricEngineInput,
   type MetricReadiness,
@@ -1387,6 +1390,298 @@ export async function buildCommandCenterWaterfallData(
       },
     ],
   };
+}
+
+const OVERVIEW_DAILY_METRIC_CODES: readonly DashboardMetricCode[] = [
+  "revenue_after_refunds",
+  "cost_of_goods_sold",
+  "ad_spend",
+  "orders",
+];
+
+const OVERVIEW_PROVIDER_DISPLAY_NAMES: Readonly<Record<string, string>> = {
+  allegro: "Allegro",
+  google_ads: "Google Ads",
+  meta_ads: "Meta Ads",
+  woocommerce: "WooCommerce",
+};
+
+export type CommandCenterOverviewDay = {
+  readonly date: string;
+  readonly revenue: number;
+  readonly costOfGoods: number;
+  readonly fulfillmentCost: number;
+  readonly marketingSpend: number;
+  readonly newCustomers: number;
+  readonly orders: number;
+};
+
+export type CommandCenterOverviewSource = {
+  readonly id: string;
+  readonly name: string;
+  readonly status: "ready" | "partial" | "stale";
+  readonly detail: string;
+};
+
+/** Matches apps/web's `CommandCenterScreenData` exactly (see CommandCenterScreen.model.ts) -- the frontend model this endpoint feeds is frozen, so this type must track it field-for-field rather than the generic command-center envelope every other operation returns. */
+export type CommandCenterOverviewScreenData = {
+  readonly mode: "live";
+  readonly currency: "PLN";
+  readonly timezone: string;
+  readonly days: readonly CommandCenterOverviewDay[];
+  readonly decisions: readonly never[];
+  readonly sources: readonly CommandCenterOverviewSource[];
+  readonly lastUpdated: string;
+};
+
+function overviewSourceStatus(status: string | null): "ready" | "partial" | "stale" {
+  if (status === "active") {
+    return "ready";
+  }
+  if (status === "account_selection_required" || status === "reauthorization_required") {
+    return "partial";
+  }
+  return "stale";
+}
+
+function overviewSourceDetail(status: string | null, accountName: string | null): string {
+  if (status === "active") {
+    return accountName ? `Połączono: ${accountName}` : "Połączenie aktywne.";
+  }
+  if (status === "account_selection_required") {
+    return "Wymaga wyboru konta.";
+  }
+  if (status === "reauthorization_required") {
+    return "Wymaga ponownej autoryzacji.";
+  }
+  if (status === "disconnected") {
+    return "Połączenie rozłączone.";
+  }
+  return "Status nieznany.";
+}
+
+/**
+ * Builds apps/web's `CommandCenterScreenData` shape directly from real
+ * canonical data -- the frontend's `deriveOverview` computes margin/trend/
+ * drivers client-side from a full daily breakdown, so this must supply real
+ * per-day values, not a period aggregate (unlike every other Command Center
+ * builder in this file).
+ *
+ * `fulfillmentCost` is always 0: no shipping/fulfillment-cost source is
+ * ingested anywhere in the canonical pipeline yet. That's an honest
+ * "not tracked", not a fabricated estimate -- once a real source exists this
+ * is the only line that needs to change.
+ *
+ * `decisions` is always empty: no backend record today carries the
+ * owner/due-date/evidence a decision card needs (recommendations --
+ * buildCommandCenterRecommendationsData -- have neither). Returning an
+ * honest empty list rather than inventing ownership data.
+ *
+ * Mirrors the narrowing already done in buildCommandCenterPlanPerformanceData
+ * (only 4 metric codes instead of the full KPI set) to keep a 366-day daily
+ * expansion affordable within the BFF's request timeout.
+ */
+export async function buildCommandCenterOverviewScreenData(
+  tenantId: string,
+  workspaceId: string,
+  generatedAt: string,
+  dataSource: CommandCenterDataSource,
+  dateRange: CommandCenterDateRangeInput | null = null,
+): Promise<CommandCenterOverviewScreenData> {
+  const { periodEnd, periodStart, timezone } = resolveMetricWindow(generatedAt, dateRange, KPI_WINDOW_DAYS);
+
+  // New-vs-returning can only be decided from a customer's FULL order
+  // history, not just this window (see customer-lifecycle.ts) -- same
+  // pattern as buildCommandCenterCustomerSegmentsData.
+  const [windowInput, historyInput, historyRows, connectionRows] = await Promise.all([
+    createRealMetricEngineInput({
+      dataSource,
+      generatedAt: generatedAt as IsoDateTime,
+      periodEnd,
+      periodStart,
+      tenantId,
+      timezone,
+      workspaceId,
+    }),
+    createRealMetricEngineInput({
+      dataSource,
+      generatedAt: generatedAt as IsoDateTime,
+      periodEnd,
+      periodStart: CUSTOMER_HISTORY_FLOOR as IsoDateTime,
+      tenantId,
+      timezone,
+      workspaceId,
+    }),
+    dataSource.listCanonicalRecords(tenantId, workspaceId, {
+      businessTimeFrom: CUSTOMER_HISTORY_FLOOR,
+      businessTimeTo: periodEnd,
+      streams: ["orders"],
+    }),
+    dataSource.listConnections(tenantId, workspaceId),
+  ]);
+
+  const { daily } = computeMetricEngineSeries(windowInput, OVERVIEW_DAILY_METRIC_CODES, { includeDaily: true });
+
+  const qualifyingOrders = historyInput.canonicalOrders.filter(
+    (order) => order.currency === historyInput.currency && isRevenueQualifyingOrder(order),
+  );
+  const classified = classifyCustomerOrders(qualifyingOrders, historyRows);
+  const newCustomersByDate = new Map<string, number>();
+  for (const { isFirstOrder, order } of classified) {
+    if (!isFirstOrder || order.orderedAt < periodStart || order.orderedAt >= periodEnd) {
+      continue;
+    }
+    const dateOnly = dateOnlyInTimeZone(order.orderedAt, timezone);
+    newCustomersByDate.set(dateOnly, (newCustomersByDate.get(dateOnly) ?? 0) + 1);
+  }
+
+  const days: readonly CommandCenterOverviewDay[] = daily.map((day) => ({
+    date: day.date,
+    revenue: numberOrZero(day.values.revenue_after_refunds),
+    costOfGoods: numberOrZero(day.values.cost_of_goods_sold),
+    fulfillmentCost: 0,
+    marketingSpend: numberOrZero(day.values.ad_spend),
+    newCustomers: newCustomersByDate.get(day.date) ?? 0,
+    orders: numberOrZero(day.values.orders),
+  }));
+
+  const sources: readonly CommandCenterOverviewSource[] = connectionRows.map((row) => {
+    const providerId = readRowString(row.provider_id);
+    const status = readRowString(row.status);
+    const accountName = readRowString(row.account_name);
+    return {
+      id: readRowString(row.id) ?? providerId ?? "unknown",
+      name: (providerId ? OVERVIEW_PROVIDER_DISPLAY_NAMES[providerId] : null) ?? providerId ?? "Nieznane źródło",
+      status: overviewSourceStatus(status),
+      detail: overviewSourceDetail(status, accountName),
+    };
+  });
+
+  return {
+    currency: "PLN",
+    days,
+    decisions: [],
+    lastUpdated: generatedAt,
+    mode: "live",
+    sources,
+    timezone,
+  };
+}
+
+/**
+ * Structural read surface this module needs from `MetricSnapshotRepository`
+ * (@papadata/database) -- kept narrow and duck-typed, same convention as
+ * `CommandCenterDataSource` above, so tests can pass a plain in-memory fake.
+ */
+export type MetricSnapshotWriter = {
+  readonly ensureDefinitionsSeeded: (definitions: readonly {
+    readonly businessDefinition: string;
+    readonly currencyPolicy: string;
+    readonly datePolicy: string;
+    readonly definitionVersion: string;
+    readonly excludedStatuses: readonly string[];
+    readonly formula: string;
+    readonly includedStatuses: readonly string[];
+    readonly metricCode: string;
+    readonly missingDataPolicy: string;
+    readonly readinessRule: string;
+    readonly refundPolicy: string;
+    readonly requiredCanonicalFacts: readonly string[];
+    readonly taxPolicy: string;
+    readonly testVectors: readonly unknown[];
+  }[]) => Promise<void>;
+  readonly insertSnapshots: (
+    tenantId: string,
+    workspaceId: string,
+    snapshots: readonly {
+      readonly currency: string | null;
+      readonly definitionVersion: string;
+      readonly evidence: readonly string[];
+      readonly generatedAt: string;
+      readonly inputHash: string;
+      readonly lastSuccessfulSyncAt: string | null;
+      readonly limitations: readonly string[];
+      readonly metricCode: string;
+      readonly periodEnd: string;
+      readonly periodStart: string;
+      readonly readiness: string;
+      readonly reasonCodes: readonly string[];
+      readonly snapshotId: string;
+      readonly value: string | null;
+      readonly valueKind: string;
+    }[],
+  ) => Promise<void>;
+};
+
+/**
+ * Computes real dashboard metric values for one (tenant, workspace, period)
+ * and persists them into app.metric_snapshots -- until this existed, that
+ * table's schema was fully built but nothing ever wrote to it (see
+ * docs/backend-remediation/CONVERGENCE-FROM-PAPADATA-MAIN.md's "canonical
+ * ingestion/metric snapshots" claim, which had no backing writer).
+ *
+ * Best-effort by design: callers should fire this without awaiting it on a
+ * request's critical path (see commandCenterContractData) -- a snapshot
+ * write failing must never fail the KPI response it rides along with.
+ */
+export async function persistCommandCenterMetricSnapshots(
+  tenantId: string,
+  workspaceId: string,
+  generatedAt: string,
+  dataSource: CommandCenterDataSource,
+  writer: MetricSnapshotWriter,
+  dateRange: CommandCenterDateRangeInput | null = null,
+): Promise<void> {
+  const { periodEnd, periodStart, timezone } = resolveMetricWindow(generatedAt, dateRange, KPI_WINDOW_DAYS);
+  const input = await createRealMetricEngineInput({
+    dataSource,
+    generatedAt: generatedAt as IsoDateTime,
+    periodEnd,
+    periodStart,
+    tenantId,
+    timezone,
+    workspaceId,
+  });
+
+  await writer.ensureDefinitionsSeeded(metricDefinitions.map((definitionRecord) => ({
+    businessDefinition: definitionRecord.businessDefinition,
+    currencyPolicy: definitionRecord.currencyPolicy,
+    datePolicy: definitionRecord.datePolicy,
+    definitionVersion: definitionRecord.definitionVersion,
+    excludedStatuses: definitionRecord.excludedStatuses,
+    formula: definitionRecord.formula,
+    includedStatuses: definitionRecord.includedStatuses,
+    metricCode: definitionRecord.metricCode,
+    missingDataPolicy: definitionRecord.missingDataPolicy,
+    readinessRule: definitionRecord.readinessRule,
+    refundPolicy: definitionRecord.refundPolicy,
+    requiredCanonicalFacts: definitionRecord.requiredCanonicalFacts,
+    taxPolicy: definitionRecord.taxPolicy,
+    testVectors: definitionRecord.testVectors,
+  })));
+
+  const records = buildMetricSnapshotRecords(input, dashboardMetricCodes);
+  await writer.insertSnapshots(
+    tenantId,
+    workspaceId,
+    records.map((record) => ({
+      currency: record.currency,
+      definitionVersion: record.definitionVersion,
+      evidence: record.evidence,
+      generatedAt: record.generatedAt,
+      inputHash: record.inputHash,
+      lastSuccessfulSyncAt: record.lastSuccessfulSyncAt,
+      limitations: record.limitations,
+      metricCode: record.metricCode,
+      periodEnd: record.periodEnd,
+      periodStart: record.periodStart,
+      readiness: record.readiness,
+      reasonCodes: record.reasonCodes,
+      snapshotId: record.snapshotId,
+      value: record.value,
+      valueKind: record.valueKind,
+    })),
+  );
 }
 
 function pearsonCorrelation(xs: readonly number[], ys: readonly number[]): number {

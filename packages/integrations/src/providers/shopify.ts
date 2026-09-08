@@ -47,131 +47,158 @@ export class ShopifyAdapter implements IntegrationProviderAdapter {
     );
   }
 
+  /**
+   * Real page-level resumability (see WooCommerceAdapter.fetch's doc comment
+   * for the full rationale) -- one call fetches exactly one page of exactly
+   * one stream. Shopify's GraphQL connections already paginate by opaque
+   * cursor rather than page number, so the resume cursor here carries that
+   * cursor string straight through instead of a page index.
+   */
   async fetch(request: ProviderFetchRequest): Promise<ProviderFetchResult> {
+    const observedAt = new Date().toISOString();
+    const cursor = parseShopifyPageCursor(request.pageCursor);
+    const streamIndex = cursor?.streamIndex ?? 0;
+    const stream = request.streams[streamIndex];
+
+    if (stream === undefined) {
+      // Guards a stale resume cursor (e.g. left over from a job whose
+      // streams list changed) -- the pipeline itself stops calling fetch()
+      // once nextPageCursor is null.
+      return {
+        records: [],
+        nextCheckpoint: JSON.stringify({ updatedAt: observedAt }),
+        nextPageCursor: null,
+        partial: false,
+        limitations: [],
+      };
+    }
+
     const records: ProviderRecord[] = [];
     const limitations: string[] = [];
-    const observedAt = new Date().toISOString();
+    let hasNextPage = false;
+    let endCursor: string | null = null;
 
-    for (const stream of request.streams) {
-      if (stream === "orders" || stream === "refunds") {
-        const orders = await this.paginate(
-          `query Orders($cursor: String, $query: String) {
-             orders(first: 100, after: $cursor, query: $query, sortKey: UPDATED_AT) {
-               pageInfo { hasNextPage endCursor }
-               nodes {
-                 id name createdAt updatedAt cancelledAt closedAt displayFinancialStatus
-                 displayFulfillmentStatus currencyCode currentTotalPriceSet { shopMoney { amount currencyCode } }
-                 customer { id email phone }
-                 shippingAddress { city countryCodeV2 zip }
-                 lineItems(first: 250) { nodes { id sku name quantity originalUnitPriceSet { shopMoney { amount currencyCode } } } }
-                 refunds { id createdAt note totalRefundedSet { shopMoney { amount currencyCode } } refundLineItems(first: 250) { nodes { quantity lineItem { id sku } } } }
-               }
+    if (stream === "orders" || stream === "refunds") {
+      const page = await this.fetchOnePage(
+        `query Orders($cursor: String, $query: String) {
+           orders(first: 100, after: $cursor, query: $query, sortKey: UPDATED_AT) {
+             pageInfo { hasNextPage endCursor }
+             nodes {
+               id name createdAt updatedAt cancelledAt closedAt displayFinancialStatus
+               displayFulfillmentStatus currencyCode currentTotalPriceSet { shopMoney { amount currencyCode } }
+               customer { id email phone }
+               shippingAddress { city countryCodeV2 zip }
+               lineItems(first: 250) { nodes { id sku name quantity originalUnitPriceSet { shopMoney { amount currencyCode } } } }
+               refunds { id createdAt note totalRefundedSet { shopMoney { amount currencyCode } } refundLineItems(first: 250) { nodes { quantity lineItem { id sku } } } }
              }
-           }`,
-          "orders",
-          buildOrderQuery(request),
-        );
-        if (stream === "orders") {
-          records.push(...orders.map((order) => ({
-            stream,
-            externalId: globalId(order),
-            observedAt,
-            payload: order,
-          })));
-        } else {
-          for (const order of orders) {
-            const orderId = globalId(order);
-            for (const refund of readArrayField(order, "refunds")) {
-              records.push({
-                stream,
-                externalId: readStringField(refund, "id") ?? `${orderId}:${randomUUID()}`,
-                observedAt,
-                payload: { orderId, refund },
-              });
-            }
+           }
+         }`,
+        "orders",
+        cursor?.cursor ?? null,
+        buildOrderQuery(request),
+      );
+      hasNextPage = page.hasNextPage;
+      endCursor = page.endCursor;
+
+      if (stream === "orders") {
+        records.push(...page.nodes.map((order) => ({
+          stream,
+          externalId: globalId(order),
+          observedAt,
+          payload: order,
+        })));
+        limitations.push("Shopify orders older than the granted historical window require read_all_orders approval.");
+      } else {
+        for (const order of page.nodes) {
+          const orderId = globalId(order);
+          for (const refund of readArrayField(order, "refunds")) {
+            records.push({
+              stream,
+              externalId: readStringField(refund, "id") ?? `${orderId}:${randomUUID()}`,
+              observedAt,
+              payload: { orderId, refund },
+            });
           }
         }
-        continue;
       }
-
-      if (stream === "products") {
-        const products = await this.paginate(
-          `query Products($cursor: String) {
-             products(first: 100, after: $cursor, sortKey: UPDATED_AT) {
-               pageInfo { hasNextPage endCursor }
-               nodes { id title handle status vendor productType createdAt updatedAt
-                 variants(first: 250) { nodes { id sku barcode title price inventoryQuantity inventoryItem { id tracked } } }
-               }
+    } else if (stream === "products") {
+      const page = await this.fetchOnePage(
+        `query Products($cursor: String) {
+           products(first: 100, after: $cursor, sortKey: UPDATED_AT) {
+             pageInfo { hasNextPage endCursor }
+             nodes { id title handle status vendor productType createdAt updatedAt
+               variants(first: 250) { nodes { id sku barcode title price inventoryQuantity inventoryItem { id tracked } } }
              }
-           }`,
-          "products",
-        );
-        records.push(...products.map((product) => ({
-          stream,
-          externalId: globalId(product),
-          observedAt,
-          payload: product,
-        })));
-        continue;
-      }
-
-      if (stream === "inventory") {
-        const inventory = await this.paginate(
-          `query Inventory($cursor: String) {
-             inventoryItems(first: 100, after: $cursor) {
-               pageInfo { hasNextPage endCursor }
-               nodes { id tracked sku variant { id displayName product { id title } } inventoryLevels(first: 100) { nodes { id location { id name } quantities(names: ["available", "committed", "on_hand"]) { name quantity } } } }
-             }
-           }`,
-          "inventoryItems",
-        );
-        records.push(...inventory.map((item) => ({
-          stream,
-          externalId: globalId(item),
-          observedAt,
-          payload: item,
-        })));
-      }
+           }
+         }`,
+        "products",
+        cursor?.cursor ?? null,
+      );
+      hasNextPage = page.hasNextPage;
+      endCursor = page.endCursor;
+      records.push(...page.nodes.map((product) => ({
+        stream,
+        externalId: globalId(product),
+        observedAt,
+        payload: product,
+      })));
+    } else if (stream === "inventory") {
+      const page = await this.fetchOnePage(
+        `query Inventory($cursor: String) {
+           inventoryItems(first: 100, after: $cursor) {
+             pageInfo { hasNextPage endCursor }
+             nodes { id tracked sku variant { id displayName product { id title } } inventoryLevels(first: 100) { nodes { id location { id name } quantities(names: ["available", "committed", "on_hand"]) { name quantity } } } }
+           }
+         }`,
+        "inventoryItems",
+        cursor?.cursor ?? null,
+      );
+      hasNextPage = page.hasNextPage;
+      endCursor = page.endCursor;
+      records.push(...page.nodes.map((item) => ({
+        stream,
+        externalId: globalId(item),
+        observedAt,
+        payload: item,
+      })));
     }
 
-    if (request.streams.includes("orders")) {
-      limitations.push("Shopify orders older than the granted historical window require read_all_orders approval.");
-    }
+    const nextStreamIndex = streamIndex + 1;
+    const nextPageCursor = hasNextPage && endCursor
+      ? serializeShopifyPageCursor({ streamIndex, cursor: endCursor })
+      : nextStreamIndex < request.streams.length
+        ? serializeShopifyPageCursor({ streamIndex: nextStreamIndex, cursor: null })
+        : null;
 
     return {
       records,
       nextCheckpoint: JSON.stringify({ updatedAt: observedAt }),
+      nextPageCursor,
       partial: false,
       limitations,
     };
   }
 
-  private async paginate(
+  private async fetchOnePage(
     query: string,
     connectionName: string,
+    cursor: string | null,
     searchQuery?: string,
-  ): Promise<readonly unknown[]> {
-    const records: unknown[] = [];
-    let cursor: string | null = null;
-    let page = 0;
-
-    while (page < 10_000) {
-      const payload = await this.graphql<unknown>(query, {
-        cursor,
-        ...(searchQuery ? { query: searchQuery } : {}),
-      });
-      if (!isRecord(payload) || !isRecord(payload[connectionName])) {
-        throw new ProviderAdapterError("Shopify returned an invalid connection", "validation");
-      }
-      const connection = payload[connectionName];
-      records.push(...readArrayField(connection, "nodes"));
-      const pageInfo = isRecord(connection.pageInfo) ? connection.pageInfo : {};
-      const hasNextPage = pageInfo.hasNextPage === true;
-      cursor = readStringField(pageInfo, "endCursor");
-      page += 1;
-      if (!hasNextPage || !cursor) break;
+  ): Promise<{ readonly nodes: readonly unknown[]; readonly hasNextPage: boolean; readonly endCursor: string | null }> {
+    const payload = await this.graphql<unknown>(query, {
+      cursor,
+      ...(searchQuery ? { query: searchQuery } : {}),
+    });
+    if (!isRecord(payload) || !isRecord(payload[connectionName])) {
+      throw new ProviderAdapterError("Shopify returned an invalid connection", "validation");
     }
-    return records;
+    const connection = payload[connectionName];
+    const pageInfo = isRecord(connection.pageInfo) ? connection.pageInfo : {};
+    return {
+      nodes: readArrayField(connection, "nodes"),
+      hasNextPage: pageInfo.hasNextPage === true,
+      endCursor: readStringField(pageInfo, "endCursor"),
+    };
   }
 
   private async graphql<T>(query: string, variables: Record<string, unknown>): Promise<T> {
@@ -222,6 +249,34 @@ function checkpointDate(checkpoint: string | null): string | null {
   } catch {
     return Number.isFinite(Date.parse(checkpoint)) ? checkpoint : null;
   }
+}
+
+type ShopifyPageCursor = {
+  readonly streamIndex: number;
+  readonly cursor: string | null;
+};
+
+function parseShopifyPageCursor(cursor: string | null): ShopifyPageCursor | null {
+  if (!cursor) return null;
+  try {
+    const value = JSON.parse(cursor) as unknown;
+    if (
+      isRecord(value)
+      && typeof value.streamIndex === "number"
+      && Number.isInteger(value.streamIndex)
+      && value.streamIndex >= 0
+      && (value.cursor === null || typeof value.cursor === "string")
+    ) {
+      return { streamIndex: value.streamIndex, cursor: value.cursor as string | null };
+    }
+  } catch {
+    // fall through to null
+  }
+  return null;
+}
+
+function serializeShopifyPageCursor(cursor: ShopifyPageCursor): string {
+  return JSON.stringify(cursor);
 }
 
 function normalizeShopDomain(value: string): string {

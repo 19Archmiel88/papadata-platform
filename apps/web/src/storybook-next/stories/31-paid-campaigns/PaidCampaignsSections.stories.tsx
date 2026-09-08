@@ -1,6 +1,4 @@
-import type {
-  Meta,
-} from '@storybook/react-vite';
+import type { Meta } from '@storybook/react-vite';
 
 import {
   Result as ResultStory,

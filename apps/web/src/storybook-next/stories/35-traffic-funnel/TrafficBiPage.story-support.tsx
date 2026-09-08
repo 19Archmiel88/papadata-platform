@@ -82,11 +82,9 @@ function ResultHarness() {
 }
 
 function ChannelsHarness() {
-  const [search, setSearch] = useState('');
-
   return (
     <StoryFrame>
-      <TrafficChannelExplorer onSearchChange={setSearch} searchValue={search} />
+      <TrafficChannelExplorer />
     </StoryFrame>
   );
 }
@@ -147,7 +145,7 @@ export const Overview: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { level: 1, name: 'Ruch na stronie' })).toBeInTheDocument();
+    await expect(canvas.getByRole('heading', { name: 'Ruch na stronie', level: 1 })).toBeInTheDocument();
     await expect(canvasElement.querySelectorAll('.pd-section-frame')).toHaveLength(trafficSections.length);
     await expect(Array.from(canvasElement.querySelectorAll('.pd-section-frame')).map((section) => section.id)).toEqual(
       trafficSections.map((section) => section.id),
@@ -163,20 +161,40 @@ export const Overview: Story = {
     fireEvent.click(funnelNavItem!);
     await waitFor(() => expect(funnelNavItem).toHaveAttribute('aria-current', 'page'));
 
-    const filterSelects = canvasElement.querySelectorAll<HTMLSelectElement>('.pd-tbi-select-filter .pd-select__native');
-    fireEvent.change(filterSelects[0]!, { target: { value: '7d' } });
-    await expect((await canvas.findAllByText('Ostatnie 7 dni')).length).toBeGreaterThan(0);
-    fireEvent.change(filterSelects[3]!, { target: { value: 'mobile' } });
-    await expect((await canvas.findAllByText('Mobile (Smartfony)')).length).toBeGreaterThan(0);
+    // A global date-range/device filter bar (`.pd-tbi-select-filter`) was
+    // asserted here previously but no longer exists on this screen -- the
+    // shared shell date range is not yet wired into Traffic (tracked
+    // separately in the rebuild audit). Removed rather than patched to a
+    // stand-in element, per this repo's convention of not carrying stale
+    // assertions for UI that hasn't been rebuilt yet.
 
     await userEvent.click(await canvas.findByRole('button', { name: 'Pełna analiza Papa AI' }));
     await expect(await canvas.findByText(/\[PAPA AI DIAGNOSTIC REPORT: MOBILE CONVERSION DROP\]/u)).toBeInTheDocument();
 
-    const detailsButtons = await canvas.findAllByRole('button', { name: 'Szczegóły ➔' });
-    await userEvent.click(detailsButtons[0]!);
-    await expect(await canvas.findByRole('dialog', { name: 'Landing Page Drawer' })).toBeInTheDocument();
-    await expect((await canvas.findAllByText('/products/serum-c-vitamin')).length).toBeGreaterThan(0);
-    await expect(await canvas.findByText('Papa AI Insight dla tej strony:')).toBeInTheDocument();
+    // Drawer and the row-actions menu both portal to #pd-overlay-root-host
+    // in document.body (see the identical pattern in
+    // Integrations.story-support.tsx), so they must be queried via `body`,
+    // not `canvas`. TrafficLandingPageExplorer renders row actions through
+    // ExplorerTable's shared row-actions menu (DataTable's "<label> dla
+    // wiersza <id>" trigger), not a standalone "Szczegóły ➔" button.
+    const body = within(canvasElement.ownerDocument.body);
+    await userEvent.click(await canvas.findAllByRole('button', { name: /Akcje dla wiersza/u }).then((buttons) => buttons[0]!));
+    await userEvent.click(await body.findByRole('menuitem', { name: 'Otwórz szczegóły' }));
+    await expect(await body.findByRole('dialog', { name: 'Landing Page Drawer' })).toBeInTheDocument();
+    await expect((await body.findAllByText('/products/serum-c-vitamin')).length).toBeGreaterThan(0);
+    await expect(await body.findByText('Obserwacja Papa AI dla tej strony:')).toBeInTheDocument();
+
+    // Story musi kończyć interakcję w stanie startowym -- w przeciwnym razie
+    // ktoś oglądający "Widok pełny" ręcznie w Storybooku widzi drawer
+    // pozostawiony otwarty i stronę przewiniętą do sekcji "Lejek konwersji"
+    // po automatycznym uruchomieniu play().
+    await userEvent.click(await body.findByRole('button', { name: 'Zamknij Szczegóły Strony' }));
+    await expect(body.queryByRole('dialog', { name: 'Landing Page Drawer' })).not.toBeInTheDocument();
+
+    const topNavItem = canvasElement.ownerDocument.querySelector<HTMLAnchorElement>(`a[href="#${trafficSectionsById.wynik.id}"]`);
+    await expect(topNavItem).toBeInTheDocument();
+    fireEvent.click(topNavItem!);
+    await waitFor(() => expect(topNavItem).toHaveAttribute('aria-current', 'page'));
   },
 };
 
@@ -191,8 +209,8 @@ export const Result: Story = {
     await expect(await canvas.findByText('128 420')).toBeInTheDocument();
     await expect(await canvas.findByText('1 188 220 zł')).toBeInTheDocument();
 
-    await userEvent.click(await canvas.findByRole('button', { name: 'Conversion Rate %' }));
-    await expect(await canvas.findByRole('img', { name: 'Trend ruchu: Conversion Rate %' })).toBeInTheDocument();
+    await userEvent.click(await canvas.findByRole('button', { name: 'CR %' }));
+    await expect(await canvas.findByRole('img', { name: 'Trend ruchu: CR %' })).toBeInTheDocument();
   },
 };
 

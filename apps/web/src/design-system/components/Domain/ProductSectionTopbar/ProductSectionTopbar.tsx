@@ -1,5 +1,6 @@
 import type {
   HTMLAttributes,
+  ReactNode,
 } from '../domainShared';
 import {
   forwardRef,
@@ -23,6 +24,7 @@ export type ProductSectionTopbarItem = {
 
 export type ProductSectionTopbarProps = Omit<HTMLAttributes<HTMLElement>, 'children'> & {
   readonly activeId?: string;
+  readonly actions?: ReactNode;
   readonly ariaLabel?: string;
   readonly items: readonly ProductSectionTopbarItem[];
   readonly onActiveIdChange?: (id: string) => void;
@@ -40,6 +42,7 @@ export const ProductSectionTopbar = forwardRef<HTMLElement, ProductSectionTopbar
   function ProductSectionTopbar(
     {
       activeId,
+      actions = null,
       ariaLabel = 'Nawigacja sekcji',
       className,
       items,
@@ -61,7 +64,11 @@ export const ProductSectionTopbar = forwardRef<HTMLElement, ProductSectionTopbar
       }
 
       function handleScroll(event?: Event) {
-        setIsScrolled(readScrollTop(event?.target ?? null) > scrollThreshold);
+        const passedThreshold = readScrollTop(event?.target ?? null) > scrollThreshold;
+        // Once revealed, keep the control reachable. Collapsing every section
+        // can shorten the document and force scrollTop back to zero; hiding the
+        // only "Rozwiń wszystkie" action at that point strands the user.
+        setIsScrolled((current) => current || passedThreshold);
       }
 
       handleScroll();
@@ -81,25 +88,30 @@ export const ProductSectionTopbar = forwardRef<HTMLElement, ProductSectionTopbar
         className={joinClassNames('pd-section-topbar', className)}
         data-visible={isScrolled ? 'true' : 'false'}
       >
-        <div className="pd-section-topbar__list">
-          {items.map((item) => (
-            <a
-              aria-current={item.id === activeId ? 'page' : undefined}
-              className="pd-section-topbar__item"
-              href={`#${item.id}`}
-              key={item.id}
-              onClick={(event) => {
-                event.preventDefault();
-                onActiveIdChange?.(item.id);
-                document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-            >
-              {item.icon ? (
-                <Icon decorative name={item.icon} size={16} />
-              ) : null}
-              <span>{item.label}</span>
-            </a>
-          ))}
+        <div className="pd-section-topbar__inner">
+          <div className="pd-section-topbar__list">
+            {items.map((item) => (
+              <a
+                aria-current={item.id === activeId ? 'page' : undefined}
+                className="pd-section-topbar__item"
+                href={`#${item.id}`}
+                key={item.id}
+                onClick={(event) => {
+                  event.preventDefault();
+                  onActiveIdChange?.(item.id);
+                  document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
+              >
+                {item.icon ? (
+                  <Icon decorative name={item.icon} size={16} />
+                ) : null}
+                <span>{item.label}</span>
+              </a>
+            ))}
+          </div>
+          {actions ? (
+            <div className="pd-section-topbar__actions">{actions}</div>
+          ) : null}
         </div>
       </nav>
     );

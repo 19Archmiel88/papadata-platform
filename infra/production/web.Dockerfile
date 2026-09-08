@@ -3,11 +3,22 @@ WORKDIR /workspace
 RUN corepack enable
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json turbo.json ./
 COPY apps/web/package.json apps/web/package.json
+COPY packages/contracts/package.json packages/contracts/package.json
 RUN pnpm install --frozen-lockfile
-# apps/web reaches the repo-root contracts/ directory via relative imports
-# (e.g. "../../../../../contracts/api-schemas"), not as a workspace package.
+# apps/web reaches most of the repo-root contracts/ directory via relative
+# imports (e.g. "../../../../../contracts/api-schemas"), not as a workspace
+# package -- but it also depends on @papadata/contracts (packages/contracts)
+# as a real pnpm workspace package (see apps/web/package.json), which must
+# be present for that import to resolve during the build.
 COPY contracts contracts
+COPY packages/contracts packages/contracts
 COPY apps/web apps/web
+# @papadata/contracts resolves through its package.json "exports" to
+# packages/contracts/dist/*, so it must be built before apps/web's `vite
+# build` tries to resolve "@papadata/contracts/saved-reports" -- unlike the
+# backend apps below, vite does not follow TS project references to build
+# workspace dependencies on demand.
+RUN pnpm --filter @papadata/contracts build
 RUN pnpm --filter @papadata/web build
 # Source maps are generated for local debugging builds but must not be served
 # from the production image (config/local-production-parity contract: web is

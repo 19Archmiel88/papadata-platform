@@ -1,6 +1,12 @@
 import type {
   DateRange,
 } from '../../../../../../contracts/ui-contract-types';
+import type {
+  ReportCommand,
+  ReportConfig,
+  ReportSnapshot,
+  ReportsStore,
+} from '@papadata/contracts/saved-reports';
 import {
   BrowserAuthRefreshCoordinator,
   type AuthRefreshCoordinator,
@@ -223,6 +229,21 @@ export type InvitationPreview = {
   readonly status: string;
   readonly tenantName?: string;
   readonly workspaceName?: string;
+};
+
+// Mirrors packages/database/src/product-domain.ts's MemberListRow -- a
+// unified list of active/disabled members AND pending invitations (the
+// latter carry status 'invited' and their id is the invitation id, not a
+// membership id). settings.memberships.read does not return an expiry for
+// pending invitations, so callers cannot show one.
+export type SettingsMembershipRow = {
+  readonly id: string;
+  readonly person: string;
+  readonly email: string;
+  readonly role: string;
+  readonly status: string;
+  readonly mfa: boolean;
+  readonly lastSeenAt: string | null;
 };
 
 export type RegisterInput = {
@@ -606,6 +627,12 @@ export class BffClient {
     return this.authenticatedCommand('/api/v1/invitation/reject', { invitationId });
   }
 
+  async readSettingsMemberships(): Promise<{
+    readonly items: readonly SettingsMembershipRow[];
+  }> {
+    return this.readDomainScreen('/api/v1/settings/czlonkostwa');
+  }
+
   async validateInvitation(input: {
     readonly invitationId: string;
     readonly token: string;
@@ -910,11 +937,12 @@ export class BffClient {
     readonly snapshot: Readonly<Record<string, unknown>>;
     readonly title: string;
     readonly idempotencyKey?: string;
+    readonly signal?: AbortSignal;
   }): Promise<PapaContextCaptureResult> {
-    const { idempotencyKey, ...body } = input;
+    const { idempotencyKey, signal, ...body } = input;
     const data = await this.authenticatedCommand<{
       readonly contextCaptureResult: PapaContextCaptureResult;
-    }>('/api/v1/papa/context/capture', body, { idempotencyKey });
+    }>('/api/v1/papa/context/capture', body, { idempotencyKey, signal });
     return data.contextCaptureResult;
   }
 
@@ -924,8 +952,9 @@ export class BffClient {
     readonly parentConversationId: string | null;
     readonly prompt: string;
     readonly idempotencyKey?: string;
+    readonly signal?: AbortSignal;
   }): Promise<PapaAnswerGenerateResult> {
-    const { idempotencyKey, ...body } = input;
+    const { idempotencyKey, signal, ...body } = input;
     const data = await this.authenticatedCommand<{
       readonly answerGenerateResult: {
         readonly caseThreadId: string | null;
@@ -933,13 +962,44 @@ export class BffClient {
         readonly messageId: string;
       };
       readonly record: PapaAnswerRecord;
-    }>('/api/v1/papa/answer', body, { idempotencyKey });
+    }>('/api/v1/papa/answer', body, { idempotencyKey, signal });
     return {
       caseThreadId: data.answerGenerateResult.caseThreadId,
       conversationId: data.answerGenerateResult.conversationId,
       messageId: data.answerGenerateResult.messageId,
       record: data.record,
     };
+  }
+
+  async commandPapaAction(input: {
+    readonly action: 'validate' | 'approve' | 'reject';
+    readonly actionProposalId: string;
+    readonly reason: string;
+    readonly idempotencyKey: string;
+  }): Promise<unknown> {
+    return this.authenticatedCommand(`/api/v1/papa/ai-actions/${input.action}`, {
+      payload: {
+        actionProposalId: input.actionProposalId,
+        ...(input.action === 'approve' ? { exactConsent: input.reason } : {}),
+        ...(input.action === 'reject' ? { rejectionReason: input.reason } : {}),
+      },
+    }, { idempotencyKey: input.idempotencyKey });
+  }
+
+  async savePapaObservation(input: {
+    readonly content: string;
+    readonly conversationId: string | null;
+    readonly idempotencyKey?: string;
+  }): Promise<{
+    readonly conversationId: string;
+    readonly observationId: string;
+  }> {
+    const { idempotencyKey, ...body } = input;
+    const data = await this.authenticatedCommand<{
+      readonly observationSaveResult: { readonly conversationId: string };
+      readonly outcomeId: string;
+    }>('/api/v1/papa/observations', body, { idempotencyKey });
+    return { conversationId: data.observationSaveResult.conversationId, observationId: data.outcomeId };
   }
 
   async readPapaAnswers(conversationId: string): Promise<{
@@ -970,6 +1030,24 @@ export class BffClient {
 
   async readPapaGovernance<TData = unknown>(): Promise<TData> {
     return this.readDomainScreen<TData>('/api/v1/papa/ustawienia-ai-i-governance');
+  }
+
+  async readSavedReports(): Promise<ReportsStore> {
+    return this.readDomainScreen<ReportsStore>('/api/v1/saved-reports');
+  }
+
+  async previewSavedReport(config: ReportConfig): Promise<ReportSnapshot & { readonly previewId: string }> {
+    return this.authenticatedCommand<ReportSnapshot & { readonly previewId: string }>(
+      '/api/v1/saved-reports/preview',
+      config as unknown as Readonly<Record<string, unknown>>,
+    );
+  }
+
+  async commandSavedReports(command: ReportCommand): Promise<ReportsStore> {
+    return this.authenticatedCommand<ReportsStore>(
+      '/api/v1/saved-reports/commands',
+      command as unknown as Readonly<Record<string, unknown>>,
+    );
   }
 
   async readPapaReportDefinitions(input: {
@@ -1196,13 +1274,14 @@ export class BffClient {
   private async authenticatedCommand<TData = unknown>(
     path: string,
     body?: Readonly<Record<string, unknown>>,
-    options: { readonly idempotencyKey?: string } = {},
+    options: { readonly idempotencyKey?: string; readonly signal?: AbortSignal } = {},
   ): Promise<TData> {
     const csrfToken = await this.getCsrfToken();
     const response = await this.fetch(
       path,
       {
         method: 'POST',
+        signal: options.signal,
         headers: {
           'idempotency-key': options.idempotencyKey ?? createCorrelationId(),
           'x-papadata-csrf': csrfToken,

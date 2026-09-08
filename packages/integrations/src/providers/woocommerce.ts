@@ -48,61 +48,103 @@ export class WooCommerceAdapter implements IntegrationProviderAdapter {
     await this.requestJson("system_status");
   }
 
+  /**
+   * Real page-level resumability pilot (see the scaling architecture audit
+   * and the "porcjowanie dużych importów" work) -- unlike every other
+   * provider adapter, this one honors `request.pageCursor`/returns
+   * `nextPageCursor` for real: one call fetches exactly one page of exactly
+   * one stream, so the pipeline (DurableIngestionPipeline.run) can persist,
+   * normalize, canonicalize and reconcile that page durably before asking
+   * for the next one. A crash partway through a large orders/products
+   * backfill now loses at most one in-flight page, not the whole fetch.
+   *
+   * `refunds` is intentionally NOT paginated through this mechanism yet --
+   * fetchRefundRecords has its own global-endpoint/per-order-fallback logic
+   * that isn't page-cursor-friendly, so it is still fetched in one shot
+   * (same behavior as before this pilot; not a regression).
+   *
+   * The cursor encodes (streamIndex, page): streamIndex points into
+   * request.streams so multi-stream requests (the common case -- see
+   * AUTO_SYNC_PROVIDER_STREAMS in apps/worker) page through each stream in
+   * turn rather than needing a separate job per stream.
+   */
   async fetch(request: ProviderFetchRequest): Promise<ProviderFetchResult> {
     const observedAt = new Date().toISOString();
-    const records: ProviderRecord[] = [];
-    const limitations: string[] = [];
     const from = request.from ?? checkpointDate(request.checkpoint);
     const to = request.to;
+    const cursor = parseWooCommercePageCursor(request.pageCursor);
+    const streamIndex = cursor?.streamIndex ?? 0;
+    const page = cursor?.page ?? 1;
+    const stream = request.streams[streamIndex];
 
-    for (const stream of request.streams) {
-      if (stream === "orders") {
-        const orders = await this.fetchPages("orders", {
-          after: from,
-          before: to,
-          order: "asc",
-          orderby: "modified",
-          status: "any",
-        });
-        records.push(...orders.map((order) => ({
-          stream,
-          externalId: readStringField(order, "id", "number") ?? randomUUID(),
-          observedAt,
-          payload: order,
-        })));
-        continue;
-      }
-
-      if (stream === "products" || stream === "inventory") {
-        const products = await this.fetchPages("products", {
-          after: from,
-          before: to,
-          order: "asc",
-          orderby: "modified",
-          status: "any",
-        });
-        records.push(...products.map((product) => ({
-          stream,
-          externalId: readStringField(product, "id", "sku") ?? randomUUID(),
-          observedAt,
-          payload: product,
-        })));
-        continue;
-      }
-
-      if (stream === "refunds") {
-        records.push(...await this.fetchRefundRecords({
-          from,
-          to,
-          observedAt,
-          limitations,
-        }));
-      }
+    if (stream === undefined) {
+      // Nothing left to page through -- the pipeline stops calling fetch()
+      // once nextPageCursor is null, so this only guards a stale resume
+      // cursor (e.g. left over from a job whose streams list changed).
+      return {
+        records: [],
+        nextCheckpoint: JSON.stringify({ modifiedAfter: observedAt }),
+        nextPageCursor: null,
+        partial: false,
+        limitations: [],
+      };
     }
+
+    const records: ProviderRecord[] = [];
+    const limitations: string[] = [];
+    let hasMorePagesInStream = false;
+
+    if (stream === "orders") {
+      const { rows, hasMore } = await this.fetchOnePage("orders", {
+        after: from,
+        before: to,
+        order: "asc",
+        orderby: "modified",
+        status: "any",
+      }, page);
+      records.push(...rows.map((order) => ({
+        stream,
+        externalId: readStringField(order, "id", "number") ?? randomUUID(),
+        observedAt,
+        payload: order,
+      })));
+      hasMorePagesInStream = hasMore;
+    } else if (stream === "products" || stream === "inventory") {
+      const { rows, hasMore } = await this.fetchOnePage("products", {
+        after: from,
+        before: to,
+        order: "asc",
+        orderby: "modified",
+        status: "any",
+      }, page);
+      records.push(...rows.map((product) => ({
+        stream,
+        externalId: readStringField(product, "id", "sku") ?? randomUUID(),
+        observedAt,
+        payload: product,
+      })));
+      hasMorePagesInStream = hasMore;
+    } else if (stream === "refunds") {
+      records.push(...await this.fetchRefundRecords({
+        from,
+        to,
+        observedAt,
+        limitations,
+      }));
+      hasMorePagesInStream = false;
+    }
+
+    const nextStreamIndex = streamIndex + 1;
+    const nextPageCursor = hasMorePagesInStream
+      ? serializeWooCommercePageCursor({ streamIndex, page: page + 1 })
+      : nextStreamIndex < request.streams.length
+        ? serializeWooCommercePageCursor({ streamIndex: nextStreamIndex, page: 1 })
+        : null;
 
     return {
       records,
       nextCheckpoint: JSON.stringify({ modifiedAfter: observedAt }),
+      nextPageCursor,
       partial: false,
       limitations,
     };
@@ -257,6 +299,34 @@ export class WooCommerceAdapter implements IntegrationProviderAdapter {
     return records;
   }
 
+  /**
+   * Single-page counterpart to fetchPages, used by the real page-resumable
+   * path in fetch() above. Same WordPress REST pagination contract
+   * (page/per_page query params, x-wp-totalpages response header).
+   */
+  private async fetchOnePage(
+    resource: string,
+    filters: Readonly<Record<string, string | null>>,
+    page: number,
+  ): Promise<{ readonly rows: readonly unknown[]; readonly hasMore: boolean }> {
+    const query = new URLSearchParams({
+      page: String(page),
+      per_page: "100",
+    });
+    for (const [key, value] of Object.entries(filters)) {
+      if (value) query.set(key, value);
+    }
+    const result = await this.requestJson(`${resource}?${query.toString()}`);
+    const rows = Array.isArray(result.data)
+      ? result.data
+      : readArrayField(result.data, resource, "data");
+    const totalPages = Number(result.headers.get("x-wp-totalpages") ?? "0");
+    const hasMore = rows.length >= 100
+      && !(Number.isFinite(totalPages) && totalPages > 0 && page >= totalPages);
+
+    return { rows, hasMore };
+  }
+
   private async fetchPages(
     resource: string,
     filters: Readonly<Record<string, string | null>>,
@@ -354,6 +424,36 @@ function checkpointDate(checkpoint: string | null): string | null {
     if (Number.isFinite(Date.parse(checkpoint))) return checkpoint;
   }
   return null;
+}
+
+type WooCommercePageCursor = {
+  readonly streamIndex: number;
+  readonly page: number;
+};
+
+function parseWooCommercePageCursor(cursor: string | null): WooCommercePageCursor | null {
+  if (!cursor) return null;
+  try {
+    const value = JSON.parse(cursor) as unknown;
+    if (
+      isRecord(value)
+      && typeof value.streamIndex === "number"
+      && typeof value.page === "number"
+      && Number.isInteger(value.streamIndex)
+      && Number.isInteger(value.page)
+      && value.streamIndex >= 0
+      && value.page >= 1
+    ) {
+      return { streamIndex: value.streamIndex, page: value.page };
+    }
+  } catch {
+    // fall through to null
+  }
+  return null;
+}
+
+function serializeWooCommercePageCursor(cursor: WooCommercePageCursor): string {
+  return JSON.stringify(cursor);
 }
 
 function normalizeRefundPayload(

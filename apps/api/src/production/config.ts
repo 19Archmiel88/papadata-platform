@@ -22,6 +22,11 @@ export type ProductionConfig = {
   readonly authActiveSecret: string;
   readonly authPreviousSecret: string | null;
   readonly mfaEncryptionKey: string;
+  // Optional on purpose: no environment this codebase runs in today has a
+  // real Stripe account configured (see docs/backend-remediation and the
+  // scaling architecture audit). Null means the webhook endpoint rejects
+  // every request rather than the whole API failing to boot.
+  readonly stripeWebhookSecret: string | null;
 };
 
 export class ProductionConfigurationError extends Error {
@@ -137,6 +142,7 @@ export function readProductionConfig(
     authActiveSecret,
     authPreviousSecret,
     mfaEncryptionKey: readMfaKey(env),
+    stripeWebhookSecret: optionalSecret(env, "STRIPE_WEBHOOK_SECRET"),
   };
 }
 

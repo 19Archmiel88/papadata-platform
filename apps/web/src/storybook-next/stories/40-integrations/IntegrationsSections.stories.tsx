@@ -3,9 +3,13 @@ import type {
 } from '@storybook/react-vite';
 
 import {
-  Screen40_03Story as Screen40_03StoryStory,
-  Screen40_04Story as Screen40_04StoryStory,
-  Screen40_06Story as Screen40_06StoryStory,
+  CatalogStory as CatalogStoryStory,
+  DataQualityStory as DataQualityStoryStory,
+  WorkspaceConfigStory as WorkspaceConfigStoryStory,
+  WorkspaceDataStory as WorkspaceDataStoryStory,
+  WorkspaceOverviewStory as WorkspaceOverviewStoryStory,
+  WorkspaceSyncRunStory as WorkspaceSyncRunStoryStory,
+  WorkspaceSyncStory as WorkspaceSyncStoryStory,
 } from './Integrations.story-support';
 
 const meta = {
@@ -14,17 +18,37 @@ const meta = {
 
 export default meta;
 
-export const Screen40_03Story = {
-  ...Screen40_03StoryStory,
-  name: 'Szczegóły integracji',
+export const CatalogStory = {
+  ...CatalogStoryStory,
+  name: 'Katalog',
 };
 
-export const Screen40_04Story = {
-  ...Screen40_04StoryStory,
-  name: 'Historia synchronizacji',
+export const DataQualityStory = {
+  ...DataQualityStoryStory,
+  name: 'Jakość danych',
 };
 
-export const Screen40_06Story = {
-  ...Screen40_06StoryStory,
-  name: 'Zakres synchronizacji',
+export const WorkspaceOverviewStory = {
+  ...WorkspaceOverviewStoryStory,
+  name: 'Szczegóły integracji — Przegląd',
+};
+
+export const WorkspaceDataStory = {
+  ...WorkspaceDataStoryStory,
+  name: 'Szczegóły integracji — Dane',
+};
+
+export const WorkspaceSyncStory = {
+  ...WorkspaceSyncStoryStory,
+  name: 'Szczegóły integracji — Synchronizacja',
+};
+
+export const WorkspaceConfigStory = {
+  ...WorkspaceConfigStoryStory,
+  name: 'Szczegóły integracji — Konfiguracja',
+};
+
+export const WorkspaceSyncRunStory = {
+  ...WorkspaceSyncRunStoryStory,
+  name: 'Szczegóły runu',
 };

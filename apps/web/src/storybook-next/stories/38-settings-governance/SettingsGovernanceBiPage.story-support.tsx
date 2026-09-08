@@ -7,7 +7,9 @@ import type {
 } from 'react';
 import {
   expect,
+  fireEvent,
   userEvent,
+  waitFor,
   within,
 } from 'storybook/test';
 
@@ -23,6 +25,10 @@ import {
   SettingsWorkspaceNotifications,
   SettingsWorkspaceTeam,
 } from '../../../screens/settings-governance/SettingsGovernanceScreen';
+import {
+  settingsSections,
+  settingsSectionsById,
+} from '../../../screens/settings-governance/SettingsGovernanceScreen.data';
 import {
   StorybookProductShellFrame,
 } from '../shared/StorybookProductShellFrame';
@@ -49,10 +55,8 @@ function StoryFrame({
 }) {
   return (
     <main className="pd-set">
-      <div className="pd-set-content">
-        <div className="pd-set-view">
-          {children}
-        </div>
+      <div className="pd-set__content">
+        {children}
       </div>
     </main>
   );
@@ -68,16 +72,29 @@ export const FullPage: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByRole('heading', { name: 'Moje konto' })).toBeInTheDocument();
+    await expect(canvasElement.querySelectorAll('.pd-section-frame')).toHaveLength(settingsSections.length);
+    await expect(Array.from(canvasElement.querySelectorAll('.pd-section-frame')).map((section) => section.id)).toEqual(
+      settingsSections.map((section) => section.id),
+    );
 
-    await userEvent.click(await canvas.findByRole('button', { name: /Bezpieczeństwo/u }));
-    await expect(await canvas.findByRole('heading', { name: 'Bezpieczeństwo i Dostęp' })).toBeInTheDocument();
+    for (const section of settingsSections) {
+      await expect(await canvas.findByRole('heading', { name: section.title })).toBeInTheDocument();
+      await expect(canvasElement.ownerDocument.querySelector(`a[href="#${section.id}"]`)).toHaveTextContent(section.navLabel);
+    }
 
-    await userEvent.click(await canvas.findByRole('button', { name: /Zespół i uprawnienia/u }));
-    await expect(await canvas.findByRole('heading', { name: 'Zespół i Uprawnienia (RBAC)' })).toBeInTheDocument();
+    const teamNavItem = canvasElement.ownerDocument.querySelector<HTMLAnchorElement>(`a[href="#${settingsSectionsById['ws-team'].id}"]`);
+    await expect(teamNavItem).toBeInTheDocument();
+    fireEvent.click(teamNavItem!);
+    await waitFor(() => expect(teamNavItem).toHaveAttribute('aria-current', 'page'));
 
-    await userEvent.click(await canvas.findByRole('button', { name: /Audyt P0/u }));
-    await expect(await canvas.findByRole('heading', { name: 'Raport Audytu Architektury Ustawień (P0 Fixes)' })).toBeInTheDocument();
+    // Story musi kończyć interakcję w stanie startowym -- w przeciwnym razie
+    // ktoś oglądający "Widok pełny" ręcznie w Storybooku widzi stronę
+    // przewiniętą do sekcji "Zespół i uprawnienia" po automatycznym
+    // uruchomieniu play().
+    const topNavItem = canvasElement.ownerDocument.querySelector<HTMLAnchorElement>(`a[href="#${settingsSectionsById['account-profile'].id}"]`);
+    await expect(topNavItem).toBeInTheDocument();
+    fireEvent.click(topNavItem!);
+    await waitFor(() => expect(topNavItem).toHaveAttribute('aria-current', 'page'));
   },
 };
 
@@ -92,7 +109,7 @@ export const AccountProfile: Story = {
     const canvas = within(canvasElement);
 
     await expect(await canvas.findByDisplayValue('Anna Kowalska')).toBeInTheDocument();
-    await expect(await canvas.findByText('Email Zweryfikowany ✓')).toBeInTheDocument();
+    await expect(await canvas.findByText(/E-mail zweryfikowany/u)).toBeInTheDocument();
   },
 };
 
@@ -108,7 +125,7 @@ export const AccountSecurity: Story = {
 
     await expect(await canvas.findByText('YubiKey 5 NFC (Hardware Key)')).toBeInTheDocument();
 
-    await userEvent.click(await canvas.findByRole('button', { name: /Ponownie Skonfiguruj TOTP/u }));
+    await userEvent.click(await canvas.findByRole('button', { name: /Skonfiguruj ponownie/u }));
   },
 };
 
@@ -123,7 +140,7 @@ export const WsCompany: Story = {
     const canvas = within(canvasElement);
 
     await expect(await canvas.findByDisplayValue('Casa di Orfeo')).toBeInTheDocument();
-    await expect(await canvas.findByText('Strefa Krytyczna (Danger Zone)')).toBeInTheDocument();
+    await expect(await canvas.findByText('Operacje zaawansowane')).toBeInTheDocument();
   },
 };
 
@@ -167,7 +184,7 @@ export const WsAi: Story = {
     const canvas = within(canvasElement);
 
     await expect(await canvas.findByText('VIP_CUSTOMER')).toBeInTheDocument();
-    await expect(await canvas.findByText(/AI Security Guardrail/u)).toBeInTheDocument();
+    await expect(await canvas.findByText(/Ochrona danych logowania/u)).toBeInTheDocument();
   },
 };
 
@@ -181,7 +198,7 @@ export const WsNotifications: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await expect(await canvas.findByText('Weekly Executive Brief')).toBeInTheDocument();
+    await expect(await canvas.findByText('Cotygodniowe podsumowanie')).toBeInTheDocument();
   },
 };
 
@@ -222,21 +239,26 @@ export const ModalsAndSearch: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    // Dialog portals to #pd-overlay-root-host in document.body (see the
+    // identical pattern in Integrations/Customers/Traffic story-support
+    // files), so anything rendered inside one of the 3 modals below must be
+    // queried via `body`, not `canvas`. All sections are always mounted now
+    // (no more tab-switch), so buttons further down the page are reachable
+    // directly without first clicking a topbar anchor.
+    const body = within(canvasElement.ownerDocument.body);
 
-    await userEvent.click(await canvas.findByRole('button', { name: /Bezpieczeństwo/u }));
-    await userEvent.click(await canvas.findByRole('button', { name: /Ponownie Skonfiguruj TOTP/u }));
-    await expect(await canvas.findByRole('dialog', { name: 'Konfiguracja TOTP 2FA' })).toBeInTheDocument();
-    await userEvent.click(await canvas.findByRole('button', { name: 'Zamknij' }));
+    await userEvent.click(await canvas.findByRole('button', { name: /Skonfiguruj ponownie/u }));
+    await expect(await body.findByRole('dialog', { name: 'Konfiguracja weryfikacji dwuetapowej' })).toBeInTheDocument();
+    await userEvent.click(await body.findByRole('button', { name: 'Zamknij' }));
 
-    await userEvent.click(await canvas.findByRole('button', { name: /Zespół i uprawnienia/u }));
-    await userEvent.click(await canvas.findByRole('button', { name: /Zaproś Nowego Użytkownika/u }));
-    await expect(await canvas.findByRole('dialog', { name: 'Zaproś członka zespołu' })).toBeInTheDocument();
-    await expect(await canvas.findByText('targets.manage')).toBeInTheDocument();
-    await userEvent.click(await canvas.findByRole('button', { name: 'Zamknij' }));
+    await userEvent.click(await canvas.findByRole('button', { name: /Zaproś osobę/u }));
+    await expect(await body.findByRole('dialog', { name: 'Zaproś członka zespołu' })).toBeInTheDocument();
+    await expect(await body.findByText('targets.manage')).toBeInTheDocument();
+    await userEvent.click(await body.findByRole('button', { name: 'Zamknij' }));
 
     await userEvent.click(await canvas.findByRole('button', { name: /Szukaj ustawień/u }));
-    await expect(await canvas.findByRole('dialog', { name: 'Szukaj ustawień' })).toBeInTheDocument();
-    await userEvent.type(await canvas.findByPlaceholderText(/Szukaj ustawienia/u), 'ROAS');
-    await expect(await canvas.findByText('Cele Biznesowe (/targets)')).toBeInTheDocument();
+    await expect(await body.findByRole('dialog', { name: 'Szukaj ustawień' })).toBeInTheDocument();
+    await userEvent.type(await body.findByPlaceholderText(/Szukaj ustawienia/u), 'ROAS');
+    await expect(await body.findByText('Cele Biznesowe (/targets)')).toBeInTheDocument();
   },
 };

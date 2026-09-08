@@ -3,9 +3,9 @@ import type {
 } from '@storybook/react-vite';
 
 import {
-  Screen40_02Story as Screen40_02StoryStory,
-  Screen40_07Story as Screen40_07StoryStory,
-  Screen40_08Story as Screen40_08StoryStory,
+  ConnectWizardStory as ConnectWizardStoryStory,
+  DisconnectDialogStory as DisconnectDialogStoryStory,
+  ReconnectWizardStory as ReconnectWizardStoryStory,
 } from './Integrations.story-support';
 
 const meta = {
@@ -14,17 +14,17 @@ const meta = {
 
 export default meta;
 
-export const Screen40_02Story = {
-  ...Screen40_02StoryStory,
-  name: 'Kreator połączenia',
+export const ConnectWizardStory = {
+  ...ConnectWizardStoryStory,
+  name: 'Połącz źródło',
 };
 
-export const Screen40_07Story = {
-  ...Screen40_07StoryStory,
+export const ReconnectWizardStory = {
+  ...ReconnectWizardStoryStory,
   name: 'Ponowne połączenie',
 };
 
-export const Screen40_08Story = {
-  ...Screen40_08StoryStory,
+export const DisconnectDialogStory = {
+  ...DisconnectDialogStoryStory,
   name: 'Odłączenie',
 };

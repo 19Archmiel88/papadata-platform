@@ -16,17 +16,15 @@
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
     "paths": {
       "@papadata/contracts": [
-        "packages/contracts/src/index.ts"
+        "./packages/contracts/src/index.ts"
       ],
       "@papadata/database": [
-        "packages/database/src/index.ts"
+        "./packages/database/src/index.ts"
       ],
       "@papadata/testing": [
-        "packages/testing/src/index.ts"
+        "./packages/testing/src/index.ts"
       ]
     }
   }

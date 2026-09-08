@@ -58,73 +58,104 @@ export class AllegroAdapter implements IntegrationProviderAdapter {
     await this.requestJson("/me");
   }
 
+  /**
+   * Real page-level resumability (see WooCommerceAdapter.fetch's doc
+   * comment for the full rationale) -- one call fetches exactly one page of
+   * exactly one stream. Allegro's offset/limit pagination maps the resume
+   * cursor to {streamIndex, offset}, mirroring WooCommerce's {streamIndex,
+   * page} for the same reason (a single sync request commonly asks for
+   * multiple streams together -- see AUTO_SYNC_PROVIDER_STREAMS).
+   *
+   * The event-cursor lookup (fetchEventCursor) costs its own real API call,
+   * so it only runs once this is genuinely the last page of the last
+   * stream -- a page result that will keep looping never needs a
+   * nextCheckpoint value, since persistFetchedPage only writes it on the
+   * final page (see DurableIngestionPipeline.run).
+   */
   async fetch(request: ProviderFetchRequest): Promise<ProviderFetchResult> {
     const observedAt = new Date().toISOString();
-    const records: ProviderRecord[] = [];
     const limitations = [
       "Allegro change delivery is implemented by cursor-based event polling because the public REST API exposes event journals rather than signed webhooks.",
     ];
+    const cursor = parseAllegroPageCursor(request.pageCursor);
+    const streamIndex = cursor?.streamIndex ?? 0;
+    const offset = cursor?.offset ?? 0;
+    const stream = request.streams[streamIndex];
 
-    for (const stream of request.streams) {
-      if (stream === "orders") {
-        const orders = await this.fetchOffsetPages(
-          "/order/checkout-forms",
-          "checkoutForms",
-          {
-            "lineItems.boughtAt.gte": request.from,
-            "lineItems.boughtAt.lte": request.to,
-            sort: "+lineItems.boughtAt",
-          },
-          100,
-        );
-        records.push(...orders.map((order) => ({
-          stream,
-          externalId: readStringField(order, "id") ?? randomUUID(),
-          observedAt,
-          payload: order,
-        })));
-        continue;
-      }
-
-      if (stream === "products" || stream === "inventory") {
-        const offers = await this.fetchOffsetPages(
-          "/sale/offers",
-          "offers",
-          {
-            "publication.marketplace": this.config?.marketplaceId ?? "allegro-pl",
-            "publication.status": "ACTIVE",
-          },
-          1000,
-        );
-        records.push(...offers.map((offer) => ({
-          stream,
-          externalId: readStringField(offer, "id") ?? randomUUID(),
-          observedAt,
-          payload: offer,
-        })));
-        continue;
-      }
-
-      if (stream === "refunds") {
-        const claims = await this.fetchOffsetPages(
-          "/order/refund-claims",
-          "refundClaims",
-          {},
-          100,
-        );
-        records.push(...claims.map((claim) => ({
-          stream,
-          externalId: readStringField(claim, "id") ?? randomUUID(),
-          observedAt,
-          payload: claim,
-        })));
-      }
+    if (stream === undefined) {
+      return {
+        records: [],
+        nextCheckpoint: await this.fetchEventCursor(request.checkpoint),
+        nextPageCursor: null,
+        partial: false,
+        limitations,
+      };
     }
 
-    const eventCursor = await this.fetchEventCursor(request.checkpoint);
+    const records: ProviderRecord[] = [];
+    let page: { readonly rows: readonly unknown[]; readonly hasMore: boolean };
+
+    if (stream === "orders") {
+      page = await this.fetchOffsetPage(
+        "/order/checkout-forms",
+        "checkoutForms",
+        {
+          "lineItems.boughtAt.gte": request.from,
+          "lineItems.boughtAt.lte": request.to,
+          sort: "+lineItems.boughtAt",
+        },
+        100,
+        offset,
+      );
+      records.push(...page.rows.map((order) => ({
+        stream,
+        externalId: readStringField(order, "id") ?? randomUUID(),
+        observedAt,
+        payload: order,
+      })));
+    } else if (stream === "products" || stream === "inventory") {
+      page = await this.fetchOffsetPage(
+        "/sale/offers",
+        "offers",
+        {
+          "publication.marketplace": this.config?.marketplaceId ?? "allegro-pl",
+          "publication.status": "ACTIVE",
+        },
+        1000,
+        offset,
+      );
+      records.push(...page.rows.map((offer) => ({
+        stream,
+        externalId: readStringField(offer, "id") ?? randomUUID(),
+        observedAt,
+        payload: offer,
+      })));
+    } else if (stream === "refunds") {
+      page = await this.fetchOffsetPage("/order/refund-claims", "refundClaims", {}, 100, offset);
+      records.push(...page.rows.map((claim) => ({
+        stream,
+        externalId: readStringField(claim, "id") ?? randomUUID(),
+        observedAt,
+        payload: claim,
+      })));
+    } else {
+      page = { rows: [], hasMore: false };
+    }
+
+    const nextStreamIndex = streamIndex + 1;
+    const nextPageCursor = page.hasMore
+      ? serializeAllegroPageCursor({ streamIndex, offset: offset + page.rows.length })
+      : nextStreamIndex < request.streams.length
+        ? serializeAllegroPageCursor({ streamIndex: nextStreamIndex, offset: 0 })
+        : null;
+    const nextCheckpoint = nextPageCursor === null
+      ? await this.fetchEventCursor(request.checkpoint)
+      : request.checkpoint;
+
     return {
       records,
-      nextCheckpoint: eventCursor,
+      nextCheckpoint,
+      nextPageCursor,
       partial: false,
       limitations,
     };
@@ -143,35 +174,28 @@ export class AllegroAdapter implements IntegrationProviderAdapter {
     });
   }
 
-  private async fetchOffsetPages(
+  private async fetchOffsetPage(
     path: string,
     arrayKey: string,
     parameters: Readonly<Record<string, string | null>>,
     limit: number,
-  ): Promise<readonly unknown[]> {
-    const rows: unknown[] = [];
-    let offset = 0;
-
-    while (offset <= 10_000_000) {
-      const query = new URLSearchParams({
-        limit: String(limit),
-        offset: String(offset),
-      });
-      for (const [key, value] of Object.entries(parameters)) {
-        if (value) query.append(key, value);
-      }
-      const response = await this.requestJson(`${path}?${query.toString()}`);
-      const page = readArrayField(response, arrayKey);
-      rows.push(...page);
-      const total = readNumberField(response, "totalCount", "total");
-      offset += page.length;
-
-      if (page.length === 0 || page.length < limit || (total !== null && offset >= total)) {
-        break;
-      }
+    offset: number,
+  ): Promise<{ readonly rows: readonly unknown[]; readonly hasMore: boolean }> {
+    const query = new URLSearchParams({
+      limit: String(limit),
+      offset: String(offset),
+    });
+    for (const [key, value] of Object.entries(parameters)) {
+      if (value) query.append(key, value);
     }
+    const response = await this.requestJson(`${path}?${query.toString()}`);
+    const rows = readArrayField(response, arrayKey);
+    const total = readNumberField(response, "totalCount", "total");
+    const hasMore = rows.length > 0
+      && rows.length >= limit
+      && !(total !== null && offset + rows.length >= total);
 
-    return rows;
+    return { rows, hasMore };
   }
 
   private async requestJson(path: string): Promise<unknown> {
@@ -203,6 +227,36 @@ export class AllegroAdapter implements IntegrationProviderAdapter {
     }
     return result.data;
   }
+}
+
+type AllegroPageCursor = {
+  readonly streamIndex: number;
+  readonly offset: number;
+};
+
+function parseAllegroPageCursor(cursor: string | null): AllegroPageCursor | null {
+  if (!cursor) return null;
+  try {
+    const value = JSON.parse(cursor) as unknown;
+    if (
+      isRecord(value)
+      && typeof value.streamIndex === "number"
+      && typeof value.offset === "number"
+      && Number.isInteger(value.streamIndex)
+      && Number.isInteger(value.offset)
+      && value.streamIndex >= 0
+      && value.offset >= 0
+    ) {
+      return { streamIndex: value.streamIndex, offset: value.offset };
+    }
+  } catch {
+    // fall through to null
+  }
+  return null;
+}
+
+function serializeAllegroPageCursor(cursor: AllegroPageCursor): string {
+  return JSON.stringify(cursor);
 }
 
 function normalizeAllegroBaseUrl(value: string): string {

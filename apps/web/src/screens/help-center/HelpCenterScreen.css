@@ -45,11 +45,26 @@
   --pd-hc-slate-800: 74 74 68;
   --pd-hc-slate-900: 58 58 54;
   --pd-hc-slate-950: 37 37 35;
+  /* Non-inverting: for chrome (modal headers, dark buttons, toasts) that
+     must stay dark-background/white-text in both themes. --pd-hc-slate-900
+     itself intentionally flips to near-white in dark theme (it's a
+     text-emphasis token, correct for body text) -- using it as a background
+     was the bug (see .pd-hc-hero below, which already hardcodes this same
+     value for the same reason). Not redefined in the dark-theme block. */
+  --pd-hc-chrome-ink: 58 58 54;
   --pd-hc-violet-50: 245 244 246;
   --pd-hc-violet-100: 234 232 237;
   --pd-hc-violet-200: 213 208 220;
   --pd-hc-violet-600: 106 78 147;
   --pd-hc-violet-700: 86 64 120;
+  --pd-section-frame-surface: rgb(var(--pd-hc-surface-card));
+  --pd-section-frame-text: rgb(var(--pd-hc-slate-800));
+  --pd-section-frame-muted: rgb(var(--pd-hc-slate-500));
+  --pd-section-topbar-surface: rgb(var(--pd-hc-surface-card) / 0.94);
+  --pd-section-topbar-text: rgb(var(--pd-hc-slate-500));
+  --pd-section-topbar-active-surface: rgb(var(--pd-hc-brand-600) / 0.14);
+  --pd-section-topbar-active-border: rgb(var(--pd-hc-brand-500) / 0.5);
+  --pd-section-topbar-active-text: var(--pd-brand-action);
   background: rgb(var(--pd-hc-slate-50));
   color: rgb(var(--pd-hc-slate-800));
   font-family: var(--pd-font-sans);
@@ -95,6 +110,143 @@
   width: 100%;
 }
 
+/* Sekcje zwijane -- wzorzec przeniesiony z Centrum Dowodzenia / Klientów /
+   Ustawień: rozwinięta sekcja to płaska, pełnoszerokościowa lista rozdzielona
+   kreską (bez własnego cienia/pudełka), a cień/obramowanie sygnalizuje teraz
+   stan zwinięty, nie każdą sekcję z osobna. */
+.pd-hc .pd-section-frame {
+  --pd-section-frame-padding: 0;
+  --pd-section-frame-shadow: none;
+  --pd-section-frame-shadow-hover: none;
+  --pd-section-frame-surface: transparent;
+  border-radius: 0;
+}
+
+.pd-hc .pd-section-frame:not([data-collapsed='true']) {
+  border-top: 1px solid rgb(var(--pd-hc-slate-300));
+  padding-block: 28px;
+}
+
+.pd-hc__content > .pd-section-frame:not([data-collapsed='true']):first-child {
+  border-top: none;
+  padding-top: 4px;
+}
+
+.pd-hc .pd-section-frame__body {
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.pd-hc-section-content {
+  display: contents;
+}
+
+.pd-hc-section-frame[data-collapsed='true'] {
+  --pd-section-frame-padding: 14px 18px;
+  border: 1px solid rgb(var(--pd-hc-slate-300));
+  box-shadow: none;
+}
+
+.pd-hc-section-frame[data-collapsed='true']:hover {
+  border-color: rgb(var(--pd-hc-slate-400));
+  box-shadow: none;
+}
+
+.pd-hc-section-frame[data-collapsed='true'] .pd-section-frame__head {
+  align-items: center;
+}
+
+.pd-hc-section-frame[data-collapsed='true'] .pd-section-frame__body {
+  display: none;
+}
+
+.pd-hc-section-summary {
+  color: var(--pd-section-frame-text);
+  font-weight: 600;
+}
+
+.pd-hc-section-toggle,
+.pd-hc-section-nav-toggle {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--pd-radius-pill);
+  color: rgb(var(--pd-hc-slate-600));
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 600;
+  gap: 5px;
+  justify-content: center;
+  min-height: 32px;
+  padding: 3px 4px 3px 9px;
+  transition: color 140ms var(--pd-motion-easing-standard);
+  white-space: nowrap;
+}
+
+.pd-hc-section-toggle:hover,
+.pd-hc-section-nav-toggle:hover {
+  background: transparent;
+  border-color: transparent;
+  color: var(--pd-brand-action);
+}
+
+.pd-hc-section-toggle:focus-visible,
+.pd-hc-section-nav-toggle:focus-visible {
+  border-color: transparent;
+  box-shadow: none;
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: 2px;
+}
+
+.pd-hc-section-toggle__icon {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  display: inline-flex;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+  transition: color 140ms var(--pd-motion-easing-standard);
+}
+
+.pd-hc-section-toggle:hover .pd-hc-section-toggle__icon {
+  background: transparent;
+  border-color: transparent;
+  color: var(--pd-brand-action);
+}
+
+.pd-hc-section-toggle__icon svg {
+  transition: transform 160ms var(--pd-motion-easing-standard);
+}
+
+.pd-hc-section-toggle[aria-expanded='true'] .pd-hc-section-toggle__icon svg {
+  transform: rotate(180deg);
+}
+
+.pd-hc-section-nav-toggle {
+  background: transparent;
+  border-color: transparent;
+}
+
+@media (max-width: 720px) {
+  .pd-hc__content {
+    gap: 14px;
+  }
+
+  .pd-hc .pd-section-frame {
+    --pd-section-frame-padding: 16px;
+  }
+
+  .pd-hc-section-frame[data-collapsed='true'] {
+    --pd-section-frame-padding: 13px 14px;
+  }
+
+  .pd-hc-section-frame[data-collapsed='true'] .pd-section-frame__head {
+    align-items: flex-start;
+  }
+}
+
 .pd-hc-primary-button,
 .pd-hc-brand-button,
 .pd-hc-muted-button,
@@ -105,8 +257,6 @@
 .pd-hc-quick-search,
 .pd-hc-context-signal,
 .pd-hc-context-signal > div,
-.pd-hc-tabs,
-.pd-hc-tabs button,
 .pd-hc-kb__filters,
 .pd-hc-category-filters,
 .pd-hc-article-card__meta,
@@ -161,8 +311,8 @@
 }
 
 .pd-hc-primary-button {
-  background: rgb(var(--pd-hc-slate-900));
-  border: 1px solid rgb(var(--pd-hc-slate-900));
+  background: rgb(var(--pd-hc-chrome-ink));
+  border: 1px solid rgb(var(--pd-hc-chrome-ink));
   color: white;
 }
 
@@ -268,6 +418,11 @@
   min-height: 38px;
   outline: 0;
   width: 100%;
+}
+
+.pd-hc-search input:focus-visible {
+  outline: 0;
+  box-shadow: none;
 }
 
 .pd-hc-search button,
@@ -430,37 +585,6 @@
   margin-top: 3px;
 }
 
-.pd-hc-tabs {
-  border-bottom: 1px solid rgb(var(--pd-hc-slate-200));
-  flex-wrap: wrap;
-  gap: 3px;
-}
-
-.pd-hc-tabs button {
-  background: transparent;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  color: rgb(var(--pd-hc-slate-500));
-  gap: 8px;
-  min-height: 44px;
-  padding: 11px 14px;
-}
-
-.pd-hc-tabs button.is-active {
-  border-bottom-color: rgb(var(--pd-hc-brand-600));
-  color: rgb(var(--pd-hc-brand-700));
-  font-weight: 600;
-}
-
-.pd-hc-tabs button span {
-  background: rgb(var(--pd-hc-brand-100));
-  border-radius: var(--pd-radius-pill);
-  color: rgb(var(--pd-hc-brand-800));
-  font-size: var(--pd-type-size-micro);
-  font-weight: 600;
-  padding: 4px 7px;
-}
-
 .pd-hc-kb,
 .pd-hc-truth,
 .pd-hc-domain {
@@ -489,8 +613,8 @@
 }
 
 .pd-hc-category-filters button.is-active {
-  background: rgb(var(--pd-hc-slate-900));
-  border-color: rgb(var(--pd-hc-slate-900));
+  background: rgb(var(--pd-hc-chrome-ink));
+  border-color: rgb(var(--pd-hc-chrome-ink));
   color: white;
   font-weight: 600;
 }
@@ -695,7 +819,7 @@
 }
 
 .pd-hc-truth-console {
-  background: rgb(var(--pd-hc-slate-900));
+  background: rgb(var(--pd-hc-chrome-ink));
   border-radius: var(--pd-radius-small);
   box-shadow: var(--pd-shadow-raised);
   color: white;
@@ -935,7 +1059,7 @@
 }
 
 .pd-hc-context-pack pre {
-  background: rgb(var(--pd-hc-slate-900));
+  background: rgb(var(--pd-hc-chrome-ink));
   border-radius: var(--pd-radius-small);
   color: rgb(var(--pd-hc-emerald-500));
   font-family: var(--pd-font-mono);
@@ -1211,7 +1335,7 @@
 
 .pd-hc-procedure-modal__head,
 .pd-hc-modal-head {
-  background: rgb(var(--pd-hc-slate-900));
+  background: rgb(var(--pd-hc-chrome-ink));
   color: white;
   gap: 14px;
   justify-content: space-between;
@@ -1492,7 +1616,7 @@
 }
 
 .pd-hc-toast {
-  background: rgb(var(--pd-hc-slate-900));
+  background: rgb(var(--pd-hc-chrome-ink));
   border-radius: var(--pd-radius-pill);
   bottom: 18px;
   box-shadow: var(--pd-shadow-overlay);
@@ -1628,4 +1752,21 @@
   --pd-hc-violet-200: 40 30 52;
   --pd-hc-violet-600: 145 86 210;
   --pd-hc-violet-700: 166 118 218;
+}
+
+/* Final UI convergence: canonical selects */
+.pd-hc-role-filter {
+  inline-size: min(15rem, 100%);
+  flex: 0 0 auto;
+}
+
+.pd-hc-truth-role-select {
+  inline-size: min(13rem, 100%);
+}
+
+@media (max-width: 760px) {
+  .pd-hc-role-filter,
+  .pd-hc-truth-role-select {
+    inline-size: 100%;
+  }
 }

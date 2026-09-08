@@ -49,6 +49,8 @@ import { IntegrationQueueService } from "./queue/queue.service.js";
 import { ReadinessController } from "./readiness.controller.js";
 import { ReportController } from "./reports/report.controller.js";
 import { ReportService } from "./reports/report.service.js";
+import { SavedReportsController } from "./reports/saved-reports.controller.js";
+import { SavedReportsService } from "./reports/saved-reports.service.js";
 import { Argon2PasswordService } from "./security/argon2.service.js";
 import { InvitationTokenService } from "./security/invitation-token.service.js";
 import { SecurityController } from "./security/security.controller.js";
@@ -59,6 +61,8 @@ import { NotificationController } from "./notifications/notification.controller.
 import { NotificationService } from "./notifications/notification.service.js";
 import { ContractRuntimeService } from "./contract-runtime/contract-runtime.service.js";
 import { contractRuntimeControllers } from "./contract-runtime/generated/index.js";
+import { StripeWebhookController } from "./billing/stripe-webhook.controller.js";
+import { StripeWebhookService } from "./billing/stripe-webhook.service.js";
 
 export const productionControllers = [
   HealthController,
@@ -66,10 +70,12 @@ export const productionControllers = [
   MetricsController,
   IntegrationController,
   WebhookController,
+  StripeWebhookController,
   SecurityController,
   AuditController,
   PrivacyController,
   ReportController,
+  SavedReportsController,
   IdentityController,
   OAuthController,
   ProductController,
@@ -97,6 +103,7 @@ export const productionControllers = [
     AuditService,
     PrivacyService,
     ReportService,
+    SavedReportsService,
     IdentityService,
     OAuthProviderConfig,
     OAuthTokenVerifierService,
@@ -105,6 +112,7 @@ export const productionControllers = [
     NotificationService,
     ContractRuntimeService,
     ObjectStorageService,
+    StripeWebhookService,
     {
       provide: PRINCIPAL_CLOCK,
       useValue: systemPrincipalClock,

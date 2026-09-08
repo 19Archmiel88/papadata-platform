@@ -520,6 +520,16 @@
     "bffPath": "/api/v1/billing/read"
   },
   {
+    "auth": "external_provider",
+    "controllerFile": "apps/api/src/production/billing/stripe-webhook.controller.ts",
+    "implementation": "native-hardened-runtime",
+    "method": "POST",
+    "operationId": "billing.stripe.webhook.receive",
+    "releaseStatus": "enabled",
+    "servicePath": "/v1/billing/stripe/webhook",
+    "bffPath": "/api/v1/billing/stripe/webhook"
+  },
+  {
     "auth": "step_up+capability",
     "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
     "implementation": "migrated-billing-policy",
@@ -2550,6 +2560,16 @@
     "bffPath": "/api/v1/security/mfa/confirm"
   },
   {
+    "auth": "step_up+capability",
+    "controllerFile": "apps/api/src/production/security/security.controller.ts",
+    "implementation": "native-hardened-runtime",
+    "method": "DELETE",
+    "operationId": "security.mfa.disable",
+    "releaseStatus": "enabled",
+    "servicePath": "/v1/security/mfa",
+    "bffPath": "/api/v1/security/mfa"
+  },
+  {
     "auth": "capability",
     "controllerFile": "apps/api/src/production/security/security.controller.ts",
     "implementation": "native-hardened-runtime",
@@ -2558,6 +2578,26 @@
     "releaseStatus": "enabled",
     "servicePath": "/v1/security/mfa/enroll",
     "bffPath": "/api/v1/security/mfa/enroll"
+  },
+  {
+    "auth": "capability",
+    "controllerFile": "apps/api/src/production/security/security.controller.ts",
+    "implementation": "native-hardened-runtime",
+    "method": "POST",
+    "operationId": "security.mfa.recovery-code.redeem",
+    "releaseStatus": "enabled",
+    "servicePath": "/v1/security/mfa/recovery-code/redeem",
+    "bffPath": "/api/v1/security/mfa/recovery-code/redeem"
+  },
+  {
+    "auth": "capability",
+    "controllerFile": "apps/api/src/production/security/security.controller.ts",
+    "implementation": "native-hardened-runtime",
+    "method": "POST",
+    "operationId": "security.mfa.verify",
+    "releaseStatus": "enabled",
+    "servicePath": "/v1/security/mfa/verify",
+    "bffPath": "/api/v1/security/mfa/verify"
   },
   {
     "auth": "mfa+capability",

@@ -1,18 +1,35 @@
 import type {
   ChangeEvent,
   FormEvent,
-  ReactNode,
 } from 'react';
 import {
-  useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 
 import {
-  navigate,
-} from '../app/routing/navigation';
+  AlertDialog,
+  Button,
+  Checkbox,
+  DataTable,
+  Dialog,
+  Drawer,
+  Icon,
+  InlineNotice,
+  Menu,
+  PasswordField,
+  SearchField,
+  StatusBadge,
+  Tabs,
+  TextField,
+} from '../../design-system';
+import type {
+  DataTableStatusTone,
+  MenuItem,
+} from '../../design-system';
+import type {
+  DataRow,
+} from '../../../../../contracts/component-shared';
 import {
   createIntegrationsRuntimeFallbackData,
   filterIntegrationCatalog,
@@ -20,22 +37,23 @@ import {
   formatDuration,
   formatIntegrationDateTime,
   formatNumber,
-  resolveIntegrationRuntimeTab,
+  integrationWorkspaceTabs,
+  providerAvailabilityTone,
+  resolveSourceSyntheticStatus,
+  streamLabel,
+  syntheticStatusTone,
 } from './integrationsData';
 import type {
   IntegrationCatalogFilters,
-  IntegrationCompletenessRuntime,
   IntegrationProviderId,
   IntegrationProviderTestResult,
   IntegrationRuntimeCatalogProvider,
   IntegrationRuntimeLog,
   IntegrationRuntimeSource,
-  IntegrationRuntimeTabId,
-  IntegrationScreenDefinition,
-  IntegrationsData,
-  IntegrationsRuntimeView,
   IntegrationSourceFilters,
-  RuntimeSourceBusinessStatus,
+  IntegrationSyncStage,
+  IntegrationWorkspaceTabId,
+  IntegrationsRuntimeView,
 } from './integrationsData';
 import './integrations-workspace.css';
 
@@ -45,9 +63,9 @@ type PartialFailure = {
   readonly message: string;
 };
 
+type HubAreaId = 'sources' | 'catalog' | 'data-quality';
+
 export type IntegrationsWorkspaceProps = {
-  readonly data?: IntegrationsData | null;
-  readonly definition?: IntegrationScreenDefinition | null;
   readonly loading?: boolean;
   readonly mode?: 'runtime' | 'storybook';
   readonly onCreateConnection?: (
@@ -69,10 +87,17 @@ export type IntegrationsWorkspaceProps = {
     source: IntegrationRuntimeSource,
     actionId: IntegrationRuntimeSource['primaryAction']['id'],
   ) => Promise<void>;
+  readonly onUpdateSourceScope?: (
+    source: IntegrationRuntimeSource,
+    selectedStreams: readonly string[],
+  ) => Promise<void>;
   readonly partialFailures?: readonly PartialFailure[];
   readonly path?: string;
   readonly problem?: string | null;
   readonly runtime?: IntegrationsRuntimeView | null;
+  readonly initialArea?: HubAreaId;
+  readonly initialSourceId?: string | null;
+  readonly initialWorkspaceTab?: IntegrationWorkspaceTabId;
 };
 
 type OperationNotice = {
@@ -87,13 +112,20 @@ type Toast = {
   readonly tone: 'error' | 'info' | 'success';
 };
 
+const hubAreas: readonly { readonly id: HubAreaId; readonly label: string }[] = [
+  { id: 'sources', label: 'Źródła' },
+  { id: 'catalog', label: 'Katalog' },
+  { id: 'data-quality', label: 'Jakość danych' },
+];
+
 const sourceStatusFilters: readonly {
-  readonly id: 'all' | RuntimeSourceBusinessStatus;
+  readonly id: IntegrationSourceFilters['status'];
   readonly label: string;
 }[] = [
   { id: 'all', label: 'Wszystkie' },
-  { id: 'working', label: 'Działające' },
-  { id: 'syncing', label: 'Pobieranie' },
+  { id: 'ready', label: 'Gotowe' },
+  { id: 'syncing', label: 'Synchronizacja' },
+  { id: 'partial', label: 'Częściowo gotowe' },
   { id: 'action_required', label: 'Wymaga działania' },
 ];
 
@@ -102,42 +134,23 @@ const catalogFilterOptions: readonly {
   readonly label: string;
 }[] = [
   { id: 'all', label: 'Wszystkie' },
-  { id: 'commerce', label: 'Sprzedaż i E-commerce' },
-  { id: 'advertising', label: 'Reklamy & PPC' },
-  { id: 'analytics', label: 'Analityka i Marketing' },
+  { id: 'commerce', label: 'Sprzedaż i marketplace' },
+  { id: 'advertising', label: 'Reklama' },
+  { id: 'analytics', label: 'Analityka i marketing' },
   { id: 'available', label: 'Dostępne' },
 ];
 
-const recommendedFlow = [
-  {
-    detail: 'WooCommerce, BaseLinker',
-    status: 'Podłączone (100%)',
-    tone: 'success',
-    title: '1. Sklep / Zamówienia',
-  },
-  {
-    detail: 'Google Analytics 4',
-    status: 'Pobieranie historii w toku',
-    tone: 'processing',
-    title: '2. Analityka Ruchu',
-  },
-  {
-    detail: 'Google Ads',
-    status: 'Wymaga ponownego łączenia',
-    tone: 'warning',
-    title: '3. Reklamy PPC',
-  },
-  {
-    detail: 'Meta Ads, CSV Import',
-    status: 'Podłączone',
-    tone: 'success',
-    title: '4. Social Ads & Koszty',
-  },
+const wizardStepDefs = [
+  { id: 'account', label: 'Konto' },
+  { id: 'access', label: 'Dostęp' },
+  { id: 'scope', label: 'Zakres danych' },
+  { id: 'test', label: 'Test' },
+  { id: 'sync', label: 'Pierwsza synchronizacja' },
 ] as const;
 
+type WizardStepId = (typeof wizardStepDefs)[number]['id'];
+
 export function IntegrationsWorkspace({
-  data,
-  definition,
   loading = false,
   mode = 'runtime',
   onCreateConnection,
@@ -145,22 +158,21 @@ export function IntegrationsWorkspace({
   onProviderTest,
   onReload,
   onSourceCommand,
+  onUpdateSourceScope,
   partialFailures = [],
   path = '/app/integrations/sources',
   problem = null,
   runtime,
+  initialArea,
+  initialSourceId = null,
+  initialWorkspaceTab = 'overview',
 }: IntegrationsWorkspaceProps) {
   const resolvedRuntime = useMemo(
-    () => (
-      runtime
-        ? runtime
-        : data
-          ? createIntegrationsRuntimeFallbackData(data.generatedAt)
-          : null
-    ),
-    [data, runtime],
+    () => runtime ?? createIntegrationsRuntimeFallbackData(),
+    [runtime],
   );
-  const activeTab = resolveIntegrationRuntimeTab(path);
+
+  const [area, setArea] = useState<HubAreaId>(initialArea ?? resolveHubArea(path));
   const [sourceFilters, setSourceFilters] = useState<IntegrationSourceFilters>({
     provider: 'all',
     query: '',
@@ -170,81 +182,38 @@ export function IntegrationsWorkspace({
     category: 'all',
     query: '',
   });
-  const [selectedSourceId, setSelectedSourceId] = useState<string | null>(null);
+  const [selectedSourceId, setSelectedSourceId] = useState<string | null>(initialSourceId);
+  const [workspaceTab, setWorkspaceTab] = useState<IntegrationWorkspaceTabId>(initialWorkspaceTab);
+  const [expandedRunId, setExpandedRunId] = useState<string | null>(null);
   const [connectProviderId, setConnectProviderId] = useState<IntegrationProviderId | null>(null);
   const [disconnectSource, setDisconnectSource] = useState<IntegrationRuntimeSource | null>(null);
-  const [readinessOpen, setReadinessOpen] = useState(false);
-  const [sseOpen, setSseOpen] = useState(false);
-  const [sseProgress, setSseProgress] = useState(42);
+  const [activityOpen, setActivityOpen] = useState(false);
   const [operationNotice, setOperationNotice] = useState<OperationNotice>(null);
   const [toasts, setToasts] = useState<readonly Toast[]>([]);
+  const [scopeOverrides, setScopeOverrides] = useState<Readonly<Record<string, readonly string[]>>>({});
 
-  const showToast = (message: string, tone: Toast['tone'] = 'info') => {
+  function showToast(message: string, tone: Toast['tone'] = 'info') {
     const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
     setToasts((items) => [...items, { id, message, tone }]);
     window.setTimeout(() => {
       setToasts((items) => items.filter((item) => item.id !== id));
     }, 3500);
-  };
-
-  if (!resolvedRuntime && loading) {
-    return <IntegrationsPrototypeSkeleton />;
   }
-
-  if (!resolvedRuntime) {
-    return (
-      <div className="pd-integrations-id8" data-mode={mode}>
-        <PrototypeHeader
-          loading={loading}
-          onReload={onReload}
-          onSseOpen={() => setSseOpen(true)}
-          planLabel="0 / 0 źródeł"
-        />
-        <main className="pd-id8-main">
-          <section className="pd-id8-notice" data-tone="critical">
-            <strong>Integracje nie są dostępne</strong>
-            <span>{problem ?? 'Nie udało się pobrać danych o integracjach.'}</span>
-            {onReload ? (
-              <button onClick={onReload} type="button">Spróbuj ponownie</button>
-            ) : null}
-          </section>
-        </main>
-      </div>
-    );
-  }
-
-  const filteredSources = filterIntegrationSources(
-    resolvedRuntime.status.sources,
-    sourceFilters,
-  );
-  const filteredProviders = filterIntegrationCatalog(
-    resolvedRuntime.catalog.providers,
-    catalogFilters,
-  );
-  const selectedSource = selectedSourceId
-    ? resolvedRuntime.status.sources.find((source) => source.integrationId === selectedSourceId) ?? null
-    : null;
-  const connectProvider = connectProviderId
-    ? resolvedRuntime.catalog.providers.find((provider) => provider.provider === connectProviderId) ?? null
-    : null;
-  const actionRequired = resolvedRuntime.status.summary.actionRequired;
-  const healthTone = actionRequired > 0
-    ? 'warning'
-    : resolvedRuntime.status.summary.syncingSources > 0
-      ? 'processing'
-      : 'success';
 
   async function executeSourceCommand(
     source: IntegrationRuntimeSource,
     actionId: IntegrationRuntimeSource['primaryAction']['id'],
   ) {
     if (actionId === 'details') {
-      setSelectedSourceId(source.integrationId);
+      openWorkspace(source.integrationId);
       return;
+    }
+    if (actionId === 'reauth') {
+      setConnectProviderId(source.provider);
     }
     try {
       await onSourceCommand?.(source, actionId);
-          showToast(`${source.providerDisplayName}: rozpoczęto operację.`, 'success');
+      showToast(`${source.providerDisplayName}: rozpoczęto operację.`, 'success');
     } catch (cause) {
       setOperationNotice({
         message: cause instanceof Error ? cause.message : 'Nie udało się wykonać operacji.',
@@ -255,1268 +224,1408 @@ export function IntegrationsWorkspace({
     }
   }
 
+  function openWorkspace(sourceId: string, tab: IntegrationWorkspaceTabId = 'overview') {
+    setSelectedSourceId(sourceId);
+    setWorkspaceTab(tab);
+    setExpandedRunId(null);
+  }
+
+  if (loading && !resolvedRuntime) {
+    return (
+      <div className="pd-int" data-mode={mode}>
+        <div className="pd-int-skeleton">
+          <div className="pd-int-skeleton__block" />
+          <div className="pd-int-skeleton__block" />
+          <div className="pd-int-skeleton__block" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!resolvedRuntime) {
+    return (
+      <div className="pd-int" data-mode={mode}>
+        <div className="pd-int-empty-shell">
+          <InlineNotice
+            message={problem ?? 'Nie udało się pobrać danych o integracjach.'}
+            title="Integracje nie są dostępne"
+            tone="critical"
+          />
+          {onReload ? (
+            <Button onClick={onReload} size="small" variant="secondary">Spróbuj ponownie</Button>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
+  const selectedSourceBase = selectedSourceId
+    ? resolvedRuntime.status.sources.find((source) => source.integrationId === selectedSourceId) ?? null
+    : null;
+  const selectedSource = selectedSourceBase
+    ? {
+      ...selectedSourceBase,
+      selectedStreams: scopeOverrides[selectedSourceBase.integrationId] ?? selectedSourceBase.selectedStreams,
+    }
+    : null;
+  const connectProvider = connectProviderId
+    ? resolvedRuntime.catalog.providers.find((provider) => provider.provider === connectProviderId) ?? null
+    : null;
+  const syncingSources = resolvedRuntime.status.sources.filter((source) => source.businessStatus === 'syncing');
+
   return (
-    <div
-      className="pd-integrations-id8"
-      data-demo={resolvedRuntime.demo ? true : undefined}
-      data-mode={mode}
-      data-screen-id={definition?.id ?? 'ID-8'}
-      data-tab={activeTab}
-    >
-      <ToastStack toasts={toasts} />
+    <div className="pd-int" data-demo={resolvedRuntime.demo ? true : undefined} data-mode={mode}>
+      {toasts.length > 0 ? (
+        <div aria-live="polite" className="pd-int-toast-stack">
+          {toasts.map((toast) => (
+            <div className="pd-int-toast" data-tone={toast.tone} key={toast.id}>{toast.message}</div>
+          ))}
+        </div>
+      ) : null}
 
-      <main className="pd-id8-main">
-        <section className="pd-id8-title-row">
-          <div>
-            <h1>Integracje i Jakość Danych</h1>
-            <p>Zarządzaj połączeniami, monitoruj kompletność i sprawdzaj gotowość danych dla analiz oraz Papa Asystenta.</p>
-          </div>
-          <div className="pd-id8-page-actions">
-            <span className="pd-id8-plan-summary">
-              {resolvedRuntime.status.plan.dataSourcesUsed} z {resolvedRuntime.status.plan.dataSourcesLimit} źródeł
-            </span>
-            <button className="pd-id8-button pd-id8-button--secondary" onClick={() => setSseOpen(true)} type="button">
-              Aktywność
-            </button>
-            <button
-              className="pd-id8-button pd-id8-button--secondary"
-              disabled={loading}
-              onClick={() => {
-                showToast('Odświeżanie stanu integracji...');
-                onReload?.();
-              }}
-              type="button"
-            >
-              {loading ? 'Odświeżanie…' : 'Odśwież'}
-            </button>
-            <button className="pd-id8-button pd-id8-button--primary" onClick={() => navigate('/app/integrations/add')} type="button">
-              Dodaj źródło
-            </button>
-          </div>
-        </section>
-
-        <GlobalHealthBar
-          onFix={() => {
-            navigate('/app/integrations/sources');
-            setSourceFilters((filters) => ({ ...filters, status: 'action_required' }));
-          }}
-          runtime={resolvedRuntime}
-          tone={healthTone}
+      {selectedSource ? (
+        <ProviderWorkspace
+          activeTab={workspaceTab}
+          expandedRunId={expandedRunId}
+          logs={resolvedRuntime.logs.logs.filter((log) => log.integrationId === selectedSource.integrationId)}
+          onBack={() => setSelectedSourceId(null)}
+          onDisconnect={() => setDisconnectSource(selectedSource)}
+          onExpandRun={setExpandedRunId}
+          availableStreams={resolvedRuntime.catalog.providers.find((provider) => provider.provider === selectedSource.provider)?.supportedStreams ?? selectedSource.selectedStreams}
+          onSourceCommand={executeSourceCommand}
+          onTabChange={setWorkspaceTab}
+          onUpdateScope={mode === 'storybook' || onUpdateSourceScope ? async (selectedStreams) => {
+            try {
+              await onUpdateSourceScope?.(selectedSource, selectedStreams);
+              setScopeOverrides((current) => ({
+                ...current,
+                [selectedSource.integrationId]: selectedStreams,
+              }));
+              showToast('Zakres danych integracji został zaktualizowany.', 'success');
+            } catch (cause) {
+              setOperationNotice({
+                message: cause instanceof Error ? cause.message : 'Nie udało się zapisać zakresu danych.',
+                title: 'Zmiana zakresu nie powiodła się',
+                tone: 'critical',
+              });
+              showToast('Nie udało się zapisać zakresu danych.', 'error');
+              throw cause;
+            }
+          } : undefined}
+          source={selectedSource}
         />
-
-        <KpiDashboard runtime={resolvedRuntime} />
-
-        {problem ? (
-          <section className="pd-id8-notice" data-tone="warning">
-            <strong>Część danych Integracji wymaga odświeżenia</strong>
-            <span>{problem}</span>
-            {onReload ? (
-              <button onClick={onReload} type="button">Spróbuj ponownie</button>
-            ) : null}
-          </section>
-        ) : null}
-
-        {partialFailures.length > 0 ? (
-          <div className="pd-id8-notice-stack">
-            {partialFailures.map((failure) => (
-              <section className="pd-id8-notice" data-tone="warning" key={failure.id}>
-                <strong>{failure.title}</strong>
-                <span>{failure.message}</span>
-                {onReload ? (
-                  <button onClick={onReload} type="button">Spróbuj ponownie</button>
-                ) : null}
-              </section>
-            ))}
-          </div>
-        ) : null}
-
-        {operationNotice ? (
-          <section className="pd-id8-notice" data-tone={operationNotice.tone}>
-            <strong>{operationNotice.title}</strong>
-            <span>{operationNotice.message}</span>
-            <button onClick={() => setOperationNotice(null)} type="button">Zamknij</button>
-          </section>
-        ) : null}
-
-        <RuntimeTabs
-          activeTab={activeTab}
+      ) : (
+        <IntegrationsHub
+          area={area}
           catalogFilters={catalogFilters}
+          catalogProviders={filterIntegrationCatalog(resolvedRuntime.catalog.providers, catalogFilters)}
           completeness={resolvedRuntime.completeness}
-          filteredProviders={filteredProviders}
-          filteredSources={filteredSources}
+          loading={loading}
           logs={resolvedRuntime.logs.logs}
+          onAreaChange={setArea}
           onCatalogFiltersChange={setCatalogFilters}
           onConnect={(provider) => setConnectProviderId(provider.provider)}
-          onDisconnect={setDisconnectSource}
-          onOpenDetails={setSelectedSourceId}
-          onReadinessOpen={() => setReadinessOpen(true)}
-          onSourceCommand={executeSourceCommand}
+          onOpenSource={openWorkspace}
+          onReload={onReload}
+          onRequestDisconnect={setDisconnectSource}
           onSourceFiltersChange={setSourceFilters}
+          runtimeStatus={resolvedRuntime.status}
           sourceFilters={sourceFilters}
-          sources={resolvedRuntime.status.sources}
+          sources={filterIntegrationSources(resolvedRuntime.status.sources, sourceFilters)}
+          onOpenActivity={() => setActivityOpen(true)}
+          onSourceCommand={executeSourceCommand}
         />
-      </main>
+      )}
 
-      <SourceInspector
-        onClose={() => setSelectedSourceId(null)}
-        onDisconnect={setDisconnectSource}
-        onSourceCommand={executeSourceCommand}
-        source={selectedSource}
-      />
+      {problem ? (
+        <div className="pd-int-floating-notice">
+          <InlineNotice message={problem} title="Część danych Integracji wymaga odświeżenia" tone="warning" />
+        </div>
+      ) : null}
+      {partialFailures.map((failure) => (
+        <div className="pd-int-floating-notice" key={failure.id}>
+          <InlineNotice message={failure.message} title={failure.title} tone="warning" />
+        </div>
+      ))}
+      {operationNotice ? (
+        <div className="pd-int-floating-notice">
+          <InlineNotice message={operationNotice.message} title={operationNotice.title} tone={operationNotice.tone} />
+        </div>
+      ) : null}
 
-      <ConnectModal
+      <ConnectWizard
         onClose={() => setConnectProviderId(null)}
         onCreateConnection={onCreateConnection}
         onProviderTest={onProviderTest}
         onSaved={() => {
           setConnectProviderId(null);
-          showToast('Połączenie zapisane. Rozpoczynamy pobieranie danych.', 'success');
-          navigate('/app/integrations/sources');
+          showToast('Konto zostało uwierzytelnione. Rozpoczynamy pierwszą synchronizację.', 'success');
+          setArea('sources');
         }}
         provider={connectProvider}
-        setOperationNotice={setOperationNotice}
         showToast={showToast}
       />
 
-      <SseConsole
-        onClose={() => setSseOpen(false)}
-        open={sseOpen}
-        progress={sseProgress}
-        setProgress={setSseProgress}
-        showToast={showToast}
-      />
-
-      <ReadinessModal
-        onClose={() => setReadinessOpen(false)}
-        open={readinessOpen}
-      />
-
-      <DisconnectModal
-        onClose={() => setDisconnectSource(null)}
-        onConfirm={async (source) => {
-          try {
-            await onDisconnectConnection?.(source);
-            showToast('Źródło zostało wyrejestrowane.', 'success');
-          } catch (cause) {
-            setOperationNotice({
-              message: cause instanceof Error ? cause.message : 'Nie udało się rozłączyć źródła.',
-              title: 'Rozłączenie nie powiodło się',
-              tone: 'critical',
-            });
-            showToast('Rozłączenie nie powiodło się.', 'error');
-          } finally {
-            setDisconnectSource(null);
-          }
+      <AlertDialog
+        cancelLabel="Anuluj"
+        confirmLabel="Odłącz źródło"
+        destructive
+        message={disconnectSource
+          ? `Odłączenie ${disconnectSource.providerDisplayName} (${disconnectSource.accountName ?? ''}) zatrzyma synchronizację danych. Historyczne dane pozostają dostępne w analizach, ale nowe dane przestaną napływać, a powiązane KPI zaczną się starzeć.`
+          : ''}
+        onCancel={() => setDisconnectSource(null)}
+        onConfirm={() => {
+          const source = disconnectSource;
+          if (!source) return;
+          void (async () => {
+            try {
+              await onDisconnectConnection?.(source);
+              showToast('Źródło zostało odłączone.', 'success');
+            } catch (cause) {
+              setOperationNotice({
+                message: cause instanceof Error ? cause.message : 'Nie udało się odłączyć źródła.',
+                title: 'Odłączenie nie powiodło się',
+                tone: 'critical',
+              });
+              showToast('Odłączenie nie powiodło się.', 'error');
+            } finally {
+              setDisconnectSource(null);
+              setSelectedSourceId(null);
+            }
+          })();
         }}
-        source={disconnectSource}
+        open={disconnectSource !== null}
+        title="Odłączyć to źródło?"
       />
+
+      <Drawer
+        dismissible
+        onOpenChange={(open) => setActivityOpen(open)}
+        open={activityOpen}
+        side="right"
+        title="Aktywność synchronizacji"
+        width={420}
+      >
+        {syncingSources.length === 0 ? (
+          <p className="pd-int-muted-text">Żadne źródło nie synchronizuje się teraz.</p>
+        ) : (
+          <div className="pd-int-activity-list">
+            {syncingSources.map((source) => (
+              <article className="pd-int-activity-item" key={source.integrationId}>
+                <ProviderMark label={source.providerDisplayName} provider={source.provider} />
+                <div>
+                  <strong>{source.providerDisplayName}</strong>
+                  <p>{source.accountName}</p>
+                  <div className="pd-int-activity-track"><span style={{ width: `${source.completeness.percentage}%` }} /></div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </Drawer>
     </div>
   );
 }
 
-function PrototypeHeader({
+function resolveHubArea(path: string): HubAreaId {
+  if (path.includes('/add') || path.includes('/katalog')) return 'catalog';
+  if (path.includes('/data-health') || path.includes('/jakosc')) return 'data-quality';
+  return 'sources';
+}
+
+/* ---------------------------------------------------------------------- */
+/* Hub: Źródła / Katalog / Jakość danych                                   */
+/* ---------------------------------------------------------------------- */
+
+function IntegrationsHub({
+  area,
+  catalogFilters,
+  catalogProviders,
+  completeness,
   loading,
+  logs,
+  onAreaChange,
+  onCatalogFiltersChange,
+  onConnect,
+  onOpenActivity,
+  onOpenSource,
   onReload,
-  onSseOpen,
-  planLabel,
+  onRequestDisconnect,
+  onSourceCommand,
+  onSourceFiltersChange,
+  runtimeStatus,
+  sourceFilters,
+  sources,
 }: {
+  readonly area: HubAreaId;
+  readonly catalogFilters: IntegrationCatalogFilters;
+  readonly catalogProviders: readonly IntegrationRuntimeCatalogProvider[];
+  readonly completeness: IntegrationsRuntimeView['completeness'];
   readonly loading: boolean;
+  readonly logs: readonly IntegrationRuntimeLog[];
+  readonly onAreaChange: (area: HubAreaId) => void;
+  readonly onCatalogFiltersChange: (filters: IntegrationCatalogFilters) => void;
+  readonly onConnect: (provider: IntegrationRuntimeCatalogProvider) => void;
+  readonly onOpenActivity: () => void;
+  readonly onOpenSource: (id: string, tab?: IntegrationWorkspaceTabId) => void;
   readonly onReload?: () => void;
-  readonly onSseOpen: () => void;
-  readonly planLabel: string;
+  readonly onRequestDisconnect: (source: IntegrationRuntimeSource) => void;
+  readonly onSourceCommand: (source: IntegrationRuntimeSource, actionId: IntegrationRuntimeSource['primaryAction']['id']) => void;
+  readonly onSourceFiltersChange: (filters: IntegrationSourceFilters) => void;
+  readonly runtimeStatus: IntegrationsRuntimeView['status'];
+  readonly sourceFilters: IntegrationSourceFilters;
+  readonly sources: readonly IntegrationRuntimeSource[];
 }) {
+  const readyCount = runtimeStatus.sources.filter((source) => resolveSourceSyntheticStatus(source).id === 'ready').length;
+  const primaryAlert = runtimeStatus.alerts[0] ?? null;
+
   return (
-    <header className="pd-id8-topbar">
-      <div className="pd-id8-topbar__inner">
-        <div className="pd-id8-topbar__actions">
-          <button className="pd-id8-sse-button" onClick={onSseOpen} type="button">
-            <span />
-            Aktywność synchronizacji
-          </button>
-          <div className="pd-id8-plan-chip">
-            <span>Limit planu:</span>
-            <strong>{planLabel}</strong>
-            <i aria-hidden="true"><b /></i>
-          </div>
-          <button className="pd-id8-refresh" disabled={loading} onClick={onReload} type="button">
-            <span aria-hidden="true">↻</span>
-            {loading ? 'Odświeżanie' : 'Odśwież status'}
-          </button>
+    <div className="pd-int-hub">
+      <header className="pd-int-topbar">
+        <div>
+          <h1 className="pd-int-sr-only">Integracje i jakość danych</h1>
+          <span className="pd-int-eyebrow">Dane i integracje</span>
+          <p className="pd-int-lead">Zarządzaj połączeniami źródeł danych i sprawdzaj ich wpływ na gotowość analiz.</p>
         </div>
-      </div>
-    </header>
+        <div className="pd-int-topbar-actions">
+          <Button onClick={onOpenActivity} size="small" variant="secondary">Aktywność synchronizacji</Button>
+          {onReload ? (
+            <Button disabled={loading} loading={loading} loadingLabel="Odświeżanie…" onClick={onReload} size="small" variant="secondary">
+              Odśwież
+            </Button>
+          ) : null}
+          <Button onClick={() => onAreaChange('catalog')} size="small">
+            + Połącz źródło
+          </Button>
+        </div>
+      </header>
+
+      <nav aria-label="Obszary integracji" className="pd-int-areas">
+        {hubAreas.map((item) => (
+          <button
+            aria-current={area === item.id ? 'page' : undefined}
+            className="pd-int-area-tab"
+            key={item.id}
+            onClick={() => onAreaChange(item.id)}
+            type="button"
+          >
+            {item.label}
+          </button>
+        ))}
+      </nav>
+
+      {area !== 'data-quality' && primaryAlert ? (
+        <div className="pd-int-alert" data-tone={primaryAlert.tone}>
+          <Icon decorative name="warning" size={16} />
+          <div>
+            <strong>{primaryAlert.title}</strong>
+            <span>{primaryAlert.message}</span>
+          </div>
+          {primaryAlert.actionLabel && primaryAlert.sourceId ? (
+            <Button
+              onClick={() => {
+                onAreaChange('sources');
+                onOpenSource(primaryAlert.sourceId!);
+              }}
+              size="small"
+            >
+              {primaryAlert.actionLabel}
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
+
+      {area !== 'data-quality' ? (
+        <div className="pd-int-summary-grid">
+          <SummaryCard label="Połączone źródła" value={`${runtimeStatus.plan.dataSourcesUsed}`} suffix={`/ ${runtimeStatus.plan.dataSourcesLimit}`} />
+          <SummaryCard label="Wymaga działania" value={`${runtimeStatus.summary.actionRequired}`} tone={runtimeStatus.summary.actionRequired > 0 ? 'warning' : undefined} />
+          <SummaryCard label="Synchronizacje" value={`${runtimeStatus.summary.syncingSources}`} suffix="w toku" />
+          <SummaryCard label="Gotowe do analizy" value={`${readyCount}`} suffix={`/ ${runtimeStatus.sources.length}`} tone="success" />
+        </div>
+      ) : null}
+
+      {area === 'sources' ? (
+        <SourcesView
+          filters={sourceFilters}
+          onFiltersChange={onSourceFiltersChange}
+          onOpenSource={onOpenSource}
+          onRequestDisconnect={onRequestDisconnect}
+          onSourceCommand={onSourceCommand}
+          sources={sources}
+        />
+      ) : null}
+
+      {area === 'catalog' ? (
+        <CatalogView
+          filters={catalogFilters}
+          onConnect={onConnect}
+          onFiltersChange={onCatalogFiltersChange}
+          onManageProvider={(source) => onOpenSource(source.integrationId)}
+          providers={catalogProviders}
+          sources={runtimeStatus.sources}
+        />
+      ) : null}
+
+      {area === 'data-quality' ? (
+        <DataQualityView completeness={completeness} logs={logs} />
+      ) : null}
+    </div>
   );
 }
 
-function GlobalHealthBar({
-  onFix,
-  runtime,
+function SummaryCard({
+  label,
+  suffix,
   tone,
+  value,
 }: {
-  readonly onFix: () => void;
-  readonly runtime: IntegrationsRuntimeView;
-  readonly tone: 'processing' | 'success' | 'warning';
+  readonly label: string;
+  readonly suffix?: string;
+  readonly tone?: 'success' | 'warning';
+  readonly value: string;
 }) {
-  const actionRequired = runtime.status.summary.actionRequired;
-  const prefix = actionRequired > 0
-    ? `${actionRequired} źródło wymaga akcji:`
-    : runtime.status.summary.syncingSources > 0
-      ? 'Pobieranie danych:'
-      : 'Dane gotowe do analizy:';
+  return (
+    <div className="pd-int-summary-card">
+      <span className="pd-int-summary-card__label">{label}</span>
+      <div className="pd-int-summary-card__value" data-tone={tone}>
+        {value}
+        {suffix ? <small>{suffix}</small> : null}
+      </div>
+    </div>
+  );
+}
+
+const sourceStatusToneMap: Record<string, DataTableStatusTone> = {
+  'Brak danych': 'neutral',
+  'Częściowo gotowe': 'warning',
+  'Gotowe': 'success',
+  'Odłączone': 'neutral',
+  'Problem providera': 'danger',
+  'Synchronizacja': 'default',
+  'Wymaga działania': 'danger',
+};
+
+function SourcesView({
+  filters,
+  onFiltersChange,
+  onOpenSource,
+  onRequestDisconnect,
+  onSourceCommand,
+  sources,
+}: {
+  readonly filters: IntegrationSourceFilters;
+  readonly onFiltersChange: (filters: IntegrationSourceFilters) => void;
+  readonly onOpenSource: (id: string, tab?: IntegrationWorkspaceTabId) => void;
+  readonly onRequestDisconnect: (source: IntegrationRuntimeSource) => void;
+  readonly onSourceCommand: (source: IntegrationRuntimeSource, actionId: IntegrationRuntimeSource['primaryAction']['id']) => void;
+  readonly sources: readonly IntegrationRuntimeSource[];
+}) {
+  const sourceById = new Map(sources.map((source) => [source.integrationId, source] as const));
+  const rows: DataRow[] = sources.map((source) => ({
+    account: source.accountName ?? '',
+    completeness: source.completeness.percentage,
+    freshness: source.freshness.label,
+    id: source.integrationId,
+    impact: source.issue ? source.issue.message : 'Bez problemów',
+    source: source.providerDisplayName,
+    status: resolveSourceSyntheticStatus(source).label,
+  }));
 
   return (
-    <section className="pd-id8-health-bar" data-tone={tone}>
-      <div className="pd-id8-health-bar__inner">
-        <div>
-          <span className="pd-id8-dot" />
-          <strong>{prefix}</strong>
-          <span>{runtime.status.summary.healthDescription}</span>
+    <section aria-label="Źródła danych" className="pd-int-panel">
+      <div className="pd-int-toolbar">
+        <SearchField
+          debounceMs={150}
+          hideLabel
+          label="Szukaj źródła"
+          loading={false}
+          onQueryChange={(value) => onFiltersChange({ ...filters, query: value })}
+          placeholder="Szukaj źródła lub konta…"
+          query={filters.query}
+          resultCount={null}
+        />
+        <div className="pd-int-filter-pills">
+          {sourceStatusFilters.map((item) => (
+            <button
+              aria-pressed={filters.status === item.id}
+              className="pd-int-filter-pill"
+              data-active={filters.status === item.id}
+              key={item.id}
+              onClick={() => onFiltersChange({ ...filters, status: item.id })}
+              type="button"
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
-        {actionRequired > 0 ? (
-          <button onClick={onFix} type="button">Napraw problem</button>
+      </div>
+
+      <DataTable
+        actionsLabel="Akcje"
+        actionsMenuItems={() => [
+          { id: 'sync', label: 'Synchronizuj teraz' },
+          { id: 'config', label: 'Konfiguracja' },
+          { id: 'reauth', label: 'Połącz ponownie' },
+          { id: 'sep', kind: 'separator' },
+          { destructive: true, id: 'disconnect', label: 'Odłącz' },
+        ]}
+        actionsTriggerLabel="•••"
+        ariaLabel="Źródła danych i jakość danych"
+        cellRenderers={{
+          completeness: (row) => {
+            const source = sourceById.get(String(row.id));
+            if (!source) return null;
+            const synthetic = resolveSourceSyntheticStatus(source);
+            return (
+              <div className="pd-int-completeness-cell">
+                <div className="pd-int-completeness-track"><span data-tone={syntheticStatusTone(synthetic.id)} style={{ width: `${source.completeness.percentage}%` }} /></div>
+                <span>{source.completeness.percentage}%</span>
+              </div>
+            );
+          },
+          openAction: (row) => {
+            const source = sourceById.get(String(row.id));
+            if (!source) return null;
+            const needsAction = source.primaryAction.id === 'reauth' || source.primaryAction.id === 'fix';
+            return (
+              <Button
+                onClick={() => (
+                  needsAction
+                    ? onSourceCommand(source, source.primaryAction.id)
+                    : onOpenSource(source.integrationId)
+                )}
+                size="small"
+                variant={needsAction ? 'primary' : 'secondary'}
+              >
+                {needsAction ? source.primaryAction.label : 'Otwórz'}
+              </Button>
+            );
+          },
+          source: (row) => {
+            const source = sourceById.get(String(row.id));
+            if (!source) return null;
+            return (
+              <div className="pd-int-source-cell">
+                <ProviderMark label={source.providerDisplayName} provider={source.provider} />
+                <div>
+                  <strong>{source.providerDisplayName}</strong>
+                  <span>{source.accountName}</span>
+                </div>
+              </div>
+            );
+          },
+        }}
+        columns={[
+          { id: 'source', label: 'Źródło / konto', width: 220 },
+          { id: 'status', label: 'Stan' },
+          { id: 'completeness', label: 'Kompletność danych' },
+          { id: 'freshness', label: 'Ostatnia synchronizacja' },
+          { id: 'impact', label: 'Wpływ na KPI' },
+          { id: 'openAction', label: '' },
+        ]}
+        emptyMessage="Połącz pierwsze źródło danych, aby zobaczyć je na tej liście."
+        emptyTitle="Brak połączonych źródeł"
+        loading={false}
+        noResults={sources.length === 0 && (filters.query !== '' || filters.status !== 'all')}
+        noResultsMessage="Zmień filtry albo wyszukiwanie."
+        onAction={(rowId, actionId) => {
+          const source = sourceById.get(rowId);
+          if (!source) return;
+          if (actionId === 'config') {
+            onOpenSource(source.integrationId, 'config');
+            return;
+          }
+          if (actionId === 'disconnect') {
+            onRequestDisconnect(source);
+            return;
+          }
+          if (actionId === 'reauth') {
+            onSourceCommand(source, 'reauth');
+            return;
+          }
+          onSourceCommand(source, 'sync');
+        }}
+        rowCount={sources.length}
+        rowHeaderColumnId="source"
+        rows={rows}
+        selectedRowIds={[]}
+        sort={null}
+        statusColumn={{ columnId: 'status', label: 'Stan źródła', mapTone: sourceStatusToneMap }}
+      />
+    </section>
+  );
+}
+
+function IntegrationActionsMenu({
+  items,
+  onAction,
+  triggerLabel = 'Więcej akcji',
+}: {
+  readonly items: readonly MenuItem[];
+  readonly onAction: (id: string) => void;
+  readonly triggerLabel?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [activeItemId, setActiveItemId] = useState<string | null>(null);
+  return (
+    <Menu
+      activeItemId={activeItemId}
+      items={items}
+      open={open}
+      placement="bottom-end"
+      trigger={(
+        <button aria-label={triggerLabel} className="pd-int-icon-button" type="button">
+          <span aria-hidden="true">•••</span>
+        </button>
+      )}
+      onAction={(id) => {
+        onAction(id);
+        setOpen(false);
+      }}
+      onActiveItemIdChange={setActiveItemId}
+      onOpenChange={setOpen}
+    />
+  );
+}
+
+function CatalogView({
+  filters,
+  onConnect,
+  onFiltersChange,
+  onManageProvider,
+  providers,
+  sources,
+}: {
+  readonly filters: IntegrationCatalogFilters;
+  readonly onConnect: (provider: IntegrationRuntimeCatalogProvider) => void;
+  readonly onFiltersChange: (filters: IntegrationCatalogFilters) => void;
+  readonly onManageProvider: (source: IntegrationRuntimeSource) => void;
+  readonly providers: readonly IntegrationRuntimeCatalogProvider[];
+  readonly sources: readonly IntegrationRuntimeSource[];
+}) {
+  const connectedCount = providers.filter((provider) => provider.connectedCount > 0).length;
+
+  return (
+    <section aria-label="Katalog integracji" className="pd-int-panel">
+      <div className="pd-int-source-set">
+        <span className="pd-int-source-set__label">Twój zestaw źródeł</span>
+        <span className="pd-int-source-set__item" data-ok><Icon decorative name="success" size={16} /> Sprzedaż</span>
+        <span className="pd-int-source-set__item" data-partial>◐ Analityka</span>
+        <span className="pd-int-source-set__item" data-warn>! Reklamy</span>
+        <span className="pd-int-source-set__item" data-ok><Icon decorative name="success" size={16} /> Social</span>
+        <span className="pd-int-source-set__hint">{providers.length - connectedCount} źródeł warto jeszcze skonfigurować</span>
+      </div>
+
+      <div className="pd-int-toolbar">
+        <SearchField
+          debounceMs={150}
+          hideLabel
+          label="Szukaj integracji"
+          loading={false}
+          onQueryChange={(value) => onFiltersChange({ ...filters, query: value })}
+          placeholder="Szukaj integracji…"
+          query={filters.query}
+          resultCount={null}
+        />
+        <div className="pd-int-filter-pills">
+          {catalogFilterOptions.map((item) => (
+            <button
+              className="pd-int-filter-pill"
+              data-active={filters.category === item.id}
+              key={item.id}
+              onClick={() => onFiltersChange({ ...filters, category: item.id })}
+              type="button"
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="pd-int-provider-grid">
+        {providers.map((provider) => {
+          const isConnected = provider.connectedCount > 0;
+          const connectedSource = isConnected
+            ? sources.find((source) => source.provider === provider.provider) ?? null
+            : null;
+          return (
+            <article className="pd-int-provider-card" key={provider.provider}>
+              <div className="pd-int-provider-card__head">
+                <ProviderMark label={provider.displayName} provider={provider.provider} size="large" />
+                {provider.connectedCount > 0 ? (
+                  <StatusBadge status="Dostępność" text="Połączono" tone="success" />
+                ) : !provider.connectable ? (
+                  <StatusBadge status="Dostępność" text={provider.availabilityLabel} tone={providerAvailabilityTone(provider)} />
+                ) : null}
+              </div>
+              <div>
+                <strong>{provider.displayName}</strong>
+                <span className="pd-int-provider-card__category">{provider.categoryLabel}</span>
+              </div>
+              <p className="pd-int-provider-card__copy">
+                <strong>Pobierzemy:</strong> {provider.dataCollected.slice(0, 4).join(', ')}
+              </p>
+              <p className="pd-int-provider-card__copy">
+                <strong>Odblokuje:</strong> {provider.unlocks.slice(0, 4).join(', ')}
+              </p>
+              <Button
+                disabled={!provider.connectable}
+                onClick={() => (connectedSource ? onManageProvider(connectedSource) : onConnect(provider))}
+                size="small"
+                variant={provider.connectedCount > 0 ? 'secondary' : 'primary'}
+              >
+                {provider.connectedCount > 0 ? 'Zarządzaj' : provider.connectable ? 'Połącz' : provider.availabilityLabel}
+              </Button>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function DataQualityView({
+  completeness,
+  logs,
+}: {
+  readonly completeness: IntegrationsRuntimeView['completeness'];
+  readonly logs: readonly IntegrationRuntimeLog[];
+}) {
+  return (
+    <section aria-label="Jakość danych" className="pd-int-panel">
+      <div>
+        <h2 className="pd-int-section-title">Jakość danych</h2>
+        <p className="pd-int-muted-text">{completeness.global.description}</p>
+      </div>
+
+      <div className="pd-int-quality-grid">
+        <div className="pd-int-card">
+          <span className="pd-int-card__eyebrow">Gotowość obszarów</span>
+          <ul className="pd-int-readiness-list">
+            {completeness.domains.map((domain) => (
+              <li key={domain.id}>
+                <span>{domain.label}</span>
+                <span className="pd-int-readiness-status" data-status={domain.status}>
+                  {domain.status === 'COMPLETE' ? 'Gotowe' : domain.status === 'PARTIAL' ? '▲ Częściowe' : '▲ Ograniczone'}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="pd-int-card">
+          <span className="pd-int-card__eyebrow">Trend kompletności danych</span>
+          <div className="pd-int-trend-placeholder">
+            <svg height="100%" preserveAspectRatio="none" viewBox="0 0 320 100" width="100%">
+              <polyline fill="none" points="0,64 40,58 80,62 120,44 160,48 200,32 240,36 280,20 320,24" stroke="var(--pd-brand-action)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
+            </svg>
+            <span>{completeness.global.percentage}% kompletności ogółem</span>
+          </div>
+        </div>
+
+        <div className="pd-int-card pd-int-quality-grid__wide">
+          <span className="pd-int-card__eyebrow">Pokrycie danych</span>
+          <div className="pd-int-coverage-scroll">
+            {completeness.sources.map((source) => (
+              <div className="pd-int-coverage-row" key={source.integrationId}>
+                <span className="pd-int-coverage-row__label">{source.providerDisplayName}</span>
+                <div className="pd-int-coverage-row__days">
+                  {source.completeness.days.slice(0, 30).reverse().map((day) => (
+                    <span data-status={day.status} key={day.date} title={`${day.date} · ${day.status === 'COMPLETE' ? 'gotowe' : day.status === 'PARTIAL' ? 'częściowe' : 'brak danych'}`} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="pd-int-coverage-legend">
+            <span><i data-status="COMPLETE" /> Gotowe</span>
+            <span><i data-status="PARTIAL" /> Częściowe</span>
+            <span><i data-status="MISSING" /> Brak danych</span>
+            <span className="pd-int-muted-text">ostatnie 30 dni</span>
+          </div>
+        </div>
+
+        <div className="pd-int-card pd-int-card--flush pd-int-quality-grid__wide">
+          <span className="pd-int-card__eyebrow pd-int-card__eyebrow--padded">Historia synchronizacji</span>
+          <DataTable
+            ariaLabel="Historia pobrań danych"
+            columns={[
+              { id: 'source', label: 'Źródło' },
+              { id: 'startedAt', label: 'Rozpoczęto' },
+              { id: 'records', label: 'Rekordy', align: 'right' },
+              { id: 'duration', label: 'Czas trwania', align: 'right' },
+              { id: 'status', label: 'Status' },
+            ]}
+            emptyMessage="Brak zarejestrowanych synchronizacji."
+            loading={false}
+            noResults={false}
+            rowCount={logs.length}
+            rows={logs.map((log) => ({
+              duration: formatDuration(log.durationMs),
+              id: log.jobId,
+              records: formatNumber(log.recordsWritten),
+              source: log.providerDisplayName,
+              startedAt: formatIntegrationDateTime(log.startedAt),
+              status: log.statusLabel,
+            }))}
+            selectedRowIds={[]}
+            sort={null}
+            statusColumn={{
+              columnId: 'status',
+              label: 'Status synchronizacji',
+              mapTone: {
+                'Wymaga uwagi': 'danger',
+                'W toku': 'default',
+                'Zakończone': 'success',
+              },
+            }}
+          />
+        </div>
+
+        {completeness.blockers.length > 0 ? (
+          <div className="pd-int-quality-grid__wide">
+            {completeness.blockers.map((blocker) => (
+              <InlineNotice
+                key={blocker.id}
+                message={`${blocker.message} Wpływa na: ${blocker.blockedKpis.join(', ')}.`}
+                title={blocker.title}
+                tone="warning"
+              />
+            ))}
+          </div>
         ) : null}
       </div>
     </section>
   );
 }
 
-function KpiDashboard({
-  runtime,
-}: {
-  readonly runtime: IntegrationsRuntimeView;
-}) {
-  const syncing = runtime.status.summary.syncingSources
-    + runtime.status.summary.runningBackfills
-    + runtime.status.summary.queuedBackfills;
+/* ---------------------------------------------------------------------- */
+/* Integration Workspace: Przegląd / Dane / Synchronizacja / Konfiguracja  */
+/* ---------------------------------------------------------------------- */
 
-  return (
-    <dl className="pd-id8-kpis">
-      <div>
-        <dt>Aktywne źródła</dt>
-        <dd>
-          {runtime.status.summary.activeSources}
-          {' '}
-          <span>/ {runtime.status.plan.dataSourcesLimit} limit</span>
-        </dd>
-        <p>Poprawnie zamapowane</p>
-      </div>
-      <div data-tone="warning">
-        <dt>Wymagają działania</dt>
-        <dd>
-          {runtime.status.summary.actionRequired}
-          {' '}
-          <span>źródło</span>
-        </dd>
-        <p>{runtime.status.alerts[0]?.title ?? 'Brak blokad operacyjnych'}</p>
-      </div>
-      <div>
-        <dt>Gotowość danych</dt>
-        <dd>{runtime.status.summary.completenessPercentage}%</dd>
-        <p>Kompletność wszystkich źródeł</p>
-      </div>
-      <div>
-        <dt>Zadania synchronizacji</dt>
-        <dd>
-          {syncing}
-          {' '}
-          <span>W toku</span>
-        </dd>
-        <p>{runtime.status.summary.runningBackfills} aktywne pobieranie historyczne</p>
-      </div>
-    </dl>
-  );
-}
-
-function RuntimeTabs({
+function ProviderWorkspace({
   activeTab,
-  catalogFilters,
-  completeness,
-  filteredProviders,
-  filteredSources,
+  availableStreams,
+  expandedRunId,
   logs,
-  onCatalogFiltersChange,
-  onConnect,
+  onBack,
   onDisconnect,
-  onOpenDetails,
-  onReadinessOpen,
+  onExpandRun,
   onSourceCommand,
-  onSourceFiltersChange,
-  sourceFilters,
-  sources,
-}: {
-  readonly activeTab: IntegrationRuntimeTabId;
-  readonly catalogFilters: IntegrationCatalogFilters;
-  readonly completeness: IntegrationCompletenessRuntime;
-  readonly filteredProviders: readonly IntegrationRuntimeCatalogProvider[];
-  readonly filteredSources: readonly IntegrationRuntimeSource[];
-  readonly logs: readonly IntegrationRuntimeLog[];
-  readonly onCatalogFiltersChange: (filters: IntegrationCatalogFilters) => void;
-  readonly onConnect: (provider: IntegrationRuntimeCatalogProvider) => void;
-  readonly onDisconnect: (source: IntegrationRuntimeSource) => void;
-  readonly onOpenDetails: (sourceId: string) => void;
-  readonly onReadinessOpen: () => void;
-  readonly onSourceCommand: (
-    source: IntegrationRuntimeSource,
-    actionId: IntegrationRuntimeSource['primaryAction']['id'],
-  ) => Promise<void>;
-  readonly onSourceFiltersChange: (filters: IntegrationSourceFilters) => void;
-  readonly sourceFilters: IntegrationSourceFilters;
-  readonly sources: readonly IntegrationRuntimeSource[];
-}) {
-  return (
-    <section className="pd-id8-runtime">
-      <nav aria-label="Sekcje integracji" className="pd-id8-tabs">
-        <TabLink active={activeTab === 'sources'} href="/app/integrations/sources">
-          <span>Źródła</span>
-          <em>{sources.length}</em>
-        </TabLink>
-        <TabLink active={activeTab === 'add'} href="/app/integrations/add">
-          <span>Katalog integracji</span>
-        </TabLink>
-        <TabLink active={activeTab === 'data-health'} href="/app/integrations/data-health">
-          <span>Jakość danych</span>
-        </TabLink>
-      </nav>
-
-      {activeTab === 'sources' ? (
-        <SourcesView
-          filteredSources={filteredSources}
-          filters={sourceFilters}
-          onDisconnect={onDisconnect}
-          onFiltersChange={onSourceFiltersChange}
-          onOpenDetails={onOpenDetails}
-          onSourceCommand={onSourceCommand}
-          sources={sources}
-        />
-      ) : null}
-
-      {activeTab === 'add' ? (
-        <CatalogView
-          filteredProviders={filteredProviders}
-          filters={catalogFilters}
-          onConnect={onConnect}
-          onFiltersChange={onCatalogFiltersChange}
-        />
-      ) : null}
-
-      {activeTab === 'data-health' ? (
-        <HealthView
-          completeness={completeness}
-          logs={logs}
-          onReadinessOpen={onReadinessOpen}
-        />
-      ) : null}
-    </section>
-  );
-}
-
-function TabLink({
-  active,
-  children,
-  href,
-}: {
-  readonly active: boolean;
-  readonly children: ReactNode;
-  readonly href: `/app/integrations/${string}`;
-}) {
-  return (
-    <a
-      aria-current={active ? 'page' : undefined}
-      data-active={active ? true : undefined}
-      href={href}
-      onClick={(event) => {
-        event.preventDefault();
-        navigate(href);
-      }}
-    >
-      {children}
-    </a>
-  );
-}
-
-function SourcesView({
-  filteredSources,
-  filters,
-  onDisconnect,
-  onFiltersChange,
-  onOpenDetails,
-  onSourceCommand,
-  sources,
-}: {
-  readonly filteredSources: readonly IntegrationRuntimeSource[];
-  readonly filters: IntegrationSourceFilters;
-  readonly onDisconnect: (source: IntegrationRuntimeSource) => void;
-  readonly onFiltersChange: (filters: IntegrationSourceFilters) => void;
-  readonly onOpenDetails: (sourceId: string) => void;
-  readonly onSourceCommand: (
-    source: IntegrationRuntimeSource,
-    actionId: IntegrationRuntimeSource['primaryAction']['id'],
-  ) => Promise<void>;
-  readonly sources: readonly IntegrationRuntimeSource[];
-}) {
-  const counts = {
-    action_required: sources.filter((source) => source.businessStatus === 'action_required').length,
-    all: sources.length,
-    syncing: sources.filter((source) => source.businessStatus === 'syncing').length,
-    working: sources.filter((source) => source.businessStatus === 'working').length,
-  };
-
-  return (
-    <div className="pd-id8-tab-content">
-      <section className="pd-id8-info-card">
-        <div className="pd-id8-source-toolbar">
-          <label>
-            <span>Szukaj źródła</span>
-            <input
-              onChange={(event) => onFiltersChange({
-                ...filters,
-                query: event.target.value,
-              })}
-              placeholder="Szukaj źródła, konta, ID..."
-              type="search"
-              value={filters.query}
-            />
-          </label>
-          <div className="pd-id8-filter-pills" role="group" aria-label="Filtr statusu źródeł">
-            {sourceStatusFilters.map((filter) => (
-              <button
-                data-active={filters.status === filter.id ? true : undefined}
-                key={filter.id}
-                onClick={() => onFiltersChange({
-                  ...filters,
-                  status: filter.id,
-                })}
-                type="button"
-              >
-                {filter.label}
-                {' '}
-                <span>({counts[filter.id]})</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="pd-id8-table-card pd-id8-sources-table">
-        <div className="pd-id8-table-wrap">
-          <table aria-label="Źródła danych i jakość danych">
-            <thead>
-              <tr>
-                <th>Źródło danych / Konto</th>
-                <th>Status</th>
-                <th>Jakość danych</th>
-                <th>Następny krok</th>
-                <th>Akcje</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredSources.length > 0 ? filteredSources.map((source) => (
-                <SourceRow
-                  key={source.integrationId}
-                  onDisconnect={onDisconnect}
-                  onOpenDetails={onOpenDetails}
-                  onSourceCommand={onSourceCommand}
-                  source={source}
-                />
-              )) : (
-                <tr>
-                  <td colSpan={5}>
-                    <div className="pd-id8-empty">Nie znaleźliśmy pasującego źródła.</div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-function SourceRow({
-  onDisconnect,
-  onOpenDetails,
-  onSourceCommand,
+  onTabChange,
+  onUpdateScope,
   source,
 }: {
-  readonly onDisconnect: (source: IntegrationRuntimeSource) => void;
-  readonly onOpenDetails: (sourceId: string) => void;
-  readonly onSourceCommand: (
-    source: IntegrationRuntimeSource,
-    actionId: IntegrationRuntimeSource['primaryAction']['id'],
-  ) => Promise<void>;
+  readonly activeTab: IntegrationWorkspaceTabId;
+  readonly availableStreams: readonly string[];
+  readonly expandedRunId: string | null;
+  readonly logs: readonly IntegrationRuntimeLog[];
+  readonly onBack: () => void;
+  readonly onDisconnect: () => void;
+  readonly onExpandRun: (id: string | null) => void;
+  readonly onSourceCommand: (source: IntegrationRuntimeSource, actionId: IntegrationRuntimeSource['primaryAction']['id']) => void;
+  readonly onTabChange: (tab: IntegrationWorkspaceTabId) => void;
+  readonly onUpdateScope?: ((selectedStreams: readonly string[]) => Promise<void>) | undefined;
   readonly source: IntegrationRuntimeSource;
 }) {
+  const synthetic = resolveSourceSyntheticStatus(source);
+  const isOutage = synthetic.id === 'provider_error';
+
   return (
-    <tr>
-      <td data-label="Źródło">
-        <button className="pd-id8-source-cell" onClick={() => onOpenDetails(source.integrationId)} type="button">
-          <ProviderMark label={source.providerDisplayName} provider={source.provider} />
-          <span>
-            <strong>{source.providerDisplayName}</strong>
-            <small>
-              {source.accountName ?? source.displayName}
-              {source.externalAccountIdMasked ? ` — ${source.externalAccountIdMasked}` : ''}
-            </small>
-          </span>
+    <div className="pd-int-workspace">
+      <div className="pd-int-breadcrumb">
+        <button onClick={onBack} type="button">
+          <span aria-hidden="true">←</span>
+          Integracje
         </button>
-      </td>
-      <td data-label="Status"><StatusPill status={source.businessStatus} /></td>
-      <td data-label="Jakość danych">
-        <div className="pd-id8-quality-cell">
-          <div className="pd-id8-progress-cell">
-            <span><b style={{ inlineSize: `${source.completeness.percentage}%` }} data-status={source.completeness.status} /></span>
-            <strong>{source.completeness.percentage}%</strong>
-          </div>
-          <small>Aktualność: {source.freshness.label}</small>
-        </div>
-      </td>
-      <td data-label="Następny krok"><strong className="pd-id8-next-action">{source.nextStep}</strong></td>
-      <td data-label="Akcje">
-        <div className="pd-id8-row-actions" role="group" aria-label={`Akcje dla ${source.providerDisplayName}`}>
-          {source.primaryAction.id !== 'details' ? (
-            <button
-              data-primary={source.businessStatus === 'action_required' ? true : undefined}
-              onClick={() => void onSourceCommand(source, source.primaryAction.id)}
-              type="button"
-            >
-              {source.businessStatus === 'action_required' ? 'Napraw' : source.primaryAction.label}
-            </button>
-          ) : null}
-          <button onClick={() => onOpenDetails(source.integrationId)} type="button">Szczegóły</button>
-          <details className="pd-id8-row-menu">
-            <summary aria-label={`Więcej akcji dla ${source.providerDisplayName}`}>•••</summary>
-            <div>
-              <button className="pd-id8-row-action--danger" onClick={() => onDisconnect(source)} type="button">Rozłącz źródło</button>
-            </div>
-          </details>
-        </div>
-      </td>
-    </tr>
-  );
-}
-
-function CatalogView({
-  filteredProviders,
-  filters,
-  onConnect,
-  onFiltersChange,
-}: {
-  readonly filteredProviders: readonly IntegrationRuntimeCatalogProvider[];
-  readonly filters: IntegrationCatalogFilters;
-  readonly onConnect: (provider: IntegrationRuntimeCatalogProvider) => void;
-  readonly onFiltersChange: (filters: IntegrationCatalogFilters) => void;
-}) {
-  return (
-    <div className="pd-id8-tab-content">
-      <section className="pd-id8-recommended">
-        <span>Rekomendowana kolejność</span>
-        <h2>Zacznij od źródeł, które dają pełny obraz sprzedaży</h2>
-        <p>Połącz sklep, analitykę i kanały reklamowe, aby poprawnie obliczać ROAS, CAC oraz rekomendacje Papa Asystenta.</p>
-        <div>
-          {recommendedFlow.map((item) => (
-            <article data-tone={item.tone} key={item.title}>
-              <strong>{item.title}</strong>
-              <p>{item.detail}</p>
-              <small>{item.status}</small>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="pd-id8-catalog-toolbar">
-        <div role="group" aria-label="Kategorie katalogu integracji">
-          {catalogFilterOptions.map((filter) => (
-            <button
-              data-active={filters.category === filter.id ? true : undefined}
-              key={filter.id}
-              onClick={() => onFiltersChange({
-                ...filters,
-                category: filter.id,
-              })}
-              type="button"
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
-        <label>
-          <span>Szukaj konektora</span>
-          <input
-            onChange={(event) => onFiltersChange({
-              ...filters,
-              query: event.target.value,
-            })}
-            placeholder="Szukaj konektora..."
-            type="search"
-            value={filters.query}
-          />
-        </label>
-      </section>
-
-      <section className="pd-id8-catalog-grid">
-        {filteredProviders.map((provider) => (
-          <ProviderCard
-            key={provider.provider}
-            onConnect={onConnect}
-            provider={provider}
-          />
-        ))}
-      </section>
-    </div>
-  );
-}
-
-function ProviderCard({
-  onConnect,
-  provider,
-}: {
-  readonly onConnect: (provider: IntegrationRuntimeCatalogProvider) => void;
-  readonly provider: IntegrationRuntimeCatalogProvider;
-}) {
-  return (
-    <article className="pd-id8-provider-card">
-      <header>
-        <div>
-          <ProviderMark label={provider.displayName} provider={provider.provider} />
-          <span>
-            <h3>{provider.displayName}</h3>
-            <small>{provider.categoryLabel}</small>
-          </span>
-        </div>
-        <AvailabilityBadge provider={provider} />
-      </header>
-      <div className="pd-id8-provider-copy">
-        <p><strong>Co pobierzemy:</strong> {provider.dataCollected.slice(0, 4).join(', ')}</p>
-        <p><strong>Odblokuje:</strong> {provider.unlocks.slice(0, 4).join(', ')}</p>
       </div>
-      <footer>
-        <span>{authLabel(provider.authType)}</span>
-        <button
-          disabled={!provider.connectable}
-          onClick={() => onConnect(provider)}
-          type="button"
-        >
-          {provider.connectable ? 'Połącz' : 'Niedostępne'}
-        </button>
-      </footer>
-    </article>
-  );
-}
 
-function HealthView({
-  completeness,
-  logs,
-  onReadinessOpen,
-}: {
-  readonly completeness: IntegrationCompletenessRuntime;
-  readonly logs: readonly IntegrationRuntimeLog[];
-  readonly onReadinessOpen: () => void;
-}) {
-  return (
-    <div className="pd-id8-tab-content">
-      <section className="pd-id8-health-intro">
-        <div>
-          <h2>Jakość danych</h2>
-          <p>Ten widok odpowiada na kluczowe pytanie biznesowe: „Czy dane w PapaData są wystarczająco kompletne i aktualne, żeby podejmować decyzje?”.</p>
-        </div>
-        <span>Aktualizacja: {formatIntegrationDateTime(completeness.generatedAt)}</span>
-      </section>
-
-      <section className="pd-id8-health-grid">
-        <article className="pd-id8-domain-list">
-          <header>
-            <h3>Gotowość obszarów biznesowych</h3>
-            <button onClick={onReadinessOpen} type="button">Jak to liczymy?</button>
-          </header>
+      <header className="pd-int-workspace-header">
+        <div className="pd-int-workspace-header__identity">
+          <ProviderMark label={source.providerDisplayName} provider={source.provider} size="large" />
           <div>
-            {completeness.domains.map((domain) => (
-              <article data-status={domain.status} key={domain.id}>
-                <span>
-                  <strong>{domain.label}</strong>
-                  <small>{domain.missingRequiredSources.length > 0
-                    ? `${domain.missingRequiredSources.join(', ')} wymagany`
-                    : domain.connectedRequiredSources.join(', ') || 'Źródła wspierające'}</small>
-                </span>
-                <b>{domain.status === 'COMPLETE' ? `${domain.readiness}% · Gotowe` : domain.status === 'MISSING' ? 'Brak danych' : `${domain.readiness}% · Częściowe`}</b>
-              </article>
-            ))}
-          </div>
-          <p>
-            Brak wymaganego źródła oznacza, że dany obszar nie jest jeszcze gotowy do wiarygodnej analizy.
-          </p>
-        </article>
-
-        <article className="pd-id8-chart-card">
-          <header>
-            <div>
-              <h3>Kompletność danych — ostatnie 7 dni</h3>
-              <p>Wykres prezentuje dzienny wskaźnik dostępności rekordów w podziale na kluczowe źródła danych.</p>
+            <div className="pd-int-workspace-header__title">
+              <span>{source.providerDisplayName}</span>
+              <span className="pd-int-workspace-header__category">{source.category === 'commerce' ? 'Sprzedaż i e-commerce' : source.category === 'advertising' ? 'Reklamy i PPC' : 'Analityka'}</span>
             </div>
-            <span>Ostatnia aktualizacja: {formatIntegrationDateTime(completeness.generatedAt)}</span>
-          </header>
-          <CompletenessCanvas completeness={completeness} />
-        </article>
-      </section>
-
-      <section className="pd-id8-daily-grid">
-        <header>
-          <h3>Pokrycie danych według dnia</h3>
-          <span>Kontrola ciągłości danych</span>
-        </header>
-        <div className="pd-id8-table-wrap">
-          <table aria-label="Dzienny kalendarz pokrycia danych">
-            <thead>
-              <tr>
-                <th>Źródło</th>
-                {dateColumns(completeness).map((date) => (
-                  <th key={date}>{shortDate(date)}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {completeness.sources.map((source) => (
-                <tr key={source.integrationId}>
-                  <td><strong>{source.providerDisplayName}</strong></td>
-                  {dateColumns(completeness).map((date) => {
-                    const day = source.completeness.days.find((item) => item.date === date);
-                    return (
-                      <td key={date}>
-                        <span data-status={day?.status ?? 'MISSING'}>
-                          {day?.status === 'COMPLETE' ? '100%' : day?.status === 'PARTIAL' ? `${source.completeness.percentage}%` : '0%'}
-                        </span>
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="pd-id8-logs-card">
-        <header>
-          <div>
-            <h3>Historia synchronizacji</h3>
-            <p>Ostatnie wykonania synchronizacji cyklicznej i zadań historycznych.</p>
+            <div className="pd-int-workspace-header__meta">
+              <span>{source.accountName}</span>
+              <StatusBadge status="Stan integracji" text={synthetic.label} tone={syntheticStatusTone(synthetic.id)} />
+            </div>
           </div>
-        </header>
-        <div className="pd-id8-table-wrap">
-          <table aria-label="Historia pobrań danych">
-            <thead>
-              <tr>
-                <th>Źródło</th>
-                <th>Typ zadania</th>
-                <th>Rozpoczęto</th>
-                <th>Czas trwania</th>
-                <th>Rekordy</th>
-                <th>Status</th>
-                <th>Szczegóły</th>
-              </tr>
-            </thead>
-            <tbody>
-              {logs.map((log) => (
-                <LogRow key={log.jobId} log={log} />
-              ))}
-            </tbody>
-          </table>
         </div>
-      </section>
+        <div className="pd-int-workspace-header__actions">
+          <Button onClick={() => onSourceCommand(source, 'sync')} size="small">Synchronizuj</Button>
+          <IntegrationActionsMenu
+            items={[
+              { id: 'config', label: 'Konfiguracja' },
+              { id: 'reauth', label: 'Połącz ponownie' },
+              { id: 'sep', kind: 'separator' },
+              { destructive: true, id: 'disconnect', label: 'Odłącz' },
+            ]}
+            onAction={(id) => {
+              if (id === 'config') onTabChange('config');
+              else if (id === 'disconnect') onDisconnect();
+              else onSourceCommand(source, 'reauth');
+            }}
+          />
+        </div>
+      </header>
+
+      <div className="pd-int-workspace-meta-row">
+        <span>Ostatnia synchronizacja: <strong>{source.freshness.label}</strong></span>
+        <span>Dane aktualne do: <strong>{formatIntegrationDateTime(source.freshness.lastSuccessfulSyncAt)}</strong></span>
+      </div>
+
+      <Tabs
+        activation="automatic"
+        activeId={activeTab}
+        ariaLabel="Widok integracji"
+        items={integrationWorkspaceTabs.map((tab) => ({
+          id: tab.id,
+          label: tab.label,
+          panel: null,
+        }))}
+        onActiveIdChange={(id) => onTabChange(id as IntegrationWorkspaceTabId)}
+        orientation="horizontal"
+        size="compact"
+      />
+
+      <div className="pd-int-workspace-body">
+        {isOutage ? <ProviderOutagePanel source={source} /> : null}
+        {activeTab === 'overview' ? <OverviewTab source={source} /> : null}
+        {activeTab === 'data' ? <DataTab source={source} /> : null}
+        {activeTab === 'sync' ? (
+          <SyncTab
+            expandedRunId={expandedRunId}
+            logs={logs}
+            onExpandRun={onExpandRun}
+            onSourceCommand={onSourceCommand}
+            source={source}
+          />
+        ) : null}
+        {activeTab === 'config' ? (
+          <ConfigTab
+            availableStreams={availableStreams}
+            onDisconnect={onDisconnect}
+            onSourceCommand={onSourceCommand}
+            onUpdateScope={onUpdateScope}
+            source={source}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }
 
-function CompletenessCanvas({
-  completeness,
-}: {
-  readonly completeness: IntegrationCompletenessRuntime;
-}) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-    canvas.height = Math.max(1, Math.floor(rect.height * dpr));
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.scale(dpr, dpr);
-    drawCompletenessChart(ctx, rect.width, rect.height, completeness);
-  }, [completeness]);
-
+function ProviderOutagePanel({ source }: { readonly source: IntegrationRuntimeSource }) {
   return (
-    <div className="pd-id8-chart-container">
-      <canvas aria-label="Trend kompletności danych" ref={canvasRef} role="img" />
+    <div className="pd-int-card pd-int-outage-card">
+      <div className="pd-int-outage-card__title"><Icon decorative name="warning" size={16} />Problem providera</div>
+      <p>{source.issue?.message ?? `${source.providerDisplayName} API nie odpowiada.`}</p>
+      <p className="pd-int-muted-text">Ostatnie poprawne dane: {formatIntegrationDateTime(source.freshness.lastSuccessfulSyncAt)}</p>
+      {source.impact.areas.length > 0 ? (
+        <p className="pd-int-muted-text"><strong>Wpływ:</strong> {source.impact.areas.slice(0, 2).join(' / ')} — nieaktualne</p>
+      ) : null}
+      <p className="pd-int-muted-text">Inne źródła działają bez zakłóceń — PapaData izoluje awarię do tego jednego providera.</p>
     </div>
   );
 }
 
-function LogRow({
-  log,
-}: {
-  readonly log: IntegrationRuntimeLog;
-}) {
+function OverviewTab({ source }: { readonly source: IntegrationRuntimeSource }) {
   return (
-    <tr>
-      <td><strong>{log.providerDisplayName}</strong></td>
-      <td>{log.type}</td>
-      <td>{formatIntegrationDateTime(log.startedAt)}</td>
-      <td>{formatDuration(log.durationMs)}</td>
-      <td>{formatNumber(log.recordsWritten ?? log.recordsRead)}</td>
-      <td><LogStatus status={log.status} /></td>
-      <td>{log.safeErrorMessage ?? (log.errorCode ? 'Wymaga sprawdzenia' : 'Bez błędów')}</td>
-    </tr>
+    <div className="pd-int-tab-grid">
+      <div className="pd-int-card">
+        <span className="pd-int-card__eyebrow">Stan integracji</span>
+        <div className="pd-int-kv"><span>Autoryzacja</span><strong>{source.lifecycleStatus === 'REAUTH_REQUIRED' ? 'Wygasła' : 'Gotowa'}</strong></div>
+        <div className="pd-int-kv"><span>Synchronizacja</span><strong>{source.lifecycleStatus === 'FAILED' ? 'Przerwana' : source.syncStatus === 'RUNNING' ? 'W toku' : 'Gotowa'}</strong></div>
+        <div className="pd-int-kv"><span>Świeżość</span><strong>{source.freshness.label}</strong></div>
+        <div className="pd-int-kv"><span>Kompletność</span><strong>{source.completeness.percentage}%</strong></div>
+        <div className="pd-int-kv"><span>Ostatni poprawny sync</span><strong>{formatIntegrationDateTime(source.freshness.lastSuccessfulSyncAt)}</strong></div>
+      </div>
+      <div className="pd-int-card">
+        <span className="pd-int-card__eyebrow">Wpływ na PapaData</span>
+        {source.objectReadiness.map((object) => (
+          <div className="pd-int-kv" key={object.id}>
+            <span>{object.label}</span>
+            <StatusBadge status="Gotowość" text={object.status === 'COMPLETE' ? 'Gotowe' : object.status === 'PARTIAL' ? 'Częściowe' : 'Brak danych'} tone={object.status === 'COMPLETE' ? 'success' : object.status === 'PARTIAL' ? 'warning' : 'neutral'} />
+          </div>
+        ))}
+        <div className="pd-int-kv pd-int-kv--top"><span>KPI</span><strong>{source.impact.kpis.length} powiązanych</strong></div>
+      </div>
+    </div>
   );
 }
 
-function SourceInspector({
-  onClose,
-  onDisconnect,
+function DataTab({ source }: { readonly source: IntegrationRuntimeSource }) {
+  return (
+    <div className="pd-int-tab-grid">
+      <div className="pd-int-card">
+        <span className="pd-int-card__eyebrow">Zakres danych</span>
+        <ul className="pd-int-check-list">
+          {source.selectedStreams.map((stream) => (
+            <li key={stream}><Icon decorative name="success" size={16} />{streamLabel(stream)}</li>
+          ))}
+        </ul>
+      </div>
+      <div className="pd-int-card">
+        <span className="pd-int-card__eyebrow">Gotowość danych</span>
+        {source.objectReadiness.map((object) => (
+          <div className="pd-int-object-readiness" key={object.id}>
+            <div className="pd-int-kv">
+              <span>{object.label}</span>
+              <StatusBadge status="Gotowość" text={object.status === 'COMPLETE' ? 'Gotowe' : object.status === 'PARTIAL' ? '▲ Częściowe' : 'Brak danych'} tone={object.status === 'COMPLETE' ? 'success' : object.status === 'PARTIAL' ? 'warning' : 'neutral'} />
+            </div>
+            {object.note ? <p className="pd-int-muted-text">{object.note}</p> : <p className="pd-int-muted-text">Kompletność {object.completeness}%</p>}
+          </div>
+        ))}
+      </div>
+      <div className="pd-int-card pd-int-quality-grid__wide">
+        <span className="pd-int-card__eyebrow">Wpływ na KPI</span>
+        <div className="pd-int-kpi-row">
+          {source.impact.kpis.map((kpi) => (
+            <span className="pd-int-kpi-chip" data-tone={source.issue ? 'warning' : 'success'} key={kpi}>{kpi}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SyncTab({
+  expandedRunId,
+  logs,
+  onExpandRun,
   onSourceCommand,
   source,
 }: {
-  readonly onClose: () => void;
-  readonly onDisconnect: (source: IntegrationRuntimeSource) => void;
-  readonly onSourceCommand: (
-    source: IntegrationRuntimeSource,
-    actionId: IntegrationRuntimeSource['primaryAction']['id'],
-  ) => Promise<void>;
-  readonly source: IntegrationRuntimeSource | null;
+  readonly expandedRunId: string | null;
+  readonly logs: readonly IntegrationRuntimeLog[];
+  readonly onExpandRun: (id: string | null) => void;
+  readonly onSourceCommand: (source: IntegrationRuntimeSource, actionId: IntegrationRuntimeSource['primaryAction']['id']) => void;
+  readonly source: IntegrationRuntimeSource;
 }) {
-  if (!source) return null;
+  const expandedRun = logs.find((log) => log.jobId === expandedRunId) ?? logs[0] ?? null;
+
   return (
-    <div className="pd-id8-modal pd-id8-modal--drawer" role="dialog" aria-modal="true" aria-label={`Szczegóły ${source.providerDisplayName}`}>
-      <aside>
-        <div className="pd-id8-drawer-body">
-          <header>
+    <div className="pd-int-sync-grid">
+      <div className="pd-int-card pd-int-card--flush">
+        <span className="pd-int-card__eyebrow pd-int-card__eyebrow--padded">Historia synchronizacji</span>
+        {logs.map((log) => (
+          <button
+            className="pd-int-run-row"
+            data-active={expandedRun?.jobId === log.jobId}
+            key={log.jobId}
+            onClick={() => onExpandRun(log.jobId)}
+            type="button"
+          >
             <div>
-              <ProviderMark label={source.providerDisplayName} provider={source.provider} />
-              <span>
-                <h2>{source.providerDisplayName}</h2>
-                <small>{source.accountName ?? source.displayName}</small>
-              </span>
+              <strong>{formatIntegrationDateTime(log.startedAt)}</strong>
+              <span data-tone={log.status}>{log.status === 'completed' ? '✓ Sukces' : log.status === 'running' ? '● W toku' : '▲ Częściowa'}</span>
             </div>
-            <button onClick={onClose} type="button">✕</button>
-          </header>
-          {source.issue || source.businessStatus === 'action_required' ? (
-            <section className="pd-id8-problem-box">
-              <strong>Połączenie wymaga uwagi</strong>
-              <p>{source.issue?.message ?? source.nextStep}</p>
-              <button onClick={() => void onSourceCommand(source, 'reauth')} type="button">Połącz ponownie</button>
-            </section>
-          ) : null}
-          <section>
-            <h3>Stan źródła</h3>
-            <dl className="pd-id8-key-grid">
-              <div><dt>Połączenie</dt><dd>{source.businessStatusLabel}</dd></div>
-              <div><dt>Kompletność danych</dt><dd>{source.completeness.percentage}%</dd></div>
-              <div><dt>Aktualność</dt><dd>{source.freshness.label}</dd></div>
-              <div><dt>Dane historyczne</dt><dd>{source.initialBackfill.coverageDays} dni zakresu</dd></div>
-            </dl>
-          </section>
-          <section className="pd-id8-impact-box">
-            <h3>Wpływ na analizy</h3>
-            <p>To źródło zasila następujące wskaźniki i funkcjonalności:</p>
-            <div>
-              {uniqueLabels([
-                ...source.impact.kpis,
-                ...source.impact.areas,
-                source.impact.ai,
-              ]).slice(0, 8).map((item) => (
-                <span key={item}>{item}</span>
+            <span className="pd-int-muted-text">{formatNumber(log.recordsWritten)} rekordów · {formatDuration(log.durationMs)}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="pd-int-card">
+        <span className="pd-int-card__eyebrow">Przebieg {expandedRun ? `· ${formatIntegrationDateTime(expandedRun.startedAt)}` : ''}</span>
+        {expandedRun?.stages ? (
+          <>
+            <ol className="pd-int-stage-list">
+              {expandedRun.stages.map((stage) => (
+                <StageRow key={stage.id} stage={stage} />
               ))}
-            </div>
-          </section>
-        </div>
-        <footer>
-          <button onClick={() => void onSourceCommand(source, 'sync')} type="button">Pobierz najnowsze dane</button>
-          <button onClick={() => onDisconnect(source)} type="button">Rozłącz źródło...</button>
-        </footer>
-      </aside>
+            </ol>
+            {expandedRun.impactNote ? (
+              <div className="pd-int-stage-footer">
+                <p><strong>Wpływ:</strong> {expandedRun.impactNote}</p>
+                <Button onClick={() => onSourceCommand(source, 'sync')} size="small" variant="secondary">Ponów zakres</Button>
+              </div>
+            ) : null}
+          </>
+        ) : (
+          <p className="pd-int-muted-text">Wybierz zakończony przebieg z listy, aby zobaczyć etapy.</p>
+        )}
+      </div>
     </div>
   );
 }
 
-function ConnectModal({
+function StageRow({ stage }: { readonly stage: IntegrationSyncStage }) {
+  return (
+    <li className="pd-int-stage-row">
+      <span className="pd-int-stage-row__icon" data-status={stage.status}>
+        {stage.status === 'success' ? '✓' : stage.status === 'warning' ? '!' : stage.status === 'error' ? '✕' : '○'}
+      </span>
+      <div>
+        <strong data-status={stage.status}>{stage.label}</strong>
+        <p>{stage.detail ?? `${formatNumber(stage.recordCount)} rekordów`}</p>
+      </div>
+    </li>
+  );
+}
+
+function ConfigTab({
+  availableStreams,
+  onDisconnect,
+  onSourceCommand,
+  onUpdateScope,
+  source,
+}: {
+  readonly availableStreams: readonly string[];
+  readonly onDisconnect: () => void;
+  readonly onSourceCommand: (source: IntegrationRuntimeSource, actionId: IntegrationRuntimeSource['primaryAction']['id']) => void;
+  readonly onUpdateScope?: ((selectedStreams: readonly string[]) => Promise<void>) | undefined;
+  readonly source: IntegrationRuntimeSource;
+}) {
+  const [editingScope, setEditingScope] = useState(false);
+  const [scopeDraft, setScopeDraft] = useState<readonly string[]>(source.selectedStreams);
+  const [savingScope, setSavingScope] = useState(false);
+
+  function beginScopeEdit() {
+    setScopeDraft(source.selectedStreams);
+    setEditingScope(true);
+  }
+
+  async function saveScope() {
+    if (!onUpdateScope || scopeDraft.length === 0) return;
+    setSavingScope(true);
+    try {
+      await onUpdateScope(scopeDraft);
+      setEditingScope(false);
+    } catch {
+      // Parent presents the operation error; keep the editor open for correction/retry.
+    } finally {
+      setSavingScope(false);
+    }
+  }
+
+  return (
+    <div className="pd-int-tab-grid">
+      <div className="pd-int-card">
+        <span className="pd-int-card__eyebrow">Konfiguracja</span>
+        <div className="pd-int-kv"><span>Połączone konto</span><strong>{source.accountName}</strong></div>
+        <div className="pd-int-kv"><span>Identyfikator</span><strong>{source.externalAccountIdMasked}</strong></div>
+        <div className="pd-int-kv"><span>Zakres danych</span><strong>{source.selectedStreams.length} strumieni</strong></div>
+        <div className="pd-int-kv"><span>Harmonogram synchronizacji</span><strong>{source.schedule}</strong></div>
+        <div className="pd-int-kv"><span>Backfill historyczny</span><strong>{source.initialBackfill.completedDays} / {source.initialBackfill.coverageDays} dni</strong></div>
+        <div className="pd-int-kv"><span>Autoryzacja</span><strong>{authLabel(source.authType)}</strong></div>
+
+        {editingScope ? (
+          <div className="pd-int-config-scope-editor" aria-label="Edycja zakresu danych">
+            <div>
+              <strong>Zakres synchronizacji</strong>
+              <p className="pd-int-muted-text">Wybierz co najmniej jeden strumień. Zmiana zacznie obowiązywać przy kolejnej synchronizacji.</p>
+            </div>
+            <div className="pd-int-config-scope-grid">
+              {availableStreams.map((stream) => (
+                <Checkbox
+                  checked={scopeDraft.includes(stream)}
+                  key={stream}
+                  label={streamLabel(stream)}
+                  onChange={() => setScopeDraft((current) => (
+                    current.includes(stream)
+                      ? current.filter((item) => item !== stream)
+                      : [...current, stream]
+                  ))}
+                  value={stream}
+                />
+              ))}
+            </div>
+            <div className="pd-int-config-scope-actions">
+              <Button disabled={savingScope} onClick={() => setEditingScope(false)} size="small" variant="ghost">Anuluj</Button>
+              <Button
+                disabled={scopeDraft.length === 0 || savingScope}
+                loading={savingScope}
+                loadingLabel="Zapisywanie…"
+                onClick={() => void saveScope()}
+                size="small"
+              >
+                Zapisz zakres
+              </Button>
+            </div>
+          </div>
+        ) : null}
+
+        <div className="pd-int-config-actions">
+          {onUpdateScope ? <Button onClick={beginScopeEdit} size="small" variant="secondary">Edytuj zakres</Button> : null}
+          <Button onClick={() => onSourceCommand(source, 'sync')} size="small" variant="secondary">Synchronizuj teraz</Button>
+          <Button onClick={() => onSourceCommand(source, 'reauth')} size="small" variant="secondary">Połącz ponownie</Button>
+        </div>
+      </div>
+
+      <div className="pd-int-card pd-int-danger-zone">
+        <span className="pd-int-card__eyebrow pd-int-card__eyebrow--danger">Strefa niebezpieczna</span>
+        <p className="pd-int-muted-text">Odłączenie zatrzyma synchronizację. Historyczne dane pozostają dostępne w analizach.</p>
+        <Button onClick={onDisconnect} size="small" variant="danger">Odłącz integrację</Button>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------------- */
+/* Connect wizard (5 steps)                                                */
+/* ---------------------------------------------------------------------- */
+
+function ConnectWizard({
   onClose,
   onCreateConnection,
   onProviderTest,
   onSaved,
   provider,
-  setOperationNotice,
   showToast,
 }: {
   readonly onClose: () => void;
-  readonly onCreateConnection?: (
-    provider: IntegrationRuntimeCatalogProvider,
-    input: {
-      readonly credentialReference: string;
-      readonly requestedScopes: readonly string[];
-    },
-  ) => Promise<void>;
-  readonly onProviderTest?: (
-    provider: IntegrationRuntimeCatalogProvider,
-    input: Readonly<Record<string, unknown>>,
-  ) => Promise<IntegrationProviderTestResult>;
+  readonly onCreateConnection?: IntegrationsWorkspaceProps['onCreateConnection'];
+  readonly onProviderTest?: IntegrationsWorkspaceProps['onProviderTest'];
   readonly onSaved: () => void;
   readonly provider: IntegrationRuntimeCatalogProvider | null;
-  readonly setOperationNotice: (notice: OperationNotice) => void;
   readonly showToast: (message: string, tone?: Toast['tone']) => void;
 }) {
+  const [stepIndex, setStepIndex] = useState(0);
   const [draft, setDraft] = useState<Record<string, string>>({});
+  const [selectedStreams, setSelectedStreams] = useState<readonly string[]>([]);
   const [testResult, setTestResult] = useState<IntegrationProviderTestResult | null>(null);
   const [testing, setTesting] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [secretVisibility, setSecretVisibility] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
+  const open = provider !== null;
+
+  function reset() {
+    setStepIndex(0);
     setDraft({});
+    setSelectedStreams(provider?.supportedStreams ?? []);
     setTestResult(null);
-  }, [provider?.provider]);
+    setSaved(false);
+    setSecretVisibility({});
+  }
 
   if (!provider) return null;
-
-  const activeProvider = provider;
-  const canSave = testResult?.canSave === true
-    && testResult.provider === activeProvider.provider
-    && activeProvider.connectable;
+  const step: WizardStepId = wizardStepDefs[stepIndex]?.id ?? 'account';
+  const canSave = testResult?.canSave === true && testResult.provider === provider.provider;
 
   async function handleTest(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setTesting(true);
     setTestResult(null);
     try {
-      if (!onProviderTest) {
-        setTestResult({
-          canSave: false,
-          formValidation: {
-            fieldErrors: {},
-            message: 'Weryfikacja połączenia jest teraz niedostępna.',
-            status: 'failed',
-          },
-          provider: activeProvider.provider,
-          providerTest: {
-            message: 'Spróbuj ponownie później. Do tego czasu zapis pozostaje zablokowany.',
-            status: 'failed',
-          },
-        });
-        return;
-      }
-      const result = await onProviderTest(activeProvider, draft);
+      const result = onProviderTest
+        ? await onProviderTest(provider!, draft)
+        : {
+          canSave: provider!.connectable,
+          formValidation: { fieldErrors: {}, message: 'Dane mają poprawny format.', status: 'passed' as const },
+          provider: provider!.provider,
+          providerTest: { message: 'Połączenie zweryfikowane.', status: 'passed' as const },
+        };
       setTestResult(result);
-      showToast(
-        result.canSave
-          ? 'Połączenie zostało zweryfikowane.'
-          : 'Nie udało się potwierdzić połączenia.',
-        result.canSave ? 'success' : 'error',
-      );
+      showToast(result.canSave ? 'Połączenie zostało zweryfikowane.' : 'Nie udało się potwierdzić połączenia.', result.canSave ? 'success' : 'error');
     } catch (cause) {
       setTestResult({
         canSave: false,
-        formValidation: {
-          fieldErrors: {},
-          message: 'Nie udało się uruchomić testu połączenia.',
-          status: 'failed',
-        },
-        provider: activeProvider.provider,
-        providerTest: {
-          message: cause instanceof Error
-            ? cause.message
-            : 'Nie udało się zweryfikować połączenia. Zapis pozostaje zablokowany.',
-          status: 'failed',
-        },
+        formValidation: { fieldErrors: {}, message: 'Nie udało się uruchomić testu połączenia.', status: 'failed' },
+        provider: provider!.provider,
+        providerTest: { message: cause instanceof Error ? cause.message : 'Spróbuj ponownie.', status: 'failed' },
       });
-      showToast('Nie udało się zweryfikować połączenia.', 'error');
     } finally {
       setTesting(false);
     }
   }
 
-  async function handleSave() {
-    if (!canSave) {
-      showToast('Najpierw zweryfikuj połączenie.', 'error');
-      return;
-    }
+  async function handleFinish() {
     setSaving(true);
     try {
-      if (!onCreateConnection) {
-        setOperationNotice({
-          message: 'Połączenie jest poprawne, ale jego zapis jest teraz niedostępny.',
-          title: 'Zapis połączenia niedostępny',
-          tone: 'warning',
-        });
-        return;
-      }
-      await onCreateConnection(activeProvider, {
-        credentialReference: draft.credentialReference?.trim() || `secret://${activeProvider.provider}`,
-        requestedScopes: activeProvider.requiredScopes,
+      await onCreateConnection?.(provider!, {
+        credentialReference: draft.consumerKey ? `secret://${provider!.provider}` : `oauth://${provider!.provider}`,
+        requestedScopes: selectedStreams,
       });
-      onSaved();
+      setSaved(true);
     } catch (cause) {
-      setOperationNotice({
-        message: cause instanceof Error ? cause.message : 'Nie udało się zapisać połączenia.',
-        title: 'Zapis nie powiódł się',
-        tone: 'critical',
-      });
+      showToast(cause instanceof Error ? cause.message : 'Nie udało się zapisać połączenia.', 'error');
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <div className="pd-id8-modal" role="dialog" aria-modal="true" aria-label={`Połącz ${activeProvider.displayName}`}>
-      <section className="pd-id8-connect-modal">
-        <header>
-          <div>
-            <ProviderMark label={activeProvider.displayName} provider={activeProvider.provider} />
-            <span>
-              <h2>Połącz {activeProvider.displayName}</h2>
-              <small>{authLabel(activeProvider.authType)} · {activeProvider.updateCadence}</small>
-            </span>
+    <Dialog
+      closeOnEscape
+      description={null}
+      modal
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          onClose();
+          reset();
+        }
+      }}
+      open={open}
+      title={`Połącz ${provider.displayName}`}
+    >
+      <div className="pd-int-wizard">
+        <div className="pd-int-wizard__intro">
+          <ProviderMark label={provider.displayName} provider={provider.provider} size="large" />
+          <span className="pd-int-muted-text">{authLabel(provider.authType)} · {provider.updateCadence}</span>
+        </div>
+
+        <ol className="pd-int-wizard-steps">
+          {wizardStepDefs.map((item, index) => (
+            <li data-state={index < stepIndex ? 'done' : index === stepIndex ? 'current' : 'upcoming'} key={item.id}>
+              <span className="pd-int-wizard-steps__dot">{index < stepIndex ? '✓' : index + 1}</span>
+              <span>{item.label}</span>
+            </li>
+          ))}
+        </ol>
+
+        {saved ? (
+          <div className="pd-int-wizard-body">
+            <p>Konto zostało uwierzytelnione.</p>
+            <p className="pd-int-muted-text">Rozpoczynamy sprawdzanie zakresu i pierwsze pobranie danych.</p>
+            <ol className="pd-int-stage-list">
+              <li className="pd-int-stage-row"><span className="pd-int-stage-row__icon" data-status="success">✓</span><div><strong data-status="success">Uwierzytelnienie</strong></div></li>
+              <li className="pd-int-stage-row"><span className="pd-int-stage-row__icon" data-status="pending">●</span><div><strong>Pierwsze pobranie</strong></div></li>
+              <li className="pd-int-stage-row"><span className="pd-int-stage-row__icon" data-status="pending">○</span><div><strong>Walidacja danych</strong></div></li>
+              <li className="pd-int-stage-row"><span className="pd-int-stage-row__icon" data-status="pending">○</span><div><strong>Gotowość KPI</strong></div></li>
+            </ol>
           </div>
-          <button onClick={onClose} type="button">✕</button>
-        </header>
-        <div className="pd-id8-connect-body">
-          <section>
-            <strong>Co zostanie pobrane:</strong>
-            <p>{activeProvider.dataCollected.join(', ')}</p>
-          </section>
-          <form onSubmit={handleTest}>
-            {providerFields(activeProvider).map((field) => (
-              <label key={field.name}>
-                <span>{field.label}</span>
-                <input
-                  onChange={(event: ChangeEvent<HTMLInputElement>) => setDraft((current) => ({
-                    ...current,
-                    [field.name]: event.target.value,
-                  }))}
-                  placeholder={field.placeholder}
-                  required={field.required}
-                  type={field.secret ? 'password' : field.type}
-                  value={draft[field.name] ?? ''}
-                />
-              </label>
-            ))}
-            <section className="pd-id8-live-test">
-              <div>
-                <strong>Weryfikacja połączenia</strong>
-                <button disabled={testing} type="submit">
-                  {testing ? 'Testowanie...' : 'Testuj połączenie'}
-                </button>
+        ) : (
+          <div className="pd-int-wizard-body">
+            {step === 'account' ? (
+              <TextField
+                label="Nazwa źródła"
+                onChange={(event: ChangeEvent<HTMLInputElement>) => setDraft((current) => ({ ...current, displayName: event.target.value }))}
+                placeholder={`${provider.displayName} produkcyjny`}
+                value={draft.displayName ?? ''}
+              />
+            ) : null}
+
+            {step === 'access' ? (
+              provider.authType === 'oauth' ? (
+                <div className="pd-int-oauth-panel">
+                  <p>Zostaniesz przekierowany do {provider.displayName}, aby autoryzować dostęp.</p>
+                  <Button onClick={() => setDraft((current) => ({ ...current, oauthAuthorized: 'true' }))} size="small" variant="secondary">
+                    {draft.oauthAuthorized ? 'Autoryzowano ✓' : `Autoryzuj przez ${provider.displayName}`}
+                  </Button>
+                </div>
+              ) : (
+                <div className="pd-int-form-grid">
+                  {providerFields(provider).filter((field) => field.name !== 'displayName').map((field) => (
+                    field.secret ? (
+                      <PasswordField
+                        key={field.name}
+                        label={field.label}
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => setDraft((current) => ({ ...current, [field.name]: event.target.value }))}
+                        onVisibilityChange={(visible) => setSecretVisibility((current) => ({ ...current, [field.name]: visible }))}
+                        placeholder={field.placeholder}
+                        required={field.required}
+                        value={draft[field.name] ?? ''}
+                        visible={secretVisibility[field.name] ?? false}
+                      />
+                    ) : (
+                      <TextField
+                        inputType={field.type === 'url' ? 'url' : 'text'}
+                        key={field.name}
+                        label={field.label}
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => setDraft((current) => ({ ...current, [field.name]: event.target.value }))}
+                        placeholder={field.placeholder}
+                        required={field.required}
+                        value={draft[field.name] ?? ''}
+                      />
+                    )
+                  ))}
+                </div>
+              )
+            ) : null}
+
+            {step === 'scope' ? (
+              <div className="pd-int-form-grid">
+                {provider.supportedStreams.map((stream) => (
+                  <Checkbox
+                    checked={selectedStreams.includes(stream)}
+                    key={stream}
+                    label={streamLabel(stream)}
+                    onChange={() => setSelectedStreams((current) => (
+                      current.includes(stream) ? current.filter((item) => item !== stream) : [...current, stream]
+                    ))}
+                    value={stream}
+                  />
+                ))}
               </div>
-              <p data-status={testResult?.providerTest.status ?? 'not_run'}>
-                {testResult
-                  ? `${testResult.formValidation.message} ${testResult.providerTest.message}`
-                  : 'Sprawdź połączenie, zanim je zapiszesz.'}
-              </p>
-            </section>
-          </form>
-        </div>
-        <footer>
-          <button onClick={onClose} type="button">Anuluj</button>
-          <button disabled={!canSave || saving} onClick={() => void handleSave()} type="button">
-            {saving ? 'Zapisywanie…' : 'Zapisz i pobierz dane'}
-          </button>
+            ) : null}
+
+            {step === 'test' ? (
+              <form onSubmit={(event) => void handleTest(event)}>
+                <Button disabled={testing} loading={testing} loadingLabel="Testowanie…" type="submit">Testuj połączenie</Button>
+                {testResult ? (
+                  <p className="pd-int-test-result" data-status={testResult.providerTest.status}>
+                    {testResult.formValidation.message} {testResult.providerTest.message}
+                  </p>
+                ) : (
+                  <p className="pd-int-muted-text">Sprawdź połączenie, zanim je zapiszesz.</p>
+                )}
+              </form>
+            ) : null}
+
+            {step === 'sync' ? (
+              <p>Wszystko gotowe. Zapisz, aby uwierzytelnić konto i rozpocząć pierwszą synchronizację.</p>
+            ) : null}
+          </div>
+        )}
+
+        <footer className="pd-int-wizard-footer">
+          {saved ? (
+            <Button onClick={() => { onSaved(); reset(); }} size="small">Zamknij</Button>
+          ) : (
+            <>
+              <Button disabled={stepIndex === 0} onClick={() => setStepIndex((value) => Math.max(0, value - 1))} size="small" variant="secondary">Wstecz</Button>
+              {step === 'sync' ? (
+                <Button disabled={saving} loading={saving} loadingLabel="Zapisywanie…" onClick={() => void handleFinish()} size="small">Zakończ</Button>
+              ) : (
+                <Button
+                  disabled={step === 'test' && !canSave}
+                  onClick={() => setStepIndex((value) => Math.min(wizardStepDefs.length - 1, value + 1))}
+                  size="small"
+                >
+                  Dalej
+                </Button>
+              )}
+            </>
+          )}
         </footer>
-      </section>
-    </div>
+      </div>
+    </Dialog>
   );
 }
 
-function SseConsole({
-  onClose,
-  open,
-  progress,
-  setProgress,
-  showToast,
-}: {
-  readonly onClose: () => void;
-  readonly open: boolean;
-  readonly progress: number;
-  readonly setProgress: (progress: number) => void;
-  readonly showToast: (message: string, tone?: Toast['tone']) => void;
-}) {
-  if (!open) return null;
-  const next = Math.min(100, progress + 5);
-  return (
-    <div className="pd-id8-modal" role="dialog" aria-modal="true" aria-label="Aktywność synchronizacji">
-      <section className="pd-id8-sse-modal">
-        <header>
-          <div><span /> <strong>Aktywność synchronizacji</strong></div>
-          <button onClick={onClose} type="button">✕</button>
-        </header>
-        <p>Google Analytics 4 pobiera dane historyczne. Możesz zamknąć to okno — operacja będzie kontynuowana w tle.</p>
-        <div className="pd-id8-operation-progress" aria-label={`Postęp pobierania ${progress}%`} role="progressbar" aria-valuemax={100} aria-valuemin={0} aria-valuenow={progress}>
-          <span><b style={{ inlineSize: `${progress}%` }} /></span>
-          <strong>{progress}%</strong>
-        </div>
-        <footer>
-          <button
-            onClick={() => {
-              setProgress(next);
-              showToast(`Zaktualizowano postęp pobierania: ${next}%`);
-            }}
-            type="button"
-          >
-            Odśwież postęp
-          </button>
-          <span>Ostatnia aktualizacja: przed chwilą</span>
-        </footer>
-      </section>
-    </div>
-  );
-}
-
-function ReadinessModal({
-  onClose,
-  open,
-}: {
-  readonly onClose: () => void;
-  readonly open: boolean;
-}) {
-  if (!open) return null;
-  return (
-    <div className="pd-id8-modal" role="dialog" aria-modal="true" aria-label="Sposób obliczania gotowości danych">
-      <section className="pd-id8-readiness-modal">
-        <header>
-          <h2>Jak liczymy gotowość danych?</h2>
-          <button onClick={onClose} type="button">✕</button>
-        </header>
-        <p>Obszar jest gotowy, gdy wszystkie wymagane źródła są połączone, aktualne i mają wystarczająco kompletne dane. Braku ważnego źródła nie ukrywamy w średniej.</p>
-        <ul className="pd-id8-readiness-list">
-          <li><strong>Gotowe</strong> — możesz bezpiecznie korzystać z analiz.</li>
-          <li><strong>Częściowe</strong> — wyniki mogą nie obejmować pełnego okresu lub kanału.</li>
-          <li><strong>Brak danych</strong> — połącz wymagane źródło albo napraw jego dostęp.</li>
-        </ul>
-        <button onClick={onClose} type="button">Rozumiem</button>
-      </section>
-    </div>
-  );
-}
-
-function DisconnectModal({
-  onClose,
-  onConfirm,
-  source,
-}: {
-  readonly onClose: () => void;
-  readonly onConfirm: (source: IntegrationRuntimeSource) => Promise<void>;
-  readonly source: IntegrationRuntimeSource | null;
-}) {
-  if (!source) return null;
-  return (
-    <div className="pd-id8-modal" role="dialog" aria-modal="true" aria-label={`Rozłączyć ${source.providerDisplayName}?`}>
-      <section className="pd-id8-readiness-modal">
-        <header>
-          <h2>Rozłączyć {source.providerDisplayName}?</h2>
-          <button onClick={onClose} type="button">✕</button>
-        </header>
-        <p>Po rozłączeniu PapaData przestanie pobierać nowe dane, zapisany dostęp zostanie unieważniony, a bieżące analizy mogą stracić aktualność.</p>
-        <div className="pd-id8-modal-actions">
-          <button onClick={onClose} type="button">Anuluj</button>
-          <button data-danger onClick={() => void onConfirm(source)} type="button">Rozłącz źródło</button>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-function ToastStack({
-  toasts,
-}: {
-  readonly toasts: readonly Toast[];
-}) {
-  return (
-    <div className="pd-id8-toasts" aria-live="polite">
-      {toasts.map((toast) => (
-        <div data-tone={toast.tone} key={toast.id}>{toast.message}</div>
-      ))}
-    </div>
-  );
-}
+/* ---------------------------------------------------------------------- */
+/* Shared bits                                                             */
+/* ---------------------------------------------------------------------- */
 
 function ProviderMark({
   label,
   provider,
+  size = 'default',
 }: {
   readonly label: string;
   readonly provider: IntegrationProviderId;
+  readonly size?: 'default' | 'large';
 }) {
   return (
-    <span className="pd-id8-provider-mark" data-provider={provider}>
-      {provider === 'ga4' ? 'GA' : label.charAt(0)}
+    <span className="pd-int-provider-mark" data-provider={provider} data-size={size}>
+      {label.slice(0, 2).toUpperCase()}
     </span>
   );
 }
 
-function StatusPill({
-  status,
-}: {
-  readonly status: RuntimeSourceBusinessStatus;
-}) {
-  const label = status === 'working'
-    ? 'Działa'
-    : status === 'syncing'
-      ? 'Pobieranie'
-      : 'Wymaga działania';
-  const icon = status === 'working' ? '✓' : status === 'syncing' ? '↻' : '⚠';
-  return (
-    <span className="pd-id8-status-pill" data-status={status}>
-      {icon}
-      {' '}
-      {label}
-    </span>
-  );
-}
-
-function AvailabilityBadge({
-  provider,
-}: {
-  readonly provider: IntegrationRuntimeCatalogProvider;
-}) {
-  return (
-    <span className="pd-id8-availability" data-connectable={provider.connectable ? true : undefined}>
-      {provider.connectable ? 'Dostępne' : provider.availabilityLabel}
-    </span>
-  );
-}
-
-function LogStatus({
-  status,
-}: {
-  readonly status: IntegrationRuntimeLog['status'];
-}) {
-  const label = status === 'completed' ? 'Zakończone' : status === 'running' ? 'W toku' : 'Błąd';
-  return <span className="pd-id8-log-status" data-status={status}>{label}</span>;
-}
-
-function IntegrationsPrototypeSkeleton() {
-  return (
-    <div className="pd-integrations-id8">
-      <PrototypeHeader
-        loading
-        onSseOpen={() => undefined}
-        planLabel="..."
-      />
-      <main className="pd-id8-main">
-        <section className="pd-id8-skeleton" />
-        <section className="pd-id8-skeleton" />
-        <section className="pd-id8-skeleton" />
-      </main>
-    </div>
-  );
-}
-
-function authLabel(type: IntegrationRuntimeCatalogProvider['authType']) {
-  switch (type) {
-    case 'api_key':
-      return 'API Key / Basic Auth';
-    case 'basic_auth':
-      return 'Basic Auth';
+function authLabel(authType: IntegrationRuntimeCatalogProvider['authType']): string {
+  switch (authType) {
     case 'oauth':
       return 'Konto OAuth2';
+    case 'api_key':
+      return 'API Key';
+    case 'basic_auth':
+      return 'Basic Auth';
   }
 }
 
@@ -1530,123 +1639,13 @@ function providerFields(provider: IntegrationRuntimeCatalogProvider): readonly {
 }[] {
   if (provider.authType === 'oauth') {
     return [
-      {
-        label: 'Nazwa źródła',
-        name: 'displayName',
-        placeholder: `${provider.displayName} produkcyjny`,
-        required: true,
-        secret: false,
-        type: 'text',
-      },
+      { label: 'Nazwa źródła', name: 'displayName', placeholder: `${provider.displayName} produkcyjny`, required: true, secret: false, type: 'text' },
     ];
   }
   return [
-    {
-      label: 'Nazwa źródła',
-      name: 'displayName',
-      placeholder: `Sklep produkcyjny ${provider.displayName}`,
-      required: true,
-      secret: false,
-      type: 'text',
-    },
-    {
-      label: 'Adres sklepu',
-      name: 'storeUrl',
-      placeholder: 'https://sklep.example.com',
-      required: provider.provider === 'woocommerce',
-      secret: false,
-      type: provider.provider === 'woocommerce' ? 'url' : 'text',
-    },
-    {
-      label: provider.provider === 'baselinker' ? 'Token dostępu' : 'Klucz dostępu',
-      name: 'consumerKey',
-      placeholder: provider.provider === 'baselinker' ? 'token_live_...' : 'ck_live_...',
-      required: true,
-      secret: true,
-      type: 'text',
-    },
-    {
-      label: 'Sekret dostępu',
-      name: 'consumerSecret',
-      placeholder: 'cs_live_...',
-      required: provider.provider === 'woocommerce',
-      secret: true,
-      type: 'text',
-    },
+    { label: 'Nazwa źródła', name: 'displayName', placeholder: `Sklep produkcyjny ${provider.displayName}`, required: true, secret: false, type: 'text' },
+    { label: 'Adres sklepu', name: 'storeUrl', placeholder: 'https://sklep.example.com', required: provider.provider === 'woocommerce', secret: false, type: provider.provider === 'woocommerce' ? 'url' : 'text' },
+    { label: provider.provider === 'baselinker' ? 'Token dostępu' : 'Klucz dostępu', name: 'consumerKey', placeholder: provider.provider === 'baselinker' ? 'token_live_...' : 'ck_live_...', required: true, secret: true, type: 'text' },
+    { label: 'Sekret dostępu', name: 'consumerSecret', placeholder: 'cs_live_...', required: provider.provider === 'woocommerce', secret: true, type: 'text' },
   ];
-}
-
-function uniqueLabels(labels: readonly (string | undefined)[]) {
-  return Array.from(new Set(labels.filter((label): label is string => Boolean(label))));
-}
-
-function dateColumns(completeness: IntegrationCompletenessRuntime): readonly string[] {
-  const first = completeness.sources[0]?.completeness.days ?? [];
-  return first.slice(0, 7).map((day) => day.date).reverse();
-}
-
-function shortDate(value: string) {
-  return new Intl.DateTimeFormat('pl-PL', {
-    day: '2-digit',
-    month: 'short',
-  }).format(new Date(`${value}T00:00:00.000Z`));
-}
-
-function drawCompletenessChart(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  completeness: IntegrationCompletenessRuntime,
-) {
-  const palette = ['rgb(16 185 129)', 'rgb(244 63 94)', 'rgb(99 102 241)', 'rgb(245 158 11)'];
-  const padding = { bottom: 42, left: 38, right: 16, top: 18 };
-  const chartWidth = width - padding.left - padding.right;
-  const chartHeight = height - padding.top - padding.bottom;
-  const labels = dateColumns(completeness);
-
-  ctx.clearRect(0, 0, width, height);
-  ctx.fillStyle = 'rgb(255 255 255)';
-  ctx.fillRect(0, 0, width, height);
-  ctx.strokeStyle = 'rgb(226 232 240)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  for (let line = 0; line <= 4; line += 1) {
-    const y = padding.top + (chartHeight / 4) * line;
-    ctx.moveTo(padding.left, y);
-    ctx.lineTo(width - padding.right, y);
-  }
-  ctx.stroke();
-
-  ctx.fillStyle = 'rgb(100 116 139)';
-  ctx.font = '11px Inter, sans-serif';
-  [0, 50, 100].forEach((tick) => {
-    const y = padding.top + chartHeight - ((tick / 100) * chartHeight);
-    ctx.fillText(`${tick}%`, 4, y + 4);
-  });
-
-  completeness.sources.slice(0, 4).forEach((source, index) => {
-    const data = labels.map((label) => {
-      const day = source.completeness.days.find((item) => item.date === label);
-      if (!day) return 0;
-      if (day.status === 'COMPLETE') return 100;
-      if (day.status === 'PARTIAL') return source.completeness.percentage;
-      return 0;
-    });
-    ctx.strokeStyle = palette[index % palette.length];
-    ctx.lineWidth = index === 1 ? 2.5 : 2;
-    ctx.beginPath();
-    data.forEach((value, pointIndex) => {
-      const x = padding.left + (labels.length <= 1 ? 0 : (chartWidth / (labels.length - 1)) * pointIndex);
-      const y = padding.top + chartHeight - ((value / 100) * chartHeight);
-      if (pointIndex === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-  });
-
-  labels.forEach((label, index) => {
-    const x = padding.left + (labels.length <= 1 ? 0 : (chartWidth / (labels.length - 1)) * index);
-    ctx.fillStyle = 'rgb(100 116 139)';
-    ctx.fillText(shortDate(label), x - 18, height - 16);
-  });
 }

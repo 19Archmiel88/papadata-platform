@@ -1,3 +1,4 @@
+import { createRuntimeShellNavigation } from './shellRuntime';
 import type {
   ShellCommandResult,
   ShellNavigationGroup,
@@ -53,118 +54,9 @@ export const defaultShellWorkspaces = [
   },
 ] satisfies readonly ShellWorkspace[];
 
-export const defaultShellNavigation = [
-  {
-    id: 'analytics',
-    label: 'Analiza',
-    items: [
-      {
-        icon: 'home',
-        id: 'command-center',
-        label: 'Centrum Dowodzenia',
-        path: '/app/command-center',
-      },
-      {
-        icon: 'trend',
-        id: 'campaigns',
-        label: 'Kampanie płatne',
-        path: '/app/campaigns',
-      },
-      {
-        icon: 'data',
-        id: 'orders',
-        label: 'Zamówienia',
-        path: '/app/orders',
-      },
-      {
-        icon: 'products',
-        id: 'products',
-        label: 'Produkty',
-        path: '/app/products',
-      },
-      {
-        icon: 'customers',
-        id: 'customers',
-        label: 'Klienci',
-        path: '/app/customers',
-      },
-      {
-        icon: 'trend',
-        id: 'traffic',
-        label: 'Ruch na stronie',
-        path: '/app/traffic',
-      },
-    ],
-  },
-  {
-    id: 'ai',
-    label: 'AI',
-    items: [
-      {
-        icon: 'assistant',
-        id: 'papa',
-        label: 'Laboratorium Papa Asystenta',
-        path: '/app/papa',
-      },
-    ],
-  },
-  {
-    id: 'data-integrations',
-    label: 'Dane i integracje',
-    items: [
-      {
-        icon: 'integration',
-        id: 'integrations',
-        label: 'Integracje',
-        path: '/app/integrations/sources',
-      },
-    ],
-  },
-  {
-    id: 'administration',
-    label: 'Administracja',
-    items: [
-      {
-        disabled: true,
-        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym środowisku.',
-        icon: 'security',
-        id: 'settings',
-        label: 'Ustawienia',
-        path: '/app/settings/organizacja',
-      },
-      {
-        badge: 'Nowe',
-        icon: 'billing',
-        id: 'billing',
-        label: 'Subskrypcja i płatności',
-        path: '/app/billing/subskrypcja',
-        status: 'Sekcja 70',
-      },
-    ],
-  },
-  {
-    id: 'support',
-    label: 'Wsparcie',
-    items: [
-      {
-        badge: 'Nowe',
-        icon: 'decisions',
-        id: 'decisions',
-        label: 'Wsparcie w marketingu',
-        path: '/app/decisions/centrum-decyzji',
-        status: 'Sekcja 80',
-      },
-      {
-        disabled: true,
-        disabledReason: 'Moduł nie jest jeszcze aktywny w bieżącym środowisku.',
-        icon: 'help',
-        id: 'help',
-        label: 'Centrum Pomocy',
-        path: '/app/help/strona-glowna-pomocy',
-      },
-    ],
-  },
-] satisfies readonly ShellNavigationGroup[];
+export const defaultShellNavigation: readonly ShellNavigationGroup[] = createRuntimeShellNavigation([
+  'analytics.read', 'decisions.read', 'ai.use', 'integrations.read', 'settings.read', 'billing.read', 'help.read',
+]);
 
 export const defaultShellCommands = [
   {
@@ -203,7 +95,7 @@ export const defaultShellCommands = [
       'kpi',
       'centrum',
     ],
-    label: 'Przejdź do Centrum Dowodzenia',
+    label: 'Przejdź do Przeglądu',
     path: '/app/command-center',
     section: 'Nawigacja',
   },
@@ -244,7 +136,7 @@ export const defaultShellCommands = [
     section: 'Administracja',
   },
   {
-    description: 'Pokazuje centrum decyzji marketingowych, rekomendacje i pomiar działań.',
+    description: 'Pokazuje decyzje, rekomendacje i pomiar działań.',
     id: 'open-decisions',
     keywords: [
       'decyzje',

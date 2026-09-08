@@ -20,7 +20,9 @@ export const FunnelStep = forwardRef<HTMLElement, FunnelStepProps>(
       conversions,
       conversionRate,
       label,
+      nextStepId: _nextStepId,
       onInspect,
+      previousStepId: _previousStepId,
       stepId,
       visitors,
       ...props

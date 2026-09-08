@@ -1,24 +1,9 @@
-import type {
-  Meta,
-} from '@storybook/react-vite';
-
+import type { Meta } from '@storybook/react-vite';
 import {
   BundleSimulator as BundleSimulatorStory,
-  PapaAiInteractions as PapaAiInteractionsStory,
+  EvidenceAndRisk as EvidenceAndRiskStory,
 } from './ProductsBiPage.story-support';
-
-const meta = {
-  title: 'ANALIZA/Produkty/Interakcje',
-} satisfies Meta;
-
+const meta = { title: 'ANALIZA/Produkty/Interakcje' } satisfies Meta;
 export default meta;
-
-export const BundleSimulator = {
-  ...BundleSimulatorStory,
-  name: 'Symulator zestawów',
-};
-
-export const PapaAiInteractions = {
-  ...PapaAiInteractionsStory,
-  name: 'Papa AI',
-};
+export const BundleSimulator = { ...BundleSimulatorStory, name: 'Symulator zestawów' };
+export const EvidenceAndRisk = { ...EvidenceAndRiskStory, name: 'Koszt, ryzyko i szczegóły SKU' };

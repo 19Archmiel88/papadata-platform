@@ -17,7 +17,7 @@ header.pd-shell-topbar {
   border-block-end: 1px solid var(--pd-shell-separator);
   background: var(--pd-shell-canvas);
   color: var(--pd-shell-text);
-  color-scheme: dark;
+  color-scheme: inherit;
 }
 
 header.pd-shell-topbar::before,
@@ -146,7 +146,7 @@ header.pd-shell-topbar[data-variant='public'] {
   color: var(--pd-shell-text-muted);
   background: var(--pd-shell-surface-subtle);
   font-family: var(--pd-font-mono);
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .pd-shell-topbar__control,
@@ -228,7 +228,7 @@ header.pd-shell-topbar[data-variant='public'] {
   border-radius: 7px;
   color: var(--pd-shell-text);
   background: var(--pd-shell-surface-raised);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -269,7 +269,7 @@ header.pd-shell-topbar[data-variant='public'] {
   border-radius: 6px;
   color: var(--pd-shell-text-muted);
   background: transparent;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -285,12 +285,13 @@ header.pd-shell-topbar[data-variant='public'] {
 .pd-shell-topbar__language-switch button:focus-visible,
 .pd-shell-topbar__profile-trigger:focus-visible,
 .pd-shell-topbar__mobile-menu:focus-visible {
-  outline: 0;
-  box-shadow: 0 0 0 3px var(--pd-shell-brand-ambient);
+  box-shadow: none;
+  outline: var(--pd-focus-width, 2px) solid var(--pd-shell-brand-ambient);
+  outline-offset: 2px;
 }
 
 .pd-shell-topbar__calendar-overlay {
-  color-scheme: dark;
+  color-scheme: inherit;
 }
 
 @media (max-width: 1100px) {

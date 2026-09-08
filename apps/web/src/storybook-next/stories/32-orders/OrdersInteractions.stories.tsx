@@ -1,18 +1,5 @@
-import type {
-  Meta,
-} from '@storybook/react-vite';
-
-import {
-  PapaAiInteractions as PapaAiInteractionsStory,
-} from './OrdersBiPage.story-support';
-
-const meta = {
-  title: 'ANALIZA/Zamówienia/Interakcje',
-} satisfies Meta;
-
+import type { Meta } from '@storybook/react-vite';
+import { EvidenceAndQueue as EvidenceAndQueueStory } from './OrdersBiPage.story-support';
+const meta = { title: 'ANALIZA/Zamówienia/Interakcje' } satisfies Meta;
 export default meta;
-
-export const PapaAiInteractions = {
-  ...PapaAiInteractionsStory,
-  name: 'Papa AI',
-};
+export const EvidenceAndQueue = { ...EvidenceAndQueueStory, name: 'Kolejka i dowody zamówienia' };

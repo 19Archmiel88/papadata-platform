@@ -190,18 +190,32 @@ services:
     build:
       context: .
       dockerfile: infra/docker/node.Dockerfile
-    command: ["pnpm", "--filter", "@papadata/worker", "start:local"]
+    # dev:production (tsx src/production/main.ts) is the real worker --
+    # NestFactory.createApplicationContext with no HTTP server at all (see
+    # apps/worker/src/production/main.ts). There used to be a "start:local"
+    # script here instead, running a health-check-only stub
+    # (local-runtime.mjs) that never started IntegrationWorkerService,
+    # PlatformWorkerService or SyncDispatchScheduler -- `docker compose up`
+    # looked like it ran a worker but never actually processed a single
+    # integration job. Matches compose.production-parity.yml's
+    # worker-production service, which already runs this real entrypoint
+    # with no healthcheck for the same headless-process reason.
+    command: ["pnpm", "--filter", "@papadata/worker", "dev:production"]
     environment:
-      WORKER_HEALTH_PORT: ${WORKER_HEALTH_PORT:-3002}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       PAPADATA_DATABASE: ${PAPADATA_DATABASE:-papadata}
       PAPADATA_APP_USER: ${PAPADATA_APP_USER:-papadata_app}
       PAPADATA_APP_PASSWORD: ${PAPADATA_APP_PASSWORD:-change-me-local-only}
+      DATABASE_URL: postgres://${PAPADATA_APP_USER:-papadata_app}:${PAPADATA_APP_PASSWORD:-change-me-local-only}@postgres:5432/${PAPADATA_DATABASE:-papadata}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-    ports:
-      - "${WORKER_HEALTH_PORT:-3002}:${WORKER_HEALTH_PORT:-3002}"
+      REDIS_URL: redis://redis:6379
+      PAPADATA_STORAGE_DRIVER: minio
+      PAPADATA_STORAGE_BUCKET: papadata-artifacts
+      PAPADATA_STORAGE_ENDPOINT: http://minio:9000
+      PAPADATA_STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:-papadata_minio_admin}
+      PAPADATA_STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-papadata-local-dev-minio-secret-please-rotate-xyz}
     depends_on:
       postgres:
         condition: service_healthy
@@ -209,12 +223,8 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
-    healthcheck:
-      test: ["CMD", "node", "apps/worker/healthcheck.mjs"]
-      interval: 10s
-      timeout: 3s
-      retries: 12
-      start_period: 10s
+      minio-init:
+        condition: service_completed_successfully
 
 volumes:
   papadata-postgres-data:

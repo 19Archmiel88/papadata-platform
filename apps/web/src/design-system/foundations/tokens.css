@@ -1,0 +1,669 @@
+/* PapaData: one palette, two modes. RGB ramps also serve existing analytical components. */
+:root {
+  --pd-font-sans: "Inter",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  --pd-font-mono: "JetBrains Mono",
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  --pd-font-serif: var(--pd-font-sans);
+  --pd-font-weight-regular: 400;
+  --pd-font-weight-medium: 500;
+  --pd-font-weight-semibold: 600;
+  --pd-font-weight-bold: 700;
+  --pd-premium-hero-numeral-font: var(--pd-font-sans);
+  --pd-premium-hero-numeral-weight: 600;
+  --pd-type-size-micro: 12px;
+  --pd-type-size-caption: 12px;
+  --pd-type-size-body-small: 13px;
+  --pd-type-size-body: 14px;
+  --pd-type-size-body-large: 16px;
+  --pd-type-size-label: 13px;
+  --pd-type-size-section: 18px;
+  --pd-type-size-heading-small: 14px;
+  --pd-type-size-heading-5: 16px;
+  --pd-type-size-heading-4: 18px;
+  --pd-type-size-heading-3: 20px;
+  --pd-type-size-heading-2: 24px;
+  --pd-type-size-heading-1: 32px;
+  --pd-type-size-metric: 32px;
+  --pd-type-size-page: 24px;
+  --pd-type-size-display: 40px;
+  --pd-type-size-page-mobile: 24px;
+  --pd-type-size-display-mobile: 36px;
+  --pd-type-size-heading-large: var(--pd-type-size-heading-2);
+  --pd-font-size-2: var(--pd-type-size-caption);
+  --pd-font-size-3: var(--pd-type-size-body-small);
+  --pd-font-size-4: var(--pd-type-size-body);
+  --pd-font-size-5: var(--pd-type-size-body-large);
+  --pd-font-size-6: var(--pd-type-size-heading-4);
+  --pd-line-height-body: var(--pd-line-height-normal);
+  --pd-line-height-compact: 1.2;
+  --pd-line-height-tight: 1.25;
+  --pd-line-height-heading: 1.3;
+  --pd-line-height-page-mobile: 1.22;
+  --pd-line-height-display-mobile: 1.12;
+  --pd-line-height-normal: 1.4286;
+  --pd-line-height-relaxed: 1.65;
+  --pd-letter-spacing: 0;
+  --pd-space-0: 0;
+  --pd-space-1: 4px;
+  --pd-space-2: 8px;
+  --pd-space-3: 12px;
+  --pd-space-4: 16px;
+  --pd-space-5: 20px;
+  --pd-space-6: 24px;
+  --pd-space-8: 32px;
+  --pd-space-10: 40px;
+  --pd-space-12: 48px;
+  --pd-space-16: 64px;
+  --pd-space-20: 80px;
+  --pd-space-24: 96px;
+  --pd-layout-content-max-width: 1560px;
+  --pd-layout-page-padding: var(--pd-space-8);
+  --pd-grid-columns-wide: 12;
+  --pd-grid-columns-tablet: 8;
+  --pd-grid-columns-mobile: 4;
+  --pd-grid-gutter: var(--pd-space-6);
+  --pd-grid-min-column: 0;
+  --pd-radius-none: 0;
+  --pd-radius-subtle: 4px;
+  --pd-radius-small: 6px;
+  --pd-radius-control: 6px;
+  --pd-radius-surface: 8px;
+  --pd-radius-overlay: 12px;
+  --pd-radius-pill: 999px;
+  --pd-border-width-none: 0;
+  --pd-border-width-subtle: 1px;
+  --pd-border-width-strong: 2px;
+  --pd-focus-width: 2px;
+  --pd-focus-offset: 2px;
+  --pd-focus-ring-size: 3px;
+  --pd-shadow-none: none;
+  --pd-motion-duration-instant: 70ms;
+  --pd-motion-duration-fast: 110ms;
+  --pd-motion-duration-standard: 180ms;
+  --pd-motion-duration-deliberate: 240ms;
+  --pd-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --pd-motion-easing-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+  --pd-motion-distance: 3px;
+  --pd-layer-underlay: -1;
+  --pd-layer-base: 0;
+  --pd-layer-sticky: 10;
+  --pd-layer-popover: 20;
+  --pd-layer-modal: 30;
+  --pd-layer-toast: 40;
+  --pd-brand-flow-line-height: 2px;
+  --pd-brand-flow-line-radius: var(--pd-radius-pill);
+  --pd-brand-flow-line-rest-scale: 0.36;
+  --pd-brand-flow-line-active-scale: 1;
+  --pd-brand-flow-line-transition: transform var(--pd-motion-duration-standard) var(--pd-motion-easing-emphasized),
+    opacity var(--pd-motion-duration-standard) var(--pd-motion-easing-standard);
+  --pd-table-min-width: 720px;
+  --pd-drawer-width: 520px;
+  --pd-menu-offset: 8px;
+  --pd-overlay-z-index: var(--pd-layer-modal);
+  --pd-business-side-width: 380px;
+  --pd-scrollbar-size: 8px;
+  --pd-scrollbar-radius: var(--pd-radius-pill);
+}
+
+:root,
+[data-theme="light"] {
+  --pd-vl-canvas: 250 247 239;
+  --pd-vl-surface: 255 252 247;
+  --pd-vl-surface-soft: 244 239 229;
+  --pd-vl-surface-muted: 240 234 223;
+  --pd-vl-border: 230 219 216;
+  --pd-vl-border-strong: 155 135 142;
+  --pd-vl-text: 41 27 34;
+  --pd-vl-text-secondary: 89 70 77;
+  --pd-vl-text-muted: 114 95 101;
+  --pd-vl-inverse: 255 252 247;
+  --pd-vl-shell: 240 234 223;
+  --pd-vl-shell-panel: 255 252 247;
+  --pd-vl-shell-accent-deep: 120 31 61;
+  --pd-vl-shell-accent-soft: 216 231 138;
+  --pd-vl-accent-50: 250 241 243;
+  --pd-vl-accent-100: 241 223 229;
+  --pd-vl-accent-200: 228 190 201;
+  --pd-vl-accent-300: 205 145 164;
+  --pd-vl-accent-400: 169 81 112;
+  --pd-vl-accent-500: 120 31 61;
+  --pd-vl-accent-600: 97 23 47;
+  --pd-vl-accent-700: 78 16 37;
+  --pd-vl-accent-800: 60 12 28;
+  --pd-vl-accent-900: 46 9 21;
+  --pd-vl-accent-950: 33 19 25;
+  --pd-vl-success-50: 240 253 244;
+  --pd-vl-success-100: 220 252 231;
+  --pd-vl-success-200: 187 247 208;
+  --pd-vl-success-300: 134 239 172;
+  --pd-vl-success-400: 74 222 128;
+  --pd-vl-success-500: 24 121 78;
+  --pd-vl-success-600: 22 163 74;
+  --pd-vl-success-700: 21 128 61;
+  --pd-vl-success-800: 22 101 52;
+  --pd-vl-success-900: 20 83 45;
+  --pd-vl-success-950: 5 46 22;
+  --pd-vl-warning-50: 255 251 235;
+  --pd-vl-warning-100: 254 243 199;
+  --pd-vl-warning-200: 253 230 138;
+  --pd-vl-warning-300: 252 211 77;
+  --pd-vl-warning-400: 251 191 36;
+  --pd-vl-warning-500: 154 103 0;
+  --pd-vl-warning-600: 217 119 6;
+  --pd-vl-warning-700: 180 83 9;
+  --pd-vl-warning-800: 146 64 14;
+  --pd-vl-warning-900: 120 53 15;
+  --pd-vl-warning-950: 69 26 3;
+  --pd-vl-danger-50: 254 242 242;
+  --pd-vl-danger-100: 254 226 226;
+  --pd-vl-danger-200: 254 202 202;
+  --pd-vl-danger-300: 252 165 165;
+  --pd-vl-danger-400: 248 113 113;
+  --pd-vl-danger-500: 180 35 24;
+  --pd-vl-danger-600: 220 38 38;
+  --pd-vl-danger-700: 185 28 28;
+  --pd-vl-danger-800: 153 27 27;
+  --pd-vl-danger-900: 127 29 29;
+  --pd-vl-danger-950: 69 10 10;
+  --pd-vl-info-50: 250 241 243;
+  --pd-vl-info-100: 241 223 229;
+  --pd-vl-info-200: 228 190 201;
+  --pd-vl-info-300: 205 145 164;
+  --pd-vl-info-400: 169 81 112;
+  --pd-vl-info-500: 120 31 61;
+  --pd-vl-info-600: 97 23 47;
+  --pd-vl-info-700: 78 16 37;
+  --pd-vl-info-800: 60 12 28;
+  --pd-vl-info-900: 46 9 21;
+  --pd-vl-violet-50: 245 243 255;
+  --pd-vl-violet-100: 237 233 254;
+  --pd-vl-violet-200: 221 214 254;
+  --pd-vl-violet-300: 196 181 253;
+  --pd-vl-violet-400: 167 139 250;
+  --pd-vl-violet-500: 139 92 246;
+  --pd-vl-violet-600: 124 58 237;
+  --pd-vl-violet-700: 109 40 217;
+  --pd-vl-violet-800: 91 33 182;
+  --pd-vl-violet-900: 76 29 149;
+  --pd-vl-violet-950: 46 16 101;
+  --pd-vl-slate-50: 245 245 245;
+  --pd-vl-slate-100: 235 235 234;
+  --pd-vl-slate-200: 215 215 213;
+  --pd-vl-slate-300: 190 190 187;
+  --pd-vl-slate-400: 161 161 155;
+  --pd-vl-slate-500: 138 138 128;
+  --pd-vl-slate-600: 117 117 107;
+  --pd-vl-slate-700: 96 96 88;
+  --pd-vl-slate-800: 74 74 68;
+  --pd-vl-slate-900: 58 58 54;
+  --pd-vl-slate-950: 37 37 35;
+  --pd-canvas: rgb(var(--pd-vl-canvas));
+  --pd-surface: rgb(var(--pd-vl-surface));
+  --pd-surface-subtle: rgb(var(--pd-vl-surface-muted));
+  --pd-surface-raised: rgb(var(--pd-vl-surface));
+  --pd-surface-soft: rgb(var(--pd-vl-surface-soft));
+  --pd-surface-sunken: rgb(var(--pd-vl-surface-muted));
+  --pd-surface-overlay: rgb(var(--pd-vl-surface));
+  --pd-surface-active: rgb(var(--pd-vl-surface-muted));
+  --pd-surface-data: rgb(var(--pd-vl-surface-soft));
+  --pd-surface-panel: rgb(var(--pd-vl-surface));
+  --pd-glass-surface: rgb(var(--pd-vl-surface));
+  --pd-workspace-canvas: var(--pd-canvas);
+  --pd-workspace-surface: var(--pd-surface);
+  --pd-workspace-surface-panel: var(--pd-surface-panel);
+  --pd-workspace-surface-raised: var(--pd-surface-raised);
+  --pd-workspace-surface-data: var(--pd-surface-data);
+  --pd-workspace-text: var(--pd-text);
+  --pd-workspace-text-secondary: var(--pd-text-secondary);
+  --pd-workspace-text-muted: var(--pd-text-muted);
+  --pd-shell-canvas: rgb(var(--pd-vl-shell));
+  --pd-shell-surface: rgb(var(--pd-vl-shell));
+  --pd-shell-surface-subtle: var(--pd-surface-subtle);
+  --pd-shell-surface-raised: var(--pd-surface-raised);
+  --pd-shell-surface-overlay: var(--pd-surface-overlay);
+  --pd-shell-surface-active: var(--pd-surface-active);
+  --pd-shell-text: var(--pd-text);
+  --pd-shell-text-secondary: var(--pd-text-secondary);
+  --pd-shell-text-muted: var(--pd-text-muted);
+  --pd-shell-separator: var(--pd-separator);
+  --pd-shell-separator-strong: var(--pd-separator-strong);
+  --pd-shell-brand: var(--pd-interactive);
+  --pd-shell-brand-strong: var(--pd-interactive-hover);
+  --pd-shell-brand-on: var(--pd-interactive-on);
+  --pd-shell-brand-ambient: var(--pd-interactive-subtle);
+  --pd-shell-glow: transparent;
+  --pd-auth-canvas: var(--pd-canvas);
+  --pd-auth-surface: var(--pd-surface);
+  --pd-auth-surface-soft: var(--pd-surface-soft);
+  --pd-auth-surface-subtle: var(--pd-surface-subtle);
+  --pd-auth-ink: var(--pd-text);
+  --pd-auth-ink-secondary: var(--pd-text-secondary);
+  --pd-auth-ink-muted: var(--pd-text-muted);
+  --pd-auth-ink-on-accent: var(--pd-interactive-on);
+  --pd-auth-line: var(--pd-separator);
+  --pd-auth-line-subtle: var(--pd-separator-subtle);
+  --pd-auth-line-strong: var(--pd-separator-strong);
+  --pd-auth-accent: var(--pd-interactive);
+  --pd-auth-accent-hover: var(--pd-interactive-hover);
+  --pd-auth-accent-tint: var(--pd-interactive-subtle);
+  --pd-auth-focus-ring: var(--pd-focus-ring);
+  --pd-auth-cta-surface: var(--pd-interactive);
+  --pd-auth-cta-surface-hover: var(--pd-interactive-hover);
+  --pd-auth-cta-ink: var(--pd-interactive-on);
+  --pd-auth-chart-positive: var(--pd-status-success);
+  --pd-auth-depth-glow: none;
+  --pd-auth-elevated-shadow: var(--pd-shadow-raised);
+  --pd-premium-ambient-wash: none;
+  --pd-premium-depth-glow: none;
+  --pd-premium-panel-wash: none;
+  --pd-separator-subtle: rgb(var(--pd-vl-border));
+  --pd-separator: rgb(var(--pd-vl-border));
+  --pd-separator-strong: rgb(var(--pd-vl-border-strong));
+  --pd-text: rgb(var(--pd-vl-text));
+  --pd-text-secondary: rgb(var(--pd-vl-text-secondary));
+  --pd-text-muted: rgb(var(--pd-vl-text-muted));
+  --pd-brand-deep: var(--pd-brand-cherry);
+  --pd-brand: var(--pd-interactive);
+  --pd-brand-strong: var(--pd-interactive-hover);
+  --pd-brand-highlight: var(--pd-brand-pistachio);
+  --pd-brand-accent: var(--pd-interactive);
+  --pd-brand-line: var(--pd-interactive);
+  --pd-brand-ambient: var(--pd-interactive-subtle);
+  --pd-brand-on: var(--pd-interactive-on);
+  --pd-brand-action: var(--pd-interactive);
+  --pd-brand-action-hover: var(--pd-interactive-hover);
+  --pd-brand-action-active: var(--pd-interactive-active);
+  --pd-brand-action-on: var(--pd-interactive-on);
+  --pd-brand-glow: transparent;
+  --pd-interactive: rgb(var(--pd-vl-accent-500));
+  --pd-interactive-hover: rgb(var(--pd-vl-accent-600));
+  --pd-interactive-active: rgb(var(--pd-vl-accent-700));
+  --pd-interactive-subtle: #e8edc9;
+  --pd-interactive-on: #fffcf7;
+  --pd-data-accent: var(--pd-interactive);
+  --pd-data-accent-hover: var(--pd-interactive-hover);
+  --pd-data-accent-subtle: var(--pd-interactive-subtle);
+  --pd-data-series-1: #781f3d;
+  --pd-data-series-2: #7e716b;
+  --pd-data-series-3: #5b6b35;
+  --pd-data-series-4: #9e6428;
+  --pd-data-series-5: #80566e;
+  --pd-data-series-6: #47735b;
+  --pd-data-series-7: #996456;
+  --pd-data-series-8: #747038;
+  --pd-data-series-9: #675c6c;
+  --pd-data-series-10: #aa5435;
+  --pd-data-actual: var(--pd-data-series-1);
+  --pd-data-target: var(--pd-text);
+  --pd-data-forecast: var(--pd-data-series-2);
+  --pd-data-uncertainty: color-mix(in srgb, var(--pd-interactive) 14%, transparent);
+  --pd-data-positive: var(--pd-status-success);
+  --pd-data-negative: var(--pd-status-danger);
+  --pd-data-no-data: var(--pd-text-muted);
+  --pd-status-success: rgb(var(--pd-vl-success-500));
+  --pd-status-success-subtle: #eaf7ef;
+  --pd-status-warning: rgb(var(--pd-vl-warning-500));
+  --pd-status-warning-subtle: #fff4d6;
+  --pd-status-danger: rgb(var(--pd-vl-danger-500));
+  --pd-status-danger-on: #ffffff;
+  --pd-status-danger-subtle: #feeceb;
+  --pd-status-danger-border: rgba(201, 72, 82, 0.32);
+  --pd-status-neutral: var(--pd-text-secondary);
+  --pd-status-neutral-subtle: var(--pd-surface-subtle);
+  --pd-status-info: rgb(var(--pd-vl-info-500));
+  --pd-status-info-subtle: #f6e9ed;
+  --pd-status-critical: var(--pd-status-danger);
+  --pd-text-strong: var(--pd-text);
+  --pd-accent: var(--pd-brand-accent);
+  --pd-success: var(--pd-status-success);
+  --pd-warning: var(--pd-status-warning);
+  --pd-danger: var(--pd-status-danger);
+  --pd-focus-visible: var(--pd-interactive);
+  --pd-focus-on-interactive: var(--pd-interactive);
+  --pd-focus-ring: color-mix(in srgb, var(--pd-interactive) 24%, transparent);
+  --pd-border-interactive: var(--pd-interactive);
+  --pd-border-danger: rgba(239, 68, 68, 0.34);
+  --pd-overlay-scrim: rgba(13, 13, 15, 0.72);
+  --pd-overlay-scrim-text: #f4f4f1;
+  --pd-overlay-scrim-text-muted: rgba(244, 244, 241, 0.72);
+  --pd-gradient-premium: var(--pd-surface);
+  --pd-gradient-data: linear-gradient(180deg, color-mix(in srgb, var(--pd-data-series-1) 12%, transparent), transparent);
+  --pd-canvas-gradient: var(--pd-canvas);
+  --pd-shadow-control: none;
+  --pd-shadow-raised: none;
+  --pd-shadow-floating: 0 6px 24px rgb(41 27 34 / 0.16);
+  --pd-shadow-overlay: 0 20px 64px rgb(20 10 16 / 0.28);
+  --pd-enterprise-focus: var(--pd-focus-visible);
+  --pd-enterprise-copper: var(--pd-brand-accent);
+  --pd-enterprise-paper: var(--pd-surface-panel);
+  --pd-enterprise-ink: var(--pd-text);
+  --pd-form-surface: var(--pd-surface-raised);
+  --pd-form-border: var(--pd-separator-strong);
+  --pd-form-ring: var(--pd-focus-ring);
+  --pd-form-accent: var(--pd-interactive);
+  --pd-form-text: var(--pd-text);
+  --pd-form-muted: var(--pd-text-muted);
+  --pd-button-color: var(--pd-interactive);
+  --pd-button-hover-color: var(--pd-interactive-hover);
+  --pd-button-line: var(--pd-separator);
+  --pd-icon-button-color: var(--pd-text-secondary);
+  --pd-icon-button-hover-color: var(--pd-text);
+  --pd-icon-button-line: var(--pd-separator);
+  --pd-inline-action-color: var(--pd-interactive);
+  --pd-inline-action-hover-color: var(--pd-interactive-hover);
+  --pd-inline-action-line: var(--pd-separator-subtle);
+  --pd-feedback-accent: var(--pd-brand-accent);
+  --pd-feedback-tint: var(--pd-surface-raised);
+  --pd-feedback-state-accent: var(--pd-status-info);
+  --pd-feedback-state-tint: var(--pd-status-info-subtle);
+  --pd-progress-accent: var(--pd-data-accent);
+  --pd-progress-tint: var(--pd-data-accent-subtle);
+  --pd-progress-track: var(--pd-surface-subtle);
+  --pd-progress-value: var(--pd-data-accent);
+  --pd-search-surface: var(--pd-surface-raised);
+  --pd-search-border: var(--pd-separator);
+  --pd-search-ring: var(--pd-focus-ring);
+  --pd-search-accent: var(--pd-interactive);
+  --pd-operation-accent: var(--pd-data-accent);
+  --pd-operation-tint: var(--pd-data-accent-subtle);
+  --pd-overlay-accent: var(--pd-brand-accent);
+  --pd-badge-accent: var(--pd-brand-accent);
+  --pd-chart-frame-surface: var(--pd-surface-panel);
+  --pd-chart-frame-panel: var(--pd-surface-raised);
+  --pd-chart-frame-region: var(--pd-surface-data);
+  --pd-chart-frame-rule: var(--pd-separator);
+  --pd-chart-frame-rule-soft: var(--pd-separator-subtle);
+  --pd-chart-frame-accent: var(--pd-data-accent);
+  --pd-chart-frame-insight: var(--pd-brand-accent);
+  --pd-chart-interaction-panel-surface: var(--pd-surface-overlay);
+  --pd-chart-interaction-panel-line: var(--pd-separator);
+  --pd-chart-interaction-plot-surface: var(--pd-surface-data);
+  --pd-forecast-axis-color: var(--pd-text-muted);
+  --pd-forecast-grid-color: var(--pd-separator);
+  --pd-forecast-grid-opacity: 0.46;
+  --pd-forecast-legend-strong: var(--pd-text);
+  --pd-forecast-legend-text: var(--pd-text-secondary);
+  --pd-forecast-reference-line-color: var(--pd-data-forecast);
+  --pd-forecast-reference-line-opacity: 0.62;
+  --pd-forecast-uncertainty-fill: var(--pd-data-forecast);
+  --pd-forecast-uncertainty-fill-opacity: 0.10;
+  --pd-forecast-uncertainty-stroke: var(--pd-data-forecast);
+  --pd-forecast-uncertainty-stroke-opacity: 0.36;
+  --pd-share-series-1: var(--pd-data-series-1);
+  --pd-share-series-2: var(--pd-data-series-2);
+  --pd-share-series-3: var(--pd-data-series-3);
+  --pd-share-series-4: var(--pd-data-series-4);
+  --pd-share-series-5: var(--pd-data-series-5);
+  --pd-share-series-6: var(--pd-data-series-6);
+  --pd-correlation-point: var(--pd-data-accent);
+  --pd-correlation-trendline: var(--pd-data-series-1);
+  --pd-correlation-cluster: var(--pd-data-series-5);
+  --pd-correlation-driver: var(--pd-data-series-2);
+  --pd-correlation-outlier: var(--pd-status-danger);
+  --pd-brand-flow-line-core: var(--pd-brand-accent);
+  --pd-brand-flow-line-edge: transparent;
+  --pd-brand-flow-line-background: var(--pd-interactive-subtle);
+  --pd-brand-flow-line-shadow: none;
+  --pd-scrollbar-track: rgba(23, 23, 21, 0.04);
+  --pd-scrollbar-thumb: rgba(23, 23, 21, 0.22);
+  --pd-scrollbar-thumb-hover: rgba(23, 23, 21, 0.36);
+  --pd-select-scrollbar-track: var(--pd-surface-subtle);
+  --pd-select-scrollbar-thumb: rgba(23, 23, 21, 0.20);
+  --pd-select-scrollbar-thumb-hover: rgba(23, 23, 21, 0.34);
+  --pd-s52-scrollbar-track: var(--pd-surface-subtle);
+  --pd-s52-scrollbar-thumb: rgba(23, 23, 21, 0.20);
+  --pd-s52-scrollbar-thumb-hover: rgba(23, 23, 21, 0.34);
+  --pd-refractive-background: var(--pd-canvas);
+  --pd-refractive-surface: var(--pd-surface);
+  --pd-refractive-surface-subtle: var(--pd-surface-subtle);
+  --pd-refractive-control: var(--pd-surface);
+  --pd-refractive-control-hover: var(--pd-surface-soft);
+  --pd-refractive-border: var(--pd-separator);
+  --pd-refractive-border-strong: var(--pd-separator-strong);
+  --pd-refractive-border-hover: var(--pd-border-interactive);
+  --pd-refractive-sheen: transparent;
+  --pd-refractive-spectrum-a: transparent;
+  --pd-refractive-spectrum-b: transparent;
+  --pd-refractive-depth: var(--pd-shadow-raised);
+  --pd-refractive-depth-strong: var(--pd-shadow-floating);
+  --pd-refractive-focus: 0 0 0 3px var(--pd-focus-ring);
+  --pd-refractive-primary: var(--pd-brand-action);
+  --pd-refractive-primary-hover: var(--pd-brand-action-hover);
+  --pd-brand-cherry: #781f3d;
+  --pd-brand-pistachio: #d8e78a;
+  --pd-brand-mark-detail: var(--pd-brand-pistachio);
+  --pd-brand-porcelain: #faf7ef;
+  --pd-data-comparison: var(--pd-data-series-2);
+}
+
+[data-theme="dark"] {
+  --pd-vl-canvas: 33 19 25;
+  --pd-vl-surface: 43 28 35;
+  --pd-vl-surface-soft: 48 32 40;
+  --pd-vl-surface-muted: 53 36 45;
+  --pd-vl-border: 80 59 70;
+  --pd-vl-border-strong: 158 132 145;
+  --pd-vl-text: 248 240 238;
+  --pd-vl-text-secondary: 215 196 202;
+  --pd-vl-text-muted: 191 167 177;
+  --pd-vl-inverse: 33 19 25;
+  --pd-vl-shell: 33 19 25;
+  --pd-vl-shell-panel: 43 28 35;
+  --pd-vl-shell-accent-deep: 68 50 61;
+  --pd-vl-accent-50: 48 37 43;
+  --pd-vl-accent-100: 60 48 53;
+  --pd-vl-accent-200: 85 69 77;
+  --pd-vl-accent-300: 134 116 109;
+  --pd-vl-accent-400: 181 194 107;
+  --pd-vl-accent-500: 216 231 138;
+  --pd-vl-accent-600: 226 238 170;
+  --pd-vl-accent-700: 233 241 189;
+  --pd-vl-accent-800: 239 245 208;
+  --pd-vl-accent-900: 244 247 224;
+  --pd-vl-accent-950: 250 251 239;
+  --pd-vl-success-50: 18 51 34;
+  --pd-vl-success-100: 20 83 45;
+  --pd-vl-success-200: 22 101 52;
+  --pd-vl-success-300: 21 128 61;
+  --pd-vl-success-400: 22 163 74;
+  --pd-vl-success-500: 114 212 160;
+  --pd-vl-success-600: 74 222 128;
+  --pd-vl-success-700: 134 239 172;
+  --pd-vl-success-800: 187 247 208;
+  --pd-vl-success-900: 220 252 231;
+  --pd-vl-success-950: 240 253 244;
+  --pd-vl-warning-50: 58 42 10;
+  --pd-vl-warning-100: 69 26 3;
+  --pd-vl-warning-200: 120 53 15;
+  --pd-vl-warning-300: 146 64 14;
+  --pd-vl-warning-400: 217 119 6;
+  --pd-vl-warning-500: 240 198 108;
+  --pd-vl-warning-600: 251 191 36;
+  --pd-vl-warning-700: 252 211 77;
+  --pd-vl-warning-800: 253 230 138;
+  --pd-vl-warning-900: 254 243 199;
+  --pd-vl-warning-950: 255 251 235;
+  --pd-vl-danger-50: 60 20 24;
+  --pd-vl-danger-100: 69 10 10;
+  --pd-vl-danger-200: 127 29 29;
+  --pd-vl-danger-300: 153 27 27;
+  --pd-vl-danger-400: 185 28 28;
+  --pd-vl-danger-500: 255 154 145;
+  --pd-vl-danger-600: 248 113 113;
+  --pd-vl-danger-700: 252 165 165;
+  --pd-vl-danger-800: 254 202 202;
+  --pd-vl-danger-900: 254 226 226;
+  --pd-vl-danger-950: 254 242 242;
+  --pd-vl-info-50: 48 37 43;
+  --pd-vl-info-100: 60 48 53;
+  --pd-vl-info-200: 85 69 77;
+  --pd-vl-info-300: 134 116 109;
+  --pd-vl-info-400: 181 194 107;
+  --pd-vl-info-500: 216 231 138;
+  --pd-vl-info-600: 226 238 170;
+  --pd-vl-info-700: 233 241 189;
+  --pd-vl-info-800: 239 245 208;
+  --pd-vl-info-900: 244 247 224;
+  --pd-vl-violet-50: 33 18 55;
+  --pd-vl-violet-100: 46 16 101;
+  --pd-vl-violet-200: 76 29 149;
+  --pd-vl-violet-300: 91 33 182;
+  --pd-vl-violet-400: 109 40 217;
+  --pd-vl-violet-600: 167 139 250;
+  --pd-vl-violet-700: 196 181 253;
+  --pd-vl-violet-800: 221 214 254;
+  --pd-vl-violet-900: 237 233 254;
+  --pd-vl-violet-950: 245 243 255;
+  --pd-vl-slate-50: 12 12 13;
+  --pd-vl-slate-100: 22 22 23;
+  --pd-vl-slate-200: 40 40 42;
+  --pd-vl-slate-300: 65 65 68;
+  --pd-vl-slate-400: 95 95 99;
+  --pd-vl-slate-500: 124 124 131;
+  --pd-vl-slate-600: 145 145 151;
+  --pd-vl-slate-700: 166 166 171;
+  --pd-vl-slate-800: 187 187 190;
+  --pd-vl-slate-900: 208 208 210;
+  --pd-vl-slate-950: 229 229 230;
+  --pd-interactive-subtle: #44323d;
+  --pd-interactive-on: #211319;
+  --pd-data-series-1: #d8e78a;
+  --pd-brand-mark-detail: #efabc1;
+  --pd-data-series-2: #bba9b0;
+  --pd-data-series-3: #efabc1;
+  --pd-data-series-4: #dfaf75;
+  --pd-data-series-5: #a7c3a0;
+  --pd-data-series-6: #c7a2bb;
+  --pd-data-series-7: #e7cdae;
+  --pd-data-series-8: #b8bc88;
+  --pd-data-series-9: #a0aba4;
+  --pd-data-series-10: #d99b7a;
+  --pd-status-success-subtle: #153527;
+  --pd-status-warning-subtle: #382e18;
+  --pd-status-danger-on: #151107;
+  --pd-status-danger-subtle: #3b2024;
+  --pd-status-danger-border: rgba(240, 97, 107, 0.34);
+  --pd-status-info-subtle: #44323d;
+  --pd-border-danger: rgba(251, 113, 133, 0.34);
+  --pd-overlay-scrim: rgba(0, 0, 0, 0.78);
+  --pd-overlay-scrim-text: #ededee;
+  --pd-overlay-scrim-text-muted: rgba(237, 237, 238, 0.70);
+  --pd-forecast-grid-opacity: 0.52;
+  --pd-forecast-reference-line-opacity: 0.66;
+  --pd-forecast-uncertainty-fill-opacity: 0.11;
+  --pd-forecast-uncertainty-stroke-opacity: 0.38;
+  --pd-scrollbar-track: rgba(255, 255, 255, 0.04);
+  --pd-scrollbar-thumb: rgba(255, 255, 255, 0.18);
+  --pd-scrollbar-thumb-hover: rgba(255, 255, 255, 0.30);
+  --pd-select-scrollbar-thumb: rgba(255, 255, 255, 0.18);
+  --pd-select-scrollbar-thumb-hover: rgba(255, 255, 255, 0.30);
+  --pd-s52-scrollbar-thumb: rgba(255, 255, 255, 0.18);
+  --pd-s52-scrollbar-thumb-hover: rgba(255, 255, 255, 0.30);
+  --pd-refractive-control: var(--pd-surface-raised);
+}
+
+
+
+:root,
+[data-density="comfortable"] {
+  --pd-density-control-height: 36px;
+  --pd-density-row-height: 44px;
+  --pd-density-surface-padding: var(--pd-space-6);
+  --pd-density-section-gap: var(--pd-space-12);
+  --pd-density-inline-gap: var(--pd-space-3);
+}
+
+[data-density="compact"] {
+  --pd-density-control-height: 32px;
+  --pd-density-row-height: 36px;
+  --pd-density-surface-padding: var(--pd-space-4);
+  --pd-density-section-gap: var(--pd-space-10);
+  --pd-density-inline-gap: var(--pd-space-2);
+}
+
+:root,
+[data-motion="full"] {
+  --pd-motion-duration-instant: 70ms;
+  --pd-motion-duration-fast: 110ms;
+  --pd-motion-duration-standard: 180ms;
+  --pd-motion-duration-deliberate: 240ms;
+  --pd-motion-distance: 3px;
+}
+
+[data-motion="reduced"] {
+  --pd-motion-duration-instant: 1ms;
+  --pd-motion-duration-fast: 1ms;
+  --pd-motion-duration-standard: 1ms;
+  --pd-motion-duration-deliberate: 1ms;
+  --pd-motion-distance: 0;
+}
+
+@media (max-width: 839px) {
+  :root {
+    --pd-layout-page-padding: var(--pd-space-8);
+  }
+}
+
+@media (max-width: 479px) {
+  :root {
+    --pd-layout-page-padding: var(--pd-space-4);
+    --pd-type-size-page: var(--pd-type-size-page-mobile);
+    --pd-type-size-display: var(--pd-type-size-display-mobile);
+    --pd-line-height-heading: var(--pd-line-height-page-mobile);
+    --pd-line-height-compact: var(--pd-line-height-display-mobile);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --pd-motion-duration-instant: 1ms;
+    --pd-motion-duration-fast: 1ms;
+    --pd-motion-duration-standard: 1ms;
+    --pd-motion-duration-deliberate: 1ms;
+    --pd-motion-distance: 0;
+  }
+}
+
+:where(
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  summary,
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: var(--pd-focus-width) solid var(--pd-focus-visible);
+  outline-offset: var(--pd-focus-offset);
+  box-shadow: none;
+}
+
+:where(
+  [data-interactive-tone="primary"]
+):focus-visible {
+  outline-color: var(--pd-focus-on-interactive);
+  box-shadow: none;
+}
+
+@media (forced-colors: active) {
+  :where(
+    a,
+    button,
+    input,
+    textarea,
+    select,
+    summary,
+    [tabindex]:not([tabindex="-1"])
+  ):focus-visible {
+    outline-color: Highlight;
+    box-shadow: none;
+  }
+}

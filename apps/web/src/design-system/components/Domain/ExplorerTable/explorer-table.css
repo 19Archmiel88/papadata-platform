@@ -1,0 +1,60 @@
+.pd-explorer-table {
+  display: grid;
+  gap: var(--pd-space-3);
+  min-width: 0;
+}
+
+.pd-explorer-table__data-table {
+  min-width: 0;
+}
+
+.pd-explorer-table .pd-filter-bar__active {
+  display: none;
+}
+
+.pd-explorer-table .pd-explorer-table__column-picker-trigger:is(:hover, :focus-visible, [aria-expanded='true']),
+.pd-explorer-table .pd-explorer-table__export-trigger:is(:hover, :focus-visible, [aria-expanded='true']) {
+  --pd-icon-button-color: var(--pd-brand-action);
+  --pd-icon-button-hover-color: var(--pd-brand-action);
+  --pd-icon-button-surface-hover: transparent;
+  --pd-icon-button-border-hover: var(--pd-brand-action);
+  background: transparent;
+  border-color: var(--pd-brand-action);
+  color: var(--pd-brand-action);
+}
+
+
+.pd-explorer-table__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pd-space-3);
+  padding-top: var(--pd-space-1);
+}
+
+.pd-explorer-table__page-summary {
+  color: var(--pd-text-muted);
+  font-size: 0.7rem;
+}
+
+.pd-explorer-table__page-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--pd-space-3);
+}
+
+/* PDP EXPLORER TABLE TOOLBAR FILTER */
+.pd-explorer-table__filter-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  .pd-explorer-table__filter-control {
+    width: 100%;
+  }
+}
+/* PDP EXPLORER TABLE TOOLBAR FILTER END */

@@ -1,0 +1,272 @@
+.pd-orders-analysis {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 28px 32px 48px;
+  color: var(--pd-text);
+  font-family: var(--pd-font-sans);
+}
+.pd-orders-analysis h1,
+.pd-orders-analysis h2,
+.pd-orders-analysis h3,
+.pd-orders-analysis p {
+  margin: 0;
+}
+.pd-orders-analysis h1 {
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 650;
+  letter-spacing: -0.7px;
+}
+.pd-orders-analysis h2 {
+  font-size: 20px;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+.pd-orders-analysis h3 {
+  font-size: 15px;
+  font-weight: 600;
+}
+.pd-orders-analysis p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--pd-text-secondary);
+}
+.pd-orders-analysis__header,
+.pd-orders-analysis__context,
+.pd-orders-analysis__section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.pd-orders-analysis__header > div > p {
+  margin-top: 6px;
+}
+.pd-orders-analysis__header > p {
+  white-space: nowrap;
+}
+.pd-orders-analysis__tabs {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+  border-bottom: 1px solid var(--pd-separator);
+  overflow: auto;
+}
+.pd-orders-analysis__tabs button {
+  flex-shrink: 0;
+  padding: 0 0 13px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--pd-text-secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.pd-orders-analysis__tabs button[aria-current] {
+  border-color: var(--pd-interactive);
+  color: var(--pd-text);
+  font-weight: 600;
+}
+.pd-orders-analysis__context {
+  margin: 16px 0 24px;
+}
+.pd-orders-analysis select {
+  min-height: 34px;
+  max-width: 100%;
+  border: 1px solid var(--pd-separator-strong);
+  border-radius: 5px;
+  background: var(--pd-surface);
+  color: var(--pd-text);
+  padding: 5px 8px;
+  font: inherit;
+  font-size: 13px;
+}
+.pd-orders-analysis__diagnosis {
+  padding: 0 0 24px;
+  border-bottom: 1px solid var(--pd-separator);
+}
+.pd-orders-analysis__eyebrow {
+  display: block;
+  color: var(--pd-text-secondary);
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.pd-orders-analysis__diagnosis h2 {
+  font-size: 25px;
+}
+.pd-orders-analysis__diagnosis p {
+  margin: 8px 0 14px;
+}
+.pd-orders-analysis__kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 24px 0 30px;
+}
+.pd-orders-analysis__kpis .pd-metric-card {
+  border-right: 1px solid var(--pd-separator);
+  padding-inline: 20px;
+}
+.pd-orders-analysis__kpis .pd-metric-card:first-child {
+  padding-left: 0;
+}
+.pd-orders-analysis__kpis .pd-metric-card:last-child {
+  border-right: 0;
+}
+.pd-orders-analysis__filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.pd-orders-analysis__filters button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  border: 1px solid var(--pd-separator);
+  border-radius: 5px;
+  padding: 6px 10px;
+  color: var(--pd-text-secondary);
+  background: var(--pd-surface);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.pd-orders-analysis__filters button[aria-pressed='true'] {
+  background: var(--pd-interactive);
+  color: var(--pd-interactive-on);
+  border-color: var(--pd-interactive);
+}
+.pd-orders-analysis__filters span {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.pd-orders-analysis__order-link {
+  background: transparent;
+  border: 0;
+  padding: 4px 0;
+  color: var(--pd-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pd-orders-analysis__note {
+  margin-top: 12px !important;
+  font-size: 12px !important;
+}
+.pd-orders-analysis__state {
+  padding: 48px 0;
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+}
+.pd-orders-analysis__details {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+.pd-orders-analysis__evidence {
+  display: grid;
+  gap: 24px;
+  color: var(--pd-text);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.pd-orders-analysis__evidence h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+.pd-orders-analysis__evidence p {
+  margin: 6px 0;
+  color: var(--pd-text-secondary);
+}
+.pd-orders-analysis__evidence dl {
+  margin: 0;
+}
+.pd-orders-analysis__evidence dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--pd-separator);
+}
+.pd-orders-analysis__evidence dt {
+  color: var(--pd-text-secondary);
+}
+.pd-orders-analysis__evidence dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.pd-orders-analysis__evidence article + article {
+  margin-top: 16px;
+}
+.pd-orders-analysis__next-step {
+  border-top: 1px solid var(--pd-separator);
+  padding-top: 20px;
+}
+.pd-orders-analysis [data-tone='danger'],
+.pd-orders-analysis__evidence [data-tone='danger'] {
+  color: var(--pd-status-danger);
+}
+.pd-orders-analysis [data-tone='warning'] {
+  color: var(--pd-status-warning);
+}
+.pd-orders-analysis button:focus-visible,
+.pd-orders-analysis select:focus-visible {
+  outline: 2px solid var(--pd-interactive);
+  outline-offset: 3px;
+}
+@media (max-width: 900px) {
+  .pd-orders-analysis {
+    padding: 24px;
+  }
+  .pd-orders-analysis__kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 0;
+  }
+  .pd-orders-analysis__kpis .pd-metric-card:nth-child(2) {
+    border-right: 0;
+  }
+  .pd-orders-analysis__kpis .pd-metric-card:nth-child(3) {
+    padding-left: 0;
+  }
+  .pd-orders-analysis__header {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 540px) {
+  .pd-orders-analysis {
+    padding: 20px 16px 36px;
+  }
+  .pd-orders-analysis h1 {
+    font-size: 25px;
+  }
+  .pd-orders-analysis__diagnosis h2 {
+    font-size: 22px;
+  }
+  .pd-orders-analysis__context {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .pd-orders-analysis__kpis .pd-metric-card {
+    padding-inline: 12px;
+  }
+  .pd-orders-analysis__kpis .pd-metric-card__value {
+    font-size: 24px;
+  }
+  .pd-orders-analysis__tabs {
+    gap: 20px;
+  }
+  .pd-orders-analysis__filters {
+    gap: 8px;
+  }
+  .pd-orders-analysis__filters button {
+    min-height: 40px;
+    font-size: 12px;
+  }
+}

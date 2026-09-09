@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-215",
   "storyTitle": "40 Integracje i synchronizacja/Ponowne połączenie",
-  "sourceDocument": "13-integracje-i-synchronizacja/40-07-ponowne-polaczenie.md",
+  "sourceDocument": "13-integracje-i-synchronizacja/README.md",
   "screenId": "40.07",
   "components": [
     "PageHeader",

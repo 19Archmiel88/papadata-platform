@@ -3,13 +3,10 @@ import type { CanonicalOrderRecord } from "../../integrations/integrationDataCor
 import { readEntity, readEntityString, readRowString } from "./command-center-metrics.real-source.ts";
 
 /**
- * Pseudonymizes a raw customer reference (email / provider customer id --
- * see `normalizeOrder` in canonical-normalizer.ts) into a stable,
- * non-reversible display id. Privacy-by-design: the contract's
- * `customerPseudonym`/`ConsentStatus` fields exist precisely so raw PII
- * never has to reach the UI. Stable across calls (same input -> same
- * output) so the same real customer always resolves to the same pseudonym,
- * but the hash cannot be reversed back to the email/customer id.
+ * Legacy deterministic display ID. Raw PII is not sent to the UI, but an
+ * unkeyed, truncated hash is pseudonymization, NOT anonymization: predictable
+ * emails/provider IDs can be tested by dictionary lookup. Replacing it with
+ * keyed/workspace-scoped IDs needs an explicit identity/link migration.
  */
 export function pseudonymizeCustomerReference(customerReference: string): string {
   const digest = createHash("sha256").update(customerReference).digest("hex");
@@ -48,20 +45,7 @@ export function classifyCustomerOrders(
   orders: readonly CanonicalOrderRecord[],
   rawRows: readonly Record<string, unknown>[],
 ): readonly ClassifiedCustomerOrder[] {
-  const customerReferenceByOrderId = new Map<string, string>();
-  for (const row of rawRows) {
-    const providerId = readRowString(row.provider_id);
-    const externalId = readRowString(row.external_id);
-    if (!providerId || !externalId) {
-      continue;
-    }
-    const entity = readEntity(row.canonical_payload);
-    const customerReference = readEntityString(entity, "customerReference");
-    if (!customerReference) {
-      continue;
-    }
-    customerReferenceByOrderId.set(`${providerId}:${externalId}`, customerReference);
-  }
+  const { references: customerReferenceByOrderId } = resolveCustomerReferences(rawRows);
 
   const byCustomer = new Map<string, CanonicalOrderRecord[]>();
   for (const order of orders) {
@@ -86,5 +70,30 @@ export function classifyCustomerOrders(
   return classified;
 }
 
-/** Real-data floor: nothing in the canonical pipeline predates ingestion going live (same constant orders/products/campaigns detail lookups use). */
+/** Conservative resolver: never merge equal provider IDs from independent accounts. */
+function resolveCustomerReferences(rawRows:readonly Record<string,unknown>[]) {
+  const byOrder=new Map<string,{reference:string;source:string}>(),ambiguous=new Set<string>();
+  const sourcesByReference=new Map<string,Set<string>>();
+  for(const row of rawRows){
+    const provider=readRowString(row.provider_id),external=readRowString(row.external_id);
+    const reference=readEntityString(readEntity(row.canonical_payload),'customerReference');
+    if(!provider||!external||!reference)continue;
+    const source=readRowString(row.connection_id)??provider,key=`${provider}:${external}`,previous=byOrder.get(key);
+    if(previous&&(previous.reference!==reference||previous.source!==source))ambiguous.add(key);
+    byOrder.set(key,{reference,source});
+    const sources=sourcesByReference.get(reference)??new Set<string>();sources.add(source);sourcesByReference.set(reference,sources);
+  }
+  const collisions=new Set([...sourcesByReference].filter(([,sources])=>sources.size>1).map(([reference])=>reference));
+  const references=new Map<string,string>();
+  for(const [key,item] of byOrder){if(collisions.has(item.reference))ambiguous.add(key);if(!ambiguous.has(key))references.set(key,item.reference);}
+  return {references,ambiguous,conflictGroups:collisions.size};
+}
+export function customerIdentityDiagnostics(orders:readonly CanonicalOrderRecord[],rawRows:readonly Record<string,unknown>[]){
+  const resolved=resolveCustomerReferences(rawRows);
+  let missingReferenceOrders=0,ambiguousOrders=0;
+  for(const order of orders){if(resolved.ambiguous.has(order.canonicalOrderId))ambiguousOrders++;else if(!resolved.references.has(order.canonicalOrderId))missingReferenceOrders++;}
+  return {missingReferenceOrders,ambiguousOrders,conflictGroups:resolved.conflictGroups};
+}
+
+/** Query floor, NOT a guarantee that every source has imported history since this date. */
 export const CUSTOMER_HISTORY_FLOOR = "2020-01-01T00:00:00.000Z";

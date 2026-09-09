@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-132",
   "storyTitle": "25 Dostęp/Powierzchnie/Ponowne uwierzytelnienie",
-  "sourceDocument": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-24-ponowne-uwierzytelnienie.md",
+  "sourceDocument": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
   "screenId": null,
   "components": [],
   "states": [

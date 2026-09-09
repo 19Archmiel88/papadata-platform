@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-209",
   "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Warianty ruchu",
-  "sourceDocument": "12-ruch-i-lejek/35-09-warianty-ruchu.md",
+  "sourceDocument": "12-ruch-i-lejek/README.md",
   "screenId": "35.09",
   "components": [
     "PageHeader",

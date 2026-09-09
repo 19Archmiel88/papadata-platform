@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-275",
   "storyTitle": "80 Wsparcie marketingowe, decyzje i działania/Szczegóły działania",
-  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/80-06-szczegoly-dzialania.md",
+  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/README.md",
   "screenId": "80.06",
   "components": [
     "PageHeader",

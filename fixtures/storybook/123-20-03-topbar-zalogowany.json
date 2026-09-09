@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-123",
   "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/Topbar zalogowany",
-  "sourceDocument": "06-powloka-produktu-i-nawigacja/20-03-topbar-zalogowany.md",
+  "sourceDocument": "06-powloka-produktu-i-nawigacja/README.md",
   "screenId": null,
   "components": [
     "AuthenticatedTopbar",

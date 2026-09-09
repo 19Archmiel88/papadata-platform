@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-256",
   "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Workspace",
-  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/60-02-workspace.md",
+  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/README.md",
   "screenId": "60.02",
   "components": [
     "PageHeader",

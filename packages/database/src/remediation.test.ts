@@ -81,7 +81,26 @@ describe("SecurityRepository.advanceTotpStep", () => {
 
     expect(result).toBe(true);
     expect(capturedSql).toMatch(/last_totp_step is null or last_totp_step < \$3/u);
-    expect(capturedParams).toEqual(["tenant-1", "user-1", 12345]);
+    expect(capturedParams).toEqual(["tenant-1", "user-1", 12345, null, null]);
+  });
+
+  it("passes expectedSecret and expectedStatus through as additional replay guards", async () => {
+    let capturedParams: readonly unknown[] = [];
+    const database = fakeDatabase((_sql, params) => {
+      capturedParams = params;
+      return { rowCount: 1 };
+    });
+    const repository = new SecurityRepository(database);
+
+    await repository.advanceTotpStep({
+      tenantId: "tenant-1",
+      userId: "user-1",
+      step: 12345,
+      expectedSecret: "secret-abc",
+      expectedStatus: "active",
+    });
+
+    expect(capturedParams).toEqual(["tenant-1", "user-1", 12345, "secret-abc", "active"]);
   });
 
   it("reports false when no row matched (step not newer than the last accepted one)", async () => {

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-180",
   "storyTitle": "32 Zamówienia/Przegląd",
-  "sourceDocument": "09-zamowienia/32-01-przeglad.md",
+  "sourceDocument": "09-zamowienia/README.md",
   "screenId": "32.01",
   "components": [
     "PageHeader",

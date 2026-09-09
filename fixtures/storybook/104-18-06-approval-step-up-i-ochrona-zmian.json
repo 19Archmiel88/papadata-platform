@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-104",
   "storyTitle": "18 Wzorce interfejsu/Approval, step-up i ochrona zmian",
-  "sourceDocument": "21-stany-przekrojowe/18-06-approval-step-up-i-ochrona-zmian.md",
+  "sourceDocument": "21-stany-przekrojowe/README.md",
   "screenId": null,
   "components": [
     "ApprovalPanel",

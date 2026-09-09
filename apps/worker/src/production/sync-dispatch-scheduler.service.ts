@@ -8,20 +8,15 @@ import { IntegrationRepository, PlatformDatabase, ProductionDatabase } from "@pa
 import { readWorkerConfig } from "./config.js";
 import type { IntegrationJobPayload } from "./worker.service.js";
 
-/**
- * Streams requested per provider on an automatic dispatch. Mirrors the
- * `provider_id`/`stream` CHECK constraints in
- * packages/database/migrations/000004_integration_canonical_data.sql --
- * only the 4 providers active in production today (google_ads/meta_ads/
- * woocommerce/allegro carry ad_spend+attributed_conversions or
- * products+orders+refunds+inventory respectively). A provider missing from
- * this map is silently skipped by dispatchDueSyncs rather than guessed.
- */
+/** Production streams: every configured catalog provider has an explicit schedule. */
 const AUTO_SYNC_PROVIDER_STREAMS: Readonly<Record<string, readonly string[]>> = {
   allegro: ["products", "orders", "refunds", "inventory"],
-  google_ads: ["ad_spend", "attributed_conversions"],
-  meta_ads: ["ad_spend", "attributed_conversions"],
+  baselinker: ["products", "orders", "inventory"],
+  shopify: ["products", "orders", "refunds", "inventory"],
+  google_ads: ["ad_spend", "attributed_conversions", "ad_creative_performance"],
+  meta_ads: ["ad_spend", "attributed_conversions", "ad_creative_performance"],
   woocommerce: ["products", "orders", "refunds", "inventory"],
+  ga4: ["traffic", "events", "conversions", "traffic_breakdown", "event_breakdown"],
 };
 
 const SYNC_INTERVAL_HOURS = readPositiveNumber(process.env.SYNC_INTERVAL_HOURS, 6);
@@ -32,6 +27,7 @@ type DueConnectionRow = {
   readonly tenant_id: string;
   readonly workspace_id: string;
   readonly provider_id: string;
+  readonly scoped_streams: readonly string[] | null;
 };
 
 /**
@@ -106,7 +102,7 @@ export class SyncDispatchScheduler implements OnModuleDestroy {
     let dispatched = 0;
 
     for (const dueConnection of due) {
-      const streams = AUTO_SYNC_PROVIDER_STREAMS[dueConnection.provider_id];
+      const streams = dueConnection.scoped_streams ?? AUTO_SYNC_PROVIDER_STREAMS[dueConnection.provider_id];
       if (!streams) {
         continue;
       }
@@ -170,8 +166,10 @@ export class SyncDispatchScheduler implements OnModuleDestroy {
          connection.connection_id,
          connection.tenant_id,
          connection.workspace_id,
-         connection.provider_id
+         connection.provider_id,
+         scope.streams AS scoped_streams
        from app.integration_connections as connection
+       LEFT JOIN app.integration_sync_scopes scope ON scope.tenant_id=connection.tenant_id AND scope.workspace_id=connection.workspace_id AND scope.connection_id=connection.connection_id
        left join lateral (
          select max(checkpoint.updated_at) as last_synced_at
          from app.sync_checkpoints as checkpoint

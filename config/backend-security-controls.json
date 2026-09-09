@@ -70,7 +70,7 @@
       "status": "release_scope_control",
       "evidencePaths": [
         "config/backend-release-scope.json",
-        "docs/backend-remediation/RELEASE-SCOPE.md"
+        "docs/engineering/backend-operations.md"
       ],
       "owner": "backend-platform",
       "acceptance": "static verifier",
@@ -85,7 +85,7 @@
         "tools/verify-backend-tests.mjs",
         "apps/api/src/production/integrations/webhook.service.ts",
         "packages/database/migrations/0017_backend_product_convergence.sql",
-        "docs/backend-remediation/INTEGRATION-RUNTIME.md"
+        "docs/engineering/backend-operations.md"
       ],
       "owner": "backend-platform",
       "acceptance": "repository verifier plus provider-specific live evidence",
@@ -201,7 +201,7 @@
       "status": "implemented_requires_live_test",
       "evidencePaths": [
         "tests/backend-production-parity/e2e.mjs",
-        "docs/backend-remediation/PRODUCTION-ACCEPTANCE.md"
+        "docs/engineering/backend-operations.md"
       ],
       "owner": "backend-platform",
       "acceptance": "repository verifier plus environment-specific evidence",
@@ -258,7 +258,7 @@
       "evidencePaths": [
         "apps/api/src/production/telemetry.ts",
         "infra/otel/otel-collector-production.yaml",
-        "docs/backend-remediation/OBSERVABILITY.md"
+        "docs/engineering/backend-operations.md"
       ],
       "owner": "platform-security",
       "acceptance": "repository verifier plus environment-specific evidence",
@@ -317,7 +317,7 @@
       "findingId": "AUD-026",
       "status": "procedure_requires_external_acceptance",
       "evidencePaths": [
-        "docs/backend-remediation/MIGRATION-AND-DR.md",
+        "docs/engineering/backend-operations.md",
         "tools/restore-drill.sh"
       ],
       "owner": "platform-security",
@@ -329,7 +329,7 @@
       "status": "implemented",
       "evidencePaths": [
         "config/backend-security-controls.json",
-        "docs/backend-remediation/SECURITY-CONTROL-MATRIX.md"
+        "docs/engineering/backend-operations.md"
       ],
       "owner": "backend-platform",
       "acceptance": "static verifier",
@@ -339,7 +339,7 @@
       "findingId": "AUD-028",
       "status": "excluded_storybook_context",
       "evidencePaths": [
-        "docs/backend-remediation/RELEASE-SCOPE.md"
+        "docs/engineering/backend-operations.md"
       ],
       "owner": "backend-platform",
       "acceptance": "static verifier",

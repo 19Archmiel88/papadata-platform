@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-118",
   "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/OverlayRoot i system warstw",
-  "sourceDocument": "06-powloka-produktu-i-nawigacja/20-10-overlayroot-i-system-warstw.md",
+  "sourceDocument": "06-powloka-produktu-i-nawigacja/README.md",
   "screenId": null,
   "components": [
     "OverlayRoot",

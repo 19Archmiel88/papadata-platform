@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   ForbiddenException,
   Inject,
   Injectable,
@@ -74,6 +75,19 @@ export class BffSecurityService {
       throw new UnauthorizedException("Session is not active.");
     }
 
+    // The caller pins its visible scope before awaiting CSRF/refresh. A cookie
+    // switched by another tab must not silently redirect an in-flight write.
+    const expected = [
+      ['x-papadata-expected-tenant', session.activeTenantId],
+      ['x-papadata-expected-workspace', session.activeWorkspaceId],
+      ['x-papadata-expected-user', session.userId],
+    ] as const;
+    for (const [header, actual] of expected) {
+      const value = readHeader(request.headers, header);
+      if (value !== null && value !== actual) throw new ConflictException({
+        code: 'REQUEST_SCOPE_CHANGED', message: 'The session scope changed. Reload the current workspace before repeating this operation.',
+      });
+    }
     return session;
   }
 
@@ -141,6 +155,9 @@ export class BffSecurityService {
         "content-type",
         "idempotency-key",
         "x-correlation-id",
+        "x-papadata-expected-tenant",
+        "x-papadata-expected-workspace",
+        "x-papadata-expected-user",
         this.config.csrfHeaderName,
       ].join(", "),
       "access-control-allow-methods": "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS",

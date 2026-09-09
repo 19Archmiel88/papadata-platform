@@ -49,11 +49,12 @@
 .pd-campaign-analysis__scope {
   justify-content: flex-end;
   gap: 8px;
+  flex-wrap: wrap;
 }
 .pd-campaign-analysis__tabs {
   display: flex;
   gap: 24px;
-  margin-top: 20px;
+  margin-top: 16px;
   border-bottom: 1px solid var(--pd-separator);
   overflow-x: auto;
 }
@@ -72,19 +73,22 @@
   border-color: var(--pd-interactive);
 }
 .pd-campaign-analysis__context {
-  margin-block: 12px 20px;
+  margin-block: 16px 20px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
 }
+.pd-campaign-analysis__channel { display: flex; align-items: center; gap: 8px; color: var(--pd-text-secondary); font-size: 13px; }
 .pd-campaign-analysis__context p {
   font-size: 12px;
 }
 .pd-campaign-analysis__diagnosis h2 {
-  font-size: 20px;
-  line-height: 28px;
+  font-size: 18px;
+  line-height: 26px;
 }
 .pd-campaign-analysis__metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  padding-block: 24px;
+  padding-block: 20px;
   border-bottom: 1px solid var(--pd-separator);
 }
 .pd-campaign-analysis__metrics .pd-metric-card {
@@ -111,12 +115,13 @@
   background: none;
   border: 0;
   min-height: 24px;
+  margin-top: 0;
 }
 .pd-campaign-analysis__analysis {
   display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(260px, 1fr);
-  gap: 28px;
-  padding-block: 24px;
+  grid-template-columns: minmax(0, 1.8fr) minmax(320px, 1fr);
+  gap: 24px;
+  padding-block: 20px;
   border-bottom: 1px solid var(--pd-separator);
 }
 .pd-campaign-analysis__trend {
@@ -136,20 +141,28 @@
   font-size: 12px;
   padding-top: 12px;
 }
+.pd-campaign-analysis__legend span { display: inline-flex; align-items: center; gap: 7px; }
+.pd-campaign-analysis__legend i { width: 20px; border-top: 2px solid var(--pd-data-series-1); }
+.pd-campaign-analysis__legend i[data-goal] { border-color: var(--pd-status-warning); border-top-style: dashed; }
 .pd-campaign-analysis__plot {
   height: 240px;
   margin-top: 8px;
 }
 .pd-campaign-analysis__attention {
   border-left: 1px solid var(--pd-separator);
-  padding-left: 28px;
+  padding-left: 24px;
+  min-width: 0;
 }
+.pd-campaign-analysis__attention h2 { display: flex; justify-content: space-between; gap: 12px; }
+.pd-campaign-analysis__attention h2 > span { color: var(--pd-text-secondary); font-size: 14px; font-variant-numeric: tabular-nums; }
+.pd-campaign-analysis__attention-list { max-height: 330px; overflow-y: auto; scrollbar-gutter: stable; padding-right: 8px; }
 .pd-campaign-analysis__attention article {
-  padding-block: 16px;
+  padding-block: 12px;
   border-bottom: 1px solid var(--pd-separator);
 }
+.pd-campaign-analysis__attention article p { font-size: 12px; }
 .pd-campaign-analysis__attention article button {
-  margin-top: 12px;
+  margin-top: 8px;
 }
 .pd-campaign-analysis__attention > p {
   font-size: 12px;
@@ -198,7 +211,7 @@
   font-weight: 500;
 }
 .pd-campaign-analysis__table {
-  padding-block: 24px;
+  padding-block: 20px;
   min-width: 0;
 }
 .pd-campaign-analysis__table > .pd-campaign-analysis__section-heading {

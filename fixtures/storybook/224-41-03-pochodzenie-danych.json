@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-224",
   "storyTitle": "41 Jakość danych i integralność/Pochodzenie danych",
-  "sourceDocument": "14-jakosc-danych-i-integralnosc/41-03-pochodzenie-danych.md",
+  "sourceDocument": "14-jakosc-danych-i-integralnosc/README.md",
   "screenId": "41.03",
   "components": [
     "PageHeader",

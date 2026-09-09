@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-238",
   "storyTitle": "50 Papa Asystent i Laboratorium AI/Obserwacje",
-  "sourceDocument": "15-papa-asystent-i-laboratorium-ai/50-09-obserwacje.md",
+  "sourceDocument": "15-papa-asystent-i-laboratorium-ai/README.md",
   "screenId": "50.09",
   "components": [
     "PageHeader",

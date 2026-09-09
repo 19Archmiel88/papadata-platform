@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-202",
   "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/GA4 vs zamówienia",
-  "sourceDocument": "12-ruch-i-lejek/35-06-ga4-vs-zamowienia.md",
+  "sourceDocument": "12-ruch-i-lejek/README.md",
   "screenId": "35.06",
   "components": [
     "PageHeader",

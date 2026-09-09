@@ -1154,3 +1154,29 @@ export * from "./environment-gates.js";
 
 export * from "./migrated-domain-policies.js";
 export * from "./authorization-role-policy.js";
+
+export type * from "./customer-portfolio.js";
+
+export type * from "./traffic-portfolio.js";
+
+export type * from "./support-ticket.js";
+
+export { filterTrafficRows } from './traffic-portfolio.js';
+
+export { productScopeKeys, productContextKeys, cleanProductContextPath, productContextFilters } from './product-context.js';
+
+export * from "./platform-operations.js";
+
+export * from './access-lifecycle.js';
+export * from './assistant-workspace.js';
+
+export * from './commerce-portfolio.js';
+
+export * from "./business-overview.js";
+
+export * from "./business-overview.projection.js";
+
+export * from './commerce-reports.js';
+export { reportNumber as savedReportNumber, reportDate as savedReportDate, compareReportVersions as compareSavedReportVersions } from './saved-report-presentation.js';
+export { reportCsv as renderSavedReportCsv, reportHtml as renderSavedReportHtml, reportJson as renderSavedReportJson, escapeReportHtml as escapeSavedReportHtml } from './saved-report-export.js';
+export type { SavedReportDownload } from './saved-report-export.js';

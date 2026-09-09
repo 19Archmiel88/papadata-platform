@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-191",
   "storyTitle": "33 Produkty/Warianty produktów",
-  "sourceDocument": "10-produkty/33-09-warianty-produktow.md",
+  "sourceDocument": "10-produkty/README.md",
   "screenId": "33.09",
   "components": [
     "PageHeader",

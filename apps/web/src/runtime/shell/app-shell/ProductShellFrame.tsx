@@ -1,7 +1,8 @@
 import { ShellNavigationContext } from './ShellNavigationContext';
 import type { DateRange } from '../../../../../../contracts/ui-contract-types';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { navigate as navigateLocation } from '../../app/routing/navigation';
 
 import { Drawer, Icon, InlineNotice } from '../../../design-system/index';
 import { CommandPalette } from '../command-palette/index';
@@ -165,13 +166,26 @@ export function ProductShellFrame({
     return () => document.body.classList.remove('pd-product-shell-scroll-lock');
   }, []);
 
+  const rangeRef = useRef(dateRange);
+  rangeRef.current = dateRange;
+  useEffect(() => {
+    const restoreRange = () => {
+      const next = createInitialShellDateRange(rangeRef.current);
+      if (next.from !== rangeRef.current.from || next.to !== rangeRef.current.to || next.timezone !== rangeRef.current.timezone) setDateRange(next);
+    };
+    window.addEventListener('popstate', restoreRange);
+    window.addEventListener('papadata:navigation', restoreRange);
+    return () => { window.removeEventListener('popstate', restoreRange); window.removeEventListener('papadata:navigation', restoreRange); };
+  }, []);
   useEffect(() => {
     if (!isValidShellDateRange(dateRange)) return;
     writeStoredShellDateRange(dateRange);
     const url = new URL(window.location.href);
+    if (url.searchParams.get('from') === dateRange.from && url.searchParams.get('to') === dateRange.to && url.searchParams.get('timezone') === dateRange.timezone) return;
     url.searchParams.set('from', dateRange.from);
     url.searchParams.set('to', dateRange.to);
-    window.history.replaceState(window.history.state, '', url);
+    url.searchParams.set('timezone', dateRange.timezone);
+    navigateLocation(`${url.pathname}${url.search}${url.hash}`, { replace: true });
   }, [dateRange]);
 
   useEffect(() => {

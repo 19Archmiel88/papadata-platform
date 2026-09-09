@@ -737,7 +737,7 @@ export function readEntityNumber(entity: Record<string, unknown>, field: string)
 
 export { readString as readRowString };
 
-const GA4_STABLE_EXTERNAL_ID = /^(?:traffic|events|conversions):[0-9a-f]{24}$/u;
+const GA4_STABLE_EXTERNAL_ID = /^(?:traffic|events|conversions|traffic_breakdown|event_breakdown):[0-9a-f]{24}$/u;
 
 /**
  * Deduplicates GA4 canonical rows by their business grain. Older adapter
@@ -748,7 +748,7 @@ const GA4_STABLE_EXTERNAL_ID = /^(?:traffic|events|conversions):[0-9a-f]{24}$/u;
  */
 export function dedupeGa4CanonicalRows(
   rows: readonly Record<string, unknown>[],
-  stream: "traffic" | "events" | "conversions",
+  stream: "traffic" | "events" | "conversions" | "traffic_breakdown" | "event_breakdown",
 ): readonly Record<string, unknown>[] {
   const scoped = rows.filter((row) => (
     readString(row.provider_id) === "ga4" && readString(row.stream) === stream
@@ -769,7 +769,7 @@ export function dedupeGa4CanonicalRows(
     }
 
     const identity = stable
-      ? `stable:${externalId}`
+      ? `stable:${readString(row.connection_id) ?? ""}:${externalId}`
       : `legacy:${coarseKey}`;
     const current = selected.get(identity);
     if (!current || canonicalRowUpdatedAt(row) >= canonicalRowUpdatedAt(current)) {
@@ -782,20 +782,17 @@ export function dedupeGa4CanonicalRows(
 
 function ga4CoarseIdentity(
   row: Record<string, unknown>,
-  stream: "traffic" | "events" | "conversions",
+  stream: "traffic" | "events" | "conversions" | "traffic_breakdown" | "event_breakdown",
 ): string {
   const entity = readEntity(row.canonical_payload);
+  const connection = readString(row.connection_id) ?? "";
   const date = readEntityString(entity, "date") ?? "unknown-date";
-  if (stream === "traffic") {
-    const channel = readEntityString(entity, "channel")
-      ?? readEntityString(entity, "source")
-      ?? "unknown-channel";
-    return `${stream}:${date}:${channel}`;
+  const channel = readEntityString(entity, "channel") ?? readEntityString(entity, "source") ?? "unknown-channel";
+  const event = readEntityString(entity, "eventName") ?? "unknown-event";
+  if (stream === "traffic_breakdown" || stream === "event_breakdown") {
+    return JSON.stringify([connection, stream, date, channel, stream === "event_breakdown" ? event : readEntityString(entity, "landingPage"), readEntityString(entity, "device"), readEntityString(entity, "country")]);
   }
-  if (stream === "events") {
-    return `${stream}:${date}:${readEntityString(entity, "eventName") ?? "unknown-event"}`;
-  }
-  return `${stream}:${date}:${readEntityString(entity, "source") ?? "unknown-source"}`;
+  return JSON.stringify([connection, stream, date, stream === "traffic" ? channel : stream === "events" ? event : readEntityString(entity, "source")]);
 }
 
 function canonicalRowUpdatedAt(row: Record<string, unknown>): number {

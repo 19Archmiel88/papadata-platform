@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-194",
   "storyTitle": "34 Klienci/Kohorty",
-  "sourceDocument": "11-klienci/34-03-kohorty.md",
+  "sourceDocument": "11-klienci/README.md",
   "screenId": "34.03",
   "components": [
     "PageHeader",

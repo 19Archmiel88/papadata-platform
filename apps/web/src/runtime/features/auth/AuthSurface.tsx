@@ -138,6 +138,8 @@ export type AuthSurfaceProps = {
   readonly initialInvitationToken?: string | null;
   readonly initialRememberDevice?: boolean;
   readonly initialResetToken?: string | null;
+  readonly tokenResetOnly?: boolean;
+  readonly initialRegistrationStage?: 'choice' | 'email';
   readonly mode: AuthSurfaceMode;
   // Real per-provider availability from auth.status.read — governs
   // whether the OAuth buttons render enabled or disabled-with-explanation.
@@ -147,6 +149,7 @@ export type AuthSurfaceProps = {
   readonly workspaceOptions?: readonly AuthWorkspaceOption[];
   readonly onAcceptInvitation: (input: AuthAcceptInvitationInput) => Promise<void>;
   readonly onLogin: (input: AuthLoginInput) => Promise<void>;
+  readonly onUseRecoveryCode?: () => void;
   readonly onMfaConfirm: (input: AuthMfaInput) => Promise<void>;
   readonly onNavigate?: (path: string) => void;
   // Real navigation (window.location.assign to the provider's consent
@@ -235,12 +238,15 @@ export function AuthSurface({
   initialInvitationToken = null,
   initialRememberDevice = false,
   initialResetToken = null,
+  tokenResetOnly = false,
+  initialRegistrationStage = 'choice',
   mode,
   oauthAvailability,
   workspaceOptions = [],
   onAcceptInvitation,
   onLogin,
   onMfaConfirm,
+  onUseRecoveryCode,
   onNavigate,
   onOAuthContinue,
   onPasswordRecoveryRequest,
@@ -252,6 +258,7 @@ export function AuthSurface({
   onValidateInvitation,
   state = 'ready',
 }: AuthSurfaceProps) {
+  const submitLock = useRef(false);
   const [email, setEmail] = useState(initialEmail);
   const [fullName, setFullName] = useState('');
   const [organizationName, setOrganizationName] = useState('');
@@ -262,7 +269,7 @@ export function AuthSurface({
   const [newPasswordConfirmation, setNewPasswordConfirmation] = useState('');
   const [code, setCode] = useState('');
   const [otp, setOtp] = useState('');
-  const [resetToken, setResetToken] = useState(initialResetToken ?? '');
+  const [resetToken] = useState(initialResetToken ?? '');
   const [rememberDevice, setRememberDevice] = useState(initialRememberDevice);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordConfirmationVisible, setPasswordConfirmationVisible] = useState(false);
@@ -272,7 +279,7 @@ export function AuthSurface({
     setNewPasswordConfirmationVisible,
   ] = useState(false);
   const [registrationStage, setRegistrationStage] = useState<RegistrationStage>(
-    state === 'registrationCompleted' ? 'email' : 'choice',
+    state === 'registrationCompleted' ? 'email' : initialRegistrationStage,
   );
   const [submitting, setSubmitting] = useState(false);
   const [fieldProblems, setFieldProblems] = useState<FieldProblems>({});
@@ -567,7 +574,7 @@ export function AuthSurface({
       email,
       newPassword,
       newPasswordConfirmation,
-      otp,
+      tokenResetOnly ? '000000' : otp,
       resetToken,
       formCopy,
     );
@@ -605,6 +612,8 @@ export function AuthSurface({
   }
 
   async function runSubmit(action: () => Promise<void>) {
+    if (submitLock.current) return;
+    submitLock.current = true;
     setSubmitting(true);
     setProblem(null);
     try {
@@ -616,6 +625,7 @@ export function AuthSurface({
           : formCopy.operationFailed,
       );
     } finally {
+      submitLock.current = false;
       setSubmitting(false);
     }
   }
@@ -991,6 +1001,7 @@ export function AuthSurface({
                 >
                   {formCopy.confirmMfa}
                 </Button>
+                {onUseRecoveryCode ? <Button variant="secondary" disabled={submitting} onClick={onUseRecoveryCode}>{locale === 'en' ? 'Use a recovery code' : 'Uzyj kodu odzyskiwania'}</Button> : null}
               </form>
             ) : null}
 
@@ -1099,7 +1110,7 @@ export function AuthSurface({
                   value={email}
                 />
 
-                <VerificationCodeInput
+                {!tokenResetOnly ? <VerificationCodeInput
                   helperText={formCopy.otpHelper}
                   invalid={Boolean(fieldProblems.otp)}
                   label={formCopy.otpCode}
@@ -1107,7 +1118,7 @@ export function AuthSurface({
                   onChange={(event) => setOtp(event.currentTarget.value)}
                   required
                   value={otp}
-                />
+                /> : null}
 
                 <input
                   name="resetToken"
@@ -1678,7 +1689,7 @@ function resolvePresentedSurfaceId(
   if (mode === 'mfa') return 'auth-16';
   if (mode === 'reauth') return 'auth-24';
   if (mode === 'workspace') return 'auth-23';
-  if (mode === 'accept-invite') return 'auth-04';
+  if (mode === 'accept-invite') return 'auth-15';
   return isResetFlow ? 'auth-20' : 'auth-18';
 }
 

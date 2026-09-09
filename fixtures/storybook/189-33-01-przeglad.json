@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-189",
   "storyTitle": "33 Produkty/Przegląd",
-  "sourceDocument": "10-produkty/33-01-przeglad.md",
+  "sourceDocument": "10-produkty/README.md",
   "screenId": "33.01",
   "components": [
     "PageHeader",

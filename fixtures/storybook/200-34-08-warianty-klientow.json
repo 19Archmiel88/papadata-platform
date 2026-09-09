@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-200",
   "storyTitle": "34 Klienci/Warianty klientów",
-  "sourceDocument": "11-klienci/34-08-warianty-klientow.md",
+  "sourceDocument": "11-klienci/README.md",
   "screenId": "34.08",
   "components": [
     "PageHeader",

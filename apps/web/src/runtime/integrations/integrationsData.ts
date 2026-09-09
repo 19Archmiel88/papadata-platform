@@ -178,6 +178,8 @@ export type IntegrationRuntimeSource = {
     readonly note: string | null;
   }[];
   readonly selectedStreams: readonly string[];
+  readonly scopeVersion?: number;
+  readonly credentialVersion?: number;
   readonly schedule: string;
   readonly createdAt: string | null;
   readonly updatedAt: string | null;

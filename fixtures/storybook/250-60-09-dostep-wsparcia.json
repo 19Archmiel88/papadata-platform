@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-250",
   "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Dostęp wsparcia",
-  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/60-09-dostep-wsparcia.md",
+  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/README.md",
   "screenId": "60.09",
   "components": [
     "PageHeader",

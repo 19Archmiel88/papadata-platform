@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-196",
   "storyTitle": "34 Klienci/Prywatność",
-  "sourceDocument": "11-klienci/34-06-prywatnosc.md",
+  "sourceDocument": "11-klienci/README.md",
   "screenId": "34.06",
   "components": [
     "PageHeader",

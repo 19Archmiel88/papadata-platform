@@ -1,3 +1,7 @@
+import { campaignGrowthFixture } from '../../fixtures/paid-campaigns/campaignGrowthFixture';
+import { projectCampaignGrowthReport, projectCustomerPortfolioReport, projectTrafficPortfolioReport } from '@papadata/contracts/report-projections';
+import { customerPortfolioFixture } from '../../fixtures/customers/customerPortfolioFixture';
+import { trafficPortfolioFixture } from '../../fixtures/traffic/trafficPortfolioFixture';
 import { commandCenterDemoSeed } from '../../fixtures/command-center/commandCenterDemoSeed';
 import {
   deriveOverview,
@@ -21,7 +25,6 @@ import {
   reportMetricLabels,
   reportTemplate,
   type ReportConfig,
-  type ReportMetric,
   type ReportSnapshot,
   type ReportUnit,
 } from './SavedReports.model';
@@ -34,6 +37,24 @@ export function buildReportSnapshot(
 ): ReportSnapshot {
   const error = reportConfigError(config);
   if (error) throw new Error(error);
+  if(config.template==='campaigns'&&config.context?.sourcePath){
+    const origin=new URL(config.context.sourcePath,'https://context.invalid');
+    if(origin.pathname==='/app/campaigns'||origin.searchParams.has('campaignView')||/\/(growth|kreacje|budzet|atrybucja-i-sprzedaz)$/.test(origin.pathname)){
+      const data=campaignGrowthFixture({from:config.from,to:config.to,timezone:config.timezone??'Europe/Warsaw'});
+      const channel=config.filter==='google_ads'||config.filter==='meta_ads'?config.filter:origin.searchParams.get('channel');
+      const campaign=origin.searchParams.get('campaignId'),currency=origin.searchParams.get('currency');
+      const matches=(row:{provider:string;currency:string})=>(!channel||channel==='all'||row.provider===channel)&&(!currency||row.currency===currency);
+      const campaigns=data.campaigns.filter(row=>matches(row)&&(!campaign||row.id===campaign));
+      const observations=data.observations.filter(row=>matches(row)&&(!campaign||campaigns.some(c=>c.sourceId===row.sourceId&&c.campaignId===row.campaignId)));
+      const creatives=data.creatives.filter(row=>matches(row)&&(!campaign||row.campaignKey===campaign));
+      const snapshot=projectCampaignGrowthReport({...data,campaigns,observations,creatives},config);
+      return {...snapshot,mode:'demo',limitations:['Scenariusz demonstracyjny, ten sam model co Analytics Growth. Brak danych dostawcy.',...snapshot.limitations]};
+    }
+  }
+  if(config.template==='customers'||config.template==='traffic'){
+    const snapshot=config.template==='customers'?projectCustomerPortfolioReport(customerPortfolioFixture,config):projectTrafficPortfolioReport(trafficPortfolioFixture,config);
+    return {...snapshot,mode:'demo',limitations:['Staly, jawny scenariusz demonstracyjny. Daty nie pobieraja danych serwera.',...snapshot.limitations]};
+  }
   const range = {
     from: config.from,
     to: config.to,
@@ -357,38 +378,4 @@ export function buildReportSnapshot(
   snapshot.metrics = snapshot.metrics.filter((m) => config.metricIds.includes(m.id));
   return snapshot;
 }
-export const reportNumber = (value: number | null, unit?: ReportUnit) =>
-  value === null
-    ? '—'
-    : `${new Intl.NumberFormat('pl-PL', { maximumFractionDigits: unit === 'szt.' ? 0 : 2 }).format(value)}${unit ? ' ' + unit : ''}`;
-export const reportDate = (value: string) =>
-  new Intl.DateTimeFormat('pl-PL', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'Europe/Warsaw',
-  }).format(new Date(value.length === 10 ? `${value}T12:00:00Z` : value));
-export function compareReportVersions(
-  a: { config: ReportConfig; snapshot: ReportSnapshot },
-  b: { config: ReportConfig; snapshot: ReportSnapshot },
-) {
-  const comparable =
-    a.config.template === b.config.template &&
-    a.config.filter === b.config.filter &&
-    a.config.from === b.config.from &&
-    a.config.to === b.config.to;
-  return {
-    comparable,
-    metrics: b.snapshot.metrics.map((m) => {
-      const before = a.snapshot.metrics.find((n) => n.id === m.id && n.unit === m.unit);
-      return {
-        ...m,
-        before: before?.value ?? null,
-        delta:
-          comparable && before?.value !== null && before?.value !== undefined && m.value !== null
-            ? m.value - before.value
-            : null,
-      };
-    }),
-  };
-}
+export { reportNumber, reportDate, compareReportVersions } from './SavedReports.presentation';

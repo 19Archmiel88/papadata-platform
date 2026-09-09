@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-220",
   "storyTitle": "41 Jakość danych i integralność/Centrum jakości",
-  "sourceDocument": "14-jakosc-danych-i-integralnosc/41-01-centrum-jakosci.md",
+  "sourceDocument": "14-jakosc-danych-i-integralnosc/README.md",
   "screenId": "41.01",
   "components": [
     "PageHeader",

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-162",
   "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/Ruch",
-  "sourceDocument": "07-centrum-dowodzenia/30-07-ruch.md",
+  "sourceDocument": "07-centrum-dowodzenia/README.md",
   "screenId": "30.07",
   "components": [
     "BusinessScreen",

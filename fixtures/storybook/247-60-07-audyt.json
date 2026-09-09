@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-247",
   "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Audyt",
-  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/60-07-audyt.md",
+  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/README.md",
   "screenId": "60.07",
   "components": [
     "PageHeader",

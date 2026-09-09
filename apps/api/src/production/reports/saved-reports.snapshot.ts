@@ -1,3 +1,7 @@
+import { projectCampaignGrowthReport, projectCustomerPortfolioReport, projectTrafficPortfolioReport } from '@papadata/contracts/report-projections';
+import { readGrowthPortfolio } from '../campaigns/campaign-growth.source.js';
+import { buildCustomerPortfolio } from '../contract-runtime/customers-analytics.real-source.js';
+import { fetchTrafficPortfolio } from '../contract-runtime/traffic-portfolio.real-source.js';
 import type { IsoDateTime } from '@papadata/contracts';
 import { reportTemplate, type ReportConfig, type ReportMetric, type ReportSnapshot } from '@papadata/contracts/saved-reports';
 import { computeMetricEngineSeries, isRevenueQualifyingOrder, type DashboardMetricCode, type MetricEngineInput } from '../../metrics/metricEngineCore.ts';
@@ -6,13 +10,27 @@ import { resolveMetricWindow } from '../contract-runtime/command-center-metrics.
 
 const metricCodes: readonly DashboardMetricCode[] = ['revenue_after_refunds','product_revenue','product_margin','ad_spend','orders','gross_order_value','return_value','roas','platform_attributed_revenue','available_stock','stock_value','units_sold'];
 const number = (v: string | null | undefined) => v != null && Number.isFinite(Number(v)) ? Number(v) : null;
-const day = (v: string) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Warsaw', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(v));
+const day = (v: string,timeZone='Europe/Warsaw') => new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(v));
 
 export async function buildLiveReportSnapshot(
   scope: { tenantId: string; workspaceId: string }, config: ReportConfig,
   dataSource: CommandCenterDataSource,
 ): Promise<ReportSnapshot> {
   const generatedAt = new Date().toISOString();
+  const timezone=config.timezone??'Europe/Warsaw';
+  const q=new URL(config.context?.sourcePath??'/app','https://context.invalid').searchParams;
+  if(['campaigns','customers','traffic'].includes(config.template)){
+    const today=new Intl.DateTimeFormat('en-CA',{timeZone:timezone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(generatedAt));
+    if(config.to>today)throw new Error('Raport obserwacji nie moze konczyc sie w przyszlosci. Plan budzetowy utworz w Kampaniach.');
+    const dateRange={from:config.from,to:config.to,timezone};
+    if(config.template==='campaigns'){
+      const portfolio=await readGrowthPortfolio({...scope,dataSource,generatedAt,range:dateRange,filters:{provider:config.filter==='google_ads'||config.filter==='meta_ads'?config.filter:null,campaignKey:q.get('campaignId'),currency:q.get('currency')},plans:[],history:[],canManagePlans:false});
+      return projectCampaignGrowthReport(portfolio,config);
+    }
+    if(config.template==='customers')return projectCustomerPortfolioReport(await buildCustomerPortfolio({...scope,dataSource,generatedAt,dateRange}),config);
+    return projectTrafficPortfolioReport(await fetchTrafficPortfolio({...scope,dataSource,generatedAt,dateRange,filters:{sourceId:q.get('sourceId'),channel:q.get('channel'),device:q.get('device'),country:q.get('country')}}),config);
+  }
+
   // Resolve Warsaw calendar boundaries without the dashboard's fallback for future ranges.
   const anchor = new Date(Date.parse(config.to) + 3 * 86400000).toISOString();
   const window = resolveMetricWindow(anchor, config, 30);
@@ -37,7 +55,7 @@ export function projectLiveReport(original: MetricEngineInput, config: ReportCon
     throw new Error('Źródło produkcyjne nie udostępnia kategorii produktów. Wybierz wszystkie kategorie.');
   const series = computeMetricEngineSeries(input, metricCodes);
   const snapshot: ReportSnapshot = {
-    generatedAt: input.generatedAt, mode: 'live', currency: 'PLN', timezone: 'Europe/Warsaw',
+    generatedAt: input.generatedAt, mode: 'live', currency: input.currency, timezone: input.timezone,
     scopeLabel: `${config.from} – ${config.to} · ${reportTemplate(config.template).filters.find(f => f.id === config.filter)?.label ?? config.filter}`,
     quality: 'complete', limitations: [], metrics: [], series: [], seriesMetric: '', columns: [], rows: [], sources: [],
   };
@@ -58,41 +76,41 @@ export function projectLiveReport(original: MetricEngineInput, config: ReportCon
   const lines = input.canonicalOrderLines.filter(r => orderIds.has(r.canonicalOrderId));
   const hasOrders = orders.length > 0;
   if (config.template === 'overview') {
-    add('revenue','Przychód po zwrotach (brutto)','revenue_after_refunds','PLN','Przychód kwalifikowanych zamówień pomniejszony o zwroty według silnika metryk. Kwoty brutto.');
-    add('margin','Marża po marketingu',null,'PLN','Brak pełnych kosztów realizacji i podatku w źródle. Marża biznesowa pozostaje niedostępna.');
-    add('marketingSpend','Koszt reklam','ad_spend','PLN','Wydatki reklamowe przypisane do wybranego okresu.');
+    add('revenue','Przychód po zwrotach (brutto)','revenue_after_refunds',input.currency,'Przychód kwalifikowanych zamówień pomniejszony o zwroty według silnika metryk. Kwoty brutto.');
+    add('margin','Marża po marketingu',null,input.currency,'Brak pełnych kosztów realizacji i podatku w źródle. Marża biznesowa pozostaje niedostępna.');
+    add('marketingSpend','Koszt reklam','ad_spend',input.currency,'Wydatki reklamowe przypisane do wybranego okresu.');
     add('orders','Zamówienia kwalifikowane','orders','szt.','Liczba zamówień kwalifikowanych do przychodu.');
   } else if (config.template === 'campaigns') {
-    add('spend','Koszt reklam','ad_spend','PLN','Wydatki wybranych kanałów reklamowych.');
-    add('revenue','Przychód przypisany przez platformy','platform_attributed_revenue','PLN','Atrybucja platform reklamowych; nie jest deduplikowanym przychodem sklepu.');
+    add('spend','Koszt reklam','ad_spend',input.currency,'Wydatki wybranych kanałów reklamowych.');
+    add('revenue','Przychód przypisany przez platformy','platform_attributed_revenue',input.currency,'Atrybucja platform reklamowych; nie jest deduplikowanym przychodem sklepu.');
     add('roas','ROAS','roas','×','Przychód przypisany przez platformy / koszt reklam.');
-    add('ncac','Koszt nowego klienta',null,'PLN','Brak powiązania konwersji reklamowej z pierwszym zakupem klienta.');
+    add('ncac','Koszt nowego klienta',null,input.currency,'Brak powiązania konwersji reklamowej z pierwszym zakupem klienta.');
     snapshot.limitations.push('Atrybucja pochodzi z platform reklamowych. Konwersje pomiędzy platformami mogą się pokrywać.');
-    snapshot.columns = [{id:'campaign',label:'Id kampanii'},{id:'channel',label:'Kanał'},{id:'date',label:'Dzień'},{id:'spend',label:'Koszt',unit:'PLN'}];
+    snapshot.columns = [{id:'campaign',label:'Id kampanii'},{id:'channel',label:'Kanał'},{id:'date',label:'Dzień'},{id:'spend',label:'Koszt',unit:input.currency}];
     snapshot.rows = input.canonicalAdSpend.filter(r => r.date >= config.from && r.date <= config.to && r.currency === input.currency).map(r => ({id:r.canonicalAdSpendId,values:{campaign:r.campaignId,channel:r.providerId,date:r.date,spend:number(r.costAmount)}}));
   } else if (config.template === 'orders') {
     add('count','Zamówienia w okresie',null,'szt.','Wszystkie zamówienia w wybranym okresie i źródle.',hasOrders ? orders.length : null);
-    add('gross','Wartość zamówień brutto',null,'PLN','Wszystkie zamówienia, również nieopłacone i anulowane.',hasOrders ? orders.reduce((s,r)=>s+Number(r.grossAmount),0) : null);
+    add('gross','Wartość zamówień brutto',null,input.currency,'Wszystkie zamówienia, również nieopłacone i anulowane.',hasOrders ? orders.reduce((s,r)=>s+Number(r.grossAmount),0) : null);
     add('late','Po terminie wysyłki',null,'szt.','Źródło kanoniczne nie zawiera terminów wysyłki.');
-    add('refunded','Zwroty w okresie','return_value','PLN','Zwroty według daty zwrotu, także dla wcześniejszych zamówień.');
-    snapshot.columns=[{id:'order',label:'Zamówienie'},{id:'date',label:'Data'},{id:'status',label:'Status źródłowy'},{id:'gross',label:'Wartość brutto',unit:'PLN'}];
-    snapshot.rows=orders.map(r=>({id:r.canonicalOrderId,values:{order:r.orderNumber,date:day(r.orderedAt),status:r.status,gross:number(r.grossAmount)}}));
+    add('refunded','Zwroty w okresie','return_value',input.currency,'Zwroty według daty zwrotu, także dla wcześniejszych zamówień.');
+    snapshot.columns=[{id:'order',label:'Zamówienie'},{id:'date',label:'Data'},{id:'status',label:'Status źródłowy'},{id:'gross',label:'Wartość brutto',unit:input.currency}];
+    snapshot.rows=orders.map(r=>({id:r.canonicalOrderId,values:{order:r.orderNumber,date:day(r.orderedAt,input.timezone),status:r.status,gross:number(r.grossAmount)}}));
   } else if (config.template === 'products') {
-    add('revenue','Sprzedaż produktów brutto','product_revenue','PLN','Wartość linii kwalifikowanych zamówień, przed zwrotami.');
-    add('knownMargin','Marża według silnika metryk','product_margin','PLN','Sprzedaż produktów minus potwierdzony koszt. Definicja silnika metryk; nie obejmuje kosztów reklam i realizacji.');
+    add('revenue','Sprzedaż produktów brutto','product_revenue',input.currency,'Wartość linii kwalifikowanych zamówień, przed zwrotami.');
+    add('knownMargin','Marża według silnika metryk','product_margin',input.currency,'Sprzedaż produktów minus potwierdzony koszt. Definicja silnika metryk; nie obejmuje kosztów reklam i realizacji.');
     const productById=new Map(input.canonicalProducts.map(p=>[p.canonicalProductId,p]));
     const costSkus=new Set(input.productCosts.filter(c=>c.currency===input.currency).map(c=>c.sku));
     const total=lines.reduce((s,l)=>s+Number(l.grossAmount),0);
     const covered=lines.filter(l=>costSkus.has(productById.get(l.canonicalProductId ?? '')?.sku ?? '')).reduce((s,l)=>s+Number(l.grossAmount),0);
     add('costCoverage','Pokrycie przychodu kosztem',null,'%','Udział przychodu linii zamówień z potwierdzonym kosztem SKU.',total>0 ? 100*covered/total : null);
     add('units','Sprzedane sztuki','units_sold','szt.','Sztuki w kwalifikowanych zamówieniach.');
-    snapshot.columns=[{id:'sku',label:'SKU'},{id:'name',label:'Produkt'},{id:'units',label:'Sztuki',unit:'szt.'},{id:'gross',label:'Sprzedaż brutto',unit:'PLN'}];
+    snapshot.columns=[{id:'sku',label:'SKU'},{id:'name',label:'Produkt'},{id:'units',label:'Sztuki',unit:'szt.'},{id:'gross',label:'Sprzedaż brutto',unit:input.currency}];
     const grouped=new Map<string,{units:number;gross:number}>();
     for(const l of lines){const id=l.canonicalProductId ?? 'unmapped';const r=grouped.get(id) ?? {units:0,gross:0};r.units+=l.quantity;r.gross+=Number(l.grossAmount);grouped.set(id,r);}
     snapshot.rows=[...grouped].map(([id,v])=>({id,values:{sku:productById.get(id)?.sku ?? null,name:productById.get(id)?.name ?? 'Produkt nieprzypisany',...v}}));
   } else {
     add('available','Dostępne sztuki','available_stock','szt.','Ostatni stan wskazanego głównego źródła magazynu w zakresie.');
-    add('capital','Wartość magazynu według kosztu','stock_value','PLN','Stan głównego magazynu przemnożony przez potwierdzone koszty SKU.');
+    add('capital','Wartość magazynu według kosztu','stock_value',input.currency,'Stan głównego magazynu przemnożony przez potwierdzone koszty SKU.');
     add('atRisk','SKU zagrożone brakiem',null,'szt.','Brak terminów dostaw i progów bezpieczeństwa w źródle.');
     add('unknown','SKU bez pełnej oceny',null,'szt.','SKU w magazynie bez możliwości oceny terminu wyczerpania względem dostawy.',input.canonicalInventorySnapshots.length ? new Set(input.canonicalInventorySnapshots.map(r=>r.canonicalProductId ?? r.externalProductId)).size : null);
     snapshot.columns=[{id:'product',label:'Produkt / SKU'},{id:'available',label:'Dostępne sztuki',unit:'szt.'},{id:'date',label:'Stan na dzień'},{id:'source',label:'Źródło'}];

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-254",
   "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Sesje",
-  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/60-06-sesje.md",
+  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/README.md",
   "screenId": "60.06",
   "components": [
     "PageHeader",

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-255",
   "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Warianty ustawień",
-  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/60-10-warianty-ustawien.md",
+  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/README.md",
   "screenId": "60.10",
   "components": [
     "PageHeader",

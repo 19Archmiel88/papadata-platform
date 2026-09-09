@@ -408,7 +408,7 @@ function secretStoreKey(input: CredentialSecretReadInput): string {
   ].join("\u001f");
 }
 
-function parseCredentialSecret(
+export function parseCredentialSecret(
   providerId: MvpIntegrationCatalogProviderId,
   secretPayload: string,
 ): ResolvedCredentialMaterial {

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-242",
   "storyTitle": "50 Papa Asystent i Laboratorium AI/Rekomendacje i warianty",
-  "sourceDocument": "15-papa-asystent-i-laboratorium-ai/50-10-rekomendacje-i-warianty.md",
+  "sourceDocument": "15-papa-asystent-i-laboratorium-ai/README.md",
   "screenId": "50.10",
   "components": [
     "PageHeader",

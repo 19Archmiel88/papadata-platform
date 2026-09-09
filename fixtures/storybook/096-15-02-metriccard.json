@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-096",
   "storyTitle": "15 Wykresy i dane/01 Powierzchnie analityczne/MetricCard",
-  "sourceDocument": "05-wykresy-i-wizualizacje/15-02-metriccard.md",
+  "sourceDocument": "05-wykresy-i-wizualizacje/README.md",
   "screenId": null,
   "components": [
     "MetricCard",

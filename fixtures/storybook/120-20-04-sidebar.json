@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-120",
   "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/Sidebar",
-  "sourceDocument": "06-powloka-produktu-i-nawigacja/20-04-sidebar.md",
+  "sourceDocument": "06-powloka-produktu-i-nawigacja/README.md",
   "screenId": null,
   "components": [
     "Sidebar",

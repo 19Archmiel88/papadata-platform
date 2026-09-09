@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-244",
   "storyTitle": "50 Papa Asystent i Laboratorium AI/Ustawienia AI i Governance",
-  "sourceDocument": "15-papa-asystent-i-laboratorium-ai/50-16-ustawienia-ai-i-governance.md",
+  "sourceDocument": "15-papa-asystent-i-laboratorium-ai/README.md",
   "screenId": "50.16",
   "components": [
     "PageHeader",

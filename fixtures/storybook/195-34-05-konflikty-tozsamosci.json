@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-195",
   "storyTitle": "34 Klienci/Konflikty tożsamości",
-  "sourceDocument": "11-klienci/34-05-konflikty-tozsamosci.md",
+  "sourceDocument": "11-klienci/README.md",
   "screenId": "34.05",
   "components": [
     "PageHeader",

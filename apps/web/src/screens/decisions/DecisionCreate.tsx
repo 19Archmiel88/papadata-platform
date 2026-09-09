@@ -11,10 +11,14 @@ export function DecisionCreate({
   today,
   onCreate,
   error,
+  pending = false,
+  initialDraft,
 }: {
   today: string;
   onCreate: (command: Extract<DecisionCommand, { type: 'create' }>) => void;
   error: string | null;
+  pending?: boolean;
+  initialDraft?: Partial<Extract<DecisionCommand, {type:'create'}>>;
 }) {
   const [metric, setMetric] = useState('');
   const [unit, setUnit] = useState<DecisionMeasurement['unit']>('szt.');
@@ -30,6 +34,7 @@ export function DecisionCreate({
     action: '',
     owner: '',
     due: today,
+    ...initialDraft,
   });
   const update = (key: keyof typeof draft, value: string) =>
     setDraft((current) => ({ ...current, [key]: value }));
@@ -38,6 +43,7 @@ export function DecisionCreate({
       className="pd-decisions pd-decisions--detail pd-decisions__create"
       onSubmit={(e) => {
         e.preventDefault();
+        if (pending) return;
         onCreate({
           type: 'create',
           ...draft,
@@ -211,7 +217,7 @@ export function DecisionCreate({
         Zapis lokalny w podglądzie. Obserwacja jest wpisana ręcznie; propozycja wymaga osobnej
         oceny.
       </p>
-      <Button type="submit">Dodaj do kolejki</Button>
+      <Button disabled={pending} type="submit">Dodaj do kolejki</Button>
     </form>
   );
 }

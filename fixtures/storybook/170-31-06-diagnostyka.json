@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-170",
   "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne/Diagnostyka",
-  "sourceDocument": "08-kampanie-platne/31-06-diagnostyka.md",
+  "sourceDocument": "08-kampanie-platne/README.md",
   "screenId": "31.06",
   "components": [
     "BusinessScreen",

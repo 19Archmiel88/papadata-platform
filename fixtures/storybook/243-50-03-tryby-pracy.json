@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-243",
   "storyTitle": "50 Papa Asystent i Laboratorium AI/Tryby pracy",
-  "sourceDocument": "15-papa-asystent-i-laboratorium-ai/50-03-tryby-pracy.md",
+  "sourceDocument": "15-papa-asystent-i-laboratorium-ai/README.md",
   "screenId": "50.03",
   "components": [
     "PageHeader",

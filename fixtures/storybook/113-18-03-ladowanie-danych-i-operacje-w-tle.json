@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-113",
   "storyTitle": "18 Wzorce interfejsu/Ładowanie danych i operacje w tle",
-  "sourceDocument": "21-stany-przekrojowe/18-03-ladowanie-danych-i-operacje-w-tle.md",
+  "sourceDocument": "21-stany-przekrojowe/README.md",
   "screenId": null,
   "components": [
     "Skeleton",

@@ -1,13 +1,18 @@
+import { cleanProductContextPath } from '@papadata/contracts';
+import type { ReportContext } from '@papadata/contracts/saved-reports';
+import { useShellDateRange } from '../../runtime/shell/app-shell/ShellDateRangeContext';
+import { currentProductSourcePath } from '../../runtime/app/routing/productRoutes';
+import { ReportContextCard } from './ReportContextCard';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '../../design-system/components/Button';
 import { Drawer } from '../../design-system/components/Drawer';
 import {
-  buildReportSnapshot,
   compareReportVersions,
   reportDate,
   reportNumber,
-} from './SavedReports.build';
-import { createReportsDemo } from './SavedReports.demo';
+} from './SavedReports.presentation';
+import { ProductDataState } from '../shared/ProductDataState';
+import type { RemoteState } from '../../runtime/shared/data/useRemoteResource';
 import { downloadReport, reportCsv, reportHtml, reportJson } from './SavedReports.export';
 import {
   defaultReportConfig,
@@ -22,21 +27,24 @@ import {
   type ReportConfig,
   type ReportSnapshot,
   type ReportsStore,
-  type SavedReport,
 } from './SavedReports.model';
 import { parseReportImport, reportsStorageKey } from './SavedReports.store';
 import { useReportsStore } from './useReportsStore';
 import { ReportDocument } from './ReportDocument';
 import { ReportEditor } from './ReportEditor';
+import { safeRandomUUID } from '../../runtime/shared/id/safeRandomUUID';
 import './SavedReports.css';
 
 type Route = { id: string; version: number; edit: boolean };
 type Props = {
   data?: ReportsStore;
+  currentActorId?: string;
   mode?: 'demo' | 'live';
   persistenceKey?: string | null;
   canManage?: boolean;
-  state?: 'ready' | 'loading' | 'error';
+  state?: RemoteState;
+  canDownload?: boolean;
+  onDownload?: (id:string,version:number,format:'html'|'csv'|'json')=>Promise<void>;
   errorMessage?: string;
   onRetry?: () => void;
   initialReportId?: string;
@@ -59,17 +67,31 @@ export function SavedReportsScreen({
   mode = 'demo',
   persistenceKey = reportsStorageKey,
   canManage = true,
+  currentActorId = reportsActor.id,
   state = 'ready',
+  canDownload = mode === 'demo',
+  onDownload,
   errorMessage,
   onRetry,
   initialReportId = '',
   initialVersion = 0,
   initialCollection = 'all',
   initialEdit = false,
-  build = async (c) => buildReportSnapshot(c),
+  build = async () => { throw new Error('Brak adaptera generowania raportu.'); },
   onCommand,
 }: Props) {
-  const initial = useMemo(() => data ?? createReportsDemo(), [data]);
+  const {dateRange}=useShellDateRange();
+  const query=new URLSearchParams(location.search),origin=cleanProductContextPath(query.get('returnTo'));
+  const originQuery=new URL(origin??'/app',window.location.origin).searchParams;
+  const linked=(key:string)=>query.get(key)??originQuery.get(key);
+  const requestedTemplate=reportTemplates.find(template=>template.id===query.get('reportTemplate'));
+  const incomingContext:ReportContext|null=origin?{sourcePath:origin,conversationId:linked('conversationId'),caseThreadId:linked('caseThreadId'),decisionId:linked('decisionId'),budgetPlanId:linked('budgetPlanId')}:null;
+  function configForTemplate(template:ReportConfig['template']):ReportConfig{
+    const config=defaultReportConfig(template);
+    const channel=query.get('channel')??originQuery.get('channel');
+    return {...config,from:dateRange.from,to:dateRange.to,timezone:dateRange.timezone??'Europe/Warsaw',context:incomingContext??{sourcePath:currentProductSourcePath()},filter:template==='campaigns'&&(channel==='google_ads'||channel==='meta_ads')?channel:config.filter};
+  }
+  const initial = useMemo(() => data ?? {schema:1 as const,workspace:'',reports:[]}, [data]);
   const liveManageable = mode === 'live' && !!onCommand;
   const { store, commit, readError } = useReportsStore(
     initial,
@@ -124,6 +146,7 @@ export function SavedReportsScreen({
       value ? url.searchParams.set(key, value) : url.searchParams.delete(key),
     );
     window.history[push ? 'pushState' : 'replaceState'](window.history.state, '', url);
+    window.dispatchEvent(new Event('papadata:navigation'));
   };
   const open = (id = '', v = 0, edit = false) => {
     setRoute({ id, version: v, edit });
@@ -153,13 +176,13 @@ export function SavedReportsScreen({
     }
   };
   const create = async (config: ReportConfig) => {
-    const id = `RAP-${crypto.randomUUID()}`;
+    const id = `RAP-${safeRandomUUID()}`;
     if (await perform({ type: 'create', id, config }, 'Utworzono szkic raportu.'))
       open(id, 0, true);
   };
   const duplicate = async () => {
     if (!report) return;
-    const id = `RAP-${crypto.randomUUID()}`;
+    const id = `RAP-${safeRandomUUID()}`;
     if (
       await perform(
         { type: 'duplicate', id: report.id, version: version?.number ?? 0, newId: id },
@@ -175,7 +198,7 @@ export function SavedReportsScreen({
   const visible = store.reports
     .filter((r) => (collection === 'archive' ? r.archived : !r.archived))
     .filter((r) => collection !== 'favorites' || r.favorite)
-    .filter((r) => collection !== 'mine' || r.ownerId === reportsActor.id)
+    .filter((r) => collection !== 'mine' || r.ownerId === currentActorId)
     .filter((r) => collection !== 'drafts' || r.draft || r.external?.status === 'draft')
     .filter(
       (r) =>
@@ -238,7 +261,7 @@ export function SavedReportsScreen({
               Utwórz kopię
             </Button>
             {version && (
-              <Button variant="secondary" onClick={() => setPanel('export')}>
+              <Button variant="secondary" disabled={!canDownload || pending || (mode === 'live' && !onDownload)} onClick={() => setPanel('export')}>
                 Eksportuj raport
               </Button>
             )}
@@ -295,6 +318,12 @@ export function SavedReportsScreen({
           )}
         </div>
       )}
+      {incomingContext&&!route.id&&<ReportContextCard context={incomingContext}/>}
+      {requestedTemplate&&!route.id&&state==='ready'&&<div className="pd-reports-status">
+        <p>Przekazano zakres analizy. Utworzenie raportu wymaga Twojej akcji.</p>
+        <Button disabled={!editable||pending} onClick={()=>void create(configForTemplate(requestedTemplate.id))}>Utwórz szkic: {requestedTemplate.label}</Button>
+      </div>}
+
       {message && (
         <p className="pd-reports-status" role="status">
           {message}
@@ -310,12 +339,8 @@ export function SavedReportsScreen({
           <h1 tabIndex={-1}>Zapisane raporty</h1>
           <p>Wczytywanie biblioteki raportów…</p>
         </div>
-      ) : state === 'error' ? (
-        <div className="pd-reports-empty">
-          <h1 tabIndex={-1}>Nie udało się wczytać raportów</h1>
-          <p role="alert">{errorMessage || 'Sprawdź połączenie i spróbuj ponownie.'}</p>
-          {onRetry && <Button onClick={onRetry}>Spróbuj ponownie</Button>}
-        </div>
+      ) : state === 'error' || state === 'offline' || state === 'forbidden' ? (
+        <ProductDataState state={state} problem={errorMessage} onRetry={onRetry}/>
       ) : route.id ? (
         !report ? (
           <div className="pd-reports-empty">
@@ -330,6 +355,7 @@ export function SavedReportsScreen({
           <ReportEditor
             key={`${report.id}-${editorKey}`}
             report={report}
+            allowLocalDraftExport={mode === 'demo'}
             commit={commit}
             onDone={(v) => {
               setMessage(`Zapisano wersję ${v}. Poprzednie wersje pozostają w historii.`);
@@ -376,6 +402,7 @@ export function SavedReportsScreen({
                 )}
               </div>
             )}
+            <ReportContextCard context={version?.config.context??report.draft?.config.context} reportId={report.id} reportVersion={version?.number}/>
             {version ? (
               <ReportDocument
                 key={`${report.id}-${version.number}`}
@@ -444,7 +471,7 @@ export function SavedReportsScreen({
                         if (selected.size > 4_000_000)
                           throw new Error('Plik może mieć maksymalnie 4 MB.');
                         const imported = parseReportImport(await selected.text()),
-                          id = `RAP-${crypto.randomUUID()}`;
+                          id = `RAP-${safeRandomUUID()}`;
                         if (
                           await perform(
                             { type: 'import', report: imported, newId: id },
@@ -519,7 +546,7 @@ export function SavedReportsScreen({
                         : !r.archived &&
                           (id === 'all' ||
                             (id === 'favorites' && r.favorite) ||
-                            (id === 'mine' && r.ownerId === reportsActor.id) ||
+                            (id === 'mine' && r.ownerId === currentActorId) ||
                             (id === 'drafts' && (r.draft || r.external?.status === 'draft'))),
                     ).length
                   }
@@ -709,7 +736,7 @@ export function SavedReportsScreen({
                 <button
                   key={t.id}
                   disabled={pending}
-                  onClick={() => void create(defaultReportConfig(t.id))}
+                  onClick={() => void create(configForTemplate(t.id))}
                 >
                   <span className="pd-reports-template-number">0{i + 1}</span>
                   <div>
@@ -840,7 +867,7 @@ export function SavedReportsScreen({
               )}
           </>
         )}
-        {panel === 'export' && report && version && (
+        {panel === 'export' && canDownload && report && version && (
           <>
             <p>
               <strong>{version.config.title}</strong>
@@ -878,13 +905,18 @@ export function SavedReportsScreen({
                   </div>
                   <Button
                     variant="secondary"
-                    onClick={() => {
-                      downloadReport(
-                        o.content(),
-                        o.mime,
-                        `papadata-raport-v${version.number}.${o.ext}`,
-                      );
-                      setMessage(`Przygotowano plik ${o.format}, wersja ${version.number}.`);
+                    disabled={!canDownload || pending || (mode === 'live' && !onDownload)}
+                    onClick={async () => {
+                      if(!canDownload||pending)return;
+                      setPending(true);setError('');
+                      try {
+                        if(mode==='live') {
+                          if(!onDownload)throw new Error('Brak adaptera pobierania raportu.');
+                          await onDownload(report.id,version.number,o.ext as 'html'|'csv'|'json');
+                        } else downloadReport(o.content(),o.mime,`papadata-raport-v${version.number}.${o.ext}`);
+                        setMessage(`Przygotowano plik ${o.format}, wersja ${version.number}.`);
+                      } catch(cause) { setError(cause instanceof Error?cause.message:'Nie udalo sie pobrac raportu.'); }
+                      finally { setPending(false); }
                     }}
                   >
                     Pobierz {o.format}

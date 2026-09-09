@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-157",
   "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/Kolejka uwagi",
-  "sourceDocument": "07-centrum-dowodzenia/30-02-kolejka-uwagi.md",
+  "sourceDocument": "07-centrum-dowodzenia/README.md",
   "screenId": "30.02",
   "components": [
     "BusinessScreen",

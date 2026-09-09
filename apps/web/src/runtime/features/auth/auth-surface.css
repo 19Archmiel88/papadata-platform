@@ -15,9 +15,9 @@
   container-type: inline-size;
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  height: auto;
   min-height: 100dvh;
-  overflow: hidden;
+  overflow: visible;
   background: var(--pdauth-depth-glow) var(--pdauth-canvas);
   color: var(--pdauth-ink);
   font-family: var(--pd-font-sans);
@@ -31,9 +31,9 @@
 .pd-auth-route-shell {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  height: auto;
   min-height: 100dvh;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .pd-auth-route-shell .pd-auth-surface {
@@ -43,9 +43,10 @@
 
 .pd-auth-surface__layout {
   display: grid;
-  grid-template-columns: minmax(0, 0.76fr) minmax(0, 1.24fr);
-  grid-template-rows: minmax(0, 1fr);
-  block-size: 100%;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-rows: auto;
+  align-items: start;
+  block-size: auto;
   flex: 1;
   min-height: 0;
 }
@@ -309,8 +310,8 @@
      visible at once (e.g. registration) could run out of room before the
      submit button, with no scroll available (overflow: hidden above) to
      reach it. */
-  padding: clamp(40px, 6vh, 84px) clamp(28px, 5vw, 64px) clamp(22px, 4vh, 42px);
-  overflow: hidden;
+  padding: clamp(82px, 9vh, 110px) clamp(28px, 5vw, 64px) clamp(22px, 4vh, 42px);
+  overflow: visible;
 }
 
 .pd-auth-runtime-preferences {
@@ -372,7 +373,7 @@
 .pd-auth-surface__workspace {
   display: grid;
   gap: clamp(14px, 2vh, 20px);
-  width: min(30rem, 100%);
+  width: min(32rem, 100%);
 }
 
 .pd-auth-surface[data-auth-mode='entry'] .pd-auth-surface__workspace {
@@ -646,6 +647,9 @@
    ========================================================================== */
 
 @container (max-width: 960px) {
+  .pd-auth-surface__marketing-body,
+  .pd-auth-surface__marketing-footer { display: none; }
+
   .pd-auth-surface__layout {
     grid-template-columns: minmax(0, 1fr);
     block-size: auto;

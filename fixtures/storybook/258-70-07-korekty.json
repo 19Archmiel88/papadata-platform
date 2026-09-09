@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-258",
   "storyTitle": "70 Subskrypcja i płatności/Korekty",
-  "sourceDocument": "17-subskrypcja-i-platnosci/70-07-korekty.md",
+  "sourceDocument": "17-subskrypcja-i-platnosci/README.md",
   "screenId": "70.07",
   "components": [
     "PageHeader",

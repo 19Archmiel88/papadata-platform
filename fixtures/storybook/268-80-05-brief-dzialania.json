@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-268",
   "storyTitle": "80 Wsparcie marketingowe, decyzje i działania/Brief działania",
-  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/80-05-brief-dzialania.md",
+  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/README.md",
   "screenId": "80.05",
   "components": [
     "PageHeader",

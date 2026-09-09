@@ -1,3 +1,5 @@
+import type { CustomerSegment, CustomerMoney as Money, RealCustomersRecord, CustomersSegmentSummary, CustomersParetoBucket, CustomersTrendPoint, CustomersCacSummary, CustomersAffinityRow, CustomersAffinitySummary, CustomersPriorityAlert, CustomersCohort, CustomersCurrencyCoverage, CustomersFilters, CustomersPageRequest, CustomersPortfolio, CustomersPortfolioTotals } from "@papadata/contracts";
+export type { CustomerSegment, CustomerMoney as Money, RealCustomersRecord, CustomersSegmentSummary, CustomersParetoBucket, CustomersTrendPoint, CustomersCacSummary, CustomersAffinityRow, CustomersAffinitySummary, CustomersPriorityAlert, CustomersCohort, CustomersRetentionCell, CustomersCurrencyCoverage, CustomersFilters, CustomersPageRequest, CustomersSummaryRecord, CustomersPortfolio, CustomersPortfolioTotals } from "@papadata/contracts";
 import type { IsoDateTime } from "@papadata/contracts";
 import type { CanonicalAdSpendRecord, CanonicalOrderRecord } from "../../integrations/integrationDataCore.ts";
 import { centsToDecimal, decimalToCents, isRevenueQualifyingOrder } from "../../metrics/metricEngineCore.ts";
@@ -11,6 +13,7 @@ import {
 } from "./command-center-metrics.contract-data.ts";
 import {
   classifyCustomerOrders,
+  customerIdentityDiagnostics,
   pseudonymizeCustomerReference,
   CUSTOMER_HISTORY_FLOOR,
   type ClassifiedCustomerOrder,
@@ -18,8 +21,6 @@ import {
 
 /** Needs the full data source (not just listCanonicalRecords) because it goes through `createRealMetricEngineInput`. */
 export type CustomersDataSource = CommandCenterDataSource;
-
-export type CustomerSegment = "atRisk" | "champions" | "hibernating" | "loyal" | "new" | "potential";
 
 // Fixed, stable ids for each RFM segment bucket -- same pattern as Command
 // Center's own hardcoded recommendation ids (buildCommandCenterRecommendationsData).
@@ -43,105 +44,6 @@ const SEGMENT_LABELS: Readonly<Record<CustomerSegment, string>> = {
   potential: "Potential Loyalists",
 };
 
-export type Money = { readonly amount: number; readonly currency: string };
-
-export type RealCustomersRecord = {
-  readonly aov: Money;
-  readonly consentStatus: "unknown";
-  readonly cohortKey: string;
-  readonly customerPseudonym: string;
-  readonly isNewCustomer: boolean;
-  readonly ltv: Money;
-  readonly ordersCount: number;
-  readonly recencyDays: number;
-  readonly revenue: Money;
-  readonly rfmScore: string;
-  readonly segmentId: string;
-  readonly segmentLabel: string;
-};
-
-export type CustomersSegmentSummary = {
-  readonly count: number;
-  readonly description: string;
-  readonly revenue: Money;
-  readonly segmentId: string;
-  readonly segmentLabel: string;
-};
-
-export type CustomersParetoBucket = {
-  readonly bucket: "A" | "B" | "C";
-  readonly customers: number;
-  readonly cumulativeRevenueShare: number;
-  readonly revenue: Money;
-};
-
-export type CustomersTrendPoint = {
-  readonly date: string;
-  readonly newCustomers: number;
-  readonly newRevenue: number;
-  readonly returningCustomers: number;
-  readonly returningRevenue: number;
-};
-
-export type CustomersCacSummary = {
-  readonly cac: number | null;
-  readonly newCustomers: number;
-  readonly spend: Money;
-};
-
-export type CustomersAffinityRow = { readonly name: string; readonly orders: number; readonly revenue: Money };
-
-export type CustomersAffinitySummary = {
-  readonly newProducts: readonly CustomersAffinityRow[];
-  readonly returningProducts: readonly CustomersAffinityRow[];
-};
-
-export type CustomersPriorityAlert = { readonly count: number; readonly revenue: Money };
-
-export type CustomersCohort = {
-  readonly cohortKey: string;
-  readonly retentionRate: number | null;
-  readonly revenue: Money;
-  readonly users: number;
-};
-
-export type CustomersCurrencyCoverage = {
-  readonly excludedOrders: number;
-  readonly observedCurrencies: readonly string[];
-  readonly reportingCurrency: string;
-};
-
-export type CustomersFilters = {
-  readonly riskStatus?: readonly ("at_risk" | "active" | "lapsed")[] | null;
-  readonly search?: string | null;
-  readonly segment?: readonly CustomerSegment[] | null;
-};
-
-export type CustomersPageRequest = { readonly cursor?: string | null; readonly limit?: number | null };
-
-export type CustomersSummaryRecord = {
-  readonly critical: number;
-  readonly ready: number;
-  readonly total: number;
-  readonly updatedAt: IsoDateTime;
-  readonly warning: number;
-};
-
-export type CustomersPortfolio = {
-  readonly affinity: CustomersAffinitySummary;
-  readonly cac: CustomersCacSummary | null;
-  readonly cohorts: readonly CustomersCohort[];
-  readonly currencyCoverage: CustomersCurrencyCoverage;
-  readonly pageInfo: { readonly nextCursor: string | null; readonly total: number | null };
-  readonly pareto: readonly CustomersParetoBucket[];
-  readonly portfolioTotals: CustomersPortfolioTotals;
-  readonly priorityAlert: CustomersPriorityAlert | null;
-  readonly records: readonly RealCustomersRecord[];
-  readonly segments: readonly CustomersSegmentSummary[];
-  readonly summary: CustomersSummaryRecord;
-  readonly trend: readonly CustomersTrendPoint[];
-};
-
 /**
  * Portfolio-wide totals over EVERY real customer, computed before pagination
  * slices `records` down to a page -- a KPI tile built from `records.length`
@@ -149,15 +51,7 @@ export type CustomersPortfolio = {
  * defaults to a 50-row page; this repo's own demo tenant already has more
  * than 50 real customers, so this is not a hypothetical).
  */
-export type CustomersPortfolioTotals = {
-  readonly activeCustomers: number;
-  readonly aovAllTime: Money | null;
-  readonly newCustomers: number;
-  readonly returningCustomers: number;
-  readonly totalCustomers: number;
-  readonly totalLtv: Money;
-  readonly totalWindowRevenue: Money;
-};
+
 
 const DEFAULT_WINDOW_DAYS = 30;
 const DEFAULT_PAGE_LIMIT = 50;
@@ -219,13 +113,18 @@ function buildAggregates(
 // (fewer days since last order = better).
 function rankScores(values: readonly number[], higherIsBetter: boolean): number[] {
   const n = values.length;
-  const scores = new Array<number>(n).fill(1);
+  const scores = new Array<number>(n).fill(3);
   const order = [...values.keys()].sort((a, b) => values[a]! - values[b]!);
-  order.forEach((originalIndex, rank) => {
-    const percentile = (rank + 1) / n;
+  // Equal input values receive the same score. An all-equal/single-customer
+  // population is neutral, not arbitrarily marked at risk by iteration order.
+  for (let first = 0; first < n;) {
+    let last = first;
+    while (last + 1 < n && values[order[last + 1]!] === values[order[first]!]) last += 1;
+    const percentile = (first + last + 1) / (2 * n);
     const bucket = Math.min(5, Math.max(1, Math.ceil(percentile * 5)));
-    scores[originalIndex] = higherIsBetter ? bucket : 6 - bucket;
-  });
+    for (let rank = first; rank <= last; rank += 1) scores[order[rank]!] = higherIsBetter ? bucket : 6 - bucket;
+    first = last + 1;
+  }
   return scores;
 }
 
@@ -243,8 +142,8 @@ function rankScores(values: readonly number[], higherIsBetter: boolean): number[
  * gating on recency too keeps that customer out of "loyal" and into
  * "atRisk"/"hibernating", where a lapsed high-value buyer belongs.
  */
-function classifySegment(r: number, f: number, m: number, ordersAllTimeCount: number): CustomerSegment {
-  if (ordersAllTimeCount <= 1 && r >= 4) return "new";
+function classifySegment(r: number, f: number, m: number, ordersAllTimeCount: number, isNewInWindow: boolean): CustomerSegment {
+  if (ordersAllTimeCount <= 1 && isNewInWindow) return "new";
   if (r >= 4 && f >= 4 && m >= 4) return "champions";
   if (r >= 3 && f >= 3 && m >= 3) return "loyal";
   if (r <= 2 && (f >= 3 || m >= 3)) return "atRisk";
@@ -258,9 +157,20 @@ function readinessForSegment(segment: CustomerSegment): "critical" | "ready" | "
   return "ready";
 }
 
-function daysBetween(fromIso: string, toIso: string): number {
-  const ms = new Date(toIso).getTime() - new Date(fromIso).getTime();
-  return Math.max(0, Math.round(ms / (24 * 60 * 60 * 1000)));
+/** Use workspace-local calendar dates, not elapsed 24-hour periods (DST). */
+function localDate(instant: string, timezone: string): string {
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit" })
+    .formatToParts(new Date(instant));
+  const part = (name: string) => parts.find((item) => item.type === name)!.value;
+  return `${part("year")}-${part("month")}-${part("day")}`;
+}
+function daysBetween(fromIso: string, toIso: string, timezone: string): number {
+  const from = Date.parse(`${localDate(fromIso, timezone)}T00:00:00Z`);
+  const to = Date.parse(`${localDate(toIso, timezone)}T00:00:00Z`);
+  return Math.max(0, Math.round((to - from) / 86_400_000));
+}
+function monthIndex(month: string): number {
+  return Number(month.slice(0, 4)) * 12 + Number(month.slice(5, 7)) - 1;
 }
 
 function toMoney(cents: bigint, currency: string): Money {
@@ -288,11 +198,12 @@ function buildTrend(
   classified: readonly ClassifiedCustomerOrder[],
   periodStart: string,
   periodEnd: string,
+  timezone: string,
 ): readonly CustomersTrendPoint[] {
   const byDay = new Map<string, { newCustomers: Set<string>; newRevenueCents: bigint; returningCustomers: Set<string>; returningRevenueCents: bigint }>();
   for (const { customerReference, isFirstOrder, order } of classified) {
     if (order.orderedAt < periodStart || order.orderedAt >= periodEnd) continue;
-    const date = order.orderedAt.slice(0, 10);
+    const date = localDate(order.orderedAt, timezone);
     const bucket = byDay.get(date) ?? {
       newCustomers: new Set<string>(),
       newRevenueCents: 0n,
@@ -392,32 +303,35 @@ function buildAffinity(
   return { newProducts: topRows(newTotals), returningProducts: topRows(returningTotals) };
 }
 
-function buildCohorts(aggregates: readonly CustomerAggregate[], currency: string): readonly CustomersCohort[] {
-  const byMonth = new Map<string, { retainedUsers: number; revenueCents: bigint; users: number }>();
+function buildCohorts(aggregates: readonly CustomerAggregate[], currency: string, asOf: string, timezone: string): readonly CustomersCohort[] {
+  const byMonth = new Map<string, CustomerAggregate[]>();
+  const observationMonth = monthIndex(localDate(asOf, timezone).slice(0, 7));
   for (const aggregate of aggregates) {
-    const cohortKey = aggregate.firstOrderAt.slice(0, 7);
-    const entry = byMonth.get(cohortKey) ?? { retainedUsers: 0, revenueCents: 0n, users: 0 };
-    entry.users += 1;
-    entry.revenueCents += aggregate.revenueAllTimeCents;
-    // The contract exposes one retentionRate rather than an M1/M2 matrix.
-    // Define it explicitly as "returned in any later calendar month" using
-    // only real qualifying orders available up to periodEnd.
-    if (aggregate.ordersAllTime.some((order) => order.orderedAt.slice(0, 7) > cohortKey)) {
-      entry.retainedUsers += 1;
-    }
-    byMonth.set(cohortKey, entry);
+    const month = localDate(aggregate.firstOrderAt, timezone).slice(0, 7);
+    const entries = byMonth.get(month) ?? [];
+    entries.push(aggregate);
+    byMonth.set(month, entries);
   }
-
-  return [...byMonth.entries()]
-    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
-    .map(([cohortKey, entry]) => ({
+  return [...byMonth.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([cohortKey, entries]) => {
+    const cohortMonth = monthIndex(cohortKey);
+    const returnedLater = entries.filter(entry => entry.ordersAllTime.some(order => monthIndex(localDate(order.orderedAt, timezone).slice(0, 7)) > cohortMonth)).length;
+    return {
       cohortKey,
-      retentionRate: entry.users > 0
-        ? Math.round((entry.retainedUsers / entry.users) * 10_000) / 10_000
-        : null,
-      revenue: toMoney(entry.revenueCents, currency),
-      users: entry.users,
-    }));
+      users: entries.length,
+      revenue: toMoney(entries.reduce((sum, entry) => sum + entry.revenueAllTimeCents, 0n), currency),
+      retentionRate: observationMonth > cohortMonth && entries.length > 0 ? returnedLater / entries.length : null,
+      // Periodic M1-M12 retention, not cumulative retention. A month becomes
+      // eligible only after it has completely elapsed as of the selected date.
+      retention: Array.from({ length: 12 }, (_, index) => {
+        const monthOffset = index + 1;
+        const targetMonth = cohortMonth + monthOffset;
+        const complete = targetMonth < observationMonth;
+        const retainedUsers = entries.filter(entry => entry.ordersAllTime.some(order => monthIndex(localDate(order.orderedAt, timezone).slice(0, 7)) === targetMonth)).length;
+        return { monthOffset, eligibleUsers: complete ? entries.length : 0, retainedUsers,
+          rate: complete && entries.length > 0 ? retainedUsers / entries.length : null, complete };
+      }),
+    };
+  });
 }
 
 function matchesFilters(record: RealCustomersRecord, segment: CustomerSegment, filters: CustomersFilters | null | undefined): boolean {
@@ -450,13 +364,15 @@ export async function buildCustomerPortfolio(options: {
   readonly filters?: CustomersFilters | null;
   readonly generatedAt: string;
   readonly page?: CustomersPageRequest | null;
+  /** Trusted service-only export, never copied from a raw read query. */
+  readonly exportAll?: boolean;
   readonly tenantId: string;
   readonly workspaceId: string;
 }): Promise<CustomersPortfolio> {
   const { dataSource, dateRange, filters, generatedAt, page, tenantId, workspaceId } = options;
   const { periodEnd, periodStart, timezone } = resolveMetricWindow(generatedAt, dateRange, DEFAULT_WINDOW_DAYS);
 
-  const [allTimeInput, rawRows] = await Promise.all([
+  const [allTimeInput, rawRows, connections, checkpoints] = await Promise.all([
     createRealMetricEngineInput({
       dataSource,
       generatedAt: generatedAt as IsoDateTime,
@@ -471,6 +387,8 @@ export async function buildCustomerPortfolio(options: {
       businessTimeTo: periodEnd,
       streams: ["orders"],
     }),
+    dataSource.listConnections(tenantId,workspaceId),
+    dataSource.listSyncCheckpoints(tenantId,workspaceId),
   ]);
 
   const currency = allTimeInput.currency;
@@ -484,6 +402,13 @@ export async function buildCustomerPortfolio(options: {
   // expose exactly how many qualifying orders were excluded.
   const qualifyingOrders = allQualifyingOrders.filter((order) => order.currency === currency);
   const classified = classifyCustomerOrders(qualifyingOrders, rawRows);
+  const identity=customerIdentityDiagnostics(qualifyingOrders,rawRows);
+  const sourceIds=[...new Set(rawRows.map(row=>String(row.connection_id??'')).filter(Boolean))];
+  const activeCommerce=connections.filter(row=>['allegro','baselinker','shopify','woocommerce'].includes(String(row.provider_id))&&!row.deleted_at).map(row=>String(row.id??row.connection_id??''));
+  const requiredSources=[...new Set([...sourceIds,...activeCommerce])].filter(Boolean);
+  const times=requiredSources.map(id=>checkpoints.filter(row=>String(row.connection_id)===id&&row.stream==='orders').map(row=>row.updated_at instanceof Date?row.updated_at.toISOString():String(row.updated_at??'')).filter(value=>Number.isFinite(Date.parse(value))).sort().at(-1)??null);
+  const synchronizedAt=times.length>0&&times.every((value):value is string=>value!==null)?[...times].sort()[0]!:null;
+  const firstObservedOrderAt=qualifyingOrders.length?qualifyingOrders.reduce((first,row)=>row.orderedAt<first?row.orderedAt:first,qualifyingOrders[0]!.orderedAt):null;
   const aggregates = buildAggregates(classified, periodStart, periodEnd);
   const currencyCoverage: CustomersCurrencyCoverage = {
     excludedOrders: allQualifyingOrders.length - qualifyingOrders.length,
@@ -491,7 +416,9 @@ export async function buildCustomerPortfolio(options: {
     reportingCurrency: currency,
   };
 
-  const recencyDaysByCustomer = aggregates.map((a) => daysBetween(a.lastOrderAt, generatedAt));
+  // periodEnd is exclusive; subtract one millisecond before deriving "as of".
+  const asOf = new Date(Date.parse(periodEnd) - 1).toISOString();
+  const recencyDaysByCustomer = aggregates.map((a) => daysBetween(a.lastOrderAt, asOf, timezone));
   const frequencyByCustomer = aggregates.map((a) => a.ordersAllTime.length);
   const monetaryByCustomer = aggregates.map((a) => Number(a.revenueAllTimeCents));
   const rScores = rankScores(recencyDaysByCustomer, false);
@@ -502,10 +429,10 @@ export async function buildCustomerPortfolio(options: {
     const r = rScores[index]!;
     const f = fScores[index]!;
     const m = mScores[index]!;
-    const segment = classifySegment(r, f, m, aggregate.ordersAllTime.length);
+    const segment = classifySegment(r, f, m, aggregate.ordersAllTime.length, aggregate.isNewInWindow);
     const record: RealCustomersRecord = {
       aov: toMoney(aggregate.revenueAllTimeCents / BigInt(aggregate.ordersAllTime.length), currency),
-      cohortKey: aggregate.firstOrderAt.slice(0, 7),
+      cohortKey: localDate(aggregate.firstOrderAt, timezone).slice(0, 7),
       consentStatus: "unknown",
       customerPseudonym: aggregate.pseudonym,
       isNewCustomer: aggregate.isNewInWindow,
@@ -521,10 +448,26 @@ export async function buildCustomerPortfolio(options: {
   });
 
   const filtered = allRecords.filter(({ record, segment }) => matchesFilters(record, segment, filters));
-  const sorted = [...filtered].sort((a, b) => b.record.ltv.amount - a.record.ltv.amount);
+  const sortBy = filters?.sortBy ?? "ltv";
+  const direction = filters?.sortDirection === "asc" ? 1 : -1;
+  const sortValue = (record: RealCustomersRecord): number | string => {
+    switch (sortBy) {
+      case "customerPseudonym": return record.customerPseudonym;
+      case "ordersCount": return record.ordersCount;
+      case "recencyDays": return record.recencyDays;
+      case "revenue": return record.revenue.amount;
+      default: return record.ltv.amount;
+    }
+  };
+  const sorted = [...filtered].sort((a, b) => {
+    const left = sortValue(a.record), right = sortValue(b.record);
+    return (left < right ? -direction : left > right ? direction : 0)
+      || a.record.customerPseudonym.localeCompare(b.record.customerPseudonym);
+  });
 
-  const limit = clampLimit(page?.limit);
-  const offset = decodeCursor(page?.cursor);
+  if (options.exportAll && sorted.length > 50000) throw new Error("CUSTOMER_EXPORT_TOO_LARGE");
+  const limit = options.exportAll ? 50000 : clampLimit(page?.limit);
+  const offset = options.exportAll ? 0 : decodeCursor(page?.cursor);
   const pageRecords = sorted.slice(offset, offset + limit).map((entry) => entry.record);
   const nextOffset = offset + pageRecords.length;
 
@@ -561,9 +504,11 @@ export async function buildCustomerPortfolio(options: {
   let runningCents = 0n;
   const bucketed = new Map<"A" | "B" | "C", { count: number; revenueCents: bigint }>();
   for (const aggregate of byRevenueDesc) {
+    // Include the customer who crosses a threshold in the bucket they fill.
+    // A single customer contributing >80% must not leave bucket A empty.
+    const shareBefore = totalRevenueAllTimeCents > 0n ? Number(runningCents) / Number(totalRevenueAllTimeCents) : 0;
+    const bucketKey: "A" | "B" | "C" = shareBefore < 0.8 ? "A" : shareBefore < 0.95 ? "B" : "C";
     runningCents += aggregate.revenueAllTimeCents;
-    const share = totalRevenueAllTimeCents > 0n ? Number(runningCents) / Number(totalRevenueAllTimeCents) : 0;
-    const bucketKey: "A" | "B" | "C" = share <= 0.8 ? "A" : share <= 0.95 ? "B" : "C";
     const entry = bucketed.get(bucketKey) ?? { count: 0, revenueCents: 0n };
     entry.count += 1;
     entry.revenueCents += aggregate.revenueAllTimeCents;
@@ -610,7 +555,7 @@ export async function buildCustomerPortfolio(options: {
     : null;
 
   const newCustomers = aggregates.filter((aggregate) => aggregate.isNewInWindow).length;
-  const activeCustomers = aggregates.filter((aggregate) => aggregate.revenueInWindowCents > 0n).length;
+  const activeCustomers = aggregates.filter((aggregate) => aggregate.ordersInWindow.length > 0).length;
   const totalLtvCents = aggregates.reduce((sum, aggregate) => sum + aggregate.revenueAllTimeCents, 0n);
   const totalWindowRevenueCents = aggregates.reduce((sum, aggregate) => sum + aggregate.revenueInWindowCents, 0n);
   const totalOrdersAllTime = aggregates.reduce((sum, aggregate) => sum + aggregate.ordersAllTime.length, 0);
@@ -618,16 +563,20 @@ export async function buildCustomerPortfolio(options: {
     activeCustomers,
     aovAllTime: totalOrdersAllTime > 0 ? toMoney(totalLtvCents / BigInt(totalOrdersAllTime), currency) : null,
     newCustomers,
-    returningCustomers: aggregates.length - newCustomers,
+    returningCustomers: aggregates.filter((aggregate) => aggregate.ordersInWindow.length > 0 && !aggregate.isNewInWindow).length,
     totalCustomers: aggregates.length,
     totalLtv: toMoney(totalLtvCents, currency),
     totalWindowRevenue: toMoney(totalWindowRevenueCents, currency),
   };
 
   return {
+    scope: { asOf, historyFrom: CUSTOMER_HISTORY_FLOOR, periodStart, periodEndExclusive: periodEnd, timezone,
+      calculatedAt: generatedAt, synchronizedAt, filtersApplyTo: "records_only",
+      rfmMethod: "tied_midrank_quintiles_v2", ltvMethod: "observed_qualifying_gross_revenue" },
+    coverage:{qualifyingOrders:qualifyingOrders.length,classifiedOrders:classified.length,...identity,firstObservedOrderAt,sourceCount:requiredSources.length,historyComplete:false},
     affinity,
     cac,
-    cohorts: buildCohorts(aggregates, currency),
+    cohorts: buildCohorts(aggregates, currency, asOf, timezone),
     currencyCoverage,
     pageInfo: { nextCursor: nextOffset < sorted.length ? encodeCursor(nextOffset) : null, total: sorted.length },
     pareto,
@@ -636,7 +585,7 @@ export async function buildCustomerPortfolio(options: {
     records: pageRecords,
     segments,
     summary: { critical, ready, total: allRecords.length, updatedAt: generatedAt as IsoDateTime, warning },
-    trend: buildTrend(classified, periodStart, periodEnd),
+    trend: buildTrend(classified, periodStart, periodEnd, timezone),
   };
 }
 
@@ -658,22 +607,10 @@ export async function fetchCustomerDetail(options: {
   readonly tenantId: string;
   readonly workspaceId: string;
 }): Promise<RealCustomersRecord | null> {
-  let cursor: string | null = null;
-  do {
-    const portfolio = await buildCustomerPortfolio({
-      dataSource: options.dataSource,
-      dateRange: options.dateRange,
-      generatedAt: options.generatedAt,
-      page: { cursor, limit: MAX_PAGE_LIMIT },
-      tenantId: options.tenantId,
-      workspaceId: options.workspaceId,
-    });
-    const found = portfolio.records.find(
-      (record) => record.customerPseudonym === options.customerPseudonym,
-    );
-    if (found) return found;
-    cursor = portfolio.pageInfo.nextCursor;
-  } while (cursor);
-
-  return null;
+  const portfolio = await buildCustomerPortfolio({
+    dataSource: options.dataSource, dateRange: options.dateRange, generatedAt: options.generatedAt,
+    filters: { search: options.customerPseudonym }, page: { limit: MAX_PAGE_LIMIT },
+    tenantId: options.tenantId, workspaceId: options.workspaceId,
+  });
+  return portfolio.records.find(record => record.customerPseudonym === options.customerPseudonym) ?? null;
 }

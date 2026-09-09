@@ -11,103 +11,72 @@ import {
 import { navigate, useLocationPath } from '../../runtime/app/routing/navigation';
 import {
   commandCenterDemoRange,
-  commandCenterDemoSeed,
 } from '../../fixtures/command-center/commandCenterDemoSeed';
-import { CommandCenterScreen } from '../../screens/command-center/CommandCenterScreen';
+const Overview=lazy(()=>import('../../fixtures/commerce/CommerceScenarios').then(m=>({default:m.OverviewScenario})));
 
-const Campaigns = lazy(() =>
-  import('../../screens/paid-campaigns/PaidCampaignsScreen').then((m) => ({
-    default: m.PaidCampaignsScreen,
-  })),
-);
+const CampaignGrowth = lazy(() => import('./GrowthPreview'));
 const Orders = lazy(() =>
-  import('../../screens/orders/OrdersScreen').then((m) => ({ default: m.OrdersScreen })),
+  import('../../fixtures/commerce/CommerceScenarios').then((m) => ({ default: m.OrdersScenario })),
 );
 const Products = lazy(() =>
-  import('../../screens/products/ProductsScreen').then((m) => ({ default: m.ProductsScreen })),
+  import('../../fixtures/commerce/CommerceScenarios').then((m) => ({ default: m.ProductsScenario })),
 );
-const Customers = lazy(() =>
-  import('../../screens/customers/CustomersScreen').then((m) => ({ default: m.CustomersScreen })),
-);
-const Traffic = lazy(() =>
-  import('../../screens/traffic/TrafficScreen').then((m) => ({ default: m.TrafficScreen })),
-);
+const Customers = lazy(async () => {
+  const [{ CustomerPortfolioView }, { customerPortfolioFixture }] = await Promise.all([
+    import('../../screens/customers/CustomerPortfolioView'), import('../../fixtures/customers/customerPortfolioFixture'),
+  ]);
+  return { default: () => <CustomerPortfolioView data={customerPortfolioFixture} demo /> };
+});
+const Traffic = lazy(async () => {
+  const [{ TrafficPortfolioView }, { trafficPortfolioFixture }] = await Promise.all([
+    import('../../screens/traffic/TrafficPortfolioView'), import('../../fixtures/traffic/trafficPortfolioFixture'),
+  ]);
+  return { default: () => <TrafficPortfolioView data={trafficPortfolioFixture} demo /> };
+});
 const Decisions = lazy(() =>
   import('../../screens/decisions/DecisionsScreen').then((m) => ({
     default: m.DecisionsScreen,
   })),
 );
-const Settings = lazy(() =>
-  import('../../screens/settings-governance/SettingsGovernanceScreen').then((m) => ({
-    default: m.SettingsGovernanceScreen,
-  })),
-);
+const Settings = lazy(() => import('../../fixtures/platform-operations/OperationsScenarios').then(m=>({default:m.SettingsOperationsDemo})));
+const Quality = lazy(() => import('../../fixtures/platform-operations/OperationsScenarios').then(m=>({default:m.QualityOperationsDemo})));
 const Help = lazy(() =>
-  import('../../screens/help-center/HelpCenterScreen').then((m) => ({
-    default: m.HelpCenterScreen,
+  import('../../screens/help-center/HelpCenterView').then((m) => ({
+    default: m.HelpCenterView,
   })),
 );
 const Papa = lazy(() =>
-  import('../../screens/saved-reports/SavedReportsScreen').then((m) => ({
-    default: m.SavedReportsScreen,
+  import('../../fixtures/saved-reports/SavedReportsDemo').then((m) => ({
+    default: m.SavedReportsDemo,
   })),
 );
-const Billing = lazy(async () => {
-  const [{ SubscriptionBillingScreen }, { subscriptionBillingDemoSeed }] = await Promise.all([
-    import('../../screens/subscription-billing/SubscriptionBillingScreen'),
-    import('../../fixtures/subscription-billing/subscriptionBillingDemoSeed'),
-  ]);
-  return { default: () => <SubscriptionBillingScreen data={subscriptionBillingDemoSeed} /> };
-});
-const Integrations = lazy(async () => {
-  const [{ IntegrationsWorkspace }, { createIntegrationsRuntimeFallbackData }] = await Promise.all([
-    import('../../runtime/integrations/IntegrationsWorkspace'),
-    import('../../runtime/integrations/integrationsData'),
-  ]);
-  return {
-    // Same no-op simulation Storybook's own story-support uses (see
-    // Integrations.story-support.tsx) -- /preview has no session to call
-    // real operations against, but passing these means every action button
-    // (connect, test, disconnect, sync/backfill) actually completes instead
-    // of silently doing nothing when the handler prop is left undefined.
-    default: () => (
-      <IntegrationsWorkspace
-        mode="storybook"
-        runtime={createIntegrationsRuntimeFallbackData()}
-        onCreateConnection={async () => {}}
-        onDisconnectConnection={async () => {}}
-        onProviderTest={async (provider) => ({
-          canSave: provider.connectable,
-          formValidation: {
-            fieldErrors: {},
-            message: 'Dane mają poprawny format.',
-            status: 'passed',
-          },
-          provider: provider.provider,
-          providerTest: {
-            message: provider.connectable
-              ? 'Połączenie z API dostawcy zostało zwalidowane pomyślnie.'
-              : 'Readiness providera blokuje test produkcyjny.',
-            status: provider.connectable ? 'passed' : 'failed',
-          },
-        })}
-        onSourceCommand={async () => {}}
-      />
-    ),
-  };
-});
+const Billing = lazy(() => import('../../fixtures/platform-operations/OperationsScenarios').then(m=>({default:m.BillingOperationsDemo})));
+const Integrations = lazy(() => import('../../fixtures/platform-operations/IntegrationOperationsDemo').then(m=>({default:m.IntegrationOperationsDemo})));
 
 const views = {
-  '/app/campaigns': Campaigns,
+  '/app/campaigns': CampaignGrowth,
+  '/app/campaigns/growth': CampaignGrowth,
+  '/app/campaigns/atrybucja-i-sprzedaz': CampaignGrowth,
+  '/app/campaigns/kreacje': CampaignGrowth,
+  '/app/campaigns/budzet': CampaignGrowth,
+  '/app/campaigns/przeglad': CampaignGrowth,
   '/app/orders': Orders,
   '/app/products': Products,
   '/app/customers': Customers,
   '/app/traffic': Traffic,
+  '/app/decisions': Decisions,
   '/app/decisions/centrum-decyzji': Decisions,
+  '/app/settings': Settings,
   '/app/settings/organizacja': Settings,
+  '/app/data-quality': Quality,
+  '/app/help': Help,
   '/app/help/strona-glowna-pomocy': Help,
+  '/app/reports': Papa,
+  '/app/papa/raporty': Papa,
   '/app/papa': Papa,
+  '/app/billing': Billing,
   '/app/billing/subskrypcja': Billing,
+  '/app/integrations': Integrations,
   '/app/integrations/sources': Integrations,
 };
 const previewHref = (path: string) => {
@@ -124,7 +93,7 @@ export default function DemoWorkspace() {
     location === '/preview' || location === '/preview/'
       ? '/app/command-center'
       : location.replace(/^\/preview/, '/app');
-  const View = views[path as keyof typeof views];
+  const View = views[path as keyof typeof views]??(path.startsWith('/app/orders/')?Orders:path.startsWith('/app/products/')?Products:null);
   const go = (target: string) => navigate(previewHref(target));
   const groups = defaultShellNavigation.map((group) => ({
     ...group,
@@ -156,7 +125,7 @@ export default function DemoWorkspace() {
         {isAssistantPath(path) ? (
           <PapaAssistantExperience />
         ) : path === '/app/command-center' ? (
-          <CommandCenterScreen data={commandCenterDemoSeed} />
+          <Overview />
         ) : View ? (
           <View />
         ) : (

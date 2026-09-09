@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-253",
   "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Role i uprawnienia",
-  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/60-04-role-i-uprawnienia.md",
+  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/README.md",
   "screenId": "60.04",
   "components": [
     "PageHeader",

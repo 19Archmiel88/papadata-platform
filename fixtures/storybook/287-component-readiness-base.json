@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-287",
   "storyTitle": "00 Fundamenty/06 Katalog komponentów/Komponenty bazowe",
-  "sourceDocument": "00-zarzadzanie-dokumentacja/10-mapa-komponentow.md",
+  "sourceDocument": "00-zarzadzanie-dokumentacja/README.md",
   "screenId": null,
   "components": [
     "Button",

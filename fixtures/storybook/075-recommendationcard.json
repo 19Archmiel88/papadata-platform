@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-075",
   "storyTitle": "10 Komponenty/RecommendationCard",
-  "sourceDocument": "04-komponenty-bazowe/komponenty/recommendationcard.md",
+  "sourceDocument": "04-komponenty-domenowe/recommendation-card.md",
   "screenId": null,
   "components": [],
   "states": [

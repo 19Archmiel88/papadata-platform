@@ -74,10 +74,12 @@ export class ProxyController {
     const controller = new AbortController();
     const timeout = setTimeout(
       () => controller.abort("upstream_timeout"),
-      this.config.upstreamTimeoutMs,
+      /^\/api\/v1\/papa\/workspace\/runs\/[0-9a-f-]+\/events(?:\?|$)/iu.test(request.url)
+        ? 120_000 : this.config.upstreamTimeoutMs,
     );
+    let streaming = false;
     const abortOnDisconnect = (): void => controller.abort("client_closed");
-    request.raw.once("close", abortOnDisconnect);
+    reply.raw.once("close", abortOnDisconnect);
 
     try {
       const response = await fetch(target, {
@@ -103,11 +105,13 @@ export class ProxyController {
         return;
       }
 
-      reply.send(
-        Readable.fromWeb(
-          response.body as unknown as NodeReadableStream<Uint8Array>,
-        ),
-      );
+      const stream = Readable.fromWeb(response.body as unknown as NodeReadableStream<Uint8Array>);
+      streaming = true;
+      stream.once("close", () => {
+        clearTimeout(timeout);
+        reply.raw.off("close", abortOnDisconnect);
+      });
+      reply.send(stream);
     } catch {
       if (controller.signal.aborted) {
         reply.status(504).send({
@@ -126,8 +130,10 @@ export class ProxyController {
         },
       });
     } finally {
-      clearTimeout(timeout);
-      request.raw.off("close", abortOnDisconnect);
+      if (!streaming) {
+        clearTimeout(timeout);
+        reply.raw.off("close", abortOnDisconnect);
+      }
     }
   }
 

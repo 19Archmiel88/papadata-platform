@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-187",
   "storyTitle": "33 Produkty/Mapowanie",
-  "sourceDocument": "10-produkty/33-04-mapowanie.md",
+  "sourceDocument": "10-produkty/README.md",
   "screenId": "33.04",
   "components": [
     "PageHeader",

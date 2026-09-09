@@ -17,6 +17,8 @@ function stable(value: unknown): string {
   return JSON.stringify(normalizeStable(value));
 }
 
+export class MfaEnrollmentConflict extends Error {}
+
 export class SecurityRepository {
   private readonly database: ProductionDatabase;
 
@@ -43,7 +45,8 @@ export class SecurityRepository {
            set encrypted_secret = excluded.encrypted_secret,
                recovery_code_hashes = excluded.recovery_code_hashes,
                used_recovery_code_hashes = '[]'::jsonb,
-               status = 'pending', confirmed_at = null, revoked_at = null
+               status = 'pending', confirmed_at = null, revoked_at = null, last_totp_step = null
+           WHERE app.security_mfa_enrollments.status <> 'active'
            returning *`,
           [
             input.tenantId,
@@ -53,7 +56,7 @@ export class SecurityRepository {
           ],
         );
         const row = result.rows[0];
-        if (!row) throw new Error("MFA enrollment was not persisted");
+        if (!row) throw new MfaEnrollmentConflict("An active MFA factor cannot be replaced by enrollment.");
         return row;
       },
     );
@@ -75,17 +78,19 @@ export class SecurityRepository {
     );
   }
 
-  async activateMfaEnrollment(tenantId: string, userId: string): Promise<void> {
-    await this.database.withTenantWorkspace(
+  async activateMfaEnrollment(tenantId: string, userId: string, expectedSecret?: string): Promise<boolean> {
+    return this.database.withTenantWorkspace(
       tenantId,
       "security",
       async (client) => {
-        await client.query(
+        const result = await client.query(
           `update app.security_mfa_enrollments
            set status = 'active', confirmed_at = now()
-           where tenant_id = $1 and user_id = $2`,
-          [tenantId, userId],
+           where tenant_id = $1 and user_id = $2 and status = 'pending'
+             and ($3::text IS NULL OR encrypted_secret=$3)`,
+          [tenantId, userId, expectedSecret ?? null],
         );
+        return result.rowCount === 1;
       },
     );
   }
@@ -115,6 +120,8 @@ export class SecurityRepository {
     tenantId: string;
     userId: string;
     step: number;
+    expectedSecret?: string;
+    expectedStatus?: 'pending' | 'active';
   }): Promise<boolean> {
     return this.database.withTenantWorkspace(
       input.tenantId,
@@ -124,8 +131,10 @@ export class SecurityRepository {
          set last_totp_step = $3
          where tenant_id = $1 and user_id = $2 and method = 'totp'
            and (last_totp_step is null or last_totp_step < $3)
+           and ($4::text IS NULL OR encrypted_secret=$4)
+           and ($5::text IS NULL OR status=$5)
          returning id`,
-        [input.tenantId, input.userId, input.step],
+        [input.tenantId, input.userId, input.step, input.expectedSecret ?? null, input.expectedStatus ?? null],
       )).rowCount === 1,
     );
   }

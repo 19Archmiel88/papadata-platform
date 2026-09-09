@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-225",
   "storyTitle": "41 Jakość danych i integralność/Ponowne przetwarzanie",
-  "sourceDocument": "14-jakosc-danych-i-integralnosc/41-08-ponowne-przetwarzanie.md",
+  "sourceDocument": "14-jakosc-danych-i-integralnosc/README.md",
   "screenId": "41.08",
   "components": [
     "PageHeader",

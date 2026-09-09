@@ -1,27 +1,17 @@
-# PapaData — specyfikacja docelowa 1.0
+# PapaData Platform
 
-**Autor / twórca / owner:** Artur Wiśniewski  
-**Wersja:** 1.0  
-**Status:** final target specification / implementation input
+PapaData to platforma analityczna SaaS dla e-commerce, łącząca dane sprzedażowe, marketingowe i operacyjne z warstwą rekomendacji oraz automatyzacji AI.
 
-Dokumentacja definiuje docelowe fundamenty, komponenty, ekrany, API, Auth, przepływy, security i aplikację mobilną oraz zamknięty pakiet P0: 58 metryk, parity local–GCP, pełne MVP, AI local, GUS/BIR, raporty, billing, KSeF i szablony prawne.
+## Dokumentacja
 
-## Najważniejsze artefakty
+- [`docs/README.md`](docs/README.md) — wejście do dokumentacji;
+- [`docs/specyfikacja-docelowa/README.md`](docs/specyfikacja-docelowa/README.md) — kanoniczna specyfikacja produktu 1.0;
+- `contracts/` — kontrakty API, DTO, komponentów i Auth;
+- `rejestry/` — rejestry tras, operacji, komponentów i Storybooka;
+- `macierze/` — powiązania ekranów, komponentów, API, ról, Auth i E2E;
+- `fixtures/` — fixture kontraktowe i scenariuszowe.
 
-- `docs/specyfikacja-docelowa/` — normatywna dokumentacja docelowa;
-- `contracts/openapi-1.0.json` — kontrakt BFF OpenAPI 3.1;
-- `contracts/api-schemas.ts` i `.json` — request/response/data DTO;
-- `contracts/components/` — kanoniczne Props komponentów;
-- `contracts/auth-fsm.json` — jedno źródło maszyny Auth;
-- `contracts/screens/` — modele ekranów;
-- `macierze/` i `rejestry/` — śledzalność wykonawcza;
-- `fixtures/api`, `fixtures/e2e`, `fixtures/storybook` — przykłady kontraktowe i specyfikacyjne;
-- `scripts/validate_all.py` — niezależna brama akceptacyjna;
-- `install_docs_to_repo.py` — transakcyjny instalator;
-- `docs/specyfikacja-docelowa/26-priorytety-p0/` — obowiązkowe decyzje P0;
-- `docs/specyfikacja-docelowa/27-pakiet-prawny-i-organizacyjny/` — szablony go-live;
-- `contracts/metric-catalog-58.json` — pełny katalog 58 metryk;
-- `config/p0-integrations.env.example` — konfiguracja local/API/providerów.
+Dokumentacja historyczna, audyty paczek i jednorazowe raporty walidacyjne nie są częścią kanonicznego repozytorium.
 
 ## Walidacja
 
@@ -32,7 +22,7 @@ pnpm typecheck
 pnpm test
 ```
 
-## Instalacja
+## Instalacja pakietu dokumentacyjnego
 
 ```bash
 python3 install_docs_to_repo.py /home/papadata/papadata-platform dry-run

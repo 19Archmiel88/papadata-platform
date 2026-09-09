@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-183",
   "storyTitle": "32 Zamówienia/Warianty zamówień",
-  "sourceDocument": "09-zamowienia/32-08-warianty-zamowien.md",
+  "sourceDocument": "09-zamowienia/README.md",
   "screenId": "32.08",
   "components": [
     "PageHeader",

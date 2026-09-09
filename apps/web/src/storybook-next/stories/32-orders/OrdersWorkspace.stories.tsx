@@ -1,0 +1,21 @@
+import type {Meta,StoryObj} from '@storybook/react-vite';
+import {OrdersWorkspaceScreen,type OrdersWorkspaceProps} from '../../../screens/orders/OrdersWorkspaceScreen';
+import {OrdersScenario} from '../../../fixtures/commerce/CommerceScenarios';
+import {ordersFixture} from '../../../fixtures/commerce/commerceFixtures';
+import {StorybookProductShellFrame} from '../shared/StorybookProductShellFrame';
+const meta={id:'papadata-orders-workspace',title:'ANALIZA/Zamówienia/Dane rzeczywiste',component:OrdersWorkspaceScreen,parameters:{layout:'fullscreen'},args:{state:'ready'}} satisfies Meta<typeof OrdersWorkspaceScreen>;
+export default meta;
+type Story=StoryObj<typeof meta>;
+const data=ordersFixture({from:'2026-08-01',to:'2026-08-31',timezone:'Europe/Warsaw'});
+function renderStory(args:OrdersWorkspaceProps){return <StorybookProductShellFrame activePath="/app/orders"><OrdersScenario {...args}/></StorybookProductShellFrame>;}
+export const Overview:Story={render:renderStory,name:'Pełny widok'};
+export const Loading:Story={render:renderStory,args:{state:'loading'}};
+export const Forbidden:Story={render:renderStory,args:{state:'forbidden'}};
+export const Offline:Story={render:renderStory,args:{state:'offline'}};
+export const ReadFailure:Story={render:renderStory,args:{state:'error',problem:'Jawny scenariusz błędu odczytu.'}};
+export const Empty:Story={render:renderStory,args:{data:{...data,meta:{...data.meta,quality:'empty'}}}};
+export const Stale:Story={render:renderStory,args:{data:{...data,meta:{...data.meta,quality:'stale',lastSuccessfulSyncAt:'2026-07-01T10:00:00Z'}}}};
+export const SourceSelection:Story={render:renderStory,args:{data:{...data,records:[],refunds:[],meta:{...data.meta,sourceId:null,quality:'selection_required'}}}};
+export const Payments:Story={render:renderStory,args:{initialView:'payments'}};
+export const Refunds:Story={render:renderStory,args:{initialView:'refunds'}};
+export const Quality:Story={render:renderStory,args:{initialView:'quality'}};

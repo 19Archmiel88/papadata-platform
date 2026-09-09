@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-217",
   "storyTitle": "40 Integracje i synchronizacja/Szczegóły integracji",
-  "sourceDocument": "13-integracje-i-synchronizacja/40-03-szczegoly-integracji.md",
+  "sourceDocument": "13-integracje-i-synchronizacja/README.md",
   "screenId": "40.03",
   "components": [
     "PageHeader",

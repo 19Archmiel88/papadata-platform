@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-230",
   "storyTitle": "50 Papa Asystent i Laboratorium AI/AI Action Approval",
-  "sourceDocument": "15-papa-asystent-i-laboratorium-ai/50-12-ai-action-approval.md",
+  "sourceDocument": "15-papa-asystent-i-laboratorium-ai/README.md",
   "screenId": "50.12",
   "components": [
     "PageHeader",

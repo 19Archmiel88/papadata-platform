@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-008",
   "storyTitle": "10 Komponenty bazowe/Nawigacja lokalna",
-  "sourceDocument": "04-komponenty-bazowe/10-08-nawigacja-lokalna.md",
+  "sourceDocument": "04-komponenty-bazowe/README.md",
   "screenId": null,
   "components": [],
   "states": [

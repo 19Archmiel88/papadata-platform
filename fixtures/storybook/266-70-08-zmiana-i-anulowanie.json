@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-266",
   "storyTitle": "70 Subskrypcja i płatności/Zmiana i anulowanie",
-  "sourceDocument": "17-subskrypcja-i-platnosci/70-08-zmiana-i-anulowanie.md",
+  "sourceDocument": "17-subskrypcja-i-platnosci/README.md",
   "screenId": "70.08",
   "components": [
     "PageHeader",

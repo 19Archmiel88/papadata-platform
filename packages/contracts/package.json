@@ -13,6 +13,18 @@
     "./saved-reports": {
       "types": "./dist/saved-reports.d.ts",
       "import": "./dist/saved-reports.js"
+    },
+    "./decisions": {
+      "types": "./dist/decisions.d.ts",
+      "import": "./dist/decisions.js"
+    },
+    "./campaign-growth": {
+      "types": "./dist/campaign-growth.d.ts",
+      "import": "./dist/campaign-growth.js"
+    },
+    "./report-projections": {
+      "types": "./dist/report-projections.d.ts",
+      "import": "./dist/report-projections.js"
     }
   },
   "scripts": {

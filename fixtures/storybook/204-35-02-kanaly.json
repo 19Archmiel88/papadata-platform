@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-204",
   "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Kanały",
-  "sourceDocument": "12-ruch-i-lejek/35-02-kanaly.md",
+  "sourceDocument": "12-ruch-i-lejek/README.md",
   "screenId": "35.02",
   "components": [
     "PageHeader",

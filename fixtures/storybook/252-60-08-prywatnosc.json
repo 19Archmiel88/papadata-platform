@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-252",
   "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Prywatność",
-  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/60-08-prywatnosc.md",
+  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/README.md",
   "screenId": "60.08",
   "components": [
     "PageHeader",

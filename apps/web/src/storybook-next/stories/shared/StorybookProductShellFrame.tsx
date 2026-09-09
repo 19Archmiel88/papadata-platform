@@ -1,6 +1,6 @@
-import { navigateStorybook, storybookHref } from './storybookNavigation';
+import { navigateStorybook, storybookHref, registerStorybookRoute } from './storybookNavigation';
 import { commandCenterDemoRange } from '../../../fixtures/command-center/commandCenterDemoSeed';
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 
 import {
   defaultShellCommands,
@@ -41,6 +41,7 @@ export function StorybookProductShellFrame({
   activePath,
   children,
 }: StorybookProductShellFrameProps) {
+  useEffect(()=>registerStorybookRoute(activePath),[activePath]);
   return (
     <ProductShellFrame
       papaDemo

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-279",
   "storyTitle": "85 Centrum Pomocy/Strona główna pomocy",
-  "sourceDocument": "19-centrum-pomocy/85-01-strona-glowna-pomocy.md",
+  "sourceDocument": "19-centrum-pomocy/README.md",
   "screenId": "85.01",
   "components": [
     "PageHeader",

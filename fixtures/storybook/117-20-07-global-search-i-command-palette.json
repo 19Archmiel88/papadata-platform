@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-117",
   "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/Global search i Command Palette",
-  "sourceDocument": "06-powloka-produktu-i-nawigacja/20-07-global-search-i-command-palette.md",
+  "sourceDocument": "06-powloka-produktu-i-nawigacja/README.md",
   "screenId": null,
   "components": [
     "CommandPalette",

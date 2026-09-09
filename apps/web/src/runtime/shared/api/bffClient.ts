@@ -1,3 +1,4 @@
+import {readEventData} from './eventStream';
 import type {
   DateRange,
 } from '../../../../../../contracts/ui-contract-types';
@@ -12,6 +13,7 @@ import {
   type AuthRefreshCoordinator,
   type AuthRuntimeEvent,
 } from './authRefreshCoordinator';
+import { safeRandomUUID } from '../id/safeRandomUUID';
 
 export type BffSessionMembership = {
   readonly tenantId: string;
@@ -339,6 +341,22 @@ export type BffClientOptions = {
 
 export class BffClient {
   private csrfToken: string | null = null;
+  private scopeEpoch = 0;
+  private requestScope: {tenantId: string; workspaceId: string; userId: string} | null = null;
+
+  bindSessionScope(session: BffSession | null): void {
+    const next = session ? {tenantId:session.activeTenantId, workspaceId:session.activeWorkspaceId, userId:session.userId} : null;
+    if(JSON.stringify(next)!==JSON.stringify(this.requestScope))this.scopeEpoch += 1;
+    this.requestScope=next;
+  }
+
+  private scopeHeaders(): Record<string, string> {
+    return this.requestScope ? {
+      'x-papadata-expected-tenant': this.requestScope.tenantId,
+      'x-papadata-expected-workspace': this.requestScope.workspaceId,
+      'x-papadata-expected-user': this.requestScope.userId,
+    } : {};
+  }
   private readonly baseUrl: string;
   private readonly coordinator: AuthRefreshCoordinator;
   private readonly csrfCookieName: string;
@@ -368,6 +386,7 @@ export class BffClient {
     this.coordinator.subscribe((event) => {
       if (event.type === 'logout' || event.type === 'refresh-failed') {
         this.csrfToken = null;
+        this.bindSessionScope(null);
       }
       this.emit(event);
     });
@@ -381,11 +400,12 @@ export class BffClient {
   }
 
   async readSession(): Promise<BffSession | null> {
+    const scopeEpoch=this.scopeEpoch;
     try {
       return await this.readSessionAfterRefresh();
     } catch (cause) {
       if (cause instanceof BffProblem && cause.status === 401) {
-        this.endLocalSession('session-revoked');
+        if(scopeEpoch===this.scopeEpoch)this.endLocalSession('session-revoked');
         return null;
       }
       throw cause;
@@ -416,6 +436,7 @@ export class BffClient {
 
   private async refreshSession(): Promise<BffSession> {
     if (this.refreshPromise) return this.refreshPromise;
+    const scopeEpoch=this.scopeEpoch;
 
     this.refreshPromise = this.coordinator.coordinateRefresh({
       afterExternal: () => this.readSessionWithoutRefresh(),
@@ -436,10 +457,10 @@ export class BffClient {
         return payload.data.session;
       },
     }).then((session) => {
-      this.coordinator.publish({ type: 'session-updated' });
+      if(scopeEpoch===this.scopeEpoch)this.coordinator.publish({ type: 'session-updated' });
       return session;
     }).catch((cause: unknown) => {
-      this.endLocalSession('refresh-failed');
+      if(scopeEpoch===this.scopeEpoch)this.endLocalSession('refresh-failed');
       throw cause;
     }).finally(() => {
       this.refreshPromise = null;
@@ -489,6 +510,7 @@ export class BffClient {
     readonly session: BffSession;
     readonly verified: boolean;
   }> {
+    const expectedScopeHeaders = this.scopeHeaders();
     const csrfToken = await this.getCsrfToken();
     const response = await this.fetch(
       '/api/v1/auth/mfa/confirm',
@@ -496,6 +518,7 @@ export class BffClient {
         method: 'POST',
         headers: {
           'x-papadata-csrf': csrfToken,
+          ...expectedScopeHeaders,
         },
         body: JSON.stringify(input),
       },
@@ -518,6 +541,7 @@ export class BffClient {
     readonly session: BffSession;
     readonly verified: boolean;
   }> {
+    const expectedScopeHeaders = this.scopeHeaders();
     const csrfToken = await this.getCsrfToken();
     const response = await this.fetch(
       '/api/v1/auth/mfa/verify',
@@ -525,6 +549,7 @@ export class BffClient {
         method: 'POST',
         headers: {
           'x-papadata-csrf': csrfToken,
+          ...expectedScopeHeaders,
         },
         body: JSON.stringify(input),
       },
@@ -548,6 +573,7 @@ export class BffClient {
     readonly session: BffSession;
     readonly stepUpExpiresAt: string;
   }> {
+    const expectedScopeHeaders = this.scopeHeaders();
     const csrfToken = await this.getCsrfToken();
     const response = await this.fetch(
       '/api/v1/auth/step-up',
@@ -555,6 +581,7 @@ export class BffClient {
         method: 'POST',
         headers: {
           'x-papadata-csrf': csrfToken,
+          ...expectedScopeHeaders,
         },
         body: JSON.stringify(input),
       },
@@ -585,6 +612,7 @@ export class BffClient {
     // contract runtime's { data: ... } envelope. Confirmed against the real
     // running response (apps/worker/scripts/verify-invitations-flow.ts) --
     // authenticatedCommand()'s payload.data would be undefined here.
+    const expectedScopeHeaders = this.scopeHeaders();
     const csrfToken = await this.getCsrfToken();
     const response = await this.fetch(
       '/api/v1/security/mfa/enroll',
@@ -593,6 +621,7 @@ export class BffClient {
         headers: {
           'idempotency-key': createCorrelationId(),
           'x-papadata-csrf': csrfToken,
+          ...expectedScopeHeaders,
         },
         body: JSON.stringify(input),
       },
@@ -689,7 +718,9 @@ export class BffClient {
     readonly otp: string;
     readonly resetToken: string;
   }): Promise<void> {
-    await this.publicCommand('/api/v1/auth/password/reset', input);
+    const response=await this.fetch('/api/v1/auth/password/reset',{method:'POST',body:JSON.stringify(input)},{allowRefresh:false,mode:'public'});
+    const payload=await readJson<{data:{accepted?:boolean;status?:string}}>(response);assertOk(response,payload);
+    if(payload.data.accepted!==true)throw new Error('Reset link is invalid, expired or already consumed.');
   }
 
   async readAuthStatus(): Promise<{ readonly oauth: OAuthAvailability }> {
@@ -767,13 +798,15 @@ export class BffClient {
 
   async logout(): Promise<void> {
     try {
-      const csrfToken = await this.getCsrfToken();
+      const expectedScopeHeaders = this.scopeHeaders();
+    const csrfToken = await this.getCsrfToken();
       const response = await this.fetch(
         '/api/v1/auth/logout',
         {
           method: 'POST',
           headers: {
             'x-papadata-csrf': csrfToken,
+            ...expectedScopeHeaders,
           },
         },
         { allowRefresh: false, mode: 'authenticated-command' },
@@ -791,13 +824,15 @@ export class BffClient {
 
   async logoutAll(): Promise<void> {
     try {
-      const csrfToken = await this.getCsrfToken();
+      const expectedScopeHeaders = this.scopeHeaders();
+    const csrfToken = await this.getCsrfToken();
       const response = await this.fetch(
         '/api/v1/auth/logout-all',
         {
           method: 'POST',
           headers: {
             'x-papadata-csrf': csrfToken,
+            ...expectedScopeHeaders,
           },
         },
         { allowRefresh: false, mode: 'authenticated-command' },
@@ -811,6 +846,17 @@ export class BffClient {
     } finally {
       this.endLocalSession('logout-all');
     }
+  }
+
+  async disableMfa(): Promise<void> {
+    const expectedScopeHeaders = this.scopeHeaders();
+    const csrfToken = await this.getCsrfToken();
+    const response = await this.fetch('/api/v1/auth/mfa', {
+      method: 'DELETE', headers: {'x-papadata-csrf': csrfToken, ...expectedScopeHeaders},
+    }, {allowRefresh:true, mode:'authenticated-command'});
+    const payload = await readJson<unknown>(response);
+    assertOk(response, payload);
+    this.endLocalSession('logout-all');
   }
 
   async listSessions(): Promise<readonly BffSessionSummary[]> {
@@ -827,6 +873,7 @@ export class BffClient {
   }
 
   async revokeSession(sessionId: string, currentSessionId?: string): Promise<void> {
+    const expectedScopeHeaders = this.scopeHeaders();
     const csrfToken = await this.getCsrfToken();
     const response = await this.fetch(
       `/api/v1/auth/sessions/${encodeURIComponent(sessionId)}`,
@@ -834,6 +881,7 @@ export class BffClient {
         method: 'DELETE',
         headers: {
           'x-papadata-csrf': csrfToken,
+          ...expectedScopeHeaders,
         },
       },
       { allowRefresh: true, mode: 'authenticated-command' },
@@ -867,6 +915,7 @@ export class BffClient {
     options: {
       readonly dateRange?: DateRange | null;
       readonly query?: Readonly<Record<string, string | null | undefined>>;
+      readonly signal?: AbortSignal;
     } = {},
   ): Promise<TData> {
     const response = await this.fetch(
@@ -875,7 +924,7 @@ export class BffClient {
         options.dateRange ?? null,
         options.query ?? null,
       ),
-      { method: 'GET' },
+      { method: 'GET', signal: options.signal },
       { allowRefresh: true, mode: 'authenticated-read' },
     );
     const payload = await readJson<{
@@ -1032,8 +1081,89 @@ export class BffClient {
     return this.readDomainScreen<TData>('/api/v1/papa/ustawienia-ai-i-governance');
   }
 
-  async readSavedReports(): Promise<ReportsStore> {
-    return this.readDomainScreen<ReportsStore>('/api/v1/saved-reports');
+  async readIntegrationProvisionCapabilities(signal?:AbortSignal):Promise<import('@papadata/contracts').IntegrationProvisionCapabilities> {
+    return this.readDomainScreen('/api/v1/integrations/provision',{signal});
+  }
+  async provisionIntegration(input:import('@papadata/contracts').IntegrationProvisionCommand):Promise<import('@papadata/contracts').IntegrationProvisionResult> {
+    return this.authenticatedCommand('/api/v1/integrations/provision',{...input},{idempotencyKey:input.requestId});
+  }
+
+  async readSettingsOperations(signal?:AbortSignal):Promise<import('@papadata/contracts').SettingsOverview> {
+    return this.readDomainScreen('/api/v1/settings/operations',{signal});
+  }
+  async saveSettingsSection(section:import('@papadata/contracts').SettingSection,input:import('@papadata/contracts').SettingCommand):Promise<import('@papadata/contracts').SettingDocument> {
+    return this.authenticatedCommand(`/api/v1/settings/operations/sections/${encodeURIComponent(section)}`,{...input},{idempotencyKey:input.requestId});
+  }
+  async readOperationsTeam(signal?:AbortSignal):Promise<import('@papadata/contracts').TeamOverview> {
+    return this.readDomainScreen('/api/v1/settings/operations/team',{signal});
+  }
+  async commandOperationsMember(id:string,input:import('@papadata/contracts').MemberCommand):Promise<{id:string;version:number;status:string;role:string}> {
+    return this.authenticatedCommand(`/api/v1/settings/operations/members/${encodeURIComponent(id)}`,{...input},{idempotencyKey:input.requestId});
+  }
+  async readPrivacyRequests(signal?:AbortSignal):Promise<{records:readonly import('@papadata/contracts').PlatformPrivacyRequest[];limit:number}> {
+    return this.readDomainScreen('/api/v1/settings/operations/privacy',{signal});
+  }
+  async registerPrivacyRequest(input:import('@papadata/contracts').PrivacyCreateCommand):Promise<Readonly<Record<string,unknown>>> {
+    const scope=this.scopeHeaders(), csrf=await this.getCsrfToken();
+    const response=await this.fetch('/api/v1/privacy/requests',{method:'POST',headers:{...scope,'x-papadata-csrf':csrf,'idempotency-key':input.requestId},body:JSON.stringify({subjectReference:input.subjectReference,requestType:input.requestType})},{allowRefresh:true,mode:'authenticated-command'});
+    const payload=await readJson<Readonly<Record<string,unknown>>>(response);assertOk(response,payload);return payload;
+  }
+  async readSettingsAudit(before?:string,signal?:AbortSignal):Promise<import('@papadata/contracts').SettingsAuditPage> {
+    return this.readDomainScreen(`/api/v1/settings/operations/audit${before?`?before=${encodeURIComponent(before)}`:''}`,{signal});
+  }
+  async readIntegrationScope(id:string,signal?:AbortSignal):Promise<import('@papadata/contracts').IntegrationScope> {
+    return this.readDomainScreen(`/api/v1/integrations/connections/${encodeURIComponent(id)}/sync-scope`,{signal});
+  }
+  async saveIntegrationScope(id:string,input:import('@papadata/contracts').IntegrationScopeCommand):Promise<import('@papadata/contracts').IntegrationScope> {
+    return this.authenticatedCommand(`/api/v1/integrations/connections/${encodeURIComponent(id)}/sync-scope`,{...input},{idempotencyKey:input.requestId});
+  }
+  async readDataQuality(signal?:AbortSignal):Promise<import('@papadata/contracts').QualityOverview> {
+    return this.readDomainScreen('/api/v1/data-quality/operations',{signal});
+  }
+  async readDataLineage(connectionId:string,stream:string,signal?:AbortSignal):Promise<{records:readonly import('@papadata/contracts').QualityLineage[];limit:number}> {
+    return this.readDomainScreen(`/api/v1/data-quality/operations/lineage?${new URLSearchParams({connectionId,stream})}`,{signal});
+  }
+  async saveDataReview(input:import('@papadata/contracts').QualityReviewCommand):Promise<import('@papadata/contracts').QualityReview> {
+    return this.authenticatedCommand('/api/v1/data-quality/operations/reviews',{...input},{idempotencyKey:input.requestId});
+  }
+  async readBillingOperations(cursor?:string,signal?:AbortSignal):Promise<import('@papadata/contracts').BillingOverview> {
+    return this.readDomainScreen(`/api/v1/billing/operations${cursor?`?after=${encodeURIComponent(cursor)}`:''}`,{signal});
+  }
+  async createBillingSession(input:import('@papadata/contracts').BillingSessionCommand):Promise<import('@papadata/contracts').BillingSessionResult> {
+    return this.authenticatedCommand('/api/v1/billing/operations/sessions',{...input},{idempotencyKey:input.requestId});
+  }
+
+  async saveCampaignBudgetPlan(input: import('@papadata/contracts/campaign-growth').GrowthBudgetCommand): Promise<{plan:import('@papadata/contracts/campaign-growth').GrowthBudgetPlan;event:import('@papadata/contracts/campaign-growth').GrowthBudgetAudit;externalChange:false}> {
+    return this.authenticatedCommand('/api/v1/campaigns/budget-plans',input as unknown as Readonly<Record<string,unknown>>,{idempotencyKey:input.requestId});
+  }
+
+  async readSupportTickets(signal?: AbortSignal,query?:Readonly<Record<string,string>>): Promise<import('@papadata/contracts').SupportTicketsPage> {
+    return this.readDomainScreen(`/api/v1/support/tickets${query?'?'+new URLSearchParams(query):''}`,{signal});
+  }
+  async readSupportTicket(id:string,signal?:AbortSignal):Promise<import('@papadata/contracts').SupportTicketDetail> {
+    return this.readDomainScreen(`/api/v1/support/tickets/${encodeURIComponent(id)}`,{signal});
+  }
+  async commandSupportTicket(id:string,input:import('@papadata/contracts').SupportTicketCommand):Promise<import('@papadata/contracts').SupportTicketDetail> {
+    return this.authenticatedCommand('/api/v1/support/tickets/'+encodeURIComponent(id)+'/commands',input as unknown as Readonly<Record<string,unknown>>,{idempotencyKey:input.requestId});
+  }
+  async createSupportTicket(input: import('@papadata/contracts').SupportTicketInput, idempotencyKey: string): Promise<import('@papadata/contracts').SupportTicket> {
+    return this.authenticatedCommand('/api/v1/support/tickets',input as unknown as Readonly<Record<string,unknown>>,{idempotencyKey});
+  }
+
+  async readDecisions(signal?: AbortSignal): Promise<import('@papadata/contracts/decisions').DecisionsRegistry> {
+    return this.readDomainScreen('/api/v1/decisions/registry', {signal});
+  }
+
+  async commandDecision(input: import('@papadata/contracts/decisions').DecisionMutation, idempotencyKey: string): Promise<import('@papadata/contracts/decisions').DecisionsRegistry> {
+    return this.authenticatedCommand('/api/v1/decisions/registry/commands', input as unknown as Readonly<Record<string,unknown>>, {idempotencyKey});
+  }
+
+  async downloadSavedReport(id:string,version:number,format:'html'|'csv'|'json',signal?:AbortSignal):Promise<import('@papadata/contracts').SavedReportDownload> {
+    return this.readDomainScreen<import('@papadata/contracts').SavedReportDownload>(`/api/v1/saved-reports/${encodeURIComponent(id)}/versions/${version}/download`,{query:{format},signal});
+  }
+
+  async readSavedReports(signal?:AbortSignal): Promise<ReportsStore> {
+    return this.readDomainScreen<ReportsStore>('/api/v1/saved-reports',{signal});
   }
 
   async previewSavedReport(config: ReportConfig): Promise<ReportSnapshot & { readonly previewId: string }> {
@@ -1043,10 +1173,11 @@ export class BffClient {
     );
   }
 
-  async commandSavedReports(command: ReportCommand): Promise<ReportsStore> {
+  async commandSavedReports(command: ReportCommand,idempotencyKey?:string): Promise<ReportsStore> {
     return this.authenticatedCommand<ReportsStore>(
       '/api/v1/saved-reports/commands',
       command as unknown as Readonly<Record<string, unknown>>,
+      {idempotencyKey},
     );
   }
 
@@ -1235,26 +1366,17 @@ export class BffClient {
   }
 
   async startIntegrationBackfill(input: {
-    readonly connectionId: string;
-    readonly providerId: string;
-    readonly streams: readonly string[];
-  }): Promise<Readonly<Record<string, unknown>>> {
-    const to = new Date();
-    const from = new Date(to);
-    from.setUTCDate(from.getUTCDate() - 90);
-    return this.authenticatedCommand(
-      `/api/v1/integrations/connections/${encodeURIComponent(input.connectionId)}/backfill`,
-      {
-        from: from.toISOString(),
-        idempotencyKey: createCorrelationId(),
-        providerId: input.providerId,
-        streams: input.streams,
-        to: to.toISOString(),
-      },
-    );
+    readonly connectionId:string; readonly providerId:string; readonly streams:readonly string[];
+    readonly from?:string; readonly to?:string; readonly requestId?:string;
+  }):Promise<Readonly<Record<string,unknown>>> {
+    const to=input.to??new Date().toISOString(),from=input.from??new Date(Date.parse(to)-90*86400000).toISOString();
+    const key=input.requestId??createCorrelationId();
+    return this.authenticatedCommand(`/api/v1/integrations/connections/${encodeURIComponent(input.connectionId)}/backfill`,
+      {from,to,providerId:input.providerId,streams:input.streams,idempotencyKey:key},{idempotencyKey:key});
   }
 
   async disconnectIntegrationConnection(connectionId: string): Promise<void> {
+    const expectedScopeHeaders = this.scopeHeaders();
     const csrfToken = await this.getCsrfToken();
     const response = await this.fetch(
       `/api/v1/integrations/connections/${encodeURIComponent(connectionId)}`,
@@ -1263,6 +1385,7 @@ export class BffClient {
         headers: {
           'idempotency-key': createCorrelationId(),
           'x-papadata-csrf': csrfToken,
+          ...expectedScopeHeaders,
         },
       },
       { allowRefresh: true, mode: 'authenticated-command' },
@@ -1271,11 +1394,69 @@ export class BffClient {
     assertOk(response, payload);
   }
 
+
+  async readAccessLifecycle(signal?:AbortSignal):Promise<import('@papadata/contracts').AccessLifecycleStatus>{
+    return this.readDomainScreen('/api/v1/access/lifecycle',{signal});
+  }
+  async commandAccessLifecycle(action:'company'|'consents'|'complete',input:Readonly<Record<string,unknown>>&{requestId:string}):Promise<unknown>{
+    return this.authenticatedCommand(`/api/v1/access/lifecycle/${action}`,input,{idempotencyKey:input.requestId});
+  }
+  async verifyAccessEmail(token:string):Promise<void>{
+    const response=await this.fetch('/api/v1/auth/email/verify',{method:'POST',body:JSON.stringify({token})},{allowRefresh:false,mode:'public'});
+    const payload=await readJson<{data:{verified?:boolean;accepted?:boolean;status?:string}}>(response);assertOk(response,payload);
+    if(payload.data.verified!==true&&payload.data.accepted!==true)throw new Error('Link is invalid, expired or already consumed.');
+  }
+  async resendAccessEmail(email:string):Promise<void>{await this.publicCommand('/api/v1/auth/email/resend',{email});}
+  async redeemMfaRecovery(code:string):Promise<{session:BffSession;verified:boolean}>{
+    const result=await this.authenticatedCommand<{session:BffSession;verified:boolean}>('/api/v1/auth/mfa/recovery-code/redeem',{code});
+    this.coordinator.publish({type:'session-updated'});return result;
+  }
+  async readAssistantWorkspace<T>(path:'preferences'|'threads'|`threads?${string}`|'memory'|'notifications'|`diagnostics?${string}`|`attachments/${string}`|`runs/${string}`|`export/${string}`,signal?:AbortSignal):Promise<T>{
+    return this.readDomainScreen(`/api/v1/papa/workspace/${path}`,{signal});
+  }
+  async commandAssistantWorkspace<T=unknown>(path:'preferences'|'notifications'|'memory'|'memory/delete'|'attachments'|'attachments/delete'|'threads/archive'|`runs/${string}/cancel`,input:Readonly<Record<string,unknown>>&{requestId:string}):Promise<T>{
+    return this.authenticatedCommand(`/api/v1/papa/workspace/${path}`,input,{idempotencyKey:input.requestId});
+  }
+  async startPapaRun(input:{requestId:string;conversationId:string;caseThreadId:string|null;prompt:string;attachmentIds:readonly string[];useMemory:boolean},signal?:AbortSignal):Promise<import('@papadata/contracts').AssistantRun>{
+    return this.authenticatedCommand('/api/v1/papa/workspace/runs',input,{idempotencyKey:input.requestId,signal});
+  }
+  async watchPapaRun(id:string,onProgress:(text:string,native:boolean)=>void,signal:AbortSignal):Promise<PapaAnswerGenerateResult>{
+    // Retry only reads of an existing run; never resubmit a generation request.
+    for(let attempt=0;attempt<4;attempt++){
+      signal.throwIfAborted();let native=false;
+      try{
+        const response=await this.fetch(`/api/v1/papa/workspace/runs/${encodeURIComponent(id)}/events`,{method:'GET',headers:{accept:'text/event-stream'},signal},{allowRefresh:true,mode:'authenticated-read'});
+        if(!response.ok){const payload=await readJson<unknown>(response);assertOk(response,payload);}
+        if(response.body&&response.headers.get('content-type')?.includes('text/event-stream')){
+          for await(const raw of readEventData(response.body,signal)){
+            const event:unknown=JSON.parse(raw);
+            if(!event||typeof event!=='object'||!('type' in event))throw new Error('Invalid stream event.');
+            const e=event as import('@papadata/contracts').AssistantStreamEvent;
+            if(e.type==='run')native=e.nativeStreaming===true;
+            else if(e.type==='delta'){if(typeof e.text!=='string')throw new Error('Invalid stream text.');onProgress(e.text,true);}
+            else if(e.type==='completed')return parseRunAnswer(e.result);
+            else if(e.type==='stopped')break;
+          }
+        }else await response.body?.cancel();
+      }catch(cause){
+        signal.throwIfAborted();
+        if(cause instanceof BffProblem && [401,403,404].includes(cause.status))throw cause;
+        // The status endpoint is authoritative when the transport breaks mid-frame.
+      }
+      const run=await this.readAssistantWorkspace<import('@papadata/contracts').AssistantRun>(`runs/${encodeURIComponent(id)}`,signal);
+      onProgress(run.partialText,native||run.nativeStreaming);
+      if(run.status==='completed')return parseRunAnswer(run.result);
+      if(!['running','queued'].includes(run.status))throw new Error(`Generation stopped (${run.errorCode??run.status}). Partial text is not a completed answer.`);
+      await new Promise<void>(resolve=>{const timer=setTimeout(done,Math.min(1000,250*(attempt+1)));function done(){clearTimeout(timer);signal.removeEventListener('abort',done);resolve();}signal.addEventListener('abort',done,{once:true});});
+    }
+    throw new Error('Stream disconnected. Resume this run to read its result; no new generation was created.');
+  }
   private async authenticatedCommand<TData = unknown>(
     path: string,
     body?: Readonly<Record<string, unknown>>,
     options: { readonly idempotencyKey?: string; readonly signal?: AbortSignal } = {},
   ): Promise<TData> {
+    const expectedScopeHeaders = this.scopeHeaders();
     const csrfToken = await this.getCsrfToken();
     const response = await this.fetch(
       path,
@@ -1285,6 +1466,7 @@ export class BffClient {
         headers: {
           'idempotency-key': options.idempotencyKey ?? createCorrelationId(),
           'x-papadata-csrf': csrfToken,
+          ...expectedScopeHeaders,
         },
         ...(body ? { body: JSON.stringify(body) } : {}),
       },
@@ -1355,6 +1537,13 @@ export class BffClient {
     init: RequestInit,
     metadata: BffRequestMetadata,
   ): Promise<Response> {
+    if (metadata.mode === 'authenticated-command' || metadata.mode === 'authenticated-read') {
+      const headers = new Headers(init.headers);
+      for (const [key, value] of Object.entries(this.scopeHeaders())) {
+        if (!headers.has(key)) headers.set(key, value);
+      }
+      init = {...init, headers};
+    }
     return this.fetchWithRetry(path, init, metadata);
   }
 
@@ -1388,7 +1577,7 @@ export class BffClient {
     init: RequestInit,
   ): Promise<Response> {
     const headers = new Headers(init.headers);
-    headers.set('accept', 'application/json');
+    if (!headers.has('accept')) headers.set('accept', 'application/json');
     headers.set('x-correlation-id', createCorrelationId());
     if (init.body !== undefined && !headers.has('content-type')) {
       headers.set('content-type', 'application/json');
@@ -1402,6 +1591,7 @@ export class BffClient {
         redirect: 'manual',
       });
     } catch (cause) {
+      if (init.signal?.aborted) throw cause;
       throw new BffProblem(
         0,
         'NETWORK_UNAVAILABLE',
@@ -1423,6 +1613,7 @@ export class BffClient {
 
   private endLocalSession(reason: 'logout' | 'logout-all' | 'refresh-failed' | 'session-revoked'): void {
     this.csrfToken = null;
+    this.bindSessionScope(null);
     this.coordinator.publish({ type: 'logout', reason });
   }
 
@@ -1570,8 +1761,7 @@ function readRequiredAuthLevel(payload: ErrorPayload): 'mfa' | 'step_up' | null 
 }
 
 function createCorrelationId(): string {
-  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
-  return `web-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  return safeRandomUUID();
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -1622,3 +1812,10 @@ export const BFF_PAPA_LAB_RUNTIME_OPERATION_IDS = [
 
 export type BffPapaLabRuntimeOperationId =
   typeof BFF_PAPA_LAB_RUNTIME_OPERATION_IDS[number];
+
+function parseRunAnswer(value:unknown):PapaAnswerGenerateResult{
+ if(!value||typeof value!=='object')throw new Error('Invalid generation result.');
+ const v=value as Partial<PapaAnswerGenerateResult>;
+ if(typeof v.conversationId!=='string'||typeof v.messageId!=='string'||(v.caseThreadId!==null&&v.caseThreadId!==undefined&&typeof v.caseThreadId!=='string')||!v.record||typeof v.record.messageId!=='string'||typeof v.record.content!=='string'||v.record.role!=='assistant'||typeof v.record.createdAt!=='string'||!Array.isArray(v.record.evidence)||!Array.isArray(v.record.limitations)||!v.record.limitations.every(x=>typeof x==='string'))throw new Error('Incomplete generation result.');
+ return v as PapaAnswerGenerateResult;
+}

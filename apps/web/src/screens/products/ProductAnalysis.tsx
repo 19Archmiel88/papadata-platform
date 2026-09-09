@@ -86,6 +86,7 @@ export function ProductContribution({
   readonly onDetail: (detail: ProductDetail) => void;
 }) {
   const leaders = [...analysis.rows]
+    .filter((row) => row.margin !== null)
     .sort((a, b) => (b.margin ?? -Infinity) - (a.margin ?? -Infinity))
     .slice(0, 5);
   const max = Math.max(1, ...leaders.map((row) => Math.abs(row.margin ?? 0)));
@@ -97,16 +98,18 @@ export function ProductContribution({
         aria-labelledby="product-contribution-title"
       >
         <h2 id="product-contribution-title">Co buduje marżę</h2>
-        <p>Pięć SKU z najwyższą rozliczoną marżą. Koszty marketingu i realizacji nie są odjęte.</p>
+        <p>Do pięciu SKU z najwyższą rozliczoną marżą. Bez kosztów marketingu i realizacji.</p>
+        {!leaders.length && <p>Brak produktów z rozliczoną marżą w tym zakresie.</p>}
         <ol>
-          {leaders.map((row) => (
+          {leaders.map((row, index) => (
             <li key={row.id}>
               <button
                 type="button"
                 className="pd-product-analysis__contribution-row"
                 onClick={() => onDetail({ kind: 'sku', id: row.id })}
               >
-                <span>
+                <span className="pd-product-analysis__rank" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                <span className="pd-product-analysis__contribution-name">
                   {row.name}
                   <small>{row.id}</small>
                 </span>

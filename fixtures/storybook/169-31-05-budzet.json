@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-169",
   "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne/Budżet",
-  "sourceDocument": "08-kampanie-platne/31-05-budzet.md",
+  "sourceDocument": "08-kampanie-platne/README.md",
   "screenId": "31.05",
   "components": [
     "BusinessScreen",

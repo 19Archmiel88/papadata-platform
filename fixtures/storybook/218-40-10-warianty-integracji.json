@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-218",
   "storyTitle": "40 Integracje i synchronizacja/Warianty integracji",
-  "sourceDocument": "13-integracje-i-synchronizacja/40-10-warianty-integracji.md",
+  "sourceDocument": "13-integracje-i-synchronizacja/README.md",
   "screenId": "40.10",
   "components": [
     "PageHeader",

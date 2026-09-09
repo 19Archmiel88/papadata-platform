@@ -137,6 +137,11 @@ export type IntegrationRuntimeSource = {
       | "plan";
     readonly label: string;
   };
+  readonly selectedStreams?: readonly string[];
+  readonly scopeVersion?: number;
+  readonly credentialVersion?: number;
+  readonly schedule?: string;
+  readonly objectReadiness?: readonly object[];
   readonly canManage: boolean;
   readonly blockedByPlan: boolean;
   readonly initialBackfill: {

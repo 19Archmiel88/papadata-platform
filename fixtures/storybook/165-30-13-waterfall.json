@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-165",
   "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/Waterfall",
-  "sourceDocument": "07-centrum-dowodzenia/30-13-waterfall.md",
+  "sourceDocument": "07-centrum-dowodzenia/README.md",
   "screenId": "30.13",
   "components": [
     "BusinessScreen",

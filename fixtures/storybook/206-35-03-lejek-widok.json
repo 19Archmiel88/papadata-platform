@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-206",
   "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Lejek — widok",
-  "sourceDocument": "12-ruch-i-lejek/35-03-lejek-widok.md",
+  "sourceDocument": "12-ruch-i-lejek/README.md",
   "screenId": "35.03",
   "components": [
     "PageHeader",

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-201",
   "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Definicje lejka",
-  "sourceDocument": "12-ruch-i-lejek/35-05-definicje-lejka.md",
+  "sourceDocument": "12-ruch-i-lejek/README.md",
   "screenId": "35.05",
   "components": [
     "PageHeader",

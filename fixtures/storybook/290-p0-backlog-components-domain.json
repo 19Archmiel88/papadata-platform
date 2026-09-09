@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-290",
   "storyTitle": "15 Wykresy i dane/05 Katalog komponentów/Backlog P0 komponentów domenowych",
-  "sourceDocument": "22-mapy-i-indeksy/storybook-backlog-scenariusze.md",
+  "sourceDocument": "22-mapy-i-indeksy/README.md",
   "screenId": null,
   "components": [
     "AttributionComparison",

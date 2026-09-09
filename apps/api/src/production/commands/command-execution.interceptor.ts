@@ -21,6 +21,7 @@ type CommandRequest = RequestWithPrincipal & RequestWithContext & {
 
 type CommandExecutionRow = {
   readonly command_execution_id: string;
+  readonly actor_id: string;
   readonly status: "reserved" | "succeeded" | "failed";
   readonly request_hash: string;
   readonly response_body: unknown;
@@ -54,8 +55,10 @@ export class CommandExecutionInterceptor implements NestInterceptor {
     }
 
     const correlationId = request.correlationId ?? "unknown";
+    const assuranceOperation = operationId.startsWith('security.mfa.') || operationId === 'security.step-up.issue';
     const requestHash = hashJson({
       operationId,
+      ...(assuranceOperation ? {sessionId: principal.sessionId, actorId: principal.userId} : {}),
       body: request.body ?? null,
       params: request.params ?? null,
       query: request.query ?? null,
@@ -158,12 +161,16 @@ export class CommandExecutionInterceptor implements NestInterceptor {
         )).rows[0];
 
         if (!existing) throw new ConflictException("Idempotency reservation failed.");
+        if (existing.actor_id !== input.actorId) throw new ConflictException("Idempotency key belongs to a different actor.");
         if (existing.request_hash !== input.requestHash) {
           throw new ConflictException(
             "Idempotency key was already used for a different request.",
           );
         }
-        if (existing.status === "succeeded") {
+        if (existing.status === "succeeded" && isAssuranceOperation(input.operationId)) {
+          throw new ConflictException("This assurance request was already consumed. Start a new verification; secrets and factor proofs are not replayed.");
+        }
+        if (existing.status === "succeeded" && input.operationId !== "billing.operations.session.create") {
           return {
             commandExecutionId: existing.command_execution_id,
             replay: true,
@@ -224,7 +231,7 @@ export class CommandExecutionInterceptor implements NestInterceptor {
            set status = 'succeeded', response_status = 200,
                response_body = $2::jsonb, completed_at = now()
            where command_execution_id = $1`,
-          [input.commandExecutionId, JSON.stringify(input.result ?? null)],
+          [input.commandExecutionId, JSON.stringify(isAssuranceOperation(input.operationId) ? {assuranceResponseNotPersisted: true} : input.operationId === "billing.operations.session.create" ? { requiresProviderReadback: true } : input.result ?? null)],
         );
       },
     );
@@ -306,4 +313,8 @@ function stable(value: unknown): string {
   return `{${Object.keys(record).sort().map((key) =>
     `${JSON.stringify(key)}:${stable(record[key])}`
   ).join(",")}}`;
+}
+
+function isAssuranceOperation(operationId: string): boolean {
+  return operationId.startsWith('security.mfa.') || operationId === 'security.step-up.issue';
 }

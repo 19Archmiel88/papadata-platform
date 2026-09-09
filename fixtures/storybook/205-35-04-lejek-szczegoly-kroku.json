@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-205",
   "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Lejek — szczegóły kroku",
-  "sourceDocument": "12-ruch-i-lejek/35-04-lejek-szczegoly-kroku.md",
+  "sourceDocument": "12-ruch-i-lejek/README.md",
   "screenId": "35.04",
   "components": [
     "PageHeader",

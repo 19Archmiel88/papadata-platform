@@ -1,3 +1,24 @@
+import { SavedReportDownloadController } from './reports/saved-report-download.controller.js';
+import { BusinessOverviewController } from './commerce/business-overview.controller.js';
+import { BusinessOverviewService } from './commerce/business-overview.service.js';
+import { CommerceController } from './commerce/commerce.controller.js';
+import { CommerceService } from './commerce/commerce.service.js';
+import {AssistantWorkspaceController} from './assistant-workspace/assistant-workspace.controller.js';
+import {AssistantWorkspaceService} from './assistant-workspace/assistant-workspace.service.js';
+import {AssistantRunService} from './assistant-workspace/assistant-run.service.js';
+import {AccessLifecycleController} from './access-lifecycle/access-lifecycle.controller.js';
+import {AccessLifecycleService} from './access-lifecycle/access-lifecycle.service.js';
+import {AccessMailService} from './access-lifecycle/access-mail.service.js';
+import { ConnectionProvisionController } from "./platform-operations/connection-provision.controller.js";
+import { ConnectionProvisionService } from "./platform-operations/connection-provision.service.js";
+import { BillingOperationsController } from "./platform-operations/billing-operations.controller.js";
+import { BillingOperationsService } from "./platform-operations/billing-operations.service.js";
+import { IntegrationOperationsController } from "./platform-operations/integration-operations.controller.js";
+import { IntegrationOperationsService } from "./platform-operations/integration-operations.service.js";
+import { SettingsOperationsController } from "./platform-operations/settings-operations.controller.js";
+import { SettingsOperationsService } from "./platform-operations/settings-operations.service.js";
+import { CampaignGrowthController } from './campaigns/campaign-growth.controller.js';
+import { CampaignGrowthService } from './campaigns/campaign-growth.service.js';
 import { Module } from "@nestjs/common";
 import {
   APP_FILTER,
@@ -64,7 +85,23 @@ import { contractRuntimeControllers } from "./contract-runtime/generated/index.j
 import { StripeWebhookController } from "./billing/stripe-webhook.controller.js";
 import { StripeWebhookService } from "./billing/stripe-webhook.service.js";
 
+import { AnalyticsExportController } from "./analytics/analytics-export.controller.js";
+import { DecisionsController } from './decisions/decisions.controller.js';
+import { DecisionsService } from './decisions/decisions.service.js';
+
+import { SupportTicketsController } from "./support/support-tickets.controller.js";
+import { SupportTicketsService } from "./support/support-tickets.service.js";
+
 export const productionControllers = [
+ CommerceController,
+ BusinessOverviewController,
+ SavedReportDownloadController,
+ AssistantWorkspaceController,
+  AccessLifecycleController,
+  ConnectionProvisionController, SettingsOperationsController, IntegrationOperationsController, BillingOperationsController,
+  SupportTicketsController,
+  AnalyticsExportController,
+  DecisionsController,
   HealthController,
   ReadinessController,
   MetricsController,
@@ -84,9 +121,19 @@ export const productionControllers = [
 ] as const;
 
 @Module({
-  controllers: [...productionControllers],
+  controllers: [
+    CampaignGrowthController,...productionControllers],
   imports: [DatabaseModule, ScheduleModule.forRoot()],
   providers: [
+    CommerceService,
+    BusinessOverviewService,
+    AccessLifecycleService,
+    AssistantWorkspaceService,
+    AssistantRunService, AccessMailService,
+    ConnectionProvisionService, SettingsOperationsService, IntegrationOperationsService, BillingOperationsService,
+    CampaignGrowthService,
+    SupportTicketsService,
+    DecisionsService,
     IntegrationService,
     WebhookService,
     {

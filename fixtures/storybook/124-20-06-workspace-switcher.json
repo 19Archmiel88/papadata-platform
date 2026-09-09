@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-124",
   "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/Workspace switcher",
-  "sourceDocument": "06-powloka-produktu-i-nawigacja/20-06-workspace-switcher.md",
+  "sourceDocument": "06-powloka-produktu-i-nawigacja/README.md",
   "screenId": null,
   "components": [
     "WorkspaceSwitcher",

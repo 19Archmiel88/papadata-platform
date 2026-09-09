@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-263",
   "storyTitle": "70 Subskrypcja i płatności/Użycie i limity",
-  "sourceDocument": "17-subskrypcja-i-platnosci/70-02-uzycie-i-limity.md",
+  "sourceDocument": "17-subskrypcja-i-platnosci/README.md",
   "screenId": "70.02",
   "components": [
     "PageHeader",

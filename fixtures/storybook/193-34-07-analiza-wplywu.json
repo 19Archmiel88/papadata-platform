@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-193",
   "storyTitle": "34 Klienci/Analiza wpływu",
-  "sourceDocument": "11-klienci/34-07-analiza-wplywu.md",
+  "sourceDocument": "11-klienci/README.md",
   "screenId": "34.07",
   "components": [
     "PageHeader",

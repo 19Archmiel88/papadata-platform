@@ -1,6 +1,11 @@
-export type ReportTemplateId = 'overview' | 'products' | 'inventory' | 'campaigns' | 'orders';
-export type ReportUnit = 'PLN' | '%' | 'szt.' | 'dni' | '×';
+import { cleanProductContextPath } from './product-context.js';
+export type ReportTemplateId = 'overview' | 'products' | 'inventory' | 'campaigns' | 'orders' | 'customers' | 'traffic';
+export type ReportUnit = 'PLN' | '%' | 'szt.' | 'dni' | '×' | (string & {});
+export type ReportContext = { sourcePath:string; conversationId?:string|null; caseThreadId?:string|null; decisionId?:string|null; budgetPlanId?:string|null };
+
 export type ReportConfig = {
+  timezone?: string;
+  context?: ReportContext | null;
   title: string;
   question: string;
   template: ReportTemplateId;
@@ -24,8 +29,8 @@ export type ReportSnapshot = {
   previewId?: string;
   mode: 'demo' | 'live' | 'imported';
   scopeLabel: string;
-  currency: 'PLN';
-  timezone: 'Europe/Warsaw';
+  currency: string;
+  timezone: string;
   quality: 'complete' | 'partial' | 'empty';
   limitations: string[];
   metrics: ReportMetric[];
@@ -104,11 +109,13 @@ export type ReportTemplate = {
   filters: { id: string; label: string }[];
 };
 export const reportTemplates: readonly ReportTemplate[] = [
+  {id:'customers',label:'Portfel i retencja',domain:'Klienci',description:'Agregaty portfela na dzien i aktywnosc w okresie; bez danych osobowych.',metricIds:['customerCount','activeCustomers','newCustomers','observedLtv'],filters:[{id:'all',label:'Portfel w walucie workspace'}]},
+  {id:'traffic',label:'Ruch i pomiar',domain:'Ruch',description:'Sesje, transakcje oraz jakosc pomiaru GA4 z kontekstem filtrow.',metricIds:['sessions','transactions','purchaseRate','engagement'],filters:[{id:'all',label:'Zakres z kontekstu analizy'}]},
   {
     id: 'overview',
     label: 'Wynik biznesu',
     domain: 'Przegląd',
-    description: 'Sprzedaż, koszty i marża po marketingu w jednym raporcie.',
+    description: 'Wynik sprzedaży i jawne ograniczenia kosztów oraz marży.',
     metricIds: ['revenue', 'margin', 'marketingSpend', 'orders'],
     filters: [{ id: 'all', label: 'Cały sklep' }],
   },
@@ -166,7 +173,8 @@ export const reportTemplates: readonly ReportTemplate[] = [
   },
 ];
 export const reportMetricLabels: Record<string, string> = {
-  revenue: 'Sprzedaż netto',
+ customerCount:'Klienci w portfelu',activeCustomers:'Aktywni klienci',newCustomers:'Nowi zaobserwowani klienci',observedLtv:'Wartosc zaobserwowana portfela',sessions:'Sesje',transactions:'Transakcje GA4',purchaseRate:'Transakcje / sesje',engagement:'Sesje zaangazowane / sesje',
+  revenue: 'Sprzedaż według definicji źródła',
   margin: 'Marża po marketingu',
   marketingSpend: 'Koszt marketingu',
   orders: 'Zamówienia',
@@ -205,6 +213,8 @@ export const defaultReportConfig = (template: ReportTemplateId = 'overview'): Re
 });
 
 export function reportConfigError(config: ReportConfig): string | null {
+  if(config.timezone!==undefined&&!validReportTimezone(config.timezone))return 'Nieprawidlowa strefa czasowa raportu.';
+  if(config.context!=null&&!validReportContext(config.context))return 'Nieprawidlowy kontekst raportu.';
   if (!config.title.trim() || config.title.length > 160)
     return 'Podaj tytuł raportu (do 160 znaków).';
   const template = reportTemplate(config.template);
@@ -369,7 +379,16 @@ const nullable = (v: unknown) => v === null || finite(v);
 const list = (v: unknown, max: number, check: (v: unknown) => boolean): v is unknown[] =>
   Array.isArray(v) && v.length <= max && v.every(check);
 const stamp = (v: unknown) => str(v, 40) && Number.isFinite(Date.parse(v));
-const unit = (v: unknown) => ['PLN', '%', 'szt.', 'dni', '×'].includes(v as string);
+const unit = (v: unknown) => typeof v==='string' && (/^[A-Z]{3}$/.test(v) || ['%', 'szt.', 'dni', '×'].includes(v));
+export function validReportTimezone(value:unknown):value is string {
+ if(typeof value!=='string'||value.length>100)return false;
+ try{new Intl.DateTimeFormat('en',{timeZone:value}).format();return true;}catch{return false;}
+}
+export function validReportContext(value:unknown):value is ReportContext {
+ if(!obj(value)||!str(value.sourcePath,4000)||cleanProductContextPath(value.sourcePath)!==value.sourcePath)return false;
+ return ['conversationId','caseThreadId','decisionId','budgetPlanId'].every(key=>value[key]==null||(str(value[key],160)&&/^[A-Za-z0-9_.:-]+$/.test(value[key] as string)));
+}
+
 const day = (v: unknown) =>
   str(v, 10) &&
   /^\d{4}-\d{2}-\d{2}$/.test(v) &&
@@ -379,6 +398,8 @@ export function validReportConfig(v: unknown): v is ReportConfig {
   return (
     obj(v) &&
     str(v.title, 160) &&
+    (v.timezone===undefined||validReportTimezone(v.timezone)) &&
+    (v.context==null||validReportContext(v.context)) &&
     str(v.question, 1000) &&
     str(v.notes) &&
     reportTemplates.some((t) => t.id === v.template) &&
@@ -391,15 +412,15 @@ export function validReportConfig(v: unknown): v is ReportConfig {
 }
 const safeSourcePath = (v: unknown) =>
   v === null ||
-  (str(v, 2000) && /^\/app\/(command-center|products|campaigns|orders)(\?|$)/.test(v));
+  (str(v, 4000) && cleanProductContextPath(v)===v);
 export function validSnapshot(v: unknown): v is ReportSnapshot {
   return (
     obj(v) &&
     stamp(v.generatedAt) &&
     ['demo', 'live', 'imported'].includes(v.mode as string) &&
     str(v.scopeLabel, 500) &&
-    v.currency === 'PLN' &&
-    v.timezone === 'Europe/Warsaw' &&
+    typeof v.currency==='string' && /^[A-Z]{3}$/.test(v.currency) &&
+    validReportTimezone(v.timezone) &&
     ['complete', 'partial', 'empty'].includes(v.quality as string) &&
     list(v.limitations, 30, (x) => str(x)) &&
     list(

@@ -5,6 +5,7 @@ import type {
 import {
   useMemo,
   useState,
+  useEffect,
 } from 'react';
 
 import {
@@ -56,6 +57,7 @@ import type {
   IntegrationsRuntimeView,
 } from './integrationsData';
 import './integrations-workspace.css';
+import { useProductQuery } from '../app/routing/productRoutes';
 
 type PartialFailure = {
   readonly id: 'catalog' | 'logs' | 'completeness';
@@ -68,6 +70,7 @@ type HubAreaId = 'sources' | 'catalog' | 'data-quality';
 export type IntegrationsWorkspaceProps = {
   readonly loading?: boolean;
   readonly mode?: 'runtime' | 'storybook';
+  readonly onBeginConnect?: (provider:IntegrationRuntimeCatalogProvider, source?:IntegrationRuntimeSource)=>void;
   readonly onCreateConnection?: (
     provider: IntegrationRuntimeCatalogProvider,
     input: {
@@ -153,6 +156,7 @@ type WizardStepId = (typeof wizardStepDefs)[number]['id'];
 export function IntegrationsWorkspace({
   loading = false,
   mode = 'runtime',
+  onBeginConnect,
   onCreateConnection,
   onDisconnectConnection,
   onProviderTest,
@@ -168,10 +172,11 @@ export function IntegrationsWorkspace({
   initialWorkspaceTab = 'overview',
 }: IntegrationsWorkspaceProps) {
   const resolvedRuntime = useMemo(
-    () => runtime ?? createIntegrationsRuntimeFallbackData(),
-    [runtime],
+    () => runtime ?? (mode === 'storybook' ? createIntegrationsRuntimeFallbackData() : null),
+    [runtime, mode],
   );
 
+  const queryState = useProductQuery();
   const [area, setArea] = useState<HubAreaId>(initialArea ?? resolveHubArea(path));
   const [sourceFilters, setSourceFilters] = useState<IntegrationSourceFilters>({
     provider: 'all',
@@ -192,6 +197,19 @@ export function IntegrationsWorkspace({
   const [toasts, setToasts] = useState<readonly Toast[]>([]);
   const [scopeOverrides, setScopeOverrides] = useState<Readonly<Record<string, readonly string[]>>>({});
 
+  useEffect(() => {
+    const params = new URLSearchParams(queryState.location.split('?')[1] ?? '');
+    const requestedArea = params.get('integrationArea');
+    setArea(requestedArea === 'catalog' || requestedArea === 'sources' || requestedArea === 'data-quality' ? requestedArea : initialArea ?? resolveHubArea(path));
+    setSelectedSourceId(params.get('sourceId') ?? initialSourceId);
+    const tab=params.get('sourceTab');
+    setWorkspaceTab(tab === 'overview' || tab === 'data' || tab === 'sync' || tab === 'config' ? tab : initialWorkspaceTab);
+    const provider=params.get('integrationProvider'),status=params.get('integrationStatus');
+    const category=params.get('integrationCatalogCategory');
+    setCatalogFilters({query:params.get('integrationCatalogQuery')??'',category:category==='available'||category==='commerce'||category==='import'||category==='advertising'||category==='analytics' ? category as IntegrationCatalogFilters['category'] : 'all'});
+    setSourceFilters({query:params.get('integrationQuery') ?? '',provider:provider && ['woocommerce','shopify','baselinker','allegro','google_ads','meta_ads','ga4'].includes(provider) ? provider as IntegrationProviderId : 'all',status:status && ['ready','syncing','partial','action_required','provider_error','no_data','disconnected'].includes(status)? status as IntegrationSourceFilters['status']:'all'});
+  },[queryState.location,initialArea,initialSourceId,initialWorkspaceTab,path]);
+
   function showToast(message: string, tone: Toast['tone'] = 'info') {
     const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
     setToasts((items) => [...items, { id, message, tone }]);
@@ -209,12 +227,21 @@ export function IntegrationsWorkspace({
       return;
     }
     if (actionId === 'reauth') {
+      const provider=resolvedRuntime?.catalog.providers.find(item=>item.provider===source.provider);
+      if(onBeginConnect&&provider){onBeginConnect(provider,source);return;}
+      if(mode==='runtime'){showToast('Kreator polaczenia niedostepny.', 'error');return;}
       setConnectProviderId(source.provider);
+      return; // Opening a wizard is a local UI action, not a completed reconnection.
+    }
+    if (!onSourceCommand) {
+      showToast(mode === 'storybook' ? 'Demonstracja: nie uruchomiono operacji zewnetrznej.' : 'Operacja jest niedostepna w tym widoku.', 'info');
+      return;
     }
     try {
       await onSourceCommand?.(source, actionId);
-      showToast(`${source.providerDisplayName}: rozpoczęto operację.`, 'success');
+      if (actionId === 'sync' || actionId === 'backfill') showToast(mode==='storybook'?'Demo: lokalna symulacja, bez zlecenia importu.':`${source.providerDisplayName}: serwer przyjal zlecenie. Wynik sprawdz w historii.`, 'info');
     } catch (cause) {
+      if (cause instanceof DOMException && cause.name === 'AbortError') return;
       setOperationNotice({
         message: cause instanceof Error ? cause.message : 'Nie udało się wykonać operacji.',
         title: 'Operacja nie powiodła się',
@@ -224,10 +251,16 @@ export function IntegrationsWorkspace({
     }
   }
 
+  function requestDisconnect(source:IntegrationRuntimeSource){
+    if(!onDisconnectConnection){showToast('Operacja odlaczenia niedostepna dla tego widoku.','info');return;}
+    setDisconnectSource(source);
+  }
+
   function openWorkspace(sourceId: string, tab: IntegrationWorkspaceTabId = 'overview') {
     setSelectedSourceId(sourceId);
     setWorkspaceTab(tab);
     setExpandedRunId(null);
+    queryState.update({sourceId,sourceTab:tab});
   }
 
   if (loading && !resolvedRuntime) {
@@ -283,26 +316,28 @@ export function IntegrationsWorkspace({
         </div>
       ) : null}
 
+      {selectedSourceId&&!selectedSource?<InlineNotice tone="warning" title="Wybrane zrodlo niedostepne" message="Zrodlo z adresu URL nie wystepuje w tej odpowiedzi. Nie wybrano innego zrodla automatycznie."/>:null}
       {selectedSource ? (
         <ProviderWorkspace
           activeTab={workspaceTab}
           expandedRunId={expandedRunId}
           logs={resolvedRuntime.logs.logs.filter((log) => log.integrationId === selectedSource.integrationId)}
-          onBack={() => setSelectedSourceId(null)}
-          onDisconnect={() => setDisconnectSource(selectedSource)}
+          onBack={() => {setSelectedSourceId(null);queryState.update({sourceId:null,sourceTab:null});}}
+          onDisconnect={() => requestDisconnect(selectedSource)}
           onExpandRun={setExpandedRunId}
           availableStreams={resolvedRuntime.catalog.providers.find((provider) => provider.provider === selectedSource.provider)?.supportedStreams ?? selectedSource.selectedStreams}
           onSourceCommand={executeSourceCommand}
-          onTabChange={setWorkspaceTab}
-          onUpdateScope={mode === 'storybook' || onUpdateSourceScope ? async (selectedStreams) => {
+          onTabChange={(tab) => {setWorkspaceTab(tab);queryState.update({sourceTab:tab});}}
+          onUpdateScope={selectedSource.canManage && (mode === 'storybook' || onUpdateSourceScope) ? async (selectedStreams) => {
             try {
               await onUpdateSourceScope?.(selectedSource, selectedStreams);
-              setScopeOverrides((current) => ({
+              if (mode === 'storybook') setScopeOverrides((current) => ({
                 ...current,
                 [selectedSource.integrationId]: selectedStreams,
               }));
-              showToast('Zakres danych integracji został zaktualizowany.', 'success');
+              showToast(mode==='storybook'?'Demo: zakres zmieniony lokalnie.':'Zakres danych integracji został zaktualizowany.', 'success');
             } catch (cause) {
+              if (cause instanceof DOMException && cause.name === 'AbortError') return;
               setOperationNotice({
                 message: cause instanceof Error ? cause.message : 'Nie udało się zapisać zakresu danych.',
                 title: 'Zmiana zakresu nie powiodła się',
@@ -322,13 +357,13 @@ export function IntegrationsWorkspace({
           completeness={resolvedRuntime.completeness}
           loading={loading}
           logs={resolvedRuntime.logs.logs}
-          onAreaChange={setArea}
-          onCatalogFiltersChange={setCatalogFilters}
-          onConnect={(provider) => setConnectProviderId(provider.provider)}
+          onAreaChange={(value) => {setArea(value);queryState.update({integrationArea:value,sourceId:null});}}
+          onCatalogFiltersChange={value=>{setCatalogFilters(value);queryState.update({integrationCatalogQuery:value.query||null,integrationCatalogCategory:value.category==='all'?null:value.category});}}
+          onConnect={(provider) => {if(onBeginConnect)onBeginConnect(provider);else if(mode==='storybook'&&onCreateConnection)setConnectProviderId(provider.provider);else showToast('Kreator niedostepny.','error');}}
           onOpenSource={openWorkspace}
           onReload={onReload}
-          onRequestDisconnect={setDisconnectSource}
-          onSourceFiltersChange={setSourceFilters}
+          onRequestDisconnect={requestDisconnect}
+          onSourceFiltersChange={(value) => {setSourceFilters(value);queryState.update({integrationQuery:value.query||null,integrationProvider:value.provider==='all'?null:value.provider,integrationStatus:value.status==='all'?null:value.status});}}
           runtimeStatus={resolvedRuntime.status}
           sourceFilters={sourceFilters}
           sources={filterIntegrationSources(resolvedRuntime.status.sources, sourceFilters)}
@@ -359,7 +394,7 @@ export function IntegrationsWorkspace({
         onProviderTest={onProviderTest}
         onSaved={() => {
           setConnectProviderId(null);
-          showToast('Konto zostało uwierzytelnione. Rozpoczynamy pierwszą synchronizację.', 'success');
+          showToast('Demo: zakonczono scenariusz lokalny, bez synchronizacji ani autoryzacji u dostawcy.', 'info');
           setArea('sources');
         }}
         provider={connectProvider}
@@ -376,11 +411,11 @@ export function IntegrationsWorkspace({
         onCancel={() => setDisconnectSource(null)}
         onConfirm={() => {
           const source = disconnectSource;
-          if (!source) return;
+          if (!source || !onDisconnectConnection) return;
           void (async () => {
             try {
-              await onDisconnectConnection?.(source);
-              showToast('Źródło zostało odłączone.', 'success');
+              await onDisconnectConnection(source);
+              showToast(mode==='storybook'?'Demo: lokalne odlaczenie.':'Źródło zostało odłączone.', 'success');
             } catch (cause) {
               setOperationNotice({
                 message: cause instanceof Error ? cause.message : 'Nie udało się odłączyć źródła.',
@@ -391,6 +426,7 @@ export function IntegrationsWorkspace({
             } finally {
               setDisconnectSource(null);
               setSelectedSourceId(null);
+              queryState.update({sourceId:null,sourceTab:null});
             }
           })();
         }}
@@ -1055,7 +1091,7 @@ function ProviderWorkspace({
           </div>
         </div>
         <div className="pd-int-workspace-header__actions">
-          <Button onClick={() => onSourceCommand(source, 'sync')} size="small">Synchronizuj</Button>
+          <Button disabled={!source.canManage} onClick={() => onSourceCommand(source, 'sync')} size="small">Synchronizuj</Button>
           <IntegrationActionsMenu
             items={[
               { id: 'config', label: 'Konfiguracja' },
@@ -1240,7 +1276,7 @@ function SyncTab({
             {expandedRun.impactNote ? (
               <div className="pd-int-stage-footer">
                 <p><strong>Wpływ:</strong> {expandedRun.impactNote}</p>
-                <Button onClick={() => onSourceCommand(source, 'sync')} size="small" variant="secondary">Ponów zakres</Button>
+                <Button disabled={!source.canManage} onClick={() => onSourceCommand(source, 'sync')} size="small" variant="secondary">Ponów zakres</Button>
               </div>
             ) : null}
           </>
@@ -1349,16 +1385,16 @@ function ConfigTab({
         ) : null}
 
         <div className="pd-int-config-actions">
-          {onUpdateScope ? <Button onClick={beginScopeEdit} size="small" variant="secondary">Edytuj zakres</Button> : null}
-          <Button onClick={() => onSourceCommand(source, 'sync')} size="small" variant="secondary">Synchronizuj teraz</Button>
-          <Button onClick={() => onSourceCommand(source, 'reauth')} size="small" variant="secondary">Połącz ponownie</Button>
+          {onUpdateScope ? <Button disabled={!source.canManage} onClick={beginScopeEdit} size="small" variant="secondary">Edytuj zakres</Button> : null}
+          <Button disabled={!source.canManage} onClick={() => onSourceCommand(source, 'sync')} size="small" variant="secondary">Synchronizuj teraz</Button>
+          <Button disabled={!source.canManage} onClick={() => onSourceCommand(source, 'reauth')} size="small" variant="secondary">Połącz ponownie</Button>
         </div>
       </div>
 
       <div className="pd-int-card pd-int-danger-zone">
         <span className="pd-int-card__eyebrow pd-int-card__eyebrow--danger">Strefa niebezpieczna</span>
         <p className="pd-int-muted-text">Odłączenie zatrzyma synchronizację. Historyczne dane pozostają dostępne w analizach.</p>
-        <Button onClick={onDisconnect} size="small" variant="danger">Odłącz integrację</Button>
+        <Button disabled={!source.canManage} onClick={onDisconnect} size="small" variant="danger">Odłącz integrację</Button>
       </div>
     </div>
   );

@@ -2,12 +2,14 @@ import { bffClient } from '../../shared/api/bffClient';
 import type { PapaAnswerRecord, PapaReportDefinitionRow } from '../../shared/api/bffClient';
 import type { PapaScreenContextSnapshot } from './ScreenContextProvider';
 import { contextItems } from './assistantModel';
+import { safeRandomUUID } from '../../shared/id/safeRandomUUID';
 
 export type AssistantGateway = Pick<typeof bffClient,
   'capturePapaContext' | 'generatePapaAnswer' | 'readPapaAnswers' | 'readPapaReportDefinitions'
   | 'upsertPapaReportDefinition' | 'createPapaReport' | 'readPapaReport' | 'getPapaReportDownload'
-  | 'commandPapaAction' | 'savePapaObservation'> & { readResource: (path: `/api/v1/${string}`) => Promise<unknown> };
+  | 'commandPapaAction' | 'savePapaObservation'> & { workspace?: Pick<typeof bffClient, 'readAssistantWorkspace' | 'commandAssistantWorkspace'>; runs?: Pick<typeof bffClient, 'startPapaRun' | 'watchPapaRun'>; readResource: (path: `/api/v1/${string}`) => Promise<unknown> };
 export const liveAssistantGateway: AssistantGateway = {
+  workspace: bffClient, runs: bffClient,
   capturePapaContext: input => bffClient.capturePapaContext(input),
   generatePapaAnswer: input => bffClient.generatePapaAnswer(input),
   readPapaAnswers: id => bffClient.readPapaAnswers(id),
@@ -25,6 +27,7 @@ export const liveAssistantGateway: AssistantGateway = {
 export function createDemoAssistantGateway(): AssistantGateway {
   const conversations = new Map<string, PapaAnswerRecord[]>();
   const snapshots = new Map<string, PapaScreenContextSnapshot>();
+  const threads = new Map<string,{id:string;kind:string;parentConversationId:string|null}>();
   const definitions = new Map<string, PapaReportDefinitionRow>();
   // Shape matches what papa.observations.read actually returns in
   // production (toPapaObservationRecord()'s PapaConversationRecord), not
@@ -38,7 +41,8 @@ export function createDemoAssistantGateway(): AssistantGateway {
     simulation: { description: 'Scenariusz budżetowy; brak prognozy popytu.' }, limits: { externalExecution: 'blocked' } }] });
   return {
     async capturePapaContext(input) {
-      const id = input.conversationId ?? crypto.randomUUID();
+      const id = input.conversationId ?? safeRandomUUID();
+      threads.set(id,{id,kind:input.parentConversationId&&input.captureReason!=='conversation-branch'?'case':'conversation',parentConversationId:input.parentConversationId??null});
       snapshots.set(id, input.snapshot as unknown as PapaScreenContextSnapshot);
       if (!conversations.has(id)) conversations.set(id, []);
       return { conversationId: id, snapshotId: String(input.snapshot.snapshotId) };
@@ -48,13 +52,13 @@ export function createDemoAssistantGateway(): AssistantGateway {
         const timer = setTimeout(resolve, 350);
         input.signal?.addEventListener('abort', () => { clearTimeout(timer); reject(new DOMException('Anulowano', 'AbortError')); }, { once: true });
       });
-      const id = input.caseThreadId ?? input.conversationId ?? crypto.randomUUID();
+      const id = input.caseThreadId ?? input.conversationId ?? safeRandomUUID();
       const snapshot = snapshots.get(id) ?? snapshots.get(input.conversationId ?? '');
       const items = contextItems(snapshot ?? null);
       const evidence = items.filter(item => item.kind === 'metric' || item.kind === 'evidence');
-      const user: PapaAnswerRecord = { messageId: crypto.randomUUID(), role: 'user', content: input.prompt,
+      const user: PapaAnswerRecord = { messageId: safeRandomUUID(), role: 'user', content: input.prompt,
         createdAt: now(), evidence: [], confidence: null, status: 'completed', riskLevel: 'low', approvalRequired: false, actionId: null, limitations: [] };
-      const record: PapaAnswerRecord = { ...user, messageId: crypto.randomUUID(), role: 'assistant',
+      const record: PapaAnswerRecord = { ...user, messageId: safeRandomUUID(), role: 'assistant',
         content: evidence.length ? `### Fakty\n${evidence.map(item => `- ${item.label}: ${item.value ?? item.description ?? 'Dowód do sprawdzenia'}`).join('\n')}\n\n### Interpretacja\nPorównaj zmianę kosztu ze zmianą sprzedaży w tym samym okresie.\n\n### Hipotezy\nZmiana miksu kanałów może wpływać na wynik. Wymaga potwierdzenia.\n\n### Rekomendacje\nSprawdź źródła i przygotuj wariant decyzji.\n\n### Następne kroki\nZapisz raport lub przejdź do propozycji działań.`
           : 'Brakuje dowodów liczbowych. Dodaj KPI lub źródła do kontekstu, zanim wyciągniesz wnioski.',
         evidence: evidence.map(item => ({ evidenceId: item.id, source: item.source ?? 'Dane demonstracyjne', collectedAt: now(), confidence: 0.7 })),
@@ -76,12 +80,12 @@ export function createDemoAssistantGateway(): AssistantGateway {
     async getPapaReportDownload() { throw new Error('Raport serwerowy jest niedostępny w demonstracji.'); },
     async commandPapaAction(input) { actionStatus = input.action === 'approve' ? 'approved' : input.action === 'reject' ? 'rejected' : 'validated'; return actions(); },
     async savePapaObservation(input) {
-      const conversationId = input.conversationId ?? crypto.randomUUID();
-      observations.unshift({ messageId: crypto.randomUUID(), content: input.content, confidence: 1, createdAt: now() });
+      const conversationId = input.conversationId ?? safeRandomUUID();
+      observations.unshift({ messageId: safeRandomUUID(), content: input.content, confidence: 1, createdAt: now() });
       return { conversationId, observationId: observations[0]!.messageId };
     },
     async readResource(path) {
-      if (path.includes('context-basket')) { const id = new URL(path, 'http://demo').searchParams.get('conversationId'); const records = [...snapshots].filter(([key]) => !id || key === id).map(([key, snapshot]) => ({ conversationId: key, snapshot })); return { records, latest: records.at(-1) ?? null }; }
+      if (path.includes('context-basket')) { const id = new URL(path, 'http://demo').searchParams.get('conversationId'); const records = [...snapshots].filter(([key]) => !id || key === id).map(([key, snapshot]) => ({ conversationId: key, snapshot })); return { records, latest: records.at(-1) ?? null, thread:id?threads.get(id)??null:null }; }
       if (path.includes('ai-actions')) return actions();
       if (path.includes('historia-i-pamiec')) return { timeline: [...snapshots].map(([id, snapshot]) => ({ eventId: id, description: snapshot.title, occurredAt: snapshot.capturedAt })) };
       if (path.includes('ustawienia-ai')) return { governance: { aiMode: 'demo', approvalRequiredForExternalEffects: true, externalEffects: { execute: 'blocked', rollback: 'blocked' } }, summary: { description: 'Historia demonstracji trwa do przeładowania strony.' } };

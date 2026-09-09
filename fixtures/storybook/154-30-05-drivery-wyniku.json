@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-154",
   "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/Drivery wyniku",
-  "sourceDocument": "07-centrum-dowodzenia/30-05-drivery-wyniku.md",
+  "sourceDocument": "07-centrum-dowodzenia/README.md",
   "screenId": "30.05",
   "components": [
     "BusinessScreen",

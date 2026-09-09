@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-274",
   "storyTitle": "80 Wsparcie marketingowe, decyzje i działania/Rekomendacje",
-  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/80-03-rekomendacje.md",
+  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/README.md",
   "screenId": "80.03",
   "components": [
     "PageHeader",

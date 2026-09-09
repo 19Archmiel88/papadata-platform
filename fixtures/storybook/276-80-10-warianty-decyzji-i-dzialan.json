@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-276",
   "storyTitle": "80 Wsparcie marketingowe, decyzje i działania/Warianty decyzji i działań",
-  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/80-10-warianty-decyzji-i-dzialan.md",
+  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/README.md",
   "screenId": "80.10",
   "components": [
     "PageHeader",

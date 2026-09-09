@@ -89,14 +89,14 @@ export async function collectRuntimeOperations() {
 
   for (const file of files.filter((item) => item.endsWith(".controller.ts"))) {
     const source = await readFile(file, "utf8");
-    const controllerPath = source.match(/@Controller\("([^"]*)"\)/u)?.[1] ?? "";
-    const decoratorPattern = /@(Get|Post|Put|Patch|Delete)(?:\("([^"]*)"\)|\(\))([\s\S]*?)(?=\n\s*(?:async\s+)?[A-Za-z_$][\w$]*\s*\()/gu;
+    const controllerPath = source.match(/@Controller\((["'])(.*?)\1\)/u)?.[2] ?? "";
+    const decoratorPattern = /@(Get|Post|Put|Patch|Delete)(?:\((["'])(.*?)\2\)|\(\))([\s\S]*?)(?=\n\s*(?:async\s+)?[A-Za-z_$][\w$]*\s*\()/gu;
 
     for (const match of source.matchAll(decoratorPattern)) {
       const method = match[1].toUpperCase();
-      const route = match[2] ?? "";
-      const decorators = match[3];
-      const operationId = decorators.match(/@OperationId\("([^"]+)"\)/u)?.[1];
+      const route = match[3] ?? "";
+      const decorators = match[4];
+      const operationId = decorators.match(/@OperationId\((["'])(.*?)\1\)/u)?.[2];
       if (!operationId) continue;
 
       const servicePath = normalizePath(`/${controllerPath}/${route}`)
@@ -184,8 +184,8 @@ function readAuth(decorators) {
   if (decorators.includes("@PublicEndpoint")) return "public";
   if (decorators.includes("@InfrastructureEndpoint")) return "infrastructure";
   if (decorators.includes("@ExternalProviderEndpoint")) return "external_provider";
-  if (decorators.includes('@RequireAuthLevel("step_up")')) return "step_up+capability";
-  if (decorators.includes('@RequireAuthLevel("mfa")')) return "mfa+capability";
+  if (/@RequireAuthLevel\((["'])step_up\1\)/u.test(decorators)) return "step_up+capability";
+  if (/@RequireAuthLevel\((["'])mfa\1\)/u.test(decorators)) return "mfa+capability";
   return "capability";
 }
 

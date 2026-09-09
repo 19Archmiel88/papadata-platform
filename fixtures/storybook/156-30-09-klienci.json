@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-156",
   "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/Klienci",
-  "sourceDocument": "07-centrum-dowodzenia/30-09-klienci.md",
+  "sourceDocument": "07-centrum-dowodzenia/README.md",
   "screenId": "30.09",
   "components": [
     "BusinessScreen",

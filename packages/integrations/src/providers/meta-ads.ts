@@ -66,6 +66,7 @@ export class MetaAdsAdapter implements IntegrationProviderAdapter {
     if (
       !requestedStreams.has("ad_spend")
       && !requestedStreams.has("attributed_conversions")
+      && !requestedStreams.has("ad_creative_performance")
     ) {
       return {
         records: [],
@@ -124,6 +125,9 @@ export class MetaAdsAdapter implements IntegrationProviderAdapter {
       const adSetId = readStringField(row, "adset_id") ?? "account";
       const adId = readStringField(row, "ad_id") ?? "aggregate";
       const externalId = `${campaignId}:${adSetId}:${adId}:${date}`;
+      if (requestedStreams.has("ad_creative_performance")) {
+        records.push({ externalId, observedAt, payload: row, stream: "ad_creative_performance" });
+      }
       if (requestedStreams.has("ad_spend")) {
         records.push({
           externalId,

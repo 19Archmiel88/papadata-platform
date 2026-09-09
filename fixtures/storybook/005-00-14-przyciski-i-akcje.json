@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-005",
   "storyTitle": "00 Fundamenty/05 Akcje i wejścia/Przyciski i akcje",
-  "sourceDocument": "01-fundamenty/00-14-przyciski-i-akcje.md",
+  "sourceDocument": "01-fundamenty/README.md",
   "screenId": null,
   "components": [
     "Button",

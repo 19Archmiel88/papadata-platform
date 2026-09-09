@@ -1,3 +1,4 @@
+import { normalizeCommerceDetails } from './commerce-normalization.js';
 import { normalizeCurrencyCode } from "@papadata/contracts";
 import type { MvpIntegrationCatalogProviderId } from "@papadata/contracts";
 import { isRecord, readNumberField, readStringField } from "./http.js";
@@ -26,6 +27,7 @@ export function normalizeProviderRecord(input: {
 }): CanonicalProviderRecord {
   const raw = unwrapPayload(input.payload);
   const normalized = normalizeStream(input.stream, raw, input.observedAt);
+  const commerce = normalizeCommerceDetails(input.providerId, input.stream, raw, input.observedAt);
   const missingFields = requiredFields(input.stream).filter(
     (field) => readPath(normalized.entity, field) === null,
   );
@@ -35,7 +37,7 @@ export function normalizeProviderRecord(input: {
     stream: input.stream,
     externalId: input.externalId,
     occurredAt: normalized.occurredAt,
-    entity: normalized.entity,
+    entity: { ...normalized.entity, ...(commerce ? { commerce } : {}) },
     quality: {
       status: missingFields.length === 0 ? "valid" : "partial",
       missingFields,
@@ -59,11 +61,15 @@ function normalizeStream(
       return normalizeInventory(payload, observedAt);
     case "ad_spend":
       return normalizeAdSpend(payload, observedAt);
+    case "ad_creative_performance":
+      return normalizeCreative(payload, observedAt);
     case "attributed_conversions":
       return normalizeAttributedConversion(payload, observedAt);
     case "traffic":
     case "events":
     case "conversions":
+    case "traffic_breakdown":
+    case "event_breakdown":
       return normalizeAnalytics(stream, payload, observedAt);
     default:
       return {
@@ -179,9 +185,10 @@ function normalizeAdSpend(payload: Readonly<Record<string, unknown>>, observedAt
       campaignId: firstString(payload, "campaign_id", "campaign.id", "campaignId"),
       campaignName: firstString(payload, "campaign_name", "campaign.name", "campaignName"),
       campaignStatus: firstString(payload, "campaign_status", "campaign.status", "campaignStatus"),
+      ...creativeMetadata(payload),
       currency: normalizeCurrencyCode(firstString(payload,
-        "account_currency", "customer.currency_code", "currency")),
-      spend: firstNumber(payload, "spend", "cost", "metrics.cost_micros", "costMicros"),
+        "account_currency", "customer.currency_code", "customer.currencyCode", "currency")),
+      spend: firstNumber(payload, "spend", "cost", "metrics.cost_micros", "metrics.costMicros", "costMicros"),
       impressions: firstNumber(payload, "impressions", "metrics.impressions"),
       clicks: firstNumber(payload, "clicks", "metrics.clicks"),
     },
@@ -200,6 +207,7 @@ function normalizeAttributedConversion(payload: Readonly<Record<string, unknown>
     payload,
     "conversion_value",
     "metrics.conversions_value",
+    "metrics.conversionsValue",
     "purchaseValue",
   ) ?? firstMetaPurchaseActionValue(payload, "action_values");
 
@@ -209,11 +217,31 @@ function normalizeAttributedConversion(payload: Readonly<Record<string, unknown>
       date: firstString(payload, "date", "date_start", "segments.date"),
       campaignId: firstString(payload, "campaign_id", "campaign.id", "campaignId"),
       currency: normalizeCurrencyCode(firstString(payload,
-        "account_currency", "customer.currency_code", "currency")),
+        "account_currency", "customer.currency_code", "customer.currencyCode", "currency")),
       conversions,
       conversionValue,
+      attributionModel: firstString(payload, "attribution_model", "attributionModel"),
+      attributionWindow: firstString(payload, "attribution_window", "attributionWindow"),
     },
   };
+}
+
+
+function creativeMetadata(payload: Readonly<Record<string, unknown>>) {
+  return {
+    adId: firstString(payload, 'ad_id', 'adGroupAd.ad.id', 'ad_group_ad.ad.id'),
+    adName: firstString(payload, 'ad_name', 'adGroupAd.ad.name', 'ad_group_ad.ad.name'),
+    adStatus: firstString(payload, 'ad_status', 'adGroupAd.status', 'ad_group_ad.status'),
+    adFormat: firstString(payload, 'ad_format', 'adGroupAd.ad.type', 'ad_group_ad.ad.type'),
+    headline: firstString(payload, 'creative.title', 'adGroupAd.ad.responsiveSearchAd.headlines.0.text', 'ad_group_ad.ad.responsive_search_ad.headlines.0.text'),
+    body: firstString(payload, 'creative.body', 'adGroupAd.ad.responsiveSearchAd.descriptions.0.text', 'ad_group_ad.ad.responsive_search_ad.descriptions.0.text'),
+    imageUrl: firstString(payload, 'creative.image_url', 'creative.thumbnail_url', 'adGroupAd.ad.imageAd.imageUrl', 'ad_group_ad.ad.image_ad.image_url'),
+    destinationUrl: firstString(payload, 'creative.object_url', 'adGroupAd.ad.finalUrls.0', 'ad_group_ad.ad.final_urls.0'),
+  };
+}
+function normalizeCreative(payload: Readonly<Record<string, unknown>>, observedAt: string) {
+  const spend = normalizeAdSpend(payload, observedAt), conversions = normalizeAttributedConversion(payload, observedAt);
+  return { occurredAt: spend.occurredAt, entity: { ...spend.entity, ...conversions.entity, ...creativeMetadata(payload) } };
 }
 
 
@@ -263,6 +291,15 @@ function normalizeAnalytics(
       campaign: firstString(payload, "sessionCampaignName", "campaign", "firstUserCampaignName"),
       landingPage: firstString(payload, "landingPagePlusQueryString", "landingPage"),
       eventName: firstString(payload, "eventName"),
+      device: firstString(payload, "deviceCategory", "device"),
+      country: firstString(payload, "country"),
+      propertyTimezone: firstString(payload, "propertyTimezone"),
+      propertyId: firstString(payload, "propertyId"),
+      reportDimensions: firstArray(payload, "reportDimensions"),
+      reportLimitations: firstArray(payload, "reportLimitations"),
+      subjectToThresholding: payload.subjectToThresholding === true,
+      dataLossFromOtherRow: payload.dataLossFromOtherRow === true,
+      sampled: payload.sampled === true,
       sessions: firstNumber(payload, "sessions"),
       users: firstNumber(payload, "totalUsers", "activeUsers", "users"),
       newUsers: firstNumber(payload, "newUsers"),
@@ -282,9 +319,12 @@ function requiredFields(stream: string): readonly string[] {
     case "products": return ["productId"];
     case "inventory": return ["productId"];
     case "refunds": return ["refundId"];
+    case "ad_creative_performance": return ["date", "campaignId", "adId", "currency", "spend"];
     case "ad_spend": return ["date", "campaignId"];
     case "attributed_conversions": return ["date", "campaignId"];
     case "traffic": return ["date", "channel", "sessions", "users"];
+    case "traffic_breakdown": return ["date", "channel", "device", "country", "sessions"];
+    case "event_breakdown": return ["date", "eventName", "channel", "device", "country", "eventCount"];
     case "events": return ["date", "eventName", "eventCount"];
     case "conversions": return ["date", "conversions"];
     default: return [];

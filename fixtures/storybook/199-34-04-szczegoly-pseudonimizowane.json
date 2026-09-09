@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-199",
   "storyTitle": "34 Klienci/Szczegóły pseudonimizowane",
-  "sourceDocument": "11-klienci/34-04-szczegoly-pseudonimizowane.md",
+  "sourceDocument": "11-klienci/README.md",
   "screenId": "34.04",
   "components": [
     "PageHeader",

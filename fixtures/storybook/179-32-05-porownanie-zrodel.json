@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-179",
   "storyTitle": "32 Zamówienia/Porównanie źródeł",
-  "sourceDocument": "09-zamowienia/32-05-porownanie-zrodel.md",
+  "sourceDocument": "09-zamowienia/README.md",
   "screenId": "32.05",
   "components": [
     "PageHeader",

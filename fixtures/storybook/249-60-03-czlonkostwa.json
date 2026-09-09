@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-249",
   "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Członkostwa",
-  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/60-03-czlonkostwa.md",
+  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/README.md",
   "screenId": "60.03",
   "components": [
     "PageHeader",

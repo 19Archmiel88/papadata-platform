@@ -9,10 +9,9 @@ export type SettingsTabId =
   | 'ws-compliance'
   | 'audit-p0';
 
-// `role` is a plain string, not the fixture's demo-only union, because a
-// runtime-backed member list (see SettingsPage/settingsRuntimeAdapter) uses
-// the real backend role names ("Tenant Owner", "Workspace Admin", ...),
-// which do not match the demo seed's ADMIN/ANALYST/... labels below.
+// `role` is a plain string because the real backend role names
+// ("Tenant Owner", "Workspace Admin", ...) do not match the demo seed's
+// ADMIN/ANALYST/... labels below.
 export type SettingsTeamMember = {
   readonly id: string;
   readonly name: string;

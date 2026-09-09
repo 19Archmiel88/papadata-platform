@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-271",
   "storyTitle": "80 Wsparcie marketingowe, decyzje i działania/Pomiar",
-  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/80-07-pomiar.md",
+  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/README.md",
   "screenId": "80.07",
   "components": [
     "PageHeader",

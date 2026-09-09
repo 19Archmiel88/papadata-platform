@@ -14,7 +14,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 const render = (props: Parameters<typeof SavedReportsScreen>[0] = {}) => (
   <StorybookProductShellFrame activePath="/app/papa">
-    <SavedReportsScreen persistenceKey={null} {...props} />
+    <SavedReportsScreen data={createReportsDemo()} build={async config=>buildReportSnapshot(config)} persistenceKey={null} {...props} />
   </StorybookProductShellFrame>
 );
 export const Library: Story = {

@@ -1,77 +1,25 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
-
-import {
-  SubscriptionBillingScreen,
-} from '../../screens/subscription-billing/SubscriptionBillingScreen';
-import type {
-  SubscriptionBillingScreenData,
-  SubscriptionBillingViewState,
-} from '../../screens/subscription-billing/SubscriptionBillingScreen.model';
-import {
-  bffClient,
-  BffProblem,
-} from '../../runtime/shared/api/bffClient';
-import {
-  loadSubscriptionBillingRuntimeData,
-} from './subscriptionBillingRuntimeAdapter';
-
-type RuntimeState = {
-  readonly data: SubscriptionBillingScreenData | null;
-  readonly problem: string | null;
-  readonly viewState: SubscriptionBillingViewState;
-};
-
-const initialState: RuntimeState = {
-  data: null,
-  problem: null,
-  viewState: 'loading',
-};
-
-export function SubscriptionBillingPage() {
-  const [state, setState] = useState<RuntimeState>(initialState);
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  useEffect(() => {
-    let active = true;
-    setState(initialState);
-
-    loadSubscriptionBillingRuntimeData(bffClient)
-      .then((result) => {
-        if (!active) return;
-        setState({
-          data: result.data,
-          problem: null,
-          viewState: result.partial ? 'partial' : 'ready',
-        });
-      })
-      .catch((cause: unknown) => {
-        if (!active) return;
-        const forbidden = cause instanceof BffProblem && cause.status === 403;
-        setState({
-          data: null,
-          problem: forbidden
-            ? 'Twoja rola nie ma capability billing.read wymaganej do wyświetlenia danych rozliczeniowych.'
-            : cause instanceof Error
-              ? cause.message
-              : 'Nie udało się pobrać danych rozliczeniowych.',
-          viewState: forbidden ? 'forbidden' : 'error',
-        });
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [refreshKey]);
-
-  return (
-    <SubscriptionBillingScreen
-      data={state.data}
-      onReload={() => setRefreshKey((current) => current + 1)}
-      problem={state.problem}
-      state={state.viewState}
-    />
-  );
+import { useEffect, useRef } from 'react';
+import type { BillingSessionCommand } from '@papadata/contracts';
+import { bffClient } from '../../runtime/shared/api/bffClient';
+import { useAuthSessionRuntimeContext } from '../../runtime/shared/auth/authSessionRuntime';
+import { useRemoteResource } from '../../runtime/shared/data/useRemoteResource';
+import { useProductQuery } from '../../runtime/app/routing/productRoutes';
+import { BillingOperationsScreen } from '../../screens/platform-operations/BillingOperationsScreen';
+export function SubscriptionBillingPage(){
+ const runtime=useAuthSessionRuntimeContext(),scope=`${runtime.session?.activeTenantId}:${runtime.session?.activeWorkspaceId}:${runtime.session?.userId}`;
+ return <BillingRuntime key={scope} scope={scope}/>;
+}
+function BillingRuntime({scope}:{scope:string}){
+ const runtime=useAuthSessionRuntimeContext(),{params,update,location}=useProductQuery(),cursor=params.get('invoiceAfter')??undefined;
+ const active=useRef<string|null>(scope);active.current=scope;
+ useEffect(()=>{active.current=scope;return()=>{active.current=null;};},[scope]);
+ const resource=useRemoteResource(`${scope}:${cursor??''}`,signal=>bffClient.readBillingOperations(cursor,signal));
+ async function session(input:BillingSessionCommand){
+  const result=await runtime.runAuthenticatedCommand(()=>bffClient.createBillingSession(input),location);
+  if(active.current!==scope)throw new Error('Workspace changed. Open billing in the active workspace.');
+  const url=new URL(result.url);
+  if(url.protocol!=='https:'||url.username||url.password||!['checkout.stripe.com','billing.stripe.com'].includes(url.hostname))throw new Error('Untrusted billing redirect.');
+  window.location.assign(url.href);
+ }
+ return <BillingOperationsScreen data={resource.data} state={resource.state} problem={resource.problem} onReload={()=>void resource.reload()} onSession={runtime.session?.capabilities.includes('billing.manage')?session:undefined} onNextInvoices={resource.data?.invoiceCursor?()=>update({billingView:'invoices',invoiceAfter:resource.data?.invoiceCursor??null}):undefined} onFirstInvoices={cursor?()=>update({invoiceAfter:null}):undefined}/>;
 }

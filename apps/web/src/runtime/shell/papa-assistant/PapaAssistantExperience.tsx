@@ -1,13 +1,16 @@
+import { cleanProductContextPath, productContextKeys } from '@papadata/contracts';
 import { useEffect, useId, useRef, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import {AssistantMarkdown} from './AssistantMarkdown';
 import { Button, Dialog, Icon } from '../../../design-system';
 import { useShellNavigate } from '../app-shell/ShellNavigationContext';
 import { usePapaAssistantRuntime } from './PapaAssistantRuntimeContext';
 import { usePapaScreenContext } from './ScreenContextProvider';
-import { assistantModes, assistantViews, canReviewAction, contextItems, isAssistantPath, isRecord, parseActions, parseHistory, parseLab, parseObservations, parseProposals, selectContext } from './assistantModel';
+import { assistantModes, assistantViews, canReviewAction, contextItems, isAssistantPath, parseActions, parseLab, parseObservations, parseProposals, selectContext } from './assistantModel';
 import type { ActionProposal, LabResult, ObservationRecord, ProposalRecord } from './assistantModel';
 import type { PapaAssistantOpenRequest } from './PapaAssistantRuntimeContext';
+import { contextualProductLink,productRoutes,useProductQuery } from '../../app/routing/productRoutes';
+import { safeRandomUUID } from '../../shared/id/safeRandomUUID';
+import { AssistantHistoryPanel, AssistantMemoryPanel, AssistantFilesPanel, AssistantPolicyPanel, AssistantDiagnosticsPanel, AssistantNotificationsPanel, AssistantExportPanel } from './AssistantWorkspacePanels';
 import './assistant-experience.css';
 
 export function PapaAssistantExperience({ compact = false, onExpand, request }: {
@@ -16,6 +19,9 @@ export function PapaAssistantExperience({ compact = false, onExpand, request }: 
   const runtime = usePapaAssistantRuntime();
   const { currentContext, captureCurrentScreenContext } = usePapaScreenContext();
   const navigate = useShellNavigate();
+  const query=useProductQuery();
+  const restoredLink=useRef<string|null>(null);
+  const promptLink=useRef<string|null>(null);
   const { view, setView } = runtime;
   const [resetOpen, setResetOpen] = useState(false);
   const [reportName, setReportName] = useState('Analiza biznesowa');
@@ -35,6 +41,32 @@ export function PapaAssistantExperience({ compact = false, onExpand, request }: 
     setView(request.mode === 'report' || request.action === 'report' ? 'Raporty' : 'Rozmowa');
     if (request.action === 'analyze-screen') { runtime.setDraft(assistantModes[0].prompt); textarea.current?.focus(); }
   }, [request, sourceIsAssistant, captureCurrentScreenContext]);
+  const linkedId=query.params.get('conversationId'),linkedCase=query.params.get('caseThreadId');
+  const linkedKey=JSON.stringify([linkedId,linkedCase]);
+  useEffect(()=>{
+    if(compact||!linkedId||runtime.busy||restoredLink.current===linkedKey)return;
+    if(!/^[a-f0-9-]{36}$/i.test(linkedId)||(linkedCase&&!/^[a-f0-9-]{36}$/i.test(linkedCase)))return;
+    restoredLink.current=linkedKey;
+    const currentCase=runtime.selectedElementId?runtime.caseThreadIds[runtime.selectedElementId]??null:null;
+    if(runtime.conversationId!==linkedId||currentCase!==linkedCase)void runtime.restoreConversation(linkedId,linkedCase);
+  },[compact,linkedKey,runtime.busy]);
+  useEffect(()=>{
+    const prompt=query.params.get('prompt');
+    const requestedRestored=!linkedId||(runtime.conversationId===linkedId&&(!linkedCase||Object.values(runtime.caseThreadIds).includes(linkedCase)));
+    if(!compact&&prompt&&!runtime.busy&&requestedRestored&&promptLink.current!==prompt){
+      promptLink.current=prompt;
+      if(!runtime.draft.trim()){runtime.setDraft(prompt.slice(0,7000));setView('Rozmowa');}
+    }
+  },[compact,query.location,runtime.busy]);
+  const conversationLink=(target:string)=>{
+    const source=new URL(cleanProductContextPath(runtime.snapshot?.route)??'/app/assistant',window.location.origin);
+    for(const item of runtime.snapshot?.filters??[]){if((productContextKeys as readonly string[]).includes(item.label)&&item.value)source.searchParams.set(item.label,String(item.value));}
+    for(const key of ['from','to','timezone'] as const){const value=runtime.snapshot?.dateRange?.[key];if(value)source.searchParams.set(key,value);}
+    return contextualProductLink(target,{conversationId:runtime.conversationId,caseThreadId:runtime.selectedElementId?runtime.caseThreadIds[runtime.selectedElementId]??null:null,
+      from:runtime.snapshot?.dateRange?.from,to:runtime.snapshot?.dateRange?.to,timezone:runtime.snapshot?.dateRange?.timezone,
+      returnTo:cleanProductContextPath(source.pathname+source.search)??'/app/assistant'});
+  };
+  const clearLinkedConversation=()=>query.update({conversationId:null,caseThreadId:null,prompt:null});
   const snapshot = runtime.snapshot;
   const selectedMessages = runtime.messages.filter(message => (message.elementId ?? null) === runtime.selectedElementId);
   const answerEvidence = [...new Map(selectedMessages.flatMap(m => m.evidence).map(item => [item.evidenceId, item])).values()];
@@ -75,15 +107,17 @@ export function PapaAssistantExperience({ compact = false, onExpand, request }: 
         </div>}
         <ol className="pd-assistant__messages" aria-label="Historia rozmowy">{selectedMessages.map(message => <li key={message.messageId} className={`pd-assistant__message pd-assistant__message--${message.role}`}>
           <header><strong>{message.role === 'user' ? 'Ty' : message.role === 'assistant' ? 'Papa · AI' : 'Status'}</strong><time dateTime={message.createdAt}>{new Date(message.createdAt).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })}</time></header>
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
+          <AssistantMarkdown>{message.content}</AssistantMarkdown>
           {message.role === 'assistant' && <footer>
             <span className="pd-assistant__badge">{message.status === 'blocked' ? 'Ograniczona odpowiedź' : message.evidence.length ? 'Odpowiedź ze źródłami' : 'Brak źródeł odpowiedzi'}</span>
             {message.limitations.map((text, i) => <p key={i}>{text}</p>)}
             <div className="pd-assistant__actions"><Button variant="ghost" size="small" onClick={() => setView('Dowody')}>Sprawdź dowody ({message.evidence.length})</Button>
             <Button variant="secondary" size="small" onClick={() => { setReportName(snapshot?.title ? `Raport: ${snapshot.title}` : 'Analiza biznesowa'); setView('Raporty'); }}>Przygotuj raport</Button>
+            {!runtime.demo && runtime.conversationId && <Button variant="secondary" size="small" onClick={() => navigate(conversationLink(productRoutes.decisions))}>Przygotuj decyzję z kontekstem</Button>}
             {message.approvalRequired && <Button variant="secondary" size="small" onClick={() => setView('Działania')}>Przejrzyj propozycję</Button>}</div>
           </footer>}
         </li>)}</ol>
+        {!!runtime.partialText && <div className="pd-assistant__stream" role="region" aria-label="Robocza odpowiedz AI"><h3>Odpowiedz robocza - jeszcze bez weryfikacji dowodow</h3><p>{runtime.partialText}</p><small>Tekst czesciowy nie jest zakonczona odpowiedzia ani potwierdzeniem wykonania akcji.</small></div>}
       </>}
       {view === 'Kontekst' && <div className="pd-assistant__section">
         <div className="pd-assistant__section-head"><div><h2>Koszyk kontekstu</h2><p>Wybierz, które elementy dołączyć do kolejnego pytania.</p></div>
@@ -93,11 +127,11 @@ export function PapaAssistantExperience({ compact = false, onExpand, request }: 
         {!items.length && <p className="pd-assistant__empty">Ten ekran nie udostępnił elementów analizy. Wybierz ekran z KPI lub dodaj źródło.</p>}
         <ul className="pd-assistant__context-list">{items.map(item => <li key={item.id}><label><input type="checkbox" checked={!runtime.excluded.includes(item.id)} disabled={runtime.busy} onChange={() => runtime.toggleContext(item.id)} /><span><strong>{item.label}</strong><small>{item.source ?? 'Źródło nieopisane'} · {item.value ?? item.description ?? item.kind}</small></span></label>
           <Button size="small" variant="ghost" disabled={runtime.excluded.includes(item.id) || runtime.busy} onClick={() => { runtime.selectElement(item.id); setView('Rozmowa'); }}>Zapytaj o element</Button></li>)}</ul>
-        <p className="pd-assistant__note">Dołączanie plików nie jest jeszcze dostępne. Papa otrzymuje wybrane dane z ekranu.</p>
+        <AssistantFilesPanel />
       </div>}
       {view === 'Dowody' && <div className="pd-assistant__section"><h2>Dowody i ograniczenia</h2><p>Źródła przypisane przez serwer do odpowiedzi. Brak dowodu nie oznacza potwierdzenia hipotezy.</p>
         {!answerEvidence.length ? <p className="pd-assistant__empty">Brak dowodów w bieżącej rozmowie.</p> : <ul className="pd-assistant__evidence">{answerEvidence.map(item => <li key={item.evidenceId}><strong>{items.find(i => i.id === item.evidenceId)?.label ?? item.source}</strong><p>{item.source}</p><small>Zebrano: {new Date(item.collectedAt).toLocaleString('pl-PL')}</small><code>{item.evidenceId}</code></li>)}</ul>}
-        {snapshot && <Button variant="secondary" onClick={() => navigate(snapshot.route)}>Wróć do źródłowego ekranu</Button>}
+        {snapshot && <Button variant="secondary" onClick={() => navigate(conversationLink(snapshot.route))}>Wróć do źródłowego ekranu</Button>}
       </div>}
       {view === 'Raporty' && <div className="pd-assistant__section"><div className="pd-assistant__section-head"><div><h2>Raporty i artefakty</h2><p>Zachowaj analizę wraz z okresem i wybranymi źródłami.</p></div><Button variant="ghost" disabled={runtime.busy} onClick={() => void runtime.refreshReports()}>Odśwież bibliotekę</Button></div>
         <form className="pd-assistant__report-form" onSubmit={e => { e.preventDefault(); void runtime.saveReport(reportName); }}><label>Nazwa raportu<input required maxLength={160} value={reportName} onChange={e => setReportName(e.target.value)} /></label><Button type="submit" disabled={runtime.busy || !snapshot}>Zapisz szkic</Button></form>
@@ -105,28 +139,34 @@ export function PapaAssistantExperience({ compact = false, onExpand, request }: 
           <Button variant="ghost" disabled={!snapshot} onClick={() => snapshot && downloadContextCsv(selectContext(snapshot, runtime.excluded))}>Pobierz CSV kontekstu</Button></div>
         {runtime.demo && <p className="pd-assistant__note">W demonstracji szkice są lokalne. Generowanie PDF/XLSX jest dostępne po podłączeniu serwera raportów.</p>}
         <h3>Biblioteka szkiców Papa</h3>{!runtime.definitions.length && <p>Brak wczytanych szkiców. Zapisz analizę lub odśwież bibliotekę.</p>}
-        {runtime.definitions.map(report => <details className="pd-assistant__artifact" key={report.id}><summary>{report.name} · {report.status === 'draft' ? 'Szkic' : report.status}</summary><ReactMarkdown remarkPlugins={[remarkGfm]}>{report.description ?? 'Brak opisu'}</ReactMarkdown></details>)}
+        {runtime.definitions.map(report => <details className="pd-assistant__artifact" key={report.id}><summary>{report.name} · {report.status === 'draft' ? 'Szkic' : report.status}</summary><AssistantMarkdown>{report.description ?? 'Brak opisu'}</AssistantMarkdown></details>)}
         {!!runtime.reports.length && <h3>Zadania generowania</h3>}{runtime.reports.map(report => <div className="pd-assistant__artifact" key={report.id}><strong>{report.format.toUpperCase()} · {report.status}</strong><p>{report.date_from} — {report.date_to}</p><Button variant="secondary" disabled={runtime.busy} onClick={() => void runtime.downloadReport(report)}>Sprawdź i pobierz</Button></div>)}
-        <Button variant="ghost" onClick={() => navigate('/app/papa')}>Otwórz Zapisane raporty</Button>
+        <Button variant="ghost" onClick={() => navigate(conversationLink(productRoutes.reports))}>Otwórz Zapisane raporty</Button>
       </div>}
       {view === 'Laboratorium' && <Laboratorium />}
       {view === 'Propozycje' && <Propozycje />}
       {view === 'Obserwacje' && <Obserwacje />}
       {view === 'Działania' && <ActionReview />}
-      {view === 'Historia' && <History />}
-      {view === 'Ustawienia AI' && <Governance />}
+      {view === 'Historia' && <AssistantHistoryPanel />}
+      {view === 'Pamięć' && <AssistantMemoryPanel />}
+      {view === 'Pochodzenie' && <AssistantDiagnosticsPanel />}
+      {view === 'Powiadomienia' && <AssistantNotificationsPanel />}
+      {view === 'Eksport / MCP' && <AssistantExportPanel />}
+      {view === 'Ustawienia AI' && <AssistantPolicyPanel />}
     </div>
     <div className="pd-assistant__status" role="status" aria-live="polite">{runtime.activity || (runtime.demo ? 'Tryb demonstracyjny · bez zmian w systemach zewnętrznych' : 'Papa korzysta z danych i uprawnień aktywnego workspace’u.')}</div>
     {runtime.error && <p className="pd-assistant__error" role="alert">{runtime.error}</p>}
-    {view === 'Rozmowa' && <form className="pd-assistant__composer" onSubmit={e => { e.preventDefault(); void runtime.submit(); }}>
-      <label htmlFor={composerId}>Twoje pytanie</label><textarea id={composerId} ref={textarea} value={runtime.draft} maxLength={12000} rows={3}
+    {!compact && linkedId && runtime.error && !runtime.busy && <Button variant="secondary" onClick={()=>void runtime.restoreConversation(linkedId,linkedCase)}>Ponownie otwórz rozmowę z linku</Button>}
+    {runtime.runId && !runtime.busy && <div className="pd-assistant__run-controls"><Button variant="secondary" onClick={()=>void runtime.resumeRun()}>Odczytaj / wznów odbiór zadania</Button><Button variant="ghost" onClick={runtime.stop}>Zatrzymaj zadanie na serwerze</Button><Button variant="ghost" onClick={runtime.dismissRun}>Odrzuć lokalny podgląd</Button></div>}
+    <form className="pd-assistant__composer" onSubmit={e => { e.preventDefault(); setView('Rozmowa'); void runtime.submit(); }}>
+      <label htmlFor={composerId}>Twoje pytanie</label><textarea id={composerId} ref={textarea} value={runtime.draft} maxLength={7000} rows={3}
         placeholder="Co zmieniło wynik i od czego zacząć?" onChange={e => runtime.setDraft(e.target.value)}
-        onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); void runtime.submit(); } }} />
+        onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); setView('Rozmowa'); void runtime.submit(); } }} />
       <div><small>Ctrl/⌘ + Enter · Odpowiedź AI może wymagać weryfikacji.</small>
-        {runtime.busy ? <Button variant="secondary" onClick={runtime.stop}>Przerwij oczekiwanie</Button> : <Button type="submit" disabled={!runtime.draft.trim() || !snapshot}>Wyślij pytanie</Button>}</div>
-    </form>}
+        {runtime.busy ? <Button variant="secondary" onClick={runtime.stop}>Przerwij oczekiwanie</Button> : <Button type="submit" disabled={!runtime.draft.trim() || !snapshot || !!runtime.runId}>Wyślij pytanie</Button>}</div>
+    </form>
     <Dialog closeOnEscape open={resetOpen} onOpenChange={setResetOpen} title="Rozpocząć nową rozmowę?" description="Bieżąca historia pozostaje na serwerze. Nowy wątek zachowa wybrany kontekst." dismissible modal>
-      <div className="pd-assistant__actions"><Button onClick={() => { runtime.reset(); setResetOpen(false); setView('Rozmowa'); }}>Rozpocznij nową</Button><Button variant="secondary" disabled={!runtime.conversationId} onClick={() => { runtime.reset(true); setResetOpen(false); setView('Rozmowa'); }}>Utwórz odgałęzienie</Button><Button variant="ghost" onClick={() => setResetOpen(false)}>Anuluj</Button></div>
+      <div className="pd-assistant__actions"><Button onClick={() => { clearLinkedConversation(); runtime.reset(); setResetOpen(false); setView('Rozmowa'); }}>Rozpocznij nową</Button><Button variant="secondary" disabled={!runtime.conversationId} onClick={() => { clearLinkedConversation(); runtime.reset(true); setResetOpen(false); setView('Rozmowa'); }}>Utwórz odgałęzienie</Button><Button variant="ghost" onClick={() => setResetOpen(false)}>Anuluj</Button></div>
     </Dialog>
   </section>;
 }
@@ -157,7 +197,7 @@ function ActionReview() {
     setPending(true); setNotice('');
     try {
       await runtime.runCommand(() => runtime.gateway.commandPapaAction({ action: kind, actionProposalId: action.id, reason,
-        idempotencyKey: `papa-${action.id}-${kind}-${crypto.randomUUID()}` }));
+        idempotencyKey: `papa-${action.id}-${kind}-${safeRandomUUID()}` }));
       setNotice(kind === 'approve' ? 'Propozycja zatwierdzona. Zmiana zewnętrzna nie została wykonana.' : kind === 'reject' ? 'Propozycja odrzucona.' : 'Walidacja zakończona. Sprawdź aktualny status.');
       setConsent(false); resource.reload();
     } catch (error) { setNotice(error instanceof Error ? error.message : 'Operacja nie powiodła się.'); }
@@ -230,7 +270,7 @@ function Obserwacje() {
     setPending(true); setNotice('');
     try {
       await runtime.runCommand(() => runtime.gateway.savePapaObservation({
-        content: content.trim(), conversationId: runtime.conversationId, idempotencyKey: `papa-observation-${crypto.randomUUID()}`,
+        content: content.trim(), conversationId: runtime.conversationId, idempotencyKey: `papa-observation-${safeRandomUUID()}`,
       }));
       setContent(''); setNotice('Zapisano obserwację.'); resource.reload();
     } catch (cause) { setNotice(cause instanceof Error ? cause.message : 'Nie udało się zapisać obserwacji.'); }
@@ -247,33 +287,6 @@ function Obserwacje() {
     {resource.loading && <p role="status">Wczytywanie obserwacji…</p>}{error && <p role="alert">{error}</p>}
     {!resource.loading && !error && !observations.length && <p className="pd-assistant__empty">Brak zapisanych obserwacji.</p>}
     <ul className="pd-assistant__timeline">{observations.map(item => <li key={item.id}><strong>{item.content}</strong><time dateTime={item.createdAt}>{new Date(item.createdAt).toLocaleString('pl-PL')}</time></li>)}</ul>
-  </div>;
-}
-function History() {
-  const runtime = usePapaAssistantRuntime();
-  const resource = useResource('/api/v1/papa/historia-i-pamiec-papa?limit=50');
-  const basket = useResource('/api/v1/papa/context-basket?limit=50');
-  const threads = isRecord(basket.data) && Array.isArray(basket.data.records) ? [...new Map(basket.data.records.flatMap(row => isRecord(row) && typeof row.conversationId === 'string' && isRecord(row.snapshot) && typeof row.snapshot.title === 'string' ? [[row.conversationId, { id: row.conversationId, title: row.snapshot.title }] as const] : [])).values()] : [];
-  let events: ReturnType<typeof parseHistory> = []; let error = resource.error;
-  try { if (resource.data) events = parseHistory(resource.data); } catch (cause) { error = String(cause); }
-  return <div className="pd-assistant__section"><div className="pd-assistant__section-head"><h2>Historia workspace’u</h2><Button variant="ghost" onClick={resource.reload}>Odśwież historię</Button></div>
-    <p>Bieżąca rozmowa: <code>{runtime.conversationId ?? 'Nowy wątek'}</code></p>{runtime.parentConversationId && <p>Odgałęzienie rozmowy: <code>{runtime.parentConversationId}</code></p>}
-    {resource.loading && <p role="status">Wczytywanie historii…</p>}{error && <p role="alert">{error}</p>}
-    {!resource.loading && !error && !events.length && <p className="pd-assistant__empty">Brak zapisanych zdarzeń.</p>}
-    <div className="pd-assistant__actions">{threads.map(thread => <Button key={thread.id} variant="secondary" disabled={runtime.busy} onClick={() => void runtime.restoreConversation(thread.id)}>Otwórz: {thread.title}</Button>)}</div>
-    <ol className="pd-assistant__timeline">{events.map(event => <li key={event.eventId}><strong>{event.description}</strong><time dateTime={event.occurredAt}>{new Date(event.occurredAt).toLocaleString('pl-PL')}</time></li>)}</ol>
-    <p className="pd-assistant__note">Historia pokazuje zdarzenia kontekstu. Usuwanie pamięci i zarządzanie retencją wymagają osobnych operacji serwerowych.</p>
-  </div>;
-}
-function Governance() {
-  const resource = useResource('/api/v1/papa/ustawienia-ai-i-governance');
-  const navigate = useShellNavigate();
-  return <div className="pd-assistant__section"><h2>Zasady pracy Papa</h2><p>Odczyt zasad aktywnego workspace’u. Uprawnienia i limity egzekwuje serwer.</p>
-    {resource.loading && <p role="status">Wczytywanie zasad…</p>}{resource.error && <p role="alert">{resource.error}</p>}
-    {resource.data !== null && <details className="pd-assistant__artifact"><summary>Aktywna polityka i wykorzystanie</summary><pre>{displayValue(resource.data)}</pre></details>}
-    <ul><li>Odpowiedź powstaje z wybranego kontekstu i może zawierać błędy.</li><li>Dane i historia są ograniczone do workspace’u.</li><li>Brak dowodów może ograniczyć odpowiedź.</li><li>Propozycja działania wymaga osobnego zatwierdzenia.</li></ul>
-    <Button variant="secondary" onClick={() => navigate('/app/settings/organizacja')}>Otwórz ustawienia workspace’u</Button>
-    <p className="pd-assistant__note">Eksport przez MCP i zapis ustawień pamięci nie mają podłączonej operacji w tym widoku.</p>
   </div>;
 }
 function displayValue(value: unknown): string { return value === undefined || value === null ? 'Brak danych' : typeof value === 'string' ? value : JSON.stringify(value, null, 2); }

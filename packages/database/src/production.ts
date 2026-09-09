@@ -553,6 +553,7 @@ export class IntegrationRepository {
         const result = await client.query<Record<string, unknown>>(
           `select
              canonical_record_id as id,
+             connection_id,
              provider_id,
              stream,
              external_id,
@@ -614,6 +615,9 @@ export class IntegrationRepository {
           `with scoped_records as (
              select
                canonical_record_id as id,
+               connection_id,
+               ingested_at,
+               updated_at,
                provider_id,
                stream,
                external_id,
@@ -3111,11 +3115,17 @@ export class AssistantConversationRepository {
           ],
         );
 
+        const threadResult = input.conversationId ? await client.query<Record<string,unknown>>(
+          `select assistant_thread_id::text as id, thread_kind as kind, parent_thread_id::text as "parentConversationId"
+           from app.assistant_threads where tenant_id=$1 and workspace_id=$2 and assistant_thread_id=$3`,
+          [input.tenantId,input.workspaceId,input.conversationId],
+        ) : null;
         const records = result.rows;
         const latest = records[0] ?? null;
         const latestSnapshot = latest?.snapshot;
 
         return {
+          thread: threadResult?.rows[0] ?? null,
           contextItems: extractAssistantContextItems(latestSnapshot),
           latest,
           pageInfo: {

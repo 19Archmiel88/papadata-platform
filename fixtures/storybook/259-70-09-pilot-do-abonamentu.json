@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-259",
   "storyTitle": "70 Subskrypcja i płatności/Pilot do abonamentu",
-  "sourceDocument": "17-subskrypcja-i-platnosci/70-09-pilot-do-abonamentu.md",
+  "sourceDocument": "17-subskrypcja-i-platnosci/README.md",
   "screenId": "70.09",
   "components": [
     "PageHeader",

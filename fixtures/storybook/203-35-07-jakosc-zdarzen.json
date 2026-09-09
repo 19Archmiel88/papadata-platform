@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-203",
   "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Jakość zdarzeń",
-  "sourceDocument": "12-ruch-i-lejek/35-07-jakosc-zdarzen.md",
+  "sourceDocument": "12-ruch-i-lejek/README.md",
   "screenId": "35.07",
   "components": [
     "PageHeader",

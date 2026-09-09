@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-109",
   "storyTitle": "18 Wzorce interfejsu/Potwierdzenia i operacje destrukcyjne",
-  "sourceDocument": "21-stany-przekrojowe/18-05-potwierdzenia-i-operacje-destrukcyjne.md",
+  "sourceDocument": "21-stany-przekrojowe/README.md",
   "screenId": null,
   "components": [
     "AlertDialog",

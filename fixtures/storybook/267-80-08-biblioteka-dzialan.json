@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-267",
   "storyTitle": "80 Wsparcie marketingowe, decyzje i działania/Biblioteka działań",
-  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/80-08-biblioteka-dzialan.md",
+  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/README.md",
   "screenId": "80.08",
   "components": [
     "PageHeader",

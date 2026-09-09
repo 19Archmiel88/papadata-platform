@@ -17,7 +17,7 @@ export class SavedReportsController {
 
   @Post('preview')
   @OperationId('saved-reports.preview')
-  @RequireCapabilities('reports.read', 'reports.create')
+  @RequireCapabilities('reports.read', 'reports.create', 'analytics.metrics.read')
   @RequireAuthLevel('mfa')
   @AuditDeniedAccess()
   async preview(@Principal() principal: RequestPrincipal, @Body() body: unknown) {

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-188",
   "storyTitle": "33 Produkty/Oferty",
-  "sourceDocument": "10-produkty/33-05-oferty.md",
+  "sourceDocument": "10-produkty/README.md",
   "screenId": "33.05",
   "components": [
     "PageHeader",

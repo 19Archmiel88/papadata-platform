@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-111",
   "storyTitle": "18 Wzorce interfejsu/Tabela z filtrami i akcjami",
-  "sourceDocument": "21-stany-przekrojowe/18-04-tabela-z-filtrami-i-akcjami.md",
+  "sourceDocument": "21-stany-przekrojowe/README.md",
   "screenId": null,
   "components": [
     "FilterBar",

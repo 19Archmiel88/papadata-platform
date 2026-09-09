@@ -1,10 +1,14 @@
+import { projectBusinessReport, projectOrdersReport, projectProductsReport, commerceOrderTotals, commerceProductTotals } from '@papadata/contracts';
+import { CommerceService } from '../commerce/commerce.service.js';
+import { BusinessOverviewService } from '../commerce/business-overview.service.js';
+import { DecisionsService } from '../decisions/decisions.service.js';
 import { randomUUID } from 'node:crypto';
 import { BadRequestException, ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IntegrationRepository, ProductionDatabase } from '@papadata/database';
 import {
   applyReportCommand, parseReportCommand, parseReportsStore, reportConfigError,
   validReportConfig, validSnapshot,
-  type ReportConfig, type ReportSnapshot, type ReportsStore, type SavedReport,
+  type ReportConfig, type ReportContext, type ReportSnapshot, type ReportsStore, type SavedReport,
 } from '@papadata/contracts/saved-reports';
 import type { RequestPrincipal } from '../auth/request-principal.js';
 import { buildLiveReportSnapshot } from './saved-reports.snapshot.js';
@@ -13,6 +17,26 @@ import { buildLiveReportSnapshot } from './saved-reports.snapshot.js';
 export class SavedReportsService {
   constructor(@Inject(ProductionDatabase) private readonly database: ProductionDatabase) {}
 
+  private async validateContext(principal:RequestPrincipal,context:ReportContext|null|undefined):Promise<void>{
+    if(!context)return;
+    await this.database.withTenantWorkspace(principal.tenantId,principal.workspaceId,async client=>{
+      for(const key of ['conversationId','caseThreadId'] as const){
+        const id=context[key];if(!id)continue;
+        if(!/^[a-f0-9-]{36}$/i.test(id))throw new BadRequestException('Invalid conversation identifier.');
+        const rows=await client.query('SELECT assistant_thread_id FROM app.assistant_threads WHERE tenant_id=$1 AND workspace_id=$2 AND assistant_thread_id=$3 AND ($4::text<>\'caseThreadId\' OR thread_kind=\'case\')',[principal.tenantId,principal.workspaceId,id,key]);
+        if(!rows.rowCount)throw new NotFoundException('Conversation/case is not available in this workspace.');
+      }
+      if(context.budgetPlanId){
+        if(!/^[a-f0-9-]{36}$/i.test(context.budgetPlanId))throw new BadRequestException('Invalid plan identifier.');
+        const rows=await client.query('SELECT plan_id FROM app.campaign_budget_plans WHERE tenant_id=$1 AND workspace_id=$2 AND plan_id=$3',[principal.tenantId,principal.workspaceId,context.budgetPlanId]);
+        if(!rows.rowCount)throw new NotFoundException('Plan is not available in this workspace.');
+      }
+      if(context.decisionId){
+        const rows=await client.query('SELECT 1 FROM app.decision_registries r CROSS JOIN LATERAL jsonb_array_elements(r.document->\'decisions\') d WHERE r.tenant_id=$1 AND r.workspace_id=$2 AND d->>\'id\'=$3',[principal.tenantId,principal.workspaceId,context.decisionId]);
+        if(!rows.rowCount)throw new NotFoundException('Decision is not available in this workspace.');
+      }
+    });
+  }
   async read(principal: RequestPrincipal): Promise<ReportsStore> {
     return this.database.withTenantWorkspace(principal.tenantId, principal.workspaceId, async (client) => {
       const rows = await client.query<{ document: SavedReport; favorite: boolean }>(
@@ -27,11 +51,41 @@ export class SavedReportsService {
     });
   }
 
+  private async buildSnapshot(principal:RequestPrincipal,config:ReportConfig):Promise<ReportSnapshot> {
+    if(!['overview','orders','products','inventory'].includes(config.template))return buildLiveReportSnapshot(principal,config,new IntegrationRepository(this.database));
+    const origin=new URL(config.context?.sourcePath??'/app','https://context.invalid').searchParams;
+    const query:Record<string,unknown>={from:config.from,to:config.to,timezone:config.timezone??'Europe/Warsaw',sourceId:origin.get('sourceId'),currency:origin.get('currency')};
+    const commerce=new CommerceService(this.database);
+    if(config.template==='overview') {
+      const data=await new BusinessOverviewService(commerce,this.database,new DecisionsService(this.database)).read(principal,{...query,compare:origin.get('compare')??'previous'});
+      if(!data.meta.sourceId||!data.meta.currency)throw new BadRequestException('Wybierz zrodlo i walute w Centrum Dowodzenia, a nastepnie przygotuj raport.');
+      return projectBusinessReport(data,config);
+    }
+    if(config.template==='orders') {
+      if(config.filter!=='all')query.provider=config.filter==='WooCommerce'?'woocommerce':config.filter==='BaseLinker'?'baselinker':config.filter;
+      Object.assign(query,{search:origin.get('orderSearch'),queue:origin.get('orderQueue'),sortBy:origin.get('orderSort'),direction:origin.get('orderDirection')});
+      let data=await commerce.orders(principal,query);
+      if(!data.meta.sourceId||!data.meta.currency)throw new BadRequestException('Wybierz jedno zrodlo i walute w Zamowieniach.');
+      const id=origin.get('orderId');
+      if(id){const records=data.records.filter(row=>row.id===id);if(!records.length)throw new BadRequestException('Wybrane zamowienie nie jest dostepne w zakresie raportu.');data={...data,records,totals:commerceOrderTotals(records,data.refunds,data.meta.currency)};}
+      return projectOrdersReport(data,config);
+    }
+    Object.assign(query,{inventoryAsOf:origin.get('inventoryAsOf')??config.to,search:origin.get('productSearch'),category:config.filter==='all'?origin.get('productCategory'):config.filter,
+      filter:origin.get('productFilter'),sortBy:origin.get('productSort'),direction:origin.get('productDirection')});
+    let data=await commerce.products(principal,query);
+    if(!data.meta.sourceId||(config.template!=='inventory'&&!data.meta.currency))throw new BadRequestException('Wybierz zrodlo i walute w Produktach.');
+    if(config.filter!=='all'&&!data.categories.includes(config.filter))throw new BadRequestException('Wybrana kategoria nie istnieje w zrodle. Ustaw ja w analizie Produktow.');
+    const id=origin.get('productId');
+    if(id){const records=data.records.filter(row=>row.id===id);if(!records.length)throw new BadRequestException('Wybrany produkt jest niedostepny.');data={...data,records,totals:commerceProductTotals(records,data.meta.currency)};}
+    return projectProductsReport(data,config);
+  }
+
   async preview(principal: RequestPrincipal, value: unknown): Promise<ReportSnapshot> {
     if (!validReportConfig(value)) throw new BadRequestException('Nieprawidłowa konfiguracja raportu.');
     const error = reportConfigError(value);
     if (error) throw new BadRequestException(error);
-    const snapshot = await buildLiveReportSnapshot(principal, value, new IntegrationRepository(this.database));
+    await this.validateContext(principal,value.context);
+    const snapshot = await this.buildSnapshot(principal,value);
     if (!validSnapshot(snapshot)) throw new BadRequestException('Wynik przekracza dopuszczalny rozmiar raportu. Zawęź okres.');
     const previewId = randomUUID();
     await this.database.withTenantWorkspace(principal.tenantId, principal.workspaceId, async client => {
@@ -48,6 +102,7 @@ export class SavedReportsService {
     try { command = parseReportCommand(value); }
     catch (error) { throw new BadRequestException((error as Error).message); }
     const c = command;
+    if('config' in c)await this.validateContext(principal,c.config.context);
     await this.database.withTenantWorkspace(principal.tenantId, principal.workspaceId, async client => {
       // Serializes mutations within a workspace, including creation and the library size limit.
       await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))', [`saved-reports:${principal.tenantId}:${principal.workspaceId}`]);
@@ -76,6 +131,8 @@ export class SavedReportsService {
       }
       if (c.type === 'import') {
         c.report = structuredClone(c.report);
+        if(c.report.draft)c.report.draft.config.context=null;
+        c.report.versions=c.report.versions.map(version=>({...version,config:{...version.config,context:null}}));
         c.report.versions = c.report.versions.map(v => ({ ...v, snapshot: {
           ...v.snapshot, previewId: undefined, mode: 'imported',
           limitations: ['Wynik z importowanego pliku. PapaData nie zweryfikowała jego wartości.', ...v.snapshot.limitations].slice(0,30),

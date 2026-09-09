@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-186",
   "storyTitle": "33 Produkty/Kolejka braków",
-  "sourceDocument": "10-produkty/33-07-kolejka-brakow.md",
+  "sourceDocument": "10-produkty/README.md",
   "screenId": "33.07",
   "components": [
     "PageHeader",

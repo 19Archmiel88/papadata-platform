@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-261",
   "storyTitle": "70 Subskrypcja i płatności/Płatności",
-  "sourceDocument": "17-subskrypcja-i-platnosci/70-05-platnosci.md",
+  "sourceDocument": "17-subskrypcja-i-platnosci/README.md",
   "screenId": "70.05",
   "components": [
     "PageHeader",

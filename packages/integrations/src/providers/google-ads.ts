@@ -64,6 +64,7 @@ export class GoogleAdsAdapter implements IntegrationProviderAdapter {
     if (
       !requestedStreams.has("ad_spend")
       && !requestedStreams.has("attributed_conversions")
+      && !requestedStreams.has("ad_creative_performance")
     ) {
       return {
         records: [],
@@ -97,7 +98,8 @@ export class GoogleAdsAdapter implements IntegrationProviderAdapter {
       `WHERE segments.date BETWEEN '${from}' AND '${to}'`,
       "ORDER BY segments.date ASC, campaign.id ASC, ad_group.id ASC",
     ].join(" ");
-    const payload = await this.searchStream(query);
+    const payload = requestedStreams.has("ad_spend") || requestedStreams.has("attributed_conversions")
+      ? await this.searchStream(query) : [];
     const records: ProviderRecord[] = [];
     const observedAt = new Date().toISOString();
 
@@ -125,6 +127,30 @@ export class GoogleAdsAdapter implements IntegrationProviderAdapter {
             payload: result,
             stream: "attributed_conversions",
           });
+        }
+      }
+    }
+
+    if (requestedStreams.has("ad_creative_performance")) {
+      const creativeQuery = [
+        "SELECT segments.date, customer.id, customer.currency_code, campaign.id, campaign.name,",
+        "ad_group.id, ad_group_ad.ad.id, ad_group_ad.ad.name, ad_group_ad.ad.type, ad_group_ad.status,",
+        "ad_group_ad.ad.final_urls, ad_group_ad.ad.responsive_search_ad.headlines, ad_group_ad.ad.responsive_search_ad.descriptions,",
+        "metrics.cost_micros, metrics.impressions, metrics.clicks, metrics.conversions, metrics.conversions_value",
+        "FROM ad_group_ad", `WHERE segments.date BETWEEN '${from}' AND '${to}'`,
+        "ORDER BY segments.date ASC, campaign.id ASC, ad_group.id ASC, ad_group_ad.ad.id ASC",
+      ].join(" ");
+      const creativePayload = await this.searchStream(creativeQuery);
+      for (const envelope of creativePayload) {
+        for (const result of readArrayField(envelope, "results")) {
+          if (!isRecord(result)) continue;
+          const groupAd = result.adGroupAd ?? result.ad_group_ad;
+          const ad = isRecord(groupAd) ? groupAd.ad : null;
+          const adId = readStringField(ad, "id"), campaignId = nestedString(result, "campaign", "id");
+          const day = nestedString(result, "segments", "date");
+          const groupId = nestedString(result, "adGroup", "id") ?? nestedString(result, "ad_group", "id");
+          if (!adId || !campaignId || !day || !groupId) throw new ProviderAdapterError("Creative row has no stable identity", "validation");
+          records.push({ externalId: `${campaignId}:${groupId}:${adId}:${day}`, observedAt, payload: result, stream: "ad_creative_performance" });
         }
       }
     }

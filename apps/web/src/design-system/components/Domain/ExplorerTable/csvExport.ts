@@ -1,5 +1,9 @@
-function escapeCsvCell(value: number | string): string {
-  return `"${String(value).replaceAll('"', '""')}"`;
+/** Preserve numeric cells; neutralize spreadsheet formulas in text cells. */
+export function escapeCsvCell(value: number | string): string {
+  const text = String(value);
+  const safe = typeof value === 'string' && /^[\s\u0000-\u001f]*[=+@-]/u.test(text)
+    ? `'${text}` : text;
+  return `"${safe.replaceAll('"', '""')}"`;
 }
 
 const csvByteOrderMark = String.fromCharCode(0xfeff);
@@ -20,8 +24,10 @@ export function downloadCsv(
 
   anchor.href = url;
   anchor.download = filename;
+  document.body.appendChild(anchor);
   anchor.click();
-  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 const diacriticsPattern = new RegExp(

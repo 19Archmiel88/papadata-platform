@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-003",
   "storyTitle": "00 Fundamenty/03 Marka",
-  "sourceDocument": "01-fundamenty/00-12-marka.md",
+  "sourceDocument": "01-fundamenty/README.md",
   "screenId": null,
   "components": [
     "PapaDataBrand"

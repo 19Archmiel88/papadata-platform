@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-116",
   "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/Operacje w tle",
-  "sourceDocument": "06-powloka-produktu-i-nawigacja/20-09-centrum-operacji-w-tle.md",
+  "sourceDocument": "06-powloka-produktu-i-nawigacja/README.md",
   "screenId": null,
   "components": [
     "OperationCenter",

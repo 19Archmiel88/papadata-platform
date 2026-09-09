@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-251",
   "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Organizacja",
-  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/60-01-organizacja.md",
+  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/README.md",
   "screenId": "60.01",
   "components": [
     "PageHeader",

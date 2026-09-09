@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-264",
   "storyTitle": "70 Subskrypcja i płatności/Warianty billingowe",
-  "sourceDocument": "17-subskrypcja-i-platnosci/70-10-warianty-billingowe.md",
+  "sourceDocument": "17-subskrypcja-i-platnosci/README.md",
   "screenId": "70.10",
   "components": [
     "PageHeader",

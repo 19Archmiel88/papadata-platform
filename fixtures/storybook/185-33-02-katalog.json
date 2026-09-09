@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-185",
   "storyTitle": "33 Produkty/Katalog",
-  "sourceDocument": "10-produkty/33-02-katalog.md",
+  "sourceDocument": "10-produkty/README.md",
   "screenId": "33.02",
   "components": [
     "PageHeader",

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-166",
   "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/Widok główny",
-  "sourceDocument": "07-centrum-dowodzenia/30-01-widok-glowny.md",
+  "sourceDocument": "07-centrum-dowodzenia/README.md",
   "screenId": "30.01",
   "components": [
     "BusinessScreen",

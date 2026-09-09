@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-265",
   "storyTitle": "70 Subskrypcja i płatności/Zaległa płatność",
-  "sourceDocument": "17-subskrypcja-i-platnosci/70-06-zalegla-platnosc.md",
+  "sourceDocument": "17-subskrypcja-i-platnosci/README.md",
   "screenId": "70.06",
   "components": [
     "PageHeader",

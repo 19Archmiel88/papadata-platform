@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-115",
   "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/AppShell",
-  "sourceDocument": "06-powloka-produktu-i-nawigacja/20-01-appshell.md",
+  "sourceDocument": "06-powloka-produktu-i-nawigacja/README.md",
   "screenId": null,
   "components": [
     "ProductShellFrame",

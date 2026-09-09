@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-181",
   "storyTitle": "32 Zamówienia/Rekoncyliacja — skrót",
-  "sourceDocument": "09-zamowienia/32-06-rekoncyliacja-skrot.md",
+  "sourceDocument": "09-zamowienia/README.md",
   "screenId": "32.06",
   "components": [
     "PageHeader",

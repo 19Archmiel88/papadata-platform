@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-176",
   "storyTitle": "32 Zamówienia/Eksport",
-  "sourceDocument": "09-zamowienia/32-07-eksport.md",
+  "sourceDocument": "09-zamowienia/README.md",
   "screenId": "32.07",
   "components": [
     "PageHeader",

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-147",
   "storyTitle": "25 Dostęp i onboarding/Auth runtime/MFA",
-  "sourceDocument": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-16-weryfikacja-mfa.md",
+  "sourceDocument": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
   "screenId": null,
   "components": [
     "AuthSurface",

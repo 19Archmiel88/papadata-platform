@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-112",
   "storyTitle": "18 Wzorce interfejsu/Układ strony i sekcji",
-  "sourceDocument": "21-stany-przekrojowe/18-01-uklad-strony-i-sekcji.md",
+  "sourceDocument": "21-stany-przekrojowe/README.md",
   "screenId": null,
   "components": [
     "StoryPresentationPage",

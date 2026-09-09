@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-047",
   "storyTitle": "10 Komponenty/DataStatusBanner",
-  "sourceDocument": "04-komponenty-bazowe/komponenty/datastatusbanner.md",
+  "sourceDocument": "04-komponenty-domenowe/data-status-banner.md",
   "screenId": null,
   "components": [],
   "states": [

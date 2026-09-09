@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { updateProductQuery, useProductQuery } from '../../runtime/app/routing/productRoutes';
+import type { DecisionContext } from '@papadata/contracts/decisions';
 import { Button, Drawer } from '../../design-system';
 import { useShellNavigate } from '../../runtime/shell/app-shell/ShellNavigationContext';
+import { safeRandomUUID } from '../../runtime/shared/id/safeRandomUUID';
 import { DecisionDetail, DecisionMeasurementSummary, DecisionTimeline } from './DecisionDetail';
 import { DecisionCreate } from './DecisionCreate';
 import { decisionsDemoData } from './DecisionsScreen.demo';
@@ -33,12 +36,7 @@ import './DecisionsScreen.css';
 
 const param = (key: string) =>
   typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get(key);
-function writeParam(key: string, value: string | null) {
-  const url = new URL(window.location.href);
-  if (value) url.searchParams.set(key, value);
-  else url.searchParams.delete(key);
-  window.history.replaceState(window.history.state, '', url);
-}
+function writeParam(key: string, value: string | null) { updateProductQuery({[key]:value}); }
 const emptyData: DecisionsData = {
   id: 'empty',
   sourceDate: '2026-08-31',
@@ -54,6 +52,7 @@ export function DecisionsScreen({
   canManage = true,
   persistenceKey = 'papadata.decisions.demo.commerce.v1',
   today = decisionToday(),
+  onCommand, canApprove = canManage, canExport = true, context, initialDraft,
 }: {
   data?: DecisionsData | null;
   state?: 'ready' | 'loading' | 'error';
@@ -63,8 +62,17 @@ export function DecisionsScreen({
   canManage?: boolean;
   persistenceKey?: string | null;
   today?: string;
+  onCommand?: (decisionId: string, command: DecisionCommand, context?: DecisionContext | null) => Promise<DecisionsData>;
+  canApprove?: boolean;
+  canExport?: boolean;
+  context?: DecisionContext | null;
+  initialDraft?: Partial<Extract<DecisionCommand, {type:'create'}>>;
 } = {}) {
   const navigate = useShellNavigate();
+  const { location } = useProductQuery();
+  const [pending, setPending] = useState(false);
+  const pendingRef = useRef(false);
+  const createId = useRef(safeRandomUUID());
   const source = data ?? emptyData;
   const hydrate = () => {
     try {
@@ -118,6 +126,13 @@ export function DecisionsScreen({
     initialDecisionId ?? param('decisionId'),
   );
   const [creating, setCreating] = useState(false);
+  useEffect(() => {
+    setView(Object.hasOwn(decisionViews, param('decisionView') ?? '') ? param('decisionView') as DecisionView : initialView ?? 'queue');
+    setFilter(Object.hasOwn(decisionFilters, param('decisionFilter') ?? '') ? param('decisionFilter') as DecisionFilter : 'open');
+    setDomain(Object.hasOwn(decisionDomains, param('decisionDomain') ?? '') ? param('decisionDomain') as DecisionDomain : 'all');
+    setOwner(param('decisionOwner') ?? 'all'); setQuery(param('decisionSearch') ?? '');
+    setSort(param('decisionSort') === 'due' ? 'due' : 'priority'); setSelectedId(param('decisionId') ?? initialDecisionId ?? null);
+  }, [location, initialView, initialDecisionId]);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [storageWarning, setStorageWarning] = useState(saved.warning);
@@ -184,10 +199,23 @@ export function DecisionsScreen({
     for (const key of ['decisionSearch', 'decisionOwner', 'decisionDomain', 'decisionFilter'])
       writeParam(key, null);
   };
-  function dispatch(command: DecisionCommand, decisionId = selectedId) {
-    if (!decisionId) return false;
+  async function dispatch(command: DecisionCommand, decisionId = selectedId): Promise<boolean> {
+    if (!decisionId || pendingRef.current || !canManage) return false;
+    if (onCommand) {
+      pendingRef.current = true; setPending(true); setError(null); setMessage('');
+      try {
+        const confirmed = await onCommand(decisionId, command, command.type === 'create' ? context : null);
+        const next = restoreDecisionEvents(confirmed, null);
+        savedRef.current = next; setSaved(next); setStorageWarning(null);
+        setMessage('Operacja potwierdzona przez serwer. Nie wykonano automatycznie zmian u zewnętrznego dostawcy.');
+        return true;
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : 'Nie udało się zapisać decyzji.');
+        return false;
+      } finally { pendingRef.current = false; setPending(false); }
+    }
     const event: DecisionEvent = {
-      id: crypto.randomUUID(),
+      id: safeRandomUUID(),
       decisionId,
       command,
       actor: 'Ty · podgląd lokalny',
@@ -236,11 +264,12 @@ export function DecisionsScreen({
     return true;
   }
   const exportRegistry = () => {
+    if (!canExport) return;
     const blob = new Blob(
       [
         JSON.stringify(
           {
-            mode: 'demo',
+            mode: onCommand ? 'server' : 'demo',
             exportedAt: new Date().toISOString(),
             dataset: source.id,
             filters: { domain, owner, query },
@@ -270,10 +299,11 @@ export function DecisionsScreen({
         </div>
         <Button
           onClick={() => {
+            createId.current = safeRandomUUID();
             setCreating(true);
             setError(null);
           }}
-          disabled={!canManage || state !== 'ready' || !data}
+          disabled={pending || !canManage || state !== 'ready' || !data}
         >
           + Nowa decyzja
         </Button>
@@ -292,7 +322,7 @@ export function DecisionsScreen({
       </nav>
       <div className="pd-decisions__context">
         <span>
-          Dane przykładowe · zapis lokalny
+          {onCommand ? 'Rejestr serwerowy · bieżący workspace' : 'Dane przykładowe · zapis lokalny'}
           {data ? ` · źródła do ${decisionDate(data.sourceDate)}` : ''}
         </span>
         <span>Każda decyzja zachowuje własny okres dowodów</span>
@@ -573,7 +603,7 @@ export function DecisionsScreen({
                     filtrami obszaru, osoby i wyszukiwania
                   </p>
                 </div>
-                <Button variant="secondary" onClick={exportRegistry}>
+                <Button variant="secondary" onClick={exportRegistry} disabled={!canExport}>
                   Pobierz rejestr JSON
                 </Button>
               </div>
@@ -612,7 +642,7 @@ export function DecisionsScreen({
         title={selected?.title ?? 'Nie znaleziono decyzji'}
         description={
           selected
-            ? `${selected.id} · zapis demonstracyjny`
+            ? `${selected.id} · ${onCommand ? 'zapis serwerowy' : 'zapis demonstracyjny'}`
             : 'Identyfikator z adresu nie odpowiada decyzji w tym zbiorze.'
         }
         dismissible
@@ -625,7 +655,9 @@ export function DecisionsScreen({
             decision={selected}
             activity={activity.filter((a) => a.decisionId === selected.id)}
             today={today}
-            canManage={canManage}
+            canManage={canManage && !pending}
+            canApprove={canApprove && !pending}
+            pending={pending}
             onCommand={dispatch}
             onEvidence={navigate}
             error={error}
@@ -636,7 +668,7 @@ export function DecisionsScreen({
       </Drawer>
       <Drawer
         open={creating}
-        onOpenChange={setCreating}
+        onOpenChange={(open) => { if (!pending) { setCreating(open); if (!open) setError(null); } }}
         title="Nowa decyzja"
         description="Obserwacja, działanie i odpowiedzialność"
         dismissible
@@ -644,11 +676,14 @@ export function DecisionsScreen({
         width={680}
       >
         <DecisionCreate
+          key={createId.current}
           today={today}
+          initialDraft={initialDraft}
+          pending={pending}
           error={error}
-          onCreate={(command) => {
-            const id = `DEC-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
-            if (dispatch(command, id)) {
+          onCreate={async (command) => {
+            const id = createId.current;
+            if (await dispatch(command, id)) {
               setCreating(false);
               clearFilters();
               changeView('queue');

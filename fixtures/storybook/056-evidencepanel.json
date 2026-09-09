@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-056",
   "storyTitle": "10 Komponenty/EvidencePanel",
-  "sourceDocument": "04-komponenty-bazowe/komponenty/evidencepanel.md",
+  "sourceDocument": "04-komponenty-domenowe/evidence-panel.md",
   "screenId": null,
   "components": [],
   "states": [

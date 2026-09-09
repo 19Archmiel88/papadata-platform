@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-177",
   "storyTitle": "32 Zamówienia/Lista",
-  "sourceDocument": "09-zamowienia/32-02-lista.md",
+  "sourceDocument": "09-zamowienia/README.md",
   "screenId": "32.02",
   "components": [
     "PageHeader",

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-164",
   "storyTitle": "30 Centrum Dowodzenia/Warianty Centrum Dowodzenia",
-  "sourceDocument": "07-centrum-dowodzenia/30-14-warianty-centrum-dowodzenia.md",
+  "sourceDocument": "07-centrum-dowodzenia/README.md",
   "screenId": "30.14",
   "components": [
     "PageHeader",

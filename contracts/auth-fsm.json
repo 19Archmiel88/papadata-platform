@@ -4,7 +4,7 @@
   "surfaces": [
     {
       "surface_id": "auth-01",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-01-wejscie-do-auth.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Wejście do Auth",
       "auth_state": "AccessEntryReady",
       "auth_event": "OpenAuthEntry",
@@ -29,7 +29,7 @@
     },
     {
       "surface_id": "auth-02",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-02-logowanie.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Logowanie",
       "auth_state": "LoginFormReady",
       "auth_event": "SubmitCredentials",
@@ -57,7 +57,7 @@
     },
     {
       "surface_id": "auth-03",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-03-wejscie-do-rejestracji.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Wejście do rejestracji",
       "auth_state": "RegistrationChoiceReady",
       "auth_event": "ChooseRegistrationMethod",
@@ -80,7 +80,7 @@
     },
     {
       "surface_id": "auth-04",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-04-rejestracja-adresem-e-mail.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Rejestracja adresem e-mail",
       "auth_state": "EmailRegistrationReady",
       "auth_event": "SubmitEmailRegistration",
@@ -106,7 +106,7 @@
     },
     {
       "surface_id": "auth-05",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-05-rejestracja-przez-oauth.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Rejestracja przez OAuth",
       "auth_state": "OAuthRegistrationStarted",
       "auth_event": "StartOAuth",
@@ -130,7 +130,7 @@
     },
     {
       "surface_id": "auth-06",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-06-weryfikacja-adresu-e-mail.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Weryfikacja adresu e-mail",
       "auth_state": "EmailVerificationPending",
       "auth_event": "VerifyEmailToken",
@@ -155,7 +155,7 @@
     },
     {
       "surface_id": "auth-07",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-07-identyfikacja-firmy.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Identyfikacja firmy",
       "auth_state": "CompanyIdentificationReady",
       "auth_event": "SubmitCompanyIdentity",
@@ -179,7 +179,7 @@
     },
     {
       "surface_id": "auth-08",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-08-wyszukiwanie-firmy.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Wyszukiwanie firmy",
       "auth_state": "CompanyLookupRunning",
       "auth_event": "SelectCompanyCandidate",
@@ -203,7 +203,7 @@
     },
     {
       "surface_id": "auth-09",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-09-sprawdzenie-i-edycja-danych-firmy.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Sprawdzenie i edycja danych firmy",
       "auth_state": "CompanyDataReviewReady",
       "auth_event": "ConfirmCompanyData",
@@ -229,7 +229,7 @@
     },
     {
       "surface_id": "auth-10",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-10-reczne-wprowadzenie-firmy.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Ręczne wprowadzenie firmy",
       "auth_state": "ManualCompanyEntryReady",
       "auth_event": "SubmitManualCompany",
@@ -257,7 +257,7 @@
     },
     {
       "surface_id": "auth-11",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-11-firma-juz-zarejestrowana.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Firma już zarejestrowana",
       "auth_state": "CompanyAlreadyRegistered",
       "auth_event": "ResolveExistingCompany",
@@ -283,7 +283,7 @@
     },
     {
       "surface_id": "auth-12",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-12-zgody-rejestracyjne.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Zgody rejestracyjne",
       "auth_state": "RegistrationConsentsReady",
       "auth_event": "AcceptConsents",
@@ -307,7 +307,7 @@
     },
     {
       "surface_id": "auth-13",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-13-przetwarzanie-rejestracji.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Przetwarzanie rejestracji",
       "auth_state": "RegistrationProcessing",
       "auth_event": "FinalizeRegistration",
@@ -331,7 +331,7 @@
     },
     {
       "surface_id": "auth-14",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-14-rejestracja-zakonczona.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Rejestracja zakończona",
       "auth_state": "RegistrationCompleted",
       "auth_event": "ContinueAfterRegistration",
@@ -354,7 +354,7 @@
     },
     {
       "surface_id": "auth-15",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-15-przeglad-zaproszenia.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Przegląd zaproszenia",
       "auth_state": "InvitationReviewReady",
       "auth_event": "AcceptInvitation",
@@ -380,7 +380,7 @@
     },
     {
       "surface_id": "auth-16",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-16-weryfikacja-mfa.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Weryfikacja MFA",
       "auth_state": "MfaChallengeReady",
       "auth_event": "VerifyMfaCode",
@@ -408,7 +408,7 @@
     },
     {
       "surface_id": "auth-17",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-17-konfiguracja-mfa.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Konfiguracja MFA",
       "auth_state": "MfaEnrollmentReady",
       "auth_event": "EnrollMfaFactor",
@@ -433,7 +433,7 @@
     },
     {
       "surface_id": "auth-18",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-18-prosba-o-odzyskanie-hasla.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Prośba o odzyskanie hasła",
       "auth_state": "PasswordRecoveryRequestReady",
       "auth_event": "RequestPasswordRecovery",
@@ -458,7 +458,7 @@
     },
     {
       "surface_id": "auth-19",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-19-informacja-o-wyslaniu-resetu.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Informacja o wysłaniu resetu",
       "auth_state": "PasswordRecoverySent",
       "auth_event": "OpenResetLink",
@@ -483,7 +483,7 @@
     },
     {
       "surface_id": "auth-20",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-20-ustawienie-nowego-hasla.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Ustawienie nowego hasła",
       "auth_state": "NewPasswordReady",
       "auth_event": "SubmitNewPassword",
@@ -508,7 +508,7 @@
     },
     {
       "surface_id": "auth-21",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-21-rozwiazanie-dostepu.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Rozwiązanie dostępu",
       "auth_state": "AccessResolutionReady",
       "auth_event": "ResolveAccessContext",
@@ -531,7 +531,7 @@
     },
     {
       "surface_id": "auth-22",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-22-wybor-organizacji-lub-tenanta.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Wybór organizacji lub tenanta",
       "auth_state": "TenantSelectionReady",
       "auth_event": "SelectTenant",
@@ -554,7 +554,7 @@
     },
     {
       "surface_id": "auth-23",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-23-wybor-obszaru-roboczego.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Wybór obszaru roboczego",
       "auth_state": "WorkspaceSelectionReady",
       "auth_event": "SelectWorkspace",
@@ -577,7 +577,7 @@
     },
     {
       "surface_id": "auth-24",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-24-ponowne-uwierzytelnienie.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Ponowne uwierzytelnienie",
       "auth_state": "ReauthenticationReady",
       "auth_event": "SubmitReauthentication",
@@ -601,7 +601,7 @@
     },
     {
       "surface_id": "auth-25",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-25-przetwarzanie-wylogowania.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Przetwarzanie wylogowania",
       "auth_state": "LogoutProcessing",
       "auth_event": "StartLogout",
@@ -624,7 +624,7 @@
     },
     {
       "surface_id": "auth-26",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-26-ekran-po-wylogowaniu.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Ekran po wylogowaniu",
       "auth_state": "SignedOut",
       "auth_event": "ReturnToLogin",
@@ -645,7 +645,7 @@
     },
     {
       "surface_id": "auth-27",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-27-usluga-auth-niedostepna.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Usługa Auth niedostępna",
       "auth_state": "AuthServiceUnavailable",
       "auth_event": "RetryAuthService",
@@ -670,7 +670,7 @@
     },
     {
       "surface_id": "auth-28",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-28-dostep-zablokowany.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Dostęp zablokowany",
       "auth_state": "AccessBlocked",
       "auth_event": "RequestSupportOrRetry",
@@ -697,7 +697,7 @@
     },
     {
       "surface_id": "auth-29",
-      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth/auth-29-zakonczenie-procesu-i-wejscie-do-aplikacji.md",
+      "surface_document": "03-dostep-rejestracja-onboarding/powierzchnie-auth.md",
       "surface_name": "Zakończenie procesu i wejście do aplikacji",
       "auth_state": "EnterApplication",
       "auth_event": "EnterApplication",

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '../../design-system';
+import { contextualProductLink, productRoutes } from '../../runtime/app/routing/productRoutes';
 import {
   canMeasureDecision,
   decisionDate,
@@ -107,6 +108,8 @@ export function DecisionDetail({
   activity,
   today,
   canManage,
+  canApprove = canManage,
+  pending = false,
   onCommand,
   onEvidence,
   error,
@@ -115,7 +118,9 @@ export function DecisionDetail({
   activity: readonly DecisionActivity[];
   today: string;
   canManage: boolean;
-  onCommand: (command: DecisionCommand) => boolean;
+  canApprove?: boolean;
+  pending?: boolean;
+  onCommand: (command: DecisionCommand) => boolean | Promise<boolean>;
   onEvidence: (path: string) => void;
   error: string | null;
 }) {
@@ -147,8 +152,9 @@ export function DecisionDetail({
   const steps = ['Ocena', 'Plan', 'Wykonanie', 'Pomiar'];
   const stage =
     d.status === 'completed' ? 4 : d.status === 'measuring' ? 3 : d.status === 'approved' ? 2 : 0;
-  const submit = (command: DecisionCommand) => {
-    if (onCommand(command)) {
+  const submit = async (command: DecisionCommand) => {
+    if (pending) return;
+    if (await onCommand(command)) {
       setNote('');
       setSecondaryAction(null);
     }
@@ -199,6 +205,11 @@ export function DecisionDetail({
           </button>
         ))}
       </nav>
+      {pending && <p role="status">Zapisywanie operacji…</p>}
+      {!canApprove && <p className="pd-decisions__notice">Twoja rola nie może zatwierdzać ani odnotowywać wykonania decyzji.</p>}
+      {d.context?.reportId&&<Button variant="secondary" onClick={()=>onEvidence(`/app/reports?reportId=${encodeURIComponent(d.context!.reportId!)}${d.context?.reportVersion?`&reportVersion=${d.context.reportVersion}`:''}`)}>Otworz raport zrodlowy</Button>}
+      {d.context?.budgetPlanId&&<Button variant="secondary" onClick={()=>{const url=new URL(d.context!.sourcePath,window.location.origin);url.searchParams.set('campaignView','budzet');onEvidence(url.pathname+url.search);}}>Otworz plan budzetowy</Button>}
+      {d.context?.conversationId && <Button variant="secondary" onClick={() => onEvidence(`/app/assistant?conversationId=${encodeURIComponent(d.context!.conversationId!)}${d.context?.caseThreadId ? `&caseThreadId=${encodeURIComponent(d.context.caseThreadId)}` : ''}`)}>Wróć do rozmowy Papa</Button>}
       {error && (
         <p role="alert" className="pd-decisions__notice">
           {error}
@@ -260,7 +271,7 @@ export function DecisionDetail({
                 submit({ type: 'approve', optionId, owner, due, note });
               }}
             >
-              <fieldset disabled={!canManage}>
+              <fieldset disabled={!canManage || pending}>
                 <legend>Wariant działania</legend>
                 <div className="pd-decisions__options">
                   {d.options.map((o) => (
@@ -290,7 +301,7 @@ export function DecisionDetail({
                     maxLength={80}
                     value={owner}
                     onChange={(e) => setOwner(e.target.value)}
-                    disabled={!canManage}
+                    disabled={!canManage || pending}
                     placeholder="Imię i nazwisko"
                   />
                 </label>
@@ -302,7 +313,7 @@ export function DecisionDetail({
                     min={today}
                     value={due}
                     onChange={(e) => setDue(e.target.value)}
-                    disabled={!canManage}
+                    disabled={!canManage || pending}
                   />
                 </label>
               </div>
@@ -314,7 +325,7 @@ export function DecisionDetail({
                   maxLength={3000}
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  disabled={!canManage}
+                  disabled={!canManage || pending}
                   placeholder="Dlaczego wybierasz ten wariant? Jakie warunki trzeba spełnić?"
                 />
               </label>
@@ -325,11 +336,11 @@ export function DecisionDetail({
                 </p>
               )}
               <p className="pd-decisions__caveat">
-                Zatwierdzenie zapisuje plan w tym podglądzie. Działanie w sklepie lub systemie
+                Zatwierdzenie zapisuje plan w rejestrze decyzji. Działanie w sklepie lub systemie
                 reklamowym wymaga osobnego wykonania.
               </p>
               <div className="pd-decisions__actions">
-                <Button type="submit" disabled={!canManage || !d.evidenceReady}>
+                <Button type="submit" disabled={!canManage || !canApprove || pending || !d.evidenceReady}>
                   Zatwierdź plan
                 </Button>
               </div>
@@ -351,7 +362,7 @@ export function DecisionDetail({
                     submit({ type: 'execute', date: executionDate, note });
                   }}
                 >
-                  <fieldset disabled={!canManage}>
+                  <fieldset disabled={!canManage || pending}>
                     <legend>Potwierdź wykonane kroki</legend>
                     {option?.steps.map((step, i) => (
                       <label className="pd-decisions__check" key={step}>
@@ -379,7 +390,7 @@ export function DecisionDetail({
                       max={today}
                       value={executionDate}
                       onChange={(e) => setExecutionDate(e.target.value)}
-                      disabled={!canManage}
+                      disabled={!canManage || pending}
                     />
                   </label>
                   <label>
@@ -390,7 +401,7 @@ export function DecisionDetail({
                       maxLength={3000}
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
-                      disabled={!canManage}
+                      disabled={!canManage || pending}
                       placeholder="Opisz wykonanie i wskaż dokument lub potwierdzenie."
                     />
                   </label>
@@ -400,7 +411,7 @@ export function DecisionDetail({
                   </p>
                   <Button
                     type="submit"
-                    disabled={!canManage || !option || checked.length !== option.steps.length}
+                    disabled={!canManage || !canApprove || pending || !option || checked.length !== option.steps.length}
                   >
                     Odnotuj wykonanie
                   </Button>
@@ -437,7 +448,7 @@ export function DecisionDetail({
                   Wymaga wyjaśnienia
                 </Button>
               )}
-              {d.status !== 'rejected' && (
+              {canApprove && d.status !== 'rejected' && (
                 <Button
                   variant="ghost"
                   onClick={() => {
@@ -448,7 +459,7 @@ export function DecisionDetail({
                   Odrzuć propozycję
                 </Button>
               )}
-              {['blocked', 'rejected'].includes(d.status) && (
+              {canApprove && ['blocked', 'rejected'].includes(d.status) && (
                 <Button
                   variant="secondary"
                   onClick={() => {
@@ -527,7 +538,7 @@ export function DecisionDetail({
                     required
                     value={result}
                     onChange={(e) => setResult(e.target.value)}
-                    disabled={!canManage}
+                    disabled={!canManage || pending}
                   />
                 </label>
                 <label>
@@ -538,7 +549,7 @@ export function DecisionDetail({
                     maxLength={300}
                     value={source}
                     onChange={(e) => setSource(e.target.value)}
-                    disabled={!canManage}
+                    disabled={!canManage || pending}
                     placeholder="Raport, okres, identyfikator analizy"
                   />
                 </label>
@@ -550,11 +561,11 @@ export function DecisionDetail({
                     maxLength={3000}
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
-                    disabled={!canManage}
+                    disabled={!canManage || pending}
                     placeholder="Czy okresy i sposób obliczenia są porównywalne?"
                   />
                 </label>
-                <Button type="submit" disabled={!canManage}>
+                <Button type="submit" disabled={!canManage || pending}>
                   Zapisz wynik obserwacji
                 </Button>
               </form>
@@ -565,6 +576,7 @@ export function DecisionDetail({
             ))}
         </section>
       )}
+      <div className="pd-decisions__detail-section"><Button variant="secondary" onClick={()=>onEvidence(contextualProductLink(productRoutes.reports,{reportTemplate:d.domain==='campaigns'?'campaigns':d.domain==='customers'?'customers':d.domain==='traffic'?'traffic':d.domain==='products'?'products':d.domain==='orders'?'orders':'overview',decisionId:d.id,conversationId:d.context?.conversationId??null,caseThreadId:d.context?.caseThreadId??null,returnTo:d.context?.sourcePath??'/app/decisions',from:d.context?.from??null,to:d.context?.to??null,timezone:d.context?.timezone??null}))}>Przygotuj raport do decyzji</Button></div>
       {tab === 'history' && (
         <section className="pd-decisions__detail-section">
           <h3>Historia i uzasadnienia</h3>

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-210",
   "storyTitle": "40 Integracje i synchronizacja/Awaria providera",
-  "sourceDocument": "13-integracje-i-synchronizacja/40-09-awaria-providera.md",
+  "sourceDocument": "13-integracje-i-synchronizacja/README.md",
   "screenId": "40.09",
   "components": [
     "PageHeader",

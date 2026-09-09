@@ -1,3 +1,4 @@
+import { sseData } from "./sse.js";
 import { createHash } from "node:crypto";
 import type {
   AiEvaluationMode,
@@ -131,11 +132,58 @@ export class OpenAiCompatibleProvider implements AiProviderAdapter {
     request: AiProviderRequest,
     signal?: AbortSignal,
   ): AsyncIterable<string> {
-    // The adapter exposes a stable streaming contract even when the upstream
-    // route is configured without SSE. Providers can override this method with
-    // native chunk parsing without changing callers.
-    const response = await this.complete(request, signal);
-    if (response.output) yield response.output;
+    if (Date.now() < this.circuitOpenUntil) throw new Error("AI provider circuit is open");
+    const controller = new AbortController();
+    const abort = () => controller.abort(signal?.reason);
+    const timeout = setTimeout(() => controller.abort("provider_timeout"), this.timeoutMs);
+    if (signal?.aborted) abort();
+    signal?.addEventListener("abort", abort, { once: true });
+    let streamId: string | null = null;
+    let body: ReadableStream<Uint8Array> | null = null;
+    let completed = false;
+    let size = 0;
+    try {
+      // Never replay a partially delivered generation automatically.
+      const response = await fetch(`${this.endpoint}/chat/completions`, {
+        method: "POST", redirect: "error", signal: controller.signal,
+        headers: { Authorization: `Bearer ${this.apiKey}`, "Content-Type": "application/json", Accept: "text/event-stream" },
+        body: JSON.stringify({ model: request.modelId, messages: redactMessages(request.messages),
+          max_tokens: request.maxOutputTokens, temperature: request.temperature, stream: true }),
+      });
+      body = response.body;
+      if (!response.ok || !body || !response.headers.get("content-type")?.toLowerCase().includes("text/event-stream")) {
+        await body?.cancel();
+        throw new Error(`AI_STREAM_HTTP_${response.status}`);
+      }
+      for await (const data of sseData(body, controller.signal)) {
+        if (data === "[DONE]") { completed = true; break; }
+        const chunk: unknown = JSON.parse(data);
+        if (!chunk || typeof chunk !== "object") throw new Error("AI_STREAM_INVALID_EVENT");
+        const value = chunk as { id?: unknown; error?: unknown; choices?: Array<{ delta?: { content?: unknown }; finish_reason?: unknown }> };
+        if (value.error) throw new Error("AI_STREAM_PROVIDER_ERROR");
+        if (typeof value.id === "string" && streamId === null) { streamId = value.id; this.activeRequests.set(streamId, controller); }
+        const choice = value.choices?.[0];
+        const content = choice?.delta?.content;
+        if (typeof content === "string" && content) {
+          size += content.length;
+          if (size > 100_000) throw new Error("AI_STREAM_TOO_LARGE");
+          yield content;
+        }
+        // A finish marker alone is not treated as end-of-stream: require [DONE].
+        if (choice?.finish_reason === "length") throw new Error("AI_STREAM_OUTPUT_LIMIT");
+        if (choice?.finish_reason === "content_filter") throw new Error("AI_STREAM_CONTENT_FILTER");
+      }
+      if (!completed) throw new Error("AI_STREAM_INTERRUPTED");
+      this.consecutiveFailures = 0;
+    } catch (error) {
+      if (!signal?.aborted && ++this.consecutiveFailures >= 3) this.circuitOpenUntil = Date.now() + 30_000;
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+      signal?.removeEventListener("abort", abort);
+      if (streamId) this.activeRequests.delete(streamId);
+      if (body && !body.locked) await body.cancel().catch(() => undefined);
+    }
   }
 
   async embed(
@@ -478,3 +526,6 @@ async function delay(ms: number, signal?: AbortSignal): Promise<void> {
     signal?.addEventListener("abort", onAbort, { once: true });
   });
 }
+
+export { sseData } from "./sse.js";
+export { redactText };

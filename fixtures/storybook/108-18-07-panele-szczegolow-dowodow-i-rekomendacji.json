@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-108",
   "storyTitle": "18 Wzorce interfejsu/Panele szczegółów, dowodów i rekomendacji",
-  "sourceDocument": "21-stany-przekrojowe/18-07-panele-szczegolow-dowodow-i-rekomendacji.md",
+  "sourceDocument": "21-stany-przekrojowe/README.md",
   "screenId": null,
   "components": [
     "Drawer",

@@ -16,6 +16,9 @@ export default defineConfig({
   resolve: {
     alias: [
       alias("@papadata/contracts/saved-reports", "./packages/contracts/src/saved-reports.ts"),
+      alias("@papadata/contracts/decisions", "./packages/contracts/src/decisions.ts"),
+      alias("@papadata/contracts/campaign-growth", "./packages/contracts/src/campaign-growth.ts"),
+      alias("@papadata/contracts/report-projections", "./packages/contracts/src/report-projections.ts"),
       alias("@papadata/contracts", "./packages/contracts/src/index.ts"),
       alias("@papadata/database", "./packages/database/src/index.ts"),
       alias("@papadata/integrations", "./packages/integrations/src/index.ts"),

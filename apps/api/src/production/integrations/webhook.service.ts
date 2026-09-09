@@ -75,7 +75,7 @@ export class WebhookService {
     });
     if (!reserved) return { accepted: true, duplicate: true, providerEventId: input.providerEventId };
     const streams = input.providerId === "meta_ads"
-      ? ["ad_spend", "attributed_conversions"] as const
+      ? ["ad_spend", "attributed_conversions", "ad_creative_performance"] as const
       : ["orders", "products", "refunds", "inventory"] as const;
     const job = await this.integrations.startSync({
       tenantId,

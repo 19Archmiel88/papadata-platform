@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-182",
   "storyTitle": "32 Zamówienia/Szczegóły",
-  "sourceDocument": "09-zamowienia/32-03-szczegoly.md",
+  "sourceDocument": "09-zamowienia/README.md",
   "screenId": "32.03",
   "components": [
     "PageHeader",

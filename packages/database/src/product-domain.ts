@@ -195,16 +195,47 @@ export class IdentityRepository {
 
   async listMemberships(user: IdentityUserRow): Promise<readonly IdentityMembershipRow[]> {
     return this.database.withIdentity(user.identityKey, user.userId, async (client) => {
-      const result = await client.query<Record<string, unknown>>(
-        `select membership_id::text, user_id::text, tenant_id::text,
-                workspace_id::text, tenant_name, workspace_name, roles,
-                capabilities, status
+      // The identity index only discovers this user's workspace identifiers.
+      // Effective roles and display names come from the canonical rows; cached
+      // identity capabilities must not survive a revocation or role change.
+      const index = await client.query<Record<string, unknown>>(
+        `select membership_id::text, tenant_id::text, workspace_id::text
            from app.identity_memberships
-          where user_id = $1::uuid and status = 'active'
-          order by created_at`,
-        [user.userId],
+          where user_id=$1::uuid and status='active'
+          order by created_at`, [user.userId],
       );
-      return result.rows.map(readMembership);
+      const memberships: IdentityMembershipRow[] = [];
+      for (const candidate of index.rows) {
+        const tenantId = requiredString(candidate.tenant_id);
+        const workspaceId = requiredString(candidate.workspace_id);
+        await client.query(
+          `select set_config('app.tenant_id',$1,true),set_config('app.workspace_id',$2,true)`,
+          [tenantId,workspaceId],
+        );
+        const current = await client.query<Record<string, unknown>>(
+          `select m.membership_id::text,m.user_id::text,m.tenant_id::text,
+                  m.workspace_id::text,m.role,m.status,m.data_scope,
+                  m.jit_expires_at::text,t.name as tenant_name,w.name as workspace_name
+             from app.memberships m
+             join app.tenants t on t.tenant_id=m.tenant_id
+             join app.workspaces w on w.tenant_id=m.tenant_id and w.workspace_id=m.workspace_id
+            where m.membership_id=$1::uuid and m.user_id=$2::uuid
+              and m.tenant_id=$3::uuid and m.workspace_id=$4::uuid
+              and m.status='active' and t.status='active' and w.status='active'`,
+          [candidate.membership_id,user.userId,tenantId,workspaceId],
+        );
+        const row = current.rows[0];
+        if (!row) continue;
+        const role = requiredString(row.role);
+        const capabilities = resolveMembershipCapabilities({
+          role, status: requiredString(row.status),
+          dataScope: requiredString(row.data_scope),
+          jitExpiresAt: nullableString(row.jit_expires_at),
+        });
+        if (!capabilities.length) continue;
+        memberships.push(readMembership({...row,roles:[role],capabilities}));
+      }
+      return memberships;
     });
   }
 

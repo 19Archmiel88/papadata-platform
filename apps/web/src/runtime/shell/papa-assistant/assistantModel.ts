@@ -10,7 +10,7 @@ export const assistantModes = [
   { id: 'plan', label: 'Plan działań', prompt: 'Przygotuj plan z właścicielem, terminem i sposobem pomiaru.' },
 ] as const;
 export type WorkMode = typeof assistantModes[number]['id'];
-export const assistantViews = ['Rozmowa', 'Kontekst', 'Dowody', 'Laboratorium', 'Propozycje', 'Obserwacje', 'Raporty', 'Działania', 'Historia', 'Ustawienia AI'] as const;
+export const assistantViews = ['Rozmowa', 'Kontekst', 'Dowody', 'Laboratorium', 'Propozycje', 'Obserwacje', 'Raporty', 'Działania', 'Historia', 'Pamięć', 'Pochodzenie', 'Powiadomienia', 'Eksport / MCP', 'Ustawienia AI'] as const;
 export type AssistantView = typeof assistantViews[number];
 export type AssistantMessage = PapaAnswerRecord & { readonly elementId?: string };
 export type ActionProposal = {

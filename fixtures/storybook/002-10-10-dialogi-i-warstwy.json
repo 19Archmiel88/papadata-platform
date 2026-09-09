@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-002",
   "storyTitle": "10 Komponenty bazowe/Dialogi i warstwy",
-  "sourceDocument": "04-komponenty-bazowe/10-10-dialogi-i-warstwy.md",
+  "sourceDocument": "04-komponenty-bazowe/README.md",
   "screenId": null,
   "components": [],
   "states": [

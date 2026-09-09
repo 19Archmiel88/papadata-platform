@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '../../design-system/components/Button';
 import { useShellNavigate } from '../../runtime/shell/app-shell/ShellNavigationContext';
-import { reportDate, reportNumber } from './SavedReports.build';
+import { reportDate, reportNumber } from './SavedReports.presentation';
 import type { ReportConfig, ReportSnapshot } from './SavedReports.model';
 
 export function ReportDocument({

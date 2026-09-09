@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-110",
   "storyTitle": "18 Wzorce interfejsu/Readiness operacyjny",
-  "sourceDocument": "21-stany-przekrojowe/18-08-status-danych-i-readiness.md",
+  "sourceDocument": "21-stany-przekrojowe/README.md",
   "screenId": null,
   "components": [
     "StatusBadge",

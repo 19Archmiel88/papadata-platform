@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-281",
   "storyTitle": "85 Centrum Pomocy/Warianty Centrum Pomocy",
-  "sourceDocument": "19-centrum-pomocy/85-06-warianty-centrum-pomocy.md",
+  "sourceDocument": "19-centrum-pomocy/README.md",
   "screenId": "85.06",
   "components": [
     "PageHeader",

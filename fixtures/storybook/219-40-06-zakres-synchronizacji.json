@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-219",
   "storyTitle": "40 Integracje i synchronizacja/Zakres synchronizacji",
-  "sourceDocument": "13-integracje-i-synchronizacja/40-06-zakres-synchronizacji.md",
+  "sourceDocument": "13-integracje-i-synchronizacja/README.md",
   "screenId": "40.06",
   "components": [
     "PageHeader",

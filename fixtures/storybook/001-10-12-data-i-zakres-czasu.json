@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-001",
   "storyTitle": "10 Komponenty bazowe/Data i zakres czasu",
-  "sourceDocument": "04-komponenty-bazowe/10-12-data-i-zakres-czasu.md",
+  "sourceDocument": "04-komponenty-bazowe/README.md",
   "screenId": null,
   "components": [],
   "states": [

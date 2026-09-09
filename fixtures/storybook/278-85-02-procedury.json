@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-278",
   "storyTitle": "85 Centrum Pomocy/Procedury",
-  "sourceDocument": "19-centrum-pomocy/85-02-procedury.md",
+  "sourceDocument": "19-centrum-pomocy/README.md",
   "screenId": "85.02",
   "components": [
     "PageHeader",

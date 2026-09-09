@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-228",
   "storyTitle": "41 Jakość danych i integralność/Warianty jakości danych",
-  "sourceDocument": "14-jakosc-danych-i-integralnosc/41-10-warianty-jakosci-danych.md",
+  "sourceDocument": "14-jakosc-danych-i-integralnosc/README.md",
   "screenId": "41.10",
   "components": [
     "PageHeader",

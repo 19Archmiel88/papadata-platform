@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-192",
   "storyTitle": "33 Produkty/Wydajność",
-  "sourceDocument": "10-produkty/33-06-wydajnosc.md",
+  "sourceDocument": "10-produkty/README.md",
   "screenId": "33.06",
   "components": [
     "PageHeader",

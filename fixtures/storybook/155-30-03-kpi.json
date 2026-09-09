@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-155",
   "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/KPI",
-  "sourceDocument": "07-centrum-dowodzenia/30-03-kpi.md",
+  "sourceDocument": "07-centrum-dowodzenia/README.md",
   "screenId": "30.03",
   "components": [
     "BusinessScreen",

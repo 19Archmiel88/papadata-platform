@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-277",
   "storyTitle": "85 Centrum Pomocy/Lista wyników",
-  "sourceDocument": "19-centrum-pomocy/85-03-lista-wynikow.md",
+  "sourceDocument": "19-centrum-pomocy/README.md",
   "screenId": "85.03",
   "components": [
     "PageHeader",

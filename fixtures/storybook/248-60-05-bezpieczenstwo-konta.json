@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-248",
   "storyTitle": "60 Ustawienia, zespół i bezpieczeństwo/Bezpieczeństwo konta",
-  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/60-05-bezpieczenstwo-konta.md",
+  "sourceDocument": "16-ustawienia-zespol-bezpieczenstwo/README.md",
   "screenId": "60.05",
   "components": [
     "PageHeader",

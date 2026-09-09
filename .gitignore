@@ -102,3 +102,8 @@ apps/web/output/
 storybook-static/
 playwright-report/
 test-results/
+# Generated documentation evidence / audits
+docs/audits/
+artifacts/
+
+.papadata-doc-cleanup-backups/

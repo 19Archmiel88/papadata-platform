@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-011",
   "storyTitle": "10 Komponenty bazowe/Tabela bazowa",
-  "sourceDocument": "04-komponenty-bazowe/10-07-tabela-bazowa.md",
+  "sourceDocument": "04-komponenty-bazowe/README.md",
   "screenId": null,
   "components": [],
   "states": [

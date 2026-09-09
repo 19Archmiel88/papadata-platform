@@ -7,7 +7,7 @@
     "targetContract": "contracts/openapi-1.0.json",
     "targetOperations": 223,
     "exactTargetOperations": 223,
-    "extraHardeningOperations": 73,
+    "extraHardeningOperations": 130,
     "routeMethodOperationIdParity": true,
     "targetReleaseClaimed": false,
     "semanticConformanceClaimed": false,
@@ -24,6 +24,46 @@
       "releaseStatus": "compatibility",
       "servicePath": "/v1/access/bootstrap",
       "bffPath": "/api/v1/access/bootstrap"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/access-lifecycle/access-lifecycle.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "access.lifecycle.company.save",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/access/lifecycle/company",
+      "bffPath": "/api/v1/access/lifecycle/company"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/access-lifecycle/access-lifecycle.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "access.lifecycle.complete",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/access/lifecycle/complete",
+      "bffPath": "/api/v1/access/lifecycle/complete"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/access-lifecycle/access-lifecycle.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "access.lifecycle.consents.accept",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/access/lifecycle/consents",
+      "bffPath": "/api/v1/access/lifecycle/consents"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/access-lifecycle/access-lifecycle.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "access.lifecycle.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/access/lifecycle",
+      "bffPath": "/api/v1/access/lifecycle"
     },
     {
       "auth": "mfa+capability",
@@ -136,6 +176,26 @@
       "bffPath": "/api/v1/ai/runs"
     },
     {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/analytics/analytics-export.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "analytics.campaigns.export.csv",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/analytics/exports/campaigns",
+      "bffPath": "/api/v1/analytics/exports/campaigns"
+    },
+    {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/analytics/analytics-export.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "analytics.customers.export.csv",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/analytics/exports/customers",
+      "bffPath": "/api/v1/analytics/exports/customers"
+    },
+    {
       "auth": "capability",
       "controllerFile": "apps/api/src/production/product/product.controller.ts",
       "implementation": "native-hardened-runtime",
@@ -154,6 +214,16 @@
       "releaseStatus": "enabled",
       "servicePath": "/v1/metrics",
       "bffPath": "/api/v1/metrics"
+    },
+    {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/analytics/analytics-export.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "analytics.traffic.export.csv",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/analytics/exports/traffic",
+      "bffPath": "/api/v1/analytics/exports/traffic"
     },
     {
       "auth": "capability",
@@ -447,6 +517,26 @@
     },
     {
       "auth": "capability",
+      "controllerFile": "apps/api/src/production/platform-operations/billing-operations.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "billing.operations.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/billing/operations",
+      "bffPath": "/api/v1/billing/operations"
+    },
+    {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/platform-operations/billing-operations.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "billing.operations.session.create",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/billing/operations/sessions",
+      "bffPath": "/api/v1/billing/operations/sessions"
+    },
+    {
+      "auth": "capability",
       "controllerFile": "apps/api/src/production/contract-runtime/generated/billing.controller.ts",
       "implementation": "migrated-billing-policy",
       "method": "GET",
@@ -626,6 +716,16 @@
       "bffPath": "/api/v1/campaigns/budget/proposals"
     },
     {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/campaigns/campaign-growth.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "campaigns.budget.plan.save",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/campaigns/budget-plans",
+      "bffPath": "/api/v1/campaigns/budget-plans"
+    },
+    {
       "auth": "capability",
       "controllerFile": "apps/api/src/production/contract-runtime/generated/commerce-analytics.controller.ts",
       "implementation": "contract-compatibility-runtime",
@@ -664,6 +764,16 @@
       "releaseStatus": "compatibility",
       "servicePath": "/v1/campaigns/diagnostyka",
       "bffPath": "/api/v1/campaigns/diagnostyka"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/campaigns/campaign-growth.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "campaigns.growth.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/campaigns/growth",
+      "bffPath": "/api/v1/campaigns/growth"
     },
     {
       "auth": "capability",
@@ -874,6 +984,46 @@
       "releaseStatus": "compatibility",
       "servicePath": "/v1/command-center/write",
       "bffPath": "/api/v1/command-center/write"
+    },
+    {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/commerce/commerce.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "commerce.orders.export",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/commerce/orders/export",
+      "bffPath": "/api/v1/commerce/orders/export"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/commerce/commerce.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "commerce.orders.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/commerce/orders",
+      "bffPath": "/api/v1/commerce/orders"
+    },
+    {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/commerce/commerce.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "commerce.products.export",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/commerce/products/export",
+      "bffPath": "/api/v1/commerce/products/export"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/commerce/commerce.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "commerce.products.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/commerce/products",
+      "bffPath": "/api/v1/commerce/products"
     },
     {
       "auth": "mfa+capability",
@@ -1097,6 +1247,36 @@
     },
     {
       "auth": "capability",
+      "controllerFile": "apps/api/src/production/platform-operations/integration-operations.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "data-quality.operations.lineage.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/data-quality/operations/lineage",
+      "bffPath": "/api/v1/data-quality/operations/lineage"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/platform-operations/integration-operations.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "data-quality.operations.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/data-quality/operations",
+      "bffPath": "/api/v1/data-quality/operations"
+    },
+    {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/platform-operations/integration-operations.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "data-quality.operations.review.save",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/data-quality/operations/reviews",
+      "bffPath": "/api/v1/data-quality/operations/reviews"
+    },
+    {
+      "auth": "capability",
       "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
       "implementation": "migrated-data-quality-policy",
       "method": "GET",
@@ -1314,6 +1494,26 @@
       "releaseStatus": "compatibility",
       "servicePath": "/v1/decisions/powiazania-z-modulami-i-sprawami",
       "bffPath": "/api/v1/decisions/powiazania-z-modulami-i-sprawami"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/decisions/decisions.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "decisions.workspace-registry.command",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/decisions/registry/commands",
+      "bffPath": "/api/v1/decisions/registry/commands"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/decisions/decisions.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "decisions.workspace-registry.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/decisions/registry",
+      "bffPath": "/api/v1/decisions/registry"
     },
     {
       "auth": "capability",
@@ -1566,6 +1766,16 @@
       "bffPath": "/api/v1/integrations/connections"
     },
     {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/platform-operations/connection-provision.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "integrations.credentials.provision",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/integrations/provision",
+      "bffPath": "/api/v1/integrations/provision"
+    },
+    {
       "auth": "capability",
       "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
       "implementation": "native-integration-service",
@@ -1677,6 +1887,16 @@
     },
     {
       "auth": "capability",
+      "controllerFile": "apps/api/src/production/platform-operations/connection-provision.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "integrations.provision.capabilities",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/integrations/provision",
+      "bffPath": "/api/v1/integrations/provision"
+    },
+    {
+      "auth": "capability",
       "controllerFile": "apps/api/src/production/contract-runtime/generated/integrations.controller.ts",
       "implementation": "native-integration-service",
       "method": "GET",
@@ -1724,6 +1944,26 @@
       "releaseStatus": "enabled",
       "servicePath": "/v1/integrations",
       "bffPath": "/api/v1/integrations"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/platform-operations/integration-operations.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "integrations.scope.current.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/integrations/connections/{id}/sync-scope",
+      "bffPath": "/api/v1/integrations/connections/{id}/sync-scope"
+    },
+    {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/platform-operations/integration-operations.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "integrations.scope.save",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/integrations/connections/{id}/sync-scope",
+      "bffPath": "/api/v1/integrations/connections/{id}/sync-scope"
     },
     {
       "auth": "capability",
@@ -2097,6 +2337,16 @@
     },
     {
       "auth": "capability",
+      "controllerFile": "apps/api/src/production/commerce/business-overview.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "overview.business.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/overview/business",
+      "bffPath": "/api/v1/overview/business"
+    },
+    {
+      "auth": "capability",
       "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
       "implementation": "contract-compatibility-runtime",
       "method": "GET",
@@ -2356,6 +2606,186 @@
       "bffPath": "/api/v1/papa/report-definitions/schedule"
     },
     {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "papa.workspace.attachments.add",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/attachments",
+      "bffPath": "/api/v1/papa/workspace/attachments"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "papa.workspace.attachments.delete",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/attachments/delete",
+      "bffPath": "/api/v1/papa/workspace/attachments/delete"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "papa.workspace.attachments.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/attachments/{threadId}",
+      "bffPath": "/api/v1/papa/workspace/attachments/{threadId}"
+    },
+    {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "papa.workspace.context.export",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/export/{threadId}",
+      "bffPath": "/api/v1/papa/workspace/export/{threadId}"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "papa.workspace.diagnostics.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/diagnostics",
+      "bffPath": "/api/v1/papa/workspace/diagnostics"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "papa.workspace.memory.delete",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/memory/delete",
+      "bffPath": "/api/v1/papa/workspace/memory/delete"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "papa.workspace.memory.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/memory",
+      "bffPath": "/api/v1/papa/workspace/memory"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "papa.workspace.memory.save",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/memory",
+      "bffPath": "/api/v1/papa/workspace/memory"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "papa.workspace.notifications.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/notifications",
+      "bffPath": "/api/v1/papa/workspace/notifications"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "papa.workspace.notifications.update",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/notifications",
+      "bffPath": "/api/v1/papa/workspace/notifications"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "papa.workspace.preferences.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/preferences",
+      "bffPath": "/api/v1/papa/workspace/preferences"
+    },
+    {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "papa.workspace.preferences.save",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/preferences",
+      "bffPath": "/api/v1/papa/workspace/preferences"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "papa.workspace.runs.cancel",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/runs/{id}/cancel",
+      "bffPath": "/api/v1/papa/workspace/runs/{id}/cancel"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "papa.workspace.runs.create",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/runs",
+      "bffPath": "/api/v1/papa/workspace/runs"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "papa.workspace.runs.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/runs/{id}",
+      "bffPath": "/api/v1/papa/workspace/runs/{id}"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "papa.workspace.runs.stream",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/runs/{id}/events",
+      "bffPath": "/api/v1/papa/workspace/runs/{id}/events"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "papa.workspace.threads.archive",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/threads/archive",
+      "bffPath": "/api/v1/papa/workspace/threads/archive"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/assistant-workspace/assistant-workspace.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "papa.workspace.threads.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/papa/workspace/threads",
+      "bffPath": "/api/v1/papa/workspace/threads"
+    },
+    {
       "auth": "mfa+capability",
       "controllerFile": "apps/api/src/production/contract-runtime/generated/data-decisions.controller.ts",
       "implementation": "contract-compatibility-runtime",
@@ -2546,6 +2976,46 @@
       "bffPath": "/api/v1/reports/{id}"
     },
     {
+      "auth": "mfa+capability",
+      "controllerFile": "apps/api/src/production/reports/saved-reports.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "saved-reports.command",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/saved-reports/commands",
+      "bffPath": "/api/v1/saved-reports/commands"
+    },
+    {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/reports/saved-report-download.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "saved-reports.download",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/saved-reports/{id}/versions/{version}/download",
+      "bffPath": "/api/v1/saved-reports/{id}/versions/{version}/download"
+    },
+    {
+      "auth": "mfa+capability",
+      "controllerFile": "apps/api/src/production/reports/saved-reports.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "saved-reports.preview",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/saved-reports/preview",
+      "bffPath": "/api/v1/saved-reports/preview"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/reports/saved-reports.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "saved-reports.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/saved-reports",
+      "bffPath": "/api/v1/saved-reports"
+    },
+    {
       "auth": "capability",
       "controllerFile": "apps/api/src/production/product/product.controller.ts",
       "implementation": "native-hardened-runtime",
@@ -2667,6 +3137,66 @@
     },
     {
       "auth": "capability",
+      "controllerFile": "apps/api/src/production/platform-operations/settings-operations.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "settings.operations.audit.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/settings/operations/audit",
+      "bffPath": "/api/v1/settings/operations/audit"
+    },
+    {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/platform-operations/settings-operations.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "settings.operations.member.command",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/settings/operations/members/{id}",
+      "bffPath": "/api/v1/settings/operations/members/{id}"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/platform-operations/settings-operations.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "settings.operations.privacy.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/settings/operations/privacy",
+      "bffPath": "/api/v1/settings/operations/privacy"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/platform-operations/settings-operations.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "settings.operations.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/settings/operations",
+      "bffPath": "/api/v1/settings/operations"
+    },
+    {
+      "auth": "step_up+capability",
+      "controllerFile": "apps/api/src/production/platform-operations/settings-operations.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "settings.operations.save",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/settings/operations/sections/{section}",
+      "bffPath": "/api/v1/settings/operations/sections/{section}"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/platform-operations/settings-operations.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "settings.operations.team.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/settings/operations/team",
+      "bffPath": "/api/v1/settings/operations/team"
+    },
+    {
+      "auth": "capability",
       "controllerFile": "apps/api/src/production/contract-runtime/generated/support-settings.controller.ts",
       "implementation": "contract-compatibility-runtime",
       "method": "GET",
@@ -2784,6 +3314,46 @@
       "releaseStatus": "enabled",
       "servicePath": "/v1/support/threads",
       "bffPath": "/api/v1/support/threads"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/support/support-tickets.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "support.tickets.command",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/support/tickets/{id}/commands",
+      "bffPath": "/api/v1/support/tickets/{id}/commands"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/support/support-tickets.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "POST",
+      "operationId": "support.tickets.create",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/support/tickets",
+      "bffPath": "/api/v1/support/tickets"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/support/support-tickets.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "support.tickets.detail",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/support/tickets/{id}",
+      "bffPath": "/api/v1/support/tickets/{id}"
+    },
+    {
+      "auth": "capability",
+      "controllerFile": "apps/api/src/production/support/support-tickets.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "support.tickets.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/support/tickets",
+      "bffPath": "/api/v1/support/tickets"
     },
     {
       "auth": "capability",
@@ -4769,7 +5339,7 @@
     "migrated-access-policy": 2,
     "migrated-billing-policy": 17,
     "migrated-data-quality-policy": 15,
-    "native-hardened-runtime": 80,
+    "native-hardened-runtime": 137,
     "native-identity-service": 2,
     "native-integration-service": 15
   },

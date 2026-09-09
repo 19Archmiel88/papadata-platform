@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-208",
   "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Strony wejścia",
-  "sourceDocument": "12-ruch-i-lejek/35-08-strony-wejscia.md",
+  "sourceDocument": "12-ruch-i-lejek/README.md",
   "screenId": "35.08",
   "components": [
     "PageHeader",

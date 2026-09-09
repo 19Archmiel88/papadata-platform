@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-213",
   "storyTitle": "40 Integracje i synchronizacja/Kreator połączenia",
-  "sourceDocument": "13-integracje-i-synchronizacja/40-02-kreator-polaczenia.md",
+  "sourceDocument": "13-integracje-i-synchronizacja/README.md",
   "screenId": "40.02",
   "components": [
     "PageHeader",

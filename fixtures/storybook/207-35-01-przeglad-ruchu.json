@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-207",
   "storyTitle": "35 Ruch na stronie i lejek sprzedażowy/Przegląd ruchu",
-  "sourceDocument": "12-ruch-i-lejek/35-01-przeglad-ruchu.md",
+  "sourceDocument": "12-ruch-i-lejek/README.md",
   "screenId": "35.01",
   "components": [
     "PageHeader",

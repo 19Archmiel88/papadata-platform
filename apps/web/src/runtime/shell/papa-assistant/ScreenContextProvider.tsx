@@ -12,6 +12,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { safeRandomUUID } from '../../shared/id/safeRandomUUID';
 
 export type PapaScreenContextElementKind =
   | 'chart'
@@ -233,7 +234,7 @@ export function PapaScreenContextProvider({
       ...currentContext,
       captureReason,
       capturedAt,
-      snapshotId: `papa-context-${crypto.randomUUID()}`,
+      snapshotId: `papa-context-${safeRandomUUID()}`,
       route: currentContext.route + (typeof window !== "undefined" ? window.location.search : ""),
     };
   }, [

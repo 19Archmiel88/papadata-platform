@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-216",
   "storyTitle": "40 Integracje i synchronizacja/Przebieg synchronizacji",
-  "sourceDocument": "13-integracje-i-synchronizacja/40-05-przebieg-synchronizacji.md",
+  "sourceDocument": "13-integracje-i-synchronizacja/README.md",
   "screenId": "40.05",
   "components": [
     "PageHeader",

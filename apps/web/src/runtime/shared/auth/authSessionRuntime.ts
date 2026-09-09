@@ -104,7 +104,7 @@ export function authSessionReducer(
       return {
         problem: null,
         reauth: null,
-        session: state.session ? { ...state.session, ...event.session } : event.session,
+        session: state.session?.userId === event.session.userId ? { ...state.session, ...event.session } : event.session,
         status: 'authenticated',
       };
     case 'reauth-required':
@@ -135,26 +135,36 @@ export function reauthLevelFromError(cause: unknown): 'mfa' | 'step_up' | null {
 export function useAuthSessionRuntime(client: BffClient): AuthSessionRuntime {
   const [state, dispatch] = useReducer(authSessionReducer, initialState);
   const mountedRef = useRef(true);
+  const sessionEpoch = useRef(0);
+  const scopeRef = useRef('');
+  const bind = useCallback((session: BffSession | null) => {
+    scopeRef.current = session ? `${session.activeTenantId}:${session.activeWorkspaceId}:${session.userId}` : '';
+    client.bindSessionScope(session);
+  }, [client]);
 
   useEffect(() => {
     mountedRef.current = true;
 
     return () => {
       mountedRef.current = false;
+      ++sessionEpoch.current;
     };
   }, []);
 
   const bootstrap = useCallback(async () => {
+    const epoch = ++sessionEpoch.current;
     dispatch({ type: 'bootstrap-started' });
     try {
       const session = await client.readSession();
-      if (!mountedRef.current) return;
+      if (!mountedRef.current || epoch !== sessionEpoch.current) return;
+      bind(session);
       dispatch({ type: 'bootstrap-succeeded', session });
     } catch (cause) {
-      if (!mountedRef.current) return;
+      if (!mountedRef.current || epoch !== sessionEpoch.current) return;
+      bind(null);
       dispatch({ type: 'bootstrap-failed', problem: readProblemMessage(cause) });
     }
-  }, [client]);
+  }, [client, bind]);
 
   useEffect(() => {
     void bootstrap();
@@ -164,6 +174,7 @@ export function useAuthSessionRuntime(client: BffClient): AuthSessionRuntime {
     const unsubscribe = client.subscribeAuthEvents((event) => {
       if (event.type === 'logout') {
         if (!mountedRef.current) return;
+        ++sessionEpoch.current; bind(null);
         dispatch({ type: 'logged-out' });
         return;
       }
@@ -175,9 +186,12 @@ export function useAuthSessionRuntime(client: BffClient): AuthSessionRuntime {
         // sibling tab's login/refresh/workspace-switch and this tab's own
         // mutations (applySession already applied those instantly; this
         // is a self-correcting confirmation, not the primary path).
+        const epoch = ++sessionEpoch.current;
         void client.readSession().then((session) => {
-          if (!mountedRef.current || !session) return;
-          dispatch({ type: 'session-applied', session });
+          if (!mountedRef.current || epoch !== sessionEpoch.current) return;
+          bind(session);
+          if (session) dispatch({ type: 'session-applied', session });
+          else dispatch({type:'logged-out'});
         }).catch(() => {
           // A sibling tab may be mid-transition (e.g. about to log out);
           // the next event or an explicit retry will reconcile. A
@@ -187,21 +201,25 @@ export function useAuthSessionRuntime(client: BffClient): AuthSessionRuntime {
       }
     });
     return unsubscribe;
-  }, [client]);
+  }, [client, bind]);
 
   const applySession = useCallback((session: BffSession) => {
+    ++sessionEpoch.current; bind(session);
     dispatch({ type: 'session-applied', session });
-  }, []);
+  }, [bind]);
 
   const runAuthenticatedCommand = useCallback(async <T,>(
     action: () => Promise<T>,
     currentPath: string,
   ): Promise<T> => {
+    const expectedScope = scopeRef.current;
     try {
-      return await action();
+      const result = await action();
+      if (scopeRef.current !== expectedScope) throw new BffProblem(409, 'REQUEST_SCOPE_CHANGED', 'Workspace lub konto zmieniło się podczas operacji. Odśwież bieżący widok.');
+      return result;
     } catch (cause) {
       const level = reauthLevelFromError(cause);
-      if (level) dispatch({ type: 'reauth-required', level, returnTo: currentPath });
+      if (level && mountedRef.current && scopeRef.current === expectedScope) dispatch({ type: 'reauth-required', level, returnTo: currentPath });
       throw cause;
     }
   }, []);

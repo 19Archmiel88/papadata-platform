@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-222",
   "storyTitle": "41 Jakość danych i integralność/Nadrzędność źródła",
-  "sourceDocument": "14-jakosc-danych-i-integralnosc/41-05-nadrzednosc-zrodla.md",
+  "sourceDocument": "14-jakosc-danych-i-integralnosc/README.md",
   "screenId": "41.05",
   "components": [
     "PageHeader",

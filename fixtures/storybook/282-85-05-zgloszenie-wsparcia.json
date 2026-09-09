@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-282",
   "storyTitle": "85 Centrum Pomocy/Zgłoszenie wsparcia",
-  "sourceDocument": "19-centrum-pomocy/85-05-zgloszenie-wsparcia.md",
+  "sourceDocument": "19-centrum-pomocy/README.md",
   "screenId": "85.05",
   "components": [
     "PageHeader",

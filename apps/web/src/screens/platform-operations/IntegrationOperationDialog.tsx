@@ -1,0 +1,16 @@
+import { useRef, useState } from 'react';
+import { Button } from '../../design-system';
+import { safeRandomUUID } from '../../runtime/shared/id/safeRandomUUID';
+import type { IntegrationRuntimeSource } from '../../runtime/integrations/integrationsData';
+import { useProductLocale } from '../shared/useProductLocale';
+import { OperationsDialog, OperationError } from './OperationsFrame';
+export type IntegrationOperation = {kind:'scope'|'backfill';source:IntegrationRuntimeSource;streams:readonly string[]};
+export function IntegrationOperationDialog({operation,onClose,onConfirm}:{operation:IntegrationOperation;onClose:()=>void;onConfirm:(values:{from:string;to:string;reason:string;requestId:string})=>Promise<void>}){
+ const {t}=useProductLocale(),[from,setFrom]=useState(new Date(Date.now()-30*86400000).toISOString().slice(0,10)),[to,setTo]=useState(new Date().toISOString().slice(0,10)),[reason,setReason]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState<string|null>(null),request=useRef<{body:string;id:string}|null>(null);
+ async function confirm(){if(busy)return;const values={from:`${from}T00:00:00.000Z`,to:`${to}T23:59:59.999Z`,reason},body=JSON.stringify(values);if(request.current?.body!==body)request.current={body,id:safeRandomUUID()};setError(null);setBusy(true);try{await onConfirm({...values,requestId:request.current.id});}catch(cause){setError(cause instanceof Error?cause.message:'Operation failed');}finally{setBusy(false);}}
+ return <OperationsDialog open busy={busy} title={operation.kind==='scope'?t('Potwierdz zmiane zakresu','Confirm scope change'):t('Uzupelnij historie','Backfill history')} onClose={onClose}>
+ <p>{operation.source.displayName} / {operation.source.provider}</p>
+ {operation.kind==='scope'?<><p>{t('Przed','Before')}: {operation.source.selectedStreams.join(', ')}</p><p>{t('Po','After')}: {operation.streams.join(', ')}</p><p>{t('Zmiana dotyczy przyszlych synchronizacji. Nie usuwa historii ani nie anuluje juz uruchomionych zadan. Nie nadaje uprawnien dostawcy.','This affects future synchronization. It does not delete history or cancel existing jobs, and it does not grant provider permissions.')}</p><label>{t('Uzasadnienie','Reason')}<textarea value={reason} minLength={10} maxLength={1000} disabled={busy} onChange={e=>setReason(e.target.value)}/></label></>:<><p>{t('Zlecisz ponowne pobranie historii w zakresie UTC. Akceptacja zlecenia nie jest zakonczeniem importu.','Request historical data for a UTC interval. Accepting the job does not mean ingestion has completed.')}</p><label>{t('Od (UTC)','From (UTC)')}<input type="date" value={from} max={to} disabled={busy} onChange={e=>setFrom(e.target.value)}/></label><label>{t('Do (UTC)','Until (UTC)')}<input type="date" value={to} min={from} max={new Date().toISOString().slice(0,10)} disabled={busy} onChange={e=>setTo(e.target.value)}/></label><p>{t('Strumienie','Streams')}: {operation.streams.join(', ')}</p></>}
+ <OperationError message={error}/><div className="pd-operations__actions"><Button variant="secondary" disabled={busy} onClick={onClose}>{t('Anuluj','Cancel')}</Button><Button disabled={busy||(operation.kind==='scope'?reason.trim().length<10:!from||!to||from>to)} onClick={()=>void confirm()}>{t('Potwierdz operacje','Confirm operation')}</Button></div>
+ </OperationsDialog>;
+}

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-230",
   "storyTitle": "18 Wzorce interfejsu/DataDecisionWorkspace",
-  "sourceDocument": "21-stany-przekrojowe/18-11-data-decision-workspace.md",
+  "sourceDocument": "21-stany-przekrojowe/README.md",
   "screenId": null,
   "components": [
     "ChartFrame",

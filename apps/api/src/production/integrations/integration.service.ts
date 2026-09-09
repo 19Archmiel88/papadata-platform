@@ -48,7 +48,7 @@ export class IntegrationService {
 
   constructor(
     @Inject(ProductionDatabase)
-    database: ProductionDatabase,
+    private readonly database: ProductionDatabase,
     @Inject(IntegrationQueueService)
     private readonly queue: IntegrationQueueService,
     @Inject(INTEGRATION_CREDENTIAL_PROVIDER)
@@ -95,7 +95,16 @@ export class IntegrationService {
     tenantId: string,
     workspaceId: string,
   ): Promise<IntegrationRuntimeStatus> {
-    return this.readRuntimeStatusSnapshot(tenantId, workspaceId);
+    const result = await this.readRuntimeStatusSnapshot(tenantId, workspaceId);
+    const scopes = await this.database.withTenantWorkspace(tenantId, workspaceId, async client =>
+      (await client.query<{connection_id:string; streams:string[]; version:number}>(
+        'SELECT connection_id,streams,version FROM app.integration_sync_scopes WHERE tenant_id=$1 AND workspace_id=$2', [tenantId,workspaceId])).rows);
+    const connections=await this.repository.listConnections(tenantId,workspaceId);
+    return {...result, sources: result.sources.map(source => {
+      const scope=scopes.find(item=>item.connection_id===source.integrationId);
+      const streams=scope?.streams??this.registry.listTargetDescriptors().find(item=>item.providerId===source.provider)?.supportedStreams??[];
+      return {...source, selectedStreams:streams, scopeVersion:scope?.version??0, credentialVersion:Number(connections.find(row=>String(row.connection_id)===source.integrationId)?.credential_version??0), schedule:'Scheduled synchronization; check job history.', objectReadiness:[]};
+    })};
   }
 
   async readCatalog(
@@ -232,7 +241,30 @@ export class IntegrationService {
       throw new Error("Integration job not found");
     }
 
-    await this.queue.retry(jobId);
+    const retryable = ['failed', 'retryable_failed', 'dead_lettered', 'terminal_failed'];
+    if (!retryable.includes(String(job.status))) throw new Error("Only failed jobs can be retried.");
+    const connection = await this.repository.findConnection(tenantId, workspaceId, String(job.connection_id));
+    if (!connection || connection.status !== 'active') throw new Error("Reconnect the source before retrying.");
+    const prepared = await this.database.withTenantWorkspace(tenantId, workspaceId, async client => {
+      const result = await client.query(`UPDATE app.sync_jobs SET status='queued', completed_at=NULL,
+        lease_owner=NULL,lease_expires_at=NULL,cancel_requested_at=NULL,updated_at=now()
+        WHERE tenant_id=$1 AND workspace_id=$2 AND sync_job_id=$3
+          AND status=$4 AND status IN ('failed','retryable_failed','dead_lettered','terminal_failed')
+        RETURNING sync_job_id`, [tenantId,workspaceId,jobId,job.status]);
+      return result.rowCount === 1;
+    });
+    if (!prepared) throw new Error("Job state changed. Reload history before retrying.");
+    try {
+      await this.queue.retry(jobId);
+    } catch (cause) {
+      // Queue failure must not be displayed as a running import. Do not undo a lease
+      // already acquired by a worker following an ambiguous network response.
+      await this.database.withTenantWorkspace(tenantId, workspaceId, client => client.query(
+        `UPDATE app.sync_jobs SET status=$4,completed_at=$5,updated_at=now()
+         WHERE tenant_id=$1 AND workspace_id=$2 AND sync_job_id=$3 AND status='queued'`,
+        [tenantId,workspaceId,jobId,job.status,job.completed_at ?? null]));
+      throw cause;
+    }
   }
 
   async cancelJob(
@@ -276,6 +308,11 @@ export class IntegrationService {
       throw new Error("Integration connection scope mismatch");
     }
 
+    if (connection.status !== 'active') throw new ConflictException('Reconnect and select an account before synchronization.');
+    const configured = await this.database.withTenantWorkspace(input.tenantId,input.workspaceId,async client =>
+      (await client.query<{streams:string[]}>('SELECT streams FROM app.integration_sync_scopes WHERE tenant_id=$1 AND workspace_id=$2 AND connection_id=$3',[input.tenantId,input.workspaceId,input.connectionId])).rows[0]);
+    const allowed = configured?.streams ?? this.registry.listTargetDescriptors().find(item=>item.providerId===input.providerId)?.supportedStreams ?? [];
+    if (input.request.streams.length===0 || input.request.streams.some(stream=>!allowed.includes(stream))) throw new ConflictException('Requested streams are outside the saved synchronization scope.');
     const credentialReference = readConnectionCredentialReference(connection);
     await this.credentialProvider.resolve({
       tenantId: input.tenantId,

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-007",
   "storyTitle": "10 Komponenty bazowe/Menu, popovery i tooltipy",
-  "sourceDocument": "04-komponenty-bazowe/10-09-menu-popovery-i-tooltipy.md",
+  "sourceDocument": "04-komponenty-bazowe/README.md",
   "screenId": null,
   "components": [],
   "states": [

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-173",
   "storyTitle": "31 Kampanie płatne/Rekomendacje — kontekst domenowy",
-  "sourceDocument": "08-kampanie-platne/31-07-rekomendacje-kontekst-domenowy.md",
+  "sourceDocument": "08-kampanie-platne/README.md",
   "screenId": "31.07",
   "components": [
     "PageHeader",

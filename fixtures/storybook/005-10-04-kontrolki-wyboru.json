@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-005",
   "storyTitle": "10 Komponenty bazowe/Kontrolki wyboru",
-  "sourceDocument": "04-komponenty-bazowe/10-04-kontrolki-wyboru.md",
+  "sourceDocument": "04-komponenty-bazowe/README.md",
   "screenId": null,
   "components": [],
   "states": [

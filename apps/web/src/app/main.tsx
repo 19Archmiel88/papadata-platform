@@ -1,4 +1,3 @@
-import { PapaAssistantExperience } from '../runtime/shell/papa-assistant/PapaAssistantExperience';
 import { isAssistantPath } from '../runtime/shell/papa-assistant/assistantModel';
 import { lazy, StrictMode, Suspense, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -8,19 +7,8 @@ import {
   applyPapaDataRuntimeGlobals,
   getInitialPapaDataRuntimeGlobals,
 } from '../design-system/foundations/runtime/index';
-import {
-  AuthSurface,
-  type AuthAcceptInvitationInput,
-  type AuthLoginInput,
-  type AuthMfaInput,
-  type AuthPasswordResetInput,
-  type AuthRecoveryRequestInput,
-  type AuthRegisterInput,
-  type AuthStepUpInput,
-  type AuthSurfaceMode,
-  type AuthSurfaceState,
-} from '../runtime/features/auth/AuthSurface';
-import { navigate, safeReturnTo, useLocationPath } from '../runtime/app/routing/navigation';
+
+import { navigate, useLocationPath } from '../runtime/app/routing/navigation';
 import {
   createRuntimeShellCommands,
   createRuntimeShellNavigation,
@@ -28,14 +16,7 @@ import {
   type ShellUser,
   type ShellWorkspace,
 } from '../runtime/shell/index';
-import { CommandCenterPage } from './command-center/CommandCenterPage';
-import { AnalyticsModuleScreen } from '../runtime/analytics/AnalyticsModuleScreen';
 import type { AnalyticsModuleGroup } from '../runtime/analytics/analyticsModuleData';
-import { SavedReportsPage } from './saved-reports/SavedReportsPage';
-import { SubscriptionBillingPage } from './subscription-billing/SubscriptionBillingPage';
-import { IntegrationsPage } from './integrations/IntegrationsPage';
-import { SettingsPage } from './settings/SettingsPage';
-import { HelpCenterScreen } from '../screens/help-center/HelpCenterScreen';
 import { bffClient, type BffSession } from '../runtime/shared/api/bffClient';
 import {
   AuthSessionRuntimeProvider,
@@ -43,6 +24,25 @@ import {
   useAuthSessionRuntime,
 } from '../runtime/shared/auth/authSessionRuntime';
 import './runtime-app.css';
+
+import {isAccessRoute} from './access/accessRoutes';
+import {RenderBoundary} from '../runtime/shared/errors/RenderBoundary';
+const AccessRouter=lazy(()=>import('./access/AccessRouter').then(module=>({default:module.AccessRouter})));
+const DataQualityPage=lazy(()=>import('./data-quality/DataQualityPage').then(module=>({default:module.DataQualityPage})));
+const CampaignsPage=lazy(()=>import('./campaigns/CampaignsPage').then(module=>({default:module.CampaignsPage})));
+const HelpPage=lazy(()=>import('./help/HelpPage').then(module=>({default:module.HelpPage})));
+const DecisionsPage=lazy(()=>import('./decisions/DecisionsPage').then(module=>({default:module.DecisionsPage})));
+const TrafficPage=lazy(()=>import('./traffic/TrafficPage').then(module=>({default:module.TrafficPage})));
+const CustomersPage=lazy(()=>import('./customers/CustomersPage').then(module=>({default:module.CustomersPage})));
+const PapaAssistantExperience=lazy(()=>import('../runtime/shell/papa-assistant/PapaAssistantExperience').then(module=>({default:module.PapaAssistantExperience})));
+const CommandCenterPage=lazy(()=>import('./command-center/CommandCenterPage').then(module=>({default:module.CommandCenterPage})));
+const AnalyticsModuleScreen=lazy(()=>import('../runtime/analytics/AnalyticsModuleScreen').then(module=>({default:module.AnalyticsModuleScreen})));
+const SavedReportsPage=lazy(()=>import('./saved-reports/SavedReportsPage').then(module=>({default:module.SavedReportsPage})));
+const SubscriptionBillingPage=lazy(()=>import('./subscription-billing/SubscriptionBillingPage').then(module=>({default:module.SubscriptionBillingPage})));
+const IntegrationsPage=lazy(()=>import('./integrations/IntegrationsPage').then(module=>({default:module.IntegrationsPage})));
+const SettingsPage=lazy(()=>import('./settings/SettingsPage').then(module=>({default:module.SettingsPage})));
+const OrdersPage=lazy(()=>import('./orders/OrdersPage').then(module=>({default:module.OrdersPage})));
+const ProductsPage=lazy(()=>import('./products/ProductsPage').then(module=>({default:module.ProductsPage})));
 
 applyPapaDataRuntimeGlobals(document.documentElement, getInitialPapaDataRuntimeGlobals());
 
@@ -61,7 +61,7 @@ function AppEntry() {
 function RuntimeApp() {
   const locationPath = useLocationPath();
   const runtime = useAuthSessionRuntime(bffClient);
-  const authMode = resolveAuthMode(locationPath);
+  const authRoute = isAccessRoute(locationPath);
 
   if (runtime.status === 'initializing') {
     return <main className="pd-runtime-loading">Ładowanie PapaData...</main>;
@@ -70,128 +70,21 @@ function RuntimeApp() {
   const showAuthSurface =
     runtime.status === 'service_unavailable' ||
     runtime.status === 'reauth_required' ||
-    authMode !== null ||
+    authRoute ||
     runtime.status === 'anonymous';
 
   if (showAuthSurface) {
-    return <RuntimeAuthSurface authMode={authMode} locationPath={locationPath} runtime={runtime} />;
+    return <RenderBoundary key={locationPath.split('?')[0]}><Suspense fallback={<main className="pd-runtime-loading" role="status">Wczytywanie dostępu…</main>}><AccessRouter locationPath={locationPath} runtime={runtime} /></Suspense></RenderBoundary>;
   }
 
   return runtime.session ? (
     <AuthenticatedRuntimeShell
+      key={`${runtime.session.activeTenantId}:${runtime.session.activeWorkspaceId}:${runtime.session.userId}`}
       activePath={locationPath.startsWith('/app') ? locationPath : '/app'}
       runtime={runtime}
       session={runtime.session}
     />
   ) : null;
-}
-
-function RuntimeAuthSurface({
-  authMode,
-  locationPath,
-  runtime,
-}: {
-  readonly authMode: AuthSurfaceMode | null;
-  readonly locationPath: string;
-  readonly runtime: AuthSessionRuntime;
-}) {
-  const mode: AuthSurfaceMode =
-    runtime.status === 'reauth_required'
-      ? runtime.reauth?.level === 'mfa'
-        ? 'mfa'
-        : 'reauth'
-      : (authMode ?? 'login');
-  const state: AuthSurfaceState =
-    runtime.status === 'service_unavailable' ? 'serviceUnavailable' : 'ready';
-
-  function postReauthReturnTo(): string {
-    return safeReturnTo(runtime.reauth?.returnTo ?? queryParam('returnTo'));
-  }
-
-  return (
-    <AuthSurface
-      initialEmail={queryParam('email') ?? ''}
-      initialInvitationId={queryParam('invitationId')}
-      initialInvitationToken={queryParam('token')}
-      initialResetToken={queryParam('resetToken')}
-      mode={mode}
-      onAcceptInvitation={async (input: AuthAcceptInvitationInput) => {
-        await bffClient.acceptInvitation({
-          displayName: input.displayName,
-          invitationId: input.invitationId,
-          password: input.password,
-          token: input.token,
-        });
-        navigate('/login');
-      }}
-      onLogin={async (input: AuthLoginInput) => {
-        const result = await bffClient.login(input);
-        runtime.applySession(result.session);
-        navigate(safeReturnTo(queryParam('returnTo')));
-      }}
-      onMfaConfirm={async (input: AuthMfaInput) => {
-        // Elevates the current (already-authenticated) session's authLevel
-        // by proving an already-enrolled TOTP factor -- this is the
-        // ordinary per-login/per-reauth check, so it must call
-        // POST /api/v1/auth/mfa/verify, never mfa/confirm (that endpoint
-        // is reserved for confirming a brand-new enrollment and, on
-        // success, revokes every sibling session for the account -- the
-        // wrong side effect for a routine login).
-        const result = await bffClient.verifyMfa(input);
-        runtime.applySession(result.session);
-        navigate(postReauthReturnTo());
-      }}
-      onNavigate={navigate}
-      onOAuthContinue={async () => {
-        // No dedicated OAuth callback landing route exists in this
-        // runtime shell yet (the BffClient contract -- startOAuth /
-        // completeOAuthCallback -- is ready, but wiring the redirect
-        // button without a way to complete the return trip would strand
-        // the user mid-flow). Tracked as an explicit Phase 8 follow-up;
-        // oauthAvailability is intentionally left unset above so the
-        // buttons render as disabled/"configuration required" rather
-        // than reaching this handler.
-        throw new Error('OAuth is not configured for this production-parity shell.');
-      }}
-      onPasswordRecoveryRequest={async (input: AuthRecoveryRequestInput) => {
-        await bffClient.requestPasswordRecovery(input);
-      }}
-      onPasswordReset={async (input: AuthPasswordResetInput) => {
-        await bffClient.resetPassword({
-          email: input.email,
-          newPassword: input.newPassword,
-          otp: input.otp,
-          resetToken: input.resetToken,
-        });
-        navigate('/login');
-      }}
-      onRegister={async (input: AuthRegisterInput) => {
-        const result = await bffClient.register(input);
-        runtime.applySession(result.session);
-        navigate('/app');
-      }}
-      onRetry={runtime.retryBootstrap}
-      onSelectWorkspace={async (workspaceId: string) => {
-        const nextSession = await runtime.runAuthenticatedCommand(
-          () => bffClient.selectWorkspace(workspaceId),
-          locationPath,
-        );
-        runtime.applySession(nextSession);
-        navigate('/app');
-      }}
-      onStepUpConfirm={async (input: AuthStepUpInput) => {
-        const result = await bffClient.stepUp({
-          code: input.code,
-          operationScope: 'runtime.shell',
-        });
-        runtime.applySession(result.session);
-        navigate(postReauthReturnTo());
-      }}
-      onValidateInvitation={(input) => bffClient.validateInvitation(input)}
-      state={state}
-      workspaceOptions={sessionToWorkspaceOptions(runtime.session)}
-    />
-  );
 }
 
 function AuthenticatedRuntimeShell({
@@ -212,6 +105,7 @@ function AuthenticatedRuntimeShell({
   const activePathname = activePath.split('?', 1)[0] ?? activePath;
 
   return (
+    <AuthSessionRuntimeProvider value={runtime}>
     <ProductShellFrame
       runPapaCommand={(operation) => runtime.runAuthenticatedCommand(operation, activePath)}
       activePath={activePath}
@@ -227,7 +121,7 @@ function AuthenticatedRuntimeShell({
         // to that and transitions to anonymous, including in every other
         // open tab, so no local state needs clearing here.
         await bffClient.logout();
-        navigate('/auth');
+        navigate('/auth/logged-out');
       }}
       onNavigate={navigate}
       onSelectWorkspace={async (workspaceId) => {
@@ -240,26 +134,35 @@ function AuthenticatedRuntimeShell({
       user={sessionToShellUser(session)}
       workspaces={sessionToShellWorkspaces(session)}
     >
+      <RenderBoundary key={activePathname}><Suspense fallback={<section className="pd-runtime-loading" role="status">Wczytywanie widoku…</section>}>
       {isAssistantPath(activePath) ? (
         <PapaAssistantExperience />
+      ) : activePathname === '/app/decisions' || activePathname.startsWith('/app/decisions/') ? (
+        <DecisionsPage />
       ) : isSavedReportsPath(activePath) ? (
-        <AuthSessionRuntimeProvider value={runtime}>
-          <SavedReportsPage />
-        </AuthSessionRuntimeProvider>
+        <SavedReportsPage />
       ) : isSubscriptionBillingPath(activePath) ? (
         <SubscriptionBillingPage />
+      ) : activePathname === '/app/data-quality' || activePathname.startsWith('/app/data-quality/') ? (
+        <DataQualityPage />
       ) : isIntegrationsPath(activePath) ? (
-        <AuthSessionRuntimeProvider value={runtime}>
-          <IntegrationsPage />
-        </AuthSessionRuntimeProvider>
+        <IntegrationsPage />
       ) : isSettingsPath(activePath) ? (
-        <AuthSessionRuntimeProvider value={runtime}>
-          <SettingsPage />
-        </AuthSessionRuntimeProvider>
+        <SettingsPage />
       ) : isHelpPath(activePath) ? (
-        <HelpCenterScreen />
+        <HelpPage />
       ) : activePathname === '/app' || activePathname === '/app/command-center' ? (
         <CommandCenterPage />
+      ) : analyticsGroup === 'campaigns' && ['/app/campaigns','/app/campaigns/growth','/app/campaigns/atrybucja-i-sprzedaz','/app/campaigns/kreacje','/app/campaigns/budzet'].includes(activePathname) ? (
+        <CampaignsPage />
+      ) : analyticsGroup === 'orders' ? (
+        <OrdersPage />
+      ) : analyticsGroup === 'products' ? (
+        <ProductsPage />
+      ) : analyticsGroup === 'customers' ? (
+        <CustomersPage />
+      ) : analyticsGroup === 'traffic' ? (
+        <TrafficPage />
       ) : analyticsGroup ? (
         <AnalyticsModuleScreen group={analyticsGroup} path={activePath} />
       ) : (
@@ -273,7 +176,9 @@ function AuthenticatedRuntimeShell({
           <a href="/app/command-center">Wróć do przeglądu</a>
         </section>
       )}
+      </Suspense></RenderBoundary>
     </ProductShellFrame>
+    </AuthSessionRuntimeProvider>
   );
 }
 
@@ -318,23 +223,6 @@ function resolveAnalyticsGroup(path: string): AnalyticsModuleGroup | null {
   return entry ? (entry[0] as AnalyticsModuleGroup) : null;
 }
 
-function resolveAuthMode(path: string): AuthSurfaceMode | null {
-  const pathname = path.split('?', 1)[0] ?? '/';
-  if (pathname === '/' || pathname === '/auth') return 'entry';
-  if (pathname === '/login' || pathname === '/auth/login') return 'login';
-  if (pathname === '/register' || pathname === '/auth/register') return 'register';
-  if (pathname === '/recover-access' || pathname === '/auth/recover-access') return 'recover';
-  if (pathname === '/mfa' || pathname === '/auth/mfa') return 'mfa';
-  if (pathname === '/reauth' || pathname === '/auth/reauth') return 'reauth';
-  if (pathname === '/workspace' || pathname === '/auth/workspace') return 'workspace';
-  if (pathname === '/accept-invite' || pathname === '/auth/accept-invite') return 'accept-invite';
-  return null;
-}
-
-function queryParam(name: string): string | null {
-  return new URLSearchParams(window.location.search).get(name);
-}
-
 function sessionToShellUser(session: BffSession): ShellUser {
   return {
     displayName: session.user?.displayName ?? 'Użytkownik PapaData',
@@ -351,17 +239,6 @@ function sessionToShellWorkspaces(session: BffSession): readonly ShellWorkspace[
     statusText: 'Aktywny',
     tone: 'success',
   }));
-}
-
-function sessionToWorkspaceOptions(session: BffSession | null) {
-  return (
-    session?.memberships.map((membership) => ({
-      tenantId: membership.tenantId,
-      tenantName: membership.tenantName,
-      workspaceId: membership.workspaceId,
-      workspaceName: membership.workspaceName,
-    })) ?? []
-  );
 }
 
 const root = document.getElementById('root');

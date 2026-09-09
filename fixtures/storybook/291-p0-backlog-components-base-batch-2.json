@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-291",
   "storyTitle": "00 Fundamenty/06 Katalog komponentów/Backlog P0 komponentów bazowych - pakiet 2",
-  "sourceDocument": "22-mapy-i-indeksy/storybook-backlog-scenariusze.md",
+  "sourceDocument": "22-mapy-i-indeksy/README.md",
   "screenId": null,
   "components": [
     "BottomSheet",

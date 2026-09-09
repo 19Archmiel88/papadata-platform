@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-163",
   "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/Sygnały sprzedażowe",
-  "sourceDocument": "07-centrum-dowodzenia/30-12-sygnaly-sprzedazowe.md",
+  "sourceDocument": "07-centrum-dowodzenia/README.md",
   "screenId": "30.12",
   "components": [
     "BusinessScreen",

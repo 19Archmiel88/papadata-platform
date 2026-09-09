@@ -1,6 +1,7 @@
+import { ReportContextCard } from './ReportContextCard';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '../../design-system/components/Button';
-import { buildReportSnapshot, reportConfigError, reportConfigKey } from './SavedReports.build';
+import { reportConfigError, reportConfigKey } from '@papadata/contracts/saved-reports';
 import {
   defaultReportConfig,
   latestReportVersion,
@@ -18,6 +19,7 @@ import { ReportDocument } from './ReportDocument';
 
 type Props = {
   report: SavedReport;
+  allowLocalDraftExport?: boolean;
   commit: (c: ReportCommand) => Promise<ReportsStore>;
   onDone: (version: number) => void;
   onBack: () => void;
@@ -27,12 +29,13 @@ type Props = {
 };
 export function ReportEditor({
   report,
+  allowLocalDraftExport = false,
   commit,
   onDone,
   onBack,
   onCopy,
   onReload,
-  build = async (c) => buildReportSnapshot(c),
+  build = async () => { throw new Error('Brak adaptera generowania raportu.'); },
 }: Props) {
   const [config, setConfig] = useState(() =>
     structuredClone(report.draft?.config ?? latestReportVersion(report)!.config),
@@ -197,8 +200,10 @@ export function ReportEditor({
             </Button>
             <Button
               variant="ghost"
+              disabled={!allowLocalDraftExport}
+              title={allowLocalDraftExport?undefined:'Pobieranie produkcyjne wymaga zapisanej wersji i zgody serwera.'}
               onClick={() =>
-                downloadReport(
+                allowLocalDraftExport && downloadReport(
                   reportJson({
                     ...report,
                     draft: {
@@ -221,6 +226,7 @@ export function ReportEditor({
           </div>
         </div>
       )}
+      <ReportContextCard context={config.context} reportId={report.id} onClear={()=>change({context:null})}/>
       <div className="pd-reports-editor__grid">
         <section className="pd-reports-form" aria-label="Ustawienia raportu" inert={publishing}>
           <div className="pd-reports-eyebrow">
@@ -271,7 +277,7 @@ export function ReportEditor({
           </label>
           {config.template === 'inventory' ? (
             <p className="pd-reports-inline-note">
-              Migawka magazynu: 31 sierpnia 2026. Popyt: poprzednie 30 dni.
+              Data i ograniczenia stanu magazynu pochodza z przeliczonego podgladu; nie z daty szablonu.
             </p>
           ) : (
             <fieldset>
@@ -296,6 +302,7 @@ export function ReportEditor({
               </div>
             </fieldset>
           )}
+          <label>Strefa czasowa<input value={config.timezone??'Europe/Warsaw'} maxLength={100} onChange={e=>change({timezone:e.target.value})}/></label>
           <label>
             Zakres
             <select value={config.filter} onChange={(e) => change({ filter: e.target.value })}>

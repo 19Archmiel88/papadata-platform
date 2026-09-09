@@ -15,7 +15,7 @@ export function createInitialShellDateRange(fallback?: DateRange): DateRange {
     const from = params.get('from'),
       to = params.get('to');
     if (from && to && isValidShellDateRange({ from, to })) {
-      return { from, to, preset: 'custom', timezone: fallback?.timezone ?? readRuntimeTimezone() };
+      return { from, to, preset: 'custom', timezone: validatedShellTimezone(params.get('timezone')) ?? fallback?.timezone ?? readRuntimeTimezone() };
     }
   }
   return fallback ?? readStoredShellDateRange() ?? createShellDateRangeForPreset('monthToDate');
@@ -61,7 +61,7 @@ export function formatShellDateRangeLabel(range: DateRange, locale: Locale = 'pl
   const formatter = new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'pl-PL', {
     day: '2-digit',
     month: 'short',
-    timeZone: range.timezone || readRuntimeTimezone(),
+    timeZone: 'UTC',
   });
   const fromDate = parseInputDate(range.from);
   const toDate = parseInputDate(range.to);
@@ -183,4 +183,10 @@ function formatDateInput(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
 
   return `${year}-${month}-${day}`;
+}
+
+export function validatedShellTimezone(value: unknown): string | null {
+  if (typeof value !== 'string' || value.length > 100) return null;
+  try { new Intl.DateTimeFormat('en-US', { timeZone: value }).format(); return value; }
+  catch { return null; }
 }

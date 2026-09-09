@@ -1,3 +1,6 @@
+import {AssistantWorkspaceService} from '../assistant-workspace/assistant-workspace.service.js';
+import {AccessMailService} from '../access-lifecycle/access-mail.service.js';
+import { fetchTrafficPortfolio } from "./traffic-portfolio.real-source.ts";
 import { Inject } from "@nestjs/common";
 import {
   BadRequestException,
@@ -152,6 +155,8 @@ export class ContractRuntimeService {
     @Inject(IntegrationService) private readonly integrations: IntegrationService,
     @Inject(Argon2PasswordService) private readonly passwords: Argon2PasswordService,
     @Inject(OAuthProviderConfig) private readonly oauthConfig: OAuthProviderConfig,
+    @Inject(AccessMailService) private readonly accessMail: AccessMailService,
+    @Inject(AssistantWorkspaceService) private readonly assistantWorkspace: AssistantWorkspaceService,
   ) {
     this.repository = new ProductDomainRepository(database);
     this.integrationRepository = new IntegrationRepository(database);
@@ -232,45 +237,15 @@ export class ContractRuntimeService {
             google: this.oauthConfig.statusFor("google"),
             microsoft: this.oauthConfig.statusFor("microsoft"),
           },
-          passwordRecovery: "token_link_available",
+          passwordRecovery: this.accessMail.available() ? "email_queue_available" : "configuration_required",
+          emailDelivery: this.accessMail.available(),
         },
         operationId: request.operationId,
       };
     }
 
     if (request.operationId === "auth.password.recovery.request") {
-      const email = requiredPayloadString(payload, "email");
-      const user = await this.identities.findByEmail(email);
-      if (!user) {
-        // Disclosure-safe: never reveal whether an account exists for this
-        // email — same response shape whether the account is real or not.
-        return {
-          data: {
-            accepted: true,
-            disclosureSafe: true,
-            deliveryStatus: "provider_configuration_required",
-          },
-          operationId: request.operationId,
-        };
-      }
-
-      const { token, expiresAt } = await this.passwordResets.createResetToken({
-        user,
-        ttlHours: 2,
-      });
-      return {
-        data: {
-          accepted: true,
-          disclosureSafe: false,
-          deliveryStatus: "token_issued",
-          expiresAt,
-          // No email delivery pathway exists yet — the reset link is
-          // surfaced directly, the same way admin-generated invitation
-          // links are surfaced today, instead of being auto-emailed.
-          resetToken: token,
-        },
-        operationId: request.operationId,
-      };
+      return {data:await this.accessMail.enqueue('recover',requiredPayloadString(payload,'email')),operationId:request.operationId};
     }
 
     if (request.operationId === "auth.password.recovery.token.validate") {
@@ -320,39 +295,7 @@ export class ContractRuntimeService {
     }
 
     if (request.operationId === "auth.email.resend") {
-      const email = requiredPayloadString(payload, "email");
-      const user = await this.identities.findByEmail(email);
-      // Disclosure-safe, mirroring auth.password.recovery.request: the same
-      // response shape whether the account doesn't exist, is already
-      // verified, or a fresh token was actually issued.
-      if (!user || user.emailVerifiedAt !== null) {
-        return {
-          data: {
-            accepted: true,
-            disclosureSafe: true,
-            deliveryStatus: "provider_configuration_required",
-          },
-          operationId: request.operationId,
-        };
-      }
-
-      const { token, expiresAt } = await this.emailVerifications.createVerificationToken({
-        user,
-        ttlHours: 24,
-      });
-      return {
-        data: {
-          accepted: true,
-          disclosureSafe: false,
-          deliveryStatus: "token_issued",
-          expiresAt,
-          // No email delivery pathway exists yet — the verification link is
-          // surfaced directly, the same way password-recovery links are
-          // surfaced today, instead of being auto-emailed.
-          verificationToken: token,
-        },
-        operationId: request.operationId,
-      };
+      return {data:await this.accessMail.enqueue('verify',requiredPayloadString(payload,'email')),operationId:request.operationId};
     }
 
     if (request.operationId.startsWith("auth.oauth.")) {
@@ -386,33 +329,8 @@ export class ContractRuntimeService {
     }
 
     if (request.operationId === "auth.registration.finalize") {
-      // The current registration flow (auth.register.email -> IdentityService.register)
-      // creates the user, tenant, workspace and membership synchronously in a
-      // single step -- there is no separate "pending draft" state for this
-      // operation to advance. Nothing in the web client calls it today. Kept
-      // as a real, idempotent confirmation (rather than a thrown exception)
-      // so a caller can safely check that a just-submitted registration is
-      // complete, without inventing a draft/job system that doesn't exist.
-      // Disclosure-safe: the same shape whether the email is unregistered or
-      // simply not yet finalized (there is no third state today).
-      const email = requiredPayloadString(payload, "email");
-      const user = await this.identities.findByEmail(email);
-      if (!user) {
-        return {
-          data: { finalized: false, status: "not_registered" },
-          operationId: request.operationId,
-        };
-      }
-
-      return {
-        data: {
-          email: user.normalizedEmail,
-          emailVerified: user.emailVerifiedAt !== null,
-          finalized: true,
-          userId: user.userId,
-        },
-        operationId: request.operationId,
-      };
+      // Public lookup must not enumerate identity IDs or verification state.
+      return {data:{finalized:false,status:'authentication_required'},operationId:request.operationId};
     }
 
     if (request.operationId === "invitation.validate") {
@@ -944,6 +862,7 @@ export class ContractRuntimeService {
       // screen only ever calls customers.overview.read, so these must not
       // be gated to a single, narrower operationId.
       const extra: Record<string, unknown> = {
+        scope: portfolio.scope,
         affinity: portfolio.affinity,
         cac: portfolio.cac,
         cohorts: portfolio.cohorts,
@@ -996,6 +915,11 @@ export class ContractRuntimeService {
         workspaceId: principal.workspaceId,
       });
       const extra: Record<string, unknown> = {};
+      if (request.operationId === "traffic.overview.read") {
+        extra.portfolio = await fetchTrafficPortfolio({ dataSource: this.integrationRepository,
+          dateRange: readRuntimeDateRange(request.query), generatedAt, tenantId: principal.tenantId, workspaceId: principal.workspaceId,
+          filters: { sourceId: optionalRecordString(query, "sourceId"), channel: optionalRecordString(query, "channel"), device: optionalRecordString(query, "device"), country: optionalRecordString(query, "country"), compare: query.compare === "previous" } });
+      }
       if (request.operationId === "traffic.event-quality.read") {
         extra.diagnostics = result.diagnostics;
       }
@@ -1110,7 +1034,11 @@ export class ContractRuntimeService {
     if (request.operationId === "papa.answer.generate") {
       const payload = readPayload(request.body);
       const prompt = requiredPayloadString(payload, "prompt");
+      const policy = await this.assistantWorkspace.preferences(principal);
+      if(!['context','evidence','metrics'].every(tool=>policy.allowedReadTools.includes(tool)))throw new ForbiddenException('Assistant generation is disabled by workspace policy.');
       const result = await generatePapaAnswer({
+        historyEnabled: policy.historyEnabled,
+        contextDays: policy.contextDays,
         budgetGuard: this.aiBudgetGuard,
         billing: this.billing,
         caseThreadId: optionalPayloadString(payload, "caseThreadId"),
@@ -2490,7 +2418,13 @@ function customersResultKey(operationId: string): string {
 function readCustomersFilters(query: Readonly<Record<string, unknown>>): CustomersFilters {
   const segment = optionalRecordStringList(query, "segment");
   const riskStatus = optionalRecordStringList(query, "riskStatus");
+  const sortBy = optionalRecordString(query, "sortBy");
+  const sortDirection = optionalRecordString(query, "sortDirection");
+  if (sortBy && !["ltv", "revenue", "ordersCount", "recencyDays", "customerPseudonym"].includes(sortBy)) throw new BadRequestException("Unsupported customer sort column.");
+  if (sortDirection && !["asc", "desc"].includes(sortDirection)) throw new BadRequestException("Unsupported sort direction.");
   return {
+    sortBy: sortBy as CustomersFilters["sortBy"],
+    sortDirection: sortDirection as CustomersFilters["sortDirection"],
     riskStatus: riskStatus as readonly ("at_risk" | "active" | "lapsed")[] | null,
     search: optionalRecordString(query, "search"),
     segment: segment as readonly CustomerSegment[] | null,

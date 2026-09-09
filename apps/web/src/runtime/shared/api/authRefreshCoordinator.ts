@@ -1,3 +1,5 @@
+import { safeRandomUUID } from '../id/safeRandomUUID';
+
 export type AuthRuntimeEvent =
   | { readonly type: 'logout'; readonly reason: 'logout' | 'logout-all' | 'refresh-failed' | 'session-revoked' }
   | { readonly type: 'refresh-failed' }
@@ -268,8 +270,7 @@ function readStorageLock(value: string | null): { readonly expiresAt: number; re
 }
 
 function createOwnerId(): string {
-  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
-  return `web-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  return safeRandomUUID();
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

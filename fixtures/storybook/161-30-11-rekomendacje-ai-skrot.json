@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-161",
   "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/Rekomendacje AI — skrót",
-  "sourceDocument": "07-centrum-dowodzenia/30-11-rekomendacje-ai-skrot.md",
+  "sourceDocument": "07-centrum-dowodzenia/README.md",
   "screenId": "30.11",
   "components": [
     "BusinessScreen",

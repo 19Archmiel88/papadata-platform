@@ -50,34 +50,70 @@ export class Ga4Adapter implements IntegrationProviderAdapter {
   }
 
   async fetch(request: ProviderFetchRequest): Promise<ProviderFetchResult> {
-    const from = dateOnly(request.from ?? checkpointDate(request.checkpoint)) ?? "30daysAgo";
-    const to = dateOnly(request.to) ?? "today";
-    const observedAt = new Date().toISOString();
-    const records: ProviderRecord[] = [];
-
-    for (const stream of request.streams) {
-      const report = await this.runReport(reportBody(stream, from, to));
-      const rows = readArrayField(report, "rows");
-      const dimensions = headerNames(report, "dimensionHeaders");
-      const metrics = headerNames(report, "metricHeaders");
-      for (const row of rows) {
-        const payload = normalizeGa4Row(row, dimensions, metrics);
-        records.push({
-          stream,
-          externalId: deterministicExternalId(stream, dimensions, payload),
-          observedAt,
-          payload,
-        });
-      }
+    if (request.streams.length === 0 || request.streams.some(stream => !GA4_STREAMS.includes(stream))) {
+      throw new ProviderAdapterError("GA4 received an unsupported or empty stream list", "validation");
     }
-
-    return {
-      records,
-      nextCheckpoint: JSON.stringify({ date: to === "today" ? observedAt.slice(0, 10) : to }),
-      nextPageCursor: null,
-      partial: false,
-      limitations: [],
-    };
+    // One response is one durable page. A resume cursor pins both dates and
+    // stream order; it must never silently restart at offset zero.
+    const signature = createHash("sha256").update(JSON.stringify({
+      propertyId: this.config?.propertyId, streams: request.streams,
+      from: request.from, to: request.to, checkpoint: request.checkpoint,
+    })).digest("hex");
+    let cursor: ReportCursor;
+    if (request.pageCursor) {
+      cursor = parseCursor(request.pageCursor, signature, request.streams.length);
+    } else {
+      let from = dateOnly(request.from ?? checkpointDate(request.checkpoint));
+      let to = dateOnly(request.to);
+      if (!from || !to) {
+        // Relative dates are defined by the property timezone, not the worker
+        // timezone. Resolve once and persist the absolute dates in the cursor.
+        const probe = await this.runReport({ dateRanges: [{ startDate: "yesterday", endDate: "today" }], metrics: [{ name: "sessions" }], limit: "1" });
+        const metadata = isRecord(probe.metadata) ? probe.metadata : {};
+        const timezone = readStringField(metadata, "timeZone");
+        if (!timezone) throw new ProviderAdapterError("GA4 did not return the property timezone", "validation");
+        const today = calendarDate(new Date(), timezone);
+        to ??= today;
+        from ??= new Date(Date.parse(`${today}T00:00:00Z`) - 30 * 86400000).toISOString().slice(0, 10);
+      }
+      if (from > to) throw new ProviderAdapterError("GA4 date range is reversed", "validation");
+      cursor = { version: 1, signature, from, to, streamIndex: 0, offset: 0 };
+    }
+    const stream = request.streams[cursor.streamIndex]!;
+    const report = await this.runReport(reportBody(stream, cursor.from, cursor.to, cursor.offset));
+    const rows = readArrayField(report, "rows");
+    const dimensions = headerNames(report, "dimensionHeaders");
+    const metrics = headerNames(report, "metricHeaders");
+    const metadata = isRecord(report.metadata) ? report.metadata : {};
+    const observedAt = new Date().toISOString();
+    const rowCount = typeof report.rowCount === "number" ? report.rowCount : null;
+    if (rowCount === null || !Number.isSafeInteger(rowCount) || rowCount < 0
+      || (rows.length === 0 && rowCount > cursor.offset)) {
+      throw new ProviderAdapterError("GA4 returned invalid pagination metadata", "validation");
+    }
+    const limitations: string[] = [];
+    if (metadata.subjectToThresholding === true) limitations.push("GA4 privacy thresholding applies; missing rows are not zero.");
+    if (metadata.dataLossFromOtherRow === true) limitations.push("GA4 grouped high-cardinality rows into (other).");
+    if (Array.isArray(metadata.samplingMetadatas) && metadata.samplingMetadatas.length > 0) limitations.push("GA4 returned sampled data.");
+    const records: ProviderRecord[] = rows.map(row => {
+      const payload = normalizeGa4Row(row, dimensions, metrics);
+      return {
+        stream, externalId: deterministicExternalId(stream, dimensions, payload), observedAt,
+        payload: { ...payload, currencyCode: readStringField(metadata, "currencyCode"),
+          propertyTimezone: readStringField(metadata, "timeZone"), propertyId: this.config?.propertyId,
+          reportDimensions: dimensions, reportLimitations: limitations,
+          subjectToThresholding: metadata.subjectToThresholding === true,
+          dataLossFromOtherRow: metadata.dataLossFromOtherRow === true,
+          sampled: Array.isArray(metadata.samplingMetadatas) && metadata.samplingMetadatas.length > 0 },
+      };
+    });
+    const nextOffset = cursor.offset + rows.length;
+    const next: ReportCursor | null = nextOffset < rowCount
+      ? { ...cursor, offset: nextOffset }
+      : cursor.streamIndex + 1 < request.streams.length
+        ? { ...cursor, streamIndex: cursor.streamIndex + 1, offset: 0 } : null;
+    return { records, nextCheckpoint: next ? null : JSON.stringify({ date: cursor.to }),
+      nextPageCursor: next ? JSON.stringify(next) : null, partial: false, limitations };
   }
 
   private async runReport(body: object): Promise<Record<string, unknown>> {
@@ -104,50 +140,42 @@ export class Ga4Adapter implements IntegrationProviderAdapter {
   }
 }
 
-function reportBody(stream: string, from: string, to: string): object {
-  const base = { dateRanges: [{ startDate: from, endDate: to }], limit: "100000" };
-
-  if (stream === "events") {
-    return {
-      ...base,
-      dimensions: [{ name: "date" }, { name: "eventName" }],
-      metrics: [{ name: "eventCount" }, { name: "totalUsers" }],
-    };
+const GA4_STREAMS: readonly string[] = ["traffic", "events", "conversions", "traffic_breakdown", "event_breakdown"];
+const PAGE_SIZE = 100000;
+type ReportCursor = { version: 1; signature: string; from: string; to: string; streamIndex: number; offset: number };
+function parseCursor(raw: string, signature: string, streamCount: number): ReportCursor {
+  let value: unknown;
+  try { value = JSON.parse(raw); } catch { throw new ProviderAdapterError("Invalid GA4 resume cursor", "validation"); }
+  if (!isRecord(value) || value.version !== 1 || value.signature !== signature
+    || typeof value.from !== "string" || dateOnly(value.from) !== value.from
+    || typeof value.to !== "string" || dateOnly(value.to) !== value.to || value.from > value.to
+    || typeof value.streamIndex !== "number" || !Number.isSafeInteger(value.streamIndex) || value.streamIndex < 0 || value.streamIndex >= streamCount
+    || typeof value.offset !== "number" || !Number.isSafeInteger(value.offset) || value.offset < 0) {
+    throw new ProviderAdapterError("GA4 cursor does not match the requested report", "validation");
   }
-
-  if (stream === "conversions") {
-    return {
-      ...base,
-      dimensions: [
-        { name: "date" },
-        { name: "sessionDefaultChannelGroup" },
-        { name: "sessionSourceMedium" },
-      ],
-      metrics: [
-        { name: "keyEvents" },
-        { name: "purchaseRevenue" },
-        { name: "transactions" },
-      ],
-    };
-  }
-
-  return {
-    ...base,
-    dimensions: [
-      { name: "date" },
-      { name: "sessionDefaultChannelGroup" },
-      { name: "landingPagePlusQueryString" },
-    ],
-    metrics: [
-      { name: "sessions" },
-      { name: "totalUsers" },
-      { name: "newUsers" },
-      { name: "engagedSessions" },
-      { name: "keyEvents" },
-      { name: "purchaseRevenue" },
-      { name: "transactions" },
-    ],
-  };
+  return value as ReportCursor;
+}
+function calendarDate(now: Date, timezone: string): string {
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", { timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(now);
+    const get = (key: string) => parts.find(part => part.type === key)?.value;
+    return `${get("year")}-${get("month")}-${get("day")}`;
+  } catch { throw new ProviderAdapterError("GA4 returned an invalid property timezone", "validation"); }
+}
+function reportBody(stream: string, from: string, to: string, offset = 0): object {
+  const isEvent = stream === "events" || stream === "event_breakdown";
+  // Old stream dimensions and IDs are unchanged. The new grain lives in
+  // separate streams so a backfill cannot double count old and new totals.
+  const dimensions = isEvent
+    ? ["date", "eventName", ...(stream === "event_breakdown" ? ["sessionDefaultChannelGroup", "deviceCategory", "country"] : [])]
+    : stream === "conversions" ? ["date", "sessionDefaultChannelGroup", "sessionSourceMedium"]
+      : ["date", "sessionDefaultChannelGroup", "landingPagePlusQueryString", ...(stream === "traffic_breakdown" ? ["deviceCategory", "country"] : [])];
+  const metrics = isEvent ? ["eventCount", "totalUsers"]
+    : stream === "conversions" ? ["keyEvents", "purchaseRevenue", "transactions"]
+      : ["sessions", "totalUsers", "newUsers", "engagedSessions", "keyEvents", "purchaseRevenue", "transactions"];
+  return { dateRanges: [{ startDate: from, endDate: to }], limit: String(PAGE_SIZE), offset: String(offset),
+    dimensions: dimensions.map(name => ({ name })), metrics: metrics.map(name => ({ name })),
+    orderBys: dimensions.map(dimensionName => ({ dimension: { dimensionName }, desc: false })) };
 }
 
 function headerNames(report: Record<string, unknown>, key: string): readonly string[] {

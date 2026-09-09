@@ -1,0 +1,18 @@
+import type {Meta,StoryObj} from '@storybook/react-vite';
+import {PapaWorkspaceScenario} from '../../../fixtures/papa-assistant/PapaWorkspaceScenario';
+import {StorybookProductShellFrame} from '../shared/StorybookProductShellFrame';
+import type {AssistantView} from '../../../runtime/shell/papa-assistant/assistantModel';
+const meta={title:'Papa Asystent/ZIP 4 - Dostep i kontekst',parameters:{layout:'fullscreen'}} satisfies Meta;
+export default meta;type Story=StoryObj<typeof meta>;
+const render=(view:AssistantView,compact=false,readonly=false,failed=false)=><StorybookProductShellFrame activePath="/app/assistant"><PapaWorkspaceScenario view={view} compact={compact} readonly={readonly} failed={failed}/></StorybookProductShellFrame>;
+export const Conversation:Story={name:'Rozmowa i tryby',render:()=>render('Rozmowa')};
+export const Files:Story={name:'Kontekst i pliki',render:()=>render('Kontekst')};
+export const Memory:Story={name:'Pamiec osobista',render:()=>render('Pamięć')};
+export const Preferences:Story={name:'Polityka AI',render:()=>render('Ustawienia AI')};
+export const ReadOnly:Story={name:'Brak prawa zapisu',render:()=>render('Ustawienia AI',false,true)};
+export const Unavailable:Story={name:'Blad odczytu',render:()=>render('Historia',false,false,true)};
+export const History:Story={name:'Rozmowy i sprawy',render:()=>render('Historia')};
+export const Provenance:Story={name:'Pochodzenie i dowody',render:()=>render('Pochodzenie')};
+export const Notifications:Story={name:'Powiadomienia',render:()=>render('Powiadomienia')};
+export const Export:Story={name:'Eksport i offline MCP',render:()=>render('Eksport / MCP')};
+export const Compact:Story={name:'Tryb panelu',render:()=>render('Rozmowa',true)};

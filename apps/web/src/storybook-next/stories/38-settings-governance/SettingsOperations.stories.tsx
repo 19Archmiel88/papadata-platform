@@ -1,0 +1,25 @@
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { SettingsOperationsDemo } from '../../../fixtures/platform-operations/OperationsScenarios';
+import type { OperationsScenarioProps } from '../../../fixtures/platform-operations/OperationsScenarios';
+import { StorybookProductShellFrame } from '../shared/StorybookProductShellFrame';
+const meta = { id: 'papadata-settings-operations', title: 'PLATFORMA/Ustawienia/Operacje', component: SettingsOperationsDemo, parameters: { layout: 'fullscreen' } } satisfies Meta<typeof SettingsOperationsDemo>;
+export default meta;
+type Story = StoryObj<typeof meta>;
+function renderStory(args:OperationsScenarioProps) { return <StorybookProductShellFrame activePath="/app/settings"><SettingsOperationsDemo {...args} /></StorybookProductShellFrame>; }
+export const Overview: Story = { render: renderStory };
+export const Organization: Story = { render: renderStory, args: {initialView:'organization'} };
+export const Workspace: Story = { render: renderStory, args: {initialView:'workspace'} };
+export const Team: Story = { render: renderStory, args: {initialView:'team'} };
+export const Security: Story = { render: renderStory, args: {initialView:'security'} };
+export const Analytics: Story = { render: renderStory, args: {initialView:'analytics'} };
+export const Notifications: Story = { render: renderStory, args: {initialView:'notifications'} };
+export const Privacy: Story = { render: renderStory, args: {initialView:'privacy'} };
+export const Audit: Story = { render: renderStory, args: {initialView:'audit'} };
+export const Governance: Story = { render: renderStory, args: {initialView:'ai'} };
+export const Loading: Story = {render:renderStory,args:{state:'loading'}};
+export const Empty: Story = {render:renderStory,args:{empty:true}};
+export const ReadOnly: Story = {render:renderStory,args:{readonly:true}};
+export const ErrorState: Story = {render:renderStory,args:{state:'error'}};
+export const Offline: Story = {render:renderStory,args:{state:'offline'}};
+export const Forbidden: Story = {render:renderStory,args:{state:'forbidden'}};
+export const SaveFailure: Story = {render:renderStory,args:{failSave:true}};

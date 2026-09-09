@@ -85,7 +85,10 @@ export function CampaignAnalysisHeader({
   return (
     <>
       <header className="pd-campaign-analysis__header">
-        <h1>Kampanie płatne</h1>
+        <div>
+          <h1>Kampanie płatne</h1>
+          <p>Koszt pozyskania, wynik kampanii i miejsca wymagające uwagi.</p>
+        </div>
         <div className="pd-campaign-analysis__scope">
           {analytical ? (
             <>
@@ -145,8 +148,9 @@ export function CampaignAnalysisHeader({
         ))}
       </nav>
       <div className="pd-campaign-analysis__context">
-        <p>Dane przykładowe · atrybucja: ostatnie kliknięcie · PLN · Europe/Warsaw</p>
         {analytical && (
+          <label className="pd-campaign-analysis__channel">
+            Kanał
           <select
             aria-label="Kanał reklamowy"
             value={channel}
@@ -156,7 +160,9 @@ export function CampaignAnalysisHeader({
             <option value="google_ads">Google Ads</option>
             <option value="meta_ads">Meta Ads</option>
           </select>
+          </label>
         )}
+        <p>Dane przykładowe · ostatnie kliknięcie · PLN · Europe/Warsaw</p>
       </div>
     </>
   );
@@ -266,8 +272,8 @@ export function CampaignPerformance({
             </select>
           </div>
           <div className="pd-campaign-analysis__legend">
-            <span>Wybrany okres</span>
-            {goal !== null && <span>Linia przerywana: cel {value(goal)}</span>}
+            <span><i aria-hidden="true" /> Wybrany okres</span>
+            {goal !== null && <span><i data-goal aria-hidden="true" /> Cel {value(goal)}</span>}
           </div>
           <div
             className="pd-campaign-analysis__plot"
@@ -357,9 +363,10 @@ export function CampaignPerformance({
           </details>
         </section>
         <aside className="pd-campaign-analysis__attention">
-          <h2>Do sprawdzenia</h2>
+          <h2>Do sprawdzenia <span aria-hidden="true">{attention.length}</span></h2>
+          <div className="pd-campaign-analysis__attention-list" tabIndex={0} role="region" aria-label="Kampanie wymagające sprawdzenia">
           {attention.length ? (
-            attention.slice(0, 2).map((campaign) => (
+            attention.map((campaign) => (
               <article key={campaign.id}>
                 <h3>{campaign.name}</h3>
                 <p>
@@ -391,6 +398,7 @@ export function CampaignPerformance({
           ) : (
             <p>Brak kampanii poza celem w wybranym zakresie.</p>
           )}
+          </div>
           <p>Sprawdzenie sygnału poprzedza decyzję o zmianie budżetu.</p>
         </aside>
       </div>

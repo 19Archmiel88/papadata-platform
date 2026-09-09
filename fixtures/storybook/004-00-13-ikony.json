@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-004",
   "storyTitle": "00 Fundamenty/04 Ikony",
-  "sourceDocument": "01-fundamenty/00-13-ikony.md",
+  "sourceDocument": "01-fundamenty/README.md",
   "screenId": null,
   "components": [
     "Icon"

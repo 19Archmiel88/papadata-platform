@@ -1,5 +1,5 @@
 ---
-version: 1.1
+version: 1.0
 author: Artur Wiśniewski
 creator: Artur Wiśniewski
 owner: Artur Wiśniewski
@@ -53,8 +53,8 @@ Aktywny inbox pomija rekordy z `snoozed_until > now()`. Widok `snoozed` pokazuje
 
 ## Powiązania
 
-- `06-powloka-produktu-i-nawigacja/20-08-powiadomienia.md`
-- `06-powloka-produktu-i-nawigacja/20-10-overlayroot-i-system-warstw.md`
+- `06-powloka-produktu-i-nawigacja/README.md`
+- `06-powloka-produktu-i-nawigacja/README.md`
 - `21-wzorce-przekrojowe/18-03-ladowanie-danych-i-operacje-w-tle.md`
 - `rejestry/api-operations.csv`
 - `contracts/openapi-1.0.json`

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-221",
   "storyTitle": "41 Jakość danych i integralność/Konflikty",
-  "sourceDocument": "14-jakosc-danych-i-integralnosc/41-06-konflikty.md",
+  "sourceDocument": "14-jakosc-danych-i-integralnosc/README.md",
   "screenId": "41.06",
   "components": [
     "PageHeader",

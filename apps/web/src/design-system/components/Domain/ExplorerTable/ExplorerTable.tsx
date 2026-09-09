@@ -57,7 +57,7 @@ export type ExplorerTableColumn<Row> = {
   readonly label: string;
   readonly render?: (row: Row) => ReactNode;
   readonly required?: boolean;
-  readonly sortAccessor?: (row: Row) => number | string;
+  readonly sortAccessor?: (row: Row) => number | string | null;
   readonly width?: number;
 };
 
@@ -70,9 +70,19 @@ const exportMenuItems: readonly MenuItem[] = [
   { id: 'pdf', label: 'Eksportuj PDF' },
 ];
 
+export type ExplorerTableSort = { readonly columnId: string; readonly direction: 'asc' | 'desc' };
+
 export type ExplorerTableProps<Row extends { readonly id: string }> = {
   readonly ariaLabel: string;
   readonly className?: string;
+  readonly canExport?: boolean;
+  readonly loading?: boolean;
+  readonly manualSearch?: boolean;
+  readonly manualSorting?: boolean;
+  readonly sortState?: ExplorerTableSort | null;
+  readonly onSortStateChange?: (sort: ExplorerTableSort) => void;
+  readonly searchQuery?: string;
+  readonly onSearchQueryChange?: (query: string) => void;
   readonly collapsedRowCount?: number;
   readonly columnPickerLabel?: string;
   readonly columns: readonly ExplorerTableColumn<Row>[];
@@ -83,7 +93,9 @@ export type ExplorerTableProps<Row extends { readonly id: string }> = {
   readonly filters?: ReactNode;
   readonly filterState?: readonly FilterBarFilter[];
   readonly onClearFilters?: (() => void) | undefined;
-  readonly onExport?: (format: ExplorerTableExportFormat) => void;
+  readonly onExport?: (format: ExplorerTableExportFormat, context: {columns: readonly string[]; search: string; sort: ExplorerTableSort | null}) => void;
+  readonly exportFormats?: readonly ExplorerTableExportFormat[];
+  readonly exportPending?: boolean;
   readonly onRemoveFilter?: ((filterId: string) => void) | undefined;
   readonly onRowAction?: (rowId: string, actionId: string) => void;
   readonly onRowClick?: (row: Row) => void;
@@ -103,6 +115,14 @@ function normalize(value: unknown): string {
 export function ExplorerTable<Row extends { readonly id: string }>({
   ariaLabel,
   className,
+  canExport = true,
+  loading = false,
+  manualSearch = false,
+  manualSorting = false,
+  sortState,
+  onSortStateChange,
+  searchQuery,
+  onSearchQueryChange,
   collapsedRowCount = 5,
   columnPickerLabel = 'Kolumny',
   columns,
@@ -114,6 +134,8 @@ export function ExplorerTable<Row extends { readonly id: string }>({
   filterState = [],
   onClearFilters,
   onExport,
+  exportFormats = ['csv','pdf'],
+  exportPending = false,
   onRemoveFilter,
   onRowAction,
   onRowClick,
@@ -128,11 +150,13 @@ export function ExplorerTable<Row extends { readonly id: string }>({
   const columnPickerAnchorId = useId();
   const exportAnchorId = useId();
 
-  const [query, setQuery] = useState('');
+  const [localQuery, setQuery] = useState('');
+  const query = searchQuery ?? localQuery;
   const [hiddenColumnIds, setHiddenColumnIds] = useState<ReadonlySet<string>>(() => (
     new Set(columns.filter((column) => column.defaultVisible === false).map((column) => column.id))
   ));
-  const [sort, setSort] = useState<{ readonly columnId: string; readonly direction: 'asc' | 'desc' } | null>(null);
+  const [localSort, setSort] = useState<ExplorerTableSort | null>(null);
+  const sort = sortState === undefined ? localSort : sortState;
   const [expanded, setExpanded] = useState(false);
   const [page, setPage] = useState(1);
   const [columnPickerOpen, setColumnPickerOpen] = useState(false);
@@ -140,7 +164,7 @@ export function ExplorerTable<Row extends { readonly id: string }>({
   const [activeExportItemId, setActiveExportItemId] = useState<string | null>(null);
 
   const searchedRows = useMemo(() => {
-    if (query.trim() === '') {
+    if (manualSearch || query.trim() === '') {
       return rows;
     }
 
@@ -158,6 +182,7 @@ export function ExplorerTable<Row extends { readonly id: string }>({
       searchFields.some((field) => normalize(row[field]).includes(needle))
     ));
   }, [
+    manualSearch,
     query,
     rows,
     searchFields,
@@ -165,7 +190,7 @@ export function ExplorerTable<Row extends { readonly id: string }>({
   ]);
 
   const sortedRows = useMemo(() => {
-    if (!sort) {
+    if (manualSorting || !sort) {
       return searchedRows;
     }
 
@@ -182,22 +207,28 @@ export function ExplorerTable<Row extends { readonly id: string }>({
       const leftValue = sortAccessor(left);
       const rightValue = sortAccessor(right);
 
+      // Missing values are sorted last, in either direction.
+      if(leftValue === null && rightValue === null)return 0;
+      if(leftValue === null)return 1;
+      if(rightValue === null)return -1;
       if (leftValue < rightValue) return -1 * direction;
       if (leftValue > rightValue) return 1 * direction;
       return 0;
     });
   }, [
+    manualSorting,
     columns,
     searchedRows,
     sort,
   ]);
 
+  const totalPages = Math.max(1, Math.ceil(sortedRows.length / pageSize));
+  const currentPage = Math.min(Math.max(1, page), totalPages);
   const isCollapsible = !expanded && sortedRows.length > collapsedRowCount;
   const visibleRows = isCollapsible
     ? sortedRows.slice(0, collapsedRowCount)
-    : sortedRows.slice((page - 1) * pageSize, page * pageSize);
+    : sortedRows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-  const totalPages = Math.max(1, Math.ceil(sortedRows.length / pageSize));
   const showPagination = expanded && sortedRows.length > pageSize;
   const showExpandedFooter = expanded && sortedRows.length > collapsedRowCount;
 
@@ -218,8 +249,9 @@ export function ExplorerTable<Row extends { readonly id: string }>({
   }
 
   function handleExport(format: ExplorerTableExportFormat) {
+    if (!canExport || exportPending || !exportFormats.includes(format)) return;
     if (onExport) {
-      onExport(format);
+      onExport(format,{columns:visibleColumns.map(column=>column.id),search:query,sort});
       return;
     }
 
@@ -315,9 +347,9 @@ export function ExplorerTable<Row extends { readonly id: string }>({
               </Popover>
             ) : null}
 
-            <Menu
+            {canExport && <Menu
               activeItemId={activeExportItemId}
-              items={exportMenuItems}
+              items={exportMenuItems.filter(item => exportFormats.includes(item.id as ExplorerTableExportFormat))}
               onAction={(itemId) => {
                 if (itemId === 'csv' || itemId === 'pdf') {
                   handleExport(itemId);
@@ -334,12 +366,13 @@ export function ExplorerTable<Row extends { readonly id: string }>({
                   icon="data"
                   id={exportAnchorId}
                   label={exportLabel}
+                  disabled={exportPending || loading}
                   size="small"
                   title="Eksportuj"
                   variant="ghost"
                 />
               )}
-            />
+            />}
           </>
         )}
         availableFilters={filters ? (
@@ -356,10 +389,11 @@ export function ExplorerTable<Row extends { readonly id: string }>({
           <SearchField
             debounceMs={0}
             label={searchLabel}
-            loading={false}
+            loading={loading}
             hideLabel
             onQueryChange={(value) => {
               setQuery(value);
+              onSearchQueryChange?.(value);
               setPage(1);
             }}
             placeholder={searchPlaceholder}
@@ -382,7 +416,7 @@ export function ExplorerTable<Row extends { readonly id: string }>({
         emptyMessage={emptyMessage}
         emptyTitle={emptyTitle}
         hideSummary
-        loading={false}
+        loading={loading}
         rowCount={sortedRows.length}
         rows={dataRows}
         selectedRowIds={[]}
@@ -393,12 +427,10 @@ export function ExplorerTable<Row extends { readonly id: string }>({
           if (originalRow) onRowClick(originalRow);
         } : undefined}
         onSortChange={(columnId) => {
-          setSort((current) => {
-            if (current?.columnId === columnId) {
-              return { columnId, direction: current.direction === 'asc' ? 'desc' : 'asc' };
-            }
-            return { columnId, direction: 'asc' };
-          });
+          const next: ExplorerTableSort = { columnId, direction: sort?.columnId === columnId && sort.direction === 'asc' ? 'desc' : 'asc' };
+          setSort(next);
+          onSortStateChange?.(next);
+          setPage(1);
         }}
       />
 
@@ -419,23 +451,23 @@ export function ExplorerTable<Row extends { readonly id: string }>({
         <div className="pd-explorer-table__footer">
           {showPagination ? (
             <span className="pd-explorer-table__page-summary">
-              {`Strona ${page} z ${totalPages}`}
+              {`Strona ${currentPage} z ${totalPages}`}
             </span>
           ) : <span />}
           <div className="pd-explorer-table__page-controls">
             {showPagination ? (
               <>
                 <TextAction
-                  disabled={page <= 1}
-                  onClick={() => setPage((current) => Math.max(1, current - 1))}
+                  disabled={currentPage <= 1}
+                  onClick={() => setPage(Math.max(1, currentPage - 1))}
                   size="small"
                   tone="muted"
                 >
                   Poprzednia
                 </TextAction>
                 <TextAction
-                  disabled={page >= totalPages}
-                  onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+                  disabled={currentPage >= totalPages}
+                  onClick={() => setPage(Math.min(totalPages, currentPage + 1))}
                   size="small"
                   tone="muted"
                 >

@@ -1,3 +1,5 @@
+import { productContextFilters } from '@papadata/contracts';
+import { useProductQuery } from '../../app/routing/productRoutes';
 import { useRegisterScreenContext } from './ScreenContextProvider';
 
 /** Screens supply values from their own analytical model; never scrape visible DOM. */
@@ -7,13 +9,14 @@ export function useAssistantAnalysisContext(input: {
   filters?: Readonly<Record<string, string>>;
   tables?: readonly string[]; charts?: readonly string[];
 }) {
+  const {params}=useProductQuery();
   useRegisterScreenContext({
     title: input.title, route: input.route, readiness: input.readiness,
     summary: `Źródło: ${input.source}. Zakres zgodny z datami i filtrami ekranu.`,
     metrics: Object.entries(input.metrics).flatMap(([label, value]) => value === null || value === undefined ? [] : [{
       id: `${input.route}:${label}`, kind: 'metric' as const, label, value: String(value), source: input.source, status: input.readiness,
     }]),
-    filters: Object.entries(input.filters ?? {}).map(([label, value]) => ({ id: `filter:${label}`, kind: 'filter' as const, label, value })),
+    filters: Object.entries({...input.filters,...productContextFilters(params)}).map(([label, value]) => ({ id: `filter:${label}`, kind: 'filter' as const, label, value })),
     charts: (input.charts ?? []).map(label => ({ id: `${input.route}:chart:${label}`, kind: 'chart' as const, label, source: input.source })),
     tables: (input.tables ?? []).map(label => ({ id: `${input.route}:table:${label}`, kind: 'table' as const, label, source: input.source })),
   });

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-229",
   "storyTitle": "41 Jakość danych i integralność/Zbiór danych",
-  "sourceDocument": "14-jakosc-danych-i-integralnosc/41-02-zbior-danych.md",
+  "sourceDocument": "14-jakosc-danych-i-integralnosc/README.md",
   "screenId": "41.02",
   "components": [
     "PageHeader",

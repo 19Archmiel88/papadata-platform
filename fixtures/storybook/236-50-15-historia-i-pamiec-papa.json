@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-236",
   "storyTitle": "50 Papa Asystent i Laboratorium AI/Historia i pamięć Papa",
-  "sourceDocument": "15-papa-asystent-i-laboratorium-ai/50-15-historia-i-pamiec-papa.md",
+  "sourceDocument": "15-papa-asystent-i-laboratorium-ai/README.md",
   "screenId": "50.15",
   "components": [
     "PageHeader",

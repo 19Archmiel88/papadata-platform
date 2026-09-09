@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-270",
   "storyTitle": "80 Wsparcie marketingowe, decyzje i działania/Obserwacje",
-  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/80-02-obserwacje.md",
+  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/README.md",
   "screenId": "80.02",
   "components": [
     "PageHeader",

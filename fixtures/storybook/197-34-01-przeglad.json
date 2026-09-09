@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-197",
   "storyTitle": "34 Klienci/Przegląd",
-  "sourceDocument": "11-klienci/34-01-przeglad.md",
+  "sourceDocument": "11-klienci/README.md",
   "screenId": "34.01",
   "components": [
     "PageHeader",

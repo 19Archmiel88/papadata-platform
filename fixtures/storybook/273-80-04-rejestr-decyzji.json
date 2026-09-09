@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-273",
   "storyTitle": "80 Wsparcie marketingowe, decyzje i działania/Rejestr decyzji",
-  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/80-04-rejestr-decyzji.md",
+  "sourceDocument": "18-wsparcie-marketingowe-decyzje-dzialania/README.md",
   "screenId": "80.04",
   "components": [
     "PageHeader",

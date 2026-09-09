@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-184",
   "storyTitle": "33 Produkty/Analiza wpływu",
-  "sourceDocument": "10-produkty/33-08-analiza-wplywu.md",
+  "sourceDocument": "10-produkty/README.md",
   "screenId": "33.08",
   "components": [
     "PageHeader",

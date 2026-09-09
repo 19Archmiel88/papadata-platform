@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-114",
   "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/Powłoka mobilna",
-  "sourceDocument": "06-powloka-produktu-i-nawigacja/20-11-powloka-mobilna.md",
+  "sourceDocument": "06-powloka-produktu-i-nawigacja/README.md",
   "screenId": null,
   "components": [
     "ProductShellFrame",

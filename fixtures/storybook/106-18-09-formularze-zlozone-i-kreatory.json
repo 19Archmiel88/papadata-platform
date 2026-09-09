@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-106",
   "storyTitle": "18 Wzorce interfejsu/Formularze złożone i kreatory",
-  "sourceDocument": "21-stany-przekrojowe/18-09-formularze-zlozone-i-kreatory.md",
+  "sourceDocument": "21-stany-przekrojowe/README.md",
   "screenId": null,
   "components": [
     "TextField",

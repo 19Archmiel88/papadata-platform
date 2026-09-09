@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-119",
   "storyTitle": "20 Powłoka produktu/Powłoka i nawigacja/Powiadomienia",
-  "sourceDocument": "06-powloka-produktu-i-nawigacja/20-08-powiadomienia.md",
+  "sourceDocument": "06-powloka-produktu-i-nawigacja/README.md",
   "screenId": null,
   "components": [
     "NotificationCenter",

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-160",
   "storyTitle": "30 Centrum Dowodzenia/Ekrany produkcyjne/Produkty",
-  "sourceDocument": "07-centrum-dowodzenia/30-08-produkty.md",
+  "sourceDocument": "07-centrum-dowodzenia/README.md",
   "screenId": "30.08",
   "components": [
     "BusinessScreen",

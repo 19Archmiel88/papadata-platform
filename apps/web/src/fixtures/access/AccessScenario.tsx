@@ -1,0 +1,14 @@
+import {useState} from 'react';
+import type {AccessSurfaceId} from '@papadata/contracts';
+import {AuthSurface,type AuthSurfaceMode,type AuthSurfaceProps} from '../../runtime/features/auth/AuthSurface';
+import {AccessFlowScreen} from '../../runtime/features/auth/AccessFlowScreen';
+import {accessLifecycleFixture} from './accessLifecycleFixture';
+import {Button} from '../../design-system';
+export function AccessScenario({surface,failed=false}:{surface:AccessSurfaceId;failed?:boolean}){
+ const [notice,setNotice]=useState(''),[data,setData]=useState(accessLifecycleFixture);
+ const local=async()=>{if(failed)throw new globalThis.Error('Demonstracja: operacja odrzucona. Brak zapisu.');setNotice('Demonstracja: bez API, wysylki e-mail, zmiany hasla i sesji.');};
+ const modes:Partial<Record<AccessSurfaceId,AuthSurfaceMode>>={'auth-01':'entry','auth-02':'login','auth-03':'register','auth-04':'register','auth-15':'accept-invite','auth-16':'mfa','auth-18':'recover','auth-20':'recover','auth-24':'reauth'};
+ const props:AuthSurfaceProps={mode:modes[surface]??'login',state:failed?'validationError':'ready',initialRegistrationStage:surface==='auth-04'?'email':'choice',tokenResetOnly:true,initialResetToken:surface==='auth-20'?'demonstration-token':'',initialEmail:'demo@example.invalid',onNavigate:path=>setNotice(`Demonstracja nawigacji: ${path}`),onLogin:local,onRegister:local,onAcceptInvitation:local,onPasswordRecoveryRequest:local,onPasswordReset:local,onMfaConfirm:local,onStepUpConfirm:local,onSelectWorkspace:local,onRetry:()=>void local(),onOAuthContinue:local,onValidateInvitation:async()=>({accepted:false,status:'demonstration_only'})};
+ if(modes[surface])return <><p role="status">Dane i operacje demonstracyjne. {notice}</p><AuthSurface {...props}/></>;
+ return <AccessFlowScreen surface={surface} demo data={surface==='auth-06'?{...data,emailVerified:false}:data} hasToken={surface==='auth-06'} problem={failed?'Demonstracyjny blad; nie potwierdzono operacji.':null} notice={notice} onNavigate={path=>setNotice(`Demonstracja nawigacji: ${path}`)} onAction={(action,input)=>{setNotice(`Demonstracja: ${action}, bez zapisu na serwerze.`);if(action==='consents')setData(d=>({...d,acceptedDocuments:d.documents.map(x=>({id:x.id,version:x.version,acceptedAt:new Date().toISOString()}))}));if(action==='complete')setData(d=>({...d,completedAt:new Date().toISOString()}));if(action==='company'&&input&&typeof input==='object'&&'values' in input)setData(d=>({...d,company:{version:(d.company?.version??0)+1,values:(input as {values:NonNullable<typeof d.company>['values']}).values,source:'manual'}}));}}>{surface==='auth-22'||surface==='auth-23'?<div><p>Wybierz demonstracyjny zakres:</p><Button onClick={()=>setNotice('Demonstracja: wybrano workspace A.')}>Workspace A</Button><Button variant="secondary" onClick={()=>setNotice('Demonstracja: wybrano workspace B.')}>Workspace B</Button></div>:null}</AccessFlowScreen>;
+}

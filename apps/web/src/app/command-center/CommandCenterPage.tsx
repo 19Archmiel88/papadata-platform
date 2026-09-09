@@ -1,63 +1,17 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
-
-import {
-  CommandCenterScreen,
-} from '../../screens/command-center/CommandCenterScreen';
-import type {
-  CommandCenterScreenData,
-} from '../../screens/command-center/CommandCenterScreen.model';
-import {
-  bffClient,
-} from '../../runtime/shared/api/bffClient';
-import {
-  useShellDateRange,
-} from '../../runtime/shell/app-shell/ShellDateRangeContext';
-import {
-  loadCommandCenterRuntimeData,
-} from './commandCenterRuntimeAdapter';
-
-type RuntimeState = {
-  readonly data: CommandCenterScreenData | null;
-  readonly viewState: 'error' | 'loading' | 'ready';
-};
-
-const initialState: RuntimeState = {
-  data: null,
-  viewState: 'loading',
-};
-
+import type { BusinessOverview } from '@papadata/contracts';
+import { BusinessOverviewScreen } from '../../screens/command-center/BusinessOverviewScreen';
+import { bffClient } from '../../runtime/shared/api/bffClient';
+import { useAuthSessionRuntimeContext } from '../../runtime/shared/auth/authSessionRuntime';
+import { useRemoteResource } from '../../runtime/shared/data/useRemoteResource';
+import { useShellDateRange } from '../../runtime/shell/app-shell/ShellDateRangeContext';
+import { useProductQuery } from '../../runtime/app/routing/productRoutes';
 export function CommandCenterPage() {
-  const { dateRange, dateRangeKey } = useShellDateRange();
-  const [state, setState] = useState<RuntimeState>(initialState);
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  useEffect(() => {
-    let active = true;
-    setState(initialState);
-
-    loadCommandCenterRuntimeData(bffClient, dateRange)
-      .then((data) => {
-        if (!active) return;
-        setState({ data, viewState: 'ready' });
-      })
-      .catch(() => {
-        if (!active) return;
-        setState({ data: null, viewState: 'error' });
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [dateRangeKey, refreshKey]);
-
-  return (
-    <CommandCenterScreen
-      data={state.data}
-      state={state.viewState}
-      onRetry={() => setRefreshKey((current) => current + 1)}
-    />
-  );
+  const {session}=useAuthSessionRuntimeContext(),{dateRange,dateRangeKey}=useShellDateRange(),{params}=useProductQuery();
+  const scope=`${session?.activeTenantId}:${session?.activeWorkspaceId}:${session?.userId}`;
+  const query=Object.fromEntries(['sourceId','currency','compare'].flatMap(key=>params.get(key)?[[key,params.get(key)!]]:[]));
+  const resource=useRemoteResource(`${scope}:${dateRangeKey}:${JSON.stringify(query)}`,async signal=>{
+    const data=await bffClient.readDomainScreen<BusinessOverview>('/api/v1/overview/business',{dateRange,query,signal});
+    if(data?.version!=='business.overview.v1')throw new Error('Niezgodna wersja modelu Centrum Dowodzenia.');return data;
+  });
+  return <BusinessOverviewScreen key={scope} data={resource.data} state={resource.state} problem={resource.problem} onReload={()=>void resource.reload()}/>;
 }

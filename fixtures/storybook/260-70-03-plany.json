@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-260",
   "storyTitle": "70 Subskrypcja i płatności/Plany",
-  "sourceDocument": "17-subskrypcja-i-platnosci/70-03-plany.md",
+  "sourceDocument": "17-subskrypcja-i-platnosci/README.md",
   "screenId": "70.03",
   "components": [
     "PageHeader",

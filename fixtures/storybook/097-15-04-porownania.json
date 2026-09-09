@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-097",
   "storyTitle": "15 Wykresy i dane/02 Rodziny wykresów/Porównania",
-  "sourceDocument": "05-wykresy-i-wizualizacje/15-04-porownania.md",
+  "sourceDocument": "05-wykresy-i-wizualizacje/README.md",
   "screenId": null,
   "components": [
     "ChartFrame",

@@ -1,7 +1,7 @@
 {
   "fixtureId": "SB-171",
   "storyTitle": "31 Kampanie płatne/Ekrany produkcyjne/Lista kampanii",
-  "sourceDocument": "08-kampanie-platne/31-02-lista-kampanii.md",
+  "sourceDocument": "08-kampanie-platne/README.md",
   "screenId": "31.02",
   "components": [
     "BusinessScreen",

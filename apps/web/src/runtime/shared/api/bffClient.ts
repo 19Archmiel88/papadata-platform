@@ -339,6 +339,13 @@ export type BffClientOptions = {
   readonly fetchImpl?: BffFetch;
 };
 
+export type CompanyLookupResult = {
+  readonly normalized: import('@papadata/contracts').CompanyProfile;
+  readonly source: 'gus_bir';
+  readonly retrievedAt: string;
+  readonly servedFromCache: boolean;
+};
+
 export class BffClient {
   private csrfToken: string | null = null;
   private scopeEpoch = 0;
@@ -1400,6 +1407,14 @@ export class BffClient {
   }
   async commandAccessLifecycle(action:'company'|'consents'|'complete',input:Readonly<Record<string,unknown>>&{requestId:string}):Promise<unknown>{
     return this.authenticatedCommand(`/api/v1/access/lifecycle/${action}`,input,{idempotencyKey:input.requestId});
+  }
+  // Public (company.lookup has no session/tenant requirement -- the backend
+  // adapter is the only thing that ever talks to GUS/BIR, see DOC-P0-005),
+  // same request shape as readAuthStatus.
+  async lookupCompany(nip:string):Promise<CompanyLookupResult>{
+    const response=await this.fetch(`/api/v1/company/lookup?nip=${encodeURIComponent(nip)}`,{method:'GET'},{allowRefresh:false,mode:'public'});
+    const payload=await readJson<{data:CompanyLookupResult}>(response);assertOk(response,payload);
+    return payload.data;
   }
   async verifyAccessEmail(token:string):Promise<void>{
     const response=await this.fetch('/api/v1/auth/email/verify',{method:'POST',body:JSON.stringify({token})},{allowRefresh:false,mode:'public'});

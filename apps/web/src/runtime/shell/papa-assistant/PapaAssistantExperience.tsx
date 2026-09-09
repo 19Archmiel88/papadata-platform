@@ -1,5 +1,5 @@
 import { cleanProductContextPath, productContextKeys } from '@papadata/contracts';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import {AssistantMarkdown} from './AssistantMarkdown';
 import { Button, Dialog, Icon } from '../../../design-system';
 import { useShellNavigate } from '../app-shell/ShellNavigationContext';
@@ -12,9 +12,12 @@ import { contextualProductLink,productRoutes,useProductQuery } from '../../app/r
 import { safeRandomUUID } from '../../shared/id/safeRandomUUID';
 import { AssistantHistoryPanel, AssistantMemoryPanel, AssistantFilesPanel, AssistantPolicyPanel, AssistantDiagnosticsPanel, AssistantNotificationsPanel, AssistantExportPanel } from './AssistantWorkspacePanels';
 import './assistant-experience.css';
+import { AssistantControlIcon, AssistantDisclosure } from './AssistantControls';
 
-export function PapaAssistantExperience({ compact = false, onExpand, request }: {
-  readonly compact?: boolean; readonly onExpand?: () => void; readonly request?: PapaAssistantOpenRequest | null;
+const primaryViews = ['Rozmowa', 'Kontekst', 'Dowody'] as const;
+
+export function PapaAssistantExperience({ compact = false, onExpand, panelControls, request }: {
+  readonly compact?: boolean; readonly onExpand?: () => void; readonly panelControls?: ReactNode; readonly request?: PapaAssistantOpenRequest | null;
 }) {
   const runtime = usePapaAssistantRuntime();
   const { currentContext, captureCurrentScreenContext } = usePapaScreenContext();
@@ -28,6 +31,8 @@ export function PapaAssistantExperience({ compact = false, onExpand, request }: 
   const composerId = useId();
   const seenRequest = useRef<string | null>(null);
   const textarea = useRef<HTMLTextAreaElement>(null);
+  const scrollBody = useRef<HTMLDivElement>(null);
+  const followMessages = useRef(true);
   const items = contextItems(runtime.snapshot);
   const sourceIsAssistant = isAssistantPath(currentContext.route);
   useEffect(() => {
@@ -70,39 +75,66 @@ export function PapaAssistantExperience({ compact = false, onExpand, request }: 
   const snapshot = runtime.snapshot;
   const selectedMessages = runtime.messages.filter(message => (message.elementId ?? null) === runtime.selectedElementId);
   const answerEvidence = [...new Map(selectedMessages.flatMap(m => m.evidence).map(item => [item.evidenceId, item])).values()];
+  const includedItems = items.filter(item => !runtime.excluded.includes(item.id));
+  const canSubmit = !!runtime.draft.trim() && !!snapshot && !runtime.busy && !runtime.runId;
+  const sendMessage = () => {
+    if (!canSubmit) return;
+    followMessages.current = true;
+    setView('Rozmowa');
+    void runtime.submit();
+  };
+  useEffect(() => {
+    followMessages.current = true;
+    if (scrollBody.current) scrollBody.current.scrollTop = view === 'Rozmowa' && selectedMessages.length ? scrollBody.current.scrollHeight : 0;
+  }, [view, runtime.selectedElementId, runtime.conversationId]);
+  useEffect(() => {
+    if (view === 'Rozmowa' && selectedMessages.length && followMessages.current && scrollBody.current) scrollBody.current.scrollTop = scrollBody.current.scrollHeight;
+  }, [selectedMessages.length, runtime.partialText, runtime.busy, view]);
+  useEffect(() => {
+    if (!textarea.current) return;
+    textarea.current.style.height = 'auto';
+    textarea.current.style.height = `${Math.min(textarea.current.scrollHeight, 144)}px`;
+  }, [runtime.draft]);
 
   return <section className={`pd-assistant ${compact ? 'pd-assistant--compact' : ''}`} aria-label="Przestrzeń Papa Asystenta">
     <header className="pd-assistant__header">
       <div className="pd-assistant__identity"><span className="pd-assistant__mark"><Icon name="assistant" size={24} /></span><div>
-        {compact ? <h2>Papa Asystent</h2> : <h1>Papa Asystent</h1>}
-        <p>Od pytania do decyzji opartej na danych</p>
+        {compact ? <p className="pd-assistant__title">Papa Asystent</p> : <h1>Papa Asystent</h1>}
+        <p className="pd-assistant__subtitle"><span className="pd-assistant__presence" />{runtime.demo ? 'Tryb demonstracyjny' : 'Twój partner w analizie'}</p>
       </div></div>
       <div className="pd-assistant__actions">
-        <span className="pd-assistant__badge">{runtime.demo ? 'Demonstracja' : 'Odpowiedzi AI'}</span>
         {onExpand && <Button variant="secondary" size="small" onClick={onExpand}>Pełny widok</Button>}
-        <Button variant="ghost" size="small" disabled={runtime.busy} onClick={() => setResetOpen(true)}>Nowa rozmowa</Button>
+        <button type="button" className="pd-assistant__icon-button" aria-label="Nowa rozmowa" title="Nowa rozmowa" disabled={runtime.busy} onClick={() => {
+          if (!runtime.messages.length && !runtime.draft.trim() && !runtime.conversationId) { setView('Rozmowa'); textarea.current?.focus(); }
+          else setResetOpen(true);
+        }}><AssistantControlIcon name="plus" /></button>
+        {panelControls ?? <button type="button" className="pd-assistant__icon-button" aria-label="Historia rozmów" title="Historia rozmów" onClick={() => setView('Historia')}><AssistantControlIcon name="history" /></button>}
       </div>
     </header>
-    <div className="pd-assistant__context-line">
-      <div><strong>{snapshot?.title ?? 'Wybierz kontekst analizy'}</strong><span>{snapshot ? `${snapshot.workspaceName} · ${snapshot.dateRangeLabel}` : 'Otwórz Papa z ekranu, który chcesz przeanalizować.'}</span></div>
-      <Button variant="ghost" size="small" onClick={() => setView('Kontekst')}>{items.length - runtime.excluded.length} elementów kontekstu</Button>
-    </div>
+    <button type="button" className="pd-assistant__context-line" onClick={() => setView('Kontekst')} aria-label={`Kontekst analizy: ${snapshot?.title ?? 'Brak kontekstu'}. Wybrane elementy: ${includedItems.length}. Zmień kontekst`}>
+      <span className="pd-assistant__context-icon"><Icon name="data" size={20} /></span>
+      <span className="pd-assistant__context-copy"><strong>{snapshot?.title ?? 'Dodaj kontekst analizy'}</strong><span>{snapshot ? `${snapshot.workspaceName} · ${snapshot.dateRangeLabel}` : 'Otwórz Papa z wybranej analizy.'}</span></span>
+      <span className="pd-assistant__context-count" title="Liczba wybranych elementów">{includedItems.length}</span><AssistantControlIcon name="chevron" />
+    </button>
     <nav className="pd-assistant__nav" aria-label="Widoki Papa Asystenta">
-      {assistantViews.map(tab => <button type="button" key={tab} aria-current={view === tab ? 'page' : undefined} onClick={() => setView(tab)}>{tab}</button>)}
+      {primaryViews.map(tab => <button type="button" key={tab} aria-current={view === tab ? 'page' : undefined} onClick={() => setView(tab)}>{tab}</button>)}
+      <AssistantDisclosure label="Narzędzia" active={!primaryViews.some(tab => tab === view)}>
+        <p className="pd-assistant__menu-label">Analizy i działania</p>
+        {assistantViews.filter(tab => !primaryViews.some(primary => primary === tab)).map(tab => <button type="button" key={tab} aria-current={view === tab ? 'page' : undefined} onClick={() => setView(tab)}>{tab}</button>)}
+      </AssistantDisclosure>
     </nav>
-    <div className="pd-assistant__body">
+    <div className="pd-assistant__body" ref={scrollBody} onScroll={event => {
+      const node = event.currentTarget;
+      followMessages.current = node.scrollHeight - node.scrollTop - node.clientHeight < 80;
+    }}>
       {view === 'Rozmowa' && <>
-        <div className="pd-assistant__mode-row"><label>Tryb analizy<select value={runtime.mode} onChange={e => runtime.setMode(e.target.value as typeof runtime.mode)} disabled={runtime.busy}>
-          {assistantModes.map(mode => <option key={mode.id} value={mode.id}>{mode.label}</option>)}
-        </select></label>
-        <label>Zakres rozmowy<select value={runtime.selectedElementId ?? ''} disabled={runtime.busy} onChange={e => runtime.selectElement(e.target.value || null)}>
-          <option value="">Cały kontekst</option>{items.filter(item => !runtime.excluded.includes(item.id)).map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
-        </select></label></div>
         {!selectedMessages.length && <div className="pd-assistant__welcome">
-          <span className="pd-assistant__eyebrow">TWÓJ KONTEKST. KONKRETNE WNIOSKI.</span>
-          <h2>Co warto dziś sprawdzić?</h2><p>Zacznij od wyniku, znajdź jego przyczyny albo przygotuj plan. Papa pokaże dowody i ograniczenia odpowiedzi.</p>
-          <div className="pd-assistant__suggestions">{assistantModes.filter(m => ['brief', 'diagnosis', 'plan'].includes(m.id)).map(mode => <button key={mode.id} type="button" onClick={() => { runtime.setMode(mode.id); runtime.setDraft(mode.prompt); textarea.current?.focus(); }}>
-            <strong>{mode.label} <span aria-hidden="true">↗</span></strong><span>{mode.prompt}</span>
+          <span className="pd-assistant__eyebrow">Z DANYCH DO DECYZJI</span>
+          <h2>Przyjrzyjmy się<br /> Twoim wynikom.</h2><p>Zapytaj o swoje dane lub wybierz punkt wyjścia. Wnioski sprawdzisz w źródłach.</p>
+          <div className="pd-assistant__suggestions">{assistantModes.filter(m => ['brief', 'diagnosis', 'plan'].includes(m.id)).map(mode => <button key={mode.id} type="button" disabled={runtime.busy} onClick={() => { runtime.setMode(mode.id); runtime.setDraft(mode.prompt); textarea.current?.focus(); }}>
+            <span className="pd-assistant__suggestion-icon"><Icon name={mode.id === 'brief' ? 'trend' : mode.id === 'diagnosis' ? 'search' : 'decisions'} size={20} /></span>
+            <span className="pd-assistant__suggestion-copy"><strong>{mode.id === 'brief' ? 'Co zmieniło się w wynikach?' : mode.id === 'diagnosis' ? 'Skąd ta zmiana?' : 'Co zrobić w następnej kolejności?'}</strong><span>{mode.id === 'brief' ? 'Szybki brief · najważniejsze liczby' : mode.id === 'diagnosis' ? 'Diagnoza · przyczyny i dowody' : 'Plan działań · konkretne kroki'}</span></span>
+            <AssistantControlIcon name="arrow" />
           </button>)}</div>
         </div>}
         <ol className="pd-assistant__messages" aria-label="Historia rozmowy">{selectedMessages.map(message => <li key={message.messageId} className={`pd-assistant__message pd-assistant__message--${message.role}`}>
@@ -154,16 +186,26 @@ export function PapaAssistantExperience({ compact = false, onExpand, request }: 
       {view === 'Eksport / MCP' && <AssistantExportPanel />}
       {view === 'Ustawienia AI' && <AssistantPolicyPanel />}
     </div>
-    <div className="pd-assistant__status" role="status" aria-live="polite">{runtime.activity || (runtime.demo ? 'Tryb demonstracyjny · bez zmian w systemach zewnętrznych' : 'Papa korzysta z danych i uprawnień aktywnego workspace’u.')}</div>
+    {runtime.activity && <div className="pd-assistant__status" role="status" aria-live="polite">{runtime.busy && <span className="pd-assistant__activity-dot" />}{runtime.activity}</div>}
     {runtime.error && <p className="pd-assistant__error" role="alert">{runtime.error}</p>}
     {!compact && linkedId && runtime.error && !runtime.busy && <Button variant="secondary" onClick={()=>void runtime.restoreConversation(linkedId,linkedCase)}>Ponownie otwórz rozmowę z linku</Button>}
     {runtime.runId && !runtime.busy && <div className="pd-assistant__run-controls"><Button variant="secondary" onClick={()=>void runtime.resumeRun()}>Odczytaj / wznów odbiór zadania</Button><Button variant="ghost" onClick={runtime.stop}>Zatrzymaj zadanie na serwerze</Button><Button variant="ghost" onClick={runtime.dismissRun}>Odrzuć lokalny podgląd</Button></div>}
-    <form className="pd-assistant__composer" onSubmit={e => { e.preventDefault(); setView('Rozmowa'); void runtime.submit(); }}>
-      <label htmlFor={composerId}>Twoje pytanie</label><textarea id={composerId} ref={textarea} value={runtime.draft} maxLength={7000} rows={3}
-        placeholder="Co zmieniło wynik i od czego zacząć?" onChange={e => runtime.setDraft(e.target.value)}
-        onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); setView('Rozmowa'); void runtime.submit(); } }} />
-      <div><small>Ctrl/⌘ + Enter · Odpowiedź AI może wymagać weryfikacji.</small>
-        {runtime.busy ? <Button variant="secondary" onClick={runtime.stop}>Przerwij oczekiwanie</Button> : <Button type="submit" disabled={!runtime.draft.trim() || !snapshot || !!runtime.runId}>Wyślij pytanie</Button>}</div>
+    <form className="pd-assistant__composer" onSubmit={e => { e.preventDefault(); sendMessage(); }}>
+      <div className="pd-assistant__mode-row"><label><span className="pd-assistant__sr-only">Tryb analizy</span><Icon name="assistant" size={16} /><select value={runtime.mode} onChange={e => runtime.setMode(e.target.value as typeof runtime.mode)} disabled={runtime.busy}>
+        {assistantModes.map(mode => <option key={mode.id} value={mode.id}>{mode.label}</option>)}
+      </select></label>
+      <label><span className="pd-assistant__sr-only">Zakres rozmowy</span><select value={runtime.selectedElementId ?? ''} disabled={runtime.busy} onChange={e => runtime.selectElement(e.target.value || null)}>
+        <option value="">Cały kontekst</option>{includedItems.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
+      </select></label></div>
+      <div className="pd-assistant__input-box">
+        <label htmlFor={composerId} className="pd-assistant__sr-only">Twoje pytanie</label><textarea id={composerId} ref={textarea} value={runtime.draft} maxLength={7000} rows={2}
+          placeholder="Zapytaj Papa o swoje dane…" aria-describedby={`${composerId}-hint`} onChange={e => runtime.setDraft(e.target.value)}
+          onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !e.nativeEvent.isComposing) { e.preventDefault(); sendMessage(); } }} />
+        <div className="pd-assistant__input-actions"><button type="button" className="pd-assistant__context-action" onClick={() => setView('Kontekst')} title="Zarządzaj kontekstem i plikami"><AssistantControlIcon name="plus" /><span>Kontekst i pliki</span></button>
+          {runtime.busy ? <button type="button" className="pd-assistant__send" aria-label="Przerwij oczekiwanie" title="Przerwij oczekiwanie" onClick={runtime.stop}><AssistantControlIcon name="stop" /></button> : <button type="submit" className="pd-assistant__send" disabled={!canSubmit} aria-label="Wyślij pytanie" title="Wyślij pytanie (Ctrl/⌘ + Enter)"><AssistantControlIcon name="send" /></button>}
+        </div>
+      </div>
+      <p className="pd-assistant__composer-hint" id={`${composerId}-hint`}>{runtime.demo ? 'Dane demo · bez zmian w systemach zewnętrznych' : 'Papa może się mylić. Sprawdzaj źródła odpowiedzi.'}<span>Ctrl/⌘ + Enter</span></p>
     </form>
     <Dialog closeOnEscape open={resetOpen} onOpenChange={setResetOpen} title="Rozpocząć nową rozmowę?" description="Bieżąca historia pozostaje na serwerze. Nowy wątek zachowa wybrany kontekst." dismissible modal>
       <div className="pd-assistant__actions"><Button onClick={() => { clearLinkedConversation(); runtime.reset(); setResetOpen(false); setView('Rozmowa'); }}>Rozpocznij nową</Button><Button variant="secondary" disabled={!runtime.conversationId} onClick={() => { clearLinkedConversation(); runtime.reset(true); setResetOpen(false); setView('Rozmowa'); }}>Utwórz odgałęzienie</Button><Button variant="ghost" onClick={() => setResetOpen(false)}>Anuluj</Button></div>

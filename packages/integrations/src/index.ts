@@ -18,6 +18,7 @@ export * from "./providers/ga4.js";
 export * from "./canonical-normalizer.js";
 
 export * from "./stripe-billing.js";
+export * from "./gus-bir-adapter.js";
 
 export * from "./secret-provisioner.js";
 

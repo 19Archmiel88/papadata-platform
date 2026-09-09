@@ -27,7 +27,7 @@ export function isValidNip(value:string):boolean {
 export type LegalDocument = { id:'terms'|'privacy'; version:string; url:string; required:boolean };
 export type AccessLifecycleStatus = {
  readonly email:string; readonly emailVerified:boolean; readonly userId:string;
- readonly company:{ readonly version:number; readonly values:CompanyProfile; readonly source:'manual' }|null;
+ readonly company:{ readonly version:number; readonly values:CompanyProfile; readonly source:'manual'|'gus_bir' }|null;
  readonly documents:readonly LegalDocument[]; readonly documentsConfigured:boolean;
  readonly acceptedDocuments:readonly {id:string;version:string;acceptedAt:string}[];
  readonly completedAt:string|null; readonly canEditCompany:boolean;

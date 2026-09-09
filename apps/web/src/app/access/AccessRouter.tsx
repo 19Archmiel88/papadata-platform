@@ -4,7 +4,7 @@ import {Button} from '../../design-system';
 import {AuthSurface,type AuthSurfaceMode,type AuthSurfaceProps} from '../../runtime/features/auth/AuthSurface';
 import {AccessFlowScreen,type AccessFlowAction} from '../../runtime/features/auth/AccessFlowScreen';
 import {businessOutcomeMessage,oauthErrorMessage} from '../../runtime/features/auth/oauthOutcomes';
-import {bffClient,BffProblem,type OAuthAvailability,type OAuthCallbackResult} from '../../runtime/shared/api/bffClient';
+import {bffClient,BffProblem,type CompanyLookupResult,type OAuthAvailability,type OAuthCallbackResult} from '../../runtime/shared/api/bffClient';
 import type {AuthSessionRuntime} from '../../runtime/shared/auth/authSessionRuntime';
 import {useRemoteResource} from '../../runtime/shared/data/useRemoteResource';
 import {safeRandomUUID} from '../../runtime/shared/id/safeRandomUUID';
@@ -26,6 +26,7 @@ function AccessRuntime({locationPath,runtime,scope}:{locationPath:string;runtime
  const {t}=useProductLocale(),path=locationPath.split('?')[0]??'/auth',query=new URLSearchParams(locationPath.split('?')[1]??'');
  const [secrets,setSecrets]=useState(()=>{const q=new URLSearchParams(window.location.search),f=new URLSearchParams(window.location.hash.slice(1));return {token:f.get('token')??q.get('token')??'',resetToken:f.get('resetToken')??q.get('resetToken')??'',code:q.get('code')??'',state:q.get('state')??'',invitationId:q.get('invitationId')??'',error:q.get('error')??''};});
  const [availability,setAvailability]=useState<OAuthAvailability|undefined>(),[problem,setProblem]=useState<string|null>(null),[notice,setNotice]=useState<string|null>(null),[busy,setBusy]=useState(false),[mfa,setMfa]=useState(false),[recovery,setRecovery]=useState(false),[recoveryCode,setRecoveryCode]=useState('');
+ const [companyLookup,setCompanyLookup]=useState<CompanyLookupResult|null>(null),[companyLookupProblem,setCompanyLookupProblem]=useState<string|null>(null);
  const lock=useRef(false),alive=useRef(true),lastMutation=useRef<{signature:string;id:string}|null>(null),resendAt=useRef(0);
  const resource=useRemoteResource(scope,async signal=>runtime.session?bffClient.readAccessLifecycle(signal):null);
  useEffect(()=>{alive.current=true;return()=>{alive.current=false;};},[]);
@@ -68,13 +69,27 @@ function AccessRuntime({locationPath,runtime,scope}:{locationPath:string;runtime
   },
  };
  async function action(kind:AccessFlowAction,input?:unknown){
-  if(lock.current)return;lock.current=true;setBusy(true);setProblem(null);setNotice(null);
+  if(lock.current)return;lock.current=true;setBusy(true);setProblem(null);setNotice(null);setCompanyLookupProblem(null);
   try{
    if(kind==='retry'){await runtime.retryBootstrap();if(runtime.session)await resource.reload();}
    else if(kind==='mfa')setMfa(true);
    else if(kind==='logout'){await bffClient.logout();navigate('/auth/logged-out');}
    else if(kind==='verify'){await bffClient.verifyAccessEmail(secrets.token);setSecrets(s=>({...s,token:''}));setNotice(t('Adres potwierdzony. Zaloguj sie lub odswiez stan.','Email verified. Sign in or refresh the status.'));await resource.reload();}
    else if(kind==='resend'){if(Date.now()-resendAt.current<60_000)throw new Error(t('Odczekaj minute przed kolejnym linkiem.','Wait one minute before requesting another link.'));const email=(input as {email:string}).email;await bffClient.resendAccessEmail(email);resendAt.current=Date.now();setNotice(t('Zlecenie przyjete. Jezeli adres spelnia warunki, wiadomosc zostanie wyslana.','Request accepted. If eligible, an email will be sent.'));}
+   else if(kind==='company-lookup'){
+    // Public backend call (no runAuthenticatedCommand/CSRF -- company.lookup
+    // is @PublicEndpoint(), see DOC-P0-005): on success the result flows
+    // into AccessFlowScreen as a prop, which prefills its existing
+    // `company` form state and the user reviews/saves via the unchanged
+    // 'company' action. On failure we stay on auth-08 and surface a
+    // dedicated message so the "enter details manually" fallback next to
+    // it is never hidden behind the generic bootstrap-retry error panel.
+    const nip=(input as {nip:string}).nip;
+    const result=await bffClient.lookupCompany(nip);
+    if(!alive.current)return;
+    setCompanyLookup(result);
+    navigate('/auth/company/manual');
+   }
    else{
     const signature=JSON.stringify({kind,input});if(lastMutation.current?.signature!==signature)lastMutation.current={signature,id:safeRandomUUID()};
     const payload={...(input&&typeof input==='object'?input:{}),requestId:lastMutation.current.id};
@@ -83,13 +98,13 @@ function AccessRuntime({locationPath,runtime,scope}:{locationPath:string;runtime
     const fresh=await resource.reload();if(!fresh){setNotice(t('Zapis potwierdzony. Odczyt po zapisie nie powiodl sie; nie wysylaj ponownie.','Save confirmed. Readback failed; do not resubmit.'));return;}
     navigate(kind==='company'?'/auth/company/review':kind==='consents'?'/auth/completing':'/auth/registered');
    }
-  }catch(cause){if(alive.current)setProblem(cause instanceof Error?cause.message:'Operation failed.');}finally{lock.current=false;if(alive.current)setBusy(false);}
+  }catch(cause){if(alive.current){const message=cause instanceof Error?cause.message:'Operation failed.';if(kind==='company-lookup')setCompanyLookupProblem(message);else setProblem(message);}}finally{lock.current=false;if(alive.current)setBusy(false);}
  }
  if(surface==='auth-20'&&!secrets.resetToken)return <AccessFlowScreen surface="auth-20" problem={t('Brak tokenu. Otworz pelny link z wiadomosci lub zamow nowy.','Missing token. Open the full email link or request another.')} onAction={()=>navigate('/auth/recover-access')} onNavigate={navigate}/>;
  if(surface==='auth-16'&&recovery)return <AccessFlowScreen surface="auth-16" data={resource.data} problem={problem} busy={busy} onAction={()=>setRecovery(false)} onNavigate={navigate}><form onSubmit={async e=>{e.preventDefault();if(lock.current)return;lock.current=true;setBusy(true);setProblem(null);try{const result=await bffClient.redeemMfaRecovery(recoveryCode);if(!result.verified)throw new Error('Code not accepted.');runtime.applySession(result.session);setRecoveryCode('');navigate(target());}catch(cause){setProblem(cause instanceof Error?cause.message:'Verification failed.');}finally{lock.current=false;setBusy(false);}}}><p>{t('Kod odzyskiwania jest jednorazowy. Nie wklejaj go do rozmowy z Asystentem.','Recovery codes are single-use. Do not paste one into an assistant conversation.')}</p><label>{t('Kod odzyskiwania','Recovery code')}<input autoComplete="one-time-code" required value={recoveryCode} onChange={e=>setRecoveryCode(e.target.value)}/></label><Button disabled={busy} type="submit">{t('Potwierdz kod','Verify code')}</Button><Button variant="secondary" onClick={()=>{setRecoveryCode('');setRecovery(false);}}>{t('Wroc do TOTP','Back to TOTP')}</Button></form></AccessFlowScreen>;
  if(mode)return <AuthSurface key={`${path}:${mode}`} {...authProps}/>;
  const options=runtime.session?.memberships??[],tenants=[...new Map(options.map(m=>[m.tenantId,m])).values()];
- return <><AccessFlowScreen surface={surface} data={resource.data} problem={problem??(runtime.session?resource.problem:null)} notice={notice} busy={busy} loading={!!runtime.session&&resource.state==='loading'} hasToken={!!secrets.token} onAction={(kind,input)=>void action(kind,input)} onNavigate={navigate}>
+ return <><AccessFlowScreen surface={surface} data={resource.data} problem={problem??(runtime.session?resource.problem:null)} notice={notice} busy={busy} loading={!!runtime.session&&resource.state==='loading'} hasToken={!!secrets.token} companyLookup={companyLookup} companyLookupProblem={companyLookupProblem} onAction={(kind,input)=>void action(kind,input)} onNavigate={navigate}>
  {surface==='auth-22'||surface==='auth-23'?<div className="pd-access__actions">{(surface==='auth-22'?tenants:options.filter(m=>!query.get('tenant')||m.tenantId===query.get('tenant'))).map(m=><Button key={surface==='auth-22'?m.tenantId:m.workspaceId} disabled={busy} variant="secondary" onClick={()=>{if(surface==='auth-22'){navigate(`/auth/workspace?tenant=${encodeURIComponent(m.tenantId)}&returnTo=${encodeURIComponent(target())}`);}else{if(lock.current)return;lock.current=true;setBusy(true);void authProps.onSelectWorkspace(m.workspaceId).catch(cause=>setProblem(cause instanceof Error?cause.message:'Selection failed.')).finally(()=>{lock.current=false;if(alive.current)setBusy(false);});}}}>{surface==='auth-22'?(m.tenantName??m.tenantId):(m.workspaceName??m.workspaceId)}</Button>)}{!options.length?<p>{t('Brak aktywnych czlonkostw. Popros o zaproszenie.','No active memberships. Request an invitation.')}</p>:null}</div>:null}
  </AccessFlowScreen><MfaSetupDialog open={mfa} onClose={()=>setMfa(false)} onEnroll={()=>runtime.runAuthenticatedCommand(()=>bffClient.enrollMfa({accountName:resource.data?.email??runtime.session?.userId??''}),locationPath)} onConfirm={async code=>{const result=await bffClient.confirmMfa({code});if(!result.verified)throw new Error('Invalid code.');runtime.applySession(result.session);setNotice(t('MFA wlaczone.','MFA enabled.'));}}/></>;
 }

@@ -2403,9 +2403,9 @@ export class AssistantConversationRepository {
     caseThreadId: string;
     parentThreadId: string;
     sourceElementId: string | null;
-    caseType: "action" | "analysis" | "anomaly" | "decision" | "opportunity" | "report" | "risk";
+    caseType: "action" | "analysis" | "anomaly" | "data_quality" | "decision" | "opportunity" | "report" | "risk";
     severity: "critical" | "high" | "low" | "medium";
-    status: "analysis" | "approval" | "detected" | "dismissed" | "monitoring" | "recommendation" | "resolved" | "triage";
+    status: "actioned" | "awaiting_approval" | "detected" | "dismissed" | "monitoring" | "needs_data" | "recommendation_ready" | "resolved" | "triaging";
     title: string;
     metrics: readonly unknown[];
     snapshots: readonly unknown[];
@@ -6002,5 +6002,54 @@ export class BillingRepository {
         );
       },
     );
+  }
+}
+
+export type CompanyLookupAuditInsertRow = {
+  readonly id: string;
+  readonly nip: string;
+  readonly rawPayload: unknown;
+  readonly normalized: Readonly<Record<string, unknown>>;
+  readonly source: "gus_bir";
+  readonly retrievedAt: string;
+  readonly correlationId: string | null;
+};
+
+/**
+ * Append-only audit of raw GUS/BIR registry responses collected during the
+ * public company.lookup step of the access (registration) flow -- see
+ * 0065_company_lookup_audit.sql. company.lookup has no RequestPrincipal
+ * (@PublicEndpoint(), called before a tenant/workspace scope exists), so
+ * rows carry no tenant_id/workspace_id/user_id and this deliberately uses
+ * withSystem rather than a tenant-scoped write, matching
+ * app.access_mail_outbox. Only `record` is exposed: the API has no grant to
+ * read, update or delete this table (see the migration), so a later manual
+ * edit to app.access_company_profiles can never alter or erase what a
+ * lookup actually returned.
+ */
+export class CompanyLookupAuditRepository {
+  private readonly database: ProductionDatabase;
+
+  constructor(database: ProductionDatabase) {
+    this.database = database;
+  }
+
+  async record(row: CompanyLookupAuditInsertRow): Promise<void> {
+    await this.database.withSystem(async (client) => {
+      await client.query(
+        `insert into app.company_lookup_audit (
+           id, nip, raw_payload, normalized, source, retrieved_at, correlation_id
+         ) values ($1, $2, $3::jsonb, $4::jsonb, $5, $6, $7)`,
+        [
+          row.id,
+          row.nip,
+          JSON.stringify(row.rawPayload),
+          JSON.stringify(row.normalized),
+          row.source,
+          row.retrievedAt,
+          row.correlationId,
+        ],
+      );
+    });
   }
 }

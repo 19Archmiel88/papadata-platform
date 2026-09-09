@@ -130,6 +130,9 @@ const sourceStatusFilters: readonly {
   { id: 'syncing', label: 'Synchronizacja' },
   { id: 'partial', label: 'Częściowo gotowe' },
   { id: 'action_required', label: 'Wymaga działania' },
+  { id: 'provider_error', label: 'Błąd dostawcy' },
+  { id: 'no_data', label: 'Brak danych' },
+  { id: 'disconnected', label: 'Odłączone' },
 ];
 
 const catalogFilterOptions: readonly {
@@ -351,6 +354,8 @@ export function IntegrationsWorkspace({
         />
       ) : (
         <IntegrationsHub
+          demo={resolvedRuntime.demo}
+          canConnect={Boolean(onBeginConnect || onCreateConnection)}
           area={area}
           catalogFilters={catalogFilters}
           catalogProviders={filterIntegrationCatalog(resolvedRuntime.catalog.providers, catalogFilters)}
@@ -435,6 +440,7 @@ export function IntegrationsWorkspace({
       />
 
       <Drawer
+        className="pd-int-activity-drawer"
         dismissible
         onOpenChange={(open) => setActivityOpen(open)}
         open={activityOpen}
@@ -452,7 +458,7 @@ export function IntegrationsWorkspace({
                 <div>
                   <strong>{source.providerDisplayName}</strong>
                   <p>{source.accountName}</p>
-                  <div className="pd-int-activity-track"><span style={{ width: `${source.completeness.percentage}%` }} /></div>
+                  <span className="pd-int-muted-text">Synchronizacja w toku · kompletność danych {source.completeness.percentage}%</span>
                 </div>
               </article>
             ))}
@@ -474,6 +480,8 @@ function resolveHubArea(path: string): HubAreaId {
 /* ---------------------------------------------------------------------- */
 
 function IntegrationsHub({
+  demo,
+  canConnect,
   area,
   catalogFilters,
   catalogProviders,
@@ -493,6 +501,8 @@ function IntegrationsHub({
   sourceFilters,
   sources,
 }: {
+  readonly demo: boolean;
+  readonly canConnect: boolean;
   readonly area: HubAreaId;
   readonly catalogFilters: IntegrationCatalogFilters;
   readonly catalogProviders: readonly IntegrationRuntimeCatalogProvider[];
@@ -514,17 +524,23 @@ function IntegrationsHub({
 }) {
   const readyCount = runtimeStatus.sources.filter((source) => resolveSourceSyntheticStatus(source).id === 'ready').length;
   const primaryAlert = runtimeStatus.alerts[0] ?? null;
+  const connectedCount = runtimeStatus.sources.filter(source => source.connectionStatus !== 'DISCONNECTED').length;
+  const statusCount = (status: IntegrationSourceFilters['status']) => runtimeStatus.sources.filter(source => status === 'all' || resolveSourceSyntheticStatus(source).id === status).length;
+  const filterByStatus = (status: IntegrationSourceFilters['status']) => {
+    onSourceFiltersChange({ query: '', provider: 'all', status });
+    onAreaChange('sources');
+  };
 
   return (
     <div className="pd-int-hub">
       <header className="pd-int-topbar">
         <div>
-          <h1 className="pd-int-sr-only">Integracje i jakość danych</h1>
-          <span className="pd-int-eyebrow">Dane i integracje</span>
-          <p className="pd-int-lead">Zarządzaj połączeniami źródeł danych i sprawdzaj ich wpływ na gotowość analiz.</p>
+          <span className="pd-int-eyebrow">Twoje centrum danych</span>
+          <div className="pd-int-title-row"><h1>Dane i integracje</h1>{demo && <span className="pd-int-demo-badge" title="Dane przykładowe. Operacje są lokalne. Nie wpisuj prawdziwych sekretów.">Demo</span>}</div>
+          <p className="pd-int-lead">Połącz źródła. Dbaj o dane. Analizuj z pewnością.</p>
         </div>
         <div className="pd-int-topbar-actions">
-          <Button onClick={onOpenActivity} size="small" variant="secondary">Aktywność synchronizacji</Button>
+          <Button startIcon={<Icon name="calendar" size={16} />} onClick={onOpenActivity} size="small" variant="ghost">Aktywność synchronizacji</Button>
           {onReload ? (
             <Button disabled={loading} loading={loading} loadingLabel="Odświeżanie…" onClick={onReload} size="small" variant="secondary">
               Odśwież
@@ -546,9 +562,19 @@ function IntegrationsHub({
             type="button"
           >
             {item.label}
+            {item.id === 'sources' && <span className="pd-int-tab-count">{runtimeStatus.sources.length}</span>}
           </button>
         ))}
       </nav>
+
+      {area === 'sources' ? (
+        <div className="pd-int-summary-grid" aria-label="Podsumowanie źródeł">
+          <SummaryCard icon="integration" label="Połączone źródła" value={`${connectedCount}`} suffix={`/ ${runtimeStatus.plan.dataSourcesLimit}`} description="Limit źródeł w Twoim planie" onClick={() => filterByStatus('all')} active={sourceFilters.status === 'all'} />
+          <SummaryCard icon="success" label="Gotowe do analizy" value={`${readyCount}`} description="Dane gotowe do wykorzystania" tone="success" onClick={() => filterByStatus('ready')} active={sourceFilters.status === 'ready'} />
+          <SummaryCard icon="data" label="Synchronizacje" value={`${statusCount('syncing')}`} description="Źródła pobierające dane" onClick={() => filterByStatus('syncing')} active={sourceFilters.status === 'syncing'} />
+          <SummaryCard icon="warning" label="Wymaga działania" value={`${statusCount('action_required')}`} description="Sprawdź dostęp i ograniczenia" tone={statusCount('action_required') > 0 ? 'warning' : undefined} onClick={() => filterByStatus('action_required')} active={sourceFilters.status === 'action_required'} />
+        </div>
+      ) : null}
 
       {area !== 'data-quality' && primaryAlert ? (
         <div className="pd-int-alert" data-tone={primaryAlert.tone}>
@@ -560,23 +586,15 @@ function IntegrationsHub({
           {primaryAlert.actionLabel && primaryAlert.sourceId ? (
             <Button
               onClick={() => {
-                onAreaChange('sources');
-                onOpenSource(primaryAlert.sourceId!);
+                const source = runtimeStatus.sources.find(item => item.integrationId === primaryAlert.sourceId);
+                if (source?.primaryAction.id === 'reauth' && source.canManage) onSourceCommand(source, 'reauth');
+                else onOpenSource(primaryAlert.sourceId!);
               }}
               size="small"
             >
-              {primaryAlert.actionLabel}
+              {runtimeStatus.sources.find(source => source.integrationId === primaryAlert.sourceId)?.canManage ? primaryAlert.actionLabel : 'Zobacz szczegóły'}
             </Button>
           ) : null}
-        </div>
-      ) : null}
-
-      {area !== 'data-quality' ? (
-        <div className="pd-int-summary-grid">
-          <SummaryCard label="Połączone źródła" value={`${runtimeStatus.plan.dataSourcesUsed}`} suffix={`/ ${runtimeStatus.plan.dataSourcesLimit}`} />
-          <SummaryCard label="Wymaga działania" value={`${runtimeStatus.summary.actionRequired}`} tone={runtimeStatus.summary.actionRequired > 0 ? 'warning' : undefined} />
-          <SummaryCard label="Synchronizacje" value={`${runtimeStatus.summary.syncingSources}`} suffix="w toku" />
-          <SummaryCard label="Gotowe do analizy" value={`${readyCount}`} suffix={`/ ${runtimeStatus.sources.length}`} tone="success" />
         </div>
       ) : null}
 
@@ -588,11 +606,20 @@ function IntegrationsHub({
           onRequestDisconnect={onRequestDisconnect}
           onSourceCommand={onSourceCommand}
           sources={sources}
+          allSources={runtimeStatus.sources}
+          onConnect={() => onAreaChange('catalog')}
         />
       ) : null}
 
+      {area === 'sources' && runtimeStatus.sources.length > 0 && <section className="pd-int-readiness-strip" aria-label="Wpływ danych na analizy">
+        <div><Icon name="trend" size={20} /><div><h2>Gotowość Twoich analiz</h2><p>Połączenie źródła to pierwszy krok. Liczy się też kompletność danych.</p></div></div>
+        <div className="pd-int-readiness-chips">{completeness.domains.map(domain => <button type="button" key={domain.id} onClick={() => onAreaChange('data-quality')}><span data-status={domain.status} />{domain.label}<small>{domain.status === 'COMPLETE' ? 'Gotowe' : domain.status === 'PARTIAL' ? 'Częściowe' : 'Brak danych'}</small></button>)}</div>
+        <Button variant="ghost" size="small" onClick={() => onAreaChange('data-quality')}>Sprawdź jakość danych →</Button>
+      </section>}
+
       {area === 'catalog' ? (
         <CatalogView
+          canConnect={canConnect}
           filters={catalogFilters}
           onConnect={onConnect}
           onFiltersChange={onCatalogFiltersChange}
@@ -610,24 +637,30 @@ function IntegrationsHub({
 }
 
 function SummaryCard({
+  icon, description, onClick, active,
   label,
   suffix,
   tone,
   value,
 }: {
+  readonly icon: 'integration' | 'success' | 'data' | 'warning';
+  readonly description: string;
+  readonly onClick: () => void;
+  readonly active: boolean;
   readonly label: string;
   readonly suffix?: string;
   readonly tone?: 'success' | 'warning';
   readonly value: string;
 }) {
   return (
-    <div className="pd-int-summary-card">
-      <span className="pd-int-summary-card__label">{label}</span>
+    <button type="button" className="pd-int-summary-card" onClick={onClick} aria-pressed={active}>
+      <span className="pd-int-summary-card__label">{label}<Icon name={icon} size={16} /></span>
       <div className="pd-int-summary-card__value" data-tone={tone}>
         {value}
         {suffix ? <small>{suffix}</small> : null}
       </div>
-    </div>
+      <span className="pd-int-summary-card__description">{description}<span aria-hidden="true">↗</span></span>
+    </button>
   );
 }
 
@@ -642,6 +675,7 @@ const sourceStatusToneMap: Record<string, DataTableStatusTone> = {
 };
 
 function SourcesView({
+  allSources, onConnect,
   filters,
   onFiltersChange,
   onOpenSource,
@@ -649,6 +683,8 @@ function SourcesView({
   onSourceCommand,
   sources,
 }: {
+  readonly allSources: readonly IntegrationRuntimeSource[];
+  readonly onConnect: () => void;
   readonly filters: IntegrationSourceFilters;
   readonly onFiltersChange: (filters: IntegrationSourceFilters) => void;
   readonly onOpenSource: (id: string, tab?: IntegrationWorkspaceTabId) => void;
@@ -662,13 +698,14 @@ function SourcesView({
     completeness: source.completeness.percentage,
     freshness: source.freshness.label,
     id: source.integrationId,
-    impact: source.issue ? source.issue.message : 'Bez problemów',
+    impact: source.issue ? source.issue.message : source.impact.kpis.join(' · ') || 'Brak przypisanych KPI',
     source: source.providerDisplayName,
     status: resolveSourceSyntheticStatus(source).label,
   }));
 
   return (
     <section aria-label="Źródła danych" className="pd-int-panel">
+      <div className="pd-int-list-heading"><div><h2>Twoje źródła <span>{allSources.length}</span></h2><p>Stan połączeń, świeżość i kompletność danych w jednym miejscu.</p></div></div>
       <div className="pd-int-toolbar">
         <SearchField
           debounceMs={150}
@@ -681,7 +718,7 @@ function SourcesView({
           resultCount={null}
         />
         <div className="pd-int-filter-pills">
-          {sourceStatusFilters.map((item) => (
+          {sourceStatusFilters.filter(item => ['all', 'ready', 'syncing', 'action_required'].includes(item.id) || filters.status === item.id || allSources.some(source => resolveSourceSyntheticStatus(source).id === item.id)).map((item) => (
             <button
               aria-pressed={filters.status === item.id}
               className="pd-int-filter-pill"
@@ -691,6 +728,7 @@ function SourcesView({
               type="button"
             >
               {item.label}
+              <span>{allSources.filter(source => item.id === 'all' || resolveSourceSyntheticStatus(source).id === item.id).length}</span>
             </button>
           ))}
         </div>
@@ -698,15 +736,16 @@ function SourcesView({
 
       <DataTable
         actionsLabel="Akcje"
-        actionsMenuItems={() => [
-          { id: 'sync', label: 'Synchronizuj teraz' },
+        actionsMenuItems={(row) => [
+          { id: 'sync', label: 'Synchronizuj teraz', disabled: !sourceById.get(String(row.id))?.canManage },
           { id: 'config', label: 'Konfiguracja' },
-          { id: 'reauth', label: 'Połącz ponownie' },
+          { id: 'reauth', label: 'Połącz ponownie', disabled: !sourceById.get(String(row.id))?.canManage },
           { id: 'sep', kind: 'separator' },
-          { destructive: true, id: 'disconnect', label: 'Odłącz' },
+          { destructive: true, id: 'disconnect', label: 'Odłącz', disabled: !sourceById.get(String(row.id))?.canManage },
         ]}
         actionsTriggerLabel="•••"
         ariaLabel="Źródła danych i jakość danych"
+        summary={`Widoczne źródła: ${sources.length} z ${allSources.length}`}
         cellRenderers={{
           completeness: (row) => {
             const source = sourceById.get(String(row.id));
@@ -722,7 +761,7 @@ function SourcesView({
           openAction: (row) => {
             const source = sourceById.get(String(row.id));
             if (!source) return null;
-            const needsAction = source.primaryAction.id === 'reauth' || source.primaryAction.id === 'fix';
+            const needsAction = source.canManage && (source.primaryAction.id === 'reauth' || source.primaryAction.id === 'fix');
             return (
               <Button
                 onClick={() => (
@@ -762,7 +801,7 @@ function SourcesView({
         emptyMessage="Połącz pierwsze źródło danych, aby zobaczyć je na tej liście."
         emptyTitle="Brak połączonych źródeł"
         loading={false}
-        noResults={sources.length === 0 && (filters.query !== '' || filters.status !== 'all')}
+        noResults={sources.length === 0 && (filters.query !== '' || filters.status !== 'all' || filters.provider !== 'all')}
         noResultsMessage="Zmień filtry albo wyszukiwanie."
         onAction={(rowId, actionId) => {
           const source = sourceById.get(rowId);
@@ -788,6 +827,7 @@ function SourcesView({
         sort={null}
         statusColumn={{ columnId: 'status', label: 'Stan źródła', mapTone: sourceStatusToneMap }}
       />
+      {sources.length === 0 && <div className="pd-int-empty-action"><Button variant="secondary" onClick={() => allSources.length ? onFiltersChange({ query: '', provider: 'all', status: 'all' }) : onConnect()}>{allSources.length ? 'Wyczyść filtry' : 'Połącz pierwsze źródło'}</Button></div>}
     </section>
   );
 }
@@ -825,6 +865,7 @@ function IntegrationActionsMenu({
 }
 
 function CatalogView({
+  canConnect,
   filters,
   onConnect,
   onFiltersChange,
@@ -832,6 +873,7 @@ function CatalogView({
   providers,
   sources,
 }: {
+  readonly canConnect: boolean;
   readonly filters: IntegrationCatalogFilters;
   readonly onConnect: (provider: IntegrationRuntimeCatalogProvider) => void;
   readonly onFiltersChange: (filters: IntegrationCatalogFilters) => void;
@@ -839,17 +881,12 @@ function CatalogView({
   readonly providers: readonly IntegrationRuntimeCatalogProvider[];
   readonly sources: readonly IntegrationRuntimeSource[];
 }) {
-  const connectedCount = providers.filter((provider) => provider.connectedCount > 0).length;
-
   return (
     <section aria-label="Katalog integracji" className="pd-int-panel">
       <div className="pd-int-source-set">
         <span className="pd-int-source-set__label">Twój zestaw źródeł</span>
-        <span className="pd-int-source-set__item" data-ok><Icon decorative name="success" size={16} /> Sprzedaż</span>
-        <span className="pd-int-source-set__item" data-partial>◐ Analityka</span>
-        <span className="pd-int-source-set__item" data-warn>! Reklamy</span>
-        <span className="pd-int-source-set__item" data-ok><Icon decorative name="success" size={16} /> Social</span>
-        <span className="pd-int-source-set__hint">{providers.length - connectedCount} źródeł warto jeszcze skonfigurować</span>
+        <span className="pd-int-source-set__item">Zapisane źródła: {sources.length}</span>
+        <span className="pd-int-source-set__hint">Dostępne do połączenia w tym widoku: {providers.filter(provider => !provider.connectedCount && provider.connectable).length}</span>
       </div>
 
       <div className="pd-int-toolbar">
@@ -905,7 +942,8 @@ function CatalogView({
                 <strong>Odblokuje:</strong> {provider.unlocks.slice(0, 4).join(', ')}
               </p>
               <Button
-                disabled={!provider.connectable}
+                disabled={!connectedSource && (!provider.connectable || !canConnect)}
+                title={!connectedSource && !canConnect ? 'Brak uprawnień do łączenia źródeł' : undefined}
                 onClick={() => (connectedSource ? onManageProvider(connectedSource) : onConnect(provider))}
                 size="small"
                 variant={provider.connectedCount > 0 ? 'secondary' : 'primary'}
@@ -1095,9 +1133,9 @@ function ProviderWorkspace({
           <IntegrationActionsMenu
             items={[
               { id: 'config', label: 'Konfiguracja' },
-              { id: 'reauth', label: 'Połącz ponownie' },
+              { id: 'reauth', label: 'Połącz ponownie', disabled: !source.canManage },
               { id: 'sep', kind: 'separator' },
-              { destructive: true, id: 'disconnect', label: 'Odłącz' },
+              { destructive: true, id: 'disconnect', label: 'Odłącz', disabled: !source.canManage },
             ]}
             onAction={(id) => {
               if (id === 'config') onTabChange('config');
@@ -1648,8 +1686,8 @@ function ProviderMark({
   readonly size?: 'default' | 'large';
 }) {
   return (
-    <span className="pd-int-provider-mark" data-provider={provider} data-size={size}>
-      {label.slice(0, 2).toUpperCase()}
+    <span aria-hidden="true" className="pd-int-provider-mark" data-provider={provider} data-size={size}>
+      {({ woocommerce: 'Woo', shopify: 'S', baselinker: 'BL', allegro: 'a', google_ads: 'Ads', meta_ads: 'm', ga4: 'GA4' } as const)[provider] ?? label.slice(0, 2).toUpperCase()}
     </span>
   );
 }

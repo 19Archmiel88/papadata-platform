@@ -212,7 +212,24 @@ export class IntegrationService {
     tenantId: string,
     workspaceId: string,
     connectionId: string,
-  ): Promise<void> {
+  ): Promise<{ connectionId: string; providerId: string }> {
+    // Read the provider before deleting so the controller's post-success
+    // audit entry (see integration.controller.ts's disconnect()) can record
+    // which provider was disconnected without a second round-trip -- this
+    // reuses the existing findConnection() read rather than adding a new
+    // repository method or widening markConnectionDeleted's own RETURNING.
+    const connection = await this.repository.findConnection(
+      tenantId,
+      workspaceId,
+      connectionId,
+    );
+
+    if (!connection) {
+      throw new Error(
+        "Integration connection was not found or was already disconnected",
+      );
+    }
+
     const deleted = await this.repository.markConnectionDeleted(
       tenantId,
       workspaceId,
@@ -224,6 +241,8 @@ export class IntegrationService {
         "Integration connection was not found or was already disconnected",
       );
     }
+
+    return { connectionId, providerId: String(connection.provider_id) };
   }
 
   async retryJob(

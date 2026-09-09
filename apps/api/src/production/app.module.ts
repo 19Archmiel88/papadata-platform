@@ -9,6 +9,7 @@ import {AssistantRunService} from './assistant-workspace/assistant-run.service.j
 import {AccessLifecycleController} from './access-lifecycle/access-lifecycle.controller.js';
 import {AccessLifecycleService} from './access-lifecycle/access-lifecycle.service.js';
 import {AccessMailService} from './access-lifecycle/access-mail.service.js';
+import {GusBirCacheService} from './access-lifecycle/gus-bir-cache.service.js';
 import { ConnectionProvisionController } from "./platform-operations/connection-provision.controller.js";
 import { ConnectionProvisionService } from "./platform-operations/connection-provision.service.js";
 import { BillingOperationsController } from "./platform-operations/billing-operations.controller.js";
@@ -129,7 +130,7 @@ export const productionControllers = [
     BusinessOverviewService,
     AccessLifecycleService,
     AssistantWorkspaceService,
-    AssistantRunService, AccessMailService,
+    AssistantRunService, AccessMailService, GusBirCacheService,
     ConnectionProvisionService, SettingsOperationsService, IntegrationOperationsService, BillingOperationsService,
     CampaignGrowthService,
     SupportTicketsService,

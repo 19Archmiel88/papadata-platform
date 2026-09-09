@@ -42,7 +42,6 @@ function IntegrationsRuntime({scope}:{scope:string}){
  if(params.get('integrationArea')==='data-quality'||location.split('?')[0]?.endsWith('/jakosc-danych'))return <><Button variant="ghost" onClick={()=>{update({integrationArea:'sources'});if(location.split('?')[0]?.endsWith('/jakosc-danych'))navigate('/app/integrations');}}>{t('Wroc do zrodel','Back to sources')}</Button><DataQualityPage/></>;
  const canManage=runtime.session?.capabilities.includes('integrations.connection.manage')===true;
  return <>
- <div className="pd-operations__actions"><Button variant="secondary" onClick={()=>update({integrationArea:'data-quality',sourceId:null})}>{t('Jakosc i pochodzenie danych','Data quality and lineage')}</Button></div>
  {notice&&<p role="status">{notice}</p>}
  {capabilities.problem&&<p role="alert">{t('Kreator wymaga ponownego odczytu konfiguracji.','Connection setup requires configuration readback.')}</p>}
  <IntegrationsWorkspace mode="runtime" path={location} loading={resource.state==='loading'} problem={resource.problem} runtime={resource.data} partialFailures={resource.data?.partialFailures} onReload={()=>{void resource.reload();void capabilities.reload();}}

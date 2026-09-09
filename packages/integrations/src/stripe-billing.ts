@@ -1,3 +1,4 @@
+import type { PaymentMethodType, BillingPaymentMethodStatus } from '@papadata/contracts';
 /** Hosted billing only: no card data or SDK objects cross the application boundary. */
 export type BillingPriceConfig = { plan: 'starter'|'growth'|'scale'; cycle:'monthly'|'annual'; priceId:string; name:string };
 export type StripeBillingConfig = { mode:'test'|'live'; secretKey:string; apiVersion:string; returnOrigin:string; portalConfiguration:string|null; prices:readonly BillingPriceConfig[] };
@@ -46,3 +47,80 @@ export function stripeRecord(value:unknown):Record<string,unknown>{return value&
 export function stripeId(value:unknown,prefix:string):string|null {const id=typeof value==='string'?value:stripeRecord(value).id;return typeof id==='string'&&new RegExp(`^${prefix}_[A-Za-z0-9_]+$`).test(id)?id:null;}
 export function stripeTimestamp(value:unknown):string|null {return typeof value==='number'&&Number.isFinite(value)&&value>0&&value<1e11?new Date(value*1000).toISOString():null;}
 export function stripeSafeUrl(value:unknown,hosts:readonly string[]):string|null {if(typeof value!=='string')return null;try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&hosts.includes(u.hostname)?u.href:null;}catch{return null;}}
+
+/** Feature flags read once per checkout. Fail-closed like PAPADATA_PAPA_REMOTE_ENABLED
+ * elsewhere in this repo (see config/p0-integrations.env.example): an unset or non-'true'
+ * value means disabled, there is no other implicit default. */
+export type PaymentMethodsConfig = {readonly card:boolean;readonly blik:boolean;readonly blikRecurring:boolean;readonly fastBankTransfer:boolean;readonly bankTransfer:boolean;readonly applePay:boolean;readonly googlePay:boolean};
+export function readPaymentMethodsConfig(env:NodeJS.ProcessEnv=process.env):PaymentMethodsConfig {
+ return {
+  card:env.PAYMENT_ENABLE_CARD==='true',
+  blik:env.PAYMENT_ENABLE_BLIK==='true',
+  blikRecurring:env.PAYMENT_ENABLE_BLIK_RECURRING==='true',
+  fastBankTransfer:env.PAYMENT_ENABLE_FAST_TRANSFER==='true',
+  bankTransfer:env.PAYMENT_ENABLE_BANK_TRANSFER==='true',
+  applePay:env.PAYMENT_ENABLE_APPLE_PAY==='true',
+  googlePay:env.PAYMENT_ENABLE_GOOGLE_PAY==='true',
+ };
+}
+
+export type StripeCheckoutPaymentMethodPlan = {readonly types:readonly string[];readonly statuses:readonly BillingPaymentMethodStatus[]};
+const ALL_PAYMENT_METHOD_TYPES:readonly PaymentMethodType[] = ['card','blik','blik_recurring','fast_bank_transfer','traditional_bank_transfer','apple_pay','google_pay'];
+
+// -----------------------------------------------------------------------
+// Mapping PaymentMethodType -> Stripe `payment_method_types` values for THIS repo's
+// checkout, which BillingOperationsService.session always creates with mode:'subscription'.
+// Confirmed live against Stripe's own payment-method-support docs
+// (docs.stripe.com/payments/payment-methods/payment-method-support, fetched 2026-09-09):
+//  - card: fully supported in Checkout subscription mode. HIGH confidence.
+//  - apple_pay / google_pay: NOT distinct `payment_method_types` values at all (that doc's
+//    own "API enum" column lists "- Unsupported" for both). They ride on `card` automatically
+//    once `card` is in the array AND the wallet is turned on in the Stripe Dashboard (Apple
+//    Pay additionally needs domain verification there). This code can make sure `card` is
+//    present for them but cannot control or verify the Dashboard side. HIGH confidence on "no
+//    separate value exists"; the Dashboard dependency is inherently outside this repo.
+//  - blik: a real Stripe payment method (`blik`), but the same doc's "Bank redirects product
+//    support" table marks Checkout for BLIK as unsupported "when using Checkout in
+//    subscription mode" -- exactly the mode this repo always uses for checkout. NOT sent to
+//    Stripe here. A working BLIK checkout would need a separate one-time (`mode:'payment'`)
+//    or invoice-based flow -- not built by this change. HIGH confidence this exact mapping is
+//    unusable as-is for the existing subscription checkout; LOW confidence about what the
+//    eventual one-time-flow mapping should look like, since that flow does not exist yet.
+//  - blik_recurring: Stripe has no such `payment_method_types` value. Recurring BLIK is a
+//    distinct feature (a SetupIntent with usage:'off_session', then a later off-session
+//    PaymentIntent charge -- see docs.stripe.com/payments/blik/set-up-payment), not a Checkout
+//    Session parameter, and Stripe additionally caps off-session BLIK charges at 2000 PLN and
+//    notes not all Polish banks support it. NOT implemented by this change -- flagged here
+//    rather than guessed, per this task's own instruction to surface uncertainty explicitly.
+//  - fast_bank_transfer: mapped conceptually to Stripe's `p24` (Przelewy24), the common Polish
+//    redirect bank transfer method -- UNVERIFIED beyond that conceptual mapping, and moot for
+//    this integration point regardless, since the same product-support table marks P24's
+//    Checkout support unsupported in subscription mode too. NOT sent to Stripe here.
+//  - traditional_bank_transfer: mapped to Stripe's `customer_balance` bank-transfer type,
+//    which is one-time-only by construction (no SetupIntent support at all, per that doc's
+//    API-support table) and is, once again, unsupported in Checkout subscription mode. NOT
+//    sent to Stripe here.
+// None of blik/blik_recurring/fast_bank_transfer/traditional_bank_transfer can become sendable
+// here without a broader change (a separate one-time/invoice checkout path). The honest thing
+// to report meanwhile is "configured, not yet deliverable through this checkout" -- see the
+// `note` on each BillingPaymentMethodStatus row below and BillingOperationsService.read's
+// limitations array, rather than silently pretending PAYMENT_ENABLE_BLIK etc. have an effect.
+// -----------------------------------------------------------------------
+function describePaymentMethod(method:PaymentMethodType,config:PaymentMethodsConfig,cardFamily:boolean):BillingPaymentMethodStatus {
+ switch(method){
+  case 'card':return {method,enabledByConfig:config.card,wiredToCheckout:cardFamily,note:!cardFamily?'Disabled: no payment method is enabled for this checkout.':config.card?'Sent to Stripe as payment_method_types=card.':'Sent to Stripe as payment_method_types=card because Apple Pay/Google Pay require it, even though PAYMENT_ENABLE_CARD is false.'};
+  case 'apple_pay':return {method,enabledByConfig:config.applePay,wiredToCheckout:false,note:'Stripe has no separate apple_pay payment_method_types value; it rides on card automatically when enabled AND verified for this domain in the Stripe Dashboard (outside this repo). This flag alone does not guarantee Apple Pay appears.'};
+  case 'google_pay':return {method,enabledByConfig:config.googlePay,wiredToCheckout:false,note:'Stripe has no separate google_pay payment_method_types value; it rides on card automatically when turned on in the Stripe Dashboard (outside this repo). This flag alone does not guarantee Google Pay appears.'};
+  case 'blik':return {method,enabledByConfig:config.blik,wiredToCheckout:false,note:'Not sent to Stripe: BLIK is not supported in a subscription-mode Checkout Session (confirmed against Stripe payment-method-support docs, fetched 2026-09-09). Would need a separate one-time or invoice-based checkout flow, not built here.'};
+  case 'blik_recurring':return {method,enabledByConfig:config.blikRecurring,wiredToCheckout:false,note:'Not implemented: Stripe has no blik_recurring payment_method_types value. Recurring BLIK needs a dedicated SetupIntent(usage=off_session) plus a later off-session PaymentIntent, not this Checkout Session.'};
+  case 'fast_bank_transfer':return {method,enabledByConfig:config.fastBankTransfer,wiredToCheckout:false,note:'Not sent to Stripe: maps conceptually to Stripe p24 (Przelewy24), which is also unsupported in a subscription-mode Checkout Session. Would need a separate one-time or invoice-based checkout flow, not built here.'};
+  case 'traditional_bank_transfer':return {method,enabledByConfig:config.bankTransfer,wiredToCheckout:false,note:'Not sent to Stripe: maps to Stripe customer_balance (bank transfer) type, which is one-time-only and unsupported in a subscription-mode Checkout Session.'};
+  default:{const exhaustive:never=method;return exhaustive;}
+ }
+}
+export function resolveStripeCheckoutPaymentMethods(config:PaymentMethodsConfig):StripeCheckoutPaymentMethodPlan {
+ const cardFamily=config.card||config.applePay||config.googlePay;
+ const types:string[]=cardFamily?['card']:[];
+ const statuses=ALL_PAYMENT_METHOD_TYPES.map(method=>describePaymentMethod(method,config,cardFamily));
+ return {types,statuses};
+}

@@ -5,13 +5,14 @@ import { entitlementsForMigratedPlan, type IntegrationProvisionCapabilities, typ
 import { IntegrationSecretProvisioner, parseCredentialSecret } from '@papadata/integrations';
 import { createProviderRegistry } from '../integrations/provider.factory.js';
 import { isMvpProviderId, testProviderCredential } from '../integrations/integration-runtime.js';
+import { AuditService } from '../audit/audit.service.js';
 import type { RequestPrincipal } from '../auth/request-principal.js';
 import { object, onlyKeys, string, uuid, version } from './validation.js';
 import { operation } from './operation-store.js';
 
 @Injectable()
 export class ConnectionProvisionService {
- constructor(@Inject(ProductionDatabase) private readonly db:ProductionDatabase){}
+ constructor(@Inject(ProductionDatabase) private readonly db:ProductionDatabase,@Inject(AuditService) private readonly audit:AuditService){}
  capabilities():IntegrationProvisionCapabilities {
   const enabled=IntegrationSecretProvisioner.ready();return {enabled,reason:enabled?'Server-side Secret Manager provisioning configured. Provider access is verified before activation.':'An administrator must configure the Secret Manager project, replica location and workload identity permissions.',storage:'gcp_secret_manager',transport:'https_required',automaticOAuth:false};
  }
@@ -67,6 +68,16 @@ export class ConnectionProvisionService {
    await c.query(`UPDATE app.integration_credentials SET status='revoked',rotation_state='revoked',revoked_at=now(),updated_at=now() WHERE tenant_id=$1 AND workspace_id=$2 AND connection_id=$3 AND revoked_at IS NULL`,[p.tenantId,p.workspaceId,connectionId]);
    await c.query(`INSERT INTO app.integration_credentials(tenant_id,workspace_id,connection_id,provider_id,secret_reference,credential_reference,secret_resource,active_version,status,rotation_state,issued_at,last_verified_at,required_scopes,granted_scopes) VALUES($1,$2,$3,$4,$5,$5,$6,$7,'active','active',now(),now(),$8::jsonb,'[]'::jsonb)`,[p.tenantId,p.workspaceId,connectionId,provider,ref,secret.resource,secret.version,JSON.stringify(descriptor.requiredScopes)]);
    await c.query(`INSERT INTO app.integration_sync_scopes(tenant_id,workspace_id,connection_id,streams,version,updated_by) VALUES($1,$2,$3,$4,1,$5) ON CONFLICT(tenant_id,workspace_id,connection_id) DO UPDATE SET streams=EXCLUDED.streams,version=app.integration_sync_scopes.version+1,updated_by=EXCLUDED.updated_by,updated_at=now()`,[p.tenantId,p.workspaceId,connectionId,streams,p.userId]);
+   // Explicit, provider/connection-scoped success audit -- in addition to (not
+   // instead of) AuditDeniedAccess on the controller route and
+   // CommandExecutionInterceptor's own generic api_command success audit,
+   // which fires for every authenticated POST but carries no provider or
+   // connectionId. Distinguishing connect vs reconnect in `action` itself
+   // (rather than always using the shared 'integrations.credentials.provision'
+   // operationId) matters because this one method serves both. No try/catch:
+   // an audit failure must fail the request, same policy as
+   // integration.controller.ts's createConnection()/disconnect().
+   await this.audit.append({tenantId:p.tenantId,workspaceId:p.workspaceId,actorId:p.userId,actorType:'user',action:reconnect?'integrations.connection.reconnect':'integrations.connection.connect',resourceType:'integration_connection',resourceId:connectionId,outcome:'success',correlationId:requestId,metadata:{provider,account,streams,connectionVersion:expectedVersion+1}});
    return {connectionId,status:'active' as const,credentialVersion:expectedVersion+1,synchronizationStarted:false as const};
   }));
  }

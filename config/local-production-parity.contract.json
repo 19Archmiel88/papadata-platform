@@ -95,49 +95,70 @@
       "local": "PostgreSQL 16.13",
       "gcp": "POSTGRES_16",
       "status": "close",
-      "acceptance": "Same major; managed patch lifecycle remains a staging responsibility."
+      "acceptance": "Same major; managed patch lifecycle remains a staging responsibility.",
+      "owner": "platform-infra",
+      "revisitBy": null,
+      "revisitByNote": "do potwierdzenia przez ownera modułu"
     },
     {
       "capability": "Redis engine",
       "local": "Redis 7.2 container with TLS/AUTH",
       "gcp": "REDIS_7_2 with TLS/AUTH",
       "status": "close",
-      "acceptance": "Managed failover/maintenance behavior must be tested on GCP."
+      "acceptance": "Managed failover/maintenance behavior must be tested on GCP.",
+      "owner": "platform-infra",
+      "revisitBy": null,
+      "revisitByNote": "do potwierdzenia przez ownera modułu"
     },
     {
       "capability": "Object storage",
       "local": "MinIO S3-compatible",
       "gcp": "Cloud Storage",
       "status": "emulated",
-      "acceptance": "IAM, signed URLs, retention and GCS semantics require staging tests."
+      "acceptance": "IAM, signed URLs, retention and GCS semantics require staging tests.",
+      "owner": "platform-infra",
+      "revisitBy": null,
+      "revisitByNote": "do potwierdzenia przez ownera modułu"
     },
     {
       "capability": "BFF/API identity boundary",
       "local": "Shared HMAC principal secrets",
       "gcp": "Cloud Run invocation identity plus internal principal contract",
       "status": "partial",
-      "acceptance": "Cloud Run identity cannot be reproduced 1:1 locally."
+      "acceptance": "Cloud Run identity cannot be reproduced 1:1 locally.",
+      "owner": "platform-infra",
+      "revisitBy": null,
+      "revisitByNote": "do potwierdzenia przez ownera modułu"
     },
     {
       "capability": "Public HTTPS edge",
       "local": "Contract only in LP-0..LP-4",
       "gcp": "HTTPS Load Balancer + managed certificate + Cloud Armor",
       "status": "deferred",
-      "acceptance": "Implemented locally in LP-6; GCP behavior accepted in staging."
+      "acceptance": "Implemented locally in LP-6; GCP behavior accepted in staging.",
+      "owner": "platform-infra",
+      "revisitBy": null,
+      "revisitByNote": "do potwierdzenia przez ownera modułu"
     },
     {
       "capability": "Web runtime",
       "local": "Real React runtime in LP-4; production static container deferred to LP-5",
       "gcp": "Cloud Run static web container deferred to LP-5",
       "status": "partial",
-      "acceptance": "LP-4 proves routing/auth code; LP-5/LP-6 prove production transport."
+      "acceptance": "LP-4 proves routing/auth code; LP-5/LP-6 prove production transport.",
+      "owner": "web-platform",
+      "revisitBy": null,
+      "revisitByNote": "do potwierdzenia przez ownera modułu"
     },
     {
       "capability": "Autoscaling/HA/PITR/managed maintenance",
       "local": "Not faithfully emulatable",
       "gcp": "Managed platform behavior",
       "status": "staging-only",
-      "acceptance": "Never claim local 1:1; use explicit GCP staging evidence."
+      "acceptance": "Never claim local 1:1; use explicit GCP staging evidence.",
+      "owner": "platform-infra",
+      "revisitBy": null,
+      "revisitByNote": "do potwierdzenia przez ownera modułu"
     }
   ],
   "scopeBoundary": {

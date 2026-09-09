@@ -68,6 +68,15 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-papadata_minio_admin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-papadata-local-dev-minio-secret-please-rotate-xyz}
 
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.130.1
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./infra/otel/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
+    ports:
+      - "${OTEL_COLLECTOR_GRPC_PORT:-4317}:4317"
+      - "${OTEL_COLLECTOR_HTTP_PORT:-4318}:4318"
+
   migrate:
     image: postgres:${POSTGRES_VERSION:-16.13}-alpine
     working_dir: /workspace
@@ -119,6 +128,7 @@ services:
       PAPADATA_STORAGE_ENDPOINT: http://minio:9000
       PAPADATA_STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:-papadata_minio_admin}
       PAPADATA_STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-papadata-local-dev-minio-secret-please-rotate-xyz}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       # Local-only placeholders below -- never valid in production (rejected there
       # by the placeholder-pattern / TLS checks in apps/api/src/production/config.ts).
       # BFF_INTERNAL_AUTH_ACTIVE_SECRET/ISSUER/AUDIENCE on the bff service below must
@@ -156,6 +166,7 @@ services:
       BFF_PORT: ${BFF_PORT:-3101}
       API_ORIGIN: http://api:${API_PORT:-3001}
       REDIS_URL: redis://redis:6379
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       BFF_ALLOWED_ORIGINS: ${BFF_ALLOWED_ORIGINS:-http://localhost:5173}
       BFF_PUBLIC_HOSTS: ${BFF_PUBLIC_HOSTS:-localhost:${BFF_PORT:-3101},127.0.0.1:${BFF_PORT:-3101}}
       # Local-only placeholders -- see the matching note on the api service above.
@@ -216,6 +227,7 @@ services:
       PAPADATA_STORAGE_ENDPOINT: http://minio:9000
       PAPADATA_STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:-papadata_minio_admin}
       PAPADATA_STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-papadata-local-dev-minio-secret-please-rotate-xyz}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
     depends_on:
       postgres:
         condition: service_healthy
@@ -225,6 +237,28 @@ services:
         condition: service_completed_successfully
       minio-init:
         condition: service_completed_successfully
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/node.Dockerfile
+    # apps/web has no "dev" script of its own (see apps/web/package.json --
+    # only "storybook"/"build"/"build-storybook"). This mirrors the root
+    # package.json's dev:web script instead: the real @papadata/web Vite dev
+    # server for src/app, the same runtime that `vite build` turns into the
+    # web-production static container in compose.production-parity.yml.
+    # Storybook-Next is the source of truth for UI *components/screens in
+    # isolation* against fixtures -- it has no router/session/BFF wiring, so
+    # it cannot stand in for "docker compose up runs a complete MVP" here.
+    command: ["pnpm", "--filter", "@papadata/web", "exec", "vite", "--host", "0.0.0.0", "--port", "${WEB_PORT:-5173}", "--strictPort"]
+    environment:
+      WEB_PORT: ${WEB_PORT:-5173}
+      BFF_ORIGIN: http://bff:${BFF_PORT:-3101}
+    ports:
+      - "${WEB_PORT:-5173}:${WEB_PORT:-5173}"
+    depends_on:
+      bff:
+        condition: service_healthy
 
 volumes:
   papadata-postgres-data:

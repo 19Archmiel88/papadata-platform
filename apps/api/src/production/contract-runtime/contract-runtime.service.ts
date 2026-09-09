@@ -1,21 +1,28 @@
 import {AssistantWorkspaceService} from '../assistant-workspace/assistant-workspace.service.js';
 import {AccessMailService} from '../access-lifecycle/access-mail.service.js';
+import {GusBirCacheService} from '../access-lifecycle/gus-bir-cache.service.js';
 import { fetchTrafficPortfolio } from "./traffic-portfolio.real-source.ts";
 import { Inject } from "@nestjs/common";
 import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
+  RequestTimeoutException,
+  ServiceUnavailableException,
 } from "@nestjs/common";
 import { createHash, randomUUID } from "node:crypto";
 import type { AiProviderAdapter } from "@papadata/ai-runtime";
 import { AiBudgetGuard, LocalDeterministicProvider } from "@papadata/ai-runtime";
+import { GusBirAdapter, readGusBirConfig } from "@papadata/integrations";
 import {
   AssistantConversationRepository,
   BillingRepository,
+  CompanyLookupAuditRepository,
   EmailVerificationRepository,
   IdentityRepository,
   IntegrationRepository,
@@ -29,14 +36,17 @@ import {
 } from "@papadata/database";
 import {
   entitlementsForMigratedPlan,
+  isValidNip,
   mapBillingStatus,
   migratedCommercialPlans,
   migratedSourcePriorityPolicy,
+  normalizeNip,
   resolveAccess,
   resolveBillingTaxDecision,
   resolveKsefReadinessMetadata,
   type BillingVatValidationStatus,
 } from "@papadata/contracts";
+import { lookupCompanyRegistry } from "./company-lookup.real-source.js";
 import type {
   RequestPrincipal,
   RequestPrincipalMembership,
@@ -149,6 +159,8 @@ export class ContractRuntimeService {
 
   private readonly aiBudgetGuard: AiBudgetGuard;
 
+  private readonly companyLookupAudit: CompanyLookupAuditRepository;
+
   constructor(
     @Inject(ProductionDatabase) database: ProductionDatabase,
     @Inject(IdentityService) private readonly identity: IdentityService,
@@ -157,6 +169,7 @@ export class ContractRuntimeService {
     @Inject(OAuthProviderConfig) private readonly oauthConfig: OAuthProviderConfig,
     @Inject(AccessMailService) private readonly accessMail: AccessMailService,
     @Inject(AssistantWorkspaceService) private readonly assistantWorkspace: AssistantWorkspaceService,
+    @Inject(GusBirCacheService) private readonly gusBirCache: GusBirCacheService,
   ) {
     this.repository = new ProductDomainRepository(database);
     this.integrationRepository = new IntegrationRepository(database);
@@ -172,6 +185,21 @@ export class ContractRuntimeService {
     this.billing = new BillingRepository(database);
     this.assistantProvider = new LocalDeterministicProvider();
     this.aiBudgetGuard = new AiBudgetGuard();
+    this.companyLookupAudit = new CompanyLookupAuditRepository(database);
+  }
+
+  // Lazy + try/catch, like BillingOperationsService's client() for Stripe --
+  // GUS_BIR_MODE=production with a missing/invalid key must fail only the
+  // company.lookup request, not crash the whole API at boot.
+  private gusBirRuntime(): { readonly adapter: GusBirAdapter; readonly cacheTtlSeconds: number } {
+    try {
+      const config = readGusBirConfig();
+      return { adapter: new GusBirAdapter(config), cacheTtlSeconds: config.cacheTtlSeconds };
+    } catch {
+      throw new ServiceUnavailableException(
+        "GUS/BIR registry lookup configuration is invalid. Contact an administrator.",
+      );
+    }
   }
 
   async executePublic(
@@ -449,6 +477,48 @@ export class ContractRuntimeService {
           memberships: [joined.membership],
           outcome: "new_identity",
           userId: joined.user.userId,
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "company.lookup") {
+      const query = safeObject(request.query);
+      const rawNip = optionalRecordString(query, "nip");
+      if (!rawNip) {
+        throw new BadRequestException("Query parameter 'nip' is required.");
+      }
+      if (!isValidNip(rawNip)) {
+        throw new BadRequestException("NIP checksum is invalid.");
+      }
+      const { adapter, cacheTtlSeconds } = this.gusBirRuntime();
+      const outcome = await lookupCompanyRegistry({
+        nip: normalizeNip(rawNip),
+        cache: this.gusBirCache,
+        adapter,
+        auditRepository: this.companyLookupAudit,
+        cacheTtlSeconds,
+        correlationId: request.correlationId,
+      });
+      if (!outcome.ok) {
+        // Spec step 5: timeout/limit/no-record/failure all lead the caller
+        // (AccessRouter.tsx) back to the existing manual-entry fallback --
+        // the exception type just picks the right HTTP status for each.
+        if (outcome.code === "not_found") throw new NotFoundException(outcome.message);
+        if (outcome.code === "timeout") throw new RequestTimeoutException(outcome.message);
+        if (outcome.code === "rate_limited") throw new HttpException(outcome.message, HttpStatus.TOO_MANY_REQUESTS);
+        throw new ServiceUnavailableException(outcome.message);
+      }
+      return {
+        data: {
+          // The raw adapter payload is never sent to the browser -- it's
+          // already durably captured server-side by lookupCompanyRegistry's
+          // audit write (app.company_lookup_audit), independent of what the
+          // UI receives or how the user later edits the prefilled form.
+          normalized: outcome.normalized,
+          source: outcome.source,
+          retrievedAt: outcome.retrievedAt,
+          servedFromCache: outcome.servedFromCache,
         },
         operationId: request.operationId,
       };

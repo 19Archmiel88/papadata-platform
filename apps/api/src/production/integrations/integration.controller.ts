@@ -7,8 +7,11 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Req,
 } from "@nestjs/common";
+import type { FastifyRequest } from "fastify";
 import { toIdempotencyKey, toIsoDateTime } from "@papadata/contracts";
+import { AuditService } from "../audit/audit.service.js";
 import {
   AuditDeniedAccess,
   OperationId,
@@ -17,6 +20,7 @@ import {
 } from "../auth/route-policy.js";
 import { Principal } from "../auth/principal.decorator.js";
 import type { RequestPrincipal } from "../auth/request-principal.js";
+import type { RequestWithContext } from "../observability/request-context.js";
 import {
   CreateIntegrationConnectionDto,
   StartIntegrationBackfillDto,
@@ -26,7 +30,10 @@ import { IntegrationService } from "./integration.service.js";
 
 @Controller("v1/integrations")
 export class IntegrationController {
-  constructor(@Inject(IntegrationService) private readonly service: IntegrationService) {}
+  constructor(
+    @Inject(IntegrationService) private readonly service: IntegrationService,
+    @Inject(AuditService) private readonly audit: AuditService,
+  ) {}
 
   @Get("providers")
   @OperationId("integrations.providers.list")
@@ -134,19 +141,46 @@ export class IntegrationController {
   async createConnection(
     @Principal() principal: RequestPrincipal,
     @Body() request: CreateIntegrationConnectionDto,
+    @Req() httpRequest: FastifyRequest,
   ): Promise<object> {
-    return {
-      data: await this.service.createConnection(
-        principal.tenantId,
-        principal.workspaceId,
-        {
-          providerId: request.providerId,
-          credentialReference: request.credentialReference,
-          requestedScopes: request.requestedScopes,
-          idempotencyKey: toIdempotencyKey(request.idempotencyKey),
-        },
-      ),
-    };
+    const connection = await this.service.createConnection(
+      principal.tenantId,
+      principal.workspaceId,
+      {
+        providerId: request.providerId,
+        credentialReference: request.credentialReference,
+        requestedScopes: request.requestedScopes,
+        idempotencyKey: toIdempotencyKey(request.idempotencyKey),
+      },
+    );
+
+    // No try/catch: an audit.append() failure here must fail the request
+    // too, matching CommandExecutionInterceptor.complete()'s existing
+    // policy (see report.controller.ts's download() for the same
+    // reasoning) -- a connect that succeeds with a silently unaudited
+    // trail would be a worse outcome than a 500 with no audit gap. This is
+    // in addition to CommandExecutionInterceptor's own generic api_command
+    // success audit (fires unconditionally for every authenticated POST),
+    // which carries no provider/connection detail -- this entry is the one
+    // that does.
+    const context = httpRequest as unknown as RequestWithContext;
+    await this.audit.append({
+      action: "integrations.connection.create",
+      actorId: principal.userId,
+      actorType: "user",
+      correlationId: context.correlationId ?? "unknown",
+      metadata: {
+        provider: request.providerId,
+        requestedScopes: request.requestedScopes,
+      },
+      outcome: "success",
+      resourceId: String(connection.connection_id ?? connection.id ?? ""),
+      resourceType: "integration_connection",
+      tenantId: principal.tenantId,
+      workspaceId: principal.workspaceId,
+    });
+
+    return { data: connection };
   }
 
   @Post(":provider/test")
@@ -171,12 +205,30 @@ export class IntegrationController {
   async disconnect(
     @Param("id", new ParseUUIDPipe({ version: "4" })) connectionId: string,
     @Principal() principal: RequestPrincipal,
+    @Req() httpRequest: FastifyRequest,
   ): Promise<object> {
-    await this.service.disconnect(
+    const disconnected = await this.service.disconnect(
       principal.tenantId,
       principal.workspaceId,
       connectionId,
     );
+
+    // No try/catch -- see createConnection() above for why an audit
+    // failure here must fail the request rather than be swallowed.
+    const context = httpRequest as unknown as RequestWithContext;
+    await this.audit.append({
+      action: "integrations.connections.disconnect",
+      actorId: principal.userId,
+      actorType: "user",
+      correlationId: context.correlationId ?? "unknown",
+      metadata: { provider: disconnected.providerId },
+      outcome: "success",
+      resourceId: disconnected.connectionId,
+      resourceType: "integration_connection",
+      tenantId: principal.tenantId,
+      workspaceId: principal.workspaceId,
+    });
+
     return { data: { connectionId, status: "disconnected" } };
   }
 

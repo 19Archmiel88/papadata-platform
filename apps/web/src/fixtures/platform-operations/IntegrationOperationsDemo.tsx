@@ -20,8 +20,7 @@ export function IntegrationOperationsDemo({state='ready',readonly=false,initialV
  const quality=query.params.get('integrationArea')==='data-quality'||(initialView==='data-quality'&&!query.params.has('integrationArea'));
  if(state==='forbidden')return <ProductDataState state="forbidden"/>;
  if(quality)return <><Button variant="ghost" onClick={()=>query.update({integrationArea:'sources'})}>{t('Wroc do zrodel','Back to sources')}</Button><QualityOperationsDemo state={state} readonly={readonly}/></>;
- return <div className="pd-operations"><p role="status">{t('Demonstracja Integracji. Nie wpisuj prawdziwych sekretow. Wszystkie operacje sa lokalne.','Integration demonstration. Do not enter real secrets. All operations are local.')}</p>{notice&&<p role="status">{notice}</p>}
- <Button variant="secondary" onClick={()=>query.update({integrationArea:'data-quality'})}>{t('Jakosc i pochodzenie danych','Data quality and lineage')}</Button>
+ return <div className="pd-int-page">{notice&&<p className="pd-int-demo-notice" role="status">{notice}</p>}
  <IntegrationsWorkspace mode="storybook" runtime={runtime} loading={state==='loading'} problem={state==='error'?t('Demo: blad odczytu.','Demo: read failed.'):state==='offline'?t('Demo: offline.','Demo: offline.'):null} initialArea={initialView==='catalog'?'catalog':'sources'} onReload={()=>setNotice('Demo: bez odczytu API.')}
  onBeginConnect={readonly?undefined:(provider,source)=>setConnect({provider,source})}
  onDisconnectConnection={readonly?undefined:async source=>{local();setBase(value=>({...value,status:{...value.status,sources:value.status.sources.map(row=>row.integrationId===source.integrationId?{...row,connectionStatus:'DISCONNECTED',dataSourceStatus:'DISCONNECTED',canManage:false}:row)}}));}}

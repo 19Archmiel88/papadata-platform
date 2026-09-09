@@ -15,16 +15,19 @@
   },
   "scripts": {
     "build": "tsc -b tsconfig.json",
-    "typecheck": "tsc -b tsconfig.json --pretty false"
+    "typecheck": "tsc -b tsconfig.json --pretty false",
+    "test": "vitest run"
   },
   "dependencies": {
-    "@papadata/contracts": "workspace:*"
+    "@papadata/contracts": "workspace:*",
+    "fast-xml-parser": "^5.11.1"
   },
   "engines": {
     "node": "24.18.0",
     "pnpm": "10.29.3"
   },
   "devDependencies": {
-    "@types/node": "^26.5.0"
+    "@types/node": "^26.5.0",
+    "vitest": "^5.0.0"
   }
 }

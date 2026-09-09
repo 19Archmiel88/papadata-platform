@@ -28,13 +28,30 @@ export type QualityLineage = { sourceId: string; canonicalId: string | null; ext
 export type PlatformPrivacyRequest = { id: string; kind: string; status: string; subject: string; requestedAt: string; dueAt: string; completedAt: string | null; legalHold: boolean; targets: readonly { system: string; status: string; errorCode: string | null }[] };
 export type BillingCycle = 'monthly' | 'annual';
 export type BillingOffer = { plan: 'starter' | 'growth' | 'scale'; name: string; cycle: BillingCycle; priceId: string; currency: string; unitAmount: number; interval: string; intervalCount: number; taxBehavior: string };
-export type BillingInvoiceView = { id: string; number: string | null; currency: string; total: number; due: number; status: string; createdAt: string; dueAt: string | null; pdfUrl: string | null; paymentUrl: string | null; ksefStatus: 'not_connected' };
+// PaymentMethodType/KsefInvoiceStatus/KsefInvoiceReference mirror contracts/billing-compliance.ts
+// (root -- the UI-facing design contract used only by apps/web, see that file's own copies of
+// these shapes) the same way BillingCycle above already does. They are kept in sync manually
+// rather than imported, because packages/integrations (the only backend consumer) has
+// tsconfig rootDir:'src' with a composite build, which cannot include a file outside its own
+// src tree -- confirmed with `tsc -b`: TS6059 ("File ... is not under 'rootDir'") plus TS6307.
+export type PaymentMethodType = 'card' | 'blik' | 'blik_recurring' | 'fast_bank_transfer' | 'traditional_bank_transfer' | 'apple_pay' | 'google_pay';
+export type KsefInvoiceStatus = 'draft' | 'ready_for_ksef' | 'submitted' | 'accepted' | 'rejected' | 'offline_pending' | 'correction_required';
+export type KsefInvoiceReference = { readonly localInvoiceId: string; readonly ksefNumber: string | null; readonly status: KsefInvoiceStatus; readonly schemaVersion: string; readonly submittedAt: string | null; readonly acceptedAt: string | null; readonly upoReference: string | null };
+export type BillingInvoiceView = { id: string; number: string | null; currency: string; total: number; due: number; status: string; createdAt: string; dueAt: string | null; pdfUrl: string | null; paymentUrl: string | null; ksefStatus: 'not_connected' | KsefInvoiceStatus };
+// One row per PaymentMethodType, reported by BillingOperationsService.read() so the UI (and
+// tests) can see, per method, whether it is merely turned on in env config (`enabledByConfig`)
+// versus actually sent to Stripe for the live checkout (`wiredToCheckout`) -- see
+// resolveStripeCheckoutPaymentMethods in @papadata/integrations for how these are computed.
+export type BillingPaymentMethodStatus = { readonly method: PaymentMethodType; readonly enabledByConfig: boolean; readonly wiredToCheckout: boolean; readonly note: string };
 export type BillingOverview = {
  version: 'billing.operations.v1'; mode: 'disabled' | 'test' | 'live'; canManage: boolean;
  subscription: { plan: string; status: string; customerConfigured: boolean; subscriptionConfigured: boolean; currentPeriodEnd: string | null; providerStatus: string | null; cancelAtPeriodEnd: boolean | null; providerCheckedAt: string | null };
  usage: { connectedSources: number; maxSources: number }; offers: readonly BillingOffer[];
  invoices: readonly BillingInvoiceView[]; invoicesHasMore: boolean; invoiceCursor: string | null;
  pendingCheckout: {requestId:string;offerId:string;expiresAt:string}|null; portalEnabled: boolean; limitations: readonly string[];
+ // Optional: absent only means an older caller hasn't been updated to populate it (e.g. a
+ // fixture); never treat absence as "no payment methods are configured."
+ paymentMethods?: readonly BillingPaymentMethodStatus[];
 };
 export type BillingSessionCommand = { requestId: string; action: 'checkout' | 'portal'; offerId?: string };
 export type BillingSessionResult = { url: string; mode: 'test' | 'live'; action: 'checkout' | 'portal'; status: 'requires_provider_confirmation' };

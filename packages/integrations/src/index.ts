@@ -19,6 +19,7 @@ export * from "./canonical-normalizer.js";
 
 export * from "./stripe-billing.js";
 export * from "./gus-bir-adapter.js";
+export * from "./ksef-adapter.js";
 
 export * from "./secret-provisioner.js";
 

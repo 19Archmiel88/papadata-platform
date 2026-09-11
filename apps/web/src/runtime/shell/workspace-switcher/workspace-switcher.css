@@ -131,6 +131,11 @@
   background: color-mix(in srgb, var(--pd-shell-brand) 9%, transparent);
 }
 
+.pd-product-shell__workspace-option[data-active='true'] .pd-product-shell__workspace-option-copy small,
+.pd-product-shell__workspace-option[data-active='true'] .pd-product-shell__workspace-option-state {
+  color: var(--pd-text-secondary);
+}
+
 .pd-product-shell__workspace-option-state {
   color: var(--pd-text-muted);
   font-size: var(--pd-type-size-caption);

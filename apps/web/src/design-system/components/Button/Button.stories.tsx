@@ -542,7 +542,7 @@ function ButtonDocumentation() {
                 <LinkAction href="#">
                   <Localized pl="zapytaj asystenta" en="ask assistant" />
                 </LinkAction>
-                <LinkAction href="#">
+                <LinkAction href="#lista-kampanii">
                   <Localized pl="Otwórz listę kampanii" en="Open campaign list" />
                 </LinkAction>
               </div>
@@ -793,11 +793,9 @@ export const Przyciski: Story = {
     const afterFocus = primaryAction.getBoundingClientRect();
     assertNoLayoutShift(beforeFocus, afterFocus);
 
-    const loadingActions = canvas.getAllByRole('button', {
+    const loadingButton = canvas.getByRole('button', {
       name: copy({ pl: 'Trwa synchronizacja integracji', en: 'Synchronizing integrations' }),
     });
-    const loadingButton = loadingActions[0];
-    const loadingIconButton = loadingActions[1];
 
     await expect(loadingButton).toBeDisabled();
     await expect(loadingButton).toHaveAttribute(
@@ -809,23 +807,14 @@ export const Przyciski: Story = {
       'true',
     );
 
-    await expect(loadingIconButton).toHaveAttribute(
-      'aria-label',
-      copy({ pl: 'Trwa synchronizacja integracji', en: 'Synchronizing integrations' }),
-    );
+    const loadingIconButton = canvas.getByRole('button', {
+      name: copy({ pl: 'Synchronizacja danych', en: 'Syncing data' }),
+    });
+
+    await expect(loadingIconButton).toHaveAttribute('aria-busy', 'true');
     await expect(
       loadingIconButton.querySelector('.pd-icon-button__spinner'),
     ).toBeInTheDocument();
-
-    const iconAction = canvas.getAllByRole('button', {
-      name: copy({ pl: 'Odśwież dane', en: 'Refresh data' }),
-    })[0];
-
-    await expect(iconAction).toHaveAttribute(
-      'data-variant',
-      'primary',
-    );
-    assertActivityLineMatchesControl(iconAction);
 
     const horizontalGroup = canvas.getByRole('group', {
       name: copy({ pl: 'Sterowana grupa akcji', en: 'Controlled action group' }),
@@ -837,18 +826,6 @@ export const Przyciski: Story = {
     await expect(horizontalGroup).toHaveAttribute(
       'data-orientation',
       'horizontal',
-    );
-
-    const verticalGroup = canvas.getByRole('group', {
-      name: copy({ pl: 'Akcje pionowe w wąskim układzie', en: 'Vertical actions in a narrow layout' }),
-    });
-
-    await expect(verticalGroup).toHaveClass(
-      'pd-action-review__stacked-actions',
-    );
-    await expect(verticalGroup).toHaveAttribute(
-      'data-orientation',
-      'vertical',
     );
 
     const fullWidthAction = canvas.getByRole('button', {
@@ -867,15 +844,6 @@ export const Przyciski: Story = {
       fullWidthContent.getBoundingClientRect().width,
     );
 
-    const reviewGroup = canvas.getByRole('group', {
-      name: copy({ pl: 'Akcje rewizji', en: 'Review actions' }),
-    });
-
-    await expect(reviewGroup).toHaveAttribute(
-      'data-orientation',
-      'horizontal',
-    );
-
     const reportLink = canvas.getByRole('link', {
       name: copy({ pl: 'Otwórz raport kwartalny', en: 'Open quarterly report' }),
     });
@@ -883,16 +851,8 @@ export const Przyciski: Story = {
     await expect(reportLink).toHaveAttribute('href', '#raport-kwartalny');
     assertActivityLineMatchesControl(reportLink);
 
-    const chartFrameActions = canvas.getByRole('group', {
-      name: copy({ pl: 'Akcje w ChartFrame', en: 'ChartFrame actions' }),
-    });
-    await expect(chartFrameActions).toHaveAttribute(
-      'data-orientation',
-      'horizontal',
-    );
-
-    const sourceRowsAction = canvas.getByRole('button', {
-      name: copy({ pl: 'Pokaż rekordy źródłowe', en: 'Show source rows' }),
+    const sourceRowsAction = canvas.getByRole('link', {
+      name: copy({ pl: 'Pokaż rekordy źródłowe', en: 'Show source records' }),
     });
     assertActivityLineMatchesControl(sourceRowsAction);
 

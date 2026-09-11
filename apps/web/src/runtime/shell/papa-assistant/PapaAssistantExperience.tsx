@@ -124,7 +124,7 @@ export function PapaAssistantExperience({ compact = false, onExpand, panelContro
         {assistantViews.filter(tab => !primaryViews.some(primary => primary === tab)).map(tab => <button type="button" key={tab} aria-current={view === tab ? 'page' : undefined} onClick={() => setView(tab)}>{tab}</button>)}
       </AssistantDisclosure>
     </nav>
-    <div className="pd-assistant__body" ref={scrollBody} onScroll={event => {
+    <div className="pd-assistant__body" ref={scrollBody} tabIndex={0} onScroll={event => {
       const node = event.currentTarget;
       followMessages.current = node.scrollHeight - node.scrollTop - node.clientHeight < 80;
     }}>

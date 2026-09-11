@@ -303,7 +303,7 @@ header.pd-shell-topbar[data-variant='public'] {
     display: inline-flex;
   }
 
-  .pd-shell-topbar__brand {
+  header.pd-shell-topbar[data-variant='authenticated'] .pd-shell-topbar__brand {
     display: none;
   }
 

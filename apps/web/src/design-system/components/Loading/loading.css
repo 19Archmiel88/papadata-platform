@@ -123,14 +123,6 @@
   transition: inline-size 180ms ease;
 }
 
-.pd-background-operation__progress-indicator {
-  display: block;
-  block-size: 100%;
-  border-radius: inherit;
-  background: var(--pd-brand-action);
-  transition: inline-size 180ms ease;
-}
-
 .pd-progress-indicator__description {
   margin: 0;
   color: var(--pd-text-muted);
@@ -198,8 +190,7 @@
     animation: none !important;
   }
 
-  .pd-progress-indicator__fill,
-  .pd-background-operation__progress-indicator {
+  .pd-progress-indicator__fill {
     transition-duration: 1ms !important;
   }
 }

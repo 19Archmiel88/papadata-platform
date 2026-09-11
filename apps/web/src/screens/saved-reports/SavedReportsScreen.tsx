@@ -790,7 +790,12 @@ export function SavedReportsScreen({
                       ? 'Ten sam okres, szablon i filtr. Różnica = wersja czytana minus porównywana.'
                       : 'Zakresy lub szablony są różne. Pokazujemy wartości bez wyliczania zmiany.'}
                 </p>
-                <div className="pd-reports-table-scroll">
+                <div
+                  className="pd-reports-table-scroll"
+                  role="region"
+                  aria-label="Tabela porównania wersji raportu"
+                  tabIndex={0}
+                >
                   <table>
                     <thead>
                       <tr>

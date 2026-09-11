@@ -1,5 +1,6 @@
 .pd-product-shell {
   --pd-shell-topbar-height: 56px;
+  --pd-shell-footer-height: 28px;
   --pd-shell-sidebar-width: 224px;
   --pd-shell-sidebar-collapsed-width: 64px;
   --pd-shell-rail-item-size: 38px;
@@ -7,11 +8,49 @@
   height: 100dvh;
   min-height: 100vh;
   display: grid;
-  grid-template-rows: var(--pd-shell-topbar-height) minmax(0, 1fr);
+  grid-template-rows: var(--pd-shell-topbar-height) minmax(0, 1fr) var(--pd-shell-footer-height);
   overflow: hidden;
   color: var(--pd-text);
   background: var(--pd-canvas);
   isolation: isolate;
+}
+
+.pd-product-shell__footer {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  border-block-start: 1px solid var(--pd-separator);
+  background: var(--pd-surface);
+}
+
+.pd-product-shell__footer[data-attention] {
+  background: color-mix(in srgb, var(--pd-status-danger) 8%, var(--pd-surface));
+}
+
+.pd-product-shell__footer-status {
+  overflow: hidden;
+  padding-inline: var(--pd-space-4);
+  border: none;
+  background: none;
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-caption);
+  text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.pd-product-shell__footer[data-attention] .pd-product-shell__footer-status {
+  color: var(--pd-status-danger);
+}
+
+.pd-product-shell__footer-status:hover {
+  text-decoration: underline;
+}
+
+.pd-product-shell__footer-status:focus-visible {
+  outline: var(--pd-focus-width, 2px) solid var(--pd-focus-ring);
+  outline-offset: -2px;
 }
 
 body.pd-product-shell-scroll-lock {

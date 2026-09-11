@@ -80,10 +80,39 @@ async function runAxe(page) {
 async function hasVisibleKeyboardFocus(page) {
   return page.evaluate(() => {
     const element = document.activeElement;
-    if (!(element instanceof HTMLElement) || element === document.body || element === document.documentElement) return false;
+    // Chart components (recharts) put tabindex="0" on their root <svg>, which is an SVGElement,
+    // not an HTMLElement -- excluding it here made every chart's focused element auto-fail this
+    // check regardless of visibility.
+    if (!(element instanceof HTMLElement || element instanceof SVGElement) || element === document.body || element === document.documentElement) return false;
     const style = window.getComputedStyle(element);
     const rect = element.getBoundingClientRect();
-    return style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity) !== 0 && rect.width > 0 && rect.height > 0;
+    const directlyVisible = style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity) !== 0 && rect.width > 0 && rect.height > 0;
+    if (directlyVisible) return true;
+
+    // The focused element itself may be a visually-hidden native control (a common, valid pattern
+    // for custom checkboxes/radios/switches/segmented controls/verification-code inputs), whose
+    // focus ring actually renders on a sibling, on a descendant reached via an ancestor's
+    // `:focus-within`, or via a pseudo-element -- not on the focused node itself. Rather than
+    // enumerate every such CSS relationship, find the nearest reasonably-sized container and check
+    // whether ANY of its descendants render differently while this element is focused vs. blurred.
+    let container = element.parentElement;
+    while (container) {
+      const box = container.getBoundingClientRect();
+      if (box.width >= 8 && box.height >= 8) break;
+      container = container.parentElement;
+    }
+    if (!container) return false;
+
+    const snapshot = () => Array.from(container.querySelectorAll("*")).map((node) => {
+      const computed = window.getComputedStyle(node);
+      return `${computed.outlineStyle}|${computed.outlineColor}|${computed.boxShadow}|${computed.borderColor}|${computed.backgroundColor}`;
+    }).join(";");
+
+    const focusedSnapshot = snapshot();
+    element.blur();
+    const blurredSnapshot = snapshot();
+    element.focus();
+    return focusedSnapshot !== blurredSnapshot;
   });
 }
 async function inspectStory(page, entry, viewport, screenshot) {
@@ -98,8 +127,22 @@ async function inspectStory(page, entry, viewport, screenshot) {
     const response = await page.goto(`${origin}/iframe.html?id=${encodeURIComponent(entry.id)}&viewMode=story`, { waitUntil: "networkidle", timeout: 30_000 });
     if (!response || response.status() >= 400) throw new Error(`story returned ${response?.status() ?? "no response"}`);
     const result = await runAxe(page);
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
-    const focusable = await page.locator('a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])').count();
+    // document.body.scrollWidth, not document.documentElement's: per the CSSOM View spec, the root
+    // element's scrollWidth is defined against the viewport's scrolling area rather than its own
+    // overflow box, so it stays inflated by clipped descendant overflow even once body (and every
+    // real ancestor down to the offending element) correctly contains it.
+    const overflow = await page.evaluate(() => document.body.scrollWidth > document.body.clientWidth + 1);
+    // Scoped to #storybook-root (the real rendered story) and filtered to visible elements only:
+    // Storybook's static iframe.html shell always ships hidden (display:none) boilerplate
+    // markup -- an example ArgsTable and a generic error-display fallback, each with its own
+    // buttons/links -- outside #storybook-root. An unscoped, visibility-blind selector counts
+    // that dead markup as "focusable", so a real story with zero interactive content still gets
+    // gated on keyboard focus even though Tab has nowhere real to land.
+    const focusable = await page
+      .locator(
+        '#storybook-root a[href]:visible, #storybook-root button:visible, #storybook-root input:visible, #storybook-root select:visible, #storybook-root textarea:visible, #storybook-root [tabindex]:not([tabindex="-1"]):visible',
+      )
+      .count();
     let keyboardFocus = true;
     if (focusable > 0) {
       keyboardFocus = await hasVisibleKeyboardFocus(page);
@@ -179,7 +222,7 @@ try {
     try {
       await page.setViewportSize({ width: 320, height: 900 });
       await page.goto(`${origin}/iframe.html?id=${encodeURIComponent(entry.id)}&viewMode=story`, { waitUntil: "networkidle", timeout: 30_000 });
-      const reflowOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+      const reflowOverflow = await page.evaluate(() => document.body.scrollWidth > document.body.clientWidth + 1);
       evidence.checks.push({ storyId: entry.id, viewport: "reflow-320", overflow: reflowOverflow });
       if (reflowOverflow) evidence.failures.push(`${entry.id}: WCAG reflow overflow at 320px`);
     } catch (error) {

@@ -45,6 +45,15 @@ const fallbackShellUser: ShellUser = {
   email: 'Aktywna sesja',
 };
 
+function describePolishOperationAttentionCount(count: number): string {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  const isFewForm = mod10 >= 2 && mod10 <= 4 && !(mod100 >= 12 && mod100 <= 14);
+  const noun = count === 1 ? 'operacja' : isFewForm ? 'operacje' : 'operacji';
+  const verb = count !== 1 && isFewForm ? 'wymagają' : 'wymaga';
+  return `${count} ${noun} integracji ${verb} uwagi`;
+}
+
 type NotificationMutation = (notification: ShellNotification) => void | Promise<void>;
 
 export type ProductShellFrameProps = {
@@ -248,6 +257,15 @@ export function ProductShellFrame({
   const activeOperationCount = operations.filter(
     (item) => item.status === 'running' || item.status === 'queued' || item.status === 'failed',
   ).length;
+  const attentionOperationCount = operations.filter((item) => item.status === 'failed').length;
+  const syncingOperationCount = operations.filter(
+    (item) => item.status === 'running' || item.status === 'queued',
+  ).length;
+  const footerStatusText = attentionOperationCount > 0
+    ? describePolishOperationAttentionCount(attentionOperationCount)
+    : syncingOperationCount > 0
+      ? 'Synchronizacja w toku'
+      : 'Brak aktywnych operacji integracji';
   const selectedWorkspace =
     workspaces.find((workspace) => workspace.id === activeWorkspaceId) ?? workspaces[0] ?? null;
   const sectionLabel = resolveShellSectionLabel(activePath, navigationGroups);
@@ -356,6 +374,21 @@ export function ProductShellFrame({
                   </div>
                 </main>
               </div>
+
+              <footer
+                aria-label="Stan synchronizacji"
+                className="pd-product-shell__footer"
+                data-attention={attentionOperationCount > 0 ? true : undefined}
+                role="contentinfo"
+              >
+                <button
+                  className="pd-product-shell__footer-status"
+                  onClick={() => setOverlay('operations')}
+                  type="button"
+                >
+                  {footerStatusText}
+                </button>
+              </footer>
 
               <CommandPalette
                 commands={commands}

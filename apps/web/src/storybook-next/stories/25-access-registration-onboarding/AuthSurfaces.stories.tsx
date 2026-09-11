@@ -6,6 +6,7 @@ import {
   expect,
   fn,
   userEvent,
+  waitFor,
   within,
 } from 'storybook/test';
 import type {
@@ -338,7 +339,12 @@ export const CompanyManualEntryStory: Story = {
     const stage = getStage(canvasElement, 'auth-10');
     const canvas = within(stage);
     await expect(canvas.getByText(/Dane pobrane z GUS\/BIR/u)).toBeInTheDocument();
-    await expect(canvas.getByRole('textbox', { name: /Nazwa firmy/u })).toHaveValue('Nowa Firma Demonstracyjna sp. z o.o.');
+    // The lookup-derived company name lands via a useEffect that fires after the initial
+    // render, so the input may still show its pre-lookup (empty) value at the moment play()
+    // starts -- wait for the effect to commit instead of asserting synchronously.
+    await waitFor(() => {
+      expect(canvas.getByRole('textbox', { name: /Nazwa firmy/u })).toHaveValue('Nowa Firma Demonstracyjna sp. z o.o.');
+    });
   },
 };
 
@@ -423,7 +429,11 @@ export const InvitationStory: Story = {
   play: async ({ canvasElement }) => {
     const stage = getStage(canvasElement, 'auth-15');
     const canvas = within(stage);
-    await expect(validateInvitationAction).toHaveBeenCalled();
+    // Validation fires from a mount-time useEffect in AuthSurface, so wait for it instead of
+    // asserting synchronously (same race as the company-lookup effect above).
+    await waitFor(() => {
+      expect(validateInvitationAction).toHaveBeenCalled();
+    });
     await expect(canvas.getByText(/nowy\.operator@papadata\.local/u)).toBeInTheDocument();
     await expect(canvas.getByRole('textbox', { name: /Imię i nazwisko/u })).toBeInTheDocument();
   },

@@ -61,13 +61,20 @@
 }
 
 .pd-chart-legend li[data-active='false'] button {
-  opacity: 0.44;
   background: transparent;
+}
+
+.pd-chart-legend li[data-active='false'] button .pd-chart-legend__swatch {
+  opacity: 0.44;
 }
 
 .pd-chart-legend li[data-disabled='true'] button,
 .pd-chart-legend li[data-disabled='true'] .pd-chart-legend__static {
   cursor: not-allowed;
+  color: var(--pd-text-muted);
+}
+
+.pd-chart-legend li[data-disabled='true'] .pd-chart-legend__swatch {
   opacity: 0.5;
 }
 

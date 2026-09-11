@@ -1,12 +1,28 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+
+const alias = (packageName: string, relativeSourcePath: string): { find: string; replacement: string } => ({
+  find: packageName,
+  replacement: fileURLToPath(new URL(relativeSourcePath, import.meta.url)),
+});
 
 export default defineConfig({
   plugins: [
     tailwindcss(),
     react(),
   ],
+
+  resolve: {
+    alias: [
+      alias('@papadata/contracts/saved-reports', '../../packages/contracts/src/saved-reports.ts'),
+      alias('@papadata/contracts/decisions', '../../packages/contracts/src/decisions.ts'),
+      alias('@papadata/contracts/campaign-growth', '../../packages/contracts/src/campaign-growth.ts'),
+      alias('@papadata/contracts/report-projections', '../../packages/contracts/src/report-projections.ts'),
+      alias('@papadata/contracts', '../../packages/contracts/src/index.ts'),
+    ],
+  },
 
   server: {
     host: '0.0.0.0',

@@ -8,6 +8,11 @@ output "bff_internal_uri" {
   sensitive = true
 }
 
+output "web_internal_uri" {
+  value     = google_cloud_run_v2_service.web.uri
+  sensitive = true
+}
+
 output "public_https_url" {
   value = "https://${var.public_domain}"
 }

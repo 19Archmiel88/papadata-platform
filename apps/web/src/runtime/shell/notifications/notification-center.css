@@ -13,16 +13,16 @@
   gap: 0;
   min-width: 0;
   min-height: 0;
-  font-size: 12px;
+  font-size: var(--pd-type-size-caption);
   line-height: 1.38;
 }
 
 .pd-shell-notification-center__overview {
   display: grid;
   grid-template-columns: 32px minmax(0, 1fr);
-  gap: 10px;
+  gap: var(--pd-space-3);
   align-items: center;
-  padding: 11px 12px;
+  padding: var(--pd-space-3) var(--pd-space-3);
   border-block-end: 1px solid var(--pd-shell-separator);
   background:
     linear-gradient(
@@ -39,7 +39,7 @@
   display: inline-grid;
   place-items: center;
   border: 1px solid var(--pd-shell-separator);
-  border-radius: 9px;
+  border-radius: var(--pd-radius-surface);
   color: var(--pd-shell-brand-strong);
   background: var(--pd-shell-surface-raised);
 }
@@ -47,13 +47,13 @@
 .pd-shell-notification-center__overview div {
   min-width: 0;
   display: grid;
-  gap: 2px;
+  gap: var(--pd-space-1);
 }
 
 .pd-shell-notification-center__overview strong {
   overflow: hidden;
   color: var(--pd-shell-text);
-  font-size: 13px;
+  font-size: var(--pd-type-size-body-small);
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -62,7 +62,7 @@
 .pd-shell-notification-center__overview small {
   overflow: hidden;
   color: var(--pd-shell-text-muted);
-  font-size: 10px;
+  font-size: var(--pd-type-size-caption);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -71,8 +71,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 10px;
-  padding: 8px 10px;
+  gap: var(--pd-space-2) var(--pd-space-3);
+  padding: var(--pd-space-2) var(--pd-space-3);
   border-block-end: 1px solid var(--pd-shell-separator);
   background: var(--pd-shell-surface);
 }
@@ -81,7 +81,7 @@
   display: flex;
   flex: 1 1 auto;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: var(--pd-space-1);
   min-width: 0;
 }
 
@@ -94,14 +94,14 @@
 .pd-shell-notification-center__filters button,
 .pd-shell-notification-center__mark-all {
   min-height: 28px;
-  padding: 4px 8px;
+  padding: var(--pd-space-1) var(--pd-space-2);
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: var(--pd-radius-control);
   background: transparent;
   color: var(--pd-shell-text-muted);
   cursor: pointer;
   font: inherit;
-  font-size: 11px;
+  font-size: var(--pd-type-size-caption);
   font-weight: 600;
 }
 
@@ -129,12 +129,12 @@
   position: relative;
   grid-template-columns: 28px minmax(0, 1fr);
   display: grid;
-  gap: 9px;
+  gap: var(--pd-space-2);
   min-width: 0;
-  padding: 10px 12px;
+  padding: var(--pd-space-3) var(--pd-space-3);
   border-block-end: 1px solid var(--pd-shell-separator);
   background: var(--pd-shell-surface);
-  transition: background-color 120ms ease;
+  transition: background-color var(--pd-motion-duration-fast) var(--pd-motion-easing-standard);
 }
 
 .pd-shell-notification:hover {
@@ -173,7 +173,7 @@
 .pd-shell-notification__content {
   min-width: 0;
   display: grid;
-  gap: 5px;
+  gap: var(--pd-space-1);
 }
 
 .pd-shell-notification h3,
@@ -184,7 +184,7 @@
 .pd-shell-notification h3 {
   overflow: hidden;
   color: var(--pd-shell-text);
-  font-size: 13px;
+  font-size: var(--pd-type-size-body-small);
   font-weight: 600;
   line-height: 1.25;
   text-overflow: ellipsis;
@@ -195,7 +195,7 @@
   display: -webkit-box;
   overflow: hidden;
   color: var(--pd-shell-text-secondary);
-  font-size: 11px;
+  font-size: var(--pd-type-size-caption);
   line-height: 1.4;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -206,17 +206,17 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: var(--pd-space-2);
   color: var(--pd-shell-text-muted);
-  font-size: 10px;
+  font-size: var(--pd-type-size-caption);
   line-height: 1.25;
 }
 
 .pd-shell-notification__state {
   width: fit-content;
-  padding: 1px 5px;
+  padding: var(--pd-space-0) var(--pd-space-1);
   border: 1px solid var(--pd-shell-separator);
-  border-radius: 999px;
+  border-radius: var(--pd-radius-pill);
   background: var(--pd-shell-surface-raised);
 }
 
@@ -226,7 +226,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: var(--pd-space-2);
 }
 
 .pd-shell-notification__actions {
@@ -236,7 +236,7 @@
 .pd-shell-notification__actions summary {
   color: var(--pd-shell-text-muted);
   cursor: pointer;
-  font-size: 11px;
+  font-size: var(--pd-type-size-caption);
   font-weight: 600;
   list-style: none;
 }
@@ -248,14 +248,14 @@
 .pd-shell-notification__actions-panel {
   position: absolute;
   right: 0;
-  z-index: 1;
+  z-index: var(--pd-layer-popover);
   min-width: 13rem;
   display: grid;
-  gap: 6px;
-  margin-block-start: 6px;
-  padding: 8px;
+  gap: var(--pd-space-2);
+  margin-block-start: var(--pd-space-2);
+  padding: var(--pd-space-2);
   border: 1px solid var(--pd-shell-separator-strong);
-  border-radius: 9px;
+  border-radius: var(--pd-radius-surface);
   background: var(--pd-shell-surface-overlay);
   box-shadow: var(--pd-shadow-overlay);
 }
@@ -263,20 +263,20 @@
 .pd-shell-notification__preset-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 5px;
+  gap: var(--pd-space-1);
 }
 
 .pd-shell-notification__preset-grid button,
 .pd-shell-notification__actions button {
   min-height: 28px;
-  padding: 4px 7px;
+  padding: var(--pd-space-1) var(--pd-space-2);
   border: 1px solid var(--pd-shell-separator);
-  border-radius: 7px;
+  border-radius: var(--pd-radius-control);
   background: var(--pd-shell-surface-raised);
   color: var(--pd-shell-text-secondary);
   cursor: pointer;
   font: inherit;
-  font-size: 10px;
+  font-size: var(--pd-type-size-caption);
 }
 
 .pd-shell-notification__preset-grid button:hover,
@@ -288,26 +288,26 @@
 .pd-shell-notification__snooze-until,
 .pd-shell-notification__policy-note {
   color: var(--pd-shell-text-muted);
-  font-size: 10px;
+  font-size: var(--pd-type-size-caption);
   line-height: 1.45;
 }
 
 .pd-shell-notification-center__mutation-error {
-  margin: 8px 10px 0;
-  padding: 8px 9px;
+  margin: var(--pd-space-2) var(--pd-space-3) 0;
+  padding: var(--pd-space-2) var(--pd-space-2);
   border: 1px solid color-mix(in srgb, var(--pd-status-danger) 42%, var(--pd-shell-separator));
   border-radius: var(--pd-radius-control);
   background: color-mix(in srgb, var(--pd-status-danger) 8%, var(--pd-shell-surface));
   color: var(--pd-shell-text-secondary);
-  font-size: 10px;
+  font-size: var(--pd-type-size-caption);
 }
 
 .pd-shell-notification-center__notice {
   display: grid;
   grid-template-columns: 32px minmax(0, 1fr);
-  gap: 10px;
+  gap: var(--pd-space-3);
   align-items: center;
-  padding: 18px 14px;
+  padding: var(--pd-space-5) var(--pd-space-4);
 }
 
 .pd-shell-notification-center__notice > span {
@@ -316,7 +316,7 @@
   display: inline-grid;
   place-items: center;
   border: 1px solid var(--pd-shell-separator);
-  border-radius: 9px;
+  border-radius: var(--pd-radius-surface);
   color: var(--pd-shell-text-muted);
   background: var(--pd-shell-surface-raised);
 }
@@ -332,22 +332,22 @@
 
 .pd-shell-notification-center__notice strong {
   color: var(--pd-shell-text);
-  font-size: 13px;
+  font-size: var(--pd-type-size-body-small);
 }
 
 .pd-shell-notification-center__notice p {
-  margin-block-start: 2px;
+  margin-block-start: var(--pd-space-1);
   color: var(--pd-shell-text-muted);
-  font-size: 11px;
+  font-size: var(--pd-type-size-caption);
   line-height: 1.45;
 }
 
 .pd-shell-notification-center__footer-note {
-  padding: 8px 12px;
+  padding: var(--pd-space-2) var(--pd-space-3);
   border-block-start: 1px solid var(--pd-shell-separator);
   color: var(--pd-shell-text-muted);
   background: var(--pd-shell-surface);
-  font-size: 10px;
+  font-size: var(--pd-type-size-caption);
 }
 
 @media (max-width: 520px) {
@@ -364,3 +364,10 @@
     margin-inline-start: 0;
   }
 }
+.pd-shell-notification-center__list { max-height:none; overflow:visible; padding:var(--pd-space-2); gap:var(--pd-space-2); }
+.pd-shell-notification { border:1px solid var(--pd-shell-separator); border-radius:var(--pd-radius-overlay); padding:var(--pd-space-4); }
+.pd-shell-notification__actions { flex:1 1 100%; }
+.pd-shell-notification__actions summary { padding:var(--pd-space-2) 0; width:fit-content; }
+.pd-shell-notification__actions-panel { position:static; min-width:0; width:100%; box-sizing:border-box; box-shadow:none; }
+.pd-shell-notification__actions button { min-height:34px; font-size:var(--pd-type-size-caption); }
+.pd-shell-notification-center__overview small { white-space:normal; font-size:var(--pd-type-size-caption); }

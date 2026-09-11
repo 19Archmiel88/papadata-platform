@@ -9,6 +9,7 @@ import {
   YAxis,
 } from 'recharts';
 import { Button } from '../../design-system';
+import { useProductLocale } from '../shared/useProductLocale';
 import {
   overviewChange,
   overviewDayCount,
@@ -51,6 +52,7 @@ export function OverviewMetrics({
   const comparable =
     result.currentDays === result.expectedDays &&
     result.previousDays === overviewDayCount(result.previousRange);
+  const { locale } = useProductLocale();
   return (
     <section className="pd-overview__metrics" aria-label="Główne wskaźniki">
       {(Object.keys(overviewMetricLabels) as OverviewMetric[]).map((metric) => {
@@ -74,13 +76,13 @@ export function OverviewMetrics({
               {overviewMetricLabels[metric]} <span aria-hidden="true">ⓘ</span>
             </button>
             <strong>
-              {result.currentDays ? overviewNumber(result.current[metric]) : '—'}
+              {result.currentDays ? overviewNumber(result.current[metric], 0, locale) : '—'}
               {metric !== 'newCustomers' && result.currentDays ? <span> zł</span> : null}
             </strong>
             <span className="pd-overview__change" data-tone={tone}>
               {change === null
                 ? 'Brak pełnego porównania'
-                : `${change >= 0 ? '↑' : '↓'} ${overviewNumber(Math.abs(change), 1)}% vs porównanie`}
+                : `${change >= 0 ? '↑' : '↓'} ${overviewNumber(Math.abs(change), 1, locale)}% vs porównanie`}
             </span>
           </div>
         );
@@ -99,9 +101,10 @@ export function OverviewTrend({
   readonly onMetricChange: (metric: OverviewMetric) => void;
 }) {
   const titleId = useId();
+  const { locale } = useProductLocale();
   const money = metric !== 'newCustomers';
   const unit = money ? 'zł / dzień' : 'osób / dzień';
-  const value = (v: number) => (money ? overviewMoney(v) : overviewNumber(v));
+  const value = (v: number) => (money ? overviewMoney(v, locale) : overviewNumber(v, 0, locale));
   return (
     <section className="pd-overview__trend" aria-labelledby={titleId}>
       <div className="pd-overview__section-heading">
@@ -139,7 +142,7 @@ export function OverviewTrend({
       <div
         className="pd-overview__plot"
         role="img"
-        aria-label={`${overviewMetricLabels[metric]}: ${overviewRangeLabel(result.range)}; porównanie ${overviewRangeLabel(result.previousRange)}. Tabela wartości poniżej.`}
+        aria-label={`${overviewMetricLabels[metric]}: ${overviewRangeLabel(result.range, locale)}; porównanie ${overviewRangeLabel(result.previousRange, locale)}. Tabela wartości poniżej.`}
       >
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
@@ -150,7 +153,7 @@ export function OverviewTrend({
             <CartesianGrid vertical={false} stroke="var(--pd-separator)" />
             <XAxis
               dataKey="date"
-              tickFormatter={overviewShortDate}
+              tickFormatter={(v: string) => overviewShortDate(v, locale)}
               minTickGap={40}
               tickLine={false}
               axisLine={false}
@@ -159,14 +162,14 @@ export function OverviewTrend({
             <YAxis
               width={50}
               tickFormatter={(v: number) =>
-                Math.abs(v) >= 1000 ? `${overviewNumber(v / 1000, 0)} tys.` : overviewNumber(v)
+                Math.abs(v) >= 1000 ? `${overviewNumber(v / 1000, 0, locale)} tys.` : overviewNumber(v, 0, locale)
               }
               tickLine={false}
               axisLine={false}
               tick={{ fill: 'var(--pd-text-muted)', fontSize: 12 }}
             />
             <Tooltip
-              labelFormatter={(label) => overviewShortDate(String(label))}
+              labelFormatter={(label) => overviewShortDate(String(label), locale)}
               formatter={(v) => (typeof v === 'number' ? value(v) : 'Brak danych')}
               contentStyle={{
                 background: 'var(--pd-surface-raised)',
@@ -209,7 +212,7 @@ export function OverviewTrend({
           <table>
             <caption>
               {overviewMetricLabels[metric]} · {unit}. Porównanie od{' '}
-              {overviewShortDate(result.previousRange.from)}.
+              {overviewShortDate(result.previousRange.from, locale)}.
             </caption>
             <thead>
               <tr>
@@ -221,7 +224,7 @@ export function OverviewTrend({
             <tbody>
               {result.points.map((point) => (
                 <tr key={point.date}>
-                  <th scope="row">{overviewShortDate(point.date)}</th>
+                  <th scope="row">{overviewShortDate(point.date, locale)}</th>
                   <td>{point.current === null ? 'Brak danych' : value(point.current)}</td>
                   <td>{point.previous === null ? 'Brak danych' : value(point.previous)}</td>
                 </tr>
@@ -241,6 +244,8 @@ export function OverviewDrivers({
   readonly result: OverviewResult;
   readonly onDetails: () => void;
 }) {
+  const { locale } = useProductLocale();
+
   return (
     <section className="pd-overview__drivers" aria-labelledby="overview-drivers-title">
       <h2 id="overview-drivers-title">Co zmieniło marżę?</h2>
@@ -251,14 +256,14 @@ export function OverviewDrivers({
             <dt>{driver.label}</dt>
             <dd data-tone={driver.value >= 0 ? 'success' : 'danger'}>
               {driver.value > 0 ? '+' : ''}
-              {overviewMoney(driver.value)}
+              {overviewMoney(driver.value, locale)}
             </dd>
           </div>
         ))}
       </dl>
       <div className="pd-overview__driver-total">
         <span>Łączna zmiana</span>
-        <strong>{overviewMoney(result.current.margin - result.previous.margin)}</strong>
+        <strong>{overviewMoney(result.current.margin - result.previous.margin, locale)}</strong>
       </div>
       <Button variant="ghost" size="small" onClick={onDetails}>
         Jak obliczamy różnicę <span aria-hidden="true">→</span>

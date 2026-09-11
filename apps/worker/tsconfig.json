@@ -31,6 +31,12 @@
     },
     {
       "path": "../../packages/storage"
+    },
+    {
+      "path": "../../packages/ai-runtime"
+    },
+    {
+      "path": "../../packages/papa-runtime"
     }
   ]
 }

@@ -82,7 +82,4 @@ Story 15.01 jest zaimplementowanym ownerem ChartFrame w statusie `accepted`. Pok
 05.03 nie renderuje pełnego ChartFrame; zachowuje wyłącznie decision record i handoff do 15.01.
 
 ## Kryteria akceptacji
-1. `tsc --noEmit` kompiluje jedyny kontrakt kanoniczny.
-2. Dokument, rejestr i macierz ekran–komponent wskazują ten sam component ID i plik kontraktu.
-3. Testy a11y nie wykazują naruszeń krytycznych.
-4. Komponent nie definiuje własnych tokenów ani duplikuje komponentu bazowego.
+> [STD-COMPONENT-ACCEPTANCE](../../00-zarzadzanie-dokumentacja/README.md#std-component-acceptance) — normatywny.

@@ -6,7 +6,7 @@ import type { RemoteState } from '../../runtime/shared/data/useRemoteResource';
 import { useProductQuery, contextualProductLink, productRoutes } from '../../runtime/app/routing/productRoutes';
 import { useShellNavigate } from '../../runtime/shell/app-shell/ShellNavigationContext';
 import { useAssistantAnalysisContext } from '../../runtime/shell/papa-assistant/useAssistantAnalysisContext';
-import { DataProvenance, MetricSummary, ProductDataState, ProductViewNav } from '../shared/ProductDataState';
+import { MetricSummary, ProductDataState, ProductViewNav } from '../shared/ProductDataState';
 import { useProductLocale } from '../shared/useProductLocale';
 import { CommerceScope, commerceSourcePath } from '../commerce/CommerceScope';
 import { commerceMoney, commerceNumber, commerceState, commerceTimestamp, fulfillmentLabels, paymentLabels } from '../commerce/commercePresentation';
@@ -38,9 +38,9 @@ export function OrdersWorkspaceScreen({data,state,problem,onReload,exportBusy,ex
     <CommerceScope title={t('Zamówienia','Orders')} description={t('Wynik, stan płatności i realizacji z jednego wskazanego źródła.','Performance, payment and fulfillment from one explicitly selected source.')} meta={data?.meta??null} onReload={onReload} template="orders"/>
     <ProductViewNav label={t('Widoki zamówień','Order views')} active={view} items={views} onChange={value=>update({orderView:value,orderId:null})}/>
     {exportProblem&&<p role="alert">{exportProblem}</p>}
-    <ProductDataState state={commerceState(data?.meta,state)} problem={problem??(data?.meta.quality==='selection_required'?t('Wybierz jedno zrodlo w filtrze powyzej. Nie laczymy nakladajacych sie kont.','Choose one source above. Overlapping accounts are not combined.'):undefined)} onRetry={onReload}>
+    <ProductDataState provenance={data?{source:data.meta.sources.find(s=>s.id===data.meta.sourceId)?.name??t('Wybór źródła','Source selection'),synchronizedAt:data.meta.lastSuccessfulSyncAt,calculatedAt:data.meta.generatedAt,limitations:data.meta.limitations,demo:data.meta.mode==='demo'}:undefined} state={commerceState(data?.meta,state)} problem={problem??(data?.meta.quality==='selection_required'?t('Wybierz jedno zrodlo w filtrze powyzej. Nie laczymy nakladajacych sie kont.','Choose one source above. Overlapping accounts are not combined.'):undefined)} onRetry={onReload}>
     {data&&<>
-      <DataProvenance source={data.meta.sources.find(s=>s.id===data.meta.sourceId)?.name??t('Wybór źródła','Source selection')} synchronizedAt={data.meta.lastSuccessfulSyncAt} calculatedAt={data.meta.generatedAt} limitations={data.meta.limitations} demo={data.meta.mode==='demo'}/>
+
       <dl className="pd-product-data__metrics"><MetricSummary label={t('Zamówienia w tabeli','Orders in table')} value={n(rows.length)} description={t('Po filtrach i wyszukiwaniu.','After filters and search.')}/>
         <MetricSummary label={t('Brutto kwalifikowane','Qualified gross')} value={money(totals.qualifiedGross)} description={t('Przed refundacjami, według reguł kwalifikacji metryk.','Before refunds, using metric qualification rules.')}/>
         <MetricSummary label={t('Kwota netto wszystkich zamówień','Net amount of all orders')} value={money(totals.net)} description={t(`Potwierdzone kwoty: ${totals.netKnown}/${rows.length}.`,`Confirmed amounts: ${totals.netKnown}/${rows.length}.`)}/>

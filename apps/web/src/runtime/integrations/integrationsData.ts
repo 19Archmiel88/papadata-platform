@@ -1,3 +1,6 @@
+import { formatPapaDataNumber } from '../../design-system/foundations';
+import { readProductLocale } from '../../screens/shared/useProductLocale';
+
 export type IntegrationRuntimeTabId =
   | 'sources'
   | 'add'
@@ -508,9 +511,9 @@ export function providerAvailabilityTone(
   return 'neutral';
 }
 
-export function formatIntegrationDateTime(value: string | null): string {
+export function formatIntegrationDateTime(value: string | null, locale: 'pl' | 'en' = 'pl'): string {
   if (!value) return 'Brak danych';
-  return new Intl.DateTimeFormat('pl-PL', {
+  return new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'pl-PL', {
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
@@ -529,9 +532,9 @@ export function formatDuration(value: number | null): string {
   return `${hours} h ${minutes % 60} min`;
 }
 
-export function formatNumber(value: number | null): string {
+export function formatNumber(value: number | null, locale: 'pl' | 'en' = 'pl'): string {
   if (value === null) return '—';
-  return value.toLocaleString('pl-PL');
+  return formatPapaDataNumber(value, locale);
 }
 
 export function createIntegrationsRuntimeFallbackData(
@@ -1160,5 +1163,5 @@ function primaryActionForLifecycle(
 }
 
 function normalizeSearch(value: string): string {
-  return value.trim().toLocaleLowerCase('pl-PL');
+  return value.trim().toLocaleLowerCase(readProductLocale() === 'en' ? 'en-US' : 'pl-PL');
 }

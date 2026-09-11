@@ -8,6 +8,7 @@ COPY packages/database/package.json packages/database/package.json
 COPY packages/integrations/package.json packages/integrations/package.json
 COPY packages/storage/package.json packages/storage/package.json
 COPY packages/ai-runtime/package.json packages/ai-runtime/package.json
+COPY packages/papa-runtime/package.json packages/papa-runtime/package.json
 RUN pnpm install --frozen-lockfile
 COPY apps/worker apps/worker
 COPY packages/contracts packages/contracts
@@ -15,6 +16,7 @@ COPY packages/database packages/database
 COPY packages/integrations packages/integrations
 COPY packages/storage packages/storage
 COPY packages/ai-runtime packages/ai-runtime
+COPY packages/papa-runtime packages/papa-runtime
 RUN pnpm --filter @papadata/worker... build
 RUN pnpm --filter @papadata/worker --prod deploy --legacy /runtime
 

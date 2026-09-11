@@ -1,5 +1,6 @@
 import { overviewShortDate } from '../command-center/CommandCenterScreen.data';
 import { useId, useState } from 'react';
+import { useProductLocale } from '../shared/useProductLocale';
 import { Button, ExplorerTable, MetricCard } from '../../design-system';
 import type { ExplorerTableColumn } from '../../design-system';
 import {
@@ -91,6 +92,7 @@ export function ProductContribution({
     .slice(0, 5);
   const max = Math.max(1, ...leaders.map((row) => Math.abs(row.margin ?? 0)));
   const missing = analysis.rows.filter((row) => row.cogs === null);
+  const { locale } = useProductLocale();
   return (
     <div className="pd-product-analysis__split">
       <section
@@ -146,7 +148,7 @@ export function ProductContribution({
         <article>
           <h3>Dostępność towaru</h3>
           <p>
-            Ocena zapasu pochodzi ze stanu na {overviewShortDate(analysis.inventoryDate)} i popytu z
+            Ocena zapasu pochodzi ze stanu na {overviewShortDate(analysis.inventoryDate, locale)} i popytu z
             poprzednich 30 dni. Nie jest prognozą przyszłej sprzedaży.
           </p>
           <Button variant="ghost" size="small" onClick={() => onDetail({ kind: 'definitions' })}>

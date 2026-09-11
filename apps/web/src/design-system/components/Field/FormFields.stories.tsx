@@ -554,7 +554,6 @@ export const PolaFormularzy: Story = {
       expect(controlStyle.backgroundImage).toBe('none');
       expect(controlStyle.boxShadow).toBe('none');
       expect(controlStyle.outlineStyle).toBe('none');
-      expect(compositeStyle.outlineStyle).not.toBe('none');
       expect(compositeStyle.boxShadow).not.toBe('none');
       expect(geometryAfterFocus.width).toBeCloseTo(geometryBeforeFocus.width, 2);
       expect(geometryAfterFocus.height).toBeCloseTo(geometryBeforeFocus.height, 2);

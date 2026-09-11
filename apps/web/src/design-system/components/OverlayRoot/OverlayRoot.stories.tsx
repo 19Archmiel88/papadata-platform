@@ -88,6 +88,7 @@ function OverlayRootDemo() {
             borderRadius: 'var(--pd-radius-surface)',
             background: 'var(--pd-surface)',
             boxShadow: 'var(--pd-shadow-overlay)',
+            pointerEvents: 'auto',
           }}
         >
           <p><Localized pl="Ten panel jest portalowany do #pd-overlay-root-host w document.body." en="This panel is portaled to #pd-overlay-root-host in document.body." /></p>

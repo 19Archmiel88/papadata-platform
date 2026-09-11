@@ -19,6 +19,7 @@ import {
 } from '../../design-system';
 import type { ExplorerTableColumn } from '../../design-system';
 import { useShellDateRange } from '../../runtime/shell/app-shell/ShellDateRangeContext';
+import { useProductLocale } from '../shared/useProductLocale';
 import {
   overviewChange,
   overviewDayCount,
@@ -50,8 +51,8 @@ const metricDefinitions: Record<CampaignMetric, string> = {
   roas: 'Przychód przypisany podzielony przez wydatki reklamowe. Cel 3,10× jest założeniem analizy; bez pełnego kosztu produktów i realizacji nie określa progu rentowności.',
   ncac: 'Wydatki reklamowe podzielone przez liczbę nowych klientów przypisanych kampaniom. Wynik łączny jest liczony z sum, a nie jako średnia kosztów kampanii. W przykładzie cel wynosi maksymalnie 100 zł.',
 };
-const numeric = (n: number | null, decimal = 0) => (n === null ? '—' : overviewNumber(n, decimal));
-const money = (n: number | null) => (n === null ? '—' : overviewMoney(n));
+const numeric = (n: number | null, decimal = 0, locale: 'pl' | 'en' = 'pl') => (n === null ? '—' : overviewNumber(n, decimal, locale));
+const money = (n: number | null, locale: 'pl' | 'en' = 'pl') => (n === null ? '—' : overviewMoney(n, locale));
 const channelLabel = (channel: CampaignResult['channel']) =>
   channel === 'google_ads' ? 'Google Ads' : 'Meta Ads';
 export const campaignTabs = [
@@ -79,6 +80,7 @@ export function CampaignAnalysisHeader({
   readonly onComparison: (value: 'previous_period' | 'previous_year') => void;
 }) {
   const { dateRange, setDateRange } = useShellDateRange();
+  const { locale } = useProductLocale();
   const [open, setOpen] = useState(false);
   const valid = overviewDayCount(dateRange) > 0 && overviewDayCount(dateRange) <= 366;
   const analytical = tab === 'wynik' || tab === 'kampanie';
@@ -101,7 +103,7 @@ export function CampaignAnalysisHeader({
                 title="Okres kampanii"
                 trigger={
                   <Button variant="secondary" size="small">
-                    {overviewRangeLabel(dateRange)} <span aria-hidden="true">⌄</span>
+                    {overviewRangeLabel(dateRange, locale)} <span aria-hidden="true">⌄</span>
                   </Button>
                 }
               >
@@ -177,6 +179,7 @@ export function CampaignPerformance({
 }) {
   const [metric, setMetric] = useState<'ncac' | 'roas' | 'spend'>('ncac');
   const { current, previous, attention } = analysis;
+  const { locale } = useProductLocale();
   const plural = new Intl.PluralRules('pl').select(attention.length);
   const attentionLabel =
     plural === 'one'
@@ -185,8 +188,8 @@ export function CampaignPerformance({
         ? 'kampanie wymagają'
         : 'kampanii wymaga';
   const goal = metric === 'ncac' ? 100 : metric === 'roas' ? 3.1 : null;
-  const value = (n: number | null) => (metric === 'roas' ? `${numeric(n, 2)}×` : money(n));
-  const daysLabel = overviewRangeLabel(analysis.range);
+  const value = (n: number | null) => (metric === 'roas' ? `${numeric(n, 2, locale)}×` : money(n, locale));
+  const daysLabel = overviewRangeLabel(analysis.range, locale);
   return (
     <section aria-label="Efektywność kampanii">
       <div className="pd-campaign-analysis__diagnosis">
@@ -199,7 +202,7 @@ export function CampaignPerformance({
           Ocena opiera się na koszcie nowego klienta i kompletności kosztów.{' '}
           {!analysis.complete
             ? 'Porównanie okresów jest niepełne.'
-            : `Porównanie: ${overviewRangeLabel(analysis.previousRange)}.`}
+            : `Porównanie: ${overviewRangeLabel(analysis.previousRange, locale)}.`}
         </p>
       </div>
       <section className="pd-campaign-analysis__metrics" aria-label="Główne miary kampanii">
@@ -231,14 +234,14 @@ export function CampaignPerformance({
               metricId={`campaign-${key}`}
               status="ready"
               statusLabel=""
-              value={key === 'roas' ? `${numeric(raw, 2)}×` : money(raw)}
+              value={key === 'roas' ? `${numeric(raw, 2, locale)}×` : money(raw, locale)}
               signal={signal}
               comparison={{
                 direction,
                 label:
                   change === null
                     ? 'Brak pełnego porównania'
-                    : `${numeric(Math.abs(change), 1)}% vs porównanie`,
+                    : `${numeric(Math.abs(change), 1, locale)}% vs porównanie`,
               }}
               detailAction={{
                 label: 'Definicja i źródło',
@@ -293,7 +296,7 @@ export function CampaignPerformance({
                 <CartesianGrid vertical={false} stroke="var(--pd-separator)" />
                 <XAxis
                   dataKey="date"
-                  tickFormatter={overviewShortDate}
+                  tickFormatter={(v: string) => overviewShortDate(v, locale)}
                   minTickGap={40}
                   tickLine={false}
                   axisLine={false}
@@ -302,13 +305,13 @@ export function CampaignPerformance({
                 <YAxis
                   width={48}
                   domain={[0, 'auto']}
-                  tickFormatter={(v) => numeric(v, metric === 'roas' ? 1 : 0)}
+                  tickFormatter={(v) => numeric(v, metric === 'roas' ? 1 : 0, locale)}
                   tickLine={false}
                   axisLine={false}
                   tick={{ fill: 'var(--pd-text-muted)', fontSize: 12 }}
                 />
                 <Tooltip
-                  labelFormatter={(label) => overviewShortDate(String(label))}
+                  labelFormatter={(label) => overviewShortDate(String(label), locale)}
                   formatter={(v) => (typeof v === 'number' ? value(v) : 'Brak danych')}
                   contentStyle={{
                     background: 'var(--pd-surface-raised)',
@@ -353,7 +356,7 @@ export function CampaignPerformance({
                 <tbody>
                   {analysis.points.map((point) => (
                     <tr key={point.date}>
-                      <th scope="row">{overviewShortDate(point.date)}</th>
+                      <th scope="row">{overviewShortDate(point.date, locale)}</th>
                       <td>{value(point[metric])}</td>
                     </tr>
                   ))}
@@ -378,7 +381,7 @@ export function CampaignPerformance({
                         : undefined
                     }
                   >
-                    {money(campaign.ncac)}
+                    {money(campaign.ncac, locale)}
                   </strong>
                 </p>
                 <p>
@@ -414,6 +417,7 @@ export function CampaignTable({
   readonly onDetail: (detail: CampaignDetail) => void;
 }) {
   const [attentionOnly, setAttentionOnly] = useState(false);
+  const { locale } = useProductLocale();
   const columns: readonly ExplorerTableColumn<CampaignResult>[] = [
     {
       id: 'name',
@@ -443,7 +447,7 @@ export function CampaignTable({
       align: 'right',
       sortAccessor: (r) => r.spend,
       csvValue: (r) => r.spend,
-      render: (r) => money(r.spend),
+      render: (r) => money(r.spend, locale),
     },
     {
       id: 'revenue',
@@ -452,7 +456,7 @@ export function CampaignTable({
       defaultVisible: false,
       sortAccessor: (r) => r.revenue,
       csvValue: (r) => r.revenue,
-      render: (r) => money(r.revenue),
+      render: (r) => money(r.revenue, locale),
     },
     {
       id: 'roas',
@@ -460,7 +464,7 @@ export function CampaignTable({
       align: 'right',
       sortAccessor: (r) => r.roas ?? -1,
       csvValue: (r) => r.roas ?? '',
-      render: (r) => `${numeric(r.roas, 2)}×`,
+      render: (r) => `${numeric(r.roas, 2, locale)}×`,
     },
     {
       id: 'ncac',
@@ -470,7 +474,7 @@ export function CampaignTable({
       csvValue: (r) => r.ncac ?? '',
       render: (r) => (
         <span data-tone={r.ncac !== null && r.ncac > r.cacGoal ? 'danger' : undefined}>
-          {money(r.ncac)}
+          {money(r.ncac, locale)}
         </span>
       ),
     },
@@ -527,6 +531,7 @@ export function CampaignEvidence({
 }) {
   const campaign =
     detail?.type === 'campaign' ? analysis.rows.find((r) => r.id === detail.id) : null;
+  const { locale } = useProductLocale();
   const title =
     detail?.type === 'metric'
       ? campaignMetricLabels[detail.metric]
@@ -545,7 +550,7 @@ export function CampaignEvidence({
     >
       <div className="pd-campaign-analysis__evidence">
         <p className="pd-campaign-analysis__quiet">
-          Dane przykładowe · {overviewRangeLabel(analysis.range)} · last click
+          Dane przykładowe · {overviewRangeLabel(analysis.range, locale)} · last click
         </p>
         {detail?.type === 'metric' && (
           <>
@@ -554,8 +559,8 @@ export function CampaignEvidence({
               Wynik:{' '}
               <strong>
                 {detail.metric === 'roas'
-                  ? `${numeric(analysis.current[detail.metric], 2)}×`
-                  : money(analysis.current[detail.metric])}
+                  ? `${numeric(analysis.current[detail.metric], 2, locale)}×`
+                  : money(analysis.current[detail.metric], locale)}
               </strong>
             </p>
           </>
@@ -569,21 +574,21 @@ export function CampaignEvidence({
               </div>
               <div>
                 <dt>Wydatki reklamowe</dt>
-                <dd>{money(campaign.spend)}</dd>
+                <dd>{money(campaign.spend, locale)}</dd>
               </div>
               <div>
                 <dt>Nowi klienci</dt>
-                <dd>{numeric(campaign.newCustomers)}</dd>
+                <dd>{numeric(campaign.newCustomers, 0, locale)}</dd>
               </div>
               <div>
                 <dt>Koszt nowego klienta / cel</dt>
                 <dd>
-                  {money(campaign.ncac)} / maks. {campaign.cacGoal} zł
+                  {money(campaign.ncac, locale)} / maks. {campaign.cacGoal} zł
                 </dd>
               </div>
               <div>
                 <dt>ROAS / cel</dt>
-                <dd>{numeric(campaign.roas, 2)}× / 3,10×</dd>
+                <dd>{numeric(campaign.roas, 2, locale)}× / 3,10×</dd>
               </div>
               <div>
                 <dt>Kompletność kosztów produktów i realizacji</dt>
@@ -619,6 +624,7 @@ export function CampaignBudgetComparison({
   readonly days: number;
 }) {
   const id = useId();
+  const { locale } = useProductLocale();
   const [change, setChange] = useState(0);
   const scenario = campaignBudgetScenario(spend, change, days);
   return (
@@ -641,15 +647,15 @@ export function CampaignBudgetComparison({
       <dl>
         <div>
           <dt>Obecne wydatki w okresie</dt>
-          <dd>{money(spend)}</dd>
+          <dd>{money(spend, locale)}</dd>
         </div>
         <div>
           <dt>Wariant dla okresu tej samej długości</dt>
-          <dd>{money(scenario.spend)}</dd>
+          <dd>{money(scenario.spend, locale)}</dd>
         </div>
         <div>
           <dt>Różnica kosztu</dt>
-          <dd>{money(scenario.delta)}</dd>
+          <dd>{money(scenario.delta, locale)}</dd>
         </div>
       </dl>
       <p>

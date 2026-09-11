@@ -82,7 +82,4 @@ Story 15.02 jest zaimplementowanym ownerem MetricCard w statusie `accepted`. Pok
 05.03 nie renderuje lokalnych wariantów MetricCard ani `KpiSparkline`; zachowuje wyłącznie decision record i handoff do 15.02.
 
 ## Kryteria akceptacji
-1. `tsc --noEmit` kompiluje jedyny kontrakt kanoniczny.
-2. Dokument, rejestr i macierz ekran–komponent wskazują ten sam component ID i plik kontraktu.
-3. Testy a11y nie wykazują naruszeń krytycznych.
-4. Komponent nie definiuje własnych tokenów ani duplikuje komponentu bazowego.
+> [STD-COMPONENT-ACCEPTANCE](../../00-zarzadzanie-dokumentacja/README.md#std-component-acceptance) — normatywny.

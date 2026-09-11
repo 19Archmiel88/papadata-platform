@@ -52,7 +52,6 @@ export const surfaceStyleTokens = {
 export const surfaceStyleContract = {
   allowedRadiusValues: [
     0,
-    2,
     4,
     6,
     8,

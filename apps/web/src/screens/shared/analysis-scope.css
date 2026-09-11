@@ -1,0 +1,11 @@
+.pd-analysis-scope { display:flex; align-items:start; flex-wrap:wrap; gap:var(--pd-space-2) var(--pd-space-4); min-width:0; }
+.pd-analysis-scope__disclosure { flex:1 1 360px; min-width:0; }
+.pd-analysis-scope__disclosure > summary { display:flex; align-items:center; flex-wrap:wrap; gap:var(--pd-space-2) var(--pd-space-3); min-height:32px; width:fit-content; max-width:100%; list-style:none; cursor:pointer; color:var(--pd-text-secondary); font-size:var(--pd-type-size-body-small); }
+.pd-analysis-scope__disclosure > summary::-webkit-details-marker { display:none; }
+.pd-analysis-scope__edit { color:var(--pd-interactive); white-space:nowrap; }
+.pd-analysis-scope__disclosure[open] .pd-analysis-scope__edit { text-decoration:underline; }
+.pd-analysis-scope__controls { margin-top:var(--pd-space-2); }
+.pd-analysis-scope__controls label { flex:1 1 150px; min-width:0; max-width:320px; }
+.pd-analysis-scope__controls select { width:100%; }
+.pd-analysis-scope__actions { display:flex; align-items:center; flex-wrap:wrap; gap:var(--pd-space-2); }
+@media(max-width:540px) { .pd-analysis-scope__controls label { max-width:none; } }

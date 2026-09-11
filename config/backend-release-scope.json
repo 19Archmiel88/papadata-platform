@@ -1,8 +1,13 @@
 {
-  "schemaVersion": 3,
-  "releaseName": "backend-migration-implementation-2026-08",
-  "baseHead": "ff6854e001ef61b8745c8f2db61f44618464f6c8",
+  "schemaVersion": 4,
+  "scopeId": "backend-production-runtime",
   "generatedAtPolicy": "deterministic-no-timestamp",
+  "revisionPolicy": {
+    "releaseEvidenceRequiresCleanCommit": true,
+    "commitShaSource": "git rev-parse HEAD at evidence generation time",
+    "workingTreePolicy": "release evidence is invalid when the working tree is dirty",
+    "imageDigestPolicy": "deployment evidence records immutable image digests separately from source scope metadata"
+  },
   "contractPosition": {
     "targetContract": "contracts/openapi-1.0.json",
     "targetOperations": 223,

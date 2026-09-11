@@ -123,9 +123,10 @@ export const PopoverStory: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const page = within(canvasElement.ownerDocument.body);
 
     await userEvent.click(canvas.getByTestId('popover-trigger'));
 
-    await expect(canvas.getByText(copy({ pl: 'Wymaga ponownej autoryzacji', en: 'Needs reauthorization' }))).toBeInTheDocument();
+    await expect(await page.findByText(copy({ pl: 'Wymaga ponownej autoryzacji', en: 'Needs reauthorization' }))).toBeInTheDocument();
   },
 };

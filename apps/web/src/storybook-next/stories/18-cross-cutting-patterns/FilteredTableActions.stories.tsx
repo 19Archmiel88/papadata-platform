@@ -2168,7 +2168,7 @@ export const FilteredTableActionsStory: Story = {
     );
 
     await userEvent.click(
-      canvas.getByRole(
+      body.getByRole(
         'menuitem',
         {
           name: 'ROAS',
@@ -2242,7 +2242,7 @@ export const FilteredTableActionsStory: Story = {
     );
 
     await userEvent.click(
-      canvas.getByRole(
+      body.getByRole(
         'menuitem',
         {
           name: /Pokaż szczegóły/,
@@ -2273,7 +2273,7 @@ export const FilteredTableActionsStory: Story = {
     );
 
     await userEvent.click(
-      canvas.getByRole(
+      body.getByRole(
         'menuitem',
         {
           name: /Dodaj do zaznaczenia/,

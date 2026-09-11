@@ -294,12 +294,6 @@ export function SavedReportsScreen({
   );
   return (
     <div className="pd-reports" ref={heading}>
-      <div className="pd-reports-mode" role="note">
-        <span className="pd-reports-mode__dot" />
-        {mode === 'demo'
-          ? `Podgląd produktu · dane przykładowe · ${persistenceKey ? 'zapis w tej przeglądarce' : 'zmiany tylko w tej sesji podglądu'}`
-          : 'Biblioteka raportów Twojego obszaru roboczego'}
-      </div>
       {readError && (
         <div className="pd-reports-alert" role="alert">
           <strong>Nie udało się odczytać biblioteki</strong>
@@ -448,7 +442,6 @@ export function SavedReportsScreen({
         <>
           <header className="pd-reports-header">
             <div>
-              <div className="pd-reports-eyebrow">TWOJA WIEDZA, ZAPISANA</div>
               <h1 tabIndex={-1}>
                 Zapisane raporty<span className="pd-reports-count">{activeCount}</span>
               </h1>
@@ -797,7 +790,12 @@ export function SavedReportsScreen({
                       ? 'Ten sam okres, szablon i filtr. Różnica = wersja czytana minus porównywana.'
                       : 'Zakresy lub szablony są różne. Pokazujemy wartości bez wyliczania zmiany.'}
                 </p>
-                <div className="pd-reports-table-scroll">
+                <div
+                  className="pd-reports-table-scroll"
+                  role="region"
+                  aria-label="Tabela porównania wersji raportu"
+                  tabIndex={0}
+                >
                   <table>
                     <thead>
                       <tr>
@@ -1019,6 +1017,12 @@ export function SavedReportsScreen({
           </p>
         )}
       </Drawer>
+      <div className="pd-reports-mode" role="note">
+        <span className="pd-reports-mode__dot" />
+        {mode === 'demo'
+          ? `Podgląd produktu · dane przykładowe · ${persistenceKey ? 'zapis w tej przeglądarce' : 'zmiany tylko w tej sesji podglądu'}`
+          : 'Biblioteka raportów Twojego obszaru roboczego'}
+      </div>
     </div>
   );
 }

@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "policy": "P1 is code-ready only when every repository-owned control is implemented. Production acceptance additionally requires fresh external evidence.",
+  "controls": [
+    {"id":"P1-01","owner":"Web/Platform","codeControl":"web-production-parity","releaseEvidence":"webProductionParity"},
+    {"id":"P1-02","owner":"Web/Design System","codeControl":"storybook-browser-a11y","releaseEvidence":"storybookAccessibility"},
+    {"id":"P1-03","owner":"UX/UI","codeControl":"responsive-browser-acceptance","releaseEvidence":"responsiveAcceptance"},
+    {"id":"P1-04","owner":"AI/Worker","codeControl":"durable-assistant-generation","releaseEvidence":"assistantQueueResilience"},
+    {"id":"P1-05","owner":"AI","codeControl":"canonical-papa-runtime","releaseEvidence":"canonicalAiRuntime"},
+    {"id":"P1-06","owner":"Worker","codeControl":"worker-resilience-tests","releaseEvidence":"workerResilience"},
+    {"id":"P1-07","owner":"Platform","codeControl":"terraform-ci","releaseEvidence":"terraformPlan"},
+    {"id":"P1-08","owner":"Engineering","codeControl":"runtime-runbook-current","releaseEvidence":"runtimeRunbook"},
+    {"id":"P1-09","owner":"Architecture","codeControl":"parity-contract-current","releaseEvidence":"parityContract"},
+    {"id":"P1-10","owner":"Platform/SRE","codeControl":"staging-and-drill-gates","releaseEvidence":"gcpStaging"},
+    {"id":"P1-11","owner":"Identity/Platform","codeControl":"oauth-staging-acceptance","releaseEvidence":"oauthIdentity"},
+    {"id":"P1-12","owner":"Repository Admin","codeControl":"github-governance-validator","releaseEvidence":"branchGovernance"}
+  ]
+}

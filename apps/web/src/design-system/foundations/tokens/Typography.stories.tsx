@@ -85,8 +85,7 @@ const fontRules: ReadonlyArray<{
 }> = [
   { rule: 'metricsMayUseDataFont', label: { pl: 'Metryki i wartości liczbowe mogą używać fontu danych (JetBrains Mono, tabular-nums).', en: 'Metrics and numeric values may use the data font (JetBrains Mono, tabular-nums).' } },
   { rule: 'ordinaryDescriptionsUseDataFont', label: { pl: 'Zwykłe opisy nigdy nie używają fontu danych.', en: 'Ordinary descriptions never use the data font.' } },
-  { rule: 'heroMetricsMayUseDisplayAccentFont', label: { pl: 'Duże liczby hero i nagłówki sekcji mogą użyć akcentu edytorskiego (Newsreader) — wąsko, nie jako drugi font interfejsu.', en: 'Hero numerals and section headings may use the editorial accent (Newsreader) — narrowly, not as a second interface font.' } },
-  { rule: 'buttonsUseDataFont', label: { pl: 'Przyciski nigdy nie używają fontu danych ani akcentu edytorskiego.', en: 'Buttons never use the data font or the editorial accent.' } },
+  { rule: 'buttonsUseDataFont', label: { pl: 'Przyciski nigdy nie używają fontu danych.', en: 'Buttons never use the data font.' } },
 ];
 
 export const Typografia: Story = {
@@ -100,7 +99,7 @@ export const Typografia: Story = {
           items={[
             { label: <Localized pl="Font interfejsu" en="Interface font" />, value: typographyContract.interfaceFont },
             { label: <Localized pl="Font danych" en="Data font" />, value: typographyContract.dataFont },
-            { label: <Localized pl="Akcent display" en="Display accent" />, value: typographyContract.displayAccentFont },
+            { label: <Localized pl="Kroki skali" en="Scale steps" />, value: String(Object.keys(typographyTokens.sizes).length) },
           ]}
         />
       )}
@@ -109,11 +108,11 @@ export const Typografia: Story = {
       storyId="typography"
       summary={
         <Localized
-          pl="Inter obsługuje cały interfejs, JetBrains Mono niesie liczby i identyfikatory, Newsreader jest wąskim akcentem edytorskim dla wybranych nagłówków i metryk hero."
-          en="Inter carries the whole interface, JetBrains Mono carries numbers and identifiers, Newsreader is a narrow editorial accent for select headings and hero metrics."
+          pl="Inter obsługuje cały interfejs, JetBrains Mono niesie liczby i identyfikatory. Realny kod dziś nie używa żadnego trzeciego fontu akcentowego — poprzednia wersja tej strony wspominała o edytorskim akcencie Newsreader, ale ten nigdy nie trafił do obecnych ekranów (--pd-font-serif aliasuje wprost na Inter)."
+          en="Inter carries the whole interface, JetBrains Mono carries numbers and identifiers. Real code today does not use any third accent font — an earlier version of this page mentioned an editorial Newsreader accent, but it never made it into the current screens (--pd-font-serif aliases straight to Inter)."
         />
       }
-      title={<Localized pl="Trzy fonty, jedna hierarchia." en="Three fonts, one hierarchy." />}
+      title={<Localized pl="Dwa fonty, jedna hierarchia." en="Two fonts, one hierarchy." />}
     >
       <StorySection
         index="01"
@@ -181,6 +180,18 @@ export const Typografia: Story = {
           ))}
         </div>
       </StorySection>
+
+      <StorySection
+        index="04"
+        title={<Localized pl="W praktyce" en="In practice" />}
+      >
+        <div className="pd-f0-note" data-testid="typography-practice">
+          <Localized
+            pl="Do 2026-09-10 realny kod ustawiał font-size ręczną liczbą w 385 miejscach (26 plików) zamiast tokenem ze skali — niemal 3,5× więcej niż analogiczny problem przy promieniach. Doprowadzone do zgodności: wszystkie miejsca (poza jednym celowym wyjątkiem — inline code w wątku wiadomości Papy używa font-size:0.85em, żeby skalować się razem z otaczającym tekstem, a nie sztywno) odwołują się dziś do tokenu, wartości pozaskalowe zaokrąglono do najbliższego kroku."
+            en="Until 2026-09-10, real code set font-size with a raw number in 385 places (26 files) instead of a scale token — almost 3.5× the equivalent radius problem. Brought into alignment: every place (except one deliberate exception — inline code in the Papa message thread uses font-size:0.85em to scale with its surrounding text rather than a fixed size) now references a token, with off-scale values rounded to the nearest step."
+          />
+        </div>
+      </StorySection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {
@@ -189,5 +200,6 @@ export const Typografia: Story = {
     await expect(canvas.getByTestId('typography-scale').children).toHaveLength(sizeSamples.length);
     await expect(canvas.getByTestId('typography-numerics')).toBeInTheDocument();
     await expect(canvas.getByTestId('typography-rules').children).toHaveLength(fontRules.length);
+    await expect(canvas.getByTestId('typography-practice')).toBeInTheDocument();
   },
 };

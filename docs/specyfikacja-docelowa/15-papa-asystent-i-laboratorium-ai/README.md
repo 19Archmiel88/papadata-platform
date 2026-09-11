@@ -25,13 +25,7 @@ Użytkownik realizuje zadanie „Panel kontekstowy Papa” w obszarze: Papa, evi
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-ANALYTICS](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-analytics) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -58,43 +52,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-01.ts`.
 - Odczyt: `papa.context-panel.read` — `GET /api/v1/papa/panel-kontekstowy-papa`, `PapaContextPanelReadRequest` → `PapaContextPanelReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.01`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-50-02-assistantshell"></a>
 
@@ -110,12 +86,7 @@ Użytkownik realizuje zadanie „AssistantShell” w obszarze: Papa, evidence, c
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-BASE](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-base) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -138,43 +109,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-02.ts`.
 - Odczyt: `papa.assistant-shell.read` — `GET /api/v1/papa/assistantshell`, `PapaAssistantShellReadRequest` → `PapaAssistantShellReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.02`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-50-03-tryby-pracy"></a>
 
@@ -184,18 +137,10 @@ Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stan
 Dokument definiuje zasady, warianty i ograniczenia dla obszaru „Tryby pracy”; nie jest samodzielnym routem runtime.
 
 ### Routing i warunki wejścia
-- Route: brak.
-- Tenant i workspace muszą być rozwiązane przed pobraniem danych.
-- Parametry filtrów i rekordu są walidowane przed żądaniem; niedozwolone identyfikatory kończą się bezpiecznym 404/403.
-- Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
+> [STD-SCREEN-ROUTE-NONE](../00-zarzadzanie-dokumentacja/README.md#std-screen-route-none) — normatywny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Reguły wariantów | dokument policy | macierz warunków i rekomendowane użycie |
-| Przykłady | Storybook backlog | przykłady poprawne i błędne |
+> [STD-SCREEN-LAYOUT-POLICY](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-policy) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -219,43 +164,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-03.ts`.
 Brak endpointu i brak route runtime. Dokument nie może być rejestrowany jako ekran aplikacji ani otrzymać fikcyjnej operacji CRUD.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.03`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-50-04-context-basket"></a>
 
@@ -271,13 +198,7 @@ Użytkownik realizuje zadanie „Context basket” w obszarze: Papa, evidence, c
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-ANALYTICS](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-analytics) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -306,43 +227,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-04.ts`.
 - Odczyt: `papa.context-basket.read` — `GET /api/v1/papa/context-basket`, `PapaContextBasketReadRequest` → `PapaContextBasketReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.04`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-50-05-odpowiedz-papa"></a>
 
@@ -358,12 +261,7 @@ Użytkownik realizuje zadanie „Odpowiedź Papa” w obszarze: Papa, evidence, 
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-BASE](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-base) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -387,43 +285,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-05.ts`.
 - Odczyt: `papa.answer.read` — `GET /api/v1/papa/odpowiedz-papa`, `PapaAnswerReadRequest` → `PapaAnswerReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.05`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-50-06-dowody"></a>
 
@@ -439,13 +319,7 @@ Użytkownik realizuje zadanie „Dowody” w obszarze: Papa, evidence, confidenc
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-ANALYTICS](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-analytics) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -472,43 +346,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-06.ts`.
 - Odczyt: `papa.evidence.read` — `GET /api/v1/papa/dowody`, `PapaEvidenceReadRequest` → `PapaEvidenceReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.06`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-50-07-confidence"></a>
 
@@ -518,18 +374,10 @@ Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stan
 Dokument definiuje zasady, warianty i ograniczenia dla obszaru „Confidence”; nie jest samodzielnym routem runtime.
 
 ### Routing i warunki wejścia
-- Route: brak.
-- Tenant i workspace muszą być rozwiązane przed pobraniem danych.
-- Parametry filtrów i rekordu są walidowane przed żądaniem; niedozwolone identyfikatory kończą się bezpiecznym 404/403.
-- Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
+> [STD-SCREEN-ROUTE-NONE](../00-zarzadzanie-dokumentacja/README.md#std-screen-route-none) — normatywny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Reguły wariantów | dokument policy | macierz warunków i rekomendowane użycie |
-| Przykłady | Storybook backlog | przykłady poprawne i błędne |
+> [STD-SCREEN-LAYOUT-POLICY](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-policy) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -549,43 +397,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-07.ts`.
 Brak endpointu i brak route runtime. Dokument nie może być rejestrowany jako ekran aplikacji ani otrzymać fikcyjnej operacji CRUD.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.07`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-50-08-laboratorium-ai"></a>
 
@@ -601,14 +431,7 @@ Użytkownik realizuje zadanie „Laboratorium AI” w obszarze: Papa, evidence, 
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
-| Rejestr danych | DataTable lub komponent domenowy | sortowanie, filtrowanie, paginacja i otwieranie rekordu |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-ANALYTICS-TABLE](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-analytics-table) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -638,43 +461,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-08.ts`.
 - Odczyt: `papa.lab.read` — `GET /api/v1/papa/laboratorium-ai`, `PapaLabReadRequest` → `PapaLabReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.08`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 ### Decyzja P0 — raporty i ciągłość
 Laboratorium zachowuje conversationId z panelu Papa Asystenta oraz zapewnia kreator raportów z zapisem wykresów i eksportem PDF/CSV/XLSX.
@@ -693,13 +498,7 @@ Użytkownik realizuje zadanie „Obserwacje” w obszarze: Papa, evidence, confi
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-ANALYTICS](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-analytics) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -728,43 +527,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-09.ts`.
 - Odczyt: `papa.observations.read` — `GET /api/v1/papa/obserwacje`, `PapaObservationsReadRequest` → `PapaObservationsReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.09`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 ### Decyzja P0 — AI Case Threads
 Anomalia, wzrost, ryzyko i problem danych mogą otrzymać osobny wątek sprawy powiązany z rozmową główną.
@@ -777,18 +558,10 @@ Anomalia, wzrost, ryzyko i problem danych mogą otrzymać osobny wątek sprawy p
 Dokument definiuje zasady, warianty i ograniczenia dla obszaru „Rekomendacje i warianty”; nie jest samodzielnym routem runtime.
 
 ### Routing i warunki wejścia
-- Route: brak.
-- Tenant i workspace muszą być rozwiązane przed pobraniem danych.
-- Parametry filtrów i rekordu są walidowane przed żądaniem; niedozwolone identyfikatory kończą się bezpiecznym 404/403.
-- Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
+> [STD-SCREEN-ROUTE-NONE](../00-zarzadzanie-dokumentacja/README.md#std-screen-route-none) — normatywny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Reguły wariantów | dokument policy | macierz warunków i rekomendowane użycie |
-| Przykłady | Storybook backlog | przykłady poprawne i błędne |
+> [STD-SCREEN-LAYOUT-POLICY](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-policy) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -812,43 +585,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-10.ts`.
 Brak endpointu i brak route runtime. Dokument nie może być rejestrowany jako ekran aplikacji ani otrzymać fikcyjnej operacji CRUD.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.10`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-50-11-propozycje-ai"></a>
 
@@ -864,12 +619,7 @@ Użytkownik realizuje zadanie „Propozycje AI” w obszarze: Papa, evidence, co
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-BASE](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-base) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -893,43 +643,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-11.ts`.
 - Odczyt: `papa.proposals.read` — `GET /api/v1/papa/propozycje-ai`, `PapaProposalsReadRequest` → `PapaProposalsReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.11`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-50-12-ai-action-approval"></a>
 
@@ -945,12 +677,7 @@ Użytkownik realizuje zadanie „AI Action Approval” w obszarze: Papa, evidenc
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-BASE](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-base) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -976,43 +703,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-12.ts`.
 - Odczyt: `papa.action-approval.read` — `GET /api/v1/papa/ai-action-approval`, `PapaActionApprovalReadRequest` → `PapaActionApprovalReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.12`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-50-13-ai-actions"></a>
 
@@ -1028,12 +737,7 @@ Użytkownik realizuje zadanie „AI Actions” w obszarze: Papa, evidence, confi
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-BASE](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-base) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -1057,43 +761,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-13.ts`.
 - Odczyt: `papa.actions.read` — `GET /api/v1/papa/ai-actions`, `PapaActionsReadRequest` → `PapaActionsReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.13`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 ### Decyzja P0 — wykonanie zmian
 Zmiany budżetu i ustawień integracji wymagają diffu, walidacji, capability, jawnej akceptacji człowieka, idempotencji, read-after-write, audytu i rollbacku/kompensacji.
@@ -1106,18 +792,10 @@ Zmiany budżetu i ustawień integracji wymagają diffu, walidacji, capability, j
 Dokument definiuje zasady, warianty i ograniczenia dla obszaru „Zablokowane działania AI”; nie jest samodzielnym routem runtime.
 
 ### Routing i warunki wejścia
-- Route: brak.
-- Tenant i workspace muszą być rozwiązane przed pobraniem danych.
-- Parametry filtrów i rekordu są walidowane przed żądaniem; niedozwolone identyfikatory kończą się bezpiecznym 404/403.
-- Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
+> [STD-SCREEN-ROUTE-NONE](../00-zarzadzanie-dokumentacja/README.md#std-screen-route-none) — normatywny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Reguły wariantów | dokument policy | macierz warunków i rekomendowane użycie |
-| Przykłady | Storybook backlog | przykłady poprawne i błędne |
+> [STD-SCREEN-LAYOUT-POLICY](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-policy) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -1141,43 +819,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-14.ts`.
 Brak endpointu i brak route runtime. Dokument nie może być rejestrowany jako ekran aplikacji ani otrzymać fikcyjnej operacji CRUD.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.14`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-50-15-historia-i-pamiec-papa"></a>
 
@@ -1193,13 +853,7 @@ Użytkownik realizuje zadanie „Historia i pamięć Papa” w obszarze: Papa, e
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Rejestr danych | DataTable lub komponent domenowy | sortowanie, filtrowanie, paginacja i otwieranie rekordu |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-TABLE](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-table) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -1230,43 +884,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-15.ts`.
 - Odczyt: `papa.history-memory.read` — `GET /api/v1/papa/historia-i-pamiec-papa`, `PapaHistoryMemoryReadRequest` → `PapaHistoryMemoryReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.15`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 ### Decyzja P0 — jeden wątek
 Panel i Laboratorium są dwiema powierzchniami tej samej rozmowy. Nowy conversationId powstaje tylko po jawnej akcji.
@@ -1285,12 +921,7 @@ Użytkownik realizuje zadanie „Ustawienia AI i Governance” w obszarze: Papa,
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-BASE](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-base) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -1314,43 +945,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-16.ts`.
 - Odczyt: `papa.governance.read` — `GET /api/v1/papa/ustawienia-ai-i-governance`, `PapaGovernanceReadRequest` → `PapaGovernanceReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.16`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-50-17-warianty-papa"></a>
 
@@ -1360,18 +973,10 @@ Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stan
 Dokument definiuje zasady, warianty i ograniczenia dla obszaru „Warianty Papa”; nie jest samodzielnym routem runtime.
 
 ### Routing i warunki wejścia
-- Route: brak.
-- Tenant i workspace muszą być rozwiązane przed pobraniem danych.
-- Parametry filtrów i rekordu są walidowane przed żądaniem; niedozwolone identyfikatory kończą się bezpiecznym 404/403.
-- Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
+> [STD-SCREEN-ROUTE-NONE](../00-zarzadzanie-dokumentacja/README.md#std-screen-route-none) — normatywny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Reguły wariantów | dokument policy | macierz warunków i rekomendowane użycie |
-| Przykłady | Storybook backlog | przykłady poprawne i błędne |
+> [STD-SCREEN-LAYOUT-POLICY](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-policy) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -1392,43 +997,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/50-17.ts`.
 Brak endpointu i brak route runtime. Dokument nie może być rejestrowany jako ekran aplikacji ani otrzymać fikcyjnej operacji CRUD.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=50.17`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="papa-asystent-kontekst-produktowy"></a>
 
@@ -1436,6 +1023,8 @@ Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stan
 
 Poniżej masz **kompletny kontekst Papa Asystenta** jako modułu. Bez skakania. To jest opis docelowy: **co to jest, jak działa, jak wygląda, jakie ma funkcje, statusy, raporty, evidence, AI actions, bezpieczeństwo i wymagane informacje AI**.
 
+
+<a id="papa-shared-evidence-1"></a>
 
 Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
 Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
@@ -1454,8 +1043,7 @@ Nie powinien mówić: „zrobiłem”, jeśli realnie tylko przygotował propozy
 
 ## [x] 2. Główne zasady działania
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Każde zapytanie do Papa Asystenta musi mieć jawny kontekst:
 
@@ -1477,8 +1065,7 @@ Czyli Asystent nie odpowiada „ogólnie”. On odpowiada na podstawie **konkret
 
 ## [x] 3. Gdzie użytkownik go uruchamia
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Papa Asystent powinien być dostępny z kilku punktów:
 
@@ -1497,13 +1084,11 @@ W praktyce: użytkownik może zapytać o cały ekran, konkretny KPI, konkretny w
 
 ## [x] 4. Jak wygląda Papa Asystent
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 ## [x] 4.1. Globalny panel
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Na desktopie:
 
@@ -1521,8 +1106,7 @@ Na mobile:
 
 ## [x] 4.2. Struktura AssistantShell
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Docelowa anatomia:
 
@@ -1558,13 +1142,11 @@ Ważne: te widoki **nie mogą tworzyć kolejnych modalnych drawerów nad panelem
 
 ## [x] 5. Formy pracy Asystenta
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 ## [x] 5.1. Panel kontekstowy
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 * dostępny z każdego ekranu,
 * stała szerokość,
@@ -1574,8 +1156,7 @@ Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`,
 
 ## [x] 5.2. Widok podzielony
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 * Asystent i dane są jednocześnie widoczne,
 * Asystent może wskazać wykres, tabelę albo pole,
@@ -1583,8 +1164,7 @@ Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`,
 
 ## [x] 5.3. Pełna sekcja
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Pełny widok Papa Asystenta obejmuje:
 
@@ -1599,8 +1179,7 @@ Pełny widok Papa Asystenta obejmuje:
 
 ## [x] 5.4. Inline Assistant
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Działa na konkretnym KPI, wykresie albo tabeli:
 
@@ -1614,8 +1193,7 @@ Działa na konkretnym KPI, wykresie albo tabeli:
 
 ## [x] 6. Context basket
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Użytkownik może wrzucić do kontekstu Asystenta:
 
@@ -1639,50 +1217,43 @@ Każdy element context basket musi pokazywać:
 
 ## [x] 7. Tryby pracy Papa Asystenta
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Docelowe tryby:
 
 ## [x] Szybki brief
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Podsumowuje aktywny ekran.
 
 ## [x] Interpretacja
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Wyjaśnia zmianę i drivery.
 
 ## [x] Diagnoza
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Szuka przyczyn, ograniczeń i brakujących danych.
 
 ## [x] Decyzja
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Przygotowuje rekomendacje i warianty.
 
 ## [x] Raport
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Tworzy draft raportu albo uruchamia report job po jawnej akcji użytkownika.
 
 ## [x] Plan działań
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Tworzy zadania, właścicieli i terminy. Nie wykonuje zmian biznesowych bez AI Action.
 
@@ -1697,8 +1268,7 @@ Dla Laboratorium są też tryby robocze:
 
 ## [x] 8. Jak wygląda odpowiedź Asystenta
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Każda odpowiedź powinna mieć logiczną strukturę:
 
@@ -1719,8 +1289,7 @@ Streaming odpowiedzi ma być stabilny. Czytnik ekranu nie może dostawać chaoty
 
 ## [x] 9. EvidencePanel i zaufanie
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Papa Asystent musi pokazywać evidence, czyli dowody i ograniczenia odpowiedzi.
 
@@ -1751,8 +1320,7 @@ Nie używa się swobodnie wygenerowanego procentu typu `87%`, jeśli nie ma real
 
 ## [x] 10. Odmowy i zabezpieczenia
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Asystent odmawia albo ogranicza odpowiedź, gdy:
 
@@ -1770,8 +1338,7 @@ Kluczowe decyzje finansowe i operacyjne wymagają weryfikacji człowieka.
 
 ## [x] 11. Źródła analizy
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Widok `sources` pozwala dodać:
 
@@ -1786,8 +1353,7 @@ Dodanie źródła nie zmienia data authority. Źródło ma klasyfikację, zakres
 
 ## [x] 12. Artefakty
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Papa Asystent tworzy artefakty:
 
@@ -1813,8 +1379,7 @@ Rozbudowany artefakt nie powinien być małym modalem. Ma być route-backed work
 
 ## [x] 13. Rekomendacja i symulacja
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Przed akceptacją rekomendacji użytkownik widzi:
 
@@ -1833,8 +1398,7 @@ To jest ważne UX-owo: rekomendacja AI nie może być tylko tekstem. Ma pokazywa
 
 ## [x] 14. Wykonanie zmiany przez AI
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Papa Asystent może przygotować i wykonać zmianę w integracji dopiero po świadomym zatwierdzeniu klienta.
 
@@ -1863,8 +1427,7 @@ Zmiany finansowe, masowe albo trudne do cofnięcia wymagają dwóch kroków i wp
 
 ## [x] 15. Wykonanie częściowe
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Zasady partial execution:
 
@@ -1878,8 +1441,7 @@ Zasady partial execution:
 
 ## [x] 16. Historia decyzji i działań
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Historia Papa Asystenta ma pełną oś czasu:
 
@@ -1903,8 +1465,7 @@ Historia ma mieć:
 
 ## [x] 17. Raporty
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Asystent tworzy:
 
@@ -1937,8 +1498,7 @@ Postęp jest trwały, a zakończenie trafia do powiadomień.
 
 ## [x] 18. Laboratorium jako część Papa Asystenta
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Laboratorium jest pełnym miejscem pracy z AI, a nie tylko czatem.
 
@@ -1969,8 +1529,7 @@ Sekcje Laboratorium:
 
 ## [x] 19. Rekomendacje w Laboratorium
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Karta rekomendacji pokazuje:
 
@@ -1996,8 +1555,7 @@ Statusy rekomendacji:
 
 ## [x] 20. Biblioteka
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Biblioteka przechowuje:
 
@@ -2033,8 +1591,7 @@ Metadane:
 
 ## [x] 21. Briefingi i analizy
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Briefingi i analizy:
 
@@ -2060,8 +1617,7 @@ Briefing zawiera:
 
 ## [x] 22. DecisionQueue
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Statusy DecisionQueue:
 
@@ -2101,8 +1657,7 @@ Znaczenie:
 
 ## [x] 23. Eksport i MCP
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Eksporty:
 
@@ -2131,8 +1686,7 @@ W praktyce: wynik Asystenta może zostać zamieniony w PDF, CSV, brief, zapis do
 
 ## [x] 24. Dostępność
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Papa Asystent musi mieć:
 
@@ -2148,8 +1702,7 @@ Papa Asystent musi mieć:
 
 ## [x] 25. Storybook
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Docelowe stories:
 
@@ -2172,8 +1725,7 @@ Docelowe stories:
 
 ## [x] 26. Kryteria akceptacji
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Papa Asystent jest poprawnie zaprojektowany dopiero wtedy, gdy:
 
@@ -2190,8 +1742,7 @@ Papa Asystent jest poprawnie zaprojektowany dopiero wtedy, gdy:
 
 ## [x] 27. Obowiązkowe informacje AI w UI
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Zgodnie z AI Act, użytkownik powinien być poinformowany, że wchodzi w interakcję z systemem AI, gdy system jest przeznaczony do bezpośredniej interakcji z osobami; obowiązki transparentności Article 50 dotyczą m.in. interaktywnych systemów AI i treści AI, a Komisja wskazuje, że reguły transparentności pomagają rozpoznawać interakcję z AI lub ekspozycję na treść AI. ([Eur-Lex][1]) ([Cyfrowa Strategia Europy][2])
 
@@ -2230,13 +1781,11 @@ Jeżeli Asystent generuje treść używaną dalej poza aplikacją — raport, br
 
 ## [x] 28. Statusy, które powinieneś mieć w modelu
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 ## [x] Status danych
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 ```text
 ready
@@ -2250,8 +1799,7 @@ no access
 
 ## [x] Confidence
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 ```text
 wysoka
@@ -2261,8 +1809,7 @@ niewystarczająca
 
 ## [x] Report job
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 ```text
 queued
@@ -2274,8 +1821,7 @@ expired
 
 ## [x] DecisionQueue
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 ```text
 proposed
@@ -2294,8 +1840,7 @@ compensated
 
 ## [x] Eksport / MCP
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 ```text
 ready
@@ -2307,8 +1852,7 @@ no access
 
 ## [x] Odmowa AI
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 ```text
 insufficient_evidence
@@ -2325,8 +1869,7 @@ approval_required
 
 ## [x] 29. Minimalny przebieg użytkownika
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 ```text
 Użytkownik otwiera ekran
@@ -2348,8 +1891,7 @@ Użytkownik otwiera ekran
 
 ## [x] 30. Co musi być na ekranie Papa Asystenta
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 Minimum UI:
 
@@ -2432,8 +1974,7 @@ Minimum UI:
 
 ## [x] 31. Najkrótsza definicja produktu
 
-Evidence: `apps/web/src/features/papa-assistant/assistantTypes.ts`, `apps/web/src/features/papa-assistant/papaAssistantData.ts`, `apps/web/src/features/papa-assistant/PapaAssistantExperience.tsx`, `apps/web/src/features/papa-assistant/papa-assistant-experience.css`, `apps/web/src/features/papa-assistant/papaAssistantModel.test.ts`, `apps/web/src/storybook-next/stories/40-papa-assistant`, `apps/web/src/storybook-next/stories/90-papa-assistant-flows`, `apps/web/src/screens/papa/PapaScreen.tsx`.
-Verification: `pnpm verify:papa-assistant`, `pnpm -w typecheck`, `pnpm -w lint`, `pnpm -w test`.
+> [PAPA-SHARED-EVIDENCE-1](#papa-shared-evidence-1) — normatywny.
 
 ```text
 Papa Asystent to kontekstowy analityk AI w PapaData.

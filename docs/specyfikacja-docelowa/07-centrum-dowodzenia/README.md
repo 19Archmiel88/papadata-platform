@@ -70,13 +70,7 @@ Użytkownik realizuje zadanie „Widok główny” w obszarze: poranny przegląd
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Rejestr danych | DataTable lub komponent domenowy | sortowanie, filtrowanie, paginacja i otwieranie rekordu |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-TABLE](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-table) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -112,43 +106,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/30-01.ts`.
 - Odczyt: `command-center.overview.read` — `GET /api/v1/command-center/widok-glowny`, `CommandCenterOverviewReadRequest` → `CommandCenterOverviewReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=30.01`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-30-02-kolejka-uwagi"></a>
 
@@ -164,14 +140,7 @@ Użytkownik realizuje zadanie „Kolejka uwagi” w obszarze: poranny przegląd 
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
-| Rejestr danych | DataTable lub komponent domenowy | sortowanie, filtrowanie, paginacja i otwieranie rekordu |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-ANALYTICS-TABLE](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-analytics-table) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -203,43 +172,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/30-02.ts`.
 - Odczyt: `command-center.attention.queue.read` — `GET /api/v1/command-center/kolejka-uwagi`, `CommandCenterAttentionQueueReadRequest` → `CommandCenterAttentionQueueReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=30.02`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-30-03-kpi"></a>
 
@@ -294,47 +245,29 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/30-03.ts`.
 - Odczyt: `command-center.kpi.read` — `GET /api/v1/command-center/kpi`, `CommandCenterKpiReadRequest` → `CommandCenterKpiReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Hierarchia KPI
 
 W układzie KPI przychód jest jedyną kartą o największej głębi. Pozostałe metryki nie powtarzają ciężkich kontenerów; są prezentowane kompaktowo i rozdzielane separatorami. Na mobile kolejność pozostaje: readiness → przychód → pozostałe KPI → działania i szczegóły.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=30.03`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 ### Hierarchia biznesowa KPI
 
@@ -356,13 +289,7 @@ Użytkownik realizuje zadanie „Plan vs wynik” w obszarze: poranny przegląd 
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-ANALYTICS](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-analytics) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -395,43 +322,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/30-04.ts`.
 - Odczyt: `command-center.plan-performance.read` — `GET /api/v1/command-center/plan-vs-wynik`, `CommandCenterPlanPerformanceReadRequest` → `CommandCenterPlanPerformanceReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=30.04`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-30-05-drivery-wyniku"></a>
 
@@ -447,13 +356,7 @@ Użytkownik realizuje zadanie „Drivery wyniku” w obszarze: poranny przegląd
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-ANALYTICS](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-analytics) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -481,43 +384,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/30-05.ts`.
 - Odczyt: `command-center.drivers.read` — `GET /api/v1/command-center/drivery-wyniku`, `CommandCenterDriversReadRequest` → `CommandCenterDriversReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=30.05`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-30-06-zrodla-sprzedazy"></a>
 
@@ -533,13 +418,7 @@ Użytkownik realizuje zadanie „Źródła sprzedaży” w obszarze: poranny prz
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-ANALYTICS](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-analytics) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -565,43 +444,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/30-06.ts`.
 - Odczyt: `command-center.sales-sources.read` — `GET /api/v1/command-center/zrodla-sprzedazy`, `CommandCenterSalesSourcesReadRequest` → `CommandCenterSalesSourcesReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=30.06`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-30-07-ruch"></a>
 
@@ -617,14 +478,7 @@ Użytkownik realizuje zadanie „Ruch” w obszarze: poranny przegląd kondycji 
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
-| Rejestr danych | DataTable lub komponent domenowy | sortowanie, filtrowanie, paginacja i otwieranie rekordu |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-ANALYTICS-TABLE](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-analytics-table) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -654,43 +508,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/30-07.ts`.
 - Odczyt: `command-center.traffic-summary.read` — `GET /api/v1/command-center/ruch`, `CommandCenterTrafficSummaryReadRequest` → `CommandCenterTrafficSummaryReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=30.07`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-30-08-produkty"></a>
 
@@ -706,12 +542,7 @@ Użytkownik realizuje zadanie „Produkty” w obszarze: poranny przegląd kondy
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-BASE](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-base) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -736,43 +567,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/30-08.ts`.
 - Odczyt: `command-center.products-summary.read` — `GET /api/v1/command-center/produkty`, `CommandCenterProductsSummaryReadRequest` → `CommandCenterProductsSummaryReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=30.08`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-30-09-klienci"></a>
 
@@ -788,13 +601,7 @@ Użytkownik realizuje zadanie „Klienci” w obszarze: poranny przegląd kondyc
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-ANALYTICS](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-analytics) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -819,43 +626,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/30-09.ts`.
 - Odczyt: `command-center.customers-summary.read` — `GET /api/v1/command-center/klienci`, `CommandCenterCustomersSummaryReadRequest` → `CommandCenterCustomersSummaryReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=30.09`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-30-10-lejek"></a>
 
@@ -871,13 +660,7 @@ Użytkownik realizuje zadanie „Lejek” w obszarze: poranny przegląd kondycji
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-ANALYTICS](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-analytics) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -908,43 +691,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/30-10.ts`.
 - Odczyt: `command-center.funnel.read` — `GET /api/v1/command-center/lejek`, `CommandCenterFunnelReadRequest` → `CommandCenterFunnelReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=30.10`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-30-11-rekomendacje-ai-skrot"></a>
 
@@ -960,13 +725,7 @@ Użytkownik realizuje zadanie „Rekomendacje AI — skrót” w obszarze: poran
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-ANALYTICS](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-analytics) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -994,43 +753,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/30-11.ts`.
 - Odczyt: `command-center.ai-recommendations.read` — `GET /api/v1/command-center/rekomendacje-ai-skrot`, `CommandCenterAiRecommendationsReadRequest` → `CommandCenterAiRecommendationsReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=30.11`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-30-12-sygnaly-sprzedazowe"></a>
 
@@ -1046,12 +787,7 @@ Użytkownik realizuje zadanie „Sygnały sprzedażowe” w obszarze: poranny pr
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-BASE](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-base) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -1076,43 +812,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/30-12.ts`.
 - Odczyt: `command-center.sales-signals.read` — `GET /api/v1/command-center/sygnaly-sprzedazowe`, `CommandCenterSalesSignalsReadRequest` → `CommandCenterSalesSignalsReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=30.12`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-30-13-waterfall"></a>
 
@@ -1128,13 +846,7 @@ Użytkownik realizuje zadanie „Waterfall” w obszarze: poranny przegląd kond
 - Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
-| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
-| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+> [STD-SCREEN-LAYOUT-ANALYTICS](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-analytics) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -1164,43 +876,25 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/30-13.ts`.
 - Odczyt: `command-center.waterfall.read` — `GET /api/v1/command-center/waterfall`, `CommandCenterWaterfallReadRequest` → `CommandCenterWaterfallReadResponse`.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=30.13`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.
 
 <a id="sekcja-30-14-warianty-centrum-dowodzenia"></a>
 
@@ -1210,18 +904,10 @@ Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stan
 Dokument definiuje zasady, warianty i ograniczenia dla obszaru „Warianty Centrum Dowodzenia”; nie jest samodzielnym routem runtime.
 
 ### Routing i warunki wejścia
-- Route: brak.
-- Tenant i workspace muszą być rozwiązane przed pobraniem danych.
-- Parametry filtrów i rekordu są walidowane przed żądaniem; niedozwolone identyfikatory kończą się bezpiecznym 404/403.
-- Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.
+> [STD-SCREEN-ROUTE-NONE](../00-zarzadzanie-dokumentacja/README.md#std-screen-route-none) — normatywny.
 
 ### Anatomia finalnego ekranu
-| Region | Kompozycja | Odpowiedzialność |
-|---|---|---|
-| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
-| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
-| Reguły wariantów | dokument policy | macierz warunków i rekomendowane użycie |
-| Przykłady | Storybook backlog | przykłady poprawne i błędne |
+> [STD-SCREEN-LAYOUT-POLICY](../00-zarzadzanie-dokumentacja/README.md#std-screen-layout-policy) — normatywny.
 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
@@ -1249,40 +935,22 @@ Kanoniczny model TypeScript ekranu: `contracts/screens/30-14.ts`.
 Brak endpointu i brak route runtime. Dokument nie może być rejestrowany jako ekran aplikacji ani otrzymać fikcyjnej operacji CRUD.
 
 ### Reguły biznesowe i interakcje
-- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
-- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
-- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
-- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+> [STD-SCREEN-BUSINESS-INTERACTIONS](../00-zarzadzanie-dokumentacja/README.md#std-screen-business-interactions) — normatywny.
 
 ### Stany
-| Stan | Zachowanie |
-|---|---|
-| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
-| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
-| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
-| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
-| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
-| `error` | ApiProblem z correlationId, bez utraty filtrów. |
-| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
-| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+> [STD-SCREEN-STATES](../00-zarzadzanie-dokumentacja/README.md#std-screen-states) — normatywny.
 
 ### Responsywność i dostępność
-Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+> [STD-SCREEN-RESPONSIVE-A11Y](../00-zarzadzanie-dokumentacja/README.md#std-screen-responsive-a11y) — normatywny.
 
 ### Bezpieczeństwo i prywatność
-- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
-- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
-- Błędy nie ujawniają rekordów z innego tenanta.
-- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+> [STD-SCREEN-SECURITY-PRIVACY](../00-zarzadzanie-dokumentacja/README.md#std-screen-security-privacy) — normatywny.
 
 ### Telemetria
 Zdarzenia: `screen_viewed`, `filter_changed`, `record_opened`, `operation_started`, `operation_succeeded`, `operation_failed`, każde z `screenId=30.14`, workspaceId, operationId i readiness; bez wartości PII.
 
 ### Storybook i testy
-Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+> [STD-SCREEN-STORYBOOK-TESTS](../00-zarzadzanie-dokumentacja/README.md#std-screen-storybook-tests) — normatywny.
 
 ### Kryteria akceptacji
-1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
-2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
-3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
-4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+> [STD-SCREEN-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-screen-acceptance) — normatywny.

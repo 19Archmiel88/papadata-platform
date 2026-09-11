@@ -1,73 +1,125 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import csv
+import hashlib
+import io
+import re
+import sys
 from pathlib import Path
-import re,csv,hashlib,os
-from collections import defaultdict
-ROOT=Path(__file__).resolve().parents[1]
-SPEC=ROOT/'docs/specyfikacja-docelowa'
-REG=ROOT/'rejestry'; REG.mkdir(exist_ok=True)
-md=sorted(SPEC.rglob('*.md'))
 
-def sha(p):
-    h=hashlib.sha256(); h.update(p.read_bytes()); return h.hexdigest()
-def write(name,header,rows):
-    with (REG/name).open('w',encoding='utf-8',newline='') as f:
-        w=csv.writer(f); w.writerow(header); w.writerows(rows)
-routes=[]; ops=defaultdict(set); caps=defaultdict(set); stories=[]; events=defaultdict(set); entities=defaultdict(set); documents=[]
-route_re=re.compile(r'(?:Route docelowy|Route aplikacji|Route|route)\s*:?\s*`([^`]+)`',re.I)
-dotted_re=re.compile(r'`([a-z][a-zA-Z0-9_-]*(?:\.[a-zA-Z0-9_-]+){1,5})`')
-event_re=re.compile(r'\b([a-z][a-z0-9]+(?:_[a-z0-9]+){1,8})\b')
-for p in md:
-    rel=str(p.relative_to(SPEC)).replace('\\','/')
-    t=p.read_text('utf-8',errors='replace')
-    title=next((x[2:].strip() for x in t.splitlines() if x.startswith('# ')),p.stem)
-    words=len(re.findall(r'\b[\wąćęłńóśźżĄĆĘŁŃÓŚŹŻ-]+\b',re.sub(r'```.*?```',' ',t,flags=re.S)))
-    documents.append([rel,title,words,sha(p)])
-    for m in route_re.finditer(t):
-        val=m.group(1).strip()
-        if val.startswith('/'): routes.append([val,rel,title,'target' if 'docelowy' in t.lower() else 'reference'])
-    in_ops=False
-    for line in t.splitlines():
-        low=line.lower()
-        if line.startswith('## '): in_ops=any(x in low for x in ['operacje','api','capabilit','uprawnienia'])
-        tokens=dotted_re.findall(line)
-        for tok in tokens:
-            seg=tok.split('.')
-            action=seg[-1].lower()
-            cap_context=('capabilit' in low or 'uprawnien' in low or 'wymagane minimum' in low or 'wymaga capability' in low)
-            op_context=(in_ops and ('operation' in low or 'query' in low or 'command' in low or len(seg)>=3)) or '/25-kontrakty-' in '/'+rel
-            if len(seg)>=3 or op_context:
-                ops[tok].add(rel)
-            elif cap_context or action in {'read','write','manage','admin','export','approve','execute','security','billing','support','invite','delete','update','create'}:
-                caps[tok].add(rel)
-            else:
-                ops[tok].add(rel)
-        if any(x in low for x in ['title:','planned story:','story:']):
-            for x in re.findall(r'`([^`]+/[^`]+)`',line):
-                if not x.startswith('/'):
-                    status='implemented' if 'potwierdz' in low and 'nie potwierdz' not in low else 'planned'
-                    stories.append([x,rel,status])
-    for ev in event_re.findall(t):
-        if any(ev.endswith('_'+s) or ('_'+s+'_') in ev for s in ['viewed','opened','clicked','changed','started','completed','failed','reached','selected','downloaded','submitted','created','updated','approved','rejected','revoked','expired','retried']):
-            events[ev].add(rel)
-    for m in re.finditer(r'Główne encje:\s*([^\n]+)',t):
-        for e in re.split(r'[,;]',m.group(1)):
-            e=e.strip(' .')
-            if e: entities[e].add(rel)
+ROOT = Path(__file__).resolve().parents[1]
+SPEC = ROOT / "docs/specyfikacja-docelowa"
+REG = ROOT / "rejestry"
+DOCUMENTS = REG / "documents.csv"
 
-# Canonical route ownership.
-groups=defaultdict(list)
-for r in routes: groups[r[0]].append(r)
-rout=[]
-for route,arr in sorted(groups.items()):
-    def score(r):
-        rel=r[1]
-        return (0 if '/katalogi/' in '/'+rel else 1,1 if 'powierzchnie-auth' in rel or rel[:2].isdigit() else 0,len(rel))
-    owner=max(arr,key=score)
-    for r in arr: rout.append(r+['canonical' if r is owner else 'reference'])
-write('routes.csv',['route','document','title','status','ownership'],rout)
-write('api-operations.csv',['operation_id','used_by_count','documents'],[[k,len(v),' | '.join(sorted(v))] for k,v in sorted(ops.items())])
-write('capabilities.csv',['capability','used_by_count','documents'],[[k,len(v),' | '.join(sorted(v))] for k,v in sorted(caps.items())])
-write('storybook.csv',['story_title','document','status'],sorted(set(tuple(x) for x in stories)))
-write('events.csv',['event','used_by_count','documents'],[[k,len(v),' | '.join(sorted(v))] for k,v in sorted(events.items())])
-write('documents.csv',['path','title','words','sha256'],documents)
-write('entities.csv',['entity','used_by_count','documents'],[[k,len(v),' | '.join(sorted(v))] for k,v in sorted(entities.items())])
-print('documents',len(documents),'routes',len(rout),'operations',len(ops),'capabilities',len(caps),'stories',len(set(tuple(x) for x in stories)),'events',len(events),'entities',len(entities))
+# These registries carry manually curated runtime/product semantics that cannot
+# be reconstructed safely from Markdown. This maintenance script must never
+# overwrite them.
+PROTECTED_REGISTRIES = (
+    "routes.csv",
+    "api-operations.csv",
+    "storybook.csv",
+    "component-contracts.csv",
+    "api-schemas.csv",
+)
+
+WORD_RE = re.compile(r"\b[\wąćęłńóśźżĄĆĘŁŃÓŚŹŻ-]+\b")
+CODE_FENCE_RE = re.compile(r"```.*?```", re.S)
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def first_h1(text: str, fallback: str) -> str:
+    match = re.search(r"^#\s+(.+?)\s*$", text, re.M)
+    return match.group(1).strip() if match else fallback
+
+
+def count_words(text: str) -> int:
+    return len(WORD_RE.findall(CODE_FENCE_RE.sub(" ", text)))
+
+
+def build_document_rows() -> list[list[str]]:
+    rows: list[list[str]] = []
+
+    for path in sorted(SPEC.rglob("*.md")):
+        relative = path.relative_to(SPEC).as_posix()
+        text = path.read_text(encoding="utf-8", errors="replace")
+        # P2-01 normalizes documentation metrics: path/title/hash and word count
+        # are all derived from the current document bytes with one tokenizer.
+        # Historical mixed-tokenizer counts are intentionally discarded.
+        rows.append([
+            relative,
+            first_h1(text, path.stem),
+            str(count_words(text)),
+            sha256(path),
+        ])
+
+    return rows
+
+
+def render_documents_csv(rows: list[list[str]]) -> str:
+    buffer = io.StringIO(newline="")
+    writer = csv.writer(buffer, lineterminator="\r\n")
+    writer.writerow(["path", "title", "words", "sha256"])
+    writer.writerows(rows)
+    return buffer.getvalue()
+
+
+def write_atomic(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    with temporary.open("w", encoding="utf-8", newline="") as handle:
+        handle.write(content)
+    temporary.replace(path)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Safely maintain the derived documentation registry. Rich runtime "
+            "registries are intentionally protected from heuristic regeneration."
+        )
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Return non-zero when rejestry/documents.csv is out of date without modifying files.",
+    )
+    args = parser.parse_args()
+
+    rows = build_document_rows()
+    expected = render_documents_csv(rows)
+    if DOCUMENTS.exists():
+        with DOCUMENTS.open(encoding="utf-8", newline="") as handle:
+            current = handle.read()
+    else:
+        current = ""
+
+    if args.check:
+        if current != expected:
+            print("OUTDATED: rejestry/documents.csv")
+            return 1
+        print(f"OK: rejestry/documents.csv ({len(rows)} documents)")
+        return 0
+
+    if current != expected:
+        write_atomic(DOCUMENTS, expected)
+        action = "updated"
+    else:
+        action = "unchanged"
+
+    print(f"documents.csv {action}: {len(rows)} documents")
+    print("protected registries untouched: " + ", ".join(PROTECTED_REGISTRIES))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

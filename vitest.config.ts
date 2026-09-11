@@ -24,6 +24,7 @@ export default defineConfig({
       alias("@papadata/integrations", "./packages/integrations/src/index.ts"),
       alias("@papadata/storage", "./packages/storage/src/index.ts"),
       alias("@papadata/ai-runtime", "./packages/ai-runtime/src/index.ts"),
+      alias("@papadata/papa-runtime", "./packages/papa-runtime/src/index.ts"),
       alias("@papadata/testing", "./packages/testing/src/index.ts"),
     ],
   },

@@ -38,10 +38,7 @@ Dokument definiuje wyłącznie kanoniczne operacje wynikające z przypadków uż
 
 ## Reguły
 
-- `query` nie zmienia stanu i może zwrócić status danych oraz ograniczenia.
-- `command` wymaga idempotency key, audytu, kontroli capability i jawnego outcome.
-- Alias ekranowy nie jest nowym endpointem backendowym.
-- Dokumenty wariantów i polityk nie otrzymują własnego route ani operationId.
+> [STD-API-OPERATION-RULES](../00-zarzadzanie-dokumentacja/README.md#std-api-operation-rules) — normatywny.
 
 ## Kanoniczne DTO i operacje 1.0 po audycie
 

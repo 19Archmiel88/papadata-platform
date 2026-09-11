@@ -3,8 +3,8 @@
   min-inline-size: 0;
   inline-size: 100%;
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: var(--pd-space-3);
+  padding: var(--pd-space-3);
 }
 
 .pd-shell-topbar__calendar-overlay[role='dialog'] {
@@ -15,10 +15,10 @@
 
 .pd-shell-date-range-overlay__summary {
   display: grid;
-  gap: 2px;
-  padding: 10px 11px;
+  gap: var(--pd-space-1);
+  padding: var(--pd-space-3) var(--pd-space-3);
   border: 1px solid var(--pd-shell-separator);
-  border-radius: 10px;
+  border-radius: var(--pd-radius-overlay);
   background: var(--pd-shell-surface-raised);
 }
 
@@ -28,14 +28,14 @@
 .pd-shell-date-range-overlay .pd-form-field__label-row,
 .pd-shell-date-range-overlay__helper {
   color: var(--pd-shell-text-muted);
-  font-size: 10px;
+  font-size: var(--pd-type-size-caption);
   line-height: 1.35;
 }
 
 .pd-shell-date-range-overlay__summary strong {
   overflow: hidden;
   color: var(--pd-shell-text);
-  font-size: 13px;
+  font-size: var(--pd-type-size-body-small);
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -44,24 +44,24 @@
 .pd-shell-date-range-overlay__quick-options {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 5px;
-  padding: 3px;
+  gap: var(--pd-space-1);
+  padding: var(--pd-space-1);
   border: 1px solid var(--pd-shell-separator);
-  border-radius: 9px;
+  border-radius: var(--pd-radius-surface);
   background: var(--pd-shell-canvas);
 }
 
 .pd-shell-date-range-overlay__quick-options button {
   min-width: 0;
   min-height: 30px;
-  padding: 0 6px;
+  padding: 0 var(--pd-space-2);
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: var(--pd-radius-control);
   background: transparent;
   color: var(--pd-shell-text-muted);
   cursor: pointer;
   font: inherit;
-  font-size: 11px;
+  font-size: var(--pd-type-size-caption);
   font-weight: 600;
 }
 
@@ -80,7 +80,7 @@
 .pd-shell-date-range-overlay__preset,
 .pd-shell-date-range-overlay__custom-range label {
   display: grid;
-  gap: 5px;
+  gap: var(--pd-space-1);
   min-width: 0;
 }
 
@@ -90,7 +90,7 @@
   min-width: 0;
   width: 100%;
   min-height: 34px;
-  padding: 0 10px;
+  padding: 0 var(--pd-space-3);
   border: 1px solid var(--pd-shell-separator-strong);
   border-radius: var(--pd-radius-control);
   outline: 0;
@@ -98,7 +98,7 @@
   color: var(--pd-shell-text);
   color-scheme: dark;
   font: inherit;
-  font-size: 12px;
+  font-size: var(--pd-type-size-caption);
   font-weight: 600;
 }
 
@@ -117,13 +117,13 @@
 
 .pd-shell-date-range-overlay__preset .pd-select__trigger {
   min-height: 32px;
-  padding-inline: 10px 4px;
+  padding-inline: var(--pd-space-3) var(--pd-space-1);
 }
 
 .pd-shell-date-range-overlay__custom-range {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: var(--pd-space-2);
 }
 
 .pd-shell-date-range-overlay__custom-range input::-webkit-calendar-picker-indicator {
@@ -138,7 +138,7 @@
 
 @media (max-width: 520px) {
   .pd-shell-date-range-overlay {
-    padding: 10px;
+    padding: var(--pd-space-3);
   }
 
   .pd-shell-date-range-overlay__quick-options,
@@ -146,3 +146,10 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+.pd-shell-date-range-overlay { padding:var(--pd-space-4); gap:var(--pd-space-4); }
+.pd-shell-date-range-overlay__preset { display:grid; gap:var(--pd-space-2); }
+.pd-shell-date-range-overlay__preset select { min-width:0; width:100%; min-height:40px; padding:var(--pd-space-2) var(--pd-space-3); border:1px solid var(--pd-shell-separator-strong); border-radius:var(--pd-radius-surface); background:var(--pd-shell-surface-raised); color:var(--pd-shell-text); font:inherit; }
+.pd-shell-date-range-overlay__summary strong { font-size:var(--pd-type-size-body-large); white-space:normal; }
+.pd-shell-date-range-overlay label > span, .pd-shell-date-range-overlay__helper { font-size:var(--pd-type-size-caption); }
+.pd-shell-date-range-overlay__quick-options button { min-height:36px; }
+.pd-shell-date-range-overlay input[type='date'] { color-scheme:dark; }

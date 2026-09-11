@@ -203,6 +203,32 @@ export const PromienieIObramowania: Story = {
           ))}
         </div>
       </StorySection>
+
+      <StorySection
+        index="06"
+        title={<Localized pl="W praktyce" en="In practice" />}
+      >
+        <div className="pd-f0-ledger" data-testid="surface-practice-contract">
+          <div className="pd-f0-ledger__row">
+            <span className="pd-f0-ledger__label"><Localized pl="Dozwolone promienie (px)" en="Allowed radius values (px)" /></span>
+            <span className="pd-f0-ledger__value">{surfaceStyleContract.allowedRadiusValues.join(' / ')}</span>
+          </div>
+        </div>
+
+        <div className="pd-f0-note" data-testid="surface-practice-radius">
+          <Localized
+            pl="Do 2026-09-10 ponad 100 miejsc w realnym kodzie (screens/runtime/app) ustawiało border-radius ręczną liczbą zamiast zmienną --pd-radius-* — część trafiała przypadkiem w wartość z kontraktu, reszta była spoza skali (organiczny bałagan wielu rąk, nie świadomie rozszerzona skala). Doprowadzone do zgodności: każde miejsce dziś odwołuje się do tokenu, wartości spoza skali zaokrąglono do najbliższego kroku wg roli komponentu. Warto wiedzieć: role small i control nadal rozwiązują się do tej samej wartości (6px) — nieszkodliwy zbieg, nie błąd."
+            en="Until 2026-09-10, 100+ places in real code (screens/runtime/app) set border-radius with a raw number instead of the --pd-radius-* variable — some happened to land on a contract value, the rest were off-scale (organic drift from many hands, not a deliberately extended scale). Brought into alignment: every place now references a token, with off-scale values rounded to the nearest step by component role. Worth knowing: the small and control roles still resolve to the same value (6px) — a harmless coincidence, not a bug."
+          />
+        </div>
+
+        <div className="pd-f0-note" data-testid="surface-practice-shadow">
+          <Localized
+            pl="Cień jest czysty — realny kod nigdzie nie omija już --pd-shadow-* (ostatnie 2 wyjątki, podpowiedź wykresu recharts i .pd-shell-anchored-overlay, naprawione 2026-09-10)."
+            en="Shadow is clean — real code no longer bypasses --pd-shadow-* anywhere (the last 2 exceptions, the recharts tooltip and .pd-shell-anchored-overlay, were fixed on 2026-09-10)."
+          />
+        </div>
+      </StorySection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {
@@ -213,5 +239,8 @@ export const PromienieIObramowania: Story = {
     await expect(canvas.getByTestId('surface-shadows').children).toHaveLength(shadowEntries.length);
     await expect(canvas.getByTestId('surface-focus')).toBeInTheDocument();
     await expect(canvas.getByTestId('surface-rules').children).toHaveLength(rules.length);
+    await expect(canvas.getByTestId('surface-practice-contract')).toBeInTheDocument();
+    await expect(canvas.getByTestId('surface-practice-radius')).toBeInTheDocument();
+    await expect(canvas.getByTestId('surface-practice-shadow')).toBeInTheDocument();
   },
 };

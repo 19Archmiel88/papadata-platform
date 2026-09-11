@@ -9,6 +9,7 @@ import { contextualProductLink, productRoutes, useProductQuery } from '../../run
 import { useAssistantAnalysisContext } from '../../runtime/shell/papa-assistant/useAssistantAnalysisContext';
 import type { RemoteState } from '../../runtime/shared/data/useRemoteResource';
 import { DataProvenance, ProductDataState, ProductViewNav } from '../shared/ProductDataState';
+import { AnalysisScope } from '../shared/AnalysisScope';
 import { ProductDateControl } from '../shared/ProductDateControl';
 import { TrafficOverview, trafficRangeLabel } from './TrafficOverview';
 import './traffic-portfolio.css';
@@ -65,22 +66,28 @@ export function TrafficPortfolioView({ data = null, state = data ? 'ready' : 'lo
     <ProductViewNav label={t('Widoki Ruchu', 'Traffic views')} active={view} onChange={trafficView => update({ trafficView, trafficSearch: null, trafficId:null,trafficDetail:null,trafficEvent:null })} items={[
       { id: 'overview', label: t('Wynik', 'Overview') }, { id: 'channels', label: t('Kanały', 'Channels') }, { id: 'landingPages', label: t('Strony wejścia', 'Landing pages') },
       { id: 'devices', label: t('Urządzenia', 'Devices') }, { id: 'countries', label: t('Geografia', 'Geography') }, { id: 'funnel', label: t('Lejek i zamówienia', 'Funnel and orders') }, { id: 'quality', label: t('Jakość pomiaru', 'Measurement quality') }]} />
-    <div className="pd-product-data__toolbar pd-traffic-portfolio__filters">
+    <AnalysisScope summary={[
+      data?.choices.sources?.find(source => source.id === params.get('sourceId'))?.label ?? (params.get('sourceId') ? t('Wybrane źródło GA4', 'Selected GA4 source') : t('Wszystkie usługi GA4', 'All GA4 properties')),
+      channel || t('Wszystkie kanały', 'All channels'), device, country,
+      params.get('compare') === 'previous' ? t('Porównanie z poprzednim okresem', 'Previous period comparison') : null,
+    ].filter(Boolean).join(' · ')}>
       <label>{t('Usługa GA4','GA4 property')}<select value={params.get('sourceId')??''} onChange={e=>changeFilter({sourceId:e.target.value,channel:null,device:null,country:null})}><option value="">{t('Wszystkie połączenia','All connections')}</option>{data?.choices.sources?.map(source=><option key={source.id} value={source.id}>{source.label}</option>)}</select></label>
       <label>{t('Kanał', 'Channel')}<select value={channel} onChange={event => changeFilter({ channel: event.target.value })}><option value="">{t('Wszystkie', 'All')}</option>{choices(data?.choices.channels, channel).map(item => <option key={item}>{item}</option>)}</select></label>
       <label>{t('Urządzenie', 'Device')}<select value={device} onChange={event => changeFilter({ device: event.target.value })}><option value="">{t('Wszystkie', 'All')}</option>{choices(data?.choices.devices, device).map(item => <option key={item}>{item}</option>)}</select></label>
       <label>{t('Kraj', 'Country')}<select value={country} onChange={event => changeFilter({ country: event.target.value })}><option value="">{t('Wszystkie', 'All')}</option>{choices(data?.choices.countries,country).map(item => <option key={item}>{item}</option>)}</select></label>
       <label>{t('Porównanie', 'Comparison')}<select value={params.get('compare') === 'previous' ? 'previous' : ''} onChange={event => changeFilter({ compare: event.target.value })}><option value="">{t('Bez porównania', 'No comparison')}</option><option value="previous">{t('Poprzedni równy okres', 'Previous equal period')}</option></select></label>
-      <Button variant="ghost" size="small" onClick={() => changeFilter({ channel: null, device: null, country: null, sourceId:null, trafficSearch: null })}>{t('Wyczyść filtry', 'Clear filters')}</Button>
-    </div>
+      <Button variant="ghost" size="small" onClick={() => changeFilter({ channel: null, device: null, country: null, sourceId:null, compare:null, trafficSearch: null })}>{t('Wyczyść filtry', 'Clear filters')}</Button>
+    </AnalysisScope>
     {exportProblem && <p role="alert">{exportProblem}</p>}
     <ProductDataState state={state} problem={problem} onRetry={onReload}>{data && current && <>
       <p className="pd-traffic-portfolio__context">
-        {t('Wyświetlane dane', 'Displayed data')}: {trafficRangeLabel(current, language)} · GA4
-        {demo && <span>{t('Dane przykładowe; zmiany dat i filtrów nie przeliczają tego scenariusza.', 'Demonstration data; changing dates and filters does not recalculate this scenario.')}</span>}
+        {demo ? t('Demo', 'Demo') : t('Dane', 'Data')}: {trafficRangeLabel(current, language)} · GA4
         {(current.from !== dateRange.from || current.to !== dateRange.to) && <span data-mismatch role="status">{t('Wybrany zakres różni się od okresu wyświetlonych danych.', 'The selected range differs from the period of the displayed data.')}</span>}
       </p>
-      {data.findings.filter(item => item.severity !== 'info').map(item => <p key={item.id} className="pd-product-data__notice" role="status">{t(item.messagePl,item.messageEn)} <Button variant="ghost" size="small" onClick={() => navigate(contextualProductLink(productRoutes[item.target], { topic: item.id, source: 'traffic' }))}>{t('Wyjaśnij / napraw', 'Explain / resolve')}</Button></p>)}
+      {view !== 'quality' && data.findings.some(item => item.severity !== 'info') && <div className="pd-traffic-portfolio__quality-notice" role="status">
+        <span>{t('Pomiar wymaga uwagi', 'Measurement needs attention')} · {data.findings.filter(item => item.severity !== 'info').length}</span>
+        <Button variant="ghost" size="small" onClick={() => update({trafficView:'quality',trafficId:null,trafficDetail:null})}>{t('Sprawdź jakość pomiaru', 'Review measurement quality')}</Button>
+      </div>}
       {view === 'overview' && <TrafficOverview current={current} previous={data.previous}
         trendTable={table('trend', t('Dane trendu', 'Trend data'), current.trend)}
         onChannel={row => showDetail('channels', row)}
@@ -101,7 +108,7 @@ export function TrafficPortfolioView({ data = null, state = data ? 'ready' : 'lo
         <div className="pd-product-data__stack">{data.findings.map(item => <article key={item.id}><h3><code>{item.id}</code></h3><p>{t(item.messagePl,item.messageEn)}</p><Button variant="secondary" size="small" onClick={() => navigate(contextualProductLink(productRoutes[item.target],{ topic: item.id, source: 'traffic' }))}>{t('Przejdź do rozwiązania','Open resolution')}</Button></article>)}</div>
       </ProductSectionFrame>}
       <DataProvenance source="Google Analytics 4" demo={demo} synchronizedAt={data.scope.synchronizedAt} calculatedAt={data.scope.calculatedAt}
-        limitations={[t(`Strefy GA4: ${data.scope.propertyTimezones.join(', ') || '?'}. Strefa workspace: ${data.scope.timezone}.`, `GA4 timezones: ${data.scope.propertyTimezones.join(', ') || '?'}. Workspace timezone: ${data.scope.timezone}.`),
+        limitations={[...(demo ? [t('Dane przykładowe; zmiany dat i filtrów nie przeliczają tego scenariusza.', 'Demonstration data; changing dates and filters does not recalculate this scenario.')] : []), t(`Strefy GA4: ${data.scope.propertyTimezones.join(', ') || '?'}. Strefa workspace: ${data.scope.timezone}.`, `GA4 timezones: ${data.scope.propertyTimezones.join(', ') || '?'}. Workspace timezone: ${data.scope.timezone}.`),
           t('Odczyt API nie wywołuje synchronizacji u dostawcy. Dodatkowe przekroje mogą mieć krótszą historię niż raport zbiorczy.', 'Reading the API does not synchronize the provider. Additional breakdowns may have less history than the aggregate report.')]} />
     </>}</ProductDataState>
     {data&&<TrafficEventDetails data={data}/>}

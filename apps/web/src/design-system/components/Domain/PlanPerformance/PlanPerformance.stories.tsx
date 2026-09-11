@@ -37,6 +37,6 @@ export const Podglad: Story = {
   } satisfies PlanPerformanceProps,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByText('Realizacja celu')).toBeInTheDocument();
+    await expect(canvas.getByText('Wynik względem benchmarku')).toBeInTheDocument();
   },
 };

@@ -4,13 +4,16 @@ import { useProductLocale } from './useProductLocale';
 import type { RemoteState } from '../../runtime/shared/data/useRemoteResource';
 import './product-data.css';
 
-export function ProductDataState({ state, problem, onRetry, children }: {
+export function ProductDataState({ state, problem, onRetry, children, provenance }: {
   readonly state: RemoteState | 'empty' | 'partial' | 'stale';
   readonly problem?: string | null;
   readonly onRetry?: () => void;
   readonly children?: ReactNode;
+  readonly provenance?: DataProvenanceProps;
 }) {
   const { t } = useProductLocale();
+  if (provenance && (state === 'ready' || state === 'partial' || state === 'stale')) return <>
+    <DataProvenance {...provenance} status={state} problem={problem}/>{children}</>;
   if (state === 'ready') return <>{children}</>;
   if (state === 'partial' || state === 'stale') return <>
     <p className="pd-product-data__notice" role="status">{problem ?? (state === 'partial'
@@ -27,18 +30,23 @@ export function ProductDataState({ state, problem, onRetry, children }: {
     retryLabel={t('Ponów odczyt', 'Retry')} onRetry={onRetry} />;
 }
 
-export function DataProvenance({ source, synchronizedAt, calculatedAt, limitations = [], demo = false }: {
+export type DataProvenanceProps = {
   readonly source: string;
   readonly synchronizedAt?: string | null;
   readonly calculatedAt?: string | null;
   readonly limitations?: readonly string[];
   readonly demo?: boolean;
-}) {
+  readonly status?: 'ready' | 'partial' | 'stale';
+  readonly problem?: string | null;
+};
+export function DataProvenance({ source, synchronizedAt, calculatedAt, limitations = [], demo = false, status, problem }: DataProvenanceProps) {
   const { t, language } = useProductLocale();
   const time = (value: string | null | undefined) => value && Number.isFinite(Date.parse(value))
     ? new Intl.DateTimeFormat(language, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) : t('Nie udostępniono', 'Not provided');
   return <details className="pd-product-data__provenance">
-    <summary>{demo ? t('Dane demonstracyjne', 'Demonstration data') : source} · {t('Źródło i ograniczenia', 'Source and limitations')}</summary>
+    <summary>{demo && <span>{t('Demonstracja', 'Demo')} · </span>}{status === 'partial' ? t('Dane częściowe', 'Partial data') : status === 'stale' ? t('Dane nieaktualne', 'Stale data') : t('Źródło danych', 'Data source')}<span className="pd-product-data__provenance-link">{t('Szczegóły', 'Details')}</span></summary>
+    <p>{source}</p>
+    {problem && <p role="status">{problem}</p>}
     <dl><div><dt>{t('Ostatnia synchronizacja źródła', 'Last source synchronization')}</dt><dd>{time(synchronizedAt)}</dd></div>
       <div><dt>{t('Odczyt / obliczenie odpowiedzi', 'Response read / calculation')}</dt><dd>{time(calculatedAt)}</dd></div></dl>
     {!synchronizedAt && <p>{t('Czas odpowiedzi API nie potwierdza świeżości danych źródłowych.', 'The API response time does not establish source freshness.')}</p>}
@@ -46,10 +54,11 @@ export function DataProvenance({ source, synchronizedAt, calculatedAt, limitatio
   </details>;
 }
 
-export function MetricSummary({ label, value, description }: {
+export function MetricSummary({ label, value, description, onDetails }: {
   readonly label: string; readonly value: ReactNode; readonly description: string;
+  readonly onDetails?: () => void;
 }) {
-  return <div className="pd-product-data__metric"><dt>{label}</dt><dd>{value}<p>{description}</p></dd></div>;
+  return <div className="pd-product-data__metric"><dt>{label}{onDetails && <button type="button" className="pd-product-data__metric-info" aria-label={`Szczegóły: ${label}`} onClick={onDetails}>i</button>}</dt><dd>{value}<p>{description}</p></dd></div>;
 }
 export function ProductViewNav<T extends string>({ label, active, items, onChange }: {
   readonly label: string; readonly active: T; readonly items: readonly { readonly id: T; readonly label: string }[];

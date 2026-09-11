@@ -260,7 +260,7 @@ export const ProviderOutageStory = {
   name: 'Awaria providera',
   play: async ({ canvasElement }) => {
     const screen = within(canvasElement);
-    await expect(screen.getByText('Problem providera')).toBeInTheDocument();
+    await expect(screen.getByText('Problem providera', { selector: '.pd-int-outage-card__title' })).toBeInTheDocument();
     await expect(screen.getByText(/Meta API nie odpowiada/u)).toBeInTheDocument();
     await expect(screen.getByText(/inne źródła działają bez zakłóceń/iu)).toBeInTheDocument();
   },

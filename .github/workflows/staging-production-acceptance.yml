@@ -1,0 +1,136 @@
+name: Staging production acceptance
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 4 * * 1"
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  NODE_VERSION: 24.18.0
+  PNPM_VERSION: 10.29.3
+
+jobs:
+  terraform-plan:
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_TERRAFORM_SERVICE_ACCOUNT }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_version: 1.13.3
+
+      - name: Materialize staging variable contract
+        env:
+          TFVARS_JSON: ${{ secrets.PAPADATA_TERRAFORM_STAGING_VARS_JSON }}
+        run: |
+          test -n "$TFVARS_JSON"
+          printf '%s' "$TFVARS_JSON" > "$RUNNER_TEMP/staging.tfvars.json"
+
+      - name: Terraform init and validate
+        run: |
+          terraform -chdir=infra/terraform init -input=false
+          terraform -chdir=infra/terraform validate
+
+      - name: Terraform staging plan
+        run: terraform -chdir=infra/terraform plan -input=false -lock=false -var-file="$RUNNER_TEMP/staging.tfvars.json" -out="$RUNNER_TEMP/staging.tfplan"
+
+      - name: Record immutable plan evidence
+        run: |
+          mkdir -p artifacts/p1-terraform-plan
+          sha256sum "$RUNNER_TEMP/staging.tfplan" > artifacts/p1-terraform-plan/terraform-plan.sha256
+          printf 'releaseSha=%s\nrunId=%s\n' "${GITHUB_SHA}" "${GITHUB_RUN_ID}" > artifacts/p1-terraform-plan/metadata.txt
+
+      - name: Upload Terraform plan evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: p1-terraform-plan-${{ github.sha }}
+          path: artifacts/p1-terraform-plan
+          if-no-files-found: error
+
+  live-staging:
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+        with:
+          version: 10.29.3
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24.18.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify GCP staging
+        env:
+          PAPADATA_STAGING_ORIGIN: ${{ vars.PAPADATA_STAGING_ORIGIN }}
+        run: pnpm verify:gcp-staging
+
+      - name: Verify Google and Microsoft OAuth start flows
+        env:
+          PAPADATA_STAGING_ORIGIN: ${{ vars.PAPADATA_STAGING_ORIGIN }}
+        run: pnpm verify:oauth-staging
+
+      - name: Materialize infrastructure drill evidence
+        env:
+          INFRA_DRILL_EVIDENCE_JSON: ${{ secrets.PAPADATA_INFRA_DRILL_EVIDENCE_JSON }}
+        run: |
+          mkdir -p artifacts
+          test -n "$INFRA_DRILL_EVIDENCE_JSON"
+          printf '%s' "$INFRA_DRILL_EVIDENCE_JSON" > artifacts/p1-infra-drill-evidence.json
+
+      - name: Verify infrastructure drill evidence
+        run: pnpm verify:infra-drill-evidence
+
+      - name: Upload staging acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: p1-staging-acceptance-${{ github.sha }}
+          path: |
+            artifacts/p1-gcp-staging
+            artifacts/p1-oauth-staging
+            artifacts/p1-infra-drill-evidence.json
+          if-no-files-found: error
+
+  repository-governance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Verify main branch governance
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node tools/verify-github-governance.mjs

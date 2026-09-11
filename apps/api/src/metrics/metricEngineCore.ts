@@ -47,6 +47,11 @@ const REVENUE_EXCLUDED_ORDER_STATUSES: ReadonlySet<string> = new Set([
  * `createMetricFacts` uses internally, instead of re-declaring a second,
  * driftable copy of `REVENUE_EXCLUDED_ORDER_STATUSES`.
  */
+function isCancelledOrderStatus(status: string | null): boolean {
+  const normalized = status?.toLowerCase();
+  return normalized === "cancelled" || normalized === "canceled";
+}
+
 export function isRevenueQualifyingStatus(status: string | null): boolean {
   if (!status) return true;
   return !REVENUE_EXCLUDED_ORDER_STATUSES.has(status.toLowerCase());
@@ -89,7 +94,37 @@ export const dashboardMetricCodes = [
   "platform_attributed_revenue",
   "roas",
   "cost_per_order",
-  "cost_of_goods_sold",
+  "cancelled_orders",
+  "cancellation_rate",
+  "discount_value",
+  "shipping_revenue",
+  "tax_value",
+  "net_sales",
+  "cogs",
+  "gross_margin",
+  "gross_margin_rate",
+  "marketplace_fees",
+  "payment_fees",
+  "contribution_margin",
+  "contribution_margin_rate",
+  "new_customers",
+  "returning_customers",
+  "active_customers",
+  "customer_retention_rate",
+  "repeat_purchase_rate",
+  "purchase_frequency",
+  "customer_lifetime_value",
+  "customer_acquisition_cost",
+  "marketing_efficiency_ratio",
+  "sessions",
+  "users",
+  "new_users",
+  "conversion_rate",
+  "add_to_cart_rate",
+  "checkout_start_rate",
+  "cart_abandonment_rate",
+  "revenue_per_session",
+  "organic_revenue_share",
 ] as const;
 
 export type DashboardMetricCode = (typeof dashboardMetricCodes)[number];
@@ -255,6 +290,7 @@ export type DashboardModule =
   | "traffic";
 
 type MetricFacts = {
+  readonly allOrders: readonly CanonicalOrderRecord[];
   readonly adSpend: readonly CanonicalAdSpendRecord[];
   readonly attributedConversions: readonly CanonicalAttributedConversionRecord[];
   readonly commerceOrders: readonly CanonicalOrderRecord[];
@@ -275,6 +311,37 @@ type CalculationResult = {
   readonly reasonCodes: readonly MetricReasonCode[];
   readonly value: string | null;
 };
+
+const plannedUnavailableMetricCodes: readonly DashboardMetricCode[] = [
+  "discount_value",
+  "shipping_revenue",
+  "tax_value",
+  "net_sales",
+  "gross_margin",
+  "gross_margin_rate",
+  "marketplace_fees",
+  "payment_fees",
+  "contribution_margin",
+  "contribution_margin_rate",
+  "new_customers",
+  "returning_customers",
+  "active_customers",
+  "customer_retention_rate",
+  "repeat_purchase_rate",
+  "purchase_frequency",
+  "customer_lifetime_value",
+  "customer_acquisition_cost",
+  "marketing_efficiency_ratio",
+  "sessions",
+  "users",
+  "new_users",
+  "conversion_rate",
+  "add_to_cart_rate",
+  "checkout_start_rate",
+  "cart_abandonment_rate",
+  "revenue_per_session",
+  "organic_revenue_share",
+] as const;
 
 export const metricDefinitions = [
   definition("gross_order_value", "money", "Suma brutto kanonicznych zamowien sklepowych.", "SUM(canonical_orders.gross_amount)", ["canonical_orders"], "348.00"),
@@ -304,7 +371,17 @@ export const metricDefinitions = [
   definition("platform_attributed_revenue", "money", "Wartosc konwersji przypisana przez platformy reklamowe, oddzielna od przychodu sklepu.", "SUM(canonical_attributed_conversions.attributed_value_amount)", ["canonical_attributed_conversions"], "810.00"),
   definition("roas", "ratio", "ROAS platform reklamowych bez sumowania z przychodem sklepu.", "platform_attributed_revenue / ad_spend", ["canonical_ad_spend", "canonical_attributed_conversions"], "3.8571"),
   definition("cost_per_order", "money", "Koszt reklam przypadajacy na kanoniczne zamowienie sklepowe.", "ad_spend / orders", ["canonical_ad_spend", "canonical_orders"], "105.00"),
-  definition("cost_of_goods_sold", "money", "Koszt sprzedanych produktow po potwierdzonym koszcie jednostkowym.", "SUM(canonical_order_lines.quantity * product_unit_cost)", ["canonical_order_lines", "product_costs"], "140.00"),
+  definition("cogs", "money", "Koszt sprzedanych produktow po potwierdzonym koszcie jednostkowym.", "SUM(canonical_order_lines.quantity * product_unit_cost)", ["canonical_order_lines", "product_costs"], "140.00"),
+  definition("cancelled_orders", "count", "Liczba anulowanych zamowien w okresie.", "COUNT(canonical_orders WHERE status IN cancelled_statuses)", ["canonical_orders"], "0"),
+  definition("cancellation_rate", "ratio", "Udzial anulowanych zamowien we wszystkich zamowieniach w okresie.", "cancelled_orders / all_orders", ["canonical_orders"], "0.0000"),
+  ...plannedUnavailableMetricCodes.map((metricCode) => definition(
+    metricCode,
+    "ratio",
+    "Metryka P0 wymaga canonical facts, ktore nie sa jeszcze obecne w MetricEngineInput.",
+    "UNAVAILABLE_UNTIL_REQUIRED_CANONICAL_FACTS_EXIST",
+    ["p0_required_canonical_facts"],
+    null,
+  )),
 ] as const satisfies readonly MetricDefinitionRecord[];
 
 export function createMetricEngineInput(options: {
@@ -936,6 +1013,8 @@ function valueForMetric(
   const productCost = productCostCents(facts.orderLines, facts);
   const stockCost = inventoryCostCents(facts.inventorySnapshots, facts);
   const orderCount = facts.commerceOrders.length;
+  const allOrderCount = facts.allOrders.length;
+  const cancelledOrderCount = facts.allOrders.filter((order) => isCancelledOrderStatus(order.status)).length;
   const refundOrderCount = uniqueStrings(
     facts.refunds
       .map((refund) => refund.canonicalOrderId)
@@ -952,7 +1031,11 @@ function valueForMetric(
       return divideCentsByInteger(grossOrderValue, orderCount);
     case "available_stock":
       return integerString(availableStock);
-    case "cost_of_goods_sold":
+    case "cancelled_orders":
+      return String(cancelledOrderCount);
+    case "cancellation_rate":
+      return ratio(cancelledOrderCount, allOrderCount);
+    case "cogs":
       return centsToDecimal(productCost);
     case "cost_per_order":
       return divideCentsByInteger(adSpend, orderCount);
@@ -1002,6 +1085,8 @@ function valueForMetric(
       return stockoutRisk(availableStock, unitsSold, periodDays);
     case "units_sold":
       return integerString(unitsSold);
+    default:
+      return null;
   }
 }
 
@@ -1010,6 +1095,10 @@ function unavailableFor(
   input: MetricEngineInput,
   facts: MetricFacts,
 ): CalculationResult | null {
+  if (plannedUnavailableMetricCodes.includes(metricCode)) {
+    return unavailable("UNAVAILABLE", "Metric requires canonical facts not present in MetricEngineInput; no value is inferred or coerced to zero.");
+  }
+
   if (inventoryMetricCodes.includes(metricCode) && !input.primaryInventorySource) {
     return unavailable("MISSING_INVENTORY_AUTHORITY", "Inventory source authority is not selected.");
   }
@@ -1042,6 +1131,10 @@ function unavailableFor(
 }
 
 function hasRequiredData(metricCode: DashboardMetricCode, facts: MetricFacts): boolean {
+  if (metricCode === "cancelled_orders" || metricCode === "cancellation_rate") {
+    return facts.allOrders.length > 0;
+  }
+
   if (commerceOrderMetricCodes.includes(metricCode)) {
     return facts.commerceOrders.length > 0;
   }
@@ -1078,12 +1171,11 @@ function hasRequiredData(metricCode: DashboardMetricCode, facts: MetricFacts): b
 }
 
 function createMetricFacts(input: MetricEngineInput): MetricFacts {
-  const commerceOrders = input.canonicalOrders.filter(
-    (order) =>
-      order.currency === input.currency
-      && isInPeriod(order.orderedAt, input.periodStart, input.periodEnd)
-      && isRevenueQualifyingOrder(order),
+  const allOrders = input.canonicalOrders.filter(
+    (order) => order.currency === input.currency
+      && isInPeriod(order.orderedAt, input.periodStart, input.periodEnd),
   );
+  const commerceOrders = allOrders.filter((order) => isRevenueQualifyingOrder(order));
   const orderIds = new Set(commerceOrders.map((order) => order.canonicalOrderId));
   const orderLines = input.canonicalOrderLines.filter((line) =>
     orderIds.has(line.canonicalOrderId),
@@ -1135,6 +1227,7 @@ function createMetricFacts(input: MetricEngineInput): MetricFacts {
   );
 
   return {
+    allOrders,
     adSpend,
     attributedConversions,
     commerceOrders,
@@ -1166,7 +1259,7 @@ function missingCostFor(metricCode: DashboardMetricCode, facts: MetricFacts): bo
   if (
     metricCode === "product_margin"
     || metricCode === "product_contribution"
-    || metricCode === "cost_of_goods_sold"
+    || metricCode === "cogs"
   ) {
     return facts.orderLines.some((line) => {
       if (!line.canonicalProductId) {
@@ -1286,14 +1379,13 @@ function unavailable(
     | "MISSING_INVENTORY_FACTS"
     | "NO_DATA"
     | "STALE_CANONICAL_FACTS"
-    | "UNAVAILABLE"
   >,
   limitation: string,
 ): CalculationResult {
   return {
     limitations: [limitation],
     readiness: "unavailable",
-    reasonCodes: ["UNAVAILABLE", reason],
+    reasonCodes: reason === "UNAVAILABLE" ? ["UNAVAILABLE"] : ["UNAVAILABLE", reason],
     value: null,
   };
 }
@@ -1373,7 +1465,7 @@ function definition(
   businessDefinition: string,
   formula: string,
   requiredCanonicalFacts: readonly string[],
-  expectedValue: string,
+  expectedValue: string | null,
 ): MetricDefinitionRecord {
   return {
     businessDefinition,
@@ -1670,6 +1762,8 @@ const readyProductCosts = [
 
 const commerceOrderMetricCodes: readonly DashboardMetricCode[] = [
   "aov",
+  "cancelled_orders",
+  "cancellation_rate",
   "cost_per_order",
   "gross_order_value",
   "orders",
@@ -1678,7 +1772,7 @@ const commerceOrderMetricCodes: readonly DashboardMetricCode[] = [
 ] as const;
 
 const orderLineMetricCodes: readonly DashboardMetricCode[] = [
-  "cost_of_goods_sold",
+  "cogs",
   "days_of_inventory",
   "inventory_turnover",
   "product_contribution",
@@ -1725,7 +1819,7 @@ const conversionMetricCodes: readonly DashboardMetricCode[] = [
 ] as const;
 
 const productMappingMetricCodes: readonly DashboardMetricCode[] = [
-  "cost_of_goods_sold",
+  "cogs",
   "product_contribution",
   "product_margin",
   "product_revenue",
@@ -1733,7 +1827,7 @@ const productMappingMetricCodes: readonly DashboardMetricCode[] = [
 ] as const;
 
 const costMetricCodes: readonly DashboardMetricCode[] = [
-  "cost_of_goods_sold",
+  "cogs",
   "product_contribution",
   "product_margin",
   "stock_value",

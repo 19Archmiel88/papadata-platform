@@ -13,7 +13,21 @@ import {
   writeJson,
 } from "./backend-gate-common.mjs";
 
-const manifest = await readJson("config/backend-release-scope.json");
+const current = await readJson("config/backend-release-scope.json");
+const manifest = {
+  ...current,
+  schemaVersion: 4,
+  scopeId: "backend-production-runtime",
+  generatedAtPolicy: "deterministic-no-timestamp",
+  revisionPolicy: {
+    releaseEvidenceRequiresCleanCommit: true,
+    commitShaSource: "git rev-parse HEAD at evidence generation time",
+    workingTreePolicy: "release evidence is invalid when the working tree is dirty",
+    imageDigestPolicy: "deployment evidence records immutable image digests separately from source scope metadata",
+  },
+};
+delete manifest.releaseName;
+delete manifest.baseHead;
 const openApi = await readJson("contracts/openapi-1.0.json");
 const runtimeOperations = await collectRuntimeOperations();
 const targetOperations = collectTargetOperations(openApi);

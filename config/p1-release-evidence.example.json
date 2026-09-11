@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "releaseSha": "REPLACE_WITH_IMMUTABLE_COMMIT_SHA",
+  "generatedAt": "2026-09-10T00:00:00Z",
+  "evidence": {
+    "webProductionParity": {"status":"pending","reference":""},
+    "storybookAccessibility": {"status":"pending","reference":""},
+    "responsiveAcceptance": {"status":"pending","reference":""},
+    "assistantQueueResilience": {"status":"pending","reference":""},
+    "canonicalAiRuntime": {"status":"pending","reference":""},
+    "workerResilience": {"status":"pending","reference":""},
+    "terraformPlan": {"status":"pending","reference":""},
+    "runtimeRunbook": {"status":"pending","reference":""},
+    "parityContract": {"status":"pending","reference":""},
+    "gcpStaging": {"status":"pending","reference":""},
+    "cloudSqlRestore": {"status":"pending","reference":""},
+    "redisFailover": {"status":"pending","reference":""},
+    "cloudArmor": {"status":"pending","reference":""},
+    "loadBalancerTls": {"status":"pending","reference":""},
+    "oauthGoogle": {"status":"pending","reference":""},
+    "oauthMicrosoft": {"status":"pending","reference":""},
+    "oauthIdentity": {"status":"pending","reference":""},
+    "branchProtection": {"status":"pending","reference":""},
+    "branchGovernance": {"status":"pending","reference":""}
+  }
+}

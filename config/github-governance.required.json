@@ -1,0 +1,17 @@
+{
+  "branch": "main",
+  "requireProtection": true,
+  "requirePullRequestReviews": true,
+  "requireConversationResolution": true,
+  "requiredCheckFragments": [
+    "verify-backend",
+    "production-parity-config",
+    "migrations",
+    "dependencies",
+    "repository-security",
+    "terraform-static",
+    "web-production-parity",
+    "storybook-acceptance",
+    "CodeQL"
+  ]
+}

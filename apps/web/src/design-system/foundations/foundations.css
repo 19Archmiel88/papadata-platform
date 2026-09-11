@@ -42,6 +42,7 @@ body,
   line-height: var(--pd-line-height-normal);
 }
 
+html,
 body,
 .sb-show-main,
 .pd-storybook-canvas {
@@ -201,6 +202,7 @@ textarea {
 }
 
 @supports not (overflow: clip) {
+  html,
   body,
   .sb-show-main,
   .pd-storybook-canvas {

@@ -13,6 +13,7 @@ import {
 import type {
   PapaChatMessage,
 } from '../../screens/papa/papaData';
+import { readProductLocale } from '../../../screens/shared/useProductLocale';
 import './papa-message-thread.css';
 
 export type PapaMessageEvidence = {
@@ -316,14 +317,14 @@ function isRefusalMessage(body: string): boolean {
 }
 
 function formatPercent(value: number): string {
-  return new Intl.NumberFormat('pl-PL', {
+  return new Intl.NumberFormat(readProductLocale() === 'en' ? 'en-US' : 'pl-PL', {
     maximumFractionDigits: 0,
     style: 'percent',
   }).format(value);
 }
 
 function formatShortDateTime(value: string): string {
-  return new Intl.DateTimeFormat('pl-PL', {
+  return new Intl.DateTimeFormat(readProductLocale() === 'en' ? 'en-US' : 'pl-PL', {
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',

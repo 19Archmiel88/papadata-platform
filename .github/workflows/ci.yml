@@ -32,6 +32,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Verify canonical repository integrity
+        run: pnpm verify:repository-integrity
+
+      - name: Worker unit and resilience policy tests
+        run: pnpm test:worker
+
       - name: Verify backend release and controls
         run: pnpm verify:backend
 

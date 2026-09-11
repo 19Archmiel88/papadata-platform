@@ -7,6 +7,12 @@ import {AuthRuntimePreferences} from './AuthRuntimePreferences';
 import './access-lifecycle.css';
 export type AccessFlowAction='retry'|'verify'|'resend'|'company'|'company-lookup'|'consents'|'complete'|'logout'|'mfa';
 export type AccessFlowProps={children?:ReactNode;surface:AccessSurfaceId;data?:AccessLifecycleStatus|null;problem?:string|null;notice?:string|null;busy?:boolean;loading?:boolean;demo?:boolean;hasToken?:boolean;companyLookup?:{readonly normalized:CompanyProfile}|null;companyLookupProblem?:string|null;onAction:(action:AccessFlowAction,input?:unknown)=>void;onNavigate:(path:string)=>void};
+// The "email -> company -> documents -> first data" tracker only describes
+// the self-serve registration journey. Surfaces outside that journey (errors,
+// sign-out, password recovery, MFA setup/recovery, org/workspace switching)
+// have nothing to do with those 4 steps -- showing the tracker there implies
+// progress that isn't being made and context that doesn't apply.
+const ONBOARDING_CONTEXT_SURFACES=new Set<AccessSurfaceId>(['auth-06','auth-07','auth-08','auth-09','auth-10','auth-11','auth-12','auth-13','auth-14','auth-29']);
 export function AccessFlowScreen({children,surface,data=null,problem=null,notice=null,busy=false,loading=false,demo=false,hasToken=false,companyLookup=null,companyLookupProblem=null,onAction,onNavigate}:AccessFlowProps){
  const {t,locale}=useProductLocale(),definition=accessSurfaces.find(x=>x[0]===surface)!,title=locale==='en'?definition[2]:definition[1];
  const [company,updateCompany]=useState<CompanyProfile>(()=>data?.company?.values??{legalName:'',vatId:'',street:'',city:'',postalCode:'',country:'PL'});
@@ -20,12 +26,12 @@ export function AccessFlowScreen({children,surface,data=null,problem=null,notice
  useEffect(()=>{if(companyLookup)updateCompany(companyLookup.normalized);},[companyLookup]);
  useEffect(()=>{document.getElementById('access-title')?.focus();},[surface]);
  const done=(id:string)=>data?.acceptedDocuments.some(x=>x.id===id&&data.documents.some(d=>d.id===id&&d.version===x.version))??false;
- const enabled=!busy&&!loading;
+ const enabled=!busy&&!loading,showContext=ONBOARDING_CONTEXT_SURFACES.has(surface);
  return <main className="pd-access" data-auth-surface={surface} aria-busy={busy||loading}>
  <header className="pd-access__header"><a href="/auth" onClick={e=>{e.preventDefault();onNavigate('/auth');}} className="pd-access__brand">PapaData</a><AuthRuntimePreferences/></header>
- <div className="pd-access__layout"><aside className="pd-access__context"><p className="pd-access__eyebrow">{t('Dostep do workspace','Workspace access')}</p><h2>{t('Od konta do pierwszych danych.','From an account to your first data.')}</h2><p>{t('Kazdy etap ma jawny wynik. Sekrety pozostaja tylko w pamieci formularza.','Every step has an explicit result. Form secrets stay in memory only.')}</p><ol className="pd-access__steps">{[
+ <div className={showContext?'pd-access__layout':'pd-access__layout pd-access__layout--panel-only'}>{showContext?<aside className="pd-access__context"><p className="pd-access__eyebrow">{t('Dostep do workspace','Workspace access')}</p><h2>{t('Od konta do pierwszych danych.','From an account to your first data.')}</h2><p>{t('Kazdy etap ma jawny wynik. Sekrety pozostaja tylko w pamieci formularza.','Every step has an explicit result. Form secrets stay in memory only.')}</p><ol className="pd-access__steps">{[
   [t('Potwierdz e-mail','Verify email'),data?.emailVerified], [t('Dane firmy','Company details'),!!data?.company], [t('Dokumenty i zgody','Documents and consent'),!!data?.documentsConfigured&&data.documents.every(d=>done(d.id))], [t('Pierwsze dane','First data'),(data?.readySourceCount??0)>0],
- ].map(([label,ok],i)=><li key={i} data-complete={Boolean(ok)}><span aria-hidden="true">{ok?'OK':i+1}</span>{label}</li>)}</ol><p className="pd-access__hint">{t('Dane firmy sa wspolne dla workspace. Potwierdzenia dokumentow przypisujemy do uzytkownika i wersji.','Company details belong to the workspace. Acknowledgements belong to the user and document version.')}</p></aside>
+ ].map(([label,ok],i)=><li key={i} data-complete={Boolean(ok)}><span aria-hidden="true">{ok?'OK':i+1}</span>{label}</li>)}</ol><p className="pd-access__hint">{t('Dane firmy sa wspolne dla workspace. Potwierdzenia dokumentow przypisujemy do uzytkownika i wersji.','Company details belong to the workspace. Acknowledgements belong to the user and document version.')}</p></aside>:null}
  <section className="pd-access__panel" aria-labelledby="access-title"><p className="pd-access__eyebrow">{demo?t('Scenariusz demonstracyjny','Demonstration scenario'):'PapaData / Access'}</p><h1 id="access-title" tabIndex={-1}>{title}</h1>
  {loading?<p role="status">{t('Wczytywanie aktualnego stanu...','Loading current status...')}</p>:null}
  {problem?<div role="alert" className="pd-access__error"><p>{problem}</p><Button variant="secondary" disabled={busy} onClick={()=>onAction('retry')}>{t('Ponow odczyt','Retry read')}</Button></div>:null}

@@ -1,9 +1,13 @@
 import type { GrowthMeasures, GrowthMetric } from '@papadata/contracts/campaign-growth';
+import { formatPapaDataCurrency } from '../../../design-system/foundations';
+
+// Variable fraction-digit precision (0 or 2, chosen per metric below) has no equivalent
+// in the shared formatPapaData* helpers, which fix maximumFractionDigits at 2 — kept local.
 export function growthNumber(value: GrowthMetric, language: string, digits = 0): string {
     return value === null ? '—' : new Intl.NumberFormat(language, { maximumFractionDigits: digits }).format(value);
 }
 export function growthMoney(value: GrowthMetric, currency: string | null, language: string): string {
-    return value === null || !currency || currency === 'XXX' ? '—' : new Intl.NumberFormat(language, { style: 'currency', currency, maximumFractionDigits: 2 }).format(value);
+    return value === null || !currency || currency === 'XXX' ? '—' : formatPapaDataCurrency(value, language.startsWith('en') ? 'en' : 'pl', currency);
 }
 export function growthMetric(value: GrowthMetric, metric: keyof GrowthMeasures, currency: string | null, language: string): string {
     if (['spend', 'revenue', 'cpc', 'cpm', 'cpa'].includes(metric))

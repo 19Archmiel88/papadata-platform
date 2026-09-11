@@ -54,7 +54,7 @@
   );
   overflow: hidden;
   border: 1px solid var(--pd-shell-separator-strong);
-  border-radius: 12px;
+  border-radius: var(--pd-radius-overlay);
   background: var(--pd-shell-surface-overlay);
   color: var(--pd-shell-text);
   box-shadow: var(--pd-shadow-overlay);
@@ -119,9 +119,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--pd-space-3);
   min-width: 0;
-  padding: 11px 12px;
+  padding: var(--pd-space-3) var(--pd-space-3);
   border-block-end: 1px solid var(--pd-shell-separator);
   background: var(--pd-shell-surface-raised);
 }
@@ -134,16 +134,16 @@
 
 .pd-shell-anchored-overlay__header h2,
 .pd-shell-anchored-overlay__header h3 {
-  font-size: 13px;
+  font-size: var(--pd-type-size-body-small);
   font-weight: 600;
   letter-spacing: 0;
   line-height: 1.2;
 }
 
 .pd-shell-anchored-overlay__header p {
-  margin-block-start: 2px;
+  margin-block-start: var(--pd-space-1);
   color: var(--pd-shell-text-muted);
-  font-size: 11px;
+  font-size: var(--pd-type-size-caption);
   line-height: 1.35;
 }
 
@@ -164,7 +164,7 @@
   background: transparent;
   color: var(--pd-shell-text-muted);
   cursor: pointer;
-  font-size: 18px;
+  font-size: var(--pd-type-size-section);
   line-height: 1;
 }
 
@@ -173,4 +173,15 @@
   border-color: var(--pd-shell-separator);
   background: var(--pd-shell-surface-active);
   color: var(--pd-shell-text);
+}
+
+/* Compact, bounded panels: the heading stays visible while content scrolls. */
+.pd-shell-anchored-overlay { border-color:var(--pd-shell-separator); border-radius:var(--pd-radius-overlay); box-shadow: var(--pd-shadow-overlay); }
+.pd-shell-anchored-overlay__header { padding:var(--pd-space-4); align-items:flex-start; }
+.pd-shell-anchored-overlay__header h2 { font-size:var(--pd-type-size-body-large); line-height:1.4; }
+.pd-shell-anchored-overlay__header p { font-size:var(--pd-type-size-caption); line-height:1.5; max-width:42ch; }
+.pd-shell-anchored-overlay__body { overflow-y:auto; overscroll-behavior:contain; min-width:0; }
+.pd-shell-anchored-overlay__close { flex-shrink:0; width:32px; height:32px; }
+@media(max-width:600px) {
+ .pd-shell-anchored-overlay[role='dialog'][data-align] { left:12px; right:12px; width:auto; max-height:calc(100dvh - var(--pd-shell-overlay-top) - 12px); }
 }

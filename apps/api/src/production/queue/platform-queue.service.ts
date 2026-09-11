@@ -5,7 +5,7 @@ import IORedis from "ioredis";
 import { readProductionConfig } from "../config.js";
 
 export type PlatformJobPayload = {
-  readonly jobType: "report" | "privacy_request" | "reconciliation" | "retention" | "ai_evaluation" | "stripe_webhook";
+  readonly jobType: "report" | "privacy_request" | "reconciliation" | "retention" | "ai_evaluation" | "stripe_webhook" | "assistant_generation";
   readonly tenantId: string;
   readonly workspaceId: string | null;
   readonly payload: Readonly<Record<string, unknown>>;

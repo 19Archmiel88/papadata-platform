@@ -128,19 +128,19 @@ export function deriveOverview(
 export function overviewChange(value: number, previous: number): number | null {
   return previous === 0 ? null : ((value - previous) / Math.abs(previous)) * 100;
 }
-export const overviewNumber = (value: number, decimals = 0) =>
-  new Intl.NumberFormat('pl-PL', {
+export const overviewNumber = (value: number, decimals = 0, locale: 'pl' | 'en' = 'pl') =>
+  new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'pl-PL', {
     maximumFractionDigits: decimals,
     minimumFractionDigits: decimals,
   }).format(value);
-export const overviewMoney = (value: number) => `${overviewNumber(value)} zł`;
-export const overviewShortDate = (date: string) =>
+export const overviewMoney = (value: number, locale: 'pl' | 'en' = 'pl') => `${overviewNumber(value, 0, locale)} zł`;
+export const overviewShortDate = (date: string, locale: 'pl' | 'en' = 'pl') =>
   Number.isFinite(dateValue(date))
-    ? new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(
+    ? new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'pl-PL', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(
         new Date(dateValue(date)),
       )
     : '—';
-export const overviewRangeLabel = (range: Pick<DateRange, 'from' | 'to'>) =>
+export const overviewRangeLabel = (range: Pick<DateRange, 'from' | 'to'>, locale: 'pl' | 'en' = 'pl') =>
   overviewDayCount(range)
-    ? `${overviewShortDate(range.from)} – ${overviewShortDate(range.to)} ${range.to.slice(0, 4)}`
+    ? `${overviewShortDate(range.from, locale)} – ${overviewShortDate(range.to, locale)} ${range.to.slice(0, 4)}`
     : 'Wybierz okres';

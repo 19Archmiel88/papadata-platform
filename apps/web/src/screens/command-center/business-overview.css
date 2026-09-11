@@ -1,0 +1,22 @@
+.pd-business-overview.pd-product-data { gap:var(--pd-space-3); }
+.pd-business-overview .pd-product-data__metrics { grid-template-columns:repeat(6,minmax(0,1fr)); }
+.pd-business-overview .pd-product-data__metric { padding:var(--pd-space-4); }
+.pd-business-overview .pd-product-data__metric:first-child { padding-top:var(--pd-space-4); }
+.pd-business-overview .pd-product-data__metric dd { font-size:clamp(22px,1.8vw,30px); }
+.pd-business-overview .pd-product-data__metric dt { display:flex; align-items:start; justify-content:space-between; gap:var(--pd-space-2); font-size:var(--pd-type-size-caption); }
+.pd-business-overview .pd-commerce__analysis { grid-template-columns:minmax(0,1fr) 280px; gap:var(--pd-space-4); align-items:start; }
+.pd-business-overview__aside { display:grid; gap:var(--pd-space-4); min-width:0; }
+.pd-business-overview__aside h2 { font-size:var(--pd-type-size-body-large); }
+.pd-business-overview__missing ul { margin-bottom:var(--pd-space-3); }
+.pd-business-overview__missing li { padding-block:var(--pd-space-2); }
+.pd-business-overview__missing li button { border:0; padding:0; background:none; color:var(--pd-text); font:inherit; font-size:var(--pd-type-size-body-small); text-align:start; cursor:pointer; }
+.pd-business-overview__links { display:flex; align-items:center; flex-wrap:wrap; gap:var(--pd-space-2); border-top:1px solid var(--pd-separator); padding-top:var(--pd-space-3); }
+.pd-business-overview__links > span { color:var(--pd-text-muted); font-size:var(--pd-type-size-caption); margin-inline-end:var(--pd-space-2); }
+.pd-business-overview__trend-control { display:flex; align-items:center; gap:var(--pd-space-2); color:var(--pd-text-secondary); font-size:var(--pd-type-size-caption); min-width:0; }
+.pd-business-overview__metric-dialog { width:min(560px,calc(100vw - 24px)); grid-template-rows:auto minmax(0,1fr); }
+.pd-business-overview__metric-dialog .pd-product-data__facts { margin:0; }
+.pd-business-overview__metric-dialog .pd-product-data__facts dd { font-size:var(--pd-type-size-heading-2); }
+.pd-business-overview__metric-dialog p { margin:0; line-height:1.6; }
+@media(max-width:1250px) { .pd-business-overview .pd-product-data__metrics { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media(max-width:800px) { .pd-business-overview .pd-commerce__analysis { grid-template-columns:minmax(0,1fr); } .pd-business-overview__aside { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:540px) { .pd-business-overview .pd-product-data__metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } .pd-business-overview__aside { grid-template-columns:minmax(0,1fr); } }

@@ -250,8 +250,13 @@ export const AppShellStory: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(await canvas.findByRole('heading', { name: 'AppShell' })).toBeInTheDocument();
-    await expect(await canvas.findByRole('button', { name: /Szukaj lub uruchom komendę/u })).toBeInTheDocument();
-    await expect(await canvas.findByRole('complementary', { name: 'Nawigacja główna' })).toBeInTheDocument();
+    // The command-palette trigger collapses at narrow viewports (topbar.css, <=820px) in favor
+    // of the sidebar's own direct navigation links, so it is only asserted when actually visible.
+    const searchTrigger = canvas.queryByRole('button', { name: /Szukaj lub uruchom komendę/u });
+    if (searchTrigger) {
+      await expect(searchTrigger).toBeInTheDocument();
+    }
+    await expect(await canvas.findByRole('navigation', { name: 'Nawigacja główna' })).toBeInTheDocument();
     const sidebarToggle = canvas.queryByRole('button', { name: /nawigację/u });
     if (sidebarToggle) {
       await expect(sidebarToggle).toBeInTheDocument();
@@ -321,8 +326,8 @@ export const AuthenticatedTopbarStory: Story = {
     await userEvent.click(accountButton);
     const accountDialog = await page.findByRole('dialog', { name: 'Konto' });
     await expect(accountDialog).toBeInTheDocument();
-    await expect(within(accountDialog).getByRole('group', { name: 'Język' })).toBeInTheDocument();
-    await expect(within(accountDialog).getByRole('group', { name: 'Motyw' })).toBeInTheDocument();
+    await expect(within(accountDialog).getByRole('radiogroup', { name: 'Język interfejsu' })).toBeInTheDocument();
+    await expect(within(accountDialog).getByRole('radiogroup', { name: 'Motyw interfejsu' })).toBeInTheDocument();
   },
 };
 
@@ -347,8 +352,8 @@ export const SidebarStory: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole('complementary', { name: 'Nawigacja główna' })).toBeInTheDocument();
-    await expect(canvas.getByRole('button', { name: /Centrum Dowodzenia/u })).toHaveAttribute('aria-current', 'page');
+    await expect(canvas.getByRole('navigation', { name: 'Nawigacja główna' })).toBeInTheDocument();
+    await expect(canvas.getByRole('link', { name: /Przegląd/u })).toHaveAttribute('aria-current', 'page');
   },
 };
 

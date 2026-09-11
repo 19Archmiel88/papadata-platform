@@ -1736,6 +1736,10 @@ export class ContractRuntimeService {
         tenantId: principal.tenantId,
         workspaceId: principal.workspaceId,
         userId: principal.userId,
+        // codeql[js/insufficient-password-hash]: rawToken is a 256-bit value from randomBytes(32)
+        // (see the pairing-issue branch above), not a user-chosen password -- it cannot be brute-forced
+        // regardless of hash speed. SHA-256 lookup hashing matches this codebase's convention for every
+        // other high-entropy token (invitation-token.service.ts, step-up.service.ts, product-domain.ts).
         tokenHash: createHash("sha256").update(rawToken).digest("hex"),
         deviceExternalId,
         displayName: optionalPayloadString(payload, "displayName") ?? "PapaData mobile",

@@ -12,7 +12,10 @@ import {
 
 import {
   colorContract,
+  colorShortAliases,
   colorTokens,
+  rampSwatch,
+  rampTokens,
 } from './colors';
 import {
   dataSeriesTokens,
@@ -108,6 +111,26 @@ const statusRoles: ReadonlyArray<{
   { key: 'statusNeutral', subtleKey: 'statusNeutralSubtle', tone: 'neutral', label: { pl: 'Neutralny', en: 'Neutral' } },
 ];
 
+const rampFamilyLabels: Record<(typeof rampTokens.families)[number], LocalizedCopy> = {
+  accent: { pl: 'Akcent (marka / interaktywny)', en: 'Accent (brand / interactive)' },
+  success: { pl: 'Sukces', en: 'Success' },
+  warning: { pl: 'Ostrzeżenie', en: 'Warning' },
+  danger: { pl: 'Krytyczny', en: 'Danger' },
+  info: { pl: 'Informacja', en: 'Info' },
+  violet: { pl: 'Fiolet (dodatkowy)', en: 'Violet (extra)' },
+  slate: { pl: 'Slate (neutralny)', en: 'Slate (neutral)' },
+};
+
+const aliasRoles: ReadonlyArray<{
+  readonly key: keyof typeof colorShortAliases;
+  readonly label: LocalizedCopy;
+}> = [
+  { key: 'accent', label: { pl: 'Akcent', en: 'Accent' } },
+  { key: 'success', label: { pl: 'Sukces', en: 'Success' } },
+  { key: 'warning', label: { pl: 'Ostrzeżenie', en: 'Warning' } },
+  { key: 'danger', label: { pl: 'Krytyczny', en: 'Danger' } },
+];
+
 const contractRules: ReadonlyArray<{
   readonly rule: keyof typeof colorContract.rules;
   readonly label: LocalizedCopy;
@@ -131,6 +154,7 @@ export const KoloryIStatusy: Story = {
             { label: <Localized pl="Motywy" en="Themes" />, value: colorContract.themes.join(' / ') },
             { label: <Localized pl="Role semantyczne" en="Semantic roles" />, value: String(colorContract.semanticRoles.length) },
             { label: <Localized pl="Role marki" en="Brand roles" />, value: String(colorContract.brandRoles.length) },
+            { label: <Localized pl="Rodziny rampy bazowej" en="Base ramp families" />, value: String(rampTokens.families.length) },
           ]}
         />
       )}
@@ -225,6 +249,41 @@ export const KoloryIStatusy: Story = {
           ))}
         </div>
       </StorySection>
+
+      <StorySection
+        index="06"
+        title={<Localized pl="Skala bazowa" en="Base ramp" />}
+        summary={
+          <Localized
+            pl="Role wyżej (Marka, Statusy) to nazwane kroki tej skali --pd-vl-* — zwykle 500 jako kolor podstawowy, 600/700 na hover/active. Ekran Zamówienia (Orders) jest dziś jedynym miejscem w realnym kodzie, które sięga po tę skalę bezpośrednio, przez lokalny prefiks --pd-obi-*, zamiast przez role semantyczne."
+            en="The roles above (Brand, Statuses) are named steps of this --pd-vl-* ramp — usually 500 as the base color, 600/700 for hover/active. The Orders screen is currently the only place in real code that reaches into this ramp directly, via the local --pd-obi-* prefix, instead of going through the semantic roles."
+          />
+        }
+      >
+        <div data-testid="color-ramp">
+          {rampTokens.families.map((family) => (
+            <div className="pd-f0-icon-line" key={family}>
+              <strong>{copy(rampFamilyLabels[family])}</strong>
+              {rampTokens.steps[family].map((step) => (
+                <span key={step} title={`--pd-vl-${family}-${step}`}>
+                  <span className="pd-f0-swatch" data-color="data" style={{ background: rampSwatch(family, step) }} />
+                  {step}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        <div className="pd-f0-icon-line" data-testid="color-aliases">
+          {aliasRoles.map((role) => (
+            <span key={role.key}>
+              <span className="pd-f0-swatch" data-color="data" style={{ background: colorShortAliases[role.key] }} />
+              {copy(role.label)}
+              <code className="pd-f0-color-value">{`--pd-${role.key}`}</code>
+            </span>
+          ))}
+        </div>
+      </StorySection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {
@@ -235,5 +294,7 @@ export const KoloryIStatusy: Story = {
     await expect(canvas.getByTestId('color-status-roles')).toBeInTheDocument();
     await expect(canvas.getByTestId('color-series').querySelectorAll('.pd-f0-swatch')).toHaveLength(dataSeriesTokens.length);
     await expect(canvas.getByTestId('color-rules').children).toHaveLength(contractRules.length);
+    await expect(canvas.getByTestId('color-ramp').children).toHaveLength(rampTokens.families.length);
+    await expect(canvas.getByTestId('color-aliases').children).toHaveLength(aliasRoles.length);
   },
 };

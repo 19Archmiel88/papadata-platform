@@ -8,6 +8,7 @@ import { usePapaScreenContext } from './ScreenContextProvider';
 import { assistantModes, assistantViews, canReviewAction, contextItems, isAssistantPath, parseActions, parseLab, parseObservations, parseProposals, selectContext } from './assistantModel';
 import type { ActionProposal, LabResult, ObservationRecord, ProposalRecord } from './assistantModel';
 import type { PapaAssistantOpenRequest } from './PapaAssistantRuntimeContext';
+import { readProductLocale } from '../../../screens/shared/useProductLocale';
 import { contextualProductLink,productRoutes,useProductQuery } from '../../app/routing/productRoutes';
 import { safeRandomUUID } from '../../shared/id/safeRandomUUID';
 import { AssistantHistoryPanel, AssistantMemoryPanel, AssistantFilesPanel, AssistantPolicyPanel, AssistantDiagnosticsPanel, AssistantNotificationsPanel, AssistantExportPanel } from './AssistantWorkspacePanels';
@@ -138,7 +139,7 @@ export function PapaAssistantExperience({ compact = false, onExpand, panelContro
           </button>)}</div>
         </div>}
         <ol className="pd-assistant__messages" aria-label="Historia rozmowy">{selectedMessages.map(message => <li key={message.messageId} className={`pd-assistant__message pd-assistant__message--${message.role}`}>
-          <header><strong>{message.role === 'user' ? 'Ty' : message.role === 'assistant' ? 'Papa · AI' : 'Status'}</strong><time dateTime={message.createdAt}>{new Date(message.createdAt).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })}</time></header>
+          <header><strong>{message.role === 'user' ? 'Ty' : message.role === 'assistant' ? 'Papa · AI' : 'Status'}</strong><time dateTime={message.createdAt}>{new Date(message.createdAt).toLocaleTimeString(readProductLocale() === 'en' ? 'en-US' : 'pl-PL', { hour: '2-digit', minute: '2-digit' })}</time></header>
           <AssistantMarkdown>{message.content}</AssistantMarkdown>
           {message.role === 'assistant' && <footer>
             <span className="pd-assistant__badge">{message.status === 'blocked' ? 'Ograniczona odpowiedź' : message.evidence.length ? 'Odpowiedź ze źródłami' : 'Brak źródeł odpowiedzi'}</span>
@@ -155,14 +156,14 @@ export function PapaAssistantExperience({ compact = false, onExpand, panelContro
         <div className="pd-assistant__section-head"><div><h2>Koszyk kontekstu</h2><p>Wybierz, które elementy dołączyć do kolejnego pytania.</p></div>
         <Button variant="secondary" disabled={sourceIsAssistant || runtime.busy} onClick={() => runtime.setContext(captureCurrentScreenContext('context-refresh'))}>Pobierz bieżący ekran</Button></div>
         {sourceIsAssistant && <p>Pełny widok zachowuje kontekst źródłowego ekranu. Aby go zmienić, otwórz Papa z wybranej analizy.</p>}
-        {snapshot && <dl className="pd-assistant__facts"><div><dt>Okres</dt><dd>{snapshot.dateRangeLabel}</dd></div><div><dt>Gotowość danych</dt><dd>{snapshot.readiness ?? 'Nie określono'}</dd></div><div><dt>Filtry</dt><dd>{snapshot.filters.map(f => `${f.label}: ${f.value ?? '—'}`).join(', ') || 'Brak dodatkowych filtrów'}</dd></div><div><dt>Kontekst pobrany</dt><dd>{new Date(snapshot.capturedAt).toLocaleString('pl-PL')}</dd></div></dl>}
+        {snapshot && <dl className="pd-assistant__facts"><div><dt>Okres</dt><dd>{snapshot.dateRangeLabel}</dd></div><div><dt>Gotowość danych</dt><dd>{snapshot.readiness ?? 'Nie określono'}</dd></div><div><dt>Filtry</dt><dd>{snapshot.filters.map(f => `${f.label}: ${f.value ?? '—'}`).join(', ') || 'Brak dodatkowych filtrów'}</dd></div><div><dt>Kontekst pobrany</dt><dd>{new Date(snapshot.capturedAt).toLocaleString(readProductLocale() === 'en' ? 'en-US' : 'pl-PL')}</dd></div></dl>}
         {!items.length && <p className="pd-assistant__empty">Ten ekran nie udostępnił elementów analizy. Wybierz ekran z KPI lub dodaj źródło.</p>}
         <ul className="pd-assistant__context-list">{items.map(item => <li key={item.id}><label><input type="checkbox" checked={!runtime.excluded.includes(item.id)} disabled={runtime.busy} onChange={() => runtime.toggleContext(item.id)} /><span><strong>{item.label}</strong><small>{item.source ?? 'Źródło nieopisane'} · {item.value ?? item.description ?? item.kind}</small></span></label>
           <Button size="small" variant="ghost" disabled={runtime.excluded.includes(item.id) || runtime.busy} onClick={() => { runtime.selectElement(item.id); setView('Rozmowa'); }}>Zapytaj o element</Button></li>)}</ul>
         <AssistantFilesPanel />
       </div>}
       {view === 'Dowody' && <div className="pd-assistant__section"><h2>Dowody i ograniczenia</h2><p>Źródła przypisane przez serwer do odpowiedzi. Brak dowodu nie oznacza potwierdzenia hipotezy.</p>
-        {!answerEvidence.length ? <p className="pd-assistant__empty">Brak dowodów w bieżącej rozmowie.</p> : <ul className="pd-assistant__evidence">{answerEvidence.map(item => <li key={item.evidenceId}><strong>{items.find(i => i.id === item.evidenceId)?.label ?? item.source}</strong><p>{item.source}</p><small>Zebrano: {new Date(item.collectedAt).toLocaleString('pl-PL')}</small><code>{item.evidenceId}</code></li>)}</ul>}
+        {!answerEvidence.length ? <p className="pd-assistant__empty">Brak dowodów w bieżącej rozmowie.</p> : <ul className="pd-assistant__evidence">{answerEvidence.map(item => <li key={item.evidenceId}><strong>{items.find(i => i.id === item.evidenceId)?.label ?? item.source}</strong><p>{item.source}</p><small>Zebrano: {new Date(item.collectedAt).toLocaleString(readProductLocale() === 'en' ? 'en-US' : 'pl-PL')}</small><code>{item.evidenceId}</code></li>)}</ul>}
         {snapshot && <Button variant="secondary" onClick={() => navigate(conversationLink(snapshot.route))}>Wróć do źródłowego ekranu</Button>}
       </div>}
       {view === 'Raporty' && <div className="pd-assistant__section"><div className="pd-assistant__section-head"><div><h2>Raporty i artefakty</h2><p>Zachowaj analizę wraz z okresem i wybranymi źródłami.</p></div><Button variant="ghost" disabled={runtime.busy} onClick={() => void runtime.refreshReports()}>Odśwież bibliotekę</Button></div>
@@ -328,7 +329,7 @@ function Obserwacje() {
     {notice && <p role="status">{notice}</p>}
     {resource.loading && <p role="status">Wczytywanie obserwacji…</p>}{error && <p role="alert">{error}</p>}
     {!resource.loading && !error && !observations.length && <p className="pd-assistant__empty">Brak zapisanych obserwacji.</p>}
-    <ul className="pd-assistant__timeline">{observations.map(item => <li key={item.id}><strong>{item.content}</strong><time dateTime={item.createdAt}>{new Date(item.createdAt).toLocaleString('pl-PL')}</time></li>)}</ul>
+    <ul className="pd-assistant__timeline">{observations.map(item => <li key={item.id}><strong>{item.content}</strong><time dateTime={item.createdAt}>{new Date(item.createdAt).toLocaleString(readProductLocale() === 'en' ? 'en-US' : 'pl-PL')}</time></li>)}</ul>
   </div>;
 }
 function displayValue(value: unknown): string { return value === undefined || value === null ? 'Brak danych' : typeof value === 'string' ? value : JSON.stringify(value, null, 2); }

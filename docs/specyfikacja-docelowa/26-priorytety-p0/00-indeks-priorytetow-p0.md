@@ -28,4 +28,4 @@ Ten katalog jest nadrzędnym pakietem wykonawczym dla ustaleń zatwierdzonych 30
 | P0-11 | Billing miesięczny/roczny, karta/BLIK/przelewy | [ ] |
 | P0-12 | KSeF i pełny pakiet prawno-organizacyjny | [ ] |
 
-Brama odbioru znajduje się w `scripts/validate_all.py` jako kontrola `priority_p0`.
+Bieżąca brama kodowa P0 to `pnpm verify:p0-code`; pełna akceptacja release wymaga dodatkowo `pnpm verify:p0-release` i evidence związanych z niezmiennym commitem release.

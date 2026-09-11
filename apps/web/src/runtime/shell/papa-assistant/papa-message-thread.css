@@ -6,9 +6,9 @@
 .pd-papa-message-thread {
   display: grid;
   align-content: start;
-  gap: 10px;
+  gap: var(--pd-space-3);
   margin: 0;
-  padding: 12px;
+  padding: var(--pd-space-3);
   overflow: auto;
   list-style: none;
 }
@@ -24,9 +24,9 @@
 .pd-papa-message-thread > li[data-author='user'],
 .pd-papa-message-thread > li[data-author='system'] {
   display: grid;
-  gap: 6px;
+  gap: var(--pd-space-2);
   width: min(100%, 88%);
-  padding: 8px 4px;
+  padding: var(--pd-space-2) var(--pd-space-1);
   border: 0;
   color: var(--pd-text-secondary);
   line-height: var(--pd-line-height-relaxed);
@@ -34,14 +34,14 @@
 
 .pd-papa-message-thread > li[data-author='user'] {
   justify-self: end;
-  padding-inline-end: 10px;
+  padding-inline-end: var(--pd-space-3);
   border-inline-end: 2px solid color-mix(in srgb, var(--pd-brand-accent) 45%, transparent);
   text-align: end;
 }
 
 .pd-papa-message-thread > li[data-author='system'] {
   width: 100%;
-  padding-inline-start: 10px;
+  padding-inline-start: var(--pd-space-3);
   border-inline-start: 2px solid var(--pd-separator-strong);
   color: var(--pd-text-muted);
 }
@@ -51,7 +51,7 @@
 .pd-papa-message-thread__assistant header span,
 .pd-papa-message-thread__evidence > span {
   color: var(--pd-text-muted);
-  font-size: 0.68rem;
+  font-size: var(--pd-type-size-caption);
   font-weight: var(--pd-font-weight-semibold);
   text-transform: uppercase;
 }
@@ -67,7 +67,7 @@
 .pd-papa-message-thread > li[data-author='system'] time,
 .pd-papa-message-thread__assistant footer time {
   color: var(--pd-text-muted);
-  font-size: 0.7rem;
+  font-size: var(--pd-type-size-caption);
 }
 
 /* The assistant's structured answer is the one thing in this thread that
@@ -75,8 +75,8 @@
    bar, not a 1px outline, mirroring the Command Center/Auth technique. */
 .pd-papa-message-thread__assistant {
   display: grid;
-  gap: 10px;
-  padding: 12px;
+  gap: var(--pd-space-3);
+  padding: var(--pd-space-3);
   border: 0;
   border-inline-start: 3px solid var(--pd-brand-accent);
   border-radius: var(--pd-radius-surface, 10px);
@@ -97,33 +97,33 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: var(--pd-space-2);
   min-inline-size: 0;
 }
 
 .pd-papa-message-thread__assistant header > div {
   display: grid;
-  gap: 2px;
+  gap: var(--pd-space-1);
   min-inline-size: 0;
 }
 
 .pd-papa-message-thread__assistant header strong {
   color: var(--pd-text);
-  font-size: 0.92rem;
+  font-size: var(--pd-type-size-body);
   font-weight: 700;
 }
 
 .pd-papa-message-thread__assistant-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--pd-space-2);
 }
 
 /* react-markdown emits real <p>/<ul>/<pre> tags with browser default
    margins — reset them to the single-<p> look this bubble had before. */
 .pd-papa-message-thread__body {
   display: grid;
-  gap: 8px;
+  gap: var(--pd-space-2);
 }
 
 .pd-papa-message-thread__body > :first-child {
@@ -145,12 +145,12 @@
 }
 
 .pd-papa-message-thread__body li + li {
-  margin-block-start: 2px;
+  margin-block-start: var(--pd-space-1);
 }
 
 .pd-papa-message-thread__body code {
-  padding: 1px 4px;
-  border-radius: 4px;
+  padding: var(--pd-space-0) var(--pd-space-1);
+  border-radius: var(--pd-radius-subtle);
   background: var(--pd-surface-soft);
   font-family: var(--pd-font-mono);
   font-size: 0.85em;
@@ -158,7 +158,7 @@
 
 .pd-papa-message-thread__body pre {
   margin: 0;
-  padding: 10px 12px;
+  padding: var(--pd-space-3) var(--pd-space-3);
   border-radius: var(--pd-radius-control);
   background: var(--pd-surface-soft);
   box-shadow: var(--pd-shadow-control);
@@ -178,7 +178,7 @@
 .pd-papa-message-thread__body th,
 .pd-papa-message-thread__body td {
   border-block-end: 1px solid var(--pd-separator-subtle);
-  padding: 4px 8px;
+  padding: var(--pd-space-1) var(--pd-space-2);
   text-align: start;
 }
 
@@ -189,26 +189,26 @@
 .pd-papa-message-thread__pending {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px;
+  gap: var(--pd-space-3);
+  padding: var(--pd-space-3);
   border: 0;
   border-inline-start: 3px solid var(--pd-brand-accent);
   border-radius: var(--pd-radius-surface, 10px);
   background: var(--pd-surface);
   box-shadow: var(--pd-shadow-raised);
   color: var(--pd-text-secondary);
-  font-size: 0.85rem;
+  font-size: var(--pd-type-size-body);
 }
 
 .pd-papa-message-thread__pending-dots {
   display: inline-flex;
-  gap: 3px;
+  gap: var(--pd-space-1);
 }
 
 .pd-papa-message-thread__pending-dots span {
   inline-size: 5px;
   block-size: 5px;
-  border-radius: 999px;
+  border-radius: var(--pd-radius-pill);
   background: var(--pd-brand-accent);
   animation: pd-papa-pending-pulse 1.1s ease-in-out infinite;
 }
@@ -242,14 +242,14 @@
 
 .pd-papa-message-thread__evidence {
   display: grid;
-  gap: 7px;
-  padding-block-start: 8px;
+  gap: var(--pd-space-2);
+  padding-block-start: var(--pd-space-2);
   border-block-start: 1px solid var(--pd-separator-subtle);
 }
 
 .pd-papa-message-thread__evidence ul {
   display: grid;
-  gap: 6px;
+  gap: var(--pd-space-2);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -257,8 +257,8 @@
 
 .pd-papa-message-thread__evidence li {
   display: grid;
-  gap: 2px;
-  padding: 8px 9px;
+  gap: var(--pd-space-1);
+  padding: var(--pd-space-2) var(--pd-space-2);
   border: 0;
   border-radius: var(--pd-radius-control);
   background: var(--pd-surface-soft);
@@ -267,13 +267,13 @@
 
 .pd-papa-message-thread__evidence strong {
   color: var(--pd-text);
-  font-size: 0.78rem;
+  font-size: var(--pd-type-size-caption);
   font-weight: var(--pd-font-weight-semibold);
 }
 
 .pd-papa-message-thread__evidence small {
   color: var(--pd-text-muted);
-  font-size: 0.68rem;
+  font-size: var(--pd-type-size-caption);
 }
 
 .pd-papa-message-thread__notice {
@@ -281,7 +281,7 @@
 }
 
 .pd-papa-message-thread__empty {
-  margin: 12px;
+  margin: var(--pd-space-3);
   min-block-size: 220px;
 }
 

@@ -1,8 +1,10 @@
 import {AssistantWorkspaceService} from '../assistant-workspace/assistant-workspace.service.js';
+import { SettingsOperationsService } from '../platform-operations/settings-operations.service.js';
 import {AccessMailService} from '../access-lifecycle/access-mail.service.js';
 import {GusBirCacheService} from '../access-lifecycle/gus-bir-cache.service.js';
 import { fetchTrafficPortfolio } from "./traffic-portfolio.real-source.ts";
 import { Inject } from "@nestjs/common";
+import { createHash, randomBytes } from "node:crypto";
 import {
   BadRequestException,
   ConflictException,
@@ -15,9 +17,7 @@ import {
   RequestTimeoutException,
   ServiceUnavailableException,
 } from "@nestjs/common";
-import { createHash, randomUUID } from "node:crypto";
-import type { AiProviderAdapter } from "@papadata/ai-runtime";
-import { AiBudgetGuard, LocalDeterministicProvider } from "@papadata/ai-runtime";
+import { AiBudgetGuard, createPapaProviderRuntime } from "@papadata/ai-runtime";
 import { GusBirAdapter, readGusBirConfig } from "@papadata/integrations";
 import {
   AssistantConversationRepository,
@@ -28,11 +28,11 @@ import {
   IntegrationRepository,
   InvitationRepository,
   MetricSnapshotRepository,
+  MobilePairingRepository,
   PasswordResetRepository,
   ProductDomainRepository,
   ProductionDatabase,
   type InvitationRow,
-  type ProductDomainRecord,
 } from "@papadata/database";
 import {
   entitlementsForMigratedPlan,
@@ -115,7 +115,7 @@ import {
   listObservationRecords,
   listPapaAnswerRecords,
   saveObservation,
-} from "./papa-conversation.real-source.js";
+} from "@papadata/papa-runtime";
 
 export type ContractRuntimeRequest = {
   readonly operationId: string;
@@ -153,9 +153,10 @@ export class ContractRuntimeService {
 
   private readonly metricSnapshots: MetricSnapshotRepository;
 
+  private readonly mobilePairing: MobilePairingRepository;
+
   private readonly billing: BillingRepository;
 
-  private readonly assistantProvider: AiProviderAdapter;
 
   private readonly aiBudgetGuard: AiBudgetGuard;
 
@@ -170,6 +171,7 @@ export class ContractRuntimeService {
     @Inject(AccessMailService) private readonly accessMail: AccessMailService,
     @Inject(AssistantWorkspaceService) private readonly assistantWorkspace: AssistantWorkspaceService,
     @Inject(GusBirCacheService) private readonly gusBirCache: GusBirCacheService,
+    @Inject(SettingsOperationsService) private readonly settingsOperations: SettingsOperationsService,
   ) {
     this.repository = new ProductDomainRepository(database);
     this.integrationRepository = new IntegrationRepository(database);
@@ -182,8 +184,8 @@ export class ContractRuntimeService {
     this.emailVerifications = new EmailVerificationRepository(database);
     this.assistantConversations = new AssistantConversationRepository(database);
     this.metricSnapshots = new MetricSnapshotRepository(database);
+    this.mobilePairing = new MobilePairingRepository(database);
     this.billing = new BillingRepository(database);
-    this.assistantProvider = new LocalDeterministicProvider();
     this.aiBudgetGuard = new AiBudgetGuard();
     this.companyLookupAudit = new CompanyLookupAuditRepository(database);
   }
@@ -1017,6 +1019,16 @@ export class ContractRuntimeService {
       };
     }
 
+    if (request.operationId === "settings.audit.read") {
+      const query = safeObject(request.query);
+      const before = optionalRecordString(query, "before") ?? undefined;
+      return {
+        data: await this.settingsOperations.audit(principal, before),
+        implementation: "settings-operations-service",
+        operationId: request.operationId,
+      };
+    }
+
     if (request.operationId === "settings.memberships.read") {
       return {
         data: {
@@ -1106,6 +1118,12 @@ export class ContractRuntimeService {
       const prompt = requiredPayloadString(payload, "prompt");
       const policy = await this.assistantWorkspace.preferences(principal);
       if(!['context','evidence','metrics'].every(tool=>policy.allowedReadTools.includes(tool)))throw new ForbiddenException('Assistant generation is disabled by workspace policy.');
+      let providerRuntime: ReturnType<typeof createPapaProviderRuntime>;
+      try {
+        providerRuntime = createPapaProviderRuntime();
+      } catch {
+        throw new ServiceUnavailableException("Configured AI provider is unavailable.");
+      }
       const result = await generatePapaAnswer({
         historyEnabled: policy.historyEnabled,
         contextDays: policy.contextDays,
@@ -1116,7 +1134,9 @@ export class ContractRuntimeService {
         idempotencyKey: requireIdempotencyKey(request),
         parentConversationId: optionalPayloadString(payload, "parentConversationId"),
         prompt,
-        provider: this.assistantProvider,
+        provider: providerRuntime.provider,
+        modelId: providerRuntime.modelId,
+        maxOutputTokens: providerRuntime.nativeStreaming ? 1536 : 512,
         repository: this.assistantConversations,
         tenantId: principal.tenantId,
         userId: principal.userId,
@@ -1660,6 +1680,96 @@ export class ContractRuntimeService {
     }
 
 
+    if (request.operationId === "mobile.invite") {
+      const rawToken = randomBytes(32).toString("base64url");
+      const tokenHash = createHash("sha256").update(rawToken).digest("hex");
+      const expiresAt = new Date(Date.now() + 5 * 60_000).toISOString();
+      const pairing = await this.mobilePairing.createPairingToken({
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+        userId: principal.userId,
+        tokenHash,
+        expiresAt,
+      });
+      return {
+        data: {
+          outcomeId: pairing.pairingId,
+          status: "pending_pairing",
+          changedResourceIds: [pairing.pairingId],
+          inviteResult: JSON.stringify({ token: rawToken, expiresAt: pairing.expiresAt }),
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "mobile.device.manage") {
+      const payload = readPayload(request.body);
+      const action = requiredPayloadString(payload, "action");
+      const deviceExternalId = requiredPayloadString(payload, "deviceExternalId");
+
+      if (action === "revoke") {
+        const revoked = await this.mobilePairing.revokeDevice({
+          tenantId: principal.tenantId,
+          workspaceId: principal.workspaceId,
+          deviceExternalId,
+        });
+        if (!revoked) throw new NotFoundException("Mobile device was not found in this workspace.");
+        return {
+          data: {
+            outcomeId: deviceExternalId,
+            status: "revoked",
+            changedResourceIds: [deviceExternalId],
+            deviceManageResult: "revoked",
+          },
+          operationId: request.operationId,
+        };
+      }
+
+      if (action !== "pair") {
+        throw new BadRequestException("mobile.device.manage action must be pair or revoke.");
+      }
+
+      const rawToken = requiredPayloadString(payload, "pairingToken");
+      const platformRaw = optionalPayloadString(payload, "platform") ?? "other";
+      const platform = platformRaw === "ios" || platformRaw === "android" ? platformRaw : "other";
+      const paired = await this.mobilePairing.pairDevice({
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+        userId: principal.userId,
+        tokenHash: createHash("sha256").update(rawToken).digest("hex"),
+        deviceExternalId,
+        displayName: optionalPayloadString(payload, "displayName") ?? "PapaData mobile",
+        platform,
+      });
+      if (!paired) throw new ConflictException("Pairing token is invalid, expired or already used.");
+      return {
+        data: {
+          outcomeId: paired.deviceExternalId,
+          status: "paired",
+          changedResourceIds: [paired.deviceExternalId],
+          deviceManageResult: JSON.stringify(paired),
+        },
+        operationId: request.operationId,
+      };
+    }
+
+    if (request.operationId === "mobile.use") {
+      const devices = await this.mobilePairing.listDevices({
+        tenantId: principal.tenantId,
+        workspaceId: principal.workspaceId,
+        userId: principal.userId,
+      });
+      return {
+        data: {
+          records: devices,
+          pageInfo: { nextCursor: null, total: devices.length },
+          summary: { active: devices.filter((device) => device.revokedAt === null).length, total: devices.length },
+          useResult: "mobile_device_inventory",
+        },
+        operationId: request.operationId,
+      };
+    }
+
     if (isExternalAiEffect(request.operationId)) {
       throw new ForbiddenException(
         "External AI side effects remain disabled until live provider approval and revalidation evidence are available.",
@@ -1867,70 +1977,14 @@ export class ContractRuntimeService {
     }
 
 
-    const descriptor = operationDescriptor(request.operationId);
-    if (request.method === "GET") {
-      const items = await this.repository.list({
-        tenantId: principal.tenantId,
-        workspaceId: principal.workspaceId,
-        domain: descriptor.domain,
-        entityType: descriptor.entityType,
-        limit: readLimit(request.query),
-      });
-      return {
-        data: {
-          items: descriptor.domain === "customers"
-            ? items.map((item: ProductDomainRecord) => ({
-                ...item,
-                data: redactCustomerData(item.data),
-              }))
-            : items,
-          operationId: request.operationId,
-          query: safeObject(request.query),
-          source: items.length > 0 ? "persistent_or_canonical" : "empty",
-        },
-      };
-    }
-
-    const rawPayload = readPayload(request.body);
-    assertNoPersistedSecrets(rawPayload);
-    const payload = request.operationId.startsWith("billing.")
-      ? enrichBillingPayload(rawPayload)
-      : rawPayload;
-    const externalKey = operationExternalKey(
-      payload,
-      request.params,
-      request.idempotencyKey,
-    );
-    const current = await this.repository.find({
-      tenantId: principal.tenantId,
-      workspaceId: principal.workspaceId,
-      domain: descriptor.domain,
-      entityType: descriptor.entityType,
-      externalKey,
-    });
-    const status = statusForOperation(request.operationId, current?.status ?? "active");
-    const record = await this.repository.upsert({
-      tenantId: principal.tenantId,
-      workspaceId: principal.workspaceId,
-      domain: descriptor.domain,
-      entityType: descriptor.entityType,
-      externalKey,
-      status,
-      data: {
-        ...(current?.data ?? {}),
-        ...payload,
-        contractOperationId: request.operationId,
-        contractServicePath: request.servicePath,
+    throw new HttpException(
+      {
+        error: "operation_not_implemented",
+        message: `Operation ${request.operationId} has no dedicated production domain handler.`,
+        operationId: request.operationId,
       },
-      actorUserId: principal.userId,
-      operationId: request.operationId,
-      correlationId: request.correlationId,
-      idempotencyKey: request.idempotencyKey,
-    });
-    return {
-      data: record,
-      operationId: request.operationId,
-    };
+      HttpStatus.NOT_IMPLEMENTED,
+    );
   }
 
   private async executeMigratedSemantics(
@@ -2584,18 +2638,6 @@ function optionalRecordDateString(
     : null;
 }
 
-function operationDescriptor(operationId: string): {
-  readonly domain: string;
-  readonly entityType: string;
-} {
-  const [rawDomain = "product", ...segments] = operationId.split(".");
-  return {
-    domain: rawDomain.replaceAll("-", "_"),
-    entityType: (segments.length > 0 ? segments.join("_") : "record")
-      .replaceAll("-", "_"),
-  };
-}
-
 function requireIdempotencyKey(request: ContractRuntimeRequest): string {
   const value = request.idempotencyKey?.trim();
   if (!value) {
@@ -2604,54 +2646,6 @@ function requireIdempotencyKey(request: ContractRuntimeRequest): string {
     );
   }
   return value;
-}
-
-function operationExternalKey(
-  payload: Readonly<Record<string, unknown>>,
-  params: unknown,
-  idempotencyKey: string | null,
-): string {
-  for (const candidate of [
-    payload.resourceId,
-    payload.externalKey,
-    payload.id,
-    firstStringValue(params),
-    idempotencyKey,
-  ]) {
-    if (typeof candidate === "string" && candidate.trim().length > 0) {
-      return candidate.trim().slice(0, 240);
-    }
-  }
-  return randomUUID();
-}
-
-function statusForOperation(operationId: string, current: string): string {
-  if (operationId.endsWith(".approve")) return "approved";
-  if (operationId.endsWith(".reject")) return "rejected";
-  if (operationId.endsWith(".rollback")) return "rolled_back";
-  if (operationId.includes(".activate")) return "active";
-  if (operationId.includes(".cancel")) return "cancelled";
-  if (operationId.includes(".revoke")) return "revoked";
-  if (operationId.includes(".confirm")) return "confirmed";
-  return current;
-}
-
-function enrichBillingPayload(
-  payload: Readonly<Record<string, unknown>>,
-): Readonly<Record<string, unknown>> {
-  const taxCountry = optionalRecordString(payload, "taxCountry");
-  const vatId = optionalRecordString(payload, "vatId") ?? optionalRecordString(payload, "nip");
-  const taxDecision = resolveBillingTaxDecision({
-    taxCountry,
-    vatId,
-    isBusinessCustomer: optionalRecordBoolean(payload, "isBusinessCustomer") ?? vatId !== null,
-    vatValidationStatus: readVatValidationStatus(payload.vatValidationStatus),
-  });
-  return {
-    ...payload,
-    taxDecision,
-    ksef: resolveKsefReadinessMetadata({ taxCountry: taxDecision.taxCountry }),
-  };
 }
 
 function optionalRecordBoolean(
@@ -2776,44 +2770,6 @@ function optionalPayloadString(
   return typeof value === "string" && value.trim().length > 0
     ? value.trim()
     : null;
-}
-
-function firstStringValue(value: unknown): string | null {
-  const record = safeObject(value);
-  for (const item of Object.values(record)) {
-    if (typeof item === "string" && item.trim().length > 0) return item;
-  }
-  return null;
-}
-
-function assertNoPersistedSecrets(value: unknown, path = "body"): void {
-  if (Array.isArray(value)) {
-    value.forEach((item, index) => assertNoPersistedSecrets(item, `${path}[${index}]`));
-    return;
-  }
-  if (!value || typeof value !== "object") return;
-  for (const [key, item] of Object.entries(value)) {
-    if (/password|secret|access.?token|refresh.?token|authorization|cookie|cvv|card.?number/iu.test(key)) {
-      throw new BadRequestException(`Sensitive field cannot be persisted by contract runtime: ${path}.${key}`);
-    }
-    assertNoPersistedSecrets(item, `${path}.${key}`);
-  }
-}
-
-function redactCustomerData(
-  value: Readonly<Record<string, unknown>>,
-): Readonly<Record<string, unknown>> {
-  const result: Record<string, unknown> = {};
-  for (const [key, item] of Object.entries(value)) {
-    if (/email|phone|address|first.?name|last.?name|full.?name/iu.test(key)) {
-      result[key] = typeof item === "string"
-        ? `sha256:${createHash("sha256").update(item).digest("hex").slice(0, 20)}`
-        : "[REDACTED]";
-    } else {
-      result[key] = item;
-    }
-  }
-  return result;
 }
 
 function uniqueBy<T>(items: readonly T[], key: (item: T) => string): readonly T[] {

@@ -1,15 +1,15 @@
 .pd-workspace-switcher {
   display: grid;
-  gap: 4px;
+  gap: var(--pd-space-1);
   min-width: 0;
-  font-size: 12px;
+  font-size: var(--pd-type-size-caption);
   line-height: 1.35;
 }
 
 .pd-workspace-switcher__title {
-  padding-inline: 8px;
+  padding-inline: var(--pd-space-2);
   color: var(--pd-shell-text-muted);
-  font-size: 12px;
+  font-size: var(--pd-type-size-caption);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -21,9 +21,9 @@
   min-height: 38px;
   display: grid;
   grid-template-columns: 26px minmax(0, 1fr) auto;
-  gap: 8px;
+  gap: var(--pd-space-2);
   align-items: center;
-  padding: 5px 8px;
+  padding: var(--pd-space-1) var(--pd-space-2);
   border: 1px solid transparent;
   border-radius: var(--pd-radius-control);
   color: var(--pd-shell-text-secondary);
@@ -46,10 +46,10 @@
   display: inline-grid;
   place-items: center;
   border: 1px solid var(--pd-shell-separator);
-  border-radius: 7px;
+  border-radius: var(--pd-radius-surface);
   color: var(--pd-shell-brand-strong);
   background: var(--pd-shell-surface-raised);
-  font-size: 12px;
+  font-size: var(--pd-type-size-caption);
   font-weight: 600;
 }
 
@@ -57,14 +57,14 @@
 .pd-product-shell__workspace-option-copy {
   min-width: 0;
   display: grid;
-  gap: 1px;
+  gap: var(--pd-space-0);
 }
 
 .pd-product-shell__workspace-copy strong,
 .pd-product-shell__workspace-option-copy strong {
   overflow: hidden;
   color: inherit;
-  font-size: 12px;
+  font-size: var(--pd-type-size-caption);
   font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -75,7 +75,7 @@
 .pd-product-shell__workspace-chevron {
   overflow: hidden;
   color: var(--pd-shell-text-muted);
-  font-size: 12px;
+  font-size: var(--pd-type-size-caption);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -93,10 +93,10 @@
 
 .pd-product-shell__workspace-options {
   display: grid;
-  gap: 3px;
+  gap: var(--pd-space-1);
   max-height: min(16rem, calc(100dvh - 12rem));
   overflow-y: auto;
-  padding: 6px;
+  padding: var(--pd-space-2);
   scrollbar-gutter: auto;
 }
 
@@ -106,15 +106,15 @@
   min-height: 38px;
   display: grid;
   grid-template-columns: 26px minmax(0, 1fr) auto;
-  gap: 8px;
+  gap: var(--pd-space-2);
   align-items: center;
-  padding: 6px 7px;
+  padding: var(--pd-space-2) var(--pd-space-2);
   border: 1px solid transparent;
   border-radius: var(--pd-radius-control);
   color: var(--pd-text-secondary);
   background: transparent;
   font: inherit;
-  font-size: 12px;
+  font-size: var(--pd-type-size-caption);
   text-align: left;
   cursor: pointer;
 }
@@ -133,19 +133,19 @@
 
 .pd-product-shell__workspace-option-state {
   color: var(--pd-text-muted);
-  font-size: 12px;
+  font-size: var(--pd-type-size-caption);
 }
 
 .pd-product-shell__workspace-actions {
-  margin-block-start: 4px;
-  padding-block-start: 5px;
+  margin-block-start: var(--pd-space-1);
+  padding-block-start: var(--pd-space-1);
   border-block-start: 1px solid var(--pd-separator-subtle);
 }
 
 .pd-product-shell__workspace-selection-error {
-  margin: 6px 0 0;
+  margin: var(--pd-space-2) 0 0;
   color: var(--pd-status-danger);
-  font-size: 12px;
+  font-size: var(--pd-type-size-caption);
 }
 
 .pd-product-shell__sidebar-column[data-collapsed='true'] .pd-workspace-switcher,
@@ -173,3 +173,8 @@
   outline: var(--pd-focus-width, 2px) solid var(--pd-focus-ring);
   outline-offset: 2px;
 }
+.pd-product-shell__workspace-overlay[role='dialog'] { width:min(24rem,calc(100vw - 24px)); }
+.pd-product-shell__workspace-option { padding:var(--pd-space-3); min-height:64px; border-radius:var(--pd-radius-overlay); }
+.pd-product-shell__workspace-option:disabled { opacity:.5; cursor:not-allowed; }
+.pd-product-shell__workspace-option-copy strong { font-size:var(--pd-type-size-body-small); }
+.pd-product-shell__workspace-option-copy small { font-size:var(--pd-type-size-caption); white-space:normal; }

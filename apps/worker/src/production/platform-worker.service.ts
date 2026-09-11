@@ -4,13 +4,17 @@ import { Injectable, Logger } from "@nestjs/common";
 import type { OnModuleDestroy } from "@nestjs/common";
 import { Worker, type Job } from "bullmq";
 import IORedis from "ioredis";
-import { PlatformDatabase, PrivacyRepository, ProductionDatabase } from "@papadata/database";
-import { LocalDeterministicProvider } from "@papadata/ai-runtime";
+import { AssistantConversationRepository, BillingRepository, PlatformDatabase, PrivacyRepository, ProductionDatabase } from "@papadata/database";
+import { AiBudgetGuard, createPapaProviderRuntime, LocalDeterministicProvider, redactText } from "@papadata/ai-runtime";
+import type { MembershipAuthorizationInput } from "@papadata/contracts";
+import { generatePapaAnswer } from "@papadata/papa-runtime";
 import { ObjectStorageClient } from "@papadata/storage";
 import { readWorkerConfig } from "./config.js";
+import { assistantGenerationLeaseDurationMs, canRunAssistantGeneration, decideAssistantGenerationFailure } from "./assistant-generation.policy.js";
+import { privacyTargetDisposition, reportFormatEnabled } from "./platform-worker.policy.js";
 
 export type PlatformJobPayload = {
-  readonly jobType: "report" | "privacy_request" | "reconciliation" | "retention" | "ai_evaluation" | "stripe_webhook";
+  readonly jobType: "report" | "privacy_request" | "reconciliation" | "retention" | "ai_evaluation" | "stripe_webhook" | "assistant_generation";
   readonly tenantId: string;
   readonly workspaceId: string | null;
   readonly payload: Readonly<Record<string, unknown>>;
@@ -72,6 +76,189 @@ export class PlatformWorkerService implements OnModuleDestroy {
         return this.processAiEvaluation(job.data);
       case "stripe_webhook":
         return this.processStripeWebhook(job.data);
+      case "assistant_generation":
+        return this.processAssistantGeneration(job);
+    }
+  }
+
+  private async processAssistantGeneration(job: Job<PlatformJobPayload>): Promise<object> {
+    const data = job.data;
+    if (!data.workspaceId) throw new Error("Assistant generation requires workspace scope");
+    const runId = requiredPayloadString(data.payload, "runId");
+    const leaseMs = assistantGenerationLeaseDurationMs(this.config.leaseDurationMs);
+    const leaseSeconds = Math.ceil(leaseMs / 1000);
+    const maxAttempts = Math.max(1, Number(job.opts.attempts ?? 1));
+
+    const claim = await this.database.withTenantWorkspace(
+      data.tenantId,
+      data.workspaceId,
+      async (client) => {
+        const result = await client.query<{
+          id: string;
+          user_id: string;
+          conversation_id: string;
+          case_thread_id: string | null;
+          request_payload: Record<string, unknown>;
+          status: string;
+        }>(
+          `update app.assistant_generation_runs
+              set status='running', attempt_count=attempt_count+1,
+                  last_heartbeat_at=now(), lease_expires_at=now()+($4::int * interval '1 second'),
+                  error_code=null, updated_at=now()
+            where tenant_id=$1 and workspace_id=$2 and id=$3
+              and (
+                status in ('queued','interrupted')
+                or (status='running' and (lease_expires_at is null or lease_expires_at < now()))
+              )
+            returning id,user_id,conversation_id,case_thread_id,request_payload,status`,
+          [data.tenantId, data.workspaceId, runId, leaseSeconds],
+        );
+        return result.rows[0] ?? null;
+      },
+    );
+
+    if (!claim) {
+      const current = await this.database.withTenantWorkspace(
+        data.tenantId,
+        data.workspaceId,
+        async (client) => (await client.query<{ status: string }>(
+          `select status from app.assistant_generation_runs
+            where tenant_id=$1 and workspace_id=$2 and id=$3`,
+          [data.tenantId, data.workspaceId, runId],
+        )).rows[0] ?? null,
+      );
+      if (!current) throw new Error("Assistant generation run not found");
+      return { runId, status: current.status, claimed: false };
+    }
+
+    const request = claim.request_payload ?? {};
+    const prompt = requiredPayloadString(request, "prompt");
+    const policyVersion = Number(request.policyVersion);
+    const historyEnabled = request.historyEnabled !== false;
+    const contextDays = Number(request.contextDays ?? 30);
+    const supplementaryContext = Array.isArray(request.supplementaryContext)
+      ? request.supplementaryContext.filter((value): value is string => typeof value === "string")
+      : [];
+
+    const controller = new AbortController();
+    let partialText = "";
+    let heartbeatBusy = false;
+    const heartbeat = setInterval(() => {
+      if (heartbeatBusy || controller.signal.aborted) return;
+      heartbeatBusy = true;
+      void this.database.withTenantWorkspace(data.tenantId, data.workspaceId as string, async (client) => {
+        const state = (await client.query<{
+          status: string;
+          policy_version: number | null;
+        }>(
+          `select r.status, p.version as policy_version
+             from app.assistant_generation_runs r
+             left join app.assistant_preferences p
+               on p.tenant_id=r.tenant_id and p.workspace_id=r.workspace_id
+            where r.tenant_id=$1 and r.workspace_id=$2 and r.id=$3`,
+          [data.tenantId, data.workspaceId, runId],
+        )).rows[0];
+        if (!state || state.status === "cancelled" || state.policy_version !== policyVersion) {
+          controller.abort("assistant_generation_authority_changed");
+          return;
+        }
+        await client.query(
+          `update app.assistant_generation_runs
+              set last_heartbeat_at=now(), lease_expires_at=now()+($4::int * interval '1 second'), updated_at=now()
+            where tenant_id=$1 and workspace_id=$2 and id=$3 and status='running'`,
+          [data.tenantId, data.workspaceId, runId, leaseSeconds],
+        );
+      }).catch(() => controller.abort("assistant_generation_heartbeat_failed")).finally(() => {
+        heartbeatBusy = false;
+      });
+    }, Math.max(5_000, Math.floor(leaseMs / 3)));
+
+    try {
+      const memberships = await this.database.withTenantWorkspace(
+        data.tenantId,
+        data.workspaceId,
+        async (client) => (await client.query<MembershipAuthorizationInput>(
+          `select role,status,data_scope as "dataScope",jit_expires_at::text as "jitExpiresAt"
+             from app.memberships
+            where tenant_id=$1 and user_id=$2
+              and (workspace_id=$3 or (role='Tenant Owner' and data_scope='tenant'))`,
+          [data.tenantId, claim.user_id, data.workspaceId],
+        )).rows,
+      );
+      if (!canRunAssistantGeneration(memberships)) {
+        controller.abort("assistant_generation_capability_revoked");
+        throw new Error("ASSISTANT_CAPABILITY_REVOKED");
+      }
+
+      const provider = createPapaProviderRuntime();
+      const repository = new AssistantConversationRepository(this.database);
+      const billing = new BillingRepository(this.database);
+      const result = await generatePapaAnswer({
+        repository,
+        billing,
+        budgetGuard: new AiBudgetGuard(),
+        provider: provider.provider,
+        modelId: provider.modelId,
+        maxOutputTokens: provider.nativeStreaming ? 1536 : 512,
+        tenantId: data.tenantId,
+        workspaceId: data.workspaceId,
+        userId: claim.user_id,
+        conversationId: claim.conversation_id,
+        caseThreadId: claim.case_thread_id,
+        parentConversationId: null,
+        prompt,
+        idempotencyKey: `run:${runId}`,
+        signal: controller.signal,
+        historyEnabled,
+        contextDays: Number.isFinite(contextDays) ? contextDays : 30,
+        supplementaryContext,
+        ...(provider.nativeStreaming
+          ? {
+              onDelta: async (chunk: string) => {
+                controller.signal.throwIfAborted();
+                partialText += chunk;
+                await this.database.withTenantWorkspace(data.tenantId, data.workspaceId as string, (client) => client.query(
+                  `update app.assistant_generation_runs
+                      set partial_text=$4,last_heartbeat_at=now(),lease_expires_at=now()+($5::int * interval '1 second'),updated_at=now()
+                    where tenant_id=$1 and workspace_id=$2 and id=$3 and status='running'`,
+                  [data.tenantId, data.workspaceId, runId, redactText(partialText), leaseSeconds],
+                ));
+              },
+            }
+          : {}),
+      });
+      if (!result) throw new Error("THREAD_UNAVAILABLE");
+      controller.signal.throwIfAborted();
+      await this.database.withTenantWorkspace(data.tenantId, data.workspaceId, (client) => client.query(
+        `update app.assistant_generation_runs
+            set status='completed',result=$4::jsonb,partial_text='',error_code=null,
+                last_heartbeat_at=now(),lease_expires_at=null,updated_at=now()
+          where tenant_id=$1 and workspace_id=$2 and id=$3 and status='running'`,
+        [data.tenantId, data.workspaceId, runId, JSON.stringify(result)],
+      ));
+      return { runId, status: "completed", claimed: true };
+    } catch (error) {
+      const cancelled = controller.signal.aborted || await this.database.withTenantWorkspace(
+        data.tenantId,
+        data.workspaceId,
+        async (client) => (await client.query<{ status: string }>(
+          `select status from app.assistant_generation_runs where tenant_id=$1 and workspace_id=$2 and id=$3`,
+          [data.tenantId, data.workspaceId, runId],
+        )).rows[0]?.status === "cancelled",
+      );
+      const decision = decideAssistantGenerationFailure({ cancelled, attemptsMade: job.attemptsMade, maxAttempts });
+      const status = decision === "retry" ? "interrupted" : decision === "cancel" ? "cancelled" : "failed";
+      const code = decision === "retry" ? "WORKER_RETRY" : decision === "cancel" ? "GENERATION_STOPPED" : "GENERATION_FAILED";
+      await this.database.withTenantWorkspace(data.tenantId, data.workspaceId, (client) => client.query(
+        `update app.assistant_generation_runs
+            set status=$4,error_code=$5,partial_text=$6,lease_expires_at=null,last_heartbeat_at=now(),updated_at=now()
+          where tenant_id=$1 and workspace_id=$2 and id=$3 and status in ('running','interrupted','cancelled')`,
+        [data.tenantId, data.workspaceId, runId, status, code, redactText(partialText)],
+      ));
+      if (decision === "retry") throw error;
+      return { runId, status, errorCode: code };
+    } finally {
+      clearInterval(heartbeat);
     }
   }
 
@@ -84,19 +271,22 @@ export class PlatformWorkerService implements OnModuleDestroy {
       data.workspaceId,
       async (client) => {
         const report = (await client.query<Record<string, unknown>>(
-          `select * from app.report_requests
-           where id = $1 and tenant_id::text = $2 and workspace_id::text = $3
+          `select assistant_report_export_id::text as id, *
+           from app.assistant_report_exports
+           where assistant_report_export_id = $1::uuid
+             and tenant_id::text = $2
+             and workspace_id::text = $3
            limit 1 for update`,
           [reportId, data.tenantId, data.workspaceId],
         )).rows[0];
         if (!report) throw new Error("Report request not found");
 
         const format = String(report.format);
-        if (format !== "json" && format !== "csv") {
+        if (!reportFormatEnabled(format)) {
           await client.query(
-            `update app.report_requests
+            `update app.assistant_report_exports
              set status = 'failed', error_code = 'FORMAT_NOT_ENABLED'
-             where id = $1`,
+             where assistant_report_export_id = $1::uuid`,
             [reportId],
           );
           return {
@@ -108,7 +298,7 @@ export class PlatformWorkerService implements OnModuleDestroy {
         }
 
         await client.query(
-          "update app.report_requests set status = 'generating', error_code = null where id = $1",
+          "update app.assistant_report_exports set status = 'generating', error_code = null where assistant_report_export_id = $1::uuid",
           [reportId],
         );
         const rows = (await client.query<Record<string, unknown>>(
@@ -126,9 +316,9 @@ export class PlatformWorkerService implements OnModuleDestroy {
 
         if (rows.length === 0) {
           await client.query(
-            `update app.report_requests
+            `update app.assistant_report_exports
              set status = 'failed', error_code = 'NO_REPORT_DATA'
-             where id = $1`,
+             where assistant_report_export_id = $1::uuid`,
             [reportId],
           );
           return { reportId, status: "failed", errorCode: "NO_REPORT_DATA" };
@@ -147,11 +337,11 @@ export class PlatformWorkerService implements OnModuleDestroy {
         const stored = await this.storage.put(objectKey, artifact.body, artifact.contentType);
 
         await client.query(
-          `update app.report_requests
+          `update app.assistant_report_exports
            set status = 'ready', object_key = $2, checksum_sha256 = $3,
                size_bytes = $4, content_type = $5, ready_at = now(),
                expires_at = now() + interval '7 days', error_code = null
-           where id = $1`,
+           where assistant_report_export_id = $1::uuid`,
           [
             reportId,
             stored.key,
@@ -206,7 +396,7 @@ export class PlatformWorkerService implements OnModuleDestroy {
         workspaceId: data.workspaceId,
         requestId,
         system,
-        status: "not_applicable",
+        status: privacyTargetDisposition(system),
         evidenceReference: `${stored.bucket}/${stored.key}#${stored.checksumSha256}`,
         errorCode: null,
       });
@@ -217,7 +407,7 @@ export class PlatformWorkerService implements OnModuleDestroy {
         workspaceId: data.workspaceId,
         requestId,
         system,
-        status: "verification_pending",
+        status: privacyTargetDisposition(system),
         evidenceReference: `${stored.bucket}/${stored.key}#${stored.checksumSha256}`,
         errorCode: system === "database"
           ? "DATA_HANDLER_NOT_ENABLED"
@@ -270,8 +460,8 @@ export class PlatformWorkerService implements OnModuleDestroy {
       tenant_id: string;
       workspace_id: string;
     }>(
-      `select id::text, object_key, tenant_id::text, workspace_id::text
-       from app.report_requests
+      `select assistant_report_export_id::text as id, object_key, tenant_id::text, workspace_id::text
+       from app.assistant_report_exports
        where status = 'ready' and expires_at <= now()
        order by expires_at
        limit 1000`,
@@ -285,9 +475,9 @@ export class PlatformWorkerService implements OnModuleDestroy {
         const result = await this.storage.deleteAllVersions(report.object_key);
         await this.systemDatabase.withTransaction(async (client) => {
           await client.query(
-            `update app.report_requests
+            `update app.assistant_report_exports
              set status = 'expired', object_key = null
-             where id = $1 and status = 'ready'`,
+             where assistant_report_export_id = $1::uuid and status = 'ready'`,
             [report.id],
           );
           await client.query(

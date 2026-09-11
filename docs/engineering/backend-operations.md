@@ -3,9 +3,9 @@
 
 ## Macierz możliwości backendu
 
-> Plik generowany przez `tools/generate-backend-capability-docs.mjs`. Nie edytować ręcznie.
+> Snapshot opisowy możliwości backendu. Machine-readable source of truth dla zakresu release: `config/backend-release-scope.json`; dowód release wiąże aktualny commit SHA i immutable image digests.
 
-**Wydanie:** backend-migration-implementation-2026-08<br>
+**Zakres:** backend-production-runtime<br>
 **Operacje runtime:** 292<br>
 **Kontrakt docelowy:** 223/223 dokładnych metod, ścieżek i operationId<br>
 **Dodatkowe operacje hardeningowe:** 69<br>

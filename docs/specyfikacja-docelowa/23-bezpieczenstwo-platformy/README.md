@@ -17,6 +17,8 @@ Ten dokument jest kanonicznym, scalonym źródłem dla tego obszaru. Sekcje odpo
 
 ### Kontrakt bezpieczeństwa
 
+<a id="security-slo-1"></a>
+
 | Metryka | Cel zachowany |
 | --- | --- |
 | RPO | <= 15 minut |
@@ -28,16 +30,11 @@ Ten dokument jest kanonicznym, scalonym źródłem dla tego obszaru. Sekcje odpo
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-01-program-i-raci"></a>
 
@@ -45,25 +42,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-02-architektura-docelowa"></a>
 
@@ -71,25 +58,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-03-roadmapa-p0-p1-p2"></a>
 
@@ -97,25 +74,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-04-mapa-zmian-w-repozytorium"></a>
 
@@ -123,25 +90,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-05-edge-waf-ddos"></a>
 
@@ -149,25 +106,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-06-iam-secrets-kms"></a>
 
@@ -175,25 +122,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-07-ci-supply-chain"></a>
 
@@ -201,25 +138,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-08-tenancy-dlp-ai"></a>
 
@@ -227,25 +154,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-09-api-integracje"></a>
 
@@ -253,25 +170,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-10-observability-detection"></a>
 
@@ -279,25 +186,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-11-incident-response-runbooks"></a>
 
@@ -305,27 +202,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Metryka | Cel zachowany |
-| --- | --- |
-| RPO | <= 15 minut |
-| RTO | <= 60 minut |
-| P1 acknowledge | <= 15 minut |
-| Containment objective | <= 60 minut |
-| Release evidence | SBOM, provenance, attestation, rollback evidence |
-| WAF bypass | niedopuszczalny |
+> [SECURITY-SLO-1](#security-slo-1) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-12-dr-bcp-backup"></a>
 
@@ -333,27 +218,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Metryka | Cel zachowany |
-| --- | --- |
-| RPO | <= 15 minut |
-| RTO | <= 60 minut |
-| P1 acknowledge | <= 15 minut |
-| Containment objective | <= 60 minut |
-| Release evidence | SBOM, provenance, attestation, rollback evidence |
-| WAF bypass | niedopuszczalny |
+> [SECURITY-SLO-1](#security-slo-1) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-13-release-gates"></a>
 
@@ -361,27 +234,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Metryka | Cel zachowany |
-| --- | --- |
-| RPO | <= 15 minut |
-| RTO | <= 60 minut |
-| P1 acknowledge | <= 15 minut |
-| Containment objective | <= 60 minut |
-| Release evidence | SBOM, provenance, attestation, rollback evidence |
-| WAF bypass | niedopuszczalny |
+> [SECURITY-SLO-1](#security-slo-1) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-14-test-plan"></a>
 
@@ -389,25 +250,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-15-backlog"></a>
 
@@ -415,25 +266,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-16-risk-register"></a>
 
@@ -441,25 +282,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-17-go-live-checklist"></a>
 
@@ -467,25 +298,15 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.
 
 <a id="sekcja-18-evidence-templates"></a>
 
@@ -493,22 +314,12 @@ Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyni
 
 ### Kontrakt bezpieczeństwa
 
-| Kontrola | Wymaganie |
-| --- | --- |
-| owner | RACI i evidence owner |
-| evidence | plik, log, konfiguracja albo wynik testu |
-| rollout | preview -> enforcement, gdy ryzykowne |
-| rollback | opisany i przetestowany |
+> [STD-SECURITY-CONTROLS](../00-zarzadzanie-dokumentacja/README.md#std-security-controls) — normatywny.
 
 ### Powiązania z produktem
 
-- Auth, MFA, sesje i reauthentication;
-- tenant/workspace isolation;
-- integracje i dane osobowe;
-- AI read-only w MVP i evidence panel;
-- aplikacja mobilna, pairing i urządzenia;
-- billing, support access i operacje administracyjne.
+> [STD-SECURITY-PRODUCT-LINKS](../00-zarzadzanie-dokumentacja/README.md#std-security-product-links) — normatywny.
 
 ### Acceptance evidence
 
-Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+> [STD-SECURITY-EVIDENCE](../00-zarzadzanie-dokumentacja/README.md#std-security-evidence) — normatywny.

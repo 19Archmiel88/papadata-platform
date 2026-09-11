@@ -573,6 +573,7 @@ export class ReportRepository {
   create(input: {
     tenantId: string;
     workspaceId: string;
+    createdByUserId: string;
     reportType: string;
     format: string;
     dateFrom: string;
@@ -585,26 +586,33 @@ export class ReportRepository {
       input.workspaceId,
       async (client) => {
         const result = await client.query<Record<string, unknown>>(
-          `insert into app.report_requests (
-             tenant_id, workspace_id, report_type, format, status,
-             date_from, date_to, filters, idempotency_key
-           ) values ($1, $2, $3, $4, 'queued', $5, $6, $7::jsonb, $8)
-           on conflict (tenant_id, workspace_id, idempotency_key) do update
-           set idempotency_key = excluded.idempotency_key
-           returning *`,
+          `insert into app.assistant_report_exports (
+             assistant_report_export_id, tenant_id, workspace_id, export_scope,
+             format, status, job_id, created_by_user_id, idempotency_key,
+             report_type, date_from, date_to, filters, source
+           ) values (
+             gen_random_uuid(), $1::uuid, $2::uuid, 'report', $3, 'queued', null,
+             $4::uuid, $5, $6, $7::timestamptz, $8::timestamptz, $9::jsonb,
+             'reports_api'
+           )
+           on conflict (tenant_id, workspace_id, idempotency_key)
+             where idempotency_key is not null
+           do update set idempotency_key = excluded.idempotency_key
+           returning assistant_report_export_id::text as id, *`,
           [
             input.tenantId,
             input.workspaceId,
-            input.reportType,
             input.format,
+            input.createdByUserId,
+            input.idempotencyKey,
+            input.reportType,
             input.dateFrom,
             input.dateTo,
             JSON.stringify(input.filters),
-            input.idempotencyKey,
           ],
         );
         const row = result.rows[0];
-        if (!row) throw new Error("Report request was not inserted");
+        if (!row) throw new Error("Report export was not inserted");
         return row;
       },
     );
@@ -619,8 +627,11 @@ export class ReportRepository {
       tenantId,
       workspaceId,
       async (client) => (await client.query<Record<string, unknown>>(
-        `select * from app.report_requests
-         where tenant_id::text = $1 and workspace_id::text = $2 and id = $3
+        `select assistant_report_export_id::text as id, *
+         from app.assistant_report_exports
+         where tenant_id::text = $1
+           and workspace_id::text = $2
+           and assistant_report_export_id = $3::uuid
          limit 1`,
         [tenantId, workspaceId, reportId],
       )).rows[0] ?? null,

@@ -62,6 +62,37 @@ locals {
     "redis_url",
     "redis_ca_base64",
   ])
+
+  # Optional integration secrets (Stripe, OAuth, GUS/BIR, remote Papa AI,
+  # KSeF). Terraform never requires these keys to exist in
+  # runtime_secret_ids -- it only grants IAM access and injects them into
+  # the API service for whichever of these keys the operator actually
+  # supplied, and the preconditions below require the ones a given feature
+  # flag needs once that feature is turned on.
+  optional_integration_secret_names = toset([
+    "stripe_secret_key",
+    "stripe_webhook_secret",
+    "google_oauth_client_secret",
+    "microsoft_oauth_client_secret",
+    "gus_bir_api_key",
+    "papa_remote_api_key",
+    "ksef_certificate_ref",
+  ])
+  api_integration_secret_names = setintersection(
+    local.optional_integration_secret_names,
+    toset(keys(var.runtime_secret_ids)),
+  )
+  worker_integration_secret_names = setintersection(
+    toset(["papa_remote_api_key"]),
+    toset(keys(var.runtime_secret_ids)),
+  )
+
+  oauth_google_enabled    = var.google_oauth_client_id != ""
+  oauth_microsoft_enabled = var.microsoft_oauth_client_id != ""
+  gus_bir_production      = var.gus_bir_mode == "production"
+  billing_enabled         = var.billing_mode != ""
+  web_origin              = "https://${var.public_domain}"
+  billing_return_origin   = var.billing_return_origin != "" ? var.billing_return_origin : local.web_origin
 }
 
 resource "terraform_data" "validate_external_secrets" {
@@ -72,6 +103,40 @@ resource "terraform_data" "validate_external_secrets" {
         toset(keys(var.runtime_secret_ids)),
       )) == 0
       error_message = "runtime_secret_ids is missing one or more required keys. See variables.tf and README.md."
+    }
+
+    precondition {
+      condition     = !local.oauth_google_enabled || contains(keys(var.runtime_secret_ids), "google_oauth_client_secret")
+      error_message = "google_oauth_client_id is set but runtime_secret_ids is missing \"google_oauth_client_secret\"."
+    }
+
+    precondition {
+      condition     = !local.oauth_microsoft_enabled || contains(keys(var.runtime_secret_ids), "microsoft_oauth_client_secret")
+      error_message = "microsoft_oauth_client_id is set but runtime_secret_ids is missing \"microsoft_oauth_client_secret\"."
+    }
+
+    precondition {
+      condition     = !local.gus_bir_production || (var.gus_bir_base_url != "" && contains(keys(var.runtime_secret_ids), "gus_bir_api_key"))
+      error_message = "gus_bir_mode=production requires gus_bir_base_url and a \"gus_bir_api_key\" entry in runtime_secret_ids."
+    }
+
+    precondition {
+      condition = !local.billing_enabled || (
+        var.stripe_api_version != "" &&
+        contains(keys(var.runtime_secret_ids), "stripe_secret_key") &&
+        (var.billing_mode != "live" || var.billing_allow_live)
+      )
+      error_message = "billing_mode requires stripe_api_version, a \"stripe_secret_key\" entry in runtime_secret_ids, and billing_allow_live=true when billing_mode=live."
+    }
+
+    precondition {
+      condition = !var.papa_remote_enabled || (
+        var.papa_remote_endpoint != "" &&
+        var.papa_remote_model != "" &&
+        length(var.papa_remote_allowed_hosts) > 0 &&
+        contains(keys(var.runtime_secret_ids), "papa_remote_api_key")
+      )
+      error_message = "papa_remote_enabled requires papa_remote_endpoint, papa_remote_model, papa_remote_allowed_hosts, and a \"papa_remote_api_key\" entry in runtime_secret_ids."
     }
   }
 }
@@ -255,8 +320,13 @@ resource "google_service_account" "worker" {
   display_name = "PapaData Worker"
 }
 
+resource "google_service_account" "web" {
+  account_id   = "${local.prefix}-web"
+  display_name = "PapaData Web"
+}
+
 resource "google_secret_manager_secret_iam_member" "api" {
-  for_each  = local.api_secret_names
+  for_each  = setunion(local.api_secret_names, local.api_integration_secret_names)
   project   = var.project_id
   secret_id = local.runtime_secret_ids[each.key]
   role      = "roles/secretmanager.secretAccessor"
@@ -272,7 +342,7 @@ resource "google_secret_manager_secret_iam_member" "bff" {
 }
 
 resource "google_secret_manager_secret_iam_member" "worker" {
-  for_each  = local.worker_secret_names
+  for_each  = setunion(local.worker_secret_names, local.worker_integration_secret_names)
   project   = var.project_id
   secret_id = local.runtime_secret_ids[each.key]
   role      = "roles/secretmanager.secretAccessor"
@@ -357,6 +427,141 @@ resource "google_cloud_run_v2_service" "api" {
         value = "papadata:auth"
       }
 
+      # Optional integrations (Stripe billing, Google/Microsoft OAuth,
+      # GUS/BIR, KSeF, remote Papa AI). Every value here is safe to set
+      # even when the corresponding feature is disabled -- apps/api treats
+      # an empty/default value as "not configured" rather than erroring
+      # (see each adapter's readXConfig()), so this env contract is
+      # explicit and complete regardless of which features are turned on.
+      env {
+        name  = "PAPADATA_WEB_ORIGIN"
+        value = local.web_origin
+      }
+      env {
+        name  = "GOOGLE_OAUTH_CLIENT_ID"
+        value = var.google_oauth_client_id
+      }
+      env {
+        name  = "MICROSOFT_OAUTH_CLIENT_ID"
+        value = var.microsoft_oauth_client_id
+      }
+      env {
+        name  = "GUS_BIR_MODE"
+        value = var.gus_bir_mode
+      }
+      env {
+        name  = "GUS_BIR_BASE_URL"
+        value = var.gus_bir_base_url
+      }
+      env {
+        name  = "GUS_BIR_TIMEOUT_MS"
+        value = tostring(var.gus_bir_timeout_ms)
+      }
+      env {
+        name  = "GUS_BIR_CACHE_TTL_SECONDS"
+        value = tostring(var.gus_bir_cache_ttl_seconds)
+      }
+      env {
+        name  = "KSEF_ENV"
+        value = var.ksef_env
+      }
+      env {
+        name  = "KSEF_BASE_URL"
+        value = var.ksef_base_url
+      }
+      env {
+        name  = "KSEF_NIP_CONTEXT"
+        value = var.ksef_nip_context
+      }
+      env {
+        name  = "KSEF_TIMEOUT_MS"
+        value = tostring(var.ksef_timeout_ms)
+      }
+      env {
+        name  = "KSEF_RETRY_POLICY"
+        value = var.ksef_retry_policy
+      }
+      env {
+        name  = "PAPADATA_PAPA_REMOTE_ENABLED"
+        value = var.papa_remote_enabled ? "true" : "false"
+      }
+      env {
+        name  = "PAPADATA_PAPA_REMOTE_ENDPOINT"
+        value = var.papa_remote_endpoint
+      }
+      env {
+        name  = "PAPADATA_PAPA_REMOTE_MODEL"
+        value = var.papa_remote_model
+      }
+      env {
+        name  = "PAPADATA_PAPA_REMOTE_ALLOWED_HOSTS"
+        value = join(",", var.papa_remote_allowed_hosts)
+      }
+      env {
+        name  = "PAPADATA_PAPA_REMOTE_RESERVE_MINOR_PER_CALL"
+        value = tostring(var.papa_remote_reserve_minor_per_call)
+      }
+      env {
+        name  = "AI_WORKSPACE_BUDGET_MINOR_PER_MONTH"
+        value = tostring(var.ai_workspace_budget_minor_per_month)
+      }
+      env {
+        name  = "AI_USER_BUDGET_MINOR_PER_MONTH"
+        value = tostring(var.ai_user_budget_minor_per_month)
+      }
+      env {
+        name  = "PAPADATA_BILLING_MODE"
+        value = var.billing_mode
+      }
+      env {
+        name  = "STRIPE_API_VERSION"
+        value = var.stripe_api_version
+      }
+      env {
+        name  = "PAPADATA_BILLING_RETURN_ORIGIN"
+        value = local.billing_return_origin
+      }
+      env {
+        name  = "PAPADATA_BILLING_ALLOW_LIVE"
+        value = var.billing_allow_live ? "true" : "false"
+      }
+      env {
+        name  = "PAPADATA_BILLING_PRICES_JSON"
+        value = var.billing_prices_json
+      }
+      env {
+        name  = "STRIPE_PORTAL_CONFIGURATION"
+        value = var.stripe_portal_configuration
+      }
+      env {
+        name  = "PAYMENT_ENABLE_CARD"
+        value = var.payment_methods_enabled.card ? "true" : "false"
+      }
+      env {
+        name  = "PAYMENT_ENABLE_BLIK"
+        value = var.payment_methods_enabled.blik ? "true" : "false"
+      }
+      env {
+        name  = "PAYMENT_ENABLE_BLIK_RECURRING"
+        value = var.payment_methods_enabled.blik_recurring ? "true" : "false"
+      }
+      env {
+        name  = "PAYMENT_ENABLE_FAST_TRANSFER"
+        value = var.payment_methods_enabled.fast_bank_transfer ? "true" : "false"
+      }
+      env {
+        name  = "PAYMENT_ENABLE_BANK_TRANSFER"
+        value = var.payment_methods_enabled.bank_transfer ? "true" : "false"
+      }
+      env {
+        name  = "PAYMENT_ENABLE_APPLE_PAY"
+        value = var.payment_methods_enabled.apple_pay ? "true" : "false"
+      }
+      env {
+        name  = "PAYMENT_ENABLE_GOOGLE_PAY"
+        value = var.payment_methods_enabled.google_pay ? "true" : "false"
+      }
+
       dynamic "env" {
         for_each = {
           DATABASE_URL                       = "database_url"
@@ -366,6 +571,35 @@ resource "google_cloud_run_v2_service" "api" {
           PAPADATA_API_AUTH_PREVIOUS_SECRET  = "api_auth_previous_secret"
           MFA_ENCRYPTION_KEY                 = "mfa_encryption_key"
           PAPADATA_INFRASTRUCTURE_AUTH_TOKEN = "infrastructure_auth_token"
+        }
+        content {
+          name = env.key
+          value_source {
+            secret_key_ref {
+              secret  = local.runtime_secret_ids[env.value]
+              version = "latest"
+            }
+          }
+        }
+      }
+
+      # Same optional-integration set as the plain env{} blocks above, but
+      # for the secret half of each pair. Only emits an env var for a key
+      # the operator actually put in runtime_secret_ids -- a feature left
+      # unconfigured gets no env var at all here, matching apps/api
+      # treating a missing var the same as an empty one.
+      dynamic "env" {
+        for_each = {
+          for entry in [
+            { name = "STRIPE_SECRET_KEY", key = "stripe_secret_key" },
+            { name = "STRIPE_WEBHOOK_SECRET", key = "stripe_webhook_secret" },
+            { name = "GOOGLE_OAUTH_CLIENT_SECRET", key = "google_oauth_client_secret" },
+            { name = "MICROSOFT_OAUTH_CLIENT_SECRET", key = "microsoft_oauth_client_secret" },
+            { name = "GUS_BIR_API_KEY", key = "gus_bir_api_key" },
+            { name = "PAPADATA_PAPA_REMOTE_API_KEY", key = "papa_remote_api_key" },
+            { name = "KSEF_CERTIFICATE_REF", key = "ksef_certificate_ref" },
+          ] : entry.name => entry.key
+          if contains(keys(var.runtime_secret_ids), entry.key)
         }
         content {
           name = env.key
@@ -526,6 +760,56 @@ resource "google_cloud_run_v2_service" "bff" {
   labels = local.labels
 }
 
+resource "google_cloud_run_v2_service" "web" {
+  name                = "${local.prefix}-web"
+  location            = var.region
+  ingress             = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
+  deletion_protection = var.deletion_protection
+
+  template {
+    service_account = google_service_account.web.email
+    timeout         = "10s"
+
+    scaling {
+      min_instance_count = var.environment == "production" ? 1 : 0
+      max_instance_count = 20
+    }
+
+    containers {
+      image = var.web_image
+
+      ports {
+        container_port = 8080
+      }
+
+      resources {
+        limits = {
+          cpu    = "1"
+          memory = "256Mi"
+        }
+      }
+
+      startup_probe {
+        http_get {
+          path = "/"
+          port = 8080
+        }
+        failure_threshold = 10
+        period_seconds    = 2
+      }
+
+      liveness_probe {
+        http_get {
+          path = "/"
+          port = 8080
+        }
+      }
+    }
+  }
+
+  labels = local.labels
+}
+
 resource "google_cloud_run_v2_service_iam_member" "bff_invokes_api" {
   project  = var.project_id
   location = google_cloud_run_v2_service.api.location
@@ -542,6 +826,14 @@ resource "google_cloud_run_v2_service_iam_member" "edge_invokes_bff" {
   member   = "allUsers"
 }
 
+resource "google_cloud_run_v2_service_iam_member" "edge_invokes_web" {
+  project  = var.project_id
+  location = google_cloud_run_v2_service.web.location
+  name     = google_cloud_run_v2_service.web.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
+
 resource "google_compute_region_network_endpoint_group" "bff" {
   name                  = "${local.prefix}-bff-neg"
   network_endpoint_type = "SERVERLESS"
@@ -549,6 +841,16 @@ resource "google_compute_region_network_endpoint_group" "bff" {
 
   cloud_run {
     service = google_cloud_run_v2_service.bff.name
+  }
+}
+
+resource "google_compute_region_network_endpoint_group" "web" {
+  name                  = "${local.prefix}-web-neg"
+  network_endpoint_type = "SERVERLESS"
+  region                = var.region
+
+  cloud_run {
+    service = google_cloud_run_v2_service.web.name
   }
 }
 
@@ -628,11 +930,65 @@ resource "google_compute_backend_service" "bff" {
     enable      = true
     sample_rate = 1.0
   }
+
+  # No custom_response_headers here, deliberately: the BFF already
+  # originates its own headers for its JSON responses (@fastify/helmet,
+  # see apps/bff/src/app.factory.ts) and must not have a second,
+  # web-app-shaped CSP layered on top by the load balancer. Mirrors
+  # infra/production/edge/nginx.conf.template's `location /api/` block,
+  # which carries the same comment for local parity.
+}
+
+resource "google_compute_backend_service" "web" {
+  name                  = "${local.prefix}-web-backend"
+  protocol              = "HTTP"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+  security_policy       = google_compute_security_policy.edge.id
+  timeout_sec           = 30
+
+  backend {
+    group = google_compute_region_network_endpoint_group.web.id
+  }
+
+  log_config {
+    enable      = true
+    sample_rate = 1.0
+  }
+
+  # The web-production container itself sets no security headers (see
+  # infra/production/web/nginx.conf) -- this backend is the GCP-side
+  # equivalent of infra/production/edge/nginx.conf.template's `location /`
+  # block, which is the single source of truth for these headers locally.
+  # Values must stay identical between the two: apps/web's CSP is verified
+  # empirically against real console output, not assumed.
+  custom_response_headers = [
+    "Strict-Transport-Security: max-age=63072000; includeSubDomains",
+    "X-Content-Type-Options: nosniff",
+    "X-Frame-Options: DENY",
+    "Referrer-Policy: strict-origin-when-cross-origin",
+    "Permissions-Policy: camera=(), microphone=(), geolocation=()",
+    "Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'",
+  ]
 }
 
 resource "google_compute_url_map" "edge" {
   name            = "${local.prefix}-edge-map"
-  default_service = google_compute_backend_service.bff.id
+  default_service = google_compute_backend_service.web.id
+
+  host_rule {
+    hosts        = [var.public_domain]
+    path_matcher = "primary"
+  }
+
+  path_matcher {
+    name            = "primary"
+    default_service = google_compute_backend_service.web.id
+
+    path_rule {
+      paths   = ["/api", "/api/*"]
+      service = google_compute_backend_service.bff.id
+    }
+  }
 }
 
 resource "google_compute_managed_ssl_certificate" "edge" {
@@ -703,6 +1059,34 @@ resource "google_cloud_run_v2_worker_pool" "worker" {
         name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
         value = var.otel_exporter_otlp_endpoint
       }
+      env {
+        name  = "PAPADATA_PAPA_REMOTE_ENABLED"
+        value = var.papa_remote_enabled ? "true" : "false"
+      }
+      env {
+        name  = "PAPADATA_PAPA_REMOTE_ENDPOINT"
+        value = var.papa_remote_endpoint
+      }
+      env {
+        name  = "PAPADATA_PAPA_REMOTE_MODEL"
+        value = var.papa_remote_model
+      }
+      env {
+        name  = "PAPADATA_PAPA_REMOTE_ALLOWED_HOSTS"
+        value = join(",", var.papa_remote_allowed_hosts)
+      }
+      env {
+        name  = "PAPADATA_PAPA_REMOTE_RESERVE_MINOR_PER_CALL"
+        value = tostring(var.papa_remote_reserve_minor_per_call)
+      }
+      env {
+        name  = "AI_WORKSPACE_BUDGET_MINOR_PER_MONTH"
+        value = tostring(var.ai_workspace_budget_minor_per_month)
+      }
+      env {
+        name  = "AI_USER_BUDGET_MINOR_PER_MONTH"
+        value = tostring(var.ai_user_budget_minor_per_month)
+      }
 
       dynamic "env" {
         for_each = {
@@ -711,6 +1095,23 @@ resource "google_cloud_run_v2_worker_pool" "worker" {
           REDIS_URL              = "redis_url"
           REDIS_CA_BASE64        = "redis_ca_base64"
         }
+        content {
+          name = env.key
+          value_source {
+            secret_key_ref {
+              secret  = local.runtime_secret_ids[env.value]
+              version = "latest"
+            }
+          }
+        }
+      }
+
+      dynamic "env" {
+        for_each = (
+          contains(keys(var.runtime_secret_ids), "papa_remote_api_key")
+          ? { PAPADATA_PAPA_REMOTE_API_KEY = "papa_remote_api_key" }
+          : {}
+        )
         content {
           name = env.key
           value_source {

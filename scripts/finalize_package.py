@@ -5,7 +5,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 AUTHOR = "Artur Wiśniewski"
-VERSION = "1.0"
+VERSION = "1.0-archive"
 
 IGNORED_DIRS = {
     '.git', '.hg', '.svn', '.idea', '.vscode', '__pycache__',
@@ -28,8 +28,9 @@ def sha_file(path: Path) -> str:
 
 
 def main() -> int:
+    print("ARCHIVE-ONLY: finalizuje historyczny pakiet specyfikacyjny, nie release runtime.")
     validation = subprocess.run(
-        ['python3', str(ROOT / 'scripts' / 'validate_all.py'), str(ROOT)],
+        ['python3', str(ROOT / 'scripts' / 'validate_specification_archive.py'), str(ROOT)],
         cwd=ROOT,
         capture_output=True,
         text=True,

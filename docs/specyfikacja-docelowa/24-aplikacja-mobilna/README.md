@@ -53,14 +53,11 @@ Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 
 ### Decyzje naprawcze
 
-- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
-- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
-- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+> [STD-MOBILE-DECISIONS](../00-zarzadzanie-dokumentacja/README.md#std-mobile-decisions) — normatywny.
 
 ### Acceptance
 
-Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+> [STD-MOBILE-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-acceptance) — normatywny.
 
 <a id="sekcja-01-product-brief"></a>
 
@@ -71,23 +68,15 @@ Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, 
 Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 ### Kontrakt
 
-| Wymaganie | Reguła |
-| --- | --- |
-| Model komercyjny | bezpłatna aplikacja towarzysząca istniejącej odpłatnej usłudze B2B |
-| Brak artefaktu generatora placeholderów | identyfikatory techniczne muszą mieć jawne nazwy bez składni generatora |
-| Privacy | App Store Privacy Labels i Google Data Safety |
-| Account deletion | procedura dostępna i testowalna |
+> [STD-MOBILE-BASELINE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-baseline) — normatywny.
 
 ### Decyzje naprawcze
 
-- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
-- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
-- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+> [STD-MOBILE-DECISIONS](../00-zarzadzanie-dokumentacja/README.md#std-mobile-decisions) — normatywny.
 
 ### Acceptance
 
-Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+> [STD-MOBILE-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-acceptance) — normatywny.
 
 <a id="sekcja-02-ux-architecture-i-screen-map"></a>
 
@@ -98,23 +87,15 @@ Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, 
 Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 ### Kontrakt
 
-| Wymaganie | Reguła |
-| --- | --- |
-| Model komercyjny | bezpłatna aplikacja towarzysząca istniejącej odpłatnej usłudze B2B |
-| Brak artefaktu generatora placeholderów | identyfikatory techniczne muszą mieć jawne nazwy bez składni generatora |
-| Privacy | App Store Privacy Labels i Google Data Safety |
-| Account deletion | procedura dostępna i testowalna |
+> [STD-MOBILE-BASELINE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-baseline) — normatywny.
 
 ### Decyzje naprawcze
 
-- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
-- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
-- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+> [STD-MOBILE-DECISIONS](../00-zarzadzanie-dokumentacja/README.md#std-mobile-decisions) — normatywny.
 
 ### Acceptance
 
-Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+> [STD-MOBILE-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-acceptance) — normatywny.
 
 <a id="sekcja-03-pairing-auth"></a>
 
@@ -158,14 +139,11 @@ Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 
 ### Decyzje naprawcze
 
-- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
-- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
-- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+> [STD-MOBILE-DECISIONS](../00-zarzadzanie-dokumentacja/README.md#std-mobile-decisions) — normatywny.
 
 ### Acceptance
 
-Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+> [STD-MOBILE-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-acceptance) — normatywny.
 
 ### Decyzja P0 — dwa rodzaje QR
 QR parowania jest oddzielony od smart QR pobrania aplikacji. Panel dystrybucji w ustawieniach jest dostępny tylko Ownerowi lub capability mobile.distribution.manage.
@@ -179,23 +157,15 @@ QR parowania jest oddzielony od smart QR pobrania aplikacji. Panel dystrybucji w
 Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 ### Kontrakt
 
-| Wymaganie | Reguła |
-| --- | --- |
-| Model komercyjny | bezpłatna aplikacja towarzysząca istniejącej odpłatnej usłudze B2B |
-| Brak artefaktu generatora placeholderów | identyfikatory techniczne muszą mieć jawne nazwy bez składni generatora |
-| Privacy | App Store Privacy Labels i Google Data Safety |
-| Account deletion | procedura dostępna i testowalna |
+> [STD-MOBILE-BASELINE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-baseline) — normatywny.
 
 ### Decyzje naprawcze
 
-- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
-- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
-- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+> [STD-MOBILE-DECISIONS](../00-zarzadzanie-dokumentacja/README.md#std-mobile-decisions) — normatywny.
 
 ### Acceptance
 
-Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+> [STD-MOBILE-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-acceptance) — normatywny.
 
 <a id="sekcja-05-data-model"></a>
 
@@ -206,23 +176,15 @@ Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, 
 Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 ### Kontrakt
 
-| Wymaganie | Reguła |
-| --- | --- |
-| Model komercyjny | bezpłatna aplikacja towarzysząca istniejącej odpłatnej usłudze B2B |
-| Brak artefaktu generatora placeholderów | identyfikatory techniczne muszą mieć jawne nazwy bez składni generatora |
-| Privacy | App Store Privacy Labels i Google Data Safety |
-| Account deletion | procedura dostępna i testowalna |
+> [STD-MOBILE-BASELINE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-baseline) — normatywny.
 
 ### Decyzje naprawcze
 
-- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
-- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
-- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+> [STD-MOBILE-DECISIONS](../00-zarzadzanie-dokumentacja/README.md#std-mobile-decisions) — normatywny.
 
 ### Acceptance
 
-Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+> [STD-MOBILE-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-acceptance) — normatywny.
 
 <a id="sekcja-06-openapi"></a>
 
@@ -266,14 +228,11 @@ Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 
 ### Decyzje naprawcze
 
-- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
-- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
-- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+> [STD-MOBILE-DECISIONS](../00-zarzadzanie-dokumentacja/README.md#std-mobile-decisions) — normatywny.
 
 ### Acceptance
 
-Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+> [STD-MOBILE-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-acceptance) — normatywny.
 
 <a id="sekcja-07-push-deep-links-offline"></a>
 
@@ -284,23 +243,15 @@ Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, 
 Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 ### Kontrakt
 
-| Wymaganie | Reguła |
-| --- | --- |
-| Model komercyjny | bezpłatna aplikacja towarzysząca istniejącej odpłatnej usłudze B2B |
-| Brak artefaktu generatora placeholderów | identyfikatory techniczne muszą mieć jawne nazwy bez składni generatora |
-| Privacy | App Store Privacy Labels i Google Data Safety |
-| Account deletion | procedura dostępna i testowalna |
+> [STD-MOBILE-BASELINE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-baseline) — normatywny.
 
 ### Decyzje naprawcze
 
-- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
-- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
-- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+> [STD-MOBILE-DECISIONS](../00-zarzadzanie-dokumentacja/README.md#std-mobile-decisions) — normatywny.
 
 ### Acceptance
 
-Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+> [STD-MOBILE-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-acceptance) — normatywny.
 
 <a id="sekcja-08-store-compliance"></a>
 
@@ -311,23 +262,15 @@ Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, 
 Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 ### Kontrakt
 
-| Wymaganie | Reguła |
-| --- | --- |
-| Model komercyjny | bezpłatna aplikacja towarzysząca istniejącej odpłatnej usłudze B2B |
-| Brak artefaktu generatora placeholderów | identyfikatory techniczne muszą mieć jawne nazwy bez składni generatora |
-| Privacy | App Store Privacy Labels i Google Data Safety |
-| Account deletion | procedura dostępna i testowalna |
+> [STD-MOBILE-BASELINE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-baseline) — normatywny.
 
 ### Decyzje naprawcze
 
-- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
-- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
-- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+> [STD-MOBILE-DECISIONS](../00-zarzadzanie-dokumentacja/README.md#std-mobile-decisions) — normatywny.
 
 ### Acceptance
 
-Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+> [STD-MOBILE-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-acceptance) — normatywny.
 
 <a id="sekcja-09-ci-cd-release"></a>
 
@@ -338,23 +281,15 @@ Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, 
 Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 ### Kontrakt
 
-| Wymaganie | Reguła |
-| --- | --- |
-| Model komercyjny | bezpłatna aplikacja towarzysząca istniejącej odpłatnej usłudze B2B |
-| Brak artefaktu generatora placeholderów | identyfikatory techniczne muszą mieć jawne nazwy bez składni generatora |
-| Privacy | App Store Privacy Labels i Google Data Safety |
-| Account deletion | procedura dostępna i testowalna |
+> [STD-MOBILE-BASELINE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-baseline) — normatywny.
 
 ### Decyzje naprawcze
 
-- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
-- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
-- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+> [STD-MOBILE-DECISIONS](../00-zarzadzanie-dokumentacja/README.md#std-mobile-decisions) — normatywny.
 
 ### Acceptance
 
-Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+> [STD-MOBILE-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-acceptance) — normatywny.
 
 <a id="sekcja-10-observability-slo"></a>
 
@@ -365,23 +300,15 @@ Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, 
 Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 ### Kontrakt
 
-| Wymaganie | Reguła |
-| --- | --- |
-| Model komercyjny | bezpłatna aplikacja towarzysząca istniejącej odpłatnej usłudze B2B |
-| Brak artefaktu generatora placeholderów | identyfikatory techniczne muszą mieć jawne nazwy bez składni generatora |
-| Privacy | App Store Privacy Labels i Google Data Safety |
-| Account deletion | procedura dostępna i testowalna |
+> [STD-MOBILE-BASELINE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-baseline) — normatywny.
 
 ### Decyzje naprawcze
 
-- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
-- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
-- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+> [STD-MOBILE-DECISIONS](../00-zarzadzanie-dokumentacja/README.md#std-mobile-decisions) — normatywny.
 
 ### Acceptance
 
-Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+> [STD-MOBILE-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-acceptance) — normatywny.
 
 <a id="sekcja-11-rollout-rollback"></a>
 
@@ -392,23 +319,15 @@ Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, 
 Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 ### Kontrakt
 
-| Wymaganie | Reguła |
-| --- | --- |
-| Model komercyjny | bezpłatna aplikacja towarzysząca istniejącej odpłatnej usłudze B2B |
-| Brak artefaktu generatora placeholderów | identyfikatory techniczne muszą mieć jawne nazwy bez składni generatora |
-| Privacy | App Store Privacy Labels i Google Data Safety |
-| Account deletion | procedura dostępna i testowalna |
+> [STD-MOBILE-BASELINE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-baseline) — normatywny.
 
 ### Decyzje naprawcze
 
-- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
-- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
-- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+> [STD-MOBILE-DECISIONS](../00-zarzadzanie-dokumentacja/README.md#std-mobile-decisions) — normatywny.
 
 ### Acceptance
 
-Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+> [STD-MOBILE-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-acceptance) — normatywny.
 
 <a id="sekcja-12-backlog-i-acceptance-plan"></a>
 
@@ -419,23 +338,15 @@ Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, 
 Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 ### Kontrakt
 
-| Wymaganie | Reguła |
-| --- | --- |
-| Model komercyjny | bezpłatna aplikacja towarzysząca istniejącej odpłatnej usłudze B2B |
-| Brak artefaktu generatora placeholderów | identyfikatory techniczne muszą mieć jawne nazwy bez składni generatora |
-| Privacy | App Store Privacy Labels i Google Data Safety |
-| Account deletion | procedura dostępna i testowalna |
+> [STD-MOBILE-BASELINE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-baseline) — normatywny.
 
 ### Decyzje naprawcze
 
-- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
-- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
-- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+> [STD-MOBILE-DECISIONS](../00-zarzadzanie-dokumentacja/README.md#std-mobile-decisions) — normatywny.
 
 ### Acceptance
 
-Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+> [STD-MOBILE-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-acceptance) — normatywny.
 
 <a id="sekcja-13-adr-mobile"></a>
 
@@ -446,20 +357,12 @@ Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, 
 Dokument definiuje kompletny zakres wymagań dla aplikacji mobilnej.
 ### Kontrakt
 
-| Wymaganie | Reguła |
-| --- | --- |
-| Model komercyjny | bezpłatna aplikacja towarzysząca istniejącej odpłatnej usłudze B2B |
-| Brak artefaktu generatora placeholderów | identyfikatory techniczne muszą mieć jawne nazwy bez składni generatora |
-| Privacy | App Store Privacy Labels i Google Data Safety |
-| Account deletion | procedura dostępna i testowalna |
+> [STD-MOBILE-BASELINE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-baseline) — normatywny.
 
 ### Decyzje naprawcze
 
-- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
-- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
-- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
-- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+> [STD-MOBILE-DECISIONS](../00-zarzadzanie-dokumentacja/README.md#std-mobile-decisions) — normatywny.
 
 ### Acceptance
 
-Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+> [STD-MOBILE-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-mobile-acceptance) — normatywny.

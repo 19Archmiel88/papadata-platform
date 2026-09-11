@@ -1,0 +1,30 @@
+{
+  "name": "@papadata/papa-runtime",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b tsconfig.json",
+    "typecheck": "tsc -b tsconfig.json --pretty false"
+  },
+  "dependencies": {
+    "@papadata/ai-runtime": "workspace:*",
+    "@papadata/contracts": "workspace:*",
+    "@papadata/database": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.0"
+  },
+  "engines": {
+    "node": "24.18.0",
+    "pnpm": "10.29.3"
+  }
+}

@@ -206,6 +206,19 @@ export const Motion: Story = {
           ))}
         </div>
       </StorySection>
+
+      <StorySection
+        index="04"
+        title={<Localized pl="Poza skalą: ruch ciągły" en="Outside the scale: ambient motion" />}
+        summary={<Localized pl="Cztery kroki czasu trwania opisują ruch, który potwierdza jednorazową zmianę stanu — nie ciągłe, zapętlone animacje." en="The four duration steps describe motion that confirms a one-off state change — not continuous, looping animation." />}
+      >
+        <div className="pd-f0-note" data-testid="motion-ambient-note">
+          <Localized
+            pl="W realnym kodzie istnieją 4 zapętlone animacje ambientowe spoza tej skali: przewijający się pasek logotypów w Auth (28s), pulsujący wskaźnik aktywności Papa Asystenta (1s), pulsowanie oczekującej wiadomości (1,1s) i shimmer szkieletu ładowania w Integracjach (1,4s). To świadomie osobna kategoria — nie próbujemy naciągać ich na krok 70–240ms, bo wtedy przestałyby wyglądać jak ciągły ruch. Wszystkie mają własną obsługę prefers-reduced-motion (shimmerowi w Integracjach brakowało jej — dopisane przy okazji tego audytu)."
+            en="Real code has 4 looping ambient animations outside this scale: Auth's scrolling logo marquee (28s), Papa Assistant's activity-pulse dot (1s), the pending-message pulse (1.1s), and Integrations' loading-skeleton shimmer (1.4s). This is deliberately a separate category — forcing them onto the 70–240ms step would stop them from reading as continuous motion. All of them have their own prefers-reduced-motion handling (Integrations' shimmer was missing it — added as part of this audit)."
+          />
+        </div>
+      </StorySection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {
@@ -220,5 +233,6 @@ export const Motion: Story = {
     await expect(fullTrack).toHaveAttribute('data-run', 'true');
 
     await expect(canvas.getByTestId('motion-presets').children).toHaveLength(presetRows.length);
+    await expect(canvas.getByTestId('motion-ambient-note')).toBeInTheDocument();
   },
 };

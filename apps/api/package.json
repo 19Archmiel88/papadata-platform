@@ -33,6 +33,7 @@
     "@papadata/contracts": "workspace:*",
     "@papadata/database": "workspace:*",
     "@papadata/integrations": "workspace:*",
+    "@papadata/papa-runtime": "workspace:*",
     "@papadata/storage": "workspace:*",
     "argon2": "^0.45.1",
     "bullmq": "^6.3.4",

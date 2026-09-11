@@ -97,9 +97,9 @@ export function CommandPalette({
           />
         ) : (
           <div
-            aria-label="Wyniki command palette"
+            aria-label="Wyniki wyszukiwania"
             className="pd-product-shell__command-results"
-            role="listbox"
+            role="region"
           >
             {groupedResults.map((group) => (
               <section
@@ -112,7 +112,7 @@ export function CommandPalette({
                 <div className="pd-product-shell__command-group-list">
                   {group.results.map((result) => (
                     <button
-                      aria-selected="false"
+
                       className="pd-product-shell__command-result"
                       key={result.id}
                       onClick={() => {
@@ -125,7 +125,7 @@ export function CommandPalette({
                         onNavigate(result.path);
                         onOpenChange(false);
                       }}
-                      role="option"
+
                       type="button"
                     >
                       <span aria-hidden="true" className="pd-product-shell__command-result-icon">

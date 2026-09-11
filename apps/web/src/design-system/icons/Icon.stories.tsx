@@ -678,6 +678,18 @@ export const Ikony: Story = {
             {iconCatalogGroups.map(renderCatalogGroup)}
           </div>
         </StorySection>
+
+        <StorySection
+          index="05"
+          title={<Localized pl="Poza rejestrem" en="Outside the registry" />}
+        >
+          <p style={sectionSummaryStyle}>
+            <Localized
+              pl="Realny przykład lokalnego assetu: Papa Asystent renderuje własne ikony interfejsu (plus, chevron, wyślij, przypnij, zamknij i inne — 10 nazw) bezpośrednio jako SVG w AssistantControlIcon, zamiast przez ten komponent. To świadomie osobna kategoria — generyczne glify sterujące UI, nie ikonografia domenowa — nie duplikacja do naprawienia."
+              en="A real local-asset example: Papa Assistant renders its own interface icons (plus, chevron, send, pin, close and others — 10 names) directly as SVG in AssistantControlIcon, instead of through this component. This is a deliberately separate category — generic UI-control glyphs, not domain iconography — not duplication to fix."
+            />
+          </p>
+        </StorySection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

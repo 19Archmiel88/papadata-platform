@@ -140,6 +140,18 @@ export const Motyw: Story = {
           />
         </div>
       </StorySection>
+
+      <StorySection
+        index="03"
+        title={<Localized pl="Trzeci wybór w Ustawieniach" en="A third choice in Settings" />}
+      >
+        <div className="pd-f0-note" data-testid="theme-system-note">
+          <Localized
+            pl="Realny ekran Ustawień platformy daje użytkownikowi trzeci wybór — Systemowy — obok Jasnego i Ciemnego. To wygoda interfejsu, nie trzeci tryb CSS: przy zapisie Systemowy jest jednorazowo rozstrzygany przez prefers-color-scheme i zapisywany jako zwykły jasny albo ciemny motyw z kontraktu powyżej. Brak nasłuchu na żywo — zmiana preferencji systemu w trakcie sesji nie przełącza motywu automatycznie."
+            en="The real Platform Settings screen gives users a third choice — System — alongside Light and Dark. It is an interface convenience, not a third CSS mode: on save, System is resolved once via prefers-color-scheme and stored as a plain light or dark theme from the contract above. There is no live listener — an in-session system-preference change does not switch the theme automatically."
+          />
+        </div>
+      </StorySection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {
@@ -147,5 +159,6 @@ export const Motyw: Story = {
 
     await expect(canvas.getByTestId('theme-live-sample')).toBeInTheDocument();
     await expect(canvas.getByTestId('theme-note')).toBeInTheDocument();
+    await expect(canvas.getByTestId('theme-system-note')).toBeInTheDocument();
   },
 };

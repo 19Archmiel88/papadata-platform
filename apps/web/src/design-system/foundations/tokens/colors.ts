@@ -103,6 +103,34 @@ export const colorContract = {
   },
 } as const;
 
+export const rampTokens = {
+  families: ['accent', 'success', 'warning', 'danger', 'info', 'violet', 'slate'],
+
+  steps: {
+    accent: [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950],
+    success: [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950],
+    warning: [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950],
+    danger: [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950],
+    info: [50, 100, 200, 300, 400, 500, 600, 700, 800, 900],
+    violet: [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950],
+    slate: [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950],
+  },
+} as const;
+
+export function rampSwatch(
+  family: typeof rampTokens.families[number],
+  step: number,
+): string {
+  return `rgb(var(--pd-vl-${family}-${step}))`;
+}
+
+export const colorShortAliases = {
+  accent: 'var(--pd-accent)',
+  success: 'var(--pd-success)',
+  warning: 'var(--pd-warning)',
+  danger: 'var(--pd-danger)',
+} as const;
+
 export type PapaDataThemeName =
   typeof papaDataRuntimeThemes[number];
 

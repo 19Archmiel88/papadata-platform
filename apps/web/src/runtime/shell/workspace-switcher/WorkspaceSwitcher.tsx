@@ -106,7 +106,7 @@ export function WorkspaceSwitcher({
       <AnchoredShellOverlay
         align="start"
         className="pd-product-shell__workspace-overlay"
-        description="Zmiana workspace aktualizuje bezpieczny kontekst sesji przed odświeżeniem danych."
+        description="Wybierz obszar roboczy, którego dane chcesz przeglądać."
         onOpenChange={setMenuOpen}
         open={menuOpen}
         title="Zmień workspace"

@@ -64,6 +64,18 @@ export function gitHead() {
   }
 }
 
+export function gitWorkingTreeClean() {
+  try {
+    return execFileSync("git", ["status", "--porcelain", "--untracked-files=normal"], {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim().length === 0;
+  } catch {
+    return false;
+  }
+}
+
 export async function collectFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const result = [];

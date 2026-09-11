@@ -9,6 +9,7 @@ import { safeRandomUUID } from '../../shared/id/safeRandomUUID';
 import { isRecord } from './assistantModel';
 import { bffClient } from '../../shared/api/bffClient';
 import './assistant-workspace.css';
+import { readProductLocale } from '../../../screens/shared/useProductLocale';
 
 type ReadPath=Parameters<typeof bffClient.readAssistantWorkspace>[0];
 function useWorkspace<T>(path:ReadPath|null){
@@ -29,7 +30,7 @@ function useMutation(){
  return {busy,notice,error,run};
 }
 function DemoNote(){const {demo,gateway}=usePapaAssistantRuntime();return !gateway.workspace?<p className="pd-assistant__note">{demo?'Demonstracja: poniższe operacje wymagają sesji API. Nie zapisujemy fikcyjnego potwierdzenia.':'Ten transport nie udostępnia operacji workspace’u.'}</p>:null;}
-const stamp=(value:string|null)=>value?new Date(value).toLocaleString('pl-PL'):'bez terminu';
+const stamp=(value:string|null)=>value?new Date(value).toLocaleString(readProductLocale()==='en'?'en-US':'pl-PL'):'bez terminu';
 
 export function AssistantHistoryPanel(){
  const runtime=usePapaAssistantRuntime(),[search,setSearch]=useState(''),[filter,setFilter]=useState(''),[page,setPage]=useState(0),[archived,setArchived]=useState(false),mutation=useMutation();

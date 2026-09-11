@@ -828,3 +828,261 @@ Stan na 2026-07-30:
 - `node_modules` istnieje, więc instalacja nie jest teraz wymagana.
 - W audytowanych bezpośrednich zależnościach nie ma pakietów `GPL/AGPL/LGPL/SSPL/BUSL`.
 - Jedyny obszar wymagający dodatkowej decyzji operacyjnej to pakiety fontowe na `OFL-1.1`.
+
+<a id="wspolne-kontrakty-przekrojowe"></a>
+
+## Wspólne kontrakty przekrojowe (P2-01)
+
+Poniższe bloki są normatywnym source-of-truth dla reguł powtarzanych wcześniej w wielu dokumentach. Dokument domenowy lub komponentowy dziedziczy cały wskazany kontrakt i zawiera lokalnie wyłącznie wyjątki albo semantykę własną.
+
+<a id="std-screen-states"></a>
+
+### STD-SCREEN-STATES
+
+### Stany
+| Stan | Zachowanie |
+|---|---|
+| `ready` | Dane kompletne; wszystkie dozwolone akcje aktywne. |
+| `loading` | Skeleton zachowuje układ i nie pokazuje fałszywych zer. |
+| `empty` | Wyjaśnienie, dlaczego brak danych, oraz konkretna akcja uzyskania danych. |
+| `partial` | Widoczne źródła braków; obliczenia nie udają pełnej pewności. |
+| `stale` | Znacznik czasu i wpływ nieświeżości na decyzję. |
+| `error` | ApiProblem z correlationId, bez utraty filtrów. |
+| `forbidden` | Informacja o wymaganym capability bez ujawnienia danych. |
+| `offline` | Dane cache oznaczone jako historyczne; mutacje zablokowane. |
+
+<a id="std-screen-acceptance"></a>
+
+### STD-SCREEN-ACCEPTANCE
+
+### Kryteria akceptacji
+1. Ekran renderuje wyłącznie komponenty z tabeli i ich kanonicznych kontraktów.
+2. Dane są zgodne z typem z `contracts/api-schemas.ts`; niedozwolone `any` i generyczny `Record<string, unknown>` nie są modelem finalnym.
+3. Każda akcja ma operationId lub jest jawnie akcją UI bez transportu.
+4. Testy komponentowe, a11y, kontraktowe i E2E obejmują stany z tabeli.
+
+<a id="std-screen-responsive-a11y"></a>
+
+### STD-SCREEN-RESPONSIVE-A11Y
+
+### Responsywność i dostępność
+Desktop używa siatki 12-kolumnowej; tablet redukuje zestawienie do 2 kolumn; mobile prezentuje kolejność: readiness → najważniejszy wynik → działania → szczegóły. Tabele mają tryb przewijania lub listy kart bez utraty pól. Wykresy mają tabelę danych, opis trendu i oznaczenia inne niż kolor. Wszystkie akcje są dostępne z klawiatury, a fokus nie jest przenoszony bez intencji użytkownika.
+
+<a id="std-screen-business-interactions"></a>
+
+### STD-SCREEN-BUSINESS-INTERACTIONS
+
+### Reguły biznesowe i interakcje
+- Odczyt nie może zmieniać stanu domeny. Mutacja wymaga capability write, potwierdzenia adekwatnego do ryzyka i audit eventu.
+- Filtry, sortowanie i zakres czasu są częścią adresowalnego stanu widoku.
+- Otwarcie szczegółu zachowuje kontekst powrotu; overlay przywraca focus do elementu wywołującego.
+- Eksport istnieje wyłącznie wtedy, gdy ma osobne operationId i respektuje maskowanie, role oraz retencję.
+
+<a id="std-screen-security-privacy"></a>
+
+### STD-SCREEN-SECURITY-PRIVACY
+
+### Bezpieczeństwo i prywatność
+- Zapytania zawsze zawierają zweryfikowany tenant/workspace z sesji, nie z samego parametru klienta.
+- PII jest maskowane albo pseudonimizowane zgodnie z rolą.
+- Błędy nie ujawniają rekordów z innego tenanta.
+- Mutacje rejestrują actor, operationId, resource IDs, wynik i correlationId bez sekretów.
+
+<a id="std-screen-storybook-tests"></a>
+
+### STD-SCREEN-STORYBOOK-TESTS
+
+### Storybook i testy
+Target Storybook używa fixture właściwego temu dokumentowi. Wymagane są stany ready/loading/empty/partial/stale/error/forbidden/offline, viewporty 1440/768/390, PL/EN, dark/light, reduced motion oraz test interakcji powiązany z rzeczywistym operationId.
+
+<a id="std-component-acceptance"></a>
+
+### STD-COMPONENT-ACCEPTANCE
+
+## Kryteria akceptacji
+1. `tsc --noEmit` kompiluje jedyny kontrakt kanoniczny.
+2. Dokument, rejestr i macierz ekran–komponent wskazują ten sam component ID i plik kontraktu.
+3. Testy a11y nie wykazują naruszeń krytycznych.
+4. Komponent nie definiuje własnych tokenów ani duplikuje komponentu bazowego.
+
+<a id="std-component-storybook-tests"></a>
+
+### STD-COMPONENT-STORYBOOK-TESTS
+
+## Storybook i testy
+Wymagane stories: wariant bazowy, wszystkie stany, długie polskie i angielskie etykiety, 200% zoom, dark/light, reduced motion oraz test interakcji dla każdej akcji. Target pozostaje backlogiem do chwili dodania fizycznego pliku story.
+
+<a id="std-component-states"></a>
+
+### STD-COMPONENT-STATES
+
+## Stany i warianty
+Obsłuż: default, loading, empty, error, disabled, readonly i success, jeśli mają znaczenie dla tego komponentu. Nie renderuj akcji bez capability i nie ukrywaj przyczyny blokady.
+
+<a id="std-component-a11y"></a>
+
+### STD-COMPONENT-A11Y
+
+## Dostępność
+Semantyczny element HTML, pełna obsługa klawiatury, focus-visible, nazwa dostępna, komunikaty dynamiczne przez właściwe live region oraz brak przekazywania znaczenia wyłącznie kolorem.
+
+<a id="std-component-events"></a>
+
+### STD-COMPONENT-EVENTS
+
+## Zdarzenia
+Zdarzenia mają identyfikator komponentu, nazwę działania, `correlationId` i typowany payload. Komponent nie wywołuje bezpośrednio endpointu — przekazuje intencję do właściciela ekranu.
+
+<a id="std-api-operation-rules"></a>
+
+### STD-API-OPERATION-RULES
+
+- `query` nie zmienia stanu i może zwrócić status danych oraz ograniczenia.
+- `command` wymaga idempotency key, audytu, kontroli capability i jawnego outcome.
+- Alias ekranowy nie jest nowym endpointem backendowym.
+- Dokumenty wariantów i polityk nie otrzymują własnego route ani operationId.
+
+<a id="std-e2e-acceptance"></a>
+
+### STD-E2E-ACCEPTANCE
+
+### Kryteria akceptacji
+1. Każdy krok ma istniejący fixture i operationId o prawidłowym kind.
+2. Surface document, route i postcondition są zgodne z nazwą procesu.
+3. Retry nie duplikuje skutku komendy.
+4. Proces ma test happy path, błąd odzyskiwalny, utratę capability i wznowienie po przerwaniu.
+
+<a id="std-e2e-security"></a>
+
+### STD-E2E-SECURITY
+
+### Zasady bezpieczeństwa
+Każdy krok ponownie sprawdza capability i zakres tenant/workspace. Tokeny, hasła i kody MFA nie są zapisywane w fixture ani telemetrii. Komendy wymagają correlationId, audytu i idempotency key; callback wymaga podpisu i ochrony przed replay.
+
+<a id="std-security-controls"></a>
+
+### STD-SECURITY-CONTROLS
+
+| Kontrola | Wymaganie |
+| --- | --- |
+| owner | RACI i evidence owner |
+| evidence | plik, log, konfiguracja albo wynik testu |
+| rollout | preview -> enforcement, gdy ryzykowne |
+| rollback | opisany i przetestowany |
+
+<a id="std-security-product-links"></a>
+
+### STD-SECURITY-PRODUCT-LINKS
+
+- Auth, MFA, sesje i reauthentication;
+- tenant/workspace isolation;
+- integracje i dane osobowe;
+- AI read-only w MVP i evidence panel;
+- aplikacja mobilna, pairing i urządzenia;
+- billing, support access i operacje administracyjne.
+
+<a id="std-security-evidence"></a>
+
+### STD-SECURITY-EVIDENCE
+
+Każda kontrola wymaga właściciela, artefaktu dowodowego, daty wykonania, wyniku i decyzji GO/NO-GO.
+
+<a id="std-mobile-baseline"></a>
+
+### STD-MOBILE-BASELINE
+
+| Wymaganie | Reguła |
+| --- | --- |
+| Model komercyjny | bezpłatna aplikacja towarzysząca istniejącej odpłatnej usłudze B2B |
+| Brak artefaktu generatora placeholderów | identyfikatory techniczne muszą mieć jawne nazwy bez składni generatora |
+| Privacy | App Store Privacy Labels i Google Data Safety |
+| Account deletion | procedura dostępna i testowalna |
+
+<a id="std-mobile-decisions"></a>
+
+### STD-MOBILE-DECISIONS
+
+- Aplikacja mobilna jest bezpłatną aplikacją towarzyszącą istniejącej odpłatnej usłudze B2B.
+- API używa parametrów `{runId}`, `{artifactId}`, `{deviceId}`, `{pairingId}`; nie wolno używać artefaktów generatora placeholderów.
+- Mobile MVP jest read-only z kontrolowanymi wyjątkami dla pairing, sesji, urządzeń i preferencji powiadomień.
+- Pairing web↔mobile jest osobną maszyną stanów, powiązaną z sesją i urządzeniem.
+
+<a id="std-mobile-acceptance"></a>
+
+### STD-MOBILE-ACCEPTANCE
+
+Każda funkcja mobile musi mieć screen, endpoint lub decyzję braku endpointu, privacy impact, test i rollout/rollback.
+
+<a id="std-screen-layout-base"></a>
+
+### STD-SCREEN-LAYOUT-BASE
+
+### Anatomia finalnego ekranu
+| Region | Kompozycja | Odpowiedzialność |
+|---|---|---|
+| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
+| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
+| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
+| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+
+<a id="std-screen-layout-analytics"></a>
+
+### STD-SCREEN-LAYOUT-ANALYTICS
+
+### Anatomia finalnego ekranu
+| Region | Kompozycja | Odpowiedzialność |
+|---|---|---|
+| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
+| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
+| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
+| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
+| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+
+<a id="std-screen-layout-table"></a>
+
+### STD-SCREEN-LAYOUT-TABLE
+
+### Anatomia finalnego ekranu
+| Region | Kompozycja | Odpowiedzialność |
+|---|---|---|
+| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
+| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
+| Rejestr danych | DataTable lub komponent domenowy | sortowanie, filtrowanie, paginacja i otwieranie rekordu |
+| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
+| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+
+<a id="std-screen-layout-analytics-table"></a>
+
+### STD-SCREEN-LAYOUT-ANALYTICS-TABLE
+
+### Anatomia finalnego ekranu
+| Region | Kompozycja | Odpowiedzialność |
+|---|---|---|
+| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
+| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
+| Analiza | komponenty analityczne | metryki, porównania, trend i alternatywa tabelaryczna |
+| Rejestr danych | DataTable lub komponent domenowy | sortowanie, filtrowanie, paginacja i otwieranie rekordu |
+| Dowody i stan | DataStatusBanner / EvidencePanel | świeżość, pochodzenie, confidence i ograniczenia |
+| Akcje | Button / ApprovalPanel / Dialog | tylko operacje dozwolone capability; mutacje z potwierdzeniem i idempotency key |
+
+<a id="std-screen-layout-policy"></a>
+
+### STD-SCREEN-LAYOUT-POLICY
+
+### Anatomia finalnego ekranu
+| Region | Kompozycja | Odpowiedzialność |
+|---|---|---|
+| Nagłówek | PageHeader lub SectionIntro | nazwa, zakres, readiness i akcje zgodne z capability |
+| Kontekst | FilterBar / DateRangePicker | filtry zapisane w URL i odtwarzalne po odświeżeniu |
+| Reguły wariantów | dokument policy | macierz warunków i rekomendowane użycie |
+| Przykłady | Storybook backlog | przykłady poprawne i błędne |
+
+<a id="std-screen-route-none"></a>
+
+### STD-SCREEN-ROUTE-NONE
+
+### Routing i warunki wejścia
+- Route: brak.
+- Tenant i workspace muszą być rozwiązane przed pobraniem danych.
+- Parametry filtrów i rekordu są walidowane przed żądaniem; niedozwolone identyfikatory kończą się bezpiecznym 404/403.
+- Zmiana workspace czyści cache zakresu poprzedniego workspace i odtwarza filtr domyślny.

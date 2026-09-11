@@ -57,7 +57,7 @@ export function AnchoredShellOverlay({
     setPosition({
       left: Math.max(12, rect.left),
       right: Math.max(12, window.innerWidth - rect.right),
-      top: Math.max(12, rect.bottom + 10),
+      top: Math.min(Math.max(12, rect.bottom + 10), Math.max(12, window.innerHeight - 240)),
     });
   }, []);
 
@@ -73,7 +73,7 @@ export function AnchoredShellOverlay({
       const first = panelRef.current?.querySelector<HTMLElement>(
         'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
       );
-      (autofocus ?? first ?? panelRef.current)?.focus();
+      (autofocus ?? first ?? panelRef.current)?.focus({ preventScroll: true });
     });
 
     function handlePointerDown(event: PointerEvent) {

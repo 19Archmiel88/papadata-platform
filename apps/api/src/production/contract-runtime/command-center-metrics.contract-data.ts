@@ -1394,7 +1394,7 @@ export async function buildCommandCenterWaterfallData(
 
 const OVERVIEW_DAILY_METRIC_CODES: readonly DashboardMetricCode[] = [
   "revenue_after_refunds",
-  "cost_of_goods_sold",
+  "cogs",
   "ad_spend",
   "orders",
 ];
@@ -1538,7 +1538,7 @@ export async function buildCommandCenterOverviewScreenData(
   const days: readonly CommandCenterOverviewDay[] = daily.map((day) => ({
     date: day.date,
     revenue: numberOrZero(day.values.revenue_after_refunds),
-    costOfGoods: numberOrZero(day.values.cost_of_goods_sold),
+    costOfGoods: numberOrZero(day.values.cogs),
     fulfillmentCost: 0,
     marketingSpend: numberOrZero(day.values.ad_spend),
     newCustomers: newCustomersByDate.get(day.date) ?? 0,

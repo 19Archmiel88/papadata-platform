@@ -43,7 +43,7 @@ Proces prowadzi użytkownika przez: Przegląd zaproszenia → Utworzenie lub pow
 - Krok 9: `INVITATION_OR_ACCESS_FAILED` — `INVITATION_OR_ACCESS_FAILED` dla kroku 9: zachowaj niesekretne dane formularza i route `/app/command-center/widok-glowny`, pokaż correlationId oraz akcję retry tylko dla błędu oznaczonego `recoverable=true`; błąd capability kończy proces bez retry.
 
 ### Zasady bezpieczeństwa
-Każdy krok ponownie sprawdza capability i zakres tenant/workspace. Tokeny, hasła i kody MFA nie są zapisywane w fixture ani telemetrii. Komendy wymagają correlationId, audytu i idempotency key; callback wymaga podpisu i ochrony przed replay.
+> [STD-E2E-SECURITY](../00-zarzadzanie-dokumentacja/README.md#std-e2e-security) — normatywny.
 
 ### Wznowienie
 Wznowienie opiera się na ostatnim potwierdzonym postcondition, a nie na samym numerze ekranu. System przed kontynuacją odczytuje aktualny stan domeny i nie odtwarza mutacji bez dowodu idempotencji.
@@ -52,10 +52,7 @@ Wznowienie opiera się na ostatnim potwierdzonym postcondition, a nie na samym n
 Test ładuje fizyczne fixture wskazane w tabeli, mockuje kontrakt API zgodny z `contracts/openapi-1.0.json`, wykonuje akcję UI, sprawdza event i postcondition, a następnie uruchamia scenariusz błędu `INVITATION_OR_ACCESS_FAILED`.
 
 ### Kryteria akceptacji
-1. Każdy krok ma istniejący fixture i operationId o prawidłowym kind.
-2. Surface document, route i postcondition są zgodne z nazwą procesu.
-3. Retry nie duplikuje skutku komendy.
-4. Proces ma test happy path, błąd odzyskiwalny, utratę capability i wznowienie po przerwaniu.
+> [STD-E2E-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-e2e-acceptance) — normatywny.
 
 <a id="sekcja-90-02-onboarding-do-pierwszej-wartosci"></a>
 
@@ -85,7 +82,7 @@ Proces prowadzi użytkownika przez: Profil działalności → Identyfikacja firm
 - Krok 7: `ONBOARDING_FIRST_VALUE_BLOCKED` — `ONBOARDING_FIRST_VALUE_BLOCKED` dla kroku 7: zachowaj niesekretne dane formularza i route `/app/decisions/rekomendacje`, pokaż correlationId oraz akcję retry tylko dla błędu oznaczonego `recoverable=true`; błąd capability kończy proces bez retry.
 
 ### Zasady bezpieczeństwa
-Każdy krok ponownie sprawdza capability i zakres tenant/workspace. Tokeny, hasła i kody MFA nie są zapisywane w fixture ani telemetrii. Komendy wymagają correlationId, audytu i idempotency key; callback wymaga podpisu i ochrony przed replay.
+> [STD-E2E-SECURITY](../00-zarzadzanie-dokumentacja/README.md#std-e2e-security) — normatywny.
 
 ### Wznowienie
 Wznowienie opiera się na ostatnim potwierdzonym postcondition, a nie na samym numerze ekranu. System przed kontynuacją odczytuje aktualny stan domeny i nie odtwarza mutacji bez dowodu idempotencji.
@@ -94,10 +91,7 @@ Wznowienie opiera się na ostatnim potwierdzonym postcondition, a nie na samym n
 Test ładuje fizyczne fixture wskazane w tabeli, mockuje kontrakt API zgodny z `contracts/openapi-1.0.json`, wykonuje akcję UI, sprawdza event i postcondition, a następnie uruchamia scenariusz błędu `ONBOARDING_FIRST_VALUE_BLOCKED`.
 
 ### Kryteria akceptacji
-1. Każdy krok ma istniejący fixture i operationId o prawidłowym kind.
-2. Surface document, route i postcondition są zgodne z nazwą procesu.
-3. Retry nie duplikuje skutku komendy.
-4. Proces ma test happy path, błąd odzyskiwalny, utratę capability i wznowienie po przerwaniu.
+> [STD-E2E-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-e2e-acceptance) — normatywny.
 
 <a id="sekcja-90-03-zmiana-workspace"></a>
 
@@ -125,7 +119,7 @@ Proces prowadzi użytkownika przez: Aktywny moduł → Otwarcie przełącznika w
 - Krok 6: `WORKSPACE_SWITCH_FAILED` — `WORKSPACE_SWITCH_FAILED` dla kroku 6: zachowaj niesekretne dane formularza i route `/app/notifications`, pokaż correlationId oraz akcję retry tylko dla błędu oznaczonego `recoverable=true`; błąd capability kończy proces bez retry.
 
 ### Zasady bezpieczeństwa
-Każdy krok ponownie sprawdza capability i zakres tenant/workspace. Tokeny, hasła i kody MFA nie są zapisywane w fixture ani telemetrii. Komendy wymagają correlationId, audytu i idempotency key; callback wymaga podpisu i ochrony przed replay.
+> [STD-E2E-SECURITY](../00-zarzadzanie-dokumentacja/README.md#std-e2e-security) — normatywny.
 
 ### Wznowienie
 Wznowienie opiera się na ostatnim potwierdzonym postcondition, a nie na samym numerze ekranu. System przed kontynuacją odczytuje aktualny stan domeny i nie odtwarza mutacji bez dowodu idempotencji.
@@ -134,10 +128,7 @@ Wznowienie opiera się na ostatnim potwierdzonym postcondition, a nie na samym n
 Test ładuje fizyczne fixture wskazane w tabeli, mockuje kontrakt API zgodny z `contracts/openapi-1.0.json`, wykonuje akcję UI, sprawdza event i postcondition, a następnie uruchamia scenariusz błędu `WORKSPACE_SWITCH_FAILED`.
 
 ### Kryteria akceptacji
-1. Każdy krok ma istniejący fixture i operationId o prawidłowym kind.
-2. Surface document, route i postcondition są zgodne z nazwą procesu.
-3. Retry nie duplikuje skutku komendy.
-4. Proces ma test happy path, błąd odzyskiwalny, utratę capability i wznowienie po przerwaniu.
+> [STD-E2E-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-e2e-acceptance) — normatywny.
 
 <a id="sekcja-90-04-kpi-do-rekordu-zrodlowego"></a>
 
@@ -167,7 +158,7 @@ Proces prowadzi użytkownika przez: KPI → Wykres → Tabela alternatywna → �
 - Krok 7: `SOURCE_RECORD_UNAVAILABLE` — `SOURCE_RECORD_UNAVAILABLE` dla kroku 7: zachowaj niesekretne dane formularza i route `/app/data-quality/konflikty`, pokaż correlationId oraz akcję retry tylko dla błędu oznaczonego `recoverable=true`; błąd capability kończy proces bez retry.
 
 ### Zasady bezpieczeństwa
-Każdy krok ponownie sprawdza capability i zakres tenant/workspace. Tokeny, hasła i kody MFA nie są zapisywane w fixture ani telemetrii. Komendy wymagają correlationId, audytu i idempotency key; callback wymaga podpisu i ochrony przed replay.
+> [STD-E2E-SECURITY](../00-zarzadzanie-dokumentacja/README.md#std-e2e-security) — normatywny.
 
 ### Wznowienie
 Wznowienie opiera się na ostatnim potwierdzonym postcondition, a nie na samym numerze ekranu. System przed kontynuacją odczytuje aktualny stan domeny i nie odtwarza mutacji bez dowodu idempotencji.
@@ -176,10 +167,7 @@ Wznowienie opiera się na ostatnim potwierdzonym postcondition, a nie na samym n
 Test ładuje fizyczne fixture wskazane w tabeli, mockuje kontrakt API zgodny z `contracts/openapi-1.0.json`, wykonuje akcję UI, sprawdza event i postcondition, a następnie uruchamia scenariusz błędu `SOURCE_RECORD_UNAVAILABLE`.
 
 ### Kryteria akceptacji
-1. Każdy krok ma istniejący fixture i operationId o prawidłowym kind.
-2. Surface document, route i postcondition są zgodne z nazwą procesu.
-3. Retry nie duplikuje skutku komendy.
-4. Proces ma test happy path, błąd odzyskiwalny, utratę capability i wznowienie po przerwaniu.
+> [STD-E2E-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-e2e-acceptance) — normatywny.
 
 <a id="sekcja-90-05-polaczenie-do-pierwszych-danych"></a>
 
@@ -209,7 +197,7 @@ Proces prowadzi użytkownika przez: Katalog integracji → Kreator połączenia 
 - Krok 7: `INTEGRATION_FIRST_SYNC_FAILED` — `INTEGRATION_FIRST_SYNC_FAILED` dla kroku 7: zachowaj niesekretne dane formularza i route `/app/data-quality/centrum-jakosci`, pokaż correlationId oraz akcję retry tylko dla błędu oznaczonego `recoverable=true`; błąd capability kończy proces bez retry.
 
 ### Zasady bezpieczeństwa
-Każdy krok ponownie sprawdza capability i zakres tenant/workspace. Tokeny, hasła i kody MFA nie są zapisywane w fixture ani telemetrii. Komendy wymagają correlationId, audytu i idempotency key; callback wymaga podpisu i ochrony przed replay.
+> [STD-E2E-SECURITY](../00-zarzadzanie-dokumentacja/README.md#std-e2e-security) — normatywny.
 
 ### Wznowienie
 Wznowienie opiera się na ostatnim potwierdzonym postcondition, a nie na samym numerze ekranu. System przed kontynuacją odczytuje aktualny stan domeny i nie odtwarza mutacji bez dowodu idempotencji.
@@ -218,10 +206,7 @@ Wznowienie opiera się na ostatnim potwierdzonym postcondition, a nie na samym n
 Test ładuje fizyczne fixture wskazane w tabeli, mockuje kontrakt API zgodny z `contracts/openapi-1.0.json`, wykonuje akcję UI, sprawdza event i postcondition, a następnie uruchamia scenariusz błędu `INTEGRATION_FIRST_SYNC_FAILED`.
 
 ### Kryteria akceptacji
-1. Każdy krok ma istniejący fixture i operationId o prawidłowym kind.
-2. Surface document, route i postcondition są zgodne z nazwą procesu.
-3. Retry nie duplikuje skutku komendy.
-4. Proces ma test happy path, błąd odzyskiwalny, utratę capability i wznowienie po przerwaniu.
+> [STD-E2E-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-e2e-acceptance) — normatywny.
 
 <a id="sekcja-90-06-wygasly-token-do-ponownego-polaczenia"></a>
 
@@ -249,7 +234,7 @@ Proces prowadzi użytkownika przez: Alert integracji → Szczegóły integracji 
 - Krok 6: `INTEGRATION_TOKEN_EXPIRED` — `INTEGRATION_TOKEN_EXPIRED` dla kroku 6: zachowaj niesekretne dane formularza i route `/app/integrations/historia-synchronizacji`, pokaż correlationId oraz akcję retry tylko dla błędu oznaczonego `recoverable=true`; błąd capability kończy proces bez retry.
 
 ### Zasady bezpieczeństwa
-Każdy krok ponownie sprawdza capability i zakres tenant/workspace. Tokeny, hasła i kody MFA nie są zapisywane w fixture ani telemetrii. Komendy wymagają correlationId, audytu i idempotency key; callback wymaga podpisu i ochrony przed replay.
+> [STD-E2E-SECURITY](../00-zarzadzanie-dokumentacja/README.md#std-e2e-security) — normatywny.
 
 ### Wznowienie
 Wznowienie opiera się na ostatnim potwierdzonym postcondition, a nie na samym numerze ekranu. System przed kontynuacją odczytuje aktualny stan domeny i nie odtwarza mutacji bez dowodu idempotencji.
@@ -258,7 +243,4 @@ Wznowienie opiera się na ostatnim potwierdzonym postcondition, a nie na samym n
 Test ładuje fizyczne fixture wskazane w tabeli, mockuje kontrakt API zgodny z `contracts/openapi-1.0.json`, wykonuje akcję UI, sprawdza event i postcondition, a następnie uruchamia scenariusz błędu `INTEGRATION_TOKEN_EXPIRED`.
 
 ### Kryteria akceptacji
-1. Każdy krok ma istniejący fixture i operationId o prawidłowym kind.
-2. Surface document, route i postcondition są zgodne z nazwą procesu.
-3. Retry nie duplikuje skutku komendy.
-4. Proces ma test happy path, błąd odzyskiwalny, utratę capability i wznowienie po przerwaniu.
+> [STD-E2E-ACCEPTANCE](../00-zarzadzanie-dokumentacja/README.md#std-e2e-acceptance) — normatywny.

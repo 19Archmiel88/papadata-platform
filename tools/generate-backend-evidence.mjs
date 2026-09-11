@@ -7,6 +7,7 @@ import {
   ensureEvidenceDir,
   evidenceDir,
   gitHead,
+  gitWorkingTreeClean,
   pathExists,
   readJson,
   root,
@@ -27,6 +28,7 @@ const generatedManifest = buildBackendManifest(
   targetOperations,
   manifest,
 );
+const workingTreeClean = gitWorkingTreeClean();
 
 let validation = null;
 if (pathExists("artifacts/backend-evidence/validation-results.json")) {
@@ -55,7 +57,7 @@ if (pathExists("artifacts/backend-evidence/validation-results.json")) {
       },
     ],
   };
-  validation.status = validation.steps.every((step) => step.status === "pass")
+  validation.status = validation.steps.every((step) => step.status === "pass") && workingTreeClean
     ? "pass"
     : "fail";
   await writeJson("artifacts/backend-evidence/validation-results.json", validation);
@@ -69,9 +71,11 @@ const evidence = {
   schemaVersion: 2,
   generatedAt: new Date().toISOString(),
   gitHead: gitHead(),
-  releaseName: manifest.releaseName,
+  workingTreeClean,
+  scopeId: manifest.scopeId,
+  revisionPolicy: manifest.revisionPolicy,
   targetReleaseClaimed: manifest.contractPosition.targetReleaseClaimed,
-  validationStatus: validation.status,
+  validationStatus: validation.status === "pass" && workingTreeClean ? "pass" : "fail",
   checkSummary: Object.fromEntries(
     validation.steps.map((step) => [step.id, step.status]),
   ),
@@ -103,5 +107,6 @@ await import("node:fs/promises").then(({ writeFile }) =>
   writeFile(resolve(evidenceDir, "SHA256SUMS"), `${sums.join("\n")}\n`),
 );
 
-console.log(`BACKEND_EVIDENCE=${validation.status === "fail" ? "FAIL" : "PASS"} path=${relative(root, evidenceDir)}`);
-if (validation.status === "fail") process.exitCode = 1;
+const evidencePassed = validation.status === "pass" && workingTreeClean;
+console.log(`BACKEND_EVIDENCE=${evidencePassed ? "PASS" : "FAIL"} path=${relative(root, evidenceDir)} workingTreeClean=${workingTreeClean}`);
+if (!evidencePassed) process.exitCode = 1;

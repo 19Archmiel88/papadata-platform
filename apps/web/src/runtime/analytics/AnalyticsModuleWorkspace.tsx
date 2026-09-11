@@ -42,6 +42,12 @@ import type {
   TrafficModuleData,
 } from './analyticsModuleData';
 import './analytics-module-workspace.css';
+import { readProductLocale } from '../../screens/shared/useProductLocale';
+import {
+  formatPapaDataCurrency,
+  formatPapaDataNumber,
+  formatPapaDataPercent,
+} from '../../design-system/foundations';
 
 export type AnalyticsModuleWorkspaceProps = {
   readonly data: AnalyticsModuleData | null;
@@ -1753,10 +1759,11 @@ function aggregateTrafficChannels(records: readonly TrafficRecord[]) {
 }
 
 function filterRows(rows: readonly DataRow[], query: string): readonly DataRow[] {
-  const normalized = query.trim().toLocaleLowerCase('pl-PL');
+  const intlLocale = readProductLocale() === 'en' ? 'en-US' : 'pl-PL';
+  const normalized = query.trim().toLocaleLowerCase(intlLocale);
   if (!normalized) return rows;
   return rows.filter((row) => Object.values(row).some((value) => (
-    String(value ?? '').toLocaleLowerCase('pl-PL').includes(normalized)
+    String(value ?? '').toLocaleLowerCase(intlLocale).includes(normalized)
   )));
 }
 
@@ -1804,19 +1811,15 @@ function formatMoney(value: Money) {
 }
 
 function formatMoneyAmount(amount: number, currency: Money['currency']) {
-  return new Intl.NumberFormat('pl-PL', {
-    currency,
-    maximumFractionDigits: 2,
-    style: 'currency',
-  }).format(amount);
+  return formatPapaDataCurrency(amount, readProductLocale(), currency);
 }
 
 function formatInteger(value: number) {
-  return new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 }).format(value);
+  return new Intl.NumberFormat(readProductLocale() === 'en' ? 'en-US' : 'pl-PL', { maximumFractionDigits: 0 }).format(value);
 }
 
 function formatNumber(value: number) {
-  return new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 2 }).format(value);
+  return formatPapaDataNumber(value, readProductLocale());
 }
 
 function formatNullableNumber(value: number | null) {
@@ -1824,7 +1827,7 @@ function formatNullableNumber(value: number | null) {
 }
 
 function formatPercent(value: number) {
-  return new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 1, style: 'percent' }).format(value);
+  return formatPapaDataPercent(value, readProductLocale());
 }
 
 function formatNullablePercent(value: number | null) {
@@ -1834,7 +1837,7 @@ function formatNullablePercent(value: number | null) {
 function formatDateTime(value: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat('pl-PL', {
+  return new Intl.DateTimeFormat(readProductLocale() === 'en' ? 'en-US' : 'pl-PL', {
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',

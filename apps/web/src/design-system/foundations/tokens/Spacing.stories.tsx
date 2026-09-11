@@ -175,7 +175,7 @@ export const SpacingISiatka: Story = {
       <StorySection
         index="05"
         title={<Localized pl="Gęstość interfejsu" en="Interface density" />}
-        summary={<Localized pl="Przełącznik Gęstość w toolbarze steruje wysokością kontrolek i wierszy w całym produkcie." en="The Density toggle in the toolbar drives control and row height across the whole product." />}
+        summary={<Localized pl="Przełącznik Gęstość w toolbarze steruje tym demo. W produkcie nie ma dziś panelu dla tego globalnego ustawienia — realne komponenty (Table, Pagination i inne) mają własny, niezależny prop compact/comfortable ustawiany punktowo." en="The Density toggle in the toolbar drives this demo. In the product, there is no panel for this global setting today — real components (Table, Pagination and others) have their own independent compact/comfortable prop set per instance." />}
       >
         <div className="pd-f0-density-demo" data-testid="spacing-density">
           {spacingTokens.density.modes.map((mode) => (
@@ -191,6 +191,30 @@ export const SpacingISiatka: Story = {
           ))}
         </div>
       </StorySection>
+
+      <StorySection
+        index="06"
+        title={<Localized pl="W praktyce" en="In practice" />}
+      >
+        <div className="pd-f0-note" data-testid="spacing-practice-scale">
+          <Localized
+            pl="Do 2026-09-10 realny kod ustawiał padding/margin/gap ręczną liczbą w 1156 miejscach (26 plików) zamiast tokenem ze skali — to był największy tego typu rozjazd w całym audycie (ponad 3× więcej niż 385 przy typografii). Doprowadzone do zgodności: wartości pozaskalowe zaokrąglono do najbliższego kroku skali (0/4/8/12/16/20/24/32/40/48/64/80/96). Pozostawiono celowo: 6 ujemnych marginesów (wzorzec sr-only i zakładka nachodząca na obramowanie — nie są rytmem odstępów, tylko dopasowaniem co do piksela) oraz 2 wartości padding-right (480px/720px) odpowiadające szerokości przypiętego panelu Papy Asystenta, a nie skali odstępów."
+            en="Until 2026-09-10, real code set padding/margin/gap with a raw number in 1156 places (26 files) instead of a scale token — the largest such gap in this entire audit (over 3× typography's 385). Brought into alignment: off-scale values were rounded to the nearest scale step (0/4/8/12/16/20/24/32/40/48/64/80/96). Deliberately left alone: 6 negative margins (the sr-only visually-hidden pattern and a tab/border-overlap hack — pixel-exact alignment, not spacing rhythm) and 2 padding-right values (480px/720px) that match the pinned Papa Assistant panel's width, not the spacing scale."
+          />
+        </div>
+        <div className="pd-f0-note" data-testid="spacing-practice-grid">
+          <Localized
+            pl="Tokeny --pd-grid-columns-wide/tablet/mobile (12/8/4) mają dziś zero użyć w realnym kodzie. Realne ekrany nie używają jednolitej siatki kolumnowej — każdy komponent ma własny, celowy grid-template-columns (np. repeat(2, minmax(0,1fr)) dla kafelków KPI, repeat(4, ...) dla pasków metryk, auto-fit dla siatek kart)."
+            en="The --pd-grid-columns-wide/tablet/mobile tokens (12/8/4) have zero real usage today. Real screens do not use a uniform column grid — every component has its own purpose-built grid-template-columns (e.g. repeat(2, minmax(0,1fr)) for KPI tiles, repeat(4, ...) for metric strips, auto-fit for card grids)."
+          />
+        </div>
+        <div className="pd-f0-note" data-testid="spacing-practice-breakpoints">
+          <Localized
+            pl="Udokumentowane breakpointy (390/768/1440/1920px) praktycznie nie występują w realnym kodzie — realnie jest 26 różnych wartości @media, od 360px do 1500px, dobieranych punktowo przez każdy komponent. Zmiana breakpointu, w przeciwieństwie do promienia czy rozmiaru fontu, zmienia moment przełączenia layoutu, nie tylko jego wygląd — to inna kategoria ryzyka."
+            en="The documented breakpoints (390/768/1440/1920px) barely appear in real code — there are actually 26 distinct @media values in use, from 360px to 1500px, chosen per component. Unlike radius or font-size, changing a breakpoint shifts when a layout switches, not just how it looks — a different risk category."
+          />
+        </div>
+      </StorySection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {
@@ -201,5 +225,8 @@ export const SpacingISiatka: Story = {
     await expect(canvas.getByTestId('spacing-grid').children).toHaveLength(spacingContract.responsiveColumns.desktop);
     await expect(canvas.getByTestId('spacing-breakpoints').children).toHaveLength(breakpointEntries.length);
     await expect(canvas.getByTestId('spacing-density').children).toHaveLength(spacingTokens.density.modes.length);
+    await expect(canvas.getByTestId('spacing-practice-scale')).toBeInTheDocument();
+    await expect(canvas.getByTestId('spacing-practice-grid')).toBeInTheDocument();
+    await expect(canvas.getByTestId('spacing-practice-breakpoints')).toBeInTheDocument();
   },
 };

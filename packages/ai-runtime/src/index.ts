@@ -529,3 +529,94 @@ async function delay(ms: number, signal?: AbortSignal): Promise<void> {
 
 export { sseData } from "./sse.js";
 export { redactText };
+
+export type PapaProviderRuntime = {
+  readonly provider: AiProviderAdapter;
+  readonly modelId: string;
+  readonly nativeStreaming: boolean;
+  readonly reserveMinorPerCall: number;
+};
+
+export function createPapaProviderRuntime(
+  env: NodeJS.ProcessEnv = process.env,
+): PapaProviderRuntime {
+  if (env.PAPADATA_PAPA_REMOTE_ENABLED !== "true") {
+    return {
+      provider: new LocalDeterministicProvider(),
+      modelId: "local-deterministic",
+      nativeStreaming: false,
+      reserveMinorPerCall: 0,
+    };
+  }
+
+  const endpoint = env.PAPADATA_PAPA_REMOTE_ENDPOINT?.trim() ?? "";
+  const apiKey = env.PAPADATA_PAPA_REMOTE_API_KEY?.trim() ?? "";
+  const modelId = env.PAPADATA_PAPA_REMOTE_MODEL?.trim() ?? "";
+  const allowedHosts = (env.PAPADATA_PAPA_REMOTE_ALLOWED_HOSTS ?? "")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+
+  let url: URL;
+  try {
+    url = new URL(endpoint);
+  } catch {
+    throw new Error("Remote Papa AI endpoint is not a valid URL.");
+  }
+
+  if (
+    url.protocol !== "https:"
+    || url.username
+    || url.password
+    || url.search
+    || url.hash
+    || !allowedHosts.includes(url.hostname.toLowerCase())
+    || apiKey.length < 12
+    || !modelId
+    || modelId.length > 150
+  ) {
+    throw new Error("Remote Papa AI configuration is incomplete or unsafe.");
+  }
+
+  const suffix = "/chat/completions";
+  if (!url.pathname.endsWith(suffix)) {
+    throw new Error("Remote Papa AI endpoint must end with /chat/completions.");
+  }
+
+  const reserveRaw = Number(env.PAPADATA_PAPA_REMOTE_RESERVE_MINOR_PER_CALL ?? 50);
+  if (!Number.isFinite(reserveRaw) || reserveRaw <= 0) {
+    throw new Error("PAPADATA_PAPA_REMOTE_RESERVE_MINOR_PER_CALL must be positive.");
+  }
+  const reserveMinorPerCall = Math.ceil(reserveRaw);
+
+  const baseUrl = new URL(url.href);
+  baseUrl.pathname = url.pathname.slice(0, -suffix.length) || "/";
+  const upstream = new OpenAiCompatibleProvider({
+    providerId: "configured-chat-provider",
+    endpoint: baseUrl.href.replace(/\/$/u, ""),
+    apiKey,
+    timeoutMs: 90_000,
+    maxAttempts: 1,
+  });
+
+  const provider: AiProviderAdapter = {
+    providerId: upstream.providerId,
+    complete: (request, signal) => upstream.complete(request, signal),
+    stream: (request, signal) => upstream.stream(request, signal),
+    embed: (request, signal) => upstream.embed(request, signal),
+    health: (signal) => upstream.health(signal),
+    cancel: (requestId) => upstream.cancel(requestId),
+    generate: (request, signal) => upstream.generate(request, signal),
+    estimateCost: (request) => ({
+      ...upstream.estimateCost(request),
+      costMinor: reserveMinorPerCall,
+    }),
+  };
+
+  return {
+    provider,
+    modelId,
+    nativeStreaming: true,
+    reserveMinorPerCall,
+  };
+}

@@ -1,0 +1,137 @@
+{
+  "version": "2026-09-p0-remediation-v1",
+  "releaseCandidateSha": "",
+  "environment": "staging",
+  "evidence": [
+    {
+      "id": "immutable-release-candidate",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "github-required-checks-green",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "gcp-web-live-smoke",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "gcp-terraform-plan-approved",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "gcp-restore-drill",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "provider-woocommerce-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "provider-shopify-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "provider-baselinker-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "provider-allegro-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "provider-google-ads-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "provider-meta-ads-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "provider-ga4-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "oauth-google-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "oauth-microsoft-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "report-pdf-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "report-xlsx-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "mobile-native-pairing-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "ai-external-action-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "billing-card-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "billing-blik-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "billing-transfer-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "ksef-production-live",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "privacy-erasure-end-to-end",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "security-acceptance-controls-closed",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "legal-go-live-approved",
+      "accepted": false,
+      "reference": ""
+    },
+    {
+      "id": "dpo-go-live-approved",
+      "accepted": false,
+      "reference": ""
+    }
+  ]
+}

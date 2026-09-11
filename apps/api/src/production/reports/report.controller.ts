@@ -38,7 +38,12 @@ export class ReportController {
     @Principal() principal: RequestPrincipal,
     @Body() body: CreateReportDto,
   ): Promise<object> {
-    return this.reports.create(principal.tenantId, principal.workspaceId, body);
+    return this.reports.create(
+      principal.tenantId,
+      principal.workspaceId,
+      principal.userId,
+      body,
+    );
   }
 
   @Get(":id")

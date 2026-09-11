@@ -26,7 +26,7 @@ RUN pnpm --filter @papadata/web build
 RUN find apps/web/dist -name '*.map' -delete
 
 FROM nginx:1.30.4-alpine3.24@sha256:97d490c12ba55b4946b01546d1c3ed324e8d41ab1c9fcb2a616aa470620e5b46 AS runtime
-RUN apk upgrade --no-cache libcrypto3 libssl3
+RUN apk upgrade --no-cache libcrypto3 libssl3 libexpat libuuid
 RUN rm -f /etc/nginx/conf.d/default.conf
 COPY infra/production/web/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build --chown=nginx:nginx /workspace/apps/web/dist /usr/share/nginx/html

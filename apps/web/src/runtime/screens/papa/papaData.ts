@@ -2,6 +2,7 @@ import type {
   DataColumn,
   DataRow,
 } from '../../../../../../contracts/component-shared';
+import { formatPapaDataPercent } from '../../../design-system/foundations';
 import type {
   DataSourceRef,
   EvidenceRef,
@@ -810,21 +811,23 @@ export function papaActionRows(
 
 export function papaMemoryRows(
   records: readonly PapaMemoryRecord[],
+  locale: 'pl' | 'en' = 'pl',
 ): readonly DataRow[] {
   return records.map((record) => ({
     event: record.event,
     id: record.id,
     retention: record.retention,
     source: record.source,
-    timestamp: formatDateTime(record.timestamp),
+    timestamp: formatDateTime(record.timestamp, locale),
   }));
 }
 
 export function papaContextRows(
   records: readonly PapaContextItem[],
+  locale: 'pl' | 'en' = 'pl',
 ): readonly DataRow[] {
   return records.map((record) => ({
-    confidence: formatPercent(record.confidence),
+    confidence: formatPercent(record.confidence, locale),
     id: record.id,
     kind: record.kind,
     kindLabel: resolveContextKindLabel(record.kind),
@@ -836,11 +839,12 @@ export function papaContextRows(
 
 export function papaEvidenceRows(
   records: readonly PapaEvidenceItem[],
+  locale: 'pl' | 'en' = 'pl',
 ): readonly DataRow[] {
   return records.map((record) => ({
     claim: record.claim,
-    confidence: formatPercent(record.confidence),
-    freshnessAt: formatDateTime(record.freshnessAt),
+    confidence: formatPercent(record.confidence, locale),
+    freshnessAt: formatDateTime(record.freshnessAt, locale),
     id: record.id,
     source: record.source,
   }));
@@ -860,9 +864,10 @@ export function papaModeRows(
 
 export function papaLabExperimentRows(
   records: readonly PapaLabExperiment[],
+  locale: 'pl' | 'en' = 'pl',
 ): readonly DataRow[] {
   return records.map((record) => ({
-    confidence: record.confidence === null ? 'Brak danych' : formatPercent(record.confidence),
+    confidence: record.confidence === null ? 'Brak danych' : formatPercent(record.confidence, locale),
     id: record.id,
     name: record.name,
     nextStep: record.nextStep,
@@ -871,16 +876,17 @@ export function papaLabExperimentRows(
     statusLabel: resolveLabStatusLabel(record.status),
     uplift: record.variant === null || record.baseline === null
       ? 'Brak danych'
-      : formatSignedNumber(record.variant - record.baseline),
+      : formatSignedNumber(record.variant - record.baseline, locale),
   }));
 }
 
 export function papaReportRows(
   records: readonly PapaReportArtifact[],
+  locale: 'pl' | 'en' = 'pl',
 ): readonly DataRow[] {
   return records.map((record) => ({
     formats: record.formats.map((format) => format.toUpperCase()).join(', '),
-    generatedAt: formatDateTime(record.generatedAt),
+    generatedAt: formatDateTime(record.generatedAt, locale),
     id: record.id,
     owner: record.owner,
     status: record.status,
@@ -1002,8 +1008,8 @@ function resolveReportStatusLabel(
   }
 }
 
-function formatDateTime(value: string): string {
-  return new Intl.DateTimeFormat('pl-PL', {
+function formatDateTime(value: string, locale: 'pl' | 'en' = 'pl'): string {
+  return new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'pl-PL', {
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
@@ -1011,15 +1017,12 @@ function formatDateTime(value: string): string {
   }).format(new Date(value));
 }
 
-function formatPercent(value: number): string {
-  return new Intl.NumberFormat('pl-PL', {
-    maximumFractionDigits: 1,
-    style: 'percent',
-  }).format(value);
+function formatPercent(value: number, locale: 'pl' | 'en' = 'pl'): string {
+  return formatPapaDataPercent(value, locale);
 }
 
-function formatSignedNumber(value: number): string {
-  return new Intl.NumberFormat('pl-PL', {
+function formatSignedNumber(value: number, locale: 'pl' | 'en' = 'pl'): string {
+  return new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'pl-PL', {
     maximumFractionDigits: 1,
     signDisplay: 'always',
   }).format(value);

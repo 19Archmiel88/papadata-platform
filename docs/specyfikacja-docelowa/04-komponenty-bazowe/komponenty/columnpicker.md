@@ -27,26 +27,23 @@ Jedyny kanoniczny kontrakt: `contracts/components/columnpicker.ts`.
 | `maxVisible` | `number | null` | Wymagane zgodnie z kontraktem; brak wartości domyślnej oznacza obowiązek jawnego przekazania. |
 
 ## Zdarzenia
-Zdarzenia mają identyfikator komponentu, nazwę działania, `correlationId` i typowany payload. Komponent nie wywołuje bezpośrednio endpointu — przekazuje intencję do właściciela ekranu.
+> [STD-COMPONENT-EVENTS](../../00-zarzadzanie-dokumentacja/README.md#std-component-events) — normatywny.
 
 ## Stany i warianty
-Obsłuż: default, loading, empty, error, disabled, readonly i success, jeśli mają znaczenie dla tego komponentu. Nie renderuj akcji bez capability i nie ukrywaj przyczyny blokady.
+> [STD-COMPONENT-STATES](../../00-zarzadzanie-dokumentacja/README.md#std-component-states) — normatywny.
 
 ColumnPicker nie tworzy nowych kolumn, nie usuwa kolumn z modelu, nie modyfikuje schematu, nie usuwa danych źródłowych i nie zmienia kolejności kolumn. Zmiana kolejności kolumn pozostaje poza zakresem zatwierdzonego kontraktu.
 
 Ukrycie kolumny wpływa na aktualny widok oraz na opcję „Eksportuj widoczne kolumny”. Nie zmienia danych źródłowych ani bezpiecznego zakresu opcji „Eksportuj wszystkie kolumny”. Ukrycie kolumny przez ColumnPicker jest preferencją widoku i nie zwiększa ani nie zmniejsza uprawnień użytkownika.
 
 ## Dostępność
-Semantyczny element HTML, pełna obsługa klawiatury, focus-visible, nazwa dostępna, komunikaty dynamiczne przez właściwe live region oraz brak przekazywania znaczenia wyłącznie kolorem.
+> [STD-COMPONENT-A11Y](../../00-zarzadzanie-dokumentacja/README.md#std-component-a11y) — normatywny.
 
 ## Konsumenci
 - `20.01` — Powłoka aplikacji
 
 ## Storybook i testy
-Wymagane stories: wariant bazowy, wszystkie stany, długie polskie i angielskie etykiety, 200% zoom, dark/light, reduced motion oraz test interakcji dla każdej akcji. Target pozostaje backlogiem do chwili dodania fizycznego pliku story.
+> [STD-COMPONENT-STORYBOOK-TESTS](../../00-zarzadzanie-dokumentacja/README.md#std-component-storybook-tests) — normatywny.
 
 ## Kryteria akceptacji
-1. `tsc --noEmit` kompiluje jedyny kontrakt kanoniczny.
-2. Dokument, rejestr i macierz ekran–komponent wskazują ten sam component ID i plik kontraktu.
-3. Testy a11y nie wykazują naruszeń krytycznych.
-4. Komponent nie definiuje własnych tokenów ani duplikuje komponentu bazowego.
+> [STD-COMPONENT-ACCEPTANCE](../../00-zarzadzanie-dokumentacja/README.md#std-component-acceptance) — normatywny.

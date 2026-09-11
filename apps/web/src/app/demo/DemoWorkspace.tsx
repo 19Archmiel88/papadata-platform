@@ -111,16 +111,6 @@ export default function DemoWorkspace() {
       user={defaultShellUser}
       onNavigate={go}
     >
-      {path !== '/app/command-center' &&
-        path !== '/app/campaigns' &&
-        path !== '/app/orders' &&
-        path !== '/app/products' &&
-        path !== '/app/papa' &&
-        path !== '/app/decisions/centrum-decyzji' && (
-          <div className="pd-preview-notice" role="note">
-            Podgląd produktu · dane przykładowe · połączenia i płatności nie są aktywne
-          </div>
-        )}
       <Suspense fallback={<p role="status">Wczytywanie widoku…</p>}>
         {isAssistantPath(path) ? (
           <PapaAssistantExperience />
@@ -136,6 +126,17 @@ export default function DemoWorkspace() {
           </section>
         )}
       </Suspense>
+      {path !== '/app/command-center' &&
+        path !== '/app/campaigns' &&
+        path !== '/app/orders' &&
+        path !== '/app/products' &&
+        path !== '/app/papa' &&
+        path !== '/app/decisions/centrum-decyzji' && (
+          <div className="pd-preview-notice" role="note">
+            Podgląd produktu · dane przykładowe · połączenia i płatności nie są aktywne
+          </div>
+        )}
+
     </ProductShellFrame>
   );
 }

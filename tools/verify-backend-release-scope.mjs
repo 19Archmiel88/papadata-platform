@@ -22,7 +22,11 @@ const expectedManifest = buildBackendManifest(
   manifest,
 );
 
-assert(manifest.schemaVersion === 3, "Unsupported backend release scope schemaVersion.");
+assert(manifest.schemaVersion === 4, "Unsupported backend release scope schemaVersion.");
+assert(manifest.scopeId === "backend-production-runtime", "Backend release scope must use stable scopeId.");
+assert(!Object.hasOwn(manifest, "releaseName"), "Historical releaseName must not be embedded in backend release scope.");
+assert(!Object.hasOwn(manifest, "baseHead"), "Stale baseHead must not be embedded in backend release scope.");
+assert(manifest.revisionPolicy?.releaseEvidenceRequiresCleanCommit === true, "Release evidence must require a clean immutable commit.");
 assert(Array.isArray(manifest.operations), "Release scope operations are missing.");
 assert(Array.isArray(manifest.targetCoverage), "Target coverage matrix is missing.");
 
@@ -125,6 +129,6 @@ if (failures.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `BACKEND_RELEASE_SCOPE=PASS operations=${manifest.operations.length} target=${targetOperations.length} extra=${runtimeOperations.length - targetOperations.length} providers=7 release=${manifest.releaseName}`,
+    `BACKEND_RELEASE_SCOPE=PASS operations=${manifest.operations.length} target=${targetOperations.length} extra=${runtimeOperations.length - targetOperations.length} providers=7 scope=${manifest.scopeId}`,
   );
 }

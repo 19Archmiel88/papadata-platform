@@ -1,0 +1,42 @@
+{
+  "version": "2026-09-p0-remediation-v1",
+  "policy": "P0 release is fail-closed. Code readiness never substitutes for live/provider/legal/security evidence.",
+  "codeControls": [
+    "gcp-web-route",
+    "metric-catalog-58-parity",
+    "api-operation-parity",
+    "contract-runtime-fail-closed",
+    "mobile-pairing-domain",
+    "seven-provider-catalog",
+    "report-format-contract",
+    "docs-registry-integrity"
+  ],
+  "releaseEvidence": [
+    "immutable-release-candidate",
+    "github-required-checks-green",
+    "gcp-web-live-smoke",
+    "gcp-terraform-plan-approved",
+    "gcp-restore-drill",
+    "provider-woocommerce-live",
+    "provider-shopify-live",
+    "provider-baselinker-live",
+    "provider-allegro-live",
+    "provider-google-ads-live",
+    "provider-meta-ads-live",
+    "provider-ga4-live",
+    "oauth-google-live",
+    "oauth-microsoft-live",
+    "report-pdf-live",
+    "report-xlsx-live",
+    "mobile-native-pairing-live",
+    "ai-external-action-live",
+    "billing-card-live",
+    "billing-blik-live",
+    "billing-transfer-live",
+    "ksef-production-live",
+    "privacy-erasure-end-to-end",
+    "security-acceptance-controls-closed",
+    "legal-go-live-approved",
+    "dpo-go-live-approved"
+  ]
+}

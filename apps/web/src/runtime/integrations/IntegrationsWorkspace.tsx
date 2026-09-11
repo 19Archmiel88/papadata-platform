@@ -58,6 +58,7 @@ import type {
 } from './integrationsData';
 import './integrations-workspace.css';
 import { useProductQuery } from '../app/routing/productRoutes';
+import { useProductLocale } from '../../screens/shared/useProductLocale';
 
 type PartialFailure = {
   readonly id: 'catalog' | 'logs' | 'completeness';
@@ -535,7 +536,6 @@ function IntegrationsHub({
     <div className="pd-int-hub">
       <header className="pd-int-topbar">
         <div>
-          <span className="pd-int-eyebrow">Twoje centrum danych</span>
           <div className="pd-int-title-row"><h1>Dane i integracje</h1>{demo && <span className="pd-int-demo-badge" title="Dane przykładowe. Operacje są lokalne. Nie wpisuj prawdziwych sekretów.">Demo</span>}</div>
           <p className="pd-int-lead">Połącz źródła. Dbaj o dane. Analizuj z pewnością.</p>
         </div>
@@ -965,6 +965,8 @@ function DataQualityView({
   readonly completeness: IntegrationsRuntimeView['completeness'];
   readonly logs: readonly IntegrationRuntimeLog[];
 }) {
+  const { locale } = useProductLocale();
+
   return (
     <section aria-label="Jakość danych" className="pd-int-panel">
       <div>
@@ -1037,9 +1039,9 @@ function DataQualityView({
             rows={logs.map((log) => ({
               duration: formatDuration(log.durationMs),
               id: log.jobId,
-              records: formatNumber(log.recordsWritten),
+              records: formatNumber(log.recordsWritten, locale),
               source: log.providerDisplayName,
-              startedAt: formatIntegrationDateTime(log.startedAt),
+              startedAt: formatIntegrationDateTime(log.startedAt, locale),
               status: log.statusLabel,
             }))}
             selectedRowIds={[]}
@@ -1104,6 +1106,7 @@ function ProviderWorkspace({
 }) {
   const synthetic = resolveSourceSyntheticStatus(source);
   const isOutage = synthetic.id === 'provider_error';
+  const { locale } = useProductLocale();
 
   return (
     <div className="pd-int-workspace">
@@ -1148,7 +1151,7 @@ function ProviderWorkspace({
 
       <div className="pd-int-workspace-meta-row">
         <span>Ostatnia synchronizacja: <strong>{source.freshness.label}</strong></span>
-        <span>Dane aktualne do: <strong>{formatIntegrationDateTime(source.freshness.lastSuccessfulSyncAt)}</strong></span>
+        <span>Dane aktualne do: <strong>{formatIntegrationDateTime(source.freshness.lastSuccessfulSyncAt, locale)}</strong></span>
       </div>
 
       <Tabs
@@ -1193,11 +1196,13 @@ function ProviderWorkspace({
 }
 
 function ProviderOutagePanel({ source }: { readonly source: IntegrationRuntimeSource }) {
+  const { locale } = useProductLocale();
+
   return (
     <div className="pd-int-card pd-int-outage-card">
       <div className="pd-int-outage-card__title"><Icon decorative name="warning" size={16} />Problem providera</div>
       <p>{source.issue?.message ?? `${source.providerDisplayName} API nie odpowiada.`}</p>
-      <p className="pd-int-muted-text">Ostatnie poprawne dane: {formatIntegrationDateTime(source.freshness.lastSuccessfulSyncAt)}</p>
+      <p className="pd-int-muted-text">Ostatnie poprawne dane: {formatIntegrationDateTime(source.freshness.lastSuccessfulSyncAt, locale)}</p>
       {source.impact.areas.length > 0 ? (
         <p className="pd-int-muted-text"><strong>Wpływ:</strong> {source.impact.areas.slice(0, 2).join(' / ')} — nieaktualne</p>
       ) : null}
@@ -1207,6 +1212,8 @@ function ProviderOutagePanel({ source }: { readonly source: IntegrationRuntimeSo
 }
 
 function OverviewTab({ source }: { readonly source: IntegrationRuntimeSource }) {
+  const { locale } = useProductLocale();
+
   return (
     <div className="pd-int-tab-grid">
       <div className="pd-int-card">
@@ -1215,7 +1222,7 @@ function OverviewTab({ source }: { readonly source: IntegrationRuntimeSource }) 
         <div className="pd-int-kv"><span>Synchronizacja</span><strong>{source.lifecycleStatus === 'FAILED' ? 'Przerwana' : source.syncStatus === 'RUNNING' ? 'W toku' : 'Gotowa'}</strong></div>
         <div className="pd-int-kv"><span>Świeżość</span><strong>{source.freshness.label}</strong></div>
         <div className="pd-int-kv"><span>Kompletność</span><strong>{source.completeness.percentage}%</strong></div>
-        <div className="pd-int-kv"><span>Ostatni poprawny sync</span><strong>{formatIntegrationDateTime(source.freshness.lastSuccessfulSyncAt)}</strong></div>
+        <div className="pd-int-kv"><span>Ostatni poprawny sync</span><strong>{formatIntegrationDateTime(source.freshness.lastSuccessfulSyncAt, locale)}</strong></div>
       </div>
       <div className="pd-int-card">
         <span className="pd-int-card__eyebrow">Wpływ na PapaData</span>
@@ -1280,6 +1287,7 @@ function SyncTab({
   readonly source: IntegrationRuntimeSource;
 }) {
   const expandedRun = logs.find((log) => log.jobId === expandedRunId) ?? logs[0] ?? null;
+  const { locale } = useProductLocale();
 
   return (
     <div className="pd-int-sync-grid">
@@ -1294,16 +1302,16 @@ function SyncTab({
             type="button"
           >
             <div>
-              <strong>{formatIntegrationDateTime(log.startedAt)}</strong>
+              <strong>{formatIntegrationDateTime(log.startedAt, locale)}</strong>
               <span data-tone={log.status}>{log.status === 'completed' ? '✓ Sukces' : log.status === 'running' ? '● W toku' : '▲ Częściowa'}</span>
             </div>
-            <span className="pd-int-muted-text">{formatNumber(log.recordsWritten)} rekordów · {formatDuration(log.durationMs)}</span>
+            <span className="pd-int-muted-text">{formatNumber(log.recordsWritten, locale)} rekordów · {formatDuration(log.durationMs)}</span>
           </button>
         ))}
       </div>
 
       <div className="pd-int-card">
-        <span className="pd-int-card__eyebrow">Przebieg {expandedRun ? `· ${formatIntegrationDateTime(expandedRun.startedAt)}` : ''}</span>
+        <span className="pd-int-card__eyebrow">Przebieg {expandedRun ? `· ${formatIntegrationDateTime(expandedRun.startedAt, locale)}` : ''}</span>
         {expandedRun?.stages ? (
           <>
             <ol className="pd-int-stage-list">
@@ -1327,6 +1335,8 @@ function SyncTab({
 }
 
 function StageRow({ stage }: { readonly stage: IntegrationSyncStage }) {
+  const { locale } = useProductLocale();
+
   return (
     <li className="pd-int-stage-row">
       <span className="pd-int-stage-row__icon" data-status={stage.status}>
@@ -1334,7 +1344,7 @@ function StageRow({ stage }: { readonly stage: IntegrationSyncStage }) {
       </span>
       <div>
         <strong data-status={stage.status}>{stage.label}</strong>
-        <p>{stage.detail ?? `${formatNumber(stage.recordCount)} rekordów`}</p>
+        <p>{stage.detail ?? `${formatNumber(stage.recordCount, locale)} rekordów`}</p>
       </div>
     </li>
   );

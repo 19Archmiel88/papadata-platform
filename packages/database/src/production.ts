@@ -6053,3 +6053,146 @@ export class CompanyLookupAuditRepository {
     });
   }
 }
+
+export type MobileDeviceRow = {
+  readonly deviceExternalId: string;
+  readonly displayName: string;
+  readonly lastSeenAt: string;
+  readonly pairedAt: string;
+  readonly platform: "android" | "ios" | "other";
+  readonly revokedAt: string | null;
+};
+
+export class MobilePairingRepository {
+  private readonly database: ProductionDatabase;
+
+  constructor(database: ProductionDatabase) {
+    this.database = database;
+  }
+
+  async createPairingToken(input: {
+    readonly tenantId: string;
+    readonly workspaceId: string;
+    readonly userId: string;
+    readonly tokenHash: string;
+    readonly expiresAt: string;
+  }): Promise<{ readonly pairingId: string; readonly expiresAt: string }> {
+    return this.database.withTenantWorkspace(input.tenantId, input.workspaceId, async (client) => {
+      const result = await client.query<{ pairing_id: string; expires_at: string }>(
+        `insert into app.mobile_pairing_tokens (
+           tenant_id, workspace_id, token_hash, created_by_user_id, expires_at
+         ) values ($1, $2, $3, $4, $5::timestamptz)
+         returning mobile_pairing_token_id::text as pairing_id, expires_at::text as expires_at`,
+        [input.tenantId, input.workspaceId, input.tokenHash, input.userId, input.expiresAt],
+      );
+      const row = result.rows[0];
+      if (!row) throw new Error("Failed to create mobile pairing token.");
+      return { pairingId: row.pairing_id, expiresAt: row.expires_at };
+    });
+  }
+
+  async pairDevice(input: {
+    readonly tenantId: string;
+    readonly workspaceId: string;
+    readonly userId: string;
+    readonly tokenHash: string;
+    readonly deviceExternalId: string;
+    readonly displayName: string;
+    readonly platform: "android" | "ios" | "other";
+  }): Promise<MobileDeviceRow | null> {
+    return this.database.withTenantWorkspace(input.tenantId, input.workspaceId, async (client) => {
+      const consumed = await client.query<{ id: string }>(
+        `update app.mobile_pairing_tokens
+         set used_at = now()
+         where tenant_id = $1
+           and workspace_id = $2
+           and token_hash = $3
+           and used_at is null
+           and revoked_at is null
+           and expires_at > now()
+         returning mobile_pairing_token_id::text as id`,
+        [input.tenantId, input.workspaceId, input.tokenHash],
+      );
+      if (consumed.rowCount !== 1) return null;
+
+      const result = await client.query<{
+        device_external_id: string;
+        display_name: string;
+        last_seen_at: string;
+        paired_at: string;
+        platform: "android" | "ios" | "other";
+        revoked_at: string | null;
+      }>(
+        `insert into app.mobile_devices (
+           tenant_id, workspace_id, user_id, device_external_id, display_name, platform
+         ) values ($1, $2, $3, $4, $5, $6)
+         on conflict (tenant_id, workspace_id, device_external_id)
+         do update set
+           user_id = excluded.user_id,
+           display_name = excluded.display_name,
+           platform = excluded.platform,
+           paired_at = now(),
+           last_seen_at = now(),
+           revoked_at = null
+         returning device_external_id, display_name, last_seen_at::text, paired_at::text, platform, revoked_at::text`,
+        [input.tenantId, input.workspaceId, input.userId, input.deviceExternalId, input.displayName, input.platform],
+      );
+      const row = result.rows[0];
+      return row ? {
+        deviceExternalId: row.device_external_id,
+        displayName: row.display_name,
+        lastSeenAt: row.last_seen_at,
+        pairedAt: row.paired_at,
+        platform: row.platform,
+        revokedAt: row.revoked_at,
+      } : null;
+    });
+  }
+
+  async revokeDevice(input: {
+    readonly tenantId: string;
+    readonly workspaceId: string;
+    readonly deviceExternalId: string;
+  }): Promise<boolean> {
+    return this.database.withTenantWorkspace(input.tenantId, input.workspaceId, async (client) => {
+      const result = await client.query(
+        `update app.mobile_devices
+         set revoked_at = coalesce(revoked_at, now())
+         where tenant_id = $1 and workspace_id = $2 and device_external_id = $3`,
+        [input.tenantId, input.workspaceId, input.deviceExternalId],
+      );
+      return (result.rowCount ?? 0) > 0;
+    });
+  }
+
+  async listDevices(input: {
+    readonly tenantId: string;
+    readonly workspaceId: string;
+    readonly userId: string;
+  }): Promise<readonly MobileDeviceRow[]> {
+    return this.database.withTenantWorkspace(input.tenantId, input.workspaceId, async (client) => {
+      const result = await client.query<{
+        device_external_id: string;
+        display_name: string;
+        last_seen_at: string;
+        paired_at: string;
+        platform: "android" | "ios" | "other";
+        revoked_at: string | null;
+      }>(
+        `select device_external_id, display_name, last_seen_at::text, paired_at::text, platform, revoked_at::text
+         from app.mobile_devices
+         where tenant_id = $1 and workspace_id = $2 and user_id = $3
+         order by paired_at desc`,
+        [input.tenantId, input.workspaceId, input.userId],
+      );
+      return result.rows.map((row) => ({
+        deviceExternalId: row.device_external_id,
+        displayName: row.display_name,
+        lastSeenAt: row.last_seen_at,
+        pairedAt: row.paired_at,
+        platform: row.platform,
+        revokedAt: row.revoked_at,
+      }));
+    });
+  }
+}

@@ -3,7 +3,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  font-size: 12px;
+  font-size: var(--pd-type-size-caption);
   line-height: 1.35;
 }
 

@@ -1203,10 +1203,10 @@ function postgresRlsRuntime(runtime) {
   const sql = `
 select set_config('app.tenant_id', '${runtime.tenantId}', false);
 select set_config('app.workspace_id', '${runtime.workspaceId}', false);
-select count(*) as visible_same_tenant from app.report_requests where id = '${runtime.reportId}'::uuid;
+select count(*) as visible_same_tenant from app.assistant_report_exports where assistant_report_export_id = '${runtime.reportId}'::uuid;
 select set_config('app.tenant_id', '00000000-0000-4000-8000-0000000000ff', false);
 select set_config('app.workspace_id', '${runtime.workspaceId}', false);
-select count(*) as visible_other_tenant from app.report_requests where id = '${runtime.reportId}'::uuid;
+select count(*) as visible_other_tenant from app.assistant_report_exports where assistant_report_export_id = '${runtime.reportId}'::uuid;
 `;
   const result = run("docker", [
     ...compose,

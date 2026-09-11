@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '../../design-system';
+import { readProductLocale } from '../shared/useProductLocale';
 import { contextualProductLink, productRoutes } from '../../runtime/app/routing/productRoutes';
 import {
   canMeasureDecision,
@@ -30,7 +31,7 @@ export function DecisionTimeline({ activity }: { activity: readonly DecisionActi
               <small>
                 {entry.actor} ·{' '}
                 <time dateTime={entry.at}>
-                  {new Intl.DateTimeFormat('pl-PL', {
+                  {new Intl.DateTimeFormat(readProductLocale() === 'en' ? 'en-US' : 'pl-PL', {
                     day: 'numeric',
                     month: 'short',
                     hour: '2-digit',

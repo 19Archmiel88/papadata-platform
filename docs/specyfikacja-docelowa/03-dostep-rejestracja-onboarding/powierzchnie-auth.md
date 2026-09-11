@@ -42,11 +42,17 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-02|auth-03|auth-15`. Bł
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: public csrf, host allow-list, neutral error.
 
+<a id="auth-shared-2"></a>
+
 ### Dostępność i responsywność
 Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
 
+<a id="auth-shared-3"></a>
+
 ### Storybook i testy
 Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+
+<a id="auth-shared-1"></a>
 
 ### Kryteria akceptacji
 1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
@@ -86,17 +92,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-16|auth-29`. Błąd prow
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: csrf, credential rate limit, audit login attempt.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-03-wejscie-do-rejestracji"></a>
 
@@ -127,17 +127,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-04|auth-05`. Błąd prow
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: csrf, anti-enumeration, invite context preserved.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-04-rejestracja-adresem-e-mail"></a>
 
@@ -171,17 +165,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-12`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: csrf, password policy, anti-enumeration, audit.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-05-rejestracja-przez-oauth"></a>
 
@@ -213,17 +201,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-06|auth-13`. Błąd prow
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: state nonce, PKCE, provider allow-list.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-06-weryfikacja-adresu-e-mail"></a>
 
@@ -254,17 +236,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-13`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: single-use token, replay protection, neutral invalid token copy.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-07-identyfikacja-firmy"></a>
 
@@ -296,17 +272,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-08|auth-10|auth-11`. Bł
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: rate limit registry lookup, no company enumeration.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-08-wyszukiwanie-firmy"></a>
 
@@ -338,17 +308,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-09`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: provider timeout budget, provenance logged.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-09-sprawdzenie-i-edycja-danych-firmy"></a>
 
@@ -382,17 +346,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-12`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: input validation, audit company draft change.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-10-reczne-wprowadzenie-firmy"></a>
 
@@ -428,17 +386,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-12`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: validation, no external provider dependency.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-11-firma-juz-zarejestrowana"></a>
 
@@ -470,17 +422,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-15|auth-28`. Błąd prow
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: tenant privacy, neutral copy, support audit.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-12-zgody-rejestracyjne"></a>
 
@@ -512,17 +458,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-13`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: consent versioning, audit, no prechecked optional consents.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-13-przetwarzanie-rejestracji"></a>
 
@@ -554,17 +494,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-14`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: transactional audit, idempotency key.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-14-rejestracja-zakonczona"></a>
 
@@ -595,17 +529,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-21|auth-29`. Błąd prow
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: session rotation, onboarding marker.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-15-przeglad-zaproszenia"></a>
 
@@ -637,17 +565,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-02|auth-04|auth-21`. Bł
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: single-use invite token, recipient verification.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-16-weryfikacja-mfa"></a>
 
@@ -681,17 +603,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-21|auth-29`. Błąd prow
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: attempt limit, TOTP/WebAuthn validation, audit.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-17-konfiguracja-mfa"></a>
 
@@ -724,17 +640,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-16`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: secret masking, recovery codes once, audit.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-18-prosba-o-odzyskanie-hasla"></a>
 
@@ -765,17 +675,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-19`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: anti-enumeration, rate limit, mail audit.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-19-informacja-o-wyslaniu-resetu"></a>
 
@@ -806,17 +710,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-20`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: single-use token, expiry, neutral invalid copy.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-20-ustawienie-nowego-hasla"></a>
 
@@ -849,17 +747,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-02`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: password policy, session revoke, audit.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-21-rozwiazanie-dostepu"></a>
 
@@ -890,17 +782,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-22|auth-23|auth-29`. Bł
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: tenant isolation, membership filter.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-22-wybor-organizacji-lub-tenanta"></a>
 
@@ -931,17 +817,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-23|auth-29`. Błąd prow
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: membership check, no cross-tenant leakage.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-23-wybor-obszaru-roboczego"></a>
 
@@ -972,17 +852,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-29`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: workspace membership, data-scope audit.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-24-ponowne-uwierzytelnienie"></a>
 
@@ -1014,17 +888,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-29`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: step-up TTL, audit, original operation binding.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-25-przetwarzanie-wylogowania"></a>
 
@@ -1055,17 +923,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-26`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: csrf, session revoke, cookie clearing.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-26-ekran-po-wylogowaniu"></a>
 
@@ -1096,17 +958,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-02`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: no sensitive data retained in browser state.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-27-usluga-auth-niedostepna"></a>
 
@@ -1137,17 +993,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-01`. Błąd prowadzi do 
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: neutral error, no secret in diagnostics.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-28-dostep-zablokowany"></a>
 
@@ -1180,17 +1030,11 @@ Po sukcesie dozwolone są wyłącznie przejścia: `auth-18|auth-27`. Błąd prow
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: no tenant data leakage, support audit.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.
 
 <a id="sekcja-auth-29-zakonczenie-procesu-i-wejscie-do-aplikacji"></a>
 
@@ -1223,14 +1067,8 @@ Po sukcesie dozwolone są wyłącznie przejścia: `app-shell`. Błąd prowadzi d
 - blocked: brak ujawniania danych organizacji, przejście do auth-28.
 - Kontrole: session rotation, workspace scope lock.
 
-### Dostępność i responsywność
-Jedna kolumna do 640 px, czytelny reflow przy 400% zoom, logiczny porządek tabulacji, `autocomplete` właściwe dla pola, poprawne etykiety i live region dla statusu asynchronicznego. Kody MFA można wkleić; hasło współpracuje z menedżerami haseł.
+> [AUTH-SHARED-2](#auth-shared-2) — normatywny.
 
-### Storybook i testy
-Stories docelowe: default, validationError, rateLimited, serviceUnavailable, blocked, long-copy PL/EN i mobile 390 px. Test kontraktowy sprawdza operationId, dozwolone przejścia i neutralność komunikatów bezpieczeństwa.
+> [AUTH-SHARED-3](#auth-shared-3) — normatywny.
 
-### Kryteria akceptacji
-1. Surface, dokument Identity/Auth, CSV i TypeScript są generowane z `contracts/auth-fsm.json`.
-2. Nie można przejść do stanu spoza success/error/retry transition.
-3. Operacja, reason i state są jednoznaczne i różne pojęciowo.
-4. Zdarzenie bezpieczeństwa zawiera correlationId, surfaceId i wynik bez sekretów.
+> [AUTH-SHARED-1](#auth-shared-1) — normatywny.

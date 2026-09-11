@@ -1,0 +1,9 @@
+{
+  "environment": "staging",
+  "releaseSha": "REPLACE_WITH_SHA",
+  "generatedAt": "2026-09-10T00:00:00Z",
+  "cloudSqlRestore": {"status":"pending","executedAt":"","reference":""},
+  "redisFailover": {"status":"pending","executedAt":"","reference":""},
+  "cloudArmor": {"status":"pending","executedAt":"","reference":""},
+  "loadBalancerTls": {"status":"pending","executedAt":"","reference":""}
+}

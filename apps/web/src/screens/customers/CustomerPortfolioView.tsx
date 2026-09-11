@@ -9,7 +9,7 @@ import { useShellNavigate } from '../../runtime/shell/app-shell/ShellNavigationC
 import { contextualProductLink, productRoutes, useProductQuery } from '../../runtime/app/routing/productRoutes';
 import { useAssistantAnalysisContext } from '../../runtime/shell/papa-assistant/useAssistantAnalysisContext';
 import type { RemoteState } from '../../runtime/shared/data/useRemoteResource';
-import { DataProvenance, MetricSummary, ProductDataState, ProductViewNav } from '../shared/ProductDataState';
+import { MetricSummary, ProductDataState, ProductViewNav } from '../shared/ProductDataState';
 import { ProductDateControl } from '../shared/ProductDateControl';
 import { formatProductMoney, useProductLocale } from '../shared/useProductLocale';
 
@@ -91,14 +91,15 @@ export function CustomerPortfolioView({ data = null, state = data ? 'ready' : 'l
         {onReload && <Button variant="secondary" size="small" disabled={state === 'loading'} onClick={onReload}>{t('Odśwież', 'Refresh')}</Button>}</div></header>
     <ProductViewNav label={t('Widoki Klientów', 'Customer views')} active={view} onChange={customerView => update({ customerView,customerId:null,customerCohort:null })}
       items={[{ id: 'overview', label: t('Wynik i retencja', 'Outcome and retention') }, { id: 'explorer', label: t('Eksplorator', 'Explorer') }, { id: 'cohorts', label: t('Kohorty', 'Cohorts') }, { id: 'value', label: t('Wartość i pozyskanie', 'Value and acquisition') }, {id:'quality',label:t('Jakość i prywatność','Quality and privacy')}]} />
-    {demo && <p className="pd-product-data__notice">{t('Dane demonstracyjne. Zmiana okresu nie pobiera danych serwera.', 'Demonstration data. Changing the period does not retrieve server data.')}</p>}
-    <ProductDataState state={state} problem={problem} onRetry={onReload}>
-      {data && <>
-        <DataProvenance source={source} demo={demo} synchronizedAt={data.scope.synchronizedAt} calculatedAt={data.scope.calculatedAt} limitations={[
+
+    <ProductDataState provenance={data?{source:source,demo:demo,synchronizedAt:data.scope.synchronizedAt,calculatedAt:data.scope.calculatedAt,limitations:[
+          ...(demo?[t('Dane demonstracyjne. Zmiana okresu nie pobiera danych serwera.', 'Demonstration data. Changing the period does not retrieve server data.')]:[]),
           t(`Dolna granica zapytania: ${data.scope.historyFrom.slice(0, 10)}; nie potwierdza kompletności historii. LTV oznacza zaobserwowany przychód brutto, nie prognozowaną wartość życiową ani marżę.`, `Query floor: ${data.scope.historyFrom.slice(0, 10)}; this does not confirm complete history. LTV means observed gross revenue, not predicted lifetime value or margin.`),
           t(`Waluta: ${data.currencyCoverage.reportingCurrency}; wyłączone zamówienia w innych walutach: ${data.currencyCoverage.excludedOrders}. Nie stosujemy domyślnego przelicznika FX.`, `Currency: ${data.currencyCoverage.reportingCurrency}; orders excluded in other currencies: ${data.currencyCoverage.excludedOrders}. No implicit FX conversion.`),
           t('RFM: kwintyle względem portfela z jednakowym wynikiem dla remisów. Filtry eksploratora nie zmieniają sum portfela.', 'RFM: portfolio-relative quintiles with identical scores for ties. Explorer filters do not change portfolio totals.'),
-        ]} />
+        ]}:undefined} state={state} problem={problem} onRetry={onReload}>
+      {data && <>
+
         {data.summary.total === 0 && <ProductDataState state="empty" />}
         {data.summary.total > 0 && data.summary.total < 30 && <p className="pd-product-data__notice" role="status">{t('Mała próba: poniżej 30 klientów. Segmenty opisują portfel, nie potwierdzają istotności statystycznej.', 'Small sample: fewer than 30 customers. Segments describe this portfolio; they do not establish statistical significance.')}</p>}
         {view === 'overview' && data.summary.total > 0 && <>
@@ -110,7 +111,7 @@ export function CustomerPortfolioView({ data = null, state = data ? 'ready' : 'l
           </dl>
           <ProductSectionFrame icon="trend" title={t('Trend klientów', 'Customer trend')} description={t('Dzienny przychód z pierwszych i kolejnych zakupów. Nie sumuj dziennych klientów jako unikalnych w całym okresie.', 'Daily revenue from first and subsequent purchases. Daily customer counts are not period-unique counts.')}>
             {data.trend.length ? <><div className="pd-product-data__chart" role="img" aria-label={t('Trend przychodu; te same dane w tabeli poniżej.', 'Revenue trend; the same values are in the following table.')}><ResponsiveContainer width="100%" height="100%"><LineChart data={[...data.trend]}>
-              <CartesianGrid stroke="var(--pd-separator)" vertical={false} /><XAxis dataKey="date" minTickGap={35} /><YAxis /><Tooltip /><Legend />
+              <CartesianGrid stroke="var(--pd-separator)" vertical={false} /><XAxis dataKey="date" minTickGap={35} /><YAxis tickLine={false} axisLine={false} width={56}/><Tooltip contentStyle={{background: 'var(--pd-surface)', border: '1px solid var(--pd-separator-strong)', borderRadius: 10, color: 'var(--pd-text)'}} labelStyle={{color: 'var(--pd-text)'}} /><Legend />
               <Line name={t('Pierwszy zakup', 'First purchase')} type="linear" dataKey="newRevenue" stroke="var(--pd-interactive)" dot={false} isAnimationActive={false} />
               <Line name={t('Kolejny zakup', 'Repeat purchase')} type="linear" dataKey="returningRevenue" stroke="var(--pd-text-secondary)" strokeDasharray="5 3" dot={false} isAnimationActive={false} />
             </LineChart></ResponsiveContainer></div><details><summary>{t('Tabela danych trendu', 'Trend data table')}</summary><div className="pd-product-data__table-scroll"><table className="pd-product-data__table"><thead><tr><th>{t('Dzień', 'Day')}</th><th>{t('Pierwszy zakup', 'First purchase')}</th><th>{t('Kolejne zakupy', 'Repeat purchases')}</th></tr></thead><tbody>{data.trend.map(point => <tr key={point.date}><th scope="row">{point.date}</th><td>{money({ amount: point.newRevenue, currency: data.currencyCoverage.reportingCurrency })}</td><td>{money({ amount: point.returningRevenue, currency: data.currencyCoverage.reportingCurrency })}</td></tr>)}</tbody></table></div></details></> : <ProductDataState state="empty" />}

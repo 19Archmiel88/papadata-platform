@@ -153,8 +153,8 @@ const brandRules = [
   },
   {
     label: { pl: 'Warstwy', en: 'Layers' },
-    value: { pl: '3 stacki', en: '3 stacks' },
-    token: 'base / mid / top',
+    value: { pl: '2 ścieżki', en: '2 paths' },
+    token: '--pd-interactive / --pd-brand-mark-detail',
   },
   {
     label: { pl: 'Kolor', en: 'Color' },
@@ -173,11 +173,11 @@ const brandPlacementRows = [
     id: 'shell',
     title: { pl: 'App shell', en: 'App shell' },
     detail: {
-      pl: 'Stały znak orientacyjny w powłoce produktu.',
-      en: 'A stable orientation mark in the product shell.',
+      pl: 'Stały znak orientacyjny w powłoce produktu — dekoracyjny (lockup + decorative): przycisk-link do strony głównej sam niesie nazwę dostępną, więc znak jest ukryty przed technologiami asystującymi.',
+      en: 'A stable orientation mark in the product shell — decorative (lockup + decorative): the home-link button itself carries the accessible name, so the mark is hidden from assistive technology.',
     },
     props: {
-      label: 'PapaData app shell',
+      decorative: true,
       size: 'small',
       variant: 'lockup',
     },
@@ -186,11 +186,11 @@ const brandPlacementRows = [
     id: 'auth',
     title: { pl: 'Auth', en: 'Auth' },
     detail: {
-      pl: 'Pełna identyfikacja przy wejściu do aplikacji.',
-      en: 'Full identity at the application entry point.',
+      pl: 'Pełna identyfikacja przy wejściu do aplikacji — dekoracyjny (lockup + decorative), wewnątrz panelu marketingowego oznaczonego aria-hidden.',
+      en: 'Full identity at the application entry point — decorative (lockup + decorative), inside a marketing panel marked aria-hidden.',
     },
     props: {
-      label: 'PapaData auth',
+      decorative: true,
       size: 'medium',
       variant: 'lockup',
     },
@@ -199,8 +199,8 @@ const brandPlacementRows = [
     id: 'empty',
     title: { pl: 'Empty state', en: 'Empty state' },
     detail: {
-      pl: 'Sygnet może wspierać pusty stan wysokiego poziomu.',
-      en: 'The mark may support a high-level empty state.',
+      pl: 'Obecnie nieużywane — realne puste stany renderują kontekstową ikonę (Icon), nie znak marki. Sygnet poniżej to rekomendowany wzorzec, gdyby to się zmieniło.',
+      en: 'Not currently used — real empty states render a contextual Icon, not the brand mark. The mark below is the recommended pattern if that changes.',
     },
     props: {
       label: 'PapaData empty state',
@@ -212,8 +212,8 @@ const brandPlacementRows = [
     id: 'export',
     title: { pl: 'Dokument eksportu', en: 'Export document' },
     detail: {
-      pl: 'Wordmark identyfikuje eksport bez przenoszenia UI aplikacji.',
-      en: 'The wordmark identifies an export without carrying application UI.',
+      pl: 'Obecnie nieużywane — realny dokument eksportu (ReportDocument) pokazuje sam tekst „PAPADATA”, bez tego komponentu. Wordmark poniżej to rekomendowany wzorzec, gdyby to się zmieniło.',
+      en: 'Not currently used — the real export document (ReportDocument) shows plain "PAPADATA" text, without this component. The wordmark below is the recommended pattern if that changes.',
     },
     props: {
       label: 'PapaData export',
@@ -512,15 +512,11 @@ export const Marka: Story = {
 
     await expect(paths[0]).toHaveAttribute(
       'd',
-      'M50 55 L85 72.5 L50 90 L15 72.5 Z',
+      'M18 12h34c20 0 32 11 32 29S72 70 52 70H38v18H18V12Zm20 18v22h14c9 0 13-4 13-11s-4-11-13-11H38Z',
     );
     await expect(paths[1]).toHaveAttribute(
       'd',
-      'M50 35 L85 52.5 L50 70 L15 52.5 Z',
-    );
-    await expect(paths[2]).toHaveAttribute(
-      'd',
-      'M50 15 L85 32.5 L50 50 L15 32.5 Z',
+      'm18 67 20-11v14L18 81V67Z',
     );
 
     for (const svg of canvasElement.querySelectorAll(

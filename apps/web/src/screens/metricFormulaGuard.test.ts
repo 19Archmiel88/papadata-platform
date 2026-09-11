@@ -54,8 +54,8 @@ const FORMULA_PATTERNS: readonly RegExp[] = [
 const ALLOWLISTED_MATCHES = new Set<string>([
   'screens/orders/OrdersScreen.data.ts:96',
   'screens/orders/OrdersScreen.data.ts:117',
-  'runtime/analytics/AnalyticsModuleWorkspace.tsx:995',
-  'runtime/analytics/AnalyticsModuleWorkspace.tsx:1615',
+  'runtime/analytics/AnalyticsModuleWorkspace.tsx:1001',
+  'runtime/analytics/AnalyticsModuleWorkspace.tsx:1621',
 ]);
 
 type FormulaMatch = { readonly key: string; readonly snippet: string };

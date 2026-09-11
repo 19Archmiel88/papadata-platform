@@ -142,6 +142,12 @@ invitation.validate,auth,command,POST,/api/v1/auth/invitations/validate,/v1/auth
 mobile.device.manage,mobile,command,POST,/api/v1/mobile/device/manage,/v1/mobile/device/manage,mobile.write,MobileDeviceManageRequest,MobileDeviceManageResponse,approved-target,Artur Wiśniewski
 mobile.invite,mobile,command,POST,/api/v1/mobile/invite,/v1/mobile/invite,mobile.write,MobileInviteRequest,MobileInviteResponse,approved-target,Artur Wiśniewski
 mobile.use,mobile,query,GET,/api/v1/mobile/use,/v1/mobile/use,mobile.read,MobileUseRequest,MobileUseResponse,approved-target,Artur Wiśniewski
+notifications.list,notifications,query,GET,/api/v1/notifications,/v1/notifications,workspace.read,NotificationsListRequest,NotificationsListResponse,approved-target,Artur Wiśniewski
+notifications.mark-all-read,notifications,command,POST,/api/v1/notifications/read-all,/v1/notifications/read-all,workspace.read,NotificationMutationRequest,NotificationsMarkAllReadResponse,approved-target,Artur Wiśniewski
+notifications.mark-read,notifications,command,POST,/api/v1/notifications/{id}/read,/v1/notifications/{id}/read,workspace.read,NotificationMutationRequest,NotificationMutationResponse,approved-target,Artur Wiśniewski
+notifications.mark-unread,notifications,command,POST,/api/v1/notifications/{id}/unread,/v1/notifications/{id}/unread,workspace.read,NotificationMutationRequest,NotificationMutationResponse,approved-target,Artur Wiśniewski
+notifications.snooze,notifications,command,POST,/api/v1/notifications/{id}/snooze,/v1/notifications/{id}/snooze,workspace.read,NotificationSnoozeRequest,NotificationMutationResponse,approved-target,Artur Wiśniewski
+notifications.unsnooze,notifications,command,POST,/api/v1/notifications/{id}/unsnooze,/v1/notifications/{id}/unsnooze,workspace.read,NotificationMutationRequest,NotificationMutationResponse,approved-target,Artur Wiśniewski
 onboarding.profile.update,onboarding,command,PUT,/api/v1/onboarding/profile,/v1/onboarding/profile,workspace.write,OnboardingProfileUpdateRequest,OnboardingProfileUpdateResponse,approved-target,Artur Wiśniewski
 onboarding.progress.read,onboarding,query,GET,/api/v1/onboarding/progress,/v1/onboarding/progress,workspace.read,OnboardingProgressReadRequest,OnboardingProgressReadResponse,approved-target,Artur Wiśniewski
 orders.detail.read,orders,query,GET,/api/v1/orders/szczegoly,/v1/orders/szczegoly,orders.read,OrdersDetailReadRequest,OrdersDetailReadResponse,approved-target,Artur Wiśniewski
@@ -174,6 +180,11 @@ papa.observation.save,papa,command,POST,/api/v1/papa/observations,/v1/papa/obser
 papa.observations.read,papa,query,GET,/api/v1/papa/obserwacje,/v1/papa/obserwacje,ai.read,PapaObservationsReadRequest,PapaObservationsReadResponse,approved-target,Artur Wiśniewski
 papa.proposals.read,papa,query,GET,/api/v1/papa/propozycje-ai,/v1/papa/propozycje-ai,ai.read,PapaProposalsReadRequest,PapaProposalsReadResponse,approved-target,Artur Wiśniewski
 papa.read,papa,query,GET,/api/v1/papa/read,/v1/papa/read,papa.read,PapaReadRequest,PapaReadResponse,approved-target,Artur Wiśniewski
+papa.report-definition.duplicate,papa,command,POST,/api/v1/papa/report-definitions/duplicate,/v1/papa/report-definitions/duplicate,ai.assistant.run,PapaReportDefinitionDuplicateRequest,PapaReportDefinitionDuplicateResponse,approved-target,Artur Wiśniewski
+papa.report-definition.read,papa,query,GET,/api/v1/papa/report-definitions,/v1/papa/report-definitions,ai.history.read,PapaReportDefinitionReadRequest,PapaReportDefinitionReadResponse,approved-target,Artur Wiśniewski
+papa.report-definition.upsert,papa,command,POST,/api/v1/papa/report-definitions,/v1/papa/report-definitions,ai.assistant.run,PapaReportDefinitionUpsertRequest,PapaReportDefinitionUpsertResponse,approved-target,Artur Wiśniewski
+papa.report-export.create,papa,command,POST,/api/v1/papa/report-definitions/exports,/v1/papa/report-definitions/exports,ai.assistant.run,PapaReportExportCreateRequest,PapaReportExportCreateResponse,approved-target,Artur Wiśniewski
+papa.report-schedule.upsert,papa,command,POST,/api/v1/papa/report-definitions/schedule,/v1/papa/report-definitions/schedule,ai.assistant.run,PapaReportScheduleUpsertRequest,PapaReportScheduleUpsertResponse,approved-target,Artur Wiśniewski
 papa.write,papa,command,POST,/api/v1/papa/write,/v1/papa/write,papa.write,PapaWriteRequest,PapaWriteResponse,approved-target,Artur Wiśniewski
 products.catalog.read,products,query,GET,/api/v1/products/katalog,/v1/products/katalog,products.read,ProductsCatalogReadRequest,ProductsCatalogReadResponse,approved-target,Artur Wiśniewski
 products.detail.read,products,query,GET,/api/v1/products/szczegoly,/v1/products/szczegoly,products.read,ProductsDetailReadRequest,ProductsDetailReadResponse,approved-target,Artur Wiśniewski

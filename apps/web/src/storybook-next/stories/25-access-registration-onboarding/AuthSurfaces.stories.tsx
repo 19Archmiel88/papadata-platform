@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -11,10 +8,16 @@ import {
   userEvent,
   within,
 } from 'storybook/test';
+import type {
+  AccessLifecycleStatus,
+} from '@papadata/contracts';
 
 import {
   AuthSurface,
 } from '../../../runtime/features/auth/AuthSurface';
+import {
+  AccessFlowScreen,
+} from '../../../runtime/features/auth/AccessFlowScreen';
 import {
   AuthDataSourceMarquee,
 } from '../../../runtime/features/auth/AuthDataSourceMarquee';
@@ -25,10 +28,10 @@ import {
   AuthRuntimePreferences,
 } from '../../../runtime/features/auth/AuthRuntimePreferences';
 import {
+  accessLifecycleFixture,
+} from '../../../fixtures/access/accessLifecycleFixture';
+import {
   Button,
-  InlineNotice,
-  ProgressIndicator,
-  StatusBadge,
 } from '../../../design-system/components';
 import {
   StoryPresentationMeta,
@@ -37,6 +40,10 @@ import {
 } from '../../../storybook-next/presentation/StoryPresentation';
 import './auth-surfaces.stories.css';
 
+// Every handler below is a tracked spy (storybook/test's `fn()`, a
+// Vitest-compatible mock) so each story's play() function can assert real
+// clicks reach the real production component's callback contract -- not
+// just that something rendered.
 const navigateAction = fn();
 const loginAction = fn();
 const registerAction = fn();
@@ -48,6 +55,14 @@ const acceptInvitationAction = fn();
 const stepUpAction = fn();
 const selectWorkspaceAction = fn();
 const oauthContinueAction = fn();
+const accessFlowAction = fn();
+const validateInvitationAction = fn(async () => ({
+  status: 'valid',
+  email: 'nowy.operator@papadata.local',
+  role: 'Operator',
+  tenantName: 'PapaData Sp. z o.o.',
+  workspaceName: 'E-commerce PL',
+}));
 
 // AuthSurface's handler props are required (no silent no-op-on-missing-handler
 // in production) — every story instance needs the full set regardless of
@@ -62,6 +77,7 @@ const allAuthHandlerProps = {
   onRegister: registerAction,
   onSelectWorkspace: selectWorkspaceAction,
   onStepUpConfirm: stepUpAction,
+  onValidateInvitation: validateInvitationAction,
 };
 
 const workspaceOptions = [
@@ -78,6 +94,9 @@ const workspaceOptions = [
     workspaceName: 'Marketing EU',
   },
 ];
+const organizationOptions = Array.from(
+  new Map(workspaceOptions.map((option) => [option.tenantId, option])).values(),
+);
 
 const meta = {
   title: 'PLATFORMA/Dostęp i onboarding/Procesy dostępu',
@@ -93,27 +112,573 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-type AuthScenario = {
-  readonly title: string;
-  readonly status: string;
-  readonly tone: 'critical' | 'neutral' | 'success' | 'warning';
-  readonly description: string;
-  readonly meta: readonly string[];
-  readonly action?: string;
-};
-
-function AuthPageFrame({
+// Real screens (below) render at full size, exactly as the production
+// AccessRouter shows them — no documentation title/summary/metadata chrome
+// on top. That chrome is reserved for the one non-screen entry at the
+// bottom of this file (the component showcase), which documents a set of
+// parts rather than presenting a single real page.
+function Stage({
+  authSurface,
   children,
-  storyId,
-  summary,
-  title,
 }: {
-  readonly children: ReactNode;
-  readonly storyId: string;
-  readonly summary: string;
-  readonly title: string;
+  readonly authSurface: string;
+  readonly children: React.ReactNode;
 }) {
   return (
+    <div className="pd-s25-stage pd-s25-stage--full" data-testid={`stage-${authSurface}`}>
+      {children}
+    </div>
+  );
+}
+
+function getStage(canvasElement: HTMLElement, authSurface: string): HTMLElement {
+  const stage = canvasElement.querySelector(`[data-auth-surface="${authSurface}"]`);
+  if (!(stage instanceof HTMLElement)) {
+    throw new Error(`${authSurface} stage is not rendered.`);
+  }
+  return stage;
+}
+
+// Company-form data variants. AccessFlowScreen owns its own form state
+// internally (see its useState calls) — these only vary what's already
+// saved server-side when the surface is first shown.
+const companyPending: AccessLifecycleStatus = { ...accessLifecycleFixture, company: null };
+const companySaved: AccessLifecycleStatus = accessLifecycleFixture;
+const emailUnverified: AccessLifecycleStatus = { ...accessLifecycleFixture, emailVerified: false };
+const registrationDone: AccessLifecycleStatus = {
+  ...accessLifecycleFixture,
+  completedAt: '2026-09-08T09:12:00.000Z',
+  integrationCount: 2,
+  lastSyncAt: '2026-09-10T06:40:00.000Z',
+  readySourceCount: 1,
+};
+const onboardingInProgress: AccessLifecycleStatus = {
+  ...accessLifecycleFixture,
+  company: null,
+  completedAt: null,
+};
+const lookupResult = {
+  normalized: {
+    city: 'Kraków',
+    country: 'PL' as const,
+    legalName: 'Nowa Firma Demonstracyjna sp. z o.o.',
+    postalCode: '30-001',
+    street: 'Rynkowa 12',
+    vatId: '5260250995',
+  },
+};
+
+export const AuthEntryStory: Story = {
+  name: 'Wejście',
+  render: () => (
+    <Stage authSurface="auth-01">
+      <AuthSurface {...allAuthHandlerProps} mode="entry" onNavigate={navigateAction} />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-01');
+    const canvas = within(stage);
+    await expect(canvas.getByRole('heading', { name: 'Witaj w PapaData' })).toBeInTheDocument();
+    await userEvent.click(canvas.getByRole('button', { name: 'Zaloguj się' }));
+    await expect(navigateAction).toHaveBeenCalled();
+  },
+};
+
+export const LoginStory: Story = {
+  name: 'Logowanie',
+  render: () => (
+    <Stage authSurface="auth-02">
+      <AuthSurface {...allAuthHandlerProps} mode="login" onLogin={loginAction} onNavigate={navigateAction} />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-02');
+    const canvas = within(stage);
+    await userEvent.click(canvas.getByRole('button', { name: 'Zaloguj się' }));
+    await expect(canvas.getAllByText('Podaj poprawny adres e-mail.')[0]).toBeInTheDocument();
+    await expect(canvas.getByRole('checkbox', { name: 'Zapamiętaj to urządzenie' })).toBeInTheDocument();
+  },
+};
+
+export const RegistrationMethodStory: Story = {
+  name: 'Metoda rejestracji',
+  render: () => (
+    <Stage authSurface="auth-03">
+      <AuthSurface {...allAuthHandlerProps}
+        initialRegistrationStage="choice"
+        mode="register"
+        onNavigate={navigateAction}
+        onRegister={registerAction}
+      />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-03');
+    const canvas = within(stage);
+    await expect(canvas.getByRole('button', { name: 'Kontynuuj przez Google' })).toBeDisabled();
+    await expect(canvas.queryByRole('textbox', { name: /E-mail/u })).not.toBeInTheDocument();
+    await userEvent.click(canvas.getByRole('button', { name: 'Utwórz konto e-mailem' }));
+    await expect(canvas.getByRole('textbox', { name: /E-mail/u })).toBeInTheDocument();
+  },
+};
+
+export const RegistrationEmailStory: Story = {
+  name: 'Rejestracja e-mail',
+  render: () => (
+    <Stage authSurface="auth-04">
+      <AuthSurface {...allAuthHandlerProps}
+        initialRegistrationStage="email"
+        mode="register"
+        onNavigate={navigateAction}
+        onRegister={registerAction}
+      />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-04');
+    const canvas = within(stage);
+    await userEvent.type(canvas.getByRole('textbox', { name: /E-mail/u }), 'user@example.com');
+    await userEvent.click(canvas.getByRole('button', { name: 'Utwórz konto' }));
+    await expect(canvas.getAllByText('Podaj imię i nazwisko.')[0]).toBeInTheDocument();
+    await expect(canvas.getAllByText('Hasło musi mieć co najmniej 12 znaków.')[0]).toBeInTheDocument();
+  },
+};
+
+export const OAuthCallbackStory: Story = {
+  name: 'Powrót OAuth',
+  render: () => (
+    <Stage authSurface="auth-05">
+      <AccessFlowScreen demo data={null} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-05" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-05');
+    const canvas = within(stage);
+    await expect(canvas.getByRole('button', { name: 'Wybierz organizacje' })).toBeDisabled();
+    await userEvent.click(canvas.getByRole('button', { name: 'Wroc do logowania' }));
+    await expect(navigateAction).toHaveBeenCalledWith('/login');
+  },
+};
+
+export const EmailVerificationStory: Story = {
+  name: 'Weryfikacja adresu e-mail',
+  render: () => (
+    <Stage authSurface="auth-06">
+      <AccessFlowScreen demo data={emailUnverified} hasToken onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-06" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-06');
+    const canvas = within(stage);
+    await userEvent.click(canvas.getByRole('button', { name: 'Potwierdz adres z linku' }));
+    await expect(accessFlowAction).toHaveBeenCalledWith('verify');
+  },
+};
+
+export const CompanyIdentityStory: Story = {
+  name: 'Identyfikacja firmy',
+  render: () => (
+    <Stage authSurface="auth-07">
+      <AccessFlowScreen demo data={companyPending} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-07" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-07');
+    const canvas = within(stage);
+    const submit = canvas.getByRole('button', { name: 'Zapisz i przejrzyj dane' });
+    await expect(submit).toBeDisabled();
+    await userEvent.type(canvas.getByRole('textbox', { name: 'NIP' }), '123');
+    await expect(canvas.getAllByText('Sprawdz 10 cyfr i sume kontrolna NIP.')[0]).toBeInTheDocument();
+  },
+};
+
+export const CompanyLookupStory: Story = {
+  name: 'Wyszukiwanie firmy',
+  render: () => (
+    <Stage authSurface="auth-08">
+      <AccessFlowScreen demo data={companyPending} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-08" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-08');
+    const canvas = within(stage);
+    const search = canvas.getByRole('button', { name: 'Szukaj w GUS/BIR' });
+    await expect(search).toBeDisabled();
+    await userEvent.type(canvas.getByRole('textbox', { name: 'NIP' }), '5260250995');
+    await expect(search).toBeEnabled();
+    await userEvent.click(canvas.getByRole('button', { name: 'Wprowadz dane recznie' }));
+    await expect(navigateAction).toHaveBeenCalledWith('/auth/company/manual');
+  },
+};
+
+export const CompanyReviewStory: Story = {
+  name: 'Przegląd danych firmy',
+  render: () => (
+    <Stage authSurface="auth-09">
+      <AccessFlowScreen demo data={companySaved} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-09" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-09');
+    const canvas = within(stage);
+    await expect(canvas.getByText('Firma demonstracyjna')).toBeInTheDocument();
+    await userEvent.click(canvas.getByRole('button', { name: 'Dalej' }));
+    await expect(navigateAction).toHaveBeenCalledWith('/auth/consents');
+  },
+};
+
+export const CompanyManualEntryStory: Story = {
+  name: 'Firma: wpis ręczny',
+  render: () => (
+    <Stage authSurface="auth-10">
+      <AccessFlowScreen demo companyLookup={lookupResult} data={companyPending} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-10" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-10');
+    const canvas = within(stage);
+    await expect(canvas.getByText(/Dane pobrane z GUS\/BIR/u)).toBeInTheDocument();
+    await expect(canvas.getByRole('textbox', { name: /Nazwa firmy/u })).toHaveValue('Nowa Firma Demonstracyjna sp. z o.o.');
+  },
+};
+
+export const CompanyExistingStory: Story = {
+  name: 'Firma już zarejestrowana',
+  render: () => (
+    <Stage authSurface="auth-11">
+      <AccessFlowScreen demo data={companySaved} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-11" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-11');
+    const canvas = within(stage);
+    await expect(canvas.getByText(/Nie wyszukujemy cudzych kont po NIP/u)).toBeInTheDocument();
+    await userEvent.click(canvas.getByRole('button', { name: 'Edytuj' }));
+    await expect(navigateAction).toHaveBeenCalledWith('/auth/company/manual');
+  },
+};
+
+export const ConsentsStory: Story = {
+  name: 'Zgody i dokumenty',
+  render: () => (
+    <Stage authSurface="auth-12">
+      <AccessFlowScreen demo data={accessLifecycleFixture} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-12" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-12');
+    const canvas = within(stage);
+    const submit = canvas.getByRole('button', { name: 'Zapisz potwierdzenia' });
+    await expect(submit).toBeDisabled();
+    for (const checkbox of canvas.getAllByRole('checkbox')) {
+      await userEvent.click(checkbox);
+    }
+    await expect(submit).toBeEnabled();
+  },
+};
+
+export const RegistrationCompletingStory: Story = {
+  name: 'Przetwarzanie rejestracji',
+  render: () => (
+    <Stage authSurface="auth-13">
+      <AccessFlowScreen demo data={accessLifecycleFixture} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-13" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-13');
+    const canvas = within(stage);
+    await userEvent.click(canvas.getByRole('button', { name: 'Zakoncz przygotowanie konta' }));
+    await expect(accessFlowAction).toHaveBeenCalledWith('complete');
+  },
+};
+
+export const RegistrationCompletedStory: Story = {
+  name: 'Rejestracja zakończona',
+  render: () => (
+    <Stage authSurface="auth-14">
+      <AccessFlowScreen demo data={registrationDone} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-14" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-14');
+    const canvas = within(stage);
+    await expect(canvas.getByText('2')).toBeInTheDocument();
+    await userEvent.click(canvas.getByRole('button', { name: 'Przejdz do aplikacji' }));
+    await expect(navigateAction).toHaveBeenCalledWith('/app/command-center');
+  },
+};
+
+export const InvitationStory: Story = {
+  name: 'Zaproszenie',
+  render: () => (
+    <Stage authSurface="auth-15">
+      <AuthSurface {...allAuthHandlerProps}
+        initialInvitationId="inv_demo_001"
+        initialInvitationToken="demo-invitation-token"
+        mode="accept-invite"
+        onNavigate={navigateAction}
+      />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-15');
+    const canvas = within(stage);
+    await expect(validateInvitationAction).toHaveBeenCalled();
+    await expect(canvas.getByText(/nowy\.operator@papadata\.local/u)).toBeInTheDocument();
+    await expect(canvas.getByRole('textbox', { name: /Imię i nazwisko/u })).toBeInTheDocument();
+  },
+};
+
+export const MfaStory: Story = {
+  name: 'Weryfikacja MFA',
+  render: () => (
+    <Stage authSurface="auth-16">
+      <AuthSurface {...allAuthHandlerProps} mode="mfa" onMfaConfirm={mfaAction} onNavigate={navigateAction} />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-16');
+    const canvas = within(stage);
+    await userEvent.click(canvas.getByRole('button', { name: 'Potwierdź MFA' }));
+    await expect(canvas.getAllByText('Kod MFA musi mieć 6 cyfr.')[0]).toBeInTheDocument();
+  },
+};
+
+export const MfaEnrollmentStory: Story = {
+  name: 'Konfiguracja MFA',
+  render: () => (
+    <Stage authSurface="auth-17">
+      <AccessFlowScreen demo data={accessLifecycleFixture} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-17" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-17');
+    const canvas = within(stage);
+    await userEvent.click(canvas.getByRole('button', { name: 'Skonfiguruj MFA' }));
+    await expect(accessFlowAction).toHaveBeenCalledWith('mfa');
+  },
+};
+
+export const AccessRecoveryStory: Story = {
+  name: 'Odzyskiwanie hasła',
+  render: () => (
+    <Stage authSurface="auth-18">
+      <AuthSurface {...allAuthHandlerProps}
+        mode="recover"
+        onNavigate={navigateAction}
+        onPasswordRecoveryRequest={recoveryRequestAction}
+      />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-18');
+    const canvas = within(stage);
+    await userEvent.click(canvas.getByRole('button', { name: 'Wyślij instrukcję' }));
+    await expect(canvas.getAllByText('Podaj poprawny adres e-mail.')[0]).toBeInTheDocument();
+  },
+};
+
+export const RecoveryInstructionsStory: Story = {
+  name: 'Instrukcje odzyskiwania',
+  render: () => (
+    <Stage authSurface="auth-19">
+      <AccessFlowScreen demo data={null} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-19" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-19');
+    const canvas = within(stage);
+    await expect(canvas.getByRole('status')).toHaveTextContent('Jezeli konto spelnia warunki odzyskiwania');
+    await userEvent.click(canvas.getByRole('button', { name: 'Wroc do logowania' }));
+    await expect(navigateAction).toHaveBeenCalledWith('/login');
+  },
+};
+
+export const NewPasswordStory: Story = {
+  name: 'Nowe hasło',
+  render: () => (
+    <Stage authSurface="auth-20">
+      <AuthSurface {...allAuthHandlerProps}
+        initialEmail="user@example.com"
+        initialResetToken="demo-reset-token"
+        mode="recover"
+        onNavigate={navigateAction}
+        onPasswordReset={resetAction}
+      />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-20');
+    const canvas = within(stage);
+    await expect(canvas.queryByRole('textbox', { name: 'Token resetu' })).not.toBeInTheDocument();
+    await expect(canvas.getByLabelText(/Powtórz nowe hasło/u)).toBeInTheDocument();
+  },
+};
+
+export const ResolveAccessStory: Story = {
+  name: 'Rozwiązywanie dostępu',
+  render: () => (
+    <Stage authSurface="auth-21">
+      <AccessFlowScreen demo data={accessLifecycleFixture} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-21" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-21');
+    const canvas = within(stage);
+    await userEvent.click(canvas.getByRole('button', { name: 'Wybierz organizacje' }));
+    await expect(navigateAction).toHaveBeenCalledWith('/auth/organization');
+  },
+};
+
+export const ChooseOrganizationStory: Story = {
+  name: 'Wybór organizacji',
+  render: () => (
+    <Stage authSurface="auth-22">
+      <AccessFlowScreen demo data={accessLifecycleFixture} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-22">
+        <div className="pd-access__actions">
+          {organizationOptions.map((option) => (
+            <Button
+              key={option.tenantId}
+              onClick={() => navigateAction(`/auth/workspace?tenant=${option.tenantId}`)}
+              variant="secondary"
+            >
+              {option.tenantName}
+            </Button>
+          ))}
+        </div>
+      </AccessFlowScreen>
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-22');
+    const canvas = within(stage);
+    await expect(canvas.getByRole('heading', { name: 'Wybór organizacji' })).toBeInTheDocument();
+    await userEvent.click(canvas.getByText('PapaData Sp. z o.o.'));
+    await expect(navigateAction).toHaveBeenCalledWith('/auth/workspace?tenant=tenant_papadata');
+  },
+};
+
+export const ChooseWorkspaceStory: Story = {
+  name: 'Wybór workspace',
+  render: () => (
+    <Stage authSurface="auth-23">
+      <AccessFlowScreen demo data={accessLifecycleFixture} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-23">
+        <div className="pd-access__actions">
+          {workspaceOptions.map((option) => (
+            <Button
+              key={option.workspaceId}
+              onClick={() => selectWorkspaceAction(option.workspaceId)}
+              variant="secondary"
+            >
+              {option.workspaceName}
+            </Button>
+          ))}
+        </div>
+      </AccessFlowScreen>
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-23');
+    const canvas = within(stage);
+    await userEvent.click(canvas.getByText('E-commerce PL'));
+    await expect(selectWorkspaceAction).toHaveBeenCalledWith('workspace_ecommerce');
+  },
+};
+
+export const ReauthStory: Story = {
+  name: 'Ponowne uwierzytelnienie',
+  render: () => (
+    <Stage authSurface="auth-24">
+      <AuthSurface {...allAuthHandlerProps} mode="reauth" onNavigate={navigateAction} onStepUpConfirm={stepUpAction} />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-24');
+    const canvas = within(stage);
+    await expect(canvas.getByRole('heading', { name: 'Potwierdź to jeszcze raz' })).toBeInTheDocument();
+    await userEvent.click(canvas.getByRole('button', { name: 'Potwierdź' }));
+    await expect(canvas.getAllByText('Kod MFA musi mieć 6 cyfr.')[0]).toBeInTheDocument();
+  },
+};
+
+export const SigningOutStory: Story = {
+  name: 'Wylogowywanie',
+  render: () => (
+    <Stage authSurface="auth-25">
+      <AccessFlowScreen demo data={accessLifecycleFixture} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-25" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-25');
+    const canvas = within(stage);
+    await userEvent.click(canvas.getByRole('button', { name: 'Potwierdz wylogowanie' }));
+    await expect(accessFlowAction).toHaveBeenCalledWith('logout');
+  },
+};
+
+export const SignedOutStory: Story = {
+  name: 'Wylogowano',
+  render: () => (
+    <Stage authSurface="auth-26">
+      <AccessFlowScreen demo data={null} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-26" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-26');
+    const canvas = within(stage);
+    await expect(canvas.getByText('Sesja zostala zakonczona.')).toBeInTheDocument();
+    await userEvent.click(canvas.getByRole('button', { name: 'Zaloguj sie ponownie' }));
+    await expect(navigateAction).toHaveBeenCalledWith('/login');
+  },
+};
+
+export const ServiceUnavailableStory: Story = {
+  name: 'Usługa niedostępna',
+  render: () => (
+    <Stage authSurface="auth-27">
+      <AccessFlowScreen demo data={null} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-27" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-27');
+    const canvas = within(stage);
+    await userEvent.click(canvas.getByRole('button', { name: 'Sprobuj ponownie' }));
+    await expect(accessFlowAction).toHaveBeenCalledWith('retry');
+  },
+};
+
+export const AccessBlockedStory: Story = {
+  name: 'Dostęp zablokowany',
+  render: () => (
+    <Stage authSurface="auth-28">
+      <AccessFlowScreen demo data={null} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-28" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-28');
+    const canvas = within(stage);
+    await expect(canvas.getByText(/Popros administratora/u)).toBeInTheDocument();
+  },
+};
+
+export const EnterApplicationStory: Story = {
+  name: 'Wejście do aplikacji',
+  render: () => (
+    <Stage authSurface="auth-29">
+      <AccessFlowScreen demo data={onboardingInProgress} onAction={accessFlowAction} onNavigate={navigateAction} surface="auth-29" />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-29');
+    const canvas = within(stage);
+    await userEvent.click(canvas.getByRole('button', { name: 'Uzupelnij firme' }));
+    await expect(navigateAction).toHaveBeenCalledWith('/auth/company');
+  },
+};
+
+export const AuthVisualComponentsStory: Story = {
+  name: 'Elementy wizualne dostępu',
+  render: () => (
     <StoryPresentationPage
       headerAside={(
         <StoryPresentationMeta
@@ -127,320 +692,8 @@ function AuthPageFrame({
       )}
       sectionCode="AU"
       sectionLabel="Dostęp i onboarding"
-      storyId={storyId}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationPage>
-  );
-}
-
-function AuthFlowPanel({
-  scenarios,
-}: {
-  readonly scenarios: readonly AuthScenario[];
-}) {
-  const completedCount = scenarios.filter((scenario) => scenario.tone === 'success').length;
-  const currentIndex = Math.max(0, scenarios.findIndex((scenario) => scenario.action));
-  const progressValue = Math.round((completedCount / Math.max(scenarios.length, 1)) * 100);
-
-  return (
-    <div className="pd-s25-flow-panel">
-      <header className="pd-s25-flow-panel__header">
-        <div>
-          <h3>Proces dostępu</h3>
-          <p>Aktualny krok, decyzje i blokery procesu są widoczne bez przechodzenia do dokumentacji.</p>
-        </div>
-        <ProgressIndicator
-          description={`${completedCount} z ${scenarios.length} kroków oznaczono jako gotowe.`}
-          indeterminate={false}
-          label="Postęp procesu"
-          max={100}
-          showValue
-          tone={progressValue >= 75 ? 'success' : 'warning'}
-          value={progressValue}
-        />
-      </header>
-      <ol className="pd-s25-flow-steps" aria-label="Kroki procesu Auth">
-        {scenarios.map((scenario, index) => (
-          <li
-            className="pd-s25-flow-step"
-            data-current={index === currentIndex ? 'true' : undefined}
-            key={scenario.title}
-          >
-          <header>
-            <StatusBadge
-              status="Status"
-              text={scenario.status}
-              tone={scenario.tone}
-            />
-            <h3>{scenario.title}</h3>
-          </header>
-          <p>{scenario.description}</p>
-          <ul aria-label={`Kryteria: ${scenario.title}`}>
-            {scenario.meta.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-          {scenario.action ? (
-            <Button
-              size="small"
-              variant="secondary"
-              onClick={scenario.title === 'Przegląd zaproszenia' ? acceptInvitationAction : navigateAction}
-            >
-              {scenario.action}
-            </Button>
-          ) : null}
-          </li>
-      ))}
-      </ol>
-    </div>
-  );
-}
-
-export const AuthEntryStory: Story = {
-  name: 'Punkt wejścia',
-  render: () => (
-    <AuthPageFrame
-      storyId="25.01"
-      summary="Pierwszy ekran Auth działa w publicznym AuthShellu i prowadzi do właściwej ścieżki bez technicznych statusów w interfejsie."
-      title="Wejście do Auth"
-    >
-      <StoryPresentationSection index="01" layout="showcase" title="Punkt wejścia">
-        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-entry-ready">
-          <AuthSurface {...allAuthHandlerProps} mode="entry" onNavigate={navigateAction} />
-        </div>
-      </StoryPresentationSection>
-
-      <StoryPresentationSection index="02" layout="showcase" title="Stany blokujące bez przycinania powierzchni">
-        <div className="pd-s25-grid pd-s25-grid--compact">
-          <div className="pd-s25-stage" data-testid="auth-entry-unavailable">
-            <AuthSurface {...allAuthHandlerProps}
-              mode="entry"
-              onNavigate={navigateAction}
-              onRetry={retryAction}
-              state="serviceUnavailable"
-            />
-          </div>
-          <div className="pd-s25-stage" data-testid="auth-entry-blocked">
-            <AuthSurface {...allAuthHandlerProps}
-              mode="entry"
-              onNavigate={navigateAction}
-              state="blocked"
-            />
-          </div>
-        </div>
-      </StoryPresentationSection>
-    </AuthPageFrame>
-  ),
-  play: async ({ canvasElement }) => {
-    const authEntry = canvasElement.querySelector('[data-testid="auth-entry-ready"]');
-
-    if (!(authEntry instanceof HTMLElement)) {
-      throw new Error('Auth entry stage is not rendered.');
-    }
-
-    const authCanvas = within(authEntry);
-    await expect(authCanvas.getByRole('heading', { name: 'Witaj w PapaData' })).toBeInTheDocument();
-    await userEvent.click(authCanvas.getByRole('button', { name: 'Zaloguj się' }));
-  },
-};
-
-export const InvitationStory: Story = {
-  name: 'Przegląd zaproszenia',
-  render: () => (
-    <AuthPageFrame
-      storyId="25.04"
-      summary="Zaproszenie pokazuje kontekst organizacji, rolę, termin ważności oraz bezpieczne przejście bez ujawniania danych spoza tokenu."
-      title="Przegląd zaproszenia"
-    >
-      <StoryPresentationSection index="01" layout="showcase" title="Zaproszenie aktywne">
-        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-invitation-ready">
-          <AuthFlowPanel
-            scenarios={[
-              {
-                action: 'Przyjmij zaproszenie',
-                description: 'Operator widzi organizację, workspace, rolę i informację o dacie ważności zaproszenia przed akceptacją.',
-                meta: ['PL/EN copy', 'focus na akcji głównej', 'brak danych PII poza adresem z tokenu'],
-                status: 'Aktywne',
-                title: 'Przegląd zaproszenia',
-                tone: 'success',
-              },
-              {
-                description: 'Jeżeli konto lub firma istnieje, ekran prowadzi do logowania lub rozwiązania kontekstu bez tworzenia duplikatu.',
-                meta: ['firma już zarejestrowana', 'bez enumeracji kont', 'ścieżka powrotu do logowania'],
-                status: 'Wymaga logowania',
-                title: 'Firma już zarejestrowana',
-                tone: 'warning',
-              },
-            ]}
-          />
-        </div>
-      </StoryPresentationSection>
-    </AuthPageFrame>
-  ),
-  play: async ({ canvasElement }) => {
-    const stage = canvasElement.querySelector('[data-testid="auth-invitation-ready"]');
-    if (!(stage instanceof HTMLElement)) throw new Error('Invitation stage is not rendered.');
-
-    const canvas = within(stage);
-    await expect(canvas.getByRole('heading', { name: 'Przegląd zaproszenia' })).toBeInTheDocument();
-    await userEvent.click(canvas.getByRole('button', { name: 'Przyjmij zaproszenie' }));
-  },
-};
-
-export const EmailVerificationStory: Story = {
-  name: 'Weryfikacja adresu e-mail',
-  render: () => (
-    <AuthPageFrame
-      storyId="25.05"
-      summary="Weryfikacja e-mail i informacja o wysłaniu resetu rozdzielają status procesu od pól edycyjnych."
-      title="Weryfikacja adresu e-mail"
-    >
-      <StoryPresentationSection index="01" layout="showcase" title="Stany komunikacji e-mail">
-        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-email-verification-ready">
-          <AuthFlowPanel
-            scenarios={[
-              {
-                action: 'Wyślij ponownie',
-                description: 'Komunikat potwierdza wysłanie linku, pokazuje adres docelowy w bezpiecznej formie i nie ujawnia statusu konta.',
-                meta: ['live region', 'rate-limit safe copy', 'focus na ponownym wysłaniu'],
-                status: 'Wysłano',
-                title: 'Weryfikacja adresu e-mail',
-                tone: 'success',
-              },
-              {
-                description: 'Potwierdzenie resetu pozostaje stanem informacyjnym; formularz nowego hasła jest dostępny dopiero po wejściu z tokenu.',
-                meta: ['informacja o wysłaniu resetu', 'brak pola tokenu', 'powrót do logowania'],
-                status: 'Instrukcja wysłana',
-                title: 'Informacja o wysłaniu resetu',
-                tone: 'neutral',
-              },
-            ]}
-          />
-        </div>
-      </StoryPresentationSection>
-    </AuthPageFrame>
-  ),
-  play: async ({ canvasElement }) => {
-    const stage = canvasElement.querySelector('[data-testid="auth-email-verification-ready"]');
-    if (!(stage instanceof HTMLElement)) throw new Error('Email verification stage is not rendered.');
-
-    const canvas = within(stage);
-    await expect(canvas.getByText('Informacja o wysłaniu resetu')).toBeInTheDocument();
-    await userEvent.click(canvas.getByRole('button', { name: 'Wyślij ponownie' }));
-  },
-};
-
-export const CompanyIdentificationStory: Story = {
-  name: 'Identyfikacja firmy',
-  render: () => (
-    <AuthPageFrame
-      storyId="25.06"
-      summary="Identyfikacja firmy pokazuje wyszukiwanie, ręczne wprowadzenie, edycję i stan niedostępnego rejestru bez lokalnego obejścia walidacji."
-      title="Identyfikacja firmy"
-    >
-      <StoryPresentationSection index="01" layout="showcase" title="Firma i dane rejestrowe">
-        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-company-identification-ready">
-          <InlineNotice
-            message="Dane firmy są widoczne jako stan do sprawdzenia i edycji; zapis wymaga kolejnej operacji onboardingowej."
-            title="Sprawdzenie danych firmy"
-            tone="info"
-          />
-          <AuthFlowPanel
-            scenarios={[
-              {
-                action: 'Sprawdź NIP',
-                description: 'Ekran prowadzi przez NIP, status źródła danych i potwierdzenie znalezionej firmy.',
-                meta: ['NIP field', 'status źródła danych', 'keyboard-only'],
-                status: 'Gotowe do sprawdzenia',
-                title: 'Identyfikacja firmy',
-                tone: 'success',
-              },
-              {
-                description: 'Fallback zachowuje wymagane pola, walidację i oznaczenie danych wymagających późniejszej weryfikacji.',
-                meta: ['ręczne wprowadzenie firmy', 'walidacja wymaganych pól', 'tryb rejestru niedostępnego'],
-                status: 'Fallback',
-                title: 'Ręczne wprowadzenie firmy',
-                tone: 'warning',
-              },
-              {
-                description: 'Po znalezieniu firmy użytkownik może przejrzeć i skorygować pola przed kontynuacją onboardingu.',
-                meta: ['sprawdzenie i edycja danych firmy', 'semantyka formularza', 'error state'],
-                status: 'Do potwierdzenia',
-                title: 'Sprawdzenie i edycja danych firmy',
-                tone: 'neutral',
-              },
-            ]}
-          />
-        </div>
-      </StoryPresentationSection>
-    </AuthPageFrame>
-  ),
-  play: async ({ canvasElement }) => {
-    const stage = canvasElement.querySelector('[data-testid="auth-company-identification-ready"]');
-    if (!(stage instanceof HTMLElement)) throw new Error('Company identification stage is not rendered.');
-
-    const canvas = within(stage);
-    await expect(canvas.getByText('Ręczne wprowadzenie firmy')).toBeInTheDocument();
-    await userEvent.click(canvas.getByRole('button', { name: 'Sprawdź NIP' }));
-  },
-};
-
-export const LoginStory: Story = {
-  name: 'Logowanie',
-  render: () => (
-    <AuthPageFrame
-      storyId="25.02"
-      summary="Logowanie obejmuje remember device, walidację pól, rate limit i produktowy komunikat bez enumeracji kont."
-      title="Logowanie"
-    >
-      <StoryPresentationSection index="01" layout="showcase" title="Dane logowania">
-        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-login-ready">
-          <AuthSurface {...allAuthHandlerProps}
-            mode="login"
-            onLogin={loginAction}
-            onNavigate={navigateAction}
-          />
-        </div>
-      </StoryPresentationSection>
-
-      <StoryPresentationSection index="02" layout="showcase" title="Stan limitu prób">
-        <div className="pd-s25-grid pd-s25-grid--compact">
-          <div className="pd-s25-stage" data-testid="auth-login-rate-limited">
-            <AuthSurface {...allAuthHandlerProps}
-              initialEmail="operator@papadata.local"
-              mode="login"
-              onLogin={loginAction}
-              onNavigate={navigateAction}
-              state="rateLimited"
-            />
-          </div>
-        </div>
-      </StoryPresentationSection>
-    </AuthPageFrame>
-  ),
-  play: async ({ canvasElement }) => {
-    const loginStage = canvasElement.querySelector('[data-testid="auth-login-ready"]');
-
-    if (!(loginStage instanceof HTMLElement)) {
-      throw new Error('Login stage is not rendered.');
-    }
-
-    const canvas = within(loginStage);
-    await userEvent.click(canvas.getByRole('button', { name: 'Zaloguj się' }));
-    await expect(canvas.getAllByText('Podaj poprawny adres e-mail.')[0]).toBeInTheDocument();
-    await expect(canvas.getByRole('checkbox', { name: 'Zapamiętaj to urządzenie' })).toBeInTheDocument();
-  },
-};
-
-export const AuthVisualComponentsStory: Story = {
-  name: 'Elementy wizualne dostępu',
-  render: () => (
-    <AuthPageFrame
-      storyId="25.02-components"
-      summary="Kontrolki preferencji, animowane źródła danych i wykres/krokomierz są osobnymi komponentami produkcyjnymi używanymi przez AuthSurface."
+      storyId="25.30"
+      summary="Kontrolki preferencji, animowane źródła danych i wykres/krokomierz są osobnymi komponentami produkcyjnymi używanymi przez AuthSurface i AccessFlowScreen."
       title="Komponenty Auth"
     >
       <StoryPresentationSection index="01" layout="showcase" title="Preferencje, źródła i wykresy">
@@ -462,7 +715,7 @@ export const AuthVisualComponentsStory: Story = {
           </div>
         </div>
       </StoryPresentationSection>
-    </AuthPageFrame>
+    </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -470,307 +723,5 @@ export const AuthVisualComponentsStory: Story = {
     await expect(canvas.getByTestId('auth-source-marquee')).toBeInTheDocument();
     await expect(canvas.getByText('Przychód z 30 dni')).toBeInTheDocument();
     await expect(canvas.getByText('Kroki uruchomienia')).toBeInTheDocument();
-  },
-};
-
-export const RegistrationStory: Story = {
-  name: 'Rejestracja',
-  render: () => (
-    <AuthPageFrame
-      storyId="25.03"
-      summary="Rejestracja rozdziela wybór metody od formularza e-mail; zgody pozostają osobnym krokiem docelowego FSM."
-      title="Rejestracja"
-    >
-      <StoryPresentationSection index="01" layout="showcase" title="Rejestracja e-mail">
-        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-registration-ready">
-          <AuthSurface {...allAuthHandlerProps}
-            mode="register"
-            onNavigate={navigateAction}
-            onRegister={registerAction}
-          />
-        </div>
-      </StoryPresentationSection>
-
-      <StoryPresentationSection index="02" layout="showcase" title="Zakończenie kroku">
-        <div className="pd-s25-grid pd-s25-grid--compact">
-          <div className="pd-s25-stage" data-testid="auth-registration-completed">
-            <AuthSurface {...allAuthHandlerProps}
-              initialEmail="founder@papadata.local"
-              mode="register"
-              onNavigate={navigateAction}
-              onRegister={registerAction}
-              state="registrationCompleted"
-            />
-          </div>
-        </div>
-      </StoryPresentationSection>
-    </AuthPageFrame>
-  ),
-  play: async ({ canvasElement }) => {
-    const registrationStage = canvasElement.querySelector('[data-testid="auth-registration-ready"]');
-
-    if (!(registrationStage instanceof HTMLElement)) {
-      throw new Error('Registration stage is not rendered.');
-    }
-
-    const canvas = within(registrationStage);
-    await expect(
-      canvas.getByRole('button', { name: 'Kontynuuj przez Google' }),
-    ).toBeDisabled();
-    await expect(
-      canvas.getByRole('button', { name: 'Kontynuuj przez Microsoft' }),
-    ).toBeDisabled();
-    await userEvent.click(
-      canvas.getByRole('button', { name: 'Utwórz konto e-mailem' }),
-    );
-    await userEvent.type(
-      canvas.getByRole('textbox', { name: /E-mail/u }),
-      'user@example.com',
-    );
-    await userEvent.click(canvas.getByRole('button', { name: 'Utwórz konto' }));
-    await expect(
-      canvas.getAllByText('Podaj imię i nazwisko.')[0],
-    ).toBeInTheDocument();
-    await expect(
-      canvas.getAllByText('Hasło musi mieć co najmniej 12 znaków.')[0],
-    ).toBeInTheDocument();
-  },
-};
-
-export const MfaStory: Story = {
-  name: 'Weryfikacja dwuetapowa',
-  render: () => (
-    <AuthPageFrame
-      storyId="25.07"
-      summary="MFA pokazuje aktywną weryfikację, błędy kodu, limit prób i konfigurację metody bez udawania pełnego backendu."
-      title="MFA"
-    >
-      <StoryPresentationSection index="01" layout="showcase" title="Aktywna weryfikacja">
-        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-mfa-ready">
-          <AuthSurface {...allAuthHandlerProps}
-            mode="mfa"
-            onMfaConfirm={mfaAction}
-            onNavigate={navigateAction}
-          />
-        </div>
-      </StoryPresentationSection>
-
-      <StoryPresentationSection index="02" layout="showcase" title="Limit prób i konfiguracja metody">
-        <div className="pd-s25-grid pd-s25-grid--compact">
-          <div className="pd-s25-stage" data-testid="auth-mfa-rate-limited">
-            <AuthSurface {...allAuthHandlerProps}
-              mode="mfa"
-              onMfaConfirm={mfaAction}
-              onNavigate={navigateAction}
-              state="rateLimited"
-            />
-          </div>
-          <div className="pd-s25-stage" data-testid="auth-mfa-enrollment">
-            <AuthSurface {...allAuthHandlerProps}
-              mode="mfa"
-              onMfaConfirm={mfaAction}
-              onNavigate={navigateAction}
-              state="mfaEnrollmentRequired"
-            />
-          </div>
-        </div>
-      </StoryPresentationSection>
-    </AuthPageFrame>
-  ),
-  play: async ({ canvasElement }) => {
-    const mfaStage = canvasElement.querySelector('[data-testid="auth-mfa-ready"]');
-
-    if (!(mfaStage instanceof HTMLElement)) {
-      throw new Error('MFA stage is not rendered.');
-    }
-
-    const canvas = within(mfaStage);
-    await userEvent.click(canvas.getByRole('button', { name: 'Potwierdź MFA' }));
-    await expect(canvas.getAllByText('Kod MFA musi mieć 6 cyfr.')[0]).toBeInTheDocument();
-  },
-};
-
-export const AccessRecoveryStory: Story = {
-  name: 'Odzyskiwanie dostępu',
-  render: () => (
-    <AuthPageFrame
-      storyId="25.08"
-      summary="Recovery rozdziela request, informację o wysłaniu i nowe hasło; token z linku pozostaje kontekstem procesu, nie edytowalnym polem."
-      title="Odzyskiwanie dostępu"
-    >
-      <StoryPresentationSection index="01" layout="showcase" title="Prośba o odzyskanie dostępu">
-        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-recovery-request">
-          <AuthSurface {...allAuthHandlerProps}
-            mode="recover"
-            onNavigate={navigateAction}
-            onPasswordRecoveryRequest={recoveryRequestAction}
-          />
-        </div>
-      </StoryPresentationSection>
-
-      <StoryPresentationSection index="02" layout="showcase" title="Wysłanie resetu i nowe hasło">
-        <div className="pd-s25-grid pd-s25-grid--compact">
-          <div className="pd-s25-stage" data-testid="auth-recovery-sent">
-            <AuthSurface {...allAuthHandlerProps}
-              initialEmail="user@example.com"
-              mode="recover"
-              onNavigate={navigateAction}
-              onPasswordRecoveryRequest={recoveryRequestAction}
-              state="recoverySent"
-            />
-          </div>
-          <div className="pd-s25-stage" data-testid="auth-recovery-reset">
-            <AuthSurface {...allAuthHandlerProps}
-              initialEmail="user@example.com"
-              initialResetToken="rst_example_token"
-              mode="recover"
-              onNavigate={navigateAction}
-              onPasswordReset={resetAction}
-            />
-          </div>
-        </div>
-      </StoryPresentationSection>
-    </AuthPageFrame>
-  ),
-  play: async ({ canvasElement }) => {
-    const recoveryStage = canvasElement.querySelector('[data-testid="auth-recovery-request"]');
-
-    if (!(recoveryStage instanceof HTMLElement)) {
-      throw new Error('Recovery stage is not rendered.');
-    }
-
-    const canvas = within(recoveryStage);
-    await userEvent.click(canvas.getByRole('button', { name: 'Wyślij instrukcję' }));
-    await expect(canvas.getAllByText('Podaj poprawny adres e-mail.')[0]).toBeInTheDocument();
-
-    const resetStage = canvasElement.querySelector('[data-testid="auth-recovery-reset"]');
-
-    if (!(resetStage instanceof HTMLElement)) {
-      throw new Error('Password reset stage is not rendered.');
-    }
-
-    const resetCanvas = within(resetStage);
-    await expect(
-      resetCanvas.queryByRole('textbox', { name: 'Token resetu' }),
-    ).not.toBeInTheDocument();
-    await expect(
-      resetCanvas.getByLabelText(/Powtórz nowe hasło/u),
-    ).toBeInTheDocument();
-  },
-};
-
-export const AccessContextResolutionStory: Story = {
-  name: 'Rozpoznanie kontekstu dostępu',
-  render: () => (
-    <AuthPageFrame
-      storyId="25.09"
-      summary="Rozpoznanie kontekstu obejmuje zablokowany dostęp, wylogowanie, reauth, MFA step-up oraz niedostępność usługi Auth."
-      title="Rozpoznanie kontekstu dostępu"
-    >
-      <StoryPresentationSection index="01" layout="showcase" title="Kontekst i blokady">
-        <div className="pd-s25-grid pd-s25-grid--compact" data-testid="auth-access-context-ready">
-          <div className="pd-s25-stage">
-            <AuthSurface {...allAuthHandlerProps} mode="entry" onNavigate={navigateAction} state="blocked" />
-          </div>
-          <div className="pd-s25-stage">
-            <AuthSurface {...allAuthHandlerProps} mode="entry" onNavigate={navigateAction} onRetry={retryAction} state="serviceUnavailable" />
-          </div>
-        </div>
-      </StoryPresentationSection>
-
-      <StoryPresentationSection index="02" layout="showcase" title="Ponowne uwierzytelnienie">
-        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-reauth-ready">
-          <AuthSurface {...allAuthHandlerProps} mode="reauth" onNavigate={navigateAction} onStepUpConfirm={stepUpAction} />
-        </div>
-      </StoryPresentationSection>
-
-      <StoryPresentationSection index="03" layout="showcase" title="Ekran po wylogowaniu">
-        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-logged-out-ready">
-          <AuthSurface {...allAuthHandlerProps} mode="login" onLogin={loginAction} onNavigate={navigateAction} state="loggedOut" />
-        </div>
-      </StoryPresentationSection>
-    </AuthPageFrame>
-  ),
-  play: async ({ canvasElement }) => {
-    const stage = canvasElement.querySelector('[data-testid="auth-access-context-ready"]');
-    if (!(stage instanceof HTMLElement)) throw new Error('Access context stage is not rendered.');
-
-    const reauthStage = canvasElement.querySelector('[data-testid="auth-reauth-ready"]');
-    if (!(reauthStage instanceof HTMLElement)) throw new Error('Reauth stage is not rendered.');
-    const reauthCanvas = within(reauthStage);
-    await expect(reauthCanvas.getByRole('heading', { name: 'Potwierdź to jeszcze raz' })).toBeInTheDocument();
-    await userEvent.click(reauthCanvas.getByRole('button', { name: 'Potwierdź' }));
-    await expect(reauthCanvas.getAllByText('Kod MFA musi mieć 6 cyfr.')[0]).toBeInTheDocument();
-
-    const loggedOutStage = canvasElement.querySelector('[data-testid="auth-logged-out-ready"]');
-    if (!(loggedOutStage instanceof HTMLElement)) throw new Error('Logged-out stage is not rendered.');
-    const loggedOutCanvas = within(loggedOutStage);
-    await expect(loggedOutCanvas.getByRole('heading', { name: 'Zostałeś wylogowany' })).toBeInTheDocument();
-    await expect(loggedOutCanvas.getByRole('button', { name: 'Przejdź do logowania' })).toBeInTheDocument();
-  },
-};
-
-export const OnboardingStory: Story = {
-  name: 'Wprowadzenie do produktu',
-  render: () => (
-    <AuthPageFrame
-      storyId="25.10"
-      summary="Onboarding zamyka wybory workspace/tenant, zgody, przetwarzanie rejestracji i wejście do aplikacji po utworzeniu kontekstu."
-      title="Onboarding"
-    >
-      <StoryPresentationSection index="01" layout="showcase" title="Proces po rejestracji">
-        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-onboarding-ready">
-          <AuthFlowPanel
-            scenarios={[
-              {
-                description: 'Ekran utrzymuje status procesu, gdy konto i firma są tworzone po stronie usługi Auth/onboarding.',
-                meta: ['przetwarzanie rejestracji', 'progress semantics', 'reduced motion'],
-                status: 'Przetwarzanie',
-                title: 'Przetwarzanie rejestracji',
-                tone: 'neutral',
-              },
-              {
-                description: 'Zgody są osobnym krokiem, a zakończenie procesu prowadzi do pierwszego ekranu aplikacji bez automatycznej mutacji w Storybooku.',
-                meta: ['zgody', 'zakończenie procesu', 'wejście do aplikacji'],
-                status: 'Gotowe',
-                title: 'Zgody i zakończenie procesu',
-                tone: 'success',
-              },
-              {
-                description: 'OAuth i rejestracja e-mailem pozostają rozdzielone, żeby błędy providera nie blokowały formularza e-mail.',
-                meta: ['rejestracja przez OAuth', 'rejestracja adresem e-mail', 'rejestracja zakończona'],
-                status: 'Metody rejestracji',
-                title: 'Rejestracja i OAuth',
-                tone: 'neutral',
-              },
-            ]}
-          />
-        </div>
-      </StoryPresentationSection>
-
-      <StoryPresentationSection index="02" layout="showcase" title="Wybór organizacji i workspace">
-        <div className="pd-s25-stage pd-s25-stage--full" data-testid="auth-workspace-ready">
-          <AuthSurface {...allAuthHandlerProps}
-            mode="workspace"
-            onNavigate={navigateAction}
-            onSelectWorkspace={selectWorkspaceAction}
-            workspaceOptions={workspaceOptions}
-          />
-        </div>
-      </StoryPresentationSection>
-    </AuthPageFrame>
-  ),
-  play: async ({ canvasElement }) => {
-    const stage = canvasElement.querySelector('[data-testid="auth-onboarding-ready"]');
-    if (!(stage instanceof HTMLElement)) throw new Error('Onboarding stage is not rendered.');
-
-    const canvas = within(stage);
-    await expect(canvas.getByText('Zgody i zakończenie procesu')).toBeInTheDocument();
-
-    const workspaceStage = canvasElement.querySelector('[data-testid="auth-workspace-ready"]');
-    if (!(workspaceStage instanceof HTMLElement)) throw new Error('Workspace selection stage is not rendered.');
-    const workspaceCanvas = within(workspaceStage);
-    await expect(workspaceCanvas.getByRole('heading', { name: 'Wybierz organizację' })).toBeInTheDocument();
-    await userEvent.click(workspaceCanvas.getByText('PapaData Sp. z o.o.'));
   },
 };

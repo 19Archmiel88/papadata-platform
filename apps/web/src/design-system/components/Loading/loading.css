@@ -173,13 +173,6 @@
   font-family: var(--pd-font-mono);
 }
 
-.pd-background-operation__progress {
-  overflow: hidden;
-  block-size: 0.42rem;
-  border-radius: var(--pd-radius-pill);
-  background: var(--pd-surface-subtle);
-}
-
 .pd-background-operation__action {
   flex: 0 0 auto;
 }

@@ -33,7 +33,6 @@ Użytkownik realizuje zadanie „Centrum decyzji” w obszarze: obserwacje, reko
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -92,9 +91,6 @@ Użytkownik realizuje zadanie „Obserwacje” w obszarze: obserwacje, rekomenda
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -153,10 +149,6 @@ Użytkownik realizuje zadanie „Rekomendacje” w obszarze: obserwacje, rekomen
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
-| `RecommendationCard` | `04-komponenty-domenowe/recommendation-card.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -216,10 +208,6 @@ Użytkownik realizuje zadanie „Rejestr decyzji” w obszarze: obserwacje, reko
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FilterBar` | `04-komponenty-bazowe/komponenty/filterbar.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
-| `Pagination` | `04-komponenty-bazowe/komponenty/pagination.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
-| `DecisionQueue` | `04-komponenty-domenowe/decision-queue.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -336,8 +324,6 @@ Użytkownik realizuje zadanie „Szczegóły działania” w obszarze: obserwacj
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FilterBar` | `04-komponenty-bazowe/komponenty/filterbar.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
-| `Pagination` | `04-komponenty-bazowe/komponenty/pagination.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
 
 ### Kontrakt danych
@@ -395,8 +381,6 @@ Użytkownik realizuje zadanie „Pomiar” w obszarze: obserwacje, rekomendacje,
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -454,9 +438,7 @@ Użytkownik realizuje zadanie „Biblioteka działań” w obszarze: obserwacje,
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -568,7 +550,6 @@ Dokument definiuje zasady, warianty i ograniczenia dla obszaru „Warianty decyz
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |

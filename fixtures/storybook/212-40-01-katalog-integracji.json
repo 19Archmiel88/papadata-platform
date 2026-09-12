@@ -9,11 +9,7 @@
     "Button",
     "FilterBar",
     "DataTable",
-    "Pagination",
-    "DetailPanel",
-    "MetricCard",
-    "ChartFrame",
-    "TrendChart"
+    "MetricCard"
   ],
   "states": [
     "ready",

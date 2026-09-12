@@ -33,7 +33,6 @@ Użytkownik realizuje zadanie „Centrum jakości” w obszarze: readiness, line
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DataStatusBanner` | `04-komponenty-domenowe/data-status-banner.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -150,7 +149,6 @@ Użytkownik realizuje zadanie „Pochodzenie danych” w obszarze: readiness, li
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `LineageGraph` | `04-komponenty-domenowe/lineage-graph.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -267,8 +265,6 @@ Użytkownik realizuje zadanie „Nadrzędność źródła” w obszarze: readine
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -386,8 +382,6 @@ Użytkownik realizuje zadanie „Przegląd ręczny” w obszarze: readiness, lin
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -508,7 +502,6 @@ Użytkownik realizuje zadanie „Rekoncyliacja” w obszarze: readiness, lineage
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `ReconciliationPanel` | `04-komponenty-domenowe/reconciliation-panel.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |

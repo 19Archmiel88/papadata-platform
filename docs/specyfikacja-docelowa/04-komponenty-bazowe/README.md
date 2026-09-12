@@ -469,7 +469,6 @@ kontrolki-wyboru
 ### Komponenty składowe
 
 - PageHeader
-- DataStatusBanner
 - InlineNotice
 - Button
 
@@ -565,7 +564,6 @@ komunikaty-i-statusy
 ### Komponenty składowe
 
 - PageHeader
-- DataStatusBanner
 - InlineNotice
 - Button
 
@@ -662,13 +660,10 @@ adowanie-i-postep
 ### Komponenty składowe
 
 - PageHeader
-- DataStatusBanner
 - InlineNotice
 - Button
 - FilterBar
 - DataTable
-- Pagination
-- DetailPanel
 
 Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
 
@@ -763,16 +758,10 @@ tabela-bazowa
 ### Komponenty składowe
 
 - PageHeader
-- DataStatusBanner
 - InlineNotice
 - Button
 - FilterBar
 - DataTable
-- Pagination
-- DetailPanel
-- EvidencePanel
-- RecommendationCard
-- DecisionCard
 
 Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
 
@@ -865,7 +854,6 @@ nawigacja-lokalna
 ### Komponenty składowe
 
 - PageHeader
-- DataStatusBanner
 - InlineNotice
 - Button
 
@@ -961,10 +949,8 @@ menu-popovery-i-tooltipy
 ### Komponenty składowe
 
 - PageHeader
-- DataStatusBanner
 - InlineNotice
 - Button
-- ApprovalPanel
 - AlertDialog
 
 Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
@@ -1053,7 +1039,6 @@ dialogi-i-warstwy
 ### Komponenty składowe
 
 - PageHeader
-- DataStatusBanner
 - InlineNotice
 - Button
 
@@ -1266,7 +1251,6 @@ data-i-zakres-czasu
 ### Komponenty składowe
 
 - PageHeader
-- DataStatusBanner
 - InlineNotice
 - Button
 

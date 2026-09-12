@@ -233,17 +233,17 @@ export function IntegrationsWorkspace({
     if (actionId === 'reauth') {
       const provider=resolvedRuntime?.catalog.providers.find(item=>item.provider===source.provider);
       if(onBeginConnect&&provider){onBeginConnect(provider,source);return;}
-      if(mode==='runtime'){showToast('Kreator polaczenia niedostepny.', 'error');return;}
+      if(mode==='runtime'){showToast('Kreator połączenia niedostępny.', 'error');return;}
       setConnectProviderId(source.provider);
       return; // Opening a wizard is a local UI action, not a completed reconnection.
     }
     if (!onSourceCommand) {
-      showToast(mode === 'storybook' ? 'Demonstracja: nie uruchomiono operacji zewnetrznej.' : 'Operacja jest niedostepna w tym widoku.', 'info');
+      showToast(mode === 'storybook' ? 'Demonstracja: nie uruchomiono operacji zewnętrznej.' : 'Operacja jest niedostępna w tym widoku.', 'info');
       return;
     }
     try {
       await onSourceCommand?.(source, actionId);
-      if (actionId === 'sync' || actionId === 'backfill') showToast(mode==='storybook'?'Demo: lokalna symulacja, bez zlecenia importu.':`${source.providerDisplayName}: serwer przyjal zlecenie. Wynik sprawdz w historii.`, 'info');
+      if (actionId === 'sync' || actionId === 'backfill') showToast(mode==='storybook'?'Demo: lokalna symulacja, bez zlecenia importu.':`${source.providerDisplayName}: serwer przyjął zlecenie. Wynik sprawdź w historii.`, 'info');
     } catch (cause) {
       if (cause instanceof DOMException && cause.name === 'AbortError') return;
       setOperationNotice({
@@ -256,7 +256,7 @@ export function IntegrationsWorkspace({
   }
 
   function requestDisconnect(source:IntegrationRuntimeSource){
-    if(!onDisconnectConnection){showToast('Operacja odlaczenia niedostepna dla tego widoku.','info');return;}
+    if(!onDisconnectConnection){showToast('Operacja odłączenia niedostępna dla tego widoku.','info');return;}
     setDisconnectSource(source);
   }
 
@@ -320,7 +320,7 @@ export function IntegrationsWorkspace({
         </div>
       ) : null}
 
-      {selectedSourceId&&!selectedSource?<InlineNotice tone="warning" title="Wybrane zrodlo niedostepne" message="Zrodlo z adresu URL nie wystepuje w tej odpowiedzi. Nie wybrano innego zrodla automatycznie."/>:null}
+      {selectedSourceId&&!selectedSource?<InlineNotice tone="warning" title="Wybrane źródło niedostępne" message="Źródło z adresu URL nie występuje w tej odpowiedzi. Nie wybrano innego źródła automatycznie."/>:null}
       {selectedSource ? (
         <ProviderWorkspace
           activeTab={workspaceTab}
@@ -365,7 +365,7 @@ export function IntegrationsWorkspace({
           logs={resolvedRuntime.logs.logs}
           onAreaChange={(value) => {setArea(value);queryState.update({integrationArea:value,sourceId:null});}}
           onCatalogFiltersChange={value=>{setCatalogFilters(value);queryState.update({integrationCatalogQuery:value.query||null,integrationCatalogCategory:value.category==='all'?null:value.category});}}
-          onConnect={(provider) => {if(onBeginConnect)onBeginConnect(provider);else if(mode==='storybook'&&onCreateConnection)setConnectProviderId(provider.provider);else showToast('Kreator niedostepny.','error');}}
+          onConnect={(provider) => {if(onBeginConnect)onBeginConnect(provider);else if(mode==='storybook'&&onCreateConnection)setConnectProviderId(provider.provider);else showToast('Kreator niedostępny.','error');}}
           onOpenSource={openWorkspace}
           onReload={onReload}
           onRequestDisconnect={requestDisconnect}
@@ -421,7 +421,7 @@ export function IntegrationsWorkspace({
           void (async () => {
             try {
               await onDisconnectConnection(source);
-              showToast(mode==='storybook'?'Demo: lokalne odlaczenie.':'Źródło zostało odłączone.', 'success');
+              showToast(mode==='storybook'?'Demo: lokalne odłączenie.':'Źródło zostało odłączone.', 'success');
             } catch (cause) {
               setOperationNotice({
                 message: cause instanceof Error ? cause.message : 'Nie udało się odłączyć źródła.',

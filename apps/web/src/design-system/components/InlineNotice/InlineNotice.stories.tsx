@@ -33,7 +33,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'InlineNotice osadza komunikat w treści strony (nie znika samoczynnie) — w przeciwieństwie do Toast, który jest tymczasowy i pojawia się globalnie. Odcień (tone) automatycznie ustawia rolę ARIA: warning/critical → alert, info/success → status.',
+          'InlineNotice osadza komunikat w treści strony i nie znika samoczynnie. Odcień (tone) automatycznie ustawia rolę ARIA: warning/critical → alert, info/success → status.',
       },
     },
   },

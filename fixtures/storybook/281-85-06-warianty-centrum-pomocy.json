@@ -6,8 +6,7 @@
   "components": [
     "PageHeader",
     "InlineNotice",
-    "Button",
-    "DecisionCard"
+    "Button"
   ],
   "states": [
     "ready",

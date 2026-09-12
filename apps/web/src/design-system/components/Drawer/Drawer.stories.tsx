@@ -111,8 +111,8 @@ export const DrawerStory: Story = {
       storyId="drawer"
       summary={
         <Localized
-          pl="Przejściowy panel boczny na szczegóły rekordu, konfigurację albo dłuższy formularz — nie jest to synonim „dowolnego prawego regionu”. Zbudowany na kanonicznym OverlayRoot, tak jak Dialog i BottomSheet."
-          en="A transient side panel for record details, configuration, or a longer form — not a synonym for “any right-hand region”. Built on the canonical OverlayRoot, same as Dialog and BottomSheet."
+          pl="Przejściowy panel boczny na szczegóły rekordu, konfigurację albo dłuższy formularz — nie jest to synonim „dowolnego prawego regionu”. Zbudowany na kanonicznym OverlayRoot, tak jak Dialog."
+          en="A transient side panel for record details, configuration, or a longer form — not a synonym for “any right-hand region”. Built on the canonical OverlayRoot, same as Dialog."
         />
       }
       title={<Localized pl="Panel boczny, który przychodzi i odchodzi." en="A side panel that comes and goes." />}

@@ -6,11 +6,7 @@
   "components": [
     "PageHeader",
     "InlineNotice",
-    "Button",
-    "ShareChart",
-    "ComparisonChart",
-    "DecisionCard",
-    "EvidencePanel"
+    "Button"
   ],
   "states": [
     "ready",

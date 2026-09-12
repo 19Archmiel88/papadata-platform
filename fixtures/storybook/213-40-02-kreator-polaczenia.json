@@ -10,8 +10,7 @@
     "TextField",
     "Select",
     "Checkbox",
-    "Dialog",
-    "PairingFlow"
+    "Dialog"
   ],
   "states": [
     "ready",

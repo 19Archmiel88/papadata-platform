@@ -4,12 +4,9 @@
   "sourceDocument": "21-stany-przekrojowe/README.md",
   "screenId": null,
   "components": [
-    "ChartFrame",
-    "TrendChart",
     "DataTable",
     "InlineNotice",
-    "StatusBadge",
-    "Toast"
+    "StatusBadge"
   ],
   "states": [
     "ready",

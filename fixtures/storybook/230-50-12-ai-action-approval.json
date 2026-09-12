@@ -7,8 +7,6 @@
     "PageHeader",
     "InlineNotice",
     "Button",
-    "DecisionCard",
-    "ApprovalPanel",
     "AlertDialog"
   ],
   "states": [

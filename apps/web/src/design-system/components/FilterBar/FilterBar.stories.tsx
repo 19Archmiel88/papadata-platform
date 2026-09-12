@@ -17,9 +17,6 @@ import {
 import {
   SearchField,
 } from '../SearchField';
-import {
-  SortControl,
-} from '../SortControl';
 
 import {
   Localized,
@@ -99,8 +96,8 @@ export const FilterBarStory: Story = {
       storyId="filter-bar"
       summary={
         <Localized
-          pl="Powłoka układu, nie zestaw własnej logiki filtrowania — search/sort/akcje przekazujesz jako sloty złożone z kanonicznych komponentów (SearchField, SortControl). Aktywne filtry renderują się jako FilterChip."
-          en="A layout shell, not its own filtering logic — search/sort/actions are passed as slots composed from canonical components (SearchField, SortControl). Active filters render as FilterChip."
+          pl="Powłoka układu, nie zestaw własnej logiki filtrowania — search/sort/akcje przekazujesz jako sloty złożone z kanonicznych komponentów (np. SearchField). Aktywne filtry renderują się jako FilterChip."
+          en="A layout shell, not its own filtering logic — search/sort/actions are passed as slots composed from canonical components (e.g. SearchField). Active filters render as FilterChip."
         />
       }
       title={<Localized pl="Jeden rząd na całe filtrowanie tabeli." en="One row for a table's entire filtering." />}
@@ -119,16 +116,6 @@ export const FilterBarStory: Story = {
                 resultCount={null}
                 size="compact"
                 onQueryChange={fn()}
-              />
-            )}
-            sort={(
-              <SortControl
-                direction="desc"
-                options={[{ id: 'date', label: copy({ pl: 'Data', en: 'Date' }) }, { id: 'revenue', label: copy({ pl: 'Przychód', en: 'Revenue' }) }]}
-                selectedId="date"
-                size="compact"
-                onDirectionChange={fn()}
-                onSelectedIdChange={fn()}
               />
             )}
           />

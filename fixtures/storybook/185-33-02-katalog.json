@@ -9,10 +9,6 @@
     "Button",
     "FilterBar",
     "DataTable",
-    "Pagination",
-    "DetailPanel",
-    "ShareChart",
-    "ComparisonChart",
     "Tabs"
   ],
   "states": [

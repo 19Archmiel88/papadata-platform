@@ -8,9 +8,7 @@
     "InlineNotice",
     "Button",
     "FunnelChart",
-    "DetailPanel",
-    "Tabs",
-    "SalesFunnel"
+    "Tabs"
   ],
   "states": [
     "ready",

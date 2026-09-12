@@ -92,8 +92,6 @@ Użytkownik realizuje zadanie „Workspace” w obszarze: tenant, workspace, cz�
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FilterBar` | `04-komponenty-bazowe/komponenty/filterbar.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
-| `Pagination` | `04-komponenty-bazowe/komponenty/pagination.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `TextField` | `04-komponenty-bazowe/komponenty/textfield.md` | required |
 | `Select` | `04-komponenty-bazowe/komponenty/select.md` | required |
 | `Checkbox` | `04-komponenty-bazowe/komponenty/checkbox.md` | required |
@@ -157,8 +155,6 @@ Użytkownik realizuje zadanie „Członkostwa” w obszarze: tenant, workspace, 
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FilterBar` | `04-komponenty-bazowe/komponenty/filterbar.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
-| `Pagination` | `04-komponenty-bazowe/komponenty/pagination.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -216,7 +212,6 @@ Użytkownik realizuje zadanie „Role i uprawnienia” w obszarze: tenant, works
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `ApprovalPanel` | `04-komponenty-bazowe/komponenty/approvalpanel.md` | required |
 | `AlertDialog` | `04-komponenty-bazowe/komponenty/alertdialog.md` | required |
 
 ### Kontrakt danych
@@ -339,8 +334,6 @@ Użytkownik realizuje zadanie „Sesje” w obszarze: tenant, workspace, członk
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FilterBar` | `04-komponenty-bazowe/komponenty/filterbar.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
-| `Pagination` | `04-komponenty-bazowe/komponenty/pagination.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -405,8 +398,6 @@ Użytkownik realizuje zadanie „Audyt” w obszarze: tenant, workspace, członk
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FilterBar` | `04-komponenty-bazowe/komponenty/filterbar.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
-| `Pagination` | `04-komponenty-bazowe/komponenty/pagination.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
 
 ### Kontrakt danych
@@ -465,7 +456,6 @@ Użytkownik realizuje zadanie „Prywatność” w obszarze: tenant, workspace, 
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `ApprovalPanel` | `04-komponenty-bazowe/komponenty/approvalpanel.md` | required |
 | `AlertDialog` | `04-komponenty-bazowe/komponenty/alertdialog.md` | required |
 
 ### Kontrakt danych
@@ -526,8 +516,6 @@ Użytkownik realizuje zadanie „Dostęp wsparcia” w obszarze: tenant, workspa
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FilterBar` | `04-komponenty-bazowe/komponenty/filterbar.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
-| `Pagination` | `04-komponenty-bazowe/komponenty/pagination.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |

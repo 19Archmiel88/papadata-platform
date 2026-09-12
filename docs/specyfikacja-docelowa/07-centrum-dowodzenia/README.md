@@ -75,22 +75,17 @@ Użytkownik realizuje zadanie „Widok główny” w obszarze: poranny przegląd
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
 |---|---|---|
-| `AssistantComposer` | `04-komponenty-bazowe/komponenty/assistantcomposer.md` | required |
 | `BrandLockup` | `04-komponenty-bazowe/komponenty/brandlockup.md` | required |
 | `BrandMark` | `04-komponenty-bazowe/komponenty/brandmark.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `Combobox` | `04-komponenty-bazowe/komponenty/combobox.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
 | `DateRangePicker` | `04-komponenty-bazowe/komponenty/daterangepicker.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `IconButton` | `04-komponenty-bazowe/komponenty/iconbutton.md` | required |
-| `Panel` | `04-komponenty-bazowe/komponenty/panel.md` | required |
 | `StatusBadge` | `04-komponenty-bazowe/komponenty/statusbadge.md` | required |
 | `TextAction` | `04-komponenty-bazowe/komponenty/textaction.md` | required |
 | `TextArea` | `04-komponenty-bazowe/komponenty/textarea.md` | required |
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
-| `MorningBrief` | `04-komponenty-domenowe/morning-brief.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -145,18 +140,12 @@ Użytkownik realizuje zadanie „Kolejka uwagi” w obszarze: poranny przegląd 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
 |---|---|---|
-| `ApprovalPanel` | `04-komponenty-bazowe/komponenty/approvalpanel.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FilterBar` | `04-komponenty-bazowe/komponenty/filterbar.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
-| `Pagination` | `04-komponenty-bazowe/komponenty/pagination.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -221,10 +210,6 @@ Użytkownik realizuje zadanie „KPI” w obszarze: poranny przegląd kondycji b
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `ForecastChart` | `05-wykresy-i-wizualizacje/komponenty/forecastchart.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
 | `TextField` | `04-komponenty-bazowe/komponenty/textfield.md` | required |
 | `Select` | `04-komponenty-bazowe/komponenty/select.md` | required |
@@ -294,19 +279,11 @@ Użytkownik realizuje zadanie „Plan vs wynik” w obszarze: poranny przegląd 
 ### Kompozycja z wcześniej zdefiniowanych komponentów
 | Komponent | Dokument źródłowy | Status |
 |---|---|---|
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
-| `CorrelationChart` | `05-wykresy-i-wizualizacje/komponenty/correlationchart.md` | required |
-| `ForecastChart` | `05-wykresy-i-wizualizacje/komponenty/forecastchart.md` | required |
 | `FunnelChart` | `05-wykresy-i-wizualizacje/komponenty/funnelchart.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `WaterfallChart` | `05-wykresy-i-wizualizacje/komponenty/waterfallchart.md` | required |
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `PlanPerformance` | `04-komponenty-domenowe/plan-performance.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -364,11 +341,7 @@ Użytkownik realizuje zadanie „Drivery wyniku” w obszarze: poranny przegląd
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
-| `ResultDrivers` | `04-komponenty-domenowe/result-drivers.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -426,9 +399,6 @@ Użytkownik realizuje zadanie „Źródła sprzedaży” w obszarze: poranny prz
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
-| `SalesSources` | `04-komponenty-domenowe/sales-sources.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -488,10 +458,6 @@ Użytkownik realizuje zadanie „Ruch” w obszarze: poranny przegląd kondycji 
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FilterBar` | `04-komponenty-bazowe/komponenty/filterbar.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
-| `Pagination` | `04-komponenty-bazowe/komponenty/pagination.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
 
 ### Kontrakt danych
@@ -550,7 +516,6 @@ Użytkownik realizuje zadanie „Produkty” w obszarze: poranny przegląd kondy
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
 
 ### Kontrakt danych
@@ -609,8 +574,6 @@ Użytkownik realizuje zadanie „Klienci” w obszarze: poranny przegląd kondyc
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -669,7 +632,6 @@ Użytkownik realizuje zadanie „Lejek” w obszarze: poranny przegląd kondycji
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FunnelChart` | `05-wykresy-i-wizualizacje/komponenty/funnelchart.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
 | `TextField` | `04-komponenty-bazowe/komponenty/textfield.md` | required |
 | `Select` | `04-komponenty-bazowe/komponenty/select.md` | required |
@@ -734,9 +696,6 @@ Użytkownik realizuje zadanie „Rekomendacje AI — skrót” w obszarze: poran
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -795,7 +754,6 @@ Użytkownik realizuje zadanie „Sygnały sprzedażowe” w obszarze: poranny pr
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
 
 ### Kontrakt danych
@@ -855,10 +813,6 @@ Użytkownik realizuje zadanie „Waterfall” w obszarze: poranny przegląd kond
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `WaterfallChart` | `05-wykresy-i-wizualizacje/komponenty/waterfallchart.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
 
 ### Kontrakt danych
@@ -916,9 +870,6 @@ Dokument definiuje zasady, warianty i ograniczenia dla obszaru „Warianty Centr
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 | `TextField` | `04-komponenty-bazowe/komponenty/textfield.md` | required |
 | `Select` | `04-komponenty-bazowe/komponenty/select.md` | required |
 | `Checkbox` | `04-komponenty-bazowe/komponenty/checkbox.md` | required |

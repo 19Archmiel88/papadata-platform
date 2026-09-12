@@ -6,12 +6,9 @@
   "components": [
     "BusinessScreen",
     "PageHeader",
-    "DataStatusBanner",
     "MetricCard",
-    "MorningBrief",
     "DataTable",
     "InlineNotice",
-    "Panel",
     "Button"
   ],
   "states": [

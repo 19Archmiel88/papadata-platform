@@ -6,23 +6,12 @@
   "components": [
     "BusinessScreen",
     "PageHeader",
-    "DataStatusBanner",
     "FilterBar",
     "SearchField",
-    "Combobox",
     "DateRangePicker",
     "MetricCard",
-    "ChartFrame",
-    "ComparisonChart",
-    "ShareChart",
     "DataTable",
-    "DetailPanel",
-    "EvidencePanel",
-    "RecommendationCard",
-    "AttributionComparison",
-    "BudgetPacing",
-    "InlineNotice",
-    "Panel"
+    "InlineNotice"
   ],
   "states": [
     "ready",

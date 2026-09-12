@@ -345,7 +345,6 @@ trendy
 ### Komponenty składowe
 
 - PageHeader
-- DataStatusBanner
 - InlineNotice
 - Button
 
@@ -449,12 +448,8 @@ porownania
 ### Komponenty składowe
 
 - PageHeader
-- DataStatusBanner
 - InlineNotice
 - Button
-- ShareChart
-- ComparisonChart
-- DetailPanel
 - Tabs
 
 Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
@@ -626,15 +621,9 @@ zaleznosci-i-korelacje
 ### Komponenty składowe
 
 - PageHeader
-- DataStatusBanner
 - InlineNotice
 - Button
 - MetricCard
-- ChartFrame
-- TrendChart
-- ShareChart
-- ComparisonChart
-- DetailPanel
 - Tabs
 
 Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
@@ -742,13 +731,8 @@ prognoza-i-ai
 ### Komponenty składowe
 
 - PageHeader
-- DataStatusBanner
 - InlineNotice
 - Button
-- ForecastChart
-- EvidencePanel
-- RecommendationCard
-- DecisionCard
 
 Każdy składnik ma osobny kontrakt w katalogu komponentów. Wzorzec nie zmienia publicznej semantyki komponentu, lecz ustala kolejność, relacje i zarządzanie stanem.
 

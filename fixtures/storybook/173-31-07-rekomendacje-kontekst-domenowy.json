@@ -8,10 +8,6 @@
     "InlineNotice",
     "Button",
     "MetricCard",
-    "ChartFrame",
-    "TrendChart",
-    "DecisionCard",
-    "ApprovalPanel",
     "AlertDialog"
   ],
   "states": [

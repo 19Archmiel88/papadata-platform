@@ -120,8 +120,8 @@ export const OverlayRootStory: Story = {
       storyId="overlay-root"
       summary={
         <Localized
-          pl="Prymityw, na którym zbudowane są Dialog, AlertDialog, Drawer i BottomSheet — portal do document.body, opcjonalny backdrop i blokada scrolla. Nie używaj OverlayRoot bezpośrednio w ekranach — użyj gotowego Dialog/Drawer/AlertDialog/BottomSheet."
-          en="The primitive Dialog, AlertDialog, Drawer and BottomSheet are built on — a portal to document.body, an optional backdrop and scroll lock. Do not use OverlayRoot directly in screens — use the ready-made Dialog/Drawer/AlertDialog/BottomSheet."
+          pl="Prymityw, na którym zbudowane są Dialog, AlertDialog i Drawer — portal do document.body, opcjonalny backdrop i blokada scrolla. Nie używaj OverlayRoot bezpośrednio w ekranach — użyj gotowego Dialog/Drawer/AlertDialog."
+          en="The primitive Dialog, AlertDialog and Drawer are built on — a portal to document.body, an optional backdrop and scroll lock. Do not use OverlayRoot directly in screens — use the ready-made Dialog/Drawer/AlertDialog."
         />
       }
       title={<Localized pl="Portal, backdrop i blokada scrolla — jeden raz." en="Portal, backdrop and scroll lock — built once." />}

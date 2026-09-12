@@ -3,6 +3,27 @@ provider "google" {
   region  = var.region
 }
 
+# Cloud SQL's built-in admin user, whose password Terraform manages here
+# (rather than requiring an operator to set it out-of-band, which was
+# previously the only way this instance could be reached at all).
+# packages/database/scripts/provision-roles.sh uses this credential
+# (DATABASE_ADMIN_URL) to reproducibly create the actual runtime roles
+# (papadata_migrator/papadata_app/papadata_platform/papadata_test) from
+# packages/database/provisioning/roles.sql -- the same file the local
+# production-parity Postgres container runs during its own bootstrap. This
+# closes the gap where Postgres role creation had no code-reproducible path
+# for Cloud SQL at all.
+resource "random_password" "database_admin" {
+  length  = 32
+  special = false
+}
+
+resource "google_sql_user" "admin" {
+  name     = "postgres"
+  instance = google_sql_database_instance.runtime.name
+  password = random_password.database_admin.result
+}
+
 locals {
   prefix = "papadata-${var.environment}"
   labels = {
@@ -26,8 +47,13 @@ locals {
   ])
 
   generated_secret_values = {
-    redis_url       = "rediss://default:${urlencode(google_redis_instance.runtime.auth_string)}@${google_redis_instance.runtime.host}:${google_redis_instance.runtime.port}"
-    redis_ca_base64 = base64encode(google_redis_instance.runtime.server_ca_certs[0].cert)
+    redis_url          = "rediss://default:${urlencode(google_redis_instance.runtime.auth_string)}@${google_redis_instance.runtime.host}:${google_redis_instance.runtime.port}"
+    redis_ca_base64    = base64encode(google_redis_instance.runtime.server_ca_certs[0].cert)
+    database_ca_base64 = base64encode(google_sql_database_instance.runtime.server_ca_cert[0].cert)
+    # Never injected into any Cloud Run service (see api/bff/worker_secret_names
+    # below, none of which reference this key) -- retrieved directly from
+    # Secret Manager by whoever runs packages/database/scripts/provision-roles.sh.
+    database_admin_url = "postgresql://${google_sql_user.admin.name}:${urlencode(random_password.database_admin.result)}@${google_sql_database_instance.runtime.private_ip_address}:5432/papadata?sslmode=require"
   }
 
   external_secret_ids = {
@@ -40,6 +66,7 @@ locals {
 
   api_secret_names = toset([
     "database_url",
+    "database_ca_base64",
     "api_auth_active_secret",
     "api_auth_previous_secret",
     "mfa_encryption_key",
@@ -59,6 +86,7 @@ locals {
   worker_secret_names = toset([
     "database_url",
     "scheduler_database_url",
+    "database_ca_base64",
     "redis_url",
     "redis_ca_base64",
   ])
@@ -565,6 +593,7 @@ resource "google_cloud_run_v2_service" "api" {
       dynamic "env" {
         for_each = {
           DATABASE_URL                       = "database_url"
+          DATABASE_CA_BASE64                 = "database_ca_base64"
           REDIS_URL                          = "redis_url"
           REDIS_CA_BASE64                    = "redis_ca_base64"
           PAPADATA_API_AUTH_ACTIVE_SECRET    = "api_auth_active_secret"
@@ -686,8 +715,21 @@ resource "google_cloud_run_v2_service" "bff" {
         value = google_cloud_run_v2_service.api.uri
       }
       env {
+        # Capability flag read by apps/bff/src/config.ts, independent of
+        # NODE_ENV -- production-parity sets the same value against a local
+        # metadata-endpoint emulator (see
+        # infra/production/identity-emulator/), so the Cloud Run
+        # identity-token acquisition code path is identical in both.
+        name  = "BFF_UPSTREAM_IDENTITY_MODE"
+        value = "metadata-server"
+      }
+      env {
         name  = "BFF_UPSTREAM_IDENTITY_AUDIENCE"
         value = google_cloud_run_v2_service.api.uri
+      }
+      env {
+        name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
+        value = var.otel_exporter_otlp_endpoint
       }
       env {
         name  = "BFF_ALLOWED_ORIGINS"
@@ -1092,6 +1134,7 @@ resource "google_cloud_run_v2_worker_pool" "worker" {
         for_each = {
           DATABASE_URL           = "database_url"
           SCHEDULER_DATABASE_URL = "scheduler_database_url"
+          DATABASE_CA_BASE64     = "database_ca_base64"
           REDIS_URL              = "redis_url"
           REDIS_CA_BASE64        = "redis_ca_base64"
         }

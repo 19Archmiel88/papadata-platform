@@ -36,11 +36,13 @@ export class PlatformWorkerService implements OnModuleDestroy {
     connectionString: this.config.databaseUrl,
     max: 8,
     statementTimeoutMs: 30_000,
+    sslCaBase64: this.config.databaseCaBase64,
   });
   private readonly systemDatabase = new PlatformDatabase({
     connectionString: this.config.schedulerDatabaseUrl,
     max: 2,
     statementTimeoutMs: 60_000,
+    sslCaBase64: this.config.databaseCaBase64,
   });
   private readonly storage = new ObjectStorageClient({
     driver: this.config.storageDriver,

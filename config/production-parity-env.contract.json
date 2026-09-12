@@ -55,31 +55,8 @@
       "composeService": null
     }
   },
-  "serviceEnvironmentOverrides": {
-    "bff": {
-      "production-parity": {
-        "NODE_ENV": {
-          "value": "production-parity",
-          "definedIn": "compose.production-parity.yml (bff-production.environment)",
-          "overrides": "the NODE_ENV=production written into the shared .env.production-parity file (env_file), which the api-production and worker-production containers use unmodified",
-          "reason": "Forces apps/bff/src/config.ts's runtimeEnvironment to 'production-parity' instead of 'production', which is the single authorized trigger documented in environmentBehaviorExceptions."
-        }
-      }
-    }
-  },
-  "environmentBehaviorExceptions": [
-    {
-      "id": "bff-cloud-run-identity-hop",
-      "service": "bff",
-      "file": "apps/bff/src/config.ts",
-      "mustContainSubstring": "upstreamIdentityAudience: runtimeEnvironment === \"production\"",
-      "behaviorWhenTrue": "Fetches a Cloud Run identity token (audience = BFF_UPSTREAM_IDENTITY_AUDIENCE or API_ORIGIN) and forwards it upstream to the private API service.",
-      "behaviorWhenFalse": "upstreamIdentityAudience is null; the BFF calls the API directly with no identity token.",
-      "productionNodeEnv": "production",
-      "productionParityNodeEnv": "production-parity",
-      "justification": "GCP Cloud Run requires a signed identity token to call a private (INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER) service; there is no equivalent identity provider in a local Compose network, so production-parity's BFF reaches api-production over the private compose network directly instead. Documented as 'partial-by-design' in config/local-production-parity.contract.json's parityMatrix (capability: BFF/API identity boundary). This is the ONLY environment-gated behavior fork allowed to differ between production-parity and production/staging; the validator fails on any other exact runtimeEnvironment === \"production\" fork appearing in apps/bff/src/config.ts that isn't this one, and fails if this fork's guarding NODE_ENV values (production vs production-parity) ever become equal or the compose override is removed without updating this entry."
-    }
-  ],
+  "serviceEnvironmentOverrides": {},
+  "environmentBehaviorExceptions": [],
   "dynamicNameSites": [
     {
       "file": "apps/api/src/production/access-lifecycle/access-lifecycle.service.ts",
@@ -938,14 +915,17 @@
         "staging": false,
         "production": false
       },
-      "source": null,
+      "source": {
+        "kind": "literal",
+        "value": "http://identity-emulator:8081/computeMetadata/v1/instance/service-accounts/default/identity"
+      },
       "terraform": null,
-      "defaultPolicy": "fallback",
-      "validation": "Defaults to the GCE metadata server identity endpoint.",
+      "defaultPolicy": "fallback-to-real-GCE-metadata-server-outside-parity",
+      "validation": "production-parity points at infra/production/identity-emulator/ (a contract-faithful local emulator -- see its module doc comment); staging/production leave this unset and fall back to the real GCE metadata server, which only resolves inside GCP.",
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
-      "example": ""
+      "example": "http://identity-emulator:8081/computeMetadata/v1/instance/service-accounts/default/identity"
     },
     {
       "name": "BFF_PORT",
@@ -1489,11 +1469,46 @@
         "name": "google_cloud_run_v2_service.api.uri"
       },
       "defaultPolicy": "fallback-to-API_ORIGIN",
-      "validation": "Only read when runtimeEnvironment === 'production' EXACTLY (see environmentBehaviorExceptions: bff-cloud-run-identity-hop). Falls back to API_ORIGIN when unset.",
+      "validation": "Only read when BFF_UPSTREAM_IDENTITY_MODE === 'metadata-server' (a capability flag, independent of NODE_ENV -- see BFF_UPSTREAM_IDENTITY_MODE). Falls back to API_ORIGIN when unset.",
       "consumer": "apps/bff/src/config.ts",
-      "productionOnlyReason": "Activates the Cloud Run identity-token hop so the BFF can call the private API service. Only meaningful where NODE_ENV is the literal 'production' (staging and production Cloud Run); production-parity intentionally runs NODE_ENV=production-parity so the BFF talks to the local API container directly without fetching a Cloud Run identity token (there is no metadata server locally). See environmentBehaviorExceptions.",
+      "productionOnlyReason": null,
       "parityOnlyReason": null,
       "example": ""
+    },
+    {
+      "name": "BFF_UPSTREAM_IDENTITY_MODE",
+      "services": [
+        "bff"
+      ],
+      "type": "enum",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "literal",
+        "value": "metadata-server"
+      },
+      "terraform": {
+        "envName": "BFF_UPSTREAM_IDENTITY_MODE",
+        "kind": "literal",
+        "value": "metadata-server"
+      },
+      "defaultPolicy": "fail-fast-in-production-like-fallback-to-disabled-in-dev",
+      "validation": "One of disabled|metadata-server. Required (fail-fast, no default) whenever NODE_ENV=production in apps/bff/src/config.ts's readBffConfig -- production-parity, staging and production must all explicitly declare this rather than silently defaulting to disabled, which would silently skip the Cloud Run identity-token hop. 'metadata-server' means the exact same CloudRunIdentityService code path (acquisition/caching/refresh/timeout/failure handling) runs everywhere -- production-parity points BFF_METADATA_IDENTITY_ENDPOINT at a local emulator (infra/production/identity-emulator/), staging/production at the real GCE metadata server.",
+      "consumer": "apps/bff/src/config.ts, apps/bff/src/cloud-run-identity.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "metadata-server"
     },
     {
       "name": "BFF_UPSTREAM_TIMEOUT_MS",
@@ -1522,6 +1537,42 @@
       "productionOnlyReason": null,
       "parityOnlyReason": null,
       "example": "5000"
+    },
+    {
+      "name": "DATABASE_CA_BASE64",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "fileBase64",
+        "path": ".runtime/backend-production-parity/postgres-tls/ca.crt"
+      },
+      "terraform": {
+        "envName": "DATABASE_CA_BASE64",
+        "kind": "secretRef",
+        "secretKey": "database_ca_base64"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "Non-empty base64. Required whenever NODE_ENV=production in apps/api/src/production/config.ts and apps/worker/src/production/config.ts -- both fail fast without it, mirroring REDIS_CA_BASE64. Enforces TLS verification against Cloud SQL (ssl_mode=ENCRYPTED_ONLY in infra/terraform/main.tf) in staging/production, and against the local hostssl-only Postgres container in production-parity (see infra/postgres/init/00-enforce-tls.sh and compose.production-parity.yml's postgres-production service).",
+      "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts, packages/database/src/production.ts (buildPoolConfig)",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "replace-with-base64-postgres-ca"
     },
     {
       "name": "DATABASE_URL",
@@ -2358,7 +2409,7 @@
         "value": "production"
       },
       "defaultPolicy": "fallback",
-      "validation": "api/worker: one of development|test|production (undefined/'local' maps to development). bff: one of local|development|test|production-parity|production. The generated .env.production-parity file (and Terraform) set the literal value 'production' for every service, but compose.production-parity.yml additionally overrides bff-production's NODE_ENV to 'production-parity' -- see serviceEnvironmentOverrides and environmentBehaviorExceptions for why, and why that is the one authorized exception.",
+      "validation": "api/worker/bff: one of development|test|production (undefined/'local' maps to development for api/worker, to 'local' for bff). All three services always run the literal 'production' in production-parity, staging and production alike -- there is no BFF-specific override anymore. See BFF_UPSTREAM_IDENTITY_MODE for how the BFF's one genuinely environment-specific behavior (the Cloud Run identity-token hop) is now gated instead.",
       "consumer": "apps/api/src/production/config.ts, apps/bff/src/config.ts, apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
@@ -2368,6 +2419,7 @@
       "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
       "services": [
         "api",
+        "bff",
         "worker"
       ],
       "type": "url",
@@ -2395,7 +2447,7 @@
       },
       "defaultPolicy": "feature-disabled",
       "validation": "URL with protocol http:/https:.",
-      "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
+      "consumer": "apps/api/src/production/config.ts, apps/bff/src/config.ts, apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
       "example": "http://otel-collector:4318"

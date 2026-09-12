@@ -4,6 +4,7 @@ export type WorkerConfig = {
   readonly runtimeEnvironment: WorkerRuntimeEnvironment;
   readonly databaseUrl: string;
   readonly schedulerDatabaseUrl: string;
+  readonly databaseCaBase64: string | null;
   readonly redisUrl: string;
   readonly redisCaBase64: string | null;
   readonly workerConcurrency: number;
@@ -15,6 +16,7 @@ export type WorkerConfig = {
   readonly storageAccessKey: string | null;
   readonly storageSecretKey: string | null;
   readonly gcpProjectId: string | null;
+  readonly otlpEndpoint: string | null;
   readonly reconciliationCron: string;
   readonly retentionCron: string;
 };
@@ -67,6 +69,11 @@ export function readWorkerConfig(env: NodeJS.ProcessEnv = process.env): WorkerCo
     throw new WorkerConfigurationError("REDIS_CA_BASE64 is required in production.");
   }
 
+  const databaseCaBase64 = optionalBase64(env.DATABASE_CA_BASE64, "DATABASE_CA_BASE64");
+  if (production && !databaseCaBase64) {
+    throw new WorkerConfigurationError("DATABASE_CA_BASE64 is required in production.");
+  }
+
   const storageDriver = readStorageDriver(env.PAPADATA_STORAGE_DRIVER, production);
   const storageBucket = requiredText(env, "PAPADATA_STORAGE_BUCKET");
   const storageEndpoint = optionalText(env.PAPADATA_STORAGE_ENDPOINT);
@@ -93,6 +100,7 @@ export function readWorkerConfig(env: NodeJS.ProcessEnv = process.env): WorkerCo
     runtimeEnvironment,
     databaseUrl,
     schedulerDatabaseUrl,
+    databaseCaBase64,
     redisUrl,
     redisCaBase64,
     workerConcurrency: integer(env.WORKER_CONCURRENCY, "WORKER_CONCURRENCY", 4, 1, 64),
@@ -116,6 +124,7 @@ export function readWorkerConfig(env: NodeJS.ProcessEnv = process.env): WorkerCo
     storageAccessKey,
     storageSecretKey,
     gcpProjectId,
+    otlpEndpoint: optionalUrl(env.OTEL_EXPORTER_OTLP_ENDPOINT, "OTEL_EXPORTER_OTLP_ENDPOINT", ["http:", "https:"]),
     reconciliationCron: env.RECONCILIATION_CRON?.trim() || "0 */6 * * *",
     retentionCron: env.RETENTION_CRON?.trim() || "30 2 * * *",
   };
@@ -189,6 +198,10 @@ function readUrl(raw: string | undefined, name: string, protocols: readonly stri
     throw new WorkerConfigurationError(`${name} must use ${protocols.join(" or ")}.`);
   }
   return value;
+}
+
+function optionalUrl(raw: string | undefined, name: string, protocols: readonly string[]): string | null {
+  return raw?.trim() ? readUrl(raw, name, protocols) : null;
 }
 
 function integer(

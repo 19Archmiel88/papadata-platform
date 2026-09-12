@@ -16,15 +16,27 @@ const localContract = await readJson(contract.localContract);
 const runtimeDir = resolve(repoRoot, ".runtime/backend-production-parity");
 const tlsDir = resolve(runtimeDir, "redis-tls");
 const edgeTlsDir = resolve(runtimeDir, "edge-tls");
+const postgresTlsDir = resolve(runtimeDir, "postgres-tls");
 const envPath = resolve(repoRoot, contract.generatedEnvFile);
 const regenerate = process.env.PAPADATA_REGENERATE_PARITY === "1";
+// Must match the alpine postgres image's built-in `postgres` OS user
+// (`id postgres` inside postgres:16.13-alpine reports uid=70(postgres)
+// gid=70(postgres)). Postgres refuses to start if ssl_key_file is
+// group/world-accessible OR not owned by that uid (or root), so the key
+// generated on the host -- which cannot chown to an arbitrary uid without
+// root -- is re-owned via a throwaway container run as root against the
+// exact same image, which can.
+const POSTGRES_CONTAINER_UID = 70;
 
 assertCommand("openssl");
+assertCommand("docker");
 await ensureRuntimeDirectory(tlsDir, 0o700);
 await ensureRuntimeDirectory(edgeTlsDir, 0o755);
+await ensureRuntimeDirectory(postgresTlsDir, 0o755);
 await chmod(runtimeDir, 0o700);
 await chmod(tlsDir, 0o700);
 await chmod(edgeTlsDir, 0o755);
+await chmod(postgresTlsDir, 0o755);
 
 const existing = await readEnvIfPresent(envPath);
 
@@ -48,6 +60,16 @@ if (
   await generateEdgeTls(runtimeDir, edgeTlsDir, localContract.canonicalLocalEndpoint.hostname);
 }
 
+const requiredPostgresTlsFiles = ["ca.crt", "ca.key", "server.crt", "server.key"]
+  .map((name) => resolve(postgresTlsDir, name));
+if (
+  regenerate
+  || !requiredPostgresTlsFiles.every((path) => existsSync(path))
+  || !hasValidCertificate(resolve(postgresTlsDir, "server.crt"))
+) {
+  await generatePostgresTls(runtimeDir, postgresTlsDir);
+}
+
 const values = await resolveEnvironment(contract, localContract, existing, { regenerate });
 await writeEnvAtomic(envPath, renderEnvironment(contract, values));
 await chmod(resolve(tlsDir, "ca.key"), 0o600);
@@ -58,11 +80,15 @@ await chmod(resolve(edgeTlsDir, "ca.key"), 0o600);
 await chmod(resolve(edgeTlsDir, "server.key"), 0o644);
 await chmod(resolve(edgeTlsDir, "ca.crt"), 0o644);
 await chmod(resolve(edgeTlsDir, "server.crt"), 0o644);
+await chmod(resolve(postgresTlsDir, "ca.key"), 0o600);
+await chmod(resolve(postgresTlsDir, "ca.crt"), 0o644);
+await reownPostgresServerKey(postgresTlsDir);
 
 console.log("Production-parity environment prepared.");
 console.log(`Environment file: ${envPath}`);
 console.log(`Redis TLS assets: ${tlsDir}`);
 console.log(`Edge TLS assets: ${edgeTlsDir}`);
+console.log(`PostgreSQL TLS assets: ${postgresTlsDir}`);
 console.log(`Canonical local origin: ${localContract.canonicalLocalEndpoint.origin}`);
 console.log(`Next: pnpm verify:production-parity-env`);
 console.log(`Then: pnpm start:production-parity`);
@@ -208,6 +234,70 @@ DNS.1 = ${hostname}
     "-extensions", "req_ext",
     "-out", resolve(tlsDirectory, "server.crt"),
   ]);
+}
+
+async function generatePostgresTls(runtimeDirectory, tlsDirectory) {
+  const configPath = resolve(runtimeDirectory, "postgres-server.cnf");
+  await writeFile(configPath, `[req]
+distinguished_name = dn
+prompt = no
+req_extensions = req_ext
+
+[dn]
+CN = postgres-production
+
+[req_ext]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = postgres-production
+DNS.2 = localhost
+IP.1 = 127.0.0.1
+`, "utf8");
+
+  runOpenSsl([
+    "req", "-x509", "-newkey", "rsa:3072", "-sha256", "-nodes", "-days", "30",
+    "-subj", "/CN=PapaData Production Parity PostgreSQL CA",
+    "-keyout", resolve(tlsDirectory, "ca.key"),
+    "-out", resolve(tlsDirectory, "ca.crt"),
+  ]);
+  runOpenSsl([
+    "req", "-newkey", "rsa:3072", "-sha256", "-nodes",
+    "-config", configPath,
+    "-keyout", resolve(tlsDirectory, "server.key"),
+    "-out", resolve(tlsDirectory, "server.csr"),
+  ]);
+  runOpenSsl([
+    "x509", "-req", "-sha256", "-days", "30",
+    "-in", resolve(tlsDirectory, "server.csr"),
+    "-CA", resolve(tlsDirectory, "ca.crt"),
+    "-CAkey", resolve(tlsDirectory, "ca.key"),
+    "-CAcreateserial",
+    "-extfile", configPath,
+    "-extensions", "req_ext",
+    "-out", resolve(tlsDirectory, "server.crt"),
+  ]);
+}
+
+// postgres:16.13-alpine's `postgres` OS user is uid/gid 70. Postgres
+// refuses to start ("private key file ... has group or world access") if
+// ssl_key_file is readable by anyone but its owner (or root), and the file
+// generated on the host by openssl is owned by whichever uid ran this
+// script -- not 70. A throwaway container run as root (the image's default
+// user before its entrypoint drops privileges) against the exact same
+// image can chown/chmod it correctly on the host-mounted directory; a
+// non-root host process cannot chown to an arbitrary uid it does not own.
+async function reownPostgresServerKey(tlsDirectory) {
+  const result = spawnSync("docker", [
+    "run", "--rm",
+    "-v", `${tlsDirectory}:/certs`,
+    "postgres:16.13-alpine",
+    "sh", "-c",
+    `chown ${POSTGRES_CONTAINER_UID}:${POSTGRES_CONTAINER_UID} /certs/server.key && chmod 600 /certs/server.key && chmod 644 /certs/server.crt`,
+  ], { encoding: "utf8" });
+  if (result.status !== 0) {
+    throw new Error(`Failed to set PostgreSQL TLS key ownership: ${result.stderr || result.stdout}`);
+  }
 }
 
 function runOpenSsl(args) {

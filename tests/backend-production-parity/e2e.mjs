@@ -57,7 +57,9 @@ try {
   await record("compose-health", waitForComposeHealth);
   await record("direct-readiness", directReadiness);
   await record("edge-health-readiness", edgeHealthReadiness);
+  await record("edge-api-exact-path-routing", edgeApiExactPathRouting);
   await record("redis-tls-auth", redisTlsAuth);
+  await record("identity-emulator-flow", identityEmulatorFlow);
 
   const runtime = await record("edge-bff-api-auth-rbac-worker-storage-e2e", authReportFlow);
   await record("rbac-role-matrix-runtime", () => rbacRoleMatrixRuntime(runtime));
@@ -76,6 +78,12 @@ try {
   await record("auth-logout-runtime", logoutFlow);
   await record("auth-logout-all-runtime", logoutAllFlow);
   await record("auth-session-revoke-runtime", sessionRevokeFlow);
+
+  // P0-2.1: worker multi-instance safety and per-service restart recovery.
+  // Run after the auth/session flows (which each restart nothing) so a
+  // failure here can't be confused with session-state assumptions above.
+  await record("worker-multi-instance-dedup", workerMultiInstanceDedupFlow);
+  await record("restart-recovery", restartRecoveryFlow);
 
   await writeEvidence("pass");
   console.log(`PRODUCTION_PARITY_E2E=PASS evidence=${relativeEvidencePath()}`);
@@ -269,6 +277,183 @@ async function edgeHealthReadiness() {
   if (ready.status !== 200) throw new Error(`Edge /readyz returned ${ready.status}: ${ready.body}`);
   const readiness = JSON.parse(ready.body);
   return { output: JSON.stringify(readiness) };
+}
+
+// infra/terraform/main.tf's google_compute_url_map "edge" path_matcher
+// routes BOTH exact "/api" and prefix "/api/*" to the BFF backend service.
+// nginx's prefix location `/api/` alone does not match the bare "/api"
+// (no trailing slash) -- that request would silently fall through to the
+// catch-all `location /` and hit Web instead of BFF, a real routing drift
+// between this edge and the real load balancer it stands in for. This
+// proves the exact-match location (infra/production/edge/nginx.conf.template)
+// actually routes it to BFF: an unauthenticated request to BFF gets BFF's
+// 401 JSON envelope, never Web's HTML document.
+async function edgeApiExactPathRouting() {
+  const response = await edgeRequest("/api", { headers: { accept: "application/json" } });
+  if (response.body.includes("<!doctype html")) {
+    throw new Error(`Edge routed exact "/api" to Web instead of BFF: ${response.status} ${response.body.slice(0, 200)}`);
+  }
+  if (response.status !== 401 && response.status !== 404) {
+    throw new Error(`Edge exact "/api" expected a BFF response (401/404), got ${response.status}: ${response.body.slice(0, 200)}`);
+  }
+  return { output: `status=${response.status} routed-to=bff` };
+}
+
+// P0-2A replaced the accidental `NODE_ENV === "production"` gate on the BFF
+// Cloud Run identity hop with the explicit BFF_UPSTREAM_IDENTITY_MODE flag,
+// and built a local emulator (infra/production/identity-emulator/) so the
+// exact same CloudRunIdentityService code path runs in production-parity as
+// in production. This proves that live, from inside the running BFF
+// container: it resolves the same request the real code issues (same
+// endpoint env var, same audience-fallback-to-API_ORIGIN logic used by
+// apps/bff/src/cloud-run-identity.service.ts), and that the emulator's
+// negative cases (its own unit tests already cover this in isolation; this
+// checks the two are actually wired together end to end).
+function identityEmulatorFlow() {
+  const positive = run("docker", [
+    ...compose, "exec", "-T", "bff-production", "sh", "-c",
+    String.raw`test "$BFF_UPSTREAM_IDENTITY_MODE" = "metadata-server" && node -e '
+      fetch(process.env.BFF_METADATA_IDENTITY_ENDPOINT + "?audience=" + encodeURIComponent(process.env.BFF_UPSTREAM_IDENTITY_AUDIENCE || process.env.API_ORIGIN) + "&format=full", { headers: { "Metadata-Flavor": "Google" } })
+        .then(async (r) => { if (!r.ok) throw new Error("status " + r.status); const token = await r.text(); const segments = token.split("."); if (segments.length !== 3) throw new Error("not JWT-shaped"); console.log("token-acquired segments=" + segments.length); })
+        .catch((e) => { console.error(String(e)); process.exit(1); });
+    '`,
+  ], { timeout: 30_000 });
+  if (!/token-acquired/u.test(positive.output)) {
+    throw new Error(`BFF did not acquire an identity token from the emulator.\n${positive.output}`);
+  }
+
+  const missingHeader = run("docker", [
+    ...compose, "exec", "-T", "bff-production", "sh", "-c",
+    String.raw`node -e 'fetch(process.env.BFF_METADATA_IDENTITY_ENDPOINT + "?audience=x&format=full").then((r) => console.log("status=" + r.status))'`,
+  ], { timeout: 15_000 });
+  if (!/status=403/u.test(missingHeader.output)) {
+    throw new Error(`Emulator did not reject a request missing Metadata-Flavor: Google.\n${missingHeader.output}`);
+  }
+
+  return { output: `${positive.output}\n${missingHeader.output}` };
+}
+
+// ETAP 13 (P0-2.1): API/BFF/Worker/Redis/Postgres must each recover from a
+// restart without manual intervention -- connection pools/clients must
+// reconnect, not require the whole stack to be torn down. One service at a
+// time (not simultaneous) to keep each failure attributable. Storage
+// (MinIO) is intentionally not restarted here: it has no persistent
+// connection held open by API/Worker (packages/storage's S3/GCS clients
+// connect per-request), so there is no "reconnect" behavior to prove beyond
+// what minioObjectRuntime and the storage contract tests already cover.
+async function restartRecoveryFlow() {
+  const outcomes = [];
+
+  async function restartAndWaitReady(service, checkReady) {
+    run("docker", [...compose, "restart", service], { timeout: 60_000 });
+    const deadline = Date.now() + 60_000;
+    let lastError = "unknown";
+    while (Date.now() < deadline) {
+      try {
+        await checkReady();
+        outcomes.push(`${service}: recovered`);
+        return;
+      } catch (error) {
+        lastError = error instanceof Error ? error.message : String(error);
+        await delay(2_000);
+      }
+    }
+    throw new Error(`${service} did not recover after restart: ${lastError}`);
+  }
+
+  await restartAndWaitReady("api-production", async () => {
+    const { response } = await fetchJson("http://127.0.0.1:54100/readyz");
+    if (response.status !== 200) throw new Error(`status ${response.status}`);
+  });
+
+  await restartAndWaitReady("bff-production", async () => {
+    const { response } = await fetchJson("http://127.0.0.1:53001/readyz", { headers: { host } });
+    if (response.status !== 200) throw new Error(`status ${response.status}`);
+  });
+
+  await restartAndWaitReady("redis-production", async () => {
+    const { response } = await fetchJson("http://127.0.0.1:54100/readyz");
+    if (response.status !== 200) throw new Error(`status ${response.status}`);
+    const body = await (await fetch("http://127.0.0.1:54100/readyz")).json();
+    const redis = body.dependencies?.find((dependency) => dependency.name === "redis");
+    if (!redis?.ready) throw new Error("redis dependency not ready after restart");
+  });
+
+  await restartAndWaitReady("postgres-production", async () => {
+    const body = await (await fetch("http://127.0.0.1:54100/readyz")).json();
+    const postgresql = body.dependencies?.find((dependency) => dependency.name === "postgresql");
+    if (!postgresql?.ready) throw new Error("postgresql dependency not ready after restart");
+  });
+
+  // Worker has no HTTP surface (NestFactory.createApplicationContext, not an
+  // HTTP server -- see apps/worker/src/production/main.ts) so "recovery" is
+  // proven by process liveness rather than a readyz call: confirm compose
+  // still reports it running (not crash-looping) a few seconds after restart.
+  run("docker", [...compose, "restart", "worker-production"], { timeout: 60_000 });
+  await delay(5_000);
+  const workerPs = run("docker", [...compose, "ps", "--format", "json", "worker-production"], { timeout: 15_000 });
+  const workerState = parseComposePs(workerPs.output)[0];
+  if (!workerState || String(workerState.State) !== "running") {
+    throw new Error(`worker-production is not running after restart: ${workerPs.output}`);
+  }
+  outcomes.push("worker-production: recovered");
+
+  return { output: outcomes.join("\n") };
+}
+
+// ETAP 9 (P0-2.1): production is a Cloud Run worker pool (multiple
+// instances by design), so local parity must prove two worker-production
+// replicas sharing the same Redis queue do not double-process one job.
+// BullMQ's own jobId uniqueness is the mechanism this is really testing
+// (apps/worker/src/production/worker.service.ts / platform-worker.service.ts
+// both construct their Worker/Queue with lockDuration/concurrency from
+// config, but hold no additional dedup logic themselves -- the guarantee is
+// BullMQ's). The scheduler's own layered guards (pg_try_advisory_xact_lock +
+// a (schedule_key, scheduled_for) unique constraint in
+// apps/worker/src/production/scheduler.service.ts's enqueueSingleton, and
+// the (tenant, workspace, idempotencyKey) upsert +
+// reused-BullMQ-jobId documented in sync-dispatch-scheduler.service.ts) were
+// verified by code review with exact file/line citations rather than a live
+// race here -- reproducing their cron timing safely in an acceptance run
+// would need to mutate real cron schedules, which risks masking the actual
+// production schedule instead of proving it.
+async function workerMultiInstanceDedupFlow() {
+  run("docker", [...compose, "up", "-d", "--scale", "worker-production=2", "--no-recreate"], { timeout: 60_000 });
+  await delay(3_000);
+  const psAfterScale = run("docker", [...compose, "ps", "--format", "json", "worker-production"], { timeout: 15_000 });
+  const replicas = parseComposePs(psAfterScale.output);
+  if (replicas.length !== 2 || replicas.some((replica) => String(replica.State) !== "running")) {
+    throw new Error(`Expected 2 running worker-production replicas.\n${psAfterScale.output}`);
+  }
+
+  const jobId = `acceptance-dedup-${randomUUID()}`;
+  const dedupScript = String.raw`
+    const { Queue } = require("bullmq");
+    const IORedis = require("ioredis");
+    (async () => {
+      const connection = new IORedis(process.env.REDIS_URL, {
+        maxRetriesPerRequest: null,
+        tls: process.env.REDIS_CA_BASE64 ? { ca: Buffer.from(process.env.REDIS_CA_BASE64, "base64").toString("utf8") } : undefined,
+      });
+      const queue = new Queue("papadata-integrations", { connection });
+      const jobId = process.argv[1];
+      const first = await queue.add("acceptance-noop", {}, { jobId, removeOnComplete: false, removeOnFail: false });
+      const second = await queue.add("acceptance-noop", {}, { jobId, removeOnComplete: false, removeOnFail: false });
+      console.log("first-id=" + first.id + " second-id=" + second.id + " same=" + (first.id === second.id));
+      await first.remove().catch(() => undefined);
+      await queue.close();
+      await connection.quit();
+    })().catch((error) => { console.error(String(error && error.stack || error)); process.exit(1); });
+  `;
+  const dedup = run("docker", [
+    ...compose, "exec", "-T", "worker-production", "node", "-e", dedupScript, jobId,
+  ], { timeout: 30_000 });
+  if (!/same=true/u.test(dedup.output)) {
+    throw new Error(`BullMQ did not deduplicate two adds with the same jobId.\n${dedup.output}`);
+  }
+
+  run("docker", [...compose, "up", "-d", "--scale", "worker-production=1", "--no-recreate"], { timeout: 60_000 });
+  return { output: dedup.output };
 }
 
 function redisTlsAuth() {

@@ -45,6 +45,9 @@ jobs:
       - name: Runtime config parity unit tests
         run: pnpm test:runtime-config-parity
 
+      - name: Redis parity guard (no environment-conditional Redis code paths)
+        run: pnpm test:redis-parity-guard
+
       - name: Symmetric runtime/Terraform/production-parity config drift gate
         run: pnpm verify:production-parity-env
 

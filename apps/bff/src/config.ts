@@ -1,6 +1,17 @@
-export type BffRuntimeEnvironment = "local" | "production" | "production-parity" | "test";
+export type BffRuntimeEnvironment = "local" | "production" | "test";
 
 export type BffSessionStoreMode = "redis-auth-state" | "test-memory";
+
+// Governs whether the BFF acquires a Cloud Run identity token before
+// calling the upstream API -- a capability/configuration flag, deliberately
+// independent of NODE_ENV/runtimeEnvironment. Production-parity and
+// production both run "metadata-server" (against a real GCE metadata
+// server in production, and a contract-faithful local emulator in
+// production-parity -- see infra/production/identity-emulator/), so the
+// exact same CloudRunIdentityService code path (acquisition, caching,
+// refresh, timeout, failure handling) executes in both. Only "local"
+// development is expected to run "disabled".
+export type BffUpstreamIdentityMode = "disabled" | "metadata-server";
 
 export type BffConfig = {
   readonly allowedOrigins: readonly string[];
@@ -41,8 +52,10 @@ export type BffConfig = {
   readonly sessionRedisUrl: string;
   readonly sessionStoreMode: BffSessionStoreMode;
   readonly upstreamTimeoutMs: number;
+  readonly upstreamIdentityMode: BffUpstreamIdentityMode;
   readonly upstreamIdentityAudience: string | null;
   readonly metadataIdentityEndpoint: string;
+  readonly otlpEndpoint: string | null;
 };
 
 const placeholderPattern =
@@ -59,7 +72,8 @@ export function readBffConfig(
   env: NodeJS.ProcessEnv = process.env,
 ): BffConfig {
   const runtimeEnvironment = readRuntimeEnvironment(env.NODE_ENV);
-  const productionLike = runtimeEnvironment === "production" || runtimeEnvironment === "production-parity";
+  const productionLike = runtimeEnvironment === "production";
+  const upstreamIdentityMode = readUpstreamIdentityMode(env.BFF_UPSTREAM_IDENTITY_MODE, productionLike);
   const cookieSecret = readSecret(env, "BFF_COOKIE_SECRET");
   const cookiePreviousSecret = readOptionalSecret(
     env,
@@ -228,7 +242,8 @@ export function readBffConfig(
       100,
       30_000,
     ),
-    upstreamIdentityAudience: runtimeEnvironment === "production"
+    upstreamIdentityMode,
+    upstreamIdentityAudience: upstreamIdentityMode === "metadata-server"
       ? readOrigin(
           env.BFF_UPSTREAM_IDENTITY_AUDIENCE?.trim() || env.API_ORIGIN,
           "BFF_UPSTREAM_IDENTITY_AUDIENCE",
@@ -236,17 +251,44 @@ export function readBffConfig(
       : null,
     metadataIdentityEndpoint: env.BFF_METADATA_IDENTITY_ENDPOINT?.trim()
       || "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity",
+    otlpEndpoint: optionalUrl(env.OTEL_EXPORTER_OTLP_ENDPOINT, "OTEL_EXPORTER_OTLP_ENDPOINT", ["http:", "https:"]),
   };
 }
 
 function readRuntimeEnvironment(value: string | undefined): BffRuntimeEnvironment {
   if (value === "production") return "production";
-  if (value === "production-parity") return "production-parity";
   if (value === "test") return "test";
   if (value === undefined || value === "local" || value === "development") return "local";
   throw new BffConfigurationError(
-    "NODE_ENV must be local, development, test, production-parity or production.",
+    "NODE_ENV must be local, development, test or production.",
   );
+}
+
+// Capability flag, deliberately independent of NODE_ENV (see
+// BffUpstreamIdentityMode doc comment). Fail-fast whenever productionLike is
+// true: production and production-parity must both explicitly declare how
+// they acquire the upstream identity token rather than silently falling
+// back to "disabled", which would silently skip the Cloud Run identity
+// path -- exactly the accidental drift this flag exists to prevent.
+function readUpstreamIdentityMode(
+  value: string | undefined,
+  productionLike: boolean,
+): BffUpstreamIdentityMode {
+  const normalized = value?.trim();
+  if (normalized === "disabled" || normalized === "metadata-server") {
+    return normalized;
+  }
+  if (normalized !== undefined && normalized !== "") {
+    throw new BffConfigurationError(
+      "BFF_UPSTREAM_IDENTITY_MODE must be disabled or metadata-server.",
+    );
+  }
+  if (productionLike) {
+    throw new BffConfigurationError(
+      "BFF_UPSTREAM_IDENTITY_MODE is required in production and production-parity.",
+    );
+  }
+  return "disabled";
 }
 
 function readSessionStoreMode(value: string | undefined): BffSessionStoreMode {
@@ -344,6 +386,25 @@ function readOrigin(value: string | undefined, name: string): string {
   return parsed.origin;
 }
 
+function optionalUrl(
+  value: string | undefined,
+  name: string,
+  protocols: readonly string[],
+): string | null {
+  const raw = value?.trim();
+  if (!raw) return null;
+  let parsed: URL;
+  try {
+    parsed = new URL(raw);
+  } catch {
+    throw new BffConfigurationError(`${name} must be a valid URL.`);
+  }
+  if (!protocols.includes(parsed.protocol)) {
+    throw new BffConfigurationError(`${name} must use one of: ${protocols.join(", ")}.`);
+  }
+  return raw;
+}
+
 function readRedisUrl(
   value: string | undefined,
   runtimeEnvironment: BffRuntimeEnvironment,
@@ -359,7 +420,7 @@ function readRedisUrl(
   if (!["redis:", "rediss:"].includes(parsed.protocol)) {
     throw new BffConfigurationError("REDIS_URL must use redis:// or rediss://.");
   }
-  if ((runtimeEnvironment === "production" || runtimeEnvironment === "production-parity") && parsed.protocol !== "rediss:") {
+  if (runtimeEnvironment === "production" && parsed.protocol !== "rediss:") {
     throw new BffConfigurationError("REDIS_URL must use rediss:// in production.");
   }
   return raw;

@@ -10,7 +10,7 @@ export class AssistantRetentionWorker implements OnModuleDestroy {
  @Interval(60000)
  async tick():Promise<void>{
   if(this.busy||process.env.PAPADATA_ASSISTANT_RETENTION_ENABLED!=='true')return;this.busy=true;
-  try{const config=readWorkerConfig();this.db??=new PlatformDatabase({connectionString:config.schedulerDatabaseUrl,max:1,statementTimeoutMs:10000});
+  try{const config=readWorkerConfig();this.db??=new PlatformDatabase({connectionString:config.schedulerDatabaseUrl,max:1,statementTimeoutMs:10000,sslCaBase64:config.databaseCaBase64});
    await this.db.withTransaction(async c=>{
     await c.query(`DELETE FROM app.assistant_text_attachments WHERE id IN(SELECT id FROM app.assistant_text_attachments WHERE expires_at<=now() ORDER BY expires_at LIMIT 500 FOR UPDATE SKIP LOCKED)`);
     await c.query(`DELETE FROM app.assistant_memory_notes WHERE id IN(SELECT id FROM app.assistant_memory_notes WHERE expires_at<=now() ORDER BY expires_at LIMIT 500 FOR UPDATE SKIP LOCKED)`);

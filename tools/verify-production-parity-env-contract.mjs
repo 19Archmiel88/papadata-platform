@@ -119,10 +119,22 @@ failures.push(...checkLocalOnlyNeverReachesProduction(contract, terraformByServi
 failures.push(...checkUnusedContractEntries(contract, discoveredRuntimeNames, terraformByService));
 
 // --- Class H: environment-specific behavior forks ---------------------------
-
+//
+// As of the P0-2A fix, no service's production-parity NODE_ENV diverges
+// from its real production/staging value anymore -- the BFF's one
+// environment-gated behavior (the Cloud Run identity-token hop) is now
+// governed by the explicit BFF_UPSTREAM_IDENTITY_MODE capability flag
+// instead (see config/production-parity-env.contract.json), so it no
+// longer needs a NODE_ENV divergence to differ safely between environments.
+// This map (and checkEnvironmentBehaviorExceptions below) is left in place
+// as a standing guard: if a future change reintroduces a NODE_ENV
+// divergence for any service, update this map, and any exact
+// `runtimeEnvironment === "production"` fork in that service's config
+// loader must be registered in contract.environmentBehaviorExceptions or
+// this gate fails.
 const serviceNodeEnv = {
   api: { productionParity: "production", terraform: "production" },
-  bff: { productionParity: "production-parity", terraform: "production" },
+  bff: { productionParity: "production", terraform: "production" },
   worker: { productionParity: "production", terraform: "production" },
 };
 const divergingServices = new Set(

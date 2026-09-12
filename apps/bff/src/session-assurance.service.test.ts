@@ -56,8 +56,10 @@ const config: BffConfig = {
   sessionRedisPrefix: "papadata:auth",
   sessionRedisUrl: "redis://127.0.0.1:6379",
   sessionStoreMode: "test-memory",
+  upstreamIdentityMode: "disabled" as const,
   upstreamIdentityAudience: null,
   upstreamTimeoutMs: 5_000,
+  otlpEndpoint: null,
 };
 
 function fakeReply(): FastifyReply & { readonly sentBody: unknown; readonly statusCode: number | null; readonly cookies: Record<string, unknown>; readonly clearedCookies: string[] } {

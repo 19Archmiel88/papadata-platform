@@ -93,6 +93,7 @@ export class IntegrationWorkerService implements OnModuleDestroy {
     connectionString: this.config.databaseUrl,
     max: 8,
     statementTimeoutMs: 30_000,
+    sslCaBase64: this.config.databaseCaBase64,
   });
   private readonly repository = new IntegrationRepository(this.database);
   private readonly ingestionRepository = new DurableIntegrationIngestionRepository(this.database);

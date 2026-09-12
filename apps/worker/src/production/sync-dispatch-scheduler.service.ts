@@ -81,6 +81,7 @@ export class SyncDispatchScheduler implements OnModuleDestroy {
     connectionString: this.config.schedulerDatabaseUrl,
     max: 2,
     statementTimeoutMs: 30_000,
+    sslCaBase64: this.config.databaseCaBase64,
   });
   // Tenant-scoped -- createJob below always runs inside the real
   // tenant/workspace of the connection it is dispatching for.
@@ -88,6 +89,7 @@ export class SyncDispatchScheduler implements OnModuleDestroy {
     connectionString: this.config.databaseUrl,
     max: 4,
     statementTimeoutMs: 30_000,
+    sslCaBase64: this.config.databaseCaBase64,
   });
   private readonly repository = new IntegrationRepository(this.database);
 

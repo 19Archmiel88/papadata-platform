@@ -13,6 +13,7 @@ export class ProductionDatabaseProvider
       connectionString: config.databaseUrl,
       max: config.databasePoolMax,
       statementTimeoutMs: config.databaseStatementTimeoutMs,
+      sslCaBase64: config.databaseCaBase64,
     });
   }
 

@@ -67,7 +67,7 @@ const steps = [
     id: "production-parity-runtime",
     command: "pnpm",
     args: ["verify:production-parity-runtime"],
-    covers: ["Edge", "Web", "BFF", "API", "PostgreSQL/RLS", "Redis/queues", "Worker", "Object Storage"],
+    covers: ["Edge", "Web", "BFF", "API", "PostgreSQL/RLS", "Redis/queues", "Worker", "Object Storage", "runtime config parity (runtime/Terraform/production-parity symmetric drift)"],
   },
 ];
 

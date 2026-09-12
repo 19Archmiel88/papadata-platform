@@ -1,149 +1,20 @@
-.pd-panel,
-.pd-decision-card,
-.pd-recommendation-card,
-.pd-evidence-panel,
-.pd-detail-panel,
-.pd-reconciliation-panel,
-.pd-decision-queue,
-.pd-morning-brief,
-.pd-plan-performance,
-.pd-budget-pacing,
-.pd-attribution-comparison,
-.pd-customer-segments,
-.pd-result-drivers,
-.pd-sales-sources,
-.pd-sales-funnel,
-.pd-funnel-chart,
-.pd-waterfall-chart,
-.pd-lineage-graph,
-.pd-sync-timeline,
-.pd-pairing-flow,
-.pd-cohort-matrix,
-.pd-assistant-composer,
-.pd-data-status-banner {
+.pd-funnel-chart {
   min-inline-size: 0;
   color: var(--pd-text);
-}
-
-.pd-panel,
-.pd-decision-card,
-.pd-recommendation-card,
-.pd-evidence-panel,
-.pd-reconciliation-panel,
-.pd-decision-queue,
-.pd-morning-brief,
-.pd-plan-performance,
-.pd-budget-pacing,
-.pd-attribution-comparison,
-.pd-customer-segments,
-.pd-result-drivers,
-.pd-sales-sources,
-.pd-sales-funnel,
-.pd-funnel-chart,
-.pd-waterfall-chart,
-.pd-lineage-graph,
-.pd-sync-timeline,
-.pd-pairing-flow,
-.pd-cohort-matrix,
-.pd-data-status-banner {
   border: 1px solid var(--pd-separator-subtle);
   border-radius: var(--pd-radius-surface);
   background: var(--pd-surface);
   box-shadow: none;
 }
 
-.pd-panel[data-bordered='false'] {
-  border-color: transparent;
-}
-
-.pd-panel[data-tone='subtle'] {
-  background: var(--pd-surface-subtle);
-}
-
-.pd-panel[data-tone='raised'] {
-  background: var(--pd-surface-raised);
-}
-
-.pd-panel__header,
-.pd-decision-card__header,
-.pd-recommendation-card__header,
-.pd-evidence-panel__header,
-.pd-reconciliation-panel__header,
-.pd-decision-queue__header,
-.pd-morning-brief__header,
-.pd-plan-performance__header,
-.pd-budget-pacing__header,
-.pd-customer-segments__header,
-.pd-result-drivers__header,
-.pd-sales-sources__header,
-.pd-sales-funnel__header,
-.pd-lineage-graph__header,
-.pd-sync-timeline__header,
-.pd-pairing-flow__header,
-.pd-cohort-matrix__header {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--pd-space-3);
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: var(--pd-space-4) var(--pd-space-5);
-  border-block-end: 1px solid var(--pd-separator-subtle);
-}
-
-.pd-panel__header h2,
-.pd-panel__header h3,
-.pd-decision-card__header h3,
-.pd-recommendation-card__header h3,
-.pd-evidence-panel__header h3,
-.pd-reconciliation-panel__header h3,
-.pd-decision-queue__header h3,
-.pd-morning-brief__header h3,
-.pd-plan-performance__header h3,
-.pd-budget-pacing__header h3,
-.pd-customer-segments__header h3,
-.pd-result-drivers__header h3,
-.pd-sales-sources__header h3,
-.pd-sales-funnel__header h3,
-.pd-lineage-graph__header h3,
-.pd-sync-timeline__header h3,
-.pd-pairing-flow__header h3,
-.pd-cohort-matrix__header h3 {
-  margin: 0;
-  color: var(--pd-text);
-  font-size: 0.9rem;
-  font-weight: var(--pd-font-weight-semibold);
-  letter-spacing: -0.018em;
-  line-height: 1.3;
-}
-
-.pd-panel__eyebrow,
-.pd-page-header__meta,
-.pd-decision-card__meta,
-.pd-recommendation-card__meta,
-.pd-plan-performance__meta {
+.pd-page-header__meta {
   color: var(--pd-text-muted);
   font-family: var(--pd-font-mono);
   font-size: 0.63rem;
   line-height: 1.4;
 }
 
-.pd-panel__body {
-  padding: var(--pd-space-5);
-}
-
-.pd-panel[data-padding='compact'] .pd-panel__body {
-  padding: var(--pd-space-4);
-}
-
-.pd-panel[data-padding='none'] .pd-panel__body {
-  padding: 0;
-}
-
-.pd-panel__actions,
-.pd-page-header__actions,
-.pd-decision-queue__actions,
-.pd-recommendation-card__actions,
-.pd-pairing-flow__actions {
+.pd-page-header__actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--pd-space-2);
@@ -193,224 +64,9 @@
   line-height: 1.55;
 }
 
-.pd-decision-card,
-.pd-recommendation-card {
-  display: grid;
-  overflow: hidden;
-}
-
-.pd-decision-card[data-priority='high'],
-.pd-recommendation-card[data-risk='high'] {
-  border-inline-start: 3px solid var(--pd-status-danger);
-}
-
-.pd-decision-card[data-priority='medium'],
-.pd-recommendation-card[data-risk='medium'] {
-  border-inline-start: 3px solid var(--pd-status-warning);
-}
-
-.pd-decision-card[data-impact='high'] {
-  border-block-start-color: color-mix(in srgb, var(--pd-brand-action) 42%, var(--pd-separator-subtle));
-}
-
-.pd-decision-card__action {
-  padding: var(--pd-space-4) var(--pd-space-5);
-  border-block-start: 1px solid var(--pd-separator-subtle);
-  background: var(--pd-surface-subtle);
-}
-
-.pd-decision-card__meta,
-.pd-recommendation-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--pd-space-2) var(--pd-space-4);
-  padding: 0 var(--pd-space-5) var(--pd-space-4);
-}
-
-.pd-recommendation-card__actions {
-  padding: var(--pd-space-4) var(--pd-space-5);
-  border-block-start: 1px solid var(--pd-separator-subtle);
-}
-
-.pd-evidence-panel__list,
-.pd-evidence-panel__sources,
-.pd-reconciliation-panel__list,
-.pd-decision-queue__list,
-.pd-morning-brief__list,
-.pd-customer-segments__list,
-.pd-result-drivers__list,
-.pd-sales-sources__list,
-.pd-sync-timeline__list {
-  display: grid;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.pd-evidence-panel__list li,
-.pd-evidence-panel__sources li,
-.pd-reconciliation-panel__list li,
-.pd-decision-queue__list li,
-.pd-morning-brief__list li,
-.pd-customer-segments__list li,
-.pd-result-drivers__list li,
-.pd-sales-sources__list li,
-.pd-sync-timeline__list li {
-  min-inline-size: 0;
-  padding: 0.72rem var(--pd-space-5);
-  border-block-end: 1px solid var(--pd-separator-subtle);
-  color: var(--pd-text-secondary);
-  font-size: 0.74rem;
-  line-height: 1.45;
-}
-
-.pd-evidence-panel__list li:last-child,
-.pd-evidence-panel__sources li:last-child,
-.pd-reconciliation-panel__list li:last-child,
-.pd-decision-queue__list li:last-child,
-.pd-morning-brief__list li:last-child,
-.pd-customer-segments__list li:last-child,
-.pd-result-drivers__list li:last-child,
-.pd-sales-sources__list li:last-child,
-.pd-sync-timeline__list li:last-child {
-  border-block-end: 0;
-}
-
-.pd-customer-segments__list li[data-selected='true'] {
-  background: color-mix(in srgb, var(--pd-brand-action) 8%, var(--pd-surface));
-  box-shadow: inset 2px 0 0 var(--pd-brand-action);
-}
-
-.pd-result-drivers__list li[data-direction='positive'] {
-  box-shadow: inset 2px 0 0 var(--pd-status-success);
-}
-
-.pd-result-drivers__list li[data-direction='negative'] {
-  box-shadow: inset 2px 0 0 var(--pd-status-danger);
-}
-
-.pd-detail-panel {
-  display: grid;
-  block-size: 100%;
-  border-inline-start: 1px solid var(--pd-separator);
-  background: var(--pd-surface);
-}
-
-.pd-detail-panel__header {
-  padding: var(--pd-space-5);
-  border-block-end: 1px solid var(--pd-separator-subtle);
-}
-
-.pd-detail-panel__sections {
-  display: grid;
-  align-content: start;
-  overflow: auto;
-  padding: var(--pd-space-5);
-  gap: var(--pd-space-5);
-}
-
-.pd-data-status-banner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--pd-space-4);
-  align-items: start;
-  padding: var(--pd-space-4) var(--pd-space-5);
-}
-
-.pd-data-status-banner[data-readiness='ready'] {
-  border-inline-start: 3px solid var(--pd-status-success);
-}
-
-.pd-data-status-banner[data-readiness='partial'],
-.pd-data-status-banner[data-readiness='delayed'] {
-  border-inline-start: 3px solid var(--pd-status-warning);
-}
-
-.pd-data-status-banner[data-readiness='blocked'] {
-  border-inline-start: 3px solid var(--pd-status-danger);
-}
-
-.pd-data-status-banner__main {
-  display: grid;
-  gap: var(--pd-space-2);
-  min-inline-size: 0;
-}
-
-.pd-data-status-banner__sources {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--pd-space-3);
-  margin: 0;
-}
-
-.pd-data-status-banner__sources > div {
-  display: grid;
-  gap: 0.1rem;
-}
-
-.pd-data-status-banner__sources dt {
-  color: var(--pd-text-muted);
-  font-size: 0.62rem;
-}
-
-.pd-data-status-banner__sources dd {
-  margin: 0;
-  color: var(--pd-text-secondary);
-  font-family: var(--pd-font-mono);
-  font-size: 0.66rem;
-}
-
-.pd-data-status-banner__issues {
-  display: grid;
-  gap: var(--pd-space-1);
-  margin: 0;
-  padding-inline-start: 1rem;
-  color: var(--pd-text-secondary);
-  font-size: 0.7rem;
-}
-
-.pd-plan-performance__chart,
-.pd-attribution-comparison__models,
-.pd-cohort-matrix__scroll,
-.pd-lineage-graph__nodes,
-.pd-lineage-graph__edges {
-  min-inline-size: 0;
-  overflow: auto;
-}
-
-.pd-plan-performance__meta,
-.pd-budget-pacing__footer,
-.pd-morning-brief__footer,
-.pd-assistant-composer__footer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--pd-space-3);
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--pd-space-3) var(--pd-space-5);
-  border-block-start: 1px solid var(--pd-separator-subtle);
-  color: var(--pd-text-muted);
-  font-size: 0.68rem;
-}
-
-.pd-budget-pacing[data-status='over'] {
-  border-inline-start: 3px solid var(--pd-status-danger);
-}
-
-.pd-budget-pacing[data-status='under'] {
-  border-inline-start: 3px solid var(--pd-status-warning);
-}
-
-.pd-budget-pacing[data-status='on-track'] {
-  border-inline-start: 3px solid var(--pd-status-success);
-}
-
-.pd-sales-sources__bar,
-.pd-sales-funnel__bar,
-.pd-funnel-chart__bar,
-.pd-waterfall-chart__bar {
+.pd-funnel-chart__bar {
   display: block;
-  min-block-size: 0.58rem;
+  block-size: 0.58rem;
   border-radius: var(--pd-radius-small);
   overflow: hidden;
   background: var(--pd-surface-subtle);
@@ -418,135 +74,40 @@
 
 /*
  * The magnitude-encoding element is the innermost <span style={{inlineSize}}>
- * — the outer .pd-*__bar above is just the full-width track. Without this
- * rule the inner span had no background/height of its own (a bare inline
- * span with only a percentage width set), so every bar rendered as the same
- * full-width track color regardless of value — the chart showed no magnitude
- * at all. A plain descendant selector (not a direct-child one) is used
- * because SalesSources wraps an extra non-dynamic <span> around its
- * width-carrying one; matching both is harmless since they'd render the
- * identical color.
+ * — the outer .pd-funnel-chart__bar above is just the full-width track.
+ * Two bugs used to hide this element entirely: (1) the fill span had no
+ * background of its own, so every bar rendered as the same full-width track
+ * color regardless of value; (2) the track only set min-block-size (not
+ * block-size), so the fill's `block-size: 100%` couldn't resolve against an
+ * "auto" parent height and collapsed to 0 — the fill was there but had zero
+ * height, invisible. Fixed by giving the track an explicit block-size above.
  */
-.pd-sales-sources__bar span,
-.pd-sales-funnel__bar span,
-.pd-funnel-chart__bar span,
-.pd-waterfall-chart__bar span {
+.pd-funnel-chart__bar span {
   display: block;
   block-size: 100%;
   border-radius: inherit;
   background: var(--pd-data-series-1);
 }
 
-.pd-sales-sources__list,
-.pd-sales-funnel__steps,
-.pd-funnel-chart__steps,
-.pd-waterfall-chart__items {
-  padding: var(--pd-space-4) var(--pd-space-5);
-}
-
-.pd-sales-funnel__steps,
-.pd-funnel-chart__steps,
-.pd-waterfall-chart__items {
+.pd-funnel-chart__steps {
   display: grid;
   gap: var(--pd-space-3);
   margin: 0;
+  padding: var(--pd-space-4) var(--pd-space-5);
   list-style: none;
-}
-
-.pd-funnel-step {
-  display: grid;
-  gap: var(--pd-space-2);
-  min-inline-size: 0;
 }
 
 /* Every value here is already direct-labeled as text, so a tooltip would add nothing — just a hover response on the mark itself. */
-.pd-funnel-chart__steps li .pd-funnel-chart__bar span,
-.pd-waterfall-chart__items li .pd-waterfall-chart__bar span {
+.pd-funnel-chart__steps li .pd-funnel-chart__bar span {
   transition: filter 120ms ease;
 }
 
-.pd-funnel-chart__steps li:hover .pd-funnel-chart__bar span,
-.pd-waterfall-chart__items li:hover .pd-waterfall-chart__bar span {
+.pd-funnel-chart__steps li:hover .pd-funnel-chart__bar span {
   filter: brightness(1.12);
 }
 
-.pd-waterfall-chart__items li[data-kind='decrease'] .pd-waterfall-chart__bar span {
-  background: var(--pd-status-danger);
-}
-
-.pd-waterfall-chart__items li[data-kind='increase'] .pd-waterfall-chart__bar span {
-  background: var(--pd-status-success);
-}
-
-.pd-lineage-graph {
-  display: grid;
-}
-
-.pd-lineage-graph__nodes,
-.pd-lineage-graph__edges {
-  padding: var(--pd-space-4) var(--pd-space-5);
-}
-
-.pd-pairing-flow__steps {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-  gap: var(--pd-space-2);
-  margin: 0;
-  padding: var(--pd-space-4) var(--pd-space-5);
-  list-style: none;
-}
-
-.pd-pairing-flow__steps li {
-  padding: 0.72rem;
-  border: 1px solid var(--pd-separator-subtle);
-  border-radius: var(--pd-radius-small);
-  background: var(--pd-surface-subtle);
-}
-
-.pd-pairing-flow__actions {
-  padding: var(--pd-space-4) var(--pd-space-5);
-  border-block-start: 1px solid var(--pd-separator-subtle);
-}
-
-.pd-cohort-matrix__scroll {
-  max-inline-size: 100%;
-}
-
-.pd-cohort-matrix table {
-  inline-size: 100%;
-  border-collapse: collapse;
-  font-size: 0.7rem;
-}
-
-.pd-cohort-matrix th,
-.pd-cohort-matrix td {
-  padding: 0.58rem 0.65rem;
-  border: 1px solid var(--pd-separator-subtle);
-  text-align: end;
-}
-
-.pd-cohort-matrix th {
-  background: var(--pd-surface-subtle);
-  color: var(--pd-text-muted);
-  font-weight: var(--pd-font-weight-medium);
-}
-
-.pd-cohort-matrix tr[data-selected='true'] td {
-  background: color-mix(in srgb, var(--pd-brand-action) 7%, var(--pd-surface));
-}
-
-.pd-assistant-composer {
-  display: grid;
-  gap: var(--pd-space-3);
-  padding: var(--pd-space-4);
-  border: 1px solid var(--pd-separator);
-  border-radius: var(--pd-radius-surface);
-  background: var(--pd-surface);
-}
-
 @media (max-width: 720px) {
-  .pd-page-header__main,
-  .pd-data-status-banner {
+  .pd-page-header__main {
     grid-template-columns: 1fr;
   }
 
@@ -554,31 +115,7 @@
     justify-content: flex-start;
   }
 
-  .pd-panel__header,
-  .pd-decision-card__header,
-  .pd-recommendation-card__header,
-  .pd-evidence-panel__header,
-  .pd-reconciliation-panel__header,
-  .pd-decision-queue__header,
-  .pd-morning-brief__header,
-  .pd-plan-performance__header,
-  .pd-budget-pacing__header,
-  .pd-customer-segments__header,
-  .pd-result-drivers__header,
-  .pd-sales-sources__header,
-  .pd-sales-funnel__header,
-  .pd-lineage-graph__header,
-  .pd-sync-timeline__header,
-  .pd-pairing-flow__header,
-  .pd-cohort-matrix__header {
-    padding-inline: var(--pd-space-4);
-  }
-
-  .pd-panel__body,
-  .pd-sales-sources__list,
-  .pd-sales-funnel__steps,
-  .pd-funnel-chart__steps,
-  .pd-waterfall-chart__items {
+  .pd-funnel-chart__steps {
     padding-inline: var(--pd-space-4);
   }
 }

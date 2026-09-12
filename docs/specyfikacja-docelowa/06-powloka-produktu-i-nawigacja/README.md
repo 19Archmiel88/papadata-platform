@@ -1269,7 +1269,6 @@ powoka-mobilna
 ### Komponenty składowe
 
 - PageHeader
-- DataStatusBanner
 - InlineNotice
 - Button
 

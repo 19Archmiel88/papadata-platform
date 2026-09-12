@@ -91,8 +91,8 @@ export const PaginationNavStory: Story = {
       storyId="pagination-nav"
       summary={
         <Localized
-          pl="Nawigacja po zbiorach bez policzalnego total (logi synchronizacji, strumienie zdarzeń). Gdy total jest znany i policzalny, użyj Pagination."
-          en="Navigation over datasets without a countable total (sync logs, event streams). When the total is known and countable, use Pagination."
+          pl="Nawigacja po zbiorach bez policzalnego total (logi synchronizacji, strumienie zdarzeń)."
+          en="Navigation over datasets without a countable total (sync logs, event streams)."
         />
       }
       title={<Localized pl="Zakres bez znanego końca." en="A range without a known end." />}

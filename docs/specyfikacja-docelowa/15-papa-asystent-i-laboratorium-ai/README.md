@@ -34,9 +34,6 @@ Użytkownik realizuje zadanie „Panel kontekstowy Papa” w obszarze: Papa, evi
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -149,9 +146,6 @@ Dokument definiuje zasady, warianty i ograniczenia dla obszaru „Tryby pracy”
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -207,11 +201,7 @@ Użytkownik realizuje zadanie „Context basket” w obszarze: Papa, evidence, c
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -269,7 +259,6 @@ Użytkownik realizuje zadanie „Odpowiedź Papa” w obszarze: Papa, evidence, 
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -327,10 +316,6 @@ Użytkownik realizuje zadanie „Dowody” w obszarze: Papa, evidence, confidenc
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
-| `EvidencePanel` | `04-komponenty-domenowe/evidence-panel.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -441,11 +426,6 @@ Użytkownik realizuje zadanie „Laboratorium AI” w obszarze: Papa, evidence, 
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FilterBar` | `04-komponenty-bazowe/komponenty/filterbar.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
-| `Pagination` | `04-komponenty-bazowe/komponenty/pagination.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -507,11 +487,7 @@ Użytkownik realizuje zadanie „Obserwacje” w obszarze: Papa, evidence, confi
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -570,9 +546,6 @@ Dokument definiuje zasady, warianty i ograniczenia dla obszaru „Rekomendacje i
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -627,7 +600,6 @@ Użytkownik realizuje zadanie „Propozycje AI” w obszarze: Papa, evidence, co
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -685,8 +657,6 @@ Użytkownik realizuje zadanie „AI Action Approval” w obszarze: Papa, evidenc
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
-| `ApprovalPanel` | `04-komponenty-bazowe/komponenty/approvalpanel.md` | required |
 | `AlertDialog` | `04-komponenty-bazowe/komponenty/alertdialog.md` | required |
 
 ### Kontrakt danych
@@ -745,7 +715,6 @@ Użytkownik realizuje zadanie „AI Actions” w obszarze: Papa, evidence, confi
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -804,9 +773,6 @@ Dokument definiuje zasady, warianty i ograniczenia dla obszaru „Zablokowane dz
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -863,10 +829,6 @@ Użytkownik realizuje zadanie „Historia i pamięć Papa” w obszarze: Papa, e
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FilterBar` | `04-komponenty-bazowe/komponenty/filterbar.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
-| `Pagination` | `04-komponenty-bazowe/komponenty/pagination.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
-| `ApprovalPanel` | `04-komponenty-bazowe/komponenty/approvalpanel.md` | required |
 | `AlertDialog` | `04-komponenty-bazowe/komponenty/alertdialog.md` | required |
 
 ### Kontrakt danych
@@ -929,7 +891,6 @@ Użytkownik realizuje zadanie „Ustawienia AI i Governance” w obszarze: Papa,
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -984,7 +945,6 @@ Dokument definiuje zasady, warianty i ograniczenia dla obszaru „Warianty Papa�
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |

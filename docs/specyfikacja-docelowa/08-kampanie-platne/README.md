@@ -34,9 +34,6 @@ Użytkownik realizuje zadanie „Przegląd” w obszarze: kampanie płatne, bud�
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
 
 ### Kontrakt danych
@@ -97,11 +94,7 @@ Użytkownik realizuje zadanie „Lista kampanii” w obszarze: kampanie płatne,
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FilterBar` | `04-komponenty-bazowe/komponenty/filterbar.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
-| `Pagination` | `04-komponenty-bazowe/komponenty/pagination.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
 
 ### Kontrakt danych
@@ -161,11 +154,6 @@ Użytkownik realizuje zadanie „Szczegóły kampanii” w obszarze: kampanie p�
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
 
 ### Kontrakt danych
@@ -222,9 +210,6 @@ Użytkownik realizuje zadanie „Atrybucja i sprzedaż” w obszarze: kampanie p
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
-| `AttributionComparison` | `04-komponenty-domenowe/attribution-comparison.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -284,10 +269,6 @@ Użytkownik realizuje zadanie „Budżet” w obszarze: kampanie płatne, budże
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
-| `BudgetPacing` | `04-komponenty-domenowe/budget-pacing.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -404,10 +385,6 @@ Użytkownik realizuje zadanie „Rekomendacje — kontekst domenowy” w obszarz
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
-| `ApprovalPanel` | `04-komponenty-bazowe/komponenty/approvalpanel.md` | required |
 | `AlertDialog` | `04-komponenty-bazowe/komponenty/alertdialog.md` | required |
 
 ### Kontrakt danych
@@ -464,7 +441,6 @@ Dokument definiuje zasady, warianty i ograniczenia dla obszaru „Warianty kampa
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
 
 ### Kontrakt danych

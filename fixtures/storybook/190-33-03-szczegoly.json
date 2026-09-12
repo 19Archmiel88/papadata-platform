@@ -7,9 +7,6 @@
     "PageHeader",
     "InlineNotice",
     "Button",
-    "ShareChart",
-    "ComparisonChart",
-    "DetailPanel",
     "Tabs"
   ],
   "states": [

@@ -7,10 +7,7 @@
     "PageHeader",
     "InlineNotice",
     "Button",
-    "MetricCard",
-    "ChartFrame",
-    "TrendChart",
-    "ForecastChart"
+    "MetricCard"
   ],
   "states": [
     "ready",

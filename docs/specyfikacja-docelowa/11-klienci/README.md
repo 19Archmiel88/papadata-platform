@@ -34,8 +34,6 @@ Użytkownik realizuje zadanie „Przegląd” w obszarze: klienci pseudonimizowa
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -94,12 +92,6 @@ Użytkownik realizuje zadanie „Segmenty” w obszarze: klienci pseudonimizowan
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
-| `CustomerSegments` | `04-komponenty-domenowe/customer-segments.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -157,7 +149,6 @@ Użytkownik realizuje zadanie „Kohorty” w obszarze: klienci pseudonimizowani
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `CohortMatrix` | `04-komponenty-domenowe/cohort-matrix.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -216,7 +207,6 @@ Użytkownik realizuje zadanie „Szczegóły pseudonimizowane” w obszarze: kli
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
 
 ### Kontrakt danych
@@ -332,8 +322,6 @@ Użytkownik realizuje zadanie „Prywatność” w obszarze: klienci pseudonimiz
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FilterBar` | `04-komponenty-bazowe/komponenty/filterbar.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
-| `Pagination` | `04-komponenty-bazowe/komponenty/pagination.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -392,11 +380,6 @@ Użytkownik realizuje zadanie „Analiza wpływu” w obszarze: klienci pseudoni
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |

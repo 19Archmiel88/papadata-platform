@@ -8,11 +8,6 @@
     "InlineNotice",
     "Button",
     "MetricCard",
-    "ChartFrame",
-    "TrendChart",
-    "ShareChart",
-    "ComparisonChart",
-    "DetailPanel",
     "Tabs"
   ],
   "states": [

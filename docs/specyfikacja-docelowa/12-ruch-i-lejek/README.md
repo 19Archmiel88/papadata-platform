@@ -35,11 +35,7 @@ Użytkownik realizuje zadanie „Przegląd ruchu” w obszarze: ruch, kanały, z
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FilterBar` | `04-komponenty-bazowe/komponenty/filterbar.md` | required |
 | `DataTable` | `04-komponenty-bazowe/komponenty/datatable.md` | required |
-| `Pagination` | `04-komponenty-bazowe/komponenty/pagination.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -97,9 +93,6 @@ Użytkownik realizuje zadanie „Kanały” w obszarze: ruch, kanały, zdarzenia
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
-| `DecisionCard` | `04-komponenty-bazowe/komponenty/decisioncard.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -158,9 +151,7 @@ Użytkownik realizuje zadanie „Lejek — widok” w obszarze: ruch, kanały, z
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `FunnelChart` | `05-wykresy-i-wizualizacje/komponenty/funnelchart.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
-| `SalesFunnel` | `04-komponenty-domenowe/sales-funnel.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -219,12 +210,8 @@ Użytkownik realizuje zadanie „Lejek — szczegóły kroku” w obszarze: ruch
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
 | `FunnelChart` | `05-wykresy-i-wizualizacje/komponenty/funnelchart.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
-| `FunnelStep` | `04-komponenty-domenowe/funnel-step.md` | required-domain |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |
@@ -284,8 +271,6 @@ Użytkownik realizuje zadanie „Definicje lejka” w obszarze: ruch, kanały, z
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
 | `MetricCard` | `05-wykresy-i-wizualizacje/komponenty/metriccard.md` | required |
-| `ChartFrame` | `05-wykresy-i-wizualizacje/komponenty/chartframe.md` | required |
-| `TrendChart` | `05-wykresy-i-wizualizacje/komponenty/trendchart.md` | required |
 | `TextField` | `04-komponenty-bazowe/komponenty/textfield.md` | required |
 | `Select` | `04-komponenty-bazowe/komponenty/select.md` | required |
 | `Checkbox` | `04-komponenty-bazowe/komponenty/checkbox.md` | required |
@@ -348,7 +333,6 @@ Użytkownik realizuje zadanie „GA4 vs zamówienia” w obszarze: ruch, kanały
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `DetailPanel` | `04-komponenty-bazowe/komponenty/detailpanel.md` | required |
 | `Tabs` | `04-komponenty-bazowe/komponenty/tabs.md` | required |
 
 ### Kontrakt danych
@@ -469,8 +453,6 @@ Użytkownik realizuje zadanie „Strony wejścia” w obszarze: ruch, kanały, z
 | `PageHeader` | `04-komponenty-bazowe/komponenty/pageheader.md` | required |
 | `InlineNotice` | `04-komponenty-bazowe/komponenty/inlinenotice.md` | required |
 | `Button` | `04-komponenty-bazowe/komponenty/button.md` | required |
-| `ShareChart` | `05-wykresy-i-wizualizacje/komponenty/sharechart.md` | required |
-| `ComparisonChart` | `05-wykresy-i-wizualizacje/komponenty/comparisonchart.md` | required |
 
 ### Kontrakt danych
 | Pole | Typ | Reguła |

@@ -6,8 +6,7 @@
   "components": [
     "PageHeader",
     "InlineNotice",
-    "Button",
-    "DataStatusBanner"
+    "Button"
   ],
   "states": [
     "ready",

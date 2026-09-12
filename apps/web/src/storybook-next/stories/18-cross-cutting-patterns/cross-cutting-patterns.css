@@ -942,6 +942,32 @@
   line-height: var(--pd-line-height-relaxed);
 }
 
+.pd-x18-analytics-detail__metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pd-space-3);
+  margin: 0;
+  padding-block: var(--pd-space-2);
+  border-block:
+    var(--pd-border-width-subtle)
+    solid
+    var(--pd-separator-subtle);
+}
+
+.pd-x18-analytics-detail__metrics dt {
+  color: var(--pd-text-muted);
+  font-size: var(--pd-type-size-label);
+  line-height: var(--pd-line-height-compact);
+}
+
+.pd-x18-analytics-detail__metrics dd {
+  margin: 0;
+  color: var(--pd-text);
+  font-size: var(--pd-type-size-body);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--pd-font-weight-medium);
+  line-height: var(--pd-line-height-heading);
+}
 
 .pd-x18-analytics-detail__trend {
   display: flex;
@@ -1187,6 +1213,19 @@
       var(--pd-separator-subtle) 66%,
       transparent
     );
+}
+
+.pd-x18-evidence-list {
+  display: grid;
+  gap: var(--pd-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-x18-evidence-list > li {
+  display: grid;
+  gap: var(--pd-space-1);
 }
 
 .pd-x18-drawer-ledger > div {

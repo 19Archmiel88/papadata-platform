@@ -8,11 +8,7 @@
     "InlineNotice",
     "Button",
     "MetricCard",
-    "ChartFrame",
-    "TrendChart",
-    "DetailPanel",
-    "Tabs",
-    "DecisionCard"
+    "Tabs"
   ],
   "states": [
     "ready",

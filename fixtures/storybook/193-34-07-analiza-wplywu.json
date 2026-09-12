@@ -7,12 +7,7 @@
     "PageHeader",
     "InlineNotice",
     "Button",
-    "MetricCard",
-    "ChartFrame",
-    "TrendChart",
-    "ShareChart",
-    "ComparisonChart",
-    "DecisionCard"
+    "MetricCard"
   ],
   "states": [
     "ready",

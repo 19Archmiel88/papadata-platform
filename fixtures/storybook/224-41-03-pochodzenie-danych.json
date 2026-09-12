@@ -6,8 +6,7 @@
   "components": [
     "PageHeader",
     "InlineNotice",
-    "Button",
-    "LineageGraph"
+    "Button"
   ],
   "states": [
     "ready",

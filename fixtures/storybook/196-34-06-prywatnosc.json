@@ -8,9 +8,7 @@
     "InlineNotice",
     "Button",
     "FilterBar",
-    "DataTable",
-    "Pagination",
-    "DetailPanel"
+    "DataTable"
   ],
   "states": [
     "ready",

@@ -23,11 +23,10 @@ import {
   DataTable,
   Drawer,
   FilterBar,
-  KeyValueList,
+  Menu,
   SearchField,
   SegmentedControl,
   Select,
-  SortControl,
   StatusBadge,
 } from '../../../design-system/components';
 import '../../../storybook-next/presentation/story-presentation.css';
@@ -658,6 +657,68 @@ function sortRows(
   return direction === 'asc'
     ? sorted
     : sorted.reverse();
+}
+
+type SortMenuControlOption = {
+  readonly id: string;
+  readonly label: string;
+};
+
+function SortMenuControl({
+  ariaLabel,
+  className,
+  direction,
+  label,
+  options,
+  selectedId,
+  onDirectionChange,
+  onSelectedIdChange,
+}: {
+  readonly ariaLabel: string;
+  readonly className?: string;
+  readonly direction: 'asc' | 'desc';
+  readonly label: string;
+  readonly options: readonly SortMenuControlOption[];
+  readonly selectedId: string;
+  readonly onDirectionChange: (direction: 'asc' | 'desc') => void;
+  readonly onSelectedIdChange: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selectedOption =
+    options.find((option) => option.id === selectedId) ?? options[0];
+
+  return (
+    <div className={className}>
+      <Menu
+        activeItemId={selectedId}
+        items={options.map((option) => ({
+          id: option.id,
+          label: option.label,
+        }))}
+        open={open}
+        placement="bottom-end"
+        trigger={(
+          <button aria-label={ariaLabel} type="button">
+            {label}: {selectedOption?.label ?? '—'}
+          </button>
+        )}
+        onAction={(itemId) => {
+          onSelectedIdChange(itemId);
+          setOpen(false);
+        }}
+        onOpenChange={(nextOpen) => {
+          setOpen(nextOpen);
+        }}
+      />
+      <button
+        aria-label={`Zmień kierunek sortowania. Aktualnie ${direction === 'asc' ? 'rosnąco' : 'malejąco'}.`}
+        type="button"
+        onClick={() => onDirectionChange(direction === 'asc' ? 'desc' : 'asc')}
+      >
+        {direction === 'asc' ? 'Rosnąco' : 'Malejąco'}
+      </button>
+    </div>
+  );
 }
 
 function toDataRow(
@@ -1485,14 +1546,13 @@ function FilteredTablePattern() {
                 }}
               />
 
-              <SortControl
+              <SortMenuControl
                 ariaLabel="Sortowanie wyników kampanii"
                 className="pd-x18-analytics-filter-sort"
                 direction={sortDirection}
                 label="Sortuj"
                 options={sortOptions}
                 selectedId={sortId}
-                size="compact"
                 onDirectionChange={(nextDirection) => {
                   setSortDirection(nextDirection);
                   resetPage();
@@ -1942,39 +2002,50 @@ function FilteredTablePattern() {
                   {detailRecord.note}
                 </p>
 
-                <KeyValueList
-                  density="compact"
-                  groups={[
-                    {
-                      id: 'metrics',
-                      items: [
-                        { id: 'revenue', label: 'Przychód', value: formatCurrency(detailRecord.revenue) },
-                        {
-                          id: 'change',
-                          label: 'Zmiana',
-                          value: (
-                            <span
-                              style={{
-                                color:
-                                  resolveDeltaTone(detailRecord.revenueChange) === 'positive'
-                                    ? 'var(--pd-status-success)'
-                                    : resolveDeltaTone(detailRecord.revenueChange) === 'negative'
-                                      ? 'var(--pd-status-danger)'
-                                      : undefined,
-                              }}
-                            >
-                              {formatSignedPercentage(detailRecord.revenueChange)}
-                            </span>
-                          ),
-                        },
-                        { id: 'roas', label: 'ROAS', value: formatRoas(detailRecord.roas) },
-                        { id: 'cvr', label: 'CVR', value: formatPercentage(detailRecord.cvr) },
-                        { id: 'margin', label: 'Marża', value: formatPercentage(detailRecord.margin) },
-                        { id: 'orders', label: 'Zamówienia', value: formatInteger(detailRecord.orders) },
-                      ],
-                    },
-                  ]}
-                />
+                <dl className="pd-x18-analytics-detail__metrics">
+                  <div>
+                    <dt>Przychód</dt>
+                    <dd>{formatCurrency(detailRecord.revenue)}</dd>
+                  </div>
+
+                  <div>
+                    <dt>Zmiana</dt>
+                    <dd>
+                      <span
+                        style={{
+                          color:
+                            resolveDeltaTone(detailRecord.revenueChange) === 'positive'
+                              ? 'var(--pd-status-success)'
+                              : resolveDeltaTone(detailRecord.revenueChange) === 'negative'
+                                ? 'var(--pd-status-danger)'
+                                : undefined,
+                        }}
+                      >
+                        {formatSignedPercentage(detailRecord.revenueChange)}
+                      </span>
+                    </dd>
+                  </div>
+
+                  <div>
+                    <dt>ROAS</dt>
+                    <dd>{formatRoas(detailRecord.roas)}</dd>
+                  </div>
+
+                  <div>
+                    <dt>CVR</dt>
+                    <dd>{formatPercentage(detailRecord.cvr)}</dd>
+                  </div>
+
+                  <div>
+                    <dt>Marża</dt>
+                    <dd>{formatPercentage(detailRecord.margin)}</dd>
+                  </div>
+
+                  <div>
+                    <dt>Zamówienia</dt>
+                    <dd>{formatInteger(detailRecord.orders)}</dd>
+                  </div>
+                </dl>
 
                 <div className="pd-x18-analytics-detail__trend">
                   <span>

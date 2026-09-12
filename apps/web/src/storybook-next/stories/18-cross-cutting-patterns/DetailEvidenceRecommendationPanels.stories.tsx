@@ -16,7 +16,6 @@ import {
 
 import {
   Button,
-  DataList,
   Drawer,
   StatusBadge,
   Tabs,
@@ -136,39 +135,40 @@ function DrawerContent({
                 Dwa sygnały wskazują ten sam kierunek.
               </h3>
             </div>
-            <DataList
-              density="compact"
-              items={[
-                {
-                  description: 'Wzrost kosztu pozyskania o 18% przy stabilnym wolumenie.',
-                  id: 'source-cac',
-                  meta: [
-                    'Źródło: warehouse',
-                    'Odświeżono 10:24',
-                  ],
-                  status: {
-                    status: 'Jakość źródła',
-                    text: 'Zweryfikowane',
-                    tone: 'success',
-                  },
-                  title: 'Koszt pozyskania',
-                },
-                {
-                  description: 'Leady z jednego formularza mają niższą kompletność pól.',
-                  id: 'source-form',
-                  meta: [
-                    'Źródło: CRM',
-                    'Próba 420 rekordów',
-                  ],
-                  status: {
-                    status: 'Jakość źródła',
-                    text: 'Częściowe',
-                    tone: 'warning',
-                  },
-                  title: 'Jakość formularza',
-                },
-              ]}
-            />
+            <ul className="pd-x18-evidence-list">
+              <li>
+                <div className="pd-x18-meta-row">
+                  <strong>Koszt pozyskania</strong>
+                  <StatusBadge
+                    status="Jakość źródła"
+                    text="Zweryfikowane"
+                    tone="success"
+                  />
+                </div>
+                <p className="pd-x18-drawer-copy">
+                  Wzrost kosztu pozyskania o 18% przy stabilnym wolumenie.
+                </p>
+                <p className="pd-x18-description">
+                  Źródło: warehouse · Odświeżono 10:24
+                </p>
+              </li>
+              <li>
+                <div className="pd-x18-meta-row">
+                  <strong>Jakość formularza</strong>
+                  <StatusBadge
+                    status="Jakość źródła"
+                    text="Częściowe"
+                    tone="warning"
+                  />
+                </div>
+                <p className="pd-x18-drawer-copy">
+                  Leady z jednego formularza mają niższą kompletność pól.
+                </p>
+                <p className="pd-x18-description">
+                  Źródło: CRM · Próba 420 rekordów
+                </p>
+              </li>
+            </ul>
           </section>
 
           <section className="pd-x18-drawer-section">

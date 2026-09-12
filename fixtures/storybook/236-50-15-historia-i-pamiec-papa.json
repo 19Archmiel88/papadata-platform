@@ -9,10 +9,6 @@
     "Button",
     "FilterBar",
     "DataTable",
-    "Pagination",
-    "DetailPanel",
-    "DecisionCard",
-    "ApprovalPanel",
     "AlertDialog"
   ],
   "states": [

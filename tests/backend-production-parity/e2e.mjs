@@ -2,12 +2,20 @@ import { createHmac, randomUUID } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import https from "node:https";
-import { resolve } from "node:path";
+import { dirname, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const root = resolve(new URL("../..", import.meta.url).pathname);
-const evidencePath = resolve(root, "artifacts/backend-evidence/production-parity-e2e.json");
-const compose = ["compose", "-f", "compose.production-parity.yml", "--env-file", ".env.production-parity"];
+const evidencePath = resolve(root, process.env.PAPADATA_PARITY_EVIDENCE_PATH || "artifacts/backend-evidence/production-parity-e2e.json");
+// P0-3: certified release parity (tools/verify-release-candidate.mjs) points
+// this at the rendered, digest-pinned compose config from
+// tools/render-certified-compose.mjs and sets PAPADATA_PARITY_NO_BUILD=1 so
+// this suite exercises the exact certified images instead of rebuilding.
+// Both default to the dev/build-mode base file, so plain
+// `pnpm test:backend-production-parity` behaves exactly as before.
+const composeFile = process.env.PAPADATA_PARITY_COMPOSE_FILE || "compose.production-parity.yml";
+const noBuild = process.env.PAPADATA_PARITY_NO_BUILD === "1";
+const compose = ["compose", "-f", composeFile, "--env-file", ".env.production-parity"];
 const origin = "https://papadata.localhost";
 const host = "papadata.localhost";
 const caPath = resolve(root, ".runtime/backend-production-parity/edge-tls/ca.crt");
@@ -50,8 +58,8 @@ try {
 
   await record("compose-down-before-run", () =>
     run("docker", [...compose, "down", "--remove-orphans"], { timeout: 120_000 }));
-  await record("compose-up-build", () =>
-    run("docker", [...compose, "up", "--build", "-d"], { timeout: 1_200_000 }));
+  await record(noBuild ? "compose-up-certified" : "compose-up-build", () =>
+    run("docker", [...compose, "up", ...(noBuild ? [] : ["--build"]), "-d"], { timeout: 1_200_000 }));
   stackStarted = true;
 
   await record("compose-health", waitForComposeHealth);
@@ -1586,7 +1594,7 @@ function delay(ms) {
 }
 
 async function writeEvidence(status, error = null) {
-  await mkdir(resolve(root, "artifacts/backend-evidence"), { recursive: true });
+  await mkdir(dirname(evidencePath), { recursive: true });
   await writeFile(evidencePath, `${JSON.stringify({
     schemaVersion: 1,
     generatedAt: new Date().toISOString(),
@@ -1599,5 +1607,5 @@ async function writeEvidence(status, error = null) {
 }
 
 function relativeEvidencePath() {
-  return "artifacts/backend-evidence/production-parity-e2e.json";
+  return relative(root, evidencePath);
 }

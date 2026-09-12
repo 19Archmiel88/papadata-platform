@@ -1,5 +1,16 @@
-name: Backend image release
+name: Release candidate build, sign, and certify
 
+# P0-3 (Build Once / Immutable Artifacts): this is the ONE canonical
+# pipeline that turns a Git SHA into a release candidate -- API, BFF,
+# Worker and Web are each built exactly once, signed, attested, and bound
+# together (with the runtime-config contract hash, migration set hash, and
+# Terraform identity) into a single release manifest. The certified-local-
+# parity job then runs the full production-parity acceptance suite against
+# those four exact digests, pulled by digest and never rebuilt -- so a PASS
+# here means "release candidate RC-X, these four immutable images, passed
+# certified parity," not "the repository at this commit once passed CI."
+# Nothing downstream (staging, production) may build these services again;
+# it consumes the same digests this workflow already certified.
 on:
   workflow_dispatch:
   push:
@@ -18,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [api, bff, worker]
+        service: [api, bff, worker, web]
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -87,4 +98,120 @@ jobs:
         with:
           name: image-release-${{ matrix.service }}-${{ github.sha }}
           path: sbom-${{ matrix.service }}.cdx.json
+          if-no-files-found: error
+
+      - name: Write image identity
+        env:
+          SERVICE: ${{ matrix.service }}
+        run: |
+          mkdir -p image-identity
+          cat > "image-identity/image-identity-${SERVICE}.json" <<JSON
+          {"service": "${SERVICE}", "repository": "${{ steps.image.outputs.image }}", "digest": "${{ steps.image.outputs.digest }}"}
+          JSON
+
+      - name: Upload image identity
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: image-identity-${{ matrix.service }}-${{ github.sha }}
+          path: image-identity/image-identity-${{ matrix.service }}.json
+          if-no-files-found: error
+
+  release-manifest:
+    needs: build-sign-attest
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24.18.0
+
+      - name: Download image identities
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: image-identity-*-${{ github.sha }}
+          path: image-identity
+          merge-multiple: true
+
+      - name: Assemble release manifest
+        run: |
+          node tools/build-release-manifest-from-images.mjs \
+            --api "$(jq -r '"\(.repository)@\(.digest)"' image-identity/image-identity-api.json)" \
+            --bff "$(jq -r '"\(.repository)@\(.digest)"' image-identity/image-identity-bff.json)" \
+            --worker "$(jq -r '"\(.repository)@\(.digest)"' image-identity/image-identity-worker.json)" \
+            --web "$(jq -r '"\(.repository)@\(.digest)"' image-identity/image-identity-web.json)" \
+            --git-sha "${{ github.sha }}"
+
+      - name: Validate release manifest shape
+        run: node tools/validate-release-manifest.mjs --skip-image-check
+
+      - name: Upload release manifest
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release-manifest-${{ github.sha }}
+          path: artifacts/release-manifest.json
+          if-no-files-found: error
+
+  certified-local-parity:
+    needs: release-manifest
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+        with:
+          version: 10.29.3
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24.18.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: pnpm --filter @papadata/web exec playwright install --with-deps chromium
+
+      - name: Download release manifest
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: release-manifest-${{ github.sha }}
+          path: artifacts
+
+      - name: Login to GHCR
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+
+      - name: Pull certified images by digest (no rebuild)
+        run: |
+          for service in api bff worker web; do
+            reference="$(jq -r ".images.${service}.reference" artifacts/release-manifest.json)"
+            docker pull "$reference"
+          done
+
+      - name: Certified release-candidate gate
+        run: pnpm verify:release-candidate
+
+      - name: Upload release-candidate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release-candidate-evidence-${{ github.sha }}
+          path: |
+            artifacts/release-manifest.json
+            artifacts/release-candidate-evidence.json
+            artifacts/release-candidate-evidence
           if-no-files-found: error

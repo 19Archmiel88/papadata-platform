@@ -19,34 +19,21 @@ import {
   runCommand,
   writeJson,
 } from "./backend-gate-common.mjs";
+import { buildProductionParitySteps } from "./lib/production-parity-steps.mjs";
 import { resolve } from "node:path";
 import { existsSync } from "node:fs";
 
-const steps = [
-  { id: "runtime-config-parity-env", command: "pnpm", args: ["verify:production-parity-env"] },
-  { id: "runtime-config-parity-tests", command: "pnpm", args: ["test:runtime-config-parity"] },
-  { id: "redis-parity-guard", command: "pnpm", args: ["test:redis-parity-guard"] },
-  { id: "typecheck-backend", command: "pnpm", args: ["typecheck:backend"] },
-  { id: "typecheck-web", command: "pnpm", args: ["--filter", "@papadata/web", "run", "typecheck"] },
-  { id: "test-unit", command: "pnpm", args: ["test:unit"] },
-  { id: "test-worker", command: "pnpm", args: ["test:worker"] },
-  { id: "repository-integrity", command: "pnpm", args: ["verify:repository-integrity"] },
-  { id: "tls-preparation", command: "pnpm", args: ["prepare:production-parity"] },
-  {
-    id: "compose-config",
-    command: "docker",
-    args: ["compose", "-f", "compose.production-parity.yml", "--env-file", ".env.production-parity", "config"],
-  },
-  { id: "backend-production-parity-e2e", command: "pnpm", args: ["test:backend-production-parity"] },
-  { id: "web-production-parity-e2e", command: "pnpm", args: ["test:web-production-parity"] },
-];
+const steps = buildProductionParitySteps();
 
 const startedAt = new Date().toISOString();
 const results = [];
 
 for (const step of steps) {
   const before = process.hrtime.bigint();
-  const result = runCommand(step.command, step.args, { timeout: step.timeout ?? 20 * 60 * 1000 });
+  const result = runCommand(step.command, step.args, {
+    timeout: step.timeout ?? 20 * 60 * 1000,
+    ...(step.env ? { env: { ...process.env, ...step.env } } : {}),
+  });
   const after = process.hrtime.bigint();
   results.push({ ...step, ...result, durationMs: Number((after - before) / 1_000_000n) });
   const lastLine = result.output.split("\n").filter(Boolean).at(-1) ?? "";

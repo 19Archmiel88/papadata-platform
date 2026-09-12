@@ -58,7 +58,13 @@
     "refresh:storybook-runtime-state": "python3 scripts/regenerate_storybook_registry_state.py",
     "verify:storybook-runtime-state": "python3 scripts/regenerate_storybook_registry_state.py --check",
     "verify:p2-p3-code": "node tools/verify-p2-p3-maintainability.mjs",
-    "verify:repository-integrity": "python3 scripts/validate_repository.py ."
+    "verify:repository-integrity": "python3 scripts/validate_repository.py .",
+    "verify:local-production-parity": "node tools/verify-local-production-parity.mjs",
+    "build:release-images": "node tools/build-release-images.mjs",
+    "verify:release-manifest": "node tools/validate-release-manifest.mjs",
+    "test:release-manifest": "node --test tools/validate-release-manifest.test.mjs",
+    "render:release-candidate-compose": "node tools/render-certified-compose.mjs",
+    "verify:release-candidate": "node tools/verify-release-candidate.mjs"
   },
   "devDependencies": {
     "@typescript/typescript-linux-x64": "7.0.2",

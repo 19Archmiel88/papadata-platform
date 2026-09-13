@@ -6,7 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 test("identity emulator: rejects requests without Metadata-Flavor: Google", async () => {
-  const { spawnServer, stopServer, baseUrl } = await startEmulator();
+  const { stopServer, baseUrl } = await startEmulator();
   try {
     const response = await fetch(`${baseUrl}/computeMetadata/v1/instance/service-accounts/default/identity?audience=https://api.example&format=full`);
     assert.equal(response.status, 403);

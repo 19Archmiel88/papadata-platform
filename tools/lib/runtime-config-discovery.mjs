@@ -39,7 +39,7 @@ export function discoverEnvVarsInSource(text) {
   // requiredText/requiredSecret/optionalSecret/readEnum/readCredentials etc,
   // including multi-name calls (OAuth's readCredentials takes two) and
   // multi-line calls (arguments on their own line).
-  for (const match of text.matchAll(/\(\s*(?:process\.env|env)\s*,\s*((?:"[A-Z][A-Z0-9_]*"\s*,?\s*)+)\)/gu)) {
+  for (const match of text.matchAll(/\(\s*(?:process\.env|env)\s*,\s*((?:"[A-Z][A-Z0-9_]*"[\s,]*)+)\)/gu)) {
     for (const nameMatch of match[1].matchAll(new RegExp(`"(${ENV_NAME})"`, "gu"))) {
       names.add(nameMatch[1]);
     }

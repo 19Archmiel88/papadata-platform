@@ -18,7 +18,6 @@ import {
   renderExample,
   repoRoot,
   generatedEntries,
-  parityEntries,
 } from "./lib/production-parity-env.mjs";
 import { listSourceFiles } from "./lib/fs-walk.mjs";
 import {

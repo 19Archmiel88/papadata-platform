@@ -209,7 +209,11 @@ export const Error: Story = {
   render: () => <RetryExample />,
   play: async ({ canvasElement }) => {
     const c = within(canvasElement);
-    await userEvent.click(await c.findByRole('button', { name: 'Spróbuj ponownie' }));
+    // SavedReportsScreen's error state renders via the shared
+    // ProductDataState -> ErrorState, whose retry button is labelled "Ponów
+    // odczyt" (see ProductDataState.tsx) -- not "Spróbuj ponownie", which is
+    // DecisionsScreen's own bespoke error-state button.
+    await userEvent.click(await c.findByRole('button', { name: 'Ponów odczyt' }));
     await expect(await c.findByRole('list', { name: 'Raporty w bibliotece' })).toBeInTheDocument();
   },
 };

@@ -10,7 +10,7 @@ CHECKS = [
     ("docs-registry", [sys.executable, "scripts/validate_registry_integrity.py", "."]),
     ("docs-maintainability", [sys.executable, "scripts/validate_documentation_maintainability.py"]),
     ("documents-derived-state", [sys.executable, "scripts/regenerate_registries.py", "--check"]),
-    ("storybook-runtime-state", [sys.executable, "scripts/regenerate_storybook_registry_state.py", "--check"]),
+    ("storybook-architecture", ["node", "tools/verify-storybook-architecture.mjs"]),
     ("p0-code", ["node", "tools/verify-p0-production-readiness.mjs", "--code"]),
     ("p1-code", ["node", "tools/verify-p1-production-acceptance.mjs", "--code"]),
     ("p2-p3-code", ["node", "tools/verify-p2-p3-maintainability.mjs"]),

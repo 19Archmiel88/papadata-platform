@@ -143,16 +143,23 @@ const preview: Preview = {
       // function: Storybook statically extracts just this AST node and
       // eval()s it in isolation to build the sidebar order, so it cannot
       // reference any identifier declared elsewhere in this module.
-      storySort: (leftEntry, rightEntry) => {
+      storySort: (
+        // @ts-expect-error Storybook statically extracts and evals this comparator as plain JavaScript.
+        leftEntry,
+        // @ts-expect-error Storybook statically extracts and evals this comparator as plain JavaScript.
+        rightEntry,
+      ) => {
         const rootOrder = [
+          'DESIGN SYSTEM',
+          'PRODUCT SHELL',
+          'DOSTĘP I ONBOARDING',
           'ANALIZA',
           'DECYZJE',
           'RAPORTY',
           'DANE I INTEGRACJE',
           'ADMINISTRACJA',
           'WSPARCIE',
-          'DESIGN SYSTEM',
-          'PLATFORMA',
+          'PAPA ASYSTENT',
         ];
 
         const sectionOrder = {
@@ -166,11 +173,13 @@ const preview: Preview = {
           ],
           DECYZJE: ['Centrum decyzji'],
           RAPORTY: ['Zapisane raporty'],
-          'DANE I INTEGRACJE': ['Integracje'],
+          'DANE I INTEGRACJE': ['Integracje', 'Jakość danych'],
           ADMINISTRACJA: ['Ustawienia', 'Subskrypcja i płatności'],
           WSPARCIE: ['Centrum Pomocy'],
-          'DESIGN SYSTEM': ['Fundamenty', 'Komponenty', 'Wzorce interfejsu'],
-          PLATFORMA: ['Powłoka produktu', 'Dostęp i onboarding'],
+          'DESIGN SYSTEM': ['Fundamenty', 'Komponenty', 'Wzorce'],
+          'PRODUCT SHELL': ['Elementy powłoki'],
+          'DOSTĘP I ONBOARDING': ['Procesy dostępu'],
+          'PAPA ASYSTENT': ['Doświadczenie', 'Workspace'],
         };
 
         const storyCategoryOrder = ['Całość', 'Sekcje', 'Stany', 'Interakcje', 'Responsive'];
@@ -180,9 +189,27 @@ const preview: Preview = {
           sensitivity: 'base',
         });
 
-        const normalizeStorySortEntry = (entry) => (Array.isArray(entry) ? entry[1] : entry);
+        const normalizeStorySortEntry = (
+          // @ts-expect-error Storybook requires plain-JavaScript syntax inside the extracted comparator.
+          entry,
+        ) => {
+          if (Array.isArray(entry)) {
+            return entry[1] ?? {};
+          }
 
-        const configuredIndex = (value, order) => {
+          if (typeof entry === 'object' && entry !== null) {
+            return entry;
+          }
+
+          return {};
+        };
+
+        const configuredIndex = (
+          // @ts-expect-error Storybook requires plain-JavaScript syntax inside the extracted comparator.
+          value,
+          // @ts-expect-error Storybook requires plain-JavaScript syntax inside the extracted comparator.
+          order,
+        ) => {
           const index = value ? order.indexOf(value) : -1;
           return index === -1 ? order.length : index;
         };
@@ -199,6 +226,7 @@ const preview: Preview = {
         if (rootDifference !== 0) return rootDifference;
 
         if (leftRoot === rightRoot && leftRoot) {
+          // @ts-expect-error Storybook title roots are dynamic and this function must remain plain JavaScript.
           const domainOrder = sectionOrder[leftRoot] ?? [];
           const domainDifference =
             configuredIndex(leftPath[1], domainOrder) - configuredIndex(rightPath[1], domainOrder);

@@ -2,6 +2,14 @@ services:
   postgres-production:
     image: postgres:16.13-alpine
     restart: unless-stopped
+    command:
+      - postgres
+      - -c
+      - ssl=on
+      - -c
+      - ssl_cert_file=/run/papadata-postgres-tls/server.crt
+      - -c
+      - ssl_key_file=/run/papadata-postgres-tls/server.key
     environment:
       POSTGRES_DB: papadata
       POSTGRES_USER: papadata_migrator
@@ -13,9 +21,16 @@ services:
       - "127.0.0.1:55432:5432"
     volumes:
       - papadata_pg_data:/var/lib/postgresql/data
+      - ./infra/postgres/init/00-enforce-tls.sh:/docker-entrypoint-initdb.d/000-enforce-tls.sh:ro
+      - ./packages/database/provisioning/roles.sql:/opt/papadata/roles.sql:ro
       - ./infra/postgres/init/01-create-production-parity-roles.sh:/docker-entrypoint-initdb.d/001-create-runtime-roles.sh:ro
+      - ./.runtime/backend-production-parity/postgres-tls:/run/papadata-postgres-tls:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U papadata_migrator -d papadata"]
+      test:
+        - CMD-SHELL
+        - >-
+          PGSSLMODE=verify-ca PGSSLROOTCERT=/run/papadata-postgres-tls/ca.crt
+          pg_isready -h postgres-production -U papadata_migrator -d papadata
       interval: 5s
       timeout: 5s
       retries: 20
@@ -94,6 +109,28 @@ services:
       - "127.0.0.1:14317:4317"
       - "127.0.0.1:14318:4318"
 
+  identity-emulator:
+    build:
+      context: .
+      dockerfile: infra/production/identity-emulator.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:58081:8081"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - >-
+          fetch('http://127.0.0.1:8081/computeMetadata/v1/instance/service-accounts/default/identity?audience=x&format=full',
+          { headers: { 'Metadata-Flavor': 'Google' } })
+          .then((response) => { if (!response.ok) process.exit(1); })
+          .catch(() => process.exit(1))
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
   migrate-production:
     image: postgres:16.13-alpine
     working_dir: /workspace
@@ -162,12 +199,12 @@ services:
     security_opt:
       - no-new-privileges:true
     env_file: [.env.production-parity]
-    environment:
-      NODE_ENV: production-parity
     depends_on:
       api-production:
         condition: service_healthy
       redis-production:
+        condition: service_healthy
+      identity-emulator:
         condition: service_healthy
     ports:
       - "127.0.0.1:53001:3001"

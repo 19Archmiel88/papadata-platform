@@ -1,599 +1,4600 @@
 {
-  "schemaVersion": 1,
-  "baselineCommit": "8b05902f7f166bee0b2d3d28aa34dfbde151e2f9",
-  "contractId": "papadata-runtime-env-v1",
+  "schemaVersion": 2,
+  "contractId": "papadata-runtime-env-v2",
+  "baselineCommit": "d25bbd8",
   "localContract": "config/local-production-parity.contract.json",
   "generatedEnvFile": ".env.production-parity",
   "generatedExampleFile": ".env.production-parity.example",
+  "environments": [
+    "dev",
+    "production-parity",
+    "staging",
+    "production"
+  ],
   "frontend": {
     "baseUrlVariable": "VITE_BFF_BASE_URL",
     "productionParityDefault": "",
-    "meaning": "Empty means same-origin /api via the canonical edge. A non-empty value is a development-only override."
+    "meaning": "Empty means same-origin /api via the canonical edge. A non-empty value is a development-only override.",
+    "consumer": "apps/web/src/runtime/shared/api/bffClient.ts"
   },
+  "services": {
+    "api": {
+      "description": "NestJS API (private Cloud Run service / api-production compose container).",
+      "configLoader": "apps/api/src/production/config.ts",
+      "terraformResource": "google_cloud_run_v2_service.api",
+      "composeService": "api-production"
+    },
+    "bff": {
+      "description": "NestJS BFF, the only public application origin (Cloud Run behind the load balancer / bff-production compose container).",
+      "configLoader": "apps/bff/src/config.ts",
+      "terraformResource": "google_cloud_run_v2_service.bff",
+      "composeService": "bff-production"
+    },
+    "worker": {
+      "description": "BullMQ worker + Nest scheduler (Cloud Run worker pool / worker-production compose container).",
+      "configLoader": "apps/worker/src/production/config.ts",
+      "terraformResource": "google_cloud_run_v2_service.worker",
+      "composeService": "worker-production"
+    },
+    "web": {
+      "description": "Static built web bundle served behind the edge; only Vite build-time env applies (VITE_BFF_BASE_URL, tracked in the frontend field, not entries).",
+      "configLoader": "apps/web/vite.config.ts",
+      "terraformResource": "google_cloud_run_v2_service.web",
+      "composeService": "web-production"
+    },
+    "edge": {
+      "description": "nginx edge (HTTPS termination locally; External HTTPS Load Balancer + Cloud Armor on GCP). Reads BFF_MAX_BODY_BYTES via envsubst templating.",
+      "configLoader": "infra/production/edge/nginx.conf.template",
+      "terraformResource": null,
+      "composeService": "edge"
+    },
+    "compose": {
+      "description": "Local-only infrastructure containers (Postgres/Redis/MinIO/migrate) that exist only in compose.production-parity.yml. No Terraform resource: GCP provisions Cloud SQL/Memorystore/GCS instead.",
+      "configLoader": null,
+      "terraformResource": null,
+      "composeService": null
+    }
+  },
+  "serviceEnvironmentOverrides": {},
+  "environmentBehaviorExceptions": [],
+  "dynamicNameSites": [
+    {
+      "file": "apps/api/src/production/access-lifecycle/access-lifecycle.service.ts",
+      "pattern": "process.env[`${prefix}_VERSION`]",
+      "resolvedNames": [
+        "PAPADATA_TERMS_VERSION",
+        "PAPADATA_PRIVACY_VERSION"
+      ],
+      "note": "prefix = `PAPADATA_${id.toUpperCase()}` for id in ['terms', 'privacy']."
+    },
+    {
+      "file": "apps/api/src/production/access-lifecycle/access-lifecycle.service.ts",
+      "pattern": "process.env[`${prefix}_URL`]",
+      "resolvedNames": [
+        "PAPADATA_TERMS_URL",
+        "PAPADATA_PRIVACY_URL"
+      ],
+      "note": "prefix = `PAPADATA_${id.toUpperCase()}` for id in ['terms', 'privacy']."
+    }
+  ],
   "entries": [
     {
-      "name": "NODE_ENV",
-      "scope": [
+      "name": "AI_PAPA_ANSWER_MAX_COST_MINOR_PER_CALL",
+      "services": [
         "api",
-        "bff",
         "worker"
       ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
       "source": {
         "kind": "literal",
-        "value": "production"
+        "value": ""
       },
-      "example": "production"
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Positive integer (minor currency units); code default applies (Terraform does not currently wire this one).",
+      "consumer": "packages/papa-runtime/src/index.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
     },
     {
-      "name": "POSTGRES_PASSWORD",
-      "scope": [
-        "compose",
-        "migrate"
-      ],
-      "secret": true,
-      "source": {
-        "kind": "randomHex",
-        "bytes": 32
-      },
-      "example": "replace-with-random-migrator-secret"
-    },
-    {
-      "name": "PAPADATA_APP_PASSWORD",
-      "scope": [
-        "compose",
-        "api"
-      ],
-      "secret": true,
-      "source": {
-        "kind": "randomHex",
-        "bytes": 32
-      },
-      "example": "replace-with-random-application-secret"
-    },
-    {
-      "name": "PAPADATA_PLATFORM_PASSWORD",
-      "scope": [
-        "compose",
+      "name": "AI_USER_BUDGET_MINOR_PER_MONTH",
+      "services": [
+        "api",
         "worker"
       ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "4000"
+      },
+      "terraform": {
+        "envName": "AI_USER_BUDGET_MINOR_PER_MONTH",
+        "kind": "variable",
+        "name": "var.ai_user_budget_minor_per_month"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "Positive integer (minor currency units), default 4000.",
+      "consumer": "packages/papa-runtime/src/index.ts, apps/api/src/production/assistant-workspace/assistant-run.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "4000"
+    },
+    {
+      "name": "AI_WORKSPACE_BUDGET_MINOR_PER_MONTH",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "20000"
+      },
+      "terraform": {
+        "envName": "AI_WORKSPACE_BUDGET_MINOR_PER_MONTH",
+        "kind": "variable",
+        "name": "var.ai_workspace_budget_minor_per_month"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "Positive integer (minor currency units), default 20000.",
+      "consumer": "packages/papa-runtime/src/index.ts, apps/api/src/production/assistant-workspace/assistant-run.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "20000"
+    },
+    {
+      "name": "API_ORIGIN",
+      "services": [
+        "bff"
+      ],
+      "type": "url",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "literal",
+        "value": "http://api-production:4000"
+      },
+      "terraform": {
+        "envName": "API_ORIGIN",
+        "kind": "variable",
+        "name": "google_cloud_run_v2_service.api.uri"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "URL with protocol http:/https:.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "http://api-production:4000"
+    },
+    {
+      "name": "API_PORT",
+      "services": [
+        "api"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 1-65535, default 4000.",
+      "consumer": "apps/api/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "4000"
+    },
+    {
+      "name": "ARGON2_MEMORY_KIB",
+      "services": [
+        "api"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Positive integer, default 65536.",
+      "consumer": "apps/api/src/production/security/argon2.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "65536"
+    },
+    {
+      "name": "ARGON2_PARALLELISM",
+      "services": [
+        "api"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Positive integer, default 1.",
+      "consumer": "apps/api/src/production/security/argon2.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "1"
+    },
+    {
+      "name": "ARGON2_TIME_COST",
+      "services": [
+        "api"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Positive integer, default 3.",
+      "consumer": "apps/api/src/production/security/argon2.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "3"
+    },
+    {
+      "name": "AUTH_CLOCK_SKEW_SECONDS",
+      "services": [
+        "api"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 0-300, default 60.",
+      "consumer": "apps/api/src/production/auth/principal.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "60"
+    },
+    {
+      "name": "AUTH_INTERNAL_TOKEN_MAX_AGE_SECONDS",
+      "services": [
+        "api"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 1-3600, default 300.",
+      "consumer": "apps/api/src/production/auth/principal.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "300"
+    },
+    {
+      "name": "BACKFILL_CHUNK_DAYS",
+      "services": [
+        "api"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "30"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Positive integer, default 30.",
+      "consumer": "apps/api/src/production/integrations/integration.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "30"
+    },
+    {
+      "name": "BFF_ALLOWED_ORIGINS",
+      "services": [
+        "bff"
+      ],
+      "type": "csv",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "contract",
+        "path": "canonicalLocalEndpoint.origin"
+      },
+      "terraform": {
+        "envName": "BFF_ALLOWED_ORIGINS",
+        "kind": "variable",
+        "name": "join(\",\", var.public_origins)"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "Comma-separated origins, none may be '*'.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "https://papadata.localhost"
+    },
+    {
+      "name": "BFF_COOKIE_PREVIOUS_SECRET",
+      "services": [
+        "bff"
+      ],
+      "type": "secret",
       "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
       "source": {
         "kind": "randomHex",
         "bytes": 32
       },
-      "example": "replace-with-random-platform-secret"
+      "terraform": {
+        "envName": "BFF_COOKIE_PREVIOUS_SECRET",
+        "kind": "secretRef",
+        "secretKey": "bff_cookie_previous_secret"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "Optional; at least 32 bytes when set; must differ from every other BFF secret.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "replace-with-32-byte-random-cookie-secret-previous"
     },
     {
-      "name": "PAPADATA_TEST_PASSWORD",
-      "scope": [
-        "compose",
-        "migrate"
+      "name": "BFF_COOKIE_SAME_SITE",
+      "services": [
+        "bff"
       ],
+      "type": "enum",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "'lax' or defaults to 'strict'.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "strict"
+    },
+    {
+      "name": "BFF_COOKIE_SECRET",
+      "services": [
+        "bff"
+      ],
+      "type": "secret",
       "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
       "source": {
         "kind": "randomHex",
         "bytes": 32
       },
-      "example": "replace-with-random-test-secret"
+      "terraform": {
+        "envName": "BFF_COOKIE_SECRET",
+        "kind": "secretRef",
+        "secretKey": "bff_cookie_secret"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "At least 32 bytes; must differ from every other BFF secret.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "replace-with-32-byte-random-cookie-secret-active"
     },
     {
-      "name": "REDIS_PASSWORD",
-      "scope": [
-        "compose",
-        "redis"
+      "name": "BFF_CSRF_COOKIE_MAX_AGE_SECONDS",
+      "services": [
+        "bff"
       ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 60-86400, default 3600.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "3600"
+    },
+    {
+      "name": "BFF_CSRF_COOKIE_NAME",
+      "services": [
+        "bff"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Defaults to papadata_csrf.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "papadata_csrf"
+    },
+    {
+      "name": "BFF_CSRF_HEADER_NAME",
+      "services": [
+        "bff"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Defaults to x-papadata-csrf.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "x-papadata-csrf"
+    },
+    {
+      "name": "BFF_CSRF_SECRET",
+      "services": [
+        "bff"
+      ],
+      "type": "secret",
       "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
       "source": {
         "kind": "randomHex",
         "bytes": 32
       },
-      "example": "replace-with-random-redis-secret"
-    },
-    {
-      "name": "MINIO_ROOT_USER",
-      "scope": [
-        "compose",
-        "storage"
-      ],
-      "source": {
-        "kind": "randomUser",
-        "prefix": "parity-",
-        "bytes": 6
+      "terraform": {
+        "envName": "BFF_CSRF_SECRET",
+        "kind": "secretRef",
+        "secretKey": "bff_csrf_secret"
       },
-      "example": "papadata-parity"
+      "defaultPolicy": "fail-fast",
+      "validation": "At least 32 bytes; must differ from every other BFF secret.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "replace-with-32-byte-random-csrf-secret"
     },
     {
-      "name": "MINIO_ROOT_PASSWORD",
-      "scope": [
-        "compose",
-        "storage"
+      "name": "BFF_INTERNAL_AUTH_ACTIVE_SECRET",
+      "services": [
+        "bff"
       ],
+      "type": "secret",
       "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "reference",
+        "from": "PAPADATA_API_AUTH_ACTIVE_SECRET"
+      },
+      "terraform": {
+        "envName": "BFF_INTERNAL_AUTH_ACTIVE_SECRET",
+        "kind": "secretRef",
+        "secretKey": "api_auth_active_secret"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "Must equal PAPADATA_API_AUTH_ACTIVE_SECRET exactly (shared secret across the BFF/API boundary).",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "replace-with-shared-32-byte-internal-active-secret"
+    },
+    {
+      "name": "BFF_INTERNAL_AUTH_AUDIENCE",
+      "services": [
+        "bff"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "reference",
+        "from": "PAPADATA_API_AUTH_AUDIENCE"
+      },
+      "terraform": {
+        "envName": "BFF_INTERNAL_AUTH_AUDIENCE",
+        "kind": "variable",
+        "name": "var.api_auth_audience"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "Must equal PAPADATA_API_AUTH_AUDIENCE exactly.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "papadata-api"
+    },
+    {
+      "name": "BFF_INTERNAL_AUTH_ISSUER",
+      "services": [
+        "bff"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "reference",
+        "from": "PAPADATA_API_AUTH_ISSUER"
+      },
+      "terraform": {
+        "envName": "BFF_INTERNAL_AUTH_ISSUER",
+        "kind": "variable",
+        "name": "var.api_auth_issuer"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "Must equal PAPADATA_API_AUTH_ISSUER exactly.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "papadata-bff"
+    },
+    {
+      "name": "BFF_INTERNAL_AUTH_PREVIOUS_SECRET",
+      "services": [
+        "bff"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "reference",
+        "from": "PAPADATA_API_AUTH_PREVIOUS_SECRET"
+      },
+      "terraform": {
+        "envName": "BFF_INTERNAL_AUTH_PREVIOUS_SECRET",
+        "kind": "secretRef",
+        "secretKey": "api_auth_previous_secret"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "Must equal PAPADATA_API_AUTH_PREVIOUS_SECRET exactly when either is set.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "replace-with-shared-32-byte-internal-previous-secret"
+    },
+    {
+      "name": "BFF_INTERNAL_PRINCIPAL_HEADER_NAME",
+      "services": [
+        "bff"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Defaults to x-papadata-internal-principal.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "x-papadata-internal-principal"
+    },
+    {
+      "name": "BFF_INTERNAL_TOKEN_TTL_SECONDS",
+      "services": [
+        "bff"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 5-300, default 120.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "120"
+    },
+    {
+      "name": "BFF_MAX_BODY_BYTES",
+      "services": [
+        "bff",
+        "edge"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "1048576"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 1024-10485760, default 1048576. Also templated into the edge nginx config (client_max_body_size).",
+      "consumer": "apps/bff/src/config.ts, infra/production/edge/nginx.conf.template",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "1048576"
+    },
+    {
+      "name": "BFF_METADATA_IDENTITY_ENDPOINT",
+      "services": [
+        "bff"
+      ],
+      "type": "url",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "http://identity-emulator:8081/computeMetadata/v1/instance/service-accounts/default/identity"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback-to-real-GCE-metadata-server-outside-parity",
+      "validation": "production-parity points at infra/production/identity-emulator/ (a contract-faithful local emulator -- see its module doc comment); staging/production leave this unset and fall back to the real GCE metadata server, which only resolves inside GCP.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "http://identity-emulator:8081/computeMetadata/v1/instance/service-accounts/default/identity"
+    },
+    {
+      "name": "BFF_PORT",
+      "services": [
+        "bff"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "3001"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 1-65535, default 3001.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "3001"
+    },
+    {
+      "name": "BFF_PUBLIC_HOSTS",
+      "services": [
+        "bff"
+      ],
+      "type": "csv",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "template",
+        "value": "${LOCAL_PUBLIC_HOST},${LOCAL_PUBLIC_HOST}:53001"
+      },
+      "terraform": {
+        "envName": "BFF_PUBLIC_HOSTS",
+        "kind": "variable",
+        "name": "join(\",\", var.public_hosts)"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "Comma-separated bare hostnames (no scheme/path, no '*').",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "papadata.localhost,papadata.localhost:53001"
+    },
+    {
+      "name": "BFF_RATE_LIMIT_MAX",
+      "services": [
+        "bff"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "300"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 1-100000, default 300.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "300"
+    },
+    {
+      "name": "BFF_RATE_LIMIT_WINDOW_MS",
+      "services": [
+        "bff"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "60000"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 1000-3600000, default 60000.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "60000"
+    },
+    {
+      "name": "BFF_REDIS_COMMAND_TIMEOUT_MS",
+      "services": [
+        "bff"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 100-30000, default 2000.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "2000"
+    },
+    {
+      "name": "BFF_REDIS_CONNECT_TIMEOUT_MS",
+      "services": [
+        "bff"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 100-30000, default 3000.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "3000"
+    },
+    {
+      "name": "BFF_REFRESH_COOKIE_NAME",
+      "services": [
+        "bff"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Defaults to pd_refresh.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "pd_refresh"
+    },
+    {
+      "name": "BFF_REFRESH_COOKIE_PATH",
+      "services": [
+        "bff"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Defaults to /api/v1/auth/refresh.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "/api/v1/auth/refresh"
+    },
+    {
+      "name": "BFF_REFRESH_COOKIE_PREVIOUS_SECRET",
+      "services": [
+        "bff"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
       "source": {
         "kind": "randomHex",
         "bytes": 32
       },
-      "example": "replace-with-random-minio-secret"
+      "terraform": {
+        "envName": "BFF_REFRESH_COOKIE_PREVIOUS_SECRET",
+        "kind": "secretRef",
+        "secretKey": "bff_refresh_cookie_previous_secret"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "Optional; at least 32 bytes when set; must differ from every other BFF secret.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "replace-with-32-byte-random-refresh-cookie-secret-previous"
+    },
+    {
+      "name": "BFF_REFRESH_COOKIE_SECRET",
+      "services": [
+        "bff"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "terraform": {
+        "envName": "BFF_REFRESH_COOKIE_SECRET",
+        "kind": "secretRef",
+        "secretKey": "bff_refresh_cookie_secret"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "At least 32 bytes; must differ from every other BFF secret.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "replace-with-32-byte-random-refresh-cookie-secret-active"
+    },
+    {
+      "name": "BFF_REQUEST_ID_HEADER_NAME",
+      "services": [
+        "bff"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Defaults to x-request-id.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "x-request-id"
+    },
+    {
+      "name": "BFF_SESSION_ABSOLUTE_TTL_SECONDS",
+      "services": [
+        "bff"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 3600-7776000, default 2592000 (30 days).",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "2592000"
+    },
+    {
+      "name": "BFF_SESSION_COOKIE_MAX_AGE_SECONDS",
+      "services": [
+        "bff"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 60-86400, default 1800.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "1800"
+    },
+    {
+      "name": "BFF_SESSION_COOKIE_NAME",
+      "services": [
+        "bff"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Defaults to pd_session.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "pd_session"
+    },
+    {
+      "name": "BFF_SESSION_COOKIE_PATH",
+      "services": [
+        "bff"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Defaults to /.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "/"
+    },
+    {
+      "name": "BFF_SESSION_REDIS_PREFIX",
+      "services": [
+        "bff"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "reference",
+        "from": "PAPADATA_API_AUTH_SESSION_REDIS_PREFIX"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Defaults to papadata:auth when unset.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "papadata:auth"
+    },
+    {
+      "name": "BFF_SESSION_STORE",
+      "services": [
+        "bff"
+      ],
+      "type": "enum",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "literal",
+        "value": "redis-auth-state"
+      },
+      "terraform": {
+        "envName": "BFF_SESSION_STORE",
+        "kind": "literal",
+        "value": "redis-auth-state"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "'redis-auth-state' outside NODE_ENV=test; 'test-memory' only when NODE_ENV=test.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "redis-auth-state"
+    },
+    {
+      "name": "BFF_UPSTREAM_IDENTITY_AUDIENCE",
+      "services": [
+        "bff"
+      ],
+      "type": "url",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": {
+        "envName": "BFF_UPSTREAM_IDENTITY_AUDIENCE",
+        "kind": "variable",
+        "name": "google_cloud_run_v2_service.api.uri"
+      },
+      "defaultPolicy": "fallback-to-API_ORIGIN",
+      "validation": "Only read when BFF_UPSTREAM_IDENTITY_MODE === 'metadata-server' (a capability flag, independent of NODE_ENV -- see BFF_UPSTREAM_IDENTITY_MODE). Falls back to API_ORIGIN when unset.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "BFF_UPSTREAM_IDENTITY_MODE",
+      "services": [
+        "bff"
+      ],
+      "type": "enum",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "literal",
+        "value": "metadata-server"
+      },
+      "terraform": {
+        "envName": "BFF_UPSTREAM_IDENTITY_MODE",
+        "kind": "literal",
+        "value": "metadata-server"
+      },
+      "defaultPolicy": "fail-fast-in-production-like-fallback-to-disabled-in-dev",
+      "validation": "One of disabled|metadata-server. Required (fail-fast, no default) whenever NODE_ENV=production in apps/bff/src/config.ts's readBffConfig -- production-parity, staging and production must all explicitly declare this rather than silently defaulting to disabled, which would silently skip the Cloud Run identity-token hop. 'metadata-server' means the exact same CloudRunIdentityService code path (acquisition/caching/refresh/timeout/failure handling) runs everywhere -- production-parity points BFF_METADATA_IDENTITY_ENDPOINT at a local emulator (infra/production/identity-emulator/), staging/production at the real GCE metadata server.",
+      "consumer": "apps/bff/src/config.ts, apps/bff/src/cloud-run-identity.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "metadata-server"
+    },
+    {
+      "name": "BFF_UPSTREAM_TIMEOUT_MS",
+      "services": [
+        "bff"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 100-30000, default 5000.",
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "5000"
+    },
+    {
+      "name": "DATABASE_CA_BASE64",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "fileBase64",
+        "path": ".runtime/backend-production-parity/postgres-tls/ca.crt"
+      },
+      "terraform": {
+        "envName": "DATABASE_CA_BASE64",
+        "kind": "secretRef",
+        "secretKey": "database_ca_base64"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "Non-empty base64. Required whenever NODE_ENV=production in apps/api/src/production/config.ts and apps/worker/src/production/config.ts -- both fail fast without it, mirroring REDIS_CA_BASE64. Enforces TLS verification against Cloud SQL (ssl_mode=ENCRYPTED_ONLY in infra/terraform/main.tf) in staging/production, and against the local hostssl-only Postgres container in production-parity (see infra/postgres/init/00-enforce-tls.sh and compose.production-parity.yml's postgres-production service).",
+      "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts, packages/database/src/production.ts (buildPoolConfig)",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "replace-with-base64-postgres-ca"
     },
     {
       "name": "DATABASE_URL",
-      "scope": [
-        "api"
+      "services": [
+        "api",
+        "worker"
       ],
+      "type": "secret",
       "secret": true,
-      "terraform": {
-        "secretKey": "database_url",
-        "envName": "DATABASE_URL"
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
       },
       "source": {
         "kind": "template",
         "value": "postgresql://papadata_app:${PAPADATA_APP_PASSWORD}@postgres-production:5432/papadata"
       },
+      "terraform": {
+        "envName": "DATABASE_URL",
+        "kind": "secretRef",
+        "secretKey": "database_url"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "URL with protocol postgres: or postgresql:.",
+      "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
       "example": "postgresql://papadata_app:replace-with-random-application-secret@postgres-production:5432/papadata"
     },
     {
-      "name": "SCHEDULER_DATABASE_URL",
-      "scope": [
-        "worker"
+      "name": "DB_POOL_MAX",
+      "services": [
+        "api"
       ],
-      "secret": true,
-      "terraform": {
-        "secretKey": "scheduler_database_url",
-        "envName": "SCHEDULER_DATABASE_URL"
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
       },
-      "source": {
-        "kind": "template",
-        "value": "postgresql://papadata_platform:${PAPADATA_PLATFORM_PASSWORD}@postgres-production:5432/papadata"
-      },
-      "example": "postgresql://papadata_platform:replace-with-random-platform-secret@postgres-production:5432/papadata"
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 1-100, default 20.",
+      "consumer": "apps/api/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "20"
     },
     {
-      "name": "REDIS_URL",
-      "scope": [
+      "name": "DB_STATEMENT_TIMEOUT_MS",
+      "services": [
+        "api"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 1000-120000, default 30000.",
+      "consumer": "apps/api/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "30000"
+    },
+    {
+      "name": "GOOGLE_CLOUD_PROJECT",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": true,
+        "production": true
+      },
+      "source": null,
+      "terraform": {
+        "envName": "GOOGLE_CLOUD_PROJECT",
+        "kind": "variable",
+        "name": "var.project_id"
+      },
+      "defaultPolicy": "required-for-gcs-forbidden-for-minio",
+      "validation": "Required when PAPADATA_STORAGE_DRIVER=gcs.",
+      "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
+      "productionOnlyReason": "Only meaningful for the GCS driver, which production-parity does not use (MinIO emulation).",
+      "parityOnlyReason": null,
+      "example": "papadata-production"
+    },
+    {
+      "name": "GOOGLE_OAUTH_CLIENT_ID",
+      "services": [
+        "api"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "GOOGLE_OAUTH_CLIENT_ID",
+        "kind": "variable",
+        "name": "var.google_oauth_client_id"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Public OAuth client id; not secret. Provider reports configuration_required until both this and its _SECRET are set (plus PAPADATA_WEB_ORIGIN).",
+      "consumer": "apps/api/src/production/identity/oauth-provider.config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "GOOGLE_OAUTH_CLIENT_SECRET",
+      "services": [
+        "api"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "GOOGLE_OAUTH_CLIENT_SECRET",
+        "kind": "secretRef",
+        "secretKey": "google_oauth_client_secret",
+        "optional": true
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Optional; provider reports configuration_required until set alongside the client id.",
+      "consumer": "apps/api/src/production/identity/oauth-provider.config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "GUS_BIR_API_KEY",
+      "services": [
+        "api"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "GUS_BIR_API_KEY",
+        "kind": "secretRef",
+        "secretKey": "gus_bir_api_key",
+        "optional": true
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Required together with GUS_BIR_BASE_URL for the adapter to activate.",
+      "consumer": "packages/integrations/src/gus-bir-adapter.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "GUS_BIR_BASE_URL",
+      "services": [
+        "api"
+      ],
+      "type": "url",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "GUS_BIR_BASE_URL",
+        "kind": "variable",
+        "name": "var.gus_bir_base_url"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Required together with GUS_BIR_API_KEY for the adapter to activate; otherwise adapter stays unconfigured.",
+      "consumer": "packages/integrations/src/gus-bir-adapter.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "GUS_BIR_CACHE_TTL_SECONDS",
+      "services": [
+        "api"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "86400"
+      },
+      "terraform": {
+        "envName": "GUS_BIR_CACHE_TTL_SECONDS",
+        "kind": "variable",
+        "name": "var.gus_bir_cache_ttl_seconds"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "Positive integer, default 86400.",
+      "consumer": "packages/integrations/src/gus-bir-adapter.ts, apps/api/src/production/access-lifecycle/gus-bir-cache.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "86400"
+    },
+    {
+      "name": "GUS_BIR_MODE",
+      "services": [
+        "api"
+      ],
+      "type": "enum",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "mock"
+      },
+      "terraform": {
+        "envName": "GUS_BIR_MODE",
+        "kind": "variable",
+        "name": "var.gus_bir_mode"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "One of production|test; anything else (including unset) falls back to mock.",
+      "consumer": "packages/integrations/src/gus-bir-adapter.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "mock"
+    },
+    {
+      "name": "GUS_BIR_TIMEOUT_MS",
+      "services": [
+        "api"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "10000"
+      },
+      "terraform": {
+        "envName": "GUS_BIR_TIMEOUT_MS",
+        "kind": "variable",
+        "name": "var.gus_bir_timeout_ms"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "Positive integer, default 10000.",
+      "consumer": "packages/integrations/src/gus-bir-adapter.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "10000"
+    },
+    {
+      "name": "KSEF_BASE_URL",
+      "services": [
+        "api"
+      ],
+      "type": "url",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "KSEF_BASE_URL",
+        "kind": "variable",
+        "name": "var.ksef_base_url"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Optional URL override for the KSeF endpoint.",
+      "consumer": "packages/integrations/src/ksef-adapter.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "KSEF_CERTIFICATE_REF",
+      "services": [
+        "api"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "KSEF_CERTIFICATE_REF",
+        "kind": "secretRef",
+        "secretKey": "ksef_certificate_ref",
+        "optional": true
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Optional reference to the KSeF client certificate held in Secret Manager.",
+      "consumer": "packages/integrations/src/ksef-adapter.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "KSEF_ENV",
+      "services": [
+        "api"
+      ],
+      "type": "enum",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "demo"
+      },
+      "terraform": {
+        "envName": "KSEF_ENV",
+        "kind": "variable",
+        "name": "var.ksef_env"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "'production' or anything else (falls back to demo).",
+      "consumer": "packages/integrations/src/ksef-adapter.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "demo"
+    },
+    {
+      "name": "KSEF_NIP_CONTEXT",
+      "services": [
+        "api"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "KSEF_NIP_CONTEXT",
+        "kind": "variable",
+        "name": "var.ksef_nip_context"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Optional NIP context string.",
+      "consumer": "packages/integrations/src/ksef-adapter.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "KSEF_RETRY_POLICY",
+      "services": [
+        "api"
+      ],
+      "type": "enum",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "exponential"
+      },
+      "terraform": {
+        "envName": "KSEF_RETRY_POLICY",
+        "kind": "variable",
+        "name": "var.ksef_retry_policy"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "'none' or anything else (falls back to exponential).",
+      "consumer": "packages/integrations/src/ksef-adapter.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "exponential"
+    },
+    {
+      "name": "KSEF_TIMEOUT_MS",
+      "services": [
+        "api"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "30000"
+      },
+      "terraform": {
+        "envName": "KSEF_TIMEOUT_MS",
+        "kind": "variable",
+        "name": "var.ksef_timeout_ms"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "Positive integer, default 30000.",
+      "consumer": "packages/integrations/src/ksef-adapter.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "30000"
+    },
+    {
+      "name": "METRIC_REPROCESS_DETECT_CRON",
+      "services": [
+        "worker"
+      ],
+      "type": "cron",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Cron expression, default '0 * * * *'.",
+      "consumer": "apps/worker/src/production/scheduler.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "0 * * * *"
+    },
+    {
+      "name": "METRIC_REPROCESS_DRAIN_CRON",
+      "services": [
+        "worker"
+      ],
+      "type": "cron",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Cron expression, default '*/15 * * * *'.",
+      "consumer": "apps/worker/src/production/scheduler.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "*/15 * * * *"
+    },
+    {
+      "name": "MFA_ENCRYPTION_KEY",
+      "services": [
+        "api"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "terraform": {
+        "envName": "MFA_ENCRYPTION_KEY",
+        "kind": "secretRef",
+        "secretKey": "mfa_encryption_key"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "Decodes (hex or base64) to exactly 32 bytes.",
+      "consumer": "apps/api/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "replace-with-64-hex-character-mfa-key"
+    },
+    {
+      "name": "MICROSOFT_OAUTH_CLIENT_ID",
+      "services": [
+        "api"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "MICROSOFT_OAUTH_CLIENT_ID",
+        "kind": "variable",
+        "name": "var.microsoft_oauth_client_id"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Public OAuth client id; not secret. Provider reports configuration_required until both this and its _SECRET are set (plus PAPADATA_WEB_ORIGIN).",
+      "consumer": "apps/api/src/production/identity/oauth-provider.config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "MICROSOFT_OAUTH_CLIENT_SECRET",
+      "services": [
+        "api"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "MICROSOFT_OAUTH_CLIENT_SECRET",
+        "kind": "secretRef",
+        "secretKey": "microsoft_oauth_client_secret",
+        "optional": true
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Optional; provider reports configuration_required until set alongside the client id.",
+      "consumer": "apps/api/src/production/identity/oauth-provider.config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "MINIO_ROOT_PASSWORD",
+      "services": [
+        "compose",
+        "storage"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "production-parity"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "terraform": null,
+      "defaultPolicy": "fail-fast",
+      "validation": "Non-empty random secret.",
+      "consumer": "compose.production-parity.yml",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "MinIO root credential; GCS uses the Cloud Run service account identity instead of a root user/password.",
+      "example": "replace-with-random-minio-secret"
+    },
+    {
+      "name": "MINIO_ROOT_USER",
+      "services": [
+        "compose",
+        "storage"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "production-parity"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "randomUser",
+        "prefix": "parity-",
+        "bytes": 6
+      },
+      "terraform": null,
+      "defaultPolicy": "fail-fast",
+      "validation": "Non-empty username.",
+      "consumer": "compose.production-parity.yml",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "MinIO root credential; GCS uses the Cloud Run service account identity instead of a root user/password.",
+      "example": "papadata-parity"
+    },
+    {
+      "name": "NODE_ENV",
+      "services": [
         "api",
         "bff",
         "worker"
       ],
-      "secret": true,
-      "terraform": {
-        "secretKey": "redis_url",
-        "envName": "REDIS_URL"
+      "type": "runtime-environment",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
       },
       "source": {
-        "kind": "template",
-        "value": "rediss://default:${REDIS_PASSWORD}@redis-production:6379"
+        "kind": "literal",
+        "value": "production"
       },
-      "example": "rediss://default:replace-with-random-redis-secret@redis-production:6379"
+      "terraform": {
+        "envName": "NODE_ENV",
+        "kind": "literal",
+        "value": "production"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "api/worker/bff: one of development|test|production (undefined/'local' maps to development for api/worker, to 'local' for bff). All three services always run the literal 'production' in production-parity, staging and production alike -- there is no BFF-specific override anymore. See BFF_UPSTREAM_IDENTITY_MODE for how the BFF's one genuinely environment-specific behavior (the Cloud Run identity-token hop) is now gated instead.",
+      "consumer": "apps/api/src/production/config.ts, apps/bff/src/config.ts, apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "production"
+    },
+    {
+      "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
+      "services": [
+        "api",
+        "bff",
+        "worker"
+      ],
+      "type": "url",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "http://otel-collector:4318"
+      },
+      "terraform": {
+        "envName": "OTEL_EXPORTER_OTLP_ENDPOINT",
+        "kind": "variable",
+        "name": "var.otel_exporter_otlp_endpoint"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "URL with protocol http:/https:.",
+      "consumer": "apps/api/src/production/config.ts, apps/bff/src/config.ts, apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "http://otel-collector:4318"
+    },
+    {
+      "name": "OTEL_SERVICE_NAME",
+      "services": [
+        "api"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "papadata-api"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Defaults to papadata-api when unset (process.env.OTEL_SERVICE_NAME ??= ...).",
+      "consumer": "apps/api/src/production/telemetry.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "papadata-api"
+    },
+    {
+      "name": "PAPADATA_API_AUTH_ACTIVE_SECRET",
+      "services": [
+        "api",
+        "bff"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "terraform": {
+        "envName": "PAPADATA_API_AUTH_ACTIVE_SECRET",
+        "kind": "secretRef",
+        "secretKey": "api_auth_active_secret"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "At least 32 bytes; must differ from PAPADATA_API_AUTH_PREVIOUS_SECRET; must equal BFF_INTERNAL_AUTH_ACTIVE_SECRET.",
+      "consumer": "apps/api/src/production/config.ts, apps/api/src/production/auth/principal.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "replace-with-shared-32-byte-internal-active-secret"
+    },
+    {
+      "name": "PAPADATA_API_AUTH_AUDIENCE",
+      "services": [
+        "api",
+        "bff"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "literal",
+        "value": "papadata-api"
+      },
+      "terraform": {
+        "envName": "PAPADATA_API_AUTH_AUDIENCE",
+        "kind": "variable",
+        "name": "var.api_auth_audience"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "Non-empty string; must equal BFF_INTERNAL_AUTH_AUDIENCE.",
+      "consumer": "apps/api/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "papadata-api"
+    },
+    {
+      "name": "PAPADATA_API_AUTH_ISSUER",
+      "services": [
+        "api",
+        "bff"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "literal",
+        "value": "papadata-bff"
+      },
+      "terraform": {
+        "envName": "PAPADATA_API_AUTH_ISSUER",
+        "kind": "variable",
+        "name": "var.api_auth_issuer"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "Non-empty string; must equal BFF_INTERNAL_AUTH_ISSUER.",
+      "consumer": "apps/api/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "papadata-bff"
+    },
+    {
+      "name": "PAPADATA_API_AUTH_JWT_SECRET",
+      "services": [
+        "api"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "legacy-alias-fallback",
+      "validation": "Legacy alias consulted only when PAPADATA_API_AUTH_ACTIVE_SECRET is unset; do not configure both.",
+      "consumer": "apps/api/src/production/auth/principal.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_API_AUTH_PREVIOUS_SECRET",
+      "services": [
+        "api",
+        "bff"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "terraform": {
+        "envName": "PAPADATA_API_AUTH_PREVIOUS_SECRET",
+        "kind": "secretRef",
+        "secretKey": "api_auth_previous_secret"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "Optional; at least 32 bytes when set; must equal BFF_INTERNAL_AUTH_PREVIOUS_SECRET.",
+      "consumer": "apps/api/src/production/config.ts, apps/api/src/production/auth/principal.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "replace-with-shared-32-byte-internal-previous-secret"
+    },
+    {
+      "name": "PAPADATA_API_AUTH_SESSION_REDIS_PREFIX",
+      "services": [
+        "api"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "papadata:auth"
+      },
+      "terraform": {
+        "envName": "PAPADATA_API_AUTH_SESSION_REDIS_PREFIX",
+        "kind": "literal",
+        "value": "papadata:auth"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "Defaults to papadata:auth when unset.",
+      "consumer": "apps/api/src/production/auth/principal.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "papadata:auth"
+    },
+    {
+      "name": "PAPADATA_API_AUTH_SESSION_STORE",
+      "services": [
+        "api"
+      ],
+      "type": "enum",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "literal",
+        "value": "redis-auth-state"
+      },
+      "terraform": {
+        "envName": "PAPADATA_API_AUTH_SESSION_STORE",
+        "kind": "literal",
+        "value": "redis-auth-state"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "'redis-auth-state' required outside NODE_ENV=test; 'test-memory' only allowed when NODE_ENV=test.",
+      "consumer": "apps/api/src/production/auth/principal.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "redis-auth-state"
+    },
+    {
+      "name": "PAPADATA_API_QUEUE_DRIVER",
+      "services": [
+        "api"
+      ],
+      "type": "enum",
+      "secret": false,
+      "environments": [
+        "dev"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "test-only",
+      "validation": "Only 'test-memory' is recognized, and only takes effect when NODE_ENV=test. Must never be set in production-parity/staging/production.",
+      "consumer": "apps/api/src/production/queue/queue.service.ts, apps/api/src/production/queue/platform-queue.service.ts, apps/api/src/production/access-lifecycle/gus-bir-cache.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "Test-only in-memory escape hatch gated on NODE_ENV=test; production-parity/staging/production always run NODE_ENV=production, so this driver value can never activate there.",
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_APP_PASSWORD",
+      "services": [
+        "compose",
+        "api"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "production-parity"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "terraform": null,
+      "defaultPolicy": "fail-fast",
+      "validation": "Non-empty random secret.",
+      "consumer": "compose.production-parity.yml",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "Local Compose credential primitive used only to synthesize DATABASE_URL/SCHEDULER_DATABASE_URL/REDIS_URL/storage credentials locally (see source.kind=template/reference entries that consume it). GCP provisions the equivalent as an opaque, ready-made Secret Manager connection string (database_url/scheduler_database_url/redis_url) and has no env var of this name.",
+      "example": "replace-with-random-application-secret"
+    },
+    {
+      "name": "PAPADATA_ASSISTANT_RETENTION_ENABLED",
+      "services": [
+        "worker"
+      ],
+      "type": "boolean",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "Must be exactly 'true' to run the assistant retention sweep.",
+      "consumer": "apps/worker/src/production/assistant-retention.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "false"
+    },
+    {
+      "name": "PAPADATA_AUTH_MAIL_API_KEY",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "Provider API key; required when enabled.",
+      "consumer": "packages/integrations/src/auth-mail.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_AUTH_MAIL_ENABLED",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "boolean",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "false"
+      },
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "Must be exactly 'true' to enable auth-mail delivery.",
+      "consumer": "packages/integrations/src/auth-mail.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "false"
+    },
+    {
+      "name": "PAPADATA_AUTH_MAIL_FROM",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "From-address; required when enabled.",
+      "consumer": "packages/integrations/src/auth-mail.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_AUTH_MAIL_KEY_BASE64",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "Base64-encoded sealing key; required when enabled.",
+      "consumer": "packages/integrations/src/auth-mail.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_BILLING_ALLOW_LIVE",
+      "services": [
+        "api"
+      ],
+      "type": "boolean",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "false"
+      },
+      "terraform": {
+        "envName": "PAPADATA_BILLING_ALLOW_LIVE",
+        "kind": "variable",
+        "name": "var.billing_allow_live"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Must be 'true' for PAPADATA_BILLING_MODE=live to be accepted; otherwise live mode throws.",
+      "consumer": "packages/integrations/src/stripe-billing.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "false"
+    },
+    {
+      "name": "PAPADATA_BILLING_MODE",
+      "services": [
+        "api"
+      ],
+      "type": "enum",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "disabled"
+      },
+      "terraform": {
+        "envName": "PAPADATA_BILLING_MODE",
+        "kind": "variable",
+        "name": "var.billing_mode"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "'test' or 'live' activates billing; anything else keeps it null.",
+      "consumer": "packages/integrations/src/stripe-billing.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "disabled"
+    },
+    {
+      "name": "PAPADATA_BILLING_PRICES_JSON",
+      "services": [
+        "api"
+      ],
+      "type": "json",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "[]"
+      },
+      "terraform": {
+        "envName": "PAPADATA_BILLING_PRICES_JSON",
+        "kind": "variable",
+        "name": "var.billing_prices_json"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "JSON array; defaults to [] when unset.",
+      "consumer": "packages/integrations/src/stripe-billing.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "[]"
+    },
+    {
+      "name": "PAPADATA_BILLING_RETURN_ORIGIN",
+      "services": [
+        "api"
+      ],
+      "type": "origin",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "PAPADATA_BILLING_RETURN_ORIGIN",
+        "kind": "variable",
+        "name": "local.billing_return_origin"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "URL origin billing checkout/portal redirects back to.",
+      "consumer": "packages/integrations/src/stripe-billing.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_INFRASTRUCTURE_AUTH_TOKEN",
+      "services": [
+        "api"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "terraform": {
+        "envName": "PAPADATA_INFRASTRUCTURE_AUTH_TOKEN",
+        "kind": "secretRef",
+        "secretKey": "infrastructure_auth_token"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "At least 32 bytes; must not match the placeholder pattern.",
+      "consumer": "apps/api/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "replace-with-32-byte-random-infra-token"
+    },
+    {
+      "name": "PAPADATA_INTEGRATION_SECRET_LOCATION",
+      "services": [
+        "api"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "GCP region-shaped string (e.g. europe-west1); required together with _PROJECT and _WRITE_ENABLED=true.",
+      "consumer": "packages/integrations/src/secret-provisioner.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_INTEGRATION_SECRET_PROJECT",
+      "services": [
+        "api"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "GCP project id (lowercase, 6-63 chars); required together with _LOCATION and _WRITE_ENABLED=true.",
+      "consumer": "packages/integrations/src/secret-provisioner.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_INTEGRATION_SECRET_WRITE_ENABLED",
+      "services": [
+        "api"
+      ],
+      "type": "boolean",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "false"
+      },
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "Must be exactly 'true' to enable Secret Manager provisioning; otherwise provisioning throws.",
+      "consumer": "packages/integrations/src/secret-provisioner.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "false"
+    },
+    {
+      "name": "PAPADATA_PAPA_REMOTE_ALLOWED_HOSTS",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "csv",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "PAPADATA_PAPA_REMOTE_ALLOWED_HOSTS",
+        "kind": "variable",
+        "name": "join(\",\", var.papa_remote_allowed_hosts)"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Comma-separated allowlist the endpoint host must appear in.",
+      "consumer": "packages/ai-runtime/src/index.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_PAPA_REMOTE_API_KEY",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "PAPADATA_PAPA_REMOTE_API_KEY",
+        "kind": "secretRef",
+        "secretKey": "papa_remote_api_key",
+        "optional": true
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Required when the remote provider is enabled.",
+      "consumer": "packages/ai-runtime/src/index.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_PAPA_REMOTE_ENABLED",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "boolean",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "false"
+      },
+      "terraform": {
+        "envName": "PAPADATA_PAPA_REMOTE_ENABLED",
+        "kind": "variable",
+        "name": "var.papa_remote_enabled"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "'true' to enable; anything else disables the remote provider.",
+      "consumer": "packages/ai-runtime/src/index.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "false"
+    },
+    {
+      "name": "PAPADATA_PAPA_REMOTE_ENDPOINT",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "url",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "PAPADATA_PAPA_REMOTE_ENDPOINT",
+        "kind": "variable",
+        "name": "var.papa_remote_endpoint"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Required (with host in PAPADATA_PAPA_REMOTE_ALLOWED_HOSTS) when enabled.",
+      "consumer": "packages/ai-runtime/src/index.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_PAPA_REMOTE_MODEL",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "PAPADATA_PAPA_REMOTE_MODEL",
+        "kind": "variable",
+        "name": "var.papa_remote_model"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Required when the remote provider is enabled.",
+      "consumer": "packages/ai-runtime/src/index.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_PAPA_REMOTE_RESERVE_MINOR_PER_CALL",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "50"
+      },
+      "terraform": {
+        "envName": "PAPADATA_PAPA_REMOTE_RESERVE_MINOR_PER_CALL",
+        "kind": "variable",
+        "name": "var.papa_remote_reserve_minor_per_call"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "Positive integer (minor currency units), default 50.",
+      "consumer": "packages/ai-runtime/src/index.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "50"
+    },
+    {
+      "name": "PAPADATA_PLATFORM_PASSWORD",
+      "services": [
+        "compose",
+        "worker"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "production-parity"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "terraform": null,
+      "defaultPolicy": "fail-fast",
+      "validation": "Non-empty random secret.",
+      "consumer": "compose.production-parity.yml",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "Local Compose credential primitive used only to synthesize DATABASE_URL/SCHEDULER_DATABASE_URL/REDIS_URL/storage credentials locally (see source.kind=template/reference entries that consume it). GCP provisions the equivalent as an opaque, ready-made Secret Manager connection string (database_url/scheduler_database_url/redis_url) and has no env var of this name.",
+      "example": "replace-with-random-platform-secret"
+    },
+    {
+      "name": "PAPADATA_PRIVACY_URL",
+      "services": [
+        "api"
+      ],
+      "type": "url",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "Must be an https: URL with no userinfo when set.",
+      "consumer": "apps/api/src/production/access-lifecycle/access-lifecycle.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_PRIVACY_VERSION",
+      "services": [
+        "api"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "Both _VERSION and _URL must be set together (https:, no embedded credentials, version <=80 chars) or the document is silently omitted.",
+      "consumer": "apps/api/src/production/access-lifecycle/access-lifecycle.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_STORAGE_ACCESS_KEY",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "reference",
+        "from": "MINIO_ROOT_USER"
+      },
+      "terraform": null,
+      "defaultPolicy": "required-for-minio-forbidden-for-gcs",
+      "validation": "Required when PAPADATA_STORAGE_DRIVER=minio; must be absent when driver=gcs.",
+      "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "MinIO credential; GCS uses the Cloud Run service account identity instead.",
+      "example": "papadata-parity"
+    },
+    {
+      "name": "PAPADATA_STORAGE_BUCKET",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "literal",
+        "value": "papadata-artifacts"
+      },
+      "terraform": {
+        "envName": "PAPADATA_STORAGE_BUCKET",
+        "kind": "variable",
+        "name": "google_storage_bucket.objects.name"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "Non-empty string.",
+      "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "papadata-artifacts"
+    },
+    {
+      "name": "PAPADATA_STORAGE_DRIVER",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "enum",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "literal",
+        "value": "minio"
+      },
+      "terraform": {
+        "envName": "PAPADATA_STORAGE_DRIVER",
+        "kind": "literal",
+        "value": "gcs"
+      },
+      "defaultPolicy": "fallback-to-minio-outside-production",
+      "validation": "One of minio|gcs. Required (no default) once NODE_ENV=production.",
+      "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
+      "productionOnlyReason": "production-parity emulates GCS with MinIO per the LP-6 parity matrix (objectStorage: emulated).",
+      "parityOnlyReason": null,
+      "example": "minio"
+    },
+    {
+      "name": "PAPADATA_STORAGE_ENDPOINT",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "url",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "http://minio:9000"
+      },
+      "terraform": null,
+      "defaultPolicy": "required-for-minio-forbidden-for-gcs",
+      "validation": "Required (non-empty) when PAPADATA_STORAGE_DRIVER=minio; must be absent when driver=gcs.",
+      "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "MinIO (S3-compatible emulator) needs an explicit endpoint URL; GCS does not.",
+      "example": "http://minio:9000"
+    },
+    {
+      "name": "PAPADATA_STORAGE_SECRET_KEY",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "reference",
+        "from": "MINIO_ROOT_PASSWORD"
+      },
+      "terraform": null,
+      "defaultPolicy": "required-for-minio-forbidden-for-gcs",
+      "validation": "Required when PAPADATA_STORAGE_DRIVER=minio; must be absent when driver=gcs.",
+      "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "MinIO credential; GCS uses the Cloud Run service account identity instead.",
+      "example": "replace-with-random-minio-secret"
+    },
+    {
+      "name": "PAPADATA_TERMS_URL",
+      "services": [
+        "api"
+      ],
+      "type": "url",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "Must be an https: URL with no userinfo when set.",
+      "consumer": "apps/api/src/production/access-lifecycle/access-lifecycle.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_TERMS_VERSION",
+      "services": [
+        "api"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "Both _VERSION and _URL must be set together (https:, no embedded credentials, version <=80 chars) or the document is silently omitted.",
+      "consumer": "apps/api/src/production/access-lifecycle/access-lifecycle.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_TEST_PASSWORD",
+      "services": [
+        "compose",
+        "migrate"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "production-parity"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "terraform": null,
+      "defaultPolicy": "fail-fast",
+      "validation": "Non-empty random secret.",
+      "consumer": "compose.production-parity.yml",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "Local Compose credential primitive used only to synthesize DATABASE_URL/SCHEDULER_DATABASE_URL/REDIS_URL/storage credentials locally (see source.kind=template/reference entries that consume it). GCP provisions the equivalent as an opaque, ready-made Secret Manager connection string (database_url/scheduler_database_url/redis_url) and has no env var of this name.",
+      "example": "replace-with-random-test-secret"
+    },
+    {
+      "name": "PAPADATA_WEB_ORIGIN",
+      "services": [
+        "api"
+      ],
+      "type": "origin",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": {
+        "envName": "PAPADATA_WEB_ORIGIN",
+        "kind": "variable",
+        "name": "local.web_origin"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Not fail-fast anywhere: oauth-provider.config.ts treats an unset/invalid value as null and OAuth just reports configuration_required. Only truly required (throws) when PAPADATA_AUTH_MAIL_ENABLED=true, which is false in every environment today. Terraform always sets it in staging/production anyway (both OAuth and mail want it available).",
+      "consumer": "apps/api/src/production/identity/oauth-provider.config.ts, packages/integrations/src/auth-mail.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "https://papadata.localhost"
+    },
+    {
+      "name": "PAYMENT_ENABLE_APPLE_PAY",
+      "services": [
+        "api"
+      ],
+      "type": "boolean",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "false"
+      },
+      "terraform": {
+        "envName": "PAYMENT_ENABLE_APPLE_PAY",
+        "kind": "variable",
+        "name": "var.payment_methods_enabled.apple_pay"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "'true' to enable the payment method; anything else disables it.",
+      "consumer": "packages/integrations/src/stripe-billing.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "false"
+    },
+    {
+      "name": "PAYMENT_ENABLE_BANK_TRANSFER",
+      "services": [
+        "api"
+      ],
+      "type": "boolean",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "false"
+      },
+      "terraform": {
+        "envName": "PAYMENT_ENABLE_BANK_TRANSFER",
+        "kind": "variable",
+        "name": "var.payment_methods_enabled.bank_transfer"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "'true' to enable the payment method; anything else disables it.",
+      "consumer": "packages/integrations/src/stripe-billing.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "false"
+    },
+    {
+      "name": "PAYMENT_ENABLE_BLIK",
+      "services": [
+        "api"
+      ],
+      "type": "boolean",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "false"
+      },
+      "terraform": {
+        "envName": "PAYMENT_ENABLE_BLIK",
+        "kind": "variable",
+        "name": "var.payment_methods_enabled.blik"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "'true' to enable the payment method; anything else disables it.",
+      "consumer": "packages/integrations/src/stripe-billing.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "false"
+    },
+    {
+      "name": "PAYMENT_ENABLE_BLIK_RECURRING",
+      "services": [
+        "api"
+      ],
+      "type": "boolean",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "false"
+      },
+      "terraform": {
+        "envName": "PAYMENT_ENABLE_BLIK_RECURRING",
+        "kind": "variable",
+        "name": "var.payment_methods_enabled.blik_recurring"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "'true' to enable the payment method; anything else disables it.",
+      "consumer": "packages/integrations/src/stripe-billing.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "false"
+    },
+    {
+      "name": "PAYMENT_ENABLE_CARD",
+      "services": [
+        "api"
+      ],
+      "type": "boolean",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "false"
+      },
+      "terraform": {
+        "envName": "PAYMENT_ENABLE_CARD",
+        "kind": "variable",
+        "name": "var.payment_methods_enabled.card"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "'true' to enable the payment method; anything else disables it.",
+      "consumer": "packages/integrations/src/stripe-billing.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "false"
+    },
+    {
+      "name": "PAYMENT_ENABLE_FAST_TRANSFER",
+      "services": [
+        "api"
+      ],
+      "type": "boolean",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "false"
+      },
+      "terraform": {
+        "envName": "PAYMENT_ENABLE_FAST_TRANSFER",
+        "kind": "variable",
+        "name": "var.payment_methods_enabled.fast_transfer"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "'true' to enable the payment method; anything else disables it.",
+      "consumer": "packages/integrations/src/stripe-billing.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "false"
+    },
+    {
+      "name": "PAYMENT_ENABLE_GOOGLE_PAY",
+      "services": [
+        "api"
+      ],
+      "type": "boolean",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "false"
+      },
+      "terraform": {
+        "envName": "PAYMENT_ENABLE_GOOGLE_PAY",
+        "kind": "variable",
+        "name": "var.payment_methods_enabled.google_pay"
+      },
+      "defaultPolicy": "fallback",
+      "validation": "'true' to enable the payment method; anything else disables it.",
+      "consumer": "packages/integrations/src/stripe-billing.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "false"
+    },
+    {
+      "name": "PLATFORM_WORKER_CONCURRENCY",
+      "services": [
+        "worker"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 1-64, default 4.",
+      "consumer": "apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "4"
+    },
+    {
+      "name": "POSTGRES_PASSWORD",
+      "services": [
+        "compose",
+        "migrate"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "production-parity"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "terraform": null,
+      "defaultPolicy": "fail-fast",
+      "validation": "Non-empty random secret.",
+      "consumer": "compose.production-parity.yml",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "Local Compose credential primitive used only to synthesize DATABASE_URL/SCHEDULER_DATABASE_URL/REDIS_URL/storage credentials locally (see source.kind=template/reference entries that consume it). GCP provisions the equivalent as an opaque, ready-made Secret Manager connection string (database_url/scheduler_database_url/redis_url) and has no env var of this name.",
+      "example": "replace-with-random-migrator-secret"
+    },
+    {
+      "name": "RECONCILIATION_CRON",
+      "services": [
+        "worker"
+      ],
+      "type": "cron",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Cron expression, default '0 */6 * * *'.",
+      "consumer": "apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "0 */6 * * *"
     },
     {
       "name": "REDIS_CA_BASE64",
-      "scope": [
+      "services": [
         "api",
         "bff",
         "worker"
       ],
-      "secret": false,
-      "terraform": {
-        "secretKey": "redis_ca_base64",
-        "envName": "REDIS_CA_BASE64"
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": true,
+        "production": true
       },
       "source": {
         "kind": "fileBase64",
         "path": ".runtime/backend-production-parity/redis-tls/ca.crt"
       },
+      "terraform": {
+        "envName": "REDIS_CA_BASE64",
+        "kind": "secretRef",
+        "secretKey": "redis_ca_base64"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "Non-empty base64.",
+      "consumer": "apps/api/src/production/config.ts, apps/bff/src/config.ts, apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
       "example": "replace-with-base64-ca"
     },
     {
-      "name": "PAPADATA_STORAGE_DRIVER",
-      "scope": [
-        "api",
-        "worker"
-      ],
-      "source": {
-        "kind": "literal",
-        "value": "minio"
-      },
-      "example": "minio"
-    },
-    {
-      "name": "PAPADATA_STORAGE_BUCKET",
-      "scope": [
-        "api",
-        "worker"
-      ],
-      "source": {
-        "kind": "literal",
-        "value": "papadata-artifacts"
-      },
-      "example": "papadata-artifacts"
-    },
-    {
-      "name": "PAPADATA_STORAGE_ENDPOINT",
-      "scope": [
-        "api",
-        "worker"
-      ],
-      "source": {
-        "kind": "literal",
-        "value": "http://minio:9000"
-      },
-      "example": "http://minio:9000"
-    },
-    {
-      "name": "PAPADATA_STORAGE_ACCESS_KEY",
-      "scope": [
-        "api",
-        "worker"
-      ],
-      "secret": true,
-      "source": {
-        "kind": "reference",
-        "from": "MINIO_ROOT_USER"
-      },
-      "example": "papadata-parity"
-    },
-    {
-      "name": "PAPADATA_STORAGE_SECRET_KEY",
-      "scope": [
-        "api",
-        "worker"
-      ],
-      "secret": true,
-      "source": {
-        "kind": "reference",
-        "from": "MINIO_ROOT_PASSWORD"
-      },
-      "example": "replace-with-random-minio-secret"
-    },
-    {
-      "name": "PAPADATA_API_AUTH_ACTIVE_SECRET",
-      "scope": [
+      "name": "REDIS_CONNECT_TIMEOUT_MS",
+      "services": [
         "api"
       ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 100-30000, default 5000.",
+      "consumer": "apps/api/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "5000"
+    },
+    {
+      "name": "REDIS_PASSWORD",
+      "services": [
+        "compose",
+        "redis"
+      ],
+      "type": "secret",
       "secret": true,
-      "terraform": {
-        "secretKey": "api_auth_active_secret",
-        "envName": "PAPADATA_API_AUTH_ACTIVE_SECRET"
+      "environments": [
+        "production-parity"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": false,
+        "production": false
       },
       "source": {
         "kind": "randomHex",
         "bytes": 32
       },
-      "example": "replace-with-shared-32-byte-internal-active-secret"
+      "terraform": null,
+      "defaultPolicy": "fail-fast",
+      "validation": "Non-empty random secret.",
+      "consumer": "compose.production-parity.yml",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "Local Compose credential primitive used only to synthesize DATABASE_URL/SCHEDULER_DATABASE_URL/REDIS_URL/storage credentials locally (see source.kind=template/reference entries that consume it). GCP provisions the equivalent as an opaque, ready-made Secret Manager connection string (database_url/scheduler_database_url/redis_url) and has no env var of this name.",
+      "example": "replace-with-random-redis-secret"
     },
     {
-      "name": "PAPADATA_API_AUTH_PREVIOUS_SECRET",
-      "scope": [
-        "api"
+      "name": "REDIS_URL",
+      "services": [
+        "api",
+        "bff",
+        "worker"
       ],
+      "type": "secret",
       "secret": true,
-      "terraform": {
-        "secretKey": "api_auth_previous_secret",
-        "envName": "PAPADATA_API_AUTH_PREVIOUS_SECRET"
-      },
-      "source": {
-        "kind": "randomHex",
-        "bytes": 32
-      },
-      "example": "replace-with-shared-32-byte-internal-previous-secret"
-    },
-    {
-      "name": "PAPADATA_API_AUTH_ISSUER",
-      "scope": [
-        "api"
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
       ],
-      "source": {
-        "kind": "literal",
-        "value": "papadata-bff"
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
       },
-      "example": "papadata-bff"
-    },
-    {
-      "name": "PAPADATA_API_AUTH_AUDIENCE",
-      "scope": [
-        "api"
-      ],
-      "source": {
-        "kind": "literal",
-        "value": "papadata-api"
-      },
-      "example": "papadata-api"
-    },
-    {
-      "name": "PAPADATA_API_AUTH_SESSION_STORE",
-      "scope": [
-        "api"
-      ],
-      "source": {
-        "kind": "literal",
-        "value": "redis-auth-state"
-      },
-      "example": "redis-auth-state"
-    },
-    {
-      "name": "PAPADATA_API_AUTH_SESSION_REDIS_PREFIX",
-      "scope": [
-        "api"
-      ],
-      "source": {
-        "kind": "literal",
-        "value": "papadata:auth"
-      },
-      "example": "papadata:auth"
-    },
-    {
-      "name": "PAPADATA_INFRASTRUCTURE_AUTH_TOKEN",
-      "scope": [
-        "api"
-      ],
-      "secret": true,
-      "terraform": {
-        "secretKey": "infrastructure_auth_token",
-        "envName": "PAPADATA_INFRASTRUCTURE_AUTH_TOKEN"
-      },
-      "source": {
-        "kind": "randomHex",
-        "bytes": 32
-      },
-      "example": "replace-with-32-byte-random-infra-token"
-    },
-    {
-      "name": "MFA_ENCRYPTION_KEY",
-      "scope": [
-        "api"
-      ],
-      "secret": true,
-      "terraform": {
-        "secretKey": "mfa_encryption_key",
-        "envName": "MFA_ENCRYPTION_KEY"
-      },
-      "source": {
-        "kind": "randomHex",
-        "bytes": 32
-      },
-      "example": "replace-with-64-hex-character-mfa-key"
-    },
-    {
-      "name": "BFF_PORT",
-      "scope": [
-        "bff"
-      ],
-      "source": {
-        "kind": "literal",
-        "value": "3001"
-      },
-      "example": "3001"
-    },
-    {
-      "name": "API_ORIGIN",
-      "scope": [
-        "bff"
-      ],
-      "source": {
-        "kind": "literal",
-        "value": "http://api-production:4000"
-      },
-      "example": "http://api-production:4000"
-    },
-    {
-      "name": "BFF_ALLOWED_ORIGINS",
-      "scope": [
-        "bff"
-      ],
-      "source": {
-        "kind": "contract",
-        "path": "canonicalLocalEndpoint.origin"
-      },
-      "example": "https://papadata.localhost"
-    },
-    {
-      "name": "BFF_PUBLIC_HOSTS",
-      "scope": [
-        "bff"
-      ],
       "source": {
         "kind": "template",
-        "value": "${LOCAL_PUBLIC_HOST},${LOCAL_PUBLIC_HOST}:53001"
+        "value": "rediss://default:${REDIS_PASSWORD}@redis-production:6379"
       },
-      "virtualInputs": [
-        "LOCAL_PUBLIC_HOST"
-      ],
-      "example": "papadata.localhost,papadata.localhost:53001"
-    },
-    {
-      "name": "BFF_COOKIE_SECRET",
-      "scope": [
-        "bff"
-      ],
-      "secret": true,
       "terraform": {
-        "secretKey": "bff_cookie_secret",
-        "envName": "BFF_COOKIE_SECRET"
+        "envName": "REDIS_URL",
+        "kind": "secretRef",
+        "secretKey": "redis_url"
       },
-      "source": {
-        "kind": "randomHex",
-        "bytes": 32
-      },
-      "example": "replace-with-32-byte-random-cookie-secret-active"
+      "defaultPolicy": "fail-fast",
+      "validation": "URL with protocol redis:/rediss:; must be rediss:// whenever the service's runtime environment is production-like.",
+      "consumer": "apps/api/src/production/config.ts, apps/bff/src/config.ts, apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "rediss://default:replace-with-random-redis-secret@redis-production:6379"
     },
     {
-      "name": "BFF_COOKIE_PREVIOUS_SECRET",
-      "scope": [
-        "bff"
-      ],
-      "secret": true,
-      "terraform": {
-        "secretKey": "bff_cookie_previous_secret",
-        "envName": "BFF_COOKIE_PREVIOUS_SECRET"
-      },
-      "source": {
-        "kind": "randomHex",
-        "bytes": 32
-      },
-      "example": "replace-with-32-byte-random-cookie-secret-previous"
-    },
-    {
-      "name": "BFF_CSRF_SECRET",
-      "scope": [
-        "bff"
-      ],
-      "secret": true,
-      "terraform": {
-        "secretKey": "bff_csrf_secret",
-        "envName": "BFF_CSRF_SECRET"
-      },
-      "source": {
-        "kind": "randomHex",
-        "bytes": 32
-      },
-      "example": "replace-with-32-byte-random-csrf-secret"
-    },
-    {
-      "name": "BFF_REFRESH_COOKIE_SECRET",
-      "scope": [
-        "bff"
-      ],
-      "secret": true,
-      "terraform": {
-        "secretKey": "bff_refresh_cookie_secret",
-        "envName": "BFF_REFRESH_COOKIE_SECRET"
-      },
-      "source": {
-        "kind": "randomHex",
-        "bytes": 32
-      },
-      "example": "replace-with-32-byte-random-refresh-cookie-secret-active"
-    },
-    {
-      "name": "BFF_REFRESH_COOKIE_PREVIOUS_SECRET",
-      "scope": [
-        "bff"
-      ],
-      "secret": true,
-      "terraform": {
-        "secretKey": "bff_refresh_cookie_previous_secret",
-        "envName": "BFF_REFRESH_COOKIE_PREVIOUS_SECRET"
-      },
-      "source": {
-        "kind": "randomHex",
-        "bytes": 32
-      },
-      "example": "replace-with-32-byte-random-refresh-cookie-secret-previous"
-    },
-    {
-      "name": "BFF_INTERNAL_AUTH_ACTIVE_SECRET",
-      "scope": [
-        "bff"
-      ],
-      "secret": true,
-      "source": {
-        "kind": "reference",
-        "from": "PAPADATA_API_AUTH_ACTIVE_SECRET"
-      },
-      "example": "replace-with-shared-32-byte-internal-active-secret"
-    },
-    {
-      "name": "BFF_INTERNAL_AUTH_PREVIOUS_SECRET",
-      "scope": [
-        "bff"
-      ],
-      "secret": true,
-      "source": {
-        "kind": "reference",
-        "from": "PAPADATA_API_AUTH_PREVIOUS_SECRET"
-      },
-      "example": "replace-with-shared-32-byte-internal-previous-secret"
-    },
-    {
-      "name": "BFF_INTERNAL_AUTH_ISSUER",
-      "scope": [
-        "bff"
-      ],
-      "source": {
-        "kind": "reference",
-        "from": "PAPADATA_API_AUTH_ISSUER"
-      },
-      "example": "papadata-bff"
-    },
-    {
-      "name": "BFF_INTERNAL_AUTH_AUDIENCE",
-      "scope": [
-        "bff"
-      ],
-      "source": {
-        "kind": "reference",
-        "from": "PAPADATA_API_AUTH_AUDIENCE"
-      },
-      "example": "papadata-api"
-    },
-    {
-      "name": "BFF_SESSION_STORE",
-      "scope": [
-        "bff"
-      ],
-      "source": {
-        "kind": "literal",
-        "value": "redis-auth-state"
-      },
-      "example": "redis-auth-state"
-    },
-    {
-      "name": "BFF_SESSION_REDIS_PREFIX",
-      "scope": [
-        "bff"
-      ],
-      "source": {
-        "kind": "reference",
-        "from": "PAPADATA_API_AUTH_SESSION_REDIS_PREFIX"
-      },
-      "example": "papadata:auth"
-    },
-    {
-      "name": "BFF_RATE_LIMIT_MAX",
-      "scope": [
-        "bff"
-      ],
-      "source": {
-        "kind": "literal",
-        "value": "300"
-      },
-      "example": "300"
-    },
-    {
-      "name": "BFF_MAX_BODY_BYTES",
-      "scope": [
-        "bff",
-        "edge"
-      ],
-      "source": {
-        "kind": "literal",
-        "value": "1048576"
-      },
-      "example": "1048576"
-    },
-    {
-      "name": "BFF_RATE_LIMIT_WINDOW_MS",
-      "scope": [
-        "bff"
-      ],
-      "source": {
-        "kind": "literal",
-        "value": "60000"
-      },
-      "example": "60000"
-    },
-    {
-      "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
-      "scope": [
-        "api",
-        "bff",
+      "name": "RETENTION_CRON",
+      "services": [
         "worker"
       ],
+      "type": "cron",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Cron expression, default '30 2 * * *'.",
+      "consumer": "apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "30 2 * * *"
+    },
+    {
+      "name": "SCHEDULER_DATABASE_URL",
+      "services": [
+        "worker"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "template",
+        "value": "postgresql://papadata_platform:${PAPADATA_PLATFORM_PASSWORD}@postgres-production:5432/papadata"
+      },
+      "terraform": {
+        "envName": "SCHEDULER_DATABASE_URL",
+        "kind": "secretRef",
+        "secretKey": "scheduler_database_url"
+      },
+      "defaultPolicy": "fallback-to-DATABASE_URL-outside-production",
+      "validation": "URL with protocol postgres:/postgresql:; must differ in credential and role from DATABASE_URL when NODE_ENV=production.",
+      "consumer": "apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "postgresql://papadata_platform:replace-with-random-platform-secret@postgres-production:5432/papadata"
+    },
+    {
+      "name": "STRIPE_API_VERSION",
+      "services": [
+        "api"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
       "source": {
         "kind": "literal",
-        "value": "http://otel-collector:4318"
+        "value": ""
       },
-      "example": "http://otel-collector:4318"
+      "terraform": {
+        "envName": "STRIPE_API_VERSION",
+        "kind": "variable",
+        "name": "var.stripe_api_version"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Pinned Stripe API version string.",
+      "consumer": "packages/integrations/src/stripe-billing.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "STRIPE_PORTAL_CONFIGURATION",
+      "services": [
+        "api"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "STRIPE_PORTAL_CONFIGURATION",
+        "kind": "variable",
+        "name": "var.stripe_portal_configuration"
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Optional Stripe billing portal configuration id.",
+      "consumer": "packages/integrations/src/stripe-billing.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "STRIPE_SECRET_KEY",
+      "services": [
+        "api"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "STRIPE_SECRET_KEY",
+        "kind": "secretRef",
+        "secretKey": "stripe_secret_key",
+        "optional": true
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Required when PAPADATA_BILLING_MODE is test or live.",
+      "consumer": "packages/integrations/src/stripe-billing.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "STRIPE_WEBHOOK_SECRET",
+      "services": [
+        "api"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": {
+        "envName": "STRIPE_WEBHOOK_SECRET",
+        "kind": "secretRef",
+        "secretKey": "stripe_webhook_secret",
+        "optional": true
+      },
+      "defaultPolicy": "feature-disabled",
+      "validation": "Optional; when unset the webhook endpoint rejects every request instead of the API failing to boot.",
+      "consumer": "apps/api/src/production/config.ts, apps/api/src/production/billing/stripe-webhook.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": ""
+    },
+    {
+      "name": "SYNC_DISPATCH_CRON",
+      "services": [
+        "worker"
+      ],
+      "type": "cron",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Cron expression, default '*/15 * * * *'.",
+      "consumer": "apps/worker/src/production/sync-dispatch-scheduler.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "*/15 * * * *"
+    },
+    {
+      "name": "SYNC_INTERVAL_HOURS",
+      "services": [
+        "worker"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Positive number, default 6.",
+      "consumer": "apps/worker/src/production/sync-dispatch-scheduler.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "6"
+    },
+    {
+      "name": "SYNC_JITTER_WINDOW_MS",
+      "services": [
+        "worker"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Positive number, default 1800000 (30 min).",
+      "consumer": "apps/worker/src/production/sync-dispatch-scheduler.service.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "1800000"
+    },
+    {
+      "name": "WORKER_CONCURRENCY",
+      "services": [
+        "worker"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 1-64, default 4.",
+      "consumer": "apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "4"
+    },
+    {
+      "name": "WORKER_LEASE_DURATION_MS",
+      "services": [
+        "worker"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 10000-600000, default 60000.",
+      "consumer": "apps/worker/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "example": "60000"
     }
   ]
 }

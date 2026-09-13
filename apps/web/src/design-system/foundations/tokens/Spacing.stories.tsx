@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -38,33 +35,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-
-function StorySection({
-  children,
-  index,
-  layout,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly layout?: 'standard' | 'narrow' | 'wide' | 'showcase' | 'full';
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-spacing-section"
-      index={index}
-      layout={layout}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
 
 const spaceEntries = Object.entries(spacingTokens.space) as ReadonlyArray<
   [string, string]
@@ -110,7 +80,8 @@ export const SpacingISiatka: Story = {
       }
       title={<Localized pl="Odstęp jest zamierzony, nigdy przypadkowy." en="Spacing is intentional, never accidental." />}
     >
-      <StorySection
+      <StoryPresentationSection
+        className="pd-spacing-section"
         index="01"
         title={<Localized pl="Skala" en="Scale" />}
         summary={<Localized pl="Dowolne wartości spoza skali są zabronione." en="Arbitrary off-scale values are forbidden." />}
@@ -124,9 +95,10 @@ export const SpacingISiatka: Story = {
             </div>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-spacing-section"
         index="02"
         title={<Localized pl="Odstępy semantyczne" en="Semantic spacing" />}
         summary={<Localized pl="Nazwa opisuje relację (inline, control, group, block, section), nie wartość w pikselach." en="The name describes the relationship (inline, control, group, block, section), not the pixel value." />}
@@ -143,9 +115,10 @@ export const SpacingISiatka: Story = {
             </div>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-spacing-section"
         index="03"
         title={<Localized pl="Siatka odpowiedzialna (12 kolumn)" en="Responsive grid (12 columns)" />}
         layout="wide"
@@ -156,9 +129,10 @@ export const SpacingISiatka: Story = {
             <span key={index}>{index + 1}</span>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-spacing-section"
         index="04"
         title={<Localized pl="Breakpointy" en="Breakpoints" />}
       >
@@ -170,9 +144,10 @@ export const SpacingISiatka: Story = {
             </div>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-spacing-section"
         index="05"
         title={<Localized pl="Gęstość interfejsu" en="Interface density" />}
         summary={<Localized pl="Przełącznik Gęstość w toolbarze steruje tym demo. W produkcie nie ma dziś panelu dla tego globalnego ustawienia — realne komponenty (Table, Pagination i inne) mają własny, niezależny prop compact/comfortable ustawiany punktowo." en="The Density toggle in the toolbar drives this demo. In the product, there is no panel for this global setting today — real components (Table, Pagination and others) have their own independent compact/comfortable prop set per instance." />}
@@ -190,9 +165,10 @@ export const SpacingISiatka: Story = {
             </div>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-spacing-section"
         index="06"
         title={<Localized pl="W praktyce" en="In practice" />}
       >
@@ -214,7 +190,7 @@ export const SpacingISiatka: Story = {
             en="The documented breakpoints (390/768/1440/1920px) barely appear in real code — there are actually 26 distinct @media values in use, from 360px to 1500px, chosen per component. Unlike radius or font-size, changing a breakpoint shifts when a layout switches, not just how it looks — a different risk category."
           />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

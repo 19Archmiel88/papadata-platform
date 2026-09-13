@@ -23,7 +23,6 @@ import {
   defaultShellOperations,
   defaultShellUser,
   defaultShellWorkspaces,
-  NotificationCenter,
   OperationCenter,
   ProductShellFrame,
   PublicTopbar,
@@ -31,7 +30,7 @@ import {
   Sidebar,
   WorkspaceSwitcher,
 } from '../../../runtime/shell/index';
-import '../../../storybook-next/presentation/story-presentation.css';
+import '../../presentation/story-presentation.css';
 import {
   StoryPresentationMeta,
   StoryPresentationPage,
@@ -47,7 +46,7 @@ const notificationMutationAction = fn();
 const operationItemAction = fn();
 
 const meta = {
-  title: 'PLATFORMA/Powłoka produktu/Elementy powłoki',
+  title: 'PRODUCT SHELL/Elementy powłoki',
   parameters: {
     layout: 'fullscreen',
     a11y: {
@@ -160,6 +159,8 @@ function ProductContentPreview() {
 function ShellFrameDemo({
   activePath = '/app/command-center',
   initialOverlay = null,
+  notificationError = null,
+  notifications = defaultShellNotifications,
   operations = defaultShellOperations,
   problem = null,
   sidebarCollapsed = false,
@@ -174,8 +175,9 @@ function ShellFrameDemo({
         commands={defaultShellCommands}
         initialOverlay={initialOverlay}
         navigationGroups={defaultShellNavigation}
-        notificationUnreadCount={defaultShellNotifications.filter((item) => item.unread).length}
-        notifications={defaultShellNotifications}
+        notificationError={notificationError}
+        notificationUnreadCount={notifications.filter((item) => item.unread).length}
+        notifications={notifications}
         onLogout={logoutAction}
         onMarkAllNotificationsRead={notificationMutationAction}
         onMarkNotificationRead={notificationMutationAction}
@@ -256,11 +258,16 @@ export const AppShellStory: Story = {
     if (searchTrigger) {
       await expect(searchTrigger).toBeInTheDocument();
     }
-    await expect(await canvas.findByRole('navigation', { name: 'Nawigacja główna' })).toBeInTheDocument();
-    const sidebarToggle = canvas.queryByRole('button', { name: /nawigację/u });
-    if (sidebarToggle) {
-      await expect(sidebarToggle).toBeInTheDocument();
+    const page = within(canvasElement.ownerDocument.body);
+    let navigation = page.queryByRole('navigation', { name: 'Nawigacja główna' });
+
+    if (!navigation) {
+      const openNavigation = canvas.getByRole('button', { name: 'Otwórz nawigację' });
+      await userEvent.click(openNavigation);
+      navigation = await page.findByRole('navigation', { name: 'Nawigacja główna' });
     }
+
+    await expect(navigation).toBeInTheDocument();
   },
 };
 
@@ -309,15 +316,8 @@ export const AuthenticatedTopbarStory: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const page = within(canvasElement.ownerDocument.body);
-    const notificationButton = canvas
-      .getAllByRole('button', { name: /Powiadomienia/u })
-      .find((button: HTMLElement) => button.classList.contains('pd-shell-topbar__notifications-trigger'));
 
-    if (!notificationButton) {
-      throw new Error('Authenticated topbar notification button is not rendered.');
-    }
-
-    await userEvent.click(notificationButton);
+    await userEvent.click(findNotificationsTrigger(canvas));
     const notificationDialog = await page.findByRole('dialog', { name: 'Powiadomienia' });
     await expect(notificationDialog).toBeInTheDocument();
     await userEvent.click(within(notificationDialog).getByRole('button', { name: 'Zamknij' }));
@@ -459,56 +459,52 @@ export const GlobalSearchCommandPaletteStory: Story = {
 
     await userEvent.type(input, 'brak');
     await expect(await page.findByText('Brak wyników')).toBeInTheDocument();
+
+    // Empty state jest zweryfikowany powyżej — story ma jednak kończyć się w
+    // reprezentatywnym stanie z pełną listą komend, a nie na "Brak wyników",
+    // więc czyścimy wyszukiwanie i potwierdzamy powrót do listy.
+    await userEvent.clear(input);
+    await expect(page.queryByText('Brak wyników')).not.toBeInTheDocument();
+    await expect(await page.findByText('Otwórz Papa Asystenta')).toBeInTheDocument();
   },
 };
 
-export const NotificationsStory: Story = {
-  name: 'Powiadomienia',
+function findNotificationsTrigger(canvas: ReturnType<typeof within>): HTMLElement {
+  const trigger = canvas
+    .getAllByRole('button', { name: /Powiadomienia/u })
+    .find((button: HTMLElement) => button.classList.contains('pd-shell-topbar__notifications-trigger'));
+
+  if (!trigger) {
+    throw new Error('Realny trigger powiadomień w topbarze nie jest wyrenderowany.');
+  }
+
+  return trigger;
+}
+
+export const NotificationsDefaultStory: Story = {
+  name: 'Powiadomienia — lista',
   render: () => (
     <ShellDocumentationPage
-      storyId="20.08"
-      summary="Powiadomienia są niemodalnym popoverem z filtrami, listą, empty state i error state."
-      title="Powiadomienia"
+      storyId="20.08A"
+      summary="Kanoniczny NotificationCenter, otwierany przez realny dzwonek w pełnym ProductShellFrame — jeden otwarty portal, lista i akcje."
+      title="Powiadomienia — lista"
     >
-      <StoryPresentationSection index="01" layout="wide" title="Popover powiadomień">
-        <div className="pd-s20-stage pd-s20-drawer-preview">
-          <NotificationCenter
-            notifications={defaultShellNotifications}
-            onMarkAllRead={notificationMutationAction}
-            onMarkRead={notificationMutationAction}
-            onMarkUnread={notificationMutationAction}
-            onOpenChange={openChangeAction}
-            onSnooze={notificationMutationAction}
-            onUnsnooze={notificationMutationAction}
-            open
-            unreadCount={defaultShellNotifications.filter((item) => item.unread).length}
-          />
-        </div>
-      </StoryPresentationSection>
-      <StoryPresentationSection index="02" layout="showcase" title="Empty i error">
-        <div className="pd-s20-isolated__row">
-          <div className="pd-s20-stage pd-s20-drawer-preview">
-            <NotificationCenter notifications={[]} onOpenChange={openChangeAction} open unreadCount={0} />
-          </div>
-          <div className="pd-s20-stage pd-s20-drawer-preview">
-            <NotificationCenter
-              error="Nie można pobrać powiadomień."
-              notifications={[]}
-              onOpenChange={openChangeAction}
-              open
-              unreadCount={0}
-            />
-          </div>
-        </div>
+      <StoryPresentationSection index="01" layout="full" title="Lista powiadomień">
+        <ShellFrameDemo />
       </StoryPresentationSection>
     </ShellDocumentationPage>
   ),
   play: async ({ canvasElement }) => {
     notificationMutationAction.mockClear();
+    const canvas = within(canvasElement);
     const page = within(canvasElement.ownerDocument.body);
-    const dialogs = await page.findAllByRole('dialog', { name: 'Powiadomienia' });
-    const dialog = dialogs[0];
-    if (!dialog) throw new Error('Notification dialog is not rendered.');
+
+    await userEvent.click(findNotificationsTrigger(canvas));
+
+    const dialog = await page.findByRole('dialog', { name: 'Powiadomienia' });
+    await expect(dialog).toBeInTheDocument();
+    await expect(page.getAllByRole('dialog', { name: 'Powiadomienia' })).toHaveLength(1);
+
     const actions = within(dialog).getAllByText('Akcje');
     await userEvent.click(actions[0]);
     const markRead = within(dialog).queryByRole('button', { name: 'Oznacz jako przeczytane' });
@@ -518,6 +514,59 @@ export const NotificationsStory: Story = {
     }
   },
 };
+
+export const NotificationsEmptyStory: Story = {
+  name: 'Powiadomienia — pusto',
+  render: () => (
+    <ShellDocumentationPage
+      storyId="20.08B"
+      summary="Empty state NotificationCenter, otwierany przez realny dzwonek w pełnym ProductShellFrame — bez nakładania drugiego portalu."
+      title="Powiadomienia — brak danych"
+    >
+      <StoryPresentationSection index="01" layout="full" title="Brak powiadomień">
+        <ShellFrameDemo notifications={[]} />
+      </StoryPresentationSection>
+    </ShellDocumentationPage>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const page = within(canvasElement.ownerDocument.body);
+
+    await userEvent.click(findNotificationsTrigger(canvas));
+
+    const dialog = await page.findByRole('dialog', { name: 'Powiadomienia' });
+    await expect(dialog).toBeInTheDocument();
+    await expect(page.getAllByRole('dialog', { name: 'Powiadomienia' })).toHaveLength(1);
+    await expect(within(dialog).getByText('Brak powiadomień')).toBeInTheDocument();
+  },
+};
+
+export const NotificationsErrorStory: Story = {
+  name: 'Powiadomienia — błąd',
+  render: () => (
+    <ShellDocumentationPage
+      storyId="20.08C"
+      summary="Error state NotificationCenter, otwierany przez realny dzwonek w pełnym ProductShellFrame — jeden portal overlay."
+      title="Powiadomienia — błąd"
+    >
+      <StoryPresentationSection index="01" layout="full" title="Błąd pobierania">
+        <ShellFrameDemo notificationError="Nie można pobrać powiadomień." notifications={[]} />
+      </StoryPresentationSection>
+    </ShellDocumentationPage>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const page = within(canvasElement.ownerDocument.body);
+
+    await userEvent.click(findNotificationsTrigger(canvas));
+
+    await expect(await page.findByRole('dialog', { name: 'Powiadomienia' })).toBeInTheDocument();
+    await expect(page.getAllByRole('dialog', { name: 'Powiadomienia' })).toHaveLength(1);
+    await expect(page.getByText('Powiadomienia niedostępne')).toBeInTheDocument();
+    await expect(page.getByText('Nie można pobrać powiadomień.')).toBeInTheDocument();
+  },
+};
+
 export const BackgroundOperationsStory: Story = {
   name: 'Operacje w tle',
   render: () => (

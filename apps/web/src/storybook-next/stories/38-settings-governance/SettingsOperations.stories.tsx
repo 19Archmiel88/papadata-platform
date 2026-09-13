@@ -2,7 +2,12 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SettingsOperationsDemo } from '../../../fixtures/platform-operations/OperationsScenarios';
 import type { OperationsScenarioProps } from '../../../fixtures/platform-operations/OperationsScenarios';
 import { StorybookProductShellFrame } from '../shared/StorybookProductShellFrame';
-const meta = { id: 'papadata-settings-operations', title: 'PLATFORMA/Ustawienia/Operacje', component: SettingsOperationsDemo, parameters: { layout: 'fullscreen' } } satisfies Meta<typeof SettingsOperationsDemo>;
+// Brak meta.component celowo: SettingsOperationsDemo to Storybook-only wrapper
+// scenariuszowy (OperationsScenarioProps: initialView/state/empty/readonly/failSave),
+// nie realny kontrakt propsów SettingsOperationsScreen (data/state/problem/onReload/
+// onSave/demo). Wskazanie SettingsOperationsScreen jako component sfałszowałoby panel
+// Controls — pokazywałby propsy, których żadna story tu nie ustawia.
+const meta = { id: 'papadata-settings-operations', title: 'ADMINISTRACJA/Ustawienia/Operacje', parameters: { layout: 'fullscreen' } } satisfies Meta;
 export default meta;
 type Story = StoryObj<typeof meta>;
 function renderStory(args:OperationsScenarioProps) { return <StorybookProductShellFrame activePath="/app/settings"><SettingsOperationsDemo {...args} /></StorybookProductShellFrame>; }

@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -54,30 +51,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-filter-bar-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const FilterBarStory: Story = {
   name: 'FilterBar',
   render: (args) => (
@@ -102,7 +75,7 @@ export const FilterBarStory: Story = {
       }
       title={<Localized pl="Jeden rząd na całe filtrowanie tabeli." en="One row for a table's entire filtering." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany (pełna kompozycja)" en="Controlled (full composition)" />}>
+      <StoryPresentationSection className="pd-filter-bar-section" index="01" title={<Localized pl="Kontrolowany (pełna kompozycja)" en="Controlled (full composition)" />}>
         <div data-testid="filter-bar-controlled">
           <FilterBar
             {...args}
@@ -120,13 +93,13 @@ export const FilterBarStory: Story = {
             )}
           />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Brak aktywnych filtrów" en="No active filters" />}>
+      <StoryPresentationSection className="pd-filter-bar-section" index="02" title={<Localized pl="Brak aktywnych filtrów" en="No active filters" />}>
         <div data-testid="filter-bar-empty">
           <FilterBar activeCount={0} collapsible={false} filters={[]} resultCount={null} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

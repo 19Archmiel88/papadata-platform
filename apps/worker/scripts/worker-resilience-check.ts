@@ -50,6 +50,7 @@ const database = new ProductionDatabase({
   connectionString: databaseUrl,
   max: 8,
   statementTimeoutMs: 30_000,
+  sslCaBase64: process.env.DATABASE_CA_BASE64?.trim() || null,
 });
 
 try {
@@ -308,6 +309,7 @@ async function runStatementTimeoutCheck(): Promise<void> {
     connectionString: databaseUrl,
     max: 2,
     statementTimeoutMs: timeoutMs,
+    sslCaBase64: process.env.DATABASE_CA_BASE64?.trim() || null,
   });
 
   const runId = randomUUID().slice(0, 8);

@@ -1,0 +1,31 @@
+# P0-3: certified-release overlay for compose.production-parity.yml.
+#
+# The base file builds all four app services from source (`build:`). This
+# overlay does NOT remove that -- Compose has no declarative way to unset an
+# inherited key across all supported Compose versions -- it only points
+# each service's `image:` at the immutable digest reference recorded in
+# artifacts/release-manifest.json (rendered into environment variables by
+# tools/render-certified-compose.mjs). It is tools/render-certified-compose.mjs,
+# not this file by itself, that produces the actual compose config used to
+# start the certified stack: it merges this overlay over the base file via
+# `docker compose config`, then strips every remaining `build:` key from the
+# four app services before writing the result, and asserts none survive.
+# That script is the only supported way to run certified release parity --
+# see tools/verify-release-candidate.mjs.
+#
+# Usage (do not run this file directly against `up`; render it first):
+#   node tools/render-certified-compose.mjs
+#   docker compose -f .runtime/release-candidate/compose.rendered.json \
+#     --env-file .env.production-parity up -d
+services:
+  api-production:
+    image: ${API_IMAGE:?API_IMAGE is required -- run tools/render-certified-compose.mjs}
+
+  bff-production:
+    image: ${BFF_IMAGE:?BFF_IMAGE is required -- run tools/render-certified-compose.mjs}
+
+  worker-production:
+    image: ${WORKER_IMAGE:?WORKER_IMAGE is required -- run tools/render-certified-compose.mjs}
+
+  web-production:
+    image: ${WEB_IMAGE:?WEB_IMAGE is required -- run tools/render-certified-compose.mjs}

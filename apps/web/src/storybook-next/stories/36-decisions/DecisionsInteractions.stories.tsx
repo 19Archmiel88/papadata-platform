@@ -6,7 +6,10 @@ import {
   Search as S,
   Create as C,
 } from './Decisions.story-support';
-export default { title: 'DECYZJE/Centrum decyzji/Interakcje' } satisfies Meta;
+export default {
+  title: 'DECYZJE/Centrum decyzji/Interakcje',
+  parameters: { layout: 'fullscreen', a11y: { test: 'error' } },
+} satisfies Meta;
 export const Approve = { ...A, name: 'Zatwierdzenie planu' };
 export const Execute = { ...E, name: 'Odnotowanie wykonania' };
 export const RejectAndReopen = { ...R, name: 'Odrzucenie i ponowna ocena' };

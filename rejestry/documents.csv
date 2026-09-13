@@ -1,5 +1,5 @@
 path,title,words,sha256
-00-zarzadzanie-dokumentacja/README.md,"Zarządzanie dokumentacją, rejestry i bramy akceptacyjne",7243,b88a9128f08ed2b3439e989cdb3dcc648bdb1fa797f8826674716c15fa456403
+00-zarzadzanie-dokumentacja/README.md,"Zarządzanie dokumentacją, rejestry i bramy akceptacyjne",7243,713889317eeb3b9cdad2cff0b1c85a2fd2537aa7632b08799caa973166dbdb68
 01-fundamenty/README.md,"Fundamenty UI, marka i dostępność",2550,be61e5026ec45f85ce32ac4968c1b408768f5898864a66404ad9200b56901aeb
 02-tla-i-powierzchnie/README.md,"Tła, powierzchnie i geometria interfejsu",3868,940f7fc9d3cd5bfaac27d064291bb9a691ee016583543e09912951c591cf603b
 03-dostep-rejestracja-onboarding/README.md,"Dostęp, rejestracja i onboarding",3214,216471ac7352e276c42ecf942b5430313961ce80794941fc13f9bbde0c3c53c2
@@ -65,7 +65,7 @@ path,title,words,sha256
 20-przeplywy-e2e/01-06-access-i-dane.md,Przepływy E2E 01–06 — dostęp i dane,4526,dffb2a85ee565d0dee7d47dffb4b56c58e356ad7af8df8c97931106ae4ad4732
 20-przeplywy-e2e/07-12-jakosc-i-wzrost.md,Przepływy E2E 07–12 — jakość i wzrost,4036,df429ecc8367cc236f937bca2d17a6efbc8dea84460b081bf4fbf13482e80b3d
 20-przeplywy-e2e/13-18-ai-decyzje-billing.md,"Przepływy E2E 13–18 — AI, decyzje i billing",4743,270f4eb7085d0177ea9436c8ce16d3e940030799096f61df84dd2c260901e760
-21-stany-przekrojowe/README.md,Stany i wzorce przekrojowe,3892,a482d482e6578405f8a1174a309e4bf2e75b832f51acd7d030c4469fb48aa04f
+21-stany-przekrojowe/README.md,Stany i wzorce przekrojowe,3909,42bb7de90c897a7900b03b7a32eb581cf8d5e5ca2a9e8ed99f2453cc135ec696
 22-mapy-i-indeksy/README.md,Mapy i indeksy,1698,f71b3ce612f8bae92e9c8bcb5b3760904abfeb06d31bad2f436a44522990d94b
 23-bezpieczenstwo-platformy/README.md,Bezpieczeństwo platformy,663,4eadb6a0851f29267a69e18a8f73d2dc0ec923a9a9bf480a4a3e8e79956356a8
 24-aplikacja-mobilna/README.md,Aplikacja mobilna,1102,80a37123d3dbc038ae8b6cd0a4f04b41df641d9aa51e0a59b9841951efa5c613

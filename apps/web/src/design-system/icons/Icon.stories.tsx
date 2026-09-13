@@ -371,29 +371,6 @@ const languageRules = [
   },
 ] as const;
 
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-icon-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 function Token({
   children,
 }: {
@@ -506,7 +483,8 @@ export const Ikony: Story = {
       title={<Localized pl="Icon jako katalog runtime." en="Icon as the runtime catalog." />}
     >
 
-        <StorySection
+        <StoryPresentationSection
+          className="pd-icon-section"
           index="01"
           title={<Localized pl="Kontrakt komponentu" en="Component contract" />}
           summary={<Localized pl="Icon dziedziczy kolor z kontekstu i zachowuje jedną geometrię dla całego produktu." en="Icon inherits color from context and keeps one geometry for the entire product." />}
@@ -565,9 +543,10 @@ export const Ikony: Story = {
               ))}
             </dl>
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
+        <StoryPresentationSection
+          className="pd-icon-section"
           index="02"
           title={<Localized pl="Dostępność i znaczenie" en="Accessibility and meaning" />}
           summary={<Localized pl="Ta sama ikona może być dekoracyjna albo informacyjna, ale jej nazwa dostępna wynika z roli w interfejsie." en="The same icon can be decorative or informative, but its accessible name follows its interface role." />}
@@ -616,9 +595,9 @@ export const Ikony: Story = {
               children: <Token>{'<title>'}</Token>,
             })}
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection index="03" title={<Localized pl="Rozmiary w realnym użyciu" en="Sizes in real use" />}>
+        <StoryPresentationSection className="pd-icon-section" index="03" title={<Localized pl="Rozmiary w realnym użyciu" en="Sizes in real use" />}>
           <div style={sizeLedgerStyle}>
             {renderSizeRow({
               title: '16 px',
@@ -667,9 +646,10 @@ export const Ikony: Story = {
               ),
             })}
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
+        <StoryPresentationSection
+          className="pd-icon-section"
           index="04"
           title={<Localized pl="Katalog" en="Catalog" />}
           summary={<Localized pl="Ikony są grupowane według zadania, nie według wyglądu. Ikony z przyszłych bibliotek trafiają do tego rejestru albo pozostają lokalnym assetem biblioteki, jeśli nie są częścią języka produktu." en="Icons are grouped by task, not by appearance. Icons from future libraries enter this registry or remain a local library asset when they are not part of the product language." />}
@@ -677,9 +657,10 @@ export const Ikony: Story = {
           <div style={catalogGridStyle}>
             {iconCatalogGroups.map(renderCatalogGroup)}
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
+        <StoryPresentationSection
+          className="pd-icon-section"
           index="05"
           title={<Localized pl="Poza rejestrem" en="Outside the registry" />}
         >
@@ -689,7 +670,7 @@ export const Ikony: Story = {
               en="A real local-asset example: Papa Assistant renders its own interface icons (plus, chevron, send, pin, close and others — 10 names) directly as SVG in AssistantControlIcon, instead of through this component. This is a deliberately separate category — generic UI-control glyphs, not domain iconography — not duplication to fix."
             />
           </p>
-        </StorySection>
+        </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -38,30 +35,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-surface-style-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
 
 const radiusEntries = Object.keys(surfaceStyleTokens.radius) as ReadonlyArray<
   keyof typeof surfaceStyleTokens.radius
@@ -118,7 +91,8 @@ export const PromienieIObramowania: Story = {
       }
       title={<Localized pl="Głębia jest wyjątkiem, nie domyślnym stanem." en="Depth is the exception, not the default." />}
     >
-      <StorySection
+      <StoryPresentationSection
+        className="pd-surface-style-section"
         index="01"
         title={<Localized pl="Promienie" en="Radius" />}
         summary={<Localized pl="Od none po pill — każdy krok ma jedną rolę komponentu." en="From none to pill — every step maps to one component role." />}
@@ -131,9 +105,10 @@ export const PromienieIObramowania: Story = {
             </div>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-surface-style-section"
         index="02"
         title={<Localized pl="Obramowania" en="Borders" />}
       >
@@ -147,9 +122,10 @@ export const PromienieIObramowania: Story = {
             </article>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-surface-style-section"
         index="03"
         title={<Localized pl="Cienie" en="Shadows" />}
         summary={<Localized pl="Cień oznacza uniesienie nad płaszczyzną strony — używany oszczędnie." en="Shadow signals lift above the page plane — used sparingly." />}
@@ -162,9 +138,10 @@ export const PromienieIObramowania: Story = {
             </div>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-surface-style-section"
         index="04"
         title={<Localized pl="Pierścień fokusu" en="Focus ring" />}
         summary={<Localized pl="Fokus jest zbudowany z tego samego tokenu we wszystkich komponentach interaktywnych." en="Focus is built from the same token across every interactive component." />}
@@ -188,9 +165,10 @@ export const PromienieIObramowania: Story = {
             </button>
           </span>
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-surface-style-section"
         index="05"
         title={<Localized pl="Reguły kontraktu" en="Contract rules" />}
       >
@@ -202,9 +180,10 @@ export const PromienieIObramowania: Story = {
             </div>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-surface-style-section"
         index="06"
         title={<Localized pl="W praktyce" en="In practice" />}
       >
@@ -228,7 +207,7 @@ export const PromienieIObramowania: Story = {
             en="Shadow is clean — real code no longer bypasses --pd-shadow-* anywhere (the last 2 exceptions, the recharts tooltip and .pd-shell-anchored-overlay, were fixed on 2026-09-10)."
           />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

@@ -2,9 +2,6 @@ import {
   useState,
 } from 'react';
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -25,16 +22,20 @@ import {
   Localized,
   copy,
 } from '../../../storybook-next/presentation/storyLocalization';
-import '../../../storybook-next/presentation/story-presentation.css';
-import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../../storybook-next/presentation/StoryPresentation';
 
 const meta = {
   title: 'DESIGN SYSTEM/Komponenty/Overlay/AlertDialog',
   component: AlertDialog,
   parameters: {
-    layout: 'fullscreen',
+    layout: 'centered',
     a11y: {
       test: 'error',
+    },
+    docs: {
+      description: {
+        component:
+          'AlertDialog (role="alertdialog", warstwa modal, z-index 30) potwierdza jedno, nieodwracalne lub ryzykowne działanie — bez dowolnej treści w środku. Gdy potrzebujesz treści złożonej (formularz, lista), użyj Dialog zamiast AlertDialog.',
+      },
     },
   },
 } satisfies Meta<typeof AlertDialog>;
@@ -42,30 +43,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-alert-dialog-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
 
 function DestructiveDemo() {
   const [open, setOpen] = useState(false);
@@ -94,34 +71,9 @@ function DestructiveDemo() {
 export const AlertDialogStory: Story = {
   name: 'AlertDialog',
   render: () => (
-    <StoryPresentationPage
-      className="pd-alert-dialog-story"
-      headerAside={(
-        <StoryPresentationMeta
-          ariaLabel={copy({ pl: 'Parametry AlertDialog', en: 'AlertDialog parameters' })}
-          items={[
-            { label: <Localized pl="Rola ARIA" en="ARIA role" />, value: 'alertdialog' },
-            { label: <Localized pl="Warstwa" en="Layer" />, value: 'modal (z-index 30)' },
-          ]}
-        />
-      )}
-      sectionCode="DS"
-      sectionLabel={<Localized pl="Komponenty" en="Components" />}
-      storyId="alert-dialog"
-      summary={
-        <Localized
-          pl="Potwierdzenie jednego, nieodwracalnego lub ryzykownego działania — bez dowolnej treści w środku. Gdy potrzebujesz treści złożonej (formularz, lista), użyj Dialog zamiast AlertDialog."
-          en="Confirmation of a single, irreversible or risky action — no arbitrary content inside. When you need complex content (a form, a list), use Dialog instead of AlertDialog."
-        />
-      }
-      title={<Localized pl="Pytanie, na które trzeba odpowiedzieć, zanim coś się stanie." en="A question you must answer before something happens." />}
-    >
-      <StorySection index="01" title={<Localized pl="Destrukcyjne potwierdzenie" en="Destructive confirmation" />}>
-        <div data-testid="alert-dialog-demo">
-          <DestructiveDemo />
-        </div>
-      </StorySection>
-    </StoryPresentationPage>
+    <div data-testid="alert-dialog-demo">
+      <DestructiveDemo />
+    </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -135,5 +87,11 @@ export const AlertDialogStory: Story = {
     await expect(body.getByRole('button', { name: 'Odłącz' })).toBeInTheDocument();
 
     await userEvent.keyboard('{Escape}');
+    await expect(body.queryByRole('alertdialog')).not.toBeInTheDocument();
+
+    // Story ma pozostać w reprezentatywnym, otwartym stanie po zakończeniu
+    // testu Escape/close powyżej, więc otwieramy ponownie.
+    await userEvent.click(trigger);
+    await expect(await body.findByRole('alertdialog')).toBeInTheDocument();
   },
 };

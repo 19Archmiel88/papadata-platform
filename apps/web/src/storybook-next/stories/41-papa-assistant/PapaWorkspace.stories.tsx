@@ -2,7 +2,7 @@ import type {Meta,StoryObj} from '@storybook/react-vite';
 import {PapaWorkspaceScenario} from '../../../fixtures/papa-assistant/PapaWorkspaceScenario';
 import {StorybookProductShellFrame} from '../shared/StorybookProductShellFrame';
 import type {AssistantView} from '../../../runtime/shell/papa-assistant/assistantModel';
-const meta={title:'Papa Asystent/ZIP 4 - Dostep i kontekst',parameters:{layout:'fullscreen'}} satisfies Meta;
+const meta={title:'PAPA ASYSTENT/Workspace',parameters:{layout:'fullscreen'}} satisfies Meta;
 export default meta;type Story=StoryObj<typeof meta>;
 const render=(view:AssistantView,compact=false,readonly=false,failed=false)=><StorybookProductShellFrame activePath="/app/assistant"><PapaWorkspaceScenario view={view} compact={compact} readonly={readonly} failed={failed}/></StorybookProductShellFrame>;
 export const Conversation:Story={name:'Rozmowa i tryby',render:()=>render('Rozmowa')};

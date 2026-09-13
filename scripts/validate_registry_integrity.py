@@ -19,16 +19,8 @@ EXPECTED_HEADERS = {
         "canonical_operation_id", "alias_of", "screen_id", "screen_name",
         "description", "owner",
     ],
-    "rejestry/storybook.csv": [
-        "story_title", "document", "status", "implementation_note", "fixture_id",
-        "states", "play_steps", "visual_assertions", "implementation_status",
-        "screen_id", "registry_scope", "active_sidebar_source",
-        "target_status", "story_exists", "runtime_used", "test_executed",
-        "acceptance_status",
-    ],
 }
 
-STORYBOOK_SOURCE = "apps/web/.storybook/main.ts"
 MANUAL_PAPA_OPERATIONS_MD = "contracts/papa-lab-runtime-operations.md"
 PAPA_OPERATIONS_JSON = "contracts/papa-lab-runtime-operations.json"
 
@@ -121,58 +113,6 @@ def validate(root: Path) -> dict[str, object]:
         if fields != expected_header:
             error("REGISTRY_SCHEMA_DRIFT", f"{relative}: expected={expected_header}, actual={fields}")
     checks["protected_registry_schemas"] = len(EXPECTED_HEADERS)
-
-    storybook_source_path = root / STORYBOOK_SOURCE
-    if not storybook_source_path.exists():
-        error("STORYBOOK_SOURCE_MISSING", STORYBOOK_SOURCE)
-
-    storybook_path = root / "rejestry/storybook.csv"
-    story_rows: list[dict[str, str]] = []
-    if storybook_path.exists():
-        _, story_rows = read_csv(storybook_path)
-        fixture_ids: set[str] = set()
-        for row in story_rows:
-            title = row.get("story_title", "<unknown>")
-            if row.get("registry_scope") != "target-backlog-registry":
-                error("STORYBOOK_SCOPE", title)
-            if row.get("active_sidebar_source") != STORYBOOK_SOURCE:
-                error("STORYBOOK_SOURCE", title)
-            if row.get("target_status") != row.get("status"):
-                error("STORYBOOK_TARGET_STATUS", title)
-            if row.get("story_exists") not in {"yes", "no"}:
-                error("STORYBOOK_EXISTS_STATE", title)
-            if row.get("runtime_used") not in {"yes", "no", "unknown", "not_applicable"}:
-                error("STORYBOOK_RUNTIME_STATE", title)
-            if row.get("acceptance_status") not in {
-                "accepted", "implemented_not_release_accepted", "backlog", "deprecated", "unknown"
-            }:
-                error("STORYBOOK_ACCEPTANCE_STATE", title)
-            if not row.get("test_executed"):
-                error("STORYBOOK_TEST_STATE", title)
-            fixture_id = row.get("fixture_id", "")
-            if not fixture_id:
-                error("STORYBOOK_FIXTURE_ID", title)
-                continue
-            if fixture_id in fixture_ids:
-                error("STORYBOOK_FIXTURE_DUPLICATE", fixture_id)
-            fixture_ids.add(fixture_id)
-            fixture = root / fixture_id
-            if not fixture.exists():
-                error("STORYBOOK_FIXTURE_MISSING", fixture_id)
-                continue
-            try:
-                payload = json.loads(fixture.read_text(encoding="utf-8"))
-            except Exception as exc:
-                error("STORYBOOK_FIXTURE_JSON", f"{fixture_id}: {exc}")
-                continue
-            if payload.get("sourceDocument") != row.get("document"):
-                error("STORYBOOK_FIXTURE_SOURCE", fixture_id)
-            if "|".join(payload.get("states", [])) != row.get("states"):
-                error("STORYBOOK_FIXTURE_STATES", fixture_id)
-    checks["storybook"] = {
-        "registry_rows": len(story_rows),
-        "active_source": STORYBOOK_SOURCE,
-    }
 
     manual_md = root / MANUAL_PAPA_OPERATIONS_MD
     if manual_md.exists():

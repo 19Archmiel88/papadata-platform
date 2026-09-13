@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -56,30 +53,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-tabs-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const TabsStory: Story = {
   name: 'Tabs',
   render: (args) => (
@@ -105,17 +78,17 @@ export const TabsStory: Story = {
       }
       title={<Localized pl="Jeden ekran, kilka paneli." en="One screen, several panels." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
+      <StoryPresentationSection className="pd-tabs-section" index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
         <div data-testid="tabs-controlled">
           <Tabs {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Pionowe" en="Vertical" />}>
+      <StoryPresentationSection className="pd-tabs-section" index="02" title={<Localized pl="Pionowe" en="Vertical" />}>
         <div data-testid="tabs-vertical" style={{ maxWidth: '260px' }}>
           <Tabs activation="automatic" activeId="data" items={items} orientation="vertical" onActiveIdChange={fn()} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

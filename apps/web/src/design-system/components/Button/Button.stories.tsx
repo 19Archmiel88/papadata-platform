@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -232,29 +229,6 @@ function assertActivityLineMatchesControl(control: HTMLElement) {
   }
 }
 
-function StorySection({
-  children,
-  description,
-  eyebrow,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly description: ReactNode;
-  readonly eyebrow: string;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-action-section"
-      index={eyebrow}
-      summary={description}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 function ButtonDocumentation() {
   const applyChangesLabel = copy({ pl: 'Zastosuj zmiany', en: 'Apply changes' });
   const approveConfigLabel = copy({ pl: 'Zatwierdź konfigurację', en: 'Approve configuration' });
@@ -292,14 +266,15 @@ function ButtonDocumentation() {
       title={<Localized pl="Akcje jako precyzyjny system decyzji." en="Actions as a precise decision system." />}
     >
 
-        <StorySection
-          description={
+        <StoryPresentationSection
+          className="pd-action-section"
+          summary={
             <Localized
               pl="Ten sam kontrakt wizualny działa w nagłówkach, tabelach, formularzach i przepływach bez lokalnych wariantów wyglądu."
               en="The same visual contract works in headers, tables, forms and flows without local visual variants."
             />
           }
-          eyebrow="01"
+          index="01"
           title={<Localized pl="Podgląd systemu akcji" en="Action system preview" />}
         >
           <div className="pd-action-hero__actions">
@@ -321,16 +296,17 @@ function ButtonDocumentation() {
               />
             </ButtonGroup>
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
-          description={
+        <StoryPresentationSection
+          className="pd-action-section"
+          summary={
             <Localized
               pl="Wybór komponentu wynika z semantyki akcji, nie z tego, który wariant wygląda mocniej."
               en="Component choice follows action semantics, not which variant looks stronger."
             />
           }
-          eyebrow="01"
+          index="01"
           title={<Localized pl="Kiedy użyć której akcji" en="When to use each action" />}
         >
           <div className="pd-action-usage-ledger">
@@ -351,16 +327,17 @@ function ButtonDocumentation() {
               </article>
             ))}
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
-          description={
+        <StoryPresentationSection
+          className="pd-action-section"
+          summary={
             <Localized
               pl="Każdy wariant ma jasną rolę w produkcie. Hierarchia wynika z koloru, ciężaru tekstu, ikony i zachowania kreski, nie z dodatkowej ramki wokół przykładu."
               en="Each variant has a clear product role. Hierarchy comes from color, text weight, icon and the activity line, not from an extra frame around the example."
             />
           }
-          eyebrow="02"
+          index="02"
           title={<Localized pl="Hierarchia decyzji" en="Decision hierarchy" />}
         >
           <div className="pd-action-ledger">
@@ -384,16 +361,17 @@ function ButtonDocumentation() {
               </article>
             ))}
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
-          description={
+        <StoryPresentationSection
+          className="pd-action-section"
+          summary={
             <Localized
               pl="Stany nie zmieniają geometrii elementu. Ładowanie blokuje kliknięcia, stan wyłączony pozostaje spokojny, a rozmiary należą do jednego systemu."
               en="States do not change element geometry. Loading blocks clicks, disabled remains calm and sizes belong to one system."
             />
           }
-          eyebrow="03"
+          index="03"
           title={<Localized pl="Stany bez przesunięć" en="States without layout shift" />}
         >
           <div className="pd-action-state-ledger">
@@ -459,16 +437,17 @@ function ButtonDocumentation() {
               <p><Localized pl="Stan nieaktywny pozostaje czytelny bez udawania interakcji." en="The inactive state stays readable without pretending to be interactive." /></p>
             </article>
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
-          description={
+        <StoryPresentationSection
+          className="pd-action-section"
+          summary={
             <Localized
               pl="Konsumenci nie tworzą lokalnych przycisków. Wykres, tabela, formularz i sidecar używają tego samego właściciela akcji z różną hierarchią."
               en="Consumers do not create local buttons. Chart, table, form and sidecar use the same action owner with different hierarchy."
             />
           }
-          eyebrow="04"
+          index="04"
           title={<Localized pl="Akcje w kontekście danych" en="Actions in data context" />}
         >
           <div className="pd-action-context-grid">
@@ -554,15 +533,16 @@ function ButtonDocumentation() {
               </p>
             </article>
           </div>
-        </StorySection>
-        <StorySection
-          description={
+        </StoryPresentationSection>
+        <StoryPresentationSection
+          className="pd-action-section"
+          summary={
             <Localized
               pl="Ikony zachowują się jak kontrolki, nie jak ozdobne kafelki. Reagują zmianą koloru i subtelnym znacznikiem aktywności."
               en="Icons behave like controls, not decorative tiles. They react with color and a subtle activity marker."
             />
           }
-          eyebrow="05"
+          index="05"
           title={<Localized pl="Ikony i pasek operacyjny" en="Icons and operation bar" />}
         >
           <div className="pd-action-toolbar-demo">
@@ -645,16 +625,17 @@ function ButtonDocumentation() {
               </p>
             </article>
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
-          description={
+        <StoryPresentationSection
+          className="pd-action-section"
+          summary={
             <Localized
               pl="TextAction jest komendą w treści, a LinkAction jest nawigacją. Oba nie konkurują z CTA, ale korzystają z tej samej spokojnej hierarchii i znacznika aktywności."
               en="TextAction is an inline command, while LinkAction is navigation. Both avoid competing with CTAs and use the same calm hierarchy and activity marker."
             />
           }
-          eyebrow="06"
+          index="06"
           title={<Localized pl="Komenda vs link" en="Command vs link" />}
         >
           <div className="pd-action-inline-grid">
@@ -692,16 +673,17 @@ function ButtonDocumentation() {
               </p>
             </article>
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
-          description={
+        <StoryPresentationSection
+          className="pd-action-section"
+          summary={
             <Localized
               pl="Ten przykład pokazuje kolejność i układ grupy działań w realnym widoku roboczym. Mobile jest wariantem tej samej kolejności, nie osobnym wzorcem."
               en="This example shows the order and layout of an action group in a real workspace. Mobile is a variant of the same order, not a separate pattern."
             />
           }
-          eyebrow="07"
+          index="07"
           title={<Localized pl="Grupa decyzji w widoku roboczym" en="Decision group in a workspace" />}
         >
           <article className="pd-action-decision-panel">
@@ -752,7 +734,7 @@ function ButtonDocumentation() {
               </ButtonGroup>
             </div>
           </article>
-        </StorySection>
+        </StoryPresentationSection>
     </StoryPresentationPage>
   );
 }

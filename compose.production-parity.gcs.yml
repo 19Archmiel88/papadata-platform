@@ -1,0 +1,61 @@
+# Optional overlay for compose.production-parity.yml: runs api-production
+# and worker-production against a REAL, dedicated GCS parity bucket using
+# the exact same `@google-cloud/storage` code path production uses --
+# instead of MinIO (packages/storage/src/index.ts's other branch).
+#
+# packages/storage/src/index.ts:ObjectStorageClient has two implementations
+# (S3-compatible for MinIO, native GCS SDK for GCS) selected purely by
+# PAPADATA_STORAGE_DRIVER; this overlay doesn't change any code, it just
+# switches which of the two production-parity already runs, by pointing
+# it at a real bucket instead of the local MinIO container.
+#
+# MinIO stays the default ("fast dev" tier): quick, no external
+# dependencies, no GCP credentials required. This overlay is the
+# "certified parity" tier for the storage driver specifically -- use it
+# when you need to verify a change actually behaves correctly against real
+# GCS before it reaches staging (signed URL formats, GCS-specific error
+# shapes, metadata semantics, etc. genuinely differ from MinIO/S3).
+#
+# Usage:
+#   1. Create a dedicated GCS bucket for parity testing (never point this
+#      at a production or staging bucket) and a service account with
+#      Storage Object Admin on it only.
+#   2. Download that service account's JSON key to
+#      .runtime/backend-production-parity/gcs-parity-key.json (already
+#      gitignored under .runtime/) -- never commit it.
+#   3. docker compose -f compose.production-parity.yml \
+#        -f compose.production-parity.gcs.yml \
+#        --env-file .env.production-parity up --build api-production worker-production
+#
+# CI equivalent: this overlay is NOT wired into the local parity gate
+# (tools/verify-production-parity-env-contract.mjs, pnpm
+# verify:production-parity-runtime) -- it requires real, credentialed GCP
+# access, so it belongs with the other GCP-managed-services acceptance
+# checks (tools/verify-gcp-staging-acceptance.mjs,
+# .github/workflows/staging-production-acceptance.yml), not the always-on
+# local gate. See that workflow for the actual CI-run acceptance check
+# against the real GCS driver in staging.
+services:
+  api-production:
+    environment:
+      PAPADATA_STORAGE_DRIVER: gcs
+      GOOGLE_CLOUD_PROJECT: ${PAPADATA_GCS_PARITY_PROJECT:?Set PAPADATA_GCS_PARITY_PROJECT to your dedicated GCS parity project}
+      PAPADATA_STORAGE_BUCKET: ${PAPADATA_GCS_PARITY_BUCKET:?Set PAPADATA_GCS_PARITY_BUCKET to your dedicated GCS parity bucket}
+      PAPADATA_STORAGE_ENDPOINT: ""
+      PAPADATA_STORAGE_ACCESS_KEY: ""
+      PAPADATA_STORAGE_SECRET_KEY: ""
+      GOOGLE_APPLICATION_CREDENTIALS: /run/papadata-gcs-parity/key.json
+    volumes:
+      - ./.runtime/backend-production-parity/gcs-parity-key.json:/run/papadata-gcs-parity/key.json:ro
+
+  worker-production:
+    environment:
+      PAPADATA_STORAGE_DRIVER: gcs
+      GOOGLE_CLOUD_PROJECT: ${PAPADATA_GCS_PARITY_PROJECT:?Set PAPADATA_GCS_PARITY_PROJECT to your dedicated GCS parity project}
+      PAPADATA_STORAGE_BUCKET: ${PAPADATA_GCS_PARITY_BUCKET:?Set PAPADATA_GCS_PARITY_BUCKET to your dedicated GCS parity bucket}
+      PAPADATA_STORAGE_ENDPOINT: ""
+      PAPADATA_STORAGE_ACCESS_KEY: ""
+      PAPADATA_STORAGE_SECRET_KEY: ""
+      GOOGLE_APPLICATION_CREDENTIALS: /run/papadata-gcs-parity/key.json
+    volumes:
+      - ./.runtime/backend-production-parity/gcs-parity-key.json:/run/papadata-gcs-parity/key.json:ro

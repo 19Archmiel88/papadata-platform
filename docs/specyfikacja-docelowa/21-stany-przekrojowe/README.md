@@ -38,7 +38,7 @@ Ten dokument jest kanonicznym, scalonym źródłem dla tego obszaru. Sekcje odpo
 
 Wzorzec pokazuje nagłówek strony, nagłówek sekcji, region treści, podział treści i relację lista-szczegół jako otwarty układ oparty o semantyczne regiony, typografię, rytm i separatory.
 
-Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.* i nie zmienia `runtime-component-api.csv` ani `analytics-system-v1.json`.
+Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.*; runtime ownerem pozostaje aktualna implementacja komponentu i jego publiczny kontrakt.
 
 ### Anatomia
 
@@ -120,7 +120,7 @@ Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook maj�
 
 Wzorzec porządkuje stan pusty, brak wyników, brak danych operacyjnych poza wykresem, błąd, blokadę procesu, brak dostępu, brak uprawnienia w planie i ponowienie przez istniejące komponenty feedback.
 
-Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.* i nie zmienia `runtime-component-api.csv` ani `analytics-system-v1.json`.
+Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.*; runtime ownerem pozostaje aktualna implementacja komponentu i jego publiczny kontrakt.
 
 Analityczne stany danych dla ChartFrame i wykresów, w tym `noData`, `partial`, `stale`, `delayed`, `blocked`, `error` i `unavailable`, pozostają własnością `15.08 / ChartDataState`. 18.02 routuje wyłącznie ogólne powierzchnie feedbacku poza kanoniczną ramą wykresu.
 
@@ -203,7 +203,7 @@ Wzorzec używa istniejących komponentów bazowych. Akcje przyciskowe pochodzą 
 
 Wzorzec pokazuje ładowanie, kolejkę, operację w toku, częściowe zakończenie, anulowanie i ponowienie przez Skeleton, Spinner, Button loading, BackgroundOperationItem i ProgressIndicator.
 
-Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.* i nie zmienia `runtime-component-api.csv` ani `analytics-system-v1.json`.
+Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.*; runtime ownerem pozostaje aktualna implementacja komponentu i jego publiczny kontrakt.
 
 ### Anatomia
 
@@ -285,7 +285,7 @@ Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook maj�
 
 Wzorzec używa DataTable jako kanonicznej powierzchni danych oraz FilterBar, SearchField, Select i lokalnego sterownika sortowania złożonego z Menu dla realnego stanu wyszukiwania, filtrowania, sortowania i akcji wiersza.
 
-Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.* i nie zmienia `runtime-component-api.csv` ani `analytics-system-v1.json`.
+Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.*; runtime ownerem pozostaje aktualna implementacja komponentu i jego publiczny kontrakt.
 
 ### Anatomia
 
@@ -458,7 +458,7 @@ Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook maj�
 
 Wzorzec używa Drawer jako realnej warstwy panelu oraz Tabs dla szczegółów, dowodów i rekomendacji. To jedyna semantycznie uzasadniona zamknięta powierzchnia w zakresie 18.
 
-Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.* i nie zmienia `runtime-component-api.csv` ani `analytics-system-v1.json`.
+Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.*; runtime ownerem pozostaje aktualna implementacja komponentu i jego publiczny kontrakt.
 
 ### Anatomia
 
@@ -538,7 +538,7 @@ Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook maj�
 
 Wzorzec pokazuje przekrojową gotowość operacyjną przez StatusBadge, InlineNotice i listy separatorowe. Stany danych wykresów analitycznych pozostają własnością 15.08 ChartDataState.
 
-Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.* i nie zmienia `runtime-component-api.csv` ani `analytics-system-v1.json`.
+Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.*; runtime ownerem pozostaje aktualna implementacja komponentu i jego publiczny kontrakt.
 
 ### Anatomia
 
@@ -584,7 +584,7 @@ Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook maj�
 ### Testy i kryteria akceptacji
 
 1. Play test sprawdza listę statusów i handoff do 15.08 ChartDataState.
-2. analytics-system-v1.json pozostaje bez zmian.
+2. Runtime ownerzy analityczni pozostają w aktualnej implementacji komponentów.
 3. Lokalny CSS nie override'uje `.pd-f0-*`, `.pd-button`, `.pd-inline-action`, `.pd-icon-button` ani produkcyjnych klas komponentów.
 4. Mobile 390 i zoom 200% są objęte audytem Storybook, jeżeli fixture deklaruje brak poziomego scrolla.
 
@@ -705,7 +705,7 @@ Wzorzec używa istniejących komponentów bazowych. Lokalne klasy Storybook maj�
 
 Macierz przypisuje rodziny stanów do powierzchni i właścicieli przez DataTable oraz lekką listę zasad, bez ściany checklist ani lokalnych kart.
 
-Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.* i nie zmienia `runtime-component-api.csv` ani `analytics-system-v1.json`.
+Zakres jest Storybook/pattern-only. Dokument nie dodaje nowego publicznego runtime componentu, nie zmienia ownerów 15.*; runtime ownerem pozostaje aktualna implementacja komponentu i jego publiczny kontrakt.
 
 Domenowa gotowość procesu danych pozostaje przy domenach danych i integracji. Analityczne stany prezentacyjne `noData`, `partial`, `stale` i `delayed` pozostają przy `15.08 / ChartDataState`.
 

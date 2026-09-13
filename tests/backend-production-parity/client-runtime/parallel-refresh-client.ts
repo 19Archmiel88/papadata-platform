@@ -29,10 +29,6 @@ const csrfToken = requiredEnv("PARITY_CSRF_TOKEN");
 const ca = readFileSync(caPath);
 
 const forceLoopback: LookupFunction = (_hostname, options, callback) => {
-  if (typeof options === "function") {
-    options(null, "127.0.0.1", 4);
-    return;
-  }
   if (options.all) {
     callback(null, [{ address: "127.0.0.1", family: 4 }]);
     return;
@@ -75,6 +71,7 @@ function nodeHttpsFetch(input: RequestInfo | URL, init: RequestInit): Promise<Re
   });
 
   return new Promise<Response>((resolvePromise, reject) => {
+    // codeql[js/file-access-to-http]: `ca` (read above) is a local TLS trust root passed as https.request's `ca` option to validate the *server's* certificate; it configures the client's trust store and is never transmitted to the remote peer, so no file data actually leaves the process here.
     const request = https.request({
       ca,
       headers: outgoingHeaders,

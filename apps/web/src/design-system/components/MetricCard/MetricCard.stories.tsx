@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -56,30 +53,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-metric-card-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 const gridStyle = { display: 'grid', gap: 'var(--pd-space-4)', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' } as const;
 
 export const MetricCardStory: Story = {
@@ -106,27 +79,27 @@ export const MetricCardStory: Story = {
       }
       title={<Localized pl="Liczba, która wie, czy można jej ufać." en="A number that knows if you can trust it." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
+      <StoryPresentationSection className="pd-metric-card-section" index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
         <div data-testid="metric-controlled" style={{ maxWidth: '340px' }}>
           <MetricCard {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Stany gotowości danych" en="Data readiness states" />}>
+      <StoryPresentationSection className="pd-metric-card-section" index="02" title={<Localized pl="Stany gotowości danych" en="Data readiness states" />}>
         <div data-testid="metric-states" style={gridStyle}>
           <MetricCard label={copy({ pl: 'Ładowanie', en: 'Loading' })} metricId="loading" status="loading" statusLabel={copy({ pl: 'Ładowanie…', en: 'Loading…' })} value={null} />
           <MetricCard freshnessLabel={copy({ pl: 'Dane nieaktualne od 08:21', en: 'Data stale since 08:21' })} label={copy({ pl: 'ROAS (nieaktualne)', en: 'ROAS (stale)' })} metricId="roas-stale" signal="warning" status="stale" statusLabel={copy({ pl: 'Dane nieaktualne', en: 'Data stale' })} unit="x" value="3,1" />
           <MetricCard label={copy({ pl: 'CAC (błąd)', en: 'CAC (error)' })} metricId="cac-error" signal="negative" status="error" statusLabel={copy({ pl: 'Błąd pobrania', en: 'Fetch error' })} value={null} />
           <MetricCard label={copy({ pl: 'Brak danych', en: 'No data' })} metricId="empty" status="noData" statusLabel={copy({ pl: 'Brak danych w zakresie', en: 'No data in range' })} value={null} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="03" title={<Localized pl="Emphasis" en="Emphasis" />} summary={<Localized pl="alert i recommendation podnoszą wizualny priorytet karty na dashboardzie." en="alert and recommendation raise the card's visual priority on a dashboard." />}>
+      <StoryPresentationSection className="pd-metric-card-section" index="03" title={<Localized pl="Emphasis" en="Emphasis" />} summary={<Localized pl="alert i recommendation podnoszą wizualny priorytet karty na dashboardzie." en="alert and recommendation raise the card's visual priority on a dashboard." />}>
         <div data-testid="metric-emphasis" style={gridStyle}>
           <MetricCard comparison={{ direction: 'down', label: '-14% d/d' }} emphasis="alert" label={copy({ pl: 'ROAS poniżej celu', en: 'ROAS below target' })} metricId="roas-alert" signal="negative" status="ready" statusLabel={copy({ pl: 'Gotowe', en: 'Ready' })} unit="x" value="1,8" />
           <MetricCard emphasis="recommendation" label={copy({ pl: 'Sugerowane działanie', en: 'Suggested action' })} metricId="recommendation" status="ready" statusLabel={copy({ pl: 'Gotowe', en: 'Ready' })} value={copy({ pl: 'Przesuń budżet', en: 'Reallocate budget' })} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

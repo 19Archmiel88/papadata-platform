@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -49,30 +46,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-pagination-nav-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const PaginationNavStory: Story = {
   name: 'PaginationNav',
   render: (args) => (
@@ -97,18 +70,18 @@ export const PaginationNavStory: Story = {
       }
       title={<Localized pl="Zakres bez znanego końca." en="A range without a known end." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
+      <StoryPresentationSection className="pd-pagination-nav-section" index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
         <div data-testid="pagination-nav-controlled">
           <PaginationNav {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Ładowanie / brak dalszych wyników" en="Loading / no further results" />}>
+      <StoryPresentationSection className="pd-pagination-nav-section" index="02" title={<Localized pl="Ładowanie / brak dalszych wyników" en="Loading / no further results" />}>
         <div data-testid="pagination-nav-states" style={{ display: 'grid', gap: 'var(--pd-space-4)' }}>
           <PaginationNav cursor="evt_100" loading nextCursor="evt_120" previousCursor={null} onNavigate={fn()} />
           <PaginationNav cursor="evt_900" loading={false} nextCursor={null} previousCursor="evt_850" summary={copy({ pl: 'Ostatnia strona wyników', en: 'Last page of results' })} onNavigate={fn()} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

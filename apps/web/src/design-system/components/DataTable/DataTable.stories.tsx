@@ -2,9 +2,6 @@ import {
   useState,
 } from 'react';
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -77,30 +74,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-data-table-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 function SelectableDataTable() {
   const [selected, setSelected] = useState<readonly string[]>([rows[0]!.id]);
 
@@ -165,19 +138,19 @@ export const DataTableStory: Story = {
       }
       title={<Localized pl="Tabela, która zarządza sobą sama." en="A table that manages itself." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany (zaznaczanie)" en="Controlled (selection)" />}>
+      <StoryPresentationSection className="pd-data-table-section" index="01" title={<Localized pl="Kontrolowany (zaznaczanie)" en="Controlled (selection)" />}>
         <div data-testid="data-table-controlled">
           <SelectableDataTable />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Ładowanie / błąd / brak wyników" en="Loading / error / no results" />}>
+      <StoryPresentationSection className="pd-data-table-section" index="02" title={<Localized pl="Ładowanie / błąd / brak wyników" en="Loading / error / no results" />}>
         <div data-testid="data-table-states" style={{ display: 'grid', gap: 'var(--pd-space-6)' }}>
           <DataTable columns={columns} emptyMessage={copy({ pl: 'Brak zamówień.', en: 'No orders.' })} loading rowCount={0} rows={[]} selectedRowIds={[]} sort={null} />
           <DataTable columns={columns} emptyMessage={copy({ pl: 'Brak zamówień.', en: 'No orders.' })} errorMessage={copy({ pl: 'Nie udało się pobrać zamówień.', en: 'Failed to fetch orders.' })} loading={false} rowCount={0} rows={[]} selectedRowIds={[]} sort={null} />
           <DataTable columns={columns} emptyMessage={copy({ pl: 'Zmień filtry, aby zobaczyć wyniki.', en: 'Adjust the filters to see results.' })} loading={false} noResults noResultsMessage={copy({ pl: 'Nic nie znaleziono dla podanych filtrów.', en: 'Nothing found for the current filters.' })} rowCount={0} rows={[]} selectedRowIds={[]} sort={null} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

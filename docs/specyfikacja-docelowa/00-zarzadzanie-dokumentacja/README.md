@@ -56,7 +56,6 @@ Dokumentacja rozdziela fundamenty, komponenty, wzorce, powierzchnie Auth, ekrany
 - [Ekran–komponent](../../../macierze/ekran-komponent.csv)
 - [Ekran–dane–API](../../../macierze/ekran-dane-api.csv)
 - [Ekran–rola–uprawnienie](../../../macierze/ekran-rola-uprawnienie.csv)
-- [Ekran–Storybook–test](../../../macierze/ekran-storybook-test.csv)
 
 
 ### Utrzymanie dokumentu 1.0
@@ -473,9 +472,9 @@ W praktyce dokument jest używany jako punkt nawigacyjny dla implementatora, pro
 
 <a id="sekcja-16-macierz-ekran-storybook-test"></a>
 
-## Macierz ekran–Storybook–test
+## Storybook i testy wykonywalne
 
-Źródło: [CSV](../../../macierze/ekran-storybook-test.csv). Status planowany nie może zostać zmieniony na wdrożony bez istnienia pliku i przejścia testu.
+Źródłem prawdy jest aktualny kod, aktywne pliki `*.stories.tsx`, konfiguracja `apps/web/.storybook/main.ts` oraz wykonywane testy. Historyczny katalog akceptacji nie steruje implementacją.
 
 
 ### Utrzymanie dokumentu 1.0
@@ -499,7 +498,7 @@ W praktyce dokument jest używany jako punkt nawigacyjny dla implementatora, pro
 | --- | --- | --- |
 | route ekranu | dokument routowalnej powierzchni i router aplikacji | `rejestry/routes.csv` |
 | operation ID | kontrakt domenowy/API | `rejestry/api-operations.csv` |
-| story title | katalog Storybooka | `rejestry/storybook.csv` |
+| story title | aktualny katalog Storybooka | `apps/web/.storybook/main.ts` oraz aktywne `*.stories.tsx` |
 | event telemetryczny | kontrakt analityki produktu | `rejestry/events.csv` |
 | capability | backend authorization/access matrix | `rejestry/capabilities.csv` |
 
@@ -534,8 +533,8 @@ Ekran może zostać zaakceptowany dopiero, gdy każdy element w jego anatomii ma
 - ekran nie definiuje lokalnej tabeli, KPI, statusu, dialogu ani wykresu;
 - komponent domenowy ma model widoku, zdarzenia, stany, Storybook i testy;
 - relacja znajduje się w `macierze/ekran-komponent.csv` lub `rejestry/component-screen.csv`;
-- brak komponentu albo brak statusu `accepted` w runtime API/Storybooku blokuje implementację ekranu produkcyjnego;
-- ekran może przejść z backlogu do runtime dopiero, gdy wszystkie wymagane komponenty mają zaakceptowany kontrakt, fixture, story i test wymagany przez `rejestry/storybook.csv`.
+- brak wymaganej implementacji runtime albo wykonywalnego pokrycia jakości blokuje release, ale nie zamraża przyszłych zmian UI;
+- stan runtime wynika z aktualnego kodu i wykonywanych testów; historyczne statusy Storybooka nie są źródłem prawdy.
 
 
 ### Utrzymanie dokumentu 1.0

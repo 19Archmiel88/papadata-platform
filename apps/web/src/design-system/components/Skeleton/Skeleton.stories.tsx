@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -56,30 +53,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-skeleton-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const SkeletonStory: Story = {
   name: 'Skeleton',
   render: (args) => (
@@ -105,7 +78,8 @@ export const SkeletonStory: Story = {
       }
       title={<Localized pl="Kształt, którego jeszcze nie widać." en="A shape you cannot see yet." />}
     >
-      <StorySection
+      <StoryPresentationSection
+        className="pd-skeleton-section"
         index="01"
         title={<Localized pl="Kontrolowany" en="Controlled" />}
         summary={<Localized pl="Steruj kontrolkami w panelu Storybooka." en="Drive it from the Storybook controls panel." />}
@@ -113,9 +87,10 @@ export const SkeletonStory: Story = {
         <div data-testid="skeleton-controlled">
           <Skeleton {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-skeleton-section"
         index="02"
         title={<Localized pl="Kształty" en="Shapes" />}
       >
@@ -139,9 +114,10 @@ export const SkeletonStory: Story = {
             </div>
           </article>
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-skeleton-section"
         index="03"
         title={<Localized pl="Animacje" en="Motion" />}
         summary={<Localized pl="Przełącz Animacje w toolbarze — animated=true respektuje prefers-reduced-motion i tryb ograniczony." en="Toggle Motion in the toolbar — animated=true respects prefers-reduced-motion and the reduced mode." />}
@@ -156,7 +132,7 @@ export const SkeletonStory: Story = {
             <Localized pl="statyczny" en="static" />
           </span>
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

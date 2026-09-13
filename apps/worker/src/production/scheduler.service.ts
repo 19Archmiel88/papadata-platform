@@ -32,6 +32,7 @@ export class ReconciliationScheduler implements OnModuleDestroy {
     connectionString: this.config.schedulerDatabaseUrl,
     max: 2,
     statementTimeoutMs: 30_000,
+    sslCaBase64: this.config.databaseCaBase64,
   });
 
   @Cron(process.env.RECONCILIATION_CRON ?? "0 */6 * * *")

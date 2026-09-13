@@ -6,7 +6,7 @@
 Ta checklista ogranicza ryzyko tworzenia lokalnych wyjątków, które później dublują design system.
 
 - [ ] Sprawdzono, czy komponent nie istnieje już w `apps/web/src/design-system/components`.
-- [ ] Sprawdzono `rejestry/runtime-component-api.csv` i `apps/web/src/design-system/component-system-v1.json`.
+- [ ] Sprawdzono, czy publiczny runtime API komponentu jest zgodny z `rejestry/runtime-component-api.csv`.
 - [ ] Wskazano jedno źródło prawdy: komponent bazowy, komponent domenowy albo helper Storybooka.
 - [ ] Zdefiniowano odpowiedzialność komponentu bez przejmowania odpowiedzialności ekranu.
 - [ ] Zdefiniowano publiczne props bez przypadkowych `any`.

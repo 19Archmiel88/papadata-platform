@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -39,29 +36,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-theme-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 const themeMetrics: ReadonlyArray<{
   readonly label: LocalizedCopy;
   readonly value: string;
@@ -97,7 +71,8 @@ export const Motyw: Story = {
       }
       title={<Localized pl="Jeden kontrakt, dwa motywy." en="One contract, two themes." />}
     >
-      <StorySection
+      <StoryPresentationSection
+        className="pd-theme-section"
         index="01"
         title={<Localized pl="Aktywny motyw na żywo" en="Active theme, live" />}
         summary={<Localized pl="Ta karta korzysta z tych samych zmiennych --pd-*, których używa produkt — motyw zmienia się razem z przełącznikiem w toolbarze." en="This card uses the same --pd-* variables the product uses — it follows the toolbar's theme toggle." />}
@@ -127,9 +102,10 @@ export const Motyw: Story = {
             />
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-theme-section"
         index="02"
         title={<Localized pl="Historia motywów" en="Theme history" />}
       >
@@ -139,9 +115,10 @@ export const Motyw: Story = {
             en="One shared brand token system: cherry, pistachio and porcelain, with light and dark modes in the app and Storybook."
           />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-theme-section"
         index="03"
         title={<Localized pl="Trzeci wybór w Ustawieniach" en="A third choice in Settings" />}
       >
@@ -151,7 +128,7 @@ export const Motyw: Story = {
             en="The real Platform Settings screen gives users a third choice — System — alongside Light and Dark. It is an interface convenience, not a third CSS mode: on save, System is resolved once via prefers-color-scheme and stored as a plain light or dark theme from the contract above. There is no live listener — an in-session system-preference change does not switch the theme automatically."
           />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

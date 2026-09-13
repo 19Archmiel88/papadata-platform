@@ -7,11 +7,7 @@ const text = (path) => readFileSync(resolve(root, path), "utf8");
 const exists = (path) => existsSync(resolve(root, path));
 const check = (condition, message) => { if (!condition) errors.push(message); };
 
-const storybookHeader = text("rejestry/storybook.csv").split(/\r?\n/u)[0].split(",");
-for (const field of ["target_status", "story_exists", "runtime_used", "test_executed", "acceptance_status"]) {
-  check(storybookHeader.includes(field), `P2-02 missing storybook state field: ${field}`);
-}
-check(exists("scripts/regenerate_storybook_registry_state.py"), "P2-02 storybook runtime-state generator is missing");
+check(exists("tools/verify-storybook-architecture.mjs"), "P2-02 Storybook architecture verifier is missing");
 
 const runtimeReportFiles = [
   "apps/api/src/production/reports/report.service.ts",

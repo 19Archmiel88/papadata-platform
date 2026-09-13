@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -60,30 +57,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-progress-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const ProgressIndicatorStory: Story = {
   name: 'ProgressIndicator',
   render: (args) => (
@@ -109,16 +82,18 @@ export const ProgressIndicatorStory: Story = {
       }
       title={<Localized pl="Postęp, który można zmierzyć." en="Progress you can measure." />}
     >
-      <StorySection
+      <StoryPresentationSection
+        className="pd-progress-section"
         index="01"
         title={<Localized pl="Kontrolowany" en="Controlled" />}
       >
         <div data-testid="progress-controlled" style={{ maxWidth: '420px' }}>
           <ProgressIndicator {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-progress-section"
         index="02"
         title={<Localized pl="Odcienie" en="Tones" />}
         summary={<Localized pl="Odcień odzwierciedla wynik operacji, nie jej ważność." en="Tone reflects the operation's outcome, not its importance." />}
@@ -129,9 +104,10 @@ export const ProgressIndicatorStory: Story = {
           <ProgressIndicator description={copy({ pl: '189 rekordów odrzuconych', en: '189 records rejected' })} indeterminate={false} label={copy({ pl: 'Walidacja z ostrzeżeniami', en: 'Validation with warnings' })} max={1030} showValue tone="warning" value={841} />
           <ProgressIndicator description={copy({ pl: 'Provider nie odpowiada', en: 'Provider is not responding' })} indeterminate={false} label={copy({ pl: 'Pobranie przerwane', en: 'Fetch interrupted' })} max={100} showValue tone="critical" value={18} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-progress-section"
         index="03"
         title={<Localized pl="Indeterminate" en="Indeterminate" />}
         summary={<Localized pl="Postęp trwa, ale wartość liczbowa nie jest jeszcze znana." en="Progress is happening, but a numeric value is not known yet." />}
@@ -139,7 +115,7 @@ export const ProgressIndicatorStory: Story = {
         <div data-testid="progress-indeterminate" style={{ maxWidth: '420px' }}>
           <ProgressIndicator description={null} indeterminate label={copy({ pl: 'Łączenie z Google Ads…', en: 'Connecting to Google Ads…' })} max={100} showValue={false} tone="neutral" value={null} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

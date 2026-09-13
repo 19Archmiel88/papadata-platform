@@ -22,7 +22,7 @@ function Seed({ empty = false }: { empty?: boolean }) {
   return <PapaAssistantExperience />;
 }
 const renderAssistant = () => <StorybookProductShellFrame activePath="/app/assistant"><Seed /></StorybookProductShellFrame>;
-const meta = { title: 'Papa Asystent/Przebudowa', parameters: { layout: 'fullscreen' } } satisfies Meta;
+const meta = { title: 'PAPA ASYSTENT/Doświadczenie', parameters: { layout: 'fullscreen' } } satisfies Meta;
 export default meta;
 type Story = StoryObj<typeof meta>;
 export const FullPage: Story = { name: 'Pełny widok', render: renderAssistant };

@@ -2,9 +2,6 @@ import {
   useState,
 } from 'react';
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -25,16 +22,20 @@ import {
   Localized,
   copy,
 } from '../../../storybook-next/presentation/storyLocalization';
-import '../../../storybook-next/presentation/story-presentation.css';
-import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../../storybook-next/presentation/StoryPresentation';
 
 const meta = {
   title: 'DESIGN SYSTEM/Komponenty/Overlay/OverlayRoot',
   component: OverlayRoot,
   parameters: {
-    layout: 'fullscreen',
+    layout: 'padded',
     a11y: {
       test: 'error',
+    },
+    docs: {
+      description: {
+        component:
+          'OverlayRoot to prymityw, na którym zbudowane są Dialog, AlertDialog i Drawer — portal do #pd-overlay-root-host w document.body, opcjonalny backdrop (none / subtle) i blokada scrolla. Nie używaj OverlayRoot bezpośrednio w ekranach — użyj gotowego Dialog/Drawer/AlertDialog.',
+      },
     },
   },
 } satisfies Meta<typeof OverlayRoot>;
@@ -42,30 +43,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-overlay-root-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
 
 function OverlayRootDemo() {
   const [open, setOpen] = useState(false);
@@ -104,34 +81,9 @@ function OverlayRootDemo() {
 export const OverlayRootStory: Story = {
   name: 'OverlayRoot',
   render: () => (
-    <StoryPresentationPage
-      className="pd-overlay-root-story"
-      headerAside={(
-        <StoryPresentationMeta
-          ariaLabel={copy({ pl: 'Parametry OverlayRoot', en: 'OverlayRoot parameters' })}
-          items={[
-            { label: <Localized pl="Cel portalu" en="Portal target" />, value: '#pd-overlay-root-host' },
-            { label: <Localized pl="backdrop" en="backdrop" />, value: 'none / subtle' },
-          ]}
-        />
-      )}
-      sectionCode="DS"
-      sectionLabel={<Localized pl="Komponenty" en="Components" />}
-      storyId="overlay-root"
-      summary={
-        <Localized
-          pl="Prymityw, na którym zbudowane są Dialog, AlertDialog i Drawer — portal do document.body, opcjonalny backdrop i blokada scrolla. Nie używaj OverlayRoot bezpośrednio w ekranach — użyj gotowego Dialog/Drawer/AlertDialog."
-          en="The primitive Dialog, AlertDialog and Drawer are built on — a portal to document.body, an optional backdrop and scroll lock. Do not use OverlayRoot directly in screens — use the ready-made Dialog/Drawer/AlertDialog."
-        />
-      }
-      title={<Localized pl="Portal, backdrop i blokada scrolla — jeden raz." en="Portal, backdrop and scroll lock — built once." />}
-    >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
-        <div data-testid="overlay-root-demo">
-          <OverlayRootDemo />
-        </div>
-      </StorySection>
-    </StoryPresentationPage>
+    <div data-testid="overlay-root-demo">
+      <OverlayRootDemo />
+    </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -144,5 +96,11 @@ export const OverlayRootStory: Story = {
     await expect(document.getElementById('pd-overlay-root-host')).toBeInTheDocument();
 
     await userEvent.click(body.getByRole('button', { name: copy({ pl: 'Zamknij', en: 'Close' }) }));
+    await expect(body.queryByTestId('overlay-root-panel')).not.toBeInTheDocument();
+
+    // Story ma pozostać w reprezentatywnym, otwartym stanie po zakończeniu
+    // testu zamknięcia powyżej, więc otwieramy ponownie.
+    await userEvent.click(canvas.getByTestId('overlay-root-trigger'));
+    await expect(await body.findByTestId('overlay-root-panel')).toBeInTheDocument();
   },
 };

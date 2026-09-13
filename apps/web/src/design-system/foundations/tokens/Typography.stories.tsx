@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -38,30 +35,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-typography-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
 
 const sizeSamples: ReadonlyArray<{
   readonly key: keyof typeof typographyTokens.sizes;
@@ -114,7 +87,8 @@ export const Typografia: Story = {
       }
       title={<Localized pl="Dwa fonty, jedna hierarchia." en="Two fonts, one hierarchy." />}
     >
-      <StorySection
+      <StoryPresentationSection
+        className="pd-typography-section"
         index="01"
         title={<Localized pl="Skala rozmiarów" en="Size scale" />}
         summary={<Localized pl="Od display po caption — każdy rozmiar ma jedno przeznaczenie w interfejsie." en="From display to caption — every size has one job in the interface." />}
@@ -138,9 +112,10 @@ export const Typografia: Story = {
             </div>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-typography-section"
         index="02"
         title={<Localized pl="Wagi i dane liczbowe" en="Weights and numerics" />}
         summary={<Localized pl="Regular dla treści, medium dla nagłówków i etykiet, semibold dla mocnych akcentów. Wartości liczbowe wyrównują się tabelarycznie." en="Regular for content, medium for headings and labels, semibold for strong accents. Numeric values align on a tabular grid." />}
@@ -165,9 +140,10 @@ export const Typografia: Story = {
             <strong style={{ fontWeight: typographyTokens.weights.semibold }}>+9,2%</strong>
           </div>
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-typography-section"
         index="03"
         title={<Localized pl="Reguły kontraktu" en="Contract rules" />}
       >
@@ -179,9 +155,10 @@ export const Typografia: Story = {
             </div>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-typography-section"
         index="04"
         title={<Localized pl="W praktyce" en="In practice" />}
       >
@@ -191,7 +168,7 @@ export const Typografia: Story = {
             en="Until 2026-09-10, real code set font-size with a raw number in 385 places (26 files) instead of a scale token — almost 3.5× the equivalent radius problem. Brought into alignment: every place (except one deliberate exception — inline code in the Papa message thread uses font-size:0.85em to scale with its surrounding text rather than a fixed size) now references a token, with off-scale values rounded to the nearest step."
           />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

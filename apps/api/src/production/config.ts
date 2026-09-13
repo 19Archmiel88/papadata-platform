@@ -4,6 +4,7 @@ export type ProductionConfig = {
   readonly runtimeEnvironment: RuntimeEnvironment;
   readonly port: number;
   readonly databaseUrl: string;
+  readonly databaseCaBase64: string | null;
   readonly databasePoolMax: number;
   readonly databaseStatementTimeoutMs: number;
   readonly redisUrl: string;
@@ -63,6 +64,13 @@ export function readProductionConfig(
     );
   }
 
+  const databaseCaBase64 = optionalBase64(env.DATABASE_CA_BASE64, "DATABASE_CA_BASE64");
+  if (runtimeEnvironment === "production" && !databaseCaBase64) {
+    throw new ProductionConfigurationError(
+      "DATABASE_CA_BASE64 is required for production PostgreSQL TLS verification.",
+    );
+  }
+
   const storageBucket = requiredText(env, "PAPADATA_STORAGE_BUCKET");
   const storageEndpoint = optionalText(env.PAPADATA_STORAGE_ENDPOINT);
   const storageAccessKey = optionalSecret(env, "PAPADATA_STORAGE_ACCESS_KEY");
@@ -104,6 +112,7 @@ export function readProductionConfig(
     runtimeEnvironment,
     port: readInteger(env.API_PORT, "API_PORT", 4000, 1, 65_535),
     databaseUrl: readUrl(env.DATABASE_URL, "DATABASE_URL", ["postgres:", "postgresql:"]),
+    databaseCaBase64,
     databasePoolMax: readInteger(env.DB_POOL_MAX, "DB_POOL_MAX", 20, 1, 100),
     databaseStatementTimeoutMs: readInteger(
       env.DB_STATEMENT_TIMEOUT_MS,

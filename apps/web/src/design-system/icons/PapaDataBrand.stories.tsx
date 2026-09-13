@@ -228,29 +228,6 @@ const brandPlacementRows = [
   readonly props: PapaDataBrandProps;
 }[];
 
-function StorySection({
-  children,
-  description,
-  eyebrow,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly description: ReactNode;
-  readonly eyebrow: string;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-brand-section"
-      index={eyebrow}
-      summary={description}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 function Token({
   children,
 }: {
@@ -326,9 +303,10 @@ export const Marka: Story = {
       title={<Localized pl="Marka jako identyfikacja produktu." en="Brand as product identity." />}
     >
 
-        <StorySection
-          description={<Localized pl="Sygnet i wordmark identyfikują PapaData w shellu, wejściu do aplikacji, eksporcie i miejscach pustych wysokiego poziomu." en="The mark and wordmark identify PapaData in the shell, app entry, exports and high-level empty placements." />}
-          eyebrow="01"
+        <StoryPresentationSection
+          className="pd-brand-section"
+          summary={<Localized pl="Sygnet i wordmark identyfikują PapaData w shellu, wejściu do aplikacji, eksporcie i miejscach pustych wysokiego poziomu." en="The mark and wordmark identify PapaData in the shell, app entry, exports and high-level empty placements." />}
+          index="01"
           title={<Localized pl="Identyfikacja produktu" en="Product identity" />}
         >
           <div className="pd-brand-language">
@@ -361,21 +339,23 @@ export const Marka: Story = {
               ))}
             </dl>
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
-          description={<Localized pl="Lockup informacyjny, Sygnet, Wordmark i Dekoracyjny są tym samym znakiem z różną semantyką dostępności." en="Informational lockup, Mark, Wordmark and Decorative are the same identity with different accessibility semantics." />}
-          eyebrow="02"
+        <StoryPresentationSection
+          className="pd-brand-section"
+          summary={<Localized pl="Lockup informacyjny, Sygnet, Wordmark i Dekoracyjny są tym samym znakiem z różną semantyką dostępności." en="Informational lockup, Mark, Wordmark and Decorative are the same identity with different accessibility semantics." />}
+          index="02"
           title={<Localized pl="Warianty komponentu" en="Component variants" />}
         >
           <div className="pd-brand-ledger">
             {semanticVariants.map(renderVariantRow)}
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
-          description={<Localized pl="Rozmiary odpowiadają realnym miejscom użycia, tak jak w story ikon i przycisków." en="Sizes map to real usage contexts, like in icon and button stories." />}
-          eyebrow="03"
+        <StoryPresentationSection
+          className="pd-brand-section"
+          summary={<Localized pl="Rozmiary odpowiadają realnym miejscom użycia, tak jak w story ikon i przycisków." en="Sizes map to real usage contexts, like in icon and button stories." />}
+          index="03"
           title={<Localized pl="Rozmiary w produkcie" en="Product sizes" />}
         >
           <div className="pd-brand-size-ledger">
@@ -419,11 +399,12 @@ export const Marka: Story = {
               </div>
             </article>
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
-          description={<Localized pl="Marka pojawia się w miejscach identyfikacji produktu. Nie używamy jej jako ozdobnika lokalnych paneli ani substytutu statusu." en="The brand appears where the product needs identification. It is not used as local panel decoration or a status substitute." />}
-          eyebrow="04"
+        <StoryPresentationSection
+          className="pd-brand-section"
+          summary={<Localized pl="Marka pojawia się w miejscach identyfikacji produktu. Nie używamy jej jako ozdobnika lokalnych paneli ani substytutu statusu." en="The brand appears where the product needs identification. It is not used as local panel decoration or a status substitute." />}
+          index="04"
           title={<Localized pl="Miejsca użycia" en="Placements" />}
         >
           <div className="pd-brand-placement-ledger">
@@ -442,7 +423,7 @@ export const Marka: Story = {
               </article>
             ))}
           </div>
-        </StorySection>
+        </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({

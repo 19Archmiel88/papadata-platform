@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -70,30 +67,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-table-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const TableStory: Story = {
   name: 'Table',
   render: (args) => (
@@ -118,24 +91,24 @@ export const TableStory: Story = {
       }
       title={<Localized pl="Wiersze i kolumny, którym można zaufać." en="Rows and columns you can trust." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
+      <StoryPresentationSection className="pd-table-section" index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
         <div data-testid="table-controlled">
           <Table {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Sortowalna" en="Sortable" />}>
+      <StoryPresentationSection className="pd-table-section" index="02" title={<Localized pl="Sortowalna" en="Sortable" />}>
         <div data-testid="table-sortable">
           <Table columns={columns} rows={rows} sort={{ columnId: 'source', direction: 'asc' }} onSort={fn()} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="03" title={<Localized pl="Ładowanie / pusta" en="Loading / empty" />}>
+      <StoryPresentationSection className="pd-table-section" index="03" title={<Localized pl="Ładowanie / pusta" en="Loading / empty" />}>
         <div data-testid="table-states" style={{ display: 'grid', gap: 'var(--pd-space-6)' }}>
           <Table columns={columns} loading loadingRows={3} rows={[]} />
           <Table columns={columns} emptyMessage={copy({ pl: 'Podłącz pierwsze źródło, aby zobaczyć dane.', en: 'Connect your first source to see data.' })} emptyTitle={copy({ pl: 'Brak źródeł', en: 'No sources' })} rows={[]} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

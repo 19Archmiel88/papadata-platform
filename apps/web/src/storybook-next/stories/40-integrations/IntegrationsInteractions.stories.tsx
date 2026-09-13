@@ -10,6 +10,10 @@ import {
 
 const meta = {
   title: 'DANE I INTEGRACJE/Integracje/Interakcje',
+  parameters: {
+    layout: 'fullscreen',
+    a11y: { test: 'error' },
+  },
 } satisfies Meta;
 
 export default meta;

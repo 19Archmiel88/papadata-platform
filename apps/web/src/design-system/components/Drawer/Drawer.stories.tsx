@@ -2,9 +2,6 @@ import {
   useState,
 } from 'react';
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -25,16 +22,20 @@ import {
   Localized,
   copy,
 } from '../../../storybook-next/presentation/storyLocalization';
-import '../../../storybook-next/presentation/story-presentation.css';
-import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../../storybook-next/presentation/StoryPresentation';
 
 const meta = {
   title: 'DESIGN SYSTEM/Komponenty/Overlay/Drawer',
   component: Drawer,
   parameters: {
-    layout: 'fullscreen',
+    layout: 'padded',
     a11y: {
       test: 'error',
+    },
+    docs: {
+      description: {
+        component:
+          'Drawer (strony: left / right, warstwa modal, z-index 30) to przejściowy panel boczny na szczegóły rekordu, konfigurację albo dłuższy formularz — nie jest to synonim „dowolnego prawego regionu”. Zbudowany na kanonicznym OverlayRoot, tak jak Dialog.',
+      },
     },
   },
 } satisfies Meta<typeof Drawer>;
@@ -42,30 +43,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-drawer-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
 
 function DrawerDemo() {
   const [open, setOpen] = useState(false);
@@ -95,34 +72,9 @@ function DrawerDemo() {
 export const DrawerStory: Story = {
   name: 'Drawer',
   render: () => (
-    <StoryPresentationPage
-      className="pd-drawer-story"
-      headerAside={(
-        <StoryPresentationMeta
-          ariaLabel={copy({ pl: 'Parametry Drawer', en: 'Drawer parameters' })}
-          items={[
-            { label: <Localized pl="Strony" en="Sides" />, value: 'left / right' },
-            { label: <Localized pl="Warstwa" en="Layer" />, value: 'modal (z-index 30)' },
-          ]}
-        />
-      )}
-      sectionCode="DS"
-      sectionLabel={<Localized pl="Komponenty" en="Components" />}
-      storyId="drawer"
-      summary={
-        <Localized
-          pl="Przejściowy panel boczny na szczegóły rekordu, konfigurację albo dłuższy formularz — nie jest to synonim „dowolnego prawego regionu”. Zbudowany na kanonicznym OverlayRoot, tak jak Dialog."
-          en="A transient side panel for record details, configuration, or a longer form — not a synonym for “any right-hand region”. Built on the canonical OverlayRoot, same as Dialog."
-        />
-      }
-      title={<Localized pl="Panel boczny, który przychodzi i odchodzi." en="A side panel that comes and goes." />}
-    >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
-        <div data-testid="drawer-demo">
-          <DrawerDemo />
-        </div>
-      </StorySection>
-    </StoryPresentationPage>
+    <div data-testid="drawer-demo">
+      <DrawerDemo />
+    </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -134,5 +86,11 @@ export const DrawerStory: Story = {
     await expect(dialog).toBeInTheDocument();
 
     await userEvent.keyboard('{Escape}');
+    await expect(body.queryByRole('dialog')).not.toBeInTheDocument();
+
+    // Story ma pozostać w reprezentatywnym, otwartym stanie po zakończeniu
+    // testu Escape/close powyżej, więc otwieramy ponownie.
+    await userEvent.click(canvas.getByTestId('drawer-trigger'));
+    await expect(await body.findByRole('dialog')).toBeInTheDocument();
   },
 };

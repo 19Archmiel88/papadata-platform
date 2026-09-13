@@ -6,7 +6,10 @@ import {
   ReadOnly as R,
   Error as X,
 } from './Decisions.story-support';
-export default { title: 'DECYZJE/Centrum decyzji/Stany' } satisfies Meta;
+export default {
+  title: 'DECYZJE/Centrum decyzji/Stany',
+  parameters: { layout: 'fullscreen', a11y: { test: 'error' } },
+} satisfies Meta;
 export const Loading = { ...L, name: 'Ładowanie' };
 export const Empty = { ...E, name: 'Pusta kolejka' };
 export const MissingEvidence = { ...M, name: 'Brak danych do akceptacji' };

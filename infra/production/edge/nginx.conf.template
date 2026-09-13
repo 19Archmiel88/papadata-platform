@@ -28,6 +28,23 @@ server {
     proxy_send_timeout 15s;
   }
 
+  # infra/terraform/main.tf's google_compute_url_map "edge" path_matcher
+  # routes BOTH exact "/api" and prefix "/api/*" to the BFF backend
+  # service. nginx's prefix location `/api/` (below) does NOT match the
+  # bare "/api" (no trailing slash) -- without this exact-match block that
+  # one request would silently fall through to the catch-all `location /`
+  # and hit Web instead of BFF, a real routing drift between this edge and
+  # the GCP load balancer it stands in for.
+  location = /api {
+    proxy_pass http://bff-production:3001;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 15s;
+    proxy_send_timeout 15s;
+  }
+
   # /api/* -> BFF only. No security-header add_header directives in this
   # block: the BFF (apps/bff/src/app.factory.ts, @fastify/helmet) already
   # originates its own headers for its JSON responses, and this location

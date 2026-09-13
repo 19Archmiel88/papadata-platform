@@ -18,7 +18,7 @@ Oba backendy mają wspólny `google_compute_security_policy.edge` (Cloud Armor: 
 - Cloud Armor blokuje reguły SQLi/XSS i wymusza per-IP rate limit przed BFF i Web.
 - Redis używa AUTH oraz TLS. Certyfikat CA i URL są przekazywane przez Secret Manager.
 - Każdy proces ma osobny service account i dostęp wyłącznie do wymaganych sekretów/bucketów. Web nie ma dostępu do żadnego sekretu ani do VPC — serwuje wyłącznie statyczne pliki.
-- Obrazy `api_image`, `bff_image`, `worker_image` i `web_image` muszą być wskazane przez `@sha256:<digest>`.
+- Obrazy `api_image`, `bff_image`, `worker_image` i `web_image` muszą być wskazane przez `@sha256:<digest>`. Docelowym źródłem tych czterech digestów jest `artifacts/release-manifest.json` (P0-3, `images.<service>.reference`) — jeden release candidate zbudowany raz przez `.github/workflows/backend-image-release.yml` (lub lokalnie `pnpm build:release-images`) i certyfikowany przez `pnpm verify:release-candidate`, nigdy osobny build per środowisko.
 
 ## Sekrety
 

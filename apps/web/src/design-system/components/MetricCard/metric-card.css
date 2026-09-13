@@ -303,6 +303,7 @@
   line-height: var(--pd-metric-card-state-line-height, 1.45);
   -webkit-box-orient: var(--pd-metric-card-state-box-orient, initial);
   -webkit-line-clamp: var(--pd-metric-card-state-line-clamp, initial);
+  line-clamp: var(--pd-metric-card-state-line-clamp, initial);
 }
 
 .pd-metric-card__sparkline {

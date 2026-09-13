@@ -6,8 +6,16 @@ import { chromium } from "playwright";
 
 const webRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const root = resolve(webRoot, "../..");
-const compose = ["compose", "-f", "compose.production-parity.yml", "--env-file", ".env.production-parity"];
-const artifactDir = resolve(root, "artifacts/web-production-parity");
+// P0-3: certified release parity (tools/verify-release-candidate.mjs) points
+// this at the rendered, digest-pinned compose config from
+// tools/render-certified-compose.mjs and sets PAPADATA_PARITY_NO_BUILD=1 so
+// this suite exercises the exact certified images instead of rebuilding.
+// Both default to the dev/build-mode base file, so plain
+// `pnpm test:web-production-parity` behaves exactly as before.
+const composeFile = process.env.PAPADATA_PARITY_COMPOSE_FILE || "compose.production-parity.yml";
+const noBuild = process.env.PAPADATA_PARITY_NO_BUILD === "1";
+const compose = ["compose", "-f", composeFile, "--env-file", ".env.production-parity"];
+const artifactDir = resolve(root, process.env.PAPADATA_PARITY_ARTIFACT_DIR || "artifacts/web-production-parity");
 const origin = process.env.PAPADATA_PARITY_ORIGIN ?? "https://papadata.localhost";
 const evidence = { generatedAt: new Date().toISOString(), origin, checks: [], failures: [] };
 
@@ -38,7 +46,7 @@ try {
   await mkdir(artifactDir, { recursive: true });
   run("pnpm", ["prepare:production-parity"]);
   spawnSync("docker", [...compose, "down", "--remove-orphans"], { cwd: root, stdio: "ignore" });
-  run("docker", [...compose, "up", "--build", "--wait"]);
+  run("docker", [...compose, "up", ...(noBuild ? [] : ["--build"]), "--wait"]);
 
   const maps = run("docker", [...compose, "exec", "-T", "web-production", "sh", "-lc", "find /usr/share/nginx/html -type f -name '*.map' -print"], { capture: true }).trim();
   record("artifact-no-source-maps", maps.length === 0, maps || "none");

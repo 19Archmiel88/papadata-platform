@@ -12,7 +12,7 @@ export class AccessMailWorker implements OnModuleDestroy{
  async tick():Promise<void>{
   if(this.busy)return;let mail:ReturnType<typeof authMailConfig>;try{mail=authMailConfig();}catch{this.logger.error('Auth mail configuration unavailable.');return;}if(!mail)return;this.busy=true;
   try{
-   const config=readWorkerConfig();this.db??=new ProductionDatabase({connectionString:config.databaseUrl,max:2,statementTimeoutMs:10000});this.platform??=new PlatformDatabase({connectionString:config.schedulerDatabaseUrl,max:1,statementTimeoutMs:10000});
+   const config=readWorkerConfig();this.db??=new ProductionDatabase({connectionString:config.databaseUrl,max:2,statementTimeoutMs:10000,sslCaBase64:config.databaseCaBase64});this.platform??=new PlatformDatabase({connectionString:config.schedulerDatabaseUrl,max:1,statementTimeoutMs:10000,sslCaBase64:config.databaseCaBase64});
    await this.platform.query(`UPDATE app.access_mail_outbox SET status='failed',error_code='MAIL_RETRIES_EXHAUSTED',encrypted_address='',encrypted_payload=NULL,completed_at=now() WHERE status='sending' AND available_at<now() AND attempts>=5 RETURNING id`);
    await this.platform.query(`DELETE FROM app.access_mail_outbox WHERE created_at<now()-interval '7 days' RETURNING id`);
    const rows=await this.platform.withTransaction(async c=>{const r=await c.query<MailRow>(`SELECT * FROM app.access_mail_outbox WHERE ((status='queued' AND available_at<=now()) OR (status='sending' AND available_at<now())) AND attempts<5 ORDER BY created_at LIMIT 1 FOR UPDATE SKIP LOCKED`);const row=r.rows[0];if(row)await c.query(`UPDATE app.access_mail_outbox SET status='sending',attempts=attempts+1,available_at=now()+interval '2 minutes' WHERE id=$1`,[row.id]);return r.rows;});

@@ -1,11 +1,19 @@
 import { createHash, randomUUID } from "node:crypto";
-import { Pool, type PoolClient, type QueryResultRow } from "pg";
+import { Pool, type PoolClient, type PoolConfig, type QueryResultRow } from "pg";
 import type { MvpIntegrationCatalogProviderId } from "@papadata/contracts";
 
 export type DatabaseConfig = {
   readonly connectionString: string;
   readonly max: number;
   readonly statementTimeoutMs: number;
+  // Base64-encoded PEM CA certificate. When present, the pool always
+  // negotiates TLS and verifies the server certificate against this CA
+  // (matches Cloud SQL's ssl_mode=ENCRYPTED_ONLY in production and the
+  // TLS-only pg_hba.conf in production-parity's local Postgres -- see
+  // compose.production-parity.yml). Null only outside production-like
+  // environments (see readDatabaseCaBase64 in apps/api and apps/worker
+  // config.ts, which require it whenever NODE_ENV=production).
+  readonly sslCaBase64: string | null;
 };
 
 export class ProductionDatabase {
@@ -169,13 +177,26 @@ async function setTenantWorkspaceScope(
   );
 }
 
-function createPool(config: DatabaseConfig, applicationName: string): Pool {
-  return new Pool({
+export function buildPoolConfig(
+  config: DatabaseConfig,
+  applicationName: string,
+): PoolConfig {
+  return {
     connectionString: config.connectionString,
     max: config.max,
     statement_timeout: config.statementTimeoutMs,
     application_name: applicationName,
-  });
+    ssl: config.sslCaBase64
+      ? {
+          ca: Buffer.from(config.sslCaBase64, "base64").toString("utf8"),
+          rejectUnauthorized: true,
+        }
+      : undefined,
+  };
+}
+
+function createPool(config: DatabaseConfig, applicationName: string): Pool {
+  return new Pool(buildPoolConfig(config, applicationName));
 }
 
 async function withTransaction<T>(

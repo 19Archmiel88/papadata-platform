@@ -2,9 +2,6 @@ import {
   useState,
 } from 'react';
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -25,16 +22,20 @@ import {
   Localized,
   copy,
 } from '../../../storybook-next/presentation/storyLocalization';
-import '../../../storybook-next/presentation/story-presentation.css';
-import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../../storybook-next/presentation/StoryPresentation';
 
 const meta = {
   title: 'DESIGN SYSTEM/Komponenty/Overlay/Popover',
   component: Popover,
   parameters: {
-    layout: 'fullscreen',
+    layout: 'centered',
     a11y: {
       test: 'error',
+    },
+    docs: {
+      description: {
+        component:
+          'Popover (umiejscowienie: top / right / bottom / left, warstwa popover, z-index 20) to krótka treść zakotwiczona przy wyzwalającym elemencie — status, szybki podgląd, mikro-akcja. Dla listy akcji do wyboru użyj Menu; dla tylko-tekstowej podpowiedzi na hover użyj Tooltip.',
+      },
     },
   },
 } satisfies Meta<typeof Popover>;
@@ -42,30 +43,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-popover-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
 
 function PopoverDemo() {
   const [open, setOpen] = useState(false);
@@ -92,34 +69,9 @@ function PopoverDemo() {
 export const PopoverStory: Story = {
   name: 'Popover',
   render: () => (
-    <StoryPresentationPage
-      className="pd-popover-story"
-      headerAside={(
-        <StoryPresentationMeta
-          ariaLabel={copy({ pl: 'Parametry Popover', en: 'Popover parameters' })}
-          items={[
-            { label: <Localized pl="Umiejscowienie" en="Placement" />, value: 'top / right / bottom / left' },
-            { label: <Localized pl="Warstwa" en="Layer" />, value: 'popover (z-index 20)' },
-          ]}
-        />
-      )}
-      sectionCode="DS"
-      sectionLabel={<Localized pl="Komponenty" en="Components" />}
-      storyId="popover"
-      summary={
-        <Localized
-          pl="Krótka treść zakotwiczona przy wyzwalającym elemencie — status, szybki podgląd, mikro-akcja. Dla listy akcji do wyboru użyj Menu; dla tylko-tekstowej podpowiedzi na hover użyj Tooltip."
-          en="Short content anchored to its trigger — a status, a quick preview, a micro-action. For a list of actions to choose from, use Menu; for a text-only hover hint, use Tooltip."
-        />
-      }
-      title={<Localized pl="Treść zakotwiczona przy elemencie." en="Content anchored to an element." />}
-    >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
-        <div data-testid="popover-demo">
-          <PopoverDemo />
-        </div>
-      </StorySection>
-    </StoryPresentationPage>
+    <div data-testid="popover-demo">
+      <PopoverDemo />
+    </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

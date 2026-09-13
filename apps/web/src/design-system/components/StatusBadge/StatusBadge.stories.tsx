@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -48,30 +45,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-status-badge-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 const toneRows: ReadonlyArray<{
   readonly status: string;
   readonly text: LocalizedCopy;
@@ -109,13 +82,13 @@ export const StatusBadgeStory: Story = {
       }
       title={<Localized pl="Status, który mówi to, co widać." en="A status that says what you see." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
+      <StoryPresentationSection className="pd-status-badge-section" index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
         <div data-testid="badge-controlled">
           <StatusBadge {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Odcienie" en="Tones" />}>
+      <StoryPresentationSection className="pd-status-badge-section" index="02" title={<Localized pl="Odcienie" en="Tones" />}>
         <div className="pd-f0-icon-line" data-testid="badge-tones">
           {toneRows.map((row) => (
             <span key={row.tone}>
@@ -123,7 +96,7 @@ export const StatusBadgeStory: Story = {
             </span>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

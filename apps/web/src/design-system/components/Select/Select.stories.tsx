@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -59,30 +56,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-select-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 const stackStyle = { display: 'grid', gap: 'var(--pd-space-6)', maxWidth: '320px' } as const;
 
 export const SelectStory: Story = {
@@ -109,24 +82,24 @@ export const SelectStory: Story = {
       }
       title={<Localized pl="Jedna wartość z zamkniętej listy." en="One value from a closed list." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
+      <StoryPresentationSection className="pd-select-section" index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
         <div data-testid="select-controlled" style={stackStyle}>
           <Select {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Długa lista z wyszukiwaniem" en="Long list with search" />}>
+      <StoryPresentationSection className="pd-select-section" index="02" title={<Localized pl="Długa lista z wyszukiwaniem" en="Long list with search" />}>
         <div data-testid="select-searchable" style={stackStyle}>
           <Select label={copy({ pl: 'Kampania', en: 'Campaign' })} options={longOptions} placeholder={copy({ pl: 'Wybierz kampanię', en: 'Choose campaign' })} searchable value="campaign-3" />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="03" title={<Localized pl="Stany" en="States" />}>
+      <StoryPresentationSection className="pd-select-section" index="03" title={<Localized pl="Stany" en="States" />}>
         <div data-testid="select-states" style={stackStyle}>
           <Select invalid label={copy({ pl: 'Wymagany zakres', en: 'Required range' })} message={copy({ pl: 'Wybierz zakres dat.', en: 'Choose a date range.' })} options={shortOptions} placeholder={copy({ pl: 'Wybierz zakres', en: 'Choose range' })} value={null} />
           <Select disabled label={copy({ pl: 'Zablokowany', en: 'Disabled' })} options={shortOptions} placeholder={copy({ pl: 'Wybierz zakres', en: 'Choose range' })} value="30d" />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

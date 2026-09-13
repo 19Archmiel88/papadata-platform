@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -38,30 +35,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-layers-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
 
 const layerDescriptions: Record<
   keyof typeof layerTokens,
@@ -104,7 +77,8 @@ export const WarstwyZIndex: Story = {
       }
       title={<Localized pl="Kolejność nakładania jest nazwana, nie zgadywana." en="Stacking order is named, not guessed." />}
     >
-      <StorySection
+      <StoryPresentationSection
+        className="pd-layers-section"
         index="01"
         title={<Localized pl="Stos warstw" en="Layer stack" />}
       >
@@ -120,9 +94,10 @@ export const WarstwyZIndex: Story = {
             </div>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-layers-section"
         index="02"
         title={<Localized pl="Wizualizacja" en="Visualization" />}
         summary={<Localized pl="Każda kolejna warstwa przesłania poprzednią." en="Each subsequent layer covers the previous one." />}
@@ -163,7 +138,7 @@ export const WarstwyZIndex: Story = {
             </div>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

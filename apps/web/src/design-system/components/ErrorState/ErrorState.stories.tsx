@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -65,30 +62,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-error-state-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const ErrorStateStory: Story = {
   name: 'ErrorState',
   render: (args) => (
@@ -114,16 +87,18 @@ export const ErrorStateStory: Story = {
       }
       title={<Localized pl="Błąd, który mówi co dalej." en="An error that says what happens next." />}
     >
-      <StorySection
+      <StoryPresentationSection
+        className="pd-error-state-section"
         index="01"
         title={<Localized pl="Kontrolowany" en="Controlled" />}
       >
         <div data-testid="error-state-controlled">
           <ErrorState {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-error-state-section"
         index="02"
         title={<Localized pl="Warianty" en="Variants" />}
       >
@@ -147,7 +122,7 @@ export const ErrorStateStory: Story = {
             </div>
           </article>
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

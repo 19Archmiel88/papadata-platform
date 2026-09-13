@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -56,30 +53,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-spinner-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const SpinnerStory: Story = {
   name: 'Spinner',
   render: (args) => (
@@ -105,16 +78,18 @@ export const SpinnerStory: Story = {
       }
       title={<Localized pl="Krótkie operacje bez mierzalnego postępu." en="Short operations without measurable progress." />}
     >
-      <StorySection
+      <StoryPresentationSection
+        className="pd-spinner-section"
         index="01"
         title={<Localized pl="Kontrolowany" en="Controlled" />}
       >
         <div data-testid="spinner-controlled">
           <Spinner {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-spinner-section"
         index="02"
         title={<Localized pl="Rozmiary" en="Sizes" />}
       >
@@ -132,9 +107,10 @@ export const SpinnerStory: Story = {
             32px
           </span>
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-spinner-section"
         index="03"
         title={<Localized pl="Z widoczną etykietą" en="With a visible label" />}
         summary={<Localized pl="Używane, gdy spinner stoi samodzielnie, bez sąsiadującego kontekstu tekstowego." en="Used when the spinner stands alone, without adjacent text context." />}
@@ -142,7 +118,7 @@ export const SpinnerStory: Story = {
         <div data-testid="spinner-labelled">
           <Spinner delayMs={0} inline={false} label={copy({ pl: 'Synchronizacja danych…', en: 'Syncing data…' })} showLabel size={20} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

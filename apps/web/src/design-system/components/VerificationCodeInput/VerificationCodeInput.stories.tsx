@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -49,30 +46,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-verification-code-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 const stackStyle = { display: 'grid', gap: 'var(--pd-space-6)', maxWidth: '320px' } as const;
 
 export const VerificationCodeInputStory: Story = {
@@ -99,19 +72,19 @@ export const VerificationCodeInputStory: Story = {
       }
       title={<Localized pl="Kod, który liczy się sam." en="A code that counts itself." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
+      <StoryPresentationSection className="pd-verification-code-section" index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
         <div data-testid="code-controlled" style={stackStyle}>
           <VerificationCodeInput {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Stany" en="States" />}>
+      <StoryPresentationSection className="pd-verification-code-section" index="02" title={<Localized pl="Stany" en="States" />}>
         <div data-testid="code-states" style={stackStyle}>
           <VerificationCodeInput invalid label={copy({ pl: 'Nieprawidłowy kod', en: 'Invalid code' })} length={6} message={copy({ pl: 'Kod jest nieprawidłowy lub wygasł.', en: 'The code is invalid or expired.' })} value="000000" onChange={fn()} />
           <VerificationCodeInput label={copy({ pl: 'Kod zamaskowany', en: 'Masked code' })} length={6} masked value="482913" onChange={fn()} />
           <VerificationCodeInput disabled label={copy({ pl: 'Zablokowany', en: 'Disabled' })} length={6} value="" onChange={fn()} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

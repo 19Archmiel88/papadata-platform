@@ -65,29 +65,6 @@ function startsWithAccessibleName(value: string) {
   return new RegExp(`^${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`);
 }
 
-function StorySection({
-  children,
-  description,
-  index,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly description: ReactNode;
-  readonly index: string;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-field-family-section"
-      index={index}
-      summary={description}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 function StoryVariant({
   children,
   description,
@@ -157,8 +134,9 @@ function FormFieldsDocumentation() {
       title={<Localized pl="Wejścia danych jako jeden kontrakt." en="Data inputs as one contract." />}
     >
 
-        <StorySection
-          description={<Localized pl="Pole podstawowe, wymagane i tylko do odczytu zachowują tę samą etykietę, geometrię, helper text i miejsce na komunikat." en="Base, required and read-only fields keep the same label, geometry, helper text and message slot." />}
+        <StoryPresentationSection
+          className="pd-field-family-section"
+          summary={<Localized pl="Pole podstawowe, wymagane i tylko do odczytu zachowują tę samą etykietę, geometrię, helper text i miejsce na komunikat." en="Base, required and read-only fields keep the same label, geometry, helper text and message slot." />}
           index="01"
           title={<Localized pl="Anatomia pola" en="Field anatomy" />}
         >
@@ -204,10 +182,11 @@ function FormFieldsDocumentation() {
               value="conn_8N4M2"
             />
           </StoryVariant>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
-          description={<Localized pl="Pole hasła zachowuje kontrakt formularza i dodaje wyłącznie kontrolowaną widoczność oraz wymagania." en="The password field keeps the form contract and adds only controlled visibility and requirements." />}
+        <StoryPresentationSection
+          className="pd-field-family-section"
+          summary={<Localized pl="Pole hasła zachowuje kontrakt formularza i dodaje wyłącznie kontrolowaną widoczność oraz wymagania." en="The password field keeps the form contract and adds only controlled visibility and requirements." />}
           index="02"
           title={<Localized pl="Poufne dane i wymagania" en="Sensitive data and requirements" />}
         >
@@ -236,10 +215,11 @@ function FormFieldsDocumentation() {
               visibilityLabelVisible={copy({ pl: 'Ukryj hasło', en: 'Hide password' })}
             />
           </StoryVariant>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
-          description={<Localized pl="Dłuższa treść, plik i przyszłe pola z bibliotek zewnętrznych korzystają z tego samego kontraktu etykiety, powierzchni, helper textu i błędu." en="Longer copy, file input and future fields from external libraries use the same label, surface, helper text and error contract." />}
+        <StoryPresentationSection
+          className="pd-field-family-section"
+          summary={<Localized pl="Dłuższa treść, plik i przyszłe pola z bibliotek zewnętrznych korzystają z tego samego kontraktu etykiety, powierzchni, helper textu i błędu." en="Longer copy, file input and future fields from external libraries use the same label, surface, helper text and error contract." />}
           index="03"
           title={<Localized pl="Treść długa i plik" en="Long content and file" />}
         >
@@ -270,10 +250,11 @@ function FormFieldsDocumentation() {
               required
             />
           </StoryVariant>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
-          description={<Localized pl="Walidacja, disabled i kod weryfikacyjny nie zmieniają hierarchii strony ani wyglądu komponentów bazowych." en="Validation, disabled state and verification code do not change page hierarchy or base component appearance." />}
+        <StoryPresentationSection
+          className="pd-field-family-section"
+          summary={<Localized pl="Walidacja, disabled i kod weryfikacyjny nie zmieniają hierarchii strony ani wyglądu komponentów bazowych." en="Validation, disabled state and verification code do not change page hierarchy or base component appearance." />}
           index="04"
           title={<Localized pl="Stany wejścia" en="Input states" />}
         >
@@ -338,10 +319,11 @@ function FormFieldsDocumentation() {
               value={verificationCode}
             />
           </StoryVariant>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
-          description={<Localized pl="Checkbox i Select używają natywnej semantyki formularza, focusu i tych samych komunikatów pomocniczych." en="Checkbox and Select use native form semantics, focus and the same helper messages." />}
+        <StoryPresentationSection
+          className="pd-field-family-section"
+          summary={<Localized pl="Checkbox i Select używają natywnej semantyki formularza, focusu i tych samych komunikatów pomocniczych." en="Checkbox and Select use native form semantics, focus and the same helper messages." />}
           index="05"
           title={<Localized pl="Wybory formularza" en="Form choices" />}
         >
@@ -389,7 +371,7 @@ function FormFieldsDocumentation() {
               value={workspaceRegion}
             />
           </StoryVariant>
-        </StorySection>
+        </StoryPresentationSection>
     </StoryPresentationPage>
   );
 }

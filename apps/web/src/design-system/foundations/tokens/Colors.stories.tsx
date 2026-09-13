@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -44,30 +41,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-color-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
 
 const brandRoles: ReadonlyArray<{
   readonly key: keyof typeof colorTokens.brand;
@@ -169,7 +142,8 @@ export const KoloryIStatusy: Story = {
       }
       title={<Localized pl="Kolor niesie znaczenie, nie dekorację." en="Color carries meaning, not decoration." />}
     >
-      <StorySection
+      <StoryPresentationSection
+        className="pd-color-section"
         index="01"
         title={<Localized pl="Marka" en="Brand" />}
         summary={<Localized pl="Różowy PapaData jest zarezerwowany dla akcji podstawowych i akcentów marki — nigdy dla statusu danych." en="PapaData pink is reserved for primary actions and brand accents — never for data status." />}
@@ -183,9 +157,10 @@ export const KoloryIStatusy: Story = {
             </span>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-color-section"
         index="02"
         title={<Localized pl="Powierzchnie i tekst" en="Surfaces and text" />}
         summary={<Localized pl="Powierzchnie neutralne budują hierarchię — canvas, surface, surface uniesiona, overlay." en="Neutral surfaces build the hierarchy — canvas, surface, raised surface, overlay." />}
@@ -201,9 +176,10 @@ export const KoloryIStatusy: Story = {
             </article>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-color-section"
         index="03"
         title={<Localized pl="Statusy" en="Statuses" />}
         summary={<Localized pl="Każdy status ma wersję pełną (tekst/ikona) i przytłumioną (tło odznaki/pasa)." en="Every status has a full variant (text/icon) and a subtle one (badge/strip background)." />}
@@ -219,9 +195,10 @@ export const KoloryIStatusy: Story = {
             </div>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-color-section"
         index="04"
         title={<Localized pl="Seria danych (wykresy)" en="Data series (charts)" />}
         summary={<Localized pl="10-kolorowa paleta cyklicznie przypisywana seriom przez resolveSeriesColor(index). Nigdy nie przypisuj koloru serii ręcznie na sztywno." en="A 10-color palette assigned cyclically to series via resolveSeriesColor(index). Never hardcode a series color by hand." />}
@@ -234,9 +211,10 @@ export const KoloryIStatusy: Story = {
             </span>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-color-section"
         index="05"
         title={<Localized pl="Reguły kontraktu" en="Contract rules" />}
       >
@@ -248,9 +226,10 @@ export const KoloryIStatusy: Story = {
             </div>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-color-section"
         index="06"
         title={<Localized pl="Skala bazowa" en="Base ramp" />}
         summary={
@@ -283,7 +262,7 @@ export const KoloryIStatusy: Story = {
             </span>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

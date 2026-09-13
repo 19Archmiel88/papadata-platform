@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -53,30 +50,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-segmented-control-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const SegmentedControlStory: Story = {
   name: 'SegmentedControl',
   render: (args) => (
@@ -101,17 +74,17 @@ export const SegmentedControlStory: Story = {
       }
       title={<Localized pl="Jedna wartość, bez osobnych paneli." en="One value, no separate panels." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
+      <StoryPresentationSection className="pd-segmented-control-section" index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
         <div data-testid="segmented-controlled">
           <SegmentedControl {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Kompaktowy" en="Compact" />}>
+      <StoryPresentationSection className="pd-segmented-control-section" index="02" title={<Localized pl="Kompaktowy" en="Compact" />}>
         <div data-testid="segmented-compact">
           <SegmentedControl ariaLabel={copy({ pl: 'Widok', en: 'View' })} items={[{ label: copy({ pl: 'Tabela', en: 'Table' }), value: 'table' }, { label: copy({ pl: 'Wykres', en: 'Chart' }), value: 'chart' }]} size="compact" value="table" onValueChange={fn()} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

@@ -2,9 +2,6 @@ import {
   useState,
 } from 'react';
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -22,11 +19,8 @@ import {
 } from '../Button';
 
 import {
-  Localized,
   copy,
 } from '../../../storybook-next/presentation/storyLocalization';
-import '../../../storybook-next/presentation/story-presentation.css';
-import { StoryPresentationMeta, StoryPresentationPage, StoryPresentationSection } from '../../../storybook-next/presentation/StoryPresentation';
 
 const items = [
   { icon: 'trend' as const, id: 'sync', label: 'Synchronizuj teraz' },
@@ -39,9 +33,15 @@ const meta = {
   title: 'DESIGN SYSTEM/Komponenty/Overlay/Menu',
   component: Menu,
   parameters: {
-    layout: 'fullscreen',
+    layout: 'centered',
     a11y: {
       test: 'error',
+    },
+    docs: {
+      description: {
+        component:
+          'Menu to lista akcji do wykonania (••• w tabeli, przycisk „Więcej”), nie wybór wartości. Dla wyboru wartości z listy użyj Select — Menu i Select mają rozłączną semantykę mimo podobnego wyglądu.',
+      },
     },
   },
 } satisfies Meta<typeof Menu>;
@@ -49,30 +49,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-menu-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
 
 function MenuDemo() {
   const [open, setOpen] = useState(false);
@@ -103,33 +79,9 @@ function MenuDemo() {
 export const MenuStory: Story = {
   name: 'Menu',
   render: () => (
-    <StoryPresentationPage
-      className="pd-menu-story"
-      headerAside={(
-        <StoryPresentationMeta
-          ariaLabel={copy({ pl: 'Parametry Menu', en: 'Menu parameters' })}
-          items={[
-            { label: <Localized pl="Semantyka" en="Semantics" />, value: copy({ pl: 'wybór akcji, nie wartości', en: 'choose an action, not a value' }) },
-          ]}
-        />
-      )}
-      sectionCode="DS"
-      sectionLabel={<Localized pl="Komponenty" en="Components" />}
-      storyId="menu"
-      summary={
-        <Localized
-          pl="Lista akcji do wykonania (••• w tabeli, przycisk Więcej). Dla wyboru wartości z listy użyj Select — Menu i Select mają rozłączną semantykę mimo podobnego wyglądu."
-          en="A list of actions to perform (the ••• in a table, a More button). For choosing a value from a list, use Select — Menu and Select have distinct semantics despite looking similar."
-        />
-      }
-      title={<Localized pl="Wybór akcji, nie wartości." en="Choosing an action, not a value." />}
-    >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
-        <div data-testid="menu-demo">
-          <MenuDemo />
-        </div>
-      </StorySection>
-    </StoryPresentationPage>
+    <div data-testid="menu-demo">
+      <MenuDemo />
+    </div>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

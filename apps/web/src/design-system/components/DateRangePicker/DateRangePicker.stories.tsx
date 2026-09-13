@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -56,30 +53,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-date-range-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const DateRangePickerStory: Story = {
   name: 'DateRangePicker',
   render: (args) => (
@@ -105,18 +78,18 @@ export const DateRangePickerStory: Story = {
       }
       title={<Localized pl="Zakres dat, który zna swój własny preset." en="A date range that knows its own preset." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
+      <StoryPresentationSection className="pd-date-range-section" index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
         <div data-testid="date-range-controlled" style={{ maxWidth: '520px' }}>
           <DateRangePicker {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Stany" en="States" />}>
+      <StoryPresentationSection className="pd-date-range-section" index="02" title={<Localized pl="Stany" en="States" />}>
         <div data-testid="date-range-states" style={{ display: 'grid', gap: 'var(--pd-space-6)', maxWidth: '520px' }}>
           <DateRangePicker invalid label={copy({ pl: 'Wymagany zakres', en: 'Required range' })} message={copy({ pl: 'Wybierz zakres dat.', en: 'Choose a date range.' })} presets={presets} timezone="Europe/Warsaw" value={{ from: '', preset: undefined, timezone: 'Europe/Warsaw', to: '' }} onChange={fn()} />
           <DateRangePicker disabled label={copy({ pl: 'Zablokowany', en: 'Disabled' })} presets={presets} timezone="Europe/Warsaw" value={{ from: '2026-08-01', preset: 'last30d', timezone: 'Europe/Warsaw', to: '2026-08-29' }} onChange={fn()} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

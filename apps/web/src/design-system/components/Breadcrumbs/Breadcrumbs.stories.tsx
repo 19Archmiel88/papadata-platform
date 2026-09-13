@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -55,30 +52,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-breadcrumbs-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const BreadcrumbsStory: Story = {
   name: 'Breadcrumbs',
   render: (args) => (
@@ -103,17 +76,17 @@ export const BreadcrumbsStory: Story = {
       }
       title={<Localized pl="Ścieżka z powrotem tam, skąd przyszedłeś." en="A trail back to where you came from." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
+      <StoryPresentationSection className="pd-breadcrumbs-section" index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
         <div data-testid="breadcrumbs-controlled">
           <Breadcrumbs {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Długa ścieżka (zwinięta)" en="Long trail (collapsed)" />}>
+      <StoryPresentationSection className="pd-breadcrumbs-section" index="02" title={<Localized pl="Długa ścieżka (zwinięta)" en="Long trail (collapsed)" />}>
         <div data-testid="breadcrumbs-long">
           <Breadcrumbs items={longItems} maxVisible={4} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

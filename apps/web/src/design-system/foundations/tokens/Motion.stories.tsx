@@ -2,9 +2,6 @@ import {
   useState,
 } from 'react';
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -46,30 +43,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-motion-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
 
 const durationEntries = Object.entries(motionTokens.duration);
 
@@ -139,7 +112,8 @@ export const Motion: Story = {
       }
       title={<Localized pl="Ruch potwierdza, nie ozdabia." en="Motion confirms, it does not decorate." />}
     >
-      <StorySection
+      <StoryPresentationSection
+        className="pd-motion-section"
         index="01"
         title={<Localized pl="Czas trwania i easing" en="Duration and easing" />}
       >
@@ -153,9 +127,10 @@ export const Motion: Story = {
             </div>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-motion-section"
         index="02"
         title={<Localized pl="Pełne vs ograniczone animacje" en="Full vs reduced motion" />}
         summary={<Localized pl="Przełącz Animacje w toolbarze — ten sam token biegnie natychmiast w trybie ograniczonym." en="Toggle Motion in the toolbar — the same token resolves instantly in reduced mode." />}
@@ -188,9 +163,10 @@ export const Motion: Story = {
             </div>
           </div>
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-motion-section"
         index="03"
         title={<Localized pl="Presety Framer Motion" en="Framer Motion presets" />}
         summary={<Localized pl="Jedyna świadoma restatuja tokenów CSS jako liczb — nie druga niezależna skala czasu." en="The one deliberate restatement of CSS tokens as numbers — not a second, independent timing scale." />}
@@ -205,9 +181,10 @@ export const Motion: Story = {
             </article>
           ))}
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-motion-section"
         index="04"
         title={<Localized pl="Poza skalą: ruch ciągły" en="Outside the scale: ambient motion" />}
         summary={<Localized pl="Cztery kroki czasu trwania opisują ruch, który potwierdza jednorazową zmianę stanu — nie ciągłe, zapętlone animacje." en="The four duration steps describe motion that confirms a one-off state change — not continuous, looping animation." />}
@@ -218,7 +195,7 @@ export const Motion: Story = {
             en="Real code has 4 looping ambient animations outside this scale: Auth's scrolling logo marquee (28s), Papa Assistant's activity-pulse dot (1s), the pending-message pulse (1.1s), and Integrations' loading-skeleton shimmer (1.4s). This is deliberately a separate category — forcing them onto the 70–240ms step would stop them from reading as continuous motion. All of them have their own prefers-reduced-motion handling (Integrations' shimmer was missing it — added as part of this audit)."
           />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

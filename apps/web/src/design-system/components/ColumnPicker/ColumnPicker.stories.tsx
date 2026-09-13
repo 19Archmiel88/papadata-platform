@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -51,30 +48,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-column-picker-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const ColumnPickerStory: Story = {
   name: 'ColumnPicker',
   render: (args) => (
@@ -99,17 +72,17 @@ export const ColumnPickerStory: Story = {
       }
       title={<Localized pl="Kolumny, które użytkownik wybiera sam." en="Columns the user chooses for themselves." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
+      <StoryPresentationSection className="pd-column-picker-section" index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
         <div data-testid="column-picker-controlled" style={{ maxWidth: '320px' }}>
           <ColumnPicker {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Z limitem widocznych kolumn" en="With a visible-column limit" />} summary={<Localized pl="Po osiągnięciu maxVisible pozostałe niewybrane kolumny są zablokowane." en="Once maxVisible is reached, remaining unselected columns are blocked." />}>
+      <StoryPresentationSection className="pd-column-picker-section" index="02" title={<Localized pl="Z limitem widocznych kolumn" en="With a visible-column limit" />} summary={<Localized pl="Po osiągnięciu maxVisible pozostałe niewybrane kolumny są zablokowane." en="Once maxVisible is reached, remaining unselected columns are blocked." />}>
         <div data-testid="column-picker-limit" style={{ maxWidth: '320px' }}>
           <ColumnPicker columns={columns} label={copy({ pl: 'Maksymalnie 3 kolumny', en: 'Up to 3 columns' })} maxVisible={3} onColumnVisibilityChange={fn()} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

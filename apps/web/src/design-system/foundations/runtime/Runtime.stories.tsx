@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -48,30 +45,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-runtime-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 const globalsRows: ReadonlyArray<{
   readonly label: LocalizedCopy;
   readonly values: readonly string[];
@@ -116,7 +89,8 @@ export const RuntimeIFormatowanie: Story = {
         }
         title={<Localized pl="Cztery przełączniki, jeden runtime." en="Four toggles, one runtime." />}
       >
-        <StorySection
+        <StoryPresentationSection
+          className="pd-runtime-section"
           index="01"
           title={<Localized pl="Globalne ustawienia" en="Global settings" />}
           summary={<Localized pl="Sterowane z toolbara Storybooka. W produkcie do panelu konta i preferencji systemowych realnie docierają tylko Motyw i Język. Gęstość nie ma dziś żadnego panelu ani odbiorcy w CSS — realne komponenty (Table, Pagination i inne) mają własny, niezależny prop compact/comfortable ustawiany punktowo, nie z tego globalnego ustawienia. Animacje nie mają ręcznego przełącznika w produkcie, ale systemowe prefers-reduced-motion jest realnie respektowane. Zapisywane w localStorage pod kluczem papadata.runtime-preferences.v1." en="Driven from the Storybook toolbar. In the product, only Theme and Locale actually reach the account panel and system preferences. Density has no panel and no CSS consumer today — real components (Table, Pagination and others) have their own independent compact/comfortable prop set per instance, not from this global setting. Motion has no manual toggle in the product, but the system-level prefers-reduced-motion is genuinely respected. Persisted in localStorage under the papadata.runtime-preferences.v1 key." />}
@@ -133,9 +107,10 @@ export const RuntimeIFormatowanie: Story = {
               </div>
             ))}
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
+        <StoryPresentationSection
+          className="pd-runtime-section"
           index="02"
           title={<Localized pl="Formatowanie liczb i walut" en="Number and currency formatting" />}
           summary={<Localized pl="Ta sama wartość liczbowa, sformatowana zgodnie z aktywnym językiem." en="The same numeric value, formatted for the active locale." />}
@@ -154,9 +129,10 @@ export const RuntimeIFormatowanie: Story = {
               <strong>{formatPapaDataPercent(0.092, locale)}</strong>
             </div>
           </div>
-        </StorySection>
+        </StoryPresentationSection>
 
-        <StorySection
+        <StoryPresentationSection
+          className="pd-runtime-section"
           index="03"
           title={<Localized pl="Formatowanie dat" en="Date formatting" />}
         >
@@ -174,7 +150,7 @@ export const RuntimeIFormatowanie: Story = {
               <strong>{formatPapaDataRelativeTime(-18, 'minute', locale)}</strong>
             </div>
           </div>
-        </StorySection>
+        </StoryPresentationSection>
       </StoryPresentationPage>
     );
   },

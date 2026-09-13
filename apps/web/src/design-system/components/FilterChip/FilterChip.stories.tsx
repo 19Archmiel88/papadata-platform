@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -50,30 +47,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-filter-chip-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const FilterChipStory: Story = {
   name: 'FilterChip',
   render: (args) => (
@@ -98,13 +71,13 @@ export const FilterChipStory: Story = {
       }
       title={<Localized pl="Aktywny filtr, który można zdjąć jednym kliknięciem." en="An active filter you can remove with one click." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
+      <StoryPresentationSection className="pd-filter-chip-section" index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
         <div data-testid="chip-controlled">
           <FilterChip {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Odcienie" en="Tones" />}>
+      <StoryPresentationSection className="pd-filter-chip-section" index="02" title={<Localized pl="Odcienie" en="Tones" />}>
         <div data-testid="chip-tones" style={{ display: 'flex', gap: 'var(--pd-space-2)', flexWrap: 'wrap' }}>
           <FilterChip label={copy({ pl: 'Neutralny', en: 'Neutral' })} removable tone="neutral" value="—" onRemove={fn()} />
           <FilterChip label={copy({ pl: 'Akcent', en: 'Accent' })} removable tone="accent" value="Google Ads" onRemove={fn()} />
@@ -112,14 +85,14 @@ export const FilterChipStory: Story = {
           <FilterChip label={copy({ pl: 'Ostrzeżenie', en: 'Warning' })} removable tone="warning" value="Częściowe" onRemove={fn()} />
           <FilterChip label={copy({ pl: 'Krytyczny', en: 'Critical' })} removable tone="danger" value="Błąd" onRemove={fn()} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="03" title={<Localized pl="Bez usuwania / zablokowany" en="Without removal / disabled" />}>
+      <StoryPresentationSection className="pd-filter-chip-section" index="03" title={<Localized pl="Bez usuwania / zablokowany" en="Without removal / disabled" />}>
         <div data-testid="chip-states" style={{ display: 'flex', gap: 'var(--pd-space-2)', flexWrap: 'wrap' }}>
           <FilterChip label={copy({ pl: 'Stały segment', en: 'Fixed segment' })} removable={false} tone="neutral" value={copy({ pl: 'Ostatnie 30 dni', en: 'Last 30 days' })} />
           <FilterChip disabled label={copy({ pl: 'Zablokowany', en: 'Disabled' })} removable tone="accent" value="—" onRemove={fn()} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

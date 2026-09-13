@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -53,30 +50,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-search-field-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 const stackStyle = { display: 'grid', gap: 'var(--pd-space-4)', maxWidth: '360px' } as const;
 
 export const SearchFieldStory: Story = {
@@ -104,19 +77,19 @@ export const SearchFieldStory: Story = {
       }
       title={<Localized pl="Wyszukiwanie, które czeka, aż skończysz pisać." en="Search that waits until you stop typing." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
+      <StoryPresentationSection className="pd-search-field-section" index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
         <div data-testid="search-controlled" style={stackStyle}>
           <SearchField {...args} onClear={fn()} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Stany" en="States" />}>
+      <StoryPresentationSection className="pd-search-field-section" index="02" title={<Localized pl="Stany" en="States" />}>
         <div data-testid="search-states" style={stackStyle}>
           <SearchField debounceMs={250} label={copy({ pl: 'Wyniki', en: 'Results' })} loading={false} placeholder={copy({ pl: 'Szukaj…', en: 'Search…' })} query="WooCommerce" resultCount={12} onClear={fn()} onQueryChange={fn()} />
           <SearchField debounceMs={250} label={copy({ pl: 'Wyszukiwanie w toku', en: 'Search in progress' })} loading placeholder={copy({ pl: 'Szukaj…', en: 'Search…' })} query="Google" resultCount={null} onClear={fn()} onQueryChange={fn()} />
           <SearchField debounceMs={250} disabled label={copy({ pl: 'Zablokowane', en: 'Disabled' })} loading={false} placeholder={copy({ pl: 'Szukaj…', en: 'Search…' })} query="" resultCount={null} onClear={fn()} onQueryChange={fn()} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

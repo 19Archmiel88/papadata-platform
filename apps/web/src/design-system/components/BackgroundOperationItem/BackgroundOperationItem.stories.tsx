@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -50,30 +47,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-background-operation-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 const stackStyle = { display: 'grid', gap: 'var(--pd-space-4)', maxWidth: '420px' } as const;
 
 export const BackgroundOperationItemStory: Story = {
@@ -100,19 +73,19 @@ export const BackgroundOperationItemStory: Story = {
       }
       title={<Localized pl="Operacja w tle, którą można śledzić." en="A background operation you can track." />}
     >
-      <StorySection index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
+      <StoryPresentationSection className="pd-background-operation-section" index="01" title={<Localized pl="Kontrolowany" en="Controlled" />}>
         <div data-testid="operation-controlled" style={{ maxWidth: '420px' }}>
           <BackgroundOperationItem {...args} onAction={fn()} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Stany" en="States" />}>
+      <StoryPresentationSection className="pd-background-operation-section" index="02" title={<Localized pl="Stany" en="States" />}>
         <div data-testid="operation-states" style={stackStyle}>
           <BackgroundOperationItem description={copy({ pl: 'Google Ads', en: 'Google Ads' })} errorCode={null} operationId="op-queued" progress={null} startedAt={null} status="queued" title={copy({ pl: 'Oczekuje w kolejce', en: 'Queued' })} />
           <BackgroundOperationItem description={copy({ pl: 'GA4', en: 'GA4' })} errorCode={null} operationId="op-completed" progress={1} showProgressValue startedAt="2026-08-29T13:00:00Z" status="completed" title={copy({ pl: 'Import zakończony', en: 'Import complete' })} />
           <BackgroundOperationItem actionLabel={copy({ pl: 'Ponów', en: 'Retry' })} actionVariant="secondary" description={copy({ pl: 'Meta Ads', en: 'Meta Ads' })} errorCode="PROVIDER_TIMEOUT" operationId="op-failed" progress={0.4} startedAt="2026-08-29T13:10:00Z" status="failed" statusText={copy({ pl: 'Provider nie odpowiedział na czas', en: 'Provider did not respond in time' })} title={copy({ pl: 'Synchronizacja przerwana', en: 'Sync interrupted' })} onAction={fn()} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

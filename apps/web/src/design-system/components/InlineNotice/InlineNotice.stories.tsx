@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -59,30 +56,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-inline-notice-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const InlineNoticeStory: Story = {
   name: 'InlineNotice',
   render: (args) => (
@@ -107,16 +80,18 @@ export const InlineNoticeStory: Story = {
       }
       title={<Localized pl="Kontekst, który zostaje w widoku." en="Context that stays in view." />}
     >
-      <StorySection
+      <StoryPresentationSection
+        className="pd-inline-notice-section"
         index="01"
         title={<Localized pl="Kontrolowany" en="Controlled" />}
       >
         <div data-testid="notice-controlled" style={{ maxWidth: '520px' }}>
           <InlineNotice {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-inline-notice-section"
         index="02"
         title={<Localized pl="Odcienie" en="Tones" />}
       >
@@ -126,16 +101,17 @@ export const InlineNoticeStory: Story = {
           <InlineNotice dismissible={false} message={copy({ pl: 'Kompletność danych spadła poniżej 90%.', en: 'Data completeness dropped below 90%.' })} title={null} tone="warning" />
           <InlineNotice dismissible={false} message={copy({ pl: 'Google Ads wymaga ponownej autoryzacji.', en: 'Google Ads requires reauthorization.' })} onAction={fn()} actionLabel={copy({ pl: 'Połącz ponownie', en: 'Reconnect' })} title={null} tone="critical" />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection
+      <StoryPresentationSection
+        className="pd-inline-notice-section"
         index="03"
         title={<Localized pl="Z tytułem, akcją i zamknięciem" en="With title, action and dismiss" />}
       >
         <div data-testid="notice-full" style={{ maxWidth: '520px' }}>
           <InlineNotice actionLabel={copy({ pl: 'Napraw problem', en: 'Fix issue' })} dismissible onAction={fn()} onDismiss={fn()} message={copy({ pl: 'Google Ads wymaga ponownej autoryzacji. Nowe dane nie są pobierane od 08:21.', en: 'Google Ads requires reauthorization. New data has not been fetched since 08:21.' })} title={copy({ pl: '1 źródło wymaga akcji', en: '1 source needs action' })} tone="critical" />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

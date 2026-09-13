@@ -1,7 +1,4 @@
 import type {
-  ReactNode,
-} from 'react';
-import type {
   Meta,
   StoryObj,
 } from '@storybook/react-vite';
@@ -53,30 +50,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-
-function StorySection({
-  children,
-  index,
-  summary,
-  title,
-}: {
-  readonly children: ReactNode;
-  readonly index: string;
-  readonly summary?: ReactNode;
-  readonly title: ReactNode;
-}) {
-  return (
-    <StoryPresentationSection
-      className="pd-section-navigation-section"
-      index={index}
-      summary={summary}
-      title={title}
-    >
-      {children}
-    </StoryPresentationSection>
-  );
-}
-
 export const SectionNavigationStory: Story = {
   name: 'SectionNavigation',
   render: (args) => (
@@ -101,17 +74,17 @@ export const SectionNavigationStory: Story = {
       }
       title={<Localized pl="Nawigacja po realnych adresach." en="Navigation across real addresses." />}
     >
-      <StorySection index="01" title={<Localized pl="Poziomo" en="Horizontal" />}>
+      <StoryPresentationSection className="pd-section-navigation-section" index="01" title={<Localized pl="Poziomo" en="Horizontal" />}>
         <div data-testid="section-nav-horizontal">
           <SectionNavigation {...args} />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
 
-      <StorySection index="02" title={<Localized pl="Pionowo" en="Vertical" />}>
+      <StoryPresentationSection className="pd-section-navigation-section" index="02" title={<Localized pl="Pionowo" en="Vertical" />}>
         <div data-testid="section-nav-vertical" style={{ maxWidth: '220px' }}>
           <SectionNavigation activeId="sync" items={items} orientation="vertical" />
         </div>
-      </StorySection>
+      </StoryPresentationSection>
     </StoryPresentationPage>
   ),
   play: async ({ canvasElement }) => {

@@ -4,6 +4,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { get } from "node:http";
 import { chromium } from "playwright";
 
 const require = createRequire(import.meta.url);
@@ -23,20 +24,137 @@ const viewports = [
 const evidence = { generatedAt: new Date().toISOString(), storyCount: 0, screenCount: 0, checks: [], failures: [] };
 let server;
 let browser;
+let context;
+let page;
+let pageUseCount = 0;
+
+const configuredRecycleEvery = Number(
+  process.env.PAPADATA_STORYBOOK_ACCEPTANCE_PAGE_RECYCLE_EVERY ?? 25,
+);
+const pageRecycleEvery =
+  Number.isFinite(configuredRecycleEvery) && configuredRecycleEvery > 0
+    ? configuredRecycleEvery
+    : 25;
+
+const storyFilters = String(
+  process.env.PAPADATA_STORYBOOK_ACCEPTANCE_FILTER ?? "",
+)
+  .split(",")
+  .map((value) => value.trim())
+  .filter(Boolean);
 
 function run(command, args) {
   const result = spawnSync(command, args, { cwd: root, encoding: "utf8", stdio: "inherit" });
   if (result.status !== 0) throw new Error(`${command} ${args.join(" ")} failed (${result.status})`);
 }
+function probeServer() {
+  return new Promise((resolveProbe) => {
+    let settled = false;
+
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      resolveProbe(value);
+    };
+
+    const request = get(`${origin}/index.json`, (response) => {
+      const ok =
+        typeof response.statusCode === "number" &&
+        response.statusCode >= 200 &&
+        response.statusCode < 400;
+
+      response.resume();
+      response.once("end", () => finish(ok));
+      response.once("error", () => finish(false));
+    });
+
+    request.once("error", () => finish(false));
+    request.setTimeout(1000, () => {
+      request.destroy();
+      finish(false);
+    });
+  });
+}
+
 async function waitForServer() {
   for (let i = 0; i < 40; i += 1) {
-    try { if ((await fetch(`${origin}/index.json`)).ok) return; } catch {}
+    if (await probeServer()) return;
     await new Promise((resolveWait) => setTimeout(resolveWait, 250));
   }
   throw new Error("Storybook static server did not start");
 }
 function safeName(value) { return value.replace(/[^a-z0-9_.-]+/giu, "-").replace(/^-+|-+$/gu, "").slice(0, 150); }
 function errorText(error) { return error instanceof Error ? error.stack ?? error.message : String(error); }
+
+function isClosedTargetError(error) {
+  const message = errorText(error);
+  return (
+    message.includes("Target page, context or browser has been closed") ||
+    message.includes("Target closed") ||
+    message.includes("Browser has been closed")
+  );
+}
+
+async function closeAcceptancePage() {
+  if (page && !page.isClosed()) {
+    await page.close().catch(() => undefined);
+  }
+  page = undefined;
+  pageUseCount = 0;
+}
+
+async function resetBrowserSession() {
+  await closeAcceptancePage();
+
+  if (context) {
+    await context.close().catch(() => undefined);
+  }
+  context = undefined;
+
+  if (browser) {
+    await browser.close().catch(() => undefined);
+  }
+  browser = undefined;
+
+  browser = await chromium.launch({ headless: true });
+  context = await browser.newContext();
+}
+
+async function getAcceptancePage() {
+  if (!browser || !browser.isConnected() || !context) {
+    await resetBrowserSession();
+  }
+
+  if (!page || page.isClosed() || pageUseCount >= pageRecycleEvery) {
+    await closeAcceptancePage();
+
+    try {
+      page = await context.newPage();
+    } catch {
+      await resetBrowserSession();
+      page = await context.newPage();
+    }
+  }
+
+  pageUseCount += 1;
+  return page;
+}
+
+async function runWithBrowserRecovery(task) {
+  let activePage = await getAcceptancePage();
+
+  try {
+    return await task(activePage);
+  } catch (error) {
+    if (!isClosedTargetError(error)) {
+      throw error;
+    }
+
+    await resetBrowserSession();
+    activePage = await getAcceptancePage();
+    return task(activePage);
+  }
+}
 const productScreenStoryDirectories = [
   "20-product-shell",
   "25-access-registration-onboarding",
@@ -185,21 +303,39 @@ try {
   server = spawn("python3", ["-m", "http.server", String(port), "--bind", "127.0.0.1", "--directory", staticDir], { cwd: root, stdio: "ignore" });
   await waitForServer();
   const index = JSON.parse(await readFile(resolve(staticDir, "index.json"), "utf8"));
-  const stories = Object.values(index.entries ?? {}).filter((entry) => entry.type === "story").sort((a, b) => a.id.localeCompare(b.id));
+  const allStories = Object.values(index.entries ?? {})
+    .filter((entry) => entry.type === "story")
+    .sort((a, b) => a.id.localeCompare(b.id));
+
+  const stories =
+    storyFilters.length === 0
+      ? allStories
+      : allStories.filter((entry) =>
+          storyFilters.some((filter) => entry.id.includes(filter)),
+        );
+
+  evidence.totalStoryCount = allStories.length;
   evidence.storyCount = stories.length;
+  evidence.filters = storyFilters;
+
   const screenStories = stories.filter(isScreenStory);
   evidence.screenCount = screenStories.length;
-  if (stories.length === 0) throw new Error("Storybook index contains no stories");
 
-  browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext();
-  const page = await context.newPage();
+  if (stories.length === 0) {
+    throw new Error(
+      `Storybook acceptance selected no stories for filters: ${storyFilters.join(", ") || "(none)"}`,
+    );
+  }
+
+  await resetBrowserSession();
 
   const screenStoryIds = new Set(screenStories.map((entry) => entry.id));
   for (const entry of stories) {
     try {
       const screenAcceptance = screenStoryIds.has(entry.id);
-      const result = await inspectStory(page, entry, viewports[0], screenAcceptance);
+      const result = await runWithBrowserRecovery((activePage) =>
+        inspectStory(activePage, entry, viewports[0], screenAcceptance),
+      );
       evidence.checks.push({ storyId: entry.id, viewport: "desktop", ...(screenAcceptance ? { screenAcceptance: true } : {}), ...result });
       recordResult(entry, "desktop", result, screenAcceptance ? "screen" : "");
     } catch (error) {
@@ -212,7 +348,9 @@ try {
     // adds the remaining viewport obligations instead of counting desktop twice.
     for (const viewport of viewports.slice(1)) {
       try {
-        const result = await inspectStory(page, entry, viewport, true);
+        const result = await runWithBrowserRecovery((activePage) =>
+          inspectStory(activePage, entry, viewport, true),
+        );
         evidence.checks.push({ storyId: entry.id, viewport: viewport.name, screenAcceptance: true, ...result });
         recordResult(entry, viewport.name, result, "screen");
       } catch (error) {
@@ -220,20 +358,53 @@ try {
       }
     }
     try {
-      await page.setViewportSize({ width: 320, height: 900 });
-      await page.goto(`${origin}/iframe.html?id=${encodeURIComponent(entry.id)}&viewMode=story`, { waitUntil: "networkidle", timeout: 30_000 });
-      const reflowOverflow = await page.evaluate(() => document.body.scrollWidth > document.body.clientWidth + 1);
-      evidence.checks.push({ storyId: entry.id, viewport: "reflow-320", overflow: reflowOverflow });
-      if (reflowOverflow) evidence.failures.push(`${entry.id}: WCAG reflow overflow at 320px`);
+      await runWithBrowserRecovery(async (activePage) => {
+        await activePage.setViewportSize({ width: 320, height: 900 });
+        await activePage.goto(
+          `${origin}/iframe.html?id=${encodeURIComponent(entry.id)}&viewMode=story`,
+          { waitUntil: "networkidle", timeout: 30_000 },
+        );
+
+        const reflowOverflow = await activePage.evaluate(
+          () => document.body.scrollWidth > document.body.clientWidth + 1,
+        );
+
+        evidence.checks.push({
+          storyId: entry.id,
+          viewport: "reflow-320",
+          overflow: reflowOverflow,
+        });
+
+        if (reflowOverflow) {
+          evidence.failures.push(`${entry.id}: WCAG reflow overflow at 320px`);
+        }
+      });
     } catch (error) {
       evidence.failures.push(`${entry.id}/reflow-320: harness error: ${errorText(error)}`);
     }
   }
-  await context.close();
+
+  await closeAcceptancePage();
+
+  if (context) {
+    await context.close().catch(() => undefined);
+    context = undefined;
+  }
 } catch (error) {
   evidence.failures.push(`harness: ${errorText(error)}`);
 } finally {
-  if (browser) await browser.close().catch(() => undefined);
+  await closeAcceptancePage();
+
+  if (context) {
+    await context.close().catch(() => undefined);
+    context = undefined;
+  }
+
+  if (browser) {
+    await browser.close().catch(() => undefined);
+    browser = undefined;
+  }
+
   if (server) server.kill("SIGTERM");
   evidence.status = evidence.failures.length === 0 ? "pass" : "fail";
   evidence.failureCount = evidence.failures.length;

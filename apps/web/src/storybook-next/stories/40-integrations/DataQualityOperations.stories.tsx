@@ -2,7 +2,12 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { QualityOperationsDemo } from '../../../fixtures/platform-operations/OperationsScenarios';
 import type { OperationsScenarioProps } from '../../../fixtures/platform-operations/OperationsScenarios';
 import { StorybookProductShellFrame } from '../shared/StorybookProductShellFrame';
-const meta = { id: 'papadata-data-quality-operations', title: 'PLATFORMA/Jakosc danych/Operacje', component: QualityOperationsDemo, parameters: { layout: 'fullscreen' } } satisfies Meta<typeof QualityOperationsDemo>;
+// Brak meta.component celowo: QualityOperationsDemo to Storybook-only wrapper
+// scenariuszowy (OperationsScenarioProps: initialView/state/empty/readonly/failSave),
+// nie realny kontrakt propsów DataQualityScreen (data/state/problem/onReload/onReview/
+// onSource/renderLineage/demo). Wskazanie DataQualityScreen jako component
+// sfałszowałoby panel Controls — pokazywałby propsy, których żadna story tu nie ustawia.
+const meta = { id: 'papadata-data-quality-operations', title: 'DANE I INTEGRACJE/Jakość danych/Operacje', parameters: { layout: 'fullscreen' } } satisfies Meta;
 export default meta;
 type Story = StoryObj<typeof meta>;
 function renderStory(args:OperationsScenarioProps) { return <StorybookProductShellFrame activePath="/app/data-quality"><QualityOperationsDemo {...args} /></StorybookProductShellFrame>; }

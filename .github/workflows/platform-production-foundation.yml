@@ -306,6 +306,9 @@ jobs:
       - name: Install Chromium
         run: pnpm --filter @papadata/web exec playwright install --with-deps chromium
 
+      - name: Verify Storybook architecture
+        run: pnpm verify:storybook-architecture
+
       - name: Build Storybook
         run: pnpm build-storybook
 

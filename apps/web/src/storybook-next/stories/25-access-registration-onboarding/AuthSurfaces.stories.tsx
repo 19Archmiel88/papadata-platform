@@ -34,6 +34,7 @@ import {
 import {
   Button,
 } from '../../../design-system/components';
+import '../../presentation/story-presentation.css';
 import {
   StoryPresentationMeta,
   StoryPresentationPage,
@@ -100,7 +101,7 @@ const organizationOptions = Array.from(
 );
 
 const meta = {
-  title: 'PLATFORMA/Dostęp i onboarding/Procesy dostępu',
+  title: 'DOSTĘP I ONBOARDING/Procesy dostępu',
   parameters: {
     layout: 'fullscreen',
     a11y: {

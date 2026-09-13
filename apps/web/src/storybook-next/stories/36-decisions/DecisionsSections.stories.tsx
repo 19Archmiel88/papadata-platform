@@ -5,7 +5,10 @@ import {
   Measurement as M,
   Registry as R,
 } from './Decisions.story-support';
-export default { title: 'DECYZJE/Centrum decyzji/Sekcje' } satisfies Meta;
+export default {
+  title: 'DECYZJE/Centrum decyzji/Sekcje',
+  parameters: { layout: 'fullscreen', a11y: { test: 'error' } },
+} satisfies Meta;
 export const Evidence = { ...E, name: 'Dowody i ograniczenia' };
 export const Plan = { ...P, name: 'Plan i wykonanie' };
 export const Measurement = { ...M, name: 'Pomiar efektów' };

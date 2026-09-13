@@ -263,20 +263,6 @@ def validate(root:Path):
   uniq=len({norm(r[field]) for r in e2e})
   if uniq<50:err('E2E_TEMPLATE',f'{field}: {uniq} unique')
  checks['e2e_steps']=len(e2e)
- # Storybook backlog fixtures
- stories=read_csv(root/'rejestry/storybook.csv')
- storybook_sidebar_source='apps/web/.storybook/main.ts'
- if not (root/storybook_sidebar_source).exists():err('STORY_ACTIVE_SOURCE_FILE',storybook_sidebar_source)
- for r in stories:
-  if r.get('registry_scope')!='target-backlog-registry':err('STORY_REGISTRY_SCOPE',r['story_title'])
-  if r.get('active_sidebar_source')!=storybook_sidebar_source:err('STORY_ACTIVE_SOURCE',r['story_title'])
-  fp=root/r['fixture_id']
-  if not fp.exists():err('STORY_FIXTURE',r['fixture_id']);continue
-  obj=json.loads(fp.read_text(encoding='utf-8'))
-  if obj.get('sourceDocument')!=r['document']:err('STORY_SOURCE',r['story_title'])
-  if '|'.join(obj.get('states',[]))!=r['states']:err('STORY_STATES',r['story_title'])
- if len({r['fixture_id'] for r in stories})!=len(stories):err('STORY_DUP_FIXTURE','duplicate fixture ids')
- checks['storybook_targets']=len(stories)
  # P0 priority package
  p0_dir=spec/'26-priorytety-p0'
  p0_docs=sorted(p0_dir.glob('*.md')) if p0_dir.exists() else []

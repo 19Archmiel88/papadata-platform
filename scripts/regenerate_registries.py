@@ -20,7 +20,6 @@ DOCUMENTS = REG / "documents.csv"
 PROTECTED_REGISTRIES = (
     "routes.csv",
     "api-operations.csv",
-    "storybook.csv",
     "component-contracts.csv",
     "api-schemas.csv",
 )
@@ -67,7 +66,7 @@ def build_document_rows() -> list[list[str]]:
 
 def render_documents_csv(rows: list[list[str]]) -> str:
     buffer = io.StringIO(newline="")
-    writer = csv.writer(buffer, lineterminator="\r\n")
+    writer = csv.writer(buffer, lineterminator="\n")
     writer.writerow(["path", "title", "words", "sha256"])
     writer.writerows(rows)
     return buffer.getvalue()

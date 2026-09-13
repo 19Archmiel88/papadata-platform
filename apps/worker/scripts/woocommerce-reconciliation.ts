@@ -77,6 +77,7 @@ const database = new ProductionDatabase({
   connectionString: databaseUrl,
   max: 8,
   statementTimeoutMs: 30_000,
+  sslCaBase64: process.env.DATABASE_CA_BASE64?.trim() || null,
 });
 
 const report: Record<string, unknown> = {

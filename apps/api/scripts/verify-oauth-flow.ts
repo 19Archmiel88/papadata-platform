@@ -35,7 +35,12 @@ import {
 
 const repoRoot = new URL("../../../", import.meta.url).pathname;
 const databaseUrl = readDatabaseUrl();
-const database = new ProductionDatabase({ connectionString: databaseUrl, max: 4, statementTimeoutMs: 10_000 });
+const database = new ProductionDatabase({
+  connectionString: databaseUrl,
+  max: 4,
+  statementTimeoutMs: 10_000,
+  sslCaBase64: process.env.DATABASE_CA_BASE64?.trim() || null,
+});
 const identities = new IdentityRepository(database);
 const invitations = new InvitationRepository(database);
 const oauthLinks = new IdentityOAuthRepository(database);

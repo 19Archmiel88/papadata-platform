@@ -29,10 +29,6 @@ const csrfToken = requiredEnv("PARITY_CSRF_TOKEN");
 const ca = readFileSync(caPath);
 
 const forceLoopback: LookupFunction = (_hostname, options, callback) => {
-  if (typeof options === "function") {
-    options(null, "127.0.0.1", 4);
-    return;
-  }
   if (options.all) {
     callback(null, [{ address: "127.0.0.1", family: 4 }]);
     return;

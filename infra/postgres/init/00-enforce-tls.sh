@@ -14,7 +14,20 @@
 # tools/prepare-production-parity.mjs) for the certificate this pairs with,
 # and compose.production-parity.yml's postgres-production `command:` for
 # where ssl/ssl_cert_file/ssl_key_file/ssl_ca_file are set.
-cat > "$PGDATA/pg_hba.conf" <<'EOF'
+#
+# infra/postgres/init/ is also bind-mounted wholesale into compose.yaml's
+# plain local-dev/CI postgres service, which never sets ssl=on. Only
+# compose.production-parity.yml mounts the generated server cert; skip the
+# hostssl-only rewrite when it is absent so local/CI TCP clients are not
+# locked out by a hostssl requirement the server can never satisfy.
+#
+# No `exit` here on the skip path: the official postgres entrypoint sources
+# non-executable *.sh init scripts (`. "$f"`, confirmed by its own "sourcing"
+# log line) rather than running them as a subprocess, so `exit` would end
+# the entrypoint's own shell -- i.e. the whole container -- not just this
+# script.
+if [ -f /run/papadata-postgres-tls/server.crt ]; then
+  cat > "$PGDATA/pg_hba.conf" <<'EOF'
 # TYPE    DATABASE        USER            ADDRESS                 METHOD
 local     all             all                                     trust
 hostssl   all             all             0.0.0.0/0               scram-sha-256
@@ -22,3 +35,4 @@ hostssl   all             all             ::0/0                   scram-sha-256
 host      all             all             0.0.0.0/0               reject
 host      all             all             ::0/0                   reject
 EOF
+fi

@@ -16,6 +16,7 @@ services:
     volumes:
       - papadata-postgres-data:/var/lib/postgresql
       - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+      - ./packages/database/provisioning/roles.sql:/opt/papadata/roles.sql:ro
     healthcheck:
       test:
         [

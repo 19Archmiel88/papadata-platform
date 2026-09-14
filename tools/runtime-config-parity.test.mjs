@@ -14,6 +14,7 @@ import {
   compareRuntimeAgainstContract,
   compareTerraformAgainstContract,
   checkProductionParityCoverage,
+  checkProductionParityRequiredHasSource,
   checkLocalOnlyNeverReachesProduction,
   checkSecretNameHeuristic,
   checkRequiredOptionalConsistency,
@@ -235,6 +236,56 @@ test("Class C negative: production-required var actually available in parity pas
     }),
   ]);
   assert.deepEqual(checkProductionParityCoverage(contract), []);
+});
+
+// 4b. required.production-parity=true with no way to actually generate a
+// value (Class C, generation half) -- the PAPADATA_COOKIE_CONSENT_VERSION
+// class of defect: prepare succeeds, verify passes, API fails at runtime. --
+
+test("Class C generation: required-for-parity var with source: null and no operatorSuppliedReason fails", () => {
+  const contract = contractWith([
+    baseEntry({
+      name: "REQUIRED_BUT_UNGENERATED",
+      required: { dev: true, "production-parity": true, staging: true, production: true },
+      source: null,
+    }),
+  ]);
+  const failures = checkProductionParityRequiredHasSource(contract);
+  assert.ok(failures.some((f) => f.includes("REQUIRED_BUT_UNGENERATED")));
+});
+
+test("Class C generation negative: required-for-parity var with a concrete source passes", () => {
+  const contract = contractWith([
+    baseEntry({
+      name: "GENERATED_VAR",
+      required: { dev: true, "production-parity": true, staging: true, production: true },
+      source: { kind: "literal", value: "1" },
+    }),
+  ]);
+  assert.deepEqual(checkProductionParityRequiredHasSource(contract), []);
+});
+
+test("Class C generation negative: required-for-parity var with operatorSuppliedReason passes without a source", () => {
+  const contract = contractWith([
+    baseEntry({
+      name: "OPERATOR_SUPPLIED_VAR",
+      required: { dev: true, "production-parity": true, staging: true, production: true },
+      source: null,
+      operatorSuppliedReason: "Filled in by the operator's local override file; never auto-generated.",
+    }),
+  ]);
+  assert.deepEqual(checkProductionParityRequiredHasSource(contract), []);
+});
+
+test("Class C generation negative: a var not required for parity is not checked at all", () => {
+  const contract = contractWith([
+    baseEntry({
+      name: "NOT_REQUIRED_FOR_PARITY",
+      required: { dev: false, "production-parity": false, staging: true, production: true },
+      source: null,
+    }),
+  ]);
+  assert.deepEqual(checkProductionParityRequiredHasSource(contract), []);
 });
 
 // 5. Secret incorrectly declared as plain (Class E) --------------------------

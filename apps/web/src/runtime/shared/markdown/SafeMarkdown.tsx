@@ -1,7 +1,7 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-/** Model text is not trusted to cause network requests by rendering image URLs. */
-export function AssistantMarkdown({children}:{children:string}){
+/** Untrusted text is not trusted to cause network requests by rendering image URLs. */
+export function SafeMarkdown({children}:{children:string}){
  return <ReactMarkdown remarkPlugins={[remarkGfm]} components={{
   img:({alt})=><span>[{alt||'External image omitted'}]</span>,
   a:({href,children:label})=>{

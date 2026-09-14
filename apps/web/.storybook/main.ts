@@ -25,6 +25,8 @@ const config: StorybookConfig = {
     '../src/storybook-next/stories/40-integrations/*.stories.tsx',
     '../src/storybook-next/stories/40-saved-reports/*.stories.tsx',
     '../src/storybook-next/stories/41-papa-assistant/*.stories.tsx',
+    '../src/storybook-next/stories/42-cookie-consent/*.stories.tsx',
+    '../src/storybook-next/stories/43-legal-documents/*.stories.tsx',
   ],
 
   addons: ['@storybook/addon-docs', '@storybook/addon-a11y'],

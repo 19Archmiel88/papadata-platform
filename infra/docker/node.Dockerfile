@@ -8,11 +8,13 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.base.js
 COPY apps/api/package.json apps/api/package.json
 COPY apps/bff/package.json apps/bff/package.json
 COPY apps/worker/package.json apps/worker/package.json
+COPY apps/web/package.json apps/web/package.json
 COPY packages/contracts/package.json packages/contracts/package.json
 COPY packages/database/package.json packages/database/package.json
 COPY packages/integrations/package.json packages/integrations/package.json
 COPY packages/storage/package.json packages/storage/package.json
 COPY packages/ai-runtime/package.json packages/ai-runtime/package.json
+COPY packages/papa-runtime/package.json packages/papa-runtime/package.json
 COPY packages/testing/package.json packages/testing/package.json
 
 RUN pnpm install --frozen-lockfile
@@ -20,6 +22,7 @@ RUN pnpm install --frozen-lockfile
 COPY apps/api apps/api
 COPY apps/bff apps/bff
 COPY apps/worker apps/worker
+COPY apps/web apps/web
 COPY packages packages
 
 RUN pnpm --filter @papadata/api --filter @papadata/bff --filter @papadata/worker build

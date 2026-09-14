@@ -13,6 +13,7 @@ function baseEnv(overrides: Record<string, string | undefined> = {}): NodeJS.Pro
     BFF_COOKIE_SECRET: secret("cookie-active"),
     BFF_COOKIE_PREVIOUS_SECRET: secret("cookie-previous"),
     BFF_CSRF_SECRET: secret("csrf"),
+    BFF_CONSENT_COOKIE_SECRET: secret("consent-active"),
     BFF_REFRESH_COOKIE_SECRET: secret("refresh-active"),
     BFF_REFRESH_COOKIE_PREVIOUS_SECRET: secret("refresh-previous"),
     BFF_INTERNAL_AUTH_ACTIVE_SECRET: secret("internal-active"),

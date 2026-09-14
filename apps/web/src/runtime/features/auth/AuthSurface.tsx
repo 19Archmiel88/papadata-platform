@@ -47,7 +47,6 @@ export type AuthSurfaceMode =
   | 'mfa'
   | 'recover'
   | 'reauth'
-  | 'workspace'
   | 'accept-invite';
 
 export type AuthSurfaceState =
@@ -87,13 +86,6 @@ export type AuthRecoveryRequestInput = {
 
 export type AuthStepUpInput = {
   readonly code: string;
-};
-
-export type AuthWorkspaceOption = {
-  readonly tenantId: string;
-  readonly tenantName?: string;
-  readonly workspaceId: string;
-  readonly workspaceName?: string;
 };
 
 export type AuthPasswordResetInput = {
@@ -146,7 +138,6 @@ export type AuthSurfaceProps = {
   // Absent/undefined is treated the same as "configuration_required" for
   // both providers (safe default while status is still loading).
   readonly oauthAvailability?: OAuthAvailability;
-  readonly workspaceOptions?: readonly AuthWorkspaceOption[];
   readonly onAcceptInvitation: (input: AuthAcceptInvitationInput) => Promise<void>;
   readonly onLogin: (input: AuthLoginInput) => Promise<void>;
   readonly onUseRecoveryCode?: () => void;
@@ -168,6 +159,12 @@ export type AuthSurfaceProps = {
   ) => Promise<void>;
   readonly onRegister: (input: AuthRegisterInput) => Promise<void>;
   readonly onRetry?: () => Promise<void> | void;
+  // AuthSurface itself no longer has a UI branch that calls this (the old
+  // mode==='workspace' option-list was dead code, removed) -- kept required
+  // because AccessRouter.tsx builds one shared handler object for both
+  // AuthSurface and its own auth-22/auth-23 AccessFlowScreen branch, and
+  // calls this handler directly from the latter's real workspace-selection
+  // buttons.
   readonly onSelectWorkspace: (workspaceId: string) => Promise<void>;
   readonly onStepUpConfirm: (input: AuthStepUpInput) => Promise<void>;
   readonly onValidateInvitation?: (
@@ -242,7 +239,6 @@ export function AuthSurface({
   initialRegistrationStage = 'choice',
   mode,
   oauthAvailability,
-  workspaceOptions = [],
   onAcceptInvitation,
   onLogin,
   onMfaConfirm,
@@ -253,7 +249,6 @@ export function AuthSurface({
   onPasswordReset,
   onRegister,
   onRetry,
-  onSelectWorkspace,
   onStepUpConfirm,
   onValidateInvitation,
   state = 'ready',
@@ -285,7 +280,6 @@ export function AuthSurface({
   const [fieldProblems, setFieldProblems] = useState<FieldProblems>({});
   const [problem, setProblem] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [pendingWorkspaceId, setPendingWorkspaceId] = useState<string | null>(null);
   const [oauthPending, setOauthPending] = useState<OAuthProviderId | null>(null);
   const [invitationPreview, setInvitationPreview] = useState<AuthInvitationPreview | null>(null);
   const [invitationPreviewError, setInvitationPreviewError] = useState<string | null>(null);
@@ -529,23 +523,6 @@ export function AuthSurface({
           : formCopy.operationFailed,
       );
       setOauthPending(null);
-    }
-  }
-
-  async function selectWorkspaceOption(workspaceId: string) {
-    if (pendingWorkspaceId) return;
-    setProblem(null);
-    setPendingWorkspaceId(workspaceId);
-    try {
-      await onSelectWorkspace(workspaceId);
-    } catch (cause) {
-      setProblem(
-        cause instanceof Error
-          ? cause.message
-          : formCopy.workspaceSelectError,
-      );
-    } finally {
-      setPendingWorkspaceId(null);
     }
   }
 
@@ -1038,31 +1015,6 @@ export function AuthSurface({
               </form>
             ) : null}
 
-            {mode === 'workspace' && !isPassiveState ? (
-              <div
-                aria-label={formCopy.workspaceListLabel}
-                className="pd-auth-surface__option-list"
-              >
-                {workspaceOptions.map((option) => (
-                  <button
-                    className="pd-auth-surface__option"
-                    disabled={Boolean(pendingWorkspaceId)}
-                    key={option.workspaceId}
-                    onClick={() => void selectWorkspaceOption(option.workspaceId)}
-                    type="button"
-                  >
-                    <span className="pd-auth-surface__option-title">
-                      {option.tenantName ?? option.tenantId}
-                    </span>
-                    <span className="pd-auth-surface__option-subtitle">
-                      {option.workspaceName ?? option.workspaceId}
-                      {pendingWorkspaceId === option.workspaceId ? formCopy.selecting : ''}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            ) : null}
-
             {mode === 'recover' && !isResetFlow && !isPassiveState ? (
               <form
                 className="pd-auth-surface__form"
@@ -1308,7 +1260,6 @@ function resolveAuthFormCopy(locale: AuthLocale) {
       requiredWorkspace: 'Enter workspace name.',
       sendInstructions: 'Send instructions',
       sendingLoading: 'Sending...',
-      selecting: ' - selecting...',
       setNewPassword: 'Set new password',
       settingPasswordLoading: 'Setting password...',
       signInAndJoin: 'Sign in and join',
@@ -1322,8 +1273,6 @@ function resolveAuthFormCopy(locale: AuthLocale) {
       successTitle: 'Operation accepted',
       verifyingLoading: 'Verifying...',
       workspace: 'Workspace',
-      workspaceListLabel: 'Choose organization and workspace',
-      workspaceSelectError: 'Could not choose the workspace.',
     }
     : {
       accountEmail: 'E-mail konta',
@@ -1394,7 +1343,6 @@ function resolveAuthFormCopy(locale: AuthLocale) {
       requiredWorkspace: 'Podaj nazwę workspace.',
       sendInstructions: 'Wyślij instrukcję',
       sendingLoading: 'Wysyłanie...',
-      selecting: ' — wybieranie...',
       setNewPassword: 'Ustaw nowe hasło',
       settingPasswordLoading: 'Ustawianie hasła...',
       signInAndJoin: 'Zaloguj się i dołącz',
@@ -1408,8 +1356,6 @@ function resolveAuthFormCopy(locale: AuthLocale) {
       successTitle: 'Operacja przyjęta',
       verifyingLoading: 'Weryfikacja...',
       workspace: 'Workspace',
-      workspaceListLabel: 'Wybierz organizację i obszar roboczy',
-      workspaceSelectError: 'Nie udało się wybrać obszaru roboczego.',
     };
 }
 
@@ -1688,7 +1634,6 @@ function resolvePresentedSurfaceId(
   }
   if (mode === 'mfa') return 'auth-16';
   if (mode === 'reauth') return 'auth-24';
-  if (mode === 'workspace') return 'auth-23';
   if (mode === 'accept-invite') return 'auth-15';
   return isResetFlow ? 'auth-20' : 'auth-18';
 }

@@ -23,6 +23,7 @@ export type ProductionConfig = {
   readonly authActiveSecret: string;
   readonly authPreviousSecret: string | null;
   readonly mfaEncryptionKey: string;
+  readonly cookieConsentVersion: string;
   // Optional on purpose: no environment this codebase runs in today has a
   // real Stripe account configured (see docs/backend-remediation and the
   // scaling architecture audit). Null means the webhook endpoint rejects
@@ -151,6 +152,7 @@ export function readProductionConfig(
     authActiveSecret,
     authPreviousSecret,
     mfaEncryptionKey: readMfaKey(env),
+    cookieConsentVersion: requiredText(env, "PAPADATA_COOKIE_CONSENT_VERSION"),
     stripeWebhookSecret: optionalSecret(env, "STRIPE_WEBHOOK_SECRET"),
   };
 }

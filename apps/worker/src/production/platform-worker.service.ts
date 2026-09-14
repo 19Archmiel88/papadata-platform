@@ -5,12 +5,19 @@ import type { OnModuleDestroy } from "@nestjs/common";
 import { Worker, type Job } from "bullmq";
 import IORedis from "ioredis";
 import { AssistantConversationRepository, BillingRepository, PlatformDatabase, PrivacyRepository, ProductionDatabase } from "@papadata/database";
-import { AiBudgetGuard, createPapaProviderRuntime, LocalDeterministicProvider, redactText } from "@papadata/ai-runtime";
+import { AiBudgetGuard, aiProviderErrorMetadata, createPapaProviderRuntime, LocalDeterministicProvider, redactText } from "@papadata/ai-runtime";
 import type { MembershipAuthorizationInput } from "@papadata/contracts";
-import { generatePapaAnswer } from "@papadata/papa-runtime";
+import { generatePapaAnswer, papaGenerationErrorStage } from "@papadata/papa-runtime";
 import { ObjectStorageClient } from "@papadata/storage";
 import { readWorkerConfig } from "./config.js";
-import { assistantGenerationLeaseDurationMs, canRunAssistantGeneration, decideAssistantGenerationFailure } from "./assistant-generation.policy.js";
+import {
+  assistantGenerationErrorCode,
+  assistantGenerationErrorName,
+  assistantGenerationLeaseDurationMs,
+  type AssistantGenerationStage,
+  canRunAssistantGeneration,
+  decideAssistantGenerationFailure,
+} from "./assistant-generation.policy.js";
 import { privacyTargetDisposition, reportFormatEnabled } from "./platform-worker.policy.js";
 
 export type PlatformJobPayload = {
@@ -145,6 +152,9 @@ export class PlatformWorkerService implements OnModuleDestroy {
     const controller = new AbortController();
     let partialText = "";
     let heartbeatBusy = false;
+    let providerId: string | null = null;
+    let providerModelId: string | null = null;
+    let stage: AssistantGenerationStage = "authority_check";
     const heartbeat = setInterval(() => {
       if (heartbeatBusy || controller.signal.aborted) return;
       heartbeatBusy = true;
@@ -176,6 +186,7 @@ export class PlatformWorkerService implements OnModuleDestroy {
     }, Math.max(5_000, Math.floor(leaseMs / 3)));
 
     try {
+      stage = "authority_check";
       const memberships = await this.database.withTenantWorkspace(
         data.tenantId,
         data.workspaceId,
@@ -192,9 +203,13 @@ export class PlatformWorkerService implements OnModuleDestroy {
         throw new Error("ASSISTANT_CAPABILITY_REVOKED");
       }
 
+      stage = "provider_creation";
       const provider = createPapaProviderRuntime();
+      providerId = provider.provider.providerId;
+      providerModelId = provider.modelId;
       const repository = new AssistantConversationRepository(this.database);
       const billing = new BillingRepository(this.database);
+      stage = "context_preparation";
       const result = await generatePapaAnswer({
         repository,
         billing,
@@ -217,6 +232,7 @@ export class PlatformWorkerService implements OnModuleDestroy {
         ...(provider.nativeStreaming
           ? {
               onDelta: async (chunk: string) => {
+                stage = "stream_handling";
                 controller.signal.throwIfAborted();
                 partialText += chunk;
                 await this.database.withTenantWorkspace(data.tenantId, data.workspaceId as string, (client) => client.query(
@@ -231,6 +247,7 @@ export class PlatformWorkerService implements OnModuleDestroy {
       });
       if (!result) throw new Error("THREAD_UNAVAILABLE");
       controller.signal.throwIfAborted();
+      stage = "result_persistence";
       await this.database.withTenantWorkspace(data.tenantId, data.workspaceId, (client) => client.query(
         `update app.assistant_generation_runs
             set status='completed',result=$4::jsonb,partial_text='',error_code=null,
@@ -248,9 +265,36 @@ export class PlatformWorkerService implements OnModuleDestroy {
           [data.tenantId, data.workspaceId, runId],
         )).rows[0]?.status === "cancelled",
       );
-      const decision = decideAssistantGenerationFailure({ cancelled, attemptsMade: job.attemptsMade, maxAttempts });
+      const failureStage = (papaGenerationErrorStage(error) ?? stage) as AssistantGenerationStage;
+      const decision = decideAssistantGenerationFailure({
+        cancelled,
+        attemptsMade: job.attemptsMade,
+        maxAttempts,
+        error,
+        stage: failureStage,
+      });
       const status = decision === "retry" ? "interrupted" : decision === "cancel" ? "cancelled" : "failed";
-      const code = decision === "retry" ? "WORKER_RETRY" : decision === "cancel" ? "GENERATION_STOPPED" : "GENERATION_FAILED";
+      const code = assistantGenerationErrorCode({ decision, error, stage: failureStage });
+      const providerError = aiProviderErrorMetadata(error);
+      this.logger.warn(JSON.stringify({
+        event: "assistant_generation_failure",
+        runId,
+        stage: failureStage,
+        errorName: assistantGenerationErrorName(error),
+        providerId,
+        modelId: providerModelId,
+        attempt: job.attemptsMade + 1,
+        maxAttempts,
+        providerErrorCode: providerError.providerErrorCode,
+        httpStatus: providerError.httpStatus,
+        retryable: providerError.retryable,
+        upstreamProviderErrorCode: providerError.upstreamProviderErrorCode,
+        upstreamProviderErrorParam: providerError.upstreamProviderErrorParam,
+        upstreamProviderErrorType: providerError.upstreamProviderErrorType,
+        upstreamProviderRequestId: providerError.upstreamProviderRequestId,
+        decision,
+      }));
+      stage = "failure_persistence";
       await this.database.withTenantWorkspace(data.tenantId, data.workspaceId, (client) => client.query(
         `update app.assistant_generation_runs
             set status=$4,error_code=$5,partial_text=$6,lease_expires_at=null,last_heartbeat_at=now(),updated_at=now()

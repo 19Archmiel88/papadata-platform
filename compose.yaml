@@ -117,6 +117,14 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_URL: redis://redis:6379
+      AI_PROVIDER: ${AI_PROVIDER:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5.6-luna}
+      OPENAI_REASONING_EFFORT: ${OPENAI_REASONING_EFFORT:-low}
+      OPENAI_VERBOSITY: ${OPENAI_VERBOSITY:-medium}
+      OPENAI_TIMEOUT_MS: ${OPENAI_TIMEOUT_MS:-90000}
+      OPENAI_RESERVE_MINOR_PER_CALL: ${OPENAI_RESERVE_MINOR_PER_CALL:-50}
+      PAPADATA_COOKIE_CONSENT_VERSION: ${PAPADATA_COOKIE_CONSENT_VERSION:?PAPADATA_COOKIE_CONSENT_VERSION is required}
       # Without this, PrincipalService.findSession() throws a config error
       # on every request and every authenticated proxied call 401s -- the
       # JWT itself can still verify fine, masking the real cause. The
@@ -140,8 +148,8 @@ services:
       PAPADATA_API_AUTH_AUDIENCE: ${PAPADATA_API_AUTH_AUDIENCE:-papadata-local-api}
       PAPADATA_API_AUTH_ACTIVE_SECRET: ${PAPADATA_API_AUTH_ACTIVE_SECRET:-papadata-local-dev-shared-internal-auth-secret-please-rotate}
       MFA_ENCRYPTION_KEY: ${MFA_ENCRYPTION_KEY:-c30e039845737fb2189d2899d1599ea8481534688755b3595cb17ec2d09db30a}
-    ports:
-      - "${API_PORT:-3001}:${API_PORT:-3001}"
+    expose:
+      - "${API_PORT:-3001}"
     depends_on:
       postgres:
         condition: service_healthy
@@ -173,6 +181,11 @@ services:
       # Local-only placeholders -- see the matching note on the api service above.
       BFF_COOKIE_SECRET: ${BFF_COOKIE_SECRET:-papadata-local-dev-bff-session-cookie-secret-please-rotate-x}
       BFF_CSRF_SECRET: ${BFF_CSRF_SECRET:-papadata-local-dev-bff-csrf-signing-secret-please-rotate-xyz}
+      BFF_CONSENT_COOKIE_SECRET: ${BFF_CONSENT_COOKIE_SECRET:-papadata-local-dev-bff-consent-cookie-secret-please-rotate-y}
+      BFF_CONSENT_COOKIE_PREVIOUS_SECRET: ${BFF_CONSENT_COOKIE_PREVIOUS_SECRET:-}
+      BFF_CONSENT_COOKIE_NAME: ${BFF_CONSENT_COOKIE_NAME:-}
+      BFF_CONSENT_COOKIE_PATH: ${BFF_CONSENT_COOKIE_PATH:-}
+      BFF_CONSENT_COOKIE_MAX_AGE_SECONDS: ${BFF_CONSENT_COOKIE_MAX_AGE_SECONDS:-}
       BFF_REFRESH_COOKIE_SECRET: ${BFF_REFRESH_COOKIE_SECRET:-papadata-local-dev-bff-refresh-cookie-secret-please-rotate}
       BFF_INTERNAL_AUTH_ACTIVE_SECRET: ${PAPADATA_API_AUTH_ACTIVE_SECRET:-papadata-local-dev-shared-internal-auth-secret-please-rotate}
       BFF_INTERNAL_AUTH_ISSUER: ${PAPADATA_API_AUTH_ISSUER:-papadata-local}
@@ -223,6 +236,13 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_URL: redis://redis:6379
+      AI_PROVIDER: ${AI_PROVIDER:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5.6-luna}
+      OPENAI_REASONING_EFFORT: ${OPENAI_REASONING_EFFORT:-low}
+      OPENAI_VERBOSITY: ${OPENAI_VERBOSITY:-medium}
+      OPENAI_TIMEOUT_MS: ${OPENAI_TIMEOUT_MS:-90000}
+      OPENAI_RESERVE_MINOR_PER_CALL: ${OPENAI_RESERVE_MINOR_PER_CALL:-50}
       PAPADATA_STORAGE_DRIVER: minio
       PAPADATA_STORAGE_BUCKET: papadata-artifacts
       PAPADATA_STORAGE_ENDPOINT: http://minio:9000

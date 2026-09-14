@@ -7,8 +7,7 @@
    różnicują się jasnością/cieniem (elevation), a rozdzielanie treści opiera
    się na cienkich liniach separujących (border-top/border-inline-start) i
    akcentach paska z boku — nie na obrysowanych "kartach" 1px border dookoła
-   każdego bloku. Wyjątek: baner cookies (prawdziwy floating overlay) — tam
-   głębia wynika z cienia (shadow), nie z ramki.
+   każdego bloku.
    ========================================================================== */
 
 .pd-auth-surface {
@@ -23,29 +22,17 @@
   font-family: var(--pd-font-sans);
 }
 
-/*
- * apps/web/src/app/routing/AppRouter.tsx renders AuthPage inside
- * PublicAuthShell (className="pd-auth-route-shell"). Auth owns runtime
- * preferences inside the surface, so the route shell only constrains height.
- */
-.pd-auth-route-shell {
-  display: flex;
-  flex-direction: column;
-  height: auto;
-  min-height: 100dvh;
-  overflow: visible;
-}
-
-.pd-auth-route-shell .pd-auth-surface {
-  flex: 1;
-  min-height: 0;
-}
-
 .pd-auth-surface__layout {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   grid-template-rows: auto;
-  align-items: start;
+  /* Stretch (not start): the shorter column must grow to the row's full
+     height so its background/border/footer reach the bottom of whichever
+     column ends up taller, instead of visibly stopping mid-page while the
+     other column keeps scrolling. Safe at the ≤960px stacked breakpoint
+     too — each column then owns its own auto row, so stretching it to
+     that row's height is a no-op there. */
+  align-items: stretch;
   block-size: auto;
   flex: 1;
   min-height: 0;
@@ -182,59 +169,6 @@
   stroke-width: 2;
 }
 
-.pd-auth-stepper-chart {
-  display: grid;
-  gap: var(--pd-space-4);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.pd-auth-stepper-chart__step {
-  display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
-  gap: var(--pd-space-3);
-  align-items: center;
-}
-
-.pd-auth-stepper-chart__index {
-  display: grid;
-  place-items: center;
-  inline-size: 28px;
-  block-size: 28px;
-  border-radius: var(--pd-radius-pill);
-  background: var(--pdauth-accent-tint);
-  color: var(--pdauth-accent);
-  font-size: var(--pd-type-size-caption);
-  font-weight: 600;
-}
-
-.pd-auth-stepper-chart__body {
-  display: grid;
-  gap: var(--pd-space-2);
-  min-width: 0;
-}
-
-.pd-auth-stepper-chart__label {
-  color: var(--pdauth-ink-secondary);
-  font-size: var(--pd-type-size-body-small);
-}
-
-.pd-auth-stepper-chart__bar {
-  display: block;
-  overflow: hidden;
-  block-size: 7px;
-  border-radius: var(--pd-radius-pill);
-  background: var(--pdauth-surface-subtle);
-}
-
-.pd-auth-stepper-chart__bar > span {
-  display: block;
-  block-size: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--pdauth-accent), var(--pdauth-chart-positive));
-}
-
 .pd-auth-source-marquee {
   display: grid;
   gap: var(--pd-space-3);
@@ -366,6 +300,14 @@
 .pd-auth-theme .pd-form-control__toggle {
   inline-size: auto;
   min-inline-size: 4.9rem;
+  /* The sibling input has inline-size:100% and min-inline-size:0, so it
+     absorbs 100% of any flex compression by default. Without this, the
+     toggle's own min-inline-size floor (4.9rem) can still end up narrower
+     than its own nowrap text at some card widths (reproduced at 768px),
+     clipping the last character of "Pokaż hasło"/"Ukryj hasło" against the
+     input's rounded corner. flex-shrink:0 keeps the toggle at its natural
+     content width in every case, in every locale. */
+  flex-shrink: 0;
   padding-inline: var(--pd-space-2);
   white-space: nowrap;
 }
@@ -448,35 +390,11 @@
   }
 }
 
-/* Wybór metody rejestracji / wybór organizacji-workspace: lista rozdzielona
-   separatorami, nie stos osobnych ramek — każda pozycja różni się od tła
-   jedynie przy hover/focus. Ten sam wzorzec dla obu przypadków. */
-.pd-auth-surface__registration-choice,
-.pd-auth-surface__option-list {
+/* Wybór metody rejestracji: lista rozdzielona separatorami, nie stos
+   osobnych ramek — każda pozycja różni się od tła jedynie przy hover/focus. */
+.pd-auth-surface__registration-choice {
   display: grid;
   border-block-start: 1px solid var(--pdauth-line);
-}
-
-.pd-auth-surface__option {
-  display: grid;
-  gap: var(--pd-space-1);
-  padding: var(--pd-space-4) var(--pd-space-1);
-  border: 0;
-  border-block-end: 1px solid var(--pdauth-line);
-  border-radius: 0;
-  background: transparent;
-  color: var(--pdauth-ink-secondary);
-  cursor: pointer;
-  font: inherit;
-  text-align: start;
-  transition: background-color var(--pd-motion-duration-fast) var(--pd-motion-easing-standard), padding-inline-start var(--pd-motion-duration-fast) var(--pd-motion-easing-standard);
-}
-
-.pd-auth-surface__option:hover,
-.pd-auth-surface__option:focus-visible {
-  padding-inline-start: var(--pd-space-3);
-  background: var(--pdauth-surface-soft);
-  color: var(--pdauth-ink);
 }
 
 .pd-auth-surface__entry-actions {
@@ -496,21 +414,6 @@
   --pd-button-surface-hover: var(--pdauth-surface-soft);
   --pd-button-border: var(--pdauth-line);
   --pd-button-border-hover: var(--pdauth-accent);
-}
-
-.pd-auth-surface__option:disabled {
-  cursor: default;
-  opacity: 0.6;
-}
-
-.pd-auth-surface__option-title {
-  color: var(--pdauth-ink);
-  font-weight: 500;
-}
-
-.pd-auth-surface__option-subtitle {
-  color: var(--pdauth-ink-muted);
-  font-size: var(--pd-type-size-body-small);
 }
 
 /* Komunikaty: pasek akcentu z boku zamiast pełnej ramki. */
@@ -628,7 +531,6 @@
 }
 
 @media (max-width: 960px) {
-  .pd-auth-route-shell,
   .pd-auth-surface {
     height: auto;
     min-height: 100dvh;
@@ -716,92 +618,6 @@
 
   .pd-auth-source-marquee__track > :nth-child(n + 6) {
     display: none;
-  }
-}
-
-/* ==========================================================================
-   Baner zgody na cookies (RODO)
-   ==========================================================================
-   Jedyne miejsce w tym systemie, gdzie faktycznie chcemy widocznej
-   "powierzchni uniesionej nad stroną" — bo to jest floating overlay. Głębia
-   pochodzi z cienia (--pdauth-elevated-shadow), nie z ramki 1px.
-   ========================================================================== */
-
-.pd-auth-cookie-banner {
-  position: fixed;
-  inset-inline: 0;
-  bottom: 0;
-  z-index: var(--pd-layer-modal, 30);
-  display: flex;
-  justify-content: center;
-  padding: var(--pd-space-4);
-  font-family: var(--pd-font-sans);
-}
-
-.pd-auth-cookie-banner__panel {
-  display: grid;
-  gap: var(--pd-space-4);
-  width: min(880px, 100%);
-  padding: var(--pd-space-5) var(--pd-space-6);
-  border-radius: var(--pd-radius-control);
-  background: var(--pdauth-surface);
-  box-shadow: var(--pdauth-elevated-shadow);
-}
-
-.pd-auth-cookie-banner__row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--pd-space-4) var(--pd-space-6);
-}
-
-.pd-auth-cookie-banner__copy {
-  display: grid;
-  gap: var(--pd-space-1);
-  max-width: 48ch;
-}
-
-.pd-auth-cookie-banner__title {
-  margin: 0;
-  color: var(--pdauth-ink);
-  font-family: var(--pdauth-font-display);
-  font-size: var(--pd-type-size-section);
-  font-weight: 500;
-}
-
-.pd-auth-cookie-banner__text {
-  margin: 0;
-  color: var(--pdauth-ink-secondary);
-  font-size: var(--pd-type-size-body-small);
-  line-height: 1.55;
-}
-
-.pd-auth-cookie-banner__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--pd-space-3);
-}
-
-.pd-auth-cookie-banner__preferences {
-  display: grid;
-  gap: var(--pd-space-3);
-  padding-block-start: var(--pd-space-4);
-  border-block-start: 1px solid var(--pdauth-line-subtle);
-}
-
-.pd-auth-cookie-banner__preference {
-  display: grid;
-}
-
-@media (max-width: 640px) {
-  .pd-auth-cookie-banner__actions {
-    width: 100%;
-  }
-
-  .pd-auth-cookie-banner__actions .pd-button {
-    flex: 1 1 auto;
   }
 }
 

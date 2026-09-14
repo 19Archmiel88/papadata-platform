@@ -11,19 +11,20 @@ import type {
 
 type AuthInsightChartProps = {
   readonly locale: PapaDataRuntimeLocale;
+  // Kept in the prop type for callers (AuthSurface, the component-showcase
+  // story) that still pass a mode — the chart itself no longer branches on
+  // it. It used to switch to a "registration progress" stepper for
+  // register/accept-invite, but that stepper's per-step percentages were
+  // static regardless of any real state (fake progress). AuthInsightChart
+  // is decorative marketing content (its parent <aside> is aria-hidden), so
+  // it now always renders the one honestly-decorative variant instead of
+  // one that visually implied real, quantified progress.
   readonly mode: AuthSurfaceMode;
 };
 
-const registerStepValues = [28, 54, 78, 100] as const;
-
 export function AuthInsightChart({
   locale,
-  mode,
 }: AuthInsightChartProps) {
-  if (mode === 'register' || mode === 'accept-invite') {
-    return <AuthRegistrationStepperChart locale={locale} />;
-  }
-
   return <AuthRevenueChart locale={locale} />;
 }
 
@@ -85,58 +86,6 @@ function AuthRevenueChart({
           <circle cx="520" cy="18" r="4" />
         </g>
       </svg>
-    </div>
-  );
-}
-
-function AuthRegistrationStepperChart({
-  locale,
-}: {
-  readonly locale: PapaDataRuntimeLocale;
-}) {
-  const copy = locale === 'en'
-    ? {
-      delta: 'Starts in minutes',
-      label: 'Launch steps',
-      steps: ['Account', 'Company', 'Sources', 'Ready'],
-      value: '4 steps',
-    }
-    : {
-      delta: 'Start w kilka minut',
-      label: 'Kroki uruchomienia',
-      steps: ['Konto', 'Firma', 'Źródła', 'Gotowe'],
-      value: '4 etapy',
-    };
-
-  return (
-    <div className="pd-auth-insight-chart" data-chart-variant="registration">
-      <div className="pd-auth-insight-chart__head">
-        <div>
-          <p className="pd-auth-insight-chart__label">
-            {copy.label}
-          </p>
-          <p className="pd-auth-insight-chart__value">{copy.value}</p>
-        </div>
-        <p className="pd-auth-insight-chart__delta">{copy.delta}</p>
-      </div>
-
-      <ol className="pd-auth-stepper-chart">
-        {copy.steps.map((step, index) => (
-          <li className="pd-auth-stepper-chart__step" key={step}>
-            <span className="pd-auth-stepper-chart__index">
-              {index + 1}
-            </span>
-            <span className="pd-auth-stepper-chart__body">
-              <span className="pd-auth-stepper-chart__label">
-                {step}
-              </span>
-              <span className="pd-auth-stepper-chart__bar">
-                <span style={{ inlineSize: `${registerStepValues[index]}%` }} />
-              </span>
-            </span>
-          </li>
-        ))}
-      </ol>
     </div>
   );
 }

@@ -65,6 +65,20 @@ const validateInvitationAction = fn(async () => ({
   tenantName: 'PapaData Sp. z o.o.',
   workspaceName: 'E-commerce PL',
 }));
+// Separate spy (not a re-implementation of validateInvitationAction above) so
+// this story's call-count/resolution stays isolated from InvitationStory's.
+// The invited e-mail already has a PapaData identity elsewhere -- the real
+// runtime branch this exercises (AuthSurface.tsx's existingIdentity checks)
+// asks the visitor to sign in with their current password instead of
+// creating a new identity.
+const validateInvitationExistingIdentityAction = fn(async () => ({
+  status: 'valid',
+  email: 'istniejacy.uzytkownik@papadata.local',
+  existingIdentity: true,
+  role: 'Analityk',
+  tenantName: 'PapaData Sp. z o.o.',
+  workspaceName: 'E-commerce PL',
+}));
 
 // AuthSurface's handler props are required (no silent no-op-on-missing-handler
 // in production) — every story instance needs the full set regardless of
@@ -147,8 +161,19 @@ function getStage(canvasElement: HTMLElement, authSurface: string): HTMLElement 
 const companyPending: AccessLifecycleStatus = { ...accessLifecycleFixture, company: null };
 const companySaved: AccessLifecycleStatus = accessLifecycleFixture;
 const emailUnverified: AccessLifecycleStatus = { ...accessLifecycleFixture, emailVerified: false };
+// access-lifecycle.service.ts's complete() rejects the write server-side
+// unless every current document is already accepted (email + company +
+// documentsConfigured + full acceptance) -- completedAt non-null is
+// therefore impossible without acceptedDocuments covering every document.
+// This fixture must reflect that, or the onboarding tracker on "Rejestracja
+// zakończona" shows a state the backend could never actually produce.
 const registrationDone: AccessLifecycleStatus = {
   ...accessLifecycleFixture,
+  acceptedDocuments: accessLifecycleFixture.documents.map((document) => ({
+    acceptedAt: '2026-09-08T09:10:00.000Z',
+    id: document.id,
+    version: document.version,
+  })),
   completedAt: '2026-09-08T09:12:00.000Z',
   integrationCount: 2,
   lastSyncAt: '2026-09-10T06:40:00.000Z',
@@ -214,11 +239,41 @@ export const RegistrationMethodStory: Story = {
       />
     </Stage>
   ),
+  // Presentation-safe: asserts the initial "choice" stage only. Must never
+  // click "Utwórz konto e-mailem" here -- that mutates registrationStage
+  // and leaves this story permanently showing the e-mail form instead of
+  // the method choice it exists to document (that transition has its own
+  // story right below).
   play: async ({ canvasElement }) => {
     const stage = getStage(canvasElement, 'auth-03');
     const canvas = within(stage);
     await expect(canvas.getByRole('button', { name: 'Kontynuuj przez Google' })).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: 'Utwórz konto e-mailem' })).toBeInTheDocument();
     await expect(canvas.queryByRole('textbox', { name: /E-mail/u })).not.toBeInTheDocument();
+  },
+};
+
+// The choice -> e-mail transition has real testing value (it's the only
+// place anything exercises AuthSurface's own registrationStage state change
+// via a real click; RegistrationEmailStory below mounts straight into the
+// e-mail stage via initialRegistrationStage and never clicks through), so
+// it gets its own explicitly-named interaction story instead of living
+// inside RegistrationMethodStory's play().
+export const RegistrationMethodEmailTransitionStory: Story = {
+  name: 'Metoda rejestracji → przejście do e-mail',
+  render: () => (
+    <Stage authSurface="auth-03">
+      <AuthSurface {...allAuthHandlerProps}
+        initialRegistrationStage="choice"
+        mode="register"
+        onNavigate={navigateAction}
+        onRegister={registerAction}
+      />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-03');
+    const canvas = within(stage);
     await userEvent.click(canvas.getByRole('button', { name: 'Utwórz konto e-mailem' }));
     await expect(canvas.getByRole('textbox', { name: /E-mail/u })).toBeInTheDocument();
   },
@@ -437,6 +492,39 @@ export const InvitationStory: Story = {
     });
     await expect(canvas.getByText(/nowy\.operator@papadata\.local/u)).toBeInTheDocument();
     await expect(canvas.getByRole('textbox', { name: /Imię i nazwisko/u })).toBeInTheDocument();
+  },
+};
+
+// The invited e-mail already has a PapaData identity elsewhere (joining a
+// second tenant): AuthSurface.tsx's existingIdentity branch asks for a
+// sign-in instead of a new-identity form -- no name field, no password
+// confirmation, no password requirements/strength meter, and an InlineNotice
+// explaining why. Previously untested: the mock always resolved without
+// existingIdentity, so this branch never rendered anywhere in Storybook.
+export const InvitationExistingIdentityStory: Story = {
+  name: 'Zaproszenie — konto już istnieje',
+  render: () => (
+    <Stage authSurface="auth-15">
+      <AuthSurface {...allAuthHandlerProps}
+        initialInvitationId="inv_demo_002"
+        initialInvitationToken="demo-invitation-token-existing"
+        mode="accept-invite"
+        onNavigate={navigateAction}
+        onValidateInvitation={validateInvitationExistingIdentityAction}
+      />
+    </Stage>
+  ),
+  play: async ({ canvasElement }) => {
+    const stage = getStage(canvasElement, 'auth-15');
+    const canvas = within(stage);
+    await waitFor(() => {
+      expect(validateInvitationExistingIdentityAction).toHaveBeenCalled();
+    });
+    await expect(canvas.getByText(/istniejacy\.uzytkownik@papadata\.local/u)).toBeInTheDocument();
+    await expect(canvas.getByText('Ten e-mail ma już konto PapaData — zaloguj się, aby dołączyć do tego workspace.')).toBeInTheDocument();
+    await expect(canvas.queryByRole('textbox', { name: /Imię i nazwisko/u })).not.toBeInTheDocument();
+    await expect(canvas.queryByLabelText(/Powtórz hasło/u)).not.toBeInTheDocument();
+    await expect(canvas.getByRole('button', { name: 'Zaloguj się i dołącz' })).toBeInTheDocument();
   },
 };
 
@@ -704,10 +792,10 @@ export const AuthVisualComponentsStory: Story = {
       sectionCode="AU"
       sectionLabel="Dostęp i onboarding"
       storyId="25.30"
-      summary="Kontrolki preferencji, animowane źródła danych i wykres/krokomierz są osobnymi komponentami produkcyjnymi używanymi przez AuthSurface i AccessFlowScreen."
+      summary="Kontrolki preferencji, animowane źródła danych i wykres są osobnymi komponentami produkcyjnymi używanymi przez AuthSurface i AccessFlowScreen."
       title="Komponenty Auth"
     >
-      <StoryPresentationSection index="01" layout="showcase" title="Preferencje, źródła i wykresy">
+      <StoryPresentationSection index="01" layout="showcase" title="Preferencje, źródła i wykres">
         <div className="pd-s25-auth-components pd-auth-theme">
           <div className="pd-s25-auth-component" data-testid="auth-runtime-preferences">
             <AuthRuntimePreferences />
@@ -717,12 +805,12 @@ export const AuthVisualComponentsStory: Story = {
             <AuthDataSourceMarquee locale="pl" />
           </div>
 
+          {/* AuthInsightChart no longer has a mode-dependent "registration
+              stepper" variant (removed with the fake 28/54/78/100% progress
+              bars) -- it always renders the one honestly-decorative revenue
+              chart, so there is only one variant left to show here. */}
           <div className="pd-s25-auth-component" data-testid="auth-revenue-chart">
             <AuthInsightChart locale="pl" mode="login" />
-          </div>
-
-          <div className="pd-s25-auth-component" data-testid="auth-registration-stepper-chart">
-            <AuthInsightChart locale="pl" mode="register" />
           </div>
         </div>
       </StoryPresentationSection>
@@ -732,7 +820,7 @@ export const AuthVisualComponentsStory: Story = {
     const canvas = within(canvasElement);
     await expect(canvas.getByTestId('auth-runtime-preferences')).toBeInTheDocument();
     await expect(canvas.getByTestId('auth-source-marquee')).toBeInTheDocument();
+    await expect(canvas.getByTestId('auth-revenue-chart')).toBeInTheDocument();
     await expect(canvas.getByText('Przychód z 30 dni')).toBeInTheDocument();
-    await expect(canvas.getByText('Kroki uruchomienia')).toBeInTheDocument();
   },
 };

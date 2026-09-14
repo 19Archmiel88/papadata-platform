@@ -20,7 +20,8 @@
   },
   "dependencies": {
     "@papadata/contracts": "workspace:*",
-    "fast-xml-parser": "^5.11.1"
+    "fast-xml-parser": "^5.11.1",
+    "nodemailer": "^10.0.9"
   },
   "engines": {
     "node": "24.18.0",

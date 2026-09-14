@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -64,7 +63,11 @@ test("unknown production licenses still fail closed", async () => {
 });
 
 async function readProductionLicenseReport() {
-  if (!existsSync(licenseReportPath)) {
+  try {
+    return JSON.parse(await readFile(licenseReportPath, "utf8"));
+  } catch (error) {
+    if (!isMissingFile(error)) throw error;
+
     const output = execFileSync(
       "pnpm",
       ["licenses", "list", "--prod", "--json"],
@@ -72,7 +75,10 @@ async function readProductionLicenseReport() {
     );
     await mkdir(resolve("artifacts/backend-evidence"), { recursive: true });
     await writeFile(licenseReportPath, output);
+    return JSON.parse(output);
   }
+}
 
-  return JSON.parse(await readFile(licenseReportPath, "utf8"));
+function isMissingFile(error) {
+  return Boolean(error && typeof error === "object" && error.code === "ENOENT");
 }

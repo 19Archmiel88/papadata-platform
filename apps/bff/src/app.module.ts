@@ -5,6 +5,7 @@ import { AuthController } from "./auth.controller.js";
 import { ContractAccessController } from "./contract-access.controller.js";
 import { ContractAuthController } from "./contract-auth.controller.js";
 import { ContractPublicController } from "./contract-public.controller.js";
+import { CookieConsentController } from "./cookie-consent.controller.js";
 import { HealthController } from "./health.controller.js";
 import { ProxyController } from "./proxy.controller.js";
 import type { BffConfig } from "./config.js";
@@ -27,6 +28,7 @@ export class BffAppModule {
         ContractAccessController,
         ContractAuthController,
         ContractPublicController,
+        CookieConsentController,
         CsrfController,
         HealthController,
         ProxyController,

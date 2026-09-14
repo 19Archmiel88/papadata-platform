@@ -72,6 +72,15 @@ export function randomHex(bytes = 32) {
   return randomBytes(bytes).toString("hex");
 }
 
+// PAPADATA_AUTH_MAIL_KEY_BASE64 (and any future base64-encoded key/secret
+// material) is decoded with Buffer.from(value, "base64") and length-checked
+// in raw bytes -- randomHex's hex-encoded output would silently decode to
+// the wrong byte length if read back through that same "base64" call, so it
+// needs its own encoding, not a second consumer of randomHex.
+export function randomBase64(bytes = 32) {
+  return randomBytes(bytes).toString("base64");
+}
+
 export async function resolveEnvironment(
   contract,
   localContract,
@@ -101,6 +110,10 @@ export async function resolveEnvironment(
       value = !options.regenerate && existing.get(name)
         ? existing.get(name)
         : randomHex(Number(source.bytes ?? 32));
+    } else if (source.kind === "randomBase64") {
+      value = !options.regenerate && existing.get(name)
+        ? existing.get(name)
+        : randomBase64(Number(source.bytes ?? 32));
     } else if (source.kind === "randomUser") {
       value = !options.regenerate && existing.get(name)
         ? existing.get(name)

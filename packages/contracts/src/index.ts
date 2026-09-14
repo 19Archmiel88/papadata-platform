@@ -1168,6 +1168,8 @@ export { productScopeKeys, productContextKeys, cleanProductContextPath, productC
 export * from "./platform-operations.js";
 
 export * from './access-lifecycle.js';
+export * from './cookie-consent.js';
+export * from './legal-documents.js';
 export * from './assistant-workspace.js';
 
 export * from './commerce-portfolio.js';

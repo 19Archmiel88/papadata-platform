@@ -8,6 +8,10 @@ import {AssistantWorkspaceService} from './assistant-workspace/assistant-workspa
 import {AssistantRunService} from './assistant-workspace/assistant-run.service.js';
 import {AccessLifecycleController} from './access-lifecycle/access-lifecycle.controller.js';
 import {AccessLifecycleService} from './access-lifecycle/access-lifecycle.service.js';
+import {CookieConsentController} from './cookie-consent/cookie-consent.controller.js';
+import {CookieConsentService} from './cookie-consent/cookie-consent.service.js';
+import {LegalDocumentsController} from './legal-documents/legal-documents.controller.js';
+import {LegalDocumentsService} from './legal-documents/legal-documents.service.js';
 import {AccessMailService} from './access-lifecycle/access-mail.service.js';
 import {GusBirCacheService} from './access-lifecycle/gus-bir-cache.service.js';
 import { ConnectionProvisionController } from "./platform-operations/connection-provision.controller.js";
@@ -99,6 +103,8 @@ export const productionControllers = [
  SavedReportDownloadController,
  AssistantWorkspaceController,
   AccessLifecycleController,
+  CookieConsentController,
+  LegalDocumentsController,
   ConnectionProvisionController, SettingsOperationsController, IntegrationOperationsController, BillingOperationsController,
   SupportTicketsController,
   AnalyticsExportController,
@@ -129,6 +135,8 @@ export const productionControllers = [
     CommerceService,
     BusinessOverviewService,
     AccessLifecycleService,
+    CookieConsentService,
+    LegalDocumentsService,
     AssistantWorkspaceService,
     AssistantRunService, AccessMailService, GusBirCacheService,
     ConnectionProvisionService, SettingsOperationsService, IntegrationOperationsService, BillingOperationsService,

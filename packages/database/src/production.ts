@@ -58,6 +58,24 @@ export class ProductionDatabase {
     });
   }
 
+  // Dedicated boundary for browser cookie consent (see migration 0071):
+  // consent rows are keyed by an opaque per-browser subject id and must be
+  // reachable before login (tenant_id/workspace_id NULL), so they cannot
+  // use withTenantWorkspace. Never derives its scope from tenant/workspace
+  // -- app.tenant_id/app.workspace_id stay unset for the whole transaction,
+  // exactly like withIdentity leaves tenant scope unset.
+  async withCookieConsentSubject<T>(
+    subjectId: string,
+    operation: (client: PoolClient) => Promise<T>,
+  ): Promise<T> {
+    assertCookieConsentSubjectId(subjectId);
+
+    return withTransaction(this.pool, async (client) => {
+      await setCookieConsentSubjectScope(client, subjectId);
+      return operation(client);
+    });
+  }
+
   async withIdentityTenantWorkspace<T>(
     identityKey: string,
     userId: string | null,
@@ -141,6 +159,15 @@ function assertIdentityKey(identityKey: string): void {
   }
 }
 
+// Same UUID v4 shape apps/api/src/production/platform-operations/validation.ts's
+// uuid() already enforces before a subjectId reaches here -- this is
+// defense in depth at the DB boundary, matching assertTenantScope/assertIdentityKey.
+function assertCookieConsentSubjectId(subjectId: string): void {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(subjectId)) {
+    throw new Error("Cookie consent subject id is invalid.");
+  }
+}
+
 function assertTenantScope(tenantId: string): void {
   if (!tenantId.trim()) {
     throw new Error("Tenant scope is required for application database access.");
@@ -159,6 +186,16 @@ async function setIdentityScope(
   await client.query(
     "select set_config('app.identity_user_id', $1, true)",
     [userId ?? ""],
+  );
+}
+
+async function setCookieConsentSubjectScope(
+  client: PoolClient,
+  subjectId: string,
+): Promise<void> {
+  await client.query(
+    "select set_config('app.cookie_consent_subject_id', $1, true)",
+    [subjectId],
   );
 }
 

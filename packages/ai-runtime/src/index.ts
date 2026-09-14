@@ -1,5 +1,11 @@
 import { sseData } from "./sse.js";
 import { createHash } from "node:crypto";
+import OpenAI, {
+  APIConnectionError,
+  APIConnectionTimeoutError,
+  APIError,
+  APIUserAbortError,
+} from "openai";
 import type {
   AiEvaluationMode,
   AiEvaluationResult,
@@ -24,6 +30,114 @@ export type AiProviderResponse = {
   readonly outputTokens: number;
   readonly providerRequestId: string | null;
 };
+
+export type AiProviderFailureCode =
+  | "AI_PROVIDER_AUTHENTICATION"
+  | "AI_PROVIDER_CANCELLED"
+  | "AI_PROVIDER_FORBIDDEN"
+  | "AI_PROVIDER_INVALID_RESPONSE"
+  | "AI_PROVIDER_NETWORK"
+  | "AI_PROVIDER_QUOTA"
+  | "AI_PROVIDER_RATE_LIMIT"
+  | "AI_PROVIDER_TIMEOUT"
+  | "AI_PROVIDER_UNAVAILABLE"
+  | "AI_PROVIDER_VALIDATION";
+
+const AI_PROVIDER_ERROR_BRAND = Symbol.for("@papadata/ai-runtime/AiProviderError");
+
+const aiProviderFailureCodes = new Set<AiProviderFailureCode>([
+  "AI_PROVIDER_AUTHENTICATION",
+  "AI_PROVIDER_CANCELLED",
+  "AI_PROVIDER_FORBIDDEN",
+  "AI_PROVIDER_INVALID_RESPONSE",
+  "AI_PROVIDER_NETWORK",
+  "AI_PROVIDER_QUOTA",
+  "AI_PROVIDER_RATE_LIMIT",
+  "AI_PROVIDER_TIMEOUT",
+  "AI_PROVIDER_UNAVAILABLE",
+  "AI_PROVIDER_VALIDATION",
+]);
+
+export class AiProviderError extends Error {
+  readonly [AI_PROVIDER_ERROR_BRAND] = true;
+  readonly code: AiProviderFailureCode;
+  readonly status: number | null;
+  readonly retryable: boolean;
+  readonly providerErrorCode: string | null;
+  readonly providerErrorParam: string | null;
+  readonly providerErrorType: string | null;
+  readonly providerRequestId: string | null;
+
+  constructor(
+    code: AiProviderFailureCode,
+    message: string,
+    input: {
+      readonly providerErrorCode?: string | null;
+      readonly providerErrorParam?: string | null;
+      readonly providerErrorType?: string | null;
+      readonly providerRequestId?: string | null;
+      readonly status?: number | null;
+      readonly retryable?: boolean;
+    } = {},
+  ) {
+    super(message);
+    this.name = "AiProviderError";
+    this.code = code;
+    this.status = input.status ?? null;
+    this.retryable = input.retryable ?? false;
+    this.providerErrorCode = input.providerErrorCode ?? null;
+    this.providerErrorParam = input.providerErrorParam ?? null;
+    this.providerErrorType = input.providerErrorType ?? null;
+    this.providerRequestId = input.providerRequestId ?? null;
+  }
+}
+
+export function isAiProviderError(error: unknown): error is AiProviderError {
+  if (error instanceof AiProviderError) return true;
+  if (!error || typeof error !== "object") return false;
+  const value = error as {
+    readonly [AI_PROVIDER_ERROR_BRAND]?: unknown;
+    readonly code?: unknown;
+    readonly status?: unknown;
+    readonly retryable?: unknown;
+  };
+  return value[AI_PROVIDER_ERROR_BRAND] === true
+    && typeof value.code === "string"
+    && aiProviderFailureCodes.has(value.code as AiProviderFailureCode)
+    && (typeof value.status === "number" || value.status === null)
+    && typeof value.retryable === "boolean";
+}
+
+export function aiProviderErrorMetadata(error: unknown): {
+  readonly providerErrorCode: AiProviderFailureCode | null;
+  readonly httpStatus: number | null;
+  readonly retryable: boolean | null;
+  readonly upstreamProviderErrorCode: string | null;
+  readonly upstreamProviderErrorParam: string | null;
+  readonly upstreamProviderErrorType: string | null;
+  readonly upstreamProviderRequestId: string | null;
+} {
+  if (!isAiProviderError(error)) {
+    return {
+      providerErrorCode: null,
+      httpStatus: null,
+      retryable: null,
+      upstreamProviderErrorCode: null,
+      upstreamProviderErrorParam: null,
+      upstreamProviderErrorType: null,
+      upstreamProviderRequestId: null,
+    };
+  }
+  return {
+    providerErrorCode: error.code,
+    httpStatus: error.status,
+    retryable: error.retryable,
+    upstreamProviderErrorCode: error.providerErrorCode ?? null,
+    upstreamProviderErrorParam: error.providerErrorParam ?? null,
+    upstreamProviderErrorType: error.providerErrorType ?? null,
+    upstreamProviderRequestId: error.providerRequestId ?? null,
+  };
+}
 
 export type AiEmbeddingRequest = {
   readonly modelId: string;
@@ -78,6 +192,26 @@ type ProviderOptions = {
   readonly apiKey: string;
   readonly timeoutMs?: number;
   readonly maxAttempts?: number;
+};
+
+type OpenAiResponsesClient = {
+  readonly responses: {
+    create(
+      body: Readonly<Record<string, unknown>>,
+      options?: { readonly signal?: AbortSignal },
+    ): Promise<unknown> | AsyncIterable<unknown>;
+  };
+};
+
+type OpenAiResponsesProviderOptions = {
+  readonly apiKey: string;
+  readonly modelId?: string;
+  readonly providerId?: string;
+  readonly timeoutMs?: number;
+  readonly reserveMinorPerCall?: number;
+  readonly reasoningEffort?: "none" | "minimal" | "low" | "medium" | "high" | "xhigh" | "max";
+  readonly verbosity?: "low" | "medium" | "high";
+  readonly client?: OpenAiResponsesClient;
 };
 
 export class OpenAiCompatibleProvider implements AiProviderAdapter {
@@ -302,6 +436,204 @@ export class OpenAiCompatibleProvider implements AiProviderAdapter {
       this.consecutiveFailures = 0;
     }
     throw lastError instanceof Error ? lastError : new Error("AI provider request failed");
+  }
+}
+
+export class OpenAiResponsesProvider implements AiProviderAdapter {
+  readonly providerId: string;
+  private readonly client: OpenAiResponsesClient;
+  private readonly timeoutMs: number;
+  private readonly reserveMinorPerCall: number;
+  private readonly reasoningEffort: "none" | "minimal" | "low" | "medium" | "high" | "xhigh" | "max";
+  private readonly verbosity: "low" | "medium" | "high";
+  private readonly activeRequests = new Map<string, AbortController>();
+
+  constructor(input: OpenAiResponsesProviderOptions) {
+    const apiKey = input.apiKey.trim();
+    if (!apiKey) {
+      throw new AiProviderError(
+        "AI_PROVIDER_AUTHENTICATION",
+        "OPENAI_API_KEY is required for AI_PROVIDER=openai.",
+        { status: 401 },
+      );
+    }
+    this.providerId = input.providerId ?? "openai-responses";
+    this.timeoutMs = input.timeoutMs ?? 90_000;
+    this.reserveMinorPerCall = Math.max(1, Math.ceil(input.reserveMinorPerCall ?? 50));
+    this.reasoningEffort = input.reasoningEffort ?? "low";
+    this.verbosity = input.verbosity ?? "medium";
+    this.client = input.client ?? new OpenAI({ apiKey, maxRetries: 0 });
+  }
+
+  generate(
+    request: AiProviderRequest,
+    signal?: AbortSignal,
+  ): Promise<AiProviderResponse> {
+    return this.complete(request, signal);
+  }
+
+  async complete(
+    request: AiProviderRequest,
+    signal?: AbortSignal,
+  ): Promise<AiProviderResponse> {
+    const response = await this.withAbort(
+      "complete",
+      signal,
+      async (requestSignal) => {
+        try {
+          return await this.client.responses.create(
+            this.responsesBody(request, false),
+            { signal: requestSignal },
+          );
+        } catch (error) {
+          throw normalizeOpenAiError(error);
+        }
+      },
+    );
+    return parseOpenAiResponse(response);
+  }
+
+  async *stream(
+    request: AiProviderRequest,
+    signal?: AbortSignal,
+  ): AsyncIterable<string> {
+    const stream = await this.withAbort(
+      "stream",
+      signal,
+      async (requestSignal) => {
+        try {
+          return await this.client.responses.create(
+            this.responsesBody(request, true),
+            { signal: requestSignal },
+          );
+        } catch (error) {
+          throw normalizeOpenAiError(error);
+        }
+      },
+    );
+    if (!isAsyncIterable(stream)) {
+      throw new AiProviderError(
+        "AI_PROVIDER_INVALID_RESPONSE",
+        "OpenAI Responses API did not return a stream.",
+      );
+    }
+
+    let completed = false;
+    try {
+      for await (const event of stream) {
+        signal?.throwIfAborted();
+        const parsed = parseOpenAiStreamEvent(event);
+        if (parsed.kind === "delta") yield parsed.text;
+        if (parsed.kind === "completed") completed = true;
+        if (parsed.kind === "failed") throw parsed.error;
+      }
+    } catch (error) {
+      throw normalizeOpenAiError(error);
+    }
+    if (!completed) {
+      throw new AiProviderError(
+        "AI_PROVIDER_NETWORK",
+        "OpenAI Responses stream ended before completion.",
+        { retryable: true },
+      );
+    }
+  }
+
+  embed(): Promise<AiEmbeddingResponse> {
+    throw new AiProviderError(
+      "AI_PROVIDER_VALIDATION",
+      "Embeddings are not enabled for Papa Assistant OpenAI Responses provider.",
+    );
+  }
+
+  async health(signal?: AbortSignal): Promise<AiProviderHealth> {
+    const startedAt = performance.now();
+    try {
+      await this.withAbort("health", signal, async (requestSignal) => {
+        await this.client.responses.create(
+          {
+            input: "ping",
+            instructions: "Reply with exactly: ok",
+            max_output_tokens: 8,
+            model: "gpt-5.6-luna",
+            reasoning: { effort: "minimal" },
+            store: false,
+            text: { verbosity: "low" },
+          },
+          { signal: requestSignal },
+        );
+      });
+      return {
+        healthy: true,
+        latencyMs: Math.round(performance.now() - startedAt),
+        detail: null,
+      };
+    } catch (error) {
+      const normalized = normalizeOpenAiError(error);
+      return {
+        healthy: false,
+        latencyMs: Math.round(performance.now() - startedAt),
+        detail: normalized.code,
+      };
+    }
+  }
+
+  estimateCost(request: AiProviderRequest): AiCostEstimate {
+    const estimatedInputTokens = estimateTokens(
+      request.messages.map((message) => message.content).join("\n"),
+    );
+    return {
+      currency: "USD",
+      costMinor: this.reserveMinorPerCall,
+      estimatedInputTokens,
+      estimatedOutputTokens: request.maxOutputTokens,
+    };
+  }
+
+  cancel(requestId: string): Promise<void> {
+    this.activeRequests.get(requestId)?.abort("cancelled");
+    this.activeRequests.delete(requestId);
+    return Promise.resolve();
+  }
+
+  private responsesBody(
+    request: AiProviderRequest,
+    stream: boolean,
+  ): Readonly<Record<string, unknown>> {
+    return {
+      input: buildResponsesInput(request.messages),
+      instructions: buildResponsesInstructions(request.messages),
+      max_output_tokens: request.maxOutputTokens,
+      model: request.modelId,
+      parallel_tool_calls: false,
+      reasoning: { effort: this.reasoningEffort },
+      store: false,
+      stream,
+      text: { verbosity: this.verbosity },
+    };
+  }
+
+  private async withAbort<T>(
+    scope: string,
+    signal: AbortSignal | undefined,
+    operation: (signal: AbortSignal) => Promise<T>,
+  ): Promise<T> {
+    const requestId = cryptoId();
+    const controller = new AbortController();
+    const relayAbort = (): void => controller.abort(signal?.reason ?? "aborted");
+    const timeout = setTimeout(() => controller.abort("provider_timeout"), this.timeoutMs);
+    if (signal?.aborted) relayAbort();
+    signal?.addEventListener("abort", relayAbort, { once: true });
+    this.activeRequests.set(`${scope}:${requestId}`, controller);
+    try {
+      return await operation(controller.signal);
+    } catch (error) {
+      throw normalizeOpenAiError(error);
+    } finally {
+      clearTimeout(timeout);
+      signal?.removeEventListener("abort", relayAbort);
+      this.activeRequests.delete(`${scope}:${requestId}`);
+    }
   }
 }
 
@@ -540,6 +872,24 @@ export type PapaProviderRuntime = {
 export function createPapaProviderRuntime(
   env: NodeJS.ProcessEnv = process.env,
 ): PapaProviderRuntime {
+  const providerName = env.AI_PROVIDER?.trim().toLowerCase() ?? "";
+  if (providerName === "openai") {
+    const modelId = env.OPENAI_MODEL?.trim() || "gpt-5.6-luna";
+    return {
+      provider: new OpenAiResponsesProvider({
+        apiKey: env.OPENAI_API_KEY?.trim() ?? "",
+        modelId,
+        reasoningEffort: readReasoningEffort(env.OPENAI_REASONING_EFFORT) ?? "low",
+        reserveMinorPerCall: readPositiveNumber(env.OPENAI_RESERVE_MINOR_PER_CALL, 50),
+        timeoutMs: readPositiveNumber(env.OPENAI_TIMEOUT_MS, 90_000),
+        verbosity: readVerbosity(env.OPENAI_VERBOSITY) ?? "medium",
+      }),
+      modelId,
+      nativeStreaming: true,
+      reserveMinorPerCall: readPositiveNumber(env.OPENAI_RESERVE_MINOR_PER_CALL, 50),
+    };
+  }
+
   if (env.PAPADATA_PAPA_REMOTE_ENABLED !== "true") {
     return {
       provider: new LocalDeterministicProvider(),
@@ -619,4 +969,207 @@ export function createPapaProviderRuntime(
     nativeStreaming: true,
     reserveMinorPerCall,
   };
+}
+
+function buildResponsesInstructions(messages: readonly AiMessage[]): string {
+  return messages
+    .filter((message) => message.role === "system")
+    .map((message) => message.content)
+    .join("\n\n")
+    .trim();
+}
+
+function buildResponsesInput(messages: readonly AiMessage[]): string {
+  return messages
+    .filter((message) => message.role !== "system")
+    .map((message) => `${message.role.toUpperCase()}:\n${message.content}`)
+    .join("\n\n")
+    .trim();
+}
+
+function parseOpenAiResponse(response: unknown): AiProviderResponse {
+  if (!response || typeof response !== "object") {
+    throw new AiProviderError(
+      "AI_PROVIDER_INVALID_RESPONSE",
+      "OpenAI Responses API returned an invalid response.",
+    );
+  }
+  const value = response as {
+    readonly id?: unknown;
+    readonly error?: { readonly code?: string | null; readonly message?: string | null } | null;
+    readonly output?: readonly unknown[];
+    readonly output_text?: unknown;
+    readonly status?: unknown;
+    readonly usage?: {
+      readonly input_tokens?: unknown;
+      readonly output_tokens?: unknown;
+    } | null;
+  };
+  if (value.error) {
+    throw new AiProviderError(
+      "AI_PROVIDER_UNAVAILABLE",
+      value.error.code ? `OpenAI Responses API failed: ${value.error.code}` : "OpenAI Responses API failed.",
+      { retryable: true },
+    );
+  }
+  if (value.status && value.status !== "completed") {
+    throw new AiProviderError(
+      "AI_PROVIDER_INVALID_RESPONSE",
+      `OpenAI Responses API did not complete (${String(value.status)}).`,
+    );
+  }
+  const output = typeof value.output_text === "string"
+    ? value.output_text
+    : extractResponseOutputText(value.output ?? []);
+  if (!output.trim()) {
+    throw new AiProviderError(
+      "AI_PROVIDER_INVALID_RESPONSE",
+      "OpenAI Responses API returned no text output.",
+    );
+  }
+  return {
+    output,
+    inputTokens: typeof value.usage?.input_tokens === "number" ? value.usage.input_tokens : 0,
+    outputTokens: typeof value.usage?.output_tokens === "number" ? value.usage.output_tokens : estimateTokens(output),
+    providerRequestId: typeof value.id === "string" ? value.id : null,
+  };
+}
+
+function extractResponseOutputText(output: readonly unknown[]): string {
+  const parts: string[] = [];
+  for (const item of output) {
+    if (!item || typeof item !== "object") continue;
+    const value = item as { readonly type?: unknown; readonly content?: readonly unknown[] };
+    if (value.type !== "message" || !Array.isArray(value.content)) continue;
+    for (const content of value.content) {
+      if (!content || typeof content !== "object") continue;
+      const chunk = content as { readonly type?: unknown; readonly text?: unknown; readonly refusal?: unknown };
+      if (chunk.type === "output_text" && typeof chunk.text === "string") parts.push(chunk.text);
+      if (chunk.type === "refusal" && typeof chunk.refusal === "string") parts.push(chunk.refusal);
+    }
+  }
+  return parts.join("");
+}
+
+function parseOpenAiStreamEvent(event: unknown):
+  | { readonly kind: "delta"; readonly text: string }
+  | { readonly kind: "completed" }
+  | { readonly kind: "ignored" }
+  | { readonly kind: "failed"; readonly error: AiProviderError } {
+  if (!event || typeof event !== "object") return { kind: "ignored" };
+  const value = event as {
+    readonly type?: unknown;
+    readonly delta?: unknown;
+    readonly response?: unknown;
+    readonly error?: { readonly code?: string | null; readonly message?: string | null } | null;
+  };
+  if (value.type === "response.output_text.delta") {
+    return typeof value.delta === "string" && value.delta
+      ? { kind: "delta", text: value.delta }
+      : { kind: "ignored" };
+  }
+  if (value.type === "response.completed") return { kind: "completed" };
+  if (value.type === "response.failed" || value.type === "response.error") {
+    return {
+      kind: "failed",
+      error: new AiProviderError(
+        "AI_PROVIDER_UNAVAILABLE",
+        "OpenAI Responses API failed.",
+        { providerErrorCode: value.error?.code ?? null, retryable: true },
+      ),
+    };
+  }
+  return { kind: "ignored" };
+}
+
+function normalizeOpenAiError(error: unknown): AiProviderError {
+  if (error instanceof AiProviderError) return error;
+  if (error instanceof APIUserAbortError || isAbortError(error)) {
+    return new AiProviderError("AI_PROVIDER_CANCELLED", "OpenAI request was cancelled.");
+  }
+  if (error instanceof APIConnectionTimeoutError) {
+    return new AiProviderError("AI_PROVIDER_TIMEOUT", "OpenAI request timed out.", { retryable: true });
+  }
+  if (error instanceof APIConnectionError) {
+    return new AiProviderError("AI_PROVIDER_NETWORK", "OpenAI network request failed.", { retryable: true });
+  }
+  if (error instanceof APIError) {
+    const metadata = openAiErrorMetadata(error);
+    if (error.status === 401) {
+      return new AiProviderError("AI_PROVIDER_AUTHENTICATION", "OpenAI authentication failed.", { status: 401, ...metadata });
+    }
+    if (error.status === 403) {
+      return new AiProviderError("AI_PROVIDER_FORBIDDEN", "OpenAI request is forbidden.", { status: 403, ...metadata });
+    }
+    if (error.status === 429) {
+      const quota = `${error.code ?? ""} ${error.type ?? ""} ${error.message} ${JSON.stringify(error.error)}`.toLowerCase().includes("quota");
+      return new AiProviderError(
+        quota ? "AI_PROVIDER_QUOTA" : "AI_PROVIDER_RATE_LIMIT",
+        quota ? "OpenAI quota is unavailable." : "OpenAI rate limit was reached.",
+        { status: 429, retryable: !quota, ...metadata },
+      );
+    }
+    if (error.status && error.status >= 500) {
+      return new AiProviderError("AI_PROVIDER_UNAVAILABLE", "OpenAI service is unavailable.", { status: error.status, retryable: true, ...metadata });
+    }
+    return new AiProviderError("AI_PROVIDER_VALIDATION", `OpenAI rejected the request (${error.status ?? "unknown"}).`, { status: error.status ?? null, ...metadata });
+  }
+  if (error instanceof Error && error.message === "provider_timeout") {
+    return new AiProviderError("AI_PROVIDER_TIMEOUT", "OpenAI request timed out.", { retryable: true });
+  }
+  return new AiProviderError("AI_PROVIDER_UNAVAILABLE", "OpenAI request failed.", { retryable: true });
+}
+
+function openAiErrorMetadata(error: APIError): {
+  readonly providerErrorCode: string | null;
+  readonly providerErrorParam: string | null;
+  readonly providerErrorType: string | null;
+  readonly providerRequestId: string | null;
+} {
+  return {
+    providerErrorCode: typeof error.code === "string" ? error.code : null,
+    providerErrorParam: typeof error.param === "string" ? error.param : null,
+    providerErrorType: typeof error.type === "string" ? error.type : null,
+    providerRequestId: typeof error.requestID === "string" ? error.requestID : null,
+  };
+}
+
+function isAbortError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  return error.name === "AbortError" || error.message === "cancelled" || error.message === "aborted";
+}
+
+function isAsyncIterable(value: unknown): value is AsyncIterable<unknown> {
+  return Boolean(value && typeof value === "object" && Symbol.asyncIterator in value);
+}
+
+function readPositiveNumber(value: string | undefined, fallback: number): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function readReasoningEffort(value: string | undefined):
+  | "none"
+  | "minimal"
+  | "low"
+  | "medium"
+  | "high"
+  | "xhigh"
+  | "max"
+  | null {
+  if (
+    value === "none"
+    || value === "minimal"
+    || value === "low"
+    || value === "medium"
+    || value === "high"
+    || value === "xhigh"
+    || value === "max"
+  ) return value;
+  return null;
+}
+
+function readVerbosity(value: string | undefined): "low" | "medium" | "high" | null {
+  if (value === "low" || value === "medium" || value === "high") return value;
+  return null;
 }

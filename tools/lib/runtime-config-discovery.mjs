@@ -246,6 +246,35 @@ export function compareTerraformAgainstContract(terraformByService, contract) {
   return failures;
 }
 
+// Class C, generation half: required.production-parity=true is a claim that
+// `pnpm prepare:production-parity` will actually put a value in
+// .env.production-parity for this variable -- generatedEntries() (see
+// tools/lib/production-parity-env.mjs) only writes entries whose `source` is
+// non-null. A required-for-parity entry with source: null is silently
+// omitted by the generator while this same script's own coverage check
+// (below) still reports it "available" merely because it's required --
+// exactly the PAPADATA_COOKIE_CONSENT_VERSION defect this check exists to
+// catch: prepare succeeds, verify reports pass, and the API fails at
+// runtime. The only sanctioned escape hatch is operatorSuppliedReason: a
+// non-null string documenting that the variable is deliberately filled in
+// through some other supported local mechanism (never a silent gap).
+export function checkProductionParityRequiredHasSource(contract) {
+  const failures = [];
+  for (const entry of contract.entries) {
+    if (!entry.required["production-parity"]) continue;
+    if (entry.source != null) continue;
+    if (entry.operatorSuppliedReason) continue;
+    failures.push(
+      `[C] ${entry.name} has required["production-parity"]=true but source: null and no `
+      + "operatorSuppliedReason -- pnpm prepare:production-parity would silently omit it from "
+      + ".env.production-parity while this verifier still reports pass. Give it a concrete "
+      + "production-parity source, or set operatorSuppliedReason explaining the supported local "
+      + "override that fills it in instead.",
+    );
+  }
+  return failures;
+}
+
 // Class C: a variable REQUIRED in staging/production must either be
 // available in production-parity (required there too, or at least
 // generatable), or carry an explicit, reviewed productionOnlyReason.

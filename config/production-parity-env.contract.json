@@ -108,6 +108,40 @@
       "consumer": "packages/papa-runtime/src/index.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
+      "example": ""
+    },
+    {
+      "name": "AI_PROVIDER",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "Set to openai to use the OpenAI Responses provider; empty keeps LocalDeterministicProvider.",
+      "consumer": "packages/ai-runtime/src/index.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -144,6 +178,7 @@
       "consumer": "packages/papa-runtime/src/index.ts, apps/api/src/production/assistant-workspace/assistant-run.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "4000"
     },
     {
@@ -180,6 +215,7 @@
       "consumer": "packages/papa-runtime/src/index.ts, apps/api/src/production/assistant-workspace/assistant-run.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "20000"
     },
     {
@@ -215,6 +251,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "http://api-production:4000"
     },
     {
@@ -243,6 +280,7 @@
       "consumer": "apps/api/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "4000"
     },
     {
@@ -271,6 +309,7 @@
       "consumer": "apps/api/src/production/security/argon2.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "65536"
     },
     {
@@ -299,6 +338,7 @@
       "consumer": "apps/api/src/production/security/argon2.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "1"
     },
     {
@@ -327,6 +367,7 @@
       "consumer": "apps/api/src/production/security/argon2.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "3"
     },
     {
@@ -355,6 +396,7 @@
       "consumer": "apps/api/src/production/auth/principal.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "60"
     },
     {
@@ -383,6 +425,7 @@
       "consumer": "apps/api/src/production/auth/principal.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "300"
     },
     {
@@ -414,6 +457,7 @@
       "consumer": "apps/api/src/production/integrations/integration.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "30"
     },
     {
@@ -449,7 +493,164 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "https://papadata.localhost"
+    },
+    {
+      "name": "BFF_CONSENT_COOKIE_MAX_AGE_SECONDS",
+      "services": [
+        "bff"
+      ],
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
+      "type": "integer",
+      "secret": false,
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Integer 86400-63072000, default 31536000.",
+      "example": "31536000"
+    },
+    {
+      "name": "BFF_CONSENT_COOKIE_NAME",
+      "services": [
+        "bff"
+      ],
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
+      "type": "string",
+      "secret": false,
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Defaults to papadata_consent_subject.",
+      "example": "papadata_consent_subject"
+    },
+    {
+      "name": "BFF_CONSENT_COOKIE_PATH",
+      "services": [
+        "bff"
+      ],
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
+      "type": "string",
+      "secret": false,
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Defaults to /.",
+      "example": "/"
+    },
+    {
+      "name": "BFF_CONSENT_COOKIE_PREVIOUS_SECRET",
+      "services": [
+        "bff"
+      ],
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
+      "type": "secret",
+      "secret": true,
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": {
+        "envName": "BFF_CONSENT_COOKIE_PREVIOUS_SECRET",
+        "kind": "secretRef",
+        "secretKey": "bff_consent_cookie_previous_secret"
+      },
+      "defaultPolicy": "optional-rotation",
+      "validation": "Optional previous consent subject cookie signing secret; when set, at least 32 bytes and distinct from every other BFF secret.",
+      "example": ""
+    },
+    {
+      "name": "BFF_CONSENT_COOKIE_SECRET",
+      "services": [
+        "bff"
+      ],
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "consumer": "apps/bff/src/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
+      "type": "secret",
+      "secret": true,
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "randomHex",
+        "bytes": 32
+      },
+      "terraform": {
+        "envName": "BFF_CONSENT_COOKIE_SECRET",
+        "kind": "secretRef",
+        "secretKey": "bff_consent_cookie_secret"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "At least 32 bytes; must differ from every other BFF secret. Signs the anonymous HttpOnly consent subject cookie.",
+      "example": "replace-with-32-byte-random-consent-cookie-secret"
     },
     {
       "name": "BFF_COOKIE_PREVIOUS_SECRET",
@@ -484,6 +685,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "replace-with-32-byte-random-cookie-secret-previous"
     },
     {
@@ -512,6 +714,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "strict"
     },
     {
@@ -547,6 +750,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "replace-with-32-byte-random-cookie-secret-active"
     },
     {
@@ -575,6 +779,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "3600"
     },
     {
@@ -603,6 +808,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "papadata_csrf"
     },
     {
@@ -631,6 +837,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "x-papadata-csrf"
     },
     {
@@ -666,6 +873,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "replace-with-32-byte-random-csrf-secret"
     },
     {
@@ -701,6 +909,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "replace-with-shared-32-byte-internal-active-secret"
     },
     {
@@ -736,6 +945,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "papadata-api"
     },
     {
@@ -771,6 +981,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "papadata-bff"
     },
     {
@@ -806,6 +1017,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "replace-with-shared-32-byte-internal-previous-secret"
     },
     {
@@ -834,6 +1046,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "x-papadata-internal-principal"
     },
     {
@@ -862,6 +1075,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "120"
     },
     {
@@ -894,6 +1108,7 @@
       "consumer": "apps/bff/src/config.ts, infra/production/edge/nginx.conf.template",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "1048576"
     },
     {
@@ -925,6 +1140,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "http://identity-emulator:8081/computeMetadata/v1/instance/service-accounts/default/identity"
     },
     {
@@ -956,6 +1172,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "3001"
     },
     {
@@ -991,6 +1208,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "papadata.localhost,papadata.localhost:53001"
     },
     {
@@ -1022,6 +1240,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "300"
     },
     {
@@ -1053,6 +1272,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "60000"
     },
     {
@@ -1081,6 +1301,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "2000"
     },
     {
@@ -1109,6 +1330,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "3000"
     },
     {
@@ -1137,6 +1359,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "pd_refresh"
     },
     {
@@ -1165,6 +1388,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "/api/v1/auth/refresh"
     },
     {
@@ -1200,6 +1424,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "replace-with-32-byte-random-refresh-cookie-secret-previous"
     },
     {
@@ -1235,6 +1460,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "replace-with-32-byte-random-refresh-cookie-secret-active"
     },
     {
@@ -1263,6 +1489,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "x-request-id"
     },
     {
@@ -1291,6 +1518,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "2592000"
     },
     {
@@ -1319,6 +1547,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "1800"
     },
     {
@@ -1347,6 +1576,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "pd_session"
     },
     {
@@ -1375,6 +1605,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "/"
     },
     {
@@ -1406,6 +1637,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "papadata:auth"
     },
     {
@@ -1441,6 +1673,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "redis-auth-state"
     },
     {
@@ -1473,6 +1706,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -1508,6 +1742,7 @@
       "consumer": "apps/bff/src/config.ts, apps/bff/src/cloud-run-identity.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "metadata-server"
     },
     {
@@ -1536,6 +1771,7 @@
       "consumer": "apps/bff/src/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "5000"
     },
     {
@@ -1572,6 +1808,7 @@
       "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts, packages/database/src/production.ts (buildPoolConfig)",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "replace-with-base64-postgres-ca"
     },
     {
@@ -1608,6 +1845,7 @@
       "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "postgresql://papadata_app:replace-with-random-application-secret@postgres-production:5432/papadata"
     },
     {
@@ -1636,6 +1874,7 @@
       "consumer": "apps/api/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "20"
     },
     {
@@ -1664,6 +1903,7 @@
       "consumer": "apps/api/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "30000"
     },
     {
@@ -1697,6 +1937,7 @@
       "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
       "productionOnlyReason": "Only meaningful for the GCS driver, which production-parity does not use (MinIO emulation).",
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "papadata-production"
     },
     {
@@ -1732,6 +1973,7 @@
       "consumer": "apps/api/src/production/identity/oauth-provider.config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -1768,6 +2010,7 @@
       "consumer": "apps/api/src/production/identity/oauth-provider.config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -1804,6 +2047,7 @@
       "consumer": "packages/integrations/src/gus-bir-adapter.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -1839,6 +2083,7 @@
       "consumer": "packages/integrations/src/gus-bir-adapter.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -1874,6 +2119,7 @@
       "consumer": "packages/integrations/src/gus-bir-adapter.ts, apps/api/src/production/access-lifecycle/gus-bir-cache.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "86400"
     },
     {
@@ -1909,6 +2155,7 @@
       "consumer": "packages/integrations/src/gus-bir-adapter.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "mock"
     },
     {
@@ -1944,6 +2191,7 @@
       "consumer": "packages/integrations/src/gus-bir-adapter.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "10000"
     },
     {
@@ -1979,6 +2227,7 @@
       "consumer": "packages/integrations/src/ksef-adapter.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -2015,6 +2264,7 @@
       "consumer": "packages/integrations/src/ksef-adapter.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -2050,6 +2300,7 @@
       "consumer": "packages/integrations/src/ksef-adapter.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "demo"
     },
     {
@@ -2085,6 +2336,7 @@
       "consumer": "packages/integrations/src/ksef-adapter.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -2120,6 +2372,7 @@
       "consumer": "packages/integrations/src/ksef-adapter.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "exponential"
     },
     {
@@ -2155,6 +2408,7 @@
       "consumer": "packages/integrations/src/ksef-adapter.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "30000"
     },
     {
@@ -2183,6 +2437,7 @@
       "consumer": "apps/worker/src/production/scheduler.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "0 * * * *"
     },
     {
@@ -2211,6 +2466,7 @@
       "consumer": "apps/worker/src/production/scheduler.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "*/15 * * * *"
     },
     {
@@ -2246,6 +2502,7 @@
       "consumer": "apps/api/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "replace-with-64-hex-character-mfa-key"
     },
     {
@@ -2281,6 +2538,7 @@
       "consumer": "apps/api/src/production/identity/oauth-provider.config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -2317,6 +2575,7 @@
       "consumer": "apps/api/src/production/identity/oauth-provider.config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -2346,6 +2605,7 @@
       "consumer": "compose.production-parity.yml",
       "productionOnlyReason": null,
       "parityOnlyReason": "MinIO root credential; GCS uses the Cloud Run service account identity instead of a root user/password.",
+      "operatorSuppliedReason": null,
       "example": "replace-with-random-minio-secret"
     },
     {
@@ -2376,6 +2636,7 @@
       "consumer": "compose.production-parity.yml",
       "productionOnlyReason": null,
       "parityOnlyReason": "MinIO root credential; GCS uses the Cloud Run service account identity instead of a root user/password.",
+      "operatorSuppliedReason": null,
       "example": "papadata-parity"
     },
     {
@@ -2413,7 +2674,206 @@
       "consumer": "apps/api/src/production/config.ts, apps/bff/src/config.ts, apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "production"
+    },
+    {
+      "name": "OPENAI_API_KEY",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": ""
+      },
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "Required only when AI_PROVIDER=openai; never expose to browser, fixtures, logs or commits.",
+      "consumer": "packages/ai-runtime/src/index.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
+      "example": ""
+    },
+    {
+      "name": "OPENAI_MODEL",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "gpt-5.6-luna"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "OpenAI Responses model for Papa Assistant; code default is gpt-5.6-luna.",
+      "consumer": "packages/ai-runtime/src/index.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
+      "example": "gpt-5.6-luna"
+    },
+    {
+      "name": "OPENAI_REASONING_EFFORT",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "low"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "One of none, minimal, low, medium, high, xhigh, max; invalid values fall back to low.",
+      "consumer": "packages/ai-runtime/src/index.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
+      "example": "low"
+    },
+    {
+      "name": "OPENAI_RESERVE_MINOR_PER_CALL",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "50"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Positive integer cost reservation for one OpenAI Papa Assistant run.",
+      "consumer": "packages/ai-runtime/src/index.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
+      "example": "50"
+    },
+    {
+      "name": "OPENAI_TIMEOUT_MS",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "90000"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Positive integer timeout for one OpenAI Responses request.",
+      "consumer": "packages/ai-runtime/src/index.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
+      "example": "90000"
+    },
+    {
+      "name": "OPENAI_VERBOSITY",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "medium"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "One of low, medium, high; invalid values fall back to medium.",
+      "consumer": "packages/ai-runtime/src/index.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
+      "example": "medium"
     },
     {
       "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
@@ -2450,6 +2910,7 @@
       "consumer": "apps/api/src/production/config.ts, apps/bff/src/config.ts, apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "http://otel-collector:4318"
     },
     {
@@ -2481,6 +2942,7 @@
       "consumer": "apps/api/src/production/telemetry.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "papadata-api"
     },
     {
@@ -2517,6 +2979,7 @@
       "consumer": "apps/api/src/production/config.ts, apps/api/src/production/auth/principal.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "replace-with-shared-32-byte-internal-active-secret"
     },
     {
@@ -2553,6 +3016,7 @@
       "consumer": "apps/api/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "papadata-api"
     },
     {
@@ -2589,6 +3053,7 @@
       "consumer": "apps/api/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "papadata-bff"
     },
     {
@@ -2617,6 +3082,7 @@
       "consumer": "apps/api/src/production/auth/principal.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -2653,6 +3119,7 @@
       "consumer": "apps/api/src/production/config.ts, apps/api/src/production/auth/principal.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "replace-with-shared-32-byte-internal-previous-secret"
     },
     {
@@ -2688,6 +3155,7 @@
       "consumer": "apps/api/src/production/auth/principal.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "papadata:auth"
     },
     {
@@ -2723,6 +3191,7 @@
       "consumer": "apps/api/src/production/auth/principal.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "redis-auth-state"
     },
     {
@@ -2748,6 +3217,7 @@
       "consumer": "apps/api/src/production/queue/queue.service.ts, apps/api/src/production/queue/platform-queue.service.ts, apps/api/src/production/access-lifecycle/gus-bir-cache.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": "Test-only in-memory escape hatch gated on NODE_ENV=test; production-parity/staging/production always run NODE_ENV=production, so this driver value can never activate there.",
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -2777,6 +3247,7 @@
       "consumer": "compose.production-parity.yml",
       "productionOnlyReason": null,
       "parityOnlyReason": "Local Compose credential primitive used only to synthesize DATABASE_URL/SCHEDULER_DATABASE_URL/REDIS_URL/storage credentials locally (see source.kind=template/reference entries that consume it). GCP provisions the equivalent as an opaque, ready-made Secret Manager connection string (database_url/scheduler_database_url/redis_url) and has no env var of this name.",
+      "operatorSuppliedReason": null,
       "example": "replace-with-random-application-secret"
     },
     {
@@ -2805,6 +3276,7 @@
       "consumer": "apps/worker/src/production/assistant-retention.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "false"
     },
     {
@@ -2833,10 +3305,11 @@
       },
       "terraform": null,
       "defaultPolicy": "feature-disabled",
-      "validation": "Provider API key; required when enabled.",
+      "validation": "Resend provider API key; required only when enabled AND PAPADATA_AUTH_MAIL_TRANSPORT=resend (the default). Left empty for production-parity, which uses the smtp transport against a local Mailpit mailbox instead.",
       "consumer": "packages/integrations/src/auth-mail.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -2861,15 +3334,16 @@
       },
       "source": {
         "kind": "literal",
-        "value": "false"
+        "value": "true"
       },
       "terraform": null,
       "defaultPolicy": "feature-disabled",
-      "validation": "Must be exactly 'true' to enable auth-mail delivery.",
+      "validation": "Must be exactly 'true' to enable auth-mail delivery. production-parity enables it against a local Mailpit mailbox (see PAPADATA_AUTH_MAIL_TRANSPORT); staging/production stay operator-controlled.",
       "consumer": "packages/integrations/src/auth-mail.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
-      "example": "false"
+      "operatorSuppliedReason": null,
+      "example": "true"
     },
     {
       "name": "PAPADATA_AUTH_MAIL_FROM",
@@ -2893,7 +3367,7 @@
       },
       "source": {
         "kind": "literal",
-        "value": ""
+        "value": "PapaData <no-reply@papadata.localhost>"
       },
       "terraform": null,
       "defaultPolicy": "feature-disabled",
@@ -2901,7 +3375,8 @@
       "consumer": "packages/integrations/src/auth-mail.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
-      "example": ""
+      "operatorSuppliedReason": null,
+      "example": "PapaData <no-reply@papadata.localhost>"
     },
     {
       "name": "PAPADATA_AUTH_MAIL_KEY_BASE64",
@@ -2924,16 +3399,191 @@
         "production": false
       },
       "source": {
-        "kind": "literal",
-        "value": ""
+        "kind": "randomBase64",
+        "bytes": 32
       },
       "terraform": null,
       "defaultPolicy": "feature-disabled",
-      "validation": "Base64-encoded sealing key; required when enabled.",
+      "validation": "Base64-encoded, exactly 32 raw bytes; required when enabled. production-parity generates a fresh random key (never a fixed/committed secret).",
       "consumer": "packages/integrations/src/auth-mail.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
+      "example": "replace-with-32-byte-random-base64-auth-mail-key"
+    },
+    {
+      "name": "PAPADATA_AUTH_MAIL_SMTP_HOST",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "production-parity"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "mailpit"
+      },
+      "terraform": null,
+      "defaultPolicy": "required-when-transport-smtp",
+      "validation": "SMTP host; required when PAPADATA_AUTH_MAIL_TRANSPORT=smtp. production-parity points this at the local Mailpit service on the internal Compose network.",
+      "consumer": "packages/integrations/src/auth-mail.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "Only production-parity's local Mailpit-backed smtp transport uses this; staging/production keep the resend transport, which never reads it.",
+      "operatorSuppliedReason": null,
+      "example": "mailpit"
+    },
+    {
+      "name": "PAPADATA_AUTH_MAIL_SMTP_PASSWORD",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "secret",
+      "secret": true,
+      "environments": [
+        "production-parity"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "Optional SMTP password, paired with PAPADATA_AUTH_MAIL_SMTP_USER, for a real external SMTP relay. Left unset for production-parity's Mailpit, which accepts unauthenticated local connections.",
+      "consumer": "packages/integrations/src/auth-mail.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "Only meaningful for the smtp transport, itself production-parity-only; see PAPADATA_AUTH_MAIL_SMTP_HOST.",
+      "operatorSuppliedReason": null,
       "example": ""
+    },
+    {
+      "name": "PAPADATA_AUTH_MAIL_SMTP_PORT",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "integer",
+      "secret": false,
+      "environments": [
+        "production-parity"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "1025"
+      },
+      "terraform": null,
+      "defaultPolicy": "required-when-transport-smtp",
+      "validation": "SMTP port; required when PAPADATA_AUTH_MAIL_TRANSPORT=smtp. 1025 is Mailpit's default SMTP port on the internal Compose network.",
+      "consumer": "packages/integrations/src/auth-mail.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "Only production-parity's local Mailpit-backed smtp transport uses this; staging/production keep the resend transport, which never reads it.",
+      "operatorSuppliedReason": null,
+      "example": "1025"
+    },
+    {
+      "name": "PAPADATA_AUTH_MAIL_SMTP_SECURE",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "boolean",
+      "secret": false,
+      "environments": [
+        "production-parity"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "false"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback",
+      "validation": "Optional; 'true' enables implicit TLS. Mailpit's local SMTP listener is plaintext, so production-parity sets this to false. Absent/anything else is treated as false.",
+      "consumer": "packages/integrations/src/auth-mail.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "Only meaningful for the smtp transport, itself production-parity-only; see PAPADATA_AUTH_MAIL_SMTP_HOST.",
+      "operatorSuppliedReason": null,
+      "example": "false"
+    },
+    {
+      "name": "PAPADATA_AUTH_MAIL_SMTP_USER",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "production-parity"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": false,
+        "staging": false,
+        "production": false
+      },
+      "source": null,
+      "terraform": null,
+      "defaultPolicy": "feature-disabled",
+      "validation": "Optional SMTP username for a real external SMTP relay; absent means no SMTP auth. Left unset for production-parity's Mailpit, which needs none.",
+      "consumer": "packages/integrations/src/auth-mail.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "Only meaningful for the smtp transport, itself production-parity-only; see PAPADATA_AUTH_MAIL_SMTP_HOST.",
+      "operatorSuppliedReason": null,
+      "example": ""
+    },
+    {
+      "name": "PAPADATA_AUTH_MAIL_TRANSPORT",
+      "services": [
+        "api",
+        "worker"
+      ],
+      "type": "enum",
+      "secret": false,
+      "environments": [
+        "production-parity"
+      ],
+      "required": {
+        "dev": false,
+        "production-parity": true,
+        "staging": false,
+        "production": false
+      },
+      "source": {
+        "kind": "literal",
+        "value": "smtp"
+      },
+      "terraform": null,
+      "defaultPolicy": "fallback-to-resend",
+      "validation": "One of resend|smtp. Empty/absent defaults to resend (today's behavior everywhere this var isn't set, unaffected by this entry). production-parity sets this to smtp for the local Mailpit mailbox; staging/production never set it and keep resend.",
+      "consumer": "packages/integrations/src/auth-mail.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": "production-parity is the only environment that overrides the transport away from the resend default.",
+      "operatorSuppliedReason": null,
+      "example": "smtp"
     },
     {
       "name": "PAPADATA_BILLING_ALLOW_LIVE",
@@ -2968,6 +3618,7 @@
       "consumer": "packages/integrations/src/stripe-billing.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "false"
     },
     {
@@ -3003,6 +3654,7 @@
       "consumer": "packages/integrations/src/stripe-billing.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "disabled"
     },
     {
@@ -3038,6 +3690,7 @@
       "consumer": "packages/integrations/src/stripe-billing.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "[]"
     },
     {
@@ -3073,7 +3726,44 @@
       "consumer": "packages/integrations/src/stripe-billing.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
+    },
+    {
+      "name": "PAPADATA_COOKIE_CONSENT_VERSION",
+      "services": [
+        "api"
+      ],
+      "type": "string",
+      "secret": false,
+      "environments": [
+        "dev",
+        "production-parity",
+        "staging",
+        "production"
+      ],
+      "required": {
+        "dev": true,
+        "production-parity": true,
+        "staging": true,
+        "production": true
+      },
+      "source": {
+        "kind": "literal",
+        "value": "1"
+      },
+      "terraform": {
+        "envName": "PAPADATA_COOKIE_CONSENT_VERSION",
+        "kind": "variable",
+        "name": "var.cookie_consent_version"
+      },
+      "defaultPolicy": "fail-fast",
+      "validation": "Required, non-empty, max 80 chars. Bump when cookie policy changes so stale decisions require renewed consent.",
+      "consumer": "apps/api/src/production/config.ts",
+      "productionOnlyReason": null,
+      "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
+      "example": "1"
     },
     {
       "name": "PAPADATA_INFRASTRUCTURE_AUTH_TOKEN",
@@ -3108,6 +3798,7 @@
       "consumer": "apps/api/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "replace-with-32-byte-random-infra-token"
     },
     {
@@ -3139,6 +3830,7 @@
       "consumer": "packages/integrations/src/secret-provisioner.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -3170,6 +3862,7 @@
       "consumer": "packages/integrations/src/secret-provisioner.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -3201,6 +3894,7 @@
       "consumer": "packages/integrations/src/secret-provisioner.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "false"
     },
     {
@@ -3237,6 +3931,7 @@
       "consumer": "packages/ai-runtime/src/index.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -3274,6 +3969,7 @@
       "consumer": "packages/ai-runtime/src/index.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -3310,6 +4006,7 @@
       "consumer": "packages/ai-runtime/src/index.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "false"
     },
     {
@@ -3346,6 +4043,7 @@
       "consumer": "packages/ai-runtime/src/index.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -3382,6 +4080,7 @@
       "consumer": "packages/ai-runtime/src/index.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -3418,6 +4117,7 @@
       "consumer": "packages/ai-runtime/src/index.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "50"
     },
     {
@@ -3447,6 +4147,7 @@
       "consumer": "compose.production-parity.yml",
       "productionOnlyReason": null,
       "parityOnlyReason": "Local Compose credential primitive used only to synthesize DATABASE_URL/SCHEDULER_DATABASE_URL/REDIS_URL/storage credentials locally (see source.kind=template/reference entries that consume it). GCP provisions the equivalent as an opaque, ready-made Secret Manager connection string (database_url/scheduler_database_url/redis_url) and has no env var of this name.",
+      "operatorSuppliedReason": null,
       "example": "replace-with-random-platform-secret"
     },
     {
@@ -3475,6 +4176,7 @@
       "consumer": "apps/api/src/production/access-lifecycle/access-lifecycle.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -3503,6 +4205,7 @@
       "consumer": "apps/api/src/production/access-lifecycle/access-lifecycle.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -3535,6 +4238,7 @@
       "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": "MinIO credential; GCS uses the Cloud Run service account identity instead.",
+      "operatorSuppliedReason": null,
       "example": "papadata-parity"
     },
     {
@@ -3571,6 +4275,7 @@
       "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "papadata-artifacts"
     },
     {
@@ -3607,6 +4312,7 @@
       "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
       "productionOnlyReason": "production-parity emulates GCS with MinIO per the LP-6 parity matrix (objectStorage: emulated).",
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "minio"
     },
     {
@@ -3639,6 +4345,7 @@
       "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": "MinIO (S3-compatible emulator) needs an explicit endpoint URL; GCS does not.",
+      "operatorSuppliedReason": null,
       "example": "http://minio:9000"
     },
     {
@@ -3671,6 +4378,7 @@
       "consumer": "apps/api/src/production/config.ts, apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": "MinIO credential; GCS uses the Cloud Run service account identity instead.",
+      "operatorSuppliedReason": null,
       "example": "replace-with-random-minio-secret"
     },
     {
@@ -3699,6 +4407,7 @@
       "consumer": "apps/api/src/production/access-lifecycle/access-lifecycle.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -3727,6 +4436,7 @@
       "consumer": "apps/api/src/production/access-lifecycle/access-lifecycle.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -3756,6 +4466,7 @@
       "consumer": "compose.production-parity.yml",
       "productionOnlyReason": null,
       "parityOnlyReason": "Local Compose credential primitive used only to synthesize DATABASE_URL/SCHEDULER_DATABASE_URL/REDIS_URL/storage credentials locally (see source.kind=template/reference entries that consume it). GCP provisions the equivalent as an opaque, ready-made Secret Manager connection string (database_url/scheduler_database_url/redis_url) and has no env var of this name.",
+      "operatorSuppliedReason": null,
       "example": "replace-with-random-test-secret"
     },
     {
@@ -3773,21 +4484,25 @@
       ],
       "required": {
         "dev": false,
-        "production-parity": false,
+        "production-parity": true,
         "staging": false,
         "production": false
       },
-      "source": null,
+      "source": {
+        "kind": "literal",
+        "value": "https://papadata.localhost"
+      },
       "terraform": {
         "envName": "PAPADATA_WEB_ORIGIN",
         "kind": "variable",
         "name": "local.web_origin"
       },
       "defaultPolicy": "feature-disabled",
-      "validation": "Not fail-fast anywhere: oauth-provider.config.ts treats an unset/invalid value as null and OAuth just reports configuration_required. Only truly required (throws) when PAPADATA_AUTH_MAIL_ENABLED=true, which is false in every environment today. Terraform always sets it in staging/production anyway (both OAuth and mail want it available).",
+      "validation": "Not fail-fast in dev or when mail is disabled: oauth-provider.config.ts treats an unset/invalid value as null and OAuth just reports configuration_required. Truly required (throws) whenever PAPADATA_AUTH_MAIL_ENABLED=true -- true for production-parity (Mailpit-backed local verification/reset mail) and whenever an operator enables mail in staging/production. Terraform always sets it in staging/production regardless.",
       "consumer": "apps/api/src/production/identity/oauth-provider.config.ts, packages/integrations/src/auth-mail.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "https://papadata.localhost"
     },
     {
@@ -3823,6 +4538,7 @@
       "consumer": "packages/integrations/src/stripe-billing.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "false"
     },
     {
@@ -3858,6 +4574,7 @@
       "consumer": "packages/integrations/src/stripe-billing.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "false"
     },
     {
@@ -3893,6 +4610,7 @@
       "consumer": "packages/integrations/src/stripe-billing.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "false"
     },
     {
@@ -3928,6 +4646,7 @@
       "consumer": "packages/integrations/src/stripe-billing.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "false"
     },
     {
@@ -3963,6 +4682,7 @@
       "consumer": "packages/integrations/src/stripe-billing.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "false"
     },
     {
@@ -3998,6 +4718,7 @@
       "consumer": "packages/integrations/src/stripe-billing.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "false"
     },
     {
@@ -4033,6 +4754,7 @@
       "consumer": "packages/integrations/src/stripe-billing.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "false"
     },
     {
@@ -4061,6 +4783,7 @@
       "consumer": "apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "4"
     },
     {
@@ -4090,6 +4813,7 @@
       "consumer": "compose.production-parity.yml",
       "productionOnlyReason": null,
       "parityOnlyReason": "Local Compose credential primitive used only to synthesize DATABASE_URL/SCHEDULER_DATABASE_URL/REDIS_URL/storage credentials locally (see source.kind=template/reference entries that consume it). GCP provisions the equivalent as an opaque, ready-made Secret Manager connection string (database_url/scheduler_database_url/redis_url) and has no env var of this name.",
+      "operatorSuppliedReason": null,
       "example": "replace-with-random-migrator-secret"
     },
     {
@@ -4118,6 +4842,7 @@
       "consumer": "apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "0 */6 * * *"
     },
     {
@@ -4155,6 +4880,7 @@
       "consumer": "apps/api/src/production/config.ts, apps/bff/src/config.ts, apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "replace-with-base64-ca"
     },
     {
@@ -4183,6 +4909,7 @@
       "consumer": "apps/api/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "5000"
     },
     {
@@ -4212,6 +4939,7 @@
       "consumer": "compose.production-parity.yml",
       "productionOnlyReason": null,
       "parityOnlyReason": "Local Compose credential primitive used only to synthesize DATABASE_URL/SCHEDULER_DATABASE_URL/REDIS_URL/storage credentials locally (see source.kind=template/reference entries that consume it). GCP provisions the equivalent as an opaque, ready-made Secret Manager connection string (database_url/scheduler_database_url/redis_url) and has no env var of this name.",
+      "operatorSuppliedReason": null,
       "example": "replace-with-random-redis-secret"
     },
     {
@@ -4249,6 +4977,7 @@
       "consumer": "apps/api/src/production/config.ts, apps/bff/src/config.ts, apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "rediss://default:replace-with-random-redis-secret@redis-production:6379"
     },
     {
@@ -4277,6 +5006,7 @@
       "consumer": "apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "30 2 * * *"
     },
     {
@@ -4312,6 +5042,7 @@
       "consumer": "apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "postgresql://papadata_platform:replace-with-random-platform-secret@postgres-production:5432/papadata"
     },
     {
@@ -4347,6 +5078,7 @@
       "consumer": "packages/integrations/src/stripe-billing.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -4382,6 +5114,7 @@
       "consumer": "packages/integrations/src/stripe-billing.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -4418,6 +5151,7 @@
       "consumer": "packages/integrations/src/stripe-billing.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -4454,6 +5188,7 @@
       "consumer": "apps/api/src/production/config.ts, apps/api/src/production/billing/stripe-webhook.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": ""
     },
     {
@@ -4482,6 +5217,7 @@
       "consumer": "apps/worker/src/production/sync-dispatch-scheduler.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "*/15 * * * *"
     },
     {
@@ -4510,6 +5246,7 @@
       "consumer": "apps/worker/src/production/sync-dispatch-scheduler.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "6"
     },
     {
@@ -4538,6 +5275,7 @@
       "consumer": "apps/worker/src/production/sync-dispatch-scheduler.service.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "1800000"
     },
     {
@@ -4566,6 +5304,7 @@
       "consumer": "apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "4"
     },
     {
@@ -4594,6 +5333,7 @@
       "consumer": "apps/worker/src/production/config.ts",
       "productionOnlyReason": null,
       "parityOnlyReason": null,
+      "operatorSuppliedReason": null,
       "example": "60000"
     }
   ]

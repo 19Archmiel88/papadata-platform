@@ -28,6 +28,7 @@ import {
   compareRuntimeAgainstContract,
   compareTerraformAgainstContract,
   checkProductionParityCoverage,
+  checkProductionParityRequiredHasSource,
   checkLocalOnlyNeverReachesProduction,
   checkSecretNameHeuristic,
   checkRequiredOptionalConsistency,
@@ -70,6 +71,7 @@ const localContract = await readJson(contract.localContract);
 failures.push(...checkDuplicateNames(contract));
 failures.push(...checkRequiredOptionalConsistency(contract));
 failures.push(...checkProductionParityCoverage(contract));
+failures.push(...checkProductionParityRequiredHasSource(contract));
 failures.push(...checkSecretNameHeuristic(contract));
 
 // --- Discover runtime source (Class A + dynamic-name sites) -----------------

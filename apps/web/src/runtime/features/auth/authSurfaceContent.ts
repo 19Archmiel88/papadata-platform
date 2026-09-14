@@ -136,15 +136,6 @@ export function resolveAuthSurfaceCopy(
     };
   }
 
-  if (mode === 'workspace') {
-    return {
-      description: 'Masz dostęp do więcej niż jednej organizacji. Wybierz, w którym obszarze roboczym chcesz teraz pracować.',
-      eyebrow: 'Wybór obszaru roboczego',
-      scopeNote: 'Wybór możesz później zmienić w dowolnym momencie w aplikacji.',
-      title: 'Wybierz organizację',
-    };
-  }
-
   return isResetFlow
     ? {
       description: 'Ustaw nowe hasło po otwarciu prawidłowego linku odzyskiwania. Nowe hasło powinno być unikalne dla PapaData.',
@@ -261,15 +252,6 @@ export function resolveAuthStatePanel(
       body: 'Ta czynność wymaga świeżego potwierdzenia — wpisz aktualny kod, nawet jeśli logowałeś się niedawno. Po kilku nieudanych próbach dalsza weryfikacja może zostać czasowo zablokowana.',
       eyebrow: 'Wymagane potwierdzenie',
       title: 'Świeży dowód tożsamości',
-      tone: 'info',
-    };
-  }
-
-  if (mode === 'workspace') {
-    return {
-      body: 'Twoje konto należy do więcej niż jednej organizacji. Wybór decyduje, którego kontekstu (danych, integracji, uprawnień) użyjemy w tej sesji.',
-      eyebrow: 'Kilka organizacji',
-      title: 'Kontynuuj we właściwym kontekście',
       tone: 'info',
     };
   }
@@ -399,15 +381,6 @@ function resolveAuthSurfaceCopyEn(
     };
   }
 
-  if (mode === 'workspace') {
-    return {
-      description: 'You have access to more than one organization. Choose the workspace you want to use now.',
-      eyebrow: 'Workspace selection',
-      scopeNote: 'You can change this choice later in the application.',
-      title: 'Choose organization',
-    };
-  }
-
   return isResetFlow
     ? {
       description: 'Set a new password after opening a valid recovery link. The new password should be unique to PapaData.',
@@ -519,15 +492,6 @@ function resolveAuthStatePanelEn(
       body: 'This action needs a fresh confirmation. Enter the current code even if you signed in recently. After several failed attempts, verification may be temporarily blocked.',
       eyebrow: 'Confirmation required',
       title: 'Fresh proof of identity',
-      tone: 'info',
-    };
-  }
-
-  if (mode === 'workspace') {
-    return {
-      body: 'Your account belongs to more than one organization. The choice decides which context, data, integrations, and permissions are used in this session.',
-      eyebrow: 'Multiple organizations',
-      title: 'Continue in the right context',
       tone: 'info',
     };
   }

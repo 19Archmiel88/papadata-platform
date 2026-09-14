@@ -23,11 +23,13 @@ import {
   type AuthSessionRuntime,
   useAuthSessionRuntime,
 } from '../runtime/shared/auth/authSessionRuntime';
+import { CookieConsentRoot } from '../runtime/shared/consent/CookieConsentSurface';
 import './runtime-app.css';
 
 import {isAccessRoute} from './access/accessRoutes';
 import {RenderBoundary} from '../runtime/shared/errors/RenderBoundary';
 const AccessRouter=lazy(()=>import('./access/AccessRouter').then(module=>({default:module.AccessRouter})));
+const LegalDocumentPage=lazy(()=>import('./legal/LegalDocumentPage').then(module=>({default:module.LegalDocumentPage})));
 const DataQualityPage=lazy(()=>import('./data-quality/DataQualityPage').then(module=>({default:module.DataQualityPage})));
 const CampaignsPage=lazy(()=>import('./campaigns/CampaignsPage').then(module=>({default:module.CampaignsPage})));
 const HelpPage=lazy(()=>import('./help/HelpPage').then(module=>({default:module.HelpPage})));
@@ -48,7 +50,21 @@ applyPapaDataRuntimeGlobals(document.documentElement, getInitialPapaDataRuntimeG
 
 const DemoWorkspace = import.meta.env.DEV ? lazy(() => import('./demo/DemoWorkspace')) : null;
 function AppEntry() {
-  const path = useLocationPath().split('?')[0];
+  const locationPath = useLocationPath();
+  const path = locationPath.split('?')[0];
+  // Public regardless of auth state -- reachable from the cookie consent
+  // banner both before login and while signed in (see BATCH F) -- so this
+  // is checked ahead of RuntimeApp's own auth branching, the same way
+  // /preview is.
+  if (path === '/legal' || path.startsWith('/legal/')) {
+    return (
+      <RenderBoundary key={path}>
+        <Suspense fallback={<main className="pd-runtime-loading" role="status">Wczytywanie dokumentu…</main>}>
+          <LegalDocumentPage locationPath={locationPath} />
+        </Suspense>
+      </RenderBoundary>
+    );
+  }
   return DemoWorkspace && (path === '/preview' || path.startsWith('/preview/')) ? (
     <Suspense fallback={<main className="pd-runtime-loading">Wczytywanie podglądu…</main>}>
       <DemoWorkspace />
@@ -246,6 +262,8 @@ if (!root) throw new Error('Missing #root mount point.');
 
 createRoot(root).render(
   <StrictMode>
-    <AppEntry />
+    <CookieConsentRoot>
+      <AppEntry />
+    </CookieConsentRoot>
   </StrictMode>,
 );

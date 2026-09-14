@@ -22,6 +22,15 @@ export type BffConfig = {
   readonly cookieSameSite: "lax" | "strict";
   readonly cookieSecret: string;
   readonly cookieSecure: boolean;
+  // Cookie consent's subject-id cookie: deliberately its own name/secret/
+  // lifetime, distinct from the session cookie -- it must outlive any
+  // session (works before login and survives logout) and carries no
+  // authentication weight, only an opaque per-browser identifier.
+  readonly consentCookieMaxAgeSeconds: number;
+  readonly consentCookieName: string;
+  readonly consentCookiePath: string;
+  readonly consentCookiePreviousSecret: string | null;
+  readonly consentCookieSecret: string;
   readonly csrfCookieMaxAgeSeconds: number;
   readonly csrfCookieName: string;
   readonly csrfHeaderName: string;
@@ -80,6 +89,11 @@ export function readBffConfig(
     "BFF_COOKIE_PREVIOUS_SECRET",
   );
   const csrfSecret = readSecret(env, "BFF_CSRF_SECRET");
+  const consentCookieSecret = readSecret(env, "BFF_CONSENT_COOKIE_SECRET");
+  const consentCookiePreviousSecret = readOptionalSecret(
+    env,
+    "BFF_CONSENT_COOKIE_PREVIOUS_SECRET",
+  );
   const internalAuthActiveSecret = readSecret(
     env,
     "BFF_INTERNAL_AUTH_ACTIVE_SECRET",
@@ -100,6 +114,10 @@ export function readBffConfig(
       ? { BFF_COOKIE_PREVIOUS_SECRET: cookiePreviousSecret }
       : {}),
     BFF_CSRF_SECRET: csrfSecret,
+    BFF_CONSENT_COOKIE_SECRET: consentCookieSecret,
+    ...(consentCookiePreviousSecret
+      ? { BFF_CONSENT_COOKIE_PREVIOUS_SECRET: consentCookiePreviousSecret }
+      : {}),
     BFF_INTERNAL_AUTH_ACTIVE_SECRET: internalAuthActiveSecret,
     ...(internalAuthPreviousSecret
       ? { BFF_INTERNAL_AUTH_PREVIOUS_SECRET: internalAuthPreviousSecret }
@@ -148,6 +166,17 @@ export function readBffConfig(
     cookieSameSite: env.BFF_COOKIE_SAME_SITE === "lax" ? "lax" : "strict",
     cookieSecret,
     cookieSecure: productionLike,
+    consentCookieMaxAgeSeconds: readBoundedInteger(
+      env.BFF_CONSENT_COOKIE_MAX_AGE_SECONDS,
+      "BFF_CONSENT_COOKIE_MAX_AGE_SECONDS",
+      365 * 24 * 60 * 60,
+      24 * 60 * 60,
+      2 * 365 * 24 * 60 * 60,
+    ),
+    consentCookieName: env.BFF_CONSENT_COOKIE_NAME?.trim() || "papadata_consent_subject",
+    consentCookiePath: env.BFF_CONSENT_COOKIE_PATH?.trim() || "/",
+    consentCookiePreviousSecret,
+    consentCookieSecret,
     csrfCookieMaxAgeSeconds: readBoundedInteger(
       env.BFF_CSRF_COOKIE_MAX_AGE_SECONDS,
       "BFF_CSRF_COOKIE_MAX_AGE_SECONDS",

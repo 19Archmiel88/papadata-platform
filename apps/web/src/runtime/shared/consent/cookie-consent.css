@@ -1,0 +1,115 @@
+.pd-cookie-consent {
+  position: fixed;
+  inset-block-end: var(--pd-space-4);
+  inset-inline: var(--pd-space-4);
+  z-index: var(--pd-layer-modal);
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.pd-cookie-consent__panel {
+  display: flex;
+  gap: var(--pd-space-4);
+  align-items: center;
+  justify-content: space-between;
+  inline-size: min(100%, 960px);
+  padding: var(--pd-space-4);
+  border: 1px solid var(--pd-separator);
+  border-radius: var(--pd-radius-overlay);
+  background: var(--pd-surface);
+  box-shadow: var(--pd-shadow-overlay);
+  color: var(--pd-text);
+  pointer-events: auto;
+}
+
+.pd-cookie-consent__copy {
+  display: grid;
+  gap: var(--pd-space-2);
+  min-inline-size: 0;
+}
+
+.pd-cookie-consent__copy h2 {
+  margin: 0;
+  font-size: var(--pd-type-size-heading-small);
+  line-height: var(--pd-line-height-tight);
+}
+
+.pd-cookie-consent__copy p,
+.pd-cookie-consent__error {
+  margin: 0;
+  color: var(--pd-text-secondary);
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-cookie-consent__error {
+  color: var(--pd-status-danger);
+}
+
+.pd-cookie-consent__policy-link {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.pd-cookie-consent__dialog-policy-link {
+  margin: 0;
+  font-size: var(--pd-type-size-body-small);
+}
+
+.pd-cookie-consent__actions,
+.pd-cookie-consent__dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pd-space-2);
+  justify-content: flex-end;
+}
+
+.pd-cookie-consent__reopen {
+  position: fixed;
+  inset-block-end: var(--pd-space-3);
+  inset-inline-end: var(--pd-space-3);
+  z-index: var(--pd-layer-sticky);
+  padding: var(--pd-space-2) var(--pd-space-3);
+  border: 1px solid var(--pd-separator);
+  border-radius: var(--pd-radius-small);
+  background: var(--pd-surface);
+  color: var(--pd-text-secondary);
+  box-shadow: var(--pd-shadow-raised);
+  font: inherit;
+}
+
+.pd-cookie-consent__reopen:hover {
+  color: var(--pd-text);
+}
+
+.pd-cookie-consent__dialog {
+  display: grid;
+  gap: var(--pd-space-4);
+}
+
+.pd-cookie-consent__options {
+  display: grid;
+  gap: var(--pd-space-3);
+}
+
+@media (max-width: 680px) {
+  .pd-cookie-consent {
+    inset-block-end: var(--pd-space-2);
+    inset-inline: var(--pd-space-2);
+  }
+
+  .pd-cookie-consent__panel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pd-cookie-consent__actions,
+  .pd-cookie-consent__dialog-actions {
+    justify-content: stretch;
+  }
+
+  .pd-cookie-consent__actions .pd-button,
+  .pd-cookie-consent__dialog-actions .pd-button {
+    flex: 1 1 100%;
+  }
+}

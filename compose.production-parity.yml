@@ -131,6 +131,32 @@ services:
       retries: 20
       start_period: 5s
 
+  # Local test mailbox for auth verification/recovery mail (see BATCH F.1
+  # correction pass). SMTP stays internal-only (no host port published for
+  # 1025) -- only the web inbox is reachable, and only from the host loopback.
+  # Never wired into infra/terraform/main.tf: staging/production keep the
+  # real Resend transport.
+  mailpit:
+    image: axllent/mailpit:v1.24.1
+    restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "127.0.0.1:58025:8025"
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - --quiet
+        - --tries=1
+        - --spider
+        - http://127.0.0.1:8025/readyz
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
   migrate-production:
     image: postgres:16.13-alpine
     working_dir: /workspace
@@ -241,6 +267,8 @@ services:
         condition: service_healthy
       minio-init:
         condition: service_completed_successfully
+      mailpit:
+        condition: service_healthy
 
   web-production:
     build:

@@ -16,7 +16,8 @@
     "typecheck": "tsc -b tsconfig.json --pretty false"
   },
   "dependencies": {
-    "@papadata/contracts": "workspace:*"
+    "@papadata/contracts": "workspace:*",
+    "openai": "^7.15.0"
   },
   "devDependencies": {
     "@types/node": "^26.5.0"

@@ -1416,6 +1416,26 @@ export class BffClient {
     const payload=await readJson<{data:CompanyLookupResult}>(response);assertOk(response,payload);
     return payload.data;
   }
+  // Public: cookie consent must work before login and survive logout (it is
+  // keyed by the BFF's own signed, HttpOnly subject-id cookie sent via
+  // credentials:'include' on every request -- there is no subjectId
+  // parameter here, the frontend never chooses or sees that value).
+  async readCookieConsent():Promise<import('@papadata/contracts').CookieConsentStatus>{
+    const response=await this.fetch('/api/v1/consent/cookies',{method:'GET'},{allowRefresh:false,mode:'public'});
+    const payload=await readJson<{data:import('@papadata/contracts').CookieConsentStatus}>(response);assertOk(response,payload);
+    return payload.data;
+  }
+  async writeCookieConsent(selection:{readonly preferences:boolean;readonly analytics:boolean;readonly marketing:boolean}):Promise<import('@papadata/contracts').CookieConsentStatus>{
+    const response=await this.fetch('/api/v1/consent/cookies',{method:'PUT',body:JSON.stringify(selection)},{allowRefresh:false,mode:'public'});
+    const payload=await readJson<{data:import('@papadata/contracts').CookieConsentStatus}>(response);assertOk(response,payload);
+    return payload.data;
+  }
+  // Public: readable before login and without a session (see BATCH F).
+  async readLegalDocument(type:import('@papadata/contracts').LegalDocumentType):Promise<import('@papadata/contracts').LegalDocumentResponse>{
+    const response=await this.fetch(`/api/v1/legal/documents/${encodeURIComponent(type)}`,{method:'GET'},{allowRefresh:false,mode:'public'});
+    const payload=await readJson<{data:import('@papadata/contracts').LegalDocumentResponse}>(response);assertOk(response,payload);
+    return payload.data;
+  }
   async verifyAccessEmail(token:string):Promise<void>{
     const response=await this.fetch('/api/v1/auth/email/verify',{method:'POST',body:JSON.stringify({token})},{allowRefresh:false,mode:'public'});
     const payload=await readJson<{data:{verified?:boolean;accepted?:boolean;status?:string}}>(response);assertOk(response,payload);

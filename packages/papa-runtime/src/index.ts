@@ -5,7 +5,7 @@ import {
   type AiProviderAdapter,
   type AiProviderRequest,
 } from "@papadata/ai-runtime";
-import { entitlementsForMigratedPlan, type AiModelRoute } from "@papadata/contracts";
+import { entitlementsForMigratedPlan, type AiModelRoute, type AssistantRefusalCode } from "@papadata/contracts";
 import type { AssistantConversationRepository } from "@papadata/database";
 
 // Placeholder monthly budgets, expressed in whatever unit
@@ -29,10 +29,48 @@ const AI_PAPA_ANSWER_MAX_COST_MINOR_PER_CALL = readPositiveNumberEnv(
   "AI_PAPA_ANSWER_MAX_COST_MINOR_PER_CALL",
   50,
 );
+const PAPA_GENERATION_STAGE = Symbol.for("@papadata/papa-runtime/generationStage");
+
+export type PapaGenerationStage =
+  | "dlp_redaction"
+  | "context_preparation"
+  | "budget_reservation"
+  | "provider_invocation"
+  | "stream_handling"
+  | "result_persistence";
+
+export function papaGenerationErrorStage(error: unknown): PapaGenerationStage | null {
+  if (!error || typeof error !== "object") return null;
+  const stage = (error as { readonly [PAPA_GENERATION_STAGE]?: unknown })[PAPA_GENERATION_STAGE];
+  return isPapaGenerationStage(stage) ? stage : null;
+}
 
 function readPositiveNumberEnv(name: string, fallback: number): number {
   const parsed = Number(process.env[name]);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function isPapaGenerationStage(value: unknown): value is PapaGenerationStage {
+  return value === "dlp_redaction"
+    || value === "context_preparation"
+    || value === "budget_reservation"
+    || value === "provider_invocation"
+    || value === "stream_handling"
+    || value === "result_persistence";
+}
+
+function throwWithPapaGenerationStage(error: unknown, stage: PapaGenerationStage): never {
+  if (error && typeof error === "object") {
+    const existing = (error as { readonly [PAPA_GENERATION_STAGE]?: unknown })[PAPA_GENERATION_STAGE];
+    if (!isPapaGenerationStage(existing)) {
+      Object.defineProperty(error, PAPA_GENERATION_STAGE, {
+        configurable: true,
+        enumerable: false,
+        value: stage,
+      });
+    }
+  }
+  throw error;
 }
 
 /**
@@ -285,15 +323,16 @@ export async function generatePapaAnswer(options: {
   readonly supplementaryContext?: readonly string[];
 }): Promise<PapaAnswerGenerationResult | null> {
   const providerPrivacy = await persistPapaPreProviderRedactionProof({
-    createdByUserId: options.userId,
-    idempotencyKey: options.idempotencyKey,
-    operationId: "papa.answer.generate",
-    rawInput: readPapaPrivacyPromptInput(options as unknown as Record<string, unknown>),
-    repository: options.repository,
-    tenantId: options.tenantId,
-    threadId: options.conversationId ?? options.parentConversationId ?? options.idempotencyKey,
-    workspaceId: options.workspaceId,
-  });
+      createdByUserId: options.userId,
+      idempotencyKey: options.idempotencyKey,
+      operationId: "papa.answer.generate",
+      rawInput: readPapaPrivacyPromptInput(options as unknown as Record<string, unknown>),
+      repository: options.repository,
+      tenantId: options.tenantId,
+      threadId: options.conversationId ?? options.parentConversationId ?? options.idempotencyKey,
+      workspaceId: options.workspaceId,
+    })
+    .catch((error: unknown) => throwWithPapaGenerationStage(error, "dlp_redaction"));
 
   const prompt = providerPrivacy.redactedInput.trim();
   if (!prompt) throw new RangeError("prompt must not be blank");
@@ -395,18 +434,19 @@ export async function generatePapaAnswer(options: {
   const auditReference = `papa-answer:${options.idempotencyKey}`;
 
   await options.repository.appendMessage({
-    auditReference,
-    confidence: 1,
-    content: prompt,
-    limitations: [],
-    recommendations: [],
-    refusalCode: null,
-    role: "user",
-    tenantId: options.tenantId,
-    threadId: targetThreadId,
-    workspaceId: options.workspaceId,
-    idempotencyKey: options.idempotencyKey,
-  });
+      auditReference,
+      confidence: 1,
+      content: prompt,
+      limitations: [],
+      recommendations: [],
+      refusalCode: null,
+      role: "user",
+      tenantId: options.tenantId,
+      threadId: targetThreadId,
+      workspaceId: options.workspaceId,
+      idempotencyKey: options.idempotencyKey,
+    })
+    .catch((error: unknown) => throwWithPapaGenerationStage(error, "context_preparation"));
 
   const usableGrounding = grounding && isGroundingUsable(grounding);
   let assistantMessage: Record<string, unknown>;
@@ -458,44 +498,51 @@ export async function generatePapaAnswer(options: {
       temperature: 0,
     };
     const budgetError = await checkPapaAnswerBudget({
-      provider: options.provider,
-      providerRequest,
-      repository: options.repository,
-      billing: options.billing,
-      tenantId: options.tenantId,
-      userId: options.userId,
-      workspaceId: options.workspaceId,
-      budgetGuard: options.budgetGuard,
-    });
+        provider: options.provider,
+        providerRequest,
+        repository: options.repository,
+        billing: options.billing,
+        tenantId: options.tenantId,
+        userId: options.userId,
+        workspaceId: options.workspaceId,
+        budgetGuard: options.budgetGuard,
+      })
+      .catch((error: unknown) => throwWithPapaGenerationStage(error, "budget_reservation"));
 
     if (budgetError) {
       assistantMessage = await options.repository.appendMessage({
-        auditReference,
-        confidence: 0,
-        content: buildBudgetExceededContent(budgetError),
-        limitations,
-        recommendations: [],
-        refusalCode: budgetError.scope === "plan" ? "AI_NOT_ENABLED" : "AI_BUDGET_EXCEEDED",
-        role: "assistant",
-        tenantId: options.tenantId,
-        threadId: targetThreadId,
-        workspaceId: options.workspaceId,
-        idempotencyKey: options.idempotencyKey,
-      });
+          auditReference,
+          confidence: 0,
+          content: buildBudgetExceededContent(budgetError),
+          limitations,
+          recommendations: [],
+          refusalCode: papaBudgetExceededRefusalCode(budgetError),
+          role: "assistant",
+          tenantId: options.tenantId,
+          threadId: targetThreadId,
+          workspaceId: options.workspaceId,
+          idempotencyKey: options.idempotencyKey,
+        })
+        .catch((error: unknown) => throwWithPapaGenerationStage(error, "budget_reservation"));
     } else {
       const costEstimate = options.provider.estimateCost(providerRequest);
       options.signal?.throwIfAborted();
       let providerResponse;
       if (options.onDelta && options.provider.providerId !== "local-deterministic") {
         let output = "";
-        for await (const chunk of options.provider.stream(providerRequest, options.signal)) {
-          output += chunk;
-          await options.onDelta(chunk);
+        try {
+          for await (const chunk of options.provider.stream(providerRequest, options.signal)) {
+            output += chunk;
+            await options.onDelta(chunk);
+          }
+        } catch (error) {
+          throwWithPapaGenerationStage(error, "provider_invocation");
         }
         providerResponse = { output, inputTokens: costEstimate.estimatedInputTokens,
           outputTokens: Math.ceil(output.length / 4), providerRequestId: null };
       } else {
-        providerResponse = await options.provider.complete(providerRequest, options.signal);
+        providerResponse = await options.provider.complete(providerRequest, options.signal)
+          .catch((error: unknown) => throwWithPapaGenerationStage(error, "provider_invocation"));
       }
       // Cancellation must not quietly publish a completed answer.
       options.signal?.throwIfAborted();
@@ -510,26 +557,28 @@ export async function generatePapaAnswer(options: {
           );
 
       assistantMessage = await options.repository.appendMessage({
-        auditReference,
-        confidence,
-        content,
-        limitations,
-        recommendations: grounding.recommendations.map((item) => item.label),
-        refusalCode: null,
-        role: "assistant",
-        tenantId: options.tenantId,
-        threadId: targetThreadId,
-        workspaceId: options.workspaceId,
-        idempotencyKey: options.idempotencyKey,
-      });
+          auditReference,
+          confidence,
+          content,
+          limitations,
+          recommendations: grounding.recommendations.map((item) => item.label),
+          refusalCode: null,
+          role: "assistant",
+          tenantId: options.tenantId,
+          threadId: targetThreadId,
+          workspaceId: options.workspaceId,
+          idempotencyKey: options.idempotencyKey,
+        })
+        .catch((error: unknown) => throwWithPapaGenerationStage(error, "result_persistence"));
 
       await persistGroundingEvidence({
-        grounding,
-        messageId: readRowString(assistantMessage, "assistant_message_id"),
-        repository: options.repository,
-        tenantId: options.tenantId,
-        workspaceId: options.workspaceId,
-      });
+          grounding,
+          messageId: readRowString(assistantMessage, "assistant_message_id"),
+          repository: options.repository,
+          tenantId: options.tenantId,
+          workspaceId: options.workspaceId,
+        })
+        .catch((error: unknown) => throwWithPapaGenerationStage(error, "result_persistence"));
 
       providerCall = {
         costMinor: costEstimate.costMinor,
@@ -562,15 +611,16 @@ export async function generatePapaAnswer(options: {
   });
 
   await persistPapaAiAnswerContractAndGovernance({
-    answerMessage: assistantMessage,
-    conversationId,
-    idempotencyKey: options.idempotencyKey,
-    providerCall,
-    repository: options.repository,
-    tenantId: options.tenantId,
-    userId: options.userId,
-    workspaceId: options.workspaceId,
-  });
+      answerMessage: assistantMessage,
+      conversationId,
+      idempotencyKey: options.idempotencyKey,
+      providerCall,
+      repository: options.repository,
+      tenantId: options.tenantId,
+      userId: options.userId,
+      workspaceId: options.workspaceId,
+    })
+    .catch((error: unknown) => throwWithPapaGenerationStage(error, "result_persistence"));
 
   return {
     caseThreadId: targetThreadId === conversationId ? null : targetThreadId,
@@ -683,6 +733,10 @@ function buildBudgetExceededContent(error: AiBudgetExceededError): string {
     return "Papa odmawia wygenerowania odpowiedzi: workspace przekroczył miesięczny budżet AI. Skontaktuj się z administratorem, aby zwiększyć budżet, albo spróbuj ponownie w kolejnym okresie rozliczeniowym.";
   }
   return "Papa odmawia wygenerowania odpowiedzi: to zapytanie przekracza dopuszczalny koszt pojedynczej odpowiedzi.";
+}
+
+export function papaBudgetExceededRefusalCode(error: AiBudgetExceededError): AssistantRefusalCode {
+  return error.scope === "plan" ? "ENTITLEMENT_REQUIRED" : "COST_LIMIT_REACHED";
 }
 
 export async function listPapaAnswerRecords(options: {

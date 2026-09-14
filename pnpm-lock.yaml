@@ -20,9 +20,15 @@ importers:
 
   .:
     devDependencies:
+      '@types/pg':
+        specifier: ^8.23.1
+        version: 8.23.1
       '@typescript/typescript-linux-x64':
         specifier: 7.0.2
         version: 7.0.2
+      pg:
+        specifier: ^8.23.0
+        version: 8.23.0
       tsx:
         specifier: 4.23.13
         version: 4.23.13
@@ -324,6 +330,9 @@ importers:
       '@papadata/contracts':
         specifier: workspace:*
         version: link:../contracts
+      openai:
+        specifier: ^7.15.0
+        version: 7.15.0(@aws-sdk/credential-provider-node@3.972.82)(@smithy/signature-v4@5.7.3)(ws@8.21.3)
     devDependencies:
       '@types/node':
         specifier: ^26.5.0
@@ -365,6 +374,9 @@ importers:
       fast-xml-parser:
         specifier: ^5.11.1
         version: 5.11.1
+      nodemailer:
+        specifier: ^10.0.9
+        version: 10.0.9
     devDependencies:
       '@types/node':
         specifier: ^26.5.0
@@ -3630,6 +3642,10 @@ packages:
     resolution: {integrity: sha512-YHs7BmmcsdAI5Ozuf8JZo6PT0mv2GIWC9vMfvUC3dp65M8hn7Ux8CPL+2oBI7juNuj9d0ndhTcznq2ODBps9cQ==}
     engines: {node: '>=18'}
 
+  nodemailer@10.0.9:
+    resolution: {integrity: sha512-BF0qcyplCwp+jMk6HCjFykBz/YhhZSsxrARhOldLwFWH+8kGjQsd2WIMIZhqEuyXRoGFi0ONbDeWDMDoL8MhLw==}
+    engines: {node: '>=20.0.0'}
+
   obug@2.1.4:
     resolution: {integrity: sha512-4a+OsYv9UktOJKE+l1A4OufDgdRF9PifWj+tJnHURo/P+WOxpG4GzUFL9qCalmWauao6ogiG+QvnCovwPoyAWA==}
     engines: {node: '>=12.20.0'}
@@ -3644,6 +3660,30 @@ packages:
   open@10.2.0:
     resolution: {integrity: sha512-YgBpdJHPyQ2UE5x+hlSXcnejzAvD0b22U2OuAP+8OnlJT+PjWPxtgmGqKKc+RgTM63U9gN0YzrYc71R2WT/hTA==}
     engines: {node: '>=18'}
+
+  openai@7.15.0:
+    resolution: {integrity: sha512-2DIwesnPSduw68MFx7nAdgvshrgvS8WOan5W8+tgUMlAy/tY+Q41g80Pa+w/v64rHA6rtn+dketa8QvMVxU96w==}
+    engines: {node: '>=22.0.0'}
+    peerDependencies:
+      '@aws-sdk/credential-provider-node': '>=3.972.0 <4'
+      '@smithy/hash-node': '>=4.3.0 <5'
+      '@smithy/signature-v4': '>=5.4.0 <6'
+      undici: '>=5 <9'
+      ws: ^8.21.0
+      zod: ^3.25 || ^4.0
+    peerDependenciesMeta:
+      '@aws-sdk/credential-provider-node':
+        optional: true
+      '@smithy/hash-node':
+        optional: true
+      '@smithy/signature-v4':
+        optional: true
+      undici:
+        optional: true
+      ws:
+        optional: true
+      zod:
+        optional: true
 
   oxc-parser@0.127.0:
     resolution: {integrity: sha512-bkgD4qHlN7WxLdX8bLXdaU54TtQtAIg/ZBAfm0aje/mo3MRDo3P0hZSgr4U7O3xfX+fQmR5AP04JS/TGcZLcFA==}
@@ -7824,6 +7864,8 @@ snapshots:
 
   node-releases@2.0.54: {}
 
+  nodemailer@10.0.9: {}
+
   obug@2.1.4: {}
 
   on-exit-leak-free@2.1.2: {}
@@ -7838,6 +7880,12 @@ snapshots:
       define-lazy-prop: 3.0.0
       is-inside-container: 1.0.0
       wsl-utils: 0.1.0
+
+  openai@7.15.0(@aws-sdk/credential-provider-node@3.972.82)(@smithy/signature-v4@5.7.3)(ws@8.21.3):
+    optionalDependencies:
+      '@aws-sdk/credential-provider-node': 3.972.82
+      '@smithy/signature-v4': 5.7.3
+      ws: 8.21.3
 
   oxc-parser@0.127.0:
     dependencies:

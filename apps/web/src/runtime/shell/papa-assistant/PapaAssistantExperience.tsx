@@ -1,6 +1,6 @@
 import { cleanProductContextPath, productContextKeys } from '@papadata/contracts';
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
-import {AssistantMarkdown} from './AssistantMarkdown';
+import {SafeMarkdown} from '../../shared/markdown/SafeMarkdown';
 import { Button, Dialog, Icon } from '../../../design-system';
 import { useShellNavigate } from '../app-shell/ShellNavigationContext';
 import { usePapaAssistantRuntime } from './PapaAssistantRuntimeContext';
@@ -140,7 +140,7 @@ export function PapaAssistantExperience({ compact = false, onExpand, panelContro
         </div>}
         <ol className="pd-assistant__messages" aria-label="Historia rozmowy">{selectedMessages.map(message => <li key={message.messageId} className={`pd-assistant__message pd-assistant__message--${message.role}`}>
           <header><strong>{message.role === 'user' ? 'Ty' : message.role === 'assistant' ? 'Papa · AI' : 'Status'}</strong><time dateTime={message.createdAt}>{new Date(message.createdAt).toLocaleTimeString(readProductLocale() === 'en' ? 'en-US' : 'pl-PL', { hour: '2-digit', minute: '2-digit' })}</time></header>
-          <AssistantMarkdown>{message.content}</AssistantMarkdown>
+          <SafeMarkdown>{message.content}</SafeMarkdown>
           {message.role === 'assistant' && <footer>
             <span className="pd-assistant__badge">{message.status === 'blocked' ? 'Ograniczona odpowiedź' : message.evidence.length ? 'Odpowiedź ze źródłami' : 'Brak źródeł odpowiedzi'}</span>
             {message.limitations.map((text, i) => <p key={i}>{text}</p>)}
@@ -172,7 +172,7 @@ export function PapaAssistantExperience({ compact = false, onExpand, panelContro
           <Button variant="ghost" disabled={!snapshot} onClick={() => snapshot && downloadContextCsv(selectContext(snapshot, runtime.excluded))}>Pobierz CSV kontekstu</Button></div>
         {runtime.demo && <p className="pd-assistant__note">W demonstracji szkice są lokalne. Generowanie PDF/XLSX jest dostępne po podłączeniu serwera raportów.</p>}
         <h3>Biblioteka szkiców Papa</h3>{!runtime.definitions.length && <p>Brak wczytanych szkiców. Zapisz analizę lub odśwież bibliotekę.</p>}
-        {runtime.definitions.map(report => <details className="pd-assistant__artifact" key={report.id}><summary>{report.name} · {report.status === 'draft' ? 'Szkic' : report.status}</summary><AssistantMarkdown>{report.description ?? 'Brak opisu'}</AssistantMarkdown></details>)}
+        {runtime.definitions.map(report => <details className="pd-assistant__artifact" key={report.id}><summary>{report.name} · {report.status === 'draft' ? 'Szkic' : report.status}</summary><SafeMarkdown>{report.description ?? 'Brak opisu'}</SafeMarkdown></details>)}
         {!!runtime.reports.length && <h3>Zadania generowania</h3>}{runtime.reports.map(report => <div className="pd-assistant__artifact" key={report.id}><strong>{report.format.toUpperCase()} · {report.status}</strong><p>{report.date_from} — {report.date_to}</p><Button variant="secondary" disabled={runtime.busy} onClick={() => void runtime.downloadReport(report)}>Sprawdź i pobierz</Button></div>)}
         <Button variant="ghost" onClick={() => navigate(conversationLink(productRoutes.reports))}>Otwórz Zapisane raporty</Button>
       </div>}

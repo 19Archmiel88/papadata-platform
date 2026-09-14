@@ -29,6 +29,10 @@ const publicContractPaths = [
   "api/v1/company/lookup",
   "api/v1/auth/invitations/accept",
   "api/v1/auth/invitations/validate",
+  // Read-only (see BATCH F): the API only exposes GET on this path, so any
+  // other method this generic proxy would otherwise forward simply has no
+  // matching upstream handler.
+  "api/v1/legal/documents/:type",
 ] as const;
 
 @Controller()

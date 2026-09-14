@@ -170,7 +170,8 @@
    longer reskins pd-auth-surface* internals (no borders, radii, shadows,
    or backdrop layered back on top here). The stage is a structural
    wrapper only: it constrains story width and lets AuthSurface fill it,
-   the same way AppRouter's PublicAuthShell does in the real app.
+   the same way AccessRouter (apps/web/src/app/access/AccessRouter.tsx)
+   renders it directly in the real app, with no route-shell wrapper.
 */
 
 .pd-f0-page[data-pd-story-section='25'] .pd-s25-stage {

@@ -907,4 +907,316 @@ BEGIN
 END
 $identity_scope$;
 
+DO $cookie_consent_scope$
+DECLARE
+  subject_a constant text := '00000000-0000-4000-8000-0000000c0aa1';
+  subject_b constant text := '00000000-0000-4000-8000-0000000c0bb1';
+  tenant_a constant uuid := '00000000-0000-4000-8000-0000000000a1';
+  tenant_b constant uuid := '00000000-0000-4000-8000-0000000000b2';
+  workspace_a1 constant uuid := '00000000-0000-4000-8000-000000000a11';
+  user_a constant uuid := '00000000-0000-4000-8000-000000000aa1';
+  visible_count integer;
+  changed_count integer;
+BEGIN
+  PERFORM set_config('app.tenant_id', '', true);
+  PERFORM set_config('app.workspace_id', '', true);
+  PERFORM set_config('app.cookie_consent_subject_id', '', true);
+
+  -- A: anonymous subject A can insert and read back its own consent row and
+  -- its own anonymous audit row.
+  PERFORM set_config('app.cookie_consent_subject_id', subject_a, true);
+
+  INSERT INTO app.cookie_consents (consent_id, subject_id, categories, version)
+  VALUES (
+    gen_random_uuid(),
+    subject_a,
+    '{"necessary":true,"preferences":false,"analytics":false,"marketing":false}'::jsonb,
+    'rls-v1'
+  );
+
+  SELECT count(*) INTO visible_count
+  FROM app.cookie_consents
+  WHERE subject_id = subject_a;
+
+  IF visible_count <> 1 THEN
+    RAISE EXCEPTION 'Anonymous subject A could not read its own cookie consent row; count=%', visible_count;
+  END IF;
+
+  INSERT INTO app.audit_events (
+    event_id, tenant_id, workspace_id, actor_type, action,
+    resource_type, resource_id, correlation_id, contract_version
+  )
+  VALUES (
+    gen_random_uuid(), NULL, NULL, 'system', 'cookie_consent.created',
+    'cookie_consent', subject_a, 'rls-cookie-consent-audit-a', 'test'
+  );
+
+  SELECT count(*) INTO visible_count
+  FROM app.audit_events
+  WHERE resource_id = subject_a AND resource_type = 'cookie_consent';
+
+  IF visible_count <> 1 THEN
+    RAISE EXCEPTION 'Anonymous subject A could not read back its own cookie-consent audit row; count=%', visible_count;
+  END IF;
+
+  -- B: subject B cannot read or mutate subject A's consent row or audit row.
+  PERFORM set_config('app.cookie_consent_subject_id', subject_b, true);
+
+  SELECT count(*) INTO visible_count
+  FROM app.cookie_consents
+  WHERE subject_id = subject_a;
+
+  IF visible_count <> 0 THEN
+    RAISE EXCEPTION 'Subject B can read subject A cookie consent row; count=%', visible_count;
+  END IF;
+
+  UPDATE app.cookie_consents SET version = 'rls-hijacked' WHERE subject_id = subject_a;
+  GET DIAGNOSTICS changed_count = ROW_COUNT;
+
+  IF changed_count <> 0 THEN
+    RAISE EXCEPTION 'Subject B can mutate subject A cookie consent row; rows=%', changed_count;
+  END IF;
+
+  SELECT count(*) INTO visible_count
+  FROM app.audit_events
+  WHERE resource_id = subject_a AND resource_type = 'cookie_consent';
+
+  IF visible_count <> 0 THEN
+    RAISE EXCEPTION 'Subject B can read subject A cookie-consent audit row; count=%', visible_count;
+  END IF;
+
+  -- D: no cookie-consent subject scope and no tenant scope sees nothing on
+  -- either table -- absence of scope is denial, not "everything".
+  PERFORM set_config('app.cookie_consent_subject_id', '', true);
+
+  SELECT count(*) INTO visible_count
+  FROM app.cookie_consents
+  WHERE subject_id IN (subject_a, subject_b);
+
+  IF visible_count <> 0 THEN
+    RAISE EXCEPTION 'Direct cookie consent SELECT bypassed subject scope; count=%', visible_count;
+  END IF;
+
+  SELECT count(*) INTO visible_count
+  FROM app.audit_events
+  WHERE resource_id = subject_a AND resource_type = 'cookie_consent';
+
+  IF visible_count <> 0 THEN
+    RAISE EXCEPTION 'Direct cookie-consent audit SELECT bypassed subject scope; count=%', visible_count;
+  END IF;
+
+  -- C: authenticated attribution may annotate the SAME browser subject with
+  -- trusted account context, still addressed by subject scope (exactly how
+  -- CookieConsentService.write() annotates a logged-in browser's consent).
+  PERFORM set_config('app.cookie_consent_subject_id', subject_a, true);
+
+  UPDATE app.cookie_consents
+  SET user_id = user_a, tenant_id = tenant_a, workspace_id = workspace_a1
+  WHERE subject_id = subject_a;
+  GET DIAGNOSTICS changed_count = ROW_COUNT;
+
+  IF changed_count <> 1 THEN
+    RAISE EXCEPTION 'Authenticated attribution could not annotate its own cookie consent row; rows=%', changed_count;
+  END IF;
+
+  -- E: unrelated tenant-scoped RLS on these same two tables stays intact --
+  -- tenant scope alone (no subject scope) can see the now tenant-tagged
+  -- row, and a different tenant still cannot.
+  PERFORM set_config('app.cookie_consent_subject_id', '', true);
+  PERFORM set_config('app.tenant_id', tenant_a::text, true);
+  PERFORM set_config('app.workspace_id', workspace_a1::text, true);
+
+  SELECT count(*) INTO visible_count
+  FROM app.cookie_consents
+  WHERE subject_id = subject_a;
+
+  IF visible_count <> 1 THEN
+    RAISE EXCEPTION 'Tenant A workspace A1 could not read its attributed cookie consent row via tenant scope; count=%', visible_count;
+  END IF;
+
+  PERFORM set_config('app.tenant_id', tenant_b::text, true);
+  PERFORM set_config('app.workspace_id', '', true);
+
+  SELECT count(*) INTO visible_count
+  FROM app.cookie_consents
+  WHERE subject_id = subject_a;
+
+  IF visible_count <> 0 THEN
+    RAISE EXCEPTION 'Tenant B can read tenant A''s attributed cookie consent row via tenant scope; count=%', visible_count;
+  END IF;
+
+  PERFORM set_config('app.tenant_id', '', true);
+  PERFORM set_config('app.workspace_id', '', true);
+END
+$cookie_consent_scope$;
+
+DO $assistant_context_snapshot_scope$
+DECLARE
+  tenant_a constant uuid := '00000000-0000-4000-8000-0000000000a1';
+  tenant_b constant uuid := '00000000-0000-4000-8000-0000000000b2';
+  workspace_a1 constant uuid := '00000000-0000-4000-8000-000000000a11';
+  workspace_b1 constant uuid := '00000000-0000-4000-8000-000000000b21';
+  user_a constant uuid := '00000000-0000-4000-8000-000000000aa1';
+  user_b constant uuid := '00000000-0000-4000-8000-000000000bb1';
+  thread_a1 constant uuid := '00000000-0000-4000-8000-0000000cca01';
+  thread_b1 constant uuid := '00000000-0000-4000-8000-0000000ccb01';
+  snapshot_id uuid;
+  visible_count integer;
+  changed_count integer;
+  rls_enabled boolean;
+  force_rls_enabled boolean;
+  app_delete_allowed boolean;
+BEGIN
+  -- Regression coverage for migration 0073: papa.context.capture failed
+  -- with "permission denied for table assistant_context_snapshots" because
+  -- papadata_app had SELECT/INSERT but not UPDATE, and
+  -- ProductionDatabase.saveSnapshot() (packages/database/src/production.ts)
+  -- always issues an INSERT ... ON CONFLICT DO UPDATE, which Postgres
+  -- rejects for a role lacking UPDATE even when no row conflicts. RLS and
+  -- FORCE RLS on this table were already correct; this proves the SQL
+  -- privilege fix without weakening either.
+  SELECT relrowsecurity, relforcerowsecurity
+    INTO rls_enabled, force_rls_enabled
+  FROM pg_class relation
+  JOIN pg_namespace namespace ON namespace.oid = relation.relnamespace
+  WHERE namespace.nspname = 'app'
+    AND relation.relname = 'assistant_context_snapshots';
+
+  IF NOT rls_enabled OR NOT force_rls_enabled THEN
+    RAISE EXCEPTION 'assistant_context_snapshots RLS/FORCE RLS regressed; rls=% force=%', rls_enabled, force_rls_enabled;
+  END IF;
+
+  SELECT has_table_privilege('papadata_app', 'app.assistant_context_snapshots', 'DELETE')
+    INTO app_delete_allowed;
+
+  IF app_delete_allowed THEN
+    RAISE EXCEPTION 'papadata_app gained an unrequested DELETE privilege on assistant_context_snapshots';
+  END IF;
+
+  PERFORM set_config('app.tenant_id', tenant_a::text, true);
+  PERFORM set_config('app.workspace_id', workspace_a1::text, true);
+
+  INSERT INTO app.assistant_threads (
+    assistant_thread_id, tenant_id, workspace_id, title, context, created_by_user_id
+  )
+  VALUES (
+    thread_a1, tenant_a, workspace_a1, 'RLS context capture thread A1', '{}'::jsonb, user_a
+  );
+
+  -- The exact statement shape saveSnapshot() runs for papa.context.capture.
+  INSERT INTO app.assistant_context_snapshots (
+    assistant_context_snapshot_id, assistant_thread_id, tenant_id, workspace_id,
+    capture_reason, snapshot, idempotency_key
+  )
+  VALUES (
+    gen_random_uuid(), thread_a1, tenant_a, workspace_a1,
+    'rls-context-capture-a1', '{"route":"a1"}'::jsonb, 'rls-context-capture-key-a1'
+  )
+  ON CONFLICT (tenant_id, workspace_id, assistant_thread_id, idempotency_key)
+    WHERE idempotency_key IS NOT NULL
+  DO UPDATE SET idempotency_key = excluded.idempotency_key
+  RETURNING assistant_context_snapshot_id INTO snapshot_id;
+
+  -- A retried capture with the same idempotency key must hit the DO UPDATE
+  -- arm (requires UPDATE privilege) and must not duplicate the row.
+  INSERT INTO app.assistant_context_snapshots (
+    assistant_context_snapshot_id, assistant_thread_id, tenant_id, workspace_id,
+    capture_reason, snapshot, idempotency_key
+  )
+  VALUES (
+    gen_random_uuid(), thread_a1, tenant_a, workspace_a1,
+    'rls-context-capture-a1', '{"route":"a1-retry"}'::jsonb, 'rls-context-capture-key-a1'
+  )
+  ON CONFLICT (tenant_id, workspace_id, assistant_thread_id, idempotency_key)
+    WHERE idempotency_key IS NOT NULL
+  DO UPDATE SET idempotency_key = excluded.idempotency_key
+  RETURNING assistant_context_snapshot_id INTO snapshot_id;
+
+  SELECT count(*) INTO visible_count
+  FROM app.assistant_context_snapshots
+  WHERE assistant_thread_id = thread_a1
+    AND idempotency_key = 'rls-context-capture-key-a1';
+
+  IF visible_count <> 1 THEN
+    RAISE EXCEPTION 'idempotent context capture retry duplicated a snapshot row; count=%', visible_count;
+  END IF;
+
+  SELECT count(*) INTO visible_count
+  FROM app.assistant_context_snapshots
+  WHERE assistant_thread_id = thread_a1;
+
+  IF visible_count <> 1 THEN
+    RAISE EXCEPTION 'Tenant A could not read its own context snapshot; count=%', visible_count;
+  END IF;
+
+  PERFORM set_config('app.tenant_id', tenant_b::text, true);
+  PERFORM set_config('app.workspace_id', workspace_b1::text, true);
+
+  INSERT INTO app.assistant_threads (
+    assistant_thread_id, tenant_id, workspace_id, title, context, created_by_user_id
+  )
+  VALUES (
+    thread_b1, tenant_b, workspace_b1, 'RLS context capture thread B1', '{}'::jsonb, user_b
+  );
+
+  INSERT INTO app.assistant_context_snapshots (
+    assistant_context_snapshot_id, assistant_thread_id, tenant_id, workspace_id,
+    capture_reason, snapshot, idempotency_key
+  )
+  VALUES (
+    gen_random_uuid(), thread_b1, tenant_b, workspace_b1,
+    'rls-context-capture-b1', '{"route":"b1"}'::jsonb, 'rls-context-capture-key-b1'
+  )
+  ON CONFLICT (tenant_id, workspace_id, assistant_thread_id, idempotency_key)
+    WHERE idempotency_key IS NOT NULL
+  DO UPDATE SET idempotency_key = excluded.idempotency_key;
+
+  -- Tenant B cannot read tenant A's snapshot.
+  SELECT count(*) INTO visible_count
+  FROM app.assistant_context_snapshots
+  WHERE assistant_thread_id = thread_a1;
+
+  IF visible_count <> 0 THEN
+    RAISE EXCEPTION 'Tenant B can read tenant A context snapshot; count=%', visible_count;
+  END IF;
+
+  -- Tenant B cannot mutate tenant A's snapshot.
+  UPDATE app.assistant_context_snapshots
+  SET capture_reason = 'hijacked'
+  WHERE capture_reason = 'rls-context-capture-a1';
+  GET DIAGNOSTICS changed_count = ROW_COUNT;
+
+  IF changed_count <> 0 THEN
+    RAISE EXCEPTION 'Tenant B can mutate tenant A context snapshot; rows=%', changed_count;
+  END IF;
+
+  -- Absence of scope is denial, not "everything".
+  PERFORM set_config('app.tenant_id', '', true);
+  PERFORM set_config('app.workspace_id', '', true);
+
+  SELECT count(*) INTO visible_count
+  FROM app.assistant_context_snapshots
+  WHERE assistant_thread_id IN (thread_a1, thread_b1);
+
+  IF visible_count <> 0 THEN
+    RAISE EXCEPTION 'Unscoped session can read context snapshots; count=%', visible_count;
+  END IF;
+
+  BEGIN
+    INSERT INTO app.assistant_context_snapshots (
+      assistant_context_snapshot_id, assistant_thread_id, tenant_id, workspace_id,
+      capture_reason, snapshot, idempotency_key
+    )
+    VALUES (
+      gen_random_uuid(), thread_a1, tenant_a, workspace_a1,
+      'rls-unscoped-write', '{}'::jsonb, 'rls-context-capture-key-unscoped'
+    );
+    RAISE EXCEPTION 'Unscoped session inserted a context snapshot';
+  EXCEPTION
+    WHEN insufficient_privilege OR check_violation THEN
+      NULL;
+  END;
+END
+$assistant_context_snapshot_scope$;
+
 SELECT 'rls_matrix=ok' AS result;

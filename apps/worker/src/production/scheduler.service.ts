@@ -5,6 +5,7 @@ import IORedis from "ioredis";
 import { PlatformDatabase } from "@papadata/database";
 import { readWorkerConfig } from "./config.js";
 import type { PlatformJobPayload } from "./platform-worker.service.js";
+import { dateTruncatedToHour } from "./scheduler.policy.js";
 
 type ReprocessJobClaim = {
   readonly affected_metric_codes: readonly string[];
@@ -259,10 +260,4 @@ export class ReconciliationScheduler implements OnModuleDestroy {
     await this.connection.quit();
     await this.database.close();
   }
-}
-
-function dateTruncatedToHour(value: Date): string {
-  const copy = new Date(value);
-  copy.setUTCMinutes(0, 0, 0);
-  return copy.toISOString();
 }

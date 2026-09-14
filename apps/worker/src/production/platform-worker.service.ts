@@ -18,7 +18,14 @@ import {
   canRunAssistantGeneration,
   decideAssistantGenerationFailure,
 } from "./assistant-generation.policy.js";
-import { privacyTargetDisposition, reportFormatEnabled } from "./platform-worker.policy.js";
+import {
+  platformJobTypes,
+  privacyTargetDisposition,
+  renderReport,
+  reportFormatEnabled,
+  schedulerKeyForJob,
+  shouldBullMqRetry,
+} from "./platform-worker.policy.js";
 
 export type PlatformJobPayload = {
   readonly jobType: "report" | "privacy_request" | "reconciliation" | "retention" | "ai_evaluation" | "stripe_webhook" | "assistant_generation";
@@ -72,6 +79,33 @@ export class PlatformWorkerService implements OnModuleDestroy {
 
   private async process(job: Job<PlatformJobPayload>): Promise<object> {
     this.logger.log(`Processing platform job ${job.data.jobType}`);
+    if (!platformJobTypes.includes(job.data.jobType)) {
+      throw new Error(`Unknown platform job type: ${String(job.data.jobType)}`);
+    }
+    try {
+      return await this.dispatch(job);
+    } catch (error) {
+      // assistant_generation persists and logs its own retry/terminal decision
+      // (processAssistantGeneration's decideAssistantGenerationFailure) before
+      // ever reaching here; every other job type retries purely on BullMQ's
+      // attempts/backoff config, so this is the only place that makes their
+      // retry-vs-terminal outcome observable instead of an opaque queue retry.
+      if (job.data.jobType !== "assistant_generation") {
+        const maxAttempts = Math.max(1, Number(job.opts.attempts ?? 1));
+        this.logger.warn(JSON.stringify({
+          event: "platform_job_failure",
+          jobType: job.data.jobType,
+          attempt: job.attemptsMade + 1,
+          maxAttempts,
+          willRetry: shouldBullMqRetry(job.attemptsMade, maxAttempts),
+          errorName: error instanceof Error ? error.name : null,
+        }));
+      }
+      throw error;
+    }
+  }
+
+  private async dispatch(job: Job<PlatformJobPayload>): Promise<object> {
     switch (job.data.jobType) {
       case "report":
         return this.processReport(job.data);
@@ -273,6 +307,10 @@ export class PlatformWorkerService implements OnModuleDestroy {
         error,
         stage: failureStage,
       });
+      // decision === "retry" persists status='interrupted' with error_code=
+      // 'WORKER_RETRY' (assistantGenerationErrorCode's sentinel for this case) so the
+      // claim query above can reclaim it as "awaiting the next BullMQ attempt" rather
+      // than a stuck run once this same job (or its lease-expiry fallback) is retried.
       const status = decision === "retry" ? "interrupted" : decision === "cancel" ? "cancelled" : "failed";
       const code = assistantGenerationErrorCode({ decision, error, stage: failureStage });
       const providerError = aiProviderErrorMetadata(error);
@@ -491,7 +529,9 @@ export class PlatformWorkerService implements OnModuleDestroy {
        group by provider_id
        order by provider_id`,
     );
-    await this.completeSchedule("reconciliation", data, null);
+    const scheduleKey = schedulerKeyForJob(data.jobType);
+    if (!scheduleKey) throw new Error(`Reconciliation job dispatched with unexpected jobType: ${data.jobType}`);
+    await this.completeSchedule(scheduleKey, data, null);
     return {
       status: "completed",
       providers: rows,
@@ -548,7 +588,9 @@ export class PlatformWorkerService implements OnModuleDestroy {
         this.logger.error(`Retention failed for report ${report.id}`, error);
       }
     }
-    await this.completeSchedule("retention", data, failed > 0 ? "RETENTION_PARTIAL_FAILURE" : null);
+    const scheduleKey = schedulerKeyForJob(data.jobType);
+    if (!scheduleKey) throw new Error(`Retention job dispatched with unexpected jobType: ${data.jobType}`);
+    await this.completeSchedule(scheduleKey, data, failed > 0 ? "RETENTION_PARTIAL_FAILURE" : null);
     return {
       status: failed > 0 ? "partial" : "completed",
       deletedReportArtifacts: deleted,
@@ -591,7 +633,7 @@ export class PlatformWorkerService implements OnModuleDestroy {
   }
 
   private async completeSchedule(
-    scheduleKey: string,
+    scheduleKey: "reconciliation" | "retention",
     data: PlatformJobPayload,
     errorCode: string | null,
   ): Promise<void> {
@@ -621,47 +663,6 @@ function requiredPayloadString(payload: Readonly<Record<string, unknown>>, key: 
     throw new Error(`Platform job payload is missing ${key}`);
   }
   return value;
-}
-
-function renderReport(
-  format: string,
-  document: Record<string, unknown> & { rows: readonly Record<string, unknown>[] },
-): { readonly body: Buffer; readonly contentType: string } {
-  if (format === "json") {
-    return {
-      body: Buffer.from(JSON.stringify(document, null, 2), "utf8"),
-      contentType: "application/json",
-    };
-  }
-
-  const columns = [
-    "metric_code",
-    "definition_version",
-    "period_start",
-    "period_end",
-    "currency",
-    "value",
-    "value_kind",
-    "readiness",
-    "generated_at",
-  ];
-  const lines = [columns.join(",")];
-  for (const row of document.rows) {
-    lines.push(columns.map((column) => csvCell(row[column])).join(","));
-  }
-  return {
-    body: Buffer.from(`\uFEFF${lines.join("\n")}\n`, "utf8"),
-    contentType: "text/csv; charset=utf-8",
-  };
-}
-
-function csvCell(value: unknown): string {
-  const text = value === null || value === undefined
-    ? ""
-    : typeof value === "string"
-      ? value
-      : JSON.stringify(value);
-  return `"${text.replaceAll('"', '""')}"`;
 }
 
 function sha256(value: string): string {

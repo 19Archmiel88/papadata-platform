@@ -17,7 +17,7 @@ import {
   RequestTimeoutException,
   ServiceUnavailableException,
 } from "@nestjs/common";
-import { AiBudgetGuard, createPapaProviderRuntime } from "@papadata/ai-runtime";
+import { createPapaProviderRuntime } from "@papadata/ai-runtime";
 import { GusBirAdapter, readGusBirConfig } from "@papadata/integrations";
 import {
   AssistantConversationRepository,
@@ -44,9 +44,11 @@ import {
   resolveAccess,
   resolveBillingTaxDecision,
   resolveKsefReadinessMetadata,
+  type AssistantRun,
   type BillingVatValidationStatus,
 } from "@papadata/contracts";
 import { lookupCompanyRegistry } from "./company-lookup.real-source.js";
+import { AssistantRunService } from "../assistant-workspace/assistant-run.service.js";
 import type {
   RequestPrincipal,
   RequestPrincipalMembership,
@@ -110,7 +112,6 @@ import {
 } from "./traffic-analytics.real-source.js";
 import {
   capturePapaContext,
-  generatePapaAnswer,
   listHistoryRecords,
   listObservationRecords,
   listPapaAnswerRecords,
@@ -157,9 +158,6 @@ export class ContractRuntimeService {
 
   private readonly billing: BillingRepository;
 
-
-  private readonly aiBudgetGuard: AiBudgetGuard;
-
   private readonly companyLookupAudit: CompanyLookupAuditRepository;
 
   constructor(
@@ -170,6 +168,7 @@ export class ContractRuntimeService {
     @Inject(OAuthProviderConfig) private readonly oauthConfig: OAuthProviderConfig,
     @Inject(AccessMailService) private readonly accessMail: AccessMailService,
     @Inject(AssistantWorkspaceService) private readonly assistantWorkspace: AssistantWorkspaceService,
+    @Inject(AssistantRunService) private readonly assistantRuns: AssistantRunService,
     @Inject(GusBirCacheService) private readonly gusBirCache: GusBirCacheService,
     @Inject(SettingsOperationsService) private readonly settingsOperations: SettingsOperationsService,
   ) {
@@ -186,7 +185,6 @@ export class ContractRuntimeService {
     this.metricSnapshots = new MetricSnapshotRepository(database);
     this.mobilePairing = new MobilePairingRepository(database);
     this.billing = new BillingRepository(database);
-    this.aiBudgetGuard = new AiBudgetGuard();
     this.companyLookupAudit = new CompanyLookupAuditRepository(database);
   }
 
@@ -201,6 +199,32 @@ export class ContractRuntimeService {
       throw new ServiceUnavailableException(
         "GUS/BIR registry lookup configuration is invalid. Contact an administrator.",
       );
+    }
+  }
+
+  // Bridges the synchronous papa.answer.generate contract onto the durable
+  // worker-owned run (see the operation handler below): 'queued'/'running'/
+  // 'interrupted' are all non-terminal here (interrupted is a run awaiting its
+  // next BullMQ retry attempt, mirroring AssistantRunService.events()'s own
+  // terminal() check), so only 'completed' resolves and only 'failed'/
+  // 'cancelled' reject. The 100s bound matches that same stream's deadline.
+  private async awaitAssistantRun(
+    principal: RequestPrincipal,
+    id: string,
+  ): Promise<AssistantRun> {
+    const deadline = Date.now() + 100_000;
+    for (;;) {
+      const run = await this.assistantRuns.read(principal, id);
+      if (run.status === "completed") return run;
+      if (run.status === "failed" || run.status === "cancelled") {
+        throw new ServiceUnavailableException(run.errorCode ?? "GENERATION_FAILED");
+      }
+      if (Date.now() >= deadline) {
+        throw new RequestTimeoutException(
+          "Assistant generation is taking longer than expected. Read papa.workspace.runs.read for its current status.",
+        );
+      }
+      await new Promise<void>((resolve) => setTimeout(resolve, 500));
     }
   }
 
@@ -1114,39 +1138,66 @@ export class ContractRuntimeService {
     }
 
     if (request.operationId === "papa.answer.generate") {
+      // Compatibility surface for the documented papa.answer.generate contract
+      // (contracts/openapi-1.0.json). The actual generation is durable-worker-owned
+      // (see AssistantRunService/PlatformWorkerService, P1-04): this only creates the
+      // conversation thread when needed, enqueues a run the same way
+      // papa.workspace.runs.create does, and blocks for the worker's result so the
+      // response shape stays the pre-existing synchronous one. It must never call
+      // generatePapaAnswer itself -- that would make the API process own generation
+      // again, a second path around the worker lease/retry/idempotency state.
       const payload = readPayload(request.body);
       const prompt = requiredPayloadString(payload, "prompt");
       const policy = await this.assistantWorkspace.preferences(principal);
       if(!['context','evidence','metrics'].every(tool=>policy.allowedReadTools.includes(tool)))throw new ForbiddenException('Assistant generation is disabled by workspace policy.');
-      let providerRuntime: ReturnType<typeof createPapaProviderRuntime>;
+      // Fail fast on the same canonical provider selection the worker will use for the
+      // actual call (createPapaProviderRuntime), instead of creating a thread and
+      // queuing a run that is guaranteed to fail at the worker's provider_creation stage.
       try {
-        providerRuntime = createPapaProviderRuntime();
+        createPapaProviderRuntime();
       } catch {
         throw new ServiceUnavailableException("Configured AI provider is unavailable.");
       }
-      const result = await generatePapaAnswer({
-        historyEnabled: policy.historyEnabled,
-        contextDays: policy.contextDays,
-        budgetGuard: this.aiBudgetGuard,
-        billing: this.billing,
-        caseThreadId: optionalPayloadString(payload, "caseThreadId"),
-        conversationId: optionalPayloadString(payload, "conversationId"),
-        idempotencyKey: requireIdempotencyKey(request),
-        parentConversationId: optionalPayloadString(payload, "parentConversationId"),
-        prompt,
-        provider: providerRuntime.provider,
-        modelId: providerRuntime.modelId,
-        maxOutputTokens: providerRuntime.nativeStreaming ? 1536 : 512,
-        repository: this.assistantConversations,
-        tenantId: principal.tenantId,
-        userId: principal.userId,
-        workspaceId: principal.workspaceId,
-      });
-      if (!result) {
-        throw new NotFoundException(
-          `Conversation not found: ${optionalPayloadString(payload, "conversationId")}`,
-        );
+
+      const idempotencyKey = requireIdempotencyKey(request);
+      const parentConversationId = optionalPayloadString(payload, "parentConversationId");
+      let conversationId = optionalPayloadString(payload, "conversationId");
+      if (!conversationId) {
+        if (parentConversationId) {
+          throw new BadRequestException(
+            "A case thread must be created via papa.context.capture before generating an answer.",
+          );
+        }
+        const thread = await this.assistantConversations.createThread({
+          tenantId: principal.tenantId,
+          workspaceId: principal.workspaceId,
+          createdByUserId: principal.userId,
+          title: prompt.slice(0, 120),
+          context: {},
+          threadKind: "conversation",
+          parentThreadId: null,
+          idempotencyKey: `${idempotencyKey}:conversation`,
+        });
+        conversationId = String(thread.assistant_thread_id);
       }
+
+      const run = await this.assistantRuns.start(principal, {
+        requestId: deterministicRunId(
+          `${principal.tenantId}:${principal.workspaceId}:papa.answer.generate:${idempotencyKey}`,
+        ),
+        conversationId,
+        caseThreadId: optionalPayloadString(payload, "caseThreadId"),
+        prompt,
+        attachmentIds: [],
+        useMemory: false,
+      });
+      const completed = await this.awaitAssistantRun(principal, run.id);
+      const result = completed.result as {
+        readonly caseThreadId: string | null;
+        readonly conversationId: string;
+        readonly messageId: string;
+        readonly record: unknown;
+      };
       return {
         data: {
           answerGenerateResult: {
@@ -2640,6 +2691,18 @@ function optionalRecordDateString(
   return typeof candidate === "string" && Number.isFinite(Date.parse(candidate))
     ? candidate
     : null;
+}
+
+// Maps an arbitrary Idempotency-Key onto the v4-shaped UUID
+// AssistantRunService.start() requires as its run id (validation.js's uuid()
+// rejects anything else), so a retried papa.answer.generate call resolves to
+// the same durable run instead of enqueueing a duplicate generation.
+function deterministicRunId(seed: string): string {
+  const bytes = createHash("sha256").update(seed).digest().subarray(0, 16);
+  bytes[6] = (bytes[6]! & 0x0f) | 0x40;
+  bytes[8] = (bytes[8]! & 0x3f) | 0x80;
+  const hex = bytes.toString("hex");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
 function requireIdempotencyKey(request: ContractRuntimeRequest): string {

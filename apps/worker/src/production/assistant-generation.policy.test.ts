@@ -24,7 +24,7 @@ describe("assistant generation worker policy", () => {
     expect(canRunAssistantGeneration([{ role: "Viewer", status: "active", dataScope: "workspace", jitExpiresAt: null }])).toBe(false);
   });
 
-  it("retries an unknown (non-provider) failure before the final BullMQ attempt and fails on the last one", () => {
+  it("retries before the final BullMQ attempt: an unknown (non-provider) failure retries, then fails on the last one", () => {
     expect(decideAssistantGenerationFailure({ cancelled: false, attemptsMade: 0, maxAttempts: 5 })).toBe("retry");
     expect(decideAssistantGenerationFailure({ cancelled: false, attemptsMade: 4, maxAttempts: 5 })).toBe("fail");
   });

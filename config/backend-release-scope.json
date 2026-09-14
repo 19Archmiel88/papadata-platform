@@ -12,7 +12,7 @@
     "targetContract": "contracts/openapi-1.0.json",
     "targetOperations": 223,
     "exactTargetOperations": 223,
-    "extraHardeningOperations": 130,
+    "extraHardeningOperations": 133,
     "routeMethodOperationIdParity": true,
     "targetReleaseClaimed": false,
     "semanticConformanceClaimed": false,
@@ -1049,6 +1049,26 @@
       "releaseStatus": "compatibility",
       "servicePath": "/v1/company/lookup",
       "bffPath": "/api/v1/company/lookup"
+    },
+    {
+      "auth": "public",
+      "controllerFile": "apps/api/src/production/cookie-consent/cookie-consent.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "consent.cookies.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/consent/cookies",
+      "bffPath": "/api/v1/consent/cookies"
+    },
+    {
+      "auth": "public",
+      "controllerFile": "apps/api/src/production/cookie-consent/cookie-consent.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "PUT",
+      "operationId": "consent.cookies.write",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/consent/cookies",
+      "bffPath": "/api/v1/consent/cookies"
     },
     {
       "auth": "capability",
@@ -2109,6 +2129,16 @@
       "releaseStatus": "compatibility",
       "servicePath": "/v1/auth/invitations/validate",
       "bffPath": "/api/v1/auth/invitations/validate"
+    },
+    {
+      "auth": "public",
+      "controllerFile": "apps/api/src/production/legal-documents/legal-documents.controller.ts",
+      "implementation": "native-hardened-runtime",
+      "method": "GET",
+      "operationId": "legal.documents.read",
+      "releaseStatus": "enabled",
+      "servicePath": "/v1/legal/documents/{type}",
+      "bffPath": "/api/v1/legal/documents/{type}"
     },
     {
       "auth": "mfa+capability",
@@ -5344,7 +5374,7 @@
     "migrated-access-policy": 2,
     "migrated-billing-policy": 17,
     "migrated-data-quality-policy": 15,
-    "native-hardened-runtime": 137,
+    "native-hardened-runtime": 140,
     "native-identity-service": 2,
     "native-integration-service": 15
   },

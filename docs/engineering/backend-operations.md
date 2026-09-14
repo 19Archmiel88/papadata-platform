@@ -374,7 +374,7 @@ Podpisywanie obrazu i attestation wymagają skonfigurowanego rejestru/OIDC. Brak
 
 ### Polityka licencji
 
-`BlueOak-1.0.0` i `OFL-1.1` są jawnie dopuszczone w `config/backend-license-policy.json`. Pierwsza obejmuje zależności narzędziowe używane przez workspace, a druga paczki self-hostowanych fontów. Polityka pozostaje fail-closed: `unknownPolicy` ma wartość `fail`, dlatego każda kolejna nierozpoznana licencja blokuje bramkę do czasu jawnej decyzji.
+`BlueOak-1.0.0`, `OFL-1.1` i `MIT-0` są jawnie dopuszczone w `config/backend-license-policy.json`. Pierwsza obejmuje zależności narzędziowe używane przez workspace, druga paczki self-hostowanych fontów, a `MIT-0` obejmuje `nodemailer@10.0.9` używany w produkcyjnym grafie `@papadata/integrations` dla transportu SMTP maili auth. `MIT-0` jest wariantem permissive MIT bez wymogu atrybucji; nie jest licencją copyleft ani source-available. Polityka pozostaje fail-closed: `unknownPolicy` ma wartość `fail`, dlatego każda kolejna nierozpoznana licencja blokuje bramkę do czasu jawnej decyzji.
 
 ### GitHub Code Scanning i SARIF
 

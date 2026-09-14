@@ -37,13 +37,17 @@ for (const control of controls.controls) {
 
 for (const [script, command] of [
   ["verify:backend", "node tools/verify-backend-gate.mjs"],
-  ["verify:backend-release", "node tools/verify-backend-release-scope.mjs"],
   ["verify:backend-security", "node tools/verify-backend-security-controls.mjs"],
   ["test:backend", "node tools/verify-backend-tests.mjs"],
   ["evidence:backend", "node tools/generate-backend-evidence.mjs"],
 ]) {
   assert(packageJson.scripts[script] === command, `Root script ${script} must be ${command}.`);
 }
+const backendReleaseScript = splitCommandChain(packageJson.scripts["verify:backend-release"]);
+assert(
+  backendReleaseScript.at(-1) === "node tools/verify-backend-release-scope.mjs",
+  "Root script verify:backend-release must end with node tools/verify-backend-release-scope.mjs.",
+);
 
 const nodeVersion = (await readText(".node-version")).trim();
 const nvmrc = (await readText(".nvmrc")).trim();
@@ -150,4 +154,9 @@ async function migrationBundle() {
   let output = "";
   for (const file of files) output += `${await readText(file)}\n`;
   return output;
+}
+
+function splitCommandChain(value) {
+  if (typeof value !== "string") return [];
+  return value.split(/\s+&&\s+/u).map((command) => command.trim()).filter(Boolean);
 }
